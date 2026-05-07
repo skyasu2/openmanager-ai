@@ -6,7 +6,6 @@
  * AISidebarV4와 AIWorkspace에서 공유하는 핵심 로직:
  * - Hybrid AI Query (Streaming + Job Queue)
  * - 세션 제한
- * - 피드백
  * - 메시지 변환
  * - 파일 첨부 재시도 지원
  *
@@ -61,7 +60,6 @@ import type { JobDataSlot } from '@/types/ai-jobs';
 import type { SessionState } from '@/types/session';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import { buildFrontendQueryRoutingDecision } from './core/query-routing';
-import { useChatFeedback } from './core/useChatFeedback';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
@@ -123,10 +121,6 @@ export interface UseAIChatCoreReturn {
   handleNewSession: () => void;
 
   // 액션
-  handleFeedback: (
-    messageId: string,
-    type: 'positive' | 'negative'
-  ) => Promise<boolean>;
   regenerateLastResponse: () => void;
   /** 마지막 쿼리 재시도 (파일 첨부 포함) */
   retryLastQuery: () => void;
@@ -529,9 +523,8 @@ export function useAIChatCore(
   const artifactAbortControllerRef = useRef<AbortController | null>(null);
 
   // 🧩 Composed Hooks
-  const { sessionId, sessionIdRef, refreshSessionId, setSessionId } =
+  const { sessionId, refreshSessionId, setSessionId } =
     useChatSession(propSessionId);
-  const { handleFeedback } = useChatFeedback(sessionIdRef);
 
   // ============================================================================
   // Hybrid AI Query Hook
@@ -1131,7 +1124,6 @@ export function useAIChatCore(
     sessionId: sessionId,
     sessionState,
     handleNewSession,
-    handleFeedback,
     regenerateLastResponse,
     retryLastQuery,
     stop: stopGeneration,

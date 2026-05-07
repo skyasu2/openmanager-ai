@@ -54,7 +54,6 @@
 |---|---|---|
 | `/api/ai/artifact-intent` | `POST` | `src/app/api/ai/artifact-intent/route.ts` |
 | `/api/ai/ask` | `GET, POST` | `src/app/api/ai/ask/route.ts` |
-| `/api/ai/feedback` | `GET, POST` | `src/app/api/ai/feedback/route.ts` |
 | `/api/ai/incident-report` | `POST` | `src/app/api/ai/incident-report/route.ts` |
 | `/api/ai/intelligent-monitoring` | `GET, POST` | `src/app/api/ai/intelligent-monitoring/route.ts` |
 | `/api/ai/jobs` | `GET, POST` | `src/app/api/ai/jobs/route.ts` |

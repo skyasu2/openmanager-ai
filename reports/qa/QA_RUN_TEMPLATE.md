@@ -104,9 +104,7 @@ npm run qa:evidence:build
 - observability 관련 Cloud Run admin endpoint는 `https://openmanager-ai.vercel.app/monitoring/*`가 아니라 `CLOUD_RUN_AI_URL/monitoring*`로 검증합니다.
 - `/monitoring` / `/monitoring/traces`는 `X-API-Key: $CLOUD_RUN_API_SECRET` 인증이 필요합니다.
 - Vercel-side observability만 확인한 run이면 `coveredSurfaces`에 dashboard panel을 쓰고, Cloud Run admin `/monitoring`, `/monitoring/traces`는 `skippedSurfaces`에 분리합니다.
-- feedback trace observability run에서는 `/api/ai/feedback` 응답의 `traceUrlStatus`를 먼저 기록합니다.
-- `traceUrlStatus=available`이면 `traceUrl`을 direct Langfuse UI 증거로 남기고, `traceUrlStatus=unavailable`이면 `traceApiUrl`/`monitoringLookupUrl`를 운영 증거로 남깁니다.
-- sampled `/monitoring/traces?q=<traceId>` 검색은 `traceUrlStatus`와 별개의 보조 증거로 분리합니다.
+- AI observability run에서는 AI 응답 metadata의 `traceId`와 Cloud Run sampled `/monitoring/traces?q=<traceId>` 검색을 별도 증거로 분리합니다.
 - dashboard/AI parity run에서는 최소 1개 서버 기준으로 `dashboard raw metric`과 `AI getServerMetrics metadata`를 같은 run에 함께 기록합니다.
 - parity 기록 최소 항목:
   - dashboard: `serverId`, raw metric 값, 상태 badge, `dataSlotInfo`, `dataSourceInfo`
@@ -246,10 +244,9 @@ npm run qa:evidence:build
 - `ciEvidence`가 있으면 `qa:record`가 `links`에 `github-actions-run`/`github-actions-artifact` 항목을 자동 병합합니다.
 - artifact `url`이 없으면 workflow run URL로 연결하고 note에 artifact 이름을 남깁니다.
 - `links.type` 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`
-- feedback trace run 예시:
-  - `traceUrlStatus=available`: `{ "type": "langfuse-trace", "label": "Feedback trace UI URL", "url": "https://us.cloud.langfuse.com/trace/<traceId>" }`
-  - `traceUrlStatus=unavailable`: `{ "type": "langfuse-trace", "label": "Feedback trace API URL", "url": "https://us.cloud.langfuse.com/api/public/traces/<traceId>" }`
-  - `{ "type": "monitoring", "label": "Cloud Run monitoring lookup for feedback traceId", "url": "https://ai-engine-...run.app/monitoring/traces?q=<traceId>&limit=5&includeAuxiliary=true" }`
+- AI trace observability run 예시:
+  - `{ "type": "langfuse-trace", "label": "Langfuse trace UI URL", "url": "https://us.cloud.langfuse.com/trace/<traceId>" }`
+  - `{ "type": "monitoring", "label": "Cloud Run monitoring lookup for AI traceId", "url": "https://ai-engine-...run.app/monitoring/traces?q=<traceId>&limit=5&includeAuxiliary=true" }`
 
 ## Playwright 자동 수집 옵션
 

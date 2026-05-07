@@ -101,7 +101,7 @@ export interface AsyncQueryResult {
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
   error?: string;
-  /** Langfuse trace ID for feedback scoring */
+  /** Langfuse trace ID for observability correlation */
   traceId?: string;
   handoffHistory?: Array<{
     from: string;

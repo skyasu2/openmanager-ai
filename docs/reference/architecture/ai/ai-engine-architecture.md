@@ -853,7 +853,6 @@ precomputed-state.ts → buildPrecomputedStates()
 | `/api/ai/graphrag/stats` | GET | legacy graph runtime 410 shim. replacement: `Knowledge Retrieval Lite` |
 | `/api/ai/graphrag/related/:nodeId` | GET | legacy graph runtime 410 shim. replacement: `searchKnowledgeBase` |
 | `/api/ai/approval` | POST | 의사결정 승인 워크플로우 |
-| `/api/ai/feedback` | POST | 유저 피드백 수집 |
 | `/api/ai/providers` | GET | Provider 상태 + 쿼타 |
 | `/api/ai` | GET | 사용량 분석 |
 | `/api/jobs` | POST | 비동기 Job 관리 |

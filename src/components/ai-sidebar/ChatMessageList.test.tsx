@@ -25,11 +25,6 @@ const MessageComponent = ({
 }: {
   message: EnhancedChatMessage;
   onRegenerateResponse?: (messageId: string) => void;
-  onFeedback?: (
-    messageId: string,
-    type: 'positive' | 'negative',
-    traceId?: string
-  ) => Promise<boolean>;
   isLastMessage?: boolean;
 }) => <div>{message.content}</div>;
 

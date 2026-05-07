@@ -45,18 +45,8 @@ interface EnhancedAIChatProps {
   MessageComponent: React.ComponentType<{
     message: EnhancedChatMessage;
     onRegenerateResponse?: (messageId: string) => void;
-    onFeedback?: (
-      messageId: string,
-      type: 'positive' | 'negative',
-      traceId?: string
-    ) => Promise<boolean>;
     isLastMessage?: boolean;
   }>;
-  onFeedback?: (
-    messageId: string,
-    type: 'positive' | 'negative',
-    traceId?: string
-  ) => Promise<boolean>;
   inputValue: string;
   setInputValue: (value: string) => void;
   handleSendInput: (attachments?: FileAttachment[]) => void;
@@ -115,7 +105,6 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   sessionState,
   onNewSession,
   onStopGeneration,
-  onFeedback,
   jobProgress,
   jobId,
   onCancelJob,
@@ -240,7 +229,6 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           limitedMessages={limitedMessages}
           messagesEndRef={messagesEndRef}
           MessageComponent={MessageComponent}
-          onFeedback={onFeedback}
           isGenerating={isGenerating}
           regenerateResponse={regenerateResponse}
           setInputValue={setInputValue}

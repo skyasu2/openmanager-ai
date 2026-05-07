@@ -23,7 +23,6 @@ vi.mock('@/hooks/ai/useAIChatCore', () => ({
     clearError: vi.fn(),
     sessionState: { messagesRemaining: 10, isLimited: false },
     handleNewSession: vi.fn(),
-    handleFeedback: vi.fn(),
     regenerateLastResponse: vi.fn(),
     retryLastQuery: vi.fn(),
     stop: vi.fn(),

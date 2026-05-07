@@ -54,8 +54,6 @@ async function submitPromptAndWaitForAssistant(
   const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
   await expect(input).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
 
-  const feedbackButtons = page.getByRole('button', { name: '개선이 필요해요' });
-  const previousFeedbackCount = await feedbackButtons.count();
   const conversationLog = page.getByRole('log', { name: 'AI 대화 메시지' });
   const previousText =
     (await conversationLog.textContent().catch(() => '')) ?? '';
@@ -68,13 +66,9 @@ async function submitPromptAndWaitForAssistant(
   await expect
     .poll(
       async () => {
-        const feedbackCount = await feedbackButtons.count();
         const currentText =
           (await conversationLog.textContent().catch(() => '')) ?? '';
-        return (
-          feedbackCount > previousFeedbackCount ||
-          currentText.trim().length > previousText.trim().length + 10
-        );
+        return currentText.trim().length > previousText.trim().length + 10;
       },
       { timeout: TIMEOUTS.AI_RESPONSE }
     )

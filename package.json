@@ -224,7 +224,6 @@
     "test:frontend:smoke": "vitest run --config config/testing/vitest.config.frontend-smoke.ts",
     "test:gate": "npm run test:quick && npm run type-check && npm run lint",
     "test:jsdom:health": "node scripts/dev/vitest-main-wrapper.js --healthcheck-only",
-    "test:manual:feedback:trace-status": "bash scripts/test/vercel-feedback-trace-status.sh",
     "test:node": "node scripts/dev/vitest-node-wrapper.js run",
     "test:node:infra:smoke": "node scripts/dev/vitest-node-wrapper.js run tests/unit/dev/vitest-node-wrapper.test.ts tests/unit/playwright/playwright-config.test.ts tests/unit/qa/vercel-post-deploy-smoke.test.ts && vitest run --config config/testing/vitest.config.node.ts tests/api/ai-supervisor-stream.contract.test.ts",
     "test:perf:vitest": "RUN_SLOW_TESTS=true node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.main.ts tests/performance/web-vitals-integration.test.ts",

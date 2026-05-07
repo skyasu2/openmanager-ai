@@ -46,7 +46,7 @@
 | 런타임 | Frontend = Vercel(Next.js). AI Engine = Cloud Run(Hono). 변경 없음. |
 | AI SDK | Root app과 AI Engine 모두 Vercel AI SDK `^6.0.156` 기반을 유지한다. SDK는 transport, streaming, structured output, tool orchestration 계층으로 사용하고 metric 판단 엔진으로 쓰지 않는다. |
 | BFF 목표 | 장기 기준안은 `/api/ai/ask` 단일 진입점이다. 현재 여러 route surface는 즉시 제거하지 않고, `AssistantPlan`/`AssistantResult` facade와 공통 metadata부터 수렴한다. |
-| 스토리지 | Redis(job/cache/quota), Supabase(auth/KB/feedback). 변경 없음. |
+| 스토리지 | Redis(job/cache/quota), Supabase(auth/KB). 변경 없음. |
 | Provider | Groq / Cerebras / Mistral / Gemini 무료 tier 기반 fallback. 단일 유료 provider 고정 불가. |
 
 ### 0.1 평가 트랙 분리
@@ -151,7 +151,7 @@ flowchart TB
     Supervisor --> Agent["AI SDK ToolLoopAgent + tools"]
     Agent --> Data["OTel precomputed 18 hosts / 144 slots"]
     Agent --> KB["Knowledge Retrieval Lite"]
-    KB --> Supabase["Supabase Auth/KB/feedback"]
+    KB --> Supabase["Supabase Auth/KB"]
     Agent --> Providers["Groq / Cerebras / Mistral / Gemini"]
     Worker --> Supervisor
 ```
@@ -334,7 +334,7 @@ flowchart TB
 
     subgraph State["State"]
         Redis["Redis\njob/progress/resume/quota"]
-        Supabase["Supabase\nAuth/KB/feedback"]
+        Supabase["Supabase\nAuth/KB"]
         OTel["Precomputed OTel\n18 hosts x 144 slots"]
     end
 

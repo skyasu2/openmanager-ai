@@ -38,7 +38,6 @@ function setupChatMock(messages: MockMessage[] = []) {
       sessionId: 'mock-session',
     },
     handleNewSession: fn(),
-    handleFeedback: fn(),
     regenerateLastResponse: fn(),
     retryLastQuery: fn(),
     stop: fn(),

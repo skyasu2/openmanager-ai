@@ -119,7 +119,7 @@ export interface ChatMessage {
     ttfbMs?: number;
     confidence?: number;
     error?: string;
-    /** Langfuse trace ID for feedback scoring */
+    /** Langfuse trace ID for observability correlation */
     traceId?: string;
     /** 분석 근거 정보 */
     analysisBasis?: AnalysisBasis;

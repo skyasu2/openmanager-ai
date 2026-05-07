@@ -245,8 +245,8 @@ graph LR
 AISidebarV4 (463줄)
 ├── useAIChatCore (426줄) ──→ useHybridAIQuery (909줄)
 │   ├── useChatSession                ├── @ai-sdk/react (useChat)
-│   ├── useChatFeedback               ├── useAsyncAIQuery
-│   ├── useChatHistory                ├── queryClassifier
+│   ├── useChatHistory                ├── useAsyncAIQuery
+│   ├── useChatQueue                  ├── queryClassifier
 │   └── useChatSessionState           └── analyzeQueryComplexity
 ├── useAISidebarStore (551줄)
 ├── useResizable

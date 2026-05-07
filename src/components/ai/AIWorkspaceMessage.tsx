@@ -58,13 +58,8 @@ ThinkingToggle.displayName = 'ThinkingToggle';
 export const AIWorkspaceMessage = memo<{
   message: EnhancedChatMessage;
   onRegenerateResponse?: (messageId: string) => void;
-  onFeedback?: (
-    messageId: string,
-    type: 'positive' | 'negative',
-    traceId?: string
-  ) => Promise<boolean>;
   isLastMessage?: boolean;
-}>(({ message, onRegenerateResponse, onFeedback, isLastMessage = false }) => {
+}>(({ message, onRegenerateResponse, isLastMessage = false }) => {
   const hasTextContent = Boolean(message.content?.trim());
   const assistantResponseView = useMemo(() => {
     if (message.role !== 'assistant' || message.isStreaming) {
@@ -215,8 +210,6 @@ export const AIWorkspaceMessage = memo<{
                   content={message.content}
                   role={message.role}
                   onRegenerate={onRegenerateResponse}
-                  onFeedback={onFeedback}
-                  traceId={message.metadata?.traceId}
                   showRegenerate={isLastMessage && message.role === 'assistant'}
                 />
               )}

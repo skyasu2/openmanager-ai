@@ -56,7 +56,7 @@
 - **v8.10.10** (2026-04-06)
   - targeted production smoke QA pass, release evidence 경로 강화
 - **v8.9.2** (2026-03-17)
-  - observability tracing 강화, feedback trace/status 안정화
+  - observability tracing 강화, trace/status 안정화
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
 

@@ -35,13 +35,8 @@ export function convertToAgentSteps(
 export const MessageComponent = memo<{
   message: EnhancedChatMessage;
   onRegenerateResponse?: (messageId: string) => void;
-  onFeedback?: (
-    messageId: string,
-    type: 'positive' | 'negative',
-    traceId?: string
-  ) => Promise<boolean>;
   isLastMessage?: boolean;
-}>(({ message, onRegenerateResponse, onFeedback, isLastMessage }) => {
+}>(({ message, onRegenerateResponse, isLastMessage }) => {
   const hasTextContent = Boolean(message.content?.trim());
   const incidentReportArtifact =
     message.role === 'assistant'
@@ -296,7 +291,7 @@ export const MessageComponent = memo<{
               </>
             )}
 
-          {/* 메시지 액션 (복사, 피드백, 재생성) */}
+          {/* 메시지 액션 (복사, 재생성) */}
           {shouldShowActionBar && (
             <div className="mt-2 flex items-center gap-1">
               {hasTextContent && (
@@ -305,8 +300,6 @@ export const MessageComponent = memo<{
                   content={message.content}
                   role={message.role}
                   onRegenerate={onRegenerateResponse}
-                  onFeedback={onFeedback}
-                  traceId={message.metadata?.traceId}
                   showRegenerate={isLastMessage && message.role === 'assistant'}
                 />
               )}

@@ -137,7 +137,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     sessionState,
     handleNewSession,
     // 액션
-    handleFeedback,
     regenerateLastResponse,
     retryLastQuery,
     stop,
@@ -319,7 +318,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               isGenerating={isLoading}
               streamStatus={streamStatus}
               regenerateResponse={regenerateLastResponse}
-              onFeedback={handleFeedback}
               onStopGeneration={stop}
               jobProgress={hybridState.progress}
               jobId={hybridState.jobId}

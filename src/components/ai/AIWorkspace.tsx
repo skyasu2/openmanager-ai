@@ -219,7 +219,6 @@ export default function AIWorkspace({
     sessionState,
     handleNewSession,
     // 액션
-    handleFeedback,
     regenerateLastResponse,
     retryLastQuery,
     stop,
@@ -416,7 +415,6 @@ export default function AIWorkspace({
           streamStatus={streamStatus}
           regenerateResponse={regenerateLastResponse}
           onStopGeneration={stop}
-          onFeedback={handleFeedback}
           jobProgress={hybridState.progress}
           jobId={hybridState.jobId}
           onCancelJob={cancel}

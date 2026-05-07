@@ -19,7 +19,6 @@ export const useAIChatCore = fn(() => ({
     sessionId: 'mock-session',
   },
   handleNewSession: fn(),
-  handleFeedback: fn(),
   regenerateLastResponse: fn(),
   retryLastQuery: fn(),
   stop: fn(),

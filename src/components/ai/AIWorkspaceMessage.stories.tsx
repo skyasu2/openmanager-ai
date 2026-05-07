@@ -64,7 +64,6 @@ const meta = {
   ],
   args: {
     onRegenerateResponse: fn(),
-    onFeedback: fn(),
     isLastMessage: false,
   },
 } satisfies Meta<typeof AIWorkspaceMessage>;

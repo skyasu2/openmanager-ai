@@ -71,7 +71,6 @@ const meta = {
     scrollContainerRef,
     messagesEndRef,
     MessageComponent: SimpleMessage,
-    onFeedback: fn(),
     isGenerating: false,
     regenerateResponse: fn(),
     setInputValue: fn(),

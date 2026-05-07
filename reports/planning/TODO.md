@@ -16,7 +16,7 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | ⚡ Sentry DSN 등록 — production 에러 수집 활성화 | High | **사용자 액션 필요** | `NEXT_PUBLIC_SENTRY_DSN` Vercel production 환경변수 미설정. 코드·tunnel·sampling은 완비. DSN 1개만 등록하면 즉시 활성화. 상세: [dead-code-sentry-cleanup-plan.md § B-1](dead-code-sentry-cleanup-plan.md) |
-| AI 피드백 기능 제거 → QA 기반 품질 루프 전환 | High | In Progress (Codex) | 실 사용자 없어 👍/👎 무의미. Cloud Run cold start 낭비. Codex 위임 완료. 상세: [ai-feedback-removal-plan.md](ai-feedback-removal-plan.md) |
+| AI 피드백 기능 제거 → QA 기반 품질 루프 전환 | High | In Progress (Codex) | 로컬 제거 구현·검증 완료. 다음 release/tag 배포 후 `/api/ai/feedback` 404 production QA 기록 필요. 상세: [ai-feedback-removal-plan.md](ai-feedback-removal-plan.md) |
 | Dead code 정리 (5개 항목) | Medium | Approved (Codex 대기) | AI 피드백 제거 완료 후 진행. 상세: [dead-code-sentry-cleanup-plan.md § Part A](dead-code-sentry-cleanup-plan.md) |
 
 ---
