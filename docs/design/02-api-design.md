@@ -21,7 +21,6 @@ API 설계는 route 존재 여부보다 책임 경계와 계약 보존을 우선
 | Health/Version | `/api/health`, `/api/version` | 배포 상태, Cloud Run soft health, version evidence |
 | Dashboard data | `/api/servers-unified`, `/api/metrics`, `/api/monitoring/report` | OTel data를 UI 친화 shape로 변환 |
 | AI stream | `/api/ai/supervisor/stream/v2` | Cloud Run UIMessageStream proxy, auth/security/context shaping |
-| AI facade | `/api/ai/ask` | 기존 stream/job/artifact route를 wrapper-only로 감싸는 opt-in facade |
 | AI job | `/api/ai/jobs/**` | Redis job state, SSE polling, Cloud Tasks dispatch trigger |
 | AI artifacts | `/api/ai/incident-report`, `/api/ai/intelligent-monitoring`, `/api/ai/artifact-intent` | artifact intent와 deterministic/LLM-gated artifact 생성 |
 | Auth/Security | `/api/auth/**`, `/api/csrf-token`, `/api/security/csp-report` | 인증, CSRF, CSP reporting |
@@ -30,7 +29,7 @@ API 설계는 route 존재 여부보다 책임 경계와 계약 보존을 우선
 
 - Vercel route는 BFF/proxy/contract preservation 역할에 집중합니다.
 - Cloud Run route는 AI execution과 job worker 역할에 집중합니다.
-- `/api/ai/ask`는 독립 구현이 아니라 기존 route 위임 facade입니다.
+- 새 AI entrypoint는 기존 stream/job/artifact route 계약을 우회하지 않도록 제한합니다.
 - route 추가/삭제는 API catalog와 architecture 문서를 같이 갱신합니다.
 - 실패 응답은 code/source/requestId/recoverable 같은 진단 가능한 metadata를 유지합니다.
 

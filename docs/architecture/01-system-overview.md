@@ -55,7 +55,6 @@ flowchart TB
 | Next.js App Router | `src/app` | 페이지, API route, BFF |
 | Dashboard data access | `src/services/metrics/MetricsProvider.ts` | OTel hourly dataset 로딩과 변환 |
 | AI stream proxy | `src/app/api/ai/supervisor/stream/v2/route.ts` | Cloud Run UIMessageStream proxy |
-| AI facade | `src/app/api/ai/ask/route.ts` | 기존 stream/job/artifact route를 감싸는 opt-in wrapper |
 | AI job queue | `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/routes/jobs.ts` | Redis job state와 Cloud Tasks dispatch |
 | Cloud Run AI entry | `cloud-run/ai-engine/src/routes/supervisor.ts` | Supervisor request 진입점 |
 | Runtime data | `public/data/otel-data`, `cloud-run/ai-engine/src/data/precomputed-state.ts` | synthetic OTel data 소비 |
@@ -71,7 +70,7 @@ flowchart TB
 ## 하면 안 되는 것
 
 - Vercel Function에 장시간 multi-agent 실행을 직접 넣지 않습니다.
-- `/api/ai/ask`를 독립 AI runtime으로 키우지 않습니다. 기존 route를 감싸는 facade로 유지합니다.
+- 기존 stream/job/artifact route를 우회하는 병렬 AI runtime을 새로 만들지 않습니다.
 - GitHub public remote를 canonical branch처럼 사용하지 않습니다.
 - Redis/Cloud Tasks/Supabase 사용 확대를 비용/쿼터 검토 없이 기본값으로 만들지 않습니다.
 - route 수, 서버 수, provider 수 같은 수치를 추측으로 문서화하지 않습니다.

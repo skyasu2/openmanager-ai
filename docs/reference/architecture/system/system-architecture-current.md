@@ -120,7 +120,7 @@ graph TB
                                    │ Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-05-04): `src/app/api/**/route.ts(x)`, `src/app/api/ai/ask/route.ts`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs).
+> Source of truth (2026-05-07): `src/app/api/**/route.ts(x)`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs).
 
 ---
 
@@ -153,7 +153,6 @@ graph TB
 1. User → AI Sidebar → 질의 입력
 2. src/components/ai-sidebar/EnhancedAIChat.tsx
 3. useHybridAIQuery() 기본 경로 → POST /api/ai/supervisor/stream/v2
-   - `NEXT_PUBLIC_AI_ASK_FACADE_ENABLED=true`이면 wrapper-only facade인 `/api/ai/ask`를 경유
 4. /api/ai/supervisor/stream/v2/route.ts:
    a. Auth 검증 (NextAuth session)
    b. Prompt injection guard
@@ -173,7 +172,6 @@ graph TB
 
 **핵심 파일 경로**:
 - `src/hooks/ai/useHybridAIQuery.ts`
-- `src/app/api/ai/ask/route.ts` (opt-in wrapper facade)
 - `src/app/api/ai/supervisor/stream/v2/route.ts`
 - `src/app/api/ai/supervisor/route.ts` (legacy fallback)
 - `cloud-run/ai-engine/src/routes/supervisor.ts`

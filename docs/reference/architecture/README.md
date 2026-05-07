@@ -80,7 +80,7 @@ OpenManager의 설계도는 초기 upfront design 산출물이 아니라, 실제
 |---|---|
 | 아키텍처 영향 변경은 같은 작업에서 관련 설계도/SSOT를 갱신합니다. | 코드만 바꾸고 설계도 수치, route, provider 흐름을 방치하지 않습니다. |
 | route 추가/삭제 시 `system-architecture-current.md`, `folder-structure.md`, API catalog를 확인합니다. | `src/app/api/**` 변경을 “구현 세부사항”으로만 취급하지 않습니다. |
-| AI route/planner/provider/tool schema 변경 시 AI 문서와 화면용 `ai-assistant` diagram을 같이 봅니다. | `/api/ai/ask` facade를 독립 실행 경로처럼 키우거나 기존 stream/job 계약을 우회하지 않습니다. |
+| AI route/planner/provider/tool schema 변경 시 AI 문서와 화면용 `ai-assistant` diagram을 같이 봅니다. | 기존 stream/job/artifact 계약을 우회하는 병렬 AI entrypoint를 만들지 않습니다. |
 | OTel 데이터 변경은 Dashboard와 AI 응답 양쪽 소비 경로를 검증합니다. | live monitoring backend, cron, DB write를 기본값으로 추가하지 않습니다. |
 | 비용 영향은 개발비와 배포비를 분리해 판단합니다. | Free Tier 문제를 고사양 인스턴스, GPU, always-on worker로 먼저 해결하지 않습니다. |
 | generated 문서는 생성 명령으로 갱신하고 diff를 검토합니다. | `component-dependency-map.md` 같은 생성 산출물을 손으로 임의 수정하지 않습니다. |
