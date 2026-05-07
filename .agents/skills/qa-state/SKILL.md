@@ -24,6 +24,7 @@ Use this skill only when the request needs both current-state triage and QA exec
 1. Run and record QA through qa-ops.
 - Use `$qa-ops` for environment selection, coverage pack choice, Playwright/Chrome DevTools usage, and `qa:record`.
 - Preserve `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`, and `countsTowardSummary` decisions from `$qa-ops`.
+- Preserve `$qa-ops` conversational AI QA requirements when the scope includes AI behavior, response parsing, or output formatting.
 - Do not duplicate QA tracker semantics in this skill.
 
 1. Report the combined state.

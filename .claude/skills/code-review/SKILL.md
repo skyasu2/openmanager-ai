@@ -11,7 +11,7 @@ disable-model-invocation: true
 
 > Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
-6개 관점으로 실제 결함과 릴리즈 리스크를 우선 발굴합니다.
+7개 관점으로 실제 결함과 릴리즈 리스크를 우선 발굴합니다.
 
 ## Trigger Keywords
 
@@ -26,7 +26,7 @@ disable-model-invocation: true
 - 어떤 모드에서도 P0/P1 blocker, 증거 부족, Security/Correctness 리스크는 반드시 드러냅니다.
 - 스킬 영향도 분석은 사용자가 명시적으로 물을 때만 포함합니다.
 
-## Review Perspectives (6관점)
+## Review Perspectives (7관점)
 
 | # | 관점 | 핵심 체크 |
 |---|------|----------|
@@ -36,7 +36,15 @@ disable-model-invocation: true
 | 4 | **Design** | SRP, DRY, 적절한 추상화 수준, 숨겨진 결합 |
 | 5 | **Performance** | 시간/공간 복잡도, 불필요한 연산, 페이로드 비대, 비싼 기본값 |
 | 6 | **Security** | OWASP Top 10, 인증 갭, 권한 범위, 시크릿 누출, 신뢰 경계 |
-| 7 | **Test Coverage** | 커버리지 갭, 엣지케이스, 테스트 품질, 크리티컬 브랜치 누락 |
+| 7 | **Test Quality** | Risk/Pareto 집중도, 계약 정합성, mock integrity, pesticide-paradox 위험, 핵심 브랜치 고신뢰 테스트 누락 |
+
+## Testing Methodology Checks
+
+- 기준 SSOT는 `docs/guides/testing/test-strategy.md` 입니다.
+- 실제 route/schema/handler 경계를 지나지 않는 mock-only 또는 inline-fetch 테스트는 false-pass 위험으로 표시합니다.
+- 테스트 개수 증가보다 risk-focused 대표 테스트를 우선합니다. coverage percentage는 릴리즈 안전성 근거로 보지 않습니다.
+- 같은 hardcoded happy-path mock 반복은 pesticide paradox 위험으로 보고 shared schema/normalizer guard로 보강하거나 제거 방향을 제안합니다.
+- 실 LLM/cloud/network 테스트는 opt-in QA evidence로 분류하고, 기본 merge readiness의 필수 조건으로 만들지 않습니다.
 
 ## Workflow
 
@@ -88,7 +96,7 @@ Perspective Summary
 - Design: <count> findings
 - Performance: <count> findings
 - Security: <count> findings
-- Test Coverage: <count> findings
+- Test Quality: <count> findings
 
 Findings
 - [P1][Security] <제목>

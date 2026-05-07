@@ -1,7 +1,7 @@
 ---
 name: qa-ops
-description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, and record every run into reports/qa tracker.
-version: v1.4.0
+description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, record every run into reports/qa tracker, and include conversational AI QA for AI-related changes.
+version: v1.5.0
 ---
 
 # OpenManager QA Ops
@@ -9,6 +9,13 @@ version: v1.4.0
 > Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 Final QA operation workflow with cumulative tracking.
+
+## Testing methodology
+
+- Use `docs/guides/testing/test-strategy.md` as the methodology SSOT.
+- QA is the top of the test pyramid: run representative, risk-based scenarios instead of expanding broad matrices.
+- Do not repeat live Vercel/Cloud Run/LLM QA to chase coverage percentage. One focused rerun after a fix is acceptable; repeated live runs need an explicit reason.
+- Keep default CI/local gates free of external-service cost. Treat production QA evidence as release-facing proof, not a replacement for local contract tests.
 
 ## Use with state triage
 
@@ -48,9 +55,22 @@ Final QA operation workflow with cumulative tracking.
 - Secondary route pack:
   - `/auth/error`, `/auth/success`, `/privacy`
 
+3.5. Run conversational AI QA for AI-related changes.
+- Required when AI prompt, agent routing, knowledge base, precomputed-state/data source, response parsing, or output formatting behavior changes.
+- Ask the AI Assistant the standard five questions in order. Details: `docs/guides/testing/test-strategy.md` § 1.5.
+  1. "현재 서버 전체 상태를 요약해줘"
+  2. "web-server-01 상태를 자세히 알려줘"
+  3. "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?"
+  4. "지금 당장 조치가 필요한 서버가 있어?"
+  5. "방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘"
+- Judge each answer as Pass (specific metrics/context), Warn (vague but usable), or Fail (empty/error/wrong).
+- Warn/Fail means fix prompt/routing/data grounding and rerun the failed question before recording a passing release-facing run.
+- Record the result with `coveredSurfaces: ["conversational-ai-qa"]` and an `expertAssessments` entry.
+
 4. Run QA scenarios and record coverage explicitly.
 - Broad QA must list which route/feature packs were covered.
 - If a changed route or feature was not tested, state the reason explicitly.
+- Select the smallest representative pack that covers the changed risk. Do not expand route/device/provider matrices without a concrete risk reason.
 - AI-required scope should run on Vercel unless the task is strictly local UI.
 - AI-not-required scope may run on local dev server.
 - Record `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`, and
@@ -183,6 +203,7 @@ Close with one short operator note that explains the highest remaining risk or s
 
 ## References
 
+- `docs/guides/testing/test-strategy.md`
 - `.agents/skills/qa-ops/references/current-surface-checklist.md`
 - `reports/qa/production-qa-2026-02-25.md`
 - `reports/qa/README.md`
@@ -192,3 +213,4 @@ Close with one short operator note that explains the highest remaining risk or s
 ## Changelog
 
 - 2026-04-28: v1.4.0 - Added Async Job + SSE Probing Playbook for Cloud Tasks dispatch QA, including EventSource Performance API capture, CSRF-safe UI flow, reconnect interpretation, and health badge separation.
+- 2026-05-07: v1.5.0 - Added conversational AI QA for AI-related changes with the standard five-question set and tracker recording guidance.

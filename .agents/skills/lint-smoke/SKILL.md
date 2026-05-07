@@ -9,6 +9,13 @@ description: Run fast OpenManager quality checks before commit or push. Use when
 
 Run quick validation in a fixed order and report pass/fail with next actions.
 
+## Testing methodology
+
+- Use `docs/guides/testing/test-strategy.md` as the methodology SSOT.
+- Default smoke validation is Risk-Based Local-First: run the smallest high-signal local checks for the changed risk surface.
+- Keep default smoke checks Small/Medium only. Do not add live LLM, Supabase, Vercel, Cloud Run, Redis, GCP, or other external-service calls.
+- Prefer fixing or deleting false-pass tests over adding more tests. Do not chase coverage percentage.
+
 ## Execute this workflow
 
 1. Confirm scope.
@@ -22,6 +29,7 @@ Run quick validation in a fixed order and report pass/fail with next actions.
 - `npm run type-check`
 - `npm run lint`
 - Add `npm run test:contract` when the scope includes server/API/auth/env contract risk.
+- If the required confidence would need Large/live tests, report that as a separate opt-in QA need instead of folding it into smoke validation.
 
 3. If `cloud-run/ai-engine` files changed, run additional checks there.
 - `cd cloud-run/ai-engine && npm run type-check`
@@ -58,5 +66,6 @@ Lint Smoke Summary
 
 ## References
 
+- `docs/guides/testing/test-strategy.md`
 - `references/commands.md`
 - `references/decision-rules.md`

@@ -1,6 +1,11 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-07 KST (`Dead code / Sentry 계획서 갱신, AI 피드백 Codex 위임`)
+**Last Updated**: 2026-05-07 KST (`AI QA skill sync 완료, MSW 테스트 인프라 개선 plan 승격`)
+
+> **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
+> - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
+> - `In Progress (Codex)` — Codex에 위임 완료. Claude는 검토 대기.
+> - `사용자 액션 필요` — AI 작업 불가, 사용자가 직접 처리해야 함.
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -20,6 +25,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| MSW 테스트 인프라 정합성 개선 | Medium | Draft plan으로 승격. false-pass 계약/통합 테스트, MSW strict boundary, live connectivity config 분리, provider handler drift, 비용/과잉 테스트 금지, Pareto/Pesticide/Risk-Based/Contract-First 방법론 검토 포함. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
 | Sentry 소스맵 업로드 검토 | Low | 현재 `sourcemaps.disable: true`. 스택트레이스가 minified라 디버깅 어려우면 개발 빌드 한정 소스맵 활성화 검토. DSN 등록 후 실제 에러를 보고 판단. |
 | Sentry tunnel 라우트 필요성 재검토 | Low | CSP 정책상 sentry.io 직접 호출 차단 여부 확인. 불필요하면 `/api/sentry-tunnel` + Vercel function 호출 제거 가능. |
 
@@ -47,6 +53,19 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-07 #309) — Codex
+- [x] `.agents/skills` 대화형 AI QA 반영
+  - `config/ai/skill-baselines.json`: qa-ops/qa-state baseline에 대화형 AI QA 요구사항 추가
+  - `.agents/skills/qa-ops/SKILL.md`: v1.5.0으로 갱신, AI 관련 변경 시 표준 5개 질의 QA 단계 추가
+  - `.agents/skills/qa-state/SKILL.md`: qa-ops의 대화형 AI QA 요구사항 보존 규칙 추가
+  - 검증: `npm run skills:check`
+
+### Completed (2026-05-07 #308) — Claude
+- [x] 대화형 AI QA 프로세스 반영
+  - `docs/guides/testing/test-strategy.md`: 테스트 피라미드에 "대화형 AI QA" 레이어 추가 (§ 1.5), 표준 5개 질문 세트, Pass/Warn/Fail 판정 기준, 기록 방법 정의
+  - `.claude/skills/qa-ops/SKILL.md`: Workflow 3.5 단계 추가 (v1.5.0), AI 관련 변경 시 필수 실행 기준 명시
+  - `reports/planning/TODO.md`: 작업 주체 표기 규칙(`In Progress (Claude/Codex)`) 추가 — 중복 착수 방지
 
 ### Completed (2026-05-06 #307)
 - [x] AI Engine precomputed-state decoupling

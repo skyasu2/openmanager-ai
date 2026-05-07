@@ -16,7 +16,7 @@ Run practical code reviews from 6 perspectives that surface real defects and rel
 - In every mode, surface P0/P1 blockers, missing evidence, and security/correctness risks. Do not hide material risk to make a plain review feel smoother.
 - Only analyze or disclose skill influence when the user explicitly asks for it.
 
-## Review Perspectives (6-관점)
+## Review Perspectives (7-관점)
 
 | # | Perspective | Key Checks |
 |---|------------|------------|
@@ -26,7 +26,15 @@ Run practical code reviews from 6 perspectives that surface real defects and rel
 | 4 | **Design** | SRP, DRY, appropriate abstraction level, hidden coupling |
 | 5 | **Performance** | Time/space complexity, unnecessary computation, payload bloat, expensive defaults |
 | 6 | **Security** | OWASP Top 10, auth gaps, privilege scope, secret leakage, unsafe trust boundaries |
-| 7 | **Test Coverage** | Coverage gaps, edge cases, test quality, critical branches without tests |
+| 7 | **Test Quality** | Risk/Pareto focus, contract fidelity, mock integrity, pesticide-paradox risk, critical branches without high-signal tests |
+
+## Testing methodology checks
+
+- Use `docs/guides/testing/test-strategy.md` as the testing methodology SSOT.
+- Flag mock-only or inline-fetch tests that can pass without exercising the real route/schema/handler boundary.
+- Prefer risk-focused representative tests over broad test count growth. Coverage percentage is not a release argument.
+- Check pesticide-paradox risk: repeated hardcoded happy-path mocks should be rotated, strengthened with shared schema/normalizer guards, or removed.
+- Treat live LLM/cloud/network tests as opt-in QA evidence, not a requirement for default merge readiness.
 
 ## Execute this workflow
 
@@ -79,7 +87,7 @@ Perspective Summary
 - Design: <count> findings
 - Performance: <count> findings
 - Security: <count> findings
-- Test Coverage: <count> findings
+- Test Quality: <count> findings
 
 Findings
 - [P1][Security] <title>

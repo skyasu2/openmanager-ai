@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewed": "2026-05-01",
+  "lastReviewed": "2026-05-07",
   "policy": {
     "standardsDoc": "docs/guides/ai/skill-standards.md",
     "geminiSameNameOverlay": "forbidden",
@@ -32,6 +32,7 @@
         "Findings come before summary.",
         "Adapt output mode to the user intent: formal gate reviews stay severity-first; pragmatic/plain reviews can lead with concise engineering judgment while still surfacing blockers.",
         "Use correctness, readability, complexity, design, performance, security, and test coverage perspectives when relevant.",
+        "Evaluate test quality against the project testing methodology: risk/Pareto focus, pesticide-paradox avoidance, contract fidelity, mock integrity, and cost guardrails.",
         "Do not claim safety without command evidence or an explicit testing gap.",
         "Security and Correctness findings are auto-escalated one level due to vibe coding (AI-generated code only)."
       ],
@@ -102,6 +103,7 @@
       "invariants": [
         "Use scope to choose lightweight versus full smoke checks.",
         "Run contract tests when API, auth, environment, or runtime contracts change.",
+        "Prefer the smallest high-signal local gate and do not add Large/live/external tests to default smoke validation.",
         "Report skipped checks with a concrete reason."
       ],
       "adapters": {
@@ -116,6 +118,8 @@
         "Use Vercel plus Playwright MCP by default for release-facing QA.",
         "Switch to local dev only when AI-path validation is unnecessary.",
         "Record QA evidence through qa:record and status commands.",
+        "Keep release-facing QA risk-based and representative; avoid repeated live runs, broad matrix expansion, or coverage-percentage chasing.",
+        "For AI-related prompt, routing, knowledge base, precomputed-state/data source, response parsing, or output formatting changes, include conversational AI QA with the standard five-question set and record the result.",
         "For async AI Job + SSE QA, use the UI flow instead of CSRF-bypassing direct fetches, inspect EventSource streams through the Performance API, and report health probe failures separately from successful query execution."
       ],
       "adapters": {
@@ -129,7 +133,8 @@
       "invariants": [
         "Do not duplicate detailed state-triage or qa-ops procedures.",
         "Run state-triage first and only continue to qa-ops when QA is the selected next action.",
-        "Record QA outcomes through qa-ops and recommend the smallest next action."
+        "Record QA outcomes through qa-ops and recommend the smallest next action.",
+        "Preserve qa-ops conversational AI QA requirements when the selected QA scope includes AI behavior, response parsing, or output formatting."
       ],
       "adapters": {
         "codex": ".agents/skills/qa-state/SKILL.md",

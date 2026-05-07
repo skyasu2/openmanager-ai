@@ -13,6 +13,13 @@ disable-model-invocation: true
 
 빠른 품질 확인용 스모크 체크입니다. 리뷰를 대체하지 않으며, 실행 증거 수집이 목적입니다.
 
+## Testing Methodology
+
+- 기준 SSOT는 `docs/guides/testing/test-strategy.md` 입니다.
+- 기본 smoke는 Risk-Based Local-First로, 변경된 위험 표면에 필요한 최소 고신뢰 로컬 체크만 실행합니다.
+- 기본 smoke에 실 LLM, Supabase, Vercel, Cloud Run, Redis, GCP 등 외부 서비스 호출을 추가하지 않습니다.
+- coverage percentage를 맞추기 위한 테스트 추가를 금지하고, false-pass 테스트는 추가보다 수정/삭제를 우선합니다.
+
 ## Trigger Keywords
 
 - "/lint-smoke", "lint"
@@ -31,6 +38,7 @@ disable-model-invocation: true
 - `npm run test:quick` — Vitest 빠른 suite
 - `npm run type-check` — TypeScript strict
 - `npm run lint` — Biome
+- Large/live 테스트가 필요한 신뢰도는 smoke에 섞지 말고 별도 opt-in QA 필요로 보고
 
 3. QA 스크립트 변경 시 node suite 추가 실행.
 - 대상: `scripts/qa/**`, `tests/unit/qa/**` 변경 시

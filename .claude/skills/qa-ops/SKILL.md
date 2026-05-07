@@ -1,7 +1,7 @@
 ---
 name: qa-ops
-description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, and mandatory cumulative logging to reports/qa.
-version: v1.4.0
+description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, mandatory cumulative logging to reports/qa, and conversational AI QA for AI-related changes.
+version: v1.5.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_fill_form, mcp__playwright__browser_evaluate, mcp__playwright__browser_close
 disable-model-invocation: true
@@ -12,6 +12,13 @@ disable-model-invocation: true
 > Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 최종 QA를 표준 절차로 수행하고 결과를 누적 추적합니다.
+
+## Testing Methodology
+
+- 기준 SSOT는 `docs/guides/testing/test-strategy.md` 입니다.
+- QA는 테스트 피라미드 최상단입니다. broad matrix를 넓히기보다 risk-based 대표 시나리오를 선택합니다.
+- coverage percentage를 맞추기 위해 Vercel/Cloud Run/LLM live QA를 반복하지 않습니다. 수정 후 집중 재검증 1회는 허용하되, 반복 live run은 명확한 사유가 필요합니다.
+- 기본 CI/local gate에는 외부 서비스 비용을 만들지 않습니다. production QA evidence는 릴리즈 증거이며, 로컬 계약 테스트를 대체하지 않습니다.
 
 ## Use with other skills
 
@@ -51,8 +58,21 @@ disable-model-invocation: true
 - 공통: landing/login/dashboard/modal
 - AI 필수: AI assistant/chat/분석 응답 경로
 - 비AI: UI/카피/레이아웃/기본 인증 동선 중심
+- 변경된 리스크를 덮는 가장 작은 대표 pack을 선택하고, route/device/provider matrix 확장은 구체적 리스크가 있을 때만 수행
 - **Data Parity (AI 검증 시)**: `GET /api/health?service=parity`로 `slot.globalSlotIndex` 기록, AI 응답 `dataSlot.slotIndex`와 ±1 이내인지 확인
 - run 입력에는 `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`를 기록합니다.
+
+3.5 대화형 AI QA (AI 관련 변경 시 필수 추가 단계).
+- AI 프롬프트, 에이전트 라우팅, 지식 베이스, precomputed-state/data source, 응답 파싱, 출력 포맷 동작이 변경될 때 실행
+- 표준 5개 질문을 AI 어시스턴트에게 순서대로 질의 (상세: `docs/guides/testing/test-strategy.md` § 1.5)
+  1. "현재 서버 전체 상태를 요약해줘"
+  2. "web-server-01 상태를 자세히 알려줘"
+  3. "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?"
+  4. "지금 당장 조치가 필요한 서버가 있어?"
+  5. "방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘"
+- 판정: Pass(구체적 수치/맥락 있음) / Warn(모호) / Fail(빈 응답/오류)
+- Fail/Warn → 프롬프트·라우팅 즉시 수정 후 재질의. 전체 Pass 후에만 기록 단계로 진행.
+- 결과는 `coveredSurfaces: ["conversational-ai-qa"]` + `expertAssessments`에 포함.
 
 4. 결과 기록(필수).
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
@@ -153,3 +173,4 @@ End with one short operator note for the highest remaining risk or `none in test
 - 2026-03-25: v1.2.0 - Data Parity Contract 검증 단계 추가 (±1 슬롯 기준)
 - 2026-04-03: v1.3.0 - 날짜 박힌 baseline 참조 제거, scope 승격 규칙 명시, Playwright 도구 추가
 - 2026-04-28: v1.4.0 - Async Job + SSE Probing Playbook 추가 (EventSource Performance API 우회, CSRF 우회 금지, reconnect 정상 신호, 함정 모음)
+- 2026-05-07: v1.5.0 - 대화형 AI QA 단계(3.5) 추가 — AI 관련 변경 시 표준 5개 질의로 유용성 검증
