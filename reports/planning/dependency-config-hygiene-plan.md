@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-08
 > Canonical: reports/planning/dependency-config-hygiene-plan.md
 > Tags: dependencies,config,security,ci,renovate
 
@@ -46,7 +46,7 @@
 | AI Engine dependency drift | `npm outdated --long`에서 `@ai-sdk/*`, `ai`, `hono`, `@hono/node-server`, `langfuse`, `pg`, `vitest` 등이 `wanted` 뒤처짐 | Cloud Run runtime 보안/호환성 부채 | High |
 | AI Engine runtime audit | `npm audit --omit=dev` 결과 Hono/node-server, axios/google logging chain, protobufjs 등 13건 | Cloud Run runtime risk. patch/minor 업데이트 우선 | High |
 | root runtime audit | `next@16.1.6`은 `npm outdated`상 최신이지만 `npm audit --omit=dev`는 Next/PostCSS advisory를 보고함 | 강제 fix가 `next@15.5.12` downgrade를 제안하므로 자동 적용 금지. Next 16 보안 릴리즈 대기/추적 필요 | Medium |
-| `shadcn` CLI devDependency | 코드 검색상 runtime import는 없고 `components.json`/문서 흔적 중심. audit chain에는 `@modelcontextprotocol/sdk`, `postcss`, `ip-address` 등이 포함됨 | dev-only audit noise와 공급망 표면 증가 | Medium |
+| `shadcn` CLI devDependency | Task 4에서 제거 완료. `components.json`은 유지하고 필요 시 `npx -y shadcn@4.1.0`으로 온디맨드 실행 | dev-only audit noise와 공급망 표면 감소 | Done |
 | Renovate 운영 신호 부족 | `renovate.json`과 self-hosted compose/script는 있으나 GitLab schedule job 또는 최근 실행 결과 추적이 없음 | patch drift가 누적되기 쉬움 | Medium |
 | `clean:all` script | `package-lock.json` 삭제 후 `npm install`을 수행 | deterministic lockfile 운영 원칙과 충돌 가능 | Medium |
 | GitHub historical workflow | `.github/`가 로컬 repo에는 남아 있으나 public snapshot에서는 제외 | 실행 위험은 낮지만 신규 세션이 GitHub Actions를 canonical로 오해할 수 있음 | Low |
@@ -144,10 +144,10 @@ Task 2 결과 (2026-05-08, Codex):
 - [x] `playwright` / `@playwright/test` patch 동시 업데이트 가능 여부 결정
 - [x] `typescript`, `@types/node` patch 업데이트
 - [ ] `jsdom 29` major는 test compatibility 확인 전 보류
-- [ ] `npm run type-check`
-- [ ] `npm run lint`
-- [ ] `npm run test:quick`
-- [ ] `npm run storybook:smoke`는 Storybook patch 변경 시만 실행
+- [x] `npm run type-check`
+- [x] `npm run lint`
+- [x] `npm run test:quick`
+- [x] `npm run storybook:smoke`는 Storybook patch 변경 시만 실행하지 않음 확인
 
 Task 3 진행 결과 (2026-05-08, Codex):
 
@@ -158,10 +158,19 @@ Task 3 진행 결과 (2026-05-08, Codex):
 
 ### Task 4: `shadcn` CLI dependency 결정
 
-- [ ] 현재 CLI를 npm script에서 쓰는 경로가 있는지 재확인
-- [ ] 상시 dependency 유지 vs `npx shadcn@<pinned>` on-demand 전환 결정
-- [ ] 제거 시 `components.json`과 기존 shadcn/ui 컴포넌트는 유지
-- [ ] 제거 시 root audit noise 감소 확인
+- [x] 현재 CLI를 npm script에서 쓰는 경로가 있는지 재확인
+- [x] 상시 dependency 유지 vs `npx shadcn@<pinned>` on-demand 전환 결정
+- [x] 제거 시 `components.json`과 기존 shadcn/ui 컴포넌트는 유지
+- [x] 제거 시 root audit noise 감소 확인
+
+Task 4 결과 (2026-05-08, Codex):
+
+- 코드/스크립트 검색 결과 `shadcn` CLI를 npm script나 runtime import로 쓰는 경로는 없다. 남은 참조는 `components.json` schema, 문서/계획서 기록, `src/config/constants.ts`의 기술 스택 라벨이다.
+- root `devDependencies`에서 `shadcn@4.1.0`을 제거하고 `package-lock.json`을 lockfile 기준으로 재생성했다.
+- `components.json`은 shadcn/ui 컴포넌트 기준 파일로 유지했다. 신규 컴포넌트가 필요하면 상시 dependency 복원이 아니라 `npx -y shadcn@4.1.0 <command>` 형태로 pinned on-demand 실행한다.
+- 중단된 `npm uninstall` 이후 `node_modules`에만 남은 extraneous 131개 경로를 제거했다. 이후 root `npm ls --depth=0`는 pass, `npm ls shadcn --depth=0`는 empty, `npm explain @modelcontextprotocol/sdk`는 dependency 없음으로 확인했다.
+- audit noise는 감소했지만 root audit은 완전히 닫히지 않았다. `npm audit --audit-level=moderate`는 dev/runtime 포함 9건을 보고한다. 주요 잔여는 `basic-ftp`, `fast-xml-parser`/`commit-and-tag-version`, `handlebars`, `ip-address`, `vite`, `protobufjs`, Next/PostCSS다.
+- runtime 기준 `npm audit --omit=dev --audit-level=moderate`는 Next/PostCSS 2건만 남는다. 현재 자동 수정은 `next@15.5.12` force downgrade를 제안하므로 적용 금지하고 Next 16 보안 릴리즈 추적 상태를 유지한다.
 
 ### Task 5: Renovate 운영 보강
 
@@ -187,9 +196,9 @@ Task 3 진행 결과 (2026-05-08, Codex):
 
 ## 완료 기준
 
-- [ ] root와 AI Engine 모두 `npm ls --depth=0`에서 의도치 않은 `extraneous`가 없다.
+- [x] root와 AI Engine 모두 `npm ls --depth=0`에서 의도치 않은 `extraneous`가 없다.
 - [x] AI Engine runtime audit의 Hono/node-server 직접 취약점이 해소된다.
-- [ ] root Next audit은 강제 downgrade 없이 추적 상태로 문서화된다.
+- [x] root Next audit은 강제 downgrade 없이 추적 상태로 문서화된다.
 - [ ] Renovate가 root/AI Engine lockfile maintenance와 patch/minor PR을 관리한다.
 - [ ] `clean:all`이 lockfile 운영 원칙과 충돌하지 않는다.
-- [ ] 관련 문서와 TODO가 같은 dependency/config hygiene 정책을 가리킨다.
+- [x] 관련 문서와 TODO가 같은 dependency/config hygiene 정책을 가리킨다.
