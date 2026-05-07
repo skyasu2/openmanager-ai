@@ -71,6 +71,9 @@ not just the original baseline flow.
 
 ## Coverage Rules
 
+- Use `docs/guides/testing/test-strategy.md` for the risk-based testing methodology.
+- Pick representative high-risk scenarios instead of broad route/device/provider matrices.
+- Do not repeat live QA runs to chase coverage percentage. Use targeted reruns only when they validate a specific fix or newly covered risk.
 - Broad or release QA should explicitly list:
   - covered surfaces
   - intentionally skipped surfaces

@@ -1,7 +1,7 @@
 ---
 name: lint-smoke
 description: Run fast quality smoke checks for OpenManager before commit or deploy. Use when validating changed code quickly.
-version: v1.6.0
+version: v1.6.1
 user-invocable: true
 allowed-tools: Bash, Read, Grep
 disable-model-invocation: true
@@ -54,7 +54,7 @@ disable-model-invocation: true
 
 6. 리뷰 요청이 있으면 `code-review` 스킬로 연결.
 - 스모크 체크는 결함 분석이 아님
-- 리뷰 요청 시 `code-review` 스킬로 위임 (6관점 심각도 우선 분석)
+- 리뷰 요청 시 `code-review` 스킬로 위임 (7관점 심각도 우선 분석)
 
 ## Output Format
 
@@ -70,7 +70,7 @@ Lint Smoke Summary
 
 ## Related Skills
 
-- `code-review` - 6관점 심각도 우선 코드 리뷰 (리뷰 요청 시 스모크 후 연계)
+- `code-review` - 7관점 심각도 우선 코드 리뷰 (리뷰 요청 시 스모크 후 연계)
 - `git-workflow` - 스모크 통과 후 커밋/푸시
 - `qa-ops` - Vercel/local 최종 QA + `reports/qa` 누적 기록
 
@@ -79,3 +79,4 @@ Lint Smoke Summary
 - 2026-02-16: v1.4.0 - v1.1.0에서 전면 재작성, 공개용 톤 정리, 리뷰 스킬 연계 명시
 - 2026-02-26: v1.5.0 - 최종 QA는 `qa-ops` 스킬로 누적 추적 원칙 추가
 - 2026-04-03: v1.6.0 - QA 스크립트 변경 시 `npm run test:node` 추가, 변경 파일 확인 단계 보강
+- 2026-05-07: v1.6.1 - Risk-Based Local-First smoke 기준과 external/live 테스트 제외 원칙 반영

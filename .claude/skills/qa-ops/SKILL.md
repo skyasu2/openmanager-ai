@@ -1,7 +1,7 @@
 ---
 name: qa-ops
 description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, mandatory cumulative logging to reports/qa, and conversational AI QA for AI-related changes.
-version: v1.5.0
+version: v1.5.1
 user-invocable: true
 allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_fill_form, mcp__playwright__browser_evaluate, mcp__playwright__browser_close
 disable-model-invocation: true
@@ -174,3 +174,4 @@ End with one short operator note for the highest remaining risk or `none in test
 - 2026-04-03: v1.3.0 - 날짜 박힌 baseline 참조 제거, scope 승격 규칙 명시, Playwright 도구 추가
 - 2026-04-28: v1.4.0 - Async Job + SSE Probing Playbook 추가 (EventSource Performance API 우회, CSRF 우회 금지, reconnect 정상 신호, 함정 모음)
 - 2026-05-07: v1.5.0 - 대화형 AI QA 단계(3.5) 추가 — AI 관련 변경 시 표준 5개 질의로 유용성 검증
+- 2026-05-07: v1.5.1 - risk-based 테스트 방법론, 비용 guardrail, 대표 live-run 제한 기준 반영

@@ -1,6 +1,6 @@
 # Review Checklist
 
-## 6 Perspectives
+## 7 Perspectives
 
 ### 1. Correctness
 - Requirements are fully met by the implementation.
@@ -38,11 +38,15 @@
 - Logging does not expose sensitive values.
 - Trust boundaries are clearly defined.
 
-### 6. Test Coverage
+### 6. Test Quality
 - At least one test covers each new branch with business impact.
 - Tests assert behavior (not implementation details only).
 - Edge cases are covered for critical paths.
 - If tests are skipped, reason and risk are documented.
+- Tests follow `docs/guides/testing/test-strategy.md`.
+- Mock-only and inline-fetch tests do not create false confidence.
+- Repeated hardcoded happy-path mocks are rotated, strengthened with schema/normalizer guards, or removed.
+- Live external tests are classified as opt-in QA evidence, not default merge evidence.
 
 ## Domain-specific checks
 

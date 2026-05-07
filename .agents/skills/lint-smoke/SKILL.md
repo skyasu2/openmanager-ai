@@ -43,11 +43,11 @@ Run quick validation in a fixed order and report pass/fail with next actions.
 
 5. If the user requested a review, hand off to review workflow.
 - Lint smoke is evidence collection, not a substitute for code review.
-- Use `$code-review` to produce 6-perspective severity-ranked findings.
+- Use `$code-review` to produce 7-perspective severity-ranked findings.
 
 ## Related skills
 
-- `$code-review` - 6-perspective severity-first review
+- `$code-review` - 7-perspective severity-first review
 - `$git-workflow` - commit/push after checks pass
 - `$qa-ops` - final QA on Vercel/local with cumulative tracker
 

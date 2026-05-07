@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: OpenManager 코드 리뷰. merge/release readiness는 심각도 우선 go/no-go로 검토하고, 사용자가 실무 감각/스킬 영향 없는 리뷰를 요청하면 간결한 engineering judgment 중심으로 검토한다. Use when the user asks for review, risk analysis, merge readiness, or regression hunting.
-version: v1.0.0
+version: v1.1.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob
 disable-model-invocation: true
@@ -123,3 +123,4 @@ Release Decision
 ## Changelog
 
 - 2026-03-19: v1.0.0 - Codex code-review 이식, Claude Code 포맷 적용
+- 2026-05-07: v1.1.0 - Test Quality 관점에 risk/Pareto, pesticide-paradox, contract/mock integrity, cost guardrail 검토 기준 추가

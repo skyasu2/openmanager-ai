@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-05-02
+> Last reviewed: 2026-05-07
 > Canonical: docs/guides/ai/ai-standards.md
 > Tags: ai,standards,tooling,policy
 >
 > **통합 문서**: ai-coding-standards.md + ai-usage-guidelines.md
-> **최종 갱신**: 2026-05-02 (v8.11.82)
+> **최종 갱신**: 2026-05-07 (test methodology SSOT alignment)
 >
 > **Note**: Qwen 제거 (2026-01-07) - 평균 201초 응답, 13.3% 실패율로 2-AI 단순화
 

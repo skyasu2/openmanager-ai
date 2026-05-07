@@ -1,7 +1,7 @@
 ---
 name: qa-ops
 description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, record every run into reports/qa tracker, and include conversational AI QA for AI-related changes.
-version: v1.5.0
+version: v1.5.1
 ---
 
 # OpenManager QA Ops
@@ -214,3 +214,4 @@ Close with one short operator note that explains the highest remaining risk or s
 
 - 2026-04-28: v1.4.0 - Added Async Job + SSE Probing Playbook for Cloud Tasks dispatch QA, including EventSource Performance API capture, CSRF-safe UI flow, reconnect interpretation, and health badge separation.
 - 2026-05-07: v1.5.0 - Added conversational AI QA for AI-related changes with the standard five-question set and tracker recording guidance.
+- 2026-05-07: v1.5.1 - Aligned QA selection with risk-based test methodology, cost guardrails, and representative live-run limits.
