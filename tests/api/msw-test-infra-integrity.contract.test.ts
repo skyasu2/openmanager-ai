@@ -17,19 +17,29 @@ describe('MSW test infrastructure integrity contract', () => {
   it('api-contract tests cannot pass by replacing global.fetch with inline mocks', () => {
     const apiContractTest = readRepoFile('tests/api/api-contract.test.ts');
 
-    expect(apiContractTest).not.toMatch(/\bglobal\.fetch\s*=\s*vi\.fn\(/);
+    expect(apiContractTest).not.toMatch(
+      /\b(?:global|globalThis)\.fetch\s*=\s*vi\.fn\(/
+    );
+    expect(apiContractTest).not.toMatch(
+      /\bvi\.spyOn\(\s*(?:global|globalThis)\s*,\s*['"]fetch['"]/
+    );
     expect(apiContractTest).not.toMatch(/\bvi\.stubGlobal\(\s*['"]fetch['"]/);
   });
 
   it('external connectivity test uses an MSW-free Vitest config', () => {
-    const packageJson = readRepoFile('package.json');
+    const packageJson = JSON.parse(readRepoFile('package.json')) as {
+      scripts: Record<string, string | undefined>;
+    };
+    const externalConnectivityScript =
+      packageJson.scripts['test:external-connectivity'] ?? '';
     const externalConfigPath = repoPath(
       'config/testing/vitest.config.external-connectivity.ts'
     );
 
-    expect(packageJson).toContain(
+    expect(externalConnectivityScript).toContain(
       'config/testing/vitest.config.external-connectivity.ts'
     );
+    expect(externalConnectivityScript).not.toContain('vitest.config.main.ts');
     expect(existsSync(externalConfigPath)).toBe(true);
 
     const externalConfig = readFileSync(externalConfigPath, 'utf8');
