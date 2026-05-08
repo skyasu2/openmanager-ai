@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-08 10:27:44 KST
+> Generated at: 2026-05-08 13:05:16 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 419 |
+| Total Recorded Runs | 420 |
 | Total Runs (Counted) | 344 |
-| Non-counted Runs | 75 |
+| Non-counted Runs | 76 |
 | Total Checks | 3017 |
 | Passed | 2908 |
 | Failed | 100 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260507-0420 (2026-05-07T03:06:42.069Z) |
-| Latest Recorded Run | QA-20260508-0421 (2026-05-08T01:27:43.763Z) |
+| Latest Recorded Run | QA-20260508-0422 (2026-05-08T04:05:15.930Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260508-0421 (2026-05-08T01:27:43.763Z)
+Latest run: QA-20260508-0422 (2026-05-08T04:05:15.930Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260508-0421 (2026-05-08T01:27:43.763Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-07T01:27:43.763Z -> 2026-05-08T01:27:43.763Z (24h)
+- Window: 2026-05-07T04:05:15.930Z -> 2026-05-08T04:05:15.930Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +58,7 @@ Latest run: QA-20260508-0421 (2026-05-08T01:27:43.763Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-07T01:27:43.763Z -> 2026-05-08T01:27:43.763Z (24h)
+- Window: 2026-05-07T04:05:15.930Z -> 2026-05-08T04:05:15.930Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -72,9 +72,9 @@ Latest run: QA-20260508-0421 (2026-05-08T01:27:43.763Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 2446e6e0
+- Deployment: SHA 0bc2810d
 - Coverage Packs: dashboard-core
-- Covered Surfaces: NivoTimeSeriesChart visual QA preflight, local Next.js dev server startup attempts, local Next.js build/start fallback assessment
+- Covered Surfaces: NivoTimeSeriesChart visual QA preflight, local Next.js dev server startup with Turbopack, local Next.js dev server startup with Webpack fallback
 - Skipped Surfaces: storage-nfs-dc1-01 performance tab hover tooltip visual verification, anomaly highlight rect visual verification, Playwright screenshot evidence
 
 ## Links (Latest Run)
@@ -625,6 +625,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260508-0422 | 2026-05-08T04:05:15.930Z | targeted | no | no | Local Nivo Chart Visual QA - Local Next.js Dev Server Exit Blocked | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260508-0421 | 2026-05-08T01:27:43.763Z | targeted | no | no | Local Nivo Chart Visual QA - WSL2 /mnt/d SIGBUS Blocked | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260507-0420 | 2026-05-07T03:06:42.069Z | targeted | yes | yes | v8.11.113 AI Feedback Removal Production Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260507-0419 | 2026-05-07T01:09:27.132Z | targeted | yes | yes | v8.11.112 AI Assistant Scroll and Internal Disclosure Targeted QA | 7 | 2 | 0 | 0 | 0 | 0 |
@@ -644,4 +645,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260504-0405 | 2026-05-04T09:01:43.674Z | broad | yes | yes | v8.11.96 Vercel Playwright MCP Recheck | 24 | 2 | 1 | 0 | 0 | 1 |
 | QA-20260504-0404 | 2026-05-04T07:13:56.328Z | broad | yes | yes | v8.11.95 Vercel Playwright MCP Broad Recheck | 20 | 2 | 0 | 0 | 3 | 3 |
 | QA-20260504-0403 | 2026-05-04T05:22:20.393Z | targeted | yes | yes | v8.11.95 AI Ranking and Formatting Rewrite Recheck | 14 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260504-0402 | 2026-05-03T23:00:39.195Z | targeted | yes | yes | v8.11.89 Vercel Playwright MCP Targeted QA | 15 | 2 | 0 | 0 | 0 | 0 |

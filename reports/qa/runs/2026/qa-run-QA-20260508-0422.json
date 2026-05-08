@@ -1,0 +1,53 @@
+{
+  "runId": "QA-20260508-0422",
+  "recordedAt": "2026-05-08T04:05:15.930Z",
+  "recordedAtKst": "2026-05-08 13:05:15 KST",
+  "runTitle": "Local Nivo Chart Visual QA - Local Next.js Dev Server Exit Blocked",
+  "owner": "codex",
+  "source": "local-dev-diagnostics",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js local",
+    "backend": "local/mock",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "0bc2810db232585c3f6a05ccf76ce48acbe6beff"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "NivoTimeSeriesChart visual QA preflight",
+    "local Next.js dev server startup with Turbopack",
+    "local Next.js dev server startup with Webpack fallback"
+  ],
+  "skippedSurfaces": [
+    "storage-nfs-dc1-01 performance tab hover tooltip visual verification",
+    "anomaly highlight rect visual verification",
+    "Playwright screenshot evidence"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 0,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Nivo visual QA was not executed because the local Next.js dev server did not remain available long enough for browser navigation.",
+    "Turbopack attempt: `next dev -p 3000 -H 127.0.0.1` opened port 3000, then `/dashboard` returned connection reset and the server process exited.",
+    "Webpack fallback attempt: `next dev -p 3000 -H 127.0.0.1 --webpack` also exited during `/dashboard` preflight; port 3000 was no longer listening.",
+    "This run is non-counting and does not change release QA totals. The remaining actionable path is to rerun the visual check from a stable ext4/CI/preview runtime."
+  ],
+  "links": []
+}

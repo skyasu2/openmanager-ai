@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-08T01:27:43.763Z"
+    "updatedAt": "2026-05-08T04:05:15.930Z"
   },
   "sequence": {
-    "nextRunNumber": 422
+    "nextRunNumber": 423
   },
   "summary": {
-    "totalRecordedRuns": 419,
+    "totalRecordedRuns": 420,
     "totalRuns": 344,
-    "excludedRuns": 75,
+    "excludedRuns": 76,
     "totalChecks": 3017,
     "totalPassed": 2908,
     "totalFailed": 100,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260507-0420",
     "lastRecordedAt": "2026-05-07T03:06:42.069Z",
-    "latestRecordedRunId": "QA-20260508-0421",
-    "latestRecordedAt": "2026-05-08T01:27:43.763Z"
+    "latestRecordedRunId": "QA-20260508-0422",
+    "latestRecordedAt": "2026-05-08T04:05:15.930Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -44215,6 +44215,58 @@
         "total": 1,
         "passed": 0,
         "failed": 1
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260508-0422",
+      "recordedAt": "2026-05-08T04:05:15.930Z",
+      "recordedAtKst": "2026-05-08 13:05:15 KST",
+      "title": "Local Nivo Chart Visual QA - Local Next.js Dev Server Exit Blocked",
+      "owner": "codex",
+      "source": "local-dev-diagnostics",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260508-0422.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js local",
+        "backend": "local/mock",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "0bc2810db232585c3f6a05ccf76ce48acbe6beff"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "NivoTimeSeriesChart visual QA preflight",
+        "local Next.js dev server startup with Turbopack",
+        "local Next.js dev server startup with Webpack fallback"
+      ],
+      "skippedSurfaces": [
+        "storage-nfs-dc1-01 performance tab hover tooltip visual verification",
+        "anomaly highlight rect visual verification",
+        "Playwright screenshot evidence"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 0,
+        "failed": 2
       },
       "aiLatencyObservations": [],
       "plannerShadowObservations": [],
