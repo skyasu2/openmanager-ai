@@ -56,6 +56,14 @@ describe('useResponsivePageSize', () => {
       vi.advanceTimersByTime(1);
     });
 
+    expect(result.current.pageSize).toBe(12);
+  });
+
+  it('중간 데스크톱 폭에서는 3열 기준 pageSize 9를 유지한다', () => {
+    setViewportWidth(1100);
+
+    const { result } = renderHook(() => useResponsivePageSize(3));
+
     expect(result.current.pageSize).toBe(9);
   });
 

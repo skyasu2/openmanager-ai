@@ -148,7 +148,7 @@ const DashboardHeader = memo(function DashboardHeader({
       suppressHydrationWarning
       className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs"
     >
-      <div className="flex items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
+      <div className="flex min-w-0 items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
         {/* 왼쪽: 브랜드 로고 */}
         <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden pr-3">
           <OpenManagerLogo variant="light" compactOnMobile href="/" />

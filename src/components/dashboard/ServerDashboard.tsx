@@ -74,7 +74,8 @@ function getServerCardColumns(viewMode: ServerViewMode, width: number): number {
   if (width < 640) return 1;
   if (viewMode === 'grid') return 2;
   if (width < 1024) return 2;
-  return 3;
+  if (width < 1280) return 3;
+  return 4;
 }
 
 /**
@@ -448,7 +449,7 @@ export default function ServerDashboard({
                 className={
                   viewMode === 'grid'
                     ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6'
-                    : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3'
+                    : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                 }
               >
                 {displayedServers.map((server, index) => {

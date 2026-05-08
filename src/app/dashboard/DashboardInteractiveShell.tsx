@@ -84,7 +84,7 @@ const DashboardHeader = dynamic(
     ssr: false,
     loading: () => (
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs">
-        <div className="flex items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
+        <div className="flex min-w-0 items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
           <div className="h-10 w-32 min-w-0 flex-1 animate-pulse rounded-lg bg-gray-200" />
           <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-4">
             <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200" />
@@ -389,13 +389,13 @@ export default function DashboardInteractiveShell({
   return (
     <>
       <DashboardNavigation isAIAssistantOpen={isAgentOpen} />
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden">
         <DashboardHeader
           onToggleAgent={toggleAgent}
           hideAIAssistantButton={dashboardView === 'ai-assistant'}
         />
 
-        <div className="flex-1 overflow-hidden pt-6">
+        <div className="min-w-0 flex-1 overflow-hidden pt-6">
           {deferDashboardContent ? (
             <ContentLoadingSkeleton />
           ) : (

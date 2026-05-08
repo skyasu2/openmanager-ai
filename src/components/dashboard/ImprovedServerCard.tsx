@@ -189,7 +189,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     const variantStyles = useMemo(() => {
       const styles = {
         compact: {
-          container: 'min-h-[155px] p-2',
+          container: 'min-h-[150px] p-2.5',
           maxServices: 2,
           showDetails: false,
           showServices: false,
@@ -265,6 +265,10 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     const currentAccentBorder =
       statusAccentBorderClasses[safeServer.status] ||
       statusAccentBorderClasses.online;
+    const actionRailClass = `flex items-center gap-1 ${isCompactVariant ? 'pt-1 sm:pt-2' : 'pt-4'}`;
+    const actionButtonClass = `flex items-center justify-center bg-black/5 text-gray-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+      isCompactVariant ? 'h-9 w-9 rounded-lg' : 'h-11 w-11 rounded-full'
+    }`;
 
     const insightBadge = (
       <AIInsightBadge
@@ -381,13 +385,13 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             </div>
           </button>
 
-          <div className="flex items-center gap-1 pt-4">
+          <div className={actionRailClass}>
             {onOpenLogs && (
               <button
                 type="button"
                 onClick={handleOpenLogs}
                 aria-label={`${safeServer.name} 로그 보기`}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-black/5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                className={`${actionButtonClass} hover:bg-blue-50 hover:text-blue-700`}
               >
                 <FileText className="h-4 w-4" />
               </button>
@@ -397,7 +401,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 type="button"
                 data-toggle-button
                 onClick={toggleExpansion}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-black/5 hover:bg-black/10 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                className={`${actionButtonClass} cursor-pointer hover:bg-black/10 hover:text-gray-700`}
                 aria-expanded={showTertiaryInfo}
                 aria-label={
                   showTertiaryInfo ? '상세 정보 접기' : '상세 정보 펼치기'

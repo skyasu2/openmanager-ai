@@ -119,6 +119,73 @@ test.describe('대시보드 서버 카드 테스트', () => {
     });
   });
 
+  test('모바일 서버 상세 route에 수평 오버플로와 컨트롤 겹침이 없다', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    const firstCard = getServerCardButtons(page).first();
+    await expect(firstCard).toBeVisible({
+      timeout: TIMEOUTS.MODAL_DISPLAY,
+    });
+    await firstCard.click();
+
+    await expect(page).toHaveURL(/\/dashboard\/servers\/[^/]+/);
+    await expect(page.getByRole('tab', { name: '종합 상황' })).toBeVisible({
+      timeout: TIMEOUTS.DASHBOARD_LOAD,
+    });
+
+    const layoutCheck = await page.evaluate(() => {
+      const viewportWidth = document.documentElement.clientWidth;
+      const pageOverflow =
+        document.documentElement.scrollWidth > viewportWidth + 1 ||
+        document.body.scrollWidth > viewportWidth + 1;
+      const main = document.querySelector('main') ?? document.body;
+      const controls = Array.from(
+        main.querySelectorAll('button, a, select, input')
+      ).filter((element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return (
+          style.visibility !== 'hidden' &&
+          style.display !== 'none' &&
+          rect.width > 0 &&
+          rect.height > 0
+        );
+      });
+      const overlaps: string[] = [];
+
+      for (let i = 0; i < controls.length; i += 1) {
+        for (let j = i + 1; j < controls.length; j += 1) {
+          const first = controls[i];
+          const second = controls[j];
+
+          if (first.contains(second) || second.contains(first)) {
+            continue;
+          }
+
+          const a = first.getBoundingClientRect();
+          const b = second.getBoundingClientRect();
+          const horizontal =
+            Math.min(a.right, b.right) - Math.max(a.left, b.left);
+          const vertical =
+            Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+
+          if (horizontal > 2 && vertical > 2) {
+            overlaps.push(
+              `${first.tagName.toLowerCase()}[${first.textContent?.trim() ?? ''}] <-> ${second.tagName.toLowerCase()}[${second.textContent?.trim() ?? ''}]`
+            );
+          }
+        }
+      }
+
+      return { pageOverflow, overlaps: overlaps.slice(0, 5) };
+    });
+
+    expect(layoutCheck.pageOverflow, JSON.stringify(layoutCheck)).toBe(false);
+    expect(layoutCheck.overlaps, JSON.stringify(layoutCheck)).toEqual([]);
+  });
+
   test('성능 분석 탭의 주요 버튼/컨트롤이 동작한다', async ({ page }) => {
     const firstCard = getServerCardButtons(page).first();
     await expect(firstCard).toBeVisible({

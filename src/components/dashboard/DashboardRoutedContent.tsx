@@ -83,8 +83,8 @@ function PageFrame({
 }) {
   if (contained) {
     return (
-      <main className="flex h-full min-h-0 w-full overflow-hidden px-4 pb-6 sm:px-6 lg:px-8">
-        <div className="mx-auto flex h-full min-h-0 w-full max-w-none flex-col gap-4 2xl:max-w-[1800px]">
+      <main className="flex h-full min-h-0 w-full min-w-0 overflow-hidden px-4 pb-6 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-full min-h-0 w-full min-w-0 max-w-none flex-col gap-4 2xl:max-w-[1800px]">
           <div className="shrink-0 pt-1">
             <h1 className="text-2xl font-bold tracking-normal text-slate-900">
               {title}
@@ -98,8 +98,8 @@ function PageFrame({
   }
 
   return (
-    <main className="h-full w-full overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-none space-y-4 2xl:max-w-[1800px]">
+    <main className="h-full w-full min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full min-w-0 max-w-none space-y-4 2xl:max-w-[1800px]">
         <div className="pt-1">
           <h1 className="text-2xl font-bold tracking-normal text-slate-900">
             {title}

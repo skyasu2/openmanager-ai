@@ -18,7 +18,7 @@ export const ServerModalTabNav = memo(function ServerModalTabNav({
     <div
       role="tablist"
       aria-label="서버 상세 정보 탭"
-      className="mt-4 flex gap-1 overflow-x-auto pb-1 sm:mt-6 sm:gap-2 no-scrollbar"
+      className="no-scrollbar mt-4 flex w-full min-w-0 max-w-full gap-1 overflow-x-auto pb-1 sm:mt-5 sm:gap-2"
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;
@@ -34,7 +34,7 @@ export const ServerModalTabNav = memo(function ServerModalTabNav({
             aria-controls={`panel-${tab.id}`}
             tabIndex={isActive ? 0 : -1}
             onClick={() => onTabSelect(tab.id)}
-            className={`relative flex items-center gap-1 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-base ${
+            className={`relative flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-200 sm:gap-2 sm:px-4 sm:py-2.5 ${
               isActive
                 ? 'bg-white text-gray-900 shadow-md border border-gray-200'
                 : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'

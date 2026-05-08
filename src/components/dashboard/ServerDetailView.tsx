@@ -159,8 +159,8 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
   });
 
   return (
-    <div className="min-h-0 rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 bg-linear-to-r from-slate-50 to-gray-100 p-4 sm:p-6">
+    <div className="min-h-0 min-w-0 space-y-4">
+      <section className="min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-5 sm:py-5">
         <div className="mb-4">
           <Link
             href="/dashboard/servers"
@@ -172,7 +172,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
         </div>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold uppercase text-slate-400">
               서버 상세
             </p>
@@ -200,27 +200,29 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
           </button>
         </div>
 
-        <ServerModalTabNav
-          tabs={tabs}
-          selectedTab={selectedTab}
-          onTabSelect={setSelectedTab}
-        />
-      </div>
+        <div className="min-w-0">
+          <ServerModalTabNav
+            tabs={tabs}
+            selectedTab={selectedTab}
+            onTabSelect={setSelectedTab}
+          />
+        </div>
+      </section>
 
       <div
         key={selectedTab}
         id={`panel-${selectedTab}`}
         role="tabpanel"
         aria-labelledby={`tab-${selectedTab}`}
-        className="bg-linear-to-br from-gray-50 to-white p-4 sm:p-6"
+        className="min-w-0 overflow-hidden"
       >
         {selectedTab === 'overview' && (
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-5">
             <OverviewTab
               server={safeServer}
               statusTheme={getStatusTheme(safeServer.status)}
             />
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <BarChart3 className="h-5 w-5 text-blue-600" />
                 핵심 성능 지표
@@ -252,14 +254,14 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
         )}
 
         {selectedTab === 'metrics' && (
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-5">
             <MetricsTab
               server={safeServer}
               realtimeData={realtimeData}
               isRealtime={isRealtime}
               onToggleRealtime={() => setIsRealtime((prev) => !prev)}
             />
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <Cpu className="h-5 w-5 text-emerald-600" />
                 서비스 목록
@@ -270,8 +272,8 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
         )}
 
         {selectedTab === 'logs' && (
-          <div className="space-y-6">
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="min-w-0 space-y-5">
+            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <FileText className="h-5 w-5 text-blue-600" />
                 시스템 로그
@@ -297,7 +299,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
               />
             </div>
 
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <Network className="h-5 w-5 text-purple-600" />
                 네트워크 상태
@@ -308,7 +310,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
         )}
       </div>
 
-      <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 sm:px-6">
+      <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm sm:px-5">
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
           <span className="font-medium capitalize text-slate-700">
             {safeServer.status}
