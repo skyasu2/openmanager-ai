@@ -698,6 +698,20 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(charts[1]).toHaveAttribute('data-points', '20,62.8');
       expect(charts[2]).toHaveAttribute('data-points', '30,73.5');
     });
+
+    it('호버만으로 보조 서비스 정보를 노출하지 않고 펼치기 버튼으로만 확장한다', () => {
+      const { container } = render(
+        <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
+      );
+
+      expect(screen.queryByText('Nginx')).not.toBeInTheDocument();
+
+      fireEvent.mouseEnter(getCardContainer(container));
+      expect(screen.queryByText('Nginx')).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: '상세 정보 펼치기' }));
+      expect(screen.getByText('Nginx')).toBeInTheDocument();
+    });
   });
 
   describe('AI prefill 진입점', () => {

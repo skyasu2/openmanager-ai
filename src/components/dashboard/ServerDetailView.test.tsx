@@ -191,6 +191,31 @@ describe('ServerDetailView', () => {
     expect(screen.queryByText('unknown · DC1-AZ1')).not.toBeInTheDocument();
   });
 
+  it('warning 서버 상세 헤더는 상태 배지와 AI 질문 버튼을 제공한다', () => {
+    const onAskAI = vi.fn();
+
+    render(
+      <ServerDetailView
+        server={{ ...baseServer, status: 'warning' }}
+        onAskAI={onAskAI}
+      />
+    );
+
+    expect(screen.getByText('주의')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'AI에게 물어보기' }));
+
+    expect(onAskAI).toHaveBeenCalledWith(
+      expect.objectContaining({ id: baseServer.id })
+    );
+  });
+
+  it('overview 탭은 별도 핵심 성능 지표 그리드를 반복 렌더링하지 않는다', () => {
+    render(<ServerDetailView server={baseServer} />);
+
+    expect(screen.queryByText('핵심 성능 지표')).not.toBeInTheDocument();
+  });
+
   it('히스토리 tail이 stale이어도 성능/로그/네트워크 탭은 current slot 값을 사용한다', () => {
     serverMetricsMock.metricsHistory = [
       {

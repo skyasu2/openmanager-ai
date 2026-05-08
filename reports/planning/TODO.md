@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`AI 어시스턴트 운영 대응 QA 확장 계획서 Draft 등록`)
+**Last Updated**: 2026-05-08 KST (`Dashboard 서버 카드 & 상세 페이지 UX 개선 계획서 Approved 전환`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -14,6 +14,7 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | AI 어시스턴트 운영 대응 QA 확장 | High | Draft (검토 대기) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — 서비스 맥락 A5 + 명령어 B5 + 초보 유도 C5 = 15개 시나리오 |
+| Dashboard 서버 카드 & 상세 페이지 UX 개선 | Medium | Approved | [dashboard-server-detail-ux-plan.md](dashboard-server-detail-ux-plan.md) — Modal dead code 제거, 상세 페이지 헤더 개선, 중복 메트릭 제거, AI Ask 버튼, 카드 PD 단순화 |
 
 ---
 
