@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.117](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.116...v8.11.117) (2026-05-08)
+
+
+### Bug Fixes
+
+* **ai:** restore chat input submit semantics ([d488d7f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d488d7fec595a42095298b5fc260fa8c1aafb10e))
+
 ## [8.11.116](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.115...v8.11.116) (2026-05-08)
 
 
