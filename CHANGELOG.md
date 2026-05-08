@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.116](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.115...v8.11.116) (2026-05-08)
+
+
+### Bug Fixes
+
+* **ai:** short-circuit service command stream ([370c4fd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/370c4fd5fba5aab0952785dc9f66c1be3048c047))
+
+
+### Tests
+
+* **spec:** add supervisor command fast-path guard ([75a66f1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/75a66f15249a755ef8722a03d2155d55d0084152))
+
 ## [8.11.115](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.114...v8.11.115) (2026-05-08)
 
 
