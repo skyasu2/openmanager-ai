@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.114](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.113...v8.11.114) (2026-05-08)
+
+
+### Features
+
+* **ai:** expose developer panel context ([6e33657](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6e3365704b03682a91dc1d59cf579948c3a6bb1f))
+* **dashboard:** fix responsive layout overflow ([45ec629](https://gitlab.com/skyasu2/openmanager-ai/-/commit/45ec6295fec29301305ebb8a3e2306718b76a6ae))
+* **dashboard:** improve server detail UX ([5e9eafb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5e9eafbb21bdf0cb2c6fb80fee860f3d76bb53e0))
+* migrate dashboard charts to nivo and svg ([40232fb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/40232fb8427fc26700c8be1a37f14bc6bf722931))
+
+
+### Bug Fixes
+
+* **ai-engine:** prefer local engine env files ([268048a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/268048a93e7dd6acc9daf1d4592ac20a060181ab))
+* **ai:** bound chat scroll container ([1b739d1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1b739d12f64eef608e3f3216377a65513e4a6ef2))
+* **ai:** improve ops command routing ([aa90d0d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/aa90d0d682d5285b88a969ce25da0d39bae25338))
+* **charts:** resolve nivo tooltip and anomaly highlight regressions ([3b98629](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3b9862946629283f4b24b4d2c26a0e24c6aab370))
+* **dev:** stabilize local webpack dev fallback ([19fc644](https://gitlab.com/skyasu2/openmanager-ai/-/commit/19fc6443d87d71e7393c16314193e17c009d739f))
+* **home:** refine feature card layout ([adb0378](https://gitlab.com/skyasu2/openmanager-ai/-/commit/adb0378c9ceb7f39e368d62ee0532cad2bac88ac))
+* **observability:** gate sentry to local analysis ([693d10f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/693d10f04d93d49dbcf6841403d6a81e6f08990d))
+* **ui:** remove sentry reporting claim ([7b763a7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7b763a712cf75601b799a60e6520e79671536cb0))
+
+
+### Code Refactoring
+
+* **observability:** remove sentry integration ([73a092e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/73a092ee749361586f5212455dda70f0a8282c12))
+
+
+### Tests
+
+* **ai:** cover test secret disclosure mode ([dc0964e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dc0964e86cc1d5a47e15bb57723a4c442da5f291))
+* harden msw test infrastructure ([b191ddd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b191ddd5b9e66f80cbe156913fdfe5feabc4e5f5))
+* **spec:** add ai ops command routing guards ([eb62657](https://gitlab.com/skyasu2/openmanager-ai/-/commit/eb626572ea17759fa7011ba73068b85b29ee7c03))
+* **spec:** add dashboard detail UX guards ([b2a02e1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b2a02e1ab4f28f2cdfb74678b615d2ecae932db3))
+* **spec:** chart migration add failing specs before implementation ([47618db](https://gitlab.com/skyasu2/openmanager-ai/-/commit/47618db7bc7e895643fad81f022d94424f43be2e))
+* **spec:** developer panel add failing tests before implementation ([b70fcf5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b70fcf547b8db5754f38aad70be0279deee38cb9))
+* **spec:** harden msw infra failing guards ([6417597](https://gitlab.com/skyasu2/openmanager-ai/-/commit/64175972dca7654b22407988b617f98790995098))
+* **spec:** msw test infra add failing specs ([84ca604](https://gitlab.com/skyasu2/openmanager-ai/-/commit/84ca604e6fd4a2321cc47cf2ddbaf1d28c1630c4))
+
 ## [8.11.113](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.112...v8.11.113) (2026-05-07)
 
 
