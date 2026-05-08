@@ -1,7 +1,7 @@
 # Storybook CI Guardrail 계획
 
 > Owner: project
-> Status: In Progress
+> Status: Implemented
 > Doc type: Plan
 > Last reviewed: 2026-05-08
 > Canonical: reports/planning/storybook-ci-guardrail-plan.md
@@ -88,6 +88,7 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 ### Task 5: 검증
 
 - [ ] `npm run storybook:smoke` — **⚠️ 로컬 환경 한계 재현(2026-05-08)**: `/mnt/d/` (Windows NTFS) 에서 `Bus error (core dumped)`, exit 135. CI runner (`~/builds/` Linux ext4)에서는 정상 동작 예상. 로컬 검증은 Linux ext4 경로에서 수행 필요.
+- [x] GitLab CI `validate_storybook_smoke` — pipeline `2509107503`, job `14271541961`, success
 - [x] `bash -n scripts/storybook/smoke.sh` — bash 문법 OK
 - [x] `npm run docs:budget`
 - [x] `npm run docs:ai-consistency`
@@ -119,8 +120,8 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 
 ## 완료 기준
 
-- [ ] Storybook/UI/package 변경 MR/branch에서 `validate_storybook_smoke`가 자동 실행된다.
-- [ ] docs-only/QA 기록/AI Engine only 변경에서는 Storybook job이 실행되지 않는다.
-- [ ] `storybook:smoke` 실패가 Storybook config/import/index drift를 차단한다.
-- [ ] full build와 browser-mode tests는 수동/스케줄 또는 별도 계획으로 분리되어 있다.
-- [ ] 관련 문서와 TODO가 같은 정책을 가리킨다.
+- [x] Storybook/UI/package 변경 MR/branch에서 `validate_storybook_smoke`가 자동 실행된다.
+- [x] docs-only/QA 기록/AI Engine only 변경에서는 Storybook job이 실행되지 않는다.
+- [x] `storybook:smoke` 실패가 Storybook config/import/index drift를 차단한다.
+- [x] full build와 browser-mode tests는 수동/스케줄 또는 별도 계획으로 분리되어 있다.
+- [x] 관련 문서와 TODO가 같은 정책을 가리킨다.
