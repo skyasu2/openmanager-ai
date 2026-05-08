@@ -218,8 +218,36 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
   - AI Engine full test PASS — 107 files / 1070 tests
   - root `test:contract` PASS
 - 남은 항목:
-  - production 배포 후 `B1/B4/B5` command-guidance targeted retest
+  - production 배포 후 `B1/B4/B5` command-guidance targeted retest 완료 (`QA-20260509-0430`)
+  - `B1`은 PASS로 회복
+  - `B4/B5`는 계속 visible answer 없이 실패. 단, `B4` isolated network diagnostic에서 `/api/ai/supervisor` 요청이 발생하지 않아 submit/runner/UI boundary 분리가 필요
   - `A5/C2` empty response timeout은 command fast-path 범위 밖이라 별도 stream fallback/초보 당직 checklist 보강 필요
+
+## QA-20260509-0430 command retest 결과
+
+- **환경**: Vercel Production v8.11.116 (`https://openmanager-ai.vercel.app`)
+- **배포 근거**: GitLab tag pipeline `2510972924` success
+- **도구**: Playwright CLI runner
+- **기록**: `reports/qa/runs/2026/qa-run-QA-20260509-0430.json`
+- **Raw evidence**:
+  - `reports/qa/evidence/qa-20260509-ai-ops-command-retest-v811116-results.json`
+  - `reports/qa/evidence/qa-20260509-ai-ops-b4-network-v811116-results.json`
+- **대상**: `B1,B4,B5`
+- **결과**: PASS 1, FAIL 2
+
+| 시나리오 | v8.11.114 | v8.11.116 | 판정 |
+|----------|-----------|-----------|------|
+| B1 HAProxy backend/status 명령어 | FAIL | PASS | `show stat`, `haproxy -c`, `systemctl status haproxy` 반환 |
+| B4 Nginx 5xx 경로 분석 | FAIL | FAIL | visible answer 없음. isolated diagnostic에서 `/api/ai/supervisor` 요청 미발생 |
+| B5 NFS 재마운트 순서 | FAIL | FAIL | visible answer 없음 |
+
+### 현재 open gap
+
+| ID | Priority | 내용 | 다음 조치 |
+|----|----------|------|-----------|
+| `ai-ops-empty-response-timeout` | P1 | A5/B4/B5/C2 visible answer timeout 계열 잔여 | B4/B5는 submit/stream boundary와 answer generation을 분리해 재현 |
+| `ai-ops-command-submit-or-stream-boundary` | P1 | Nginx/NFS command guidance가 Playwright flow에서 실제 AI 요청/답변으로 이어지지 않음 | QA runner submit selector 고정 또는 product-side submit telemetry 추가 후 B4/B5 재검증 |
+| `ai-ops-haproxy-context-specificity` | P2 | A1 HAProxy 상태 답변이 CPU/백엔드 분산 상세 부족 | HAProxy group summary fallback 보강 |
 
 ---
 
@@ -234,4 +262,4 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 
 ---
 
-_Last Updated: 2026-05-09 — command-guidance routing 로컬 수정 및 AI Engine 검증 완료, production retest 대기_
+_Last Updated: 2026-05-09 — v8.11.116 command retest 기록, B1 closure 및 B4/B5 submit/stream boundary 조사 대기_

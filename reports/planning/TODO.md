@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-09 KST (`AI 운영 대화 QA v8.11.114 production retest 완료, 잔여 P1/P2 추적`)
+**Last Updated**: 2026-05-09 KST (`AI 운영 대화 QA v8.11.116 command retest 완료, B1 closure 및 B4/B5 boundary 조사 대기`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 어시스턴트 운영 대응 QA 확장 | High | In Progress (Codex) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — v8.11.114 배포 후 QA-20260509-0429 targeted retest: 이전 WARN/FAIL 8개 중 PASS 2, WARN 1, FAIL 5. 로컬 후속 수정: 서비스 명령어 질의(HAProxy/Nginx/NFS)를 LLM 전 deterministic command catalog로 직접 응답하고 command guidance를 status summary deterministic path에서 제외. 검증: AI Engine type-check + full test PASS, root test:contract PASS. 다음 단계: 배포 후 B1/B4/B5 retest, 이후 A5/C2 empty response timeout 별도 보강 |
+| AI 어시스턴트 운영 대응 QA 확장 | High | In Progress (Codex) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — QA-20260509-0430(v8.11.116): command retest B1/B4/B5 중 B1 PASS, B4/B5 FAIL. 완료: HAProxy command intent routing(`ai-ops-command-intent-routing`) closure. 잔여: P1 empty response timeout(A5/B4/B5/C2), P1 Nginx/NFS command submit-or-stream boundary(B4/B5), P2 HAProxy context specificity(A1). 다음 단계: B4/B5는 QA runner submit selector와 product stream telemetry를 분리 조사 후 재검증, A5/C2는 별도 stream fallback/초보 당직 checklist 보강 |
 
 ---
 

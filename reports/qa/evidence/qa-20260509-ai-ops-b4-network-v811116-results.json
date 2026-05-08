@@ -1,0 +1,31 @@
+{
+  "startedAt": "2026-05-08T17:40:36.712Z",
+  "finishedAt": "2026-05-08T17:43:02.093Z",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "selectedScenarioIds": [
+    "B4"
+  ],
+  "total": 1,
+  "pass": 0,
+  "warn": 0,
+  "fail": 1,
+  "results": [
+    {
+      "id": "B4",
+      "category": "command-guidance",
+      "question": "Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘",
+      "status": "FAIL",
+      "reason": "locator.elementHandle: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'AI 질문 입력' }).locator('xpath=ancestor::form[1]')\u001b[22m\n",
+      "latencyMs": 133916,
+      "answerExcerpt": ""
+    }
+  ],
+  "consoleMessages": [],
+  "networkEvents": [
+    {
+      "type": "requestfailed",
+      "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "error": "net::ERR_ABORTED"
+    }
+  ]
+}

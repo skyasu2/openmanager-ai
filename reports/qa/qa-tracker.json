@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-08T16:33:50.518Z"
+    "updatedAt": "2026-05-08T17:45:28.422Z"
   },
   "sequence": {
-    "nextRunNumber": 430
+    "nextRunNumber": 431
   },
   "summary": {
-    "totalRecordedRuns": 427,
-    "totalRuns": 348,
+    "totalRecordedRuns": 428,
+    "totalRuns": 349,
     "excludedRuns": 79,
-    "totalChecks": 3060,
-    "totalPassed": 2940,
-    "totalFailed": 110,
+    "totalChecks": 3063,
+    "totalPassed": 2941,
+    "totalFailed": 112,
     "completionRate": 99.35,
-    "completedItems": 459,
+    "completedItems": 460,
     "pendingItems": 3,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260509-0429",
-    "lastRecordedAt": "2026-05-08T16:33:50.518Z",
-    "latestRecordedRunId": "QA-20260509-0429",
-    "latestRecordedAt": "2026-05-08T16:33:50.518Z"
+    "lastRunId": "QA-20260509-0430",
+    "lastRecordedAt": "2026-05-08T17:45:28.422Z",
+    "latestRecordedRunId": "QA-20260509-0430",
+    "latestRecordedAt": "2026-05-08T17:45:28.422Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11233,46 +11233,46 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260509-0428",
       "firstSeenAt": "2026-05-08T15:49:21.373Z",
-      "lastSeenRunId": "QA-20260509-0429",
-      "lastSeenAt": "2026-05-08T16:33:50.518Z",
-      "seenCount": 2,
+      "lastSeenRunId": "QA-20260509-0430",
+      "lastSeenAt": "2026-05-08T17:45:28.422Z",
+      "seenCount": 3,
       "completedCount": 0,
-      "pendingCount": 2,
+      "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "A5/B4/B5/C2 still timed out without visible answer in v8.11.114 targeted retest.",
-      "lastNote": "Likely stream completion, provider, or UI extraction path issue; release-blocking for this AI ops QA closure task.",
+      "lastEvidence": "B4/B5 still timed out without visible answer in v8.11.116 command retest; A5/C2 remain unresolved from QA-20260509-0429.",
+      "lastNote": "B4 isolated network diagnostic suggests at least one path may be submit/runner/UI boundary rather than AI text generation.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-08T16:33:50.518Z"
+      "lastStatusChangeAt": "2026-05-08T17:45:28.422Z"
     },
     "ai-ops-command-intent-routing": {
       "id": "ai-ops-command-intent-routing",
-      "title": "HAProxy command guidance question still returns generic server summary",
+      "title": "HAProxy command guidance surfaces concrete backend/status commands",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260509-0428",
       "firstSeenAt": "2026-05-08T15:49:21.373Z",
-      "lastSeenRunId": "QA-20260509-0429",
-      "lastSeenAt": "2026-05-08T16:33:50.518Z",
-      "seenCount": 2,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260509-0430",
+      "lastSeenAt": "2026-05-08T17:45:28.422Z",
+      "seenCount": 3,
+      "completedCount": 1,
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "B1 asked for HAProxy backend status command but received a generic 18-server summary and no HAProxy CLI/socat guidance.",
+      "lastEvidence": "B1 PASS in v8.11.116 targeted retest with show stat, haproxy config check, and systemctl status haproxy commands.",
       "lastNote": "recommendCommands was shown as the analysis tool, but the final answer did not surface its command recommendations.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-08T16:33:50.518Z"
+      "lastStatusChangeAt": "2026-05-08T17:45:28.422Z"
     },
     "ai-ops-tool-result-empty-summary": {
       "id": "ai-ops-tool-result-empty-summary",
@@ -11329,8 +11329,32 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260509-0429",
       "firstSeenAt": "2026-05-08T16:33:50.518Z",
-      "lastSeenRunId": "QA-20260509-0429",
-      "lastSeenAt": "2026-05-08T16:33:50.518Z",
+      "lastSeenRunId": "QA-20260509-0430",
+      "lastSeenAt": "2026-05-08T17:45:28.422Z",
+      "seenCount": 2,
+      "completedCount": 0,
+      "pendingCount": 2,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "A1 remained WARN in QA-20260509-0429 and was not retested in the command-only v8.11.116 run.",
+      "lastNote": "Tracking as blocking for the active AI ops QA closure task, not as a global release blocker.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T17:45:28.422Z"
+    },
+    "ai-ops-command-submit-or-stream-boundary": {
+      "id": "ai-ops-command-submit-or-stream-boundary",
+      "title": "Nginx/NFS command guidance does not produce a visible AI request/answer in Playwright flow",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260509-0430",
+      "firstSeenAt": "2026-05-08T17:45:28.422Z",
+      "lastSeenRunId": "QA-20260509-0430",
+      "lastSeenAt": "2026-05-08T17:45:28.422Z",
       "seenCount": 1,
       "completedCount": 0,
       "pendingCount": 1,
@@ -11338,13 +11362,13 @@
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "A1 improved from empty-summary fallback to a HAProxy status answer, but remained WARN because it omitted current CPU/backend distribution detail.",
-      "lastNote": "Tracking as blocking for the active AI ops QA closure task, not as a global release blocker.",
+      "lastEvidence": "B4/B5 failed in v8.11.116; B4 isolated diagnostic captured no /api/ai/supervisor request and only aborted wake-up traffic.",
+      "lastNote": "Requires separating QA runner submit reliability from product stream handling.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-08T16:33:50.518Z"
+      "lastStatusChangeAt": "2026-05-08T17:45:28.422Z"
     }
   },
   "runs": [
@@ -45173,6 +45197,115 @@
       "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260509-0430",
+      "recordedAt": "2026-05-08T17:45:28.422Z",
+      "recordedAtKst": "2026-05-09 02:45:28 KST",
+      "title": "Vercel Production AI Ops Command Guidance Retest - v8.11.116",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260509-0430.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "7785750c31674f884b0a3e7c66797934053b24e5"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant guest conversational flow",
+        "AI ops command guidance retest for B1/B4/B5 after service-command catalog fast-path",
+        "B4 isolated network diagnostic"
+      ],
+      "skippedSurfaces": [
+        "full 15-scenario AI ops pack",
+        "non-command service context scenarios",
+        "Cloud Run admin surface"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 1,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "B1 HAProxy command guidance recovered in v8.11.116, but B4/B5 still produced no visible answer in the Playwright flow.",
+          "nextAction": "B4/B5 submit/stream boundary를 네트워크 요청 발생 여부까지 포함해 분리 재현."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "B4 isolated diagnostic captured no /api/ai/supervisor request and only aborted wake-up traffic, so runner/UI submit state false-fail 가능성이 있음.",
+          "nextAction": "QA runner submit selector를 실제 textarea sibling send button 기준으로 고정하고 product-side submit telemetry를 추가 검토."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "HAProxy 명령어는 구체 CLI를 반환하지만 Nginx/NFS 운영 명령어는 아직 프로덕션 대화 흐름에서 확인되지 않음.",
+          "nextAction": "Nginx/NFS command catalog direct response가 실제 UI submit 후 stream에 도달하는지 검증."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-09T02:44:16+09:00",
+          "summary": "Current billing period reviewed after command retest and B4 isolated diagnostic; effective usage 4.7043 USD, billed 0.0000 USD, chargeCount 4263.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "AI ops command guidance retest raw results",
+          "path": "reports/qa/evidence/qa-20260509-ai-ops-command-retest-v811116-results.json",
+          "note": "B1/B4/B5 scenario result JSON captured after v8.11.116 production deploy"
+        },
+        {
+          "type": "playwright-console",
+          "label": "B4 isolated network diagnostic raw results",
+          "path": "reports/qa/evidence/qa-20260509-ai-ops-b4-network-v811116-results.json",
+          "note": "B4 isolated rerun captured no /api/ai/supervisor request; only /api/ai/wake-up requestfailed net::ERR_ABORTED"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.11.116 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2510972924"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 3,
+      "completedCount": 1,
+      "pendingCount": 3,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -45181,17 +45314,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 210,
+      "seenCount": 211,
       "appropriateCount": 185,
-      "partialCount": 25,
+      "partialCount": 26,
       "inappropriateCount": 0,
-      "improvementNeededCount": 35,
-      "lastRunId": "QA-20260509-0429",
-      "lastSeenAt": "2026-05-08T16:33:50.518Z",
+      "improvementNeededCount": 36,
+      "lastRunId": "QA-20260509-0430",
+      "lastSeenAt": "2026-05-08T17:45:28.422Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "v8.11.114 targeted retest improved A3 and C1, but 8개 재검증 중 WARN 1, FAIL 5가 남아 AI ops QA closure 기준을 충족하지 못함.",
-      "lastNextAction": "A5/B4/B5/C2 empty response timeout과 B1 HAProxy command intent failure를 우선 deterministic guard로 고정."
+      "lastRationale": "B1 HAProxy command guidance recovered in v8.11.116, but B4/B5 still produced no visible answer in the Playwright flow.",
+      "lastNextAction": "B4/B5 submit/stream boundary를 네트워크 요청 발생 여부까지 포함해 분리 재현."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -45232,34 +45365,34 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 143,
+      "seenCount": 144,
       "appropriateCount": 128,
-      "partialCount": 15,
+      "partialCount": 16,
       "inappropriateCount": 0,
-      "improvementNeededCount": 19,
-      "lastRunId": "QA-20260509-0429",
-      "lastSeenAt": "2026-05-08T16:33:50.518Z",
+      "improvementNeededCount": 20,
+      "lastRunId": "QA-20260509-0430",
+      "lastSeenAt": "2026-05-08T17:45:28.422Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Redis 비교와 HAProxy CPU beginner guidance는 회복됐지만 HAProxy backend status 명령어, Nginx 5xx 경로 분석, NFS 재마운트 순서는 실무 답변으로 반환되지 않음.",
-      "lastNextAction": "서비스별 명령어 tool result를 최종 응답으로 안정 변환하는 fallback을 보강."
+      "lastRationale": "HAProxy 명령어는 구체 CLI를 반환하지만 Nginx/NFS 운영 명령어는 아직 프로덕션 대화 흐름에서 확인되지 않음.",
+      "lastNextAction": "Nginx/NFS command catalog direct response가 실제 UI submit 후 stream에 도달하는지 검증."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 181,
+      "seenCount": 182,
       "appropriateCount": 165,
-      "partialCount": 16,
+      "partialCount": 17,
       "inappropriateCount": 0,
-      "improvementNeededCount": 18,
-      "lastRunId": "QA-20260509-0429",
-      "lastSeenAt": "2026-05-08T16:33:50.518Z",
+      "improvementNeededCount": 19,
+      "lastRunId": "QA-20260509-0430",
+      "lastSeenAt": "2026-05-08T17:45:28.422Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Playwright CLI retest는 재현 가능하지만 현재 실패가 live provider/stream 경로에 의존해 로컬 계약 테스트와 production E2E 사이 갭이 있음.",
-      "lastNextAction": "recommendCommands 결과와 stream empty-output fallback을 mocked stream contract로 분리해 회귀 기준을 고정."
+      "lastRationale": "B4 isolated diagnostic captured no /api/ai/supervisor request and only aborted wake-up traffic, so runner/UI submit state false-fail 가능성이 있음.",
+      "lastNextAction": "QA runner submit selector를 실제 textarea sibling send button 기준으로 고정하고 product-side submit telemetry를 추가 검토."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
