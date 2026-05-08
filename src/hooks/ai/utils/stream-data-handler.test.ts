@@ -8,11 +8,13 @@ import type {
   HandoffEventData,
   StreamDataPart,
 } from '@/hooks/ai/useHybridAIQuery';
+import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { handleStreamDataPart } from './stream-data-handler';
 
 function createMockCallbacks() {
   let pendingToolResults: Array<{ toolName: string; result: unknown }> = [];
   let pendingMessageMetadata: Record<string, unknown> = {};
+  let developerPanelData: DeveloperPanelData | null = null;
   const messages: UIMessage[] = [
     {
       id: 'msg-1',
@@ -41,6 +43,10 @@ function createMockCallbacks() {
     }),
     setDeferredAssistantMetadata: vi.fn(),
     setDeferredAssistantToolResults: vi.fn(),
+    getDeveloperPanelData: vi.fn(() => developerPanelData),
+    setDeveloperPanelData: vi.fn((next: DeveloperPanelData | null) => {
+      developerPanelData = next;
+    }),
     getMessages: vi.fn(() => messages),
   };
 }
@@ -718,6 +724,103 @@ describe('handleStreamDataPart', () => {
           shouldCollapse: false,
         },
       });
+    });
+  });
+
+  describe('developer-context event', () => {
+    it('should expose developer-context stream data as developer panel JSON', () => {
+      handleStreamDataPart(
+        {
+          type: 'data-developer-context',
+          data: {
+            mode: 'developer',
+            meta: {
+              ts: '2026-05-08T02:40:00.000Z',
+              session: null,
+              stream: null,
+              system: {
+                cloudRunHealthy: true,
+                cloudRunUrl: 'https://example-ai.run.app',
+                disclosureMode: 'developer',
+              },
+              rag: null,
+            },
+          },
+        },
+        callbacks
+      );
+
+      expect(callbacks.setDeveloperPanelData).toHaveBeenCalledWith({
+        ts: '2026-05-08T02:40:00.000Z',
+        session: null,
+        stream: null,
+        system: {
+          cloudRunHealthy: true,
+          cloudRunUrl: 'https://example-ai.run.app',
+          disclosureMode: 'developer',
+        },
+        rag: null,
+      });
+    });
+
+    it('should merge data-done metadata into an existing developer panel snapshot', () => {
+      callbacks.setDeveloperPanelData({
+        ts: '2026-05-08T02:40:00.000Z',
+        session: null,
+        stream: null,
+        system: {
+          cloudRunHealthy: true,
+          cloudRunUrl: 'https://example-ai.run.app',
+          disclosureMode: 'developer',
+        },
+        rag: null,
+      });
+
+      handleStreamDataPart(
+        {
+          type: 'data-done',
+          data: {
+            resolvedMode: 'multi',
+            toolsCalled: ['getServerMetrics', 'searchKnowledgeBase'],
+            processingTime: 1234,
+            metadata: {
+              provider: 'groq',
+              modelId: 'llama-3.3-70b-versatile',
+              handoffCount: 2,
+              retrieval: {
+                retrievalEnabled: true,
+                retrievalUsed: true,
+                retrievalMode: 'lite',
+                evidenceCount: 3,
+                webUsed: false,
+              },
+            },
+          },
+        },
+        callbacks
+      );
+
+      expect(callbacks.setDeveloperPanelData).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          session: {
+            provider: 'groq',
+            modelId: 'llama-3.3-70b-versatile',
+            handoffCount: 2,
+            durationMs: 1234,
+            toolsCalled: ['getServerMetrics', 'searchKnowledgeBase'],
+          },
+          stream: {
+            analysisBasis: 'multi-agent',
+            stepsExecuted: 2,
+          },
+          rag: {
+            ragType: 'lite',
+            hitCount: 3,
+            graphHits: 0,
+            vectorHits: 3,
+          },
+        })
+      );
     });
   });
 });

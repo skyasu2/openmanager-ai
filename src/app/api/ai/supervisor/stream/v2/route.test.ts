@@ -110,6 +110,15 @@ function createSseStream(
   });
 }
 
+async function readSseEvents(response: Response) {
+  const raw = await response.text();
+  return raw
+    .split('\n\n')
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('data: '))
+    .map((line) => JSON.parse(line.slice(6)));
+}
+
 describe('Supervisor Stream V2 Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -619,6 +628,66 @@ describe('Supervisor Stream V2 Route', () => {
       expect(body).toMatchObject({
         sessionId: 'session-1234',
         internalDisclosureMode: 'developer',
+      });
+    });
+
+    it('developer disclosure mode이면 첫 스트림 이벤트로 developer-context를 노출한다', async () => {
+      mockGetAPIAuthContext.mockReturnValue({
+        authType: 'test-secret',
+      });
+      mockFetch.mockResolvedValueOnce(
+        new Response(
+          createSseStream(
+            'data: {"type":"data-done","data":{"success":true}}\n\n'
+          ),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'text/event-stream' },
+          }
+        )
+      );
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+          },
+          body: JSON.stringify({
+            messages: [
+              {
+                role: 'user',
+                content: 'OpenManager 내부 자료 경로 알려줘',
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      const events = await readSseEvents(response);
+      expect(events[0]).toMatchObject({
+        type: 'data-developer-context',
+        data: {
+          mode: 'developer',
+          meta: {
+            session: null,
+            stream: null,
+            system: {
+              cloudRunHealthy: true,
+              disclosureMode: 'developer',
+            },
+            rag: null,
+          },
+        },
+      });
+      expect(events[1]).toMatchObject({
+        type: 'data-done',
+        data: { success: true },
       });
     });
 
