@@ -52,7 +52,7 @@ describe('preFilterQuery', () => {
     expect(result.shouldHandoff).toBe(false);
     expect(result.directResponse).toContain('echo "show stat"');
     expect(result.directResponse).toContain('systemctl status haproxy');
-    expect(result.directResponse).not.toMatch(/mysql|redis-cli|nginx\s+-t/i);
+    expect(result.directResponse).not.toMatch(/mysql|redis-cli|nginx\s+-t|findmnt/i);
   });
 
   it('answers Nginx and NFS command guidance directly from the command catalog', () => {

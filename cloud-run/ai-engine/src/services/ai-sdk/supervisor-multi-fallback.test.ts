@@ -479,6 +479,41 @@ describe('supervisor degraded single fallback', () => {
     });
   });
 
+  it('streams service command guidance directly before model routing', async () => {
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'multi',
+      messages: [
+        {
+          role: 'user',
+          content:
+            'Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘',
+        },
+      ],
+      sessionId: 'session-command-direct',
+    })) {
+      events.push(event);
+    }
+
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        type: 'text_delta',
+        data: expect.stringContaining('/var/log/nginx/access.log'),
+      })
+    );
+    expect(events.at(-1)).toMatchObject({
+      type: 'done',
+      data: {
+        toolsCalled: ['recommendCommands'],
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'service-command-catalog',
+        },
+      },
+    });
+    expect(mockStreamText).not.toHaveBeenCalled();
+  });
+
   it('prefers deterministic advanced metric ranking over empty finalAnswer recovery in single-agent stream', async () => {
     mockSelectExecutionMode.mockReturnValue('single');
     mockStreamText.mockReturnValue({
