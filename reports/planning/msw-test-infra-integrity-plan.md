@@ -1,7 +1,7 @@
 # MSW Test Infra Integrity Plan
 
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: Plan
 > Last reviewed: 2026-05-08
 > Canonical: reports/planning/msw-test-infra-integrity-plan.md
@@ -98,6 +98,7 @@ MSW/Vitest 기반 테스트가 실제로 검증하는 대상을 명확히 하고
 - `src/__mocks__/msw/handlers/index.ts`
 - `src/__mocks__/msw/handlers/ai/*`
 - `tests/api/api-contract.test.ts`
+- 신규: `tests/api/msw-test-infra-integrity.contract.test.ts`
 - `tests/api/core-endpoints.integration.test.ts`
 - `tests/api/ai-supervisor.integration.test.ts`
 - `tests/integration/external-services-connection.test.ts`
@@ -128,7 +129,7 @@ Task 0의 failing spec은 아래 3개를 대표 계약으로 고정한다.
 
 ## Task 목록
 
-- [ ] Task 0 — 구현 전 contract/failing spec 최소화: 대표 계약 3개에 대한 failing spec 커밋
+- [x] Task 0 — 구현 전 contract/failing spec 최소화: 대표 계약 3개에 대한 failing spec 커밋
 - [ ] Task 1 — MSW strict boundary: unhandled request policy와 suite별 예외 경로 정리
 - [ ] Task 2 — contract suite 정리: `api-contract` inline fetch mock 제거/전환/재분류
 - [ ] Task 3 — integration/live suite 정리: mock integration과 live connectivity config 분리
@@ -160,3 +161,11 @@ Task 0의 failing spec은 아래 3개를 대표 계약으로 고정한다.
 - [ ] 외부 호출/비용 발생 가능 테스트가 기본 gate에서 분리됨
 - [ ] 테스트 수 증가보다 중복 제거/재분류가 우선 적용됨
 - [ ] Pareto/Pesticide/Risk-Based/Contract-First 관점의 최종 판단이 plan 또는 완료 보고에 기록됨
+
+## 진행 로그
+
+- 2026-05-08 Task 0: `tests/api/msw-test-infra-integrity.contract.test.ts`에 대표 계약 3개 failing spec 추가.
+  - 현재 실패 예상:
+    - `config/testing/msw-setup.ts`가 `onUnhandledRequest: 'warn'` 사용
+    - `tests/api/api-contract.test.ts`가 `global.fetch = vi.fn()` inline mock 사용
+    - `test:external-connectivity`가 MSW-free 전용 config 대신 `vitest.config.main.ts` 사용

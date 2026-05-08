@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`completed plan archive cleanup`)
+**Last Updated**: 2026-05-08 KST (`MSW Task 0 failing spec`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,7 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| MSW 테스트 인프라 정합성 개선 | Medium | Approved. Task 0 failing spec 범위는 MSW unhandled request strict failure, `api-contract` inline fetch mock false-pass 차단, live connectivity MSW-free config 분리 3개로 확정. 다음 단계는 failing spec 커밋. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
+| MSW 테스트 인프라 정합성 개선 | Medium | In Progress (Codex). Task 0 failing spec 추가: MSW unhandled request strict failure, `api-contract` inline fetch mock false-pass 차단, live connectivity MSW-free config 분리. 다음 단계는 Task 1~3 구현으로 failing spec 통과. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
 
 ---
 
