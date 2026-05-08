@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`MSW contract approval`)
+**Last Updated**: 2026-05-08 KST (`completed plan archive cleanup`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,11 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| NivoTimeSeriesChart UX 회귀 수정 | High | Implemented. 툴팁/useMesh, active anomaly endTime, anomaly layer 보간/최소폭 수정 및 targeted/type/lint/test:quick 통과. 2026-05-08 로컬 `/mnt/d` QA는 SIGBUS로 blocked([QA-20260508-0421](../qa/runs/2026/qa-run-QA-20260508-0421.json)), 재시도에서도 Next dev Turbopack/Webpack listener 종료로 blocked([QA-20260508-0422](../qa/runs/2026/qa-run-QA-20260508-0422.json)). 이후 ext4 `node_modules` symlink + webpack dev + `node:*` dynamic import `webpackIgnore`로 `/dashboard` HTTP 200 preflight 확인([QA-20260508-0423](../qa/runs/2026/qa-run-QA-20260508-0423.json)). 실제 Playwright 시각 QA는 [QA-20260508-0424](../qa/runs/2026/qa-run-QA-20260508-0424.json)에서 storage-nfs-dc1-01 DISK hover tooltip과 cache-redis-dc1-01 MEMORY active anomaly 4px rect를 확인해 완료. 상세: [nivo-chart-ux-fix-plan.md](nivo-chart-ux-fix-plan.md) |
-| Storybook CI guardrail 적용 | Medium | Implemented. Task 1~5 완료(`.gitlab-ci.yml` 경로 앵커 + `validate_storybook_smoke` job + docs 반영 + story 수치 재계산 + GitLab pipeline `2509107503` success). 주의: 로컬 `/mnt/d/` 에서 esbuild `Bus error`, exit 135 재현 — CI runner (`~/builds/`) 에서는 정상 확인. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
-| Developer Panel — AI 진단 컨텍스트 노출 | Medium | Implemented. SDD failing spec 커밋 후 구현 완료. `internalDisclosureMode='developer'` stream에서 `data-developer-context`를 prepend하고, `AISidebarV4`에 hidden `data-testid="developer-panel"` DOM mount를 추가. 검증: targeted route/handler/component tests, `type-check`, `lint`, `test:quick`, `test:contract` 통과. 상세: [developer-panel-plan.md](developer-panel-plan.md) |
 | MSW 테스트 인프라 정합성 개선 | Medium | Approved. Task 0 failing spec 범위는 MSW unhandled request strict failure, `api-contract` inline fetch mock false-pass 차단, live connectivity MSW-free config 분리 3개로 확정. 다음 단계는 failing spec 커밋. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
-| docs 위생 개선 | Low | Implemented. Task 1~6 완료. 활성 문서 72/90, `ai-assistant-initial-design-comparison.md` archived 이동, `frontend-backend-comparison.md` 유지, `ci-cd.md` 절차 중복 축소, `ai-engine-architecture.md` 분할하지 않음으로 판단. 상세: [docs-hygiene-plan.md](docs-hygiene-plan.md) |
 
 ---
 
@@ -52,6 +48,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-08 #319) — Codex
+- [x] 완료 계획서 archive 정리
+  - `chart-migration-plan.md` → [archive/chart-migration-plan.md](archive/chart-migration-plan.md)
+  - `nivo-chart-ux-fix-plan.md` → [archive/nivo-chart-ux-fix-plan.md](archive/nivo-chart-ux-fix-plan.md)
+  - `developer-panel-plan.md` → [archive/developer-panel-plan.md](archive/developer-panel-plan.md)
+  - `storybook-ci-guardrail-plan.md` → [archive/storybook-ci-guardrail-plan.md](archive/storybook-ci-guardrail-plan.md)
+  - `docs-hygiene-plan.md` → [archive/docs-hygiene-plan.md](archive/docs-hygiene-plan.md)
+  - Active/Backlog에는 `MSW 테스트 인프라 정합성 개선`만 구현 대기 항목으로 유지
 
 ### Completed (2026-05-08 #318) — Claude
 - [x] 작업 계획서 상태 정리 + storybook-ci-guardrail Task 1~2 구현

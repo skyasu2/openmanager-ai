@@ -1,10 +1,10 @@
 # Storybook CI Guardrail 계획
 
 > Owner: project
-> Status: Implemented
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-08
-> Canonical: reports/planning/storybook-ci-guardrail-plan.md
+> Canonical: reports/planning/archive/storybook-ci-guardrail-plan.md
 > Tags: storybook,ci,ui,testing
 
 ## 배경

@@ -4,7 +4,7 @@
 > Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-07
-> Canonical: reports/planning/chart-migration-plan.md
+> Canonical: reports/planning/archive/chart-migration-plan.md
 > Tags: charts,recharts,nivo,refactoring,frontend
 
 ## 배경

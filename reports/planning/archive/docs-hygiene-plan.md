@@ -1,9 +1,11 @@
 # docs 위생 개선 계획 (2026-05-08)
 
 > Owner: project
-> Status: Implemented
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-08
+> Canonical: reports/planning/archive/docs-hygiene-plan.md
+> Tags: docs,hygiene,budget,diataxis
 
 ## 배경
 

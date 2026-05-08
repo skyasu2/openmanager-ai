@@ -1,10 +1,10 @@
 # Developer Panel — 구현 계획서
 
 > Owner: project
-> Status: Implemented
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-08
-> Canonical: reports/planning/developer-panel-plan.md
+> Canonical: reports/planning/archive/developer-panel-plan.md
 > Tags: ai,developer-mode,diagnostics,ai-context
 
 ---
