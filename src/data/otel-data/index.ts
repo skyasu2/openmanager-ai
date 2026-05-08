@@ -36,8 +36,8 @@ async function loadJsonData<T>(fileName: string): Promise<T | null> {
     if (typeof window === 'undefined') {
       // 서버 측: fs.readFile → fetch fallback
       try {
-        const fs = await import('node:fs/promises');
-        const path = await import('node:path');
+        const fs = await import(/* webpackIgnore: true */ 'node:fs/promises');
+        const path = await import(/* webpackIgnore: true */ 'node:path');
         const filePath = path.join(
           process.cwd(),
           'public',

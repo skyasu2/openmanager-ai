@@ -16,7 +16,7 @@ WEBPACK=false
 PORT="${NEXT_DEV_READY_PORT:-}"
 READY_TIMEOUT_S="${NEXT_DEV_READY_TIMEOUT_S:-90}"
 READY_PATH="${NEXT_DEV_READY_PATH:-/api/version}"
-CURL_TIMEOUT_S="${NEXT_DEV_READY_CURL_TIMEOUT_S:-2}"
+CURL_TIMEOUT_S="${NEXT_DEV_READY_CURL_TIMEOUT_S:-}"
 LOG_TAIL_LINES="${NEXT_DEV_READY_LOG_TAIL_LINES:-60}"
 NEXT_LOG_FILE="$(mktemp -t openmanager-next-dev-ready-XXXX.log)"
 SERVER_PID=""
@@ -35,6 +35,14 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+if [ -z "$CURL_TIMEOUT_S" ]; then
+  if [ "$WEBPACK" = "true" ]; then
+    CURL_TIMEOUT_S=45
+  else
+    CURL_TIMEOUT_S=2
+  fi
+fi
 
 # ─── Free port ───────────────────────────────────────────────────────────────
 if [ -z "$PORT" ]; then
@@ -174,7 +182,7 @@ for path in \
   /api/ai/supervisor/stream/v2 \
   /api/ai/incident-report \
   /api/security/csp-report; do
-  http_code="$(probe_http_code "${BASE_URL}${path}" 3)"
+  http_code="$(probe_http_code "${BASE_URL}${path}" "$CURL_TIMEOUT_S")"
   # 404 = route missing, 000 = probe/network failure, anything else = route exists.
   if [ "$http_code" = "404" ]; then
     printf '[dev:readiness] ✗ %s  %s  ← route missing\n' "$http_code" "$path"

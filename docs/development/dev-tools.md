@@ -150,6 +150,11 @@ npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
 > - webpack 로그 공통 패턴: `✓ Ready in ...` -> `○ Compiling proxy ...` -> `○ Compiling <target-path> ...`
 > - `npm run dev:probe:webpack -- --path=/` 재검증에서도 `server ready 72s`, 이후 첫 요청 `120s timeout`, 로그 `Compiling proxy -> Compiling /` 확인
 > - 따라서 현재 로컬 dev 이슈는 **중첩 route 404**보다는 **webpack 경로의 첫 요청 compile / readiness 지연**에 더 가깝다
+>
+> **재확인 (`2026-05-08`)**:
+> - WSL2 `/mnt/d` + ext4 `node_modules` symlink 조합에서는 Turbopack이 cross-filesystem symlink 제약으로 불안정하므로 기본 `dev*` 스크립트는 `--webpack`을 사용한다.
+> - `src/data/otel-data/index.ts`의 서버 전용 `node:*` dynamic import는 webpack client build가 정적 처리하지 않도록 `webpackIgnore`를 유지한다.
+> - 검증 기준: `npm run dev:readiness:webpack -- --path=/api/version`, 그리고 `/dashboard` 첫 요청 HTTP 200.
 
 로컬 production-like 검증이 필요한 경우 아래 스모크 스크립트를 사용합니다.
 
@@ -173,10 +178,9 @@ bash scripts/dev/check-next-dev-readiness.sh --webpack --timeout=60
 
 ### webpack first-request probe (진단 전용)
 
-> **결론 (`2026-03-16`)**: `next dev --webpack`의 120s first-request timeout은
-> Next.js webpack 고유 동작(`Compiling proxy → Compiling <route>`)이며 우리 코드 버그가 아님.
-> **일반 개발은 Turbopack(기본 `npm run dev`)을 사용할 것.**
-> webpack 모드는 Turbopack 미지원 기능 디버깅 시에만 opt-in.
+> **결론 (`2026-05-08`)**: 현재 WSL2 `/mnt/d` 로컬 개발 표준은 `next dev --webpack`이다.
+> ext4 내부 repo처럼 cross-filesystem symlink가 없는 환경에서 Turbopack 진단이 필요할 때만 `npm run dev:readiness` 또는 `npm run dev:trace:turbopack`를 별도로 실행한다.
+> webpack 첫 요청은 여전히 `Compiling proxy → Compiling <route>` 때문에 ready 이후 추가 대기가 필요할 수 있다.
 > 미사용 dev rewrites(`/test-tools/*`, `/dev/*`)는 proxy 컴파일 경로 단순화를 위해 제거됨.
 
 `next dev --webpack`에서 **서버 ready 시점**과 **첫 요청 응답 시점**을 분리해서 측정합니다.
