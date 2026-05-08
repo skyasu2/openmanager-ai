@@ -104,6 +104,7 @@ interface StreamFallbackResponseOptions {
   reason?: string;
   retryAfterMs?: number;
   headers?: Record<string, string>;
+  dataParts?: Array<{ type: `data-${string}`; data: unknown }>;
 }
 
 /**
@@ -118,10 +119,14 @@ export function createStreamFallbackResponse(
     reason = 'upstream_unavailable',
     retryAfterMs = 30_000,
     headers = {},
+    dataParts = [],
   } = options;
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
+      for (const dataPart of dataParts) {
+        writer.write(dataPart);
+      }
       const fallbackId = `fallback-${generateId()}`;
       writer.write({ type: 'text-start', id: fallbackId });
       writer.write({ type: 'text-delta', id: fallbackId, delta: message });

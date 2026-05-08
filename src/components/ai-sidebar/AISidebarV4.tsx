@@ -24,6 +24,7 @@ import { useAISidebarStore } from '@/stores/useAISidebarStore';
 // Types
 import type { AISidebarV3Props } from '@/types/ai-sidebar/ai-sidebar-types';
 import { AISidebarHeader } from './AISidebarHeader';
+import { DeveloperPanel } from './DeveloperPanel';
 import { EnhancedAIChat } from './EnhancedAIChat';
 import { ResizeHandle } from './ResizeHandle';
 import { MessageComponent } from './SidebarMessage';
@@ -151,6 +152,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     // 🎯 실시간 Agent 상태
     currentAgentStatus,
     currentHandoff,
+    developerPanelData,
     // ⚡ Cloud Run 웜업 상태
     warmingUp,
     estimatedWaitSeconds,
@@ -391,6 +393,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         onTouchMove={handleSwipeTouchMove}
         onTouchEnd={handleSwipeTouchEnd}
       >
+        <DeveloperPanel data={developerPanelData} />
         {/* 📐 리사이즈 핸들 (데스크톱 전용) */}
         {!isMobile && (
           <ResizeHandle

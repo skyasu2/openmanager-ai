@@ -1,7 +1,7 @@
 # Developer Panel — 구현 계획서
 
 > Owner: project
-> Status: Approved
+> Status: Implemented
 > Doc type: Plan
 > Last reviewed: 2026-05-08
 > Canonical: reports/planning/developer-panel-plan.md
@@ -130,28 +130,28 @@ type DeveloperPanelData = {
 
 ### Phase 1: 백엔드 — developer-context event
 
-- [ ] `T1` `src/app/api/ai/supervisor/stream/v2/route.ts`
+- [x] `T1` `src/app/api/ai/supervisor/stream/v2/route.ts`
   - `internalDisclosureMode='developer'`일 때 스트림 첫 chunk에 `developer-context` event emit
-- [ ] `T2` `src/hooks/ai/utils/stream-data-handler.ts`
+- [x] `T2` `src/hooks/ai/utils/stream-data-handler.ts`
   - `developer-context` event 파싱 + store에 저장
-- [ ] `T3` `src/hooks/ai/useDeveloperPanel.ts`
+- [x] `T3` `src/hooks/ai/useDeveloperPanel.ts`
   - stream metadata, AI session info, system status를 `DeveloperPanelData`로 조합
   - `onFinish` 시점에 DOM `data-panel-json` 갱신
 
 ### Phase 2: DOM 마운트
 
-- [ ] `T4` `src/components/ai-sidebar/DeveloperPanel.tsx`
+- [x] `T4` `src/components/ai-sidebar/DeveloperPanel.tsx`
   - `<div data-testid="developer-panel" data-panel-json={...} hidden />`
   - 스타일 없음, 단순 마운트
-- [ ] `T5` AI 사이드바 통합
+- [x] `T5` AI 사이드바 통합
   - `src/components/ai-sidebar/AISidebarV4.tsx` — developer 모드 조건부 렌더
 
 ### Phase 3: 테스트
 
-- [ ] `T6` `DeveloperPanel.test.tsx`
+- [x] `T6` `DeveloperPanel.test.tsx`
   - developer/user 모드 렌더 분기
   - `data-panel-json` 파싱 가능 여부
-- [ ] `T7` `stream-data-handler.test.ts`
+- [x] `T7` `stream-data-handler.test.ts`
   - `developer-context` event 파싱 케이스 추가
 
 ---
@@ -175,11 +175,29 @@ const panel = JSON.parse(json);
 
 ## 검증 기준
 
-- [ ] developer 모드에서 `data-testid="developer-panel"` 요소 존재
-- [ ] `data-panel-json` JSON.parse 성공 + 스키마 필드 존재
-- [ ] user 모드에서 패널 요소 없음
-- [ ] `npm run test:quick` 통과
-- [ ] `npm run type-check` 통과
+- [x] developer 모드에서 `data-testid="developer-panel"` 요소 존재
+- [x] `data-panel-json` JSON.parse 성공 + 스키마 필드 존재
+- [x] user 모드에서 패널 요소 없음
+- [x] `npm run test:quick` 통과
+- [x] `npm run type-check` 통과
+
+## 구현 결과
+
+- SDD 순서 준수:
+  - `b70fcf547` `test(spec): developer panel add failing tests before implementation`
+  - 구현 커밋 예정: failing specs 통과 후 plan 완료 처리
+- Vercel stream proxy는 `internalDisclosureMode='developer'`일 때 첫 SSE data part로 `data-developer-context`를 prepend한다.
+- 클라이언트 stream handler는 `data-developer-context`를 `DeveloperPanelData`로 정규화하고, 후속 `data-done` 메타데이터(provider/model/tools/retrieval)를 병합한다.
+- `AISidebarV4`는 panel data가 존재할 때만 hidden DOM mount를 렌더한다. 일반 user mode에서는 요소가 없다.
+
+## 검증 결과
+
+- `node scripts/dev/vitest-node-wrapper.js run src/app/api/ai/supervisor/stream/v2/route.test.ts` — pass (`32/32`)
+- `node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.dom.ts src/hooks/ai/utils/stream-data-handler.test.ts src/components/ai-sidebar/DeveloperPanel.test.tsx` — pass (`29/29`)
+- `npm run type-check` — pass
+- `npm run lint` — pass (`reports/qa/qa-tracker.json` size info only)
+- `npm run test:quick` — pass
+- `npm run test:contract` — pass (`20/20`)
 
 ---
 

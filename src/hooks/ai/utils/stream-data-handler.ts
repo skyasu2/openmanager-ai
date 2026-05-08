@@ -3,6 +3,12 @@ import {
   normalizeAssistantPlan,
   normalizeAssistantResult,
 } from '@/lib/ai/assistant-contract';
+import {
+  buildDeveloperPanelPatchFromDoneData,
+  type DeveloperPanelData,
+  mergeDeveloperPanelData,
+  normalizeDeveloperContextStreamPayload,
+} from '@/lib/ai/developer-panel';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import type {
@@ -73,6 +79,8 @@ type StreamDataCallbacks = {
     messageId: string,
     toolResults: PendingStreamToolResult[]
   ) => void;
+  getDeveloperPanelData: () => DeveloperPanelData | null;
+  setDeveloperPanelData: (data: DeveloperPanelData | null) => void;
   getMessages: () => UIMessage[];
 };
 
@@ -282,6 +290,23 @@ export function handleStreamDataPart(
   if (partType === 'data-start') {
     callbacks.setPendingToolResults([]);
     callbacks.setPendingMessageMetadata({});
+  } else if (
+    (partType === 'data-developer-context' ||
+      partType === 'developer-context') &&
+    dataPart.data
+  ) {
+    const developerPanelData = normalizeDeveloperContextStreamPayload(
+      dataPart.data
+    );
+    if (!developerPanelData) {
+      if (process.env.NODE_ENV === 'development') {
+        logger.warn('⚠️ [Developer Panel] Invalid context payload ignored', {
+          data: dataPart.data,
+        });
+      }
+      return;
+    }
+    callbacks.setDeveloperPanelData(developerPanelData);
   } else if (partType === 'data-agent-step' && dataPart.data) {
     const agentStatus = normalizeAgentStepEventData(dataPart.data);
     if (!agentStatus) {
@@ -343,6 +368,24 @@ export function handleStreamDataPart(
     const doneData = dataPart.data as ResponseSourceData | undefined;
     const pendingToolResults = callbacks.getPendingToolResults();
     const pendingMessageMetadata = callbacks.getPendingMessageMetadata();
+    const previousDeveloperPanelData = callbacks.getDeveloperPanelData();
+    if (previousDeveloperPanelData) {
+      const pendingToolNames = pendingToolResults.map(
+        (entry) => entry.toolName
+      );
+      const pendingHandoffCount = normalizeHandoffHistory(
+        pendingMessageMetadata.handoffHistory
+      ).length;
+      callbacks.setDeveloperPanelData(
+        mergeDeveloperPanelData(
+          previousDeveloperPanelData,
+          buildDeveloperPanelPatchFromDoneData(doneData, {
+            pendingToolNames,
+            pendingHandoffCount,
+          })
+        )
+      );
+    }
 
     if (doneData?.ragSources) {
       const parsedRagSources = normalizeRagSources(doneData.ragSources);

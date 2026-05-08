@@ -15,6 +15,7 @@
 
 import type { UIMessage } from '@ai-sdk/react';
 import {
+  type SetStateAction,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -48,6 +49,7 @@ import {
   type ChatArtifact,
   createArtifactEnvelope,
 } from '@/lib/ai/chat-artifacts/types';
+import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import { buildRouteDecision } from '@/lib/ai/route-decision';
@@ -149,6 +151,7 @@ export interface UseAIChatCoreReturn {
   // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
   currentAgentStatus: AgentStatusEventData | null;
   currentHandoff: HandoffEventData | null;
+  developerPanelData: DeveloperPanelData | null;
 
   /** Cloud Run AI Engine 웜업 중 여부 */
   warmingUp: boolean;
@@ -512,6 +515,9 @@ export function useAIChatCore(
   const [streamRagSources, setStreamRagSources] = useState<StreamRagSource[]>(
     []
   );
+  const [developerPanelData, setDeveloperPanelData] =
+    useState<DeveloperPanelData | null>(null);
+  const developerPanelDataRef = useRef<DeveloperPanelData | null>(null);
 
   // Refs
   const lastQueryRef = useRef<string>('');
@@ -547,6 +553,19 @@ export function useAIChatCore(
     []
   );
   const getMessages = useCallback(() => messagesRef.current, []);
+  const getDeveloperPanelData = useCallback(
+    () => developerPanelDataRef.current,
+    []
+  );
+  const updateDeveloperPanelData = useCallback(
+    (next: SetStateAction<DeveloperPanelData | null>) => {
+      const resolved =
+        typeof next === 'function' ? next(developerPanelDataRef.current) : next;
+      developerPanelDataRef.current = resolved;
+      setDeveloperPanelData(resolved);
+    },
+    []
+  );
 
   const hybridCallbacks = useAIChatHybridCallbacks({
     onMessageSend,
@@ -558,6 +577,8 @@ export function useAIChatCore(
     setCurrentAgentStatus,
     setCurrentHandoff,
     setStreamRagSources,
+    getDeveloperPanelData,
+    setDeveloperPanelData: updateDeveloperPanelData,
   });
 
   const {
@@ -603,7 +624,8 @@ export function useAIChatCore(
   useLayoutEffect(() => {
     messagesRef.current = messages;
     deferredHandlersRef.current = deferredHandlers;
-  }, [messages, deferredHandlers]);
+    developerPanelDataRef.current = developerPanelData;
+  }, [messages, deferredHandlers, developerPanelData]);
 
   const hasQueuedQueries = queuedQueries.length > 0;
 
@@ -697,6 +719,7 @@ export function useAIChatCore(
 
   const handleNewSession = useCallback(() => {
     resetHybridQuery();
+    updateDeveloperPanelData(null);
     const nextSessionId = refreshSessionId();
     setInput('');
     setError(null);
@@ -722,6 +745,7 @@ export function useAIChatCore(
     clearHistory,
     clearQueue,
     syncChatSnapshot,
+    updateDeveloperPanelData,
   ]);
 
   const clearError = useCallback(() => {
@@ -1139,6 +1163,7 @@ export function useAIChatCore(
     // 🎯 실시간 Agent 상태
     currentAgentStatus,
     currentHandoff,
+    developerPanelData,
 
     // ⚡ Cloud Run 웜업 상태
     warmingUp: hybridState.warmingUp,
