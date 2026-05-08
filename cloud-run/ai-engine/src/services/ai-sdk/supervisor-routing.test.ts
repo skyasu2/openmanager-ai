@@ -172,6 +172,9 @@ describe('getIntentCategory', () => {
     expect(getIntentCategory('표준편차 계산해줘')).toBe('math');
     expect(getIntentCategory('퍼센트는 어떻게 계산해?')).toBe('math');
     expect(getIntentCategory('cpu 80% 상태는 어떤가요')).toBe('metrics');
+    expect(
+      getIntentCategory('HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?')
+    ).not.toBe('math');
   });
 
   it('should classify RCA queries', () => {
@@ -283,6 +286,28 @@ describe('createPrepareStep', () => {
     expect(result.activeTools).not.toContain('searchKnowledgeBase');
     expect(result.activeTools).not.toContain('searchWeb');
     expect(result.toolChoice).toBe('required');
+  });
+
+  it('should route beginner operations guidance to advisor commands', async () => {
+    const prepare = createPrepareStep(
+      'lb-haproxy-dc1-01 CPU가 73%인데 이거 위험한 거야? 뭘 해야 해?'
+    );
+    const result = await prepare({ stepNumber: 0 });
+
+    expect(result.activeTools).toContain('recommendCommands');
+    expect(result.activeTools).toContain('finalAnswer');
+    expect(result.activeTools).not.toContain('computeSeriesStats');
+  });
+
+  it('should keep HAProxy load-distribution wording out of math tools', async () => {
+    const prepare = createPrepareStep(
+      'HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?'
+    );
+    const result = await prepare({ stepNumber: 0 });
+
+    expect(result.activeTools).not.toContain('evaluateMathExpression');
+    expect(result.activeTools).not.toContain('computeSeriesStats');
+    expect(result.activeTools).toContain('getServerByGroup');
   });
 
   it('should inject searchKnowledgeBase into advisor tools when RAG is ON', async () => {
