@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-08T04:05:15.930Z"
+    "updatedAt": "2026-05-08T06:59:43.939Z"
   },
   "sequence": {
-    "nextRunNumber": 423
+    "nextRunNumber": 424
   },
   "summary": {
-    "totalRecordedRuns": 420,
+    "totalRecordedRuns": 421,
     "totalRuns": 344,
-    "excludedRuns": 76,
+    "excludedRuns": 77,
     "totalChecks": 3017,
     "totalPassed": 2908,
     "totalFailed": 100,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260507-0420",
     "lastRecordedAt": "2026-05-07T03:06:42.069Z",
-    "latestRecordedRunId": "QA-20260508-0422",
-    "latestRecordedAt": "2026-05-08T04:05:15.930Z"
+    "latestRecordedRunId": "QA-20260508-0423",
+    "latestRecordedAt": "2026-05-08T06:59:43.939Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -44274,6 +44274,67 @@
       "usageChecks": [],
       "artifacts": [],
       "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260508-0423",
+      "recordedAt": "2026-05-08T06:59:43.939Z",
+      "recordedAtKst": "2026-05-08 15:59:43 KST",
+      "title": "Local Next.js Webpack Dev Fallback Stabilization",
+      "owner": "codex",
+      "source": "local-dev-diagnostics",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260508-0423.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js local webpack dev",
+        "backend": "local/mock",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "19fc6443d87d71e7393c16314193e17c009d739f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "local Next.js webpack dev readiness",
+        "local /api/version readiness probe",
+        "local /dashboard preflight",
+        "webpack route spot-check",
+        "OTel data loader server-only node dynamic import compatibility"
+      ],
+      "skippedSurfaces": [
+        "storage-nfs-dc1-01 performance tab hover tooltip visual verification",
+        "anomaly highlight rect visual verification",
+        "Playwright screenshot evidence"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2509591206",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2509591206",
+          "note": "Pushed HEAD pipeline for fix(dev): stabilize local webpack dev fallback completed successfully."
+        }
+      ],
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,

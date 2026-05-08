@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-08
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**상태 스냅샷 기준일**: 2026-05-07 | **현재 버전 스냅샷**: v8.11.113+
+**상태 스냅샷 기준일**: 2026-05-08 | **현재 버전 스냅샷**: v8.11.113+
 
 ## 상태 문서 역할 분리
 
@@ -30,6 +30,10 @@
   - 랜딩 -> 인증 -> 대시보드
   - AI Assistant 질의 -> 분석 -> 조치안/보고서
   - QA/운영 증거 누적 -> `reports/qa/`
+- 로컬 개발 기준:
+  - 현재 WSL2 `/mnt/d` 개발 경로는 `next dev --webpack`을 표준으로 사용합니다.
+  - `node_modules`는 ext4 경로 symlink를 유지하고, Turbopack 진단은 ext4 내부 repo 또는 별도 trace 목적일 때만 사용합니다.
+  - 근거: `QA-20260508-0421`/`QA-20260508-0422`에서 local dev blocked, `QA-20260508-0423`에서 webpack fallback preflight 복구 확인.
 
 ## 현재 기준 문서
 
@@ -47,6 +51,10 @@
 
 ## 최근 주요 릴리스 스냅샷
 
+- **v8.11.113+** (2026-05-08)
+  - AI feedback 제거 후 production closure 완료, Developer Panel 진단 컨텍스트 노출 구현, Storybook CI guardrail 적용
+  - NivoTimeSeriesChart UX 수정은 구현/테스트 통과 상태이며, 남은 항목은 `storage-nfs-dc1-01` 성능 탭 Playwright hover/하이라이트 시각 QA 1건
+  - WSL2 `/mnt/d` 로컬 dev 차단 원인을 `Turbopack cross-filesystem symlink 제약` + `webpack client build의 node:* dynamic import 처리`로 분리하고, webpack fallback 경로를 문서화
 - **v8.11.97** (2026-05-05)
   - broad QA remediation 진행 중, AI 응답/metric drift/formatting follow-up 보정 근거가 `reports/qa`에 누적됨
   - 설계/운영 문서 구조를 `architecture`, `design`, `operations`, `adr`, `reference` 기준으로 재정렬

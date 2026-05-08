@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-08 13:05:16 KST
+> Generated at: 2026-05-08 15:59:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 420 |
+| Total Recorded Runs | 421 |
 | Total Runs (Counted) | 344 |
-| Non-counted Runs | 76 |
+| Non-counted Runs | 77 |
 | Total Checks | 3017 |
 | Passed | 2908 |
 | Failed | 100 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260507-0420 (2026-05-07T03:06:42.069Z) |
-| Latest Recorded Run | QA-20260508-0422 (2026-05-08T04:05:15.930Z) |
+| Latest Recorded Run | QA-20260508-0423 (2026-05-08T06:59:43.939Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260508-0422 (2026-05-08T04:05:15.930Z)
+Latest run: QA-20260508-0423 (2026-05-08T06:59:43.939Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260508-0422 (2026-05-08T04:05:15.930Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-07T04:05:15.930Z -> 2026-05-08T04:05:15.930Z (24h)
+- Window: 2026-05-07T06:59:43.939Z -> 2026-05-08T06:59:43.939Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +58,7 @@ Latest run: QA-20260508-0422 (2026-05-08T04:05:15.930Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-07T04:05:15.930Z -> 2026-05-08T04:05:15.930Z (24h)
+- Window: 2026-05-07T06:59:43.939Z -> 2026-05-08T06:59:43.939Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -72,16 +72,16 @@ Latest run: QA-20260508-0422 (2026-05-08T04:05:15.930Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 0bc2810d
+- Deployment: SHA 19fc6443
 - Coverage Packs: dashboard-core
-- Covered Surfaces: NivoTimeSeriesChart visual QA preflight, local Next.js dev server startup with Turbopack, local Next.js dev server startup with Webpack fallback
+- Covered Surfaces: local Next.js webpack dev readiness, local /api/version readiness probe, local /dashboard preflight, webpack route spot-check, OTel data loader server-only node dynamic import compatibility
 - Skipped Surfaces: storage-nfs-dc1-01 performance tab hover tooltip visual verification, anomaly highlight rect visual verification, Playwright screenshot evidence
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab pipeline 2509591206 | [GitLab pipeline 2509591206](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2509591206) | Pushed HEAD pipeline for fix(dev): stabilize local webpack dev fallback completed successfully. |
 
 ## Artifacts (Latest Run)
 
@@ -625,6 +625,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260508-0423 | 2026-05-08T06:59:43.939Z | targeted | no | no | Local Next.js Webpack Dev Fallback Stabilization | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260508-0422 | 2026-05-08T04:05:15.930Z | targeted | no | no | Local Nivo Chart Visual QA - Local Next.js Dev Server Exit Blocked | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260508-0421 | 2026-05-08T01:27:43.763Z | targeted | no | no | Local Nivo Chart Visual QA - WSL2 /mnt/d SIGBUS Blocked | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260507-0420 | 2026-05-07T03:06:42.069Z | targeted | yes | yes | v8.11.113 AI Feedback Removal Production Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -644,4 +645,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260505-0406 | 2026-05-04T22:52:28.121Z | targeted | yes | yes | v8.11.97 Vercel Playwright MCP Formatting Rewrite Recheck | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260504-0405 | 2026-05-04T09:01:43.674Z | broad | yes | yes | v8.11.96 Vercel Playwright MCP Recheck | 24 | 2 | 1 | 0 | 0 | 1 |
 | QA-20260504-0404 | 2026-05-04T07:13:56.328Z | broad | yes | yes | v8.11.95 Vercel Playwright MCP Broad Recheck | 20 | 2 | 0 | 0 | 3 | 3 |
-| QA-20260504-0403 | 2026-05-04T05:22:20.393Z | targeted | yes | yes | v8.11.95 AI Ranking and Formatting Rewrite Recheck | 14 | 2 | 0 | 0 | 0 | 0 |

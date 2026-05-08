@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-08
 > Canonical: docs/README.md
 > Tags: docs,index,navigation
 >
-> Project: OpenManager AI v8.11.97
+> Project: OpenManager AI v8.11.113+
 
 이 문서는 공개 제품 문서나 고객 납품 산출물이 아니라, OpenManager를 계속 개발할 때 참조하는 내부 작업 지도입니다. 주 독자는 AI 에이전트(Codex, Claude Code, Gemini)와 프로젝트 소유자입니다.
 

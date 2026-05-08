@@ -1,0 +1,64 @@
+{
+  "runId": "QA-20260508-0423",
+  "recordedAt": "2026-05-08T06:59:43.939Z",
+  "recordedAtKst": "2026-05-08 15:59:43 KST",
+  "runTitle": "Local Next.js Webpack Dev Fallback Stabilization",
+  "owner": "codex",
+  "source": "local-dev-diagnostics",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js local webpack dev",
+    "backend": "local/mock",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "19fc6443d87d71e7393c16314193e17c009d739f"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "local Next.js webpack dev readiness",
+    "local /api/version readiness probe",
+    "local /dashboard preflight",
+    "webpack route spot-check",
+    "OTel data loader server-only node dynamic import compatibility"
+  ],
+  "skippedSurfaces": [
+    "storage-nfs-dc1-01 performance tab hover tooltip visual verification",
+    "anomaly highlight rect visual verification",
+    "Playwright screenshot evidence"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run is non-counting and records local development runtime recovery evidence only.",
+    "The prior local dev blocked state in QA-20260508-0421 and QA-20260508-0422 was narrowed to WSL2 /mnt/d Turbopack instability plus webpack client build handling of server-only node: dynamic imports.",
+    "Local dev scripts now default to next dev --webpack for this WSL2 /mnt/d setup, with node_modules symlinked to the ext4 path /home/sky-note/wsl-node-modules/openmanager-ai-project/node_modules.",
+    "src/data/otel-data/index.ts keeps webpackIgnore on server-only node:fs/promises and node:path dynamic imports so the webpack client build does not fail with UnhandledSchemeError.",
+    "Validated commands: npm run dev:readiness:webpack -- --timeout=120 --path=/api/version, npm run dev:readiness:webpack -- --timeout=120 --path=/dashboard, npm run type-check, npm run lint, npm run test:quick, npm run docs:budget, npm run docs:ai-consistency, git diff --check.",
+    "Remaining product QA is the actual Nivo visual hover/highlight check on storage-nfs-dc1-01; this run only proves the local dev runtime can reach the dashboard again."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2509591206",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2509591206",
+      "note": "Pushed HEAD pipeline for fix(dev): stabilize local webpack dev fallback completed successfully."
+    }
+  ]
+}
