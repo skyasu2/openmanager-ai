@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-09 00:49:22 KST
+> Generated at: 2026-05-09 01:33:51 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 426 |
-| Total Runs (Counted) | 347 |
+| Total Recorded Runs | 427 |
+| Total Runs (Counted) | 348 |
 | Non-counted Runs | 79 |
-| Total Checks | 3052 |
-| Passed | 2937 |
-| Failed | 105 |
-| Completed Items | 457 |
-| Pending Items | 4 |
+| Total Checks | 3060 |
+| Passed | 2940 |
+| Failed | 110 |
+| Completed Items | 459 |
+| Pending Items | 3 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 3 |
-| Completion Rate | 99.13% |
-| Last Counted Run | QA-20260509-0428 (2026-05-08T15:49:21.373Z) |
-| Latest Recorded Run | QA-20260509-0428 (2026-05-08T15:49:21.373Z) |
+| Completion Rate | 99.35% |
+| Last Counted Run | QA-20260509-0429 (2026-05-08T16:33:50.518Z) |
+| Latest Recorded Run | QA-20260509-0429 (2026-05-08T16:33:50.518Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260509-0428 (2026-05-08T15:49:21.373Z)
+Latest run: QA-20260509-0429 (2026-05-08T16:33:50.518Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | 빈 응답/타임아웃과 명령어 질문 라우팅 실패를 우선 재현 가능한 계약 테스트 또는 프롬프트 가드로 분리. |
-| DevOps / SRE Engineer | partially-appropriate | yes | 운영 명령어 가이드의 서비스별 최소 응답 템플릿을 보강. |
-| Test Automation Architect | partially-appropriate | yes | A5/B1/B4/B5/C2 실패 케이스를 deterministic contract 또는 mocked AI response quality guard로 승격. |
+| AI Quality Assurance Specialist | partially-appropriate | yes | A5/B4/B5/C2 empty response timeout과 B1 HAProxy command intent failure를 우선 deterministic guard로 고정. |
+| DevOps / SRE Engineer | partially-appropriate | yes | 서비스별 명령어 tool result를 최종 응답으로 안정 변환하는 fallback을 보강. |
+| Test Automation Architect | partially-appropriate | yes | recommendCommands 결과와 stream empty-output fallback을 mocked stream contract로 분리해 회귀 기준을 고정. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after 15 live AI QA prompts; effective usage 4.7043 USD, billed 0.0000 USD, chargeCount 4263. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted 8-prompt retest; effective usage 4.7043 USD, billed 0.0000 USD, chargeCount 4263. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-07T15:49:21.373Z -> 2026-05-08T15:49:21.373Z (24h)
+- Window: 2026-05-07T16:33:50.518Z -> 2026-05-08T16:33:50.518Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -60,7 +60,7 @@ Latest run: QA-20260509-0428 (2026-05-08T15:49:21.373Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-07T15:49:21.373Z -> 2026-05-08T15:49:21.373Z (24h)
+- Window: 2026-05-07T16:33:50.518Z -> 2026-05-08T16:33:50.518Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,38 +74,37 @@ Latest run: QA-20260509-0428 (2026-05-08T15:49:21.373Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA bfc5bd7a
+- Deployment: SHA ef6733b0
 - Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: /dashboard/ai-assistant guest conversational flow, AI service context awareness: HAProxy, MySQL, Redis, Nginx, NFS storage, AI command guidance: HAProxy, MySQL, Redis, Nginx, NFS, AI beginner operator guidance: risk triage, first on-call checklist, replication, cache impact, handoff summary
-- Skipped Surfaces: non-AI dashboard route broad smoke, release-gate full route sweep, Cloud Run direct API smoke
+- Covered Surfaces: /dashboard/ai-assistant guest conversational flow, AI ops targeted retest for QA-20260509-0428 previous WARN/FAIL scenarios, AI service context awareness: HAProxy, Redis, NFS storage, AI command guidance: HAProxy, Nginx 5xx path analysis, NFS remount, AI beginner operator guidance: HAProxy CPU risk and first on-call checklist
+- Skipped Surfaces: non-AI dashboard route broad smoke, full 15-scenario AI ops pack already covered by QA-20260509-0428, Cloud Run admin surface
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | v8.11.114 deploy pipeline | [v8.11.114 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2510850169) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | AI ops conversational QA raw scenario results | `reports/qa/evidence/qa-20260509-ai-ops-conversational-results.json` | - |
+| playwright-console | AI ops targeted retest raw scenario results | `reports/qa/evidence/qa-20260509-ai-ops-retest-v811114-results.json` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260509-0428)
-  next: 빈 응답/타임아웃과 명령어 질문 라우팅 실패를 우선 재현 가능한 계약 테스트 또는 프롬프트 가드로 분리.
-- sre-devops: DevOps / SRE Engineer (last QA-20260509-0428)
-  next: 운영 명령어 가이드의 서비스별 최소 응답 템플릿을 보강.
-- test-automation: Test Automation Architect (last QA-20260509-0428)
-  next: A5/B1/B4/B5/C2 실패 케이스를 deterministic contract 또는 mocked AI response quality guard로 승격.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260509-0429)
+  next: A5/B4/B5/C2 empty response timeout과 B1 HAProxy command intent failure를 우선 deterministic guard로 고정.
+- sre-devops: DevOps / SRE Engineer (last QA-20260509-0429)
+  next: 서비스별 명령어 tool result를 최종 응답으로 안정 변환하는 fallback을 보강.
+- test-automation: Test Automation Architect (last QA-20260509-0429)
+  next: recommendCommands 결과와 stream empty-output fallback을 mocked stream contract로 분리해 회귀 기준을 고정.
 
 ## Pending Improvements
 
-- [P1] ai-ops-command-intent-routing: HAProxy command guidance question routed to generic server summary (seen 1회, last QA-20260509-0428)
-- [P1] ai-ops-empty-response-timeout: AI ops QA empty response/timeouts for A5, B4, B5, and C2 (seen 1회, last QA-20260509-0428)
-- [P2] ai-ops-redis-context-quality: Redis context comparison response incomplete for three-node memory question (seen 1회, last QA-20260509-0428)
-- [P2] ai-ops-tool-result-empty-summary: Tool-backed AI responses can show empty summary despite analysis evidence (seen 1회, last QA-20260509-0428)
+- [P1] ai-ops-command-intent-routing: HAProxy command guidance question still returns generic server summary (seen 2회, last QA-20260509-0429)
+- [P1] ai-ops-empty-response-timeout: AI ops QA empty response/timeouts for A5, B4, B5, and C2 (seen 2회, last QA-20260509-0429)
+- [P2] ai-ops-haproxy-context-specificity: HAProxy service context answer omits CPU/backend distribution detail (seen 1회, last QA-20260509-0429)
 
 ## Deferred Improvements
 
@@ -246,6 +245,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
+- ai-ops-redis-context-quality: Redis context comparison response identifies highest-memory Redis nodes (completed 1회, last QA-20260509-0429)
+- ai-ops-tool-result-empty-summary: Tool-backed AI responses no longer show empty-summary fallback for A1/C1 retest paths (completed 1회, last QA-20260509-0429)
 - ai-provider-forced-routing-context-floor: Forced-routing quality agents skip 8K Cerebras fallback (completed 1회, last QA-20260428-0356)
 - ai-provider-phase4-supervisor-routing-hints: Supervisor routing hints deployed (completed 1회, last QA-20260428-0356)
 - ai-provider-queue-exceeded-retry-amplification: Cerebras queue_exceeded should not amplify retries before provider fallback (completed 1회, last QA-20260429-0366)
@@ -643,6 +644,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260509-0429 | 2026-05-08T16:33:50.518Z | targeted | no | yes | Vercel Production AI Ops Conversational Retest - v8.11.114 | 8 | 2 | 3 | 0 | 0 | 3 |
 | QA-20260509-0428 | 2026-05-08T15:49:21.373Z | targeted | no | yes | Vercel Production AI Ops Conversational QA - 15 Scenario Pack | 15 | 0 | 4 | 0 | 0 | 3 |
 | QA-20260509-0427 | 2026-05-08T15:14:17.014Z | targeted | no | no | Local Dashboard Server Detail UX QA - Modal Shell Removal and Header Actions | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260508-0426 | 2026-05-08T14:07:10.491Z | targeted | no | no | Local Dashboard Server Layout QA - Card Density and Mobile Detail Overflow | 5 | 2 | 0 | 0 | 0 | 0 |
@@ -662,4 +664,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260505-0412 | 2026-05-05T06:31:40.208Z | targeted | yes | yes | v8.11.106 Production Targeted QA - RAG UI and Telemetry Copy | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260505-0411 | 2026-05-05T06:13:00.571Z | targeted | no | no | QA Metadata Closure - Observability Server Detail Data Slot Gap | 0 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0410 | 2026-05-05T04:35:45.774Z | targeted | yes | yes | v8.11.105 RAG OTel SSOT Targeted Recheck | 3 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260505-0409 | 2026-05-05T03:39:15.190Z | targeted | yes | yes | v8.11.104 Residual Production Targeted QA | 6 | 3 | 1 | 0 | 0 | 1 |

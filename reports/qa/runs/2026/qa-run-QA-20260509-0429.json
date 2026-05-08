@@ -1,0 +1,175 @@
+{
+  "runId": "QA-20260509-0429",
+  "recordedAt": "2026-05-08T16:33:50.518Z",
+  "recordedAtKst": "2026-05-09 01:33:50 KST",
+  "runTitle": "Vercel Production AI Ops Conversational Retest - v8.11.114",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "ef6733b0cf6f2fbff8e3c39d4c1215b907c44ef2"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant guest conversational flow",
+    "AI ops targeted retest for QA-20260509-0428 previous WARN/FAIL scenarios",
+    "AI service context awareness: HAProxy, Redis, NFS storage",
+    "AI command guidance: HAProxy, Nginx 5xx path analysis, NFS remount",
+    "AI beginner operator guidance: HAProxy CPU risk and first on-call checklist"
+  ],
+  "skippedSurfaces": [
+    "non-AI dashboard route broad smoke",
+    "full 15-scenario AI ops pack already covered by QA-20260509-0428",
+    "Cloud Run admin surface"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 3,
+    "failed": 5
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "v8.11.114 targeted retest improved A3 and C1, but 8개 재검증 중 WARN 1, FAIL 5가 남아 AI ops QA closure 기준을 충족하지 못함.",
+      "nextAction": "A5/B4/B5/C2 empty response timeout과 B1 HAProxy command intent failure를 우선 deterministic guard로 고정."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Redis 비교와 HAProxy CPU beginner guidance는 회복됐지만 HAProxy backend status 명령어, Nginx 5xx 경로 분석, NFS 재마운트 순서는 실무 답변으로 반환되지 않음.",
+      "nextAction": "서비스별 명령어 tool result를 최종 응답으로 안정 변환하는 fallback을 보강."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Playwright CLI retest는 재현 가능하지만 현재 실패가 live provider/stream 경로에 의존해 로컬 계약 테스트와 production E2E 사이 갭이 있음.",
+      "nextAction": "recommendCommands 결과와 stream empty-output fallback을 mocked stream contract로 분리해 회귀 기준을 고정."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-09T01:31:17+09:00",
+      "summary": "Current billing period reviewed after targeted 8-prompt retest; effective usage 4.7043 USD, billed 0.0000 USD, chargeCount 4263.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "AI ops targeted retest raw scenario results",
+      "path": "reports/qa/evidence/qa-20260509-ai-ops-retest-v811114-results.json",
+      "note": "8 scenario result JSON captured by /tmp/ops-ai-qa-runner.js after v8.11.114 production deploy"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-ops-redis-context-quality",
+      "title": "Redis context comparison response identifies highest-memory Redis nodes",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "A3 PASS in v8.11.114 targeted retest: cache-redis-dc1-01 and cache-redis-dc1-02 identified at 43% memory.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-tool-result-empty-summary",
+      "title": "Tool-backed AI responses no longer show empty-summary fallback for A1/C1 retest paths",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "A1 returned HAProxy status text and C1 returned step guidance in v8.11.114 targeted retest; neither exposed the prior empty-summary fallback text.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-ops-empty-response-timeout",
+      "title": "AI ops QA empty response/timeouts for A5, B4, B5, and C2",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "A5/B4/B5/C2 still timed out without visible answer in v8.11.114 targeted retest.",
+      "note": "Likely stream completion, provider, or UI extraction path issue; release-blocking for this AI ops QA closure task.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-command-intent-routing",
+      "title": "HAProxy command guidance question still returns generic server summary",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "B1 asked for HAProxy backend status command but received a generic 18-server summary and no HAProxy CLI/socat guidance.",
+      "note": "recommendCommands was shown as the analysis tool, but the final answer did not surface its command recommendations.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-haproxy-context-specificity",
+      "title": "HAProxy service context answer omits CPU/backend distribution detail",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "A1 improved from empty-summary fallback to a HAProxy status answer, but remained WARN because it omitted current CPU/backend distribution detail.",
+      "note": "Tracking as blocking for the active AI ops QA closure task, not as a global release blocker.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment before retest: v8.11.114 via GitLab tag pipeline 2510850169, status success.",
+    "Targeted retest set: A1, A3, A5, B1, B4, B5, C1, C2 from QA-20260509-0428 prior WARN/FAIL list.",
+    "Scenario result summary: PASS 2, WARN 1, FAIL 5. WARN was counted as non-failing check for tracker totals, so checks.passed=3 and checks.failed=5.",
+    "PASS scenarios: A3 Redis highest-memory comparison, C1 HAProxy 73% CPU beginner guidance.",
+    "WARN scenario: A1 HAProxy status answer no longer exposed empty-summary fallback but omitted current CPU/backend distribution detail.",
+    "FAIL scenarios: A5 storage threshold prediction timeout, B1 HAProxy backend command returned generic server summary, B4 Nginx 5xx path analysis timeout, B5 NFS remount sequence timeout, C2 first on-call checklist timeout.",
+    "Console observation: no browser console errors/warnings captured during retest.",
+    "Vercel usage check after QA: PASS, effective usage 4.7043 USD, billed 0.0000 USD."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.11.114 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2510850169"
+    }
+  ]
+}

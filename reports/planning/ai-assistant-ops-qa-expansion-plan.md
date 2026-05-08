@@ -122,7 +122,8 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 - [x] **Task 4**: 카테고리 C (초보 운영자 유도) 5개 질문 실행 및 단계 구체성 판정
 - [x] **Task 5**: 전체 15개 결과 QA 런 기록 (`npm run qa:record`)
 - [x] **Task 6**: FAIL/WARN 항목 분석 — 코드 수정 필요 vs AI 응답 품질 한계 구분
-- [ ] **Task 7**: 필요 시 수정 후 재검증 (Task 2~5 반복)
+- [x] **Task 7**: 필요 시 수정 후 재검증 (Task 2~5 반복) — v8.11.114 targeted retest 기록
+- [ ] **Task 8**: 잔여 P1/P2 개선 — empty response timeout, HAProxy command surfacing, HAProxy context specificity
 
 ---
 
@@ -170,8 +171,55 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
   - `cloud-run/ai-engine npm run type-check` PASS
   - `cloud-run/ai-engine npm test` PASS — 107 files / 1067 tests
 - 남은 항목:
-  - production 배포 후 `QA-20260509-0428` 실패 5개 + WARN 3개 targeted retest
-  - Redis 그룹 grounding(A3), storage 예측(A5), empty response fallback(A1/C1) 실제 응답 개선 여부 확인
+  - production 배포 후 `QA-20260509-0428` 실패 5개 + WARN 3개 targeted retest 완료 (`QA-20260509-0429`)
+  - Redis 그룹 grounding(A3), empty response fallback(A1/C1) 개선 확인
+  - storage 예측(A5), Nginx/NFS/초보 당직 타임아웃(B4/B5/C2), HAProxy 명령어 surfacing(B1), HAProxy 상태 상세도(A1) 잔여
+
+## QA-20260509-0429 targeted retest 결과
+
+- **환경**: Vercel Production v8.11.114 (`https://openmanager-ai.vercel.app`)
+- **배포 근거**: GitLab tag pipeline `2510850169` success
+- **도구**: Playwright CLI runner
+- **기록**: `reports/qa/runs/2026/qa-run-QA-20260509-0429.json`
+- **Raw evidence**: `reports/qa/evidence/qa-20260509-ai-ops-retest-v811114-results.json`
+- **대상**: `QA-20260509-0428` 이전 WARN/FAIL 8개 (`A1,A3,A5,B1,B4,B5,C1,C2`)
+- **결과**: PASS 2, WARN 1, FAIL 5
+
+| 시나리오 | 이전 | 재검증 | 판정 |
+|----------|------|--------|------|
+| A1 HAProxy 상태/분산 | WARN | WARN | empty-summary fallback은 사라졌으나 CPU/백엔드 분산 상세 부족 |
+| A3 Redis 메모리 비교 | WARN | PASS | `cache-redis-dc1-01/02` 43% 식별 |
+| A5 Storage 임계치 예측 | FAIL | FAIL | visible answer 없이 타임아웃 |
+| B1 HAProxy backend 명령어 | FAIL | FAIL | `recommendCommands` 분석 근거는 있으나 최종 답변은 generic 서버 요약 |
+| B4 Nginx 5xx 경로 분석 | FAIL | FAIL | visible answer 없이 타임아웃 |
+| B5 NFS 재마운트 순서 | FAIL | FAIL | visible answer 없이 타임아웃 |
+| C1 HAProxy 73% CPU 초보 대응 | WARN | PASS | 단계별 조치 응답 반환 |
+| C2 초보 당직 알림 순서 | FAIL | FAIL | visible answer 없이 타임아웃 |
+
+### 재검증 후 open gap
+
+| ID | Priority | 내용 | 다음 조치 |
+|----|----------|------|-----------|
+| `ai-ops-empty-response-timeout` | P1 | A5/B4/B5/C2가 프로덕션에서 계속 visible answer 없이 타임아웃 | stream empty-output fallback과 provider retry 경로를 mocked contract로 고정 후 수정 |
+| `ai-ops-command-intent-routing` | P1 | B1에서 HAProxy 명령어 tool result가 최종 답변에 노출되지 않음 | `recommendCommands` 결과를 service-command 답변으로 deterministic하게 surface |
+| `ai-ops-haproxy-context-specificity` | P2 | A1이 HAProxy 상태는 답하지만 현재 CPU/백엔드 분산 근거가 부족 | HAProxy group summary fallback에 CPU/분산 체크 포인트 포함 |
+
+### 2026-05-09 command-guidance fast-path 로컬 수정
+
+- 서비스 명령어 질의를 LLM 라우팅 전에 deterministic command catalog로 직접 응답하도록 보강:
+  - HAProxy backend/status: `echo "show stat" | socat - /run/haproxy/admin.sock`, `systemctl status haproxy --no-pager`
+  - Nginx 5xx path analysis: `/var/log/nginx/access.log` 기반 `awk`/`grep`
+  - NFS mount/remount: `findmnt -t nfs`, `showmount -e <nfs-server>`, `mount -t nfs ...`
+- command guidance 질의가 deterministic status summary로 치환되지 않도록 `isDeterministicSummaryQuery()`에서 제외
+- 검증:
+  - failing spec 확인 후 구현
+  - targeted tests PASS — `orchestrator-context`, `orchestrator-summary-fallback`, `knowledge-command-tool`
+  - AI Engine `type-check` PASS
+  - AI Engine full test PASS — 107 files / 1070 tests
+  - root `test:contract` PASS
+- 남은 항목:
+  - production 배포 후 `B1/B4/B5` command-guidance targeted retest
+  - `A5/C2` empty response timeout은 command fast-path 범위 밖이라 별도 stream fallback/초보 당직 checklist 보강 필요
 
 ---
 
