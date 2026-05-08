@@ -10,6 +10,67 @@ export const recommendCommands = tool({
   execute: async ({ keywords }: { keywords: string[] }) => {
     const recommendations: CommandRecommendation[] = [
       {
+        keywords: ['haproxy', 'backend', '백엔드', '상태', '연결'],
+        command: 'echo "show stat" | socat - /run/haproxy/admin.sock',
+        description: 'HAProxy runtime socket에서 백엔드 서버별 상태와 세션 정보를 CSV로 조회',
+      },
+      {
+        keywords: ['haproxy', '설정', '검증', '체크'],
+        command: 'haproxy -c -f /etc/haproxy/haproxy.cfg',
+        description: 'HAProxy 설정 파일 문법 검증',
+      },
+      {
+        keywords: ['haproxy', '상태', 'service', 'systemctl'],
+        command: 'systemctl status haproxy --no-pager',
+        description: 'HAProxy 서비스 상태와 최근 실패 로그 확인',
+      },
+      {
+        keywords: ['nginx', 'access', '액세스', '5xx', '경로', 'path'],
+        command:
+          "awk '$9 ~ /^5/ {print $7}' /var/log/nginx/access.log | sort | uniq -c | sort -nr | head",
+        description: 'Nginx access log에서 5xx 응답이 많은 요청 경로 상위 목록 확인',
+      },
+      {
+        keywords: ['nginx', 'error', '에러', '로그', '5xx'],
+        command: "grep ' 5[0-9][0-9] ' /var/log/nginx/access.log | tail -100",
+        description: '최근 Nginx 5xx 요청 원문 확인',
+      },
+      {
+        keywords: ['nfs', 'mount', '마운트', '상태', '확인'],
+        command: 'findmnt -t nfs',
+        description: '현재 NFS 마운트 상태와 대상 경로 확인',
+      },
+      {
+        keywords: ['nfs', 'export', 'showmount', '서버'],
+        command: 'showmount -e <nfs-server>',
+        description: 'NFS 서버가 내보내는 export 목록 확인',
+      },
+      {
+        keywords: ['nfs', 'mount', '재마운트', 'remount'],
+        command: 'mount -t nfs <nfs-server>:/export/path /mnt/path',
+        description: 'NFS export를 지정 경로에 다시 마운트',
+      },
+      {
+        keywords: ['redis', 'bigkeys', '메모리', '큰', '키'],
+        command: 'redis-cli --bigkeys',
+        description: 'Redis에서 자료형별 큰 키 후보를 샘플링해 확인',
+      },
+      {
+        keywords: ['redis', 'memory', '메모리', 'usage', '키'],
+        command: 'redis-cli MEMORY USAGE <key>',
+        description: '특정 Redis key의 메모리 사용량 확인',
+      },
+      {
+        keywords: ['mysql', 'processlist', '쿼리', '실행', '느린'],
+        command: 'mysql -e "SHOW FULL PROCESSLIST"',
+        description: 'MySQL에서 현재 실행 중인 쿼리와 상태 확인',
+      },
+      {
+        keywords: ['mysql', 'slow', '느린', 'slow_query'],
+        command: "mysql -e \"SHOW VARIABLES LIKE 'slow_query_log%'\"",
+        description: 'MySQL slow query log 활성화 여부와 경로 확인',
+      },
+      {
         keywords: ['서버', '목록', '조회'],
         command: 'list servers',
         description: '서버 목록 조회',

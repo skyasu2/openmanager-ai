@@ -80,14 +80,14 @@ export function selectExecutionMode(
     /왜.*(느려|높아|이상|스파이크|지연|오류|급증)/i,
     /why.*(high|slow|spik|error|increas|drop|fail)/i,
     /what.*caused|reason.*for/i,
-    /예측|트렌드|추세|추이|변화.*패턴/i,
+    /예측|트렌드|추세|추이|변화.*패턴|임계치.*전|넘기\s*전|미리.*알|고갈/i,
     /predict|forecast|trend.*analysis/i,
     /어제.*대비|지난.*주.*대비|전월.*대비|작년.*비교/i,
     /compared.*to.*(yesterday|last|previous)/i,
     /상관관계|연관.*분석|correlat|같이.*올라|함께.*증가/i,
     /이상.*원인|비정상.*이유|스파이크.*원인|급증.*이유/i,
     /이상\s*(탐지|감지|확인|점검|있어|있나)|비정상|고장난|느린|안\s*되는/i,
-    /명령어.*추천|cli.*추천|커맨드.*알려/i,
+    /(명령어|cli|커맨드|command).*(추천|알려|확인|점검)|(추천|알려).*(명령어|cli|커맨드|command)|순서|재마운트|해야/i,
   ];
 
   const compositeConnectors = [
@@ -133,12 +133,12 @@ export type IntentCategory = 'anomaly' | 'prediction' | 'math' | 'rca' | 'adviso
 
 const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
-  prediction: /예측|트렌드|추이|전망|forecast|추세/i,
+  prediction: /예측|트렌드|추이|전망|forecast|추세|임계치.*전|넘기\s*전|미리.*알|고갈/i,
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
-  math: /(?:계산|연산|수식|평균|중앙값|분산|표준편차|퍼센트|백분율|증가율|성장률|지수|루트|\d+\s*[+\-*\/\^]\s*\d+)/i,
+  math: /(?:계산|연산|수식|중앙값|표준편차|percentile|p\d{2}|증가율|성장률|지수|루트|\d+(?:\.\d+)?\s*(?:[+*\/\^]|\s-\s)\s*\d+)/i,
   advisor:
-    /해결|방법|명령어|가이드|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
-  serverGroup: /(db|web|cache|lb|api|storage|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
+    /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|재마운트|remount|troubleshoot|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
+  serverGroup: /(db|web|cache|lb|api|storage|haproxy|nginx|mysql|redis|nfs|backend|백엔드|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
   logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
   metrics: /cpu|메모리|디스크|서버|상태|memory|disk/i,
 } as const;

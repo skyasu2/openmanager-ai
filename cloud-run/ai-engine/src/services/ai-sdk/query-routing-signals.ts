@@ -4,7 +4,7 @@
  */
 
 export const INFRA_CONTEXT_PATTERN =
-  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load/i;
+  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|당직|알림|알람|로그|마운트|백엔드|로드\s*밸런서|캐시|스토리지|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|haproxy|nginx|mysql|redis|nfs|primary|replica|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load|backend|mount/i;
 
 export const ANALYST_QUERY_PATTERN =
   /이상|비정상|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca|고장|느려|다운|안\s*됨|안됨|장애/i;
@@ -29,7 +29,7 @@ export function isFormattingOnlyReportRequest(query: string): boolean {
 }
 
 export const ADVISOR_QUERY_PATTERN =
-  /해결|방법|명령어|가이드|어떻게|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
+  /해결|방법|명령어|가이드|어떻게|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|재마운트|remount|troubleshoot|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
 
 export const FORCE_KB_QUERY_PATTERN =
   /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)|ssot|single\s*source\s*of\s*truth|pre-generated|(?:프로젝트|저장소|repo|repository|코드|문서|내부).*(?:파일|경로|위치|path|문서)|(?:otel|데이터).*(?:파일|경로|위치|path|ssot)/i;

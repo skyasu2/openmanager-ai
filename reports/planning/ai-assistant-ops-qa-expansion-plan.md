@@ -156,6 +156,23 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 3. Redis/Storage 서비스 그룹 비교 질문이 서버 그룹 메트릭 조회로 연결되는지 contract test 추가
 4. 수정 후 `QA-20260509-0428` 실패 5개 + WARN 3개만 targeted retest
 
+### 2026-05-09 로컬 수정 진행
+
+- command-guidance routing guard 추가:
+  - HAProxy load-distribution 문맥의 `분산`이 math tool로 오인되지 않도록 routing test 추가
+  - `뭘 해야 해`, `순서`, `재마운트` 등 beginner ops 표현을 Advisor 경로로 분류
+- `recommendCommands` 서비스별 명령어 보강:
+  - HAProxy runtime socket/status/config check
+  - Nginx access log 5xx path aggregation
+  - NFS mount 확인/export 확인/remount 순서
+  - Redis bigkeys/MEMORY USAGE, MySQL processlist/slow query 기본 명령어
+- 검증:
+  - `cloud-run/ai-engine npm run type-check` PASS
+  - `cloud-run/ai-engine npm test` PASS — 107 files / 1067 tests
+- 남은 항목:
+  - production 배포 후 `QA-20260509-0428` 실패 5개 + WARN 3개 targeted retest
+  - Redis 그룹 grounding(A3), storage 예측(A5), empty response fallback(A1/C1) 실제 응답 개선 여부 확인
+
 ---
 
 ## 예상 결과 및 리스크
@@ -169,4 +186,4 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 
 ---
 
-_Last Updated: 2026-05-09 — QA-20260509-0428 실행, FAIL/WARN 후속 수정 필요_
+_Last Updated: 2026-05-09 — command-guidance routing 로컬 수정 및 AI Engine 검증 완료, production retest 대기_

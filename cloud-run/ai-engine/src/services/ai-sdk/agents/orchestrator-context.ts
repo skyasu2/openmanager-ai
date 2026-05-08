@@ -254,6 +254,7 @@ const SERVER_KEYWORDS = [
   '서버', 'cpu', '메모리', '디스크', 'memory', 'disk', '상태',
   '이상', '비정상', '분석', '예측', '트렌드', '장애', '보고서', '리포트',
   '해결', '명령어', '요약', '모니터링', 'server', '알람', '경고',
+  '운영', '당직', '알림', '순서', '점검', '재마운트',
   '평균', '최대', '최소', '지난', '시간', '전체',
   '사례', '이력', '과거', '유사', '인시던트', 'incident',
   '스크린샷', 'screenshot', '이미지', 'image', '대시보드', 'dashboard',
@@ -262,7 +263,7 @@ const SERVER_KEYWORDS = [
   '오프라인', '온라인', '다운', 'down', 'offline', 'online',
   '부하', 'load', '사용량', 'usage',
   '응답시간', 'response', 'latency', '대역폭', 'bandwidth',
-  '장비',
+  '장비', 'haproxy', 'nginx', 'mysql', 'redis', 'nfs', '백엔드', 'backend',
 ];
 
 const ATTACHMENT_IMAGE_KEYWORDS = ['스크린샷', 'screenshot', '이미지', 'image', '사진', '차트', '그래프', '화면', '패널'];
