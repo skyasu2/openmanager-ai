@@ -4,6 +4,7 @@ import {
   Activity,
   ArrowLeft,
   BarChart3,
+  Bot,
   Cpu,
   FileText,
   Network,
@@ -26,6 +27,7 @@ import { ServerModalTabNav } from './ServerModalTabNav';
 
 interface ServerDetailViewProps {
   server: Server | null;
+  onAskAI?: (server: Server) => void;
 }
 
 const tabs: TabInfo[] = [
@@ -51,6 +53,42 @@ const SERVER_TYPE_LABELS: Record<string, string> = {
   unknown: '타입 미확인',
 };
 
+const SERVER_STATUS_BADGES: Record<
+  string,
+  { label: string; className: string; dotClassName: string }
+> = {
+  critical: {
+    label: '위험',
+    className: 'border-red-200 bg-red-50 text-red-700',
+    dotClassName: 'bg-red-500',
+  },
+  warning: {
+    label: '주의',
+    className: 'border-amber-200 bg-amber-50 text-amber-700',
+    dotClassName: 'bg-amber-500',
+  },
+  online: {
+    label: '정상',
+    className: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    dotClassName: 'bg-emerald-500',
+  },
+  offline: {
+    label: '오프라인',
+    className: 'border-slate-200 bg-slate-50 text-slate-600',
+    dotClassName: 'bg-slate-400',
+  },
+  maintenance: {
+    label: '점검',
+    className: 'border-blue-200 bg-blue-50 text-blue-700',
+    dotClassName: 'bg-blue-500',
+  },
+};
+const DEFAULT_STATUS_BADGE = {
+  label: '정상',
+  className: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  dotClassName: 'bg-emerald-500',
+};
+
 function formatServerType(type: string): string {
   return SERVER_TYPE_LABELS[type.toLowerCase()] ?? type;
 }
@@ -70,7 +108,10 @@ function withCurrentMetricPoint(
   return [...values.slice(0, -1), currentValue];
 }
 
-export default function ServerDetailView({ server }: ServerDetailViewProps) {
+export default function ServerDetailView({
+  server,
+  onAskAI,
+}: ServerDetailViewProps) {
   const [selectedTab, setSelectedTab] = useState<TabId>('overview');
   const [isRealtime, setIsRealtime] = useState(true);
   const { metricsHistory, loadMetricsHistory } = useServerMetrics();
@@ -157,6 +198,11 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
   const lastUpdateTime = safeServer.lastUpdate.toLocaleTimeString('en-US', {
     hour12: false,
   });
+  const statusBadge =
+    SERVER_STATUS_BADGES[safeServer.status] ?? DEFAULT_STATUS_BADGE;
+  const canAskAI =
+    typeof onAskAI === 'function' &&
+    (safeServer.status === 'warning' || safeServer.status === 'critical');
 
   return (
     <div className="min-h-0 min-w-0 space-y-4">
@@ -173,9 +219,19 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold uppercase text-slate-400">
-              서버 상세
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-xs font-semibold uppercase text-slate-400">
+                서버 상세
+              </p>
+              <span
+                className={`inline-flex h-6 items-center gap-1.5 rounded-full border px-2 text-xs font-semibold ${statusBadge.className}`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${statusBadge.dotClassName}`}
+                />
+                {statusBadge.label}
+              </span>
+            </div>
             <h1 className="mt-1 truncate text-2xl font-bold text-slate-900">
               {safeServer.name}
             </h1>
@@ -184,20 +240,32 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsRealtime((prev) => !prev)}
-            className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-semibold ${
-              isRealtime
-                ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
-                : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            {isRealtime ? 'Live' : 'Paused'}
-            {isRealtime && (
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          <div className="flex flex-wrap items-center gap-2">
+            {canAskAI && server && (
+              <button
+                type="button"
+                onClick={() => onAskAI(server)}
+                className="inline-flex h-10 items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 text-sm font-semibold text-amber-800 hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+              >
+                <Bot className="h-4 w-4" aria-hidden="true" />
+                AI에게 물어보기
+              </button>
             )}
-          </button>
+            <button
+              type="button"
+              onClick={() => setIsRealtime((prev) => !prev)}
+              className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-semibold ${
+                isRealtime
+                  ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
+                  : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
+              }`}
+            >
+              {isRealtime ? 'Live' : 'Paused'}
+              {isRealtime && (
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="min-w-0">
@@ -222,34 +290,6 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
               server={safeServer}
               statusTheme={getStatusTheme(safeServer.status)}
             />
-            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
-              <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
-                <BarChart3 className="h-5 w-5 text-blue-600" />
-                핵심 성능 지표
-              </h2>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {[
-                  ['CPU', safeServer.cpu],
-                  ['Memory', safeServer.memory],
-                  ['Disk', safeServer.disk],
-                  ['Services', safeServer.services?.length || 0],
-                ].map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="rounded-lg border border-gray-100 bg-gray-50 p-3 text-center"
-                  >
-                    <div className="text-2xl font-bold text-slate-900">
-                      {label === 'Services'
-                        ? value
-                        : `${Math.round(Number(value))}%`}
-                    </div>
-                    <div className="mt-1 text-xs uppercase tracking-wider text-gray-500">
-                      {label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         )}
 

@@ -82,13 +82,6 @@ export interface RealtimeData {
   logs: LogEntry[];
 }
 
-import type { Server } from '@/types/server';
-
-export interface EnhancedServerModalProps {
-  server: Server | null;
-  onClose: () => void;
-}
-
 export interface TabInfo {
   id: TabId;
   label: string;

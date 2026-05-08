@@ -26,6 +26,7 @@ vi.mock('lucide-react', () => {
     Activity: MockIcon,
     ArrowLeft: MockIcon,
     BarChart3: MockIcon,
+    Bot: MockIcon,
     Cpu: MockIcon,
     FileText: MockIcon,
     Network: MockIcon,

@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 134 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 133 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 141 |
+| Total TSX component inventory | 140 |
 
 ## App Route-Local Component Distribution
 
@@ -51,13 +51,13 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 28685 |
-| Component nodes | 134 |
-| Component edges | 135 |
-| Graph density | 0.76% |
+| Component source lines | 28222 |
+| Component nodes | 133 |
+| Component edges | 128 |
+| Graph density | 0.73% |
 | Alias edges (`@/components/*`) | 37 |
-| Relative edges (`./`, `../`) | 98 |
-| Isolated components | 20 |
+| Relative edges (`./`, `../`) | 91 |
+| Isolated components | 21 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
 
@@ -69,7 +69,7 @@ flowchart LR
   d1["ai-sidebar (16)"]
   d2["auth (1)"]
   d3["charts (2)"]
-  d4["dashboard (31)"]
+  d4["dashboard (30)"]
   d5["emergency (1)"]
   d6["error (3)"]
   d7["home (2)"]
@@ -78,8 +78,8 @@ flowchart LR
   d10["system (2)"]
   d11["ui (9)"]
   d12["unified-profile (3)"]
-  d4 -->|35| d4
   d0 -->|31| d0
+  d4 -->|28| d4
   d1 -->|14| d1
   d1 -->|11| d0
   d9 -->|10| d9
@@ -107,7 +107,7 @@ flowchart LR
 | Domain | Node Count |
 | --- | --- |
 | ai | 37 |
-| dashboard | 31 |
+| dashboard | 30 |
 | shared | 23 |
 | ai-sidebar | 16 |
 | ui | 9 |
@@ -124,8 +124,8 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
-| dashboard | dashboard | 35 |
 | ai | ai | 31 |
+| dashboard | dashboard | 28 |
 | ai-sidebar | ai-sidebar | 14 |
 | ai-sidebar | ai | 11 |
 | shared | shared | 10 |
@@ -172,7 +172,6 @@ flowchart LR
 | ai-sidebar/EnhancedAIChat | 9 |
 | ai-sidebar/AISidebarV4 | 8 |
 | ai-sidebar/SidebarMessage | 7 |
-| dashboard/EnhancedServerModal | 7 |
 | dashboard/DashboardRoutedContent | 6 |
 | dashboard/ServerDetailView | 6 |
 | ai/AIWorkspaceMessage | 5 |
@@ -180,6 +179,7 @@ flowchart LR
 | ai/analysis/ServerResultCard | 4 |
 | dashboard/DashboardHeader | 4 |
 | ai/AnalysisBasisBadge | 3 |
+| ai/domain-renderers/ArtifactRendererHost | 3 |
 
 ## Cycle Risk (SCC Top 10)
 
@@ -193,10 +193,10 @@ ai/AIWorkspace -> ai-sidebar/CloudRunStatusIndicator, ai-sidebar/EnhancedAIChat,
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/DeveloperPanel, ai-sidebar/EnhancedAIChat
 ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard, ai/WebSourceCards
-dashboard/EnhancedServerModal -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalHeader
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
 ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer
+shared/FeatureCardModal -> shared/FeatureCardModalHeader, shared/ReactFlowDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
 ```
 
 ## Update Rule

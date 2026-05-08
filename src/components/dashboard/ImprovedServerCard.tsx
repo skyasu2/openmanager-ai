@@ -144,7 +144,6 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       statusGradients[safeServer.status] || statusGradients.online;
     const isCompactVariant = variant === 'compact';
 
-    const [showSecondaryInfo, setShowSecondaryInfo] = useState(false);
     const [showTertiaryInfo, setShowTertiaryInfo] = useState(false);
 
     // 📈 서버 메트릭 히스토리 로드 (OTel TimeSeries)
@@ -213,10 +212,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     // Interactions - Progressive Disclosure Toggle
     const toggleExpansion = useCallback((e: React.MouseEvent) => {
       e.stopPropagation();
-      setShowTertiaryInfo((prev) => {
-        if (!prev) setShowSecondaryInfo(true);
-        return !prev;
-      });
+      setShowTertiaryInfo((prev) => !prev);
     }, []);
 
     // 카드 클릭 핸들러
@@ -250,16 +246,6 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [onOpenLogs, safeServer]
     );
 
-    // 🔧 인라인 화살표 함수를 useCallback으로 최적화
-    const handleMouseEnter = useCallback(() => {
-      if (enableProgressiveDisclosure) setShowSecondaryInfo(true);
-    }, [enableProgressiveDisclosure]);
-
-    const handleMouseLeave = useCallback(() => {
-      if (enableProgressiveDisclosure && !showTertiaryInfo)
-        setShowSecondaryInfo(false);
-    }, [enableProgressiveDisclosure, showTertiaryInfo]);
-
     const currentHoverShadow =
       hoverShadowClasses[safeServer.status] || hoverShadowClasses.online;
     const currentAccentBorder =
@@ -279,10 +265,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     );
 
     return (
-      // biome-ignore lint/a11y/noStaticElementInteractions: Container div with mouse hover for progressive disclosure — inner buttons handle keyboard interaction.
       <div
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         className={`group relative w-full overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent ${statusTheme.background} ${statusTheme.border} ${currentAccentBorder} ${variantStyles.container} ${currentHoverShadow}`}
       >
         {/* 🎨 그라데이션 애니메이션 배경 (랜딩 카드 스타일) */}
@@ -521,9 +504,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         {/* Services Section */}
         {variantStyles.showServices &&
           safeServer.services?.length > 0 &&
-          (showSecondaryInfo || !enableProgressiveDisclosure) && (
+          (showTertiaryInfo || !enableProgressiveDisclosure) && (
             <div
-              className={`mt-2 flex flex-wrap gap-1.5 transition-all duration-300 relative z-10 ${showSecondaryInfo || !enableProgressiveDisclosure ? 'opacity-100' : 'opacity-0'} ${isCompactVariant ? 'hidden sm:flex' : 'flex'}`}
+              className={`mt-2 flex flex-wrap gap-1.5 transition-all duration-300 relative z-10 ${showTertiaryInfo || !enableProgressiveDisclosure ? 'opacity-100' : 'opacity-0'} ${isCompactVariant ? 'hidden sm:flex' : 'flex'}`}
             >
               {safeServer.services
                 .slice(0, variantStyles.maxServices)

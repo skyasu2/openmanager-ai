@@ -211,7 +211,10 @@ export default function DashboardRoutedContent({
         title="서버 상세"
         description="서버별 메트릭, 로그, 네트워크 상태를 직접 URL에서 확인"
       >
-        <ServerDetailView server={server} />
+        <ServerDetailView
+          server={server}
+          onAskAI={onAskAIAboutAlert ? askAIAboutServer : undefined}
+        />
       </PageFrame>
     );
   }
