@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-08T07:24:22.394Z"
+    "updatedAt": "2026-05-08T14:07:10.491Z"
   },
   "sequence": {
-    "nextRunNumber": 425
+    "nextRunNumber": 427
   },
   "summary": {
-    "totalRecordedRuns": 422,
-    "totalRuns": 345,
-    "excludedRuns": 77,
-    "totalChecks": 3024,
-    "totalPassed": 2915,
+    "totalRecordedRuns": 424,
+    "totalRuns": 346,
+    "excludedRuns": 78,
+    "totalChecks": 3037,
+    "totalPassed": 2927,
     "totalFailed": 100,
     "completionRate": 100,
-    "completedItems": 451,
+    "completedItems": 453,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260508-0424",
-    "lastRecordedAt": "2026-05-08T07:24:22.394Z",
-    "latestRecordedRunId": "QA-20260508-0424",
-    "latestRecordedAt": "2026-05-08T07:24:22.394Z"
+    "lastRunId": "QA-20260508-0425",
+    "lastRecordedAt": "2026-05-08T12:23:59.578Z",
+    "latestRecordedRunId": "QA-20260508-0426",
+    "latestRecordedAt": "2026-05-08T14:07:10.491Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11081,6 +11081,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-08T07:24:22.394Z"
+    },
+    "dashboard-server-card-density": {
+      "id": "dashboard-server-card-density",
+      "title": "Desktop server cards use 4-column dense grid at xl width",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260508-0426",
+      "firstSeenAt": "2026-05-08T14:07:10.491Z",
+      "lastSeenRunId": "QA-20260508-0426",
+      "lastSeenAt": "2026-05-08T14:07:10.491Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "1440px grid columns measured as 307px x 4; overflowX=false",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T14:07:10.491Z"
+    },
+    "server-detail-mobile-overflow": {
+      "id": "server-detail-mobile-overflow",
+      "title": "Mobile server detail has no page horizontal overflow or control overlap",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260508-0426",
+      "firstSeenAt": "2026-05-08T14:07:10.491Z",
+      "lastSeenRunId": "QA-20260508-0426",
+      "lastSeenAt": "2026-05-08T14:07:10.491Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "390px viewport bodyScrollWidth=390, overlaps=[]; targeted Playwright guard passed",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T14:07:10.491Z"
     }
   },
   "runs": [
@@ -44460,6 +44508,197 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260508-0425",
+      "recordedAt": "2026-05-08T12:23:59.578Z",
+      "recordedAtKst": "2026-05-08 21:23:59 KST",
+      "title": "v8.11.113 3일간 변경사항 Playwright Production QA",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260508-0425.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_72ENkX6i3W35AnYpDLPdFVyRDMDz",
+        "deploymentUrl": "https://openmanager-wq01u9m8x-skyasus-projects.vercel.app",
+        "commitSha": "e0d19690a45ab4970bc72a5ad330c49516b9e678"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "/dashboard/servers",
+        "/dashboard/topology",
+        "/dashboard/ai-assistant",
+        "AI Chat sidebar",
+        "Reporter Agent",
+        "Anomaly Detection"
+      ],
+      "skippedSurfaces": [
+        "/dashboard/alerts",
+        "/dashboard/logs",
+        "auth flow"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI Chat/Reporter/이상감지 3개 핵심 기능 정상, raw JSON 억제 검증",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "manual",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-08T11:43:00+09:00",
+          "summary": "Playwright MCP QA 전체 세션 콘솔 에러 0건",
+          "evidence": "playwright-mcp QA 전체 세션",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "랜딩 페이지",
+          "path": "reports/qa/evidence/qa-20260508-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "대시보드",
+          "path": "reports/qa/evidence/qa-20260508-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "서버 SVG 차트",
+          "path": "reports/qa/evidence/qa-20260508-servers.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI 사이드바",
+          "path": "reports/qa/evidence/qa-20260508-ai-sidebar-open.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI 응답",
+          "path": "reports/qa/evidence/qa-20260508-ai-response-full.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter Agent",
+          "path": "reports/qa/evidence/qa-20260508-reporter-result.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "이상감지",
+          "path": "reports/qa/evidence/qa-20260508-anomaly-result.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI 전체화면",
+          "path": "reports/qa/evidence/qa-20260508-ai-fullscreen.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "토폴로지",
+          "path": "reports/qa/evidence/qa-20260508-topology.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260508-0426",
+      "recordedAt": "2026-05-08T14:07:10.491Z",
+      "recordedAtKst": "2026-05-08 23:07:10 KST",
+      "title": "Local Dashboard Server Layout QA - Card Density and Mobile Detail Overflow",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260508-0426.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local development proxy",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "92906f1883f66315aa0b57983a3ec38058059b57"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/servers desktop server card grid",
+        "/dashboard/servers/[serverId] mobile server detail",
+        "server detail tab navigation",
+        "mobile interactive control overlap scan"
+      ],
+      "skippedSurfaces": [
+        "AI assistant conversational QA",
+        "Vercel production release-gate",
+        "Cloud Run observability pack"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Desktop server cards after density fix",
+          "path": "/tmp/dashboard-servers-ui-fix-1440-v4.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Mobile server detail after overflow fix",
+          "path": "/tmp/server-detail-ui-fix-mobile-final-v2.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -44468,16 +44707,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 207,
-      "appropriateCount": 184,
+      "seenCount": 208,
+      "appropriateCount": 185,
       "partialCount": 23,
       "inappropriateCount": 0,
       "improvementNeededCount": 33,
-      "lastRunId": "QA-20260507-0420",
-      "lastSeenAt": "2026-05-07T03:06:42.069Z",
+      "lastRunId": "QA-20260508-0425",
+      "lastSeenAt": "2026-05-08T12:23:59.578Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run verified the intended feedback removal contract without adding live provider variability.",
+      "lastRationale": "AI Chat/Reporter/이상감지 3개 핵심 기능 정상, raw JSON 억제 검증",
       "lastNextAction": ""
     },
     "observability-monitoring": {

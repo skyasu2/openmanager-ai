@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`QA evidence audit refreshed`)
+**Last Updated**: 2026-05-08 KST (`AI 어시스턴트 운영 대응 QA 확장 계획서 Draft 등록`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | Active Task 없음 |
+| AI 어시스턴트 운영 대응 QA 확장 | High | Draft (검토 대기) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — 서비스 맥락 A5 + 명령어 B5 + 초보 유도 C5 = 15개 시나리오 |
 
 ---
 
@@ -48,6 +48,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-08 #321) — Claude
+- [x] 3일간 변경사항 Playwright Production QA (QA-20260508-0425)
+  - 13개 체크: 12 pass, 1 warn, 0 fail. 콘솔 에러/경고 0건
+  - 개선 확인: SVG Sparkline(Recharts→Nivo), AI 피드백 제거, raw JSON 억제, Reporter/이상감지 신기능 정상
+  - 관찰: 채팅 응답 후 메타데이터 영역 수동 스크롤 필요 (non-blocking)
+  - 증거: `reports/qa/evidence/qa-20260508-*.png` (9개)
 
 ### Completed (2026-05-08 #320) — Codex
 - [x] MSW 테스트 인프라 정합성 개선

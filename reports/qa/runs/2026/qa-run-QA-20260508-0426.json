@@ -1,0 +1,91 @@
+{
+  "runId": "QA-20260508-0426",
+  "recordedAt": "2026-05-08T14:07:10.491Z",
+  "recordedAtKst": "2026-05-08 23:07:10 KST",
+  "runTitle": "Local Dashboard Server Layout QA - Card Density and Mobile Detail Overflow",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local development proxy",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "92906f1883f66315aa0b57983a3ec38058059b57"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/dashboard/servers desktop server card grid",
+    "/dashboard/servers/[serverId] mobile server detail",
+    "server detail tab navigation",
+    "mobile interactive control overlap scan"
+  ],
+  "skippedSurfaces": [
+    "AI assistant conversational QA",
+    "Vercel production release-gate",
+    "Cloud Run observability pack"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Desktop server cards after density fix",
+      "path": "/tmp/dashboard-servers-ui-fix-1440-v4.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Mobile server detail after overflow fix",
+      "path": "/tmp/server-detail-ui-fix-mobile-final-v2.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-server-card-density",
+      "title": "Desktop server cards use 4-column dense grid at xl width",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "1440px grid columns measured as 307px x 4; overflowX=false",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "server-detail-mobile-overflow",
+      "title": "Mobile server detail has no page horizontal overflow or control overlap",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "390px viewport bodyScrollWidth=390, overlaps=[]; targeted Playwright guard passed",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local dev QA only; AI behavior was not changed and conversational AI QA was skipped.",
+    "Server detail page was checked at 390x844 mobile viewport and 1440x1000 desktop viewport.",
+    "Targeted E2E: PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-server-cards.spec.ts --grep \"모바일 서버 상세 route\" --project=chromium"
+  ],
+  "links": []
+}

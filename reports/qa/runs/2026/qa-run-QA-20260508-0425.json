@@ -1,0 +1,120 @@
+{
+  "runId": "QA-20260508-0425",
+  "recordedAt": "2026-05-08T12:23:59.578Z",
+  "recordedAtKst": "2026-05-08 21:23:59 KST",
+  "runTitle": "v8.11.113 3일간 변경사항 Playwright Production QA",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_72ENkX6i3W35AnYpDLPdFVyRDMDz",
+    "deploymentUrl": "https://openmanager-wq01u9m8x-skyasus-projects.vercel.app",
+    "commitSha": "e0d19690a45ab4970bc72a5ad330c49516b9e678"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "/dashboard/servers",
+    "/dashboard/topology",
+    "/dashboard/ai-assistant",
+    "AI Chat sidebar",
+    "Reporter Agent",
+    "Anomaly Detection"
+  ],
+  "skippedSurfaces": ["/dashboard/alerts", "/dashboard/logs", "auth flow"],
+  "checks": {
+    "total": 13,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Chat/Reporter/이상감지 3개 핵심 기능 정상, raw JSON 억제 검증",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "manual",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-08T11:43:00+09:00",
+      "summary": "Playwright MCP QA 전체 세션 콘솔 에러 0건",
+      "evidence": "playwright-mcp QA 전체 세션",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "랜딩 페이지",
+      "path": "reports/qa/evidence/qa-20260508-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "대시보드",
+      "path": "reports/qa/evidence/qa-20260508-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "서버 SVG 차트",
+      "path": "reports/qa/evidence/qa-20260508-servers.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI 사이드바",
+      "path": "reports/qa/evidence/qa-20260508-ai-sidebar-open.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI 응답",
+      "path": "reports/qa/evidence/qa-20260508-ai-response-full.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter Agent",
+      "path": "reports/qa/evidence/qa-20260508-reporter-result.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "이상감지",
+      "path": "reports/qa/evidence/qa-20260508-anomaly-result.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI 전체화면",
+      "path": "reports/qa/evidence/qa-20260508-ai-fullscreen.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "토폴로지",
+      "path": "reports/qa/evidence/qa-20260508-topology.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
