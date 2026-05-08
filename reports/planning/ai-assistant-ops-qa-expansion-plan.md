@@ -249,6 +249,27 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 | `ai-ops-command-submit-or-stream-boundary` | P1 | Nginx/NFS command guidance가 Playwright flow에서 실제 AI 요청/답변으로 이어지지 않음 | QA runner submit selector 고정 또는 product-side submit telemetry 추가 후 B4/B5 재검증 |
 | `ai-ops-haproxy-context-specificity` | P2 | A1 HAProxy 상태 답변이 CPU/백엔드 분산 상세 부족 | HAProxy group summary fallback 보강 |
 
+### 2026-05-09 submit/stream boundary 1차 수정
+
+- B4 isolated diagnostic의 직접 원인:
+  - QA runner가 `AI 질문 입력` textarea의 `ancestor::form[1]`를 기다림
+  - 기존 `ChatInputArea`는 `<form>` 없이 `div` + `button type="button"` 구조라서 submit 단계 전에 실패 가능
+- 제품 수정:
+  - AI 입력 컨테이너를 semantic `<form aria-label="AI 질문 전송">`으로 전환
+  - 전송 버튼을 `type="submit"`으로 변경하고 `onSubmit`에서 기존 `onSendWithAttachments()` 호출
+  - 기존 Enter 전송(`AutoResizeTextarea` keyboard shortcut), 첨부/중단 버튼 동작은 유지
+- 회귀 테스트:
+  - `ChatInputArea.test.tsx`에 textarea가 form 안에 있고 submit 시 전송 핸들러가 1회 호출되는 guard 추가
+- 검증:
+  - `node scripts/dev/vitest-main-wrapper.js run src/components/ai-sidebar/ChatInputArea.test.tsx` PASS — 8 tests
+  - `npm run type-check` PASS
+  - `npm run lint` PASS
+  - `npm run test:quick` PASS
+  - `git diff --check` PASS
+- 남은 확인:
+  - 배포 후 B4/B5 production targeted retest에서 `/api/ai/supervisor/stream/v2` 요청 발생 여부와 visible answer를 재확인
+  - 요청은 발생하지만 답변이 비면 `ai-ops-empty-response-timeout` stream fallback 경로로 분리
+
 ---
 
 ## 예상 결과 및 리스크

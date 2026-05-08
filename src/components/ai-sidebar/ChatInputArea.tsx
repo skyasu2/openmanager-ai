@@ -149,6 +149,14 @@ export const ChatInputArea = memo(function ChatInputArea({
     closePopover();
   }, [closePopover, onOpenFileDialog]);
 
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      onSendWithAttachments();
+    },
+    [onSendWithAttachments]
+  );
+
   return (
     <>
       <div
@@ -271,9 +279,11 @@ export const ChatInputArea = memo(function ChatInputArea({
           )}
 
           {/* 메인 입력 컨테이너 */}
-          <div
+          <form
+            onSubmit={handleSubmit}
             className="relative flex items-end rounded-2xl border border-gray-200 bg-white shadow-sm transition-all focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
             onPaste={onPaste}
+            aria-label="AI 질문 전송"
           >
             {/* + 버튼 (도구 popover 트리거) */}
             <div className="relative flex items-end pb-1.5 pl-2">
@@ -444,8 +454,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                 </button>
               )}
               <button
-                type="button"
-                onClick={onSendWithAttachments}
+                type="submit"
                 disabled={
                   (!inputValue.trim() && attachments.length === 0) ||
                   isGenerating ||
@@ -458,7 +467,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                 <Send className="h-4 w-4" />
               </button>
             </div>
-          </div>
+          </form>
 
           {/* 숨겨진 파일 입력 */}
           <input

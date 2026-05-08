@@ -148,6 +148,47 @@ describe('ChatInputArea popover', () => {
     }
   });
 
+  it('wraps the AI textarea in a submit form and submits through the send handler', () => {
+    const onSendWithAttachments = vi.fn();
+
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue="Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘"
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={onSendWithAttachments}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+      />
+    );
+
+    const input = screen.getByRole('textbox', { name: 'AI 질문 입력' });
+    const form = input.closest('form');
+
+    expect(form).not.toBeNull();
+    expect(screen.getByRole('button', { name: '메시지 전송' })).toHaveAttribute(
+      'type',
+      'submit'
+    );
+
+    fireEvent.submit(form!);
+
+    expect(onSendWithAttachments).toHaveBeenCalledTimes(1);
+  });
+
   it('disables the send button while a generation is in progress', () => {
     render(
       <ChatInputArea
