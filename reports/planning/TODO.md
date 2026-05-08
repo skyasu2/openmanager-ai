@@ -55,6 +55,7 @@
   - 서버 상세 헤더에 상태 배지와 warning/critical 서버용 "AI에게 물어보기" 액션 추가
   - Overview 탭 중복 "핵심 성능 지표" 그리드 제거
   - 서버 카드 Progressive Disclosure를 hover 자동 노출 없이 명시적 펼치기 버튼으로 단순화
+  - 계획서 archive: [archive/dashboard-server-detail-ux-plan.md](archive/dashboard-server-detail-ux-plan.md)
   - QA 기록: [QA-20260509-0427](../qa/runs/2026/qa-run-QA-20260509-0427.json)
 
 ### Completed (2026-05-08 #321) — Claude
