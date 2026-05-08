@@ -1,0 +1,152 @@
+{
+  "startedAt": "2026-05-08T15:37:20.851Z",
+  "finishedAt": "2026-05-08T15:46:27.486Z",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "total": 15,
+  "pass": 7,
+  "warn": 3,
+  "fail": 5,
+  "results": [
+    {
+      "id": "A1",
+      "category": "service-context",
+      "question": "HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?",
+      "status": "WARN",
+      "reason": "partial match 2/3",
+      "latencyMs": 40962,
+      "answerExcerpt": "HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?오전 12:38:16복사응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.오전 12:38:16· 2865ms복사다시 생성분석 근거도구: evaluateMathExpression · 모드: 오토"
+    },
+    {
+      "id": "A2",
+      "category": "service-context",
+      "question": "MySQL primary 서버가 replica보다 부하가 훨씬 높은 이유가 뭘까?",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 23055,
+      "answerExcerpt": "primary 서버가 replica보다 부하가 훨씬 높은 이유가 뭘까?오전 12:38:42복사핵심 요약MySQL primary- replica 간 부하 불균형은 쓰기/읽기 워크로드 분배, 쿼리 패턴, 복제 지연, 인덱스/쿼리 최적화 등 여러 요인으로 발생할 수 있습니다. 현재 primary 서버의 CPU/메모리/디스크 사용률과 replica의 상태를 조회해 부하 차이의 원인을 분석하겠습니다. 잠시만 기다려 주세요.primary 서버(CPU 54%, 메모리 68%, 디스크 82%)가 replica(CPU 40%, 메모리 59%, 디스크 44%)보다 모든 자원 사용률이 높습니다. 특히 디스크 사용률이 82%로 높은 상태입니다.상세 분석주요 원인 가설: 쓰기 부하 집중: primary는 모든 INSERT/UPDATE/DELETE를 처리하므로 replica보다 쓰기 부하가 큼 복제 지연: replica의 CPU/메모리 사용률이 낮아 복제 로그가 충분히 처리되지 않음 → primary에 부하 집중 쿼리 패턴: replica로 분배되지 않은 읽기 쿼리(예: analytical 쿼리)가 primary에서 실행 중 인덱스/쿼리 최적화 부족: primary에서 비효율적인 쿼리가 자주 실행됨 다음 단계: replica의 복제 상태 확인 primary의 느린 쿼리 로그 분석 읽기 쿼리 replica로의 분배 여부 확인 위 사항을 확인하려면 replica의 복제 지연 여부와 primary의 쿼리 로그를 조회해야 합니다. replica 복제 상태를 우선 확인하겠습니다.replica의 복제 지연은 400ms 내외로 정상 범위입니다. 그러나 reporting.job_runs 테이블에 650-730ms의 느린 쿼리가 반복 발생하고 있습니다. 재확인된 원인: 읽기 쿼리 부하: replica에서 analytical 쿼리(reporting.job_runs)가 primary 부하를 일부 분담해야 하지만 이 쿼리 자체가 느림 primary의 쓰기 부하: primary는 모든 쓰기 + replica로 분배되지 않은 읽기 쿼리까지 처리 → CPU/메모리/디스크 사용률 상승 즉시 권장 조치: reporting.job_runs 테이블 인덱스 최적화 job_runs 테이블의 created_at, status, job_type 등에 복합 인덱스 추가 예: ALTER TABLE reporting.job_runs ADD INDEX idx_job_status_cr"
+    },
+    {
+      "id": "A3",
+      "category": "service-context",
+      "question": "Redis 캐시 서버 3대 중 가장 메모리 많이 쓰는 서버가 어디야?",
+      "status": "WARN",
+      "reason": "partial match 1/3",
+      "latencyMs": 75734,
+      "answerExcerpt": "캐시 서버 3대 중 가장 메모리 많이 쓰는 서버가 어디야?오전 12:38:45복사오전 12:38:47분석 근거데이터: 일반 대화 응답"
+    },
+    {
+      "id": "A4",
+      "category": "service-context",
+      "question": "지금 웹 서버(Nginx) 3대가 고르게 트래픽 받고 있어?",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 5627,
+      "answerExcerpt": "지금 웹 서버(Nginx) 3대가 고르게 트래픽 받고 있어?오전 12:40:02복사핵심 요약현재 Nginx 서버 3대의 상태 정보가 없습니다. 웹 서버의 트래픽 분산 상태를 확인하려면 각 서버의 ID를 알고 계셔야 합니다. Nginx 서버 목록을 먼저 조회해 보겠습니다. 웹 서버(Nginx) 3대는 고르게 트래픽을 받고 있지 않습니다. 현재 CPU, 메모리, 디스크 사용률이 다릅니다. web-nginx-dc1-01: CPU 39%, 메모리 43%, 디스크 28% web-nginx-dc1-02: CPU 36%, 메모리 45%, 디스크 29% web-nginx-dc1-03: CPU 20%, 메모리 34%, 디스크 23% 가장 부하가 높은 서버: web-nginx-dc1-01과 web-nginx-dc1-02 (CPU, 메모리, 디스크 사용률 비슷) 상대적으로 낮은 서버: web-nginx-dc1-03 (CPU 20%, 메모리 34%) 트래픽 분산이 완벽하게 고르지는 않지만 치우치지도 않았습니다. 지속적인 모니터링이 필요합니다.오전 12:40:05· 3126ms복사다시 생성분석 근거도구: 서버 메트릭 조회 · 서버 그룹 조회 · 모드: 오토 · 기간: 최근 1시간"
+    },
+    {
+      "id": "A5",
+      "category": "service-context",
+      "question": "스토리지 서버 디스크 사용량이 임계치 넘기 전에 미리 알 수 있어?",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 77022,
+      "answerExcerpt": ""
+    },
+    {
+      "id": "B1",
+      "category": "command-guidance",
+      "question": "HAProxy에서 현재 연결된 백엔드 서버 목록이랑 상태 확인하는 명령어 알려줘",
+      "status": "FAIL",
+      "reason": "matched explicit fail pattern",
+      "latencyMs": 3649,
+      "answerExcerpt": "xy에서 현재 연결된 백엔드 서버 목록이랑 상태 확인하는 명령어 알려줘오전 12:41:27복사📊 서버 현황 요약 • 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대 • 평균 CPU: 31%, 메모리: 46%, 디스크: 38% ⚠️ 주의 서버 • db-mysql-dc1-primary: 디스크 83% (안정 추세 →) 📈 추세 • 전체 서버는 평균 대비 큰 변동 없이 안정적입니다. 💡 권고 • db-mysql-dc1-primary: 로그 적체, 백업 산출물, tmp 디렉터리 증가 경로를 우선 점검하세요.오전 12:41:28· 269ms복사다시 생성분석 근거데이터: 일반 대화 응답 · 모드: 오토"
+    },
+    {
+      "id": "B2",
+      "category": "command-guidance",
+      "question": "MySQL에서 현재 실행 중인 느린 쿼리 어떻게 확인해?",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 7668,
+      "answerExcerpt": "에서 현재 실행 중인 느린 쿼리 어떻게 확인해?오전 12:41:32복사핵심 요약문제 요약: MySQL에서 현재 실행 중인 느린 쿼리 확인 방법### 💡 원인 분석- MySQL에서 느린 쿼리를 확인하는 방법은 주로 MySQL의 slow query log를 확인하거나, 현재 실행 중인 쿼리를 조회하는 것입니다.상세 분석🛠️ 권장 조치 절차1. 진단: MySQL slow query log 활성화 여부 확인 ```sql SHOW VARIABLES LIKE 'slow_query_log'; code복사2. **확인**: 현재 실행 중인 쿼리 조회 ```sql SHOW FULL PROCESSLIST; 또는 sql복사SELECT * FROM information_schema.processlist; 조치: slow query log 활성화 (필요한 경우) sql복사SET GLOBAL slow_query_log = 'ON'; slow query log 파일 위치 확인 sql복사SHOW VARIABLES LIKE 'slow_query_log_file'; 검증: slow query log 확인 bash복사tail -f /var/log/mysql/slow.log ⚠️ 주의사항 slow query log를 활성화하면 디스크 공간을 차지하므로 정기적으로 로그를 관리해야 합니다. SHOW FULL PROCESSLIST; 명령어는 현재 실행 중인 모든 쿼리를 보여주므로, 많은 쿼리가 실행 중인 경우 성능에 영향을 줄 수 있습니다. 오전 12:41:36· 4798ms복사다시 생성분석 근거도구: 조치 명령어 정리 · 모드: 오토"
+    },
+    {
+      "id": "B3",
+      "category": "command-guidance",
+      "question": "Redis 메모리 사용량이 갑자기 증가할 때 어떤 키가 큰지 확인하는 방법은?",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 4686,
+      "answerExcerpt": "메모리 사용량이 갑자기 증가할 때 어떤 키가 큰지 확인하는 방법은?오전 12:41:41복사핵심 요약문제 요약: Redis 메모리 사용량 증가 시 큰 키 확인 방법### 💡 원인 분석- Redis 메모리 사용량 증가는 주로 큰 키 또는 많은 키의 생성/삭제로 인해 발생할 수 있습니다. 이를 확인하기 위해 Redis CLI 명령어를 사용할 수 있습니다.상세 분석🛠️ 권장 조치 절차1. 진단: Redis에 접속하여 메모리 사용량과 키 목록을 확인합니다. bash복사 redis-cli 조치: 메모리 사용량이 높은 키를 확인합니다. bash복사redis-cli > INFO MEMORY 또는 bash복사redis-cli > MEMORY STATS 큰 키를 확인하려면: bash복사redis-cli > DEBUG OBJECT <key_name> 또는 bash복사redis-cli > SCAN 0 MATCH * COUNT 10 TYPE string 검증: 키 삭제를 포함한 조치를 수행하고 메모리 사용량을 다시 확인합니다. ⚠️ 주의사항 큰 키를 삭제하거나 수정할 때는 데이터 손실에 주의해야 합니다. 항상 백업을 확인하고 변경 사항을 테스트한 후 진행하세요. 오전 12:41:43· 2365ms복사다시 생성분석 근거도구: 조치 명령어 정리 · 모드: 오토"
+    },
+    {
+      "id": "B4",
+      "category": "command-guidance",
+      "question": "Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 80065,
+      "answerExcerpt": ""
+    },
+    {
+      "id": "B5",
+      "category": "command-guidance",
+      "question": "NFS 마운트가 끊겼을 때 확인하고 재마운트하는 순서 알려줘",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 75702,
+      "answerExcerpt": ""
+    },
+    {
+      "id": "C1",
+      "category": "beginner-guidance",
+      "question": "lb-haproxy-dc1-01 CPU가 73%인데 이거 위험한 거야? 뭘 해야 해?",
+      "status": "WARN",
+      "reason": "partial match 1/3",
+      "latencyMs": 7738,
+      "answerExcerpt": "proxy-dc1-01 CPU가 73%인데 이거 위험한 거야? 뭘 해야 해?오전 12:44:25복사응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.오전 12:44:30· 5361ms복사다시 생성분석 근거도구: computeSeriesStats · 모드: 오토"
+    },
+    {
+      "id": "C2",
+      "category": "beginner-guidance",
+      "question": "처음 운영 당직인데 알림이 울리면 어떤 순서로 확인해야 해?",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 79034,
+      "answerExcerpt": ""
+    },
+    {
+      "id": "C3",
+      "category": "beginner-guidance",
+      "question": "MySQL primary-replica 구조에서 replication이 끊기면 어떻게 알 수 있어?",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 18899,
+      "answerExcerpt": "primary-replica 구조에서 replication이 끊기면 어떻게 알 수 있어?오전 12:45:54복사핵심 요약MySQL replication 모니터링을 위해서는 Replica_IO_Running과 Replica_SQL_Running 상태, Seconds_Behind_Master, Last_Error 등의 메트릭을 실시간으로 확인해야 합니다.상세 분석현재 MySQL 서버(primary/replica)의 replication 상태를 즉시 확인하겠습니다.MySQL replication 모니터링을 위해 replica 서버의 상태를 상세 분석해야 합니다. 현재 db-mysql-dc1-replica 서버의 replication 관련 메트릭을 즉시 확인하겠습니다.MySQL replication 끊김 감지 방법 Replication이 끊기면 replica 서버의 Replica_IO_Running과 Replica_SQL_Running 상태, Seconds_Behind_Master, Last_Error 등을 확인해야 합니다. 현재 db-mysql-dc1-replica 서버는 CPU/메모리/디스크 모두 정상으로 표시되지만, replication 관련 메트릭은 조회되지 않았습니다. 이를 위해 replica 서버에 직접 접속하여 MySQL replication 상태를 확인해야 합니다. 🔍 Replication 상태 확인 명령어 (즉시 실행 가능) sql복사-- replica 서버에 접속 후 실행 SHOW REPLICA STATUS\\G 주의할 필드: Slave_IO_Running: No → replication IO thread 중지 (연결 끊김) Slave_SQL_Running: No → SQL thread 중지 (복제 중단) Seconds_Behind_Master: NULL 또는 매우 큰 값 → replica가 primary보다 뒤처짐 Last_Error: 에러 메시지 (예: Got fatal error from primary, Connection timeout) Master_Log_File vs Read_Master_Log_Pos: 동기화 위치 불일치--- ✅ Replication 끊김 감지 방법 요약 증상원인확인 명령어Slave_IO_Running: No네트워크 단절, primary 접속 불가SHOW REPLICA STATUS\\GSeconds_Behind_Master: NULLreplica가 primary와 동기화 "
+    },
+    {
+      "id": "C4",
+      "category": "beginner-guidance",
+      "question": "Redis 캐시 서버 메모리가 꽉 차면 어떻게 돼? 서비스에 어떤 영향이 있어?",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 3720,
+      "answerExcerpt": "캐시 서버 메모리가 꽉 차면 어떻게 돼? 서비스에 어떤 영향이 있어?오전 12:46:14복사📊 서버 현황 요약 • 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대 • 평균 CPU: 31%, 메모리: 46%, 디스크: 38% ⚠️ 주의 서버 • db-mysql-dc1-primary: 디스크 83% (안정 추세 →) 📈 추세 • 전체 서버는 평균 대비 큰 변동 없이 안정적입니다. 💡 권고 • db-mysql-dc1-primary: 로그 적체, 백업 산출물, tmp 디렉터리 증가 경로를 우선 점검하세요.오전 12:46:15· 301ms복사다시 생성분석 근거데이터: 일반 대화 응답 · 모드: 오토"
+    },
+    {
+      "id": "C5",
+      "category": "beginner-guidance",
+      "question": "지금 전체 시스템 상태를 한 줄 요약해줘. 당직 인수인계용으로",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 7009,
+      "answerExcerpt": "시스템 상태를 한 줄 요약해줘. 당직 인수인계용으로오전 12:46:19복사핵심 요약📊 서버 현황 요약 • 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대 • 평균 CPU: 31%, 메모리: 46%, 디스크: 38% ⚠️ 주의 서버 • db-mysql-dc1-primary: 디스크 83% (안정 추세 →) 📈 추세 • 전체 서버는 평균 대비 큰 변동 없이 안정적입니다. 💡 권고 • db-mysql-dc1-primary: 로그 적체, 백업 산출물, tmp 디렉터리 증가 경로를 우선 점검하세요.오전 12:46:21· 2247ms복사다시 생성분석 근거도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간"
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "error",
+      "text": "[HybridAI] useChat error (trace: 6ba92f45b68827bf496a950767d69017): Internal Server Error"
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 # AI 어시스턴트 운영 대응 QA 확장 계획
 
 > Owner: project
-> Status: Draft
+> Status: In Progress
 > Doc type: How-to
-> Last reviewed: 2026-05-08
+> Last reviewed: 2026-05-09
 > Tags: qa,ai-assistant,operations,conversational-qa
 
 ---
@@ -91,7 +91,7 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 
 ### 실행 환경
 - **플랫폼**: Vercel Production (`https://openmanager-ai.vercel.app`)
-- **도구**: Playwright MCP (`mcp__playwright__*`)
+- **도구**: Playwright MCP (`mcp__playwright__*`) 또는 Playwright CLI runner
 - **접근**: 게스트 로그인 → AI 어시스턴트 사이드바 또는 전체화면
 
 ### 판정 절차
@@ -116,13 +116,45 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 
 ## Task 목록
 
-- [ ] **Task 1**: 계획서 Draft → Approved 전환 (사용자 검토 후)
-- [ ] **Task 2**: 카테고리 A (서비스 맥락 인식) 5개 질문 Playwright MCP 실행 및 판정
-- [ ] **Task 3**: 카테고리 B (기술 명령어 안내) 5개 질문 실행 및 hallucination 검증
-- [ ] **Task 4**: 카테고리 C (초보 운영자 유도) 5개 질문 실행 및 단계 구체성 판정
-- [ ] **Task 5**: 전체 15개 결과 QA 런 기록 (`npm run qa:record`)
-- [ ] **Task 6**: FAIL/WARN 항목 분석 — 코드 수정 필요 vs AI 응답 품질 한계 구분
+- [x] **Task 1**: 계획서 Draft → Approved 전환 (사용자 검토 후)
+- [x] **Task 2**: 카테고리 A (서비스 맥락 인식) 5개 질문 Playwright MCP 실행 및 판정
+- [x] **Task 3**: 카테고리 B (기술 명령어 안내) 5개 질문 실행 및 hallucination 검증
+- [x] **Task 4**: 카테고리 C (초보 운영자 유도) 5개 질문 실행 및 단계 구체성 판정
+- [x] **Task 5**: 전체 15개 결과 QA 런 기록 (`npm run qa:record`)
+- [x] **Task 6**: FAIL/WARN 항목 분석 — 코드 수정 필요 vs AI 응답 품질 한계 구분
 - [ ] **Task 7**: 필요 시 수정 후 재검증 (Task 2~5 반복)
+
+---
+
+## QA-20260509-0428 실행 결과
+
+- **환경**: Vercel Production (`https://openmanager-ai.vercel.app`)
+- **도구**: Playwright CLI runner
+- **기록**: `reports/qa/runs/2026/qa-run-QA-20260509-0428.json`
+- **Raw evidence**: `reports/qa/evidence/qa-20260509-ai-ops-conversational-results.json`
+- **결과**: PASS 7, WARN 3, FAIL 5
+
+| 카테고리 | PASS | WARN | FAIL | 판정 |
+|----------|------|------|------|------|
+| A. 서비스 맥락 인식 | A2, A4 | A1, A3 | A5 | 일부 맥락 인식 가능하나 Redis 비교/스토리지 예측/빈 요약 실패 |
+| B. 기술 명령어 안내 | B2, B3 | - | B1, B4, B5 | HAProxy 명령어 intent routing 실패, Nginx/NFS 질문 타임아웃 |
+| C. 초보 운영자 유도 | C3, C4, C5 | C1 | C2 | 기본 설명 일부 가능하나 HAProxy 73% CPU와 초보 당직 순서에서 신뢰도 부족 |
+
+### 실패/경고 원인 분류
+
+| 분류 | 시나리오 | 판단 |
+|------|----------|------|
+| 빈 응답/타임아웃 | A5, B4, B5, C2 | 코드 수정 또는 AI response completion 경로 점검 필요 |
+| 명령어 intent routing 실패 | B1 | HAProxy backend status 명령어 질문이 일반 서버 요약으로 처리됨 |
+| tool-backed empty summary | A1, C1 | tool evidence는 있으나 "응답 본문이 비어 있어" fallback 노출 |
+| 서비스 그룹 grounding 부족 | A3 | Redis 3대 메모리 비교 질문에서 대상 노드 식별 실패 |
+
+### 후속 수정 후보
+
+1. `/api/ai/supervisor/stream/v2` 또는 UI chat completion 경로에서 빈 본문/타임아웃 원인 확인
+2. HAProxy/Nginx/NFS 운영 명령어 질문을 command-guidance intent로 고정하는 프롬프트/라우팅 보강
+3. Redis/Storage 서비스 그룹 비교 질문이 서버 그룹 메트릭 조회로 연결되는지 contract test 추가
+4. 수정 후 `QA-20260509-0428` 실패 5개 + WARN 3개만 targeted retest
 
 ---
 
@@ -137,4 +169,4 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 
 ---
 
-_Last Updated: 2026-05-08_
+_Last Updated: 2026-05-09 — QA-20260509-0428 실행, FAIL/WARN 후속 수정 필요_

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-09 KST (`Dashboard 서버 카드 & 상세 페이지 UX 개선 구현 완료`)
+**Last Updated**: 2026-05-09 KST (`AI 운영 대화 QA-20260509-0428 기록 및 후속 수정 대기`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 어시스턴트 운영 대응 QA 확장 | High | Draft (검토 대기) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — 서비스 맥락 A5 + 명령어 B5 + 초보 유도 C5 = 15개 시나리오 |
+| AI 어시스턴트 운영 대응 QA 확장 | High | In Progress (Codex) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — QA-20260509-0428: 15개 시나리오 중 PASS 7, WARN 3, FAIL 5. 다음 단계: 빈 응답/타임아웃(A5/B4/B5/C2), HAProxy 명령어 라우팅(B1), tool-backed empty summary(A1/C1), Redis 그룹 grounding(A3) 수정 후 targeted retest |
 
 ---
 

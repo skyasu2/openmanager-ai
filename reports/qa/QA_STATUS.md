@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-09 00:14:18 KST
+> Generated at: 2026-05-09 00:49:22 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 425 |
-| Total Runs (Counted) | 346 |
+| Total Recorded Runs | 426 |
+| Total Runs (Counted) | 347 |
 | Non-counted Runs | 79 |
-| Total Checks | 3037 |
-| Passed | 2927 |
-| Failed | 100 |
+| Total Checks | 3052 |
+| Passed | 2937 |
+| Failed | 105 |
 | Completed Items | 457 |
-| Pending Items | 0 |
+| Pending Items | 4 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260508-0425 (2026-05-08T12:23:59.578Z) |
-| Latest Recorded Run | QA-20260509-0427 (2026-05-08T15:14:17.014Z) |
+| Expert Open Gaps | 3 |
+| Completion Rate | 99.13% |
+| Last Counted Run | QA-20260509-0428 (2026-05-08T15:49:21.373Z) |
+| Latest Recorded Run | QA-20260509-0428 (2026-05-08T15:49:21.373Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260509-0427 (2026-05-08T15:14:17.014Z)
+Latest run: QA-20260509-0428 (2026-05-08T15:49:21.373Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | 빈 응답/타임아웃과 명령어 질문 라우팅 실패를 우선 재현 가능한 계약 테스트 또는 프롬프트 가드로 분리. |
+| DevOps / SRE Engineer | partially-appropriate | yes | 운영 명령어 가이드의 서비스별 최소 응답 템플릿을 보강. |
+| Test Automation Architect | partially-appropriate | yes | A5/B1/B4/B5/C2 실패 케이스를 deterministic contract 또는 mocked AI response quality guard로 승격. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed after 15 live AI QA prompts; effective usage 4.7043 USD, billed 0.0000 USD, chargeCount 4263. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-07T15:14:17.014Z -> 2026-05-08T15:14:17.014Z (24h)
+- Window: 2026-05-07T15:49:21.373Z -> 2026-05-08T15:49:21.373Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +60,7 @@ Latest run: QA-20260509-0427 (2026-05-08T15:14:17.014Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-07T15:14:17.014Z -> 2026-05-08T15:14:17.014Z (24h)
+- Window: 2026-05-07T15:49:21.373Z -> 2026-05-08T15:49:21.373Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -71,11 +73,11 @@ Latest run: QA-20260509-0427 (2026-05-08T15:14:17.014Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 5e9eafbb
-- Coverage Packs: dashboard-core, modal-detail-pack
-- Covered Surfaces: /dashboard/servers card click to server detail route, /dashboard/servers/[serverId] detail header status and AI action, server detail overview duplicate metric removal, server card click-only progressive disclosure, EnhancedServerModal shell dead-code removal
-- Skipped Surfaces: Vercel production release-gate, AI assistant conversational response QA, Cloud Run observability pack
+- Counts Toward Summary: yes
+- Deployment: SHA bfc5bd7a
+- Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: /dashboard/ai-assistant guest conversational flow, AI service context awareness: HAProxy, MySQL, Redis, Nginx, NFS storage, AI command guidance: HAProxy, MySQL, Redis, Nginx, NFS, AI beginner operator guidance: risk triage, first on-call checklist, replication, cache impact, handoff summary
+- Skipped Surfaces: non-AI dashboard route broad smoke, release-gate full route sweep, Cloud Run direct API smoke
 
 ## Links (Latest Run)
 
@@ -87,15 +89,23 @@ Latest run: QA-20260509-0427 (2026-05-08T15:14:17.014Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-console | AI ops conversational QA raw scenario results | `reports/qa/evidence/qa-20260509-ai-ops-conversational-results.json` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260509-0428)
+  next: 빈 응답/타임아웃과 명령어 질문 라우팅 실패를 우선 재현 가능한 계약 테스트 또는 프롬프트 가드로 분리.
+- sre-devops: DevOps / SRE Engineer (last QA-20260509-0428)
+  next: 운영 명령어 가이드의 서비스별 최소 응답 템플릿을 보강.
+- test-automation: Test Automation Architect (last QA-20260509-0428)
+  next: A5/B1/B4/B5/C2 실패 케이스를 deterministic contract 또는 mocked AI response quality guard로 승격.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-ops-command-intent-routing: HAProxy command guidance question routed to generic server summary (seen 1회, last QA-20260509-0428)
+- [P1] ai-ops-empty-response-timeout: AI ops QA empty response/timeouts for A5, B4, B5, and C2 (seen 1회, last QA-20260509-0428)
+- [P2] ai-ops-redis-context-quality: Redis context comparison response incomplete for three-node memory question (seen 1회, last QA-20260509-0428)
+- [P2] ai-ops-tool-result-empty-summary: Tool-backed AI responses can show empty summary despite analysis evidence (seen 1회, last QA-20260509-0428)
 
 ## Deferred Improvements
 
@@ -633,6 +643,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260509-0428 | 2026-05-08T15:49:21.373Z | targeted | no | yes | Vercel Production AI Ops Conversational QA - 15 Scenario Pack | 15 | 0 | 4 | 0 | 0 | 3 |
 | QA-20260509-0427 | 2026-05-08T15:14:17.014Z | targeted | no | no | Local Dashboard Server Detail UX QA - Modal Shell Removal and Header Actions | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260508-0426 | 2026-05-08T14:07:10.491Z | targeted | no | no | Local Dashboard Server Layout QA - Card Density and Mobile Detail Overflow | 5 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260508-0425 | 2026-05-08T12:23:59.578Z | broad | yes | yes | v8.11.113 3일간 변경사항 Playwright Production QA | 13 | 0 | 0 | 0 | 0 | 0 |
@@ -652,4 +663,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260505-0411 | 2026-05-05T06:13:00.571Z | targeted | no | no | QA Metadata Closure - Observability Server Detail Data Slot Gap | 0 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0410 | 2026-05-05T04:35:45.774Z | targeted | yes | yes | v8.11.105 RAG OTel SSOT Targeted Recheck | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0409 | 2026-05-05T03:39:15.190Z | targeted | yes | yes | v8.11.104 Residual Production Targeted QA | 6 | 3 | 1 | 0 | 0 | 1 |
-| QA-20260505-0408 | 2026-05-05T02:27:19.400Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.104 Web search answer recovery | 8 | 1 | 0 | 0 | 0 | 0 |

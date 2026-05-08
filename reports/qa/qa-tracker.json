@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-08T15:14:17.014Z"
+    "updatedAt": "2026-05-08T15:49:21.373Z"
   },
   "sequence": {
-    "nextRunNumber": 428
+    "nextRunNumber": 429
   },
   "summary": {
-    "totalRecordedRuns": 425,
-    "totalRuns": 346,
+    "totalRecordedRuns": 426,
+    "totalRuns": 347,
     "excludedRuns": 79,
-    "totalChecks": 3037,
-    "totalPassed": 2927,
-    "totalFailed": 100,
-    "completionRate": 100,
+    "totalChecks": 3052,
+    "totalPassed": 2937,
+    "totalFailed": 105,
+    "completionRate": 99.13,
     "completedItems": 457,
-    "pendingItems": 0,
+    "pendingItems": 4,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260508-0425",
-    "lastRecordedAt": "2026-05-08T12:23:59.578Z",
-    "latestRecordedRunId": "QA-20260509-0427",
-    "latestRecordedAt": "2026-05-08T15:14:17.014Z"
+    "expertDomainsOpenGaps": 3,
+    "lastRunId": "QA-20260509-0428",
+    "lastRecordedAt": "2026-05-08T15:49:21.373Z",
+    "latestRecordedRunId": "QA-20260509-0428",
+    "latestRecordedAt": "2026-05-08T15:49:21.373Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11225,6 +11225,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-08T15:14:17.014Z"
+    },
+    "ai-ops-empty-response-timeout": {
+      "id": "ai-ops-empty-response-timeout",
+      "title": "AI ops QA empty response/timeouts for A5, B4, B5, and C2",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260509-0428",
+      "firstSeenAt": "2026-05-08T15:49:21.373Z",
+      "lastSeenRunId": "QA-20260509-0428",
+      "lastSeenAt": "2026-05-08T15:49:21.373Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "A5/B4/B5/C2 timed out without visible answer in Vercel production QA-20260509 live run.",
+      "lastNote": "Likely response completion, provider, or UI extraction path issue; raw result evidence saved.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T15:49:21.373Z"
+    },
+    "ai-ops-command-intent-routing": {
+      "id": "ai-ops-command-intent-routing",
+      "title": "HAProxy command guidance question routed to generic server summary",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260509-0428",
+      "firstSeenAt": "2026-05-08T15:49:21.373Z",
+      "lastSeenRunId": "QA-20260509-0428",
+      "lastSeenAt": "2026-05-08T15:49:21.373Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "B1 asked for HAProxy backend status command but received generic 18-server summary with no HAProxy CLI/socat guidance.",
+      "lastNote": "Command-guidance intent requires stronger tool/prompt routing.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T15:49:21.373Z"
+    },
+    "ai-ops-tool-result-empty-summary": {
+      "id": "ai-ops-tool-result-empty-summary",
+      "title": "Tool-backed AI responses can show empty summary despite analysis evidence",
+      "priority": "P2",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260509-0428",
+      "firstSeenAt": "2026-05-08T15:49:21.373Z",
+      "lastSeenRunId": "QA-20260509-0428",
+      "lastSeenAt": "2026-05-08T15:49:21.373Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "A1 and C1 returned '응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다' while tool evidence was present.",
+      "lastNote": "This degrades beginner operator usefulness even when backend tool execution occurs.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T15:49:21.373Z"
+    },
+    "ai-ops-redis-context-quality": {
+      "id": "ai-ops-redis-context-quality",
+      "title": "Redis context comparison response incomplete for three-node memory question",
+      "priority": "P2",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260509-0428",
+      "firstSeenAt": "2026-05-08T15:49:21.373Z",
+      "lastSeenRunId": "QA-20260509-0428",
+      "lastSeenAt": "2026-05-08T15:49:21.373Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "A3 returned only minimal/general response evidence and did not identify the highest-memory Redis node.",
+      "lastNote": "Service context comparison needs deterministic server-group grounding.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T15:49:21.373Z"
     }
   },
   "runs": [
@@ -44850,6 +44946,104 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260509-0428",
+      "recordedAt": "2026-05-08T15:49:21.373Z",
+      "recordedAtKst": "2026-05-09 00:49:21 KST",
+      "title": "Vercel Production AI Ops Conversational QA - 15 Scenario Pack",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260509-0428.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "bfc5bd7aa9af13727322f3349f0cac61ead654f1"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant guest conversational flow",
+        "AI service context awareness: HAProxy, MySQL, Redis, Nginx, NFS storage",
+        "AI command guidance: HAProxy, MySQL, Redis, Nginx, NFS",
+        "AI beginner operator guidance: risk triage, first on-call checklist, replication, cache impact, handoff summary"
+      ],
+      "skippedSurfaces": [
+        "non-AI dashboard route broad smoke",
+        "release-gate full route sweep",
+        "Cloud Run direct API smoke"
+      ],
+      "checks": {
+        "total": 15,
+        "passed": 10,
+        "failed": 5
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "15개 운영 대화 시나리오 중 PASS 7, WARN 3, FAIL 5로 맥락 인식과 명령어 안내 품질이 안정적이지 않음.",
+          "nextAction": "빈 응답/타임아웃과 명령어 질문 라우팅 실패를 우선 재현 가능한 계약 테스트 또는 프롬프트 가드로 분리."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "MySQL, Nginx 일부 질문은 실무형 답변을 제공했지만 HAProxy/NFS/Nginx 로그 분석 명령어와 초보 당직 흐름에서 실패가 남음.",
+          "nextAction": "운영 명령어 가이드의 서비스별 최소 응답 템플릿을 보강."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "수동 운영 대화 QA를 자동 러너로 실행했으나, 실패 재현을 CI 계약 테스트로 고정하는 후속 작업이 필요함.",
+          "nextAction": "A5/B1/B4/B5/C2 실패 케이스를 deterministic contract 또는 mocked AI response quality guard로 승격."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-09T00:47:54+09:00",
+          "summary": "Current billing period reviewed after 15 live AI QA prompts; effective usage 4.7043 USD, billed 0.0000 USD, chargeCount 4263.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "AI ops conversational QA raw scenario results",
+          "path": "reports/qa/evidence/qa-20260509-ai-ops-conversational-results.json",
+          "note": "15 scenario result JSON captured by /tmp/ops-ai-qa-runner.js"
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 3,
+      "completedCount": 0,
+      "pendingCount": 4,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -44858,17 +45052,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 208,
+      "seenCount": 209,
       "appropriateCount": 185,
-      "partialCount": 23,
+      "partialCount": 24,
       "inappropriateCount": 0,
-      "improvementNeededCount": 33,
-      "lastRunId": "QA-20260508-0425",
-      "lastSeenAt": "2026-05-08T12:23:59.578Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "AI Chat/Reporter/이상감지 3개 핵심 기능 정상, raw JSON 억제 검증",
-      "lastNextAction": ""
+      "improvementNeededCount": 34,
+      "lastRunId": "QA-20260509-0428",
+      "lastSeenAt": "2026-05-08T15:49:21.373Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "15개 운영 대화 시나리오 중 PASS 7, WARN 3, FAIL 5로 맥락 인식과 명령어 안내 품질이 안정적이지 않음.",
+      "lastNextAction": "빈 응답/타임아웃과 명령어 질문 라우팅 실패를 우선 재현 가능한 계약 테스트 또는 프롬프트 가드로 분리."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -44909,34 +45103,34 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 141,
+      "seenCount": 142,
       "appropriateCount": 128,
-      "partialCount": 13,
+      "partialCount": 14,
       "inappropriateCount": 0,
-      "improvementNeededCount": 17,
-      "lastRunId": "QA-20260507-0420",
-      "lastSeenAt": "2026-05-07T03:06:42.069Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Release propagation completed, production served the expected version, and the GitLab tag pipeline succeeded.",
-      "lastNextAction": ""
+      "improvementNeededCount": 18,
+      "lastRunId": "QA-20260509-0428",
+      "lastSeenAt": "2026-05-08T15:49:21.373Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "MySQL, Nginx 일부 질문은 실무형 답변을 제공했지만 HAProxy/NFS/Nginx 로그 분석 명령어와 초보 당직 흐름에서 실패가 남음.",
+      "lastNextAction": "운영 명령어 가이드의 서비스별 최소 응답 템플릿을 보강."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 179,
+      "seenCount": 180,
       "appropriateCount": 165,
-      "partialCount": 14,
+      "partialCount": 15,
       "inappropriateCount": 0,
-      "improvementNeededCount": 16,
-      "lastRunId": "QA-20260507-0420",
-      "lastSeenAt": "2026-05-07T03:06:42.069Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The QA combines route status checks and rendered UI action checks for the removed feature surface.",
-      "lastNextAction": ""
+      "improvementNeededCount": 17,
+      "lastRunId": "QA-20260509-0428",
+      "lastSeenAt": "2026-05-08T15:49:21.373Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "수동 운영 대화 QA를 자동 러너로 실행했으나, 실패 재현을 CI 계약 테스트로 고정하는 후속 작업이 필요함.",
+      "lastNextAction": "A5/B1/B4/B5/C2 실패 케이스를 deterministic contract 또는 mocked AI response quality guard로 승격."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

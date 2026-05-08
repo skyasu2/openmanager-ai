@@ -1,0 +1,152 @@
+{
+  "runId": "QA-20260509-0428",
+  "recordedAt": "2026-05-08T15:49:21.373Z",
+  "recordedAtKst": "2026-05-09 00:49:21 KST",
+  "runTitle": "Vercel Production AI Ops Conversational QA - 15 Scenario Pack",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "bfc5bd7aa9af13727322f3349f0cac61ead654f1"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant guest conversational flow",
+    "AI service context awareness: HAProxy, MySQL, Redis, Nginx, NFS storage",
+    "AI command guidance: HAProxy, MySQL, Redis, Nginx, NFS",
+    "AI beginner operator guidance: risk triage, first on-call checklist, replication, cache impact, handoff summary"
+  ],
+  "skippedSurfaces": [
+    "non-AI dashboard route broad smoke",
+    "release-gate full route sweep",
+    "Cloud Run direct API smoke"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 10,
+    "failed": 5
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "15개 운영 대화 시나리오 중 PASS 7, WARN 3, FAIL 5로 맥락 인식과 명령어 안내 품질이 안정적이지 않음.",
+      "nextAction": "빈 응답/타임아웃과 명령어 질문 라우팅 실패를 우선 재현 가능한 계약 테스트 또는 프롬프트 가드로 분리."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "MySQL, Nginx 일부 질문은 실무형 답변을 제공했지만 HAProxy/NFS/Nginx 로그 분석 명령어와 초보 당직 흐름에서 실패가 남음.",
+      "nextAction": "운영 명령어 가이드의 서비스별 최소 응답 템플릿을 보강."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "수동 운영 대화 QA를 자동 러너로 실행했으나, 실패 재현을 CI 계약 테스트로 고정하는 후속 작업이 필요함.",
+      "nextAction": "A5/B1/B4/B5/C2 실패 케이스를 deterministic contract 또는 mocked AI response quality guard로 승격."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-09T00:47:54+09:00",
+      "summary": "Current billing period reviewed after 15 live AI QA prompts; effective usage 4.7043 USD, billed 0.0000 USD, chargeCount 4263.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "AI ops conversational QA raw scenario results",
+      "path": "reports/qa/evidence/qa-20260509-ai-ops-conversational-results.json",
+      "note": "15 scenario result JSON captured by /tmp/ops-ai-qa-runner.js"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-ops-empty-response-timeout",
+      "title": "AI ops QA empty response/timeouts for A5, B4, B5, and C2",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "A5/B4/B5/C2 timed out without visible answer in Vercel production QA-20260509 live run.",
+      "note": "Likely response completion, provider, or UI extraction path issue; raw result evidence saved.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-command-intent-routing",
+      "title": "HAProxy command guidance question routed to generic server summary",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "B1 asked for HAProxy backend status command but received generic 18-server summary with no HAProxy CLI/socat guidance.",
+      "note": "Command-guidance intent requires stronger tool/prompt routing.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-tool-result-empty-summary",
+      "title": "Tool-backed AI responses can show empty summary despite analysis evidence",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "A1 and C1 returned '응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다' while tool evidence was present.",
+      "note": "This degrades beginner operator usefulness even when backend tool execution occurs.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-redis-context-quality",
+      "title": "Redis context comparison response incomplete for three-node memory question",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "A3 returned only minimal/general response evidence and did not identify the highest-memory Redis node.",
+      "note": "Service context comparison needs deterministic server-group grounding.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Scenario result summary: PASS 7, WARN 3, FAIL 5. WARN was counted as non-failing check for tracker totals, so checks.passed=10 and checks.failed=5.",
+    "PASS scenarios: A2 MySQL primary/replica load, A4 Nginx traffic distribution, B2 MySQL slow/running query, B3 Redis memory key guidance, C3 MySQL replication detection, C4 Redis full-memory service impact, C5 one-line handoff summary.",
+    "WARN scenarios: A1 HAProxy status returned empty-summary fallback despite tool evidence, A3 Redis three-node memory comparison did not identify the target node, C1 HAProxy 73% CPU risk returned empty-summary fallback.",
+    "FAIL scenarios: A5 storage threshold prediction timed out, B1 HAProxy backend command returned generic server summary, B4 Nginx 5xx path analysis timed out, B5 NFS remount sequence timed out, C2 first on-call checklist timed out.",
+    "Console observation: [HybridAI] useChat error trace 6ba92f45b68827bf496a950767d69017 reported Internal Server Error during the run.",
+    "Vercel usage check after QA: PASS, effective usage 4.7043 USD, billed 0.0000 USD."
+  ],
+  "links": []
+}
