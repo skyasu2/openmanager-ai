@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-07 22:13:52 KST
+> Generated at: 2026-05-08 10:27:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 418 |
+| Total Recorded Runs | 419 |
 | Total Runs (Counted) | 344 |
-| Non-counted Runs | 74 |
+| Non-counted Runs | 75 |
 | Total Checks | 3017 |
 | Passed | 2908 |
 | Failed | 100 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260507-0420 (2026-05-07T03:06:42.069Z) |
-| Latest Recorded Run | QA-20260507-0420 (2026-05-07T03:06:42.069Z) |
+| Latest Recorded Run | QA-20260508-0421 (2026-05-08T01:27:43.763Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,37 +34,31 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260507-0420 (2026-05-07T03:06:42.069Z)
+Latest run: QA-20260508-0421 (2026-05-08T01:27:43.763Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Frontend UX Engineer | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.113 targeted QA; effective 3.3658 USD, billed 0.0000 USD, chargeCount 3045. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-06T03:06:42.069Z -> 2026-05-07T03:06:42.069Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 7
+- Window: 2026-05-07T01:27:43.763Z -> 2026-05-08T01:27:43.763Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 2 | 24208ms | 45500ms | - | - | 2915ms | 2915ms | QA-20260507-0418 |
-| Supervisor | unknown | 3 | 4723ms | 6228ms | 1113ms | 1259ms | 5064ms | 5064ms | QA-20260507-0418 |
-| Reporter Agent | unknown | 1 | 3599ms | 3599ms | - | - | - | - | QA-20260506-0415 |
-| Analyst Agent | deterministic | 1 | 1273ms | 1273ms | - | - | - | - | QA-20260506-0415 |
+| - | - | 0 | - | - | - | - | - | - | - |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-06T03:06:42.069Z -> 2026-05-07T03:06:42.069Z (24h)
+- Window: 2026-05-07T01:27:43.763Z -> 2026-05-08T01:27:43.763Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -76,26 +70,24 @@ Latest run: QA-20260507-0420 (2026-05-07T03:06:42.069Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: v8.11.113 / SHA e0d19690
-- Coverage Packs: core-routes-smoke, ai-core
-- Covered Surfaces: GitLab v8.11.113 tag pipeline 2506061682 succeeded for e0d19690a45ab4970bc72a5ad330c49516b9e678, Production /api/version served 8.11.113 after release propagation, Vercel /api/ai/feedback GET returned 404, Vercel /api/ai/feedback POST returned 404, Cloud Run /api/ai/feedback GET returned 404 with production API authentication, Cloud Run /api/ai/feedback POST returned 404 with production API authentication, Production AI Assistant rendered with feedback actions removed and copy/regenerate actions retained, Message copy action still produced the copied state
-- Skipped Surfaces: Full five-question conversational AI QA was not rerun because this release removed feedback collection/UI/API surfaces and did not change prompt quality, provider routing, or answer generation logic, Reporter, anomaly/trend, modal/detail, privacy, OAuth, and broad dashboard packs were not rerun in this targeted pass
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA 2446e6e0
+- Coverage Packs: dashboard-core
+- Covered Surfaces: NivoTimeSeriesChart visual QA preflight, local Next.js dev server startup attempts, local Next.js build/start fallback assessment
+- Skipped Surfaces: storage-nfs-dc1-01 performance tab hover tooltip visual verification, anomaly highlight rect visual verification, Playwright screenshot evidence
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.113 tag pipeline 2506061682 | [GitLab v8.11.113 tag pipeline 2506061682](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2506061682) | - |
-| general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.113 AI feedback removal evidence | `reports/qa/evidence/qa-20260507-v811113-feedback-removal.md` | - |
-| playwright-screenshot | AI Assistant feedback actions removed | `reports/qa/evidence/qa-20260507-v811113-feedback-removal-ai-assistant.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -633,6 +625,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260508-0421 | 2026-05-08T01:27:43.763Z | targeted | no | no | Local Nivo Chart Visual QA - WSL2 /mnt/d SIGBUS Blocked | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260507-0420 | 2026-05-07T03:06:42.069Z | targeted | yes | yes | v8.11.113 AI Feedback Removal Production Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260507-0419 | 2026-05-07T01:09:27.132Z | targeted | yes | yes | v8.11.112 AI Assistant Scroll and Internal Disclosure Targeted QA | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260507-0418 | 2026-05-06T21:59:27.519Z | targeted | yes | yes | v8.11.110 Production Targeted QA - Precomputed State Data Source Decoupling | 11 | 2 | 0 | 0 | 0 | 0 |
@@ -652,4 +645,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260504-0404 | 2026-05-04T07:13:56.328Z | broad | yes | yes | v8.11.95 Vercel Playwright MCP Broad Recheck | 20 | 2 | 0 | 0 | 3 | 3 |
 | QA-20260504-0403 | 2026-05-04T05:22:20.393Z | targeted | yes | yes | v8.11.95 AI Ranking and Formatting Rewrite Recheck | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260504-0402 | 2026-05-03T23:00:39.195Z | targeted | yes | yes | v8.11.89 Vercel Playwright MCP Targeted QA | 15 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260504-0401 | 2026-05-03T17:29:57.587Z | targeted | yes | yes | v8.11.89 Release Smoke - Monitoring Source Error Contract | 9 | 2 | 0 | 0 | 0 | 0 |

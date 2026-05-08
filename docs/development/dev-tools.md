@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-08
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -298,6 +298,10 @@ curl -I http://127.0.0.1:6006
 
 `storybook:smoke`는 Storybook 공식 CLI의 `--ci`, `--smoke-test`, `--force-build-preview`, `--disable-telemetry`, `--no-version-updates` 조합을 사용합니다.
 이 조합은 비대화형 기동 확인, preview 재빌드, telemetry/update check 차단을 동시에 보장합니다.
+
+GitLab CI에서는 Storybook/UI 관련 변경에 한해 `validate_storybook_smoke` job이 `npm run storybook:smoke`를 실행합니다. Full build는 기본 validate에 포함하지 않고, Storybook 설정 변경, 대규모 UI/story 변경, release 전 정적 산출물 확인이 필요할 때 `npm run storybook:build:ci`를 수동 실행합니다.
+
+WSL2 `/mnt/*` Windows 파일시스템 위에서는 Vite/esbuild native IO가 `SIGBUS`를 낼 수 있습니다. 로컬에서 `storybook:smoke`가 해당 증상으로 실패하면 제품 회귀로 단정하지 말고, Linux ext4 경로 또는 GitLab runner 작업 경로(`~/builds/...`)에서 재검증합니다.
 
 ```bash
 # Codex/Gemini에서 Storybook 작업이 필요할 때

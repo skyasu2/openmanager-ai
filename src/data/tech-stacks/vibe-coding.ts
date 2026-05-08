@@ -145,7 +145,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'UI 컴포넌트를 앱 외부의 독립 환경에서 개발·테스트하는 프론트엔드 워크숍. 버튼 하나, 카드 하나를 다양한 상태(정상/경고/에러 등)로 시각 확인하며 살아있는 문서로 관리',
       implementation:
-        '→ src/components 기준 52개 스토리로 ~39% 컴포넌트 커버리지 유지. addon-mcp로 AI가 컴포넌트 문서를 직접 조회·스토리 생성 가능. @storybook/nextjs-vite 기반',
+        '→ src/components 기준 52개 스토리(~39% 컴포넌트 커버리지), 전체 56개 스토리 유지. addon-mcp로 AI가 컴포넌트 문서를 직접 조회·스토리 생성 가능. @storybook/nextjs-vite 기반',
       version: '10.2.10',
       status: 'active',
       icon: '📖',

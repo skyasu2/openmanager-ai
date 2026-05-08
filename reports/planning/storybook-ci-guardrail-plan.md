@@ -75,24 +75,25 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 **결정: 옵션 A** — CI job 추가하지 않고 운영 문서에만 명시.
 이유: self-hosted runner CI 예산 절약, full build는 release 전 수동 실행으로 충분.
 
-- [ ] `docs/development/ci-cd.md`에 full build 수동 실행 조건 명시 (`npm run storybook:build:ci`)
-- [ ] 기본 branch/MR validate에는 포함하지 않음
+- [x] `docs/development/ci-cd.md`에 full build 수동 실행 조건 명시 (`npm run storybook:build:ci`)
+- [x] 기본 branch/MR validate에는 포함하지 않음
 
 ### Task 4: 문서 및 스킬 반영
 
-- [ ] `docs/development/dev-tools.md`에 CI 적용 정책 추가
-- [ ] `docs/development/ci-cd.md`에 Storybook smoke job 조건 추가
-- [ ] 필요 시 `.agents/skills/lint-smoke/SKILL.md`에 Storybook 관련 변경 시 smoke 실행 기준 추가
-- [ ] 신규 story 수치는 컴포넌트 삭제/Chart migration 완료 후 재계산해 `src/data/tech-stacks/vibe-coding.ts`와 맞춤
+- [x] `docs/development/dev-tools.md`에 CI 적용 정책 추가
+- [x] `docs/development/ci-cd.md`에 Storybook smoke job 조건 추가
+- [x] `.agents/skills/lint-smoke/SKILL.md` 변경 불필요 판단 — Storybook smoke는 CI guardrail 문서와 `.gitlab-ci.yml` job 정책으로 한정
+- [x] 신규 story 수치는 컴포넌트 삭제/Chart migration 완료 후 재계산해 `src/data/tech-stacks/vibe-coding.ts`와 맞춤 (`src/components` 52개, 전체 56개)
 
 ### Task 5: 검증
 
-- [ ] `npm run storybook:smoke` — **⚠️ 로컬 환경 한계**: `/mnt/d/` (Windows NTFS) 에서 esbuild가 SIGBUS 발생. CI runner (`~/builds/` Linux ext4)에서는 정상 동작 예상. 로컬 검증은 Linux 경로에서 수행 필요.
+- [ ] `npm run storybook:smoke` — **⚠️ 로컬 환경 한계 재현(2026-05-08)**: `/mnt/d/` (Windows NTFS) 에서 `Bus error (core dumped)`, exit 135. CI runner (`~/builds/` Linux ext4)에서는 정상 동작 예상. 로컬 검증은 Linux ext4 경로에서 수행 필요.
 - [x] `bash -n scripts/storybook/smoke.sh` — bash 문법 OK
-- [ ] `npm run docs:budget`
-- [ ] `npm run docs:ai-consistency`
-- [ ] `git diff --check`
+- [x] `npm run docs:budget`
+- [x] `npm run docs:ai-consistency`
+- [x] `git diff --check`
 - [x] `.gitlab-ci.yml` YAML 문법 검증 (python3 yaml.safe_load) — OK
+- [x] `npm run ci:gitlab:check`
 
 ## 선행 조건
 

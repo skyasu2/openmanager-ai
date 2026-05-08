@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`storybook-ci-guardrail Task 1~2 구현 + dependency hygiene archive`)
+**Last Updated**: 2026-05-08 KST (`storybook-ci-guardrail Task 3~4 docs 반영 + local SIGBUS 재확인`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,8 +21,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| NivoTimeSeriesChart UX 회귀 수정 | High | Implemented. 툴팁/useMesh, active anomaly endTime, anomaly layer 보간/최소폭 수정 및 targeted/type/lint/test:quick 통과. 남은 확인: Playwright hover/하이라이트 시각 QA. 상세: [nivo-chart-ux-fix-plan.md](nivo-chart-ux-fix-plan.md) |
-| Storybook CI guardrail 적용 | Medium | In Progress. Task 1~2 완료(`.gitlab-ci.yml` 경로 앵커 + `validate_storybook_smoke` job). 남은 Task: docs 반영(3~4), CI 검증(5). 주의: 로컬 `/mnt/d/` 에서 esbuild SIGBUS — CI runner (`~/builds/`) 에서는 정상 예상. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
+| NivoTimeSeriesChart UX 회귀 수정 | High | Implemented. 툴팁/useMesh, active anomaly endTime, anomaly layer 보간/최소폭 수정 및 targeted/type/lint/test:quick 통과. 남은 확인: Playwright hover/하이라이트 시각 QA. 2026-05-08 로컬 `/mnt/d` QA는 SIGBUS로 blocked, non-counting 기록 [QA-20260508-0421](../qa/runs/2026/qa-run-QA-20260508-0421.json). 상세: [nivo-chart-ux-fix-plan.md](nivo-chart-ux-fix-plan.md) |
+| Storybook CI guardrail 적용 | Medium | In Progress. Task 1~4 완료(`.gitlab-ci.yml` 경로 앵커 + `validate_storybook_smoke` job + docs 반영 + story 수치 재계산). 남은 Task: CI 검증(5). 주의: 로컬 `/mnt/d/` 에서 esbuild `Bus error`, exit 135 재현 — CI runner (`~/builds/`) 에서는 정상 예상. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
 | Developer Panel — AI 진단 컨텍스트 노출 | Medium | Approved. AI 에이전트(Claude/Codex)가 MCP/Playwright로 읽는 `data-testid="developer-panel"` DOM 요소. `data-panel-json` 속성에 session/stream/system/rag 메타데이터를 JSON으로 노출. 시각 UI 없음(`hidden`). 상세: [developer-panel-plan.md](developer-panel-plan.md) |
 | MSW 테스트 인프라 정합성 개선 | Medium | Draft (계약 미확정). false-pass 계약/통합 테스트, MSW strict boundary, live connectivity config 분리, provider handler drift, 비용/과잉 테스트 금지 포함. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
 

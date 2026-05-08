@@ -1,0 +1,53 @@
+{
+  "runId": "QA-20260508-0421",
+  "recordedAt": "2026-05-08T01:27:43.763Z",
+  "recordedAtKst": "2026-05-08 10:27:43 KST",
+  "runTitle": "Local Nivo Chart Visual QA - WSL2 /mnt/d SIGBUS Blocked",
+  "owner": "codex",
+  "source": "local-dev-diagnostics",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js local",
+    "backend": "local/mock",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "2446e6e07ade20332bc5c154d48fb89241e01c7d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "NivoTimeSeriesChart visual QA preflight",
+    "local Next.js dev server startup attempts",
+    "local Next.js build/start fallback assessment"
+  ],
+  "skippedSurfaces": [
+    "storage-nfs-dc1-01 performance tab hover tooltip visual verification",
+    "anomaly highlight rect visual verification",
+    "Playwright screenshot evidence"
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright visual QA was not executed because local Next.js dev/build repeatedly crashed on WSL2 /mnt/d with SIGBUS.",
+    "Evidence: npm run storybook:smoke exited 135 with Bus error; next dev Turbopack and webpack exited before readiness; npm run build exited without stdout and dmesg recorded Node/next-server fatal signal 7.",
+    "Attempted ext4 workaround by rsyncing to /tmp, but /mnt/d large-file traversal was too slow for this QA pass and was aborted cleanly.",
+    "Deterministic gates still passed: type-check, lint, test:quick, docs:budget, docs:ai-consistency, git diff --check, ci:gitlab:check."
+  ],
+  "links": []
+}
