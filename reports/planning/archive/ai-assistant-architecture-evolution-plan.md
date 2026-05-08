@@ -9,7 +9,7 @@
 - 상태: Completed (M3~M7 completed; Streaming UI S1~S3 completed; no active implementation milestone)
 - 작성일: 2026-05-03
 - TODO.md 연결: Recent Completed #274 > `AI Assistant Architecture Evolution M7 (MonitoringFactPack + eval guard)`
-- 기준 문서: [ai-assistant-initial-design-comparison.md](../../docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md)
+- 기준 문서: [ai-assistant-initial-design-comparison.md](../../../docs/archived/ai-assistant-initial-design-comparison.md)
 - 선행 완료:
   - [AI Assistant Route Decision Metadata Plan](ai-assistant-route-decision-metadata-plan.md) — M1 완료
   - [AI Assistant Plan Result Facade Plan](ai-assistant-plan-result-facade-plan.md) — M2 완료

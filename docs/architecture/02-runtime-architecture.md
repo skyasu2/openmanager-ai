@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-08
 > Canonical: docs/architecture/02-runtime-architecture.md
 > Tags: architecture,ai,runtime,supervisor,provider
 
@@ -84,6 +84,6 @@ flowchart TB
 
 - [AI Engine Architecture](../reference/architecture/ai/ai-engine-architecture.md)
 - [Frontend/Backend AI Comparison](../reference/architecture/ai/frontend-backend-comparison.md)
-- [AI Assistant Initial Design Comparison](../reference/architecture/ai/ai-assistant-initial-design-comparison.md)
+- [AI Assistant Initial Design Comparison](../archived/ai-assistant-initial-design-comparison.md) — historical comparison only
 - [RAG Knowledge Engine](../reference/architecture/ai/rag-knowledge-engine.md)
 - [AI Assistant Architecture Evolution Plan](../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md)

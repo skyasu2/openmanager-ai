@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`storybook-ci-guardrail CI 검증 완료`)
+**Last Updated**: 2026-05-08 KST (`storage audit 추가 + docs 위생 개선 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -25,6 +25,7 @@
 | Storybook CI guardrail 적용 | Medium | Implemented. Task 1~5 완료(`.gitlab-ci.yml` 경로 앵커 + `validate_storybook_smoke` job + docs 반영 + story 수치 재계산 + GitLab pipeline `2509107503` success). 주의: 로컬 `/mnt/d/` 에서 esbuild `Bus error`, exit 135 재현 — CI runner (`~/builds/`) 에서는 정상 확인. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
 | Developer Panel — AI 진단 컨텍스트 노출 | Medium | Approved. AI 에이전트(Claude/Codex)가 MCP/Playwright로 읽는 `data-testid="developer-panel"` DOM 요소. `data-panel-json` 속성에 session/stream/system/rag 메타데이터를 JSON으로 노출. 시각 UI 없음(`hidden`). 상세: [developer-panel-plan.md](developer-panel-plan.md) |
 | MSW 테스트 인프라 정합성 개선 | Medium | Draft (계약 미확정). false-pass 계약/통합 테스트, MSW strict boundary, live connectivity config 분리, provider handler drift, 비용/과잉 테스트 금지 포함. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
+| docs 위생 개선 | Low | Implemented. Task 1~6 완료. 활성 문서 72/90, `ai-assistant-initial-design-comparison.md` archived 이동, `frontend-backend-comparison.md` 유지, `ci-cd.md` 절차 중복 축소, `ai-engine-architecture.md` 분할하지 않음으로 판단. 상세: [docs-hygiene-plan.md](docs-hygiene-plan.md) |
 
 ---
 
@@ -32,6 +33,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| P2: Local Docker/WSL storage hygiene | Medium | tracking-only | 주기 점검 기준 추가. 비파괴 감사는 `npm run storage:audit` / 상세 Docker 확인은 `npm run storage:audit -- --docker-verbose`. 우선 확인 대상: Docker build cache/unused image, Supabase volume 링크, WSL `.gemini/backups`, `.npm/_cacache`, `.npm/_npx`, `.cache/ms-playwright`, `.cache/puppeteer`, `.minikube/cache`, 프로젝트 `tmp/root-artifacts`, `tmp/playwright`. 삭제 전 QA evidence는 `npm run qa:evidence:audit` 확인. |
 | P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-05 `v8.11.106` targeted QA 후 재검증 기준 `reports/qa=90MiB`, `reports/qa/evidence=83MiB`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 | P3: GraphRAG 410 tombstone 파일 제거 검토 | Low | tracking-only | `cloud-run/ai-engine/src/routes/graphrag.ts` (34줄)는 현재 모든 엔드포인트가 410 반환만 함. `server.ts`에서 동적 import로 등록 중. 호환 기간 충분히 지난 후 파일 삭제 + `server.ts` import 제거 가능. 선행 조건: `/api/ai/graphrag/*` 외부 클라이언트 사용 여부 로그 확인. |
 

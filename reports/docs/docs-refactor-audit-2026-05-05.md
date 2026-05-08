@@ -87,7 +87,7 @@
 | File | Lines | Issue | Refactor Direction |
 |---|---:|---|---|
 | `docs/reference/architecture/ai/ai-engine-architecture.md` | 1224 | AI Engine 전체 설계, 모델 정책, provider fallback, 운영 제약이 한 파일에 집중 | 완료: AI 작업용 빠른 참조 추가. 세부 절 분리는 후속 검토 |
-| `docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md` | 842 | 역사/비교 성격이 강함 | 완료: 구현 SSOT가 아니라 대안 비교 렌즈임을 명시. 핵심 결론 흡수 후 archive 후보 |
+| `docs/archived/ai-assistant-initial-design-comparison.md` | 889 | 역사/비교 성격이 강함 | 완료: 핵심 결론은 AI Engine Architecture에 흡수됐고 2026-05-08 archived 이동 |
 | `docs/archived/server-metadata-comparison.md` | 732 | 비교/선택 기록 성격 | 완료: 현재 OTel SSOT로 대체하고 archived로 이동 |
 | `docs/development/ci-cd.md` | 684 | GitLab/Vercel/Cloud Run/공개 snapshot/로컬 CI가 모두 있음 | 완료: 실제 배포/롤백 절차는 `operations` runbook으로 분리하고, 이 문서는 CI/CD reference로 역할 축소 |
 | `docs/reference/architecture/system/system-architecture-current.md` | 566 | 현행 시스템 상세 SSOT라 크지만 가치 높음 | 유지. `docs/architecture/*`의 상세 링크 대상으로 관리 |
@@ -191,7 +191,7 @@ Legend:
 | `docs/reference/api/endpoints.md` | Active | 실제 route 기준 재생성 완료 | Keep, generate via script |
 | `docs/reference/architecture/README.md` | Active Canonical | 상세 아키텍처 인덱스 | Keep |
 | `docs/reference/architecture/ai/ai-assistant-improvement-boundaries.md` | Active Supporting | AI 개선 경계 결정 | Keep |
-| `docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md` | Active Supporting | 초기 설계 비교/진화 판단 렌즈. 구현 SSOT 아님 | Keep, Archive candidate after key conclusions are absorbed |
+| `docs/archived/ai-assistant-initial-design-comparison.md` | Archived | 초기 설계 비교/진화 판단 렌즈. 구현 SSOT 아님 | Historical evidence only |
 | `docs/reference/architecture/ai/ai-engine-architecture.md` | Active Canonical | AI Engine SSOT, AI 작업용 빠른 참조 추가 | Keep, Split candidate |
 | `docs/reference/architecture/ai/frontend-backend-comparison.md` | Active | FE/BE 비교 | Keep |
 | `docs/reference/architecture/ai/monitoring-ml.md` | Active | ML/모니터링 참고 | Refresh or merge into AI architecture |
@@ -248,7 +248,7 @@ Legend:
 
 1. 완료: `ai-engine-architecture.md` 상단에 AI 작업용 빠른 참조를 추가했다. provider/model/stream/job-store 세부 분리는 후속 검토로 유지한다.
 2. 완료: `ci-cd.md`는 CI/CD reference로 역할을 낮추고, [deployment-guide.md](../../docs/operations/deployment-guide.md)와 [rollback-guide.md](../../docs/operations/rollback-guide.md)를 운영 runbook으로 추가했다.
-3. 완료: `server-metadata-comparison.md`는 archived로 이동했다. `ai-assistant-initial-design-comparison.md`는 현재 planning에서 기준 문서로 참조하므로 active supporting으로 유지하되, 구현 SSOT가 아님을 명시했다.
+3. 완료: `server-metadata-comparison.md`와 `ai-assistant-initial-design-comparison.md`는 archived로 이동했다. 현재 AI runtime 기준은 `ai-engine-architecture.md`와 design 문서를 우선한다.
 
 ### Wave 4 - Governance
 

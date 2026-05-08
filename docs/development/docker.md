@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-08
 > Canonical: docs/development/docker.md
 > Tags: docker,cloud-run,ai-engine
 
@@ -360,6 +360,26 @@ docker inspect ai-engine-local
 # 이미지 크기 확인
 docker images ai-engine
 ```
+
+### 로컬 Docker/WSL 용량 점검
+
+로컬 Docker는 Supabase stack, GitHub MCP, Local Docker CI, AI Engine preflight가 같이 사용하므로 삭제 전에 반드시 현재 실행 중인 컨테이너와 volume 링크를 확인합니다. 주기 점검은 비파괴 감사부터 시작합니다.
+
+```bash
+# Docker 요약 + WSL 홈/프로젝트 캐시·백업 후보 확인
+npm run storage:audit
+
+# Docker 이미지/컨테이너별 상세까지 확인
+npm run storage:audit -- --docker-verbose
+```
+
+정리 판단 기준:
+
+- `docker system df -v`에서 active Supabase 이미지/볼륨만 남아 있으면 Docker prune 효과는 낮습니다.
+- `docker builder prune`/`docker image prune`은 build cache나 unused image가 실제로 있을 때만 실행합니다.
+- `docker volume prune`은 기본 금지입니다. Supabase DB/storage volume 링크를 확인한 뒤 명시적으로 불필요한 volume만 제거합니다.
+- WSL 경로에서는 `.gemini/backups`, `.npm/_cacache`, `.npm/_npx`, `.cache/ms-playwright`, `.cache/puppeteer`, `.minikube/cache`, `tmp/root-artifacts`, `tmp/playwright`를 우선 확인합니다.
+- `reports/qa/evidence`는 durable QA 증거입니다. 삭제 전 `npm run qa:evidence:audit`로 orphan 여부를 확인합니다.
 
 ### 프로덕션 배포
 

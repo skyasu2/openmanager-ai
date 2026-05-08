@@ -4,13 +4,15 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-08
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
 **분석 일시**: 2026-05-05 (AI assistant taxonomy and runtime positioning refresh)
 **버전**: v8.11.97
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)
+
+**문서 관계**: 이 문서는 Vercel frontend와 Cloud Run AI Engine의 책임 경계, 파일 매핑, 완성도 비교를 다룹니다. Cloud Run 내부 provider, tool, fallback, FactPack, endpoint 상세 기준은 [AI Engine Architecture](./ai-engine-architecture.md)를 우선합니다.
 
 ---
 
@@ -375,8 +377,10 @@ OpenManager AI v8.11.97 기준 AI Assistant는 **Frontend-Backend 양쪽 모두 
 
 현재 아키텍처는 Free Tier 범위 내에서 안정적으로 운영 가능하며, High 우선순위 항목은 모두 해결 완료되었습니다.
 
+See also: [AI Engine Architecture](./ai-engine-architecture.md) — Cloud Run AI runtime 상세 기준.
+
 ---
 
-_Last Updated: 2026-05-07 (as-built architecture index and route catalog cleanup)_
+_Last Updated: 2026-05-08 (document relationship clarified after docs hygiene review)_
 _Analysis Method: 코드베이스 실측 (wc -l, symbol analysis)_
 _Corrections: 캐시(Memory+Redis), AI error context, Provider순서(Cerebras→Mistral→Groq→Gemini), 줄 수 오류 수정_

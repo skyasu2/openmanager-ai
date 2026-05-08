@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-08
 > Canonical: docs/reference/README.md
 > Tags: reference,index,architecture
 
@@ -30,7 +30,6 @@
 
 ### AI
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
-- [AI Assistant Initial Design Comparison](./architecture/ai/ai-assistant-initial-design-comparison.md)
 - [API Endpoints](./api/endpoints.md)
 - [API Contracts](./api/contracts.md)
 - [Frontend/Backend Comparison](./architecture/ai/frontend-backend-comparison.md)
@@ -64,6 +63,7 @@
 
 ### Historical / Archived
 
+- [AI Assistant Initial Design Comparison](../archived/ai-assistant-initial-design-comparison.md) — 초기 대안 비교와 의사결정 이력. 현재 AI runtime 기준은 [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)를 사용합니다.
 - [Server Metadata Comparison](../archived/server-metadata-comparison.md) — v8.0.0 기준 비교 기록. 현재 데이터 SSOT는 [OTel Data Architecture](./architecture/data/otel-data-architecture.md)를 사용합니다.
 
 ## Related

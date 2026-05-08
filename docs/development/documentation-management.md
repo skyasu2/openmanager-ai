@@ -3,7 +3,7 @@
 > Owner: docs-platform
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-08
 > Canonical: docs/development/documentation-management.md
 > Tags: docs-governance,diataxis,docs-as-code
 
@@ -47,7 +47,7 @@ AI 에이전트가 문서를 사용할 때의 계약은 다음과 같다.
 1. 우선순위: 병합 > 기존 문서 확장 > 신규 생성
 2. 활성 문서 예산: 총 90개(`docs/archived/` 제외)
    - Scope 한도: `architecture 12`, `design 12`, `operations 8`, `adr 8`, `reference/architecture 28`, `development 28(= vibe-coding 포함)`, `guides 14`, `troubleshooting 7`, `root 5`
-   - 파일 길이 기준: How-to/Tutorial은 800줄 이하 권장, Reference/Architecture는 1500줄까지 단일 파일 허용
+   - 파일 길이 기준: Tutorial/How-to는 400줄 이하 권장, Explanation은 300~800줄 권장, Reference/Architecture는 줄 수보다 완결성과 독자·작업 단위 기준을 우선
 3. 메타데이터(변경 문서 Hard gate):
    - 필수: `Owner`, `Status`, `Doc type`, `Last reviewed`
    - 권장: `Canonical`, `Tags`

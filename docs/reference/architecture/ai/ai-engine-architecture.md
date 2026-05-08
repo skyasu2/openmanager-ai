@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-06
+> Last reviewed: 2026-05-08
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
@@ -41,7 +41,13 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **deterministi
 | dashboard/AI 데이터 정합성 기준은 무엇인가 | §9 Data Flow, §10 MonitoringFactPack/RAG | [../data/otel-data-architecture.md](../data/otel-data-architecture.md), [./rag-knowledge-engine.md](./rag-knowledge-engine.md) |
 | 무료 티어, 장애 격리, 장시간 실행 제약은 무엇인가 | §2.4 BFF 적용, §2.6 Free Tier 소비, §11 Operations | [../../../operations/README.md](../../../operations/README.md), [../infrastructure/free-tier-optimization.md](../infrastructure/free-tier-optimization.md) |
 
-현재 구현 기준 변경은 이 문서와 design 문서를 먼저 갱신합니다. [ai-assistant-initial-design-comparison.md](./ai-assistant-initial-design-comparison.md)는 구현 SSOT가 아니라 장기 방향을 재평가할 때 사용하는 비교 문서입니다.
+현재 구현 기준 변경은 이 문서와 design 문서를 먼저 갱신합니다. 초기 대안 비교 기록은 [archived ai-assistant-initial-design-comparison.md](../../../archived/ai-assistant-initial-design-comparison.md)에서 historical evidence로만 확인합니다.
+
+## 문서 범위 및 분할 판단
+
+이 파일은 AI Engine runtime의 canonical reference로 유지합니다. 주요 독자는 AI/runtime 변경을 수행하는 개발자와 아키텍트이며, 운영자는 배포·장애 대응 절차를 [Operations](../../../operations/README.md)와 [Deployment Guide](../../../operations/deployment-guide.md)에서 확인합니다.
+
+현재 길이는 1500줄 미만이고, 섹션들이 provider, route, tool, data, resilience 계약을 같은 runtime 경계 안에서 설명하므로 분할하지 않습니다. 운영 절차나 provider 정책이 독립 runbook 수준으로 커질 때만 별도 문서로 분리합니다.
 
 | 구분 | 내용 |
 |------|------|

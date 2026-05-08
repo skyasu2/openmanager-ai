@@ -177,6 +177,7 @@
     "root:artifacts:audit:strict": "node scripts/dev/root-artifact-cleanup.js --strict",
     "root:artifacts:cleanup": "node scripts/dev/root-artifact-cleanup.js --apply",
     "root:artifacts:cleanup:all": "node scripts/dev/root-artifact-cleanup.js --apply --apply-dirs",
+    "storage:audit": "node scripts/dev/wsl-storage-audit.js",
     "security:audit": "npm audit --audit-level=moderate && claude /security-review && node scripts/env/check-hardcoded-secrets.js",
     "setup:codex:project-scope": "bash scripts/ai/setup-codex-project-scope.sh",
     "setup:gemini:global": "bash scripts/ai/setup-gemini-global.sh",

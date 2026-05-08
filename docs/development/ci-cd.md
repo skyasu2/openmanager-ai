@@ -3,7 +3,7 @@
 > GitLab canonical + GitLab CI main validate + semver tag deploy(frontend/ai-engine) + smoke 레퍼런스
 > Owner: platform-devops
 > Status: Active
-> Doc type: How-to
+> Doc type: Reference
 > Last reviewed: 2026-05-08
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,gitlab,vercel,github-actions,automation
@@ -624,30 +624,29 @@ Dependabot PR 생성
 
 ## Part 3: 배포 전략
 
-### Vercel (Frontend) — GitLab CI 경유 배포
+이 섹션은 배포 절차 runbook이 아니라 CI/CD 구조와 권한 경계를 설명합니다. 실제 실행 순서, 사전 점검, fallback 판단은 [Deployment Guide](../operations/deployment-guide.md)를 SSOT로 사용합니다.
 
-```
-`git push gitlab main`
-        → GitLab CI validate
+### Frontend — GitLab CI 경유 Vercel 배포
 
-`git push --follow-tags gitlab main`
-        → GitLab CI deploy (`vercel build --prod` + `vercel deploy --prebuilt --prod`)
-        → Vercel Production
-```
+| 항목 | 기준 |
+|---|---|
+| Deploy authority | GitLab CI semver tag pipeline `deploy` job |
+| Build/deploy command | `vercel build --prod` → `vercel deploy --prebuilt --prod` |
+| Git integration | Vercel Git Integration 해제. Git push만으로 Vercel 자동 빌드 없음 |
+| Standard trigger | semver tag `v*.*.*` 포함 `git push --follow-tags gitlab main` |
+| Validation trigger | `git push gitlab main`은 validate 전용 |
+| Emergency fallback | runner 장애 시 [Deployment Guide](../operations/deployment-guide.md#runner-장애-시-fallback) 기준으로만 `npm run deploy:smart` 사용 |
 
-- GitLab CI는 `main` push에서는 validate만, semver tag push에서는 deploy/smoke까지 담당합니다.
-- Vercel Git Integration은 해제되어 있어 Git push만으로 Vercel이 별도 자동 빌드를 시작하지 않습니다.
-- `SKIP_ENV_VALIDATION=true`로 환경변수 없이도 빌드 성공 보장
+운영 메모:
+
 - 기본 Git push 대상은 canonical remote인 `gitlab` 입니다.
-- 1인 개발 기본 경로는 canonical `main` direct push + semver tag deploy 입니다.
-- `git push gitlab main`은 표준 validate 트리거입니다.
-- `git push --follow-tags gitlab main`은 semver tag가 있을 때 표준 deploy 트리거입니다.
-- feature branch → MR merge 는 고위험 변경, 병렬 작업, 리뷰 기록이 필요한 경우에만 권장합니다.
-- 원하면 로컬 strict mode로 `BLOCK_MAIN_DIRECT_PUSH=true git push gitlab main`을 사용해 일시적으로 branch/MR 흐름을 강제할 수 있습니다.
+- 1인 개발 기본 경로는 canonical `main` direct push validate 후 semver tag deploy입니다.
+- feature branch → MR merge는 고위험 변경, 병렬 작업, 리뷰 기록이 필요한 경우에만 권장합니다.
+- 로컬 strict mode로 `BLOCK_MAIN_DIRECT_PUSH=true git push gitlab main`을 사용하면 일시적으로 branch/MR 흐름을 강제할 수 있습니다.
 
 ### GitLab main 보호 설정 점검
 
-로컬에서 아래 명령으로 GitLab `main` 보호 규칙 점검 가이드를 출력할 수 있습니다.
+로컬에서 아래 명령으로 GitLab `main` 보호 규칙 점검 가이드를 출력할 수 있습니다. 배포 전 실행 순서 안의 위치는 [Deployment Guide](../operations/deployment-guide.md#배포-전-확인)를 따릅니다.
 
 ```bash
 npm run gitlab:protection:check
@@ -671,26 +670,17 @@ env -u GITHUB_PERSONAL_ACCESS_TOKEN gh api user -q .login
 git remote -v | head -n 2
 ```
 
-### Cloud Run (AI Engine) — GitLab CI 또는 수동 배포
+### AI Engine — GitLab CI 또는 수동 Cloud Run 배포
 
-```bash
-# GitLab canonical 경로
-git push gitlab main
-# → validate_ai_engine
-# → deploy_ai_engine
-# → post_deploy_ai_engine_smoke
+| 항목 | 기준 |
+|---|---|
+| Deploy authority | GitLab CI semver tag pipeline `deploy_ai_engine` job |
+| Deploy script | `cloud-run/ai-engine/deploy.sh` |
+| Validation trigger | `cloud-run/ai-engine/**` 변경 시 `validate_ai_engine` |
+| Smoke target | 현재 production service URL 기준 `/health`, `/warmup`, `/monitoring` |
+| Manual path | 로컬 `gcloud` 인증 후 `cd cloud-run/ai-engine && bash deploy.sh` |
 
-# 수동 경로(필요 시)
-cd cloud-run/ai-engine
-bash deploy.sh
-```
-
-배포 파이프라인:
-```
-Free Tier 가드레일 검증 → 로컬 Docker 프리플라이트(로컬 경로일 때) → SSOT 데이터 동기화
-  → Cloud Build (이미지 빌드) → Cloud Run 배포 → 헬스체크
-  → 이전 이미지/리비전 자동 정리 (백그라운드)
-```
+AI Engine 배포의 실제 실행 순서는 [Deployment Guide](../operations/deployment-guide.md#표준-배포)와 `cloud-run/ai-engine/deploy.sh`를 기준으로 합니다. 이 문서는 아래 CI 변수와 job 경계만 유지합니다.
 
 GitLab CI `deploy_ai_engine` 필수 변수:
 
@@ -706,7 +696,6 @@ GitLab CI `deploy_ai_engine` 필수 변수:
 - GitLab CI deploy 계열 job은 protected CI 변수를 사용하므로, 보호 브랜치뿐 아니라 semver protected tag(`v*.*.*`) 설정도 함께 맞아야 합니다. 보호 태그가 빠지면 tag pipeline에서 deploy가 fail-closed로 차단될 수 있습니다.
 - `post_deploy_ai_engine_smoke`는 배포 후 `gcloud run services describe`로 현재 service URL을 조회한 뒤 `/health`, `/warmup`, `/monitoring`(unauth 401/403 기대)만 확인합니다. LLM 호출은 없습니다.
 - `post_deploy_ai_engine_smoke`는 `deploy_ai_engine`가 같은 파이프라인에 있을 때는 그 job 이후에 대기하고, smoke 스크립트나 `.gitlab-ci.yml`만 바뀐 경우에는 현재 production service를 직접 점검합니다.
-- 수동 배포는 로컬 `gcloud` 인증이 이미 되어 있으면 `cd cloud-run/ai-engine && bash deploy.sh`로 계속 가능합니다.
 
 ---
 
@@ -719,4 +708,4 @@ GitLab CI `deploy_ai_engine` 필수 변수:
 - [Git Hooks 워크플로우](./git-hooks-workflow.md) - 로컬 Git hooks
 - [Free Tier 최적화](../reference/architecture/infrastructure/free-tier-optimization.md)
 
-_Last Updated: 2026-05-05_
+_Last Updated: 2026-05-08_
