@@ -6,17 +6,17 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
-    "sharedComponentNodes": 133,
+    "sharedComponentNodes": 134,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 140
+    "totalComponentNodes": 141
   },
   "metrics": {
-    "componentSourceLines": 28654,
-    "componentNodes": 133,
-    "componentEdges": 134,
-    "graphDensity": 0.007633,
+    "componentSourceLines": 28678,
+    "componentNodes": 134,
+    "componentEdges": 135,
+    "graphDensity": 0.007575,
     "aliasEdges": 37,
-    "relativeEdges": 97,
+    "relativeEdges": 98,
     "isolatedComponents": 20,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
@@ -82,7 +82,7 @@
     },
     {
       "component": "ai-sidebar/AISidebarV4",
-      "outDegree": 7
+      "outDegree": 8
     },
     {
       "component": "ai-sidebar/SidebarMessage",
@@ -135,7 +135,7 @@
     {
       "fromDomain": "ai-sidebar",
       "toDomain": "ai-sidebar",
-      "count": 13
+      "count": 14
     },
     {
       "fromDomain": "ai-sidebar",
