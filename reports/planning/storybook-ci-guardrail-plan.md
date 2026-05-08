@@ -1,9 +1,9 @@
 # Storybook CI Guardrail 계획
 
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-08
 > Canonical: reports/planning/storybook-ci-guardrail-plan.md
 > Tags: storybook,ci,ui,testing
 
@@ -55,20 +55,20 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 
 ### Task 1: GitLab CI 경로 앵커 추가
 
-- [ ] `.gitlab-ci.yml`에 `.storybook_validate_paths` anchor 추가
-- [ ] `.storybook_validate_changes` rules 추가
-- [ ] docs-only / QA 기록 커밋은 기존 validate skip 정책과 충돌하지 않게 유지
+- [x] `.gitlab-ci.yml`에 `.storybook_validate_paths` anchor 추가
+- [x] `.storybook_validate_changes` rules 추가 (QA 기록 커밋 예외 포함)
+- [x] docs-only / QA 기록 커밋은 기존 validate skip 정책과 충돌하지 않게 유지
 
 ### Task 2: `validate_storybook_smoke` job 추가
 
-- [ ] stage: `validate`
-- [ ] runner tag: `wsl2-docker`
-- [ ] cache: root npm cache 재사용
-- [ ] before_script: `npm ci --prefer-offline --cache .npm --no-audit`
-- [ ] script: `npm run storybook:smoke`
-- [ ] timeout: 8 minutes
-- [ ] interruptible: true
-- [ ] `rules:changes`로 Storybook/UI 관련 변경에서만 실행
+- [x] stage: `validate`
+- [x] runner tag: `wsl2-docker`
+- [x] cache: root npm cache 재사용
+- [x] before_script: `npm ci --prefer-offline --cache .npm --no-audit`
+- [x] script: `npm run storybook:smoke`
+- [x] timeout: 8 minutes
+- [x] interruptible: true
+- [x] `rules:changes`로 Storybook/UI 관련 변경에서만 실행
 
 ### Task 3: Full build 운영 경로 정리
 
@@ -87,12 +87,12 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 
 ### Task 5: 검증
 
-- [ ] `npm run storybook:smoke`
-- [ ] `bash -n scripts/storybook/smoke.sh`
+- [ ] `npm run storybook:smoke` — **⚠️ 로컬 환경 한계**: `/mnt/d/` (Windows NTFS) 에서 esbuild가 SIGBUS 발생. CI runner (`~/builds/` Linux ext4)에서는 정상 동작 예상. 로컬 검증은 Linux 경로에서 수행 필요.
+- [x] `bash -n scripts/storybook/smoke.sh` — bash 문법 OK
 - [ ] `npm run docs:budget`
 - [ ] `npm run docs:ai-consistency`
 - [ ] `git diff --check`
-- [ ] `.gitlab-ci.yml` syntax 검증 가능 시 GitLab lint 또는 local parser 사용
+- [x] `.gitlab-ci.yml` YAML 문법 검증 (python3 yaml.safe_load) — OK
 
 ## 선행 조건
 
@@ -114,6 +114,7 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 | Storybook cache가 stale story를 참조 | false failure | `storybook:smoke`에 `--force-build-preview` 유지. 필요 시 CI job에서 `node_modules/.cache/storybook`만 제거하는지 후속 판단 |
 | Chart migration 중 story 수 변동 | 공개 소개 문구 drift | Chart migration 완료 후 story count 재계산 |
 | shell runner의 browser dependency 부족 | Storybook Vitest flake | browser-mode test는 기본 CI 제외 |
+| **WSL2 `/mnt/d/` 에서 esbuild SIGBUS** | 로컬 `storybook:smoke` 실패 | CI runner는 `~/builds/` (Linux ext4)에서 실행하므로 CI에서는 정상 예상. 로컬 검증이 필요하면 Linux 경로로 프로젝트 이동 또는 Windows에서 실행. |
 
 ## 완료 기준
 

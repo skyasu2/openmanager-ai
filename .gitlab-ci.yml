@@ -69,6 +69,18 @@
   - playwright.config*.ts
   - .gitlab-ci.yml
 
+.storybook_validate_paths: &storybook_validate_paths
+  - .storybook/**/*
+  - scripts/storybook/**/*
+  - config/testing/vitest.config.storybook.ts
+  - src/**/*.stories.ts
+  - src/**/*.stories.tsx
+  - src/components/**/*
+  - src/app/**/*
+  - package.json
+  - package-lock.json
+  - .gitlab-ci.yml
+
 .frontend_deploy_paths: &frontend_deploy_paths
   - src/**/*
   - public/**/*
@@ -167,6 +179,22 @@ stages:
       when: on_success
     - if: '$CI_COMMIT_BRANCH'
       changes: *ai_engine_validate_paths
+      when: on_success
+    - when: never
+
+.storybook_validate_changes: &storybook_validate_changes
+  rules:
+    # QA 기록 커밋은 Storybook smoke 생략
+    - if: '$CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: *storybook_validate_paths
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes: *storybook_validate_paths
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH'
+      changes: *storybook_validate_paths
       when: on_success
     - when: never
 
@@ -273,6 +301,20 @@ validate_ai_engine:
     - npm run test
     - echo "✅ AI Engine validate 통과"
   timeout: 20 minutes
+  interruptible: true
+
+validate_storybook_smoke:
+  stage: validate
+  tags:
+    - wsl2-docker
+  <<: [*npm_cache, *storybook_validate_changes]
+  before_script:
+    - npm ci --prefer-offline --cache .npm --no-audit
+  script:
+    - echo "▶ Storybook smoke 검사 (index/import/config drift 탐지)..."
+    - npm run storybook:smoke
+    - echo "✅ Storybook smoke 통과"
+  timeout: 8 minutes
   interruptible: true
 
 # ─── deploy job ────────────────────────────────────────────────────────────────
