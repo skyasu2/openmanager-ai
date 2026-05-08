@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { version as PACKAGE_VERSION } from '../../../../package.json';
+import packageJson from '../../../../package.json';
 
 const APP_VERSION =
   process.env.NEXT_PUBLIC_APP_VERSION ||
   process.env.npm_package_version ||
   'unknown';
-const BUILD_VERSION = PACKAGE_VERSION || APP_VERSION;
+const BUILD_VERSION = packageJson.version || APP_VERSION;
 const COMMIT_SHA =
   process.env.APP_COMMIT_SHA ||
   process.env.VERCEL_GIT_COMMIT_SHA ||

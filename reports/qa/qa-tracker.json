@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-08T06:59:43.939Z"
+    "updatedAt": "2026-05-08T07:24:22.394Z"
   },
   "sequence": {
-    "nextRunNumber": 424
+    "nextRunNumber": 425
   },
   "summary": {
-    "totalRecordedRuns": 421,
-    "totalRuns": 344,
+    "totalRecordedRuns": 422,
+    "totalRuns": 345,
     "excludedRuns": 77,
-    "totalChecks": 3017,
-    "totalPassed": 2908,
+    "totalChecks": 3024,
+    "totalPassed": 2915,
     "totalFailed": 100,
     "completionRate": 100,
-    "completedItems": 449,
+    "completedItems": 451,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260507-0420",
-    "lastRecordedAt": "2026-05-07T03:06:42.069Z",
-    "latestRecordedRunId": "QA-20260508-0423",
-    "latestRecordedAt": "2026-05-08T06:59:43.939Z"
+    "lastRunId": "QA-20260508-0424",
+    "lastRecordedAt": "2026-05-08T07:24:22.394Z",
+    "latestRecordedRunId": "QA-20260508-0424",
+    "latestRecordedAt": "2026-05-08T07:24:22.394Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11033,6 +11033,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-07T03:06:42.069Z"
+    },
+    "nivo-storage-tooltip-visual-qa": {
+      "id": "nivo-storage-tooltip-visual-qa",
+      "title": "Nivo slice tooltip is visible on storage-nfs-dc1-01 DISK hover",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260508-0424",
+      "firstSeenAt": "2026-05-08T07:24:22.394Z",
+      "lastSeenRunId": "QA-20260508-0424",
+      "lastSeenAt": "2026-05-08T07:24:22.394Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260508-nivo-storage-disk-tooltip.png",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T07:24:22.394Z"
+    },
+    "nivo-active-anomaly-highlight-visual-qa": {
+      "id": "nivo-active-anomaly-highlight-visual-qa",
+      "title": "Nivo active anomaly highlight rect is visible for active alert data",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260508-0424",
+      "firstSeenAt": "2026-05-08T07:24:22.394Z",
+      "lastSeenRunId": "QA-20260508-0424",
+      "lastSeenAt": "2026-05-08T07:24:22.394Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260508-nivo-cache-memory-anomaly.png",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-08T07:24:22.394Z"
     }
   },
   "runs": [
@@ -44338,6 +44386,77 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260508-0424",
+      "recordedAt": "2026-05-08T07:24:22.394Z",
+      "recordedAtKst": "2026-05-08 16:24:22 KST",
+      "title": "Local Playwright MCP QA - Nivo tooltip and anomaly visual closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260508-0424.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js 16.1.6 webpack dev",
+        "backend": "local Next.js API routes",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "070ecba2e938310cdffd8249f87b7866c48838ca"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "local Next.js webpack dev server after .next cache refresh",
+        "/api/version local readiness",
+        "/login guest session",
+        "/dashboard server data render",
+        "/dashboard/servers/storage-nfs-dc1-01 performance analysis tab",
+        "storage-nfs-dc1-01 DISK Nivo hover tooltip",
+        "/dashboard/servers/cache-redis-dc1-01 performance analysis tab",
+        "cache-redis-dc1-01 MEMORY active anomaly highlight rect"
+      ],
+      "skippedSurfaces": [
+        "Vercel production QA",
+        "AI sidebar conversational QA",
+        "storage-nfs-dc1-01 anomaly highlight direct check because current local data has alerts: [] for that server"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "storage-nfs-dc1-01 DISK hover tooltip",
+          "path": "reports/qa/evidence/qa-20260508-nivo-storage-disk-tooltip.png",
+          "note": "Tooltip visible on DISK chart with time 17:50 and actual 54.0%."
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "cache-redis-dc1-01 MEMORY anomaly highlight",
+          "path": "reports/qa/evidence/qa-20260508-nivo-cache-memory-anomaly.png",
+          "note": "Active anomaly summary visible and Nivo rect rendered at chart tail with width 4px."
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

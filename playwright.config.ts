@@ -203,7 +203,7 @@ export default defineConfig({
         }
       : {
           // 개발 모드 - DevTools 비활성화 (WSL + Playwright 호환성)
-          command: `cross-env NEXT_DISABLE_DEVTOOLS=1 NEXT_PUBLIC_E2E_TESTING=true NODE_OPTIONS='--max-old-space-size=4096' npx next dev -p ${playwrightPort}`,
+          command: `cross-env NEXT_DISABLE_DEVTOOLS=1 NEXT_PUBLIC_E2E_TESTING=true NODE_OPTIONS='--max-old-space-size=4096' npx next dev -p ${playwrightPort} --webpack`,
           url: localBaseURL,
           reuseExistingServer: !process.env.CI,
           timeout: 120 * 1000,

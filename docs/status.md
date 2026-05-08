@@ -53,7 +53,7 @@
 
 - **v8.11.113+** (2026-05-08)
   - AI feedback 제거 후 production closure 완료, Developer Panel 진단 컨텍스트 노출 구현, Storybook CI guardrail 적용
-  - NivoTimeSeriesChart UX 수정은 구현/테스트 통과 상태이며, 남은 항목은 `storage-nfs-dc1-01` 성능 탭 Playwright hover/하이라이트 시각 QA 1건
+  - NivoTimeSeriesChart UX 수정은 구현/테스트/targeted Playwright 시각 QA까지 완료. `storage-nfs-dc1-01` DISK hover tooltip과 active alert 서버의 anomaly rect 표시를 `QA-20260508-0424`에서 확인
   - WSL2 `/mnt/d` 로컬 dev 차단 원인을 `Turbopack cross-filesystem symlink 제약` + `webpack client build의 node:* dynamic import 처리`로 분리하고, webpack fallback 경로를 문서화
 - **v8.11.97** (2026-05-05)
   - broad QA remediation 진행 중, AI 응답/metric drift/formatting follow-up 보정 근거가 `reports/qa`에 누적됨
