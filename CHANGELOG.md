@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.115](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.114...v8.11.115) (2026-05-08)
+
+
+### Bug Fixes
+
+* **ai:** fast-path service command guidance ([e18188c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e18188c7bb1fc5d97a6cc50a0a0d205cd549ba7c))
+
+
+### Tests
+
+* **spec:** add ai ops command guidance guards ([5811221](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5811221a74e3589d000baf833bb238939e56606c))
+
 ## [8.11.114](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.113...v8.11.114) (2026-05-08)
 
 
