@@ -19,6 +19,7 @@ import {
   type CollectedToolResult,
   type MetricsToolPayload,
 } from './orchestrator-summary-payload';
+import { isServiceCommandGuidanceQuery } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 
 export { classifyQueryIntent, shouldPreferDeterministic };
 
@@ -34,6 +35,10 @@ export function isDeterministicSummaryQuery(
   _agentName: string,
   toolResultServerCount = 0
 ): boolean {
+  if (isServiceCommandGuidanceQuery(query)) {
+    return false;
+  }
+
   if (
     toolResultServerCount > 0 &&
     (isStatusAlertOperationalQuery(query) ||

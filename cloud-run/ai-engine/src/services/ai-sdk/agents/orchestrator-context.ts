@@ -22,6 +22,7 @@ import {
   REPORTER_QUERY_PATTERN,
   isFormattingOnlyReportRequest,
 } from '../query-routing-signals';
+import { buildServiceCommandGuidanceAnswer } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 
 // ============================================================================
 // Context Store Integration - Parse and Save Agent Findings
@@ -369,6 +370,15 @@ export function preFilterQuery(
     isForceKnowledgeBaseIntent || SERVER_KEYWORDS.some(kw => normalized.includes(kw));
 
   if (hasServerKeyword) {
+    const serviceCommandAnswer = buildServiceCommandGuidanceAnswer(query);
+    if (serviceCommandAnswer) {
+      return {
+        shouldHandoff: false,
+        directResponse: serviceCommandAnswer,
+        confidence: 0.95,
+      };
+    }
+
     const hasAttachmentVisionHint =
       (context.hasImageAttachments || context.hasFileAttachments) &&
       looksLikeAttachedVisionRequest(normalized);
