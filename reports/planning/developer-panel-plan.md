@@ -3,114 +3,101 @@
 > Owner: project
 > Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-08
 > Canonical: reports/planning/developer-panel-plan.md
-> Tags: ai,developer-mode,diagnostics,ui
+> Tags: ai,developer-mode,diagnostics,ai-context
 
 ---
 
 ## 배경 및 목적
 
-현재 `internalDisclosureMode='developer'`는 **백엔드 전용 개념**이다.
-- Vercel side: `internal-disclosure-mode.ts` → auth 컨텍스트로 developer 모드 판정
-- Cloud Run side: `internal-disclosure-policy.ts` → AI가 내부 경로/구현 정보를 더 공개함
+Developer Panel은 **AI 에이전트(Claude, Codex 등)가 세션 진단 정보를 읽기 위한 인터페이스**다.
+사람이 직접 보는 경우는 드물다. AI가 MCP 브라우저 도구(`take_snapshot`, `evaluate_script`)로
+DOM을 조회하거나, API를 직접 호출해 JSON을 읽는 방식으로 소비한다.
 
-개발 중 필요한 진단 정보(AI provider, 모델, 핸드오프, RAG 히트, 스트림 메타데이터 등)는 현재 콘솔/Langfuse 에서만 확인 가능하다. **UI에 Developer Panel을 추가**하여 개발자가 코드 없이 실시간 진단할 수 있게 한다.
-
-**비개발자 사용자에게는 일절 노출되지 않는다.**
+따라서 설계 우선순위는:
+1. AI가 파싱하기 쉬운 구조화된 출력 (JSON, `data-*` 속성)
+2. 추가 인터랙션 없이 한 번에 읽히는 구조 (토글/애니메이션 없음)
+3. 인간 UI 품질(색상, 레이아웃, 애니메이션)은 비우선
 
 ---
 
 ## 범위
 
 ### In Scope
-- AI 사이드바 안에 토글 가능한 Developer Panel (overlay 방식, 별도 라우트 아님)
+
+- `data-testid="developer-panel"` 마운트 포인트 — developer 모드에서만 렌더
 - 기존 `internalDisclosureMode` gate 재사용 — 신규 auth 로직 없음
-- 스트림 응답 메타데이터 시각화 (이미 `useDeferredMessageMetadata`로 수집 중)
-- 시스템 진단 섹션 (Cloud Run 상태, 환경 정보)
+- 세션 진단 데이터를 `data-panel-json` 속성 또는 `<script type="application/json">` 인라인 블록으로 노출
+- MCP `take_snapshot` / `evaluate_script`로 읽을 수 있는 구조
 
 ### Out of Scope
-- 별도 `/dev` 라우트 생성
-- 관리자 권한 분리 (admin vs developer)
-- 프로덕션 번들 트리셰이크 (현재 `process.env.NODE_ENV` 조건으로 충분)
-- 실시간 로그 스트리밍 (Langfuse 위임)
+
+- 시각적 Card UI, 토글 버튼, 애니메이션, 색상 테마 — AI는 스타일을 읽지 않음
+- 별도 `/dev` 라우트
+- 관리자 권한 분리
+- 실시간 로그 스트리밍
 
 ---
 
 ## 설계 결정
 
-### Gate: 기존 disclosure mode 그대로 재사용
+### Gate: 기존 disclosure mode 재사용
 
 ```
 authContext.authType ∈ {development, test, test-secret}
   또는 verified PIN guest(authType='guest' + server-issued userId)
     → internalDisclosureMode = 'developer'
-    → Developer Panel 표시
+    → Developer Panel 렌더
 ```
 
-프론트엔드에서 `isDeveloperDisclosureMode` flag를 API 응답 헤더 또는 초기 세션 상태로 전달받는다.
+### 출력 형식: JSON-in-DOM
 
-### 진입점: AI 사이드바 내 토글 버튼
-
-```
-AI Sidebar
-  └─ [⚙] 개발자 패널 토글 (developer 모드에서만 렌더)
-       └─ DeveloperPanel (collapsible overlay)
-            ├─ AI Session Info
-            ├─ Stream Metadata
-            ├─ System Status
-            └─ Knowledge Base Stats
+```html
+<!-- developer 모드에서만 렌더됨 -->
+<div
+  data-testid="developer-panel"
+  data-panel-json='{"session":{"provider":"groq","modelId":"llama-3.3-70b","handoffCount":2},...}'
+  hidden
+/>
 ```
 
-컴포넌트 파일 경계:
-- `src/components/ai-sidebar/DeveloperPanel.tsx` — UI 전체
-- `src/hooks/ai/useDeveloperPanel.ts` — 데이터 수집/포맷
+- `hidden` 속성: DOM에는 존재하지만 화면에 표시되지 않음
+- AI는 `evaluate_script('document.querySelector("[data-testid=developer-panel]")?.dataset.panelJson')` 로 직접 읽음
+- 또는 Playwright `locator('[data-testid=developer-panel]').getAttribute('data-panel-json')`
+
+### 데이터 갱신: 응답 완료 시 1회 업데이트
+
+AI가 응답 완료 후 패널을 읽는 시나리오가 메인이므로, 스트리밍 중 실시간 갱신은 불필요.
+`onFinish` 콜백 시점에 `data-panel-json`을 최신 메타데이터로 교체.
 
 ---
 
 ## 계약 (Contract)
 
-### API 계약: developer mode flag 전달
-
-현재 `internalDisclosureMode`는 Cloud Run 요청 body에만 존재한다.
-프론트엔드가 "이 세션이 developer 모드인지" 알 방법이 없다.
-
-**해결**: Vercel `/api/ai/supervisor` 응답에 헤더 추가
-
-```
-X-Developer-Mode: true   (developer 모드일 때만)
-```
-
-또는 stream data event에 `type: 'developer-context'` 추가:
-```json
-{ "type": "developer-context", "mode": "developer" }
-```
-
-→ **stream data event 방식 채택** (기존 SSE 파이프라인에 자연스럽게 통합)
-
-### 컴포넌트 계약
+### 패널 JSON 스키마
 
 ```typescript
-// useDeveloperPanel.ts
 type DeveloperPanelData = {
-  sessionMode: 'developer' | null;
-  aiSession: {
-    provider: string;
+  ts: string;                  // ISO timestamp, 마지막 갱신
+  session: {
+    provider: string;          // 실제 사용된 LLM provider
     modelId: string;
     handoffCount: number;
     durationMs: number;
     toolsCalled: string[];
   } | null;
-  streamMeta: {
-    analysisBasis: string;
+  stream: {
+    analysisBasis: string;     // 'multi-agent' | 'single-agent' | 'fallback'
     stepsExecuted: number;
     tokensUsed?: number;
   } | null;
-  systemStatus: {
+  system: {
     cloudRunHealthy: boolean;
     cloudRunUrl: string;
+    disclosureMode: string;
   } | null;
-  knowledgeBase: {
+  rag: {
     ragType: string;
     hitCount: number;
     graphHits: number;
@@ -119,50 +106,80 @@ type DeveloperPanelData = {
 };
 ```
 
+### developer-context stream event
+
+스트림에서 `developer-context` event를 수신하면 패널 데이터를 갱신한다.
+
+```json
+{ "type": "developer-context", "mode": "developer", "meta": { ... } }
+```
+
 ### 테스트 시나리오
 
 ```
-1. developer 모드 세션에서 AI 사이드바 → 패널 토글 버튼 표시됨
-2. user 모드 세션(일반 게스트)에서 → 토글 버튼 렌더되지 않음
-3. AI 응답 완료 후 → AI Session / Stream Metadata 섹션에 실제 값 표시
-4. Cloud Run 오프라인 시 → systemStatus.cloudRunHealthy=false 표시
-5. 패널 닫기 → 상태 유지, 다음 응답 후 갱신
+1. developer 모드: DOM에 data-testid="developer-panel" 노출 (hidden)
+2. user 모드: 패널 요소 렌더되지 않음
+3. AI 응답 완료 후: data-panel-json에 실제 provider/modelId/handoffCount 포함
+4. Cloud Run 오프라인: system.cloudRunHealthy=false 포함
+5. evaluate_script로 panelJson 파싱: JSON.parse 성공, 스키마 필드 존재 확인
 ```
 
 ---
 
 ## 구현 태스크
 
-### Phase 1: Gate + 데이터 파이프라인 (백엔드)
+### Phase 1: 백엔드 — developer-context event
 
-- [ ] `T1` `src/app/api/ai/supervisor/stream/v2/route.ts`: `developer-context` stream data event 추가
-  - `internalDisclosureMode='developer'`일 때 스트림 첫 chunk에 emit
-- [ ] `T2` `src/hooks/ai/utils/stream-data-handler.ts`: `developer-context` event 파싱 추가
-- [ ] `T3` `src/hooks/ai/useDeveloperPanel.ts`: 신규 훅 작성
-  - stream metadata, AI session info, system status 수집
+- [ ] `T1` `src/app/api/ai/supervisor/stream/v2/route.ts`
+  - `internalDisclosureMode='developer'`일 때 스트림 첫 chunk에 `developer-context` event emit
+- [ ] `T2` `src/hooks/ai/utils/stream-data-handler.ts`
+  - `developer-context` event 파싱 + store에 저장
+- [ ] `T3` `src/hooks/ai/useDeveloperPanel.ts`
+  - stream metadata, AI session info, system status를 `DeveloperPanelData`로 조합
+  - `onFinish` 시점에 DOM `data-panel-json` 갱신
 
-### Phase 2: UI 컴포넌트 (프론트엔드)
+### Phase 2: DOM 마운트
 
-- [ ] `T4` `src/components/ai-sidebar/DeveloperPanel.tsx`: 패널 UI 구현
-  - 4개 섹션: AI Session / Stream Metadata / System Status / Knowledge Base
-  - Tailwind + 기존 `cn()` 유틸, 공용 `Card` 컴포넌트 재사용
-- [ ] `T5` AI 사이드바 통합: developer 모드 조건부 토글 버튼 추가
-  - 수정 파일: `src/components/ai-sidebar/AISidebarV4.tsx`
+- [ ] `T4` `src/components/ai-sidebar/DeveloperPanel.tsx`
+  - `<div data-testid="developer-panel" data-panel-json={...} hidden />`
+  - 스타일 없음, 단순 마운트
+- [ ] `T5` AI 사이드바 통합
+  - `src/components/ai-sidebar/AISidebarV4.tsx` — developer 모드 조건부 렌더
 
 ### Phase 3: 테스트
 
-- [ ] `T6` `DeveloperPanel.test.tsx` — developer/user 모드 렌더 분기 테스트
-- [ ] `T7` `stream-data-handler.test.ts` — `developer-context` event 파싱 케이스 추가
+- [ ] `T6` `DeveloperPanel.test.tsx`
+  - developer/user 모드 렌더 분기
+  - `data-panel-json` 파싱 가능 여부
+- [ ] `T7` `stream-data-handler.test.ts`
+  - `developer-context` event 파싱 케이스 추가
+
+---
+
+## AI 읽기 워크플로우 (예시)
+
+```javascript
+// Claude/Codex가 MCP evaluate_script로 직접 읽는 방법
+const raw = document.querySelector('[data-testid="developer-panel"]')?.dataset?.panelJson;
+const panel = raw ? JSON.parse(raw) : null;
+// → { session: { provider: 'groq', modelId: '...', handoffCount: 2 }, ... }
+```
+
+또는 Playwright:
+```javascript
+const json = await page.locator('[data-testid="developer-panel"]').getAttribute('data-panel-json');
+const panel = JSON.parse(json);
+```
 
 ---
 
 ## 검증 기준
 
-- [ ] developer 모드에서 패널 표시, user 모드에서 미표시
-- [ ] AI 응답 후 provider/modelId/handoffCount 실제 값 표시
+- [ ] developer 모드에서 `data-testid="developer-panel"` 요소 존재
+- [ ] `data-panel-json` JSON.parse 성공 + 스키마 필드 존재
+- [ ] user 모드에서 패널 요소 없음
 - [ ] `npm run test:quick` 통과
 - [ ] `npm run type-check` 통과
-- [ ] Playwright smoke (`npm run test:e2e:critical`) 회귀 없음
 
 ---
 
