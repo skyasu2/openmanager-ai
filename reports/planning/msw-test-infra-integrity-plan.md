@@ -1,15 +1,15 @@
 # MSW Test Infra Integrity Plan
 
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-08
 > Canonical: reports/planning/msw-test-infra-integrity-plan.md
 > Tags: msw,testing,vitest,contract,infra
 
 - TODO.md 연결: Backlog > MSW 테스트 인프라 정합성 개선
 - 테스트 방법론 기준: `docs/guides/testing/test-strategy.md` § 0
-- **Status 유지 이유**: 계약 섹션 내 핵심 2~3개 테스트 시나리오 최종 선택이 구현자 확정 전.
+- **Approved 기준**: 구현 전 failing spec 범위를 핵심 3개 시나리오로 확정했다. 구현 착수는 Task 0의 failing spec 커밋부터 진행한다.
 
 ## 목표
 
@@ -115,15 +115,20 @@ MSW/Vitest 기반 테스트가 실제로 검증하는 대상을 명확히 하고
 
 ### 테스트 시나리오
 
-- [ ] `test:contract`에서 MSW handler 누락 요청은 실패한다.
-- [ ] `api-contract`는 inline `global.fetch` mock만으로 통과하지 않는다.
-- [ ] live connectivity suite는 shared MSW/setup mock 없이 실행된다.
-- [ ] 현재 provider 정책과 맞지 않는 OpenAI/Cohere 중심 AI mock은 gate contract에서 사용되지 않는다.
-- [ ] 기존 `test:quick`과 `test:contract` runtime/비용이 유의미하게 증가하지 않는다.
+Task 0의 failing spec은 아래 3개를 대표 계약으로 고정한다.
+
+- `test:contract`에서 MSW handler 누락 요청은 실패한다.
+- `api-contract`는 inline `global.fetch` mock만으로 통과하지 않는다.
+- live connectivity suite는 shared MSW/setup mock 없이 실행된다.
+
+아래 2개는 구현/검증 단계의 acceptance guard로 유지한다.
+
+- 현재 provider 정책과 맞지 않는 OpenAI/Cohere 중심 AI mock은 gate contract에서 사용되지 않는다.
+- 기존 `test:quick`과 `test:contract` runtime/비용이 유의미하게 증가하지 않는다.
 
 ## Task 목록
 
-- [ ] Task 0 — 구현 전 contract/failing spec 최소화: 위 테스트 시나리오 중 핵심 2~3개만 선택
+- [ ] Task 0 — 구현 전 contract/failing spec 최소화: 대표 계약 3개에 대한 failing spec 커밋
 - [ ] Task 1 — MSW strict boundary: unhandled request policy와 suite별 예외 경로 정리
 - [ ] Task 2 — contract suite 정리: `api-contract` inline fetch mock 제거/전환/재분류
 - [ ] Task 3 — integration/live suite 정리: mock integration과 live connectivity config 분리
