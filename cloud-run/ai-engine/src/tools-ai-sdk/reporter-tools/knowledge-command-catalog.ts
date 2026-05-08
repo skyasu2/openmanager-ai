@@ -108,6 +108,7 @@ const SERVICE_COMMAND_PATTERN =
   /(haproxy|nginx|mysql|redis|nfs|백엔드|액세스\s*로그|access\s*log|5xx|마운트|재마운트|remount|slow\s*query|느린\s*쿼리|bigkeys)/i;
 const COMMAND_GUIDANCE_PATTERN =
   /(명령어|커맨드|cli|어떻게|방법|순서|확인하는|확인하고|분석하는|재마운트|remount|큰지\s*확인)/i;
+const SERVICE_KEYWORDS = ['haproxy', 'nginx', 'mysql', 'redis', 'nfs'] as const;
 
 export function isServiceCommandGuidanceQuery(query: string): boolean {
   return SERVICE_COMMAND_PATTERN.test(query) && COMMAND_GUIDANCE_PATTERN.test(query);
@@ -134,7 +135,19 @@ export function extractCommandKeywordsFromQuery(query: string): string[] {
 }
 
 export function getCommandRecommendations(keywords: string[]): CommandRecommendation[] {
-  const matched = COMMAND_RECOMMENDATIONS.filter((rec) =>
+  const normalizedKeywords = keywords.map((keyword) => keyword.toLowerCase());
+  const requestedServices = SERVICE_KEYWORDS.filter((service) =>
+    normalizedKeywords.includes(service)
+  );
+  const candidates =
+    requestedServices.length > 0
+      ? COMMAND_RECOMMENDATIONS.filter((rec) =>
+          rec.keywords.some((keyword) =>
+            requestedServices.includes(keyword.toLowerCase() as (typeof SERVICE_KEYWORDS)[number])
+          )
+        )
+      : COMMAND_RECOMMENDATIONS;
+  const matched = candidates.filter((rec) =>
     keywords.some((k) =>
       rec.keywords.some(
         (rk) =>
@@ -144,7 +157,7 @@ export function getCommandRecommendations(keywords: string[]): CommandRecommenda
     ),
   );
 
-  return matched.length > 0 ? matched : COMMAND_RECOMMENDATIONS.slice(0, 3);
+  return matched.length > 0 ? matched : candidates.slice(0, 3);
 }
 
 export function buildServiceCommandGuidanceAnswer(query: string): string | null {
@@ -166,7 +179,7 @@ export function buildServiceCommandGuidanceAnswer(query: string): string | null 
       '```'
     );
   });
-  lines.push('', '운영 환경의 socket path, NFS export, 로그 경로가 다르면 실제 설정값으로 바꿔 실행하세요.');
+  lines.push('', '운영 환경의 socket path, export, 로그 경로가 다르면 실제 설정값으로 바꿔 실행하세요.');
 
   return lines.join('\n');
 }

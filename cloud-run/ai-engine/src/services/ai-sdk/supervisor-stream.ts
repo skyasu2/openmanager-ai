@@ -67,6 +67,7 @@ import {
 } from './internal-disclosure-policy';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
 import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
+import { buildServiceCommandGuidanceAnswer } from '../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 import { FORCE_KB_QUERY_PATTERN } from './query-routing-signals';
 import type {
   AgentStepStatus,
@@ -368,6 +369,34 @@ export async function* executeSupervisorStream(
         usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
         metadata: {
           ...buildInternalImplementationPathPolicyMetadata(durationMs),
+          mode,
+          ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
+          ...buildSupervisorModeMetadata(modeDecision),
+          routeDecision,
+          assistantPlan,
+          assistantRuntime: runtimeMetadata,
+          assistantResult: buildSupervisorAssistantResult(routeDecision),
+        },
+      },
+    };
+    return;
+  }
+
+  const serviceCommandAnswer = buildServiceCommandGuidanceAnswer(queryText);
+  if (serviceCommandAnswer) {
+    const durationMs = Date.now() - startTime;
+    yield { type: 'text_delta', data: serviceCommandAnswer };
+    yield {
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: ['recommendCommands'],
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'service-command-catalog',
+          stepsExecuted: 0,
+          durationMs,
           mode,
           ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
           ...buildSupervisorModeMetadata(modeDecision),
