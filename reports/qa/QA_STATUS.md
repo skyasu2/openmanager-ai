@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-08 23:07:11 KST
+> Generated at: 2026-05-09 00:14:18 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 424 |
+| Total Recorded Runs | 425 |
 | Total Runs (Counted) | 346 |
-| Non-counted Runs | 78 |
+| Non-counted Runs | 79 |
 | Total Checks | 3037 |
 | Passed | 2927 |
 | Failed | 100 |
-| Completed Items | 453 |
+| Completed Items | 457 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260508-0425 (2026-05-08T12:23:59.578Z) |
-| Latest Recorded Run | QA-20260508-0426 (2026-05-08T14:07:10.491Z) |
+| Latest Recorded Run | QA-20260509-0427 (2026-05-08T15:14:17.014Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260508-0426 (2026-05-08T14:07:10.491Z)
+Latest run: QA-20260509-0427 (2026-05-08T15:14:17.014Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260508-0426 (2026-05-08T14:07:10.491Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-07T14:07:10.491Z -> 2026-05-08T14:07:10.491Z (24h)
+- Window: 2026-05-07T15:14:17.014Z -> 2026-05-08T15:14:17.014Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +58,7 @@ Latest run: QA-20260508-0426 (2026-05-08T14:07:10.491Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-07T14:07:10.491Z -> 2026-05-08T14:07:10.491Z (24h)
+- Window: 2026-05-07T15:14:17.014Z -> 2026-05-08T15:14:17.014Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -72,10 +72,10 @@ Latest run: QA-20260508-0426 (2026-05-08T14:07:10.491Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 92906f18
+- Deployment: SHA 5e9eafbb
 - Coverage Packs: dashboard-core, modal-detail-pack
-- Covered Surfaces: /dashboard/servers desktop server card grid, /dashboard/servers/[serverId] mobile server detail, server detail tab navigation, mobile interactive control overlap scan
-- Skipped Surfaces: AI assistant conversational QA, Vercel production release-gate, Cloud Run observability pack
+- Covered Surfaces: /dashboard/servers card click to server detail route, /dashboard/servers/[serverId] detail header status and AI action, server detail overview duplicate metric removal, server card click-only progressive disclosure, EnhancedServerModal shell dead-code removal
+- Skipped Surfaces: Vercel production release-gate, AI assistant conversational response QA, Cloud Run observability pack
 
 ## Links (Latest Run)
 
@@ -87,8 +87,7 @@ Latest run: QA-20260508-0426 (2026-05-08T14:07:10.491Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Desktop server cards after density fix | `/tmp/dashboard-servers-ui-fix-1440-v4.png` | - |
-| playwright-screenshot | Mobile server detail after overflow fix | `/tmp/server-detail-ui-fix-mobile-final-v2.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -350,6 +349,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-ai-sidebar-resize-and-rail-collapse: AI 사이드바 오픈 시 좌측 rail 축소 및 데스크톱 사이드바 리사이즈 (completed 1회, last QA-20260430-0383)
 - dashboard-client-lazy-shell-split: Split DashboardClient into auth wrapper and lazy interactive shell (completed 1회, last QA-20260420-0318)
 - dashboard-content-lazy-server-section: Lazy load ServerDashboard from DashboardContent (completed 1회, last QA-20260420-0318)
+- dashboard-detail-header-ai-action: Server detail header exposes status badge and AI ask action for warning/critical servers (completed 1회, last QA-20260509-0427)
+- dashboard-detail-modal-shell-removal: Unused EnhancedServerModal shell and shell test removed (completed 1회, last QA-20260509-0427)
+- dashboard-detail-overview-metric-dedup: Server detail overview removes duplicate 핵심 성능 지표 grid (completed 1회, last QA-20260509-0427)
 - dashboard-dev-defer-heavy-subtree: Defer DashboardContent subtree during dev bootstrap (completed 1회, last QA-20260420-0317)
 - dashboard-health-badge-warning-consistency: 고부하 카드가 Stable 대신 Warning으로 정렬됨 (completed 1회, last QA-20260322-0157)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
@@ -533,6 +535,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - sentry-error-boundary-tag-fix: error.tsx boundary 태그 수정 (global-error → root) (completed 1회, last QA-20260329-0194)
 - sentry-global-error-boundary: global-error.tsx Sentry 에러 경계 연동 추가 (completed 1회, last QA-20260329-0194)
 - server-card-badge-ai-prefill: 서버 카드 경고 배지 클릭 시 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0165)
+- server-card-click-only-disclosure: Server card progressive disclosure opens only via explicit toggle (completed 1회, last QA-20260509-0427)
 - server-card-expand: 서버 카드 상세 펼치기/접기 (completed 1회, last QA-20260317-0114)
 - server-detail-log-tab: 로그 & 네트워크 탭 (completed 1회, last QA-20260317-0114)
 - server-detail-mobile-overflow: Mobile server detail has no page horizontal overflow or control overlap (completed 1회, last QA-20260508-0426)
@@ -630,6 +633,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260509-0427 | 2026-05-08T15:14:17.014Z | targeted | no | no | Local Dashboard Server Detail UX QA - Modal Shell Removal and Header Actions | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260508-0426 | 2026-05-08T14:07:10.491Z | targeted | no | no | Local Dashboard Server Layout QA - Card Density and Mobile Detail Overflow | 5 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260508-0425 | 2026-05-08T12:23:59.578Z | broad | yes | yes | v8.11.113 3일간 변경사항 Playwright Production QA | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260508-0424 | 2026-05-08T07:24:22.394Z | targeted | no | yes | Local Playwright MCP QA - Nivo tooltip and anomaly visual closure | 7 | 2 | 0 | 0 | 0 | 0 |
@@ -649,4 +653,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260505-0410 | 2026-05-05T04:35:45.774Z | targeted | yes | yes | v8.11.105 RAG OTel SSOT Targeted Recheck | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0409 | 2026-05-05T03:39:15.190Z | targeted | yes | yes | v8.11.104 Residual Production Targeted QA | 6 | 3 | 1 | 0 | 0 | 1 |
 | QA-20260505-0408 | 2026-05-05T02:27:19.400Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.104 Web search answer recovery | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260505-0407 | 2026-05-04T23:33:01.502Z | broad | yes | yes | Vercel Playwright MCP Broad QA - v8.11.97 full surface and AI quality | 39 | 2 | 5 | 0 | 0 | 4 |

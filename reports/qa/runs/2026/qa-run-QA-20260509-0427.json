@@ -1,0 +1,107 @@
+{
+  "runId": "QA-20260509-0427",
+  "recordedAt": "2026-05-08T15:14:17.014Z",
+  "recordedAtKst": "2026-05-09 00:14:17 KST",
+  "runTitle": "Local Dashboard Server Detail UX QA - Modal Shell Removal and Header Actions",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local development proxy",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "5e9eafbb21bdf0cb2c6fb80fee860f3d76bb53e0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/dashboard/servers card click to server detail route",
+    "/dashboard/servers/[serverId] detail header status and AI action",
+    "server detail overview duplicate metric removal",
+    "server card click-only progressive disclosure",
+    "EnhancedServerModal shell dead-code removal"
+  ],
+  "skippedSurfaces": [
+    "Vercel production release-gate",
+    "AI assistant conversational response QA",
+    "Cloud Run observability pack"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dashboard-detail-modal-shell-removal",
+      "title": "Unused EnhancedServerModal shell and shell test removed",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "rg found no EnhancedServerModal shell props or non-dot shell references; type-check passed",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-detail-header-ai-action",
+      "title": "Server detail header exposes status badge and AI ask action for warning/critical servers",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "ServerDetailView targeted test verifies warning badge and AI에게 물어보기 callback",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-detail-overview-metric-dedup",
+      "title": "Server detail overview removes duplicate 핵심 성능 지표 grid",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "ServerDetailView targeted test verifies duplicate heading is absent",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "server-card-click-only-disclosure",
+      "title": "Server card progressive disclosure opens only via explicit toggle",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "ImprovedServerCard targeted test verifies hover does not reveal service chips and click does",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local deterministic QA only; no live LLM/provider call was made.",
+    "Validation passed: targeted Vitest, npm run type-check, npm run lint, npm run test:quick, npm run docs:components:verify, git diff --check.",
+    "Playwright targeted flow: 2/3 passed on first cold run, the route-click case timed out at /dashboard once, and the same case passed on immediate rerun. No active regression remains."
+  ],
+  "links": []
+}

@@ -1,7 +1,7 @@
 # Dashboard 서버 카드 & 상세 페이지 UX 개선 계획
 
 > Owner: project
-> Status: Approved
+> Status: Implemented
 > Doc type: How-to
 > Last reviewed: 2026-05-08
 > Tags: dashboard,ux,server-card,server-detail,dead-code
@@ -133,12 +133,25 @@ grep -r "EnhancedServerModal[^.]" src --include="*.tsx" --include="*.ts"
 
 ## Task 목록
 
-- [ ] **Task 1**: `EnhancedServerModal.tsx` 삭제 + `EnhancedServerModal.test.tsx` 삭제 + 타입 정리 + `type-check` 통과
-- [ ] **Task 2**: `ServerDetailView` 헤더 — 상태 컬러 배지 + AI Ask 버튼 추가 + `DashboardRoutedContent` 연결
-- [ ] **Task 3**: Overview 탭 "핵심 성능 지표" 중복 그리드 제거
-- [ ] **Task 4**: `ImprovedServerCard` Progressive Disclosure 단계 통합 (호버 자동 노출 제거)
-- [ ] **Task 5**: `npm run test:quick` + `npm run type-check` 전체 통과 확인
-- [ ] **Task 6**: Playwright MCP로 `/dashboard/servers` → 카드 클릭 → 상세 페이지 플로우 시각 확인
+- [x] **Task 1**: `EnhancedServerModal.tsx` 삭제 + `EnhancedServerModal.test.tsx` 삭제 + 타입 정리 + `type-check` 통과
+- [x] **Task 2**: `ServerDetailView` 헤더 — 상태 컬러 배지 + AI Ask 버튼 추가 + `DashboardRoutedContent` 연결
+- [x] **Task 3**: Overview 탭 "핵심 성능 지표" 중복 그리드 제거
+- [x] **Task 4**: `ImprovedServerCard` Progressive Disclosure 단계 통합 (호버 자동 노출 제거)
+- [x] **Task 5**: `npm run test:quick` + `npm run type-check` 전체 통과 확인
+- [x] **Task 6**: Playwright MCP로 `/dashboard/servers` → 카드 클릭 → 상세 페이지 플로우 시각 확인
+
+---
+
+## 검증 결과
+
+- QA 기록: `QA-20260509-0427`
+- `npm run type-check`: pass
+- `npm run lint`: pass (`qa-tracker.json` size info only)
+- `npm run test:quick`: pass
+- Targeted Vitest: `ServerDetailView.test.tsx`, `ImprovedServerCard.test.tsx` pass
+- Playwright targeted flow: `/dashboard/servers` 카드 클릭 → 상세 route 이동, 탭 전환, 모바일 overflow guard pass. 첫 cold run에서 route-click 1회 timeout 후 동일 케이스 재실행 pass.
+- `npm run docs:components:verify`: pass
+- `git diff --check`: pass
 
 ---
 

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`Dashboard 서버 카드 & 상세 페이지 UX 개선 계획서 Approved 전환`)
+**Last Updated**: 2026-05-09 KST (`Dashboard 서버 카드 & 상세 페이지 UX 개선 구현 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -14,7 +14,6 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | AI 어시스턴트 운영 대응 QA 확장 | High | Draft (검토 대기) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — 서비스 맥락 A5 + 명령어 B5 + 초보 유도 C5 = 15개 시나리오 |
-| Dashboard 서버 카드 & 상세 페이지 UX 개선 | Medium | Approved | [dashboard-server-detail-ux-plan.md](dashboard-server-detail-ux-plan.md) — Modal dead code 제거, 상세 페이지 헤더 개선, 중복 메트릭 제거, AI Ask 버튼, 카드 PD 단순화 |
 
 ---
 
@@ -49,6 +48,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-09 #322) — Codex
+- [x] Dashboard 서버 카드 & 상세 페이지 UX 개선
+  - `EnhancedServerModal.tsx` dead shell과 shell 전용 테스트 제거
+  - 서버 상세 헤더에 상태 배지와 warning/critical 서버용 "AI에게 물어보기" 액션 추가
+  - Overview 탭 중복 "핵심 성능 지표" 그리드 제거
+  - 서버 카드 Progressive Disclosure를 hover 자동 노출 없이 명시적 펼치기 버튼으로 단순화
+  - QA 기록: [QA-20260509-0427](../qa/runs/2026/qa-run-QA-20260509-0427.json)
 
 ### Completed (2026-05-08 #321) — Claude
 - [x] 3일간 변경사항 Playwright Production QA (QA-20260508-0425)
