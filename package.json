@@ -220,7 +220,7 @@
     "test:e2e:visual": "playwright test tests/e2e/visual.spec.ts --config playwright.config.ts",
     "test:e2e:visual:update": "playwright test tests/e2e/visual.spec.ts --config playwright.config.ts --update-snapshots",
     "test:e2e:with-server": "PORT=3000 npm run dev:stable & sleep 5 && playwright test --config playwright.config.ts; kill %1",
-    "test:external-connectivity": "RUN_EXTERNAL_CONNECTIVITY_TESTS=true node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.main.ts tests/integration/external-services-connection.test.ts",
+    "test:external-connectivity": "RUN_EXTERNAL_CONNECTIVITY_TESTS=true node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.external-connectivity.ts tests/integration/external-services-connection.test.ts",
     "test:fast": "npm run test",
     "test:frontend:smoke": "vitest run --config config/testing/vitest.config.frontend-smoke.ts",
     "test:gate": "npm run test:quick && npm run type-check && npm run lint",

@@ -211,7 +211,7 @@ export const nextJsApiHandlers = [
     const engine = body.engine || 'UNIFIED';
 
     // 지원하지 않는 엔진 검증 (v4.0에서는 무시하고 UNIFIED 사용하지만, 로그는 남김)
-    const supportedEngines = ['UNIFIED', 'GOOGLE', 'OPENAI', 'COHERE'];
+    const supportedEngines = ['UNIFIED'];
     if (!supportedEngines.includes(engine)) {
       console.log(
         `[MSW] Unsupported engine requested: ${engine}, falling back to UNIFIED`
@@ -431,15 +431,17 @@ export const nextJsApiHandlers = [
     // 전체 상태 요약
     return HttpResponse.json({
       summary: {
-        totalServices: 3,
-        healthyServices: 3,
+        totalServices: 5,
+        healthyServices: 5,
         degradedServices: 0,
         unhealthyServices: 0,
       },
       services: {
-        google: { state: 'CLOSED', failures: 0, isOpen: false },
-        openai: { state: 'CLOSED', failures: 0, isOpen: false },
-        cohere: { state: 'CLOSED', failures: 0, isOpen: false },
+        groq: { state: 'CLOSED', failures: 0, isOpen: false },
+        cerebras: { state: 'CLOSED', failures: 0, isOpen: false },
+        mistral: { state: 'CLOSED', failures: 0, isOpen: false },
+        gemini: { state: 'CLOSED', failures: 0, isOpen: false },
+        openrouter: { state: 'CLOSED', failures: 0, isOpen: false },
       },
       recentEvents: [],
       timestamp: Date.now(),

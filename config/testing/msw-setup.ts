@@ -20,7 +20,7 @@ beforeAll(() => {
     console.log('[MSW] Starting mock server for tests...');
   }
   server.listen({
-    onUnhandledRequest: 'warn', // 처리되지 않은 요청에 대해 경고
+    onUnhandledRequest: 'error',
   });
 });
 

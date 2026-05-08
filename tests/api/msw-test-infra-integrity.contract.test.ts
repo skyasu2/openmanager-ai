@@ -46,4 +46,17 @@ describe('MSW test infrastructure integrity contract', () => {
     expect(externalConfig).toContain('setupFiles: []');
     expect(externalConfig).not.toContain('msw-setup');
   });
+
+  it('gate MSW registry does not install legacy OpenAI/Cohere provider handlers', () => {
+    const handlerRegistry = readRepoFile('src/__mocks__/msw/handlers/index.ts');
+
+    expect(handlerRegistry).not.toContain('openAIHandlers');
+    expect(handlerRegistry).not.toContain('cohereHandlers');
+    expect(
+      existsSync(repoPath('src/__mocks__/msw/handlers/ai/openai.ts'))
+    ).toBe(false);
+    expect(
+      existsSync(repoPath('src/__mocks__/msw/handlers/ai/cohere.ts'))
+    ).toBe(false);
+  });
 });

@@ -1,13 +1,13 @@
 # MSW Test Infra Integrity Plan
 
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-08
-> Canonical: reports/planning/msw-test-infra-integrity-plan.md
+> Canonical: reports/planning/archive/msw-test-infra-integrity-plan.md
 > Tags: msw,testing,vitest,contract,infra
 
-- TODO.md 연결: Backlog > MSW 테스트 인프라 정합성 개선
+- TODO.md 연결: Recent Completed #320 > MSW 테스트 인프라 정합성 개선
 - 테스트 방법론 기준: `docs/guides/testing/test-strategy.md` § 0
 - **Approved 기준**: 구현 전 failing spec 범위를 핵심 3개 시나리오로 확정했다. 구현 착수는 Task 0의 failing spec 커밋부터 진행한다.
 
@@ -130,11 +130,11 @@ Task 0의 failing spec은 아래 3개를 대표 계약으로 고정한다.
 ## Task 목록
 
 - [x] Task 0 — 구현 전 contract/failing spec 최소화: 대표 계약 3개에 대한 failing spec 커밋
-- [ ] Task 1 — MSW strict boundary: unhandled request policy와 suite별 예외 경로 정리
-- [ ] Task 2 — contract suite 정리: `api-contract` inline fetch mock 제거/전환/재분류
-- [ ] Task 3 — integration/live suite 정리: mock integration과 live connectivity config 분리
-- [ ] Task 4 — provider handler 정리: 미사용 OpenAI/Cohere handler 제거 또는 current provider 기준 최소화
-- [ ] Task 5 — 방법론 재검토: Pareto/Pesticide/Risk 기준으로 남긴 테스트와 제거한 테스트 이유 기록
+- [x] Task 1 — MSW strict boundary: unhandled request policy와 suite별 예외 경로 정리
+- [x] Task 2 — contract suite 정리: `api-contract` inline fetch mock 제거/전환/재분류
+- [x] Task 3 — integration/live suite 정리: mock integration과 live connectivity config 분리
+- [x] Task 4 — provider handler 정리: 미사용 OpenAI/Cohere handler 제거 또는 current provider 기준 최소화
+- [x] Task 5 — 방법론 재검토: Pareto/Pesticide/Risk 기준으로 남긴 테스트와 제거한 테스트 이유 기록
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -146,21 +146,21 @@ Task 0의 failing spec은 아래 3개를 대표 계약으로 고정한다.
 
 ## 검증 기준
 
-- [ ] `npm run test:contract`
-- [ ] `npm run test:quick`
-- [ ] `npm run type-check`
-- [ ] `npm run lint`
-- [ ] `npm run docs:budget`
-- [ ] `npm run docs:ai-consistency`
-- [ ] `git diff --check`
-- [ ] live connectivity 검증이 필요할 경우에만 별도 수동 실행하고, 비용/외부 호출 발생 가능성을 실행 전 보고
+- [x] `npm run test:contract`
+- [x] `npm run test:quick`
+- [x] `npm run type-check`
+- [x] `npm run lint`
+- [x] `npm run docs:budget`
+- [x] `npm run docs:ai-consistency`
+- [x] `git diff --check`
+- [x] live connectivity 검증이 필요할 경우에만 별도 수동 실행하고, 비용/외부 호출 발생 가능성을 실행 전 보고
 
 ## 완료 기준
 
-- [ ] GitLab validate에 포함된 contract tests가 inline mock false pass를 만들지 않음
-- [ ] 외부 호출/비용 발생 가능 테스트가 기본 gate에서 분리됨
-- [ ] 테스트 수 증가보다 중복 제거/재분류가 우선 적용됨
-- [ ] Pareto/Pesticide/Risk-Based/Contract-First 관점의 최종 판단이 plan 또는 완료 보고에 기록됨
+- [x] GitLab validate에 포함된 contract tests가 inline mock false pass를 만들지 않음
+- [x] 외부 호출/비용 발생 가능 테스트가 기본 gate에서 분리됨
+- [x] 테스트 수 증가보다 중복 제거/재분류가 우선 적용됨
+- [x] Pareto/Pesticide/Risk-Based/Contract-First 관점의 최종 판단이 plan 또는 완료 보고에 기록됨
 
 ## 진행 로그
 
@@ -169,3 +169,9 @@ Task 0의 failing spec은 아래 3개를 대표 계약으로 고정한다.
     - `config/testing/msw-setup.ts`가 `onUnhandledRequest: 'warn'` 사용
     - `tests/api/api-contract.test.ts`가 `global.fetch = vi.fn()` inline mock 사용
     - `test:external-connectivity`가 MSW-free 전용 config 대신 `vitest.config.main.ts` 사용
+- 2026-05-08 Task 1~5: strict MSW boundary와 mock integrity 정리 완료.
+  - `config/testing/msw-setup.ts`는 unhandled request를 `error`로 실패 처리한다.
+  - `tests/api/api-contract.test.ts`의 inline `global.fetch` mock을 제거하고 기존 MSW route handler 경유로 전환했다.
+  - `test:external-connectivity`는 `config/testing/vitest.config.external-connectivity.ts` 전용 config를 사용하며 `setupFiles: []`로 MSW/setup mock 없이 실행된다.
+  - legacy OpenAI/Cohere provider-direct MSW handler를 registry에서 제거하고, `/api/ai/status` mock은 Groq/Cerebras/Mistral/Gemini/OpenRouter 이름으로 정렬했다.
+  - 방법론 판단: 테스트 수 증가는 대표 guard 1개로 제한하고, 핵심 위험은 unhandled request strict화와 inline mock 제거로 처리했다. live connectivity는 비용/외부 호출 위험 때문에 기본 gate에 넣지 않고 skip-only config smoke만 검증한다.

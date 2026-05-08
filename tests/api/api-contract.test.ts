@@ -5,11 +5,11 @@
  * @author Claude Code (Test Automation Specialist)
  * @created 2025-12-19
  *
- * 이 테스트는 Mock 기반으로 실행되며 실제 서버를 호출하지 않습니다.
+ * 이 테스트는 MSW 기반으로 실행되며 실제 서버를 호출하지 않습니다.
  * Vercel/배포 환경에 부하를 주지 않습니다.
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod';
 
 const BASE_URL = 'http://localhost:3002';
@@ -113,80 +113,6 @@ const ErrorResponseSchema = z.object({
 // ============================================================
 
 describe('📜 API Contract Tests - /api/servers-unified', () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-
-    // servers-unified Mock 구현
-    global.fetch = vi.fn().mockImplementation((url: string) => {
-      const urlObj = new URL(url);
-      const action = urlObj.searchParams.get('action') || 'list';
-      const limit = parseInt(urlObj.searchParams.get('limit') || '10', 10);
-      const serverId = urlObj.searchParams.get('serverId');
-
-      // action=detail
-      if (action === 'detail') {
-        if (!serverId) {
-          return Promise.resolve({
-            ok: false,
-            status: 400,
-            json: () =>
-              Promise.resolve({
-                success: false,
-                error: 'serverId is required for detail action',
-              }),
-          } as Response);
-        }
-        return Promise.resolve({
-          ok: true,
-          status: 200,
-          json: () =>
-            Promise.resolve({
-              success: true,
-              data: {
-                id: serverId,
-                name: `Server ${serverId}`,
-                hostname: `${serverId}.local`,
-                status: 'online',
-                cpu: 45.2,
-                memory: 67.8,
-                disk: 23.5,
-                network: 12.3,
-                uptime: 86400,
-              },
-              timestamp: new Date().toISOString(),
-            }),
-        } as Response);
-      }
-
-      // list, cached, realtime 등
-      return Promise.resolve({
-        ok: true,
-        status: 200,
-        json: () =>
-          Promise.resolve({
-            success: true,
-            data: Array.from({ length: Math.min(limit, 10) }, (_, i) => ({
-              id: `server-${i + 1}`,
-              name: `Test Server ${i + 1}`,
-              hostname: `test-${i + 1}.local`,
-              status: i < 8 ? 'online' : i === 8 ? 'warning' : 'offline',
-              cpu: 20 + Math.random() * 60,
-              memory: 30 + Math.random() * 50,
-              disk: 40 + Math.random() * 40,
-              network: 5 + Math.random() * 20,
-            })),
-            pagination: {
-              page: 1,
-              limit,
-              total: 10,
-              totalPages: Math.ceil(10 / limit),
-            },
-            timestamp: new Date().toISOString(),
-          }),
-      } as Response);
-    });
-  });
-
   describe('GET /api/servers-unified?action=list', () => {
     it('목록 응답이 올바른 스키마를 따른다', async () => {
       const response = await fetch(`${BASE_URL}/api/servers-unified`);
@@ -267,58 +193,6 @@ describe('📜 API Contract Tests - /api/servers-unified', () => {
 });
 
 describe('📜 API Contract Tests - /api/ai/status', () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-
-    // ai/status Mock 구현
-    global.fetch = vi.fn().mockImplementation((url: string) => {
-      const urlObj = new URL(url);
-      const service = urlObj.searchParams.get('service');
-
-      // 특정 서비스 상태
-      if (service) {
-        return Promise.resolve({
-          ok: true,
-          status: 200,
-          json: () =>
-            Promise.resolve({
-              service,
-              status: {
-                state: 'CLOSED',
-                failures: 0,
-                lastFailure: null,
-                isOpen: false,
-              },
-              events: [],
-              timestamp: Date.now(),
-            }),
-        } as Response);
-      }
-
-      // 전체 상태 요약
-      return Promise.resolve({
-        ok: true,
-        status: 200,
-        json: () =>
-          Promise.resolve({
-            summary: {
-              totalServices: 3,
-              healthyServices: 3,
-              degradedServices: 0,
-              unhealthyServices: 0,
-            },
-            services: {
-              google: { state: 'CLOSED', failures: 0, isOpen: false },
-              openai: { state: 'CLOSED', failures: 0, isOpen: false },
-              cohere: { state: 'CLOSED', failures: 0, isOpen: false },
-            },
-            recentEvents: [],
-            timestamp: Date.now(),
-          }),
-      } as Response);
-    });
-  });
-
   describe('GET /api/ai/status (전체)', () => {
     it('전체 상태 응답이 올바른 스키마를 따른다', async () => {
       const response = await fetch(`${BASE_URL}/api/ai/status`);
@@ -355,7 +229,7 @@ describe('📜 API Contract Tests - /api/ai/status', () => {
 
   describe('GET /api/ai/status?service=xxx', () => {
     it('특정 서비스 상태 응답이 올바른 스키마를 따른다', async () => {
-      const response = await fetch(`${BASE_URL}/api/ai/status?service=google`);
+      const response = await fetch(`${BASE_URL}/api/ai/status?service=groq`);
       const data = await response.json();
 
       expect(response.ok).toBe(true);
@@ -363,14 +237,16 @@ describe('📜 API Contract Tests - /api/ai/status', () => {
     });
 
     it('요청한 서비스 이름이 응답에 포함된다', async () => {
-      const response = await fetch(`${BASE_URL}/api/ai/status?service=openai`);
+      const response = await fetch(
+        `${BASE_URL}/api/ai/status?service=cerebras`
+      );
       const data = await response.json();
 
-      expect(data.service).toBe('openai');
+      expect(data.service).toBe('cerebras');
     });
 
     it('서비스 상태에 state, failures, isOpen 필드가 있다', async () => {
-      const response = await fetch(`${BASE_URL}/api/ai/status?service=cohere`);
+      const response = await fetch(`${BASE_URL}/api/ai/status?service=mistral`);
       const data = await response.json();
 
       expect(data.status.state).toBeDefined();
@@ -381,65 +257,6 @@ describe('📜 API Contract Tests - /api/ai/status', () => {
 });
 
 describe('📜 API Contract - Cross-validation', () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-
-    // Combined mock for cross-validation
-    global.fetch = vi.fn().mockImplementation((url: string) => {
-      if (url.includes('/api/servers-unified')) {
-        return Promise.resolve({
-          ok: true,
-          status: 200,
-          json: () =>
-            Promise.resolve({
-              success: true,
-              data: Array.from({ length: 10 }, (_, i) => ({
-                id: `server-${i + 1}`,
-                name: `Test Server ${i + 1}`,
-                hostname: `test-${i + 1}.local`,
-                status: i < 8 ? 'online' : i === 8 ? 'warning' : 'offline',
-                cpu: 45,
-                memory: 67,
-                disk: 23,
-                network: 12,
-              })),
-              pagination: { page: 1, limit: 10, total: 10, totalPages: 1 },
-              timestamp: new Date().toISOString(),
-            }),
-        } as Response);
-      }
-
-      if (url.includes('/api/ai/status')) {
-        return Promise.resolve({
-          ok: true,
-          status: 200,
-          json: () =>
-            Promise.resolve({
-              summary: {
-                totalServices: 3,
-                healthyServices: 3,
-                degradedServices: 0,
-                unhealthyServices: 0,
-              },
-              services: {
-                google: { state: 'CLOSED', failures: 0, isOpen: false },
-                openai: { state: 'CLOSED', failures: 0, isOpen: false },
-                cohere: { state: 'CLOSED', failures: 0, isOpen: false },
-              },
-              recentEvents: [],
-              timestamp: Date.now(),
-            }),
-        } as Response);
-      }
-
-      return Promise.resolve({
-        ok: false,
-        status: 404,
-        json: () => Promise.resolve({ error: 'Not Found' }),
-      } as Response);
-    });
-  });
-
   it('servers-unified와 ai/status 응답에 timestamp가 존재한다', async () => {
     const [serversRes, aiRes] = await Promise.all([
       fetch(`${BASE_URL}/api/servers-unified`),

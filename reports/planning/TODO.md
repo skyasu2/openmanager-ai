@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`MSW Task 0 failing spec`)
+**Last Updated**: 2026-05-08 KST (`MSW test infra integrity completed`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,7 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| MSW 테스트 인프라 정합성 개선 | Medium | In Progress (Codex). Task 0 failing spec 추가: MSW unhandled request strict failure, `api-contract` inline fetch mock false-pass 차단, live connectivity MSW-free config 분리. 다음 단계는 Task 1~3 구현으로 failing spec 통과. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
+| — | — | Backlog 없음 |
 
 ---
 
@@ -48,6 +48,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-08 #320) — Codex
+- [x] MSW 테스트 인프라 정합성 개선
+  - `test:contract` MSW unhandled request policy를 `error`로 전환
+  - `api-contract` inline `global.fetch` mock 제거, MSW route handler 기반 계약 검증으로 전환
+  - live connectivity 전용 Vitest config를 `setupFiles: []`로 분리해 기본 gate의 MSW/setup mock과 격리
+  - legacy OpenAI/Cohere provider-direct MSW handler 제거, `/api/ai/status` mock provider 이름을 current runtime 정책 기준으로 정렬
+  - 상세: [archive/msw-test-infra-integrity-plan.md](archive/msw-test-infra-integrity-plan.md)
 
 ### Completed (2026-05-08 #319) — Codex
 - [x] 완료 계획서 archive 정리
