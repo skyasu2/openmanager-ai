@@ -15,6 +15,16 @@ const sampleDomainState = {
 };
 
 describe('buildDeterministicSummaryFallback', () => {
+  it('does not classify service command guidance as deterministic status summary', () => {
+    expect(
+      isDeterministicSummaryQuery(
+        'HAProxy에서 현재 연결된 백엔드 서버 목록이랑 상태 확인하는 명령어 알려줘',
+        'Advisor Agent',
+        1
+      )
+    ).toBe(false);
+  });
+
   it('builds a deterministic NLQ summary from getServerMetrics results', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 모든 서버의 상태를 요약해줘',

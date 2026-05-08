@@ -1,0 +1,94 @@
+{
+  "startedAt": "2026-05-08T16:24:23.665Z",
+  "finishedAt": "2026-05-08T16:30:56.561Z",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "selectedScenarioIds": [
+    "A1",
+    "A3",
+    "A5",
+    "B1",
+    "B4",
+    "B5",
+    "C1",
+    "C2"
+  ],
+  "total": 8,
+  "pass": 2,
+  "warn": 1,
+  "fail": 5,
+  "results": [
+    {
+      "id": "A1",
+      "category": "service-context",
+      "question": "HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?",
+      "status": "WARN",
+      "reason": "partial match 2/3",
+      "latencyMs": 43297,
+      "answerExcerpt": "HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?오전 01:25:21복사HAProxy 서버 3대 모두 온라인 상태이며, CPU, 메모리, 디스크 사용률이 정상 범주에 있습니다. 자세히 알려드릴까요?오전 01:25:21· 2522ms복사다시 생성분석 근거도구: 서버 그룹 조회 · 모드: 오토 · 기간: 최근 1시간"
+    },
+    {
+      "id": "A3",
+      "category": "service-context",
+      "question": "Redis 캐시 서버 3대 중 가장 메모리 많이 쓰는 서버가 어디야?",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 7636,
+      "answerExcerpt": "캐시 서버 3대 중 가장 메모리 많이 쓰는 서버가 어디야?오전 01:25:25복사Redis 캐시 서버 3대 중 메모리 사용량이 가장 높은 서버는 cache-redis-dc1-01과 cache-redis-dc1-02로, 메모리 사용량은 43%입니다.오전 01:25:30· 4856ms복사다시 생성분석 근거도구: getServerByGroupAdvanced · 모드: 오토 · 기간: 최근 1시간"
+    },
+    {
+      "id": "A5",
+      "category": "service-context",
+      "question": "스토리지 서버 디스크 사용량이 임계치 넘기 전에 미리 알 수 있어?",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 75651,
+      "answerExcerpt": ""
+    },
+    {
+      "id": "B1",
+      "category": "command-guidance",
+      "question": "HAProxy에서 현재 연결된 백엔드 서버 목록이랑 상태 확인하는 명령어 알려줘",
+      "status": "FAIL",
+      "reason": "matched explicit fail pattern",
+      "latencyMs": 8961,
+      "answerExcerpt": "xy에서 현재 연결된 백엔드 서버 목록이랑 상태 확인하는 명령어 알려줘오전 01:26:51복사📊 서버 현황 요약 • 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대 • 평균 CPU: 29%, 메모리: 44%, 디스크: 37% ⚠️ 주의 서버 • db-mysql-dc1-primary: 디스크 81% (안정 추세 →) 📈 추세 • 전체 서버는 평균 대비 큰 변동 없이 안정적입니다. 💡 권고 • db-mysql-dc1-primary: 로그 적체, 백업 산출물, tmp 디렉터리 증가 경로를 우선 점검하세요.오전 01:26:54· 3584ms복사다시 생성분석 근거도구: 조치 명령어 정리 · 모드: 오토"
+    },
+    {
+      "id": "B4",
+      "category": "command-guidance",
+      "question": "Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 75610,
+      "answerExcerpt": ""
+    },
+    {
+      "id": "B5",
+      "category": "command-guidance",
+      "question": "NFS 마운트가 끊겼을 때 확인하고 재마운트하는 순서 알려줘",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 75696,
+      "answerExcerpt": ""
+    },
+    {
+      "id": "C1",
+      "category": "beginner-guidance",
+      "question": "lb-haproxy-dc1-01 CPU가 73%인데 이거 위험한 거야? 뭘 해야 해?",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 3613,
+      "answerExcerpt": "proxy-dc1-01 CPU가 73%인데 이거 위험한 거야? 뭘 해야 해?오전 01:29:35복사핵심 요약문제 요약: lb-haproxy-dc1-01 CPU 사용률 73% 💡 원인 분석 CPU 사용률 73%는 일반적으로 위험한 수준입니다. (신뢰도: 80%) 과거 사례에서 CPU 사용률이 높았던 경우, 서버 성능 저하 또는 오류 발생이 발생한 적이 있습니다. 상세 분석🛠️ 권장 조치 절차 진단: CPU 사용률을 확인하고, 메모리 사용률과 디스크 사용률을 함께 확인합니다. top -o %CPU 조치: CPU 사용률을 줄이기 위해, 불필요한 프로세스를 종료하고, CPU 사용률이 높은 프로세스를 확인합니다. pkill -f \"프로세스 이름\" top -o %CPU 검증: CPU 사용률을 확인하고, 메모리 사용률과 디스크 사용률을 함께 확인합니다. top -o %CPU ⚠️ 주의사항 CPU 사용률이 계속 높다면, 서버 성능 저하 또는 오류 발생이 발생할 수 있습니다. 메모리 사용률과 디스크 사용률도 함께 확인하여, 시스템 성능 저하를 방지하세요. 오전 01:29:35· 475ms복사다시 생성분석 근거데이터: 일반 대화 응답 · 모드: 오토"
+    },
+    {
+      "id": "C2",
+      "category": "beginner-guidance",
+      "question": "처음 운영 당직인데 알림이 울리면 어떤 순서로 확인해야 해?",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 75972,
+      "answerExcerpt": ""
+    }
+  ],
+  "consoleMessages": []
+}
