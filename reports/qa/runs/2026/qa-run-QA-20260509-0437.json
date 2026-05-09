@@ -1,0 +1,89 @@
+{
+  "runId": "QA-20260509-0437",
+  "recordedAt": "2026-05-09T13:56:23.063Z",
+  "recordedAtKst": "2026-05-09 22:56:23 KST",
+  "runTitle": "v8.11.119 Production Release Smoke",
+  "owner": "codex",
+  "source": "release-script-vercel-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_9N2ERwJsY7t2P1pLQzeodf7x15gL",
+    "deploymentUrl": "https://openmanager-cr9vfh8jm-skyasus-projects.vercel.app",
+    "commitSha": "d04c625b1875cbae6cddceb585decfa25f7cf736"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "/api/version",
+    "Vercel production version alias"
+  ],
+  "skippedSurfaces": [
+    "real LLM/AI response generation",
+    "mobile viewport pass",
+    "Cloud Run AI Engine redeploy"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab semver tag pipeline and release-script production smoke verified the deployed frontend version.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-09T22:55:06+09:00",
+      "summary": "Current billing period reviewed after v8.11.119 release smoke; billed usage remains 0.0000 USD, effective usage 5.3776 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "v811119-production-release-smoke",
+      "title": "v8.11.119 production release smoke passed",
+      "priority": "P2",
+      "evidence": "release script smoke: /, /login, /api/version all PASS; expected version 8.11.119",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.11.119 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2512463688"
+    }
+  ]
+}
