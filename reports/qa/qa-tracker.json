@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-09T13:56:23.063Z"
+    "updatedAt": "2026-05-09T16:26:24.262Z"
   },
   "sequence": {
-    "nextRunNumber": 438
+    "nextRunNumber": 439
   },
   "summary": {
-    "totalRecordedRuns": 435,
-    "totalRuns": 354,
+    "totalRecordedRuns": 436,
+    "totalRuns": 355,
     "excludedRuns": 81,
-    "totalChecks": 3079,
-    "totalPassed": 2955,
+    "totalChecks": 3083,
+    "totalPassed": 2959,
     "totalFailed": 114,
     "completionRate": 100,
-    "completedItems": 469,
+    "completedItems": 470,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260509-0437",
-    "lastRecordedAt": "2026-05-09T13:56:23.063Z",
-    "latestRecordedRunId": "QA-20260509-0437",
-    "latestRecordedAt": "2026-05-09T13:56:23.063Z"
+    "lastRunId": "QA-20260510-0438",
+    "lastRecordedAt": "2026-05-09T16:26:24.262Z",
+    "latestRecordedRunId": "QA-20260510-0438",
+    "latestRecordedAt": "2026-05-09T16:26:24.262Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11513,6 +11513,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-09T13:56:23.063Z"
+    },
+    "v811120-production-release-smoke": {
+      "id": "v811120-production-release-smoke",
+      "title": "v8.11.120 production release smoke passed",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0438",
+      "firstSeenAt": "2026-05-09T16:26:24.262Z",
+      "lastSeenRunId": "QA-20260510-0438",
+      "lastSeenAt": "2026-05-09T16:26:24.262Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "release script smoke: /, /login, /api/version all PASS; expected version 8.11.120",
+      "lastNote": "Production dashboard density smoke confirmed overview displays 8 servers at 1280px.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-09T16:26:24.262Z"
     }
   },
   "runs": [
@@ -45969,6 +45993,107 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0438",
+      "recordedAt": "2026-05-09T16:26:24.262Z",
+      "recordedAtKst": "2026-05-10 01:26:24 KST",
+      "title": "v8.11.120 Production Release Smoke",
+      "owner": "codex",
+      "source": "release-script-vercel-smoke+playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0438.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ca6LDuJNBmxZWXgNAmiZQXrjV4JM",
+        "deploymentUrl": "https://openmanager-l0nsx7oqq-skyasus-projects.vercel.app",
+        "commitSha": "9152232fda88d3b4c51b5a73a43ee59883d545d2"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/login",
+        "/api/version",
+        "/dashboard overview server density",
+        "Vercel production version alias"
+      ],
+      "skippedSurfaces": [
+        "real LLM/AI response generation",
+        "mobile viewport pass",
+        "Cloud Run AI Engine direct endpoint smoke beyond GitLab tag pipeline"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab semver tag pipeline, release-script production smoke, and Vercel deployment inspection verified the deployed frontend version.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted Playwright CLI smoke rendered the production dashboard and verified the overview server density regression fix.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-10T01:11:37+09:00",
+          "summary": "Current billing period reviewed after v8.11.120 release smoke; billed usage remains 0.0000 USD, effective usage 5.3789 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.120 dashboard overview density",
+          "path": "reports/qa/evidence/qa-20260510-v811120-dashboard-density.png",
+          "note": "Production dashboard rendered at 1280px viewport with overview showing 8 server cards."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.11.120 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2512577239"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "v8.11.120 Vercel deployment",
+          "url": "https://openmanager-l0nsx7oqq-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -46028,16 +46153,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 147,
-      "appropriateCount": 130,
+      "seenCount": 148,
+      "appropriateCount": 131,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260509-0437",
-      "lastSeenAt": "2026-05-09T13:56:23.063Z",
+      "lastRunId": "QA-20260510-0438",
+      "lastSeenAt": "2026-05-09T16:26:24.262Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab semver tag pipeline and release-script production smoke verified the deployed frontend version.",
+      "lastRationale": "GitLab semver tag pipeline, release-script production smoke, and Vercel deployment inspection verified the deployed frontend version.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -46045,16 +46170,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 184,
-      "appropriateCount": 166,
+      "seenCount": 185,
+      "appropriateCount": 167,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260509-0432",
-      "lastSeenAt": "2026-05-09T00:32:58.510Z",
+      "lastRunId": "QA-20260510-0438",
+      "lastSeenAt": "2026-05-09T16:26:24.262Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Regression tests now guard semantic submit form and clarification bypass for command guidance prompts; production network proof confirmed request dispatch.",
+      "lastRationale": "Targeted Playwright CLI smoke rendered the production dashboard and verified the overview server density regression fix.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

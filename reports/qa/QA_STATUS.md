@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-09 22:56:23 KST
+> Generated at: 2026-05-10 01:26:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 435 |
-| Total Runs (Counted) | 354 |
+| Total Recorded Runs | 436 |
+| Total Runs (Counted) | 355 |
 | Non-counted Runs | 81 |
-| Total Checks | 3079 |
-| Passed | 2955 |
+| Total Checks | 3083 |
+| Passed | 2959 |
 | Failed | 114 |
-| Completed Items | 469 |
+| Completed Items | 470 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260509-0437 (2026-05-09T13:56:23.063Z) |
-| Latest Recorded Run | QA-20260509-0437 (2026-05-09T13:56:23.063Z) |
+| Last Counted Run | QA-20260510-0438 (2026-05-09T16:26:24.262Z) |
+| Latest Recorded Run | QA-20260510-0438 (2026-05-09T16:26:24.262Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260509-0437 (2026-05-09T13:56:23.063Z)
+Latest run: QA-20260510-0438 (2026-05-09T16:26:24.262Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.119 release smoke; billed usage remains 0.0000 USD, effective usage 5.3776 USD. |
+| vercel | cli | checked | normal | Current billing period reviewed after v8.11.120 release smoke; billed usage remains 0.0000 USD, effective usage 5.3789 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-08T13:56:23.063Z -> 2026-05-09T13:56:23.063Z (24h)
+- Window: 2026-05-08T16:26:24.262Z -> 2026-05-09T16:26:24.262Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +59,7 @@ Latest run: QA-20260509-0437 (2026-05-09T13:56:23.063Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-08T13:56:23.063Z -> 2026-05-09T13:56:23.063Z (24h)
+- Window: 2026-05-08T16:26:24.262Z -> 2026-05-09T16:26:24.262Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -72,22 +73,23 @@ Latest run: QA-20260509-0437 (2026-05-09T13:56:23.063Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_9N2ERwJsY7t2P1pLQzeodf7x15gL / SHA d04c625b
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: /, /login, /api/version, Vercel production version alias
-- Skipped Surfaces: real LLM/AI response generation, mobile viewport pass, Cloud Run AI Engine redeploy
+- Deployment: dpl_Ca6LDuJNBmxZWXgNAmiZQXrjV4JM / SHA 9152232f
+- Coverage Packs: core-routes-smoke, dashboard-core
+- Covered Surfaces: /, /login, /api/version, /dashboard overview server density, Vercel production version alias
+- Skipped Surfaces: real LLM/AI response generation, mobile viewport pass, Cloud Run AI Engine direct endpoint smoke beyond GitLab tag pipeline
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | v8.11.119 tag pipeline | [v8.11.119 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2512463688) | - |
+| general | v8.11.120 tag pipeline | [v8.11.120 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2512577239) | - |
+| vercel-deployment | v8.11.120 Vercel deployment | [v8.11.120 Vercel deployment](https://openmanager-l0nsx7oqq-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | v8.11.120 dashboard overview density | `reports/qa/evidence/qa-20260510-v811120-dashboard-density.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -577,6 +579,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ui-landing-pass: 랜딩 페이지 로드 정상, v8.10.0 확인 (completed 1회, last QA-20260326-0190)
 - ui-ux-improvement-plan-p1-p3-closure: UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed (completed 1회, last QA-20260509-0436)
 - v811119-production-release-smoke: v8.11.119 production release smoke passed (completed 1회, last QA-20260509-0437)
+- v811120-production-release-smoke: v8.11.120 production release smoke passed (completed 1회, last QA-20260510-0438)
 - v81195-dashboard-core-routes-playwright-recheck: Dashboard core routes and AI assistant tabs render in Vercel production (completed 1회, last QA-20260504-0404)
 - v81195-vercel-playwright-ai-routing-recheck: AI ranking and formatting rewrite production routes remain stable on v8.11.95 (completed 1회, last QA-20260504-0404)
 - validation-evidence-summary-clarity: Validation evidence summary 카피와 정보 우선순위 정리 (completed 1회, last QA-20260324-0171)
@@ -645,6 +648,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0438 | 2026-05-09T16:26:24.262Z | targeted | yes | yes | v8.11.120 Production Release Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0437 | 2026-05-09T13:56:23.063Z | targeted | yes | yes | v8.11.119 Production Release Smoke | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0436 | 2026-05-09T12:15:44.170Z | targeted | no | yes | Local UI/UX Improvement Closure QA - P1/P2/P3 | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0435 | 2026-05-09T06:13:33.522Z | targeted | no | yes | Vercel Production AI Ops A5/C2/A1 Targeted Retest - v8.11.118 | 2 | 2 | 0 | 0 | 0 | 0 |
@@ -664,4 +668,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260508-0421 | 2026-05-08T01:27:43.763Z | targeted | no | no | Local Nivo Chart Visual QA - WSL2 /mnt/d SIGBUS Blocked | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260507-0420 | 2026-05-07T03:06:42.069Z | targeted | yes | yes | v8.11.113 AI Feedback Removal Production Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260507-0419 | 2026-05-07T01:09:27.132Z | targeted | yes | yes | v8.11.112 AI Assistant Scroll and Internal Disclosure Targeted QA | 7 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260507-0418 | 2026-05-06T21:59:27.519Z | targeted | yes | yes | v8.11.110 Production Targeted QA - Precomputed State Data Source Decoupling | 11 | 2 | 0 | 0 | 0 | 0 |
