@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-09
 > Canonical: docs/guides/testing/e2e-testing-guide.md
 > Tags: testing,e2e,playwright,playwright-mcp,chrome-devtools-mcp,vercel-qa
 
@@ -301,9 +301,9 @@ MCP (Vercel Production): 전체 핵심 흐름 순차 탐색
 
 - [ ] smoke 체크리스트 전체
 - [ ] 인증: 이메일 로그인 → 세션 유지
-- [ ] 대시보드: 서버 카드 클릭 → 상세 모달 열기
+- [ ] 대시보드: 서버 카드 클릭 → 서버 상세 페이지 이동
 - [ ] AI 사이드바: 질문 입력 → 스트리밍 응답 수신
-- [ ] 접근성: 키보드 내비게이션, focus trap (모달)
+- [ ] 접근성: 키보드 내비게이션, route 이동 후 focus/heading 확인
 - [ ] 오류 복구: 네트워크 에러 시 UI 정상 표시
 - [ ] 모바일: `npm run test:e2e:mobile` 또는 `browser_resize` 375×812
 

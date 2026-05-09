@@ -60,7 +60,7 @@ describe('AlertHistoryModal', () => {
     });
   });
 
-  it('지원 메트릭 이력은 AI 분석 버튼으로 렌더링해야 한다', () => {
+  it('지원 메트릭 이력도 AI 분석 버튼 없이 렌더링해야 한다', () => {
     const alert: Alert = {
       id: 'alert-1',
       serverId: 'server-1',
@@ -74,24 +74,20 @@ describe('AlertHistoryModal', () => {
       firedAt: '2026-03-23T00:00:00Z',
       duration: 300,
     };
-    const onAskAIAboutAlert = vi.fn();
-
     render(
       <AlertHistoryRow
         alert={alert}
         badgeClassName="bg-amber-100 text-amber-700 border-amber-200"
         borderClassName="border-l-amber-500"
         anchorDate={new Date('2026-03-23T00:10:00Z')}
-        onAskAIAboutAlert={onAskAIAboutAlert}
       />
     );
 
-    const button = screen.getByRole('button', {
-      name: 'AI에게 server-1:9100 Memory 알림 분석 요청',
-    });
-    fireEvent.click(button);
-
-    expect(onAskAIAboutAlert).toHaveBeenCalledWith(alert);
+    expect(
+      screen.queryByRole('button', {
+        name: 'AI에게 server-1:9100 Memory 알림 분석 요청',
+      })
+    ).not.toBeInTheDocument();
   });
 
   it('로그 버튼은 서버 필터가 적용된 로그 페이지로 이동한다', () => {
@@ -115,7 +111,6 @@ describe('AlertHistoryModal', () => {
         badgeClassName="bg-amber-100 text-amber-700 border-amber-200"
         borderClassName="border-l-amber-500"
         anchorDate={new Date('2026-03-23T00:10:00Z')}
-        onAskAIAboutAlert={vi.fn()}
       />
     );
 
@@ -145,7 +140,6 @@ describe('AlertHistoryModal', () => {
         badgeClassName="bg-amber-100 text-amber-700 border-amber-200"
         borderClassName="border-l-amber-500"
         anchorDate={new Date('2026-03-23T00:10:00Z')}
-        onAskAIAboutAlert={vi.fn()}
       />
     );
 

@@ -1,10 +1,7 @@
-import type { Alert } from '@/services/monitoring/AlertManager';
-
 export type AlertHistoryModalProps = {
   open: boolean;
   onClose: () => void;
   serverIds: string[];
-  onAskAIAboutAlert?: (alert: Alert) => void;
   initialServerId?: string | null;
 };
 

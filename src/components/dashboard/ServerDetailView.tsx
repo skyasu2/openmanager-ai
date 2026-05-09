@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Activity,
-  ArrowLeft,
-  BarChart3,
-  Bot,
-  Cpu,
-  FileText,
-  Network,
-} from 'lucide-react';
+import { Activity, ArrowLeft, BarChart3, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
@@ -27,7 +19,6 @@ import { ServerModalTabNav } from './ServerModalTabNav';
 
 interface ServerDetailViewProps {
   server: Server | null;
-  onAskAI?: (server: Server) => void;
 }
 
 const tabs: TabInfo[] = [
@@ -89,8 +80,40 @@ const DEFAULT_STATUS_BADGE = {
   dotClassName: 'bg-emerald-500',
 };
 
+const NETWORK_STATUS_LABELS: Record<string, string> = {
+  excellent: '우수',
+  good: '정상',
+  poor: '혼잡',
+  offline: '오프라인',
+};
+
+const METRIC_LABELS = {
+  cpu: 'CPU',
+  memory: '메모리',
+  disk: '디스크',
+  network: '네트워크',
+} as const;
+
 function formatServerType(type: string): string {
   return SERVER_TYPE_LABELS[type.toLowerCase()] ?? type;
+}
+
+function getHighestCurrentMetric(server: {
+  cpu: number;
+  memory: number;
+  disk: number;
+  network?: number;
+}): { key: keyof typeof METRIC_LABELS; value: number } {
+  const metrics = [
+    { key: 'cpu' as const, value: server.cpu },
+    { key: 'memory' as const, value: server.memory },
+    { key: 'disk' as const, value: server.disk },
+    { key: 'network' as const, value: server.network ?? 0 },
+  ];
+
+  return metrics.reduce((highest, current) =>
+    current.value > highest.value ? current : highest
+  );
 }
 
 function withCurrentMetricPoint(
@@ -108,10 +131,7 @@ function withCurrentMetricPoint(
   return [...values.slice(0, -1), currentValue];
 }
 
-export default function ServerDetailView({
-  server,
-  onAskAI,
-}: ServerDetailViewProps) {
+export default function ServerDetailView({ server }: ServerDetailViewProps) {
   const [selectedTab, setSelectedTab] = useState<TabId>('overview');
   const [isRealtime, setIsRealtime] = useState(true);
   const { metricsHistory, loadMetricsHistory } = useServerMetrics();
@@ -200,9 +220,17 @@ export default function ServerDetailView({
   });
   const statusBadge =
     SERVER_STATUS_BADGES[safeServer.status] ?? DEFAULT_STATUS_BADGE;
-  const canAskAI =
-    typeof onAskAI === 'function' &&
-    (safeServer.status === 'warning' || safeServer.status === 'critical');
+  const highestMetric = getHighestCurrentMetric(safeServer);
+  const runningServiceCount = safeServer.services.filter(
+    (service) => service.status === 'running'
+  ).length;
+  const warningLogCount =
+    server?.logs?.filter((log) => log.level === 'WARN' || log.level === 'ERROR')
+      .length ?? 0;
+  const alertLogCount = safeServer.alerts + warningLogCount;
+  const networkStatusLabel =
+    NETWORK_STATUS_LABELS[safeServer.networkStatus ?? 'good'] ??
+    NETWORK_STATUS_LABELS.good;
 
   return (
     <div className="min-h-0 min-w-0 space-y-4">
@@ -241,16 +269,6 @@ export default function ServerDetailView({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {canAskAI && server && (
-              <button
-                type="button"
-                onClick={() => onAskAI(server)}
-                className="inline-flex h-10 items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 text-sm font-semibold text-amber-800 hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-              >
-                <Bot className="h-4 w-4" aria-hidden="true" />
-                AI에게 물어보기
-              </button>
-            )}
             <button
               type="button"
               onClick={() => setIsRealtime((prev) => !prev)}
@@ -267,6 +285,49 @@ export default function ServerDetailView({
             </button>
           </div>
         </div>
+
+        <dl
+          className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-100 pt-4 lg:grid-cols-4"
+          aria-label="서버 운영 요약"
+        >
+          <div className="min-w-0">
+            <dt className="text-xs font-medium text-slate-400">현재 병목</dt>
+            <dd
+              className="mt-1 truncate text-sm font-semibold text-slate-900"
+              data-testid="detail-summary-hot-metric"
+            >
+              {METRIC_LABELS[highestMetric.key]}{' '}
+              {Math.round(highestMetric.value)}%
+            </dd>
+          </div>
+          <div className="min-w-0">
+            <dt className="text-xs font-medium text-slate-400">서비스</dt>
+            <dd
+              className="mt-1 truncate text-sm font-semibold text-slate-900"
+              data-testid="detail-summary-services"
+            >
+              {runningServiceCount}/{safeServer.services.length} 실행중
+            </dd>
+          </div>
+          <div className="min-w-0">
+            <dt className="text-xs font-medium text-slate-400">알림/로그</dt>
+            <dd
+              className="mt-1 truncate text-sm font-semibold text-slate-900"
+              data-testid="detail-summary-alerts"
+            >
+              {alertLogCount}건 확인 필요
+            </dd>
+          </div>
+          <div className="min-w-0">
+            <dt className="text-xs font-medium text-slate-400">네트워크</dt>
+            <dd
+              className="mt-1 truncate text-sm font-semibold text-slate-900"
+              data-testid="detail-summary-network"
+            >
+              {Math.round(safeServer.network ?? 0)}% · {networkStatusLabel}
+            </dd>
+          </div>
+        </dl>
 
         <div className="min-w-0">
           <ServerModalTabNav
@@ -301,51 +362,33 @@ export default function ServerDetailView({
               isRealtime={isRealtime}
               onToggleRealtime={() => setIsRealtime((prev) => !prev)}
             />
-            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
-              <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
-                <Cpu className="h-5 w-5 text-emerald-600" />
-                서비스 목록
-              </h2>
-              <ProcessesTab services={safeServer.services} />
-            </div>
+            <ProcessesTab services={safeServer.services} />
           </div>
         )}
 
         {selectedTab === 'logs' && (
           <div className="min-w-0 space-y-5">
-            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
-              <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
-                <FileText className="h-5 w-5 text-blue-600" />
-                시스템 로그
-              </h2>
-              <LogsTab
-                key={safeServer.id}
-                serverId={safeServer.id}
-                serverMetrics={{
-                  cpu: safeServer.cpu,
-                  memory: safeServer.memory,
-                  disk: safeServer.disk,
-                  network: safeServer.network ?? 0,
-                }}
-                realtimeData={realtimeData}
-                serverContext={{
-                  hostname: safeServer.hostname || safeServer.id,
-                  environment: safeServer.environment || 'production',
-                  datacenter: safeServer.location || 'DC1-AZ1',
-                  serverType: safeServer.type || 'web',
-                }}
-                serverLogs={server?.logs}
-                structuredLogs={server?.structuredLogs}
-              />
-            </div>
+            <LogsTab
+              key={safeServer.id}
+              serverId={safeServer.id}
+              serverMetrics={{
+                cpu: safeServer.cpu,
+                memory: safeServer.memory,
+                disk: safeServer.disk,
+                network: safeServer.network ?? 0,
+              }}
+              realtimeData={realtimeData}
+              serverContext={{
+                hostname: safeServer.hostname || safeServer.id,
+                environment: safeServer.environment || 'production',
+                datacenter: safeServer.location || 'DC1-AZ1',
+                serverType: safeServer.type || 'web',
+              }}
+              serverLogs={server?.logs}
+              structuredLogs={server?.structuredLogs}
+            />
 
-            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
-              <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
-                <Network className="h-5 w-5 text-purple-600" />
-                네트워크 상태
-              </h2>
-              <NetworkTab server={safeServer} realtimeData={realtimeData} />
-            </div>
+            <NetworkTab server={safeServer} realtimeData={realtimeData} />
           </div>
         )}
       </div>

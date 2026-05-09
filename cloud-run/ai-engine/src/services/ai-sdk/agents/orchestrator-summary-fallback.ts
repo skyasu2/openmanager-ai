@@ -3,11 +3,14 @@ import {
   shouldPreferDeterministic,
 } from './orchestrator-query-intent';
 import {
+  buildMetricThresholdPredictionFromPayload,
   buildMetricRankingFromPayload,
   buildMetricThresholdFilterFromPayload,
+  isMetricThresholdPredictionQuery,
 } from './orchestrator-summary-metric';
 import {
   buildExplicitServerOperationalAnswer,
+  buildHaproxyDistributionAnswer,
   buildSummaryFromPayloadForQuery,
   isExplicitServerOperationalQuery,
   isStatusAlertOperationalQuery,
@@ -48,6 +51,13 @@ export function isDeterministicSummaryQuery(
   }
 
   const classification = classifyQueryIntent(query);
+  if (
+    toolResultServerCount > 0 &&
+    isMetricThresholdPredictionQuery(query, classification)
+  ) {
+    return true;
+  }
+
   return shouldPreferDeterministic(classification, toolResultServerCount);
 }
 
@@ -65,7 +75,23 @@ function buildDeterministicAnswerFromPayload(
     return explicitServerAnswer;
   }
 
+  const haproxyDistributionAnswer = buildHaproxyDistributionAnswer(query, payload);
+  if (haproxyDistributionAnswer) {
+    return haproxyDistributionAnswer;
+  }
+
   const classification = classifyQueryIntent(query);
+
+  if (classification.intent === 'predictive') {
+    const metricPredictionAnswer = buildMetricThresholdPredictionFromPayload(
+      query,
+      payload,
+      classification
+    );
+    if (metricPredictionAnswer) {
+      return metricPredictionAnswer;
+    }
+  }
 
   if (classification.intent === 'data-filter') {
     const metricFilterAnswer = buildMetricThresholdFilterFromPayload(

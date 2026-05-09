@@ -4,7 +4,7 @@
 > Owner: platform-data
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-06
+> Last reviewed: 2026-05-09
 > Canonical: docs/reference/architecture/data/otel-data-architecture.md
 > Tags: otel,data,architecture,pipeline
 >
@@ -46,7 +46,7 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
   Cloud Run deploy.sh      MetricsProvider (Vercel)
   (otel-data 복사)         (ensureDataLoaded)
   precomputed-state.ts     ┌→ 서버 카드 (Dashboard)
-  1순위: otel-data         ├→ 서버 모달 (24h 차트)
+  1순위: otel-data         ├→ 서버 상세 페이지 (24h 차트)
   2순위: otel-processed    └→ Vercel BFF
           │                       │
           ▼                       │
@@ -62,7 +62,7 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
 
 **배포 동기화**: `cloud-run/ai-engine/deploy.sh`가 `public/data/otel-data` 파일을 Cloud Run 이미지(`data/otel-data`)로 복사하고, 하위 호환을 위해 `otel-processed/`도 함께 유지합니다.
 
-**AI 데이터 소스 계층**: 2026-04-30부터 AI 어시스턴트의 Chat/Reporter/Analyst는 Cloud Run `MonitoringDataSource` 계약을 통해 같은 snapshot/evidence refs를 소비합니다. 기본 provider는 `replay-json`이며, `live-otel`은 실제 서버 운영 연동 목표가 아니라 미래 연결 가능성을 위한 disabled skeleton입니다. Vercel은 전체 분석 fan-out을 수행하지 않고 `/api/ai/monitoring/analyze-batch`로 1회 proxy합니다.
+**AI 데이터 소스 계층**: 2026-04-30부터 AI 어시스턴트의 Chat/Reporter/Analyst는 Cloud Run `MonitoringDataSource` 계약을 통해 같은 snapshot/evidence refs를 소비합니다. 기본 provider는 `replay-json`이며, `live-otel`은 실제 서버 운영 연동 목표가 아니라 미래 연결 가능성을 위한 disabled skeleton입니다. Vercel은 전체 분석 fan-out을 수행하지 않고 `/api/ai/monitoring/analyze-batch`로 1회 proxy합니다. UI 실행 경계는 별도로 유지하며, AI 질의/Agent 실행은 AI sidebar와 `/dashboard/ai-assistant`에서 다룹니다.
 
 ---
 

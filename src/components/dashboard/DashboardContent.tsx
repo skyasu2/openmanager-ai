@@ -12,10 +12,6 @@ import type {
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
-import {
-  type DashboardAlertContext,
-  getHighestServerAlertMetric,
-} from './alert-ai-context';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
 import { SystemOverviewSection } from './SystemOverviewSection';
@@ -76,8 +72,6 @@ interface DashboardContentProps {
   statusFilter?: string | null;
   /** 상태 필터 변경 핸들러 */
   onStatusFilterChange?: (filter: string | null) => void;
-  /** 리소스 경고 Top 5 항목에서 AI 분석 요청 */
-  onAskAIAboutAlert?: (context: DashboardAlertContext) => void;
 }
 
 export default memo(function DashboardContent({
@@ -97,7 +91,6 @@ export default memo(function DashboardContent({
   onShowSequentialChange,
   statusFilter,
   onStatusFilterChange,
-  onAskAIAboutAlert,
 }: DashboardContentProps) {
   const router = useRouter();
   // 🛡️ P1-8 Fix: onStatsUpdate를 ref에 저장하여 useEffect 무한 루프 방지
@@ -152,20 +145,6 @@ export default memo(function DashboardContent({
           : statusFilter === 'offline'
             ? '오프라인'
             : statusFilter;
-
-  const handleAskAIAboutServer = (server: Server) => {
-    if (!onAskAIAboutAlert) {
-      return;
-    }
-
-    const { metricLabel, metricValue } = getHighestServerAlertMetric(server);
-    onAskAIAboutAlert({
-      serverId: server.id ?? server.name,
-      serverName: server.name,
-      metricLabel,
-      metricValue: Math.round(metricValue),
-    });
-  };
 
   // F04 fix: isClient 상태 제거 — 'use client' 컴포넌트에서 불필요한 이중 렌더링
   // F05 fix: renderError 상태 제거 — Error Boundary로 위임
@@ -229,10 +208,7 @@ export default memo(function DashboardContent({
         {servers.length > 0 ? (
           <>
             {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
-            <SystemOverviewSection
-              servers={servers}
-              onAskAIAboutAlert={onAskAIAboutAlert}
-            />
+            <SystemOverviewSection servers={servers} />
 
             {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
                   - DashboardClient → DashboardContent → ServerDashboard로 전달
@@ -247,7 +223,6 @@ export default memo(function DashboardContent({
               onPageChange={onPageChange}
               onPageSizeChange={onPageSizeChange}
               onStatsUpdate={onStatsUpdate}
-              onAskAI={onAskAIAboutAlert ? handleAskAIAboutServer : undefined}
               initialVisibleRows={1}
             />
           </>

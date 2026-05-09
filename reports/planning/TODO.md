@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-09 KST (`AI 운영 대화 QA v8.11.118 B4/B5 closure 완료, 잔여 A5/C2 및 A1 대기`)
+**Last Updated**: 2026-05-09 KST (`AI 운영 대화 QA A1/A5/C2 로컬 보강 후 리뷰/게이트 재확인 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,8 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 어시스턴트 운영 대응 QA 확장 | High | In Progress (Codex) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — QA-20260509-0432(v8.11.118): B4/B5 closure PASS. 완료: HAProxy command intent routing, AI 입력창 semantic submit form, 운영 명령어 clarification bypass, B4/B5 command guidance. 잔여: P1 empty response timeout(A5/C2), P2 HAProxy context specificity(A1). 다음 단계: A5 storage threshold prediction과 C2 first-on-call checklist stream/fallback 보강 후 targeted retest. |
+| AI 어시스턴트 운영 대응 QA 확장 | High | In Progress (Codex) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — QA-20260509-0432(v8.11.118): B4/B5 closure PASS. 완료: HAProxy command intent routing, AI 입력창 semantic submit form, 운영 명령어 clarification bypass, B4/B5 command guidance, A5 storage threshold deterministic fallback, C2 first-on-call checklist fast path, A1 HAProxy CPU/backend 분산 deterministic summary. 검증: AI Engine targeted tests/type-check/full test, root type-check/lint/test:quick/test:contract, dashboard targeted DOM tests, docs/diff-check PASS. 잔여: production targeted retest(A1/A5/C2). |
+| Dashboard AI surface boundary 정렬 | Medium | In Progress (Codex) | [dashboard-ai-surface-boundary-plan.md](dashboard-ai-surface-boundary-plan.md) — Task 0~6 완료: 서버 카드/상세/알림/overview의 per-entity AI CTA 제거, obsolete prefill helper 삭제, 서버 카드 sparkline/상세 이동/로그 이동 유지, 서버 상세 운영 요약 보강, local targeted QA `QA-20260509-0433` 기록. Task 2.5 검증 재확인 완료(targeted DOM/type/lint/quick/docs/diff-check PASS). 잔여: 명시 요청 시 커밋. |
 
 ---
 
@@ -53,6 +54,7 @@
 - [x] Dashboard 서버 카드 & 상세 페이지 UX 개선
   - `EnhancedServerModal.tsx` dead shell과 shell 전용 테스트 제거
   - 서버 상세 헤더에 상태 배지와 warning/critical 서버용 "AI에게 물어보기" 액션 추가
+  - 후속 제품 포지션 재정렬: per-entity AI CTA는 [dashboard-ai-surface-boundary-plan.md](dashboard-ai-surface-boundary-plan.md)에서 제거/이동 대상으로 재분류
   - Overview 탭 중복 "핵심 성능 지표" 그리드 제거
   - 서버 카드 Progressive Disclosure를 hover 자동 노출 없이 명시적 펼치기 버튼으로 단순화
   - 계획서 archive: [archive/dashboard-server-detail-ux-plan.md](archive/dashboard-server-detail-ux-plan.md)

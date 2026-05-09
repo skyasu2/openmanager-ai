@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-09 09:32:59 KST
+> Generated at: 2026-05-09 14:37:59 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 430 |
+| Total Recorded Runs | 432 |
 | Total Runs (Counted) | 351 |
-| Non-counted Runs | 79 |
+| Non-counted Runs | 81 |
 | Total Checks | 3067 |
 | Passed | 2943 |
 | Failed | 114 |
-| Completed Items | 463 |
+| Completed Items | 465 |
 | Pending Items | 2 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 99.57% |
 | Last Counted Run | QA-20260509-0432 (2026-05-09T00:32:58.510Z) |
-| Latest Recorded Run | QA-20260509-0432 (2026-05-09T00:32:58.510Z) |
+| Latest Recorded Run | QA-20260509-0434 (2026-05-09T05:36:57.749Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260509-0432 (2026-05-09T00:32:58.510Z)
+Latest run: QA-20260509-0434 (2026-05-09T05:36:57.749Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.118 B4/B5 closure retest; effective usage 4.7045 USD, billed 0.0000 USD, chargeCount 4263. First CLI attempt hit transient 503 high-load, retry passed. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-08T00:32:58.510Z -> 2026-05-09T00:32:58.510Z (24h)
+- Window: 2026-05-08T05:36:57.749Z -> 2026-05-09T05:36:57.749Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -60,7 +58,7 @@ Latest run: QA-20260509-0432 (2026-05-09T00:32:58.510Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-08T00:32:58.510Z -> 2026-05-09T00:32:58.510Z (24h)
+- Window: 2026-05-08T05:36:57.749Z -> 2026-05-09T05:36:57.749Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,23 +71,23 @@ Latest run: QA-20260509-0432 (2026-05-09T00:32:58.510Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: yes
-- Deployment: SHA 623560cd
-- Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: /dashboard/ai-assistant guest conversational flow, AI ops command guidance B4/B5 closure after clarification bypass, production network proof for jobs stream and supervisor stream dispatch
-- Skipped Surfaces: full 15-scenario AI ops pack, non-command service context scenarios, Cloud Run admin surface, A5/C2 empty-response scenarios, A1 HAProxy context specificity scenario
+- Counts Toward Summary: no
+- Deployment: SHA e9536017
+- Coverage Packs: ai-core
+- Covered Surfaces: A1 HAProxy status/backend distribution deterministic summary, A5 storage disk threshold prediction deterministic summary, C2 first-on-call alert checklist fast path, AI Engine routing and deterministic summary fallback tests
+- Skipped Surfaces: Vercel production browser QA, Cloud Run deployed runtime, live LLM/provider call, production A1/A5/C2 targeted retest
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | v8.11.118 deploy pipeline | [v8.11.118 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2511583233) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | AI ops B4/B5 v8.11.118 closure raw results | `reports/qa/evidence/qa-20260509-ai-ops-b4-b5-v811118-results.json` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -239,6 +237,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
+- ai-ops-a1-a5-c2-local-deterministic-fallback: A1/A5/C2 local deterministic fallback behavior is covered by tests (completed 1회, last QA-20260509-0434)
 - ai-ops-command-clarification-intercept: Operations command guidance prompts are intercepted by clarification dialog before AI request dispatch (completed 1회, last QA-20260509-0432)
 - ai-ops-command-intent-routing: HAProxy command guidance surfaces concrete backend/status commands (completed 1회, last QA-20260509-0430)
 - ai-ops-command-submit-form-boundary: AI chat input exposes a semantic submit form for UI and QA automation (completed 1회, last QA-20260509-0431)
@@ -356,6 +355,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-ai-sidebar-left-rail-collapse: 우측 AI 사이드바가 열릴 때 좌측 navigation rail 축소 (completed 1회, last QA-20260430-0380)
 - dashboard-ai-sidebar-resizable: AI 사이드바 사용자 resize 동작 검증 (completed 1회, last QA-20260430-0380)
 - dashboard-ai-sidebar-resize-and-rail-collapse: AI 사이드바 오픈 시 좌측 rail 축소 및 데스크톱 사이드바 리사이즈 (completed 1회, last QA-20260430-0383)
+- dashboard-ai-surface-boundary-core-monitoring: Dashboard core monitoring surfaces are separated from per-entity AI execution CTAs (completed 1회, last QA-20260509-0433)
 - dashboard-client-lazy-shell-split: Split DashboardClient into auth wrapper and lazy interactive shell (completed 1회, last QA-20260420-0318)
 - dashboard-content-lazy-server-section: Lazy load ServerDashboard from DashboardContent (completed 1회, last QA-20260420-0318)
 - dashboard-detail-header-ai-action: Server detail header exposes status badge and AI ask action for warning/critical servers (completed 1회, last QA-20260509-0427)
@@ -642,6 +642,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260509-0434 | 2026-05-09T05:36:57.749Z | targeted | no | no | Local AI Ops A1/A5/C2 Deterministic Fallback QA | 8 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260509-0433 | 2026-05-09T03:20:33.195Z | targeted | no | no | Local Dashboard AI Surface Boundary Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0432 | 2026-05-09T00:32:58.510Z | targeted | no | yes | Vercel Production AI Ops B4/B5 Closure Retest - v8.11.118 | 2 | 2 | 2 | 0 | 0 | 0 |
 | QA-20260509-0431 | 2026-05-09T00:05:28.683Z | targeted | no | yes | Vercel Production AI Ops B4/B5 Submit Boundary Retest - v8.11.117 | 2 | 1 | 3 | 0 | 0 | 3 |
 | QA-20260509-0430 | 2026-05-08T17:45:28.422Z | targeted | no | yes | Vercel Production AI Ops Command Guidance Retest - v8.11.116 | 3 | 1 | 3 | 0 | 0 | 3 |
@@ -660,5 +662,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260506-0417 | 2026-05-06T07:48:50.082Z | targeted | no | no | Local deterministic QA - MonitoringFactPack evidence UI | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260506-0416 | 2026-05-06T06:59:36.046Z | targeted | yes | yes | v8.11.109 RAG/Web Raw Tool JSON Closure QA | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260506-0415 | 2026-05-06T06:28:57.301Z | targeted | yes | yes | v8.11.108 AI Advanced Surface Targeted QA | 3 | 2 | 1 | 0 | 0 | 3 |
-| QA-20260506-0414 | 2026-05-06T05:49:24.582Z | targeted | yes | yes | v8.11.108 Artifact Workspace UI Targeted QA | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260506-0413 | 2026-05-06T04:35:44.343Z | targeted | yes | yes | v8.11.107 Production Targeted QA - Supervisor Runtime Host Wiring | 13 | 2 | 0 | 0 | 0 | 0 |

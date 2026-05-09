@@ -8,6 +8,10 @@
 
 ---
 
+> Follow-up note (2026-05-09): 이 계획서는 완료 당시의 구현 이력을 보존한다. 이후 제품 포지션이 "core 서버 모니터링 제품 + 별도 AI Assistant 모듈"로 재정렬되면서, 상세 페이지/카드/알림 행의 per-entity AI CTA는 [Dashboard AI Surface Boundary Plan](../dashboard-ai-surface-boundary-plan.md)에서 제거 또는 AI surface 이동 대상으로 재분류됐다.
+
+---
+
 ## 배경 및 목적
 
 현재 `ServerDashboard`는 카드 클릭 시 `router.push('/dashboard/servers/[serverId]')`로 페이지 이동하며,

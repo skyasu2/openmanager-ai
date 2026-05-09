@@ -1,11 +1,7 @@
 import { CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { Server } from '@/types/server';
-import {
-  type DashboardAlertContext,
-  getHighestServerAlertMetric,
-} from './alert-ai-context';
 
 const GAUGE_COLORS = {
   cpu: '#6366f1',
@@ -15,26 +11,25 @@ const GAUGE_COLORS = {
 
 interface SystemOverviewSectionProps {
   servers: Server[];
-  onAskAIAboutAlert?: (context: DashboardAlertContext) => void;
 }
 
-export function SystemOverviewSection({
-  servers,
-  onAskAIAboutAlert,
-}: SystemOverviewSectionProps) {
-  const router = useRouter();
+function getHighestResourceMetric(server: Server): {
+  metricLabel: 'CPU' | 'MEM' | 'DISK';
+  metricValue: number;
+} {
+  const metrics = [
+    { metricLabel: 'CPU' as const, metricValue: server.cpu ?? 0 },
+    { metricLabel: 'MEM' as const, metricValue: server.memory ?? 0 },
+    { metricLabel: 'DISK' as const, metricValue: server.disk ?? 0 },
+  ];
 
-  const handleAlertClick = useCallback(
-    (context: DashboardAlertContext) => {
-      if (onAskAIAboutAlert) {
-        onAskAIAboutAlert(context);
-        return;
-      }
-
-      router.push(`/dashboard/servers/${encodeURIComponent(context.serverId)}`);
-    },
-    [onAskAIAboutAlert, router]
+  return metrics.reduce((highest, current) =>
+    current.metricValue > highest.metricValue ? current : highest
   );
+}
+
+export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
+  const router = useRouter();
 
   const averages = useMemo(() => {
     if (!servers || servers.length === 0) {
@@ -64,7 +59,7 @@ export function SystemOverviewSection({
     if (!servers || servers.length === 0) return [];
     return [...servers]
       .map((s) => {
-        const top = getHighestServerAlertMetric(s);
+        const top = getHighestResourceMetric(s);
         return {
           id: s.id ?? s.name,
           name: s.name,
@@ -121,12 +116,9 @@ export function SystemOverviewSection({
                   type="button"
                   key={alert.id}
                   onClick={() =>
-                    handleAlertClick({
-                      serverId: alert.id,
-                      serverName: alert.name,
-                      metricLabel: alert.maxMetric as 'CPU' | 'MEM' | 'DISK',
-                      metricValue: alert.maxUsage,
-                    })
+                    router.push(
+                      `/dashboard/servers/${encodeURIComponent(alert.id)}`
+                    )
                   }
                   className={`flex w-full min-w-0 cursor-pointer items-center justify-between gap-2 px-2 py-2 transition-colors hover:bg-slate-50 ${
                     idx < topAlerts.length - 1 ? 'border-b border-gray-100' : ''

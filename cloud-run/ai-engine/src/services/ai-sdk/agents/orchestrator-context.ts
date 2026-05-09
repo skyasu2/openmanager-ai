@@ -282,6 +282,27 @@ function looksLikeAttachedVisionRequest(normalizedQuery: string): boolean {
   );
 }
 
+function buildFirstOnCallChecklistAnswer(query: string): string | null {
+  const isBeginnerOnCall =
+    /(처음|초보|신입|처음\s*운영|당직|온콜|on-?call)/i.test(query) &&
+    /(알림|알람|alert|경고)/i.test(query) &&
+    /(순서|어떤|확인|해야|대응)/i.test(query);
+
+  if (!isBeginnerOnCall) {
+    return null;
+  }
+
+  return [
+    '처음 당직이면 아래 순서로 확인하세요.',
+    '',
+    '1. 알림 내용: 서버 ID, 심각도, 발생 시각, 어떤 메트릭이 임계치를 넘었는지 먼저 확인합니다.',
+    '2. 서버 상태: 대시보드에서 해당 서버의 CPU, 메모리, 디스크, 네트워크와 online/warning/critical 상태를 봅니다.',
+    '3. 관련 로그: 알림 발생 시각 전후의 애플리케이션 로그와 시스템 로그에서 같은 에러가 반복되는지 확인합니다.',
+    '4. 영향 범위: 같은 역할의 서버, 로드밸런서 백엔드, DB/캐시 의존 서비스에도 같은 증상이 있는지 비교합니다.',
+    '5. 조치 기록: 확인한 수치와 로그 근거를 남기고, 처음부터 재시작하지 말고 원인 후보가 좁혀진 뒤 안전한 조치를 선택합니다.',
+  ].join('\n');
+}
+
 /**
  * Fast pre-filter before LLM routing
  * Handles simple queries without LLM call
@@ -370,6 +391,15 @@ export function preFilterQuery(
     isForceKnowledgeBaseIntent || SERVER_KEYWORDS.some(kw => normalized.includes(kw));
 
   if (hasServerKeyword) {
+    const firstOnCallAnswer = buildFirstOnCallChecklistAnswer(query);
+    if (firstOnCallAnswer) {
+      return {
+        shouldHandoff: false,
+        directResponse: firstOnCallAnswer,
+        confidence: 0.95,
+      };
+    }
+
     const serviceCommandAnswer = buildServiceCommandGuidanceAnswer(query);
     if (serviceCommandAnswer) {
       return {

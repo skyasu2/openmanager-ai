@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-09
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -12,7 +12,7 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.11.97 기준** 운영 의사결정 AI 어시스턴트 기반 서버 모니터링 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
+**OpenManager AI v8.11.97+ 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
 
 | 항목 | 수치 |
 |------|------|

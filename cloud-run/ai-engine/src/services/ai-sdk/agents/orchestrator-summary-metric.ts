@@ -3,6 +3,7 @@ import type {
   QueryMetric,
   QueryOperator,
 } from './orchestrator-query-intent';
+import { STATUS_THRESHOLDS } from '../../../config/status-thresholds';
 import {
   toNumber,
   type MetricsToolPayload,
@@ -152,6 +153,103 @@ function getMetricFailureWindow(metric: QueryMetric, value: number | null): stri
     return '수 시간 내 임계치 도달 가능 - 증가 추세 재확인 필요';
   }
   return '24시간 내 추세 재확인 필요';
+}
+
+function isStorageServer(server: ServerSnapshot): boolean {
+  return /storage|nfs|s3gw|nas/i.test(server.id);
+}
+
+function formatThresholdWindow(
+  metric: Exclude<QueryMetric, 'status'>,
+  value: number | null
+): string {
+  const threshold = STATUS_THRESHOLDS[metric];
+  if (value === null) return '현재 수치가 없어 예측 불가';
+  if (value >= threshold.critical) {
+    return `이미 위험 임계치 ${threshold.critical}% 이상입니다. 즉시 용량/쓰기 실패 영향을 확인하세요.`;
+  }
+  if (value >= threshold.warning) {
+    return `이미 경고 임계치 ${threshold.warning}% 이상입니다. 위험 임계치 ${threshold.critical}%까지 ${Math.round(threshold.critical - value)}%p 남았습니다.`;
+  }
+
+  const gapToWarning = Math.round(threshold.warning - value);
+  if (gapToWarning <= 5) {
+    return `경고 임계치 ${threshold.warning}%까지 ${gapToWarning}%p 남아 다음 증가 구간에서 알림 가능성이 있습니다.`;
+  }
+  return `경고 임계치 ${threshold.warning}%까지 ${gapToWarning}%p 여유가 있어 24시간 내 추세 재확인이 우선입니다.`;
+}
+
+export function isMetricThresholdPredictionQuery(
+  query: string,
+  classification: IntentClassification
+): boolean {
+  const metric = classification.metric;
+  if (classification.intent !== 'predictive') {
+    return false;
+  }
+  if (metric === 'status') {
+    return false;
+  }
+
+  const mentionsMetric = Boolean(metric) || /디스크|disk|스토리지|storage|nfs|cpu|메모리|memory|network|네트워크/i.test(query);
+  const mentionsThreshold =
+    /임계(?:치|값)|threshold|넘기\s*전|넘기|미리\s*알|고갈|부족/i.test(query);
+
+  return mentionsMetric && mentionsThreshold;
+}
+
+export function buildMetricThresholdPredictionFromPayload(
+  query: string,
+  payload: MetricsToolPayload,
+  classification: IntentClassification
+): string | null {
+  if (!isMetricThresholdPredictionQuery(query, classification)) {
+    return null;
+  }
+
+  const metric: Exclude<QueryMetric, 'status'> =
+    classification.metric && classification.metric !== 'status'
+      ? classification.metric
+      : /스토리지|storage|nfs|디스크|disk/i.test(query)
+        ? 'disk'
+        : 'cpu';
+  const label = getMetricLabel(metric);
+  const threshold = STATUS_THRESHOLDS[metric];
+  const isStorageQuestion = /스토리지|storage|nfs|s3|nas/i.test(query);
+  const candidates = payload.servers
+    .filter((server) => server.status !== 'offline')
+    .filter((server) => !isStorageQuestion || isStorageServer(server))
+    .map((server) => ({ server, value: getMetricValue(server, metric) }))
+    .filter((entry): entry is { server: ServerSnapshot; value: number } => entry.value !== null)
+    .sort((left, right) => right.value - left.value)
+    .slice(0, 3);
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  const scopeLabel = isStorageQuestion ? '스토리지' : label;
+  const lines = [
+    `📈 **${scopeLabel} ${label} 임계치 사전 예측**`,
+    `• 기준: 현재 스냅샷 기준, 경고 임계치 ${threshold.warning}%, 위험 임계치 ${threshold.critical}%`,
+  ];
+
+  lines.push('', '📊 **현재 사용률**');
+  candidates.forEach(({ server, value }, index) => {
+    lines.push(`${index + 1}. ${server.id}: 현재 ${label} ${roundPercent(value)} (상태 ${server.status})`);
+  });
+
+  lines.push('', '⏱️ **예상 리스크 윈도우**');
+  candidates.forEach(({ server, value }, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${formatThresholdWindow(metric, value)}`);
+  });
+
+  lines.push('', '💡 **선제 조치**');
+  candidates.forEach(({ server }, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${buildMetricCheckItem(metric, server)}`);
+  });
+
+  return lines.join('\n');
 }
 
 export function buildMetricThresholdFilterFromPayload(

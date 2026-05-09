@@ -123,7 +123,23 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 - [x] **Task 5**: 전체 15개 결과 QA 런 기록 (`npm run qa:record`)
 - [x] **Task 6**: FAIL/WARN 항목 분석 — 코드 수정 필요 vs AI 응답 품질 한계 구분
 - [x] **Task 7**: 필요 시 수정 후 재검증 (Task 2~5 반복) — v8.11.114 targeted retest 기록
-- [ ] **Task 8**: 잔여 P1/P2 개선 — empty response timeout, HAProxy command surfacing, HAProxy context specificity
+- [x] **Task 8**: 잔여 P1/P2 로컬 개선 (3개 gap 각각 분리)
+  - [x] **8a (P1) A5 로컬 보강**: storage threshold prediction 타임아웃 — `TrendPredictor.ts::predictThresholdBreach`가 존재하지만 "스토리지 서버 디스크 임계치 넘기 전에 미리 알 수 있어?" 질문이 LLM/tool 경로에서 visible answer 없이 종료될 수 있었다. 최소 변경으로 `predictTrends` 실행 체인을 새로 강제하지 않고, 현재 상태 payload가 있는 경우 `predictive + metric + threshold` 질의를 deterministic summary fallback에서 처리하도록 보강했다. 이유: A5 pass 기준은 "현재 디스크 수치 + 임계치 사전 판단"이며, synthetic monitoring 데이터에서는 현재 스냅샷 기반의 경고/위험 임계치 여유폭이 가장 안정적인 근거다. Production closure는 배포 후 A5 targeted retest 필요.
+  - [x] **8b (P1) C2 로컬 보강**: 초보 당직 체크리스트 타임아웃 — "알림이 울리면 어떤 순서로 확인해야 해?" 질문은 현재 메트릭 tool이 없어도 답할 수 있는 운영 절차 질문인데, Advisor/stream 경로로 들어가면 visible answer timeout 위험이 있었다. 최소 변경으로 `preFilterQuery`에 beginner on-call alert checklist fast path를 추가했다. 이유: C2 pass 기준은 알림 내용 → 서버 상태 → 로그 순서의 구체적 안내이며, LLM 호출 없이 안정적으로 답할수록 초보 운영자 보조 UX에 맞다. Production closure는 배포 후 C2 targeted retest 필요.
+  - [x] **8c (P2) A1 로컬 보강**: HAProxy context specificity — 답변은 반환되나 CPU 73% / backend 분산 근거가 부족했다. 최소 변경으로 `getServerByGroup`/`getServerByGroupAdvanced` tool result를 deterministic summary payload로 수용하고, `HAProxy + backend/분산/상태` 질의에는 현재 HAProxy CPU/메모리/디스크 상태와 `show stat` 기반 backend 분산 확인 기준을 직접 반환하도록 보강했다. 이유: 실제 backend별 세션 수는 현재 payload에 없으므로 임의로 "잘 분산됨"을 단정하지 않고, 현재 HAProxy CPU 근거와 운영자가 확인할 backend 분산 지표를 함께 제시하는 것이 WARN 원인(CPU/분산 근거 부족)을 가장 작게 해소한다. Production closure는 배포 후 A1 targeted retest 필요.
+- [ ] **Task 9**: production targeted retest 및 QA 기록 — A1/A5/C2를 v8.11.118 이후 배포본에서 재검증하고 `npm run qa:record`로 closure 또는 잔여 gap 기록.
+
+### 2026-05-09 로컬 리뷰/게이트 재확인
+
+- 계획서/TODO/QA tracker 재확인 결과, 현재 open gap은 production 배포본에서의 A1/A5/C2 targeted retest로 한정된다.
+- 로컬 코드 리뷰 기준 P0/P1/P2 신규 결함은 발견되지 않았다.
+- 추가 검증:
+  - AI Engine targeted tests `orchestrator-context`, `orchestrator-summary-fallback`, `supervisor-routing` PASS
+  - AI Engine `npm run type-check` PASS
+  - Root `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract` PASS
+  - Dashboard targeted DOM tests 8 files / 89 tests PASS
+  - `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check` PASS
+- 다음 단계는 코드 추가 수정이 아니라 커밋/배포 후 production targeted retest와 QA closure 기록이다.
 
 ---
 
@@ -332,6 +348,44 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
   - `ai-ops-empty-response-timeout` — A5 storage threshold prediction, C2 first-on-call checklist
   - `ai-ops-haproxy-context-specificity` — A1 HAProxy CPU/backend distribution 상세 부족
 
+### 2026-05-09 A5/C2 P1 로컬 보강
+
+- 수정 이유:
+  - A5는 "스토리지 서버 디스크 사용량이 임계치 넘기 전에 미리 알 수 있어?"라는 예측형 질문이지만, 사용자가 요구한 근거는 현재 synthetic monitoring 스냅샷의 storage disk 수치와 warning/critical 임계치 대비 여유폭이다.
+  - C2는 "처음 운영 당직" 사용자의 절차 안내 질문이라 서버 tool 결과보다 안정적인 first-on-call checklist가 먼저 필요하다.
+  - 두 항목 모두 LLM/provider completion 경로가 비어도 UX가 깨지면 안 되는 P1이므로, 기존 agent 구조를 크게 바꾸지 않고 deterministic fallback/fast path로 고정했다.
+- 제품 수정:
+  - `orchestrator-query-intent.ts`: `임계치 넘기 전`, `미리 알`, `고갈` 표현을 predictive intent로 분류.
+  - `orchestrator-summary-metric.ts`: `predictive + metric + threshold` 질의를 현재 payload 기반 threshold prediction summary로 응답. storage 질의는 `storage/nfs/s3gw/nas` 서버만 필터링하고 현재 DISK, 경고 80%, 위험 90%, 서버별 선제 조치를 포함.
+  - `orchestrator-summary-fallback.ts`: metric threshold prediction 질의는 current state/tool payload가 있으면 deterministic summary로 처리.
+  - `orchestrator-context.ts`: beginner on-call alert checklist fast path 추가. 알림 내용 → 서버 상태 → 관련 로그 → 영향 범위 → 조치 기록 순서를 LLM 없이 반환.
+- 검증:
+  - targeted tests PASS — `orchestrator-context`, `orchestrator-summary-fallback`, `supervisor-routing` 3 files / 105 tests
+  - AI Engine `type-check` PASS
+  - AI Engine full test PASS — 107 files / 1073 tests
+- 남은 확인:
+  - 배포 후 production targeted retest에서 A5/C2 visible answer closure 확인 필요
+  - A1 `ai-ops-haproxy-context-specificity`는 P2로 유지. 최소 변경 기준상 direct data import 없이 HAProxy group summary context를 보강하는 방식으로 별도 처리해야 함.
+
+### 2026-05-09 A1 P2 로컬 보강
+
+- 수정 이유:
+  - A1은 "HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?" 질문에 답은 있었지만, QA 기준의 핵심 근거인 HAProxy 현재 CPU 수치와 backend 분산 판단 기준이 부족했다.
+  - 현재 tool result에는 backend별 세션 수가 포함되지 않으므로, 임의로 정상 분산을 단정하면 monitoring assistant 신뢰도가 떨어진다.
+  - 따라서 deterministic fallback은 "현재 HAProxy 메트릭"과 "backend 분산 판단에 필요한 `show stat` 지표"를 분리해 답하도록 보강했다.
+- 제품 수정:
+  - `orchestrator-summary-payload.ts`: `getServerByGroup`/`getServerByGroupAdvanced` 결과를 summary payload로 변환.
+  - `orchestrator-summary-operational.ts`: `HAProxy + backend/분산/상태` 질의 전용 answer builder 추가. 현재 CPU/메모리/디스크와 `show stat`의 `status`, `scur`, `qcur`, `check_status` 확인 기준 포함.
+  - `orchestrator-summary-fallback.ts`: explicit server answer 이후, 일반 summary 이전에 HAProxy distribution answer를 우선 적용.
+- 검증:
+  - failing spec 확인 후 구현
+  - targeted test PASS — `orchestrator-summary-fallback` 1 file / 31 tests
+  - AI Engine `type-check` PASS
+  - AI Engine full test PASS — 107 files / 1074 tests
+  - root `lint`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check` PASS
+- 남은 확인:
+  - 배포 후 production targeted retest에서 A1/A5/C2 visible answer와 QA 판정 확인 필요
+
 ---
 
 ## 예상 결과 및 리스크
@@ -345,4 +399,4 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 
 ---
 
-_Last Updated: 2026-05-09 — v8.11.118 B4/B5 command guidance closure 기록, A5/C2 및 A1 잔여_
+_Last Updated: 2026-05-09 — A1/A5/C2 로컬 deterministic fallback/fast path 보강 및 리뷰/게이트 재확인, production targeted retest 잔여_

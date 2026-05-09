@@ -13,6 +13,8 @@ const {
   alertHistoryPanelMock,
   useMonitoringReportMock,
   aiWorkspaceMock,
+  serverDashboardMock,
+  serverDetailViewMock,
 } = vi.hoisted(() => ({
   searchParamsState: {
     value: new URLSearchParams(),
@@ -21,6 +23,8 @@ const {
   alertHistoryPanelMock: vi.fn(),
   useMonitoringReportMock: vi.fn(),
   aiWorkspaceMock: vi.fn(),
+  serverDashboardMock: vi.fn(),
+  serverDetailViewMock: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -94,11 +98,17 @@ vi.mock('./log-explorer/LogExplorerModal', () => ({
 }));
 
 vi.mock('./ServerDashboard', () => ({
-  default: () => <div data-testid="server-dashboard" />,
+  default: (props: Record<string, unknown>) => {
+    serverDashboardMock(props);
+    return <div data-testid="server-dashboard" />;
+  },
 }));
 
 vi.mock('./ServerDetailView', () => ({
-  default: () => <div data-testid="server-detail-view" />,
+  default: (props: Record<string, unknown>) => {
+    serverDetailViewMock(props);
+    return <div data-testid="server-detail-view" />;
+  },
 }));
 
 vi.mock('./TopologyModal', () => ({
@@ -131,6 +141,8 @@ describe('DashboardRoutedContent route query contracts', () => {
     activeAlertsPanelMock.mockClear();
     alertHistoryPanelMock.mockClear();
     aiWorkspaceMock.mockClear();
+    serverDashboardMock.mockClear();
+    serverDetailViewMock.mockClear();
     useMonitoringReportMock.mockReturnValue({
       data: null,
       error: null,
@@ -209,6 +221,43 @@ describe('DashboardRoutedContent route query contracts', () => {
         errorMessage: 'network down',
         isError: true,
         isLoading: true,
+      })
+    );
+  });
+
+  it('core monitoring route에는 per-entity AI prefill handler를 전달하지 않는다', () => {
+    render(<DashboardRoutedContent {...baseProps} view="servers" />);
+
+    expect(serverDashboardMock).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        onAskAI: expect.any(Function),
+      })
+    );
+
+    render(
+      <DashboardRoutedContent
+        {...baseProps}
+        view="server-detail"
+        initialFocusServerId="api-was-dc1-01"
+      />
+    );
+
+    expect(serverDetailViewMock).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        onAskAI: expect.any(Function),
+      })
+    );
+
+    render(<DashboardRoutedContent {...baseProps} view="alerts" />);
+
+    expect(activeAlertsPanelMock).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        onAskAIAboutAlert: expect.any(Function),
+      })
+    );
+    expect(alertHistoryPanelMock).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        onAskAIAboutAlert: expect.any(Function),
       })
     );
   });

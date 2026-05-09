@@ -26,7 +26,6 @@ vi.mock('lucide-react', () => {
     Activity: MockIcon,
     ArrowLeft: MockIcon,
     BarChart3: MockIcon,
-    Bot: MockIcon,
     Cpu: MockIcon,
     FileText: MockIcon,
     Network: MockIcon,
@@ -192,22 +191,52 @@ describe('ServerDetailView', () => {
     expect(screen.queryByText('unknown · DC1-AZ1')).not.toBeInTheDocument();
   });
 
-  it('warning 서버 상세 헤더는 상태 배지와 AI 질문 버튼을 제공한다', () => {
-    const onAskAI = vi.fn();
+  it('warning 서버 상세 헤더는 상태 배지를 유지하되 AI 질문 버튼을 노출하지 않는다', () => {
+    render(<ServerDetailView server={{ ...baseServer, status: 'warning' }} />);
 
+    expect(screen.getByText('주의')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'AI에게 물어보기' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('상세 헤더에서 AI 없이 현재 모니터링 요약을 바로 읽을 수 있다', () => {
     render(
       <ServerDetailView
-        server={{ ...baseServer, status: 'warning' }}
-        onAskAI={onAskAI}
+        server={{
+          ...baseServer,
+          cpu: 82,
+          memory: 64,
+          disk: 70,
+          network: 20,
+          alerts: 1,
+          services: [
+            { name: 'Node.js App', status: 'running', port: 3000 },
+            { name: 'PM2 Daemon', status: 'stopped', port: 9615 },
+          ],
+          logs: [
+            {
+              timestamp: '2026-05-09T00:00:00Z',
+              level: 'WARN',
+              message: 'memory pressure',
+            },
+          ],
+        }}
       />
     );
 
-    expect(screen.getByText('주의')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'AI에게 물어보기' }));
-
-    expect(onAskAI).toHaveBeenCalledWith(
-      expect.objectContaining({ id: baseServer.id })
+    expect(screen.getByLabelText('서버 운영 요약')).toBeInTheDocument();
+    expect(screen.getByTestId('detail-summary-hot-metric')).toHaveTextContent(
+      'CPU 82%'
+    );
+    expect(screen.getByTestId('detail-summary-services')).toHaveTextContent(
+      '1/2 실행중'
+    );
+    expect(screen.getByTestId('detail-summary-alerts')).toHaveTextContent(
+      '2건 확인 필요'
+    );
+    expect(screen.getByTestId('detail-summary-network')).toHaveTextContent(
+      '20% · 정상'
     );
   });
 

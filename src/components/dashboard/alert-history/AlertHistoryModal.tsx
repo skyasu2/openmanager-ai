@@ -23,7 +23,6 @@ import {
   formatRotatingTimestamp,
 } from '@/utils/dashboard/rotating-timestamp';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
-import { supportsDashboardAlertAIPrefill } from '../alert-ai-context';
 import { FilterChip } from '../shared/FilterChip';
 import { StatCell } from '../shared/StatCell';
 import type { AlertHistoryModalProps } from './alert-history.types';
@@ -59,7 +58,6 @@ const normalizeInitialServerId = (
 export function AlertHistoryPanel({
   active = true,
   serverIds,
-  onAskAIAboutAlert,
   initialServerId = null,
 }: Omit<AlertHistoryModalProps, 'open' | 'onClose'> & {
   active?: boolean;
@@ -325,7 +323,6 @@ export function AlertHistoryPanel({
                   badgeClassName={colors.badge}
                   borderClassName={colors.border}
                   anchorDate={sessionAnchorRef.current}
-                  onAskAIAboutAlert={onAskAIAboutAlert}
                 />
               );
             })}
@@ -421,19 +418,14 @@ export function AlertHistoryRow({
   badgeClassName,
   borderClassName,
   anchorDate,
-  onAskAIAboutAlert,
 }: {
   alert: Alert;
   badgeClassName: string;
   borderClassName: string;
   anchorDate: Date;
-  onAskAIAboutAlert?: (alert: Alert) => void;
 }) {
   const router = useRouter();
   const isResolved = alert.state === 'resolved';
-  const canAskAI =
-    typeof onAskAIAboutAlert === 'function' &&
-    supportsDashboardAlertAIPrefill(alert.metric);
   const rowClassName = cn(
     'rounded-lg border border-gray-200/80 bg-white p-3 border-l-4 shadow-sm',
     'transition-colors hover:bg-gray-50/50',
@@ -492,17 +484,6 @@ export function AlertHistoryRow({
           <span className="tabular-nums text-xs text-gray-400">
             {formatDuration(alert.duration)}
           </span>
-          {canAskAI && (
-            <button
-              type="button"
-              onClick={() => onAskAIAboutAlert(alert)}
-              aria-label={`AI에게 ${alert.instance} ${formatMetricName(alert.metric)} 알림 분석 요청`}
-              title="AI 분석"
-              className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold text-rose-600 transition-colors hover:bg-rose-50"
-            >
-              AI
-            </button>
-          )}
           <button
             type="button"
             onClick={handleOpenLogs}

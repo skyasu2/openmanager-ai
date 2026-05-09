@@ -8,17 +8,10 @@ import type {
   DashboardDataSourceInfo,
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
-import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
-import type { Alert } from '@/services/monitoring/AlertManager';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { Server } from '@/types/server';
 import { safeErrorMessage } from '@/utils/utils-functions';
 import { ActiveAlertsPanel } from './ActiveAlertsModal';
-import {
-  type DashboardAlertContext,
-  getHighestServerAlertMetric,
-  toDashboardAlertContext,
-} from './alert-ai-context';
 import { AlertHistoryPanel } from './alert-history/AlertHistoryModal';
 import { LogExplorerPanel } from './log-explorer/LogExplorerModal';
 import ServerDashboard from './ServerDashboard';
@@ -52,7 +45,6 @@ interface DashboardRoutedContentProps {
   onStatsUpdate: (stats: DashboardStats) => void;
   statusFilter?: string | null;
   onStatusFilterChange?: (filter: string | null) => void;
-  onAskAIAboutAlert?: (context: DashboardAlertContext) => void;
 }
 
 function toJobDataSlot(
@@ -128,7 +120,6 @@ export default function DashboardRoutedContent({
   onStatsUpdate,
   statusFilter: _statusFilter,
   onStatusFilterChange: _onStatusFilterChange,
-  onAskAIAboutAlert,
 }: DashboardRoutedContentProps) {
   const searchParams = useSearchParams();
   const aiQueryAsOfDataSlot = toJobDataSlot(dataSlotInfo);
@@ -155,29 +146,6 @@ export default function DashboardRoutedContent({
       )
     : null;
 
-  const askAIAboutMonitoringAlert = (alert: MonitoringAlert) => {
-    if (!onAskAIAboutAlert) return;
-    const context = toDashboardAlertContext(alert);
-    if (context) onAskAIAboutAlert(context);
-  };
-
-  const askAIAboutAlertHistory = (alert: Alert) => {
-    if (!onAskAIAboutAlert) return;
-    const context = toDashboardAlertContext(alert);
-    if (context) onAskAIAboutAlert(context);
-  };
-
-  const askAIAboutServer = (server: Server) => {
-    if (!onAskAIAboutAlert) return;
-    const { metricLabel, metricValue } = getHighestServerAlertMetric(server);
-    onAskAIAboutAlert({
-      serverId: server.id ?? server.name,
-      serverName: server.name,
-      metricLabel,
-      metricValue: Math.round(metricValue),
-    });
-  };
-
   if (view === 'servers') {
     return (
       <PageFrame
@@ -193,7 +161,6 @@ export default function DashboardRoutedContent({
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
           onStatsUpdate={onStatsUpdate}
-          onAskAI={onAskAIAboutAlert ? askAIAboutServer : undefined}
           initialVisibleRows={3}
         />
       </PageFrame>
@@ -211,10 +178,7 @@ export default function DashboardRoutedContent({
         title="서버 상세"
         description="서버별 메트릭, 로그, 네트워크 상태를 직접 URL에서 확인"
       >
-        <ServerDetailView
-          server={server}
-          onAskAI={onAskAIAboutAlert ? askAIAboutServer : undefined}
-        />
+        <ServerDetailView server={server} />
       </PageFrame>
     );
   }
@@ -237,17 +201,11 @@ export default function DashboardRoutedContent({
               isLoading={isMonitoringLoading}
               isError={isMonitoringError}
               errorMessage={monitoringErrorMessage}
-              onAskAIAboutAlert={
-                onAskAIAboutAlert ? askAIAboutMonitoringAlert : undefined
-              }
             />
           </div>
           <div className="flex min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <AlertHistoryPanel
               serverIds={sourceServers.map((server) => server.id)}
-              onAskAIAboutAlert={
-                onAskAIAboutAlert ? askAIAboutAlertHistory : undefined
-              }
               initialServerId={initialAlertServerId}
             />
           </div>

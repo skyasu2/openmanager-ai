@@ -2,12 +2,11 @@
 
 import { AlertTriangle, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
-import { supportsDashboardAlertAIPrefill } from './alert-ai-context';
 import { StatCell } from './shared/StatCell';
 
 const severityBadge: Record<MonitoringAlert['severity'], string> = {
@@ -73,7 +72,6 @@ interface ActiveAlertsModalProps {
   isLoading?: boolean;
   isError?: boolean;
   errorMessage?: string | null;
-  onAskAIAboutAlert?: (alert: MonitoringAlert) => void;
 }
 
 export function ActiveAlertsPanel({
@@ -81,10 +79,9 @@ export function ActiveAlertsPanel({
   isLoading = false,
   isError = false,
   errorMessage,
-  onAskAIAboutAlert,
 }: Pick<
   ActiveAlertsModalProps,
-  'alerts' | 'isLoading' | 'isError' | 'errorMessage' | 'onAskAIAboutAlert'
+  'alerts' | 'isLoading' | 'isError' | 'errorMessage'
 >) {
   const sorted = [...alerts].sort((a, b) => {
     if (a.severity === 'critical' && b.severity !== 'critical') return -1;
@@ -147,11 +144,7 @@ export function ActiveAlertsPanel({
         ) : (
           <div className="space-y-2">
             {sorted.map((alert) => (
-              <AlertRow
-                key={alert.id}
-                alert={alert}
-                onAskAIAboutAlert={onAskAIAboutAlert}
-              />
+              <AlertRow key={alert.id} alert={alert} />
             ))}
           </div>
         )}
@@ -185,34 +178,24 @@ export function ActiveAlertsModal({
   isLoading,
   isError,
   errorMessage,
-  onAskAIAboutAlert,
 }: ActiveAlertsModalProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-h-[85vh] w-[95vw] max-w-2xl flex flex-col gap-0 p-0">
+        <DialogTitle className="sr-only">활성 알림</DialogTitle>
         <ActiveAlertsPanel
           alerts={alerts}
           isLoading={isLoading}
           isError={isError}
           errorMessage={errorMessage}
-          onAskAIAboutAlert={onAskAIAboutAlert}
         />
       </DialogContent>
     </Dialog>
   );
 }
 
-function AlertRow({
-  alert,
-  onAskAIAboutAlert,
-}: {
-  alert: MonitoringAlert;
-  onAskAIAboutAlert?: (alert: MonitoringAlert) => void;
-}) {
+function AlertRow({ alert }: { alert: MonitoringAlert }) {
   const router = useRouter();
-  const canAskAI =
-    typeof onAskAIAboutAlert === 'function' &&
-    supportsDashboardAlertAIPrefill(alert.metric);
   const rowClassName = cn(
     'flex w-full items-center justify-between rounded-lg border border-gray-200/80 bg-white px-4 py-3 text-left shadow-sm',
     severityBorderLeft[alert.severity],
@@ -249,17 +232,6 @@ function AlertRow({
         <span className="tabular-nums text-xs text-gray-400">
           {formatElapsedDuration(alert.duration)}
         </span>
-        {canAskAI && (
-          <button
-            type="button"
-            onClick={() => onAskAIAboutAlert(alert)}
-            aria-label={`AI에게 ${alert.instance} ${formatMetricName(alert.metric)} 경고 분석 요청`}
-            title="AI 분석"
-            className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold text-rose-600 transition-colors hover:bg-rose-50"
-          >
-            AI
-          </button>
-        )}
         <button
           type="button"
           onClick={handleOpenLogs}

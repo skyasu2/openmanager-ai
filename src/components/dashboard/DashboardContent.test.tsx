@@ -7,11 +7,11 @@ import type { ComponentProps } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import type { Server } from '@/types/server';
-import { toDashboardAlertContext } from './alert-ai-context';
 import DashboardContent from './DashboardContent';
 
-const { routerPush } = vi.hoisted(() => ({
+const { routerPush, serverDashboardMock } = vi.hoisted(() => ({
   routerPush: vi.fn(),
+  serverDashboardMock: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -124,34 +124,17 @@ vi.mock('./SystemOverviewSection', () => ({
 }));
 
 vi.mock('./ServerDashboard', () => ({
-  default: vi.fn(({ onAskAI }: { onAskAI?: (server: Server) => void }) => (
-    <div data-testid="server-dashboard">
-      {onAskAI && (
-        <button
-          type="button"
-          aria-label="ask ai about server"
-          onClick={() =>
-            onAskAI({
-              id: 's1',
-              name: 'server-1',
-              status: 'warning',
-              cpu: 81,
-              memory: 64,
-              disk: 77,
-            } as Server)
-          }
-        >
-          ask ai
-        </button>
-      )}
-    </div>
-  )),
+  default: (props: Record<string, unknown>) => {
+    serverDashboardMock(props);
+    return <div data-testid="server-dashboard" />;
+  },
 }));
 
 const mockedUseDashboardStats = vi.mocked(useDashboardStats);
 
 beforeEach(() => {
   routerPush.mockClear();
+  serverDashboardMock.mockClear();
   mockedUseDashboardStats.mockReturnValue({
     total: 15,
     online: 15,
@@ -268,9 +251,7 @@ describe('DashboardContent empty state', () => {
     expect(routerPush).toHaveBeenCalledWith('/dashboard/logs');
   });
 
-  it('서버 카드 AI 요청을 최고 사용률 메트릭으로 변환해 브리지해야 한다', async () => {
-    const onAskAIAboutAlert = vi.fn();
-
+  it('서버 카드에는 AI prefill 핸들러를 전달하지 않는다', async () => {
     render(
       <DashboardContent
         {...createProps({
@@ -281,7 +262,6 @@ describe('DashboardContent empty state', () => {
             { id: 's1', name: 'server-1', status: 'warning' } as Server,
           ],
           totalServers: 1,
-          onAskAIAboutAlert,
         })}
       />
     );
@@ -289,60 +269,9 @@ describe('DashboardContent empty state', () => {
     await waitFor(() => {
       expect(screen.getByTestId('server-dashboard')).toBeInTheDocument();
     });
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'ask ai about server' })
-    );
-
-    expect(onAskAIAboutAlert).toHaveBeenCalledWith({
-      serverId: 's1',
-      serverName: 'server-1',
-      metricLabel: 'CPU',
-      metricValue: 81,
-    });
-  });
-
-  it('활성 알림을 DashboardAlertContext로 정규화해야 한다', () => {
-    expect(
-      toDashboardAlertContext({
-        serverId: 's1',
-        instance: 'server-1',
-        metric: 'memory',
-        value: 78.2,
-      })
-    ).toEqual({
-      serverId: 's1',
-      serverName: 'server-1',
-      metricLabel: 'MEM',
-      metricValue: 78,
-    });
-
-    expect(
-      toDashboardAlertContext({
-        serverId: 's2',
-        instance: 'server-2',
-        metric: 'network',
-        value: 82,
-      })
-    ).toBeNull();
-  });
-
-  it('resolved 알림 이력은 재발 방지 promptOverride로 정규화해야 한다', () => {
-    expect(
-      toDashboardAlertContext({
-        serverId: 's3',
-        instance: 'server-3',
-        metric: 'disk',
-        value: 91.4,
-        state: 'resolved',
-      })
-    ).toEqual(
-      expect.objectContaining({
-        serverId: 's3',
-        serverName: 'server-3',
-        metricLabel: 'DISK',
-        metricValue: 91,
-        promptOverride: expect.stringContaining('해소된 알림 이력'),
+    expect(serverDashboardMock).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        onAskAI: expect.any(Function),
       })
     );
   });

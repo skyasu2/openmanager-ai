@@ -20,7 +20,6 @@ import { getServerStatusTheme } from '@/styles/design-constants';
 import type { Server as ServerType } from '@/types/server';
 import { formatUptime } from '@/utils/serverUtils';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
-import { AIInsightBadge } from '../shared/AIInsightBadge';
 import {
   CompactMetricChip,
   DetailRow,
@@ -34,7 +33,7 @@ import {
  * - 랜딩 페이지 스타일 그라데이션 애니메이션
  * - 상태별 색상: Critical(빨강), Warning(주황), Healthy(녹색)
  * - 호버 스케일 + 글로우 효과
- * - 서버 카드 독자 기능: 실시간 메트릭, AI Insight, Progressive Disclosure
+ * - 서버 카드 독자 기능: 실시간 메트릭, Progressive Disclosure
  * - 카드 크기 50% 축소 (2025-12-13)
  * - HTML 접근성 수정: 중첩 인터랙티브 제거, header button이 카드 클릭 담당 (2026-02-24)
  */
@@ -42,7 +41,6 @@ import {
 export interface ImprovedServerCardProps {
   server: ServerType;
   onClick: (server: ServerType) => void;
-  onAskAI?: (server: ServerType) => void;
   onOpenLogs?: (server: ServerType) => void;
   variant?: 'compact' | 'standard' | 'detailed';
   showRealTimeUpdates?: boolean;
@@ -118,11 +116,19 @@ const statusAccentBorderClasses: Record<string, string> = {
   unknown: 'border-l-4 border-l-purple-500',
 };
 
+const statusLabels: Record<string, string> = {
+  critical: '위험',
+  warning: '주의',
+  online: '정상',
+  offline: '오프라인',
+  maintenance: '점검',
+  unknown: '미확인',
+};
+
 const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
   ({
     server,
     onClick,
-    onAskAI,
     onOpenLogs,
     variant = 'standard',
     showRealTimeUpdates = true,
@@ -224,19 +230,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [onClick, safeServer]
     );
 
-    const isAIActionable =
+    const needsAttention =
       safeServer.status === 'warning' || safeServer.status === 'critical';
-
-    const handleAskAI = useCallback(
-      (e: React.MouseEvent | React.KeyboardEvent) => {
-        e.stopPropagation();
-        if (!isAIActionable || !onAskAI) {
-          return;
-        }
-        onAskAI(safeServer);
-      },
-      [isAIActionable, onAskAI, safeServer]
-    );
+    const shouldAnimateStatusSignal = showRealTimeUpdates && needsAttention;
 
     const handleOpenLogs = useCallback(
       (e: React.MouseEvent | React.KeyboardEvent) => {
@@ -256,12 +252,14 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       isCompactVariant ? 'h-9 w-9 rounded-lg' : 'h-11 w-11 rounded-full'
     }`;
 
-    const insightBadge = (
-      <AIInsightBadge
-        {...realtimeMetrics}
-        status={safeServer.status}
-        historyData={metricsHistory}
-      />
+    const metricStatusBadge = (
+      <span
+        data-testid="metric-status-badge"
+        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${statusTheme.badge}`}
+        title={`서버 상태: ${statusLabels[safeServer.status] ?? statusLabels.unknown}`}
+      >
+        {statusLabels[safeServer.status] ?? statusLabels.unknown}
+      </span>
     );
 
     return (
@@ -310,7 +308,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         {showRealTimeUpdates && (
           <div className="absolute right-3 top-3 z-10">
             <span
-              className={`block h-2.5 w-2.5 rounded-full animate-pulse ring-2 ring-white/80 shadow-lg ${statusTheme.text.replace('text-', 'bg-')}`}
+              className={`block h-2.5 w-2.5 rounded-full ring-2 ring-white/80 shadow-lg ${shouldAnimateStatusSignal ? 'animate-pulse' : ''} ${statusTheme.text.replace('text-', 'bg-')}`}
               style={{ boxShadow: `0 0 8px ${currentGradient.glow}` }}
             />
           </div>
@@ -325,7 +323,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           >
             {/* 🎨 아이콘 박스 - 그라데이션 스타일 (랜딩 카드 참조) */}
             <div
-              className={`relative rounded-xl p-2 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:scale-110 bg-linear-to-br ${currentGradient.gradient}`}
+              className={`relative rounded-xl p-2 shadow-lg backdrop-blur-sm transition-transform duration-200 bg-linear-to-br ${currentGradient.gradient} ${needsAttention ? 'group-hover:scale-105' : ''}`}
               style={{
                 boxShadow: `0 4px 15px ${currentGradient.glow}`,
               }}
@@ -401,7 +399,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         </header>
         {/* Main Content Section */}
         <section className="relative z-10">
-          {/* 🎨 AI Insight - 강화된 표시 */}
+          {/* 🎨 상태 요약 - core monitoring surface */}
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <div
@@ -412,31 +410,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
               </span>
             </div>
             {isCompactVariant ? (
-              <div className="hidden sm:block">
-                {isAIActionable ? (
-                  <button
-                    type="button"
-                    onClick={handleAskAI}
-                    aria-label={`AI에게 ${safeServer.name} 경고 분석 요청`}
-                    className="cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
-                  >
-                    {insightBadge}
-                  </button>
-                ) : (
-                  <div className="cursor-default">{insightBadge}</div>
-                )}
-              </div>
-            ) : isAIActionable ? (
-              <button
-                type="button"
-                onClick={handleAskAI}
-                aria-label={`AI에게 ${safeServer.name} 경고 분석 요청`}
-                className="cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
-              >
-                {insightBadge}
-              </button>
+              <div className="hidden sm:block">{metricStatusBadge}</div>
             ) : (
-              <div className="cursor-default">{insightBadge}</div>
+              metricStatusBadge
             )}
           </div>
 

@@ -35,7 +35,12 @@ export interface AlertServerSnapshot {
 }
 
 export interface MetricsToolPayload {
-  source: 'getServerMetrics' | 'getServerMetricsAdvanced' | 'filterServers';
+  source:
+    | 'getServerMetrics'
+    | 'getServerMetricsAdvanced'
+    | 'filterServers'
+    | 'getServerByGroup'
+    | 'getServerByGroupAdvanced';
   servers: ServerSnapshot[];
   alertServers?: AlertServerSnapshot[];
   condition?: string;
@@ -156,6 +161,29 @@ export function getMetricsPayload(
 
     if (servers.length > 0) {
       return { source: 'getServerMetricsAdvanced', servers };
+    }
+  }
+
+  const groupEntry = toolResults.find(
+    (entry) =>
+      (entry.toolName === 'getServerByGroup' ||
+        entry.toolName === 'getServerByGroupAdvanced') &&
+      isRecord(entry.result)
+  );
+
+  if (groupEntry && isRecord(groupEntry.result)) {
+    const servers = Array.isArray(groupEntry.result.servers)
+      ? groupEntry.result.servers.filter(isServerSnapshot)
+      : [];
+
+    if (servers.length > 0) {
+      return {
+        source:
+          groupEntry.toolName === 'getServerByGroupAdvanced'
+            ? 'getServerByGroupAdvanced'
+            : 'getServerByGroup',
+        servers,
+      };
     }
   }
 

@@ -389,6 +389,57 @@ function buildCauseLine(server: AlertServerSnapshot): string {
   return `• ${server.id}: 상태 ${server.status} - 최근 상태 변화 시각과 관련 로그를 우선 점검해야 합니다.`;
 }
 
+function isHaproxyDistributionQuery(query: string): boolean {
+  return (
+    /haproxy|로드\s*밸런서|load\s*balancer|\blb\b/i.test(query) &&
+    /백엔드|backend|분산|연결|상태|트래픽/i.test(query)
+  );
+}
+
+function isHaproxyServer(server: ServerSnapshot): boolean {
+  return /haproxy|\blb-/i.test(server.id) || /haproxy|load\s*balancer/i.test(server.name ?? '');
+}
+
+export function buildHaproxyDistributionAnswer(
+  query: string,
+  payload: MetricsToolPayload
+): string | null {
+  if (!isHaproxyDistributionQuery(query)) {
+    return null;
+  }
+
+  const haproxyServers = payload.servers
+    .filter(isHaproxyServer)
+    .sort((left, right) => (toNumber(right.cpu) ?? 0) - (toNumber(left.cpu) ?? 0));
+
+  if (haproxyServers.length === 0) {
+    return null;
+  }
+
+  const lines = [
+    '📊 **HAProxy 상태/분산 점검**',
+    '• 현재 도구 근거는 HAProxy 서버 메트릭입니다. 백엔드별 세션 수는 runtime socket의 `show stat` 확인이 필요합니다.',
+    '',
+    '현재 HAProxy 메트릭',
+  ];
+
+  haproxyServers.forEach((server, index) => {
+    lines.push(
+      `${index + 1}. ${server.id}: CPU ${roundPercent(toNumber(server.cpu))}, 메모리 ${roundPercent(toNumber(server.memory))}, 디스크 ${roundPercent(toNumber(server.disk))} (상태 ${server.status})`
+    );
+  });
+
+  lines.push(
+    '',
+    '백엔드 분산 판단 기준',
+    '1. `echo "show stat" | socat - /run/haproxy/admin.sock`에서 backend별 `status`, `scur`, `qcur`, `check_status` 편차를 비교하세요.',
+    '2. CPU가 70% 이상이면 worker CPU와 active connection 증가가 같이 있는지 먼저 확인하세요.',
+    '3. 특정 backend만 세션이 몰리거나 DOWN이면 서버 health check, weight, stick-table 설정을 확인하세요.'
+  );
+
+  return lines.join('\n');
+}
+
 export function buildExplicitServerOperationalAnswer(
   query: string,
   payload: MetricsToolPayload,

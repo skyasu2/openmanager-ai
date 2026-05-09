@@ -1,0 +1,68 @@
+{
+  "runId": "QA-20260509-0434",
+  "recordedAt": "2026-05-09T05:36:57.749Z",
+  "recordedAtKst": "2026-05-09 14:36:57 KST",
+  "runTitle": "Local AI Ops A1/A5/C2 Deterministic Fallback QA",
+  "owner": "codex",
+  "source": "local-cli",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "not exercised",
+    "backend": "AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "e9536017b10bdc25d654907ef3d14b4bfe6d37a4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "A1 HAProxy status/backend distribution deterministic summary",
+    "A5 storage disk threshold prediction deterministic summary",
+    "C2 first-on-call alert checklist fast path",
+    "AI Engine routing and deterministic summary fallback tests"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "Cloud Run deployed runtime",
+    "live LLM/provider call",
+    "production A1/A5/C2 targeted retest"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-ops-a1-a5-c2-local-deterministic-fallback",
+      "title": "A1/A5/C2 local deterministic fallback behavior is covered by tests",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AI Engine targeted tests passed for orchestrator-context, orchestrator-summary-fallback, and supervisor-routing: 3 files / 106 tests. AI Engine type-check and full test passed: 107 files / 1074 tests. Root lint, test:contract, docs:budget, docs:ai-consistency, and git diff --check passed.",
+      "note": "This local QA does not close production pending items. A1/A5/C2 still require production targeted retest after deployment.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Non-release local QA record only; countsTowardSummary=false.",
+    "Production pending items in qa:status remain valid until deployed retest confirms closure.",
+    "No live LLM/provider call was made for this QA record."
+  ],
+  "links": []
+}

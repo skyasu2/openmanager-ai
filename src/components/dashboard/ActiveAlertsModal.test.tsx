@@ -41,36 +41,21 @@ describe('ActiveAlertsModal', () => {
     routerPush.mockClear();
   });
 
-  it('지원되는 메트릭 알림은 AI prefill 버튼으로 렌더링한다', () => {
-    const onAskAIAboutAlert = vi.fn();
+  it('지원되는 메트릭 알림도 AI prefill 버튼 없이 렌더링한다', () => {
     const alert = createAlert();
 
-    render(
-      <ActiveAlertsModal
-        open
-        onClose={vi.fn()}
-        alerts={[alert]}
-        onAskAIAboutAlert={onAskAIAboutAlert}
-      />
-    );
+    render(<ActiveAlertsModal open onClose={vi.fn()} alerts={[alert]} />);
 
-    fireEvent.click(
-      screen.getByRole('button', {
+    expect(
+      screen.queryByRole('button', {
         name: 'AI에게 api-was-dc1-01 CPU 경고 분석 요청',
       })
-    );
-
-    expect(onAskAIAboutAlert).toHaveBeenCalledWith(alert);
+    ).not.toBeInTheDocument();
   });
 
   it('로그 버튼은 서버 필터가 적용된 로그 페이지로 이동한다', () => {
     render(
-      <ActiveAlertsModal
-        open
-        onClose={vi.fn()}
-        alerts={[createAlert()]}
-        onAskAIAboutAlert={vi.fn()}
-      />
+      <ActiveAlertsModal open onClose={vi.fn()} alerts={[createAlert()]} />
     );
 
     fireEvent.click(
@@ -94,7 +79,6 @@ describe('ActiveAlertsModal', () => {
             severity: 'warning',
           }),
         ]}
-        onAskAIAboutAlert={vi.fn()}
       />
     );
 

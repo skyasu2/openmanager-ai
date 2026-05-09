@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-09
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
-> **v8.11.97** | Updated 2026-05-05
+> **v8.11.97+** | Updated 2026-05-09
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 
@@ -19,6 +19,12 @@ OpenManager AI is a human-in-the-loop server monitoring AI assistant built with:
 - AI Engine: Vercel AI SDK 6 family, deterministic/single-first advisory runtime with conditional multi-agent escalation
 - Database: Supabase (PostgreSQL + Auth/RLS); Knowledge Retrieval Lite uses BM25 RPC + metadata boost
 - Deployment: Vercel (Frontend) + Cloud Run (AI Engine)
+
+Product positioning:
+- Core domain: self-built synthetic server monitoring product, not a clone of a specific company product.
+- AI layer: AI Assistant / Agent module attached to that monitoring domain.
+- Portfolio story: demonstrate adding useful AI assistant/agent capability to an existing domain product surface, not replacing the monitoring UI with AI everywhere.
+- UI boundary: AI execution controls live in the global AI sidebar and `/dashboard/ai-assistant`; server cards, server detail, alerts, logs, and topology remain core monitoring surfaces.
 
 ## Architecture
 
@@ -48,6 +54,20 @@ OpenManager AI is a human-in-the-loop server monitoring AI assistant built with:
 - Domain-specific label: `Server Monitoring / Observability AI Assistant`.
 - Avoid positioning it as a full autonomous AIOps or autonomous SRE platform. Under the current project constraints, the assistant does not mutate real infrastructure; it produces evidence, reports, and action drafts for an operator to approve and execute.
 - Architecture claim: deterministic means rule/contract/tool code owns metric severity, ranking, and evidence boundaries. It does not mean the LLM text layer is perfectly deterministic.
+
+### Surface Boundary
+
+Use this mental model when interpreting UI or proposing changes:
+
+```
+Monitoring product surfaces:
+  Dashboard / Server cards / Server detail / Alerts / Logs / Topology
+
+AI module surfaces:
+  Header AI Assistant toggle / AISidebarV4 / /dashboard/ai-assistant
+```
+
+Do not assume every warning server row needs an inline AI button. The preferred pattern is that monitoring surfaces expose observable facts and navigation, while AI surfaces handle natural-language questions, agent progress, reports, artifacts, and evidence display.
 
 ### Assistant Type Comparison
 - Generic chatbot: not the primary type; OpenManager does not ask the LLM to infer metric truth from prompt text alone.

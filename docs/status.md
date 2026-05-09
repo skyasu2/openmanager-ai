@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-08
+> Last reviewed: 2026-05-09
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**상태 스냅샷 기준일**: 2026-05-08 | **현재 버전 스냅샷**: v8.11.113+
+**상태 스냅샷 기준일**: 2026-05-09 | **현재 버전 스냅샷**: v8.11.113+
 
 ## 상태 문서 역할 분리
 
@@ -21,14 +21,15 @@
 
 ## 현재 스냅샷
 
-- 제품 성격: AI 기반 서버 모니터링 플랫폼
+- 제품 성격: synthetic 서버 모니터링 제품에 AI Assistant / Agent 모듈을 결합한 포트폴리오형 플랫폼
 - Frontend: Next.js App Router 기반 UI를 Vercel에 배포
 - AI Engine: Cloud Run 분리 배포
 - 데이터 기준: `public/data/otel-data/` synthetic OTel snapshot SSOT
 - 운영 데이터/인증: Supabase + Redis 계열 의존
 - 핵심 사용자 흐름:
   - 랜딩 -> 인증 -> 대시보드
-  - AI Assistant 질의 -> 분석 -> 조치안/보고서
+  - 서버 모니터링 core surface -> 서버 상세/로그/알림/토폴로지 탐색
+  - 전역 AI Assistant sidebar 또는 `/dashboard/ai-assistant` -> 질의/분석/조치안/보고서
   - QA/운영 증거 누적 -> `reports/qa/`
 - 로컬 개발 기준:
   - 현재 WSL2 `/mnt/d` 개발 경로는 `next dev --webpack`을 표준으로 사용합니다.

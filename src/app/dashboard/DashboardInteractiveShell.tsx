@@ -11,7 +11,6 @@ import {
   useState,
 } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import type { DashboardAlertContext } from '@/components/dashboard/alert-ai-context';
 import { DashboardNavigation } from '@/components/dashboard/shell/DashboardNavigation';
 import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
@@ -170,7 +169,6 @@ export default function DashboardInteractiveShell({
     isOpen: isAgentOpen,
     toggleSidebar,
     closeSidebar,
-    openWithPrefill,
   } = useAIEntryController();
 
   const { isSystemStarted, startSystem } = useUnifiedAdminStore(
@@ -364,28 +362,6 @@ export default function DashboardInteractiveShell({
     []
   );
 
-  const handleAskAIAboutAlert = useCallback(
-    (context: DashboardAlertContext) => {
-      if (!canToggleAI && !isGuestFullAccess) {
-        return;
-      }
-
-      const metricLabel =
-        context.metricLabel === 'CPU'
-          ? 'CPU'
-          : context.metricLabel === 'MEM'
-            ? '메모리'
-            : '디스크';
-      const prompt =
-        context.promptOverride ??
-        `${context.serverName} 서버의 ${metricLabel} 사용률이 ${context.metricValue}%입니다. 현재 원인과 우선 조치 방법을 분석해줘.`;
-
-      void triggerAIWarmup('dashboard-alert-prefill');
-      openWithPrefill(prompt);
-    },
-    [canToggleAI, isGuestFullAccess, openWithPrefill]
-  );
-
   return (
     <>
       <DashboardNavigation isAIAssistantOpen={isAgentOpen} />
@@ -418,11 +394,6 @@ export default function DashboardInteractiveShell({
                   onShowSequentialChange={() => {}}
                   statusFilter={statusFilter}
                   onStatusFilterChange={setStatusFilter}
-                  onAskAIAboutAlert={
-                    canToggleAI || isGuestFullAccess
-                      ? handleAskAIAboutAlert
-                      : undefined
-                  }
                 />
               ) : (
                 <DashboardRoutedContent
@@ -441,11 +412,6 @@ export default function DashboardInteractiveShell({
                   onStatsUpdate={handleStatsUpdate}
                   statusFilter={statusFilter}
                   onStatusFilterChange={setStatusFilter}
-                  onAskAIAboutAlert={
-                    canToggleAI || isGuestFullAccess
-                      ? handleAskAIAboutAlert
-                      : undefined
-                  }
                 />
               )}
             </Suspense>

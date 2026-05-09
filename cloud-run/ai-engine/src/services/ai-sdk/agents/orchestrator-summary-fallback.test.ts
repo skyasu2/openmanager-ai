@@ -207,6 +207,41 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('메모리 사용률 상위');
   });
 
+  it('surfaces HAProxy CPU and backend distribution checks from group payloads', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerByGroup',
+          result: {
+            success: true,
+            group: 'loadbalancer',
+            servers: [
+              {
+                id: 'lb-haproxy-dc1-01',
+                name: 'HAProxy LB',
+                type: 'loadbalancer',
+                status: 'warning',
+                cpu: 73,
+                memory: 38,
+                disk: 26,
+                network: 55,
+              },
+            ],
+            summary: { total: 1, online: 0, warning: 1, critical: 0, offline: 0 },
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('HAProxy 상태/분산 점검');
+    expect(summary).toContain('lb-haproxy-dc1-01: CPU 73%');
+    expect(summary).toContain('백엔드 분산');
+    expect(summary).toContain('show stat');
+    expect(summary).not.toContain('메모리 사용률 상위');
+  });
+
   it('prioritizes critical operational alerts before higher-metric warnings', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 위험/경고 서버를 기준으로 운영자가 해야 할 조치 2가지를 제안해줘',
@@ -506,6 +541,46 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('db-mysql-dc1-primary');
     expect(summary).toContain('잠재적 장애 시점');
     expect(summary).toContain('권장 조치');
+  });
+
+  it('builds deterministic storage threshold prediction from current state', () => {
+    const query = '스토리지 서버 디스크 사용량이 임계치 넘기 전에 미리 알 수 있어?';
+    const stateData = {
+      servers: [
+        { id: 'web-nginx-dc1-01', status: 'online', cpu: 25, memory: 30, disk: 20 },
+        {
+          id: 'storage-nfs-dc1-01',
+          status: 'warning',
+          cpu: 35,
+          memory: 44,
+          disk: 84,
+        },
+        {
+          id: 'storage-s3gw-dc1-01',
+          status: 'online',
+          cpu: 44,
+          memory: 48,
+          disk: 72,
+        },
+      ],
+    };
+
+    expect(isDeterministicSummaryQuery(query, 'Analyst Agent', 3)).toBe(true);
+    expect(isDeterministicSummaryQuery(query, 'Analyst Agent', 0)).toBe(false);
+
+    const summary = buildDeterministicSummaryFromCurrentState(
+      query,
+      'Analyst Agent',
+      stateData
+    );
+
+    expect(summary).toContain('스토리지 DISK 임계치 사전 예측');
+    expect(summary).toContain('storage-nfs-dc1-01: 현재 DISK 84%');
+    expect(summary).toContain('storage-s3gw-dc1-01: 현재 DISK 72%');
+    expect(summary).toContain('경고 임계치 80%');
+    expect(summary).toContain('위험 임계치 90%');
+    expect(summary).toContain('NFS/export 사용량');
+    expect(summary).not.toContain('web-nginx-dc1-01');
   });
 
   it('uses the requested metric for threshold filters instead of hardcoding DISK', () => {

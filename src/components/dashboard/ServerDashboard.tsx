@@ -72,7 +72,11 @@ const compareByStatusPriority = (a: Server, b: Server): number => {
 
 function getServerCardColumns(viewMode: ServerViewMode, width: number): number {
   if (width < 640) return 1;
-  if (viewMode === 'grid') return 2;
+  if (viewMode === 'grid') {
+    if (width < 1280) return 2;
+    if (width < 1920) return 3;
+    return 4;
+  }
   if (width < 1024) return 2;
   if (width < 1280) return 3;
   return 4;
@@ -107,8 +111,6 @@ interface ServerDashboardProps {
     offline: number;
     unknown: number;
   }) => void;
-  /** 서버 카드 경고 배지에서 AI 분석 요청 */
-  onAskAI?: (server: Server) => void;
   /** 최초 화면에서 노출할 서버 카드 줄 수 */
   initialVisibleRows?: number;
 }
@@ -122,7 +124,6 @@ export default function ServerDashboard({
   onPageChange,
   onPageSizeChange,
   onStatsUpdate: _onStatsUpdate, // Reserved for future stats callback
-  onAskAI,
   initialVisibleRows = DEFAULT_VISIBLE_ROWS,
 }: ServerDashboardProps) {
   const router = useRouter();
@@ -448,7 +449,7 @@ export default function ServerDashboard({
                 }
                 className={
                   viewMode === 'grid'
-                    ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6'
+                    ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 3xl:grid-cols-4'
                     : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                 }
               >
@@ -467,7 +468,6 @@ export default function ServerDashboard({
                         showRealTimeUpdates={true}
                         index={index}
                         onClick={handleServerSelect}
-                        onAskAI={onAskAI}
                         onOpenLogs={handleOpenLogs}
                       />
                     </ServerCardErrorBoundary>

@@ -106,7 +106,7 @@ describe('ServerDashboard', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('서버 목록은 촘촘히/넓게 보기 토글을 제공하고 넓게 보기는 2열 레이아웃으로 전환된다', () => {
+  it('서버 목록은 촘촘히/넓게 보기 토글을 제공하고 넓게 보기는 와이드 화면에서 과확장을 막는다', () => {
     render(
       <ServerDashboard
         servers={[
@@ -137,6 +137,40 @@ describe('ServerDashboard', () => {
     expect(screen.getByTestId('server-dashboard-grid')).toHaveClass(
       'sm:grid-cols-2'
     );
+    expect(screen.getByTestId('server-dashboard-grid')).toHaveClass(
+      'xl:grid-cols-3'
+    );
+    expect(screen.getByTestId('server-dashboard-grid')).toHaveClass(
+      '3xl:grid-cols-4'
+    );
+  });
+
+  it('넓게 보기의 표시 개수는 xl 3열 레이아웃과 일치한다', () => {
+    setViewportWidth(1280);
+
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('server-1', 'API Server 1'),
+          createServer('server-2', 'API Server 2'),
+          createServer('server-3', 'API Server 3'),
+          createServer('server-4', 'API Server 4'),
+          createServer('server-5', 'API Server 5'),
+        ]}
+        totalServers={5}
+        currentPage={1}
+        totalPages={1}
+        pageSize={5}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        initialVisibleRows={1}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '넓게 보기' }));
+
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(3);
+    expect(screen.getByText('3/5개 서버 표시')).toBeInTheDocument();
   });
 
   it('개요용 서버 카드는 1줄만 먼저 보여주고 더 보기로 아래에 추가한다', () => {
@@ -161,8 +195,8 @@ describe('ServerDashboard', () => {
       />
     );
 
-    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(3);
-    expect(screen.getByText('3/5개 서버 표시')).toBeInTheDocument();
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(4);
+    expect(screen.getByText('4/5개 서버 표시')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /더 보기/ }));
 
@@ -170,7 +204,7 @@ describe('ServerDashboard', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '접기' }));
 
-    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(3);
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(4);
   });
 
   it('서버 탭 더 보기는 페이지 크기를 늘려 다음 줄을 같은 화면에 붙인다', () => {

@@ -41,15 +41,8 @@ describe('SystemOverviewSection', () => {
     },
   ] as Server[];
 
-  it('Top 5 경고 클릭 시 AI 컨텍스트 payload를 전달해야 함', () => {
-    const onAskAIAboutAlert = vi.fn();
-
-    render(
-      <SystemOverviewSection
-        servers={servers}
-        onAskAIAboutAlert={onAskAIAboutAlert}
-      />
-    );
+  it('Top 5 경고 클릭 시 AI prefill 대신 서버 상세 페이지로 이동한다', () => {
+    render(<SystemOverviewSection servers={servers} />);
 
     fireEvent.click(
       screen.getByRole('button', {
@@ -57,12 +50,9 @@ describe('SystemOverviewSection', () => {
       })
     );
 
-    expect(onAskAIAboutAlert).toHaveBeenCalledWith({
-      serverId: 'storage-nfs-dc1-01',
-      serverName: 'storage-nfs-dc1-01',
-      metricLabel: 'DISK',
-      metricValue: 85,
-    });
+    expect(routerPush).toHaveBeenCalledWith(
+      '/dashboard/servers/storage-nfs-dc1-01'
+    );
   });
 
   it('시스템 리소스 평균은 offline 서버의 0 메트릭을 제외한다', () => {

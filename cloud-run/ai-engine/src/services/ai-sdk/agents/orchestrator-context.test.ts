@@ -72,6 +72,18 @@ describe('preFilterQuery', () => {
     expect(nfs.directResponse).toContain('mount -t nfs');
   });
 
+  it('answers first-on-call alert checklist directly for beginner ops guidance', () => {
+    const result = preFilterQuery(
+      '처음 운영 당직인데 알림이 울리면 어떤 순서로 확인해야 해?'
+    );
+
+    expect(result.shouldHandoff).toBe(false);
+    expect(result.directResponse).toContain('1. 알림 내용');
+    expect(result.directResponse).toContain('2. 서버 상태');
+    expect(result.directResponse).toContain('3. 관련 로그');
+    expect(result.directResponse).toContain('처음부터 재시작하지 말고');
+  });
+
   it('does not send formatting-only report rewrites to Reporter Agent', () => {
     const result = preFilterQuery(
       '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘'

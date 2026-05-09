@@ -125,12 +125,6 @@ vi.mock('../shared/SvgSparkline', () => ({
   )),
 }));
 
-vi.mock('../shared/AIInsightBadge', () => ({
-  AIInsightBadge: vi.fn(() => (
-    <div data-testid="ai-insight-badge">AI Badge</div>
-  )),
-}));
-
 vi.mock('../error/ServerCardErrorBoundary', () => ({
   __esModule: true,
   default: vi.fn(({ children }: { children?: React.ReactNode }) => (
@@ -156,7 +150,6 @@ import ImprovedServerCard from './ImprovedServerCard';
 
 describe('ImprovedServerCard - User Event 테스트', () => {
   const mockOnClick = vi.fn();
-  const mockOnAskAI = vi.fn();
 
   const mockServer: Server = {
     id: 'server-1',
@@ -210,8 +203,10 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       const { container } = render(
         <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
       );
-      const pulseIndicator = container.querySelector('.animate-pulse');
-      expect(pulseIndicator).toBeInTheDocument();
+      const liveIndicator = container.querySelector(
+        '.absolute.right-3.top-3 span'
+      );
+      expect(liveIndicator).toBeInTheDocument();
     });
   });
 
@@ -519,14 +514,14 @@ describe('ImprovedServerCard - User Event 테스트', () => {
 
       const osBadge = container.querySelector('[title="운영체제: Ubuntu"]');
       const locationText = screen.getByText(/DC1-AZ1/);
-      const aiBadge = screen.getByTestId('ai-insight-badge');
+      const statusBadge = screen.getByTestId('metric-status-badge');
 
       expect(osBadge).toHaveClass('hidden');
       expect(osBadge).toHaveClass('sm:inline-flex');
       expect(locationText.closest('div')).toHaveClass('hidden');
       expect(locationText.closest('div')).toHaveClass('sm:flex');
-      expect(aiBadge.closest('div.hidden')).toHaveClass('hidden');
-      expect(aiBadge.closest('div.hidden')).toHaveClass('sm:block');
+      expect(statusBadge.closest('div.hidden')).toHaveClass('hidden');
+      expect(statusBadge.closest('div.hidden')).toHaveClass('sm:block');
     });
 
     it('compact variant에서 모바일 핵심 메트릭 칩을 렌더링한다', () => {
@@ -630,7 +625,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
   });
 
   describe('실시간 업데이트', () => {
-    it('showRealTimeUpdates가 true일 때 펄스 인디케이터가 표시된다', () => {
+    it('showRealTimeUpdates가 true여도 정상 서버는 정적 인디케이터로 표시된다', () => {
       const { container } = render(
         <ImprovedServerCard
           server={mockServer}
@@ -638,8 +633,25 @@ describe('ImprovedServerCard - User Event 테스트', () => {
           showRealTimeUpdates={true}
         />
       );
-      const pulseIndicator = container.querySelector('.animate-pulse');
-      expect(pulseIndicator).toBeInTheDocument();
+      const liveIndicator = container.querySelector(
+        '.absolute.right-3.top-3 span'
+      );
+      expect(liveIndicator).toBeInTheDocument();
+      expect(liveIndicator).not.toHaveClass('animate-pulse');
+    });
+
+    it('warning/critical 서버는 펄스 인디케이터로 조치 필요 상태를 강조한다', () => {
+      const { container } = render(
+        <ImprovedServerCard
+          server={{ ...mockServer, status: 'warning' }}
+          onClick={mockOnClick}
+          showRealTimeUpdates={true}
+        />
+      );
+      const liveIndicator = container.querySelector(
+        '.absolute.right-3.top-3 span'
+      );
+      expect(liveIndicator).toHaveClass('animate-pulse');
     });
 
     it('showRealTimeUpdates가 false일 때 펄스 인디케이터가 없다', () => {
@@ -714,28 +726,19 @@ describe('ImprovedServerCard - User Event 테스트', () => {
     });
   });
 
-  describe('AI prefill 진입점', () => {
-    it('warning 배지 클릭 시 서버 상세 클릭과 분리되어 AI 요청만 호출해야 한다', () => {
+  describe('core monitoring surface boundary', () => {
+    it('warning 서버도 카드 안에 AI 요청 버튼을 노출하지 않는다', () => {
       const warningServer = { ...mockServer, status: 'warning' as const };
 
       render(
-        <ImprovedServerCard
-          server={warningServer}
-          onClick={mockOnClick}
-          onAskAI={mockOnAskAI}
-        />
+        <ImprovedServerCard server={warningServer} onClick={mockOnClick} />
       );
 
-      fireEvent.click(
-        screen.getByRole('button', {
+      expect(
+        screen.queryByRole('button', {
           name: `AI에게 ${warningServer.name} 경고 분석 요청`,
         })
-      );
-
-      expect(mockOnAskAI).toHaveBeenCalledWith(
-        expect.objectContaining({ id: warningServer.id })
-      );
-      expect(mockOnClick).not.toHaveBeenCalled();
+      ).not.toBeInTheDocument();
     });
 
     it('로그 버튼 클릭 시 서버 상세 클릭과 분리되어 로그 요청만 호출해야 한다', () => {
@@ -762,14 +765,8 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(mockOnClick).not.toHaveBeenCalled();
     });
 
-    it('online 서버는 AI 요청 배지를 노출하지 않아야 한다', () => {
-      render(
-        <ImprovedServerCard
-          server={mockServer}
-          onClick={mockOnClick}
-          onAskAI={mockOnAskAI}
-        />
-      );
+    it('online 서버도 AI 요청 배지를 노출하지 않아야 한다', () => {
+      render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
 
       expect(
         screen.queryByRole('button', {

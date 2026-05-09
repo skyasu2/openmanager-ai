@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Active Supporting
 > Doc type: Decision Record
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-09
 > Canonical: docs/reference/architecture/ai/ai-assistant-improvement-boundaries.md
 > Tags: ai,assistant,boundary,free-tier,portfolio
 
@@ -19,6 +19,8 @@ Current assumptions:
 - Runtime text providers are Free Tier-oriented: Groq Llama 4 Scout, Cerebras `llama3.1-8b`, Mistral Small fallback, and Gemini Flash-Lite for vision.
 - The target quality pattern is domain-grounded assistant behavior: deterministic facts first, LLM explanation second.
 - The assistant is intentionally advisory. It can generate evidence, reports, commands, and action drafts, but real infrastructure changes require an operator outside the AI runtime.
+- UI positioning is "core server monitoring product + attached AI Assistant module." The Dashboard, server cards, server detail, logs, alerts, and topology should remain readable as monitoring product surfaces without per-entity AI execution buttons. AI execution UI belongs to the global AI sidebar and `/dashboard/ai-assistant`.
+- If recent dashboard code adds per-entity AI CTAs, treat that as surface-boundary drift rather than a reason to move more AI controls into monitoring screens. Preserve monitoring UX improvements such as server-detail routing, status badges, and sparklines, but remove the inline AI execution entry points and their obsolete test expectations.
 
 Generic positioning:
 
@@ -38,6 +40,7 @@ In this document, "not possible" means not possible without changing these assum
 | Fully autonomous SRE/remediation agent | Not recommended by design | The project has no real production infrastructure authority, approval workflow, rollback control, or blast-radius guard for autonomous changes. Without those controls, autonomous remediation would be performative rather than operationally meaningful. | Keep the assistant advisory. Generate evidence-backed actions, commands, and reports, but require human execution. |
 | Always-on live OTel ingestion, TSDB, and collector stack | Not recommended now | Prometheus/Mimir/Loki/Tempo/Elastic-style operation increases cost and operational scope beyond the current Free Tier replay model. | Keep `replay-json` as the default and maintain only disabled `live-otel` skeletons or adapters. |
 | Make every query multi-agent or reasoning-heavy | Not recommended | Multi-agent paths multiply LLM calls, latency, and quota pressure. Simple metric/status queries are better handled by deterministic or single-agent paths. | Use multi-agent only for RCA/report/vision/advisory/cross-domain evidence escalation. |
+| Put AI execution CTAs on every server card, detail header, or alert row | Not recommended for the product story | The portfolio concept is a self-built monitoring product with an attached AI module. Per-entity AI buttons make the monitoring surface look dependent on AI instead of showing that AI was added as a separate assistant/agent capability. | Keep the global AI Assistant entry, `AISidebarV4`, and `/dashboard/ai-assistant` as the AI execution surfaces. Core monitoring surfaces can still expose server/detail/log/alert navigation. |
 | Use a paid single frontier provider as the default quality fix | Not recommended under current assumptions | It conflicts with the Free Tier production principle and makes the portfolio less about architecture/eval quality. | Keep provider-neutral policy and use paid/frontier models only for local development analysis or separately approved experiments. |
 | Promise provider-native reasoning as a product feature | Not recommended now | Provider-native reasoning support varies by provider, model, account entitlement, quota, and latency. Current `thinking` mode is an app-level routing intensity toggle. | Add `reasoningCapability` and freshness metadata first, then consider opt-in provider-specific experiments. |
 | Production-grade compliance/SLA/security posture | Not possible as a portfolio artifact | A real commercial SLA requires legal, operational, incident response, support, compliance, access review, and audit processes outside this repo. | Document security boundaries, avoid secret leakage, keep deterministic tests, and present the result as a portfolio prototype. |
@@ -63,7 +66,9 @@ The allowed path is to improve the assistant around the model, not to assume a s
 - Surface provider/model/fallback evidence in the UI.
 - Turn incident, monitoring, and snapshot outputs into typed, replayable artifacts.
 - Expand `MonitoringFactPack` consumption across report, artifact, and evidence UI.
+- Keep AI execution controls concentrated in the sidebar/full-page AI module while letting the monitoring dashboard stand alone.
 - Separate soft health/cold-start degraded states from real AI execution failures.
 - Keep external LLM calls out of deterministic CI and limit real provider checks to targeted QA.
 
 Related work plan: [AI Assistant Architecture Evolution Plan](../../../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md).
+Dashboard surface follow-up: [Dashboard AI Surface Boundary Plan](../../../../reports/planning/dashboard-ai-surface-boundary-plan.md).

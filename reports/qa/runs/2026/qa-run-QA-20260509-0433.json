@@ -1,0 +1,72 @@
+{
+  "runId": "QA-20260509-0433",
+  "recordedAt": "2026-05-09T03:20:33.195Z",
+  "recordedAtKst": "2026-05-09 12:20:33 KST",
+  "runTitle": "Local Dashboard AI Surface Boundary Targeted QA",
+  "owner": "codex",
+  "source": "local-cli",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "not exercised",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "e9536017b10bdc25d654907ef3d14b4bfe6d37a4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "dashboard core monitoring surfaces no longer expose per-entity AI CTA",
+    "server cards keep CPU/MEM/DISK sparkline, status badge, detail navigation, and log navigation",
+    "server detail page keeps status badge and Live toggle while exposing AI-free monitoring summary",
+    "active and history alert rows keep log navigation without AI analysis buttons",
+    "overview Top 5 resource rows route to server detail instead of AI prefill",
+    "dashboard AI Assistant entry remains scoped to header/sidebar and /dashboard/ai-assistant contract tests"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "live AI Assistant LLM conversation",
+    "Cloud Run admin observability surface",
+    "deployment/usage check"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dashboard-ai-surface-boundary-core-monitoring",
+      "title": "Dashboard core monitoring surfaces are separated from per-entity AI execution CTAs",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Targeted DOM tests, type-check, lint, test:quick, docs checks, and production-source rg guard passed locally. Production dashboard source has no onAskAI/onAskAIAboutAlert/dashboard-alert-prefill/AIInsightBadge/alert-ai-context references.",
+      "note": "AI Assistant remains available through the global header/sidebar and /dashboard/ai-assistant route; no live LLM call was required for this UI boundary QA.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local deterministic QA only; release-facing production QA was skipped because this task changes dashboard UI boundary and tests, not deployed AI runtime behavior.",
+    "ServerDetailView targeted DOM test: 7 passed.",
+    "Dashboard targeted DOM suite previously passed: 8 files / 88 tests.",
+    "npm run type-check, npm run lint, npm run test:quick, npm run docs:budget, npm run docs:ai-consistency, git diff --check all passed.",
+    "Vitest emitted Vite dep-scan warnings from old tmp/root-artifacts Storybook/coverage HTML entries; test processes exited 0."
+  ],
+  "links": []
+}

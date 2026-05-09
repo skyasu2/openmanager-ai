@@ -44,7 +44,7 @@ const CAUSAL_SIGNALS =
 
 // Predictive: "will", "forecast", "predict", "future", "going to", trend projection
 const PREDICTIVE_SIGNALS =
-  /예측|전망|언제\s*(쯤|까지|부터)|앞으로|미래|될\s*(것|거|듯)|will\s+\w+|forecast|predict|going\s+to|future|projection|when\s+will/i;
+  /예측|전망|언제\s*(쯤|까지|부터)|앞으로|미래|될\s*(것|거|듯)|임계(?:치|값)?.*(?:전|넘)|넘기\s*전|미리\s*알|고갈|will\s+\w+|forecast|predict|going\s+to|future|projection|when\s+will/i;
 
 // Advisory: "should", "recommend", "what to do", "advice", "suggest", "how to"
 const ADVISORY_SIGNALS =
