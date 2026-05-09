@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.119](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.118...v8.11.119) (2026-05-09)
+
+
+### Features
+
+* **ui:** close dashboard ux improvement plan ([6a76280](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6a7628090a4bb562b0318acd08369512512e81e2))
+
+
+### Bug Fixes
+
+* close ops qa gaps and align ai surfaces ([039642c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/039642caad8ad0e0c173d14750b7e619eaa3f666))
+
 ## [8.11.118](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.117...v8.11.118) (2026-05-09)
 
 
