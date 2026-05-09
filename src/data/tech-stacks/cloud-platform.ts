@@ -19,11 +19,12 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     category: 'database',
     importance: 'critical',
     description:
-      '오픈소스 Firebase 대안 BaaS. PostgreSQL 기반으로 인증, 스토리지, 실시간 구독, Edge Functions, 벡터 검색(pgVector) 통합 제공',
-    implementation: '→ pgVector로 AI 벡터 검색, RLS로 행 수준 보안 적용',
+      '오픈소스 Firebase 대안 BaaS. PostgreSQL 기반으로 인증, 스토리지, 실시간 구독, Row Level Security를 통합 제공',
+    implementation:
+      '→ 운영 지식/사용자 상태 저장, search_knowledge_text RPC, RLS 기반 접근 제어에 사용. 과거 vector 컬럼은 호환 데이터로만 유지',
     status: 'active',
     icon: '🐘',
-    tags: ['데이터베이스', 'pgVector', 'BaaS'],
+    tags: ['데이터베이스', 'PostgreSQL', 'RLS', 'BaaS'],
     type: 'commercial',
   },
   {
@@ -40,17 +41,30 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     type: 'commercial',
   },
   {
-    name: 'Docker',
+    name: 'Google Cloud Tasks',
     category: 'deployment',
     importance: 'high',
     description:
-      '컨테이너 기반 가상화 플랫폼. 애플리케이션과 의존성을 패키징하여 어디서든 동일하게 실행. 개발-프로덕션 환경 일관성 보장',
+      'HTTP 작업을 큐잉하고 재시도/dispatch 속도를 제어하는 GCP managed queue. 주기 실행기가 아니라 사용자 요청에서 파생된 비동기 AI job delivery에 사용',
     implementation:
-      '→ WSL + Docker로 Cloud Run 로컬 에뮬레이션. 환경 불일치 원천 차단',
+      '→ /api/ai/jobs 생성 후 Cloud Run /api/jobs/dispatch가 /api/jobs/process HTTP task를 생성. pending task가 없으면 비용과 실행이 발생하지 않음',
+    status: 'active',
+    icon: '📬',
+    tags: ['CloudTasks', 'Queue', 'Async Jobs'],
+    type: 'commercial',
+  },
+  {
+    name: 'Docker Compose + Preflight',
+    category: 'deployment',
+    importance: 'high',
+    description:
+      'Cloud Run AI Engine을 로컬에서 Compose로 실행하고 build-only preflight로 컨테이너 빌드 실패를 먼저 잡는 검증 경로',
+    implementation:
+      '→ 운영 이미지는 Cloud Build가 생성하고, 로컬 Docker는 WSL 개발 환경의 AI Engine 실행과 배포 전 사전 검증에 집중',
     version: '24.0.x',
     status: 'active',
     icon: '🐋',
-    tags: ['Docker', 'Container', 'DevOps'],
+    tags: ['Docker', 'Compose', 'Preflight'],
     type: 'opensource',
   },
   {
@@ -77,20 +91,6 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     status: 'active',
     icon: '⚡',
     tags: ['Redis', 'Serverless', 'Cache', 'Rate-Limit'],
-    type: 'commercial',
-  },
-  {
-    name: 'Sentry',
-    category: 'deployment',
-    importance: 'medium',
-    description:
-      '프로덕션 에러 모니터링 및 성능 추적 플랫폼. 크래시 리포트, 성능 병목 탐지, Release Health 추적 제공',
-    implementation:
-      '→ 에러 발생 시 스택 트레이스, 브레드크럼 자동 수집. Next.js Client/Server/Edge 전체 커버',
-    version: '10.39',
-    status: 'active',
-    icon: '🛡️',
-    tags: ['Error-Tracking', 'Performance', 'Monitoring'],
     type: 'commercial',
   },
   {

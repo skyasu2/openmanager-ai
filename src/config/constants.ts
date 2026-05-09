@@ -222,18 +222,6 @@ const ENVIRONMENT = {
   },
 } as const;
 
-// 🔍 Observability 설정
-export const OBSERVABILITY = {
-  SENTRY: {
-    /** Sentry DSN (Public Key — 전송 전용, 읽기 불가) */
-    DEFAULT_DSN:
-      'https://c4cfe13cdda790d1d9a6c3f92c593f39@o4509732473667584.ingest.de.sentry.io/4510731369119824',
-    TUNNEL_UPSTREAM_TIMEOUT_MS: 1500,
-    TRACES_SAMPLE_RATE_SERVER: 0.01,
-    TRACES_SAMPLE_RATE_CLIENT: 0.05,
-  },
-} as const;
-
 // 🔌 Codex MCP 서버 설정 (SSOT - .codex/config.toml 기준)
 export const MCP_SERVERS = {
   // 활성화된 MCP 서버 목록 (9/9, 2026-04-17 동기화)

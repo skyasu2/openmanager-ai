@@ -1,9 +1,9 @@
 /**
- * 이상감지/예측 페이지 v5.1
+ * 이상감지/추세 페이지 v5.1
  *
- * 버튼 클릭으로 서버 상태 분석 및 예측
+ * 버튼 클릭으로 서버 상태와 경량 추세 분석
  * - Cloud Run /api/ai/analyze-server 호출
- * - 이상 탐지 + 트렌드 예측 + AI 인사이트 표시
+ * - 이상 탐지 + 트렌드 분석 + AI 인사이트 표시
  *
  * v5.1 변경사항 (2025-12-26):
  * - 전체 시스템 분석: 각 서버별 개별 분석 + 종합 요약
@@ -12,7 +12,7 @@
 
 'use client';
 
-import { BookOpen, Monitor, Play, RefreshCw, Server } from 'lucide-react';
+import { Monitor, Play, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
 import { useServerQuery } from '@/hooks/useServerQuery';
@@ -168,7 +168,11 @@ export default function IntelligentMonitoringPage({
   queryAsOfDataSlot,
 }: IntelligentMonitoringPageProps = {}) {
   // 서버 데이터 (React Query)
-  const { data: servers = [] } = useServerQuery();
+  const {
+    data: servers = [],
+    isLoading: isServerListLoading,
+    isError: isServerListError,
+  } = useServerQuery();
 
   // 상태
   const [selectedServer, setSelectedServer] = useState<string>('');
@@ -176,7 +180,6 @@ export default function IntelligentMonitoringPage({
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [ragEnabled, setRagEnabled] = useState(false);
 
   // 🔧 P3: useCallback으로 핸들러 메모이제이션
   const handleServerChange = useCallback(
@@ -219,7 +222,6 @@ export default function IntelligentMonitoringPage({
             serverId,
             analysisType: 'full',
             currentMetrics,
-            enableRAG: ragEnabled,
             queryAsOf: createQueryAsOf(queryAsOfDataSlot),
           }),
         });
@@ -273,7 +275,7 @@ export default function IntelligentMonitoringPage({
         return null;
       }
     },
-    [ragEnabled, queryAsOfDataSlot]
+    [queryAsOfDataSlot]
   );
 
   // 분석 실행
@@ -287,9 +289,14 @@ export default function IntelligentMonitoringPage({
       if (selectedServer) {
         // 단일 서버 분석
         const serverInfo = servers.find((s) => s.id === selectedServer);
+        if (!serverInfo) {
+          throw new Error(
+            '선택한 서버 데이터를 찾을 수 없습니다. 서버 목록을 다시 확인해 주세요.'
+          );
+        }
         const serverResult = await analyzeSingleServer(
           selectedServer,
-          serverInfo?.name || selectedServer,
+          serverInfo.name,
           serverInfo // Pass server info
         );
 
@@ -309,7 +316,6 @@ export default function IntelligentMonitoringPage({
             action: 'analyze_batch',
             serverId: 'all',
             analysisType: 'full',
-            enableRAG: ragEnabled,
             queryAsOf: createQueryAsOf(queryAsOfDataSlot),
           }),
         });
@@ -341,13 +347,15 @@ export default function IntelligentMonitoringPage({
       setIsAnalyzing(false);
       setProgress({ current: 0, total: 0 });
     }
-  }, [
-    selectedServer,
-    servers,
-    analyzeSingleServer,
-    ragEnabled,
-    queryAsOfDataSlot,
-  ]);
+  }, [selectedServer, servers, analyzeSingleServer, queryAsOfDataSlot]);
+
+  const serverListStatusLabel = isServerListLoading
+    ? '서버 목록 로딩 중'
+    : servers.length > 0
+      ? `전체 시스템 (${servers.length}개 서버)`
+      : isServerListError
+        ? '전체 시스템 (서버 목록 로드 실패)'
+        : '전체 시스템 (서버 목록 없음)';
 
   // 초기화
   const resetAnalysis = useCallback(() => {
@@ -364,8 +372,14 @@ export default function IntelligentMonitoringPage({
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-emerald-500 to-teal-500">
               <Monitor className="h-5 w-5 text-white" />
             </div>
-            이상감지/예측
+            이상감지/추세
           </h1>
+          {queryAsOfDataSlot && (
+            <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+              기준 {queryAsOfDataSlot.timeLabel} · slot{' '}
+              {queryAsOfDataSlot.slotIndex}
+            </span>
+          )}
         </div>
       </header>
 
@@ -382,49 +396,33 @@ export default function IntelligentMonitoringPage({
             </label>
             <select
               id="server-select"
+              aria-describedby="server-select-help"
               value={selectedServer}
               onChange={handleServerChange}
-              disabled={isAnalyzing}
+              disabled={isAnalyzing || isServerListLoading}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
             >
-              <option value="">
-                전체 시스템 ({servers.length || 4}개 서버)
-              </option>
-              {servers.length > 0
-                ? servers.map((server) => (
-                    <option key={server.id} value={server.id}>
-                      {server.name}
-                    </option>
-                  ))
-                : [
-                    { id: 'web-server-01', name: '웹 서버 01' },
-                    { id: 'web-server-02', name: '웹 서버 02' },
-                    { id: 'db-server-01', name: 'DB 서버 01' },
-                    { id: 'api-server-01', name: 'API 서버 01' },
-                  ].map((server) => (
-                    <option key={server.id} value={server.id}>
-                      {server.name}
-                    </option>
-                  ))}
+              <option value="">{serverListStatusLabel}</option>
+              {servers.map((server) => (
+                <option key={server.id} value={server.id}>
+                  {server.name}
+                </option>
+              ))}
             </select>
+            <p id="server-select-help" className="mt-1 text-xs text-gray-500">
+              전체 시스템 또는 특정 서버를 선택해 이상감지·추세 분석 범위를
+              정합니다.
+            </p>
+            {servers.length === 0 && !isServerListLoading && (
+              <p className="mt-1 text-xs text-amber-700">
+                서버 목록을 불러오지 못해 단일 서버 분석 옵션은 숨겼습니다. 전체
+                분석은 AI Engine의 현재 데이터 슬롯 기준으로 실행됩니다.
+              </p>
+            )}
           </div>
 
           {/* 버튼 그룹 */}
           <div className="flex items-end gap-2">
-            <button
-              type="button"
-              onClick={() => setRagEnabled((prev) => !prev)}
-              aria-pressed={ragEnabled}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                ragEnabled
-                  ? 'bg-purple-100 text-purple-700'
-                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-              }`}
-              title={ragEnabled ? 'RAG 검색 끄기' : 'RAG 검색 켜기'}
-            >
-              <BookOpen className="mr-1.5 inline h-4 w-4" />
-              RAG
-            </button>
             <button
               type="button"
               onClick={resetAnalysis}

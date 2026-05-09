@@ -11,7 +11,7 @@ import {
  *
  * AI 엔진 및 분석에 사용되는 스키마들
  *
- * ## v8.x: Cloud Run Multi-Agent + Gemini Vision 기준 스키마
+ * ## v8.x: Cloud Run deterministic-first AI runtime + Gemini Vision 기준 스키마
  */
 
 // ===== AI 엔진 =====
@@ -31,6 +31,7 @@ export const AIModelSchema = z.enum([
   'gpt-oss-120b',
   'llama3.1-8b',
   'meta-llama/llama-4-scout-17b-16e-instruct',
+  'mistral-small-latest',
   'mistral-large-latest',
   'mistral-embed',
   // Vision / auxiliary

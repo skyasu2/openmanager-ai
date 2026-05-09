@@ -7,6 +7,7 @@ import type {
   HandoffEventData,
   StreamDataPart,
 } from '@/hooks/ai/useHybridAIQuery';
+import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { logger } from '@/lib/logging';
 import type { StreamRagSource } from './types/stream-rag.types';
 import type { DeferredMetadataHandlers } from './useDeferredMessageMetadata';
@@ -22,6 +23,8 @@ interface UseAIChatHybridCallbacksOptions {
   setCurrentAgentStatus: Dispatch<SetStateAction<AgentStatusEventData | null>>;
   setCurrentHandoff: Dispatch<SetStateAction<HandoffEventData | null>>;
   setStreamRagSources: Dispatch<SetStateAction<StreamRagSource[]>>;
+  getDeveloperPanelData?: () => DeveloperPanelData | null;
+  setDeveloperPanelData?: Dispatch<SetStateAction<DeveloperPanelData | null>>;
 }
 
 export function useAIChatHybridCallbacks({
@@ -34,6 +37,8 @@ export function useAIChatHybridCallbacks({
   setCurrentAgentStatus,
   setCurrentHandoff,
   setStreamRagSources,
+  getDeveloperPanelData,
+  setDeveloperPanelData,
 }: UseAIChatHybridCallbacksOptions) {
   return useMemo(
     () => ({
@@ -83,6 +88,8 @@ export function useAIChatHybridCallbacks({
           setPendingMessageMetadata: dh.setPendingMessageMetadata,
           setDeferredAssistantMetadata: dh.setDeferredAssistantMetadata,
           setDeferredAssistantToolResults: dh.setDeferredAssistantToolResults,
+          getDeveloperPanelData: getDeveloperPanelData ?? (() => null),
+          setDeveloperPanelData: setDeveloperPanelData ?? (() => {}),
           getMessages,
         });
       },
@@ -97,6 +104,8 @@ export function useAIChatHybridCallbacks({
       setCurrentAgentStatus,
       setCurrentHandoff,
       setStreamRagSources,
+      getDeveloperPanelData,
+      setDeveloperPanelData,
     ]
   );
 }

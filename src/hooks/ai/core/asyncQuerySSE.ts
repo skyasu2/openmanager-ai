@@ -1,10 +1,15 @@
 import type { MutableRefObject } from 'react';
+import {
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
 import { extractStreamError } from '@/lib/ai/constants/stream-errors';
 import {
   type AIErrorDetails,
   extractAIErrorDetailsFromPayload,
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
+import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
 import { logger } from '@/lib/logging';
 import { calculateBackoff } from '@/lib/utils/retry';
@@ -198,6 +203,11 @@ export function connectAsyncQuerySSE(
       );
       const fallbackReason = getNonEmptyString(metadata.fallbackReason);
       const ttfbMs = getFiniteNumber(metadata.ttfbMs);
+      const routeDecision = normalizeRouteDecision(metadata.routeDecision);
+      const assistantPlan = normalizeAssistantPlan(metadata.assistantPlan);
+      const assistantResult = normalizeAssistantResult(
+        metadata.assistantResult
+      );
 
       onResult({
         success: true,
@@ -236,11 +246,13 @@ export function connectAsyncQuerySSE(
         }),
         ...(fallbackReason && { fallbackReason }),
         ...(ttfbMs !== undefined && { ttfbMs }),
-        analysisMode:
-          metadata.analysisMode === 'auto' ||
-          metadata.analysisMode === 'thinking'
-            ? metadata.analysisMode
-            : undefined,
+        ...(routeDecision && { routeDecision }),
+        ...(assistantPlan && { assistantPlan }),
+        ...(assistantResult && { assistantResult }),
+        ...(metadata.analysisMode === 'auto' ||
+        metadata.analysisMode === 'thinking'
+          ? { analysisMode: metadata.analysisMode }
+          : {}),
         handoffHistory: Array.isArray(metadata.handoffs)
           ? (metadata.handoffs as AsyncQueryResult['handoffHistory'])
           : undefined,

@@ -3,7 +3,10 @@
 import { Bot, Cpu, User } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
+import { IncidentReportArtifactCard } from '@/components/ai/IncidentReportArtifactCard';
 import { MessageActions } from '@/components/ai/MessageActions';
+import { MonitoringAnalysisArtifactCard } from '@/components/ai/MonitoringAnalysisArtifactCard';
+import { ServerSnapshotArtifactCard } from '@/components/ai/ServerSnapshotArtifactCard';
 import { WebSourceCards } from '@/components/ai/WebSourceCards';
 import { convertThinkingStepsToUI } from '@/hooks/ai/useAIChatCore';
 import {
@@ -32,14 +35,21 @@ export function convertToAgentSteps(
 export const MessageComponent = memo<{
   message: EnhancedChatMessage;
   onRegenerateResponse?: (messageId: string) => void;
-  onFeedback?: (
-    messageId: string,
-    type: 'positive' | 'negative',
-    traceId?: string
-  ) => Promise<boolean>;
   isLastMessage?: boolean;
-}>(({ message, onRegenerateResponse, onFeedback, isLastMessage }) => {
+}>(({ message, onRegenerateResponse, isLastMessage }) => {
   const hasTextContent = Boolean(message.content?.trim());
+  const incidentReportArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.incidentReportArtifact
+      : undefined;
+  const monitoringAnalysisArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.monitoringAnalysisArtifact
+      : undefined;
+  const serverSnapshotArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.serverSnapshotArtifact
+      : undefined;
   const agentSteps = useMemo(
     () => convertToAgentSteps(message.thinkingSteps),
     [message.thinkingSteps]
@@ -201,6 +211,18 @@ export const MessageComponent = memo<{
             </div>
           )}
 
+          {incidentReportArtifact && (
+            <IncidentReportArtifactCard artifact={incidentReportArtifact} />
+          )}
+          {monitoringAnalysisArtifact && (
+            <MonitoringAnalysisArtifactCard
+              artifact={monitoringAnalysisArtifact}
+            />
+          )}
+          {serverSnapshotArtifact && (
+            <ServerSnapshotArtifactCard artifact={serverSnapshotArtifact} />
+          )}
+
           {/* 타임스탬프 & 메타데이터 */}
           <div
             className={`mt-1 flex items-center justify-between ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
@@ -269,7 +291,7 @@ export const MessageComponent = memo<{
               </>
             )}
 
-          {/* 메시지 액션 (복사, 피드백, 재생성) */}
+          {/* 메시지 액션 (복사, 재생성) */}
           {shouldShowActionBar && (
             <div className="mt-2 flex items-center gap-1">
               {hasTextContent && (
@@ -278,8 +300,6 @@ export const MessageComponent = memo<{
                   content={message.content}
                   role={message.role}
                   onRegenerate={onRegenerateResponse}
-                  onFeedback={onFeedback}
-                  traceId={message.metadata?.traceId}
                   showRegenerate={isLastMessage && message.role === 'assistant'}
                 />
               )}

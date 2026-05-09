@@ -72,9 +72,14 @@ const compareByStatusPriority = (a: Server, b: Server): number => {
 
 function getServerCardColumns(viewMode: ServerViewMode, width: number): number {
   if (width < 640) return 1;
-  if (viewMode === 'grid') return 2;
+  if (viewMode === 'grid') {
+    if (width < 1280) return 2;
+    if (width < 1920) return 3;
+    return 4;
+  }
   if (width < 1024) return 2;
-  return 3;
+  if (width < 1280) return 3;
+  return 4;
 }
 
 /**
@@ -106,10 +111,10 @@ interface ServerDashboardProps {
     offline: number;
     unknown: number;
   }) => void;
-  /** 서버 카드 경고 배지에서 AI 분석 요청 */
-  onAskAI?: (server: Server) => void;
   /** 최초 화면에서 노출할 서버 카드 줄 수 */
   initialVisibleRows?: number;
+  /** 서버 카드가 놓인 화면 맥락. 개요와 전체 서버 목록의 카운트 문구를 분리한다. */
+  surface?: 'overview' | 'server-list';
 }
 
 export default function ServerDashboard({
@@ -121,8 +126,8 @@ export default function ServerDashboard({
   onPageChange,
   onPageSizeChange,
   onStatsUpdate: _onStatsUpdate, // Reserved for future stats callback
-  onAskAI,
   initialVisibleRows = DEFAULT_VISIBLE_ROWS,
+  surface = 'server-list',
 }: ServerDashboardProps) {
   const router = useRouter();
   // 🚀 성능 추적 활성화
@@ -310,6 +315,23 @@ export default function ServerDashboard({
     paginationInfo.totalServers - displayedServers.length
   );
   const showCollapseButton = visibleRows > initialVisibleRows;
+  const isOverviewSurface = surface === 'overview';
+  const nextVisibleServerLimit = (visibleRows + rowStep) * cardsPerRow;
+  const nextLoadedVisibleCount = Math.min(
+    nextVisibleServerLimit,
+    sortedServers.length
+  );
+  const nextPagedServerCount = Math.min(
+    paginationInfo.totalServers,
+    paginationInfo.pageSize + rowStep * cardsPerRow
+  );
+  const willShowAllServersOnNextClick =
+    hiddenServerCount > 0 &&
+    (hasMoreLoadedServers
+      ? nextLoadedVisibleCount >= paginationInfo.totalServers
+      : paginationInfo.pageSize < paginationInfo.totalServers
+        ? nextPagedServerCount >= paginationInfo.totalServers
+        : false);
 
   const handleShowMoreServers = useCallback(() => {
     const nextRows = visibleRows + rowStep;
@@ -425,15 +447,37 @@ export default function ServerDashboard({
             {paginationInfo.totalServers > 0 && (
               <div className="mb-4 flex items-center justify-between rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2">
                 <p className="text-sm text-blue-800">
-                  <span className="font-medium">
-                    {paginationInfo.totalServers}개
-                  </span>{' '}
-                  서버 중 현재{' '}
-                  <span className="font-mono">{displayedServers.length}</span>개
-                  표시
+                  {isOverviewSurface ? (
+                    <>
+                      상위 알림 서버{' '}
+                      <span className="font-mono">
+                        {displayedServers.length}
+                      </span>
+                      개 표시
+                      <span className="ml-1 text-blue-700">
+                        (전체 {paginationInfo.totalServers}대)
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      전체 서버{' '}
+                      <span className="font-medium">
+                        {paginationInfo.totalServers}대
+                      </span>{' '}
+                      중{' '}
+                      <span className="font-mono">
+                        {displayedServers.length}
+                      </span>
+                      대 표시
+                    </>
+                  )}
                 </p>
                 <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                  {visibleRows}줄 표시
+                  {isOverviewSurface
+                    ? '위험도 우선'
+                    : displayedServers.length === paginationInfo.totalServers
+                      ? '모든 서버 표시'
+                      : `${hiddenServerCount}대 남음`}
                 </span>
               </div>
             )}
@@ -447,8 +491,8 @@ export default function ServerDashboard({
                 }
                 className={
                   viewMode === 'grid'
-                    ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6'
-                    : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3'
+                    ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 3xl:grid-cols-4'
+                    : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                 }
               >
                 {displayedServers.map((server, index) => {
@@ -466,7 +510,6 @@ export default function ServerDashboard({
                         showRealTimeUpdates={true}
                         index={index}
                         onClick={handleServerSelect}
-                        onAskAI={onAskAI}
                         onOpenLogs={handleOpenLogs}
                       />
                     </ServerCardErrorBoundary>
@@ -505,8 +548,9 @@ export default function ServerDashboard({
             {(canShowMoreServers || showCollapseButton) && (
               <div className="flex flex-col items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm sm:flex-row sm:justify-between">
                 <span className="text-slate-600">
-                  {displayedServers.length}/{paginationInfo.totalServers}개 서버
-                  표시
+                  {isOverviewSurface
+                    ? `상위 알림 서버 ${displayedServers.length}개 표시`
+                    : `${displayedServers.length}/${paginationInfo.totalServers}대 서버 표시`}
                 </span>
                 <div className="flex w-full gap-2 sm:w-auto">
                   {showCollapseButton && (
@@ -525,10 +569,13 @@ export default function ServerDashboard({
                       onClick={handleShowMoreServers}
                       className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:flex-none"
                     >
-                      <ChevronDown className="h-4 w-4" />더 보기
+                      <ChevronDown className="h-4 w-4" />
+                      {isOverviewSurface || !willShowAllServersOnNextClick
+                        ? '더 보기'
+                        : '모든 서버 보기'}
                       {hiddenServerCount > 0 && (
                         <span className="text-blue-100">
-                          ({hiddenServerCount}개 남음)
+                          ({hiddenServerCount}대 남음)
                         </span>
                       )}
                     </button>

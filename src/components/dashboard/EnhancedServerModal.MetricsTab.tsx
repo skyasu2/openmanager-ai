@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { type FC, useState } from 'react';
 
-import { TimeSeriesChart } from '@/components/charts/TimeSeriesChart';
+import { NivoTimeSeriesChart } from '@/components/charts/NivoTimeSeriesChart';
 import { SERVER_DATA_INTERVAL_MS } from '@/config/server-data-polling';
 import { useTimeSeriesMetrics } from '@/hooks/useTimeSeriesMetrics';
 
@@ -115,9 +115,10 @@ export const MetricsTab: FC<MetricsTabProps> = ({
               <button
                 type="button"
                 onClick={() => setViewMode('simple')}
+                aria-pressed={viewMode === 'simple'}
                 className={`flex min-h-9 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all ${
                   viewMode === 'simple'
-                    ? 'bg-white text-gray-900 shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-700'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -127,9 +128,10 @@ export const MetricsTab: FC<MetricsTabProps> = ({
               <button
                 type="button"
                 onClick={() => setViewMode('advanced')}
+                aria-pressed={viewMode === 'advanced'}
                 className={`flex min-h-9 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all ${
                   viewMode === 'advanced'
-                    ? 'bg-white text-gray-900 shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-700'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -142,9 +144,12 @@ export const MetricsTab: FC<MetricsTabProps> = ({
             <button
               type="button"
               onClick={onToggleRealtime}
+              aria-label={
+                isRealtime ? '실시간 메트릭 일시정지' : '실시간 메트릭 시작'
+              }
               className={`flex min-h-10 items-center gap-2 whitespace-nowrap rounded-xl border px-4 py-2.5 font-semibold transition-colors active:scale-95 sm:px-5 ${
                 isRealtime
-                  ? 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+                  ? 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100'
                   : 'border-emerald-300 bg-white text-emerald-700 hover:bg-emerald-50'
               }`}
             >
@@ -398,7 +403,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
               )}
 
               {timeSeriesData && (
-                <TimeSeriesChart
+                <NivoTimeSeriesChart
                   data={timeSeriesData.history}
                   predictions={timeSeriesData.prediction}
                   anomalies={timeSeriesData.anomalies}

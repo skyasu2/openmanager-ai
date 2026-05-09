@@ -24,6 +24,9 @@ export type ResponseSourceData = {
   latencyTier?: unknown;
   resolvedMode?: unknown;
   modeSelectionSource?: unknown;
+  fallback?: unknown;
+  usedFallback?: unknown;
+  fallbackReason?: unknown;
 };
 
 function getNestedMetadataValue(

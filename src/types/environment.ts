@@ -55,7 +55,6 @@ declare global {
       // 📊 모니터링 및 로깅
       readonly ENABLE_LOGGING?: string;
       readonly LOG_LEVEL?: 'debug' | 'info' | 'warn' | 'error';
-      readonly SENTRY_DSN?: string;
       readonly ANALYTICS_ID?: string;
 
       // 🛠️ 빌드 및 배포
@@ -105,7 +104,6 @@ export interface SecurityEnvConfig {
 export interface MonitoringEnvConfig {
   enableLogging: boolean;
   logLevel: 'debug' | 'info' | 'warn' | 'error';
-  sentryDsn?: string;
   analyticsId?: string;
   isConfigured: boolean;
 }

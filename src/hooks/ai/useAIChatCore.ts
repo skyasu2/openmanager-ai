@@ -6,7 +6,6 @@
  * AISidebarV4와 AIWorkspace에서 공유하는 핵심 로직:
  * - Hybrid AI Query (Streaming + Job Queue)
  * - 세션 제한
- * - 피드백
  * - 메시지 변환
  * - 파일 첨부 재시도 지원
  *
@@ -16,6 +15,7 @@
 
 import type { UIMessage } from '@ai-sdk/react';
 import {
+  type SetStateAction,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -31,11 +31,28 @@ import {
   type HandoffEventData,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
-import type { AIErrorDetails } from '@/lib/ai/error-details';
 import {
-  analyzeQueryComplexity,
-  shouldForceJobQueue,
-} from '@/lib/ai/utils/query-complexity';
+  buildAssistantPlanFromRouteDecision,
+  buildAssistantResultFromRouteDecision,
+} from '@/lib/ai/assistant-contract';
+import {
+  type ChatArtifactIntentReason,
+  classifyChatArtifactIntent,
+  createArtifactGuidanceMessage,
+  fetchLLMChatArtifactIntent,
+  shouldUseLLMChatArtifactIntent,
+} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
+import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
+import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
+import {
+  type ChatArtifact,
+  createArtifactEnvelope,
+} from '@/lib/ai/chat-artifacts/types';
+import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
+import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
+import type { AIErrorDetails } from '@/lib/ai/error-details';
+import { buildRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -44,7 +61,7 @@ import {
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { SessionState } from '@/types/session';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import { useChatFeedback } from './core/useChatFeedback';
+import { buildFrontendQueryRoutingDecision } from './core/query-routing';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
@@ -106,10 +123,6 @@ export interface UseAIChatCoreReturn {
   handleNewSession: () => void;
 
   // 액션
-  handleFeedback: (
-    messageId: string,
-    type: 'positive' | 'negative'
-  ) => Promise<boolean>;
   regenerateLastResponse: () => void;
   /** 마지막 쿼리 재시도 (파일 첨부 포함) */
   retryLastQuery: () => void;
@@ -138,6 +151,7 @@ export interface UseAIChatCoreReturn {
   // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
   currentAgentStatus: AgentStatusEventData | null;
   currentHandoff: HandoffEventData | null;
+  developerPanelData: DeveloperPanelData | null;
 
   /** Cloud Run AI Engine 웜업 중 여부 */
   warmingUp: boolean;
@@ -165,13 +179,19 @@ function createDebugRoutingMessages(
   const token = Date.now().toString(36);
 
   const threshold = getComplexityThreshold(); // 기본 19
-  const modeAdjustedThreshold =
-    analysisMode === 'thinking' ? Math.max(8, threshold - 8) : threshold;
+  const routingDecision = buildFrontendQueryRoutingDecision({
+    query: query || '(쿼리 없음)',
+    complexityThreshold: threshold,
+    analysisMode,
+  });
+  const {
+    analysis,
+    forceJobQueue: forceResult,
+    modeAdjustedThreshold,
+    queryMode,
+  } = routingDecision;
 
-  const analysis = analyzeQueryComplexity(query || '(쿼리 없음)');
-  const forceResult = shouldForceJobQueue(query || '');
-
-  const isComplex = analysis.score > modeAdjustedThreshold || forceResult.force;
+  const isComplex = queryMode === 'job-queue';
   const routePath = isComplex
     ? 'Job Queue (/api/ai/jobs)'
     : 'Streaming (/api/ai/supervisor/stream/v2)';
@@ -265,6 +285,188 @@ function createQAAssistantMessages(text: string): [UIMessage, UIMessage] {
   return [userMessage, assistantMessage];
 }
 
+function createTextMessage({
+  id,
+  role,
+  text,
+  metadata,
+}: {
+  id: string;
+  role: 'user' | 'assistant';
+  text: string;
+  metadata?: Record<string, unknown>;
+}): UIMessage {
+  return {
+    id,
+    role,
+    parts: [{ type: 'text', text }],
+    ...(metadata && { metadata }),
+  };
+}
+
+function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
+  switch (kind) {
+    case 'incident-report':
+      return '장애 보고서를 작성하고 있습니다.';
+    case 'monitoring-analysis':
+      return '이상감지/추세 분석을 실행하고 있습니다.';
+    case 'server-snapshot':
+      return '서버 상태 스냅샷을 생성하고 있습니다.';
+  }
+}
+
+function getArtifactSuccessText(artifact: ChatArtifact): string {
+  if (artifact.kind === 'incident-report') {
+    return [
+      '장애 보고서를 작성했습니다.',
+      '',
+      `- 제목: ${artifact.report.title}`,
+      `- 영향 서버: ${artifact.report.affectedServers.length}대`,
+      '',
+      '아래 카드에서 MD/TXT 파일로 내려받거나 장애 보고서 작성 화면에서 확인할 수 있습니다.',
+    ].join('\n');
+  }
+
+  if (artifact.kind === 'server-snapshot') {
+    return [
+      '서버 상태 스냅샷을 생성했습니다.',
+      '',
+      `- 총 서버: ${artifact.totals.total}대`,
+      `- 주의/위험: ${artifact.totals.warning + artifact.totals.critical + artifact.totals.offline}대`,
+      '',
+      '아래 카드에서 MD/JSON 파일로 내려받을 수 있습니다.',
+    ].join('\n');
+  }
+
+  return [
+    '이상감지/추세 분석을 완료했습니다.',
+    '',
+    `- 분석 서버: ${artifact.serverCount}대`,
+    `- 위험 신호: ${artifact.riskSignalCount}건`,
+    '',
+    '아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.',
+  ].join('\n');
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'name' in error &&
+    (error as { name?: unknown }).name === 'AbortError'
+  );
+}
+
+function getArtifactErrorText(
+  kind: ChatArtifact['kind'],
+  error: unknown
+): string {
+  if (isAbortError(error)) {
+    const target =
+      kind === 'incident-report'
+        ? '장애 보고서 작성'
+        : kind === 'server-snapshot'
+          ? '서버 상태 스냅샷 생성'
+          : '이상감지/추세 분석';
+    return `${target}을 중단했습니다.`;
+  }
+
+  const message = error instanceof Error ? error.message : String(error);
+  const target =
+    kind === 'incident-report'
+      ? '장애 보고서 작성'
+      : kind === 'server-snapshot'
+        ? '서버 상태 스냅샷 생성'
+        : '이상감지/추세 분석';
+  return `${target}을 완료하지 못했습니다. ${message}`;
+}
+
+function buildArtifactMetadata(
+  artifact: ChatArtifact,
+  intentReason: ChatArtifactIntentReason,
+  queryAsOfDataSlot?: JobDataSlot
+): Record<string, unknown> {
+  const routeDecision = buildRouteDecision({
+    intent: 'artifact',
+    executionPath: 'client-artifact',
+    artifactKind: artifact.kind,
+    reasonCodes: [intentReason],
+    decidedBy: 'frontend',
+    ...(queryAsOfDataSlot?.timeLabel && {
+      dataSlot: queryAsOfDataSlot.timeLabel,
+    }),
+  });
+  const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
+  const assistantResult = buildAssistantResultFromRouteDecision(routeDecision);
+  const artifactEnvelope = createArtifactEnvelope(artifact, {
+    domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
+    sourceMode:
+      artifact.sourceMode ??
+      (artifact.kind === 'server-snapshot' ? 'otel-static' : 'tool-result'),
+    ...(queryAsOfDataSlot?.timeLabel && {
+      dataSlot: queryAsOfDataSlot.timeLabel,
+    }),
+  });
+
+  if (artifact.kind === 'incident-report') {
+    return {
+      artifactIntentReason: intentReason,
+      routeDecision,
+      assistantPlan,
+      assistantResult,
+      artifactEnvelopes: [artifactEnvelope],
+      incidentReportArtifact: artifact,
+      toolsCalled: ['generateIncidentReportArtifact'],
+      toolResultSummaries: [
+        {
+          toolName: 'generateIncidentReportArtifact',
+          label: '장애 보고서 작성',
+          summary: `${artifact.report.title} 보고서를 생성했습니다.`,
+          status: 'completed' as const,
+        },
+      ],
+    };
+  }
+
+  if (artifact.kind === 'server-snapshot') {
+    return {
+      artifactIntentReason: intentReason,
+      routeDecision,
+      assistantPlan,
+      assistantResult,
+      artifactEnvelopes: [artifactEnvelope],
+      serverSnapshotArtifact: artifact,
+      toolsCalled: ['generateServerSnapshotArtifact'],
+      toolResultSummaries: [
+        {
+          toolName: 'generateServerSnapshotArtifact',
+          label: '서버 상태 스냅샷',
+          summary: `${artifact.totals.total}대 서버 상태 스냅샷을 생성했습니다.`,
+          status: 'completed' as const,
+        },
+      ],
+    };
+  }
+
+  return {
+    artifactIntentReason: intentReason,
+    routeDecision,
+    assistantPlan,
+    assistantResult,
+    artifactEnvelopes: [artifactEnvelope],
+    monitoringAnalysisArtifact: artifact,
+    toolsCalled: ['generateMonitoringAnalysisArtifact'],
+    toolResultSummaries: [
+      {
+        toolName: 'generateMonitoringAnalysisArtifact',
+        label: '이상감지/추세 분석',
+        summary: `${artifact.serverCount}개 서버 분석과 위험 신호 ${artifact.riskSignalCount}건을 정리했습니다.`,
+        status: 'completed' as const,
+      },
+    ],
+  };
+}
+
 // ============================================================================
 // Hook
 // ============================================================================
@@ -282,6 +484,7 @@ export function useAIChatCore(
   // 입력 상태
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [artifactIsLoading, setArtifactIsLoading] = useState(false);
 
   // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
   const [currentAgentStatus, setCurrentAgentStatus] =
@@ -290,7 +493,7 @@ export function useAIChatCore(
     null
   );
 
-  // 웹 검색 / RAG 토글 상태 (Store에서 읽기)
+  // 웹 검색 UI 상태와 내부 RAG override 상태 (Store에서 읽기)
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
   const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
   const analysisMode = useAISidebarStore((s) => s.analysisMode);
@@ -312,16 +515,22 @@ export function useAIChatCore(
   const [streamRagSources, setStreamRagSources] = useState<StreamRagSource[]>(
     []
   );
+  const [developerPanelData, setDeveloperPanelData] =
+    useState<DeveloperPanelData | null>(null);
+  const developerPanelDataRef = useRef<DeveloperPanelData | null>(null);
 
   // Refs
   const lastQueryRef = useRef<string>('');
   const lastAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const pendingQueryRef = useRef<string>('');
+  const artifactIntentInFlightRef = useRef(false);
+  const artifactInFlightRef = useRef(false);
+  const artifactRequestIdRef = useRef<string | null>(null);
+  const artifactAbortControllerRef = useRef<AbortController | null>(null);
 
   // 🧩 Composed Hooks
-  const { sessionId, sessionIdRef, refreshSessionId, setSessionId } =
+  const { sessionId, refreshSessionId, setSessionId } =
     useChatSession(propSessionId);
-  const { handleFeedback } = useChatFeedback(sessionIdRef);
 
   // ============================================================================
   // Hybrid AI Query Hook
@@ -344,6 +553,19 @@ export function useAIChatCore(
     []
   );
   const getMessages = useCallback(() => messagesRef.current, []);
+  const getDeveloperPanelData = useCallback(
+    () => developerPanelDataRef.current,
+    []
+  );
+  const updateDeveloperPanelData = useCallback(
+    (next: SetStateAction<DeveloperPanelData | null>) => {
+      const resolved =
+        typeof next === 'function' ? next(developerPanelDataRef.current) : next;
+      developerPanelDataRef.current = resolved;
+      setDeveloperPanelData(resolved);
+    },
+    []
+  );
 
   const hybridCallbacks = useAIChatHybridCallbacks({
     onMessageSend,
@@ -355,6 +577,8 @@ export function useAIChatCore(
     setCurrentAgentStatus,
     setCurrentHandoff,
     setStreamRagSources,
+    getDeveloperPanelData,
+    setDeveloperPanelData: updateDeveloperPanelData,
   });
 
   const {
@@ -382,6 +606,7 @@ export function useAIChatCore(
     queryAsOfDataSlot,
     ...hybridCallbacks,
   });
+  const isGenerating = hybridIsLoading || artifactIsLoading;
 
   const {
     streamTraceIds,
@@ -399,7 +624,8 @@ export function useAIChatCore(
   useLayoutEffect(() => {
     messagesRef.current = messages;
     deferredHandlersRef.current = deferredHandlers;
-  }, [messages, deferredHandlers]);
+    developerPanelDataRef.current = developerPanelData;
+  }, [messages, deferredHandlers, developerPanelData]);
 
   const hasQueuedQueries = queuedQueries.length > 0;
 
@@ -417,7 +643,7 @@ export function useAIChatCore(
 
   const enhancedMessages = useEnhancedChatMessages({
     messages,
-    isLoading: hybridIsLoading,
+    isLoading: isGenerating,
     currentMode: currentMode ?? undefined,
     traceIdByMessageId: streamTraceIds,
     deferredAssistantMetadataByMessageId,
@@ -452,7 +678,7 @@ export function useAIChatCore(
     seedMessages: persistedSidebarMessages,
     seedSessionId: persistedSidebarSessionId,
     setMessages,
-    isLoading: hybridIsLoading,
+    isLoading: isGenerating,
     onSessionRestore: setSessionId,
     onMetadataRestore: handleMetadataRestore,
   });
@@ -493,6 +719,7 @@ export function useAIChatCore(
 
   const handleNewSession = useCallback(() => {
     resetHybridQuery();
+    updateDeveloperPanelData(null);
     const nextSessionId = refreshSessionId();
     setInput('');
     setError(null);
@@ -502,6 +729,12 @@ export function useAIChatCore(
     setCurrentHandoff(null);
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
+    artifactAbortControllerRef.current?.abort();
+    artifactAbortControllerRef.current = null;
+    artifactRequestIdRef.current = null;
+    artifactIntentInFlightRef.current = false;
+    artifactInFlightRef.current = false;
+    setArtifactIsLoading(false);
     clearHistory();
     clearQueue();
     syncChatSnapshot([], nextSessionId);
@@ -512,6 +745,7 @@ export function useAIChatCore(
     clearHistory,
     clearQueue,
     syncChatSnapshot,
+    updateDeveloperPanelData,
   ]);
 
   const clearError = useCallback(() => {
@@ -580,7 +814,7 @@ export function useAIChatCore(
   // ============================================================================
 
   const handleSendInput = useCallback(
-    (attachments?: FileAttachment[]) => {
+    async (attachments?: FileAttachment[]) => {
       // 🎯 Fix: 텍스트 또는 첨부 중 하나는 있어야 전송
       const hasText = input.trim().length > 0;
       const hasAttachments = attachments && attachments.length > 0;
@@ -601,6 +835,13 @@ export function useAIChatCore(
       if (hybridIsLoading) {
         addToQueue(effectiveText, attachments);
         setInput('');
+        return;
+      }
+
+      if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
+        setError(
+          '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
+        );
         return;
       }
 
@@ -632,6 +873,224 @@ export function useAIChatCore(
         return;
       }
 
+      const regexIntent = classifyChatArtifactIntent(effectiveText);
+      let artifactIntent = regexIntent;
+      if (
+        regexIntent.kind === 'none' &&
+        shouldUseLLMChatArtifactIntent(effectiveText)
+      ) {
+        const intentAbortController = new AbortController();
+        artifactIntentInFlightRef.current = true;
+        artifactAbortControllerRef.current = intentAbortController;
+        try {
+          artifactIntent = await fetchLLMChatArtifactIntent(
+            effectiveText,
+            intentAbortController.signal
+          );
+        } finally {
+          artifactIntentInFlightRef.current = false;
+          if (artifactAbortControllerRef.current === intentAbortController) {
+            artifactAbortControllerRef.current = null;
+          }
+        }
+
+        // fetchLLMChatArtifactIntent intentionally degrades failures to none.
+        // On an explicit abort, stop here so cancellation does not fall through
+        // into the normal Supervisor chat path.
+        if (intentAbortController.signal.aborted) {
+          return;
+        }
+      }
+      if (artifactIntent.kind === 'guidance') {
+        setError(null);
+        setStreamRagSources([]);
+        lastQueryRef.current = effectiveText;
+        lastAttachmentsRef.current = attachments || null;
+        pendingQueryRef.current = '';
+        setInput('');
+        const token = Date.now().toString(36);
+        setMessages([
+          ...messages,
+          createTextMessage({
+            id: `artifact-guidance-user-${token}`,
+            role: 'user',
+            text: effectiveText,
+          }),
+          createTextMessage({
+            id: `artifact-guidance-assistant-${token}`,
+            role: 'assistant',
+            text: createArtifactGuidanceMessage(artifactIntent.target),
+            metadata: {
+              artifactIntentReason: artifactIntent.reason,
+              artifactIntentTarget: artifactIntent.target,
+            },
+          }),
+        ]);
+        return;
+      }
+
+      if (
+        artifactIntent.kind === 'incident-report' ||
+        artifactIntent.kind === 'monitoring-analysis' ||
+        artifactIntent.kind === 'server-snapshot'
+      ) {
+        const artifactKind = artifactIntent.kind;
+        setError(null);
+        setStreamRagSources([]);
+        lastQueryRef.current = effectiveText;
+        lastAttachmentsRef.current = attachments || null;
+        pendingQueryRef.current = '';
+        setInput('');
+
+        const token = Date.now().toString(36);
+        const userMessage = createTextMessage({
+          id: `artifact-user-${token}`,
+          role: 'user',
+          text: effectiveText,
+        });
+        const pendingAssistantMessage = createTextMessage({
+          id: `artifact-assistant-${token}`,
+          role: 'assistant',
+          text: getArtifactLoadingText(artifactKind),
+        });
+        const fallbackArtifactMessages = [...messages, userMessage];
+        const abortController = new AbortController();
+        setMessages([...fallbackArtifactMessages, pendingAssistantMessage]);
+        artifactRequestIdRef.current = token;
+        artifactAbortControllerRef.current = abortController;
+        artifactInFlightRef.current = true;
+        setArtifactIsLoading(true);
+
+        void (async () => {
+          try {
+            const artifact =
+              artifactKind === 'incident-report'
+                ? await generateIncidentReportArtifact({
+                    query: effectiveText,
+                    sessionId,
+                    queryAsOfDataSlot,
+                    signal: abortController.signal,
+                  })
+                : artifactKind === 'server-snapshot'
+                  ? await generateServerSnapshotArtifact({
+                      query: effectiveText,
+                      sessionId,
+                      queryAsOfDataSlot,
+                      signal: abortController.signal,
+                    })
+                  : await generateMonitoringAnalysisArtifact({
+                      query: effectiveText,
+                      sessionId,
+                      queryAsOfDataSlot,
+                      signal: abortController.signal,
+                    });
+
+            if (artifactRequestIdRef.current !== token) {
+              return;
+            }
+
+            const finalMessage = createTextMessage({
+              id: pendingAssistantMessage.id,
+              role: 'assistant',
+              text: getArtifactSuccessText(artifact),
+              metadata: buildArtifactMetadata(
+                artifact,
+                artifactIntent.reason,
+                queryAsOfDataSlot
+              ),
+            });
+            const currentMessages = messagesRef.current;
+            const nextMessages = currentMessages.some(
+              (message) => message.id === pendingAssistantMessage.id
+            )
+              ? currentMessages.map((message) =>
+                  message.id === pendingAssistantMessage.id
+                    ? finalMessage
+                    : message
+                )
+              : [...fallbackArtifactMessages, finalMessage];
+
+            setError(null);
+            setMessages(nextMessages);
+          } catch (requestError) {
+            if (artifactRequestIdRef.current !== token) {
+              return;
+            }
+
+            const errorText = getArtifactErrorText(artifactKind, requestError);
+            const routeDecision = buildRouteDecision({
+              intent: 'artifact',
+              executionPath: 'client-artifact',
+              artifactKind,
+              reasonCodes: [artifactIntent.reason],
+              decidedBy: 'frontend',
+              ...(queryAsOfDataSlot?.timeLabel && {
+                dataSlot: queryAsOfDataSlot.timeLabel,
+              }),
+            });
+            const errorMessage = createTextMessage({
+              id: pendingAssistantMessage.id,
+              role: 'assistant',
+              text: errorText,
+              metadata: {
+                artifactIntentReason: artifactIntent.reason,
+                routeDecision,
+                assistantPlan:
+                  buildAssistantPlanFromRouteDecision(routeDecision),
+                assistantResult: buildAssistantResultFromRouteDecision(
+                  routeDecision,
+                  {
+                    status: 'failed',
+                    errorCode: isAbortError(requestError)
+                      ? 'ARTIFACT_ABORTED'
+                      : 'ARTIFACT_GENERATION_FAILED',
+                  }
+                ),
+                toolResultSummaries: [
+                  {
+                    toolName:
+                      artifactKind === 'incident-report'
+                        ? 'generateIncidentReportArtifact'
+                        : artifactKind === 'server-snapshot'
+                          ? 'generateServerSnapshotArtifact'
+                          : 'generateMonitoringAnalysisArtifact',
+                    label:
+                      artifactKind === 'incident-report'
+                        ? '장애 보고서 작성'
+                        : artifactKind === 'server-snapshot'
+                          ? '서버 상태 스냅샷'
+                          : '이상감지/추세 분석',
+                    summary: errorText,
+                    status: 'failed' as const,
+                  },
+                ],
+              },
+            });
+            const currentMessages = messagesRef.current;
+            const nextMessages = currentMessages.some(
+              (message) => message.id === pendingAssistantMessage.id
+            )
+              ? currentMessages.map((message) =>
+                  message.id === pendingAssistantMessage.id
+                    ? errorMessage
+                    : message
+                )
+              : [...fallbackArtifactMessages, errorMessage];
+
+            setError(errorText);
+            setMessages(nextMessages);
+          } finally {
+            if (artifactRequestIdRef.current === token) {
+              artifactRequestIdRef.current = null;
+              artifactAbortControllerRef.current = null;
+              artifactInFlightRef.current = false;
+              setArtifactIsLoading(false);
+            }
+          }
+        })();
+        return;
+      }
+
       setError(null);
       setStreamRagSources([]);
       lastQueryRef.current = effectiveText;
@@ -652,8 +1111,19 @@ export function useAIChatCore(
       messages,
       setMessages,
       analysisMode,
+      sessionId,
+      queryAsOfDataSlot,
     ]
   );
+
+  const stopGeneration = useCallback(() => {
+    if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
+      artifactAbortControllerRef.current?.abort();
+      return;
+    }
+
+    stop();
+  }, [stop]);
 
   // ============================================================================
   // Return
@@ -664,7 +1134,7 @@ export function useAIChatCore(
     setInput,
     messages: enhancedMessages,
     sendQuery,
-    isLoading: hybridIsLoading,
+    isLoading: isGenerating,
     hybridState: {
       progress: hybridState.progress ?? undefined,
       jobId: hybridState.jobId ?? undefined,
@@ -678,10 +1148,9 @@ export function useAIChatCore(
     sessionId: sessionId,
     sessionState,
     handleNewSession,
-    handleFeedback,
     regenerateLastResponse,
     retryLastQuery,
-    stop,
+    stop: stopGeneration,
     cancel,
     handleSendInput,
     clarification: hybridState.clarification ?? null,
@@ -694,6 +1163,7 @@ export function useAIChatCore(
     // 🎯 실시간 Agent 상태
     currentAgentStatus,
     currentHandoff,
+    developerPanelData,
 
     // ⚡ Cloud Run 웜업 상태
     warmingUp: hybridState.warmingUp,

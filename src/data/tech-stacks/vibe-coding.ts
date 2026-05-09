@@ -6,7 +6,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
     {
       name: 'Google Antigravity',
       category: 'ai',
-      importance: 'high',
+      importance: 'medium',
       description:
         'Agent-first AI-powered IDE - AI 에이전트가 계획, 실행, 검증까지 자율 수행 (Google)',
       implementation:
@@ -90,7 +90,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description: 'GitLab canonical 저장소와 GitHub 공개 스냅샷을 분리 운영',
       implementation:
-        'git push gitlab main → Vercel 자동 배포. npm run sync:github 로 코드 전용 스냅샷을 GitHub에 선택적 반영. 내부 문서·테스트·QA 자산은 GitLab에만 유지',
+        'git push gitlab main → validate, semver tag pipeline → Vercel production 배포. npm run sync:github 로 코드 전용 스냅샷을 GitHub에 선택적 반영. 내부 문서·테스트·QA 자산은 GitLab에만 유지',
       status: 'active',
       icon: '🦊',
       tags: ['GitLab', 'Dual-Remote', 'Vercel배포'],
@@ -145,7 +145,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'UI 컴포넌트를 앱 외부의 독립 환경에서 개발·테스트하는 프론트엔드 워크숍. 버튼 하나, 카드 하나를 다양한 상태(정상/경고/에러 등)로 시각 확인하며 살아있는 문서로 관리',
       implementation:
-        '→ 58개 스토리로 ~42% 컴포넌트 커버리지 달성. addon-mcp로 AI가 컴포넌트 문서를 직접 조회·스토리 생성 가능. @storybook/nextjs-vite 기반',
+        '→ src/components 기준 52개 스토리(~39% 컴포넌트 커버리지), 전체 56개 스토리 유지. addon-mcp로 AI가 컴포넌트 문서를 직접 조회·스토리 생성 가능. @storybook/nextjs-vite 기반',
       version: '10.2.10',
       status: 'active',
       icon: '📖',
@@ -375,11 +375,11 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         importance: 'high',
         description: 'Vercel 분리 AI 엔진 - Free Tier 운영',
         implementation:
-          'Vercel(Frontend)과 Cloud Run(AI Engine)으로 하이브리드 아키텍처 운영. 5개 라우팅 에이전트(NLQ/Analyst/Reporter/Advisor/Vision) + Knowledge Retrieval Lite + Supabase pgVector. Cloud Run Free Tier 엄수(1vCPU, 512Mi)',
+          'Vercel(Frontend)과 Cloud Run(AI Engine)으로 하이브리드 아키텍처 운영. 5개 라우팅 에이전트(NLQ/Analyst/Reporter/Advisor/Vision) + Knowledge Retrieval Lite(BM25 RPC + metadata boost). Cloud Run Free Tier 엄수(1vCPU, 512Mi)',
         version: 'v8.10+',
         status: 'active',
         icon: '☁️',
-        tags: ['Cloud-Run', 'AI-Engine', 'Free-Tier', 'Multi-Agent'],
+        tags: ['Cloud-Run', 'AI-Engine', 'Free-Tier', 'Tool-Calling'],
         type: 'commercial',
       },
     ],

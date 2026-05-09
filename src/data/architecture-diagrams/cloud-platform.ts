@@ -4,7 +4,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
   id: 'cloud-platform',
   title: 'Hybrid Cloud Architecture',
   description:
-    'GitLab canonical → Vercel 자동 배포. Vercel(Frontend) + Cloud Run(AI) + Supabase(DB) + Upstash(Cache). 독립적 스케일링.',
+    'GitLab canonical → GitLab CI deploy gate. Vercel(Frontend) + Cloud Run(AI) + Supabase(DB/Auth) + Upstash(Cache) + request-driven Cloud Tasks.',
   layers: [
     {
       title: 'Delivery Pipeline',
@@ -13,7 +13,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'gitlab',
           label: 'GitLab',
-          sublabel: 'git push gitlab main → 자동 배포',
+          sublabel: 'validate + semver tag deploy',
           type: 'highlight',
           icon: '🦊',
         },
@@ -37,6 +37,13 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
           type: 'highlight',
           icon: '🚀',
         },
+        {
+          id: 'cloudtasks',
+          label: 'Cloud Tasks',
+          sublabel: 'Request-driven AI job dispatch',
+          type: 'secondary',
+          icon: '📬',
+        },
       ],
     },
     {
@@ -46,7 +53,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'supabase',
           label: 'Supabase',
-          sublabel: 'PostgreSQL + pgVector + RLS',
+          sublabel: 'PostgreSQL + Auth + RLS',
           type: 'primary',
           icon: '⚡', // Bolt (Supabase uses bolt often) or Generic DB 🗄️. Sticking with simple.
         },
@@ -88,9 +95,11 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
     },
   ],
   connections: [
-    { from: 'gitlab', to: 'vercel', label: 'Auto Deploy' },
+    { from: 'gitlab', to: 'vercel', label: 'CI Deploy' },
     { from: 'vercel', to: 'supabase', label: 'Query' },
     { from: 'vercel', to: 'cloudrun', label: 'AI Proxy' },
+    { from: 'cloudrun', to: 'cloudtasks', label: 'CreateTask' },
+    { from: 'cloudtasks', to: 'cloudrun', label: 'Job POST' },
     { from: 'cloudrun', to: 'supabase', label: 'Knowledge Retrieval' },
     { from: 'vercel', to: 'upstash', label: 'Cache' },
     { from: 'cloudrun', to: 'upstash', label: 'Cache' },

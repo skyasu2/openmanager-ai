@@ -10,8 +10,8 @@
 
 'use client';
 
+import toast from 'react-hot-toast';
 import { shouldSendWebNotification } from '@/config/rules/loader';
-import { toast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logging';
 
 interface NotificationOptions {
@@ -94,19 +94,16 @@ class BrowserNotificationService {
         currentStatus,
         previousStatus
       );
-      const variant =
-        currentStatus === 'critical'
-          ? 'destructive'
-          : currentStatus === 'warning'
-            ? 'warning'
-            : 'success';
+      const toastMessage = `${serverName}\n${message}`;
 
       // 🔔 서버 알림은 이제 Toast로 표시 (좌측 하단)
-      toast({
-        title: serverName,
-        description: message,
-        variant: variant,
-      });
+      if (currentStatus === 'critical') {
+        toast.error(toastMessage);
+      } else if (currentStatus === 'warning') {
+        toast(toastMessage, { icon: '⚠️' });
+      } else {
+        toast.success(toastMessage);
+      }
 
       logger.info(`💬 Toast 알림 발송: ${message}`);
     }

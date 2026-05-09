@@ -1,4 +1,16 @@
 import type { UIMessage } from 'ai';
+import type {
+  AssistantPlan,
+  AssistantResult,
+} from '@/lib/ai/assistant-contract';
+import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import type {
+  ArtifactEnvelope,
+  IncidentReportArtifact,
+  MonitoringAnalysisArtifact,
+  ServerSnapshotArtifact,
+} from '@/lib/ai/chat-artifacts/types';
+import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import {
   getToolDescription,
@@ -43,7 +55,16 @@ export type MessageMetadata = {
   usedFallback?: boolean;
   fallbackReason?: string;
   ttfbMs?: number;
+  routeDecision?: RouteDecision;
+  assistantPlan?: AssistantPlan;
+  assistantResult?: AssistantResult;
   assistantResponseView?: StructuredAssistantResponse;
+  artifactIntentReason?: ChatArtifactIntentReason;
+  artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
+  incidentReportArtifact?: IncidentReportArtifact;
+  monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
+  serverSnapshotArtifact?: ServerSnapshotArtifact;
+  artifactEnvelopes?: ArtifactEnvelope[];
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
 };

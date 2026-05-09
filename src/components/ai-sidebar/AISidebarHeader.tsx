@@ -11,19 +11,28 @@
 
 import { Brain, Plus, X } from 'lucide-react';
 import type { FC } from 'react';
+import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
 import BasicTyping from '@/components/ui/BasicTyping';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { CloudRunStatusIndicator } from './CloudRunStatusIndicator';
 
+const AI_SIDEBAR_SUBTITLES: Record<AIAssistantFunction, string> = {
+  chat: '서버 상태·로그·메트릭을 자연어로 질의',
+  'auto-report': '장애·정기 보고서 자동 생성',
+  'intelligent-monitoring': '이상감지·추세 분석 실행',
+};
+
 interface AISidebarHeaderProps {
   onClose: () => void;
   onNewSession?: () => void;
+  activeFunction?: AIAssistantFunction;
 }
 
 export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
   onClose,
   onNewSession,
+  activeFunction = 'chat',
 }: AISidebarHeaderProps) => {
   const clearMessages = useAISidebarStore((state) => state.clearMessages);
   // 시스템 상태와 Cloud Run 상태 연동
@@ -59,7 +68,7 @@ export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
             <BasicTyping text="AI 어시스턴트" speed="fast" showCursor={false} />
           </h2>
           <p className="truncate text-xs text-gray-600 sm:text-sm">
-            AI Chat으로 시스템 질의
+            {AI_SIDEBAR_SUBTITLES[activeFunction]}
           </p>
         </div>
       </div>

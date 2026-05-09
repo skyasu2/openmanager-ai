@@ -12,12 +12,12 @@ const LandingPageRuntime = dynamic(() => import('./LandingPageRuntime'), {
           <div className="mx-auto h-5 w-full max-w-2xl animate-pulse rounded-full bg-white/8" />
         </div>
         <div className="mb-12 min-h-[30rem] rounded-[2rem] border border-white/10 bg-white/5" />
-        <div className="mb-12 rounded-[2rem] border border-white/10 bg-black/15 px-4 py-6 shadow-[0_24px_80px_rgba(15,23,42,0.28)] backdrop-blur-sm sm:px-6">
-          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
+        <div className="mb-12">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="h-40 animate-pulse rounded-2xl border border-white/10 bg-white/5"
+                className="min-h-[13rem] animate-pulse rounded-lg border border-white/10 bg-white/5 sm:min-h-[14.5rem] md:min-h-[17rem] lg:min-h-[15.5rem]"
               />
             ))}
           </div>

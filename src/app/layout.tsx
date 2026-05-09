@@ -17,17 +17,18 @@ const SITE_NAME = 'OpenManager AI';
 export const metadata: Metadata = {
   // 📌 기본 메타데이터
   title: {
-    default: 'OpenManager AI - AI Native Server Monitoring',
+    default: 'OpenManager AI - Operational Decision Support Assistant',
     template: '%s | OpenManager AI',
   },
   description:
-    'Next.js 16 + React 19 + Vercel AI SDK 기반 AI Native 서버 모니터링 플랫폼. 3개 AI 프로바이더와 5-Agent 시스템으로 실시간 장애 분석.',
+    'Next.js 16 + React 19 + Vercel AI SDK 기반 운영 의사결정 AI 어시스턴트. deterministic fact layer와 tool-calling LLM으로 서버 상태를 분석합니다.',
   keywords: [
     'AI 서버 모니터링',
+    'Operational Decision Support AI',
     'Next.js 16',
     'React 19',
     'Vercel AI SDK',
-    'Multi-Agent AI',
+    'Tool-calling AI',
     'Server Monitoring',
     'OpenManager',
     '서버 관리',
@@ -61,9 +62,9 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: 'OpenManager AI - AI Native Server Monitoring',
+    title: 'OpenManager AI - Operational Decision Support Assistant',
     description:
-      'Next.js 16 + React 19 기반 AI Native 서버 모니터링. 3개 AI 프로바이더 + 5-Agent 멀티 에이전트 시스템.',
+      'Next.js 16 + React 19 기반 운영 의사결정 AI 어시스턴트. deterministic fact layer + tool-calling LLM 기반 서버 분석.',
     images: [
       {
         url: '/api/og',
@@ -77,8 +78,8 @@ export const metadata: Metadata = {
   // 🐦 Twitter Card
   twitter: {
     card: 'summary_large_image',
-    title: 'OpenManager AI - AI Native Server Monitoring',
-    description: 'Next.js 16 + React 19 기반 AI Native 서버 모니터링 플랫폼',
+    title: 'OpenManager AI - Operational Decision Support Assistant',
+    description: 'Next.js 16 + React 19 기반 운영 의사결정 AI 어시스턴트',
     images: ['/api/og'],
     creator: '@openmanager',
   },

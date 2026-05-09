@@ -11,8 +11,8 @@
 // ==============================================
 
 /**
- * AI 모드 정의 v5.0 (Cloud Run Multi-Agent)
- * - UNIFIED: 통합 AI 엔진 (Cloud Run LLM 멀티 에이전트 + Supabase RAG)
+ * AI 모드 정의 v5.0 (Cloud Run AI runtime)
+ * - UNIFIED: 통합 AI 엔진 (tool-calling LLM + deterministic decision layer + Supabase RAG)
  * @since v3.2.0 - 자동 라우팅으로 단일 모드 사용
  * @since v4.0 - 타입 단순화 (LOCAL, GOOGLE_AI, AUTO 제거)
  * @since v5.84.0 - Cloud Run AI Engine (Vercel AI SDK + Cerebras/Groq/Mistral)

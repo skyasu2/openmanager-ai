@@ -1,6 +1,5 @@
 'use client';
 
-import * as Sentry from '@sentry/nextjs';
 import { useEffect } from 'react';
 import { logger } from '@/lib/logging';
 
@@ -13,9 +12,6 @@ export default function AIAssistantError({
 }) {
   useEffect(() => {
     logger.error(error);
-    Sentry.captureException(error, {
-      tags: { boundary: 'ai-assistant', digest: error.digest },
-    });
   }, [error]);
 
   return (

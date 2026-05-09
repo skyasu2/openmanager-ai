@@ -6,7 +6,6 @@
  * v4.0.0 - useAIChatCore 통합:
  * - AISidebarV4와 동일한 공통 훅 사용 (useAIChatCore)
  * - 세션 제한 (전체화면에서는 비활성화)
- * - 피드백 기능 통합
  */
 
 import {
@@ -20,7 +19,15 @@ import {
   Plus,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Activity, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Activity,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { CloudRunStatusIndicator } from '@/components/ai-sidebar/CloudRunStatusIndicator';
 import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
@@ -31,12 +38,14 @@ import {
   type PendingAIEntryState,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
+import { ArtifactWorkspacePanel } from './artifact-workspace/ArtifactWorkspacePanel';
 import SystemContextPanel from './SystemContextPanel';
 
 // 🔧 공통 로직은 useAIChatCore 훅에서 관리
@@ -70,19 +79,19 @@ const AI_WORKSPACE_FUNCTION_TABS: Array<{
   {
     id: 'chat',
     label: 'AI Chat',
-    description: 'NLQ Agent',
+    description: '자연어 질의',
     icon: MessageSquare,
   },
   {
     id: 'auto-report',
     label: '장애 보고서',
-    description: 'Reporter Agent',
+    description: '보고서 생성',
     icon: FileText,
   },
   {
     id: 'intelligent-monitoring',
-    label: '이상감지/예측',
-    description: 'Analyst Agent',
+    label: '이상감지/추세',
+    description: '이상 신호 분석',
     icon: Monitor,
   },
 ];
@@ -117,6 +126,8 @@ function useAIAssistantLightTheme() {
 interface AIWorkspaceProps {
   /** Dashboard route body mode. Avoids the legacy standalone AI shell. */
   embedded?: boolean;
+  /** Dashboard data slot used to keep AI pages aligned with visible metrics. */
+  queryAsOfDataSlot?: JobDataSlot;
   /** @deprecated kept for older stories/tests; sidebar uses AISidebarV4. */
   mode?: 'fullscreen';
 }
@@ -130,11 +141,12 @@ interface AIWorkspaceProps {
  */
 export default function AIWorkspace({
   embedded = false,
+  queryAsOfDataSlot,
 }: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileHandoffActive, setIsMobileHandoffActive] = useState(false);
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
   const mobileHandoffStartedRef = useRef(false);
 
   useAIAssistantLightTheme();
@@ -154,8 +166,6 @@ export default function AIWorkspace({
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    ragEnabled,
-    toggleRAG,
     analysisMode,
     selectAnalysisMode,
     pendingEntryState,
@@ -164,8 +174,15 @@ export default function AIWorkspace({
     consumePendingPrefillMessage,
   } = useAIChatSurface();
   const [workspaceQueryAsOfDataSlot, setWorkspaceQueryAsOfDataSlot] = useState(
-    pendingEntryState?.queryAsOfDataSlot
+    pendingEntryState?.queryAsOfDataSlot ?? queryAsOfDataSlot
   );
+
+  useEffect(() => {
+    if (pendingEntryState?.queryAsOfDataSlot) {
+      return;
+    }
+    setWorkspaceQueryAsOfDataSlot(queryAsOfDataSlot);
+  }, [pendingEntryState?.queryAsOfDataSlot, queryAsOfDataSlot]);
 
   const handleFunctionSelect = useCallback(
     (func: AIAssistantFunction) => {
@@ -201,7 +218,6 @@ export default function AIWorkspace({
     sessionState,
     handleNewSession,
     // 액션
-    handleFeedback,
     regenerateLastResponse,
     retryLastQuery,
     stop,
@@ -229,6 +245,33 @@ export default function AIWorkspace({
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const latestAssistantRuntime = useMemo(() => {
+    for (let index = enhancedMessages.length - 1; index >= 0; index -= 1) {
+      const message = enhancedMessages[index];
+      if (!message) {
+        continue;
+      }
+
+      if (message.role !== 'assistant' || message.isStreaming) {
+        continue;
+      }
+
+      const provider = message.metadata?.provider?.trim();
+      if (!provider) {
+        continue;
+      }
+
+      return {
+        provider,
+        modelId: message.metadata?.modelId?.trim(),
+      };
+    }
+
+    return null;
+  }, [enhancedMessages]);
+  const artifactWorkspaceId = sessionId
+    ? `ai-session-${sessionId}`
+    : 'current-ai-session';
 
   useEffect(() => {
     if (embedded) {
@@ -255,6 +298,13 @@ export default function AIWorkspace({
       analysisMode: pendingEntryState?.analysisMode ?? analysisMode,
       target: 'sidebar',
     };
+    const handoffQueryAsOfDataSlot =
+      pendingEntryState?.queryAsOfDataSlot ??
+      workspaceQueryAsOfDataSlot ??
+      queryAsOfDataSlot;
+    if (handoffQueryAsOfDataSlot) {
+      sidebarEntry.queryAsOfDataSlot = handoffQueryAsOfDataSlot;
+    }
     const draft =
       pendingEntryState?.draft ??
       (selectedFunction === 'chat' ? input.trim() : undefined);
@@ -273,8 +323,10 @@ export default function AIWorkspace({
     openSidebar,
     pendingEntryState,
     queuePendingEntryState,
+    queryAsOfDataSlot,
     router,
     selectedFunction,
+    workspaceQueryAsOfDataSlot,
     embedded,
   ]);
 
@@ -298,7 +350,7 @@ export default function AIWorkspace({
       selectAnalysisMode(entry.analysisMode);
     }
 
-    setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot);
+    setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot ?? queryAsOfDataSlot);
 
     if (entry.draft) {
       setInput(entry.draft);
@@ -306,6 +358,7 @@ export default function AIWorkspace({
   }, [
     consumePendingEntryState,
     pendingEntryState,
+    queryAsOfDataSlot,
     selectAnalysisMode,
     setInput,
     setSelectedFunction,
@@ -361,7 +414,6 @@ export default function AIWorkspace({
           streamStatus={streamStatus}
           regenerateResponse={regenerateLastResponse}
           onStopGeneration={stop}
-          onFeedback={handleFeedback}
           jobProgress={hybridState.progress}
           jobId={hybridState.jobId}
           onCancelJob={cancel}
@@ -379,8 +431,6 @@ export default function AIWorkspace({
           currentHandoff={currentHandoff}
           webSearchEnabled={webSearchEnabled}
           onToggleWebSearch={toggleWebSearch}
-          ragEnabled={ragEnabled}
-          onToggleRAG={toggleRAG}
           analysisMode={analysisMode}
           onSelectAnalysisMode={selectAnalysisMode}
           warmingUp={warmingUp}
@@ -425,7 +475,7 @@ export default function AIWorkspace({
 
   if (embedded) {
     return (
-      <div className="flex h-full min-h-[680px] w-full overflow-hidden bg-white text-gray-900">
+      <div className="flex h-full min-h-0 w-full overflow-hidden bg-white text-gray-900">
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -466,6 +516,11 @@ export default function AIWorkspace({
                 type="button"
                 onClick={handleToggleRightPanel}
                 className="hidden h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 lg:inline-flex"
+                aria-label={
+                  isRightPanelOpen
+                    ? '시스템 컨텍스트 닫기'
+                    : '시스템 컨텍스트 열기'
+                }
                 aria-pressed={isRightPanelOpen}
               >
                 {isRightPanelOpen ? (
@@ -484,7 +539,16 @@ export default function AIWorkspace({
         </div>
 
         {selectedFunction === 'chat' && isRightPanelOpen && (
-          <SystemContextPanel className="hidden xl:flex" />
+          <SystemContextPanel
+            className="hidden xl:flex"
+            finalModelId={latestAssistantRuntime?.modelId}
+            finalProvider={latestAssistantRuntime?.provider}
+          >
+            <ArtifactWorkspacePanel
+              messages={enhancedMessages}
+              workspaceId={artifactWorkspaceId}
+            />
+          </SystemContextPanel>
         )}
       </div>
     );
@@ -560,7 +624,9 @@ export default function AIWorkspace({
               <MessageSquare className="h-4 w-4 shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium">AI Chat</div>
-                <div className="text-xs text-gray-500 truncate">NLQ Agent</div>
+                <div className="text-xs text-gray-500 truncate">
+                  자연어 질의
+                </div>
               </div>
             </button>
             {/* 자동 장애보고서 */}
@@ -577,11 +643,11 @@ export default function AIWorkspace({
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium">장애 보고서</div>
                 <div className="text-xs text-gray-500 truncate">
-                  Reporter Agent
+                  보고서 생성
                 </div>
               </div>
             </button>
-            {/* 이상감지/예측 */}
+            {/* 이상감지/추세 */}
             <button
               type="button"
               onClick={() => handleFunctionSelect('intelligent-monitoring')}
@@ -593,9 +659,9 @@ export default function AIWorkspace({
             >
               <Monitor className="h-4 w-4 shrink-0" />
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium">이상감지/예측</div>
+                <div className="text-sm font-medium">이상감지/추세</div>
                 <div className="text-xs text-gray-500 truncate">
-                  Analyst Agent
+                  이상 신호 분석
                 </div>
               </div>
             </button>
@@ -605,9 +671,9 @@ export default function AIWorkspace({
         {/* Bottom Status */}
         <div className="shrink-0 border-t border-gray-200 px-3 py-2.5">
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>AI Engine Active</span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="font-medium text-gray-600">AI Engine</span>
+              <CloudRunStatusIndicator autoCheckInterval={300000} />
             </div>
             <span className="text-gray-400">v{APP_VERSION}</span>
           </div>
@@ -663,6 +729,12 @@ export default function AIWorkspace({
                   onClick={handleToggleRightPanel}
                   className="hidden min-h-6 min-w-6 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 lg:flex"
                   title="시스템 컨텍스트 패널 토글"
+                  aria-label={
+                    isRightPanelOpen
+                      ? '시스템 컨텍스트 닫기'
+                      : '시스템 컨텍스트 열기'
+                  }
+                  aria-pressed={isRightPanelOpen}
                 >
                   {isRightPanelOpen ? (
                     <PanelRightClose className="h-5 w-5" />
@@ -684,7 +756,16 @@ export default function AIWorkspace({
 
         {/* RIGHT SIDEBAR (System Context) - 실시간 헬스 체크 연동 */}
         {selectedFunction === 'chat' && isRightPanelOpen && (
-          <SystemContextPanel className="hidden lg:flex" />
+          <SystemContextPanel
+            className="hidden lg:flex"
+            finalModelId={latestAssistantRuntime?.modelId}
+            finalProvider={latestAssistantRuntime?.provider}
+          >
+            <ArtifactWorkspacePanel
+              messages={enhancedMessages}
+              workspaceId={artifactWorkspaceId}
+            />
+          </SystemContextPanel>
         )}
       </div>
     </div>

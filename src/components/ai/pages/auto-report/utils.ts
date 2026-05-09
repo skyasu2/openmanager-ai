@@ -106,23 +106,3 @@ export function getStatusLabel(status: IncidentStatus): string {
       return '해결됨';
   }
 }
-
-/**
- * 심각도 라벨 반환
- */
-export function getSeverityLabel(severity: IncidentSeverity): string {
-  switch (severity) {
-    case 'critical':
-      return '심각';
-    case 'high':
-      return '높음';
-    case 'medium':
-      return '중간';
-    case 'warning':
-      return '경고';
-    case 'low':
-      return '낮음';
-    default:
-      return '정보';
-  }
-}

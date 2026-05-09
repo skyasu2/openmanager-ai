@@ -6,6 +6,11 @@
 
 import type { UIMessage } from 'ai';
 import {
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
+import { normalizeRouteDecision } from '@/lib/ai/route-decision';
+import {
   extractTextFromUIMessage,
   normalizeAIResponse,
 } from '@/lib/ai/utils/message-normalizer';
@@ -235,6 +240,20 @@ export function transformUIMessageToEnhanced(
     metadata?.assistantResponseView,
     toolParts
   );
+  const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
+  const assistantPlan = normalizeAssistantPlan(metadata?.assistantPlan);
+  const assistantResult = normalizeAssistantResult(metadata?.assistantResult);
+  const incidentReportArtifact = metadata?.incidentReportArtifact;
+  const monitoringAnalysisArtifact = metadata?.monitoringAnalysisArtifact;
+  const serverSnapshotArtifact = metadata?.serverSnapshotArtifact;
+  const hasChatArtifact = Boolean(
+    incidentReportArtifact ||
+      monitoringAnalysisArtifact ||
+      serverSnapshotArtifact
+  );
+  const hasArtifactIntentMetadata = Boolean(
+    metadata?.artifactIntentReason || metadata?.artifactIntentTarget
+  );
   const handoffHistory = metadata?.handoffHistory;
   const hasProviderTelemetry =
     Boolean(metadata?.provider) ||
@@ -339,13 +358,21 @@ export function transformUIMessageToEnhanced(
     metadata:
       analysisBasis ||
       traceId ||
+      routeDecision ||
+      assistantPlan ||
+      assistantResult ||
       assistantResponseView ||
+      hasChatArtifact ||
+      hasArtifactIntentMetadata ||
       handoffHistory ||
       toolResultSummaries.length > 0 ||
       hasProviderTelemetry
         ? {
             ...(analysisBasis && { analysisBasis }),
             ...(traceId && { traceId }),
+            ...(routeDecision && { routeDecision }),
+            ...(assistantPlan && { assistantPlan }),
+            ...(assistantResult && { assistantResult }),
             ...(typeof metadata?.processingTime === 'number' && {
               processingTime: metadata.processingTime,
             }),
@@ -379,6 +406,21 @@ export function transformUIMessageToEnhanced(
             }),
             ...(assistantResponseView && {
               assistantResponseView,
+            }),
+            ...(metadata?.artifactIntentReason && {
+              artifactIntentReason: metadata.artifactIntentReason,
+            }),
+            ...(metadata?.artifactIntentTarget && {
+              artifactIntentTarget: metadata.artifactIntentTarget,
+            }),
+            ...(incidentReportArtifact && {
+              incidentReportArtifact,
+            }),
+            ...(monitoringAnalysisArtifact && {
+              monitoringAnalysisArtifact,
+            }),
+            ...(serverSnapshotArtifact && {
+              serverSnapshotArtifact,
             }),
             ...(handoffHistory &&
               handoffHistory.length > 0 && {

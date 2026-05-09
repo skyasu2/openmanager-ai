@@ -24,6 +24,7 @@ import { useAISidebarStore } from '@/stores/useAISidebarStore';
 // Types
 import type { AISidebarV3Props } from '@/types/ai-sidebar/ai-sidebar-types';
 import { AISidebarHeader } from './AISidebarHeader';
+import { DeveloperPanel } from './DeveloperPanel';
 import { EnhancedAIChat } from './EnhancedAIChat';
 import { ResizeHandle } from './ResizeHandle';
 import { MessageComponent } from './SidebarMessage';
@@ -31,7 +32,6 @@ import { MessageComponent } from './SidebarMessage';
 // 🔧 공통 로직은 useAIChatCore 훅에서 관리
 // - Hybrid AI Query (Streaming + Job Queue)
 // - 세션 제한
-// - 피드백
 // - 메시지 변환
 
 // 📐 리사이즈 상수
@@ -58,8 +58,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    ragEnabled,
-    toggleRAG,
     analysisMode,
     selectAnalysisMode,
     pendingEntryState,
@@ -139,7 +137,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     sessionState,
     handleNewSession,
     // 액션
-    handleFeedback,
     regenerateLastResponse,
     retryLastQuery,
     stop,
@@ -155,6 +152,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     // 🎯 실시간 Agent 상태
     currentAgentStatus,
     currentHandoff,
+    developerPanelData,
     // ⚡ Cloud Run 웜업 상태
     warmingUp,
     estimatedWaitSeconds,
@@ -321,7 +319,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               isGenerating={isLoading}
               streamStatus={streamStatus}
               regenerateResponse={regenerateLastResponse}
-              onFeedback={handleFeedback}
               onStopGeneration={stop}
               jobProgress={hybridState.progress}
               jobId={hybridState.jobId}
@@ -340,8 +337,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               currentHandoff={currentHandoff}
               webSearchEnabled={webSearchEnabled}
               onToggleWebSearch={toggleWebSearch}
-              ragEnabled={ragEnabled}
-              onToggleRAG={toggleRAG}
               analysisMode={analysisMode}
               onSelectAnalysisMode={selectAnalysisMode}
               warmingUp={warmingUp}
@@ -398,6 +393,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         onTouchMove={handleSwipeTouchMove}
         onTouchEnd={handleSwipeTouchEnd}
       >
+        <DeveloperPanel data={developerPanelData} />
         {/* 📐 리사이즈 핸들 (데스크톱 전용) */}
         {!isMobile && (
           <ResizeHandle
@@ -408,7 +404,11 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         )}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <AISidebarHeader onClose={onClose} onNewSession={handleNewSession} />
+          <AISidebarHeader
+            activeFunction={selectedFunction}
+            onClose={onClose}
+            onNewSession={handleNewSession}
+          />
           <div className="flex-1 overflow-hidden pb-20 sm:pb-0">
             <AIErrorBoundary
               componentName="AISidebar"

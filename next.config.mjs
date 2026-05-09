@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import { withSentryConfig } from '@sentry/nextjs';
 
 const require = createRequire(import.meta.url);
 
@@ -231,7 +230,6 @@ const nextConfig = {
         'https://vercel.live', // Vercel Toolbar
         'https://va.vercel-scripts.com', // Vercel Analytics
         'https://vitals.vercel-insights.com', // Speed Insights
-        'https://js-de.sentry-cdn.com', // Sentry Loader (EU)
         'blob:', // 동적 스크립트 허용
       ].filter(Boolean),
       'style-src': [
@@ -262,7 +260,6 @@ const nextConfig = {
         // Cloud Run AI Engine은 별도 도메인 사용 (CLOUD_RUN_AI_URL)
         'https://va.vercel-scripts.com', // Vercel Analytics
         'https://vitals.vercel-insights.com', // Speed Insights
-        'https://*.ingest.de.sentry.io', // Sentry EU (tunnel fallback)
         // 개발 환경 WebSocket/API는 early return으로 이미 제외됨
       ].filter(Boolean),
       'font-src': [
@@ -474,28 +471,6 @@ const nextConfig = {
   },
 };
 
-// dev 모드에서 Sentry 빌드 플러그인 생략 (컴파일 속도 대폭 개선)
-// Sentry는 production에서만 필요 (소스맵, 에러 트래킹)
 const baseConfig = withBundleAnalyzer(nextConfig);
 
-export default process.env.NODE_ENV === 'development'
-  ? baseConfig
-  : withSentryConfig(
-      baseConfig,
-      {
-        // 🎯 무료 티어: 소스맵 업로드 비활성화
-        silent: true,
-        org: 'om-4g',
-        project: 'javascript-nextjs',
-        sourcemaps: { disable: true },
-      },
-      {
-        // 🎯 무료 티어 최적화 설정
-        widenClientFileUpload: false,
-        transpileClientSDK: false,
-        tunnelRoute: '/api/sentry-tunnel',
-        hideSourceMaps: true,
-        disableLogger: true,
-        automaticVercelMonitors: false,
-      }
-    );
+export default baseConfig;

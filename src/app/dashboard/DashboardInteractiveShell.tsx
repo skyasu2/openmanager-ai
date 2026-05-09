@@ -11,7 +11,6 @@ import {
   useState,
 } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import type { DashboardAlertContext } from '@/components/dashboard/alert-ai-context';
 import { DashboardNavigation } from '@/components/dashboard/shell/DashboardNavigation';
 import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
@@ -84,7 +83,7 @@ const DashboardHeader = dynamic(
     ssr: false,
     loading: () => (
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs">
-        <div className="flex items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
+        <div className="flex min-w-0 items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
           <div className="h-10 w-32 min-w-0 flex-1 animate-pulse rounded-lg bg-gray-200" />
           <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-4">
             <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200" />
@@ -170,7 +169,6 @@ export default function DashboardInteractiveShell({
     isOpen: isAgentOpen,
     toggleSidebar,
     closeSidebar,
-    openWithPrefill,
   } = useAIEntryController();
 
   const { isSystemStarted, startSystem } = useUnifiedAdminStore(
@@ -364,38 +362,16 @@ export default function DashboardInteractiveShell({
     []
   );
 
-  const handleAskAIAboutAlert = useCallback(
-    (context: DashboardAlertContext) => {
-      if (!canToggleAI && !isGuestFullAccess) {
-        return;
-      }
-
-      const metricLabel =
-        context.metricLabel === 'CPU'
-          ? 'CPU'
-          : context.metricLabel === 'MEM'
-            ? '메모리'
-            : '디스크';
-      const prompt =
-        context.promptOverride ??
-        `${context.serverName} 서버의 ${metricLabel} 사용률이 ${context.metricValue}%입니다. 현재 원인과 우선 조치 방법을 분석해줘.`;
-
-      void triggerAIWarmup('dashboard-alert-prefill');
-      openWithPrefill(prompt);
-    },
-    [canToggleAI, isGuestFullAccess, openWithPrefill]
-  );
-
   return (
     <>
       <DashboardNavigation isAIAssistantOpen={isAgentOpen} />
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden">
         <DashboardHeader
           onToggleAgent={toggleAgent}
           hideAIAssistantButton={dashboardView === 'ai-assistant'}
         />
 
-        <div className="flex-1 overflow-hidden pt-6">
+        <div className="min-w-0 flex-1 overflow-hidden pt-6">
           {deferDashboardContent ? (
             <ContentLoadingSkeleton />
           ) : (
@@ -418,11 +394,6 @@ export default function DashboardInteractiveShell({
                   onShowSequentialChange={() => {}}
                   statusFilter={statusFilter}
                   onStatusFilterChange={setStatusFilter}
-                  onAskAIAboutAlert={
-                    canToggleAI || isGuestFullAccess
-                      ? handleAskAIAboutAlert
-                      : undefined
-                  }
                 />
               ) : (
                 <DashboardRoutedContent
@@ -441,11 +412,6 @@ export default function DashboardInteractiveShell({
                   onStatsUpdate={handleStatsUpdate}
                   statusFilter={statusFilter}
                   onStatusFilterChange={setStatusFilter}
-                  onAskAIAboutAlert={
-                    canToggleAI || isGuestFullAccess
-                      ? handleAskAIAboutAlert
-                      : undefined
-                  }
                 />
               )}
             </Suspense>

@@ -45,23 +45,23 @@ interface OverviewTabProps {
  */
 export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-5">
       {/* 3D 게이지들 - 개선된 디자인 */}
       <div>
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="bg-linear-to-r from-gray-700 to-gray-900 bg-clip-text text-2xl font-bold text-transparent">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <h3 className="text-xl font-bold text-gray-900 sm:text-2xl">
             실시간 리소스 모니터링
           </h3>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-sm">
             <StatusLED status="running" size={8} animated={true} />
-            <span className="text-sm font-medium text-gray-600">
+            <span className="font-medium text-gray-600">
               실시간 업데이트 중
             </span>
           </div>
         </div>
 
         <div
-          className={`grid grid-cols-1 gap-8 rounded-2xl bg-linear-to-br ${statusTheme.bgLight} border backdrop-blur-sm ${statusTheme.borderColor} p-8 shadow-xl md:grid-cols-3`}
+          className={`grid min-w-0 grid-cols-1 gap-4 rounded-lg bg-linear-to-br ${statusTheme.bgLight} border ${statusTheme.borderColor} p-4 shadow-sm sm:gap-6 sm:p-6 md:grid-cols-3`}
         >
           {/* CPU 게이지 */}
           <div>
@@ -96,10 +96,10 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
       </div>
 
       {/* 시스템 정보 - 개선된 카드 디자인 */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         {/* 시스템 정보 카드 */}
         <div className="group">
-          <div className="relative overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl">
+          <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-5">
             {/* 배경 그라데이션 효과 */}
             <div className="absolute inset-0 bg-linear-to-br from-blue-50 to-transparent opacity-50" />
 
@@ -136,16 +136,16 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50"
+                    className="flex min-w-0 flex-col gap-1 rounded-lg p-2 transition-colors hover:bg-gray-50 sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
                       <span className="text-lg">{item.icon}</span>
                       <span className="font-medium text-gray-600">
                         {item.label}
                       </span>
                     </div>
                     <span
-                      className={`font-semibold ${
+                      className={`max-w-full break-words text-left font-semibold sm:text-right ${
                         item.label === 'IP 주소'
                           ? 'rounded bg-gray-100 px-2 py-1 font-mono text-sm'
                           : 'text-gray-800'
@@ -162,7 +162,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
 
         {/* 서비스 상태 카드 */}
         <div className="group">
-          <div className="relative overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl">
+          <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-5">
             {/* 배경 그라데이션 효과 */}
             <div className="absolute inset-0 bg-linear-to-br from-green-50 to-transparent opacity-50" />
 
@@ -179,9 +179,9 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                   server.services.map((service, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between rounded-lg bg-linear-to-r from-gray-50 to-transparent p-3 transition-all hover:from-gray-100"
+                      className="flex min-w-0 flex-col gap-2 rounded-lg bg-linear-to-r from-gray-50 to-transparent p-3 transition-colors hover:from-gray-100 sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
                         <StatusLED
                           status={
                             service.status === 'running' ? 'running' : 'stopped'
@@ -189,13 +189,13 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                           size={12}
                           animated={service.status === 'running'}
                         />
-                        <span className="font-semibold text-gray-700">
+                        <span className="min-w-0 break-words font-semibold text-gray-700">
                           {service.name}
                         </span>
                       </div>
 
                       <span
-                        className={`rounded-full px-3 py-1.5 text-xs font-bold shadow-xs ${
+                        className={`w-fit rounded-full px-3 py-1.5 text-xs font-bold shadow-xs ${
                           service.status === 'running'
                             ? 'bg-linear-to-r from-green-100 to-green-200 text-green-800'
                             : service.status === 'stopped'

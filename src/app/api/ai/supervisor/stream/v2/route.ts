@@ -19,9 +19,11 @@
 import { generateId } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { createDeveloperContextStreamPayload } from '@/lib/ai/developer-panel';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
+import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import {
   INVALID_SESSION_ID_MESSAGE,
   normalizeSupervisorDeviceType,
@@ -32,13 +34,14 @@ import {
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
-import { withAuth } from '@/lib/auth/api-auth';
+import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import {
   getRateLimitIdentity,
   RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { resolveSupervisorInternalDisclosureMode } from '../../internal-disclosure-mode';
 import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
@@ -77,9 +80,61 @@ import { createUpstashResumableContext } from './upstash-resumable';
 export const maxDuration = 60;
 const AI_WARMUP_STARTED_AT_HEADER = 'x-ai-warmup-started-at';
 const AI_FIRST_QUERY_HEADER = 'x-ai-first-query';
+const DEVELOPER_CONTEXT_STREAM_PART_TYPE = 'data-developer-context';
 
 function isResumableStreamsEnabled(): boolean {
   return process.env.AI_RESUMABLE_STREAMS_ENABLED === 'true';
+}
+
+function normalizeFrontendLocalRouteDecision(value: unknown) {
+  const decision = normalizeRouteDecision(value);
+  if (!decision) return undefined;
+  return decision.decidedBy === 'frontend' ? decision : undefined;
+}
+
+function createDeveloperContextStreamPart(params: {
+  cloudRunHealthy: boolean;
+  cloudRunUrl: string;
+}) {
+  return {
+    type: DEVELOPER_CONTEXT_STREAM_PART_TYPE,
+    data: createDeveloperContextStreamPayload({
+      cloudRunHealthy: params.cloudRunHealthy,
+      cloudRunUrl: params.cloudRunUrl,
+      disclosureMode: 'developer',
+    }),
+  } satisfies { type: `data-${string}`; data: unknown };
+}
+
+function prependStreamDataPart(
+  body: ReadableStream<Uint8Array>,
+  dataPart: { type: `data-${string}`; data: unknown }
+): ReadableStream<Uint8Array> {
+  const reader = body.getReader();
+  const encoder = new TextEncoder();
+  let didPrepend = false;
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      if (!didPrepend) {
+        didPrepend = true;
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(dataPart)}\n\n`)
+        );
+        return;
+      }
+
+      const { done, value } = await reader.read();
+      if (done) {
+        controller.close();
+        return;
+      }
+      controller.enqueue(value);
+    },
+    cancel(reason) {
+      return reader.cancel(reason);
+    },
+  });
 }
 
 // ============================================================================
@@ -227,11 +282,20 @@ export const POST = withRateLimit(
         enableRAG,
         analysisMode,
         queryAsOfDataSlot,
+        localRouteDecision: rawLocalRouteDecision,
       } = parseResult.data;
       const queryAsOf = buildJobQueryAsOf(
         new Date().toISOString(),
         queryAsOfDataSlot
       );
+      const localRouteDecision = normalizeFrontendLocalRouteDecision(
+        rawLocalRouteDecision
+      );
+      if (rawLocalRouteDecision !== undefined && !localRouteDecision) {
+        logger.warn(
+          '[SupervisorStreamV2] Ignoring invalid localRouteDecision payload'
+        );
+      }
 
       // 2. Extract session ID
       const { sessionId, ownerKey } = resolveScopedSessionIds(
@@ -242,6 +306,9 @@ export const POST = withRateLimit(
         req.headers.get('X-Device-Type')
       );
       const rateLimitIdentity = getRateLimitIdentity(req);
+      const internalDisclosureMode = resolveSupervisorInternalDisclosureMode(
+        getAPIAuthContext(req)
+      );
       const warmupStartedAt = parseWarmupStartedAt(
         req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
       );
@@ -371,6 +438,15 @@ export const POST = withRateLimit(
 
       // 7. Proxy to Cloud Run v2 endpoint
       const streamUrl = `${cloudRunConfig.url}/api/ai/supervisor/stream/v2`;
+      const createDeveloperContextDataParts = (cloudRunHealthy: boolean) =>
+        internalDisclosureMode
+          ? [
+              createDeveloperContextStreamPart({
+                cloudRunHealthy,
+                cloudRunUrl: cloudRunConfig.url,
+              }),
+            ]
+          : [];
 
       logger.info(`🔗 [SupervisorStreamV2] Connecting to: ${streamUrl}`);
       logger.info(`🆔 [SupervisorStreamV2] Stream ID: ${streamId}`);
@@ -418,6 +494,8 @@ export const POST = withRateLimit(
                 enableRAG,
                 analysisMode,
                 queryAsOf,
+                ...(internalDisclosureMode && { internalDisclosureMode }),
+                ...(localRouteDecision && { localRouteDecision }),
               }),
               signal: AbortSignal.timeout(timeoutMs),
             });
@@ -454,6 +532,7 @@ export const POST = withRateLimit(
                   mode: 'streaming',
                   source: 'fallback',
                 }),
+                dataParts: createDeveloperContextDataParts(false),
               });
             }
 
@@ -495,6 +574,7 @@ export const POST = withRateLimit(
                   mode: 'streaming',
                   source: 'fallback',
                 }),
+                dataParts: createDeveloperContextDataParts(false),
               });
             }
 
@@ -511,6 +591,7 @@ export const POST = withRateLimit(
                 mode: 'streaming',
                 source: 'fallback',
               }),
+              dataParts: createDeveloperContextDataParts(false),
             });
           }
         }
@@ -530,6 +611,7 @@ export const POST = withRateLimit(
               mode: 'streaming',
               source: 'fallback',
             }),
+            dataParts: createDeveloperContextDataParts(false),
           });
         }
 
@@ -550,11 +632,20 @@ export const POST = withRateLimit(
           mode: 'streaming',
           source: 'cloud-run',
         });
+        const streamBody = internalDisclosureMode
+          ? prependStreamDataPart(
+              cloudRunResponse.body,
+              createDeveloperContextStreamPart({
+                cloudRunHealthy: true,
+                cloudRunUrl: cloudRunConfig.url,
+              })
+            )
+          : cloudRunResponse.body;
 
         if (!resumableStreamsEnabled) {
           logger.info(`✅ [SupervisorStreamV2] Stream started (pass-through)`);
 
-          return new Response(cloudRunResponse.body, {
+          return new Response(streamBody, {
             headers: {
               ...UI_MESSAGE_STREAM_HEADERS,
               'X-Session-Id': sessionId,
@@ -574,7 +665,7 @@ export const POST = withRateLimit(
         const resumableContext = createUpstashResumableContext();
         const resumableStream = await resumableContext.createNewResumableStream(
           streamId,
-          () => cloudRunResponse.body!
+          () => streamBody
         );
 
         logger.info(`✅ [SupervisorStreamV2] Stream started (resumable)`);

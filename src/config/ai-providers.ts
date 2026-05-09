@@ -48,9 +48,9 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     name: 'Mistral',
     role: 'Last-resort text fallback',
-    model: 'mistral-large-latest',
+    model: 'mistral-small-latest',
     description:
-      'Last-resort text fallback for agents. It is not used for RAG runtime retrieval.',
+      'Free-tier friendly last-resort text fallback for agents. It is not used for RAG runtime retrieval.',
     color: 'bg-amber-500',
   },
   {

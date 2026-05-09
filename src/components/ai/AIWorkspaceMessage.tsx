@@ -8,10 +8,10 @@ import {
 import { formatTime } from '@/lib/format-date';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
+import { ArtifactRendererHost } from './domain-renderers/ArtifactRendererHost';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { MessageActions } from './MessageActions';
 import { ThinkingProcessVisualizer } from './ThinkingProcessVisualizer';
-import { TypewriterMarkdown } from './TypewriterMarkdown';
 
 const MemoizedThinkingProcessVisualizer = memo(ThinkingProcessVisualizer);
 
@@ -58,13 +58,8 @@ ThinkingToggle.displayName = 'ThinkingToggle';
 export const AIWorkspaceMessage = memo<{
   message: EnhancedChatMessage;
   onRegenerateResponse?: (messageId: string) => void;
-  onFeedback?: (
-    messageId: string,
-    type: 'positive' | 'negative',
-    traceId?: string
-  ) => Promise<boolean>;
   isLastMessage?: boolean;
-}>(({ message, onRegenerateResponse, onFeedback, isLastMessage = false }) => {
+}>(({ message, onRegenerateResponse, isLastMessage = false }) => {
   const hasTextContent = Boolean(message.content?.trim());
   const assistantResponseView = useMemo(() => {
     if (message.role !== 'assistant' || message.isStreaming) {
@@ -174,14 +169,6 @@ export const AIWorkspaceMessage = memo<{
                         </div>
                       )}
                     </div>
-                  ) : isLastMessage &&
-                    !message.isStreaming &&
-                    !analysisBasis ? (
-                    <TypewriterMarkdown
-                      content={message.content}
-                      enableTypewriter={true}
-                      speed={12}
-                    />
                   ) : (
                     <MarkdownRenderer
                       content={message.content}
@@ -195,6 +182,10 @@ export const AIWorkspaceMessage = memo<{
                 </div>
               )}
             </div>
+          )}
+
+          {message.role === 'assistant' && (
+            <ArtifactRendererHost metadata={message.metadata} />
           )}
 
           <div
@@ -219,8 +210,6 @@ export const AIWorkspaceMessage = memo<{
                   content={message.content}
                   role={message.role}
                   onRegenerate={onRegenerateResponse}
-                  onFeedback={onFeedback}
-                  traceId={message.metadata?.traceId}
                   showRegenerate={isLastMessage && message.role === 'assistant'}
                 />
               )}

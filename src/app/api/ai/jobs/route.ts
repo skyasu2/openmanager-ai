@@ -13,13 +13,19 @@ export const maxDuration = 30;
 
 import { randomUUID } from 'crypto';
 import { after, type NextRequest, NextResponse } from 'next/server';
+import { buildAssistantPlanFromRouteDecision } from '@/lib/ai/assistant-contract';
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
+import {
+  buildRouteDecision,
+  type RouteDecision,
+  type RouteDecisionComplexity,
+} from '@/lib/ai/route-decision';
 import {
   analyzeJobQueryComplexity,
   inferJobType,
 } from '@/lib/ai/utils/query-complexity';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
-import { withAuth } from '@/lib/auth/api-auth';
+import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
 import {
@@ -40,6 +46,10 @@ import type {
 } from '@/types/ai-jobs';
 import { getErrorMessage } from '@/types/type-utils';
 import { withCSRFProtection } from '@/utils/security/csrf';
+import {
+  resolveSupervisorInternalDisclosureMode,
+  type SupervisorInternalDisclosureMode,
+} from '../supervisor/internal-disclosure-mode';
 import { buildScopedJobListKey, resolveJobOwnerKey } from './job-ownership';
 
 // ============================================
@@ -69,6 +79,20 @@ interface JobToolOptions {
   analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
+  internalDisclosureMode?: SupervisorInternalDisclosureMode;
+  localRouteDecision?: RouteDecision;
+}
+
+function mapJobComplexityToRouteDecision(
+  complexity: string
+): RouteDecisionComplexity | undefined {
+  if (complexity === 'simple' || complexity === 'complex') {
+    return complexity;
+  }
+  if (complexity === 'medium') {
+    return 'moderate';
+  }
+  return undefined;
 }
 
 function isAnalysisMode(value: unknown): value is AnalysisMode {
@@ -126,6 +150,9 @@ async function handlePOST(request: NextRequest) {
     // Job 타입 자동 추론
     const jobType = body.type || inferJobType(query);
     const toolOptions = extractJobToolOptions(options?.metadata);
+    const internalDisclosureMode = resolveSupervisorInternalDisclosureMode(
+      getAPIAuthContext(request)
+    );
 
     // Job ID 생성
     const jobId = randomUUID();
@@ -134,6 +161,22 @@ async function handlePOST(request: NextRequest) {
       now,
       options?.metadata?.queryAsOfDataSlot
     );
+    const routeDecision = buildRouteDecision({
+      intent: 'job',
+      executionPath: 'job',
+      ...(mapJobComplexityToRouteDecision(complexity.level) && {
+        complexity: mapJobComplexityToRouteDecision(complexity.level),
+      }),
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+      dataSlot: queryAsOf.dataSlot.timeLabel,
+    });
+    const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
+    const workerToolOptions: JobToolOptions = {
+      ...toolOptions,
+      ...(internalDisclosureMode && { internalDisclosureMode }),
+      localRouteDecision: routeDecision,
+    };
 
     // Redis에 Job 저장
     const job: AIJob = {
@@ -155,7 +198,10 @@ async function handlePOST(request: NextRequest) {
         factors: complexity.factors,
         ownerKey,
         queryAsOf,
-        ...toolOptions,
+        localRouteDecision: workerToolOptions.localRouteDecision,
+        routeDecision,
+        assistantPlan,
+        ...workerToolOptions,
       },
     };
 
@@ -203,7 +249,7 @@ async function handlePOST(request: NextRequest) {
                 query,
                 jobType,
                 options?.sessionId,
-                toolOptions,
+                workerToolOptions,
                 getRateLimitIdentity(request),
                 queryAsOf
               )
@@ -226,6 +272,8 @@ async function handlePOST(request: NextRequest) {
       triggerStatus: initialTriggerStatus,
       routingMode: 'job-queue',
       complexity: complexity.level,
+      routeDecision,
+      assistantPlan,
     };
 
     return NextResponse.json(response, {

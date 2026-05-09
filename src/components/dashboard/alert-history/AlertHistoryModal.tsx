@@ -1,7 +1,7 @@
 'use client';
 
 import { Bell, FileText } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   useCallback,
   useEffect,
@@ -10,7 +10,6 @@ import {
   useState,
   useTransition,
 } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useAlertHistory } from '@/hooks/dashboard/useAlertHistory';
 import { useScrollSentinel } from '@/hooks/dashboard/useScrollSentinel';
 import { cn } from '@/lib/utils';
@@ -24,7 +23,6 @@ import {
   formatRotatingTimestamp,
 } from '@/utils/dashboard/rotating-timestamp';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
-import { supportsDashboardAlertAIPrefill } from '../alert-ai-context';
 import { FilterChip } from '../shared/FilterChip';
 import { StatCell } from '../shared/StatCell';
 import type { AlertHistoryModalProps } from './alert-history.types';
@@ -50,6 +48,23 @@ function formatDuration(seconds: number): string {
 
 const INITIAL_DISPLAY = 50;
 const LOAD_MORE_COUNT = 50;
+const DEFAULT_TIME_RANGE_MS = 86_400_000;
+const ALERT_FILTER_QUERY_KEYS = [
+  'severity',
+  'state',
+  'server',
+  'serverId',
+  'range',
+  'q',
+] as const;
+
+type AlertFilterQueryState = {
+  severity: AlertSeverity | 'all';
+  state: AlertState | 'all';
+  serverId: string;
+  timeRangeMs: number;
+  keyword: string;
+};
 
 const normalizeInitialServerId = (
   initialServerId: string | null | undefined,
@@ -57,28 +72,131 @@ const normalizeInitialServerId = (
 ) =>
   initialServerId && serverIds.includes(initialServerId) ? initialServerId : '';
 
+function parseAlertSeverity(value: string | null): AlertSeverity | 'all' {
+  return value === 'critical' || value === 'warning' ? value : 'all';
+}
+
+function parseAlertState(value: string | null): AlertState | 'all' {
+  return value === 'firing' || value === 'resolved' ? value : 'all';
+}
+
+function parseAlertTimeRange(value: string | null): number {
+  if (!value) return DEFAULT_TIME_RANGE_MS;
+  if (value === '1h') return 3_600_000;
+  if (value === '6h') return 21_600_000;
+  if (value === '24h') return 86_400_000;
+  if (value === 'all') return 0;
+
+  const numericValue = Number(value);
+  const supportedRange = TIME_RANGE_OPTIONS.find(
+    (option) => option.value === numericValue
+  );
+
+  return supportedRange?.value ?? DEFAULT_TIME_RANGE_MS;
+}
+
+function formatAlertTimeRange(value: number): string | null {
+  if (value === 3_600_000) return '1h';
+  if (value === 21_600_000) return '6h';
+  if (value === 0) return 'all';
+  return null;
+}
+
+function parseAlertFilterQuery(
+  searchParams: URLSearchParams,
+  serverIds: string[],
+  initialServerId: string
+): AlertFilterQueryState {
+  return {
+    severity: parseAlertSeverity(searchParams.get('severity')),
+    state: parseAlertState(searchParams.get('state')),
+    serverId: normalizeInitialServerId(
+      searchParams.get('server') ??
+        searchParams.get('serverId') ??
+        initialServerId,
+      serverIds
+    ),
+    timeRangeMs: parseAlertTimeRange(searchParams.get('range')),
+    keyword: searchParams.get('q')?.trim() ?? '',
+  };
+}
+
+function buildAlertFilterQuery(
+  currentQueryString: string,
+  filters: AlertFilterQueryState
+) {
+  const next = new URLSearchParams(currentQueryString);
+  ALERT_FILTER_QUERY_KEYS.forEach((key) => {
+    next.delete(key);
+  });
+
+  if (filters.severity !== 'all') next.set('severity', filters.severity);
+  if (filters.state !== 'all') next.set('state', filters.state);
+  if (filters.serverId) next.set('server', filters.serverId);
+
+  const rangeParam = formatAlertTimeRange(filters.timeRangeMs);
+  if (rangeParam) next.set('range', rangeParam);
+
+  if (filters.keyword) next.set('q', filters.keyword);
+
+  return next;
+}
+
+function buildAlertFilterUrl(pathname: string, params: URLSearchParams) {
+  const query = params.toString();
+  return query ? `${pathname}?${query}` : pathname;
+}
+
 export function AlertHistoryPanel({
   active = true,
   serverIds,
-  onAskAIAboutAlert,
   initialServerId = null,
 }: Omit<AlertHistoryModalProps, 'open' | 'onClose'> & {
   active?: boolean;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentQueryString = searchParams.toString();
+  const queryServerId =
+    searchParams.get('server') ?? searchParams.get('serverId');
+  const hasServerQuery =
+    searchParams.has('server') || searchParams.has('serverId');
   const normalizedInitialServerId = normalizeInitialServerId(
     initialServerId,
     serverIds
   );
-  const [severity, setSeverity] = useState<AlertSeverity | 'all'>('all');
-  const [state, setState] = useState<AlertState | 'all'>('all');
-  const [serverId, setServerId] = useState(normalizedInitialServerId);
-  const [timeRangeMs, setTimeRangeMs] = useState(86_400_000);
-  const [keyword, setKeyword] = useState('');
-  const [debouncedKeyword, setDebouncedKeyword] = useState('');
+  const normalizedQueryServerId = normalizeInitialServerId(
+    queryServerId,
+    serverIds
+  );
+  const initialFilterState = useMemo(
+    () =>
+      parseAlertFilterQuery(
+        new URLSearchParams(currentQueryString),
+        serverIds,
+        normalizedInitialServerId
+      ),
+    [currentQueryString, normalizedInitialServerId, serverIds]
+  );
+  const [severity, setSeverity] = useState<AlertSeverity | 'all'>(
+    initialFilterState.severity
+  );
+  const [state, setState] = useState<AlertState | 'all'>(
+    initialFilterState.state
+  );
+  const [serverId, setServerId] = useState(initialFilterState.serverId);
+  const [timeRangeMs, setTimeRangeMs] = useState(
+    initialFilterState.timeRangeMs
+  );
+  const [keyword, setKeyword] = useState(initialFilterState.keyword);
+  const [debouncedKeyword, setDebouncedKeyword] = useState(
+    initialFilterState.keyword
+  );
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
+  const [serverFilterTouched, setServerFilterTouched] = useState(false);
   const [isPending, startTransition] = useTransition();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const appliedInitialServerIdRef = useRef(normalizedInitialServerId);
 
   const sessionAnchorRef = useRef(new Date());
   const [sessionAnchorLabel, setSessionAnchorLabel] = useState('');
@@ -97,7 +215,13 @@ export function AlertHistoryPanel({
     []
   );
 
-  const handleFilterChange = (update: () => void) => {
+  const handleFilterChange = (
+    update: () => void,
+    options: { serverTouched?: boolean } = {}
+  ) => {
+    if (options.serverTouched) {
+      setServerFilterTouched(true);
+    }
     startTransition(() => {
       update();
       setDisplayCount(INITIAL_DISPLAY);
@@ -105,16 +229,76 @@ export function AlertHistoryPanel({
   };
 
   useEffect(() => {
-    if (appliedInitialServerIdRef.current === normalizedInitialServerId) {
+    if (!active) return;
+    startTransition(() => {
+      setSeverity(initialFilterState.severity);
+      setState(initialFilterState.state);
+      setServerId(initialFilterState.serverId);
+      setTimeRangeMs(initialFilterState.timeRangeMs);
+      setKeyword(initialFilterState.keyword);
+      setDebouncedKeyword(initialFilterState.keyword);
+      setDisplayCount(INITIAL_DISPLAY);
+    });
+  }, [
+    active,
+    initialFilterState.severity,
+    initialFilterState.state,
+    initialFilterState.serverId,
+    initialFilterState.timeRangeMs,
+    initialFilterState.keyword,
+  ]);
+
+  useEffect(() => {
+    if (!active) return;
+    if (hasServerQuery && serverIds.length === 0) return;
+    if (
+      hasServerQuery &&
+      normalizedQueryServerId !== serverId &&
+      !serverFilterTouched
+    ) {
       return;
     }
 
-    appliedInitialServerIdRef.current = normalizedInitialServerId;
-    startTransition(() => {
-      setServerId(normalizedInitialServerId);
-      setDisplayCount(INITIAL_DISPLAY);
+    const nextSearchParams = buildAlertFilterQuery(currentQueryString, {
+      severity,
+      state,
+      serverId,
+      timeRangeMs,
+      keyword: debouncedKeyword.trim(),
     });
-  }, [normalizedInitialServerId]);
+    const nextQueryString = nextSearchParams.toString();
+
+    if (nextQueryString === currentQueryString) {
+      if (
+        serverFilterTouched &&
+        (!hasServerQuery || normalizedQueryServerId !== serverId)
+      ) {
+        setServerFilterTouched(false);
+      }
+      return;
+    }
+
+    router.replace(buildAlertFilterUrl(pathname, nextSearchParams), {
+      scroll: false,
+    });
+    if (serverFilterTouched) {
+      setServerFilterTouched(false);
+    }
+  }, [
+    active,
+    currentQueryString,
+    debouncedKeyword,
+    hasServerQuery,
+    normalizedQueryServerId,
+    pathname,
+    router,
+    serverFilterTouched,
+    serverId,
+    serverIds.length,
+    severity,
+    state,
+    timeRangeMs,
+  ]);
 
   useEffect(() => {
     if (!active) return;
@@ -238,7 +422,9 @@ export function AlertHistoryPanel({
             name="alert-history-server-filter"
             value={serverId}
             onChange={(e) =>
-              handleFilterChange(() => setServerId(e.target.value))
+              handleFilterChange(() => setServerId(e.target.value), {
+                serverTouched: true,
+              })
             }
             aria-label="서버 필터"
             className="touch-text-safe-xs w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
@@ -326,7 +512,6 @@ export function AlertHistoryPanel({
                   badgeClassName={colors.badge}
                   borderClassName={colors.border}
                   anchorDate={sessionAnchorRef.current}
-                  onAskAIAboutAlert={onAskAIAboutAlert}
                 />
               );
             })}
@@ -417,45 +602,19 @@ export function AlertHistoryPanel({
   );
 }
 
-export function AlertHistoryModal({
-  open,
-  onClose,
-  serverIds,
-  onAskAIAboutAlert,
-  initialServerId,
-}: AlertHistoryModalProps) {
-  return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-5xl flex flex-col gap-0 p-0">
-        <AlertHistoryPanel
-          active={open}
-          serverIds={serverIds}
-          onAskAIAboutAlert={onAskAIAboutAlert}
-          initialServerId={initialServerId}
-        />
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 export function AlertHistoryRow({
   alert,
   badgeClassName,
   borderClassName,
   anchorDate,
-  onAskAIAboutAlert,
 }: {
   alert: Alert;
   badgeClassName: string;
   borderClassName: string;
   anchorDate: Date;
-  onAskAIAboutAlert?: (alert: Alert) => void;
 }) {
   const router = useRouter();
   const isResolved = alert.state === 'resolved';
-  const canAskAI =
-    typeof onAskAIAboutAlert === 'function' &&
-    supportsDashboardAlertAIPrefill(alert.metric);
   const rowClassName = cn(
     'rounded-lg border border-gray-200/80 bg-white p-3 border-l-4 shadow-sm',
     'transition-colors hover:bg-gray-50/50',
@@ -514,17 +673,6 @@ export function AlertHistoryRow({
           <span className="tabular-nums text-xs text-gray-400">
             {formatDuration(alert.duration)}
           </span>
-          {canAskAI && (
-            <button
-              type="button"
-              onClick={() => onAskAIAboutAlert(alert)}
-              aria-label={`AI에게 ${alert.instance} ${formatMetricName(alert.metric)} 알림 분석 요청`}
-              title="AI 분석"
-              className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold text-rose-600 transition-colors hover:bg-rose-50"
-            >
-              AI
-            </button>
-          )}
           <button
             type="button"
             onClick={handleOpenLogs}

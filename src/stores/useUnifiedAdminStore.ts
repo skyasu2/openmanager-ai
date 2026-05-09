@@ -25,7 +25,6 @@ interface UnifiedAdminState {
   getSystemRemainingTime: () => number;
   logout: () => void;
   setSettingsPanelOpen: (isOpen: boolean) => void;
-  toggleAI: () => void; // 🔧 인터페이스에 누락된 메서드 추가
 }
 
 export const useUnifiedAdminStore = create<UnifiedAdminState>()((set, get) => ({
@@ -129,25 +128,6 @@ export const useUnifiedAdminStore = create<UnifiedAdminState>()((set, get) => ({
       logger.info('🔐 [System] 전체 로그아웃 완료');
     } catch (error) {
       logger.error('❌ [System] 전체 로그아웃 실패:', error);
-    }
-  },
-
-  // AI 에이전트 토글
-  toggleAI: () => {
-    try {
-      set((state) => ({
-        ...state,
-        aiAgent: {
-          ...state.aiAgent,
-          isEnabled: !state.aiAgent.isEnabled,
-          state: !state.aiAgent.isEnabled ? 'enabled' : 'disabled',
-        },
-      }));
-
-      const newState = get().aiAgent.isEnabled;
-      logger.info(`🤖 [AI] AI 에이전트 ${newState ? '활성화' : '비활성화'}`);
-    } catch (error) {
-      logger.error('❌ [AI] AI 토글 실패:', error);
     }
   },
 

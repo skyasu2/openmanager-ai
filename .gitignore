@@ -52,6 +52,13 @@ landing-production-*.txt
 landing-*.txt
 validation-production-*.txt
 artifacts/
+# Deterministic test source paths that use the artifacts domain name.
+!tests/artifacts/
+tests/artifacts/*
+!tests/artifacts/intent-classifier.bench.ts
+!tests/fixtures/artifacts/
+tests/fixtures/artifacts/*
+!tests/fixtures/artifacts/intent-corpus.ts
 .temp-*
 # Root-level build/deploy/test logs (moved to logs/)
 build_*.txt
@@ -455,6 +462,7 @@ eslint-result.json
 *.temp.png
 # Numbered project screenshots (documentation captures)
 [0-9][0-9]-*.png
+[0-9][0-9][a-z]-*.png
 # Playwright/dev verification screenshots (root level)
 /*.png
 

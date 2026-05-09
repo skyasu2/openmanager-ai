@@ -26,11 +26,16 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type {
+  AssistantPlan,
+  AssistantResult,
+} from '@/lib/ai/assistant-contract';
 import {
   type AIErrorDetails,
   buildRateLimitErrorDetails,
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
+import type { RouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
@@ -92,8 +97,11 @@ export interface AsyncQueryResult {
   usedFallback?: boolean;
   fallbackReason?: string;
   ttfbMs?: number;
+  routeDecision?: RouteDecision;
+  assistantPlan?: AssistantPlan;
+  assistantResult?: AssistantResult;
   error?: string;
-  /** Langfuse trace ID for feedback scoring */
+  /** Langfuse trace ID for observability correlation */
   traceId?: string;
   handoffHistory?: Array<{
     from: string;

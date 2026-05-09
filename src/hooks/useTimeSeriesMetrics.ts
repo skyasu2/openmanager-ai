@@ -144,8 +144,8 @@ const serverHistoryResponseSchema = z.object({
             metric: z.string().optional(),
             severity: z.string().optional(),
             message: z.string().optional(),
-            firedAt: z.string().optional(),
-            resolvedAt: z.string().optional(),
+            firedAt: z.string().nullable().optional(),
+            resolvedAt: z.string().nullable().optional(),
           })
         )
         .optional(),
@@ -230,11 +230,13 @@ function normalizeToTimeSeriesData(
       timestamp: point.timestamp,
       value: mapMetricValue(options.metric, point.metrics),
     }));
+    const latestHistoryTimestamp =
+      history[history.length - 1]?.timestamp ?? new Date().toISOString();
 
     const anomalies = options.includeAnomalies
       ? (serverData.alerts ?? []).map((alert) => {
-          const startTime = alert.firedAt ?? new Date().toISOString();
-          const endTime = alert.resolvedAt ?? startTime;
+          const startTime = alert.firedAt ?? latestHistoryTimestamp;
+          const endTime = alert.resolvedAt ?? latestHistoryTimestamp;
           return {
             startTime,
             endTime,

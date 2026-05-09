@@ -328,6 +328,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const simple = searchParams.get('simple') === 'true';
   const service = searchParams.get('service');
+  const soft = searchParams.get('soft') === 'true';
 
   // 1. Simple ping mode (?simple=true) - /api/ping 대체
   if (simple) {
@@ -373,6 +374,7 @@ export async function GET(request: NextRequest) {
     if (result.healthy) {
       return NextResponse.json({
         status: 'ok',
+        healthy: true,
         backend: 'cloud-run',
         latency: result.latency,
         timestamp: new Date().toISOString(),
@@ -380,12 +382,20 @@ export async function GET(request: NextRequest) {
     }
     return NextResponse.json(
       {
-        status: 'error',
+        status: soft ? 'degraded' : 'error',
+        healthy: false,
         backend: 'cloud-run',
+        ...(typeof result.latency === 'number'
+          ? { latency: result.latency }
+          : {}),
         error: result.error,
+        ...(result.reasonCode ? { reasonCode: result.reasonCode } : {}),
+        ...(typeof result.recoverable === 'boolean'
+          ? { recoverable: result.recoverable }
+          : {}),
         timestamp: new Date().toISOString(),
       },
-      { status: 503 }
+      { status: soft ? 200 : 503 }
     );
   }
 

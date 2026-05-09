@@ -5,6 +5,15 @@ import { useEffect, useRef, useState } from 'react';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 
+type BootstrapServiceStatus = 'pending' | 'success' | 'degraded' | 'failed';
+
+type SoftAIHealthResponse = {
+  status?: string;
+  error?: string;
+  reasonCode?: string;
+  recoverable?: boolean;
+};
+
 /**
  * 🚀 시스템 부트스트랩 컴포넌트
  *
@@ -26,9 +35,9 @@ export function SystemBootstrap(): React.ReactNode {
   const hasBootstrappedRef = useRef(false);
 
   const [_bootstrapStatus, setBootstrapStatus] = useState({
-    mcp: 'pending' as 'pending' | 'success' | 'failed',
-    cloudRunAI: 'pending' as 'pending' | 'success' | 'failed',
-    supabase: 'pending' as 'pending' | 'success' | 'failed',
+    mcp: 'pending' as BootstrapServiceStatus,
+    cloudRunAI: 'pending' as BootstrapServiceStatus,
+    supabase: 'pending' as BootstrapServiceStatus,
     completed: false,
   });
 
@@ -60,9 +69,9 @@ export function SystemBootstrap(): React.ReactNode {
 
       // 🎯 로컬 상태 추적 (async 업데이트 문제 해결)
       const localStatus = {
-        mcp: 'pending' as 'pending' | 'success' | 'failed',
-        cloudRunAI: 'pending' as 'pending' | 'success' | 'failed',
-        supabase: 'pending' as 'pending' | 'success' | 'failed',
+        mcp: 'pending' as BootstrapServiceStatus,
+        cloudRunAI: 'pending' as BootstrapServiceStatus,
+        supabase: 'pending' as BootstrapServiceStatus,
       };
 
       // 🎯 세션 캐시 확인 (브라우저 세션 동안 한 번만 체크)
@@ -134,23 +143,35 @@ export function SystemBootstrap(): React.ReactNode {
       aiHealthTimeout = setTimeout(() => aiHealthController.abort(), 3000);
       try {
         logger.info('🤖 Cloud Run AI 상태 확인...');
-        const aiHealthResponse = await fetch('/api/health?service=ai', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          signal: aiHealthController.signal,
-        });
+        const aiHealthResponse = await fetch(
+          '/api/health?service=ai&soft=true',
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            signal: aiHealthController.signal,
+          }
+        );
 
         if (isMounted) {
-          if (aiHealthResponse.ok) {
-            const aiData = await aiHealthResponse.json();
-            logger.info(
-              '✅ Cloud Run AI 상태 확인 완료:',
-              aiData.status === 'ok' ? '정상' : '오류'
-            );
+          const aiData =
+            (await aiHealthResponse.json()) as SoftAIHealthResponse;
+          if (aiHealthResponse.ok && aiData.status === 'ok') {
+            logger.info('✅ Cloud Run AI 상태 확인 완료:', '정상');
             localStatus.cloudRunAI = 'success';
             setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'success' }));
+          } else if (
+            aiHealthResponse.ok &&
+            aiData.status === 'degraded' &&
+            aiData.recoverable === true
+          ) {
+            logger.info('⏳ Cloud Run AI 상태 확인:', '콜드스타트 대기');
+            localStatus.cloudRunAI = 'degraded';
+            setBootstrapStatus((prev) => ({
+              ...prev,
+              cloudRunAI: 'degraded',
+            }));
           } else {
             logger.warn(
               '⚠️ Cloud Run AI 상태 확인 실패:',
@@ -163,13 +184,20 @@ export function SystemBootstrap(): React.ReactNode {
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
           logger.debug('Cloud Run AI 상태 확인 취소 또는 타임아웃');
+          if (isMounted) {
+            localStatus.cloudRunAI = 'degraded';
+            setBootstrapStatus((prev) => ({
+              ...prev,
+              cloudRunAI: 'degraded',
+            }));
+          }
         } else {
           // Cloud Run 미활성은 예상된 상황 — debug 레벨로 격하 (콘솔 노이즈 제거)
           logger.debug('Cloud Run AI 상태 확인 스킵 (미활성 또는 타임아웃)');
-        }
-        if (isMounted) {
-          localStatus.cloudRunAI = 'failed';
-          setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'failed' }));
+          if (isMounted) {
+            localStatus.cloudRunAI = 'failed';
+            setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'failed' }));
+          }
         }
       } finally {
         if (aiHealthTimeout) {

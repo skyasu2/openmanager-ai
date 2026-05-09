@@ -20,7 +20,6 @@ import { getServerStatusTheme } from '@/styles/design-constants';
 import type { Server as ServerType } from '@/types/server';
 import { formatUptime } from '@/utils/serverUtils';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
-import { AIInsightBadge } from '../shared/AIInsightBadge';
 import {
   CompactMetricChip,
   DetailRow,
@@ -34,7 +33,7 @@ import {
  * - 랜딩 페이지 스타일 그라데이션 애니메이션
  * - 상태별 색상: Critical(빨강), Warning(주황), Healthy(녹색)
  * - 호버 스케일 + 글로우 효과
- * - 서버 카드 독자 기능: 실시간 메트릭, AI Insight, Progressive Disclosure
+ * - 서버 카드 독자 기능: 실시간 메트릭, Progressive Disclosure
  * - 카드 크기 50% 축소 (2025-12-13)
  * - HTML 접근성 수정: 중첩 인터랙티브 제거, header button이 카드 클릭 담당 (2026-02-24)
  */
@@ -42,7 +41,6 @@ import {
 export interface ImprovedServerCardProps {
   server: ServerType;
   onClick: (server: ServerType) => void;
-  onAskAI?: (server: ServerType) => void;
   onOpenLogs?: (server: ServerType) => void;
   variant?: 'compact' | 'standard' | 'detailed';
   showRealTimeUpdates?: boolean;
@@ -84,6 +82,21 @@ const statusGradients = {
   },
 };
 
+function withCurrentMetricPoint(
+  values: number[],
+  currentValue: number | undefined
+): number[] {
+  if (typeof currentValue !== 'number' || !Number.isFinite(currentValue)) {
+    return values;
+  }
+
+  if (values.length === 0) {
+    return [currentValue];
+  }
+
+  return [...values.slice(0, -1), currentValue];
+}
+
 // BUG-5 fix: Tailwind JIT는 동적 클래스를 감지 못함 → 정적 룩업 맵 사용
 const hoverShadowClasses: Record<string, string> = {
   critical: 'hover:shadow-red-500/30',
@@ -103,11 +116,19 @@ const statusAccentBorderClasses: Record<string, string> = {
   unknown: 'border-l-4 border-l-purple-500',
 };
 
+const statusLabels: Record<string, string> = {
+  critical: '위험',
+  warning: '주의',
+  online: '정상',
+  offline: '오프라인',
+  maintenance: '점검',
+  unknown: '미확인',
+};
+
 const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
   ({
     server,
     onClick,
-    onAskAI,
     onOpenLogs,
     variant = 'standard',
     showRealTimeUpdates = true,
@@ -129,7 +150,6 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       statusGradients[safeServer.status] || statusGradients.online;
     const isCompactVariant = variant === 'compact';
 
-    const [showSecondaryInfo, setShowSecondaryInfo] = useState(false);
     const [showTertiaryInfo, setShowTertiaryInfo] = useState(false);
 
     // 📈 서버 메트릭 히스토리 로드 (OTel TimeSeries)
@@ -151,21 +171,30 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [safeServer]
     );
 
-    // 📊 메트릭별 히스토리 배열 (MiniLineChart용)
+    // 📊 메트릭별 히스토리 배열 (SvgSparkline용)
     const { cpuHistory, memoryHistory, diskHistory } = useMemo(
       () => ({
-        cpuHistory: metricsHistory.map((h) => h.cpu),
-        memoryHistory: metricsHistory.map((h) => h.memory),
-        diskHistory: metricsHistory.map((h) => h.disk),
+        cpuHistory: withCurrentMetricPoint(
+          metricsHistory.map((h) => h.cpu),
+          safeServer.cpu
+        ),
+        memoryHistory: withCurrentMetricPoint(
+          metricsHistory.map((h) => h.memory),
+          safeServer.memory
+        ),
+        diskHistory: withCurrentMetricPoint(
+          metricsHistory.map((h) => h.disk),
+          safeServer.disk
+        ),
       }),
-      [metricsHistory]
+      [metricsHistory, safeServer.cpu, safeServer.disk, safeServer.memory]
     );
 
     // UI Variants - 높이 증가 (그래프 영역 확대)
     const variantStyles = useMemo(() => {
       const styles = {
         compact: {
-          container: 'min-h-[155px] p-2',
+          container: 'min-h-[150px] p-2.5',
           maxServices: 2,
           showDetails: false,
           showServices: false,
@@ -189,10 +218,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     // Interactions - Progressive Disclosure Toggle
     const toggleExpansion = useCallback((e: React.MouseEvent) => {
       e.stopPropagation();
-      setShowTertiaryInfo((prev) => {
-        if (!prev) setShowSecondaryInfo(true);
-        return !prev;
-      });
+      setShowTertiaryInfo((prev) => !prev);
     }, []);
 
     // 카드 클릭 핸들러
@@ -204,19 +230,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [onClick, safeServer]
     );
 
-    const isAIActionable =
+    const needsAttention =
       safeServer.status === 'warning' || safeServer.status === 'critical';
-
-    const handleAskAI = useCallback(
-      (e: React.MouseEvent | React.KeyboardEvent) => {
-        e.stopPropagation();
-        if (!isAIActionable || !onAskAI) {
-          return;
-        }
-        onAskAI(safeServer);
-      },
-      [isAIActionable, onAskAI, safeServer]
-    );
+    const shouldAnimateStatusSignal = showRealTimeUpdates && needsAttention;
 
     const handleOpenLogs = useCallback(
       (e: React.MouseEvent | React.KeyboardEvent) => {
@@ -226,35 +242,28 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [onOpenLogs, safeServer]
     );
 
-    // 🔧 인라인 화살표 함수를 useCallback으로 최적화
-    const handleMouseEnter = useCallback(() => {
-      if (enableProgressiveDisclosure) setShowSecondaryInfo(true);
-    }, [enableProgressiveDisclosure]);
-
-    const handleMouseLeave = useCallback(() => {
-      if (enableProgressiveDisclosure && !showTertiaryInfo)
-        setShowSecondaryInfo(false);
-    }, [enableProgressiveDisclosure, showTertiaryInfo]);
-
     const currentHoverShadow =
       hoverShadowClasses[safeServer.status] || hoverShadowClasses.online;
     const currentAccentBorder =
       statusAccentBorderClasses[safeServer.status] ||
       statusAccentBorderClasses.online;
+    const actionRailClass = `flex items-center gap-1 ${isCompactVariant ? 'pt-1 sm:pt-2' : 'pt-4'}`;
+    const actionButtonClass = `flex items-center justify-center bg-black/5 text-gray-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+      isCompactVariant ? 'h-9 w-9 rounded-lg' : 'h-11 w-11 rounded-full'
+    }`;
 
-    const insightBadge = (
-      <AIInsightBadge
-        {...realtimeMetrics}
-        status={safeServer.status}
-        historyData={metricsHistory}
-      />
+    const metricStatusBadge = (
+      <span
+        data-testid="metric-status-badge"
+        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${statusTheme.badge}`}
+        title={`서버 상태: ${statusLabels[safeServer.status] ?? statusLabels.unknown}`}
+      >
+        {statusLabels[safeServer.status] ?? statusLabels.unknown}
+      </span>
     );
 
     return (
-      // biome-ignore lint/a11y/noStaticElementInteractions: Container div with mouse hover for progressive disclosure — inner buttons handle keyboard interaction.
       <div
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         className={`group relative w-full overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent ${statusTheme.background} ${statusTheme.border} ${currentAccentBorder} ${variantStyles.container} ${currentHoverShadow}`}
       >
         {/* 🎨 그라데이션 애니메이션 배경 (랜딩 카드 스타일) */}
@@ -299,7 +308,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         {showRealTimeUpdates && (
           <div className="absolute right-3 top-3 z-10">
             <span
-              className={`block h-2.5 w-2.5 rounded-full animate-pulse ring-2 ring-white/80 shadow-lg ${statusTheme.text.replace('text-', 'bg-')}`}
+              className={`block h-2.5 w-2.5 rounded-full ring-2 ring-white/80 shadow-lg ${shouldAnimateStatusSignal ? 'animate-pulse' : ''} ${statusTheme.text.replace('text-', 'bg-')}`}
               style={{ boxShadow: `0 0 8px ${currentGradient.glow}` }}
             />
           </div>
@@ -314,7 +323,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           >
             {/* 🎨 아이콘 박스 - 그라데이션 스타일 (랜딩 카드 참조) */}
             <div
-              className={`relative rounded-xl p-2 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:scale-110 bg-linear-to-br ${currentGradient.gradient}`}
+              className={`relative rounded-xl p-2 shadow-lg backdrop-blur-sm transition-transform duration-200 bg-linear-to-br ${currentGradient.gradient} ${needsAttention ? 'group-hover:scale-105' : ''}`}
               style={{
                 boxShadow: `0 4px 15px ${currentGradient.glow}`,
               }}
@@ -323,7 +332,10 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             </div>
             <div className="min-w-0 flex-1">
               <div className="mb-0.5 flex items-center gap-1.5">
-                <h2 className="truncate text-sm font-semibold text-gray-900">
+                <h2
+                  className="truncate text-sm font-semibold text-gray-900"
+                  title={safeServer.name}
+                >
                   {safeServer.name}
                 </h2>
               </div>
@@ -357,13 +369,13 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             </div>
           </button>
 
-          <div className="flex items-center gap-1 pt-4">
+          <div className={actionRailClass}>
             {onOpenLogs && (
               <button
                 type="button"
                 onClick={handleOpenLogs}
                 aria-label={`${safeServer.name} 로그 보기`}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-black/5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                className={`${actionButtonClass} hover:bg-blue-50 hover:text-blue-700`}
               >
                 <FileText className="h-4 w-4" />
               </button>
@@ -373,7 +385,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 type="button"
                 data-toggle-button
                 onClick={toggleExpansion}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-black/5 hover:bg-black/10 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                className={`${actionButtonClass} cursor-pointer hover:bg-black/10 hover:text-gray-700`}
                 aria-expanded={showTertiaryInfo}
                 aria-label={
                   showTertiaryInfo ? '상세 정보 접기' : '상세 정보 펼치기'
@@ -390,7 +402,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         </header>
         {/* Main Content Section */}
         <section className="relative z-10">
-          {/* 🎨 AI Insight - 강화된 표시 */}
+          {/* 🎨 상태 요약 - core monitoring surface */}
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <div
@@ -401,31 +413,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
               </span>
             </div>
             {isCompactVariant ? (
-              <div className="hidden sm:block">
-                {isAIActionable ? (
-                  <button
-                    type="button"
-                    onClick={handleAskAI}
-                    aria-label={`AI에게 ${safeServer.name} 경고 분석 요청`}
-                    className="cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
-                  >
-                    {insightBadge}
-                  </button>
-                ) : (
-                  <div className="cursor-default">{insightBadge}</div>
-                )}
-              </div>
-            ) : isAIActionable ? (
-              <button
-                type="button"
-                onClick={handleAskAI}
-                aria-label={`AI에게 ${safeServer.name} 경고 분석 요청`}
-                className="cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
-              >
-                {insightBadge}
-              </button>
+              <div className="hidden sm:block">{metricStatusBadge}</div>
             ) : (
-              <div className="cursor-default">{insightBadge}</div>
+              metricStatusBadge
             )}
           </div>
 
@@ -493,9 +483,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         {/* Services Section */}
         {variantStyles.showServices &&
           safeServer.services?.length > 0 &&
-          (showSecondaryInfo || !enableProgressiveDisclosure) && (
+          (showTertiaryInfo || !enableProgressiveDisclosure) && (
             <div
-              className={`mt-2 flex flex-wrap gap-1.5 transition-all duration-300 relative z-10 ${showSecondaryInfo || !enableProgressiveDisclosure ? 'opacity-100' : 'opacity-0'} ${isCompactVariant ? 'hidden sm:flex' : 'flex'}`}
+              className={`mt-2 flex flex-wrap gap-1.5 transition-all duration-300 relative z-10 ${showTertiaryInfo || !enableProgressiveDisclosure ? 'opacity-100' : 'opacity-0'} ${isCompactVariant ? 'hidden sm:flex' : 'flex'}`}
             >
               {safeServer.services
                 .slice(0, variantStyles.maxServices)

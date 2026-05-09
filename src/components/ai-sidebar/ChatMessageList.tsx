@@ -18,18 +18,8 @@ interface ChatMessageListProps {
   MessageComponent: React.ComponentType<{
     message: EnhancedChatMessage;
     onRegenerateResponse?: (messageId: string) => void;
-    onFeedback?: (
-      messageId: string,
-      type: 'positive' | 'negative',
-      traceId?: string
-    ) => Promise<boolean>;
     isLastMessage?: boolean;
   }>;
-  onFeedback?: (
-    messageId: string,
-    type: 'positive' | 'negative',
-    traceId?: string
-  ) => Promise<boolean>;
   isGenerating: boolean;
   regenerateResponse: (messageId: string) => void;
   setInputValue: (value: string) => void;
@@ -42,7 +32,6 @@ export const ChatMessageList = memo(function ChatMessageList({
   limitedMessages,
   messagesEndRef,
   MessageComponent,
-  onFeedback,
   isGenerating,
   regenerateResponse,
   setInputValue,
@@ -61,7 +50,7 @@ export const ChatMessageList = memo(function ChatMessageList({
   return (
     <div
       ref={scrollContainerRef}
-      className="flex-1 overflow-y-auto scroll-smooth will-change-scroll"
+      className="min-h-0 flex-1 overflow-y-auto scroll-smooth will-change-scroll"
       aria-busy={isGenerating}
       {...liveRegionProps}
     >
@@ -100,7 +89,6 @@ export const ChatMessageList = memo(function ChatMessageList({
               key={message.id}
               message={message}
               onRegenerateResponse={regenerateResponse}
-              onFeedback={onFeedback}
               isLastMessage={isLastMessage}
             />
           );

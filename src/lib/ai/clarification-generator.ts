@@ -7,6 +7,7 @@
 
 import type { QueryClassification } from './query-classifier';
 import { needsClarification } from './query-classifier';
+import { isFormattingOnlyRequest } from './utils/query-complexity';
 
 export interface ClarificationOption {
   id: string;
@@ -62,6 +63,15 @@ const METRIC_PATTERNS = {
     /cpu|memory|메모리|disk|디스크|network|네트워크|latency|응답|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i,
 };
 
+const EXTERNAL_KNOWLEDGE_PATTERNS =
+  /최신|latest|stable|공식\s*문서|documentation|docs|릴리스|release|버전|version|cve|security\s*advisory|보안\s*취약점|next\.?js|react|vercel|node\.?js/i;
+
+const INTERNAL_KNOWLEDGE_PATTERNS =
+  /rag|내부\s*(문서|근거|지식)|사내\s*(문서|근거|지식)|프로젝트\s*(문서|파일|경로|위치)|저장소\s*(문서|파일|경로|위치)|repo(?:sitory)?\s*(doc|file|path|location)|ssot|single\s*source\s*of\s*truth|pre-generated|파일\s*경로|코드\s*위치|데이터\s*로더|data\s*loader|otel\s*(데이터|data)?\s*(파일|경로|위치|ssot)/i;
+
+const OPERATIONS_COMMAND_GUIDANCE_PATTERNS =
+  /(?:haproxy|nginx|mysql|redis|nfs|access\.log|slow_query|show\s+(?:stat|processlist|replica|slave)\s+status|redis-cli|showmount|findmnt|mount\s+-t|df\s+-h|awk|grep).*(?:명령어|방법|순서|확인|분석|재마운트)|(?:명령어|방법|순서|확인|분석|재마운트).*(?:haproxy|nginx|mysql|redis|nfs|access\.log|slow_query|show\s+(?:stat|processlist|replica|slave)\s+status|redis-cli|showmount|findmnt|mount\s+-t|df\s+-h|awk|grep)/i;
+
 /**
  * 쿼리가 이미 구체적인 조건을 포함하는지 확인
  */
@@ -83,6 +93,22 @@ export function generateClarification(
   query: string,
   classification: QueryClassification
 ): ClarificationRequest | null {
+  if (isFormattingOnlyRequest(query)) {
+    return null;
+  }
+
+  if (EXTERNAL_KNOWLEDGE_PATTERNS.test(query)) {
+    return null;
+  }
+
+  if (INTERNAL_KNOWLEDGE_PATTERNS.test(query)) {
+    return null;
+  }
+
+  if (OPERATIONS_COMMAND_GUIDANCE_PATTERNS.test(query)) {
+    return null;
+  }
+
   // 명확화가 필요하지 않으면 null 반환
   if (
     !needsClarification(classification.confidence, classification.complexity)

@@ -14,8 +14,6 @@ export interface AIChatSurfaceState {
   setSelectedFunction: (fn: AIAssistantFunction) => void;
   webSearchEnabled: boolean;
   toggleWebSearch: () => void;
-  ragEnabled: boolean;
-  toggleRAG: () => void;
   analysisMode: AnalysisMode;
   selectAnalysisMode: (mode: AnalysisMode) => void;
   pendingEntryState: PendingAIEntryState | null;
@@ -40,8 +38,6 @@ export function useAIChatSurface(
 
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
   const setWebSearchEnabled = useAISidebarStore((s) => s.setWebSearchEnabled);
-  const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
-  const setRagEnabled = useAISidebarStore((s) => s.setRagEnabled);
   const analysisMode = useAISidebarStore((s) => s.analysisMode);
   const setAnalysisMode = useAISidebarStore((s) => s.setAnalysisMode);
   const pendingEntryState = useAISidebarStore((s) => s.pendingEntryState);
@@ -59,10 +55,6 @@ export function useAIChatSurface(
     setWebSearchEnabled((prev) => !prev);
   }, [setWebSearchEnabled]);
 
-  const toggleRAG = useCallback(() => {
-    setRagEnabled((prev) => !prev);
-  }, [setRagEnabled]);
-
   const selectAnalysisMode = useCallback(
     (mode: AnalysisMode) => {
       setAnalysisMode(mode);
@@ -75,8 +67,6 @@ export function useAIChatSurface(
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    ragEnabled,
-    toggleRAG,
     analysisMode,
     selectAnalysisMode,
     pendingEntryState,

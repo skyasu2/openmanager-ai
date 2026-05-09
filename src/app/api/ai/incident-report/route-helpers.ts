@@ -9,7 +9,7 @@ import {
 
 export const IncidentReportRequestSchema = z
   .object({
-    action: z.string().min(1),
+    action: z.literal('generate'),
     serverId: z.string().optional(),
     sessionId: z.string().optional(),
     severity: z.string().optional(),
@@ -17,79 +17,6 @@ export const IncidentReportRequestSchema = z
   .passthrough();
 
 export type IncidentReportRequest = z.infer<typeof IncidentReportRequestSchema>;
-
-interface AffectedServer {
-  id: string;
-  name: string;
-  severity?: string;
-  metric?: string;
-  value?: number;
-}
-
-interface Anomaly {
-  metric: string;
-  serverId?: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  value: number;
-  threshold: number;
-  description?: string;
-}
-
-interface RootCauseAnalysis {
-  primary_cause?: string;
-  summary?: string;
-  confidence?: number;
-  causes?: Array<{ description: string; probability: number }>;
-  evidence?: string[];
-}
-
-interface Recommendation {
-  action: string;
-  priority:
-    | 'high'
-    | 'medium'
-    | 'low'
-    | 'immediate'
-    | 'short-term'
-    | 'long-term';
-  description?: string;
-  estimatedImpact?: string;
-  expected_impact?: string;
-}
-
-interface TimelineEvent {
-  timestamp: string;
-  event: string;
-  severity?: string;
-  serverId?: string;
-}
-
-export interface IncidentReport {
-  id: string;
-  title: string;
-  severity: string;
-  created_at: string;
-  affected_servers?: string[];
-  affectedServers?: AffectedServer[];
-  anomalies?: Anomaly[];
-  root_cause_analysis?: RootCauseAnalysis;
-  recommendations?: Recommendation[];
-  timeline?: TimelineEvent[];
-  pattern?: string;
-  postmortem?: {
-    timeline: string[];
-    hypotheses: string[];
-    prevention: string[];
-  };
-  system_summary?: {
-    total_servers?: number;
-    healthy_servers?: number;
-    online_servers?: number;
-    warning_servers?: number;
-    critical_servers?: number;
-  } | null;
-  [key: string]: unknown;
-}
 
 const NO_STORE_RESPONSE_HEADERS = {
   'Cache-Control': 'no-store, max-age=0',

@@ -2,9 +2,9 @@ import type { ArchitectureDiagram } from '../architecture-diagrams.types';
 
 export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
   id: 'ai-assistant',
-  title: 'Multi-Agent Architecture (AI SDK v6)',
+  title: 'AI Assistant Runtime Architecture',
   description:
-    'Vercel AI SDK v6 네이티브 ToolLoopAgent 기반 5-Agent 멀티 에이전트 + Evaluator-Optimizer 파이프라인. 4개 LLM 프로바이더 무료 한도 내 폴백 체인. Knowledge Retrieval Lite + Tavily 하이브리드 검색.',
+    '현재 구현 기준 as-built 구조. Next.js stream route가 Cloud Run Supervisor로 위임하고, 5개 routing LLM agent + deterministic Evaluator/Optimizer/recovery fallback을 무료 한도 내 provider gate로 운영.',
   layers: [
     {
       title: 'Client',
@@ -26,7 +26,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'vercel-proxy',
           label: 'Next.js API',
-          sublabel: '/api/ai/supervisor',
+          sublabel: '/api/ai/supervisor/stream/v2',
           type: 'secondary',
           icon: '▲',
         },
@@ -38,8 +38,8 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
       nodes: [
         {
           id: 'orchestrator',
-          label: 'Orchestrator',
-          sublabel: 'Multi-Provider Routing',
+          label: 'Supervisor + Orchestrator',
+          sublabel: 'Mode decision + plannerShadow',
           type: 'highlight',
           icon: '🧠',
         },
@@ -66,7 +66,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'reporter',
           label: 'Reporter Agent',
-          sublabel: 'Groq + Eval-Opt Pipeline',
+          sublabel: 'Report + deterministic Eval/Opt',
           type: 'secondary',
           icon: '📑',
         },
@@ -80,9 +80,29 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'vision',
           label: 'Vision Agent',
-          sublabel: 'Gemini 2.5 Flash',
+          sublabel: 'Gemini 2.5 Flash-Lite',
           type: 'highlight',
           icon: '👁️',
+        },
+      ],
+    },
+    {
+      title: 'Quality & Recovery',
+      color: 'from-amber-500 to-orange-600',
+      nodes: [
+        {
+          id: 'deterministic',
+          label: 'Deterministic Recovery',
+          sublabel: 'Ranking, rewrite guard, fallback',
+          type: 'highlight',
+          icon: '✓',
+        },
+        {
+          id: 'provider-gate',
+          label: 'Provider Gate',
+          sublabel: 'Capability + quota policy',
+          type: 'secondary',
+          icon: '⚙️',
         },
       ],
     },
@@ -93,21 +113,21 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'knowledgelite',
           label: 'Knowledge Retrieval',
-          sublabel: 'BM25 + pgVector',
+          sublabel: 'BM25 RPC + metadata boost',
           type: 'secondary',
           icon: '🔍',
         },
         {
           id: 'websearch',
           label: 'Web Search',
-          sublabel: 'Tavily Hybrid RAG',
+          sublabel: 'searchWeb toggle',
           type: 'tertiary',
           icon: '🌐',
         },
         {
           id: 'otel-data',
           label: 'OTel Data',
-          sublabel: 'Pre-computed State',
+          sublabel: '18 hosts / 144 slots',
           type: 'tertiary',
           icon: '📈',
         },
@@ -142,6 +162,10 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'orchestrator', to: 'reporter', label: 'Handoff' },
     { from: 'orchestrator', to: 'advisor', label: 'Handoff' },
     { from: 'orchestrator', to: 'vision', label: 'Handoff' },
+    { from: 'orchestrator', to: 'deterministic', label: 'Recover' },
+    { from: 'orchestrator', to: 'provider-gate', label: 'Select' },
+    { from: 'provider-gate', to: 'nlq', type: 'dashed' },
+    { from: 'provider-gate', to: 'reporter', type: 'dashed' },
     { from: 'nlq', to: 'otel-data', type: 'dashed' },
     { from: 'analyst', to: 'otel-data', type: 'dashed' },
     { from: 'advisor', to: 'knowledgelite', type: 'dashed' },

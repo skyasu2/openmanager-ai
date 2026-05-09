@@ -53,8 +53,8 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
   },
   {
     icon: TrendingUp,
-    title: '성능 예측',
-    prompt: '다음 24시간 트래픽 패턴을 예측해줘',
+    title: '성능 추세',
+    prompt: '최근 추세 기준으로 다음 24시간 리스크를 요약해줘',
     iconBg: 'bg-blue-50',
     iconColor: 'text-blue-600',
   },

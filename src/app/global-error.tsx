@@ -5,7 +5,6 @@
  * 최상위 레벨 에러 처리 (500, unhandled errors)
  */
 
-import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { logger } from '@/lib/logging';
@@ -35,10 +34,6 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   useEffect(() => {
     if (clientEnv.isProduction) {
-      Sentry.captureException(error, {
-        tags: { boundary: 'global-error', digest: error.digest },
-      });
-
       const platform = clientEnv.isVercel ? 'vercel' : 'local';
 
       debug.error('[GLOBAL_ERROR]', {
@@ -89,7 +84,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
           <h1 className="text-4xl font-bold text-white">500</h1>
           <h2 className="text-xl font-semibold text-red-300">서버 오류 발생</h2>
           <p className="text-sm text-gray-400">
-            예상치 못한 오류가 발생했습니다. 문제가 자동으로 보고되었습니다.
+            예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해주세요.
           </p>
         </div>
 

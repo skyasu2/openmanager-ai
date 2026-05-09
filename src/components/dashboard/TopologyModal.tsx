@@ -3,7 +3,7 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Maximize2, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import {
   ARCHITECTURE_DIAGRAMS,
   type ArchitectureDiagram,
@@ -37,8 +37,85 @@ const TOTAL_NODES = TOPOLOGY_DIAGRAM.layers.reduce(
 const TOTAL_EDGES = TOPOLOGY_DIAGRAM.connections?.length ?? 0;
 const TOTAL_LAYERS = TOPOLOGY_DIAGRAM.layers.length;
 
+const TOPOLOGY_FILTERS = [
+  { id: 'all', label: '전체', prefixes: [] },
+  { id: 'lb', label: 'LB', prefixes: ['lb-'] },
+  { id: 'web', label: 'Web', prefixes: ['web-'] },
+  { id: 'api', label: 'API', prefixes: ['api-'] },
+  { id: 'db', label: 'DB', prefixes: ['db-'] },
+  { id: 'cache', label: 'Cache', prefixes: ['cache-'] },
+  { id: 'storage', label: 'Storage', prefixes: ['storage-'] },
+] as const;
+
+type TopologyFilterId = (typeof TOPOLOGY_FILTERS)[number]['id'];
+
+function getTopologyFilter(filterId: TopologyFilterId) {
+  return (
+    TOPOLOGY_FILTERS.find((filter) => filter.id === filterId) ??
+    TOPOLOGY_FILTERS[0]
+  );
+}
+
+function nodeMatchesTopologyFilter(
+  nodeId: string,
+  filterId: TopologyFilterId
+): boolean {
+  const filter = getTopologyFilter(filterId);
+  return (
+    filter.id === 'all' ||
+    filter.prefixes.some((prefix) => nodeId.startsWith(prefix))
+  );
+}
+
+function filterTopologyDiagram(
+  diagram: ArchitectureDiagram,
+  filterId: TopologyFilterId
+): ArchitectureDiagram {
+  if (filterId === 'all') {
+    return diagram;
+  }
+
+  const visibleNodeIds = new Set<string>();
+  const layers = diagram.layers
+    .map((layer) => {
+      const nodes = layer.nodes.filter((node) => {
+        const isVisible = nodeMatchesTopologyFilter(node.id, filterId);
+        if (isVisible) {
+          visibleNodeIds.add(node.id);
+        }
+        return isVisible;
+      });
+
+      return { ...layer, nodes };
+    })
+    .filter((layer) => layer.nodes.length > 0);
+
+  const connections = (diagram.connections ?? []).filter(
+    (connection) =>
+      visibleNodeIds.has(connection.from) && visibleNodeIds.has(connection.to)
+  );
+
+  return {
+    ...diagram,
+    layers,
+    connections,
+  };
+}
+
 export function TopologyView({ servers, active = true }: TopologyViewProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<TopologyFilterId>('all');
+
+  const filteredDiagram = useMemo(
+    () => filterTopologyDiagram(TOPOLOGY_DIAGRAM, activeFilter),
+    [activeFilter]
+  );
+  const filteredNodeCount = filteredDiagram.layers.reduce(
+    (sum, layer) => sum + layer.nodes.length,
+    0
+  );
+  const filteredEdgeCount = filteredDiagram.connections?.length ?? 0;
+  const activeFilterLabel = getTopologyFilter(activeFilter).label;
 
   useEffect(() => {
     if (!active) {
@@ -75,7 +152,7 @@ export function TopologyView({ servers, active = true }: TopologyViewProps) {
             단일 사이트: OnPrem-DC1
           </div>
           <div className="hidden sm:flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] text-amber-700">
-            synthetic 메트릭 모델
+            OpenTelemetry metric model
           </div>
         </div>
       </div>
@@ -84,6 +161,40 @@ export function TopologyView({ servers, active = true }: TopologyViewProps) {
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-gray-50 px-4 py-1.5 text-[10px] text-gray-500 sm:px-6">
         <span>현실 반영: 계층 분리, DB 복제, 백업 경로</span>
         <span className="hidden sm:inline">상태 표시는 5초 주기로 갱신</span>
+      </div>
+
+      {/* Topology controls */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-white px-4 py-3 sm:px-6">
+        <fieldset className="flex min-w-0 flex-wrap items-center gap-1.5">
+          <legend className="sr-only">토폴로지 서버 타입 필터</legend>
+          {TOPOLOGY_FILTERS.map((filter) => {
+            const isActive = activeFilter === filter.id;
+
+            return (
+              <button
+                key={filter.id}
+                type="button"
+                onClick={() => setActiveFilter(filter.id)}
+                aria-pressed={isActive}
+                className={`min-h-8 rounded-md border px-3 text-xs font-medium transition-colors ${
+                  isActive
+                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-sm'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700'
+                }`}
+              >
+                {filter.label}
+              </button>
+            );
+          })}
+        </fieldset>
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <span className="rounded-md bg-slate-100 px-2 py-1 font-medium text-slate-700">
+            {activeFilterLabel}
+          </span>
+          <span>
+            {filteredNodeCount} Nodes · {filteredEdgeCount} Edges
+          </span>
+        </div>
       </div>
 
       {/* Content */}
@@ -105,12 +216,14 @@ export function TopologyView({ servers, active = true }: TopologyViewProps) {
         >
           {isLoaded && (
             <ReactFlowDiagramDynamic
-              diagram={TOPOLOGY_DIAGRAM}
+              key={activeFilter}
+              diagram={filteredDiagram}
               compact={false}
-              showControls={true}
+              showControls={false}
               showMiniMap={true}
               showHeader={false}
               showLegend={false}
+              showZoomToolbar={true}
               maximizeViewport={true}
               servers={servers}
             />
@@ -123,7 +236,7 @@ export function TopologyView({ servers, active = true }: TopologyViewProps) {
         <div className="text-xs text-gray-500">
           데이터 소스:{' '}
           <span className="font-mono text-gray-700">
-            Vercel static OTel · 24h rotation
+            OpenTelemetry metrics · 24h window
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-xs">
@@ -133,11 +246,11 @@ export function TopologyView({ servers, active = true }: TopologyViewProps) {
           </span>
           <span className="flex items-center gap-1.5 text-gray-500">
             <div className="h-1 w-1 rounded-full bg-cyan-400" />
-            {TOTAL_NODES} Nodes
+            {activeFilter === 'all' ? TOTAL_NODES : filteredNodeCount} Nodes
           </span>
           <span className="flex items-center gap-1.5 text-gray-500">
             <div className="h-1 w-1 rounded-full bg-purple-400" />
-            {TOTAL_EDGES} Edges
+            {activeFilter === 'all' ? TOTAL_EDGES : filteredEdgeCount} Edges
           </span>
         </div>
       </div>

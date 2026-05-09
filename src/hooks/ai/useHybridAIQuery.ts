@@ -50,6 +50,8 @@ import { generateMessageId } from './utils/hybrid-query-utils';
 export type {
   AgentStatus,
   AgentStatusEventData,
+  AgentStepEventData,
+  AgentStepStatus,
   AIStreamStatus,
   ClarificationOption,
   ClarificationRequest,
@@ -75,6 +77,7 @@ import {
   type AIRateLimitErrorDetails,
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
+import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
@@ -92,6 +95,8 @@ export {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 };
+
+const DEFAULT_AI_STREAM_ENDPOINT = '/api/ai/supervisor/stream/v2';
 
 function normalizeStreamStatus(status: string): AIStreamStatus {
   if (
@@ -156,6 +161,9 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.modeSelectionSource) ||
     Boolean(result.retrieval) ||
     Boolean(result.analysisMode) ||
+    Boolean(result.routeDecision) ||
+    Boolean(result.assistantPlan) ||
+    Boolean(result.assistantResult) ||
     (result.toolsCalled && result.toolsCalled.length > 0) ||
     hasExplicitHandoffHistory ||
     (result.toolResultSummaries && result.toolResultSummaries.length > 0) ||
@@ -182,6 +190,15 @@ export function buildAssistantMessageFromAsyncResult(
             }),
           ...(result.analysisMode && {
             analysisMode: result.analysisMode,
+          }),
+          ...(result.routeDecision && {
+            routeDecision: result.routeDecision,
+          }),
+          ...(result.assistantPlan && {
+            assistantPlan: result.assistantPlan,
+          }),
+          ...(result.assistantResult && {
+            assistantResult: result.assistantResult,
           }),
           ...(hasExplicitHandoffHistory && {
             handoffHistory: result.handoffHistory,
@@ -323,6 +340,7 @@ export function useHybridAIQuery(
   const queryAsOfDataSlotRef = useRef<JobDataSlot | undefined>(
     queryAsOfDataSlot
   );
+  const currentRouteDecisionRef = useRef<RouteDecision | undefined>(undefined);
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
@@ -336,7 +354,7 @@ export function useHybridAIQuery(
   useEffect(() => {
     queryAsOfDataSlotRef.current = queryAsOfDataSlot;
   }, [queryAsOfDataSlot]);
-  const apiEndpoint = customEndpoint ?? '/api/ai/supervisor/stream/v2';
+  const apiEndpoint = customEndpoint ?? DEFAULT_AI_STREAM_ENDPOINT;
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
   );
@@ -389,6 +407,7 @@ export function useHybridAIQuery(
         ragEnabledRef,
         analysisModeRef,
         queryAsOfDataSlotRef,
+        localRouteDecisionRef: currentRouteDecisionRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
@@ -547,6 +566,9 @@ export function useHybridAIQuery(
     getMessages: () => messagesRef.current,
     setMessages,
     setState,
+    onRouteDecision: (decision) => {
+      currentRouteDecisionRef.current = decision;
+    },
     chatStatus,
     refs: {
       errorHandled: errorHandledRef,

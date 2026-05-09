@@ -2,7 +2,7 @@
  * Unified Stream Security Module
  * 경량화된 입력/출력 보안 필터
  *
- * @description Cloud Run Multi-Agent API의 보안 레이어
+ * @description Cloud Run AI Supervisor API의 보안 레이어
  * - 입력: 길이 제한, 민감정보 마스킹, Prompt Injection 탐지
  * - 출력: 길이 제한, 잠재적 위험 콘텐츠 필터링, 악성 출력 탐지
  *

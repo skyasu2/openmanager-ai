@@ -1,9 +1,9 @@
 /**
- * 이상감지/예측 분석 결과 카드 v2.1
+ * 이상감지/추세 분석 결과 카드 v2.1
  *
  * Cloud Run /api/ai/analyze-server 응답을 시각화
  * - 현재 상태 (이상 탐지): CPU/Memory/Disk 메트릭별 상태
- * - 예측 (트렌드): 1시간 후 예측값과 변화율
+ * - 추세: 1시간 후 추정값과 변화율
  * - AI 인사이트: 패턴 분석 권장사항
  *
  * v2.1 변경사항 (2026-01-12):
@@ -97,7 +97,7 @@ function MultiServerResults({ data }: { data: MultiServerAnalysisResponse }) {
               서버별 상세 분석 ({data.servers.length}개)
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              문제 서버를 먼저 보여주고, 서버 카드를 열면 이상 감지와 예측
+              문제 서버를 먼저 보여주고, 서버 카드를 열면 이상 감지와 추세
               근거를 바로 확인할 수 있습니다.
             </p>
           </div>

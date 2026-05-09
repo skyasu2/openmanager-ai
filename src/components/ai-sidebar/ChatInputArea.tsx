@@ -2,7 +2,6 @@
 
 import {
   AlertCircle,
-  BookOpen,
   File,
   FileText,
   Globe,
@@ -59,8 +58,6 @@ interface ChatInputAreaProps {
   onStopGeneration?: () => void;
   webSearchEnabled?: boolean;
   onToggleWebSearch?: () => void;
-  ragEnabled?: boolean;
-  onToggleRAG?: () => void;
   analysisMode?: AnalysisMode;
   onSelectAnalysisMode?: (mode: AnalysisMode) => void;
 }
@@ -90,8 +87,6 @@ export const ChatInputArea = memo(function ChatInputArea({
   onStopGeneration,
   webSearchEnabled,
   onToggleWebSearch,
-  ragEnabled,
-  onToggleRAG,
   analysisMode = 'auto',
   onSelectAnalysisMode,
 }: ChatInputAreaProps) {
@@ -109,7 +104,7 @@ export const ChatInputArea = memo(function ChatInputArea({
   }, []);
 
   // 활성화된 도구 수 (badge 표시용)
-  const activeToolCount = (webSearchEnabled ? 1 : 0) + (ragEnabled ? 1 : 0);
+  const activeToolCount = webSearchEnabled ? 1 : 0;
   const showAnalysisModeBadge = analysisMode !== 'auto';
 
   // 외부 클릭 시 popover 닫기
@@ -153,6 +148,14 @@ export const ChatInputArea = memo(function ChatInputArea({
     onOpenFileDialog();
     closePopover();
   }, [closePopover, onOpenFileDialog]);
+
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      onSendWithAttachments();
+    },
+    [onSendWithAttachments]
+  );
 
   return (
     <>
@@ -258,15 +261,6 @@ export const ChatInputArea = memo(function ChatInputArea({
           {/* 활성 도구 뱃지 (popover 밖에 표시) */}
           {(activeToolCount > 0 || showAnalysisModeBadge) && (
             <div className="mb-2 flex flex-wrap gap-1.5">
-              {ragEnabled && (
-                <span
-                  className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700"
-                  title="RAG 검색을 항상 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
-                >
-                  <BookOpen className="h-3 w-3" />
-                  RAG On
-                </span>
-              )}
               {webSearchEnabled && (
                 <span
                   className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700"
@@ -285,9 +279,11 @@ export const ChatInputArea = memo(function ChatInputArea({
           )}
 
           {/* 메인 입력 컨테이너 */}
-          <div
+          <form
+            onSubmit={handleSubmit}
             className="relative flex items-end rounded-2xl border border-gray-200 bg-white shadow-sm transition-all focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
             onPaste={onPaste}
+            aria-label="AI 질문 전송"
           >
             {/* + 버튼 (도구 popover 트리거) */}
             <div className="relative flex items-end pb-1.5 pl-2">
@@ -317,48 +313,6 @@ export const ChatInputArea = memo(function ChatInputArea({
                   ref={popoverRef}
                   className="absolute bottom-12 left-0 z-50 w-64 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
                 >
-                  {/* RAG source mode */}
-                  {onToggleRAG && (
-                    <div
-                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                        ragEnabled
-                          ? 'bg-purple-50 text-purple-700'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <BookOpen
-                        className={`h-4 w-4 ${ragEnabled ? 'text-purple-500' : 'text-gray-400'}`}
-                      />
-                      <div className="min-w-0 flex-1 text-left">
-                        <div className="font-medium">RAG 검색 (내부 지식)</div>
-                        <div className="text-xs text-gray-500">
-                          운영 지식/장애 이력 자동 판단
-                        </div>
-                      </div>
-                      <fieldset className="grid shrink-0 grid-cols-2 gap-0.5 rounded-lg border-0 bg-gray-100 p-0.5">
-                        <legend className="sr-only">RAG 검색 모드</legend>
-                        {([false, true] as const).map((enabled) => (
-                          <button
-                            key={String(enabled)}
-                            type="button"
-                            onClick={() => {
-                              if (ragEnabled !== enabled) {
-                                onToggleRAG();
-                              }
-                            }}
-                            className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
-                              ragEnabled === enabled
-                                ? 'bg-white text-purple-700 shadow-xs'
-                                : 'text-gray-500 hover:bg-white/70'
-                            }`}
-                          >
-                            {enabled ? 'On' : 'Auto'}
-                          </button>
-                        ))}
-                      </fieldset>
-                    </div>
-                  )}
-
                   {/* Web source mode */}
                   {onToggleWebSearch && (
                     <div
@@ -500,32 +454,20 @@ export const ChatInputArea = memo(function ChatInputArea({
                 </button>
               )}
               <button
-                type="button"
-                onClick={onSendWithAttachments}
+                type="submit"
                 disabled={
                   (!inputValue.trim() && attachments.length === 0) ||
+                  isGenerating ||
                   sessionState?.isLimitReached
                 }
                 className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9"
-                title={
-                  isGenerating
-                    ? streamStatus === 'submitted'
-                      ? '요청 전송 중 (대기열에 추가 가능)'
-                      : '대기열에 추가'
-                    : '메시지 전송'
-                }
-                aria-label={
-                  isGenerating
-                    ? streamStatus === 'submitted'
-                      ? '요청 전송 중 (대기열에 추가 가능)'
-                      : '대기열에 추가'
-                    : '메시지 전송'
-                }
+                title={isGenerating ? '요청 처리 중' : '메시지 전송'}
+                aria-label={isGenerating ? '요청 처리 중' : '메시지 전송'}
               >
                 <Send className="h-4 w-4" />
               </button>
             </div>
-          </div>
+          </form>
 
           {/* 숨겨진 파일 입력 */}
           <input

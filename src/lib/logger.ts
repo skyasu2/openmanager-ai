@@ -318,15 +318,4 @@ const _apiLogger = {
     devLogger.debug('api', message, data),
 };
 
-export const aiLogger = {
-  info: (message: string, data?: unknown) =>
-    devLogger.info('ai', message, data),
-  warn: (message: string, data?: unknown) =>
-    devLogger.warn('ai', message, data),
-  error: (message: string, data?: unknown) =>
-    devLogger.error('ai', message, data),
-  debug: (message: string, data?: unknown) =>
-    devLogger.debug('ai', message, data),
-};
-
 // 기본 export

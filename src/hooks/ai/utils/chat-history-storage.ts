@@ -4,6 +4,23 @@
  * 로컬 스토리지를 활용한 채팅 히스토리 영속화
  */
 
+import {
+  type AssistantPlan,
+  type AssistantResult,
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
+import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import type {
+  ArtifactEnvelope,
+  IncidentReportArtifact,
+  MonitoringAnalysisArtifact,
+  ServerSnapshotArtifact,
+} from '@/lib/ai/chat-artifacts/types';
+import {
+  normalizeRouteDecision,
+  type RouteDecision,
+} from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
@@ -29,6 +46,9 @@ export interface StoredMessageMetadata {
   retrieval?: RetrievalMetadata;
   featureStatus?: AnalysisFeatureStatus;
   analysisMode?: AnalysisMode;
+  routeDecision?: RouteDecision;
+  assistantPlan?: AssistantPlan;
+  assistantResult?: AssistantResult;
   toolsCalled?: string[];
   ragSources?: Array<{
     title: string;
@@ -42,6 +62,12 @@ export interface StoredMessageMetadata {
     details?: string | null;
     shouldCollapse?: boolean;
   };
+  artifactIntentReason?: ChatArtifactIntentReason;
+  artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
+  incidentReportArtifact?: IncidentReportArtifact;
+  monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
+  serverSnapshotArtifact?: ServerSnapshotArtifact;
+  artifactEnvelopes?: ArtifactEnvelope[];
   handoffHistory?: Array<{
     from: string;
     to: string;
@@ -122,6 +148,11 @@ export function saveChatHistory(
       .map((m) => {
         const metadata = m.metadata;
         const analysisBasis = m.metadata?.analysisBasis;
+        const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
+        const assistantPlan = normalizeAssistantPlan(metadata?.assistantPlan);
+        const assistantResult = normalizeAssistantResult(
+          metadata?.assistantResult
+        );
         const hasExplicitHandoffHistory = Array.isArray(
           metadata?.handoffHistory
         );
@@ -132,7 +163,17 @@ export function saveChatHistory(
           analysisBasis?.analysisMode ||
           analysisBasis?.toolsCalled ||
           analysisBasis?.ragSources ||
+          routeDecision ||
+          assistantPlan ||
+          assistantResult ||
           metadata?.assistantResponseView ||
+          metadata?.artifactIntentReason ||
+          metadata?.artifactIntentTarget ||
+          metadata?.incidentReportArtifact ||
+          metadata?.monitoringAnalysisArtifact ||
+          metadata?.serverSnapshotArtifact ||
+          (Array.isArray(metadata?.artifactEnvelopes) &&
+            metadata.artifactEnvelopes.length > 0) ||
           hasExplicitHandoffHistory ||
           (metadata?.toolResultSummaries &&
             metadata.toolResultSummaries.length > 0)
@@ -153,9 +194,38 @@ export function saveChatHistory(
                 ...(analysisBasis?.ragSources && {
                   ragSources: analysisBasis.ragSources,
                 }),
+                ...(routeDecision && {
+                  routeDecision,
+                }),
+                ...(assistantPlan && {
+                  assistantPlan,
+                }),
+                ...(assistantResult && {
+                  assistantResult,
+                }),
                 ...(metadata?.assistantResponseView && {
                   assistantResponseView: metadata.assistantResponseView,
                 }),
+                ...(metadata?.artifactIntentReason && {
+                  artifactIntentReason: metadata.artifactIntentReason,
+                }),
+                ...(metadata?.artifactIntentTarget && {
+                  artifactIntentTarget: metadata.artifactIntentTarget,
+                }),
+                ...(metadata?.incidentReportArtifact && {
+                  incidentReportArtifact: metadata.incidentReportArtifact,
+                }),
+                ...(metadata?.monitoringAnalysisArtifact && {
+                  monitoringAnalysisArtifact:
+                    metadata.monitoringAnalysisArtifact,
+                }),
+                ...(metadata?.serverSnapshotArtifact && {
+                  serverSnapshotArtifact: metadata.serverSnapshotArtifact,
+                }),
+                ...(Array.isArray(metadata?.artifactEnvelopes) &&
+                  metadata.artifactEnvelopes.length > 0 && {
+                    artifactEnvelopes: metadata.artifactEnvelopes,
+                  }),
                 ...(hasExplicitHandoffHistory && {
                   handoffHistory: metadata.handoffHistory,
                 }),

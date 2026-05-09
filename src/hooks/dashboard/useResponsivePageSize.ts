@@ -6,7 +6,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * 화면 크기에 따른 동적 페이지 크기 관리 (debounce 적용)
  * - Mobile (< 640px): 3개
  * - Tablet (< 1024px): 6개
- * - Desktop (>= 1024px): 9개
+ * - Desktop (< 1280px): 9개
+ * - Wide desktop (>= 1280px): 12개
  *
  * @param initialSize - 초기 페이지 크기 (기본값: 3)
  * @param debounceMs - debounce 지연 시간 (기본값: 150ms)
@@ -21,7 +22,8 @@ export function useResponsivePageSize(
   const calculatePageSize = useCallback((width: number): number => {
     if (width < 640) return 3;
     if (width < 1024) return 6;
-    return 9;
+    if (width < 1280) return 9;
+    return 12;
   }, []);
 
   useEffect(() => {

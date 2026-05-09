@@ -82,6 +82,8 @@ export function CloudRunStatusIndicator({
     lastChecked,
     isChecking,
     check,
+    reasonCode,
+    recoverable,
   } = useHealthCheck({
     pollingInterval: enabled ? autoCheckInterval : 0, // 비활성화 시 폴링 중지
     pauseWhenHidden: true,
@@ -107,6 +109,8 @@ export function CloudRunStatusIndicator({
   };
 
   const status = getCloudRunStatus();
+  const coldStartProbeTimeout =
+    recoverable === true && reasonCode === 'cloud_run_health_timeout';
 
   // 웜업 함수 - AbortController로 취소 가능
   const triggerWarmup = useCallback(async () => {
@@ -146,10 +150,13 @@ export function CloudRunStatusIndicator({
         }
 
         try {
-          const healthResponse = await fetch('/api/health?service=ai', {
-            cache: 'no-store',
-            signal: abortController.signal,
-          });
+          const healthResponse = await fetch(
+            '/api/health?service=ai&soft=true',
+            {
+              cache: 'no-store',
+              signal: abortController.signal,
+            }
+          );
           const healthData = await healthResponse.json();
 
           if (healthResponse.ok && healthData.status === 'ok') {
@@ -207,8 +214,10 @@ export function CloudRunStatusIndicator({
           textColor: 'text-yellow-700',
           borderColor: 'border-yellow-200',
           dotColor: 'bg-yellow-500',
-          label: 'Cold',
-          description: '웜업 필요',
+          label: coldStartProbeTimeout ? 'Warming' : 'Cold',
+          description: coldStartProbeTimeout
+            ? '콜드스타트 health probe timeout'
+            : '웜업 필요',
         };
       case 'checking':
         return {

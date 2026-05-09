@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import {
   formatDashboardDateTime,
   formatRotatingTimestamp,
+  formatRotatingTimestampRange,
 } from '@/utils/dashboard/rotating-timestamp';
 import { FilterChip } from '../shared/FilterChip';
 import { StatCell } from '../shared/StatCell';
@@ -495,9 +496,10 @@ export function LogExplorerPanel({
           </span>
           {windowStart && windowEnd && (
             <span className="text-gray-500">
-              데이터 범위: {formatRotatingTimestamp(windowStart)}
-              {' ~ '}
-              {formatRotatingTimestamp(windowEnd)}
+              데이터 범위:{' '}
+              {formatRotatingTimestampRange(windowStart, windowEnd, {
+                anchorDate: sessionAnchorRef.current,
+              })}
             </span>
           )}
         </div>

@@ -6,7 +6,7 @@
  * - /api/servers/all (전체 서버 데이터)
  * - /api/servers/next (다음 서버 데이터)
  * - /api/servers/[id] (특정 서버 상세)
- * - /api/servers/[id]/processes (서버 프로세스 목록)
+ * - action=processes (서버 프로세스 목록)
  *
  * v5.87: /mock, /realtime, /cached 제거 (Dead Code 정리)
  */

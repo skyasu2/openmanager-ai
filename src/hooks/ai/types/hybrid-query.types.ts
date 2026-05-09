@@ -60,6 +60,7 @@ export type StreamEventType =
   | 'step_finish'
   | 'handoff'
   | 'agent_status'
+  | 'agent_step'
   | 'warning' // 처리 지연 경고 (활성 스트림 경로의 threshold 초과 시)
   | 'redirect' // Job Queue 리다이렉트 이벤트 (2026-01-18)
   | 'done'
@@ -87,6 +88,14 @@ export interface AgentStatusEventData {
   status: AgentStatus;
   message?: string;
 }
+
+export type AgentStepStatus = 'start' | 'done';
+
+export type AgentStepEventData = {
+  tool: string;
+  status: AgentStepStatus;
+  message?: string;
+};
 
 /**
  * Redirect 이벤트 데이터 (Job Queue 전환)
@@ -132,6 +141,8 @@ export interface StreamDataPart {
   handoff?: HandoffEventData;
   /** Agent Status 이벤트 데이터 (type: 'agent_status') */
   agentStatus?: AgentStatusEventData;
+  /** Agent Step 이벤트 데이터 (type: 'agent_step') */
+  agentStep?: AgentStepEventData;
   /** Warning 이벤트 데이터 (type: 'warning') */
   warning?: WarningEventData;
   /** Redirect 이벤트 데이터 (type: 'redirect') */

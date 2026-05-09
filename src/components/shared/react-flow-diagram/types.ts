@@ -19,6 +19,8 @@ export interface ReactFlowDiagramProps {
   showHeader?: boolean;
   /** 하단 범례 표시 여부 */
   showLegend?: boolean;
+  /** 캔버스 내부 상단 줌 툴바 표시 여부 */
+  showZoomToolbar?: boolean;
   /** 모달/전체 화면에서 캔버스 높이를 우선 확장 */
   maximizeViewport?: boolean;
   /** 서버 실시간 데이터 (ID 매핑용) */

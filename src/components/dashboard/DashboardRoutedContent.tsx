@@ -8,16 +8,10 @@ import type {
   DashboardDataSourceInfo,
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
-import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
-import type { Alert } from '@/services/monitoring/AlertManager';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type { Server } from '@/types/server';
 import { safeErrorMessage } from '@/utils/utils-functions';
 import { ActiveAlertsPanel } from './ActiveAlertsModal';
-import {
-  type DashboardAlertContext,
-  getHighestServerAlertMetric,
-  toDashboardAlertContext,
-} from './alert-ai-context';
 import { AlertHistoryPanel } from './alert-history/AlertHistoryModal';
 import { LogExplorerPanel } from './log-explorer/LogExplorerModal';
 import ServerDashboard from './ServerDashboard';
@@ -51,21 +45,53 @@ interface DashboardRoutedContentProps {
   onStatsUpdate: (stats: DashboardStats) => void;
   statusFilter?: string | null;
   onStatusFilterChange?: (filter: string | null) => void;
-  onAskAIAboutAlert?: (context: DashboardAlertContext) => void;
+}
+
+function toJobDataSlot(
+  timeInfo: DashboardTimeInfo | undefined
+): JobDataSlot | undefined {
+  if (!timeInfo) return undefined;
+
+  const hours = String(Math.floor(timeInfo.minuteOfDay / 60)).padStart(2, '0');
+  const minutes = String(timeInfo.minuteOfDay % 60).padStart(2, '0');
+
+  return {
+    slotIndex: timeInfo.globalSlotIndex,
+    minuteOfDay: timeInfo.minuteOfDay,
+    timeLabel: `${hours}:${minutes} KST`,
+  };
 }
 
 function PageFrame({
   title,
   description,
   children,
+  contained = false,
 }: {
   title: string;
   description: string;
   children: ReactNode;
+  contained?: boolean;
 }) {
+  if (contained) {
+    return (
+      <main className="flex h-full min-h-0 w-full min-w-0 overflow-hidden px-4 pb-6 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-full min-h-0 w-full min-w-0 max-w-none flex-col gap-4 2xl:max-w-[1800px]">
+          <div className="shrink-0 pt-1">
+            <h1 className="text-2xl font-bold tracking-normal text-slate-900">
+              {title}
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">{description}</p>
+          </div>
+          {children}
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="h-full w-full overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-none space-y-4 2xl:max-w-[1800px]">
+    <main className="h-full w-full min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full min-w-0 max-w-none space-y-4 2xl:max-w-[1800px]">
         <div className="pt-1">
           <h1 className="text-2xl font-bold tracking-normal text-slate-900">
             {title}
@@ -82,7 +108,7 @@ export default function DashboardRoutedContent({
   view,
   servers,
   allServers,
-  dataSlotInfo: _dataSlotInfo,
+  dataSlotInfo,
   dataSourceInfo: _dataSourceInfo,
   initialFocusServerId,
   totalServers,
@@ -94,9 +120,9 @@ export default function DashboardRoutedContent({
   onStatsUpdate,
   statusFilter: _statusFilter,
   onStatusFilterChange: _onStatusFilterChange,
-  onAskAIAboutAlert,
 }: DashboardRoutedContentProps) {
   const searchParams = useSearchParams();
+  const aiQueryAsOfDataSlot = toJobDataSlot(dataSlotInfo);
   const initialLogServerId =
     view === 'logs'
       ? (searchParams.get('server') ?? searchParams.get('serverId'))
@@ -120,29 +146,6 @@ export default function DashboardRoutedContent({
       )
     : null;
 
-  const askAIAboutMonitoringAlert = (alert: MonitoringAlert) => {
-    if (!onAskAIAboutAlert) return;
-    const context = toDashboardAlertContext(alert);
-    if (context) onAskAIAboutAlert(context);
-  };
-
-  const askAIAboutAlertHistory = (alert: Alert) => {
-    if (!onAskAIAboutAlert) return;
-    const context = toDashboardAlertContext(alert);
-    if (context) onAskAIAboutAlert(context);
-  };
-
-  const askAIAboutServer = (server: Server) => {
-    if (!onAskAIAboutAlert) return;
-    const { metricLabel, metricValue } = getHighestServerAlertMetric(server);
-    onAskAIAboutAlert({
-      serverId: server.id ?? server.name,
-      serverName: server.name,
-      metricLabel,
-      metricValue: Math.round(metricValue),
-    });
-  };
-
   if (view === 'servers') {
     return (
       <PageFrame
@@ -158,7 +161,6 @@ export default function DashboardRoutedContent({
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
           onStatsUpdate={onStatsUpdate}
-          onAskAI={onAskAIAboutAlert ? askAIAboutServer : undefined}
           initialVisibleRows={3}
         />
       </PageFrame>
@@ -199,17 +201,11 @@ export default function DashboardRoutedContent({
               isLoading={isMonitoringLoading}
               isError={isMonitoringError}
               errorMessage={monitoringErrorMessage}
-              onAskAIAboutAlert={
-                onAskAIAboutAlert ? askAIAboutMonitoringAlert : undefined
-              }
             />
           </div>
           <div className="flex min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <AlertHistoryPanel
               serverIds={sourceServers.map((server) => server.id)}
-              onAskAIAboutAlert={
-                onAskAIAboutAlert ? askAIAboutAlertHistory : undefined
-              }
               initialServerId={initialAlertServerId}
             />
           </div>
@@ -247,9 +243,10 @@ export default function DashboardRoutedContent({
       <PageFrame
         title="AI 어시스턴트"
         description="질의, Reporter, Analyst 기능을 한 화면에서 실행"
+        contained
       >
-        <div className="min-h-[680px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <AIWorkspace embedded />
+        <div className="flex min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <AIWorkspace embedded queryAsOfDataSlot={aiQueryAsOfDataSlot} />
         </div>
       </PageFrame>
     );
