@@ -304,6 +304,34 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
   - 배포 후 B4/B5 production targeted retest에서 clarification 없이 stream request가 발생하고 command catalog 답변이 visible answer로 표시되는지 확인
   - B4/B5가 pass하면 `ai-ops-command-clarification-intercept`와 `ai-ops-command-submit-or-stream-boundary` closure 처리
 
+## QA-20260509-0432 B4/B5 v8.11.118 closure 결과
+
+- **환경**: Vercel Production v8.11.118 (`https://openmanager-ai.vercel.app`)
+- **배포 근거**: GitLab tag pipeline `2511583233` success, production version smoke attempt 24/81 PASS
+- **도구**: Playwright CLI runner
+- **기록**: `reports/qa/runs/2026/qa-run-QA-20260509-0432.json`
+- **Raw evidence**: `reports/qa/evidence/qa-20260509-ai-ops-b4-b5-v811118-results.json`
+- **대상**: `B4,B5`
+- **결과**: PASS 2, FAIL 0
+
+| 시나리오 | v8.11.117 | v8.11.118 | 판정 |
+|----------|-----------|-----------|------|
+| B4 Nginx 5xx 경로 분석 | FAIL: clarification intercept | PASS | `/var/log/nginx/access.log` 기반 `awk` path aggregation + `grep` 5xx tail 명령 반환 |
+| B5 NFS 재마운트 순서 | FAIL: visible answer 없음 | PASS | `findmnt -t nfs`, `showmount -e <nfs-server>`, `mount -t nfs ...` 순서 반환 |
+
+### closure 처리
+
+- 완료:
+  - `ai-ops-command-clarification-intercept`
+  - `ai-ops-command-submit-or-stream-boundary`
+- 네트워크 근거:
+  - `/api/ai/jobs` 201
+  - `/api/ai/jobs/<id>/stream` 200
+  - `/api/ai/supervisor/stream/v2` 200
+- 남은 open gap:
+  - `ai-ops-empty-response-timeout` — A5 storage threshold prediction, C2 first-on-call checklist
+  - `ai-ops-haproxy-context-specificity` — A1 HAProxy CPU/backend distribution 상세 부족
+
 ---
 
 ## 예상 결과 및 리스크
@@ -317,4 +345,4 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 
 ---
 
-_Last Updated: 2026-05-09 — v8.11.116 command retest 기록, B1 closure 및 B4/B5 submit/stream boundary 조사 대기_
+_Last Updated: 2026-05-09 — v8.11.118 B4/B5 command guidance closure 기록, A5/C2 및 A1 잔여_

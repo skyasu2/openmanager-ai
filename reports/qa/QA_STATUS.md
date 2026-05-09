@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-09 09:05:30 KST
+> Generated at: 2026-05-09 09:32:59 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 429 |
-| Total Runs (Counted) | 350 |
+| Total Recorded Runs | 430 |
+| Total Runs (Counted) | 351 |
 | Non-counted Runs | 79 |
-| Total Checks | 3065 |
-| Passed | 2941 |
+| Total Checks | 3067 |
+| Passed | 2943 |
 | Failed | 114 |
-| Completed Items | 461 |
-| Pending Items | 4 |
+| Completed Items | 463 |
+| Pending Items | 2 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
-| Expert Open Gaps | 3 |
-| Completion Rate | 99.14% |
-| Last Counted Run | QA-20260509-0431 (2026-05-09T00:05:28.683Z) |
-| Latest Recorded Run | QA-20260509-0431 (2026-05-09T00:05:28.683Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 99.57% |
+| Last Counted Run | QA-20260509-0432 (2026-05-09T00:32:58.510Z) |
+| Latest Recorded Run | QA-20260509-0432 (2026-05-09T00:32:58.510Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260509-0431 (2026-05-09T00:05:28.683Z)
+Latest run: QA-20260509-0432 (2026-05-09T00:32:58.510Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Bypass clarification for concrete operations command/procedure questions, then retest B4/B5. |
-| Test Automation Architect | partially-appropriate | yes | Add clarification-generator regression tests for B4/B5 command guidance prompts. |
-| DevOps / SRE Engineer | partially-appropriate | yes | Ensure Nginx/NFS direct command catalog response reaches production stream after clarification bypass. |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.117 release and B4/B5 retest; effective usage 4.7045 USD, billed 0.0000 USD, chargeCount 4263. |
+| vercel | cli | checked | normal | Current billing period reviewed after v8.11.118 B4/B5 closure retest; effective usage 4.7045 USD, billed 0.0000 USD, chargeCount 4263. First CLI attempt hit transient 503 high-load, retry passed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-08T00:05:28.683Z -> 2026-05-09T00:05:28.683Z (24h)
+- Window: 2026-05-08T00:32:58.510Z -> 2026-05-09T00:32:58.510Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -60,7 +60,7 @@ Latest run: QA-20260509-0431 (2026-05-09T00:05:28.683Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-08T00:05:28.683Z -> 2026-05-09T00:05:28.683Z (24h)
+- Window: 2026-05-08T00:32:58.510Z -> 2026-05-09T00:32:58.510Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,38 +74,31 @@ Latest run: QA-20260509-0431 (2026-05-09T00:05:28.683Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA eaed6fda
+- Deployment: SHA 623560cd
 - Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: /dashboard/ai-assistant guest conversational flow, AI ops command guidance B4/B5 retest after semantic submit form fix, production DOM/network diagnostic for clarification interception
-- Skipped Surfaces: full 15-scenario AI ops pack, non-command service context scenarios, Cloud Run admin surface
+- Covered Surfaces: /dashboard/ai-assistant guest conversational flow, AI ops command guidance B4/B5 closure after clarification bypass, production network proof for jobs stream and supervisor stream dispatch
+- Skipped Surfaces: full 15-scenario AI ops pack, non-command service context scenarios, Cloud Run admin surface, A5/C2 empty-response scenarios, A1 HAProxy context specificity scenario
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | v8.11.117 deploy pipeline | [v8.11.117 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2511552074) | - |
+| general | v8.11.118 deploy pipeline | [v8.11.118 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2511583233) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | AI ops B4/B5 v8.11.117 raw results | `reports/qa/evidence/qa-20260509-ai-ops-b4-b5-v811117-results.json` | - |
+| playwright-console | AI ops B4/B5 v8.11.118 closure raw results | `reports/qa/evidence/qa-20260509-ai-ops-b4-b5-v811118-results.json` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260509-0431)
-  next: Bypass clarification for concrete operations command/procedure questions, then retest B4/B5.
-- sre-devops: DevOps / SRE Engineer (last QA-20260509-0431)
-  next: Ensure Nginx/NFS direct command catalog response reaches production stream after clarification bypass.
-- test-automation: Test Automation Architect (last QA-20260509-0431)
-  next: Add clarification-generator regression tests for B4/B5 command guidance prompts.
+- None
 
 ## Pending Improvements
 
-- [P1] ai-ops-command-clarification-intercept: Operations command guidance prompts are intercepted by clarification dialog before AI request dispatch (seen 1회, last QA-20260509-0431)
-- [P1] ai-ops-command-submit-or-stream-boundary: Nginx/NFS command guidance does not produce a visible AI request/answer in Playwright flow (seen 1회, last QA-20260509-0430)
-- [P1] ai-ops-empty-response-timeout: AI ops QA empty response/timeouts for A5, B4, B5, and C2 (seen 4회, last QA-20260509-0431)
-- [P2] ai-ops-haproxy-context-specificity: HAProxy service context answer omits CPU/backend distribution detail (seen 3회, last QA-20260509-0431)
+- [P1] ai-ops-empty-response-timeout: AI ops QA empty response/timeouts for A5 and C2 remain unresolved after command guidance closure (seen 5회, last QA-20260509-0432)
+- [P2] ai-ops-haproxy-context-specificity: HAProxy service context answer omits CPU/backend distribution detail (seen 4회, last QA-20260509-0432)
 
 ## Deferred Improvements
 
@@ -246,8 +239,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
+- ai-ops-command-clarification-intercept: Operations command guidance prompts are intercepted by clarification dialog before AI request dispatch (completed 1회, last QA-20260509-0432)
 - ai-ops-command-intent-routing: HAProxy command guidance surfaces concrete backend/status commands (completed 1회, last QA-20260509-0430)
 - ai-ops-command-submit-form-boundary: AI chat input exposes a semantic submit form for UI and QA automation (completed 1회, last QA-20260509-0431)
+- ai-ops-command-submit-or-stream-boundary: Nginx/NFS command guidance does not produce a visible AI request/answer in Playwright flow (completed 1회, last QA-20260509-0432)
 - ai-ops-redis-context-quality: Redis context comparison response identifies highest-memory Redis nodes (completed 1회, last QA-20260509-0429)
 - ai-ops-tool-result-empty-summary: Tool-backed AI responses no longer show empty-summary fallback for A1/C1 retest paths (completed 1회, last QA-20260509-0429)
 - ai-provider-forced-routing-context-floor: Forced-routing quality agents skip 8K Cerebras fallback (completed 1회, last QA-20260428-0356)
@@ -647,6 +642,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260509-0432 | 2026-05-09T00:32:58.510Z | targeted | no | yes | Vercel Production AI Ops B4/B5 Closure Retest - v8.11.118 | 2 | 2 | 2 | 0 | 0 | 0 |
 | QA-20260509-0431 | 2026-05-09T00:05:28.683Z | targeted | no | yes | Vercel Production AI Ops B4/B5 Submit Boundary Retest - v8.11.117 | 2 | 1 | 3 | 0 | 0 | 3 |
 | QA-20260509-0430 | 2026-05-08T17:45:28.422Z | targeted | no | yes | Vercel Production AI Ops Command Guidance Retest - v8.11.116 | 3 | 1 | 3 | 0 | 0 | 3 |
 | QA-20260509-0429 | 2026-05-08T16:33:50.518Z | targeted | no | yes | Vercel Production AI Ops Conversational Retest - v8.11.114 | 8 | 2 | 3 | 0 | 0 | 3 |
@@ -666,4 +662,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260506-0415 | 2026-05-06T06:28:57.301Z | targeted | yes | yes | v8.11.108 AI Advanced Surface Targeted QA | 3 | 2 | 1 | 0 | 0 | 3 |
 | QA-20260506-0414 | 2026-05-06T05:49:24.582Z | targeted | yes | yes | v8.11.108 Artifact Workspace UI Targeted QA | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260506-0413 | 2026-05-06T04:35:44.343Z | targeted | yes | yes | v8.11.107 Production Targeted QA - Supervisor Runtime Host Wiring | 13 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260505-0412 | 2026-05-05T06:31:40.208Z | targeted | yes | yes | v8.11.106 Production Targeted QA - RAG UI and Telemetry Copy | 6 | 3 | 0 | 0 | 0 | 0 |

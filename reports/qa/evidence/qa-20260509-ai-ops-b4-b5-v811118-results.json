@@ -1,0 +1,56 @@
+{
+  "startedAt": "2026-05-09T00:22:09.716Z",
+  "finishedAt": "2026-05-09T00:24:19.030Z",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "selectedScenarioIds": [
+    "B4",
+    "B5"
+  ],
+  "total": 2,
+  "pass": 2,
+  "warn": 0,
+  "fail": 0,
+  "results": [
+    {
+      "id": "B4",
+      "category": "command-guidance",
+      "question": "Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 70810,
+      "answerExcerpt": "Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘오전 09:23:34복사바로 확인할 명령어는 아래 순서로 실행하면 됩니다. Nginx access log에서 5xx 응답이 많은 요청 경로 상위 목록 확인 bash복사awk '$9 ~ /^5/ {print $7}' /var/log/nginx/access.log | sort | uniq -c | sort -nr | head 최근 Nginx 5xx 요청 원문 확인 bash복사grep ' 5[0-9][0-9] ' /var/log/nginx/access.log | tail -100 운영 환경의 socket path, export, 로그 경로가 다르면 실제 설정값으로 바꿔 실행하세요.오전 09:23:34· 32ms복사다시 생성분석 근거도구: 조치 명령어 정리 · 모드: 오토"
+    },
+    {
+      "id": "B5",
+      "category": "command-guidance",
+      "question": "NFS 마운트가 끊겼을 때 확인하고 재마운트하는 순서 알려줘",
+      "status": "PASS",
+      "reason": "matched required context/command patterns",
+      "latencyMs": 39854,
+      "answerExcerpt": "운트가 끊겼을 때 확인하고 재마운트하는 순서 알려줘오전 09:24:15복사핵심 요약바로 확인할 명령어는 아래 순서로 실행하면 됩니다.상세 분석 현재 NFS 마운트 상태와 대상 경로 확인 bash복사findmnt -t nfs NFS 서버가 내보내는 export 목록 확인 bash복사showmount -e <nfs-server> NFS export를 지정 경로에 다시 마운트 bash복사mount -t nfs <nfs-server>:/export/path /mnt/path 운영 환경의 socket path, export, 로그 경로가 다르면 실제 설정값으로 바꿔 실행하세요.오전 09:24:15· 4ms복사다시 생성분석 근거도구: 조치 명령어 정리 · 모드: 오토"
+    }
+  ],
+  "consoleMessages": [],
+  "networkEvents": [
+    {
+      "type": "requestfailed",
+      "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "type": "response",
+      "status": 201,
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/d1ac1a08-8a07-46bc-9441-fc9e71b39708/stream"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2"
+    }
+  ]
+}

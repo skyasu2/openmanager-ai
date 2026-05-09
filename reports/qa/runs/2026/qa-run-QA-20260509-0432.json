@@ -1,0 +1,160 @@
+{
+  "runId": "QA-20260509-0432",
+  "recordedAt": "2026-05-09T00:32:58.510Z",
+  "recordedAtKst": "2026-05-09 09:32:58 KST",
+  "runTitle": "Vercel Production AI Ops B4/B5 Closure Retest - v8.11.118",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "623560cd27c691ab362fa155c3492fdc8136b566"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant guest conversational flow",
+    "AI ops command guidance B4/B5 closure after clarification bypass",
+    "production network proof for jobs stream and supervisor stream dispatch"
+  ],
+  "skippedSurfaces": [
+    "full 15-scenario AI ops pack",
+    "non-command service context scenarios",
+    "Cloud Run admin surface",
+    "A5/C2 empty-response scenarios",
+    "A1 HAProxy context specificity scenario"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "B4/B5 command guidance closure retest passed with concrete Nginx/NFS command output and no visible clarification interception.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Regression tests now guard semantic submit form and clarification bypass for command guidance prompts; production network proof confirmed request dispatch.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Nginx 5xx path analysis and NFS remount command guidance returned actionable operations commands.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-09T09:31:01+09:00",
+      "summary": "Current billing period reviewed after v8.11.118 B4/B5 closure retest; effective usage 4.7045 USD, billed 0.0000 USD, chargeCount 4263. First CLI attempt hit transient 503 high-load, retry passed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "AI ops B4/B5 v8.11.118 closure raw results",
+      "path": "reports/qa/evidence/qa-20260509-ai-ops-b4-b5-v811118-results.json",
+      "note": "B4/B5 scenario result JSON captured after v8.11.118 production deploy; both scenarios passed and network captured jobs stream plus supervisor stream dispatch."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-ops-command-clarification-intercept",
+      "title": "Operations command guidance prompts are intercepted by clarification dialog before AI request dispatch",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.118 B4/B5 closure retest passed. B4 returned awk/grep over /var/log/nginx/access.log; B5 returned findmnt/showmount/mount -t nfs sequence. Network captured /api/ai/jobs 201, jobs stream 200, and /api/ai/supervisor/stream/v2 200.",
+      "note": "Clarification bypass for concrete operations command/procedure prompts is covered by clarification-generator regression tests.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-command-submit-or-stream-boundary",
+      "title": "Nginx/NFS command guidance does not produce a visible AI request/answer in Playwright flow",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.118 B4/B5 closure retest passed through the UI flow with visible answers and AI network requests captured.",
+      "note": "Resolved by semantic submit form plus command clarification bypass.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-ops-empty-response-timeout",
+      "title": "AI ops QA empty response/timeouts for A5 and C2 remain unresolved after command guidance closure",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "B4/B5 passed in QA-20260509-0432; A5/C2 remain unresolved from QA-20260509-0429 and were intentionally skipped in this command-only closure run.",
+      "note": "Narrow next slice to storage threshold prediction and first-on-call checklist stream/fallback behavior.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-haproxy-context-specificity",
+      "title": "HAProxy service context answer omits CPU/backend distribution detail",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "A1 remained WARN in QA-20260509-0429 and was not retested in this command-only closure run.",
+      "note": "Tracking as blocking for the active AI ops QA closure task, not as a global release blocker.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment before retest: v8.11.118 via GitLab tag pipeline 2511583233, status success; production version smoke passed on attempt 24/81.",
+    "Scenario result summary: PASS 2, WARN 0, FAIL 0.",
+    "B4 PASS: returned Nginx access.log awk path aggregation and grep 5xx tail commands.",
+    "B5 PASS: returned findmnt -t nfs, showmount -e <nfs-server>, and mount -t nfs remount sequence.",
+    "Network proof captured /api/ai/jobs 201, /api/ai/jobs/<id>/stream 200, and /api/ai/supervisor/stream/v2 200.",
+    "Vercel usage check after QA: PASS on retry, effective usage 4.7045 USD, billed 0.0000 USD."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.11.118 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2511583233"
+    }
+  ]
+}
