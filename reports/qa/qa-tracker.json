@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-09T05:36:57.749Z"
+    "updatedAt": "2026-05-09T12:15:44.170Z"
   },
   "sequence": {
-    "nextRunNumber": 435
+    "nextRunNumber": 437
   },
   "summary": {
-    "totalRecordedRuns": 432,
-    "totalRuns": 351,
+    "totalRecordedRuns": 434,
+    "totalRuns": 353,
     "excludedRuns": 81,
-    "totalChecks": 3067,
-    "totalPassed": 2943,
+    "totalChecks": 3076,
+    "totalPassed": 2952,
     "totalFailed": 114,
-    "completionRate": 99.57,
-    "completedItems": 465,
-    "pendingItems": 2,
+    "completionRate": 100,
+    "completedItems": 468,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260509-0432",
-    "lastRecordedAt": "2026-05-09T00:32:58.510Z",
-    "latestRecordedRunId": "QA-20260509-0434",
-    "latestRecordedAt": "2026-05-09T05:36:57.749Z"
+    "lastRunId": "QA-20260509-0436",
+    "lastRecordedAt": "2026-05-09T12:15:44.170Z",
+    "latestRecordedRunId": "QA-20260509-0436",
+    "latestRecordedAt": "2026-05-09T12:15:44.170Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11228,27 +11228,27 @@
     },
     "ai-ops-empty-response-timeout": {
       "id": "ai-ops-empty-response-timeout",
-      "title": "AI ops QA empty response/timeouts for A5 and C2 remain unresolved after command guidance closure",
+      "title": "A5/C2 empty response/timeout resolved",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260509-0428",
       "firstSeenAt": "2026-05-08T15:49:21.373Z",
-      "lastSeenRunId": "QA-20260509-0432",
-      "lastSeenAt": "2026-05-09T00:32:58.510Z",
-      "seenCount": 5,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260509-0435",
+      "lastSeenAt": "2026-05-09T06:13:33.522Z",
+      "seenCount": 6,
+      "completedCount": 1,
       "pendingCount": 5,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "B4/B5 passed in QA-20260509-0432; A5/C2 remain unresolved from QA-20260509-0429 and were intentionally skipped in this command-only closure run.",
+      "lastEvidence": "A5 (storage threshold): Streaming response with generateMonitoringAnalysisArtifact, 18 servers, 1 risk signal. C2 (first-on-call checklist): Clarification dialog then full 서버 상태 체크리스트 in 2223ms. Both non-empty streaming confirmed.",
       "lastNote": "Narrow next slice to storage threshold prediction and first-on-call checklist stream/fallback behavior.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-09T00:32:58.510Z"
+      "lastStatusChangeAt": "2026-05-09T06:13:33.522Z"
     },
     "ai-ops-command-intent-routing": {
       "id": "ai-ops-command-intent-routing",
@@ -11324,27 +11324,27 @@
     },
     "ai-ops-haproxy-context-specificity": {
       "id": "ai-ops-haproxy-context-specificity",
-      "title": "HAProxy service context answer omits CPU/backend distribution detail",
+      "title": "A1 HAProxy CPU included, backend distribution limitation disclosed",
       "priority": "P2",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260509-0429",
       "firstSeenAt": "2026-05-08T16:33:50.518Z",
-      "lastSeenRunId": "QA-20260509-0432",
-      "lastSeenAt": "2026-05-09T00:32:58.510Z",
-      "seenCount": 4,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260509-0435",
+      "lastSeenAt": "2026-05-09T06:13:33.522Z",
+      "seenCount": 5,
+      "completedCount": 1,
       "pendingCount": 4,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "A1 remained WARN in QA-20260509-0429 and was not retested in this command-only closure run.",
+      "lastEvidence": "CPU per LB: 26%/37.6%/28%. Backend distribution: AI explicitly discloses OTel data unavailability. Improvement from silent omission to explicit disclosure. Response 1739ms via 서버 그룹 조회 tool.",
       "lastNote": "Tracking as blocking for the active AI ops QA closure task, not as a global release blocker.",
-      "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlocking": false,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-09T00:32:58.510Z"
+      "lastStatusChangeAt": "2026-05-09T06:13:33.522Z"
     },
     "ai-ops-command-submit-or-stream-boundary": {
       "id": "ai-ops-command-submit-or-stream-boundary",
@@ -11465,6 +11465,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-09T05:36:57.749Z"
+    },
+    "ui-ux-improvement-plan-p1-p3-closure": {
+      "id": "ui-ux-improvement-plan-p1-p3-closure",
+      "title": "UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260509-0436",
+      "firstSeenAt": "2026-05-09T12:15:44.170Z",
+      "lastSeenRunId": "QA-20260509-0436",
+      "lastSeenAt": "2026-05-09T12:15:44.170Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "npx vitest run src/components/dashboard/alert-history/AlertHistoryModal.test.tsx src/components/dashboard/DashboardRoutedContent.test.tsx; npx playwright test tests/e2e/dashboard-alerts-logs.spec.ts --grep \"Alert History: 필터\"; npx playwright test tmp/playwright/ui-ux-closure.spec.ts",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-09T12:15:44.170Z"
     }
   },
   "runs": [
@@ -45714,6 +45738,127 @@
       "expertAssessments": [],
       "usageChecks": [],
       "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260509-0435",
+      "recordedAt": "2026-05-09T06:13:33.522Z",
+      "recordedAtKst": "2026-05-09 15:13:33 KST",
+      "title": "Vercel Production AI Ops A5/C2/A1 Targeted Retest - v8.11.118",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260509-0435.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "141133cac65988b98e7bb872528cc01926d59833"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "AI sidebar - chat",
+        "AI ops queries"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260509-0436",
+      "recordedAt": "2026-05-09T12:15:44.170Z",
+      "recordedAtKst": "2026-05-09 21:15:44 KST",
+      "title": "Local UI/UX Improvement Closure QA - P1/P2/P3",
+      "owner": "codex",
+      "source": "codex-local-ui-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260509-0436.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local mocked/replay dashboard data",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "141133cac65988b98e7bb872528cc01926d59833"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/alerts URL filter persistence",
+        "/dashboard/topology zoom and node-type filters",
+        "/dashboard/ai-assistant fullscreen labels and collapsed system context",
+        "/ landing feature copy",
+        "dashboard alert history E2E locator regression"
+      ],
+      "skippedSurfaces": [
+        "Vercel production release gate",
+        "real LLM/AI response generation",
+        "mobile viewport pass"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Alert filter URL persistence",
+          "path": "reports/qa/evidence/qa-20260509-ui-ux-alert-filter-url.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Topology zoom and filter controls",
+          "path": "reports/qa/evidence/qa-20260509-ui-ux-topology-controls.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI workspace collapsed system context",
+          "path": "reports/qa/evidence/qa-20260509-ui-ux-ai-workspace.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing concrete feature copy",
+          "path": "reports/qa/evidence/qa-20260509-ui-ux-landing-copy.png"
+        }
+      ],
       "links": [],
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,

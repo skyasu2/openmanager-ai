@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-09 14:37:59 KST
+> Generated at: 2026-05-09 21:15:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 432 |
-| Total Runs (Counted) | 351 |
+| Total Recorded Runs | 434 |
+| Total Runs (Counted) | 353 |
 | Non-counted Runs | 81 |
-| Total Checks | 3067 |
-| Passed | 2943 |
+| Total Checks | 3076 |
+| Passed | 2952 |
 | Failed | 114 |
-| Completed Items | 465 |
-| Pending Items | 2 |
+| Completed Items | 468 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 99.57% |
-| Last Counted Run | QA-20260509-0432 (2026-05-09T00:32:58.510Z) |
-| Latest Recorded Run | QA-20260509-0434 (2026-05-09T05:36:57.749Z) |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260509-0436 (2026-05-09T12:15:44.170Z) |
+| Latest Recorded Run | QA-20260509-0436 (2026-05-09T12:15:44.170Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260509-0434 (2026-05-09T05:36:57.749Z)
+Latest run: QA-20260509-0436 (2026-05-09T12:15:44.170Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260509-0434 (2026-05-09T05:36:57.749Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-08T05:36:57.749Z -> 2026-05-09T05:36:57.749Z (24h)
+- Window: 2026-05-08T12:15:44.170Z -> 2026-05-09T12:15:44.170Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +58,7 @@ Latest run: QA-20260509-0434 (2026-05-09T05:36:57.749Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-08T05:36:57.749Z -> 2026-05-09T05:36:57.749Z (24h)
+- Window: 2026-05-08T12:15:44.170Z -> 2026-05-09T12:15:44.170Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -71,11 +71,11 @@ Latest run: QA-20260509-0434 (2026-05-09T05:36:57.749Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA e9536017
-- Coverage Packs: ai-core
-- Covered Surfaces: A1 HAProxy status/backend distribution deterministic summary, A5 storage disk threshold prediction deterministic summary, C2 first-on-call alert checklist fast path, AI Engine routing and deterministic summary fallback tests
-- Skipped Surfaces: Vercel production browser QA, Cloud Run deployed runtime, live LLM/provider call, production A1/A5/C2 targeted retest
+- Counts Toward Summary: yes
+- Deployment: SHA 141133ca
+- Coverage Packs: core-routes-smoke, dashboard-core
+- Covered Surfaces: /dashboard/alerts URL filter persistence, /dashboard/topology zoom and node-type filters, /dashboard/ai-assistant fullscreen labels and collapsed system context, / landing feature copy, dashboard alert history E2E locator regression
+- Skipped Surfaces: Vercel production release gate, real LLM/AI response generation, mobile viewport pass
 
 ## Links (Latest Run)
 
@@ -87,7 +87,10 @@ Latest run: QA-20260509-0434 (2026-05-09T05:36:57.749Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Alert filter URL persistence | `reports/qa/evidence/qa-20260509-ui-ux-alert-filter-url.png` | - |
+| playwright-screenshot | Topology zoom and filter controls | `reports/qa/evidence/qa-20260509-ui-ux-topology-controls.png` | - |
+| playwright-screenshot | AI workspace collapsed system context | `reports/qa/evidence/qa-20260509-ui-ux-ai-workspace.png` | - |
+| playwright-screenshot | Landing concrete feature copy | `reports/qa/evidence/qa-20260509-ui-ux-landing-copy.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -95,8 +98,7 @@ Latest run: QA-20260509-0434 (2026-05-09T05:36:57.749Z)
 
 ## Pending Improvements
 
-- [P1] ai-ops-empty-response-timeout: AI ops QA empty response/timeouts for A5 and C2 remain unresolved after command guidance closure (seen 5회, last QA-20260509-0432)
-- [P2] ai-ops-haproxy-context-specificity: HAProxy service context answer omits CPU/backend distribution detail (seen 4회, last QA-20260509-0432)
+- None
 
 ## Deferred Improvements
 
@@ -242,6 +244,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-ops-command-intent-routing: HAProxy command guidance surfaces concrete backend/status commands (completed 1회, last QA-20260509-0430)
 - ai-ops-command-submit-form-boundary: AI chat input exposes a semantic submit form for UI and QA automation (completed 1회, last QA-20260509-0431)
 - ai-ops-command-submit-or-stream-boundary: Nginx/NFS command guidance does not produce a visible AI request/answer in Playwright flow (completed 1회, last QA-20260509-0432)
+- ai-ops-empty-response-timeout: A5/C2 empty response/timeout resolved (completed 1회, last QA-20260509-0435)
+- ai-ops-haproxy-context-specificity: A1 HAProxy CPU included, backend distribution limitation disclosed (completed 1회, last QA-20260509-0435)
 - ai-ops-redis-context-quality: Redis context comparison response identifies highest-memory Redis nodes (completed 1회, last QA-20260509-0429)
 - ai-ops-tool-result-empty-summary: Tool-backed AI responses no longer show empty-summary fallback for A1/C1 retest paths (completed 1회, last QA-20260509-0429)
 - ai-provider-forced-routing-context-floor: Forced-routing quality agents skip 8K Cerebras fallback (completed 1회, last QA-20260428-0356)
@@ -574,6 +578,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
 - ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
 - ui-landing-pass: 랜딩 페이지 로드 정상, v8.10.0 확인 (completed 1회, last QA-20260326-0190)
+- ui-ux-improvement-plan-p1-p3-closure: UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed (completed 1회, last QA-20260509-0436)
 - v81195-dashboard-core-routes-playwright-recheck: Dashboard core routes and AI assistant tabs render in Vercel production (completed 1회, last QA-20260504-0404)
 - v81195-vercel-playwright-ai-routing-recheck: AI ranking and formatting rewrite production routes remain stable on v8.11.95 (completed 1회, last QA-20260504-0404)
 - validation-evidence-summary-clarity: Validation evidence summary 카피와 정보 우선순위 정리 (completed 1회, last QA-20260324-0171)
@@ -642,6 +647,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260509-0436 | 2026-05-09T12:15:44.170Z | targeted | no | yes | Local UI/UX Improvement Closure QA - P1/P2/P3 | 7 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260509-0435 | 2026-05-09T06:13:33.522Z | targeted | no | yes | Vercel Production AI Ops A5/C2/A1 Targeted Retest - v8.11.118 | 2 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260509-0434 | 2026-05-09T05:36:57.749Z | targeted | no | no | Local AI Ops A1/A5/C2 Deterministic Fallback QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0433 | 2026-05-09T03:20:33.195Z | targeted | no | no | Local Dashboard AI Surface Boundary Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0432 | 2026-05-09T00:32:58.510Z | targeted | no | yes | Vercel Production AI Ops B4/B5 Closure Retest - v8.11.118 | 2 | 2 | 2 | 0 | 0 | 0 |
@@ -660,5 +667,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260507-0419 | 2026-05-07T01:09:27.132Z | targeted | yes | yes | v8.11.112 AI Assistant Scroll and Internal Disclosure Targeted QA | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260507-0418 | 2026-05-06T21:59:27.519Z | targeted | yes | yes | v8.11.110 Production Targeted QA - Precomputed State Data Source Decoupling | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260506-0417 | 2026-05-06T07:48:50.082Z | targeted | no | no | Local deterministic QA - MonitoringFactPack evidence UI | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260506-0416 | 2026-05-06T06:59:36.046Z | targeted | yes | yes | v8.11.109 RAG/Web Raw Tool JSON Closure QA | 4 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260506-0415 | 2026-05-06T06:28:57.301Z | targeted | yes | yes | v8.11.108 AI Advanced Surface Targeted QA | 3 | 2 | 1 | 0 | 0 | 3 |

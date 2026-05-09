@@ -92,6 +92,43 @@ describe('AutoReportPage', () => {
     });
   });
 
+  it('빈 상태에서 Reporter 빠른 시작 칩을 제공하고 선택한 힌트를 요청에 포함한다', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        success: false,
+        message: 'stop after request assertion',
+      }),
+    });
+
+    render(<AutoReportPage />);
+
+    expect(
+      screen.getByRole('button', { name: /장애 보고서/ })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /정기 운영 보고서/ })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /이상감지 요약/ })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /정기 운영 보고서/ }));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    const request = mockFetch.mock.calls[0]?.[1];
+    expect(JSON.parse(String(request?.body))).toMatchObject({
+      action: 'generate',
+      query: '최근 24시간 운영 상태를 정기 운영 보고서로 요약해줘',
+      category: 'operations',
+      severity: 'info',
+    });
+  });
+
   it('keeps generated reports visible after the page remounts', async () => {
     mockFetch.mockResolvedValue({
       ok: true,

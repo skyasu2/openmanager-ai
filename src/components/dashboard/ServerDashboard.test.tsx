@@ -170,7 +170,7 @@ describe('ServerDashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: '넓게 보기' }));
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(3);
-    expect(screen.getByText('3/5개 서버 표시')).toBeInTheDocument();
+    expect(screen.getByText('3/5대 서버 표시')).toBeInTheDocument();
   });
 
   it('개요용 서버 카드는 1줄만 먼저 보여주고 더 보기로 아래에 추가한다', () => {
@@ -192,11 +192,13 @@ describe('ServerDashboard', () => {
         onPageChange={vi.fn()}
         onPageSizeChange={vi.fn()}
         initialVisibleRows={1}
+        surface="overview"
       />
     );
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(4);
-    expect(screen.getByText('4/5개 서버 표시')).toBeInTheDocument();
+    expect(screen.getByText('상위 알림 서버 4개 표시')).toBeInTheDocument();
+    expect(screen.getByText('위험도 우선')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /더 보기/ }));
 
@@ -228,9 +230,34 @@ describe('ServerDashboard', () => {
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(9);
 
-    fireEvent.click(screen.getByRole('button', { name: /더 보기/ }));
+    fireEvent.click(screen.getByRole('button', { name: /모든 서버 보기/ }));
 
     expect(onPageSizeChange).toHaveBeenCalledWith(18);
+  });
+
+  it('로드된 서버만 더 펼칠 때는 모든 서버 보기로 과장하지 않는다', () => {
+    setViewportWidth(1280);
+
+    render(
+      <ServerDashboard
+        servers={Array.from({ length: 18 }, (_, index) =>
+          createServer(`server-${index + 1}`, `API Server ${index + 1}`)
+        )}
+        totalServers={30}
+        currentPage={1}
+        totalPages={2}
+        pageSize={18}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        initialVisibleRows={3}
+      />
+    );
+
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(12);
+    expect(screen.getByRole('button', { name: /더 보기/ })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /모든 서버 보기/ })
+    ).not.toBeInTheDocument();
   });
 
   it('서버 정렬 셀렉트로 CPU, 메모리, 이름 기준 순서를 바꿀 수 있다', () => {

@@ -68,7 +68,7 @@ test.describe('📢 알람 기능 QA', () => {
     await expect(page).toHaveURL(/\/dashboard\/alerts$/);
 
     // 헤더
-    await expect(page.getByText('알림 이력')).toBeVisible({
+    await expect(page.getByRole('heading', { name: '알림 이력' })).toBeVisible({
       timeout: TIMEOUTS.DOM_UPDATE,
     });
 

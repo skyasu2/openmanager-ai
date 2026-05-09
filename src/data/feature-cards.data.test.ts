@@ -23,6 +23,9 @@ describe('feature card public data', () => {
   it('describes the AI assistant with current artifact and retrieval wording', () => {
     const copy = stringify(FEATURE_CARDS_DATA);
 
+    expect(copy).toContain('18대 서버의 24시간 OTel 데이터');
+    expect(copy).toContain('자연어 질의, 장애 보고서');
+    expect(copy).toContain('무료 티어 친화 실행 경계');
     expect(copy).toContain('다운로드 가능한 장애/이상감지 아티팩트');
     expect(copy).toContain('BM25 RPC + metadata boost');
     expect(copy).toContain('GitLab CI semver tag pipeline');
@@ -62,8 +65,10 @@ describe('feature card public data', () => {
 
     expect(copy).toContain('React 19');
     expect(copy).toContain('19.2.4');
-    expect(copy).toContain('Recharts 3.8');
+    expect(copy).toContain('Nivo Line 0.99');
+    expect(copy).toContain('SVG Sparkline');
     expect(copy).toContain('Tailwind CSS 4.2');
+    expect(copy).not.toContain('Recharts 3.8');
     expect(copy).not.toContain('Recharts 3.7');
     expect(copy).not.toContain('Tailwind CSS 4.1');
   });

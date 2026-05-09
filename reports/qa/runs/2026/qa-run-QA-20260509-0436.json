@@ -1,0 +1,88 @@
+{
+  "runId": "QA-20260509-0436",
+  "recordedAt": "2026-05-09T12:15:44.170Z",
+  "recordedAtKst": "2026-05-09 21:15:44 KST",
+  "runTitle": "Local UI/UX Improvement Closure QA - P1/P2/P3",
+  "owner": "codex",
+  "source": "codex-local-ui-smoke",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local mocked/replay dashboard data",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "141133cac65988b98e7bb872528cc01926d59833"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+  "coveredSurfaces": [
+    "/dashboard/alerts URL filter persistence",
+    "/dashboard/topology zoom and node-type filters",
+    "/dashboard/ai-assistant fullscreen labels and collapsed system context",
+    "/ landing feature copy",
+    "dashboard alert history E2E locator regression"
+  ],
+  "skippedSurfaces": [
+    "Vercel production release gate",
+    "real LLM/AI response generation",
+    "mobile viewport pass"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Alert filter URL persistence",
+      "path": "reports/qa/evidence/qa-20260509-ui-ux-alert-filter-url.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Topology zoom and filter controls",
+      "path": "reports/qa/evidence/qa-20260509-ui-ux-topology-controls.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI workspace collapsed system context",
+      "path": "reports/qa/evidence/qa-20260509-ui-ux-ai-workspace.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing concrete feature copy",
+      "path": "reports/qa/evidence/qa-20260509-ui-ux-landing-copy.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ui-ux-improvement-plan-p1-p3-closure",
+      "title": "UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "npx vitest run src/components/dashboard/alert-history/AlertHistoryModal.test.tsx src/components/dashboard/DashboardRoutedContent.test.tsx; npx playwright test tests/e2e/dashboard-alerts-logs.spec.ts --grep \"Alert History: 필터\"; npx playwright test tmp/playwright/ui-ux-closure.spec.ts",
+      "note": "",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright MCP was blocked by an existing browser profile lock, so local QA used Playwright CLI with an isolated Chromium process.",
+    "Initial targeted Alert History E2E exposed a strict locator collision for text '알림 이력'; the test was narrowed to heading role and passed on rerun."
+  ],
+  "links": []
+}

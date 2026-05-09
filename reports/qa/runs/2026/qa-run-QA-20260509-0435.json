@@ -1,0 +1,67 @@
+{
+  "runId": "QA-20260509-0435",
+  "recordedAt": "2026-05-09T06:13:33.522Z",
+  "recordedAtKst": "2026-05-09 15:13:33 KST",
+  "runTitle": "Vercel Production AI Ops A5/C2/A1 Targeted Retest - v8.11.118",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "141133cac65988b98e7bb872528cc01926d59833"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [],
+  "coveredSurfaces": ["AI sidebar - chat", "AI ops queries"],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-ops-empty-response-timeout",
+      "title": "A5/C2 empty response/timeout resolved",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "A5 (storage threshold): Streaming response with generateMonitoringAnalysisArtifact, 18 servers, 1 risk signal. C2 (first-on-call checklist): Clarification dialog then full 서버 상태 체크리스트 in 2223ms. Both non-empty streaming confirmed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-haproxy-context-specificity",
+      "title": "A1 HAProxy CPU included, backend distribution limitation disclosed",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "CPU per LB: 26%/37.6%/28%. Backend distribution: AI explicitly discloses OTel data unavailability. Improvement from silent omission to explicit disclosure. Response 1739ms via 서버 그룹 조회 tool.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

@@ -32,6 +32,42 @@ interface AutoReportPageProps {
   queryAsOfDataSlot?: JobDataSlot;
 }
 
+interface ReportQuickStart {
+  id: string;
+  label: string;
+  description: string;
+  query: string;
+  category: string;
+  severity?: string;
+}
+
+const REPORT_QUICK_STARTS: ReportQuickStart[] = [
+  {
+    id: 'incident',
+    label: '장애 보고서',
+    description: '현재 임계치 초과 서버와 조치 우선순위 정리',
+    query: '현재 이상 징후를 장애 보고서 형식으로 정리해줘',
+    category: 'incident',
+    severity: 'auto',
+  },
+  {
+    id: 'ops-summary',
+    label: '정기 운영 보고서',
+    description: '24시간 상태와 경고 서버 추이를 운영 요약으로 정리',
+    query: '최근 24시간 운영 상태를 정기 운영 보고서로 요약해줘',
+    category: 'operations',
+    severity: 'info',
+  },
+  {
+    id: 'anomaly-summary',
+    label: '이상감지 요약',
+    description: '탐지된 이상 신호와 영향 서버만 빠르게 요약',
+    query: '현재 이상감지 결과와 영향 서버를 요약해줘',
+    category: 'anomaly-summary',
+    severity: 'warning',
+  },
+];
+
 function normalizeRecommendations(
   recommendations: unknown
 ): IncidentReport['recommendations'] {
@@ -103,188 +139,198 @@ export default function AutoReportPage({
   const [error, setError] = useState<string | null>(null);
 
   // Generate new report
-  const handleGenerateReport = useCallback(async () => {
-    if (servers.length === 0) {
-      setError('서버 데이터를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-      return;
-    }
-    setIsGenerating(true);
-    setError(null);
+  const handleGenerateReport = useCallback(
+    async (preset?: ReportQuickStart) => {
+      if (servers.length === 0) {
+        setError('서버 데이터를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+        return;
+      }
+      setIsGenerating(true);
+      setError(null);
 
-    try {
-      const metrics: ServerMetric[] = servers.map((server) => ({
-        server_id: server.id,
-        server_name: server.name,
-        cpu: extractNumericValue(server.cpu ?? 0),
-        memory: extractNumericValue(server.memory ?? 0),
-        disk: extractNumericValue(server.disk ?? 0),
-        network: extractNumericValue(server.network ?? 0),
-        timestamp: new Date().toISOString(),
-      }));
+      try {
+        const metrics: ServerMetric[] = servers.map((server) => ({
+          server_id: server.id,
+          server_name: server.name,
+          cpu: extractNumericValue(server.cpu ?? 0),
+          memory: extractNumericValue(server.memory ?? 0),
+          disk: extractNumericValue(server.disk ?? 0),
+          network: extractNumericValue(server.network ?? 0),
+          timestamp: new Date().toISOString(),
+        }));
 
-      const response = await fetch('/api/ai/incident-report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'generate',
-          metrics,
-          notify: true,
-          queryAsOf: createQueryAsOf(queryAsOfDataSlot),
-        }),
-      });
+        const response = await fetch('/api/ai/incident-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'generate',
+            metrics,
+            notify: true,
+            ...(preset
+              ? {
+                  query: preset.query,
+                  category: preset.category,
+                  severity: preset.severity,
+                }
+              : {}),
+            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
+          }),
+        });
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          setError('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.');
+        if (!response.ok) {
+          if (response.status === 401) {
+            setError('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.');
+            return;
+          }
+          throw new Error(`API 오류: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Fallback 응답 처리
+        if (data.source === 'fallback' || !data.success) {
+          setError(
+            data.message ||
+              '보고서 생성 서비스가 일시적으로 불안정합니다. 잠시 후 다시 시도해주세요.'
+          );
           return;
         }
-        throw new Error(`API 오류: ${response.status}`);
-      }
 
-      const data = await response.json();
+        // 보고서 데이터 없음 처리
+        if (!data.report) {
+          setError('보고서 데이터를 받지 못했습니다. 다시 시도해주세요.');
+          return;
+        }
 
-      // Fallback 응답 처리
-      if (data.source === 'fallback' || !data.success) {
-        setError(
-          data.message ||
-            '보고서 생성 서비스가 일시적으로 불안정합니다. 잠시 후 다시 시도해주세요.'
-        );
-        return;
-      }
-
-      // 보고서 데이터 없음 처리
-      if (!data.report) {
-        setError('보고서 데이터를 받지 못했습니다. 다시 시도해주세요.');
-        return;
-      }
-
-      if (data.success && data.report) {
-        // 시스템 요약: API 데이터 우선, 없으면 로컬 계산
-        const apiSystemSummary = data.report.system_summary;
-        const systemSummary = apiSystemSummary
-          ? {
-              totalServers: apiSystemSummary.total_servers ?? metrics.length,
-              healthyServers:
-                apiSystemSummary.healthy_servers ??
-                apiSystemSummary.online_servers ??
-                0,
-              warningServers: apiSystemSummary.warning_servers ?? 0,
-              criticalServers: apiSystemSummary.critical_servers ?? 0,
-            }
-          : (() => {
-              const statusCounts = { online: 0, warning: 0, critical: 0 };
-              for (const m of metrics) {
-                const status = rulesLoader.getServerStatus({
-                  cpu: m.cpu,
-                  memory: m.memory,
-                  disk: m.disk,
-                });
-                statusCounts[status]++;
+        if (data.success && data.report) {
+          // 시스템 요약: API 데이터 우선, 없으면 로컬 계산
+          const apiSystemSummary = data.report.system_summary;
+          const systemSummary = apiSystemSummary
+            ? {
+                totalServers: apiSystemSummary.total_servers ?? metrics.length,
+                healthyServers:
+                  apiSystemSummary.healthy_servers ??
+                  apiSystemSummary.online_servers ??
+                  0,
+                warningServers: apiSystemSummary.warning_servers ?? 0,
+                criticalServers: apiSystemSummary.critical_servers ?? 0,
               }
-              return {
-                totalServers: metrics.length,
-                healthyServers: statusCounts.online,
-                warningServers: statusCounts.warning,
-                criticalServers: statusCounts.critical,
-              };
-            })();
+            : (() => {
+                const statusCounts = { online: 0, warning: 0, critical: 0 };
+                for (const m of metrics) {
+                  const status = rulesLoader.getServerStatus({
+                    cpu: m.cpu,
+                    memory: m.memory,
+                    disk: m.disk,
+                  });
+                  statusCounts[status]++;
+                }
+                return {
+                  totalServers: metrics.length,
+                  healthyServers: statusCounts.online,
+                  warningServers: statusCounts.warning,
+                  criticalServers: statusCounts.critical,
+                };
+              })();
 
-        // 이상 항목: API 데이터 우선, 없으면 로컬 계산
-        const apiAnomalies = data.report.anomalies;
-        const anomalies =
-          Array.isArray(apiAnomalies) && apiAnomalies.length > 0
-            ? apiAnomalies
-            : metrics
-                .filter(
-                  (m) =>
-                    rulesLoader.isWarning('cpu', m.cpu) ||
-                    rulesLoader.isCritical('cpu', m.cpu) ||
-                    rulesLoader.isWarning('memory', m.memory) ||
-                    rulesLoader.isCritical('memory', m.memory) ||
-                    rulesLoader.isWarning('disk', m.disk) ||
-                    rulesLoader.isCritical('disk', m.disk)
-                )
-                .flatMap((m) => {
-                  const items = [];
-                  if (
-                    rulesLoader.isWarning('cpu', m.cpu) ||
-                    rulesLoader.isCritical('cpu', m.cpu)
+          // 이상 항목: API 데이터 우선, 없으면 로컬 계산
+          const apiAnomalies = data.report.anomalies;
+          const anomalies =
+            Array.isArray(apiAnomalies) && apiAnomalies.length > 0
+              ? apiAnomalies
+              : metrics
+                  .filter(
+                    (m) =>
+                      rulesLoader.isWarning('cpu', m.cpu) ||
+                      rulesLoader.isCritical('cpu', m.cpu) ||
+                      rulesLoader.isWarning('memory', m.memory) ||
+                      rulesLoader.isCritical('memory', m.memory) ||
+                      rulesLoader.isWarning('disk', m.disk) ||
+                      rulesLoader.isCritical('disk', m.disk)
                   )
-                    items.push({
-                      server_id: m.server_id,
-                      server_name: m.server_name,
-                      metric: 'CPU',
-                      value: m.cpu,
-                      severity: rulesLoader.isCritical('cpu', m.cpu)
-                        ? 'critical'
-                        : 'warning',
-                    });
-                  if (
-                    rulesLoader.isWarning('memory', m.memory) ||
-                    rulesLoader.isCritical('memory', m.memory)
-                  )
-                    items.push({
-                      server_id: m.server_id,
-                      server_name: m.server_name,
-                      metric: 'Memory',
-                      value: m.memory,
-                      severity: rulesLoader.isCritical('memory', m.memory)
-                        ? 'critical'
-                        : 'warning',
-                    });
-                  if (
-                    rulesLoader.isWarning('disk', m.disk) ||
-                    rulesLoader.isCritical('disk', m.disk)
-                  )
-                    items.push({
-                      server_id: m.server_id,
-                      server_name: m.server_name,
-                      metric: 'Disk',
-                      value: m.disk,
-                      severity: rulesLoader.isCritical('disk', m.disk)
-                        ? 'critical'
-                        : 'warning',
-                    });
-                  return items;
-                });
+                  .flatMap((m) => {
+                    const items = [];
+                    if (
+                      rulesLoader.isWarning('cpu', m.cpu) ||
+                      rulesLoader.isCritical('cpu', m.cpu)
+                    )
+                      items.push({
+                        server_id: m.server_id,
+                        server_name: m.server_name,
+                        metric: 'CPU',
+                        value: m.cpu,
+                        severity: rulesLoader.isCritical('cpu', m.cpu)
+                          ? 'critical'
+                          : 'warning',
+                      });
+                    if (
+                      rulesLoader.isWarning('memory', m.memory) ||
+                      rulesLoader.isCritical('memory', m.memory)
+                    )
+                      items.push({
+                        server_id: m.server_id,
+                        server_name: m.server_name,
+                        metric: 'Memory',
+                        value: m.memory,
+                        severity: rulesLoader.isCritical('memory', m.memory)
+                          ? 'critical'
+                          : 'warning',
+                      });
+                    if (
+                      rulesLoader.isWarning('disk', m.disk) ||
+                      rulesLoader.isCritical('disk', m.disk)
+                    )
+                      items.push({
+                        server_id: m.server_id,
+                        server_name: m.server_name,
+                        metric: 'Disk',
+                        value: m.disk,
+                        severity: rulesLoader.isCritical('disk', m.disk)
+                          ? 'critical'
+                          : 'warning',
+                      });
+                    return items;
+                  });
 
-        const newReport: IncidentReport = {
-          id: data.report.id,
-          title: data.report.title,
-          severity: mapSeverity(data.report.severity),
-          timestamp: new Date(data.report.created_at),
-          affectedServers:
-            data.report.affected_servers ||
-            normalizeRelatedServers(data.report).map((server) => server.id),
-          relatedServers: normalizeRelatedServers(data.report),
-          description:
-            data.report.root_cause_analysis?.primary_cause ||
-            data.report.description ||
-            '새로운 이상 징후가 감지되었습니다.',
-          status: 'active',
-          pattern: data.report.pattern,
-          recommendations: normalizeRecommendations(
-            data.report.recommendations
-          ),
-          systemSummary,
-          anomalies,
-          timeline: data.report.timeline,
-          postmortem: data.report.postmortem,
-        };
+          const newReport: IncidentReport = {
+            id: data.report.id,
+            title: data.report.title,
+            severity: mapSeverity(data.report.severity),
+            timestamp: new Date(data.report.created_at),
+            affectedServers:
+              data.report.affected_servers ||
+              normalizeRelatedServers(data.report).map((server) => server.id),
+            relatedServers: normalizeRelatedServers(data.report),
+            description:
+              data.report.root_cause_analysis?.primary_cause ||
+              data.report.description ||
+              '새로운 이상 징후가 감지되었습니다.',
+            status: 'active',
+            pattern: data.report.pattern,
+            recommendations: normalizeRecommendations(
+              data.report.recommendations
+            ),
+            systemSummary,
+            anomalies,
+            timeline: data.report.timeline,
+            postmortem: data.report.postmortem,
+          };
 
-        setReports((prev) => [newReport, ...prev]);
+          setReports((prev) => [newReport, ...prev]);
+        }
+      } catch (err) {
+        logger.error('보고서 생성 실패:', err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : '보고서 생성 중 오류가 발생했습니다.'
+        );
+      } finally {
+        setIsGenerating(false);
       }
-    } catch (err) {
-      logger.error('보고서 생성 실패:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : '보고서 생성 중 오류가 발생했습니다.'
-      );
-    } finally {
-      setIsGenerating(false);
-    }
-  }, [servers, setReports, queryAsOfDataSlot]);
+    },
+    [servers, setReports, queryAsOfDataSlot]
+  );
 
   // Event handlers
   const handleResolve = useCallback(
@@ -361,7 +407,7 @@ export default function AutoReportPage({
             <button
               type="button"
               data-testid="report-generate-btn"
-              onClick={handleGenerateReport}
+              onClick={() => handleGenerateReport()}
               disabled={isGenerating || isServersLoading}
               className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-red-500 px-3 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
@@ -471,10 +517,28 @@ export default function AutoReportPage({
             <p className="mb-4 text-sm text-gray-500">
               새 보고서를 생성하여 장애 현황을 분석해보세요.
             </p>
+            <div className="mx-auto mb-4 grid max-w-md gap-2 text-left">
+              {REPORT_QUICK_STARTS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handleGenerateReport(preset)}
+                  disabled={isGenerating || isServersLoading}
+                  className="rounded-lg border border-red-100 bg-white px-3 py-2 text-left transition-colors hover:border-red-200 hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
+                >
+                  <span className="block text-sm font-semibold text-gray-800">
+                    {preset.label}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-gray-500">
+                    {preset.description}
+                  </span>
+                </button>
+              ))}
+            </div>
             <button
               type="button"
               data-testid="report-generate-cta"
-              onClick={handleGenerateReport}
+              onClick={() => handleGenerateReport()}
               disabled={isGenerating || isServersLoading}
               className="inline-flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-sm text-white transition-all hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >

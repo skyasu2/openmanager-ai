@@ -462,6 +462,7 @@ eslint-result.json
 *.temp.png
 # Numbered project screenshots (documentation captures)
 [0-9][0-9]-*.png
+[0-9][0-9][a-z]-*.png
 # Playwright/dev verification screenshots (root level)
 /*.png
 

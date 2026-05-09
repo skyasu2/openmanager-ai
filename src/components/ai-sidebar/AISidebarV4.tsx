@@ -404,7 +404,11 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         )}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <AISidebarHeader onClose={onClose} onNewSession={handleNewSession} />
+          <AISidebarHeader
+            activeFunction={selectedFunction}
+            onClose={onClose}
+            onNewSession={handleNewSession}
+          />
           <div className="flex-1 overflow-hidden pb-20 sm:pb-0">
             <AIErrorBoundary
               componentName="AISidebar"

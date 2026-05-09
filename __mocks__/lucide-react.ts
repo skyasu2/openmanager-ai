@@ -63,6 +63,7 @@ export const Maximize2 = noop;
 export const MessageSquare = noop;
 export const MessageSquareQuote = noop;
 export const Menu = noop;
+export const Minus = noop;
 export const Monitor = noop;
 export const MonitorCheck = noop;
 export const Network = noop;

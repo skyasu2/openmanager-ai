@@ -1,10 +1,10 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Last reviewed: 2026-05-09
 
 # Dashboard AI Surface Boundary Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-09
 - TODO.md 연결: Backlog > Dashboard AI surface boundary 정렬
 
@@ -105,7 +105,7 @@ git HEAD 기준 AI 진입점
 | 관련 test 파일 6개 | AI CTA 기대값 제거/교체 |
 | docs 파일 7개 | surface boundary 반영 |
 
-**현재 남은 작업**: 미커밋 변경 검증/커밋 판단. Task 3 서버 상세 monitoring detail 보강과 Task 6 targeted QA 기록은 완료됨.
+**현재 남은 작업**: 없음. Task 0~6 구현/검증/QA 기록은 완료됐고, 커밋은 사용자 명시 요청 전까지 미실행으로 판단을 고정함.
 
 ```text
 유지해야 하는 AI 진입점 (변경 없음)
@@ -249,10 +249,10 @@ git show 40232fb84:src/components/dashboard/ImprovedServerCard.parts.tsx
 - [x] Task 2 — active alerts/history alerts의 AI 분석 버튼 제거 및 탐색 UX 유지
   - 제거 대상: active/history alert row의 `AI` 버튼과 관련 props
   - 유지 대상: alert row의 로그 이동, 서버/알림 필터 탐색
-- [ ] **Task 2.5 — 미커밋 변경 검증/커밋 판단** ← 현재 단계
+- [x] **Task 2.5 — 미커밋 변경 검증/커밋 판단**
   - Task 0~2와 Task 4~5의 구현이 워킹 디렉토리에 완료됨 (29개 미커밋 파일)
   - 검증 상태(2026-05-09 재확인): targeted Dashboard DOM suite, `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check` 모두 통과
-  - 커밋 상태: 명시적인 커밋 요청 전에는 미실행. 요청 시 커밋 prefix는 `refactor(dashboard): remove per-entity AI CTAs` 또는 분리 커밋
+  - 커밋 판단: 명시적인 커밋 요청 전에는 미실행. 요청 시 커밋 prefix는 `refactor(dashboard): remove per-entity AI CTAs` 또는 분리 커밋
   - `3xl:grid-cols-4` 확인 결과: `src/app/globals.css`와 `src/styles/globals.css`에 `--breakpoint-3xl: 1920px`가 정의되어 Tailwind v4 CSS 변수 방식 기준으로 유효. `ServerDashboard.test.tsx`에서 class contract도 보호하므로 교체 불필요.
 - [x] Task 3 — 서버 상세 페이지를 모니터링 상세 화면으로 보강
   - 완료 기준:
@@ -315,4 +315,4 @@ git show 40232fb84:src/components/dashboard/ImprovedServerCard.parts.tsx
 
 ---
 
-_Last Updated: 2026-05-09_
+_Last Updated: 2026-05-09 — Task 0~6 및 Task 2.5 검증/커밋 판단 완료, plan completed_

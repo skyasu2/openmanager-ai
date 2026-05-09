@@ -2,20 +2,27 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useAlertHistory } from '@/hooks/dashboard/useAlertHistory';
 import type { Alert } from '@/services/monitoring/AlertManager';
 import { AlertHistoryPanel, AlertHistoryRow } from './AlertHistoryModal';
 
-const { routerPush } = vi.hoisted(() => ({
+const { routerPush, routerReplace, searchParamsState } = vi.hoisted(() => ({
   routerPush: vi.fn(),
+  routerReplace: vi.fn(),
+  searchParamsState: {
+    value: new URLSearchParams(),
+  },
 }));
 
 vi.mock('next/navigation', () => ({
+  usePathname: () => '/dashboard/alerts',
   useRouter: () => ({
     push: routerPush,
+    replace: routerReplace,
   }),
+  useSearchParams: () => searchParamsState.value,
 }));
 
 vi.mock('@/hooks/dashboard/useAlertHistory', () => ({
@@ -43,6 +50,8 @@ function createAlert(index: number): Alert {
 describe('AlertHistoryModal', () => {
   beforeEach(() => {
     routerPush.mockClear();
+    routerReplace.mockClear();
+    searchParamsState.value = new URLSearchParams();
     mockedUseAlertHistory.mockClear();
     mockedUseAlertHistory.mockReturnValue({
       alerts: [],
@@ -242,5 +251,81 @@ describe('AlertHistoryModal', () => {
       expect.objectContaining({ serverId: undefined })
     );
     expect(screen.getByLabelText('서버 필터')).toHaveValue('');
+  });
+
+  it('URL query 필터를 알림 이력 API 필터와 UI 초기값에 반영한다', () => {
+    searchParamsState.value = new URLSearchParams(
+      'severity=critical&state=firing&server=server-2&range=6h&q=cpu'
+    );
+
+    render(<AlertHistoryPanel serverIds={['server-1', 'server-2']} />);
+
+    expect(mockedUseAlertHistory).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        severity: 'critical',
+        state: 'firing',
+        serverId: 'server-2',
+        timeRangeMs: 21_600_000,
+        keyword: 'cpu',
+      })
+    );
+    expect(screen.getByLabelText('알림 검색')).toHaveValue('cpu');
+    expect(screen.getByLabelText('서버 필터')).toHaveValue('server-2');
+    expect(routerReplace).not.toHaveBeenCalled();
+  });
+
+  it('서버 목록 로드 전에는 URL server query를 제거하지 않는다', async () => {
+    searchParamsState.value = new URLSearchParams('server=server-2');
+
+    const { rerender } = render(<AlertHistoryPanel serverIds={[]} />);
+
+    expect(routerReplace).not.toHaveBeenCalled();
+    expect(mockedUseAlertHistory).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        serverId: undefined,
+      })
+    );
+
+    rerender(<AlertHistoryPanel serverIds={['server-1', 'server-2']} />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('서버 필터')).toHaveValue('server-2');
+    });
+    expect(routerReplace).not.toHaveBeenCalled();
+  });
+
+  it('서버 필터 변경을 dashboard alerts URL query로 반영한다', async () => {
+    render(<AlertHistoryPanel serverIds={['server-1', 'server-2']} />);
+
+    fireEvent.change(screen.getByLabelText('서버 필터'), {
+      target: { value: 'server-2' },
+    });
+
+    await waitFor(() => {
+      expect(routerReplace).toHaveBeenCalledWith(
+        '/dashboard/alerts?server=server-2',
+        { scroll: false }
+      );
+    });
+  });
+
+  it('URL query에서 온 서버 필터를 해제하면 필터 query를 제거한다', async () => {
+    searchParamsState.value = new URLSearchParams('server=server-2');
+
+    render(<AlertHistoryPanel serverIds={['server-1', 'server-2']} />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('서버 필터')).toHaveValue('server-2');
+    });
+
+    fireEvent.change(screen.getByLabelText('서버 필터'), {
+      target: { value: '' },
+    });
+
+    await waitFor(() => {
+      expect(routerReplace).toHaveBeenCalledWith('/dashboard/alerts', {
+        scroll: false,
+      });
+    });
   });
 });

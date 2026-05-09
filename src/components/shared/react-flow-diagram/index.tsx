@@ -14,7 +14,14 @@
  */
 
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
+import {
+  Background,
+  Controls,
+  MiniMap,
+  ReactFlow,
+  useReactFlow,
+} from '@xyflow/react';
+import { Maximize2, Minus, Plus } from 'lucide-react';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import '@xyflow/react/dist/style.css';
 
@@ -35,6 +42,43 @@ const nodeTypes = {
   swimlaneBg: SwimlaneBgNode,
 };
 
+function DiagramZoomToolbar() {
+  const reactFlow = useReactFlow();
+
+  return (
+    <fieldset className="nodrag nopan absolute right-3 top-3 z-10 flex items-center overflow-hidden rounded-lg border border-white/15 bg-slate-900/85 shadow-lg backdrop-blur-md">
+      <legend className="sr-only">토폴로지 줌 컨트롤</legend>
+      <button
+        type="button"
+        onClick={() => reactFlow.zoomIn?.({ duration: 180 })}
+        className="flex h-9 w-9 items-center justify-center border-r border-white/10 text-slate-100 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+        aria-label="토폴로지 확대"
+        title="확대"
+      >
+        <Plus className="h-4 w-4" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        onClick={() => reactFlow.zoomOut?.({ duration: 180 })}
+        className="flex h-9 w-9 items-center justify-center border-r border-white/10 text-slate-100 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+        aria-label="토폴로지 축소"
+        title="축소"
+      >
+        <Minus className="h-4 w-4" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        onClick={() => reactFlow.fitView(FIT_VIEW_OPTIONS)}
+        className="flex h-9 w-9 items-center justify-center text-slate-100 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+        aria-label="토폴로지 화면 맞춤"
+        title="화면 맞춤"
+      >
+        <Maximize2 className="h-4 w-4" aria-hidden="true" />
+      </button>
+    </fieldset>
+  );
+}
+
 function ReactFlowDiagram({
   diagram,
   compact = true,
@@ -42,6 +86,7 @@ function ReactFlowDiagram({
   showMiniMap = false,
   showHeader = true,
   showLegend = true,
+  showZoomToolbar = false,
   maximizeViewport = false,
   servers = [],
 }: ReactFlowDiagramProps) {
@@ -124,6 +169,7 @@ function ReactFlowDiagram({
               className="react-flow-dark"
               aria-label={`${diagram.title} 아키텍처 다이어그램`}
             >
+              {showZoomToolbar && <DiagramZoomToolbar />}
               <Background color="#94a3b8" gap={24} size={1.5} />
               {showControls && (
                 <Controls

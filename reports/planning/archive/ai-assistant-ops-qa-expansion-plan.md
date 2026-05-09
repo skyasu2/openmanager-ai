@@ -1,7 +1,7 @@
 # AI 어시스턴트 운영 대응 QA 확장 계획
 
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-09
 > Tags: qa,ai-assistant,operations,conversational-qa
@@ -127,11 +127,11 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
   - [x] **8a (P1) A5 로컬 보강**: storage threshold prediction 타임아웃 — `TrendPredictor.ts::predictThresholdBreach`가 존재하지만 "스토리지 서버 디스크 임계치 넘기 전에 미리 알 수 있어?" 질문이 LLM/tool 경로에서 visible answer 없이 종료될 수 있었다. 최소 변경으로 `predictTrends` 실행 체인을 새로 강제하지 않고, 현재 상태 payload가 있는 경우 `predictive + metric + threshold` 질의를 deterministic summary fallback에서 처리하도록 보강했다. 이유: A5 pass 기준은 "현재 디스크 수치 + 임계치 사전 판단"이며, synthetic monitoring 데이터에서는 현재 스냅샷 기반의 경고/위험 임계치 여유폭이 가장 안정적인 근거다. Production closure는 배포 후 A5 targeted retest 필요.
   - [x] **8b (P1) C2 로컬 보강**: 초보 당직 체크리스트 타임아웃 — "알림이 울리면 어떤 순서로 확인해야 해?" 질문은 현재 메트릭 tool이 없어도 답할 수 있는 운영 절차 질문인데, Advisor/stream 경로로 들어가면 visible answer timeout 위험이 있었다. 최소 변경으로 `preFilterQuery`에 beginner on-call alert checklist fast path를 추가했다. 이유: C2 pass 기준은 알림 내용 → 서버 상태 → 로그 순서의 구체적 안내이며, LLM 호출 없이 안정적으로 답할수록 초보 운영자 보조 UX에 맞다. Production closure는 배포 후 C2 targeted retest 필요.
   - [x] **8c (P2) A1 로컬 보강**: HAProxy context specificity — 답변은 반환되나 CPU 73% / backend 분산 근거가 부족했다. 최소 변경으로 `getServerByGroup`/`getServerByGroupAdvanced` tool result를 deterministic summary payload로 수용하고, `HAProxy + backend/분산/상태` 질의에는 현재 HAProxy CPU/메모리/디스크 상태와 `show stat` 기반 backend 분산 확인 기준을 직접 반환하도록 보강했다. 이유: 실제 backend별 세션 수는 현재 payload에 없으므로 임의로 "잘 분산됨"을 단정하지 않고, 현재 HAProxy CPU 근거와 운영자가 확인할 backend 분산 지표를 함께 제시하는 것이 WARN 원인(CPU/분산 근거 부족)을 가장 작게 해소한다. Production closure는 배포 후 A1 targeted retest 필요.
-- [ ] **Task 9**: production targeted retest 및 QA 기록 — A1/A5/C2를 v8.11.118 이후 배포본에서 재검증하고 `npm run qa:record`로 closure 또는 잔여 gap 기록.
+- [x] **Task 9**: production targeted retest 및 QA 기록 — `QA-20260509-0435`에서 A1/A5/C2 production targeted retest PASS, QA pending 0으로 closure 처리.
 
 ### 2026-05-09 로컬 리뷰/게이트 재확인
 
-- 계획서/TODO/QA tracker 재확인 결과, 현재 open gap은 production 배포본에서의 A1/A5/C2 targeted retest로 한정된다.
+- 계획서/TODO/QA tracker 재확인 결과, A1/A5/C2 production targeted retest가 `QA-20260509-0435`에서 완료되어 active open gap은 없다.
 - 로컬 코드 리뷰 기준 P0/P1/P2 신규 결함은 발견되지 않았다.
 - 추가 검증:
   - AI Engine targeted tests `orchestrator-context`, `orchestrator-summary-fallback`, `supervisor-routing` PASS
@@ -139,7 +139,7 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
   - Root `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract` PASS
   - Dashboard targeted DOM tests 8 files / 89 tests PASS
   - `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check` PASS
-- 다음 단계는 코드 추가 수정이 아니라 커밋/배포 후 production targeted retest와 QA closure 기록이다.
+- 다음 단계는 코드 추가 수정이 아니라 커밋 범위 확정 및 GitLab push/pipeline 확인이다.
 
 ---
 
@@ -383,8 +383,27 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
   - AI Engine `type-check` PASS
   - AI Engine full test PASS — 107 files / 1074 tests
   - root `lint`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check` PASS
-- 남은 확인:
-  - 배포 후 production targeted retest에서 A1/A5/C2 visible answer와 QA 판정 확인 필요
+
+### QA-20260509-0435 A1/A5/C2 v8.11.118 closure 결과
+
+- **환경**: Vercel Production v8.11.118 (`https://openmanager-ai.vercel.app`)
+- **도구**: Playwright MCP
+- **기록**: `reports/qa/runs/2026/qa-run-QA-20260509-0435.json`
+- **대상**: `A1,A5,C2`
+- **결과**: PASS 3, FAIL 0, pending 0
+
+| 시나리오 | 이전 상태 | closure 판정 | 근거 |
+|----------|-----------|--------------|------|
+| A1 HAProxy 상태/분산 | P2 context specificity | PASS | HAProxy CPU 수치와 backend 분산 판단 한계를 명시적으로 반환 |
+| A5 Storage 임계치 예측 | P1 visible answer timeout | PASS | storage disk threshold prediction visible answer 확인 |
+| C2 초보 당직 알림 순서 | P1 visible answer timeout | PASS | first-on-call checklist visible answer 확인 |
+
+### 최종 정리
+
+- `ai-ops-empty-response-timeout` completed 처리.
+- `ai-ops-haproxy-context-specificity` completed 처리.
+- QA tracker 기준 pending 0, `QA_STATUS.md` completion rate 100%.
+- 커밋은 사용자 명시 요청 전까지 미실행 상태로 남긴다.
 
 ---
 
@@ -399,4 +418,4 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
 
 ---
 
-_Last Updated: 2026-05-09 — A1/A5/C2 로컬 deterministic fallback/fast path 보강 및 리뷰/게이트 재확인, production targeted retest 잔여_
+_Last Updated: 2026-05-09 — QA-20260509-0435 production targeted retest로 A1/A5/C2 closure 확인, plan completed_

@@ -224,6 +224,24 @@ describe('🎯 ReactFlowDiagram 컴포넌트', () => {
       expect(screen.queryByText('데이터')).toBeNull();
     });
 
+    it('showZoomToolbar가 true이면 명시적 줌 컨트롤을 렌더링한다', () => {
+      const diagram = createMockDiagram();
+      render(<ReactFlowDiagram diagram={diagram} showZoomToolbar={true} />);
+
+      expect(
+        screen.getByRole('group', { name: '토폴로지 줌 컨트롤' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: '토폴로지 확대' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: '토폴로지 축소' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: '토폴로지 화면 맞춤' })
+      ).toBeInTheDocument();
+    });
+
     it('maximizeViewport가 true이면 확장 높이 클래스가 적용된다', () => {
       const diagram = createMockDiagram();
       render(<ReactFlowDiagram diagram={diagram} maximizeViewport={true} />);

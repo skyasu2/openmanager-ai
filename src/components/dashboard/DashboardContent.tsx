@@ -224,6 +224,7 @@ export default memo(function DashboardContent({
               onPageSizeChange={onPageSizeChange}
               onStatsUpdate={onStatsUpdate}
               initialVisibleRows={1}
+              surface="overview"
             />
           </>
         ) : (

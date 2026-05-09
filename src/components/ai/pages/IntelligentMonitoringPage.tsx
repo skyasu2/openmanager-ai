@@ -396,6 +396,7 @@ export default function IntelligentMonitoringPage({
             </label>
             <select
               id="server-select"
+              aria-describedby="server-select-help"
               value={selectedServer}
               onChange={handleServerChange}
               disabled={isAnalyzing || isServerListLoading}
@@ -408,6 +409,10 @@ export default function IntelligentMonitoringPage({
                 </option>
               ))}
             </select>
+            <p id="server-select-help" className="mt-1 text-xs text-gray-500">
+              전체 시스템 또는 특정 서버를 선택해 이상감지·추세 분석 범위를
+              정합니다.
+            </p>
             {servers.length === 0 && !isServerListLoading && (
               <p className="mt-1 text-xs text-amber-700">
                 서버 목록을 불러오지 못해 단일 서버 분석 옵션은 숨겼습니다. 전체

@@ -51,11 +51,11 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 28128 |
+| Component source lines | 28671 |
 | Component nodes | 133 |
-| Component edges | 127 |
-| Graph density | 0.72% |
-| Alias edges (`@/components/*`) | 37 |
+| Component edges | 128 |
+| Graph density | 0.73% |
+| Alias edges (`@/components/*`) | 38 |
 | Relative edges (`./`, `../`) | 90 |
 | Isolated components | 22 |
 | SCC cycle groups | 0 |
@@ -81,7 +81,7 @@ flowchart LR
   d0 -->|31| d0
   d4 -->|28| d4
   d1 -->|14| d1
-  d1 -->|11| d0
+  d1 -->|12| d0
   d9 -->|10| d9
   d4 -->|5| d11
   d0 -->|3| d1
@@ -127,7 +127,7 @@ flowchart LR
 | ai | ai | 31 |
 | dashboard | dashboard | 28 |
 | ai-sidebar | ai-sidebar | 14 |
-| ai-sidebar | ai | 11 |
+| ai-sidebar | ai | 12 |
 | shared | shared | 10 |
 | dashboard | ui | 5 |
 | ai | ai-sidebar | 3 |
@@ -151,9 +151,9 @@ flowchart LR
 
 | Component | In-Degree |
 | --- | --- |
+| ai/AIAssistantIconPanel | 4 |
 | ai/analysis/constants | 4 |
 | ui/dialog | 4 |
-| ai/AIAssistantIconPanel | 3 |
 | dashboard/EnhancedServerModal.components | 3 |
 | dashboard/shared/StatCell | 3 |
 | ai-sidebar/CloudRunStatusIndicator | 2 |
@@ -178,8 +178,8 @@ flowchart LR
 | shared/FeatureCardModal | 5 |
 | ai/analysis/ServerResultCard | 4 |
 | dashboard/DashboardHeader | 4 |
+| ai-sidebar/AISidebarHeader | 3 |
 | ai/AnalysisBasisBadge | 3 |
-| ai/domain-renderers/ArtifactRendererHost | 3 |
 
 ## Cycle Risk (SCC Top 10)
 

@@ -332,7 +332,10 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             </div>
             <div className="min-w-0 flex-1">
               <div className="mb-0.5 flex items-center gap-1.5">
-                <h2 className="truncate text-sm font-semibold text-gray-900">
+                <h2
+                  className="truncate text-sm font-semibold text-gray-900"
+                  title={safeServer.name}
+                >
                   {safeServer.name}
                 </h2>
               </div>

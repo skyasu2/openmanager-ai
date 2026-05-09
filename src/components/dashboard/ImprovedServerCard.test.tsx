@@ -466,6 +466,20 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       const serverName = within(button).getByText('Web Server 01');
       expect(serverName).toBeInTheDocument();
     });
+
+    it('긴 서버명은 title로 전체 이름을 확인할 수 있다', () => {
+      const longName = 'cache-redis-dc1-01-primary-write-node';
+
+      render(
+        <ImprovedServerCard
+          server={{ ...mockServer, name: longName }}
+          onClick={mockOnClick}
+          variant="compact"
+        />
+      );
+
+      expect(screen.getByText(longName)).toHaveAttribute('title', longName);
+    });
   });
 
   describe('variant 속성', () => {

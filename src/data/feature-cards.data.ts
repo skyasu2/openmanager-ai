@@ -12,7 +12,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'ai-assistant',
     title: '💬 AI 어시스턴트',
     description:
-      '현재 메트릭을 바탕으로 질문, 분석, 조치안과 다운로드 가능한 장애/이상감지 아티팩트를 연결하는 운영 어시스턴트입니다.',
+      '18대 서버의 24시간 OTel 데이터를 기준으로 자연어 질의, 장애 보고서, 다운로드 가능한 장애/이상감지 아티팩트까지 연결합니다.',
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
@@ -54,7 +54,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'cloud-platform',
     title: '🏗️ 클라우드 플랫폼 활용',
     description:
-      '질문은 빠르게 받고, 무거운 분석은 분리 처리하도록 설계한 하이브리드 런타임. Vercel, Cloud Run, Supabase, Upstash를 한 흐름으로 연결했습니다.',
+      'Vercel 프론트엔드와 Cloud Run AI Engine을 분리하고 Supabase·Upstash·Cloud Tasks로 무료 티어 친화 실행 경계를 구성했습니다.',
     icon: Database,
     gradient: 'from-emerald-500 to-teal-600',
     detailedContent: {
@@ -85,7 +85,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'tech-stack',
     title: '💻 기술 스택',
     description:
-      'AI 응답 스트리밍과 실시간 차트를 끊김 없이 구현하기 위해, 각 레이어에서 직접 골라 조합한 프론트엔드 웹 스택입니다.',
+      'Next.js 16, React 19, TypeScript 6.0, Nivo Line, SVG Sparkline으로 144 슬롯 시계열과 AI 스트리밍 UI를 처리합니다.',
     icon: Sparkles,
     gradient: 'from-blue-500 to-purple-600',
     detailedContent: {
@@ -95,7 +95,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '▲ Next.js 16: App Router, Server Actions, Partial Prerendering — API Routes로 SSOT 데이터 제공',
         '🔷 TypeScript 6.0: 최신 컴파일러 기능을 활용한 강력한 타입 안전성 확보 — strict 모드로 런타임 에러 사전 차단',
         '🎨 Tailwind CSS 4.2: 최신 Oxide 엔진으로 빌드 성능 극대화 — 유틸리티 퍼스트로 디자인 시스템 일관성 확보',
-        '📊 Recharts + uPlot 이중 차트: Recharts(SVG, 예측/이상치 인터랙션) + uPlot(Canvas, Grafana급 고성능) — 용도별 최적 렌더링 분담',
+        '📊 Nivo Line + SVG Sparkline + uPlot: 상세 시계열은 Nivo, 서버 카드 미니차트는 순수 SVG, 고밀도 렌더링은 uPlot으로 분담',
         '🔥 OpenTelemetry Data: CNCF 표준 시계열 SSOT — 24시간 메트릭+로그 파이프라인',
         '🔭 OpenTelemetry: CNCF Semantic Convention으로 메트릭 표준화 — Resource Catalog + Timeseries로 서버 메타데이터 관리',
         '📋 Loki 호환 로그 포맷: Grafana Loki Push API와 맞닿는 구조화 로그 형식 — 라벨 기반 스트림 모델로 서버 로그 필터링/탐색',
@@ -108,7 +108,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'React 19',
         'TypeScript 6.0',
         'Tailwind CSS 4.2',
-        'Recharts 3.8.0 + uPlot 1.6',
+        'Nivo Line 0.99 + SVG Sparkline + uPlot 1.6',
         'OpenTelemetry Data Pipeline',
         'OpenTelemetry (Semantic Conv.)',
         'Loki-Compatible Log Format',
@@ -123,7 +123,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'vibe-coding',
     title: '🤖 AI 개발 워크플로우',
     description:
-      'Claude Code·Codex·Gemini 같은 AI 개발 도구를 상황에 맞게 조합해, 기획부터 배포·CI/CD까지 이어지는 실제 작업 흐름을 정리한 워크플로우입니다.',
+      'Claude Code·Codex·Gemini와 GitLab CI 배포 게이트를 조합해 계획, 구현, 검증, 공개 스냅샷 동기화까지 운영합니다.',
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {

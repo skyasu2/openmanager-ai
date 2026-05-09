@@ -11,11 +11,11 @@
     "totalComponentNodes": 140
   },
   "metrics": {
-    "componentSourceLines": 28128,
+    "componentSourceLines": 28671,
     "componentNodes": 133,
-    "componentEdges": 127,
-    "graphDensity": 0.007234,
-    "aliasEdges": 37,
+    "componentEdges": 128,
+    "graphDensity": 0.007291,
+    "aliasEdges": 38,
     "relativeEdges": 90,
     "isolatedComponents": 22,
     "sccCycleGroups": 0,
@@ -23,16 +23,16 @@
   },
   "topInDegree": [
     {
+      "component": "ai/AIAssistantIconPanel",
+      "inDegree": 4
+    },
+    {
       "component": "ai/analysis/constants",
       "inDegree": 4
     },
     {
       "component": "ui/dialog",
       "inDegree": 4
-    },
-    {
-      "component": "ai/AIAssistantIconPanel",
-      "inDegree": 3
     },
     {
       "component": "dashboard/EnhancedServerModal.components",
@@ -113,11 +113,11 @@
       "outDegree": 4
     },
     {
-      "component": "ai/AnalysisBasisBadge",
+      "component": "ai-sidebar/AISidebarHeader",
       "outDegree": 3
     },
     {
-      "component": "ai/domain-renderers/ArtifactRendererHost",
+      "component": "ai/AnalysisBasisBadge",
       "outDegree": 3
     }
   ],
@@ -140,7 +140,7 @@
     {
       "fromDomain": "ai-sidebar",
       "toDomain": "ai",
-      "count": 11
+      "count": 12
     },
     {
       "fromDomain": "shared",

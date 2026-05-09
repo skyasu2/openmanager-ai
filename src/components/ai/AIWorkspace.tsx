@@ -79,19 +79,19 @@ const AI_WORKSPACE_FUNCTION_TABS: Array<{
   {
     id: 'chat',
     label: 'AI Chat',
-    description: 'NLQ Agent',
+    description: '자연어 질의',
     icon: MessageSquare,
   },
   {
     id: 'auto-report',
     label: '장애 보고서',
-    description: 'Reporter Agent',
+    description: '보고서 생성',
     icon: FileText,
   },
   {
     id: 'intelligent-monitoring',
     label: '이상감지/추세',
-    description: '경량 분석',
+    description: '이상 신호 분석',
     icon: Monitor,
   },
 ];
@@ -146,7 +146,7 @@ export default function AIWorkspace({
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileHandoffActive, setIsMobileHandoffActive] = useState(false);
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
   const mobileHandoffStartedRef = useRef(false);
 
   useAIAssistantLightTheme();
@@ -516,6 +516,11 @@ export default function AIWorkspace({
                 type="button"
                 onClick={handleToggleRightPanel}
                 className="hidden h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 lg:inline-flex"
+                aria-label={
+                  isRightPanelOpen
+                    ? '시스템 컨텍스트 닫기'
+                    : '시스템 컨텍스트 열기'
+                }
                 aria-pressed={isRightPanelOpen}
               >
                 {isRightPanelOpen ? (
@@ -619,7 +624,9 @@ export default function AIWorkspace({
               <MessageSquare className="h-4 w-4 shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium">AI Chat</div>
-                <div className="text-xs text-gray-500 truncate">NLQ Agent</div>
+                <div className="text-xs text-gray-500 truncate">
+                  자연어 질의
+                </div>
               </div>
             </button>
             {/* 자동 장애보고서 */}
@@ -636,7 +643,7 @@ export default function AIWorkspace({
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium">장애 보고서</div>
                 <div className="text-xs text-gray-500 truncate">
-                  Reporter Agent
+                  보고서 생성
                 </div>
               </div>
             </button>
@@ -653,7 +660,9 @@ export default function AIWorkspace({
               <Monitor className="h-4 w-4 shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium">이상감지/추세</div>
-                <div className="text-xs text-gray-500 truncate">경량 분석</div>
+                <div className="text-xs text-gray-500 truncate">
+                  이상 신호 분석
+                </div>
               </div>
             </button>
           </div>
@@ -720,6 +729,12 @@ export default function AIWorkspace({
                   onClick={handleToggleRightPanel}
                   className="hidden min-h-6 min-w-6 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 lg:flex"
                   title="시스템 컨텍스트 패널 토글"
+                  aria-label={
+                    isRightPanelOpen
+                      ? '시스템 컨텍스트 닫기'
+                      : '시스템 컨텍스트 열기'
+                  }
+                  aria-pressed={isRightPanelOpen}
                 >
                   {isRightPanelOpen ? (
                     <PanelRightClose className="h-5 w-5" />

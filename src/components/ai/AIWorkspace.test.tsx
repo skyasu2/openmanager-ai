@@ -347,18 +347,25 @@ describe('AIWorkspace', () => {
     render(<AIWorkspace embedded />);
 
     expect(
-      screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i })
+      screen.getByRole('button', { name: /AI Chat\s+자연어 질의/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
+      screen.getByRole('button', { name: /장애 보고서\s+보고서 생성/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /이상감지\/추세\s+경량 분석/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+이상 신호 분석/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: '대시보드로 돌아가기' })
     ).not.toBeInTheDocument();
     expect(screen.queryByText('AI Engine Active')).not.toBeInTheDocument();
+  });
+
+  it('does not expose internal agent names in fullscreen function navigation', () => {
+    render(<AIWorkspace />);
+
+    expect(screen.queryByText('NLQ Agent')).not.toBeInTheDocument();
+    expect(screen.queryByText('Reporter Agent')).not.toBeInTheDocument();
   });
 
   it('keeps embedded workspace root bounded by the dashboard route frame', () => {
@@ -367,6 +374,21 @@ describe('AIWorkspace', () => {
 
     expect(embeddedRoot).toHaveClass('h-full', 'min-h-0', 'overflow-hidden');
     expect(embeddedRoot?.className).not.toContain('min-h-[680px]');
+  });
+
+  it('keeps system context collapsed by default and opens it on request', () => {
+    render(<AIWorkspace embedded />);
+
+    expect(screen.queryByTestId('system-context')).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '시스템 컨텍스트 열기' })
+    );
+
+    expect(screen.getByTestId('system-context')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '시스템 컨텍스트 닫기' })
+    ).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('keeps the embedded mobile AI route as a dashboard function page', async () => {
@@ -382,13 +404,13 @@ describe('AIWorkspace', () => {
     render(<AIWorkspace embedded />);
 
     expect(
-      await screen.findByRole('button', { name: /AI Chat\s+NLQ Agent/i })
+      await screen.findByRole('button', { name: /AI Chat\s+자연어 질의/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
+      screen.getByRole('button', { name: /장애 보고서\s+보고서 생성/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /이상감지\/추세\s+경량 분석/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+이상 신호 분석/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByTestId('ai-workspace-mobile-handoff')
@@ -638,6 +660,12 @@ describe('AIWorkspace', () => {
 
     render(<AIWorkspace mode="fullscreen" />);
 
+    expect(screen.queryByTestId('system-context')).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '시스템 컨텍스트 열기' })
+    );
+
     expect(screen.getByTestId('system-context')).toHaveAttribute(
       'data-final-provider',
       'groq'
@@ -767,7 +795,7 @@ describe('AIWorkspace', () => {
     render(<AIWorkspace mode="fullscreen" />);
 
     fireEvent.click(
-      screen.getByRole('button', { name: /이상감지\/추세\s+경량 분석/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+이상 신호 분석/i })
     );
     fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
 
@@ -779,10 +807,10 @@ describe('AIWorkspace', () => {
     ).toBeDefined();
 
     fireEvent.click(
-      screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i })
+      screen.getByRole('button', { name: /AI Chat\s+자연어 질의/i })
     );
     fireEvent.click(
-      screen.getByRole('button', { name: /이상감지\/추세\s+경량 분석/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+이상 신호 분석/i })
     );
 
     expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
@@ -797,7 +825,7 @@ describe('AIWorkspace', () => {
     render(<AIWorkspace mode="fullscreen" />);
 
     fireEvent.click(
-      screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
+      screen.getByRole('button', { name: /장애 보고서\s+보고서 생성/i })
     );
     fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
 
@@ -809,10 +837,10 @@ describe('AIWorkspace', () => {
     ).toBeDefined();
 
     fireEvent.click(
-      screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i })
+      screen.getByRole('button', { name: /AI Chat\s+자연어 질의/i })
     );
     fireEvent.click(
-      screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
+      screen.getByRole('button', { name: /장애 보고서\s+보고서 생성/i })
     );
 
     expect(screen.getByTestId('ai-content-function')).toHaveTextContent(

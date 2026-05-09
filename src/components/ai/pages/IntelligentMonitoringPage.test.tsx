@@ -72,6 +72,14 @@ describe('IntelligentMonitoringPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('분석 대상 선택 필드가 분석 범위 목적을 설명한다', () => {
+    render(<IntelligentMonitoringPage />);
+
+    expect(screen.getByLabelText('분석 대상')).toHaveAccessibleDescription(
+      '전체 시스템 또는 특정 서버를 선택해 이상감지·추세 분석 범위를 정합니다.'
+    );
+  });
+
   it('shows login CTA when analysis API returns 401', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
