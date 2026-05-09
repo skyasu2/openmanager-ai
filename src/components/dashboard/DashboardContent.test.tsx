@@ -251,6 +251,29 @@ describe('DashboardContent empty state', () => {
     expect(routerPush).toHaveBeenCalledWith('/dashboard/logs');
   });
 
+  it('개요 서버 목록은 기본 2줄 밀도로 표시한다', async () => {
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [{ id: 's1', name: 'server-1', status: 'online' } as Server],
+          allServers: [
+            { id: 's1', name: 'server-1', status: 'online' } as Server,
+          ],
+          totalServers: 18,
+        })}
+      />
+    );
+
+    await waitFor(() => {
+      expect(serverDashboardMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initialVisibleRows: 2,
+          surface: 'overview',
+        })
+      );
+    });
+  });
+
   it('서버 카드에는 AI prefill 핸들러를 전달하지 않는다', async () => {
     render(
       <DashboardContent
