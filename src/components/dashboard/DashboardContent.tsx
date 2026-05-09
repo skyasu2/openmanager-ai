@@ -223,7 +223,7 @@ export default memo(function DashboardContent({
               onPageChange={onPageChange}
               onPageSizeChange={onPageSizeChange}
               onStatsUpdate={onStatsUpdate}
-              initialVisibleRows={1}
+              initialVisibleRows={2}
               surface="overview"
             />
           </>
