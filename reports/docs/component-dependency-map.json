@@ -11,13 +11,13 @@
     "totalComponentNodes": 140
   },
   "metrics": {
-    "componentSourceLines": 28231,
+    "componentSourceLines": 28128,
     "componentNodes": 133,
-    "componentEdges": 128,
-    "graphDensity": 0.007291,
+    "componentEdges": 127,
+    "graphDensity": 0.007234,
     "aliasEdges": 37,
-    "relativeEdges": 91,
-    "isolatedComponents": 21,
+    "relativeEdges": 90,
+    "isolatedComponents": 22,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
   },
@@ -153,11 +153,6 @@
       "count": 5
     },
     {
-      "fromDomain": "dashboard",
-      "toDomain": "shared",
-      "count": 4
-    },
-    {
       "fromDomain": "ai",
       "toDomain": "ai-sidebar",
       "count": 3
@@ -165,6 +160,11 @@
     {
       "fromDomain": "ai-sidebar",
       "toDomain": "ui",
+      "count": 3
+    },
+    {
+      "fromDomain": "dashboard",
+      "toDomain": "shared",
       "count": 3
     },
     {
