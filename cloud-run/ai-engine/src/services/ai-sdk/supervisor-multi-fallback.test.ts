@@ -514,6 +514,46 @@ describe('supervisor degraded single fallback', () => {
     expect(mockStreamText).not.toHaveBeenCalled();
   });
 
+  it('streams disk capacity command guidance directly before model routing', async () => {
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'multi',
+      messages: [
+        {
+          role: 'user',
+          content: 'db-mysql-dc1-primary 디스크 86%, 용량 확보 명령어는?',
+        },
+      ],
+      sessionId: 'session-disk-command-direct',
+    })) {
+      events.push(event);
+    }
+
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        type: 'text_delta',
+        data: expect.stringContaining('df -h'),
+      })
+    );
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        type: 'text_delta',
+        data: expect.stringContaining('du -xhd1 / 2>/dev/null | sort -hr | head -20'),
+      })
+    );
+    expect(events.at(-1)).toMatchObject({
+      type: 'done',
+      data: {
+        toolsCalled: ['recommendCommands'],
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'service-command-catalog',
+        },
+      },
+    });
+    expect(mockStreamText).not.toHaveBeenCalled();
+  });
+
   it('prefers deterministic advanced metric ranking over empty finalAnswer recovery in single-agent stream', async () => {
     mockSelectExecutionMode.mockReturnValue('single');
     mockStreamText.mockReturnValue({

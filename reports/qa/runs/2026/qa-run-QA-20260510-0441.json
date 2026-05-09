@@ -1,0 +1,63 @@
+{
+  "runId": "QA-20260510-0441",
+  "recordedAt": "2026-05-09T23:12:15.456Z",
+  "recordedAtKst": "2026-05-10 08:12:15 KST",
+  "runTitle": "Local AI Engine Command Guidance Resource Intent QA",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine-local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "3d38bc0050a9f7637b4f09c5d5117cd51a56f0f2"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI service command deterministic fast-path",
+    "AI command recommendation catalog",
+    "AI pre-filter direct response",
+    "AI supervisor stream direct command guidance",
+    "root AI stream contract"
+  ],
+  "skippedSurfaces": ["Vercel production retest", "live LLM generation"],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-disk-cleanup-command-relevance",
+      "title": "AI disk cleanup guidance should prioritize filesystem cleanup commands before MySQL diagnostics",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Targeted AI Engine tests verify db-mysql disk capacity command guidance now returns df -h and du -xhd1 before service-specific diagnostics; NFS disk cleanup uses filesystem capacity checks before remounts; CPU and memory generic command routing no longer pulls unrelated service commands.",
+      "note": "Validation: targeted Vitest 3 files / 35 tests, AI Engine type-check, AI Engine full test 107 files / 1085 tests, root test:contract 3 files / 24 tests, static command-catalog probe for 9 representative prompts.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This is a local deterministic QA record for the command guidance resource-intent fix; production deployment and live LLM QA were intentionally skipped until the next release.",
+    "The fix keeps service-specific paths for MySQL slow query, Nginx 5xx, and NFS remount guidance while prioritizing filesystem commands for disk capacity cleanup."
+  ],
+  "links": []
+}

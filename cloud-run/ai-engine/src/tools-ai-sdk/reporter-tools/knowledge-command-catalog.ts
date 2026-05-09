@@ -53,6 +53,21 @@ const COMMAND_RECOMMENDATIONS: CommandRecommendation[] = [
     description: '특정 Redis key의 메모리 사용량 확인',
   },
   {
+    keywords: ['메모리', 'memory', '사용량', '압박'],
+    command: 'free -h',
+    description: '호스트 메모리 사용량과 swap 상태 확인',
+  },
+  {
+    keywords: ['메모리', 'memory', '프로세스', '압박'],
+    command: 'ps aux --sort=-%mem | head -10',
+    description: '메모리 사용량이 높은 프로세스 상위 10개 확인',
+  },
+  {
+    keywords: ['메모리', 'memory', 'vmstat', '압박'],
+    command: 'vmstat 1 5',
+    description: '메모리 압박과 swap in/out 변화 확인',
+  },
+  {
     keywords: ['mysql', 'processlist', '쿼리', '실행', '느린'],
     command: 'mysql -e "SHOW FULL PROCESSLIST"',
     description: 'MySQL에서 현재 실행 중인 쿼리와 상태 확인',
@@ -93,9 +108,39 @@ const COMMAND_RECOMMENDATIONS: CommandRecommendation[] = [
     description: 'CPU 사용량 상위 프로세스 조회',
   },
   {
-    keywords: ['디스크', '용량', 'disk'],
+    keywords: ['cpu', '프로세스', '부하', '확인'],
+    command: 'ps aux --sort=-%cpu | head -10',
+    description: 'CPU 사용량이 높은 프로세스 상위 10개 확인',
+  },
+  {
+    keywords: ['디스크', '용량', 'disk', 'capacity', 'space', '파일시스템'],
     command: 'df -h',
-    description: '디스크 사용량 조회',
+    description: '파일시스템별 디스크 사용량 확인',
+  },
+  {
+    keywords: ['디스크', '용량', 'disk', 'capacity', 'space', '확보', '정리', 'cleanup', '대용량'],
+    command: 'du -xhd1 / 2>/dev/null | sort -hr | head -20',
+    description: '루트 파일시스템에서 큰 디렉터리 후보 상위 20개 확인',
+  },
+  {
+    keywords: ['디스크', '용량', 'disk', 'inode', '아이노드', '확보'],
+    command: 'df -ih',
+    description: 'inode 고갈 여부 확인',
+  },
+  {
+    keywords: ['디스크', '용량', '로그', 'journalctl', '정리'],
+    command: 'journalctl --disk-usage',
+    description: 'systemd journal 로그가 차지하는 디스크 사용량 확인',
+  },
+  {
+    keywords: ['디스크', '용량', '로그', 'journalctl', '정리', 'cleanup'],
+    command: 'journalctl --vacuum-time=7d',
+    description: '최근 7일을 제외한 오래된 journal 로그 정리',
+  },
+  {
+    keywords: ['디스크', '용량', '패키지', 'apt', 'cache', '정리'],
+    command: 'apt-get clean',
+    description: '패키지 매니저 캐시 정리 후보',
   },
   {
     keywords: ['네트워크', 'network', '연결'],
@@ -106,12 +151,50 @@ const COMMAND_RECOMMENDATIONS: CommandRecommendation[] = [
 
 const SERVICE_COMMAND_PATTERN =
   /(haproxy|nginx|mysql|redis|nfs|백엔드|액세스\s*로그|access\s*log|5xx|마운트|재마운트|remount|slow\s*query|느린\s*쿼리|bigkeys)/i;
+const RESOURCE_COMMAND_PATTERN =
+  /(디스크|disk|용량|capacity|space|filesystem|파일시스템|inode|아이노드|cpu|프로세스|부하|메모리|memory|oom)/i;
 const COMMAND_GUIDANCE_PATTERN =
-  /(명령어|커맨드|cli|어떻게|방법|순서|확인하는|확인하고|분석하는|재마운트|remount|큰지\s*확인)/i;
+  /(명령어|커맨드|cli|어떻게|방법|순서|확인하는|확인하고|확인\s*명령|점검|분석하는|재마운트|remount|큰지\s*확인|확보|정리|cleanup)/i;
+const RESOURCE_COMMAND_GUIDANCE_PATTERN =
+  /(명령어|커맨드|cli|확인\s*명령|점검\s*명령|용량.*확보|확보.*명령|정리|cleanup)/i;
 const SERVICE_KEYWORDS = ['haproxy', 'nginx', 'mysql', 'redis', 'nfs'] as const;
+const GENERIC_KEYWORDS = new Set([
+  '서버',
+  '상태',
+  '체크',
+  '확인',
+  '명령어',
+  '방법',
+  '순서',
+  '조회',
+]);
+const DISK_CAPACITY_COMMANDS = [
+  'df -h',
+  'du -xhd1 / 2>/dev/null | sort -hr | head -20',
+  'df -ih',
+  'journalctl --disk-usage',
+  'journalctl --vacuum-time=7d',
+  'apt-get clean',
+] as const;
+const CPU_INSPECTION_COMMANDS = [
+  'top -o cpu',
+  'ps aux --sort=-%cpu | head -10',
+] as const;
+const MEMORY_INSPECTION_COMMANDS = [
+  'free -h',
+  'ps aux --sort=-%mem | head -10',
+  'vmstat 1 5',
+] as const;
 
 export function isServiceCommandGuidanceQuery(query: string): boolean {
-  return SERVICE_COMMAND_PATTERN.test(query) && COMMAND_GUIDANCE_PATTERN.test(query);
+  if (SERVICE_COMMAND_PATTERN.test(query)) {
+    return COMMAND_GUIDANCE_PATTERN.test(query);
+  }
+
+  return (
+    RESOURCE_COMMAND_PATTERN.test(query) &&
+    RESOURCE_COMMAND_GUIDANCE_PATTERN.test(query)
+  );
 }
 
 export function extractCommandKeywordsFromQuery(query: string): string[] {
@@ -130,6 +213,9 @@ export function extractCommandKeywordsFromQuery(query: string): string[] {
   if (/access|액세스/i.test(query)) keywords.add('access');
   if (/backend|백엔드/i.test(query)) keywords.add('backend');
   if (/remount|재마운트/i.test(query)) keywords.add('재마운트');
+  if (/capacity|space|용량|확보/i.test(query)) keywords.add('용량');
+  if (/cleanup|clean\s*up|정리/i.test(query)) keywords.add('정리');
+  if (/inode|아이노드/i.test(query)) keywords.add('inode');
 
   return [...keywords];
 }
@@ -139,6 +225,23 @@ export function getCommandRecommendations(keywords: string[]): CommandRecommenda
   const requestedServices = SERVICE_KEYWORDS.filter((service) =>
     normalizedKeywords.includes(service)
   );
+  const byCommand = (commands: readonly string[]) =>
+    commands
+      .map((command) => COMMAND_RECOMMENDATIONS.find((rec) => rec.command === command))
+      .filter((rec): rec is CommandRecommendation => Boolean(rec));
+
+  if (hasDiskCapacityIntent(normalizedKeywords)) {
+    return byCommand(DISK_CAPACITY_COMMANDS);
+  }
+
+  if (hasCpuInspectionIntent(normalizedKeywords)) {
+    return byCommand(CPU_INSPECTION_COMMANDS);
+  }
+
+  if (requestedServices.length === 0 && hasMemoryInspectionIntent(normalizedKeywords)) {
+    return byCommand(MEMORY_INSPECTION_COMMANDS);
+  }
+
   const candidates =
     requestedServices.length > 0
       ? COMMAND_RECOMMENDATIONS.filter((rec) =>
@@ -149,15 +252,62 @@ export function getCommandRecommendations(keywords: string[]): CommandRecommenda
       : COMMAND_RECOMMENDATIONS;
   const matched = candidates.filter((rec) =>
     keywords.some((k) =>
-      rec.keywords.some(
-        (rk) =>
-          rk.toLowerCase().includes(k.toLowerCase()) ||
-          k.toLowerCase().includes(rk.toLowerCase()),
-      ),
+      recommendationMatchesKeyword(rec, k, requestedServices),
     ),
   );
 
   return matched.length > 0 ? matched : candidates.slice(0, 3);
+}
+
+function hasAny(keywords: string[], candidates: readonly string[]): boolean {
+  return candidates.some((candidate) => keywords.includes(candidate));
+}
+
+function hasDiskCapacityIntent(keywords: string[]): boolean {
+  return (
+    hasAny(keywords, ['디스크', 'disk', '파일시스템', 'filesystem', 'inode', '아이노드']) &&
+    hasAny(keywords, ['용량', 'capacity', 'space', '확보', '정리', 'cleanup', '대용량'])
+  );
+}
+
+function hasCpuInspectionIntent(keywords: string[]): boolean {
+  return (
+    hasAny(keywords, ['cpu', '프로세서', '부하']) &&
+    hasAny(keywords, ['확인', '점검', '명령어', '프로세스'])
+  );
+}
+
+function hasMemoryInspectionIntent(keywords: string[]): boolean {
+  return hasAny(keywords, ['메모리', 'memory', 'oom', '압박']);
+}
+
+function recommendationMatchesKeyword(
+  recommendation: CommandRecommendation,
+  keyword: string,
+  requestedServices: readonly (typeof SERVICE_KEYWORDS)[number][]
+): boolean {
+  const normalizedKeyword = keyword.toLowerCase();
+  if (GENERIC_KEYWORDS.has(normalizedKeyword) && isServiceSpecific(recommendation)) {
+    return recommendation.keywords.some((recommendationKeyword) =>
+      requestedServices.includes(
+        recommendationKeyword.toLowerCase() as (typeof SERVICE_KEYWORDS)[number]
+      )
+    );
+  }
+
+  return recommendation.keywords.some((recommendationKeyword) => {
+    const normalizedRecommendationKeyword = recommendationKeyword.toLowerCase();
+    return (
+      normalizedRecommendationKeyword.includes(normalizedKeyword) ||
+      normalizedKeyword.includes(normalizedRecommendationKeyword)
+    );
+  });
+}
+
+function isServiceSpecific(recommendation: CommandRecommendation): boolean {
+  return recommendation.keywords.some((keyword) =>
+    SERVICE_KEYWORDS.includes(keyword.toLowerCase() as (typeof SERVICE_KEYWORDS)[number])
+  );
 }
 
 export function buildServiceCommandGuidanceAnswer(query: string): string | null {

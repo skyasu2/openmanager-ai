@@ -40,7 +40,7 @@ AI Module Surface
 
 Core monitoring surface는 AI 없이도 제품으로 읽혀야 합니다. 서버 카드, 서버 상세, 알림 row, 로그 row는 상세/로그/알림/토폴로지 탐색을 제공하되 per-entity AI 실행 CTA를 기본 노출하지 않습니다. AI 질의, Agent 실행, Reporter/Analyst 결과, evidence/artifact UX는 AI sidebar와 AI 전체 페이지에서 다룹니다.
 
-현재 코드가 이 boundary와 다를 경우 파일 단위 revert가 아니라 [Dashboard AI Surface Boundary Plan](../../reports/planning/dashboard-ai-surface-boundary-plan.md)의 선택적 복구 기준을 따릅니다. 서버 상세 페이지화, 상태 배지, sparkline은 보존하고, 서버 카드/상세/알림/overview의 per-entity AI CTA와 이를 보호하는 테스트 기대값만 제거/교체합니다.
+현재 코드가 이 boundary와 다를 경우 파일 단위 revert가 아니라 [Dashboard AI Surface Boundary Plan](../../reports/planning/archive/dashboard-ai-surface-boundary-plan.md)의 선택적 복구 기준을 따릅니다. 서버 상세 페이지화, 상태 배지, sparkline은 보존하고, 서버 카드/상세/알림/overview의 per-entity AI CTA와 이를 보호하는 테스트 기대값만 제거/교체합니다.
 
 ## 설계도
 

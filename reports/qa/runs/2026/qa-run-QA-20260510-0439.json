@@ -1,0 +1,282 @@
+{
+  "runId": "QA-20260510-0439",
+  "recordedAt": "2026-05-09T17:03:25.551Z",
+  "recordedAtKst": "2026-05-10 02:03:25 KST",
+  "runTitle": "Vercel Production Smoke QA - v8.11.120 Frontend+AI",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Ca6LDuJNBmxZWXgNAmiZQXrjV4JM",
+    "deploymentUrl": "https://openmanager-l0nsx7oqq-skyasus-projects.vercel.app",
+    "commitSha": "9152232fda88d3b4c51b5a73a43ee59883d545d2"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "/dashboard/servers",
+    "/dashboard/alerts",
+    "/dashboard/logs",
+    "/dashboard/topology",
+    "/dashboard/ai-assistant",
+    "AI sidebar chat",
+    "AI fullscreen 3tabs",
+    "AI command follow-up questions Q1-Q5"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing page",
+      "path": "reports/qa/evidence/qa-20260510-0439-01-landing.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "System boot redirect",
+      "path": "reports/qa/evidence/qa-20260510-0439-02-system-boot.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard overview",
+      "path": "reports/qa/evidence/qa-20260510-0439-03-dashboard-full.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server list",
+      "path": "reports/qa/evidence/qa-20260510-0439-04-servers.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Alerts page",
+      "path": "reports/qa/evidence/qa-20260510-0439-05-alerts.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Logs page",
+      "path": "reports/qa/evidence/qa-20260510-0439-06-logs.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Topology page",
+      "path": "reports/qa/evidence/qa-20260510-0439-07-topology.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar open",
+      "path": "reports/qa/evidence/qa-20260510-0439-08-ai-sidebar-open.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI CPU query response",
+      "path": "reports/qa/evidence/qa-20260510-0439-09-ai-response-1.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar post-click state",
+      "path": "reports/qa/evidence/qa-20260510-0439-10-after-body-click.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI response full view",
+      "path": "reports/qa/evidence/qa-20260510-0439-11-ai-response-full.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI second query check",
+      "path": "reports/qa/evidence/qa-20260510-0439-12-second-q-check.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI anomaly summary response",
+      "path": "reports/qa/evidence/qa-20260510-0439-13-ai-response-2-full.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI fullscreen shell",
+      "path": "reports/qa/evidence/qa-20260510-0439-14-ai-fullscreen.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI fullscreen chat scrolled",
+      "path": "reports/qa/evidence/qa-20260510-0439-15-ai-chat-scrolled.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Incident report tab",
+      "path": "reports/qa/evidence/qa-20260510-0439-16-incident-report-tab.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Incident report generated",
+      "path": "reports/qa/evidence/qa-20260510-0439-17-incident-report-generated.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Anomaly tab",
+      "path": "reports/qa/evidence/qa-20260510-0439-18-anomaly-tab.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Anomaly analysis result",
+      "path": "reports/qa/evidence/qa-20260510-0439-19-anomaly-analysis.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Anomaly full result",
+      "path": "reports/qa/evidence/qa-20260510-0439-20-anomaly-full.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q1-55pct",
+      "path": "reports/qa/evidence/qa-20260510-0439-q1-55pct.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI disk command query",
+      "path": "reports/qa/evidence/qa-20260510-0439-q1-disk-command.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q1-disk-response",
+      "path": "reports/qa/evidence/qa-20260510-0439-q1-disk-response.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q1-mid",
+      "path": "reports/qa/evidence/qa-20260510-0439-q1-mid.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q1-top",
+      "path": "reports/qa/evidence/qa-20260510-0439-q1-top.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI memory top 3 query",
+      "path": "reports/qa/evidence/qa-20260510-0439-q2-mem-top3.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI memory top 3 response",
+      "path": "reports/qa/evidence/qa-20260510-0439-q2-response.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI clarification dialog",
+      "path": "reports/qa/evidence/qa-20260510-0439-q3-clarify.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q3-response",
+      "path": "reports/qa/evidence/qa-20260510-0439-q3-response.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI incident report follow-up",
+      "path": "reports/qa/evidence/qa-20260510-0439-q4-report.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server detail follow-up",
+      "path": "reports/qa/evidence/qa-20260510-0439-q5-server-detail.png",
+      "note": "Vercel production QA-20260510-0439 visual evidence."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-memory-topn-broad-ranking-korean-response",
+      "title": "AI memory TOP-N broad ranking should answer in Korean without server_id clarification",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260510-0439 Q2: '메모리 높은 서버 TOP 3, 조치 방법도 알려줘' returned English and asked for server_id instead of ranking all 18 servers.",
+      "note": "Expected behavior: immediately return memory-usage TOP 3 across the full server list in Korean, with remediation guidance.",
+      "owner": "project",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-disk-cleanup-command-relevance",
+      "title": "AI disk cleanup guidance should prioritize filesystem cleanup commands before MySQL diagnostics",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260510-0439 Q1: disk 86% cleanup query for db-mysql-dc1-primary mainly returned MySQL diagnostic queries instead of filesystem cleanup commands.",
+      "note": "Expected behavior: include df -h, du -sh, log/cache cleanup, and safe MySQL log/binlog checks before deeper MySQL diagnostics.",
+      "owner": "project",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Vercel production QA result: 13/13 PASS across landing, system boot, dashboard pages, AI sidebar, fullscreen chat, reporter, and anomaly analysis.",
+    "No layout breakage, console error, or AI non-response blocker was reported.",
+    "db-mysql-dc1-primary Disk 86% warning is the intended OTel scenario.",
+    "Additional AI command QA Q1-Q5: 4/5 responses were acceptable; Q2 exposed a P2 broad memory TOP-N ranking/language issue and Q1 exposed a P3 disk cleanup command relevance issue.",
+    "The Q2/P2 and Q1/P3 issues are non-blocking release quality follow-ups and are tracked as pending improvements rather than production availability failures."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.11.120 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2512577239"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "v8.11.120 Vercel deployment",
+      "url": "https://openmanager-l0nsx7oqq-skyasus-projects.vercel.app/"
+    }
+  ]
+}

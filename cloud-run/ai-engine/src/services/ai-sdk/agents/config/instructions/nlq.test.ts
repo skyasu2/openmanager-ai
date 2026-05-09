@@ -29,6 +29,14 @@ describe('NLQ instruction layering', () => {
     expect(instructions).not.toContain('서버 타입별 진단 명령어 참조표');
   });
 
+  it('keeps actionable TOP-N metric requests on the ranking path', () => {
+    const instructions = getNlqInstructions('메모리 높은 서버 TOP 3, 조치 방법도 알려줘');
+
+    expect(instructions).toContain('순위 조회');
+    expect(instructions).toContain('sortBy');
+    expect(instructions).not.toContain('서버 현황 응답 필수 포맷');
+  });
+
   it('injects threshold context for explicit comparison filters', () => {
     const instructions = getNlqInstructions('CPU 80% 이상인 서버');
 

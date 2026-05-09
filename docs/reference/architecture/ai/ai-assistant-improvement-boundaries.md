@@ -71,4 +71,4 @@ The allowed path is to improve the assistant around the model, not to assume a s
 - Keep external LLM calls out of deterministic CI and limit real provider checks to targeted QA.
 
 Related work plan: [AI Assistant Architecture Evolution Plan](../../../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md).
-Dashboard surface follow-up: [Dashboard AI Surface Boundary Plan](../../../../reports/planning/dashboard-ai-surface-boundary-plan.md).
+Dashboard surface follow-up: [Dashboard AI Surface Boundary Plan](../../../../reports/planning/archive/dashboard-ai-surface-boundary-plan.md).

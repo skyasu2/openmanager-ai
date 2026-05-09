@@ -640,6 +640,33 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('CPU 사용률 상위');
   });
 
+  it('keeps actionable memory TOP-N queries deterministic and Korean', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '메모리 높은 서버 TOP 3, 조치 방법도 알려줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'cache-redis-dc1-01', status: 'warning', cpu: 20, memory: 92, disk: 30 },
+              { id: 'db-mysql-dc1-primary', status: 'online', cpu: 40, memory: 86, disk: 88 },
+              { id: 'api-was-dc1-01', status: 'online', cpu: 77, memory: 81, disk: 45 },
+              { id: 'web-nginx-dc1-01', status: 'online', cpu: 40, memory: 55, disk: 40 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('메모리 사용률 상위 3대');
+    expect(summary).toContain('1. cache-redis-dc1-01: 메모리 92%');
+    expect(summary).toContain('2. db-mysql-dc1-primary: 메모리 86%');
+    expect(summary).toContain('3. api-was-dc1-01: 메모리 81%');
+    expect(summary).toContain('서버별 확인 항목');
+    expect(summary).not.toContain('server_id');
+  });
+
   it('builds deterministic status filters without treating them as metric thresholds', () => {
     const summary = buildDeterministicSummaryFallback(
       'status: warning 서버 알려줘',

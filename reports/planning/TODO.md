@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-09 KST (`활성 계획 2건 완료/archive 정리 및 코드 리뷰 재확인`)
+**Last Updated**: 2026-05-10 KST (`AI 명령어 추천 resource intent 구현 완료, QA-20260510-0441`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -37,6 +37,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI 명령어 추천 resource intent 우선순위 개선~~ | — | **완료** — `QA-20260510-0441` local deterministic QA로 P3 closure 기록. service keyword보다 disk/capacity resource intent를 우선하고, generic keyword 오매칭을 줄였으며, 관련 계획서 archive 이동: [archive/ai-assistant-command-guidance-resource-intent-plan.md](archive/ai-assistant-command-guidance-resource-intent-plan.md) |
+| ~~AI 메모리 TOP-N 광범위 랭킹 응답 개선~~ | — | **완료** — `QA-20260510-0440` local deterministic QA로 P2 closure 기록. `조치 방법` 문구가 있어도 메트릭 TOP-N 질의는 `data-ranking` fast-path를 우선 적용해 `getServerMetricsAdvanced`를 강제하고, 한국어 deterministic TOP-N + 서버별 확인 항목을 반환하도록 회귀 테스트 추가. |
 | ~~AI 어시스턴트 운영 대응 QA 확장~~ | — | **완료** — QA-20260509-0432(v8.11.118) B4/B5 closure PASS, QA-20260509-0435(v8.11.118) A1/A5/C2 production targeted retest PASS. QA pending 0, 계획서 archive 이동: [archive/ai-assistant-ops-qa-expansion-plan.md](archive/ai-assistant-ops-qa-expansion-plan.md) |
 | ~~Dashboard AI surface boundary 정렬~~ | — | **완료** — 서버 카드/상세/알림/overview의 per-entity AI CTA 제거, 전역 AI Assistant와 `/dashboard/ai-assistant` 유지, local targeted QA `QA-20260509-0433` 기록. 계획서 archive 이동: [archive/dashboard-ai-surface-boundary-plan.md](archive/dashboard-ai-surface-boundary-plan.md) |
 | ~~UI/UX 개선 (포스트 리팩토링 감사)~~ | — | **완료** — P1×3, P2×5, P3×4 전체 구현. Local targeted closure QA `QA-20260509-0436` 기록(7/7 PASS, pending 0, screenshot evidence 4개). 계획서 archive 이동: [archive/ui-ux-improvement-plan.md](archive/ui-ux-improvement-plan.md) |

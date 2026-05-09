@@ -1,0 +1,63 @@
+{
+  "runId": "QA-20260510-0440",
+  "recordedAt": "2026-05-09T22:47:17.841Z",
+  "recordedAtKst": "2026-05-10 07:47:17 KST",
+  "runTitle": "Local AI Engine Memory TOP-N Routing Fix QA",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine-local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "3d38bc0050a9f7637b4f09c5d5117cd51a56f0f2"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI supervisor metric ranking prepare step",
+    "NLQ rank instruction layering",
+    "deterministic metric ranking fallback",
+    "AI Engine server metrics current ranking",
+    "root AI stream contract"
+  ],
+  "skippedSurfaces": ["Vercel production retest", "live LLM generation"],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-memory-topn-broad-ranking-korean-response",
+      "title": "AI memory TOP-N broad ranking should answer in Korean without server_id clarification",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Targeted AI Engine tests force getServerMetricsAdvanced for '메모리 높은 서버 TOP 3, 조치 방법도 알려줘', inject ranking instructions, and build deterministic Korean memory TOP-N response without server_id clarification.",
+      "note": "Validation: targeted Vitest 4 files / 126 tests, AI Engine type-check, AI Engine full test 107 files / 1077 tests, root test:contract 3 files / 24 tests.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This is a local deterministic QA record for the P2 memory TOP-N routing fix; production deployment and live LLM QA were intentionally skipped until the next release.",
+    "The remaining P3 disk cleanup command relevance issue stays in TODO Backlog and QA pending state."
+  ],
+  "links": []
+}

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 01:26:25 KST
+> Generated at: 2026-05-10 08:12:15 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 436 |
-| Total Runs (Counted) | 355 |
+| Total Recorded Runs | 439 |
+| Total Runs (Counted) | 358 |
 | Non-counted Runs | 81 |
-| Total Checks | 3083 |
-| Passed | 2959 |
+| Total Checks | 3105 |
+| Passed | 2981 |
 | Failed | 114 |
-| Completed Items | 470 |
+| Completed Items | 472 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260510-0438 (2026-05-09T16:26:24.262Z) |
-| Latest Recorded Run | QA-20260510-0438 (2026-05-09T16:26:24.262Z) |
+| Last Counted Run | QA-20260510-0441 (2026-05-09T23:12:15.456Z) |
+| Latest Recorded Run | QA-20260510-0441 (2026-05-09T23:12:15.456Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,22 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0438 (2026-05-09T16:26:24.262Z)
+Latest run: QA-20260510-0441 (2026-05-09T23:12:15.456Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.120 release smoke; billed usage remains 0.0000 USD, effective usage 5.3789 USD. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-08T16:26:24.262Z -> 2026-05-09T16:26:24.262Z (24h)
+- Window: 2026-05-08T23:12:15.456Z -> 2026-05-09T23:12:15.456Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -59,7 +58,7 @@ Latest run: QA-20260510-0438 (2026-05-09T16:26:24.262Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-08T16:26:24.262Z -> 2026-05-09T16:26:24.262Z (24h)
+- Window: 2026-05-08T23:12:15.456Z -> 2026-05-09T23:12:15.456Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -71,25 +70,24 @@ Latest run: QA-20260510-0438 (2026-05-09T16:26:24.262Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_Ca6LDuJNBmxZWXgNAmiZQXrjV4JM / SHA 9152232f
-- Coverage Packs: core-routes-smoke, dashboard-core
-- Covered Surfaces: /, /login, /api/version, /dashboard overview server density, Vercel production version alias
-- Skipped Surfaces: real LLM/AI response generation, mobile viewport pass, Cloud Run AI Engine direct endpoint smoke beyond GitLab tag pipeline
+- Deployment: SHA 3d38bc00
+- Coverage Packs: ai-core
+- Covered Surfaces: AI service command deterministic fast-path, AI command recommendation catalog, AI pre-filter direct response, AI supervisor stream direct command guidance, root AI stream contract
+- Skipped Surfaces: Vercel production retest, live LLM generation
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | v8.11.120 tag pipeline | [v8.11.120 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2512577239) | - |
-| vercel-deployment | v8.11.120 Vercel deployment | [v8.11.120 Vercel deployment](https://openmanager-l0nsx7oqq-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | v8.11.120 dashboard overview density | `reports/qa/evidence/qa-20260510-v811120-dashboard-density.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -219,6 +217,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-chat-sidebar-open: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
 - ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 2회, last QA-20260318-0125)
 - ai-dashboard-query-asof-slot-drift: AI sidebar job requests use the dashboard-visible OTel data slot (completed 1회, last QA-20260429-0372)
+- ai-disk-cleanup-command-relevance: AI disk cleanup guidance should prioritize filesystem cleanup commands before MySQL diagnostics (completed 1회, last QA-20260510-0441)
 - ai-disk-threshold-answer-accuracy-drift: AI async job answer preserves DISK threshold and dashboard metric values (completed 2회, last QA-20260429-0368)
 - ai-domain-boundary-phase2-analysis-mode: AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking) (completed 1회, last QA-20260416-0297)
 - ai-engine-cloud-run-v81188-health: Cloud Run ai-engine v8.11.88 health and free-tier runtime limits verified (completed 1회, last QA-20260503-0399)
@@ -236,6 +235,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-health-soft-polling-local: AI health UI polling uses soft responses (completed 1회, last QA-20260503-0396)
 - ai-incident-artifact-render-v81181: Incident report artifact renders from production AI sidebar (completed 1회, last QA-20260502-0390)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
+- ai-memory-topn-broad-ranking-korean-response: AI memory TOP-N broad ranking should answer in Korean without server_id clarification (completed 1회, last QA-20260510-0440)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
 - ai-ops-a1-a5-c2-local-deterministic-fallback: A1/A5/C2 local deterministic fallback behavior is covered by tests (completed 1회, last QA-20260509-0434)
@@ -648,6 +648,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0441 | 2026-05-09T23:12:15.456Z | targeted | no | yes | Local AI Engine Command Guidance Resource Intent QA | 5 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260510-0440 | 2026-05-09T22:47:17.841Z | targeted | no | yes | Local AI Engine Memory TOP-N Routing Fix QA | 4 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260510-0439 | 2026-05-09T17:03:25.551Z | smoke | yes | yes | Vercel Production Smoke QA - v8.11.120 Frontend+AI | 13 | 0 | 2 | 0 | 0 | 0 |
 | QA-20260510-0438 | 2026-05-09T16:26:24.262Z | targeted | yes | yes | v8.11.120 Production Release Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0437 | 2026-05-09T13:56:23.063Z | targeted | yes | yes | v8.11.119 Production Release Smoke | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0436 | 2026-05-09T12:15:44.170Z | targeted | no | yes | Local UI/UX Improvement Closure QA - P1/P2/P3 | 7 | 1 | 0 | 0 | 0 | 0 |
@@ -665,6 +668,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260508-0424 | 2026-05-08T07:24:22.394Z | targeted | no | yes | Local Playwright MCP QA - Nivo tooltip and anomaly visual closure | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260508-0423 | 2026-05-08T06:59:43.939Z | targeted | no | no | Local Next.js Webpack Dev Fallback Stabilization | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260508-0422 | 2026-05-08T04:05:15.930Z | targeted | no | no | Local Nivo Chart Visual QA - Local Next.js Dev Server Exit Blocked | 2 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260508-0421 | 2026-05-08T01:27:43.763Z | targeted | no | no | Local Nivo Chart Visual QA - WSL2 /mnt/d SIGBUS Blocked | 1 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260507-0420 | 2026-05-07T03:06:42.069Z | targeted | yes | yes | v8.11.113 AI Feedback Removal Production Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260507-0419 | 2026-05-07T01:09:27.132Z | targeted | yes | yes | v8.11.112 AI Assistant Scroll and Internal Disclosure Targeted QA | 7 | 2 | 0 | 0 | 0 | 0 |

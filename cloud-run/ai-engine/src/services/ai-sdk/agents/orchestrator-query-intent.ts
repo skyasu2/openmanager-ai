@@ -130,8 +130,10 @@ function parseThresholdComparison(
 }
 
 export function classifyQueryIntent(query: string): IntentClassification {
-  // Priority order: causal > predictive > advisory (these always need LLM)
-  // Then: filter > ranking (deterministic if data is complete)
+  // Priority order: causal > predictive > explicit metric ranking
+  // Then: advisory > filter. Ranking stays deterministic even when the user also
+  // asks for remediation guidance, so broad TOP-N questions do not fall into
+  // server-id clarification prompts.
   // Default: data-lookup
   const metric = parseMetric(query);
   const statusValue = parseStatusValue(query);
@@ -146,6 +148,16 @@ export function classifyQueryIntent(query: string): IntentClassification {
 
   if (PREDICTIVE_SIGNALS.test(query)) {
     return { intent: 'predictive', confidence: 'high', metric, statusValue };
+  }
+
+  if (RANKING_SIGNALS.test(query) && metric && metric !== 'status') {
+    return {
+      intent: 'data-ranking',
+      confidence: 'high',
+      metric,
+      rankCount,
+      rankOrder,
+    };
   }
 
   if (ADVISORY_SIGNALS.test(query)) {
@@ -180,16 +192,6 @@ export function classifyQueryIntent(query: string): IntentClassification {
       operator: comparison?.operator,
       threshold: comparison?.threshold,
       statusValue,
-    };
-  }
-
-  if (RANKING_SIGNALS.test(query) && metric && metric !== 'status') {
-    return {
-      intent: 'data-ranking',
-      confidence: 'high',
-      metric,
-      rankCount,
-      rankOrder,
     };
   }
 

@@ -289,7 +289,7 @@ npm run validate:all
 ## Related Documents
 
 - [E2E Testing Guide](./e2e-testing-guide.md)
-- [MSW Test Infra Integrity Plan](../../../reports/planning/msw-test-infra-integrity-plan.md)
+- [MSW Test Infra Integrity Plan](../../../reports/planning/archive/msw-test-infra-integrity-plan.md)
 
 ## Methodology References
 

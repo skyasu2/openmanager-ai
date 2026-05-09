@@ -72,6 +72,17 @@ describe('preFilterQuery', () => {
     expect(nfs.directResponse).toContain('mount -t nfs');
   });
 
+  it('answers disk capacity command guidance with filesystem checks before service commands', () => {
+    const result = preFilterQuery(
+      'db-mysql-dc1-primary 디스크 86%, 용량 확보 명령어는?'
+    );
+
+    expect(result.shouldHandoff).toBe(false);
+    expect(result.directResponse).toContain('df -h');
+    expect(result.directResponse).toContain('du -xhd1 / 2>/dev/null | sort -hr | head -20');
+    expect(result.directResponse).not.toContain('SHOW FULL PROCESSLIST');
+  });
+
   it('answers first-on-call alert checklist directly for beginner ops guidance', () => {
     const result = preFilterQuery(
       '처음 운영 당직인데 알림이 울리면 어떤 순서로 확인해야 해?'
