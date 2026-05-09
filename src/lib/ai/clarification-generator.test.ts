@@ -137,6 +137,26 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('운영 명령어/절차 질의는 command guidance로 바로 실행되도록 clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          'Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘',
+          {
+            complexity: 4,
+            intent: 'analysis',
+            reasoning: 'Keyword match: Analysis/Coding',
+            confidence: 80,
+          }
+        )
+      ).toBeNull();
+      expect(
+        generateClarification(
+          'NFS 마운트가 끊겼을 때 확인하고 재마운트하는 순서 알려줘',
+          lowConfidence
+        )
+      ).toBeNull();
+    });
+
     // 한국어 활용형 테스트
     it('"CPU 높아?" → clarification 스킵 (comparisonCondition 활용형)', () => {
       expect(generateClarification('CPU 높아?', lowConfidence)).toBeNull();

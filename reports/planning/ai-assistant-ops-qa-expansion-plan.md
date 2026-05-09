@@ -270,6 +270,40 @@ WARN  - 응답이 맞지만 지나치게 일반적 (메트릭 수치 미활용)
   - 배포 후 B4/B5 production targeted retest에서 `/api/ai/supervisor/stream/v2` 요청 발생 여부와 visible answer를 재확인
   - 요청은 발생하지만 답변이 비면 `ai-ops-empty-response-timeout` stream fallback 경로로 분리
 
+## QA-20260509-0431 B4/B5 v8.11.117 재검증 결과
+
+- **환경**: Vercel Production v8.11.117 (`https://openmanager-ai.vercel.app`)
+- **배포 근거**: GitLab tag pipeline `2511552074` success, production version smoke attempt 25/81 PASS
+- **도구**: Playwright CLI runner + direct DOM/network diagnostic
+- **기록**: `reports/qa/runs/2026/qa-run-QA-20260509-0431.json`
+- **Raw evidence**: `reports/qa/evidence/qa-20260509-ai-ops-b4-b5-v811117-results.json`
+- **대상**: `B4,B5`
+- **결과**: PASS 0, FAIL 2
+
+| 시나리오 | v8.11.116 | v8.11.117 | 판정 |
+|----------|-----------|-----------|------|
+| B4 Nginx 5xx 경로 분석 | FAIL: form ancestor 없음/요청 미발생 | FAIL: form/button 정상, clarification dialog가 전송 전 가로챔 | submit form boundary는 해결, clarification intercept 잔여 |
+| B5 NFS 재마운트 순서 | FAIL: visible answer 없음 | FAIL: B4 clarification state 이후 visible answer 없음 | B4 intercept 해소 후 재검증 필요 |
+
+### 2026-05-09 command clarification bypass 로컬 수정
+
+- 원인:
+  - B4 질문은 `분석` 키워드 때문에 local classifier에서 low-confidence analysis로 분류됨
+  - `generateClarification()`이 "건너뛰고 바로 실행" dialog를 띄워 `/api/ai/supervisor/stream/v2` 요청 전송 전 단계에서 멈춤
+- 제품 수정:
+  - HAProxy/Nginx/MySQL/Redis/NFS 운영 명령어·절차 질문은 `OPERATIONS_COMMAND_GUIDANCE_PATTERNS`로 clarification을 스킵
+  - B4/B5 QA 질문을 그대로 회귀 테스트에 추가
+- 검증:
+  - `node scripts/dev/vitest-main-wrapper.js run src/lib/ai/clarification-generator.test.ts` PASS — 37 tests
+  - `npm run type-check` PASS
+  - `npm run lint` PASS
+  - `npm run test:quick` PASS
+  - `npm run test:contract` PASS — 24 tests
+  - `git diff --check` PASS
+- 남은 확인:
+  - 배포 후 B4/B5 production targeted retest에서 clarification 없이 stream request가 발생하고 command catalog 답변이 visible answer로 표시되는지 확인
+  - B4/B5가 pass하면 `ai-ops-command-clarification-intercept`와 `ai-ops-command-submit-or-stream-boundary` closure 처리
+
 ---
 
 ## 예상 결과 및 리스크

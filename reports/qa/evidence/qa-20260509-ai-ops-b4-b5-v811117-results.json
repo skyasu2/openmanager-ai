@@ -1,0 +1,41 @@
+{
+  "startedAt": "2026-05-08T23:53:44.637Z",
+  "finishedAt": "2026-05-09T00:00:51.174Z",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "selectedScenarioIds": [
+    "B4",
+    "B5"
+  ],
+  "total": 2,
+  "pass": 0,
+  "warn": 0,
+  "fail": 2,
+  "results": [
+    {
+      "id": "B4",
+      "category": "command-guidance",
+      "question": "Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 204115,
+      "answerExcerpt": ""
+    },
+    {
+      "id": "B5",
+      "category": "command-guidance",
+      "question": "NFS 마운트가 끊겼을 때 확인하고 재마운트하는 순서 알려줘",
+      "status": "FAIL",
+      "reason": "AI response timed out without visible answer",
+      "latencyMs": 204113,
+      "answerExcerpt": ""
+    }
+  ],
+  "consoleMessages": [],
+  "networkEvents": [
+    {
+      "type": "requestfailed",
+      "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "error": "net::ERR_ABORTED"
+    }
+  ]
+}

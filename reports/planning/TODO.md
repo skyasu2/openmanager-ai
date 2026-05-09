@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-09 KST (`AI 운영 대화 QA B4/B5 submit form boundary 1차 수정 완료, production 재검증 대기`)
+**Last Updated**: 2026-05-09 KST (`AI 운영 대화 QA v8.11.117 B4/B5 clarification intercept 확인 및 bypass 수정 진행`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 어시스턴트 운영 대응 QA 확장 | High | In Progress (Codex) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — QA-20260509-0430(v8.11.116): command retest B1/B4/B5 중 B1 PASS, B4/B5 FAIL. 완료: HAProxy command intent routing(`ai-ops-command-intent-routing`) closure, AI 입력창 semantic submit form 1차 수정. 잔여: P1 empty response timeout(A5/B4/B5/C2), P1 Nginx/NFS command submit-or-stream boundary(B4/B5) production 재검증, P2 HAProxy context specificity(A1). 다음 단계: 배포 후 B4/B5를 실제 UI request 발생 여부까지 재검증하고, A5/C2는 별도 stream fallback/초보 당직 checklist 보강 |
+| AI 어시스턴트 운영 대응 QA 확장 | High | In Progress (Codex) | [ai-assistant-ops-qa-expansion-plan.md](ai-assistant-ops-qa-expansion-plan.md) — QA-20260509-0431(v8.11.117): B4/B5 retest FAIL. 완료: HAProxy command intent routing closure, AI 입력창 semantic submit form 1차 수정. 확인: B4는 form/button 정상이나 clarification dialog가 AI 요청 전송을 가로막음. 진행: 운영 명령어/절차 질의 clarification bypass 회귀 테스트 및 코드 수정 완료, 배포/재검증 대기. 잔여: P1 empty response timeout(A5/B4/B5/C2), P2 HAProxy context specificity(A1). |
 
 ---
 

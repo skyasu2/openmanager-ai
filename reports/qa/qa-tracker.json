@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-08T17:45:28.422Z"
+    "updatedAt": "2026-05-09T00:05:28.683Z"
   },
   "sequence": {
-    "nextRunNumber": 431
+    "nextRunNumber": 432
   },
   "summary": {
-    "totalRecordedRuns": 428,
-    "totalRuns": 349,
+    "totalRecordedRuns": 429,
+    "totalRuns": 350,
     "excludedRuns": 79,
-    "totalChecks": 3063,
+    "totalChecks": 3065,
     "totalPassed": 2941,
-    "totalFailed": 112,
-    "completionRate": 99.35,
-    "completedItems": 460,
-    "pendingItems": 3,
+    "totalFailed": 114,
+    "completionRate": 99.14,
+    "completedItems": 461,
+    "pendingItems": 4,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260509-0430",
-    "lastRecordedAt": "2026-05-08T17:45:28.422Z",
-    "latestRecordedRunId": "QA-20260509-0430",
-    "latestRecordedAt": "2026-05-08T17:45:28.422Z"
+    "lastRunId": "QA-20260509-0431",
+    "lastRecordedAt": "2026-05-09T00:05:28.683Z",
+    "latestRecordedRunId": "QA-20260509-0431",
+    "latestRecordedAt": "2026-05-09T00:05:28.683Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11233,22 +11233,22 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260509-0428",
       "firstSeenAt": "2026-05-08T15:49:21.373Z",
-      "lastSeenRunId": "QA-20260509-0430",
-      "lastSeenAt": "2026-05-08T17:45:28.422Z",
-      "seenCount": 3,
+      "lastSeenRunId": "QA-20260509-0431",
+      "lastSeenAt": "2026-05-09T00:05:28.683Z",
+      "seenCount": 4,
       "completedCount": 0,
-      "pendingCount": 3,
+      "pendingCount": 4,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "B4/B5 still timed out without visible answer in v8.11.116 command retest; A5/C2 remain unresolved from QA-20260509-0429.",
-      "lastNote": "B4 isolated network diagnostic suggests at least one path may be submit/runner/UI boundary rather than AI text generation.",
+      "lastEvidence": "B4/B5 still timed out without visible answer in v8.11.117 command retest; A5/C2 remain unresolved from QA-20260509-0429.",
+      "lastNote": "B4 is now known to be clarification-intercepted before request dispatch; B5 needs retest after clarification bypass.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-08T17:45:28.422Z"
+      "lastStatusChangeAt": "2026-05-09T00:05:28.683Z"
     },
     "ai-ops-command-intent-routing": {
       "id": "ai-ops-command-intent-routing",
@@ -11329,22 +11329,22 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260509-0429",
       "firstSeenAt": "2026-05-08T16:33:50.518Z",
-      "lastSeenRunId": "QA-20260509-0430",
-      "lastSeenAt": "2026-05-08T17:45:28.422Z",
-      "seenCount": 2,
+      "lastSeenRunId": "QA-20260509-0431",
+      "lastSeenAt": "2026-05-09T00:05:28.683Z",
+      "seenCount": 3,
       "completedCount": 0,
-      "pendingCount": 2,
+      "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "A1 remained WARN in QA-20260509-0429 and was not retested in the command-only v8.11.116 run.",
+      "lastEvidence": "A1 remained WARN in QA-20260509-0429 and was not retested in this command-only run.",
       "lastNote": "Tracking as blocking for the active AI ops QA closure task, not as a global release blocker.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-08T17:45:28.422Z"
+      "lastStatusChangeAt": "2026-05-09T00:05:28.683Z"
     },
     "ai-ops-command-submit-or-stream-boundary": {
       "id": "ai-ops-command-submit-or-stream-boundary",
@@ -11369,6 +11369,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-08T17:45:28.422Z"
+    },
+    "ai-ops-command-submit-form-boundary": {
+      "id": "ai-ops-command-submit-form-boundary",
+      "title": "AI chat input exposes a semantic submit form for UI and QA automation",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260509-0431",
+      "firstSeenAt": "2026-05-09T00:05:28.683Z",
+      "lastSeenRunId": "QA-20260509-0431",
+      "lastSeenAt": "2026-05-09T00:05:28.683Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.117 direct DOM diagnostic confirmed textarea.closest(form), form aria-label=AI 질문 전송, submit button present and enabled before B4 send.",
+      "lastNote": "The remaining no-request failure is caused by clarification interception, not missing form semantics.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-09T00:05:28.683Z"
+    },
+    "ai-ops-command-clarification-intercept": {
+      "id": "ai-ops-command-clarification-intercept",
+      "title": "Operations command guidance prompts are intercepted by clarification dialog before AI request dispatch",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260509-0431",
+      "firstSeenAt": "2026-05-09T00:05:28.683Z",
+      "lastSeenRunId": "QA-20260509-0431",
+      "lastSeenAt": "2026-05-09T00:05:28.683Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.117 B4 direct DOM diagnostic: form exists, send button enabled, click opens clarification action (건너뛰고 바로 실행), and no /api/ai/supervisor or /api/ai/jobs request is emitted.",
+      "lastNote": "This narrows the previous submit/stream boundary issue to clarification-generator behavior for concrete command guidance prompts.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-09T00:05:28.683Z"
     }
   },
   "runs": [
@@ -45306,6 +45354,109 @@
       "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260509-0431",
+      "recordedAt": "2026-05-09T00:05:28.683Z",
+      "recordedAtKst": "2026-05-09 09:05:28 KST",
+      "title": "Vercel Production AI Ops B4/B5 Submit Boundary Retest - v8.11.117",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260509-0431.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "eaed6fda6a0bfbcd224ac026b2d74d55c851e451"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant guest conversational flow",
+        "AI ops command guidance B4/B5 retest after semantic submit form fix",
+        "production DOM/network diagnostic for clarification interception"
+      ],
+      "skippedSurfaces": [
+        "full 15-scenario AI ops pack",
+        "non-command service context scenarios",
+        "Cloud Run admin surface"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 0,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "B4/B5 still produced no visible answer in v8.11.117 targeted QA, but direct DOM diagnostic showed the semantic form exists and B4 is intercepted by clarification UI.",
+          "nextAction": "Bypass clarification for concrete operations command/procedure questions, then retest B4/B5."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The prior ancestor::form selector issue is resolved; the remaining failure is product clarification state preventing network dispatch.",
+          "nextAction": "Add clarification-generator regression tests for B4/B5 command guidance prompts."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Nginx/NFS operational command questions are valid incident-response prompts and should route directly to command guidance.",
+          "nextAction": "Ensure Nginx/NFS direct command catalog response reaches production stream after clarification bypass."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-09T08:52:48+09:00",
+          "summary": "Current billing period reviewed after v8.11.117 release and B4/B5 retest; effective usage 4.7045 USD, billed 0.0000 USD, chargeCount 4263.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "AI ops B4/B5 v8.11.117 raw results",
+          "path": "reports/qa/evidence/qa-20260509-ai-ops-b4-b5-v811117-results.json",
+          "note": "B4/B5 scenario result JSON captured after v8.11.117 production deploy; form boundary fixed but clarification dialog intercepted B4 before AI request."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.11.117 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2511552074"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 3,
+      "completedCount": 1,
+      "pendingCount": 3,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -45314,17 +45465,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 211,
+      "seenCount": 212,
       "appropriateCount": 185,
-      "partialCount": 26,
+      "partialCount": 27,
       "inappropriateCount": 0,
-      "improvementNeededCount": 36,
-      "lastRunId": "QA-20260509-0430",
-      "lastSeenAt": "2026-05-08T17:45:28.422Z",
+      "improvementNeededCount": 37,
+      "lastRunId": "QA-20260509-0431",
+      "lastSeenAt": "2026-05-09T00:05:28.683Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "B1 HAProxy command guidance recovered in v8.11.116, but B4/B5 still produced no visible answer in the Playwright flow.",
-      "lastNextAction": "B4/B5 submit/stream boundary를 네트워크 요청 발생 여부까지 포함해 분리 재현."
+      "lastRationale": "B4/B5 still produced no visible answer in v8.11.117 targeted QA, but direct DOM diagnostic showed the semantic form exists and B4 is intercepted by clarification UI.",
+      "lastNextAction": "Bypass clarification for concrete operations command/procedure questions, then retest B4/B5."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -45365,34 +45516,34 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 144,
+      "seenCount": 145,
       "appropriateCount": 128,
-      "partialCount": 16,
+      "partialCount": 17,
       "inappropriateCount": 0,
-      "improvementNeededCount": 20,
-      "lastRunId": "QA-20260509-0430",
-      "lastSeenAt": "2026-05-08T17:45:28.422Z",
+      "improvementNeededCount": 21,
+      "lastRunId": "QA-20260509-0431",
+      "lastSeenAt": "2026-05-09T00:05:28.683Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "HAProxy 명령어는 구체 CLI를 반환하지만 Nginx/NFS 운영 명령어는 아직 프로덕션 대화 흐름에서 확인되지 않음.",
-      "lastNextAction": "Nginx/NFS command catalog direct response가 실제 UI submit 후 stream에 도달하는지 검증."
+      "lastRationale": "Nginx/NFS operational command questions are valid incident-response prompts and should route directly to command guidance.",
+      "lastNextAction": "Ensure Nginx/NFS direct command catalog response reaches production stream after clarification bypass."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 182,
+      "seenCount": 183,
       "appropriateCount": 165,
-      "partialCount": 17,
+      "partialCount": 18,
       "inappropriateCount": 0,
-      "improvementNeededCount": 19,
-      "lastRunId": "QA-20260509-0430",
-      "lastSeenAt": "2026-05-08T17:45:28.422Z",
+      "improvementNeededCount": 20,
+      "lastRunId": "QA-20260509-0431",
+      "lastSeenAt": "2026-05-09T00:05:28.683Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "B4 isolated diagnostic captured no /api/ai/supervisor request and only aborted wake-up traffic, so runner/UI submit state false-fail 가능성이 있음.",
-      "lastNextAction": "QA runner submit selector를 실제 textarea sibling send button 기준으로 고정하고 product-side submit telemetry를 추가 검토."
+      "lastRationale": "The prior ancestor::form selector issue is resolved; the remaining failure is product clarification state preventing network dispatch.",
+      "lastNextAction": "Add clarification-generator regression tests for B4/B5 command guidance prompts."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

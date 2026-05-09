@@ -1,0 +1,158 @@
+{
+  "runId": "QA-20260509-0431",
+  "recordedAt": "2026-05-09T00:05:28.683Z",
+  "recordedAtKst": "2026-05-09 09:05:28 KST",
+  "runTitle": "Vercel Production AI Ops B4/B5 Submit Boundary Retest - v8.11.117",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "eaed6fda6a0bfbcd224ac026b2d74d55c851e451"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant guest conversational flow",
+    "AI ops command guidance B4/B5 retest after semantic submit form fix",
+    "production DOM/network diagnostic for clarification interception"
+  ],
+  "skippedSurfaces": [
+    "full 15-scenario AI ops pack",
+    "non-command service context scenarios",
+    "Cloud Run admin surface"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 0,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "B4/B5 still produced no visible answer in v8.11.117 targeted QA, but direct DOM diagnostic showed the semantic form exists and B4 is intercepted by clarification UI.",
+      "nextAction": "Bypass clarification for concrete operations command/procedure questions, then retest B4/B5."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The prior ancestor::form selector issue is resolved; the remaining failure is product clarification state preventing network dispatch.",
+      "nextAction": "Add clarification-generator regression tests for B4/B5 command guidance prompts."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Nginx/NFS operational command questions are valid incident-response prompts and should route directly to command guidance.",
+      "nextAction": "Ensure Nginx/NFS direct command catalog response reaches production stream after clarification bypass."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-09T08:52:48+09:00",
+      "summary": "Current billing period reviewed after v8.11.117 release and B4/B5 retest; effective usage 4.7045 USD, billed 0.0000 USD, chargeCount 4263.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "AI ops B4/B5 v8.11.117 raw results",
+      "path": "reports/qa/evidence/qa-20260509-ai-ops-b4-b5-v811117-results.json",
+      "note": "B4/B5 scenario result JSON captured after v8.11.117 production deploy; form boundary fixed but clarification dialog intercepted B4 before AI request."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-ops-command-submit-form-boundary",
+      "title": "AI chat input exposes a semantic submit form for UI and QA automation",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.117 direct DOM diagnostic confirmed textarea.closest(form), form aria-label=AI 질문 전송, submit button present and enabled before B4 send.",
+      "note": "The remaining no-request failure is caused by clarification interception, not missing form semantics.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-ops-command-clarification-intercept",
+      "title": "Operations command guidance prompts are intercepted by clarification dialog before AI request dispatch",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.117 B4 direct DOM diagnostic: form exists, send button enabled, click opens clarification action (건너뛰고 바로 실행), and no /api/ai/supervisor or /api/ai/jobs request is emitted.",
+      "note": "This narrows the previous submit/stream boundary issue to clarification-generator behavior for concrete command guidance prompts.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-empty-response-timeout",
+      "title": "AI ops QA empty response/timeouts for A5, B4, B5, and C2",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "B4/B5 still timed out without visible answer in v8.11.117 command retest; A5/C2 remain unresolved from QA-20260509-0429.",
+      "note": "B4 is now known to be clarification-intercepted before request dispatch; B5 needs retest after clarification bypass.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-ops-haproxy-context-specificity",
+      "title": "HAProxy service context answer omits CPU/backend distribution detail",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "A1 remained WARN in QA-20260509-0429 and was not retested in this command-only run.",
+      "note": "Tracking as blocking for the active AI ops QA closure task, not as a global release blocker.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment before retest: v8.11.117 via GitLab tag pipeline 2511552074, status success; production version smoke passed on attempt 25/81.",
+    "Scenario result summary: PASS 0, WARN 0, FAIL 2.",
+    "B4/B5 still timed out without visible answer in the generic runner.",
+    "Direct DOM/network diagnostic for B4 showed form and submit button are present, but clicking submit opens clarification (건너뛰고 바로 실행) and emits no supervisor/jobs request.",
+    "Next code action: operations command guidance prompts should skip clarification and route directly to command guidance.",
+    "Vercel usage check after release/retest: PASS, effective usage 4.7045 USD, billed 0.0000 USD."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.11.117 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2511552074"
+    }
+  ]
+}

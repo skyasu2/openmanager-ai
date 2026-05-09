@@ -69,6 +69,9 @@ const EXTERNAL_KNOWLEDGE_PATTERNS =
 const INTERNAL_KNOWLEDGE_PATTERNS =
   /rag|내부\s*(문서|근거|지식)|사내\s*(문서|근거|지식)|프로젝트\s*(문서|파일|경로|위치)|저장소\s*(문서|파일|경로|위치)|repo(?:sitory)?\s*(doc|file|path|location)|ssot|single\s*source\s*of\s*truth|pre-generated|파일\s*경로|코드\s*위치|데이터\s*로더|data\s*loader|otel\s*(데이터|data)?\s*(파일|경로|위치|ssot)/i;
 
+const OPERATIONS_COMMAND_GUIDANCE_PATTERNS =
+  /(?:haproxy|nginx|mysql|redis|nfs|access\.log|slow_query|show\s+(?:stat|processlist|replica|slave)\s+status|redis-cli|showmount|findmnt|mount\s+-t|df\s+-h|awk|grep).*(?:명령어|방법|순서|확인|분석|재마운트)|(?:명령어|방법|순서|확인|분석|재마운트).*(?:haproxy|nginx|mysql|redis|nfs|access\.log|slow_query|show\s+(?:stat|processlist|replica|slave)\s+status|redis-cli|showmount|findmnt|mount\s+-t|df\s+-h|awk|grep)/i;
+
 /**
  * 쿼리가 이미 구체적인 조건을 포함하는지 확인
  */
@@ -99,6 +102,10 @@ export function generateClarification(
   }
 
   if (INTERNAL_KNOWLEDGE_PATTERNS.test(query)) {
+    return null;
+  }
+
+  if (OPERATIONS_COMMAND_GUIDANCE_PATTERNS.test(query)) {
     return null;
   }
 
