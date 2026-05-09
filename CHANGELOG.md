@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.120](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.119...v8.11.120) (2026-05-09)
+
+
+### Bug Fixes
+
+* **dashboard:** increase overview server density ([bd61ce3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bd61ce339467518f0a48da29394a654f112eb2b5))
+
 ## [8.11.119](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.118...v8.11.119) (2026-05-09)
 
 
