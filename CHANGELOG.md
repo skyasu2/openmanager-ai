@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.122](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.121...v8.11.122) (2026-05-10)
+
+
+### Bug Fixes
+
+* **ai:** skip clarification for explicit server ids ([567f496](https://gitlab.com/skyasu2/openmanager-ai/-/commit/567f496bd33913fd2b88842a4e1ac7f8026812e1))
+
+
+### Tests
+
+* **qa:** record AI server ID clarification fix ([866a3ff](https://gitlab.com/skyasu2/openmanager-ai/-/commit/866a3ff8bd0367af86bd640ba158779f06d1917b))
+* **qa:** record v8.11.121 release smoke ([e055994](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e055994cfcf736aad535df6f304401ded5828ee1))
+
 ## [8.11.121](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.120...v8.11.121) (2026-05-10)
 
 
