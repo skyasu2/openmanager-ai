@@ -2,9 +2,9 @@
  * GCP Cloud Logging Optimized Logger
  *
  * Pino-based structured logging for Google Cloud Run.
- * Production: @google-cloud/pino-logging-gcp-config 사용
- *   - severity 자동 매핑, insertId 순서 보장
- *   - stack_trace → Error Reporting, OTel trace 매핑
+ * Production: stdout structured logging config for Cloud Run
+ *   - severity mapping, insertId ordering
+ *   - stack_trace → Error Reporting, OTel trace field mapping
  * Development: 기본 pino stdout 출력
  *
  * @see https://cloud.google.com/logging/docs/structured-logging
@@ -13,17 +13,128 @@
 import pino from 'pino';
 import { version as APP_VERSION } from '../../package.json';
 
-type GcpLoggingPinoConfigFactory = (
-  options: {
-    serviceContext: {
-      service: string;
-      version: string;
-    };
-  },
-  pinoOptions: {
-    level: string;
+const SERVICE_CONTEXT = {
+  service: 'ai-engine',
+  version: APP_VERSION,
+};
+
+const GCP_SEVERITY_BY_PINO_LEVEL: Record<string, string> = {
+  trace: 'DEBUG',
+  debug: 'DEBUG',
+  info: 'INFO',
+  warn: 'WARNING',
+  error: 'ERROR',
+  fatal: 'CRITICAL',
+};
+
+let insertIdCounter = 0;
+
+function nextInsertId(): string {
+  insertIdCounter = (insertIdCounter + 1) % Number.MAX_SAFE_INTEGER;
+  return `${Date.now().toString(36)}-${process.pid.toString(36)}-${insertIdCounter.toString(36)}`;
+}
+
+function cloudLoggingTimestamp(): string {
+  const now = Date.now();
+  const seconds = Math.floor(now / 1000);
+  const nanos = (now % 1000) * 1_000_000;
+  return `,"timestamp":{"seconds":${seconds},"nanos":${nanos}}`;
+}
+
+function getStringProperty(
+  value: Record<string, unknown>,
+  key: string
+): string | undefined {
+  const property = value[key];
+  return typeof property === 'string' && property.length > 0 ? property : undefined;
+}
+
+function extractStackTrace(value: unknown): string | undefined {
+  if (value instanceof Error) {
+    return value.stack;
   }
-) => unknown;
+
+  if (typeof value === 'object' && value !== null) {
+    const stack = (value as { stack?: unknown }).stack;
+    return typeof stack === 'string' && stack.length > 0 ? stack : undefined;
+  }
+
+  return undefined;
+}
+
+function formatCloudLoggingRecord(
+  logObject: Record<string, unknown>
+): Record<string, unknown> {
+  const formatted = { ...logObject };
+
+  const traceId =
+    getStringProperty(formatted, 'trace_id') ?? getStringProperty(formatted, 'traceId');
+  const spanId =
+    getStringProperty(formatted, 'span_id') ?? getStringProperty(formatted, 'spanId');
+  const traceFlags =
+    getStringProperty(formatted, 'trace_flags') ??
+    getStringProperty(formatted, 'traceFlags');
+  const projectId =
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    process.env.GCP_PROJECT_ID ||
+    process.env.GCLOUD_PROJECT;
+
+  if (traceId) {
+    formatted['logging.googleapis.com/trace'] = projectId
+      ? `projects/${projectId}/traces/${traceId}`
+      : traceId;
+    delete formatted.trace_id;
+    delete formatted.traceId;
+  }
+
+  if (spanId) {
+    formatted['logging.googleapis.com/spanId'] = spanId;
+    delete formatted.span_id;
+    delete formatted.spanId;
+  }
+
+  if (traceFlags) {
+    formatted['logging.googleapis.com/trace_sampled'] =
+      traceFlags === '01' ||
+      traceFlags === '1' ||
+      traceFlags.toLowerCase() === 'true';
+    delete formatted.trace_flags;
+    delete formatted.traceFlags;
+  }
+
+  const stackTrace =
+    extractStackTrace(formatted.err) ?? extractStackTrace(formatted.error);
+  if (stackTrace && typeof formatted.stack_trace !== 'string') {
+    formatted.stack_trace = stackTrace;
+  }
+
+  return formatted;
+}
+
+export function createCloudRunPinoOptions(logLevel: string): pino.LoggerOptions {
+  return {
+    level: logLevel,
+    messageKey: 'message',
+    base: {
+      service: SERVICE_CONTEXT.service,
+      version: SERVICE_CONTEXT.version,
+      serviceContext: SERVICE_CONTEXT,
+    },
+    timestamp: cloudLoggingTimestamp,
+    mixin: () => ({
+      'logging.googleapis.com/insertId': nextInsertId(),
+    }),
+    formatters: {
+      level(label, number) {
+        return {
+          severity: GCP_SEVERITY_BY_PINO_LEVEL[label] || 'DEFAULT',
+          level: number,
+        };
+      },
+      log: formatCloudLoggingRecord,
+    },
+  };
+}
 
 /**
  * Create GCP-optimized Pino logger
@@ -46,21 +157,7 @@ function createLogger(): pino.Logger {
     process.env.LOG_LEVEL || (useLocalLogger ? (isTest ? 'error' : 'debug') : 'warn');
 
   if (!useLocalLogger) {
-    const { createGcpLoggingPinoConfig } = require(
-      '@google-cloud/pino-logging-gcp-config'
-    ) as {
-      createGcpLoggingPinoConfig: GcpLoggingPinoConfigFactory;
-    };
-
-    // Production: 공식 GCP 패키지로 severity/insertId/stack_trace 자동 처리
-    // GCP 패키지가 pino@10 타입 기준이므로 pino@9와 제네릭 불일치 → LoggerOptions 단언
-    const gcpConfig = createGcpLoggingPinoConfig(
-      {
-        serviceContext: { service: 'ai-engine', version: APP_VERSION },
-      },
-      { level: logLevel }
-    ) as unknown as pino.LoggerOptions;
-    return pino(gcpConfig);
+    return pino(createCloudRunPinoOptions(logLevel));
   }
 
   if (isTest) {
@@ -68,8 +165,8 @@ function createLogger(): pino.Logger {
       enabled: false,
       level: 'silent',
       base: {
-        service: 'ai-engine',
-        version: APP_VERSION,
+        service: SERVICE_CONTEXT.service,
+        version: SERVICE_CONTEXT.version,
       },
     });
   }
@@ -78,8 +175,8 @@ function createLogger(): pino.Logger {
   return pino({
     level: logLevel,
     base: {
-      service: 'ai-engine',
-      version: APP_VERSION,
+      service: SERVICE_CONTEXT.service,
+      version: SERVICE_CONTEXT.version,
     },
     timestamp: pino.stdTimeFunctions.isoTime,
     transport: {

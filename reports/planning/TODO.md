@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-10 KST (`release tooling audit risk 제거`)
+**Last Updated**: 2026-05-10 KST (`AI Engine audit low chain 제거`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,7 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Dependency security audit follow-up | P1 | Root full audit의 dev critical `commit-and-tag-version -> handlebars` 체인은 내부 `scripts/release/version-and-tag.mjs` release tool로 대체해 제거. Root production/full audit는 `next@16.1.6` high 1건만 잔류. 같은-major fixed release(`next@16.1.7` 또는 `16.2.3+`)가 registry에 제공되면 즉시 업데이트하며, `npm audit fix --force`의 Next 15 downgrade는 금지. AI Engine audit은 `promptfoo@0.121.3` + scoped overrides로 low-only까지 축소했고, 남은 AI Engine production low는 Google Cloud logging transitive upstream 추적. |
+| Dependency security audit follow-up | P1 | Root full audit의 dev critical `commit-and-tag-version -> handlebars` 체인은 내부 `scripts/release/version-and-tag.mjs` release tool로 대체해 제거. AI Engine production/full audit의 Google Cloud logging low 체인은 `@google-cloud/pino-logging-gcp-config` 제거와 내부 Cloud Run pino structured logging config로 대체해 0건으로 해소. Root production/full audit는 `next@16.1.6` high 1건만 잔류. 같은-major fixed release(`next@16.1.7` 또는 `16.2.3+`)가 registry에 제공되면 즉시 업데이트하며, `npm audit fix --force`의 Next 15 downgrade는 금지. |
 | AI Assistant general coding boundary hardening | P2 | `QA-20260510-0463`의 일반 Python coding WARN 후속. 상세 계획: [ai-assistant-general-coding-boundary-plan.md](ai-assistant-general-coding-boundary-plan.md) |
 | AI Assistant operational artifact hardening | P2 | 운영 스크립트/Slack 알림/로그 대응 절차를 typed artifact로 생성·수정. 상세 계획: [ai-assistant-ops-artifact-plan.md](ai-assistant-ops-artifact-plan.md) |
 
