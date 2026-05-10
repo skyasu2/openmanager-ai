@@ -110,7 +110,8 @@ describe('filter-public-scripts', () => {
     const pkgPath = makeTempPkg({
       dev: 'next dev',
       'sync:github': 'bash scripts/sync/github-sync.sh',
-      'release:patch': 'commit-and-tag-version --release-as patch',
+      'release:patch':
+        'node scripts/release/version-and-tag.mjs --release-as patch',
       'hook:pre-push': 'node scripts/hooks/pre-push.js',
       'ci:local:docker': 'bash scripts/ci/local-docker-ci.sh',
     });

@@ -403,7 +403,7 @@ cd cloud-run/ai-engine
 
 ## 버전 관리
 
-### commit-and-tag-version
+### Release Versioning
 
 ```bash
 npm run release:patch   # 8.0.0 → 8.0.1
@@ -416,6 +416,8 @@ npm run release:check   # 버전/태그/체인지로그 정합성 점검
 ### CHANGELOG
 
 자동 생성: `CHANGELOG.md`
+
+릴리스 메타데이터는 `scripts/release/version-and-tag.mjs`가 conventional commit을 기준으로 생성합니다. 외부 changelog generator 의존성을 두지 않아 release tooling이 앱 보안 감사 결과를 악화시키지 않도록 유지합니다.
 
 ## IDE 설정
 

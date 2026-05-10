@@ -3,7 +3,7 @@
 # Canonical release pipeline: version bump -> consistency check -> push commit/tag to GitLab
 #
 # Usage:
-#   ./scripts/release/publish.sh           # auto (commit-and-tag-version decides)
+#   ./scripts/release/publish.sh           # auto (conventional commit bump)
 #   ./scripts/release/publish.sh patch     # force patch
 #   ./scripts/release/publish.sh minor     # force minor
 #   ./scripts/release/publish.sh major     # force major
@@ -22,6 +22,8 @@ RELEASE_VERIFY_URL="${RELEASE_VERIFY_URL:-https://openmanager-ai.vercel.app}"
 RELEASE_VERIFY_RETRIES="${RELEASE_VERIFY_RETRIES:-80}"
 RELEASE_VERIFY_DELAY_MS="${RELEASE_VERIFY_DELAY_MS:-15000}"
 RELEASE_VERIFY_TIMEOUT_MS="${RELEASE_VERIFY_TIMEOUT_MS:-8000}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RELEASE_TOOL="${RELEASE_TOOL:-${SCRIPT_DIR}/version-and-tag.mjs}"
 
 verification_window_minutes() {
   node -p "((Number(process.argv[1]) * Number(process.argv[2])) / 60000).toFixed(1)" \
@@ -106,13 +108,12 @@ run_post_release_verification() {
 if [[ -n "$DRY_RUN" ]]; then
   echo "🔍 Dry-run 모드"
   if [[ -n "$RELEASE_TYPE" ]]; then
-    npx commit-and-tag-version --dry-run --release-as "$RELEASE_TYPE"
+    node "$RELEASE_TOOL" --dry-run --release-as "$RELEASE_TYPE"
   else
-    npx commit-and-tag-version --dry-run
+    node "$RELEASE_TOOL" --dry-run
   fi
   echo ""
-  echo "ℹ️  Dry-run output may mention origin because commit-and-tag-version prints its default hint."
-  echo "   Actual canonical publish path in this repository is: git push --follow-tags ${CANONICAL_REMOTE} main"
+  echo "ℹ️  Actual canonical publish path in this repository is: git push --follow-tags ${CANONICAL_REMOTE} main"
   exit 0
 fi
 
@@ -161,9 +162,9 @@ fi
 # ── 1. Version bump + CHANGELOG + tag ─────────────────────
 echo "📦 릴리스 생성 중..."
 if [[ -n "$RELEASE_TYPE" ]]; then
-  npx commit-and-tag-version --release-as "$RELEASE_TYPE"
+  node "$RELEASE_TOOL" --release-as "$RELEASE_TYPE"
 else
-  npx commit-and-tag-version
+  node "$RELEASE_TOOL"
 fi
 
 # Extract the new version from package.json

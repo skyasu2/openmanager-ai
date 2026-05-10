@@ -4,7 +4,6 @@
 
 import { spawnSync } from 'node:child_process';
 import {
-  chmodSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -65,12 +64,68 @@ function initReleaseRepo() {
     JSON.stringify({ name: 'fixture', version: '1.2.3' }, null, 2),
     'utf8'
   );
+  writeFileSync(
+    join(repoDir, 'package-lock.json'),
+    JSON.stringify(
+      {
+        name: 'fixture',
+        version: '1.2.3',
+        lockfileVersion: 3,
+        packages: {
+          '': { name: 'fixture', version: '1.2.3' },
+        },
+      },
+      null,
+      2
+    ),
+    'utf8'
+  );
+  mkdirSync(join(repoDir, 'cloud-run', 'ai-engine'), { recursive: true });
+  writeFileSync(
+    join(repoDir, 'cloud-run', 'ai-engine', 'package.json'),
+    JSON.stringify({ name: 'ai-engine', version: '1.2.3' }, null, 2),
+    'utf8'
+  );
+  writeFileSync(
+    join(repoDir, 'cloud-run', 'ai-engine', 'package-lock.json'),
+    JSON.stringify(
+      {
+        name: 'ai-engine',
+        version: '1.2.3',
+        lockfileVersion: 3,
+        packages: {
+          '': { name: 'ai-engine', version: '1.2.3' },
+        },
+      },
+      null,
+      2
+    ),
+    'utf8'
+  );
+  writeFileSync(
+    join(repoDir, 'CHANGELOG.md'),
+    '# Changelog\n\nAll notable changes to this project will be documented in this file.\n',
+    'utf8'
+  );
+  writeFileSync(
+    join(repoDir, '.versionrc.json'),
+    JSON.stringify(
+      {
+        types: [
+          { type: 'feat', section: 'Features' },
+          { type: 'fix', section: 'Bug Fixes' },
+          { type: 'chore', hidden: true },
+        ],
+      },
+      null,
+      2
+    ),
+    'utf8'
+  );
   runCommand('git', ['-C', repoDir, 'add', 'README.md'], {
     cwd: process.cwd(),
   });
-  runCommand('git', ['-C', repoDir, 'add', 'package.json'], {
-    cwd: process.cwd(),
-  });
+  runCommand('git', ['-C', repoDir, 'add', '.'], { cwd: process.cwd() });
   runCommand('git', ['-C', repoDir, 'commit', '-m', 'init'], {
     cwd: process.cwd(),
   });
@@ -92,26 +147,6 @@ function initReleaseRepo() {
   });
 
   return repoDir;
-}
-
-function createFakeNpx(tempDir: string) {
-  const binDir = join(tempDir, 'bin');
-  mkdirSync(binDir, { recursive: true });
-  const fakeNpxPath = join(binDir, 'npx');
-
-  writeFileSync(
-    fakeNpxPath,
-    [
-      '#!/usr/bin/env bash',
-      'set -euo pipefail',
-      'printf \'%s\\n\' "$@" >> "$NPX_CALL_LOG"',
-      'exit 0',
-      '',
-    ].join('\n'),
-    'utf8'
-  );
-  chmodSync(fakeNpxPath, 0o755);
-  return binDir;
 }
 
 function writeSmokeScript(repoDir: string, bodyLines: string[]) {
@@ -161,29 +196,31 @@ afterEach(() => {
 });
 
 describe('release publish script', () => {
-  it('prints canonical gitlab push hint in dry-run mode', () => {
-    const tempDir = createTempDir('release-publish-dry-run-');
-    const callLog = join(tempDir, 'npx-call.log');
-    const fakeBinDir = createFakeNpx(tempDir);
+  it('prints canonical gitlab push hint in dry-run mode without mutating files', () => {
+    const repoDir = initReleaseRepo();
+    writeFileSync(join(repoDir, 'feature.txt'), 'feature\n', 'utf8');
+    runCommand('git', ['-C', repoDir, 'add', 'feature.txt'], {
+      cwd: process.cwd(),
+    });
+    runCommand('git', ['-C', repoDir, 'commit', '-m', 'feat: add fixture'], {
+      cwd: process.cwd(),
+    });
 
-    const result = runPublish(tempDir, ['minor'], {
+    const result = runPublish(repoDir, ['minor'], {
       DRY_RUN: '1',
       CANONICAL_REMOTE: 'gitlab',
-      NPX_CALL_LOG: callLog,
-      PATH: `${fakeBinDir}:${process.env.PATH || ''}`,
     });
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('🔍 Dry-run 모드');
+    expect(result.stdout).toContain('Release dry-run');
+    expect(result.stdout).toContain('next: 1.3.0');
     expect(result.stdout).toContain(
       'Actual canonical publish path in this repository is: git push --follow-tags gitlab main'
     );
-
-    const loggedArgs = readFileSync(callLog, 'utf8');
-    expect(loggedArgs).toContain('commit-and-tag-version');
-    expect(loggedArgs).toContain('--dry-run');
-    expect(loggedArgs).toContain('--release-as');
-    expect(loggedArgs).toContain('minor');
+    expect(readFileSync(join(repoDir, 'package.json'), 'utf8')).toContain(
+      '"version": "1.2.3"'
+    );
   });
 
   it('fails preflight when remote.pushDefault is not gitlab', () => {
@@ -341,15 +378,10 @@ describe('release publish script', () => {
     ]);
     writeReleaseConsistencyScript(repoDir);
     commitRepoChanges(repoDir, 'add release fixtures');
-    const tempDir = createTempDir('release-publish-bypass-');
-    const callLog = join(tempDir, 'npx-call.log');
-    const fakeBinDir = createFakeNpx(tempDir);
 
     const result = runPublish(repoDir, ['patch'], {
       RELEASE_REQUIRE_DEPLOYED_BASE: 'false',
       RELEASE_VERIFY_PRODUCTION: 'false',
-      NPX_CALL_LOG: callLog,
-      PATH: `${fakeBinDir}:${process.env.PATH || ''}`,
     });
 
     expect(result.status).toBe(0);
@@ -359,7 +391,25 @@ describe('release publish script', () => {
     expect(result.stdout).toContain(
       '⚪ Production verification skipped (RELEASE_VERIFY_PRODUCTION=false)'
     );
-    const loggedArgs = readFileSync(callLog, 'utf8');
-    expect(loggedArgs).toContain('commit-and-tag-version');
+    expect(result.stdout).toContain('Release commit and tag created: v1.2.4');
+    expect(
+      runCommand('git', ['-C', repoDir, 'tag', '--list', 'v1.2.4'], {
+        cwd: process.cwd(),
+      }).stdout.trim()
+    ).toBe('v1.2.4');
+    expect(
+      JSON.parse(readFileSync(join(repoDir, 'package.json'), 'utf8')).version
+    ).toBe('1.2.4');
+    expect(
+      JSON.parse(
+        readFileSync(
+          join(repoDir, 'cloud-run', 'ai-engine', 'package.json'),
+          'utf8'
+        )
+      ).version
+    ).toBe('1.2.4');
+    expect(readFileSync(join(repoDir, 'CHANGELOG.md'), 'utf8')).toContain(
+      '## [1.2.4]'
+    );
   });
 });
