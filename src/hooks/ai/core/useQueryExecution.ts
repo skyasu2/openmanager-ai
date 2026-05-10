@@ -12,6 +12,7 @@ import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
+import { getOffDomainGuardrail } from '@/lib/ai/off-domain-guard';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import type { RouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
@@ -215,8 +216,53 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       // Redirect 이벤트 처리를 위해 현재 쿼리 저장
       refs.currentQuery.current = trimmedQuery;
 
-      // 1. 복잡도 분석 + 의도 기반 Job Queue 강제 라우팅
       const hasAttachments = Boolean(attachments?.length);
+      const offDomainGuardrail = hasAttachments
+        ? null
+        : getOffDomainGuardrail(trimmedQuery);
+
+      if (offDomainGuardrail) {
+        const assistantMessage: UIMessage = {
+          id: generateMessageId('assistant'),
+          role: 'assistant',
+          parts: [
+            {
+              type: 'text',
+              text: offDomainGuardrail.response,
+            },
+          ],
+        };
+        const nextMessages: UIMessage[] = isRetry
+          ? [assistantMessage]
+          : [
+              {
+                id: generateMessageId('user'),
+                role: 'user',
+                parts: [{ type: 'text', text: trimmedQuery }],
+              },
+              assistantMessage,
+            ];
+
+        setMessages((prev) => [...sanitizeMessages(prev), ...nextMessages]);
+        setState((prev) => ({
+          ...prev,
+          mode: 'streaming',
+          complexity: 'simple',
+          progress: null,
+          jobId: null,
+          isLoading: false,
+          error: null,
+          errorDetails: null,
+          warning: offDomainGuardrail.warning,
+          processingTime: 0,
+          clarification: null,
+          warmingUp: false,
+          estimatedWaitSeconds: 0,
+        }));
+        return;
+      }
+
+      // 1. 복잡도 분석 + 의도 기반 Job Queue 강제 라우팅
       const routingDecision = buildFrontendQueryRoutingDecision({
         query: trimmedQuery,
         complexityThreshold,
@@ -232,25 +278,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         routeDecision,
       } = routingDecision;
 
-      // 오프도메인 감지: best-effort 모드로 처리하되 실패 시 요청 자체는 막지 않는다.
-      void Promise.resolve()
-        .then(() => classifyQuery(trimmedQuery))
-        .then((classification) => {
-          if (!classification?.isOffDomain) return;
-
-          setState((prev) => ({
-            ...prev,
-            warning:
-              prev.warning ??
-              '참고: 저는 서버 운영·모니터링 중심 AI입니다. 일반 정보 답변은 정확도와 최신성이 제한될 수 있습니다.',
-          }));
-        })
-        .catch((error) => {
-          logger.warn(
-            '[HybridAI] Query classification failed, continuing without off-domain disclaimer',
-            error
-          );
-        });
       const isComplex = queryMode === 'job-queue';
       onRouteDecision?.(routeDecision);
 

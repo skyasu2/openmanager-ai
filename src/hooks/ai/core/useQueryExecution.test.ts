@@ -227,45 +227,46 @@ describe('useQueryExecution', () => {
     expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
   });
 
-  it('off-domain query면 best-effort disclaimer warning을 주입한다', async () => {
+  it('off-domain live fact query는 LLM 전송 없이 deterministic guard 응답을 남긴다', async () => {
     process.env.NODE_ENV = 'production';
     const deps = createDeps();
 
     const { result } = renderHook(() => useQueryExecution(deps));
 
     act(() => {
-      result.current.executeQuery('오늘 서울 날씨 알려줘');
+      result.current.executeQuery('비트코인 지금 가격 알려줘');
     });
 
-    await waitFor(() => {
-      const updaterCalls = deps.setState.mock.calls
-        .map(([updater]) => updater)
-        .filter(
-          (updater): updater is (prev: HybridQueryState) => HybridQueryState =>
-            typeof updater === 'function'
-        );
+    await Promise.resolve();
 
-      const disclaimerUpdater = updaterCalls.find((updater) => {
-        const next = updater({
-          mode: 'streaming',
-          complexity: null,
-          progress: null,
-          jobId: null,
-          isLoading: false,
-          error: null,
-          errorDetails: null,
-          clarification: null,
-          warning: null,
-          processingTime: 0,
-          warmingUp: false,
-          estimatedWaitSeconds: 0,
-        });
+    expect(deps.sendMessage).not.toHaveBeenCalled();
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
 
-        return next.warning?.includes('서버 운영·모니터링 중심 AI');
-      });
+    const messagesUpdater = deps.setMessages.mock.calls.at(-1)?.[0];
+    expect(typeof messagesUpdater).toBe('function');
 
-      expect(disclaimerUpdater).toBeDefined();
-    });
+    const nextMessages = (
+      messagesUpdater as (prev: UIMessage[]) => UIMessage[]
+    )([]);
+    expect(nextMessages).toHaveLength(2);
+    expect(nextMessages[0]?.role).toBe('user');
+    expect(nextMessages[1]?.role).toBe('assistant');
+    expect(nextMessages[1]?.parts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'text',
+          text: expect.stringContaining('실시간'),
+        }),
+      ])
+    );
+
+    const stateUpdater = deps.setState.mock.calls.at(-1)?.[0];
+    expect(typeof stateUpdater).toBe('function');
+    const nextState = (
+      stateUpdater as (prev: HybridQueryState) => HybridQueryState
+    )(createBaseState());
+    expect(nextState.isLoading).toBe(false);
+    expect(nextState.warning).toContain('서버 운영');
   });
 
   it('thinking mode면 streaming 후보 쿼리도 job-queue로 더 적극적으로 보낸다', async () => {

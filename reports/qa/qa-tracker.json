@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T07:26:58.691Z"
+    "updatedAt": "2026-05-10T08:01:49.702Z"
   },
   "sequence": {
-    "nextRunNumber": 459
+    "nextRunNumber": 460
   },
   "summary": {
-    "totalRecordedRuns": 456,
+    "totalRecordedRuns": 457,
     "totalRuns": 375,
-    "excludedRuns": 81,
+    "excludedRuns": 82,
     "totalChecks": 3331,
     "totalPassed": 3204,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 521,
+    "completedItems": 524,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 25,
+    "wontFixItems": 22,
     "expertDomainsTracked": 13,
-    "expertDomainsOpenGaps": 2,
+    "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0458",
     "lastRecordedAt": "2026-05-10T07:26:58.691Z",
-    "latestRecordedRunId": "QA-20260510-0458",
-    "latestRecordedAt": "2026-05-10T07:26:58.691Z"
+    "latestRecordedRunId": "QA-20260510-0459",
+    "latestRecordedAt": "2026-05-10T08:01:49.702Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12766,73 +12766,73 @@
       "id": "ai-non-it-live-fact-guard",
       "title": "Prevent unsupported live/current factual claims for off-domain questions",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260510-0458",
       "firstSeenAt": "2026-05-10T07:26:58.691Z",
-      "lastSeenRunId": "QA-20260510-0458",
-      "lastSeenAt": "2026-05-10T07:26:58.691Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260510-0459",
+      "lastSeenAt": "2026-05-10T08:01:49.702Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Prompt '비트코인 지금 가격 알려줘' returned an unsupported exact value: '1,234,567 KRW'.",
+      "lastEvidence": "getOffDomainGuardrail live_fact + useQueryExecution short-circuit regression",
       "lastNote": "Return limitation/source guidance unless an approved live data tool is available.",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-05-10T07:26:58.691Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T08:01:49.702Z"
     },
     "ai-non-it-action-claim-guard": {
       "id": "ai-non-it-action-claim-guard",
       "title": "Prevent false completion claims for external action requests",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260510-0458",
       "firstSeenAt": "2026-05-10T07:26:58.691Z",
-      "lastSeenRunId": "QA-20260510-0458",
-      "lastSeenAt": "2026-05-10T07:26:58.691Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260510-0459",
+      "lastSeenAt": "2026-05-10T08:01:49.702Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Prompt '내일 오후 3시에 팀 회의 일정 잡아줘' returned '회의가 잡혔습니다' without a calendar integration.",
+      "lastEvidence": "external_action guard blocks calendar/reservation/email execution claims",
       "lastNote": "Return a copyable event draft and explain that direct scheduling is unavailable.",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-05-10T07:26:58.691Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T08:01:49.702Z"
     },
     "ai-non-it-local-recommendation-quality": {
       "id": "ai-non-it-local-recommendation-quality",
       "title": "Improve local recommendation fallback quality",
       "priority": "P3",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260510-0458",
       "firstSeenAt": "2026-05-10T07:26:58.691Z",
-      "lastSeenRunId": "QA-20260510-0458",
-      "lastSeenAt": "2026-05-10T07:26:58.691Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260510-0459",
+      "lastSeenAt": "2026-05-10T08:01:49.702Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Prompt '강남역 근처 맛집 추천해줘' returned generic placeholder-like category names without sources or freshness caveat.",
+      "lastEvidence": "local_recommendation guard states live venue/review limitations",
       "lastNote": "Ask for constraints or provide a clearly caveated generic checklist instead of invented venue-like claims.",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-05-10T07:26:58.691Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T08:01:49.702Z"
     }
   },
   "runs": [
@@ -48858,6 +48858,75 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 3
+    },
+    {
+      "runId": "QA-20260510-0459",
+      "recordedAt": "2026-05-10T08:01:49.702Z",
+      "recordedAtKst": "2026-05-10 17:01:49 KST",
+      "title": "Local QA - AI Assistant Off-Domain Guardrail",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0459.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "mocked/local deterministic tests",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "4581984120a6540c8abbeb7dd4c4f16cb06caa4b"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI Assistant input guard",
+        "useQueryExecution streaming/job dispatch boundary",
+        "query-classifier off-domain classification"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "live LLM call",
+        "external weather/price/calendar integrations"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "비 IT live fact, 외부 action, 지역 추천 질문을 deterministic guard와 회귀 테스트로 고정",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "검증된 tool 실행 없이 외부 작업 완료를 주장하는 경로를 입력 경계에서 차단",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -48866,17 +48935,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 216,
-      "appropriateCount": 188,
+      "seenCount": 217,
+      "appropriateCount": 189,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 38,
-      "lastRunId": "QA-20260510-0458",
-      "lastSeenAt": "2026-05-10T07:26:58.691Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Core monitoring prompts passed, but non-IT live/current fact and external action prompts can produce unsupported claims.",
-      "lastNextAction": "Add deterministic off-domain guard templates and regression tests for live facts, action requests, and local recommendations."
+      "lastRunId": "QA-20260510-0459",
+      "lastSeenAt": "2026-05-10T08:01:49.702Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "비 IT live fact, 외부 action, 지역 추천 질문을 deterministic guard와 회귀 테스트로 고정",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -48900,17 +48969,17 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 58,
-      "appropriateCount": 43,
+      "seenCount": 59,
+      "appropriateCount": 44,
       "partialCount": 15,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260510-0458",
-      "lastSeenAt": "2026-05-10T07:26:58.691Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The assistant falsely claimed a calendar event was scheduled without an integration/tool result, which is a capability overclaim.",
-      "lastNextAction": "Block action-completion claims unless a verified tool execution exists."
+      "lastRunId": "QA-20260510-0459",
+      "lastSeenAt": "2026-05-10T08:01:49.702Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "검증된 tool 실행 없이 외부 작업 완료를 주장하는 경로를 입력 경계에서 차단",
+      "lastNextAction": ""
     },
     "sre-devops": {
       "domainId": "sre-devops",

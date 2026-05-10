@@ -1,0 +1,121 @@
+import { hasExplicitServerReference } from './server-scope-detection';
+
+export type OffDomainGuardCategory =
+  | 'live_fact'
+  | 'external_action'
+  | 'local_recommendation'
+  | 'personal_general';
+
+export interface OffDomainGuardrailResult {
+  category: OffDomainGuardCategory;
+  shouldShortCircuit: true;
+  warning: string;
+  response: string;
+}
+
+const OFF_DOMAIN_WARNING =
+  '서버 운영·모니터링 범위를 벗어난 질문이라 실시간 조회나 외부 실행 없이 제한된 안내만 제공합니다.';
+
+const OPERATIONAL_CONTEXT_PATTERN =
+  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|krl|rag/i;
+
+const EXTERNAL_ACTION_PATTERN =
+  /((캘린더|calendar|일정|회의|미팅).*(잡아|등록|추가|넣어|만들어|생성|예약|schedule))|(예약해|예약\s*(잡아|잡|해줘|해)|\bbook\b|\breserve\b)|(메일|이메일|email|문자|sms|슬랙|slack).*(보내|발송|전송|공유|send)/i;
+
+const LIVE_FACT_PATTERN =
+  /날씨|weather|뉴스|news|환율|exchange\s*rate|주가|stock\s*price|시세|비트코인|bitcoin|btc|코인|crypto|현재가|지금\s*(가격|얼마)|가격\s*(알려|찾아|조회)|실시간/i;
+
+const LOCAL_RECOMMENDATION_PATTERN =
+  /(맛집|restaurant|카페|cafe|병원|약국|장소|근처).*(추천|찾아|알려)|(추천).*(맛집|restaurant|카페|cafe|병원|약국|장소|근처)/i;
+
+const PERSONAL_GENERAL_PATTERN =
+  /운세|horoscope|점심|저녁|아침|메뉴|뭐\s*먹|번역|translate|일정\s*정리/i;
+
+function hasOperationalContext(query: string): boolean {
+  return (
+    hasExplicitServerReference(query) || OPERATIONAL_CONTEXT_PATTERN.test(query)
+  );
+}
+
+function buildResponse(category: OffDomainGuardCategory): string {
+  switch (category) {
+    case 'live_fact':
+      return [
+        '실시간 외부 조회 도구가 연결되어 있지 않아 현재 가격, 날씨, 뉴스, 환율 같은 값을 확인할 수 없습니다.',
+        '정확한 현재값은 공식 앱, 거래소, 기상청, 금융 정보 서비스에서 확인해 주세요.',
+        '',
+        'OpenManager 범위 안에서는 서버 CPU, 메모리, 디스크, 알림, 로그, 토폴로지, 장애 징후를 바로 분석할 수 있습니다.',
+      ].join('\n');
+    case 'external_action':
+      return [
+        '캘린더, 예약, 메일, 문자, Slack 같은 외부 시스템을 직접 실행할 수 없습니다.',
+        '대신 아래처럼 사용자가 복사해서 등록하거나 보낼 수 있는 초안만 제공할 수 있습니다.',
+        '',
+        '- 제목: 요청하신 작업',
+        '- 내용: 필요한 참석자, 시간, 장소, 목적을 확인한 뒤 외부 도구에서 직접 등록해 주세요.',
+      ].join('\n');
+    case 'local_recommendation':
+      return [
+        '최신 영업 여부, 위치, 대기 시간, 리뷰 데이터를 확인할 수 없습니다.',
+        '장소 추천은 지도/리뷰 서비스에서 현재 정보를 확인해야 합니다.',
+        '',
+        '일반 기준으로는 접근성, 최근 리뷰, 영업시간, 혼잡도, 예산, 예약 가능 여부를 비교해 고르면 됩니다.',
+      ].join('\n');
+    case 'personal_general':
+      return [
+        '저는 서버 운영·모니터링 중심 AI라 이 질문은 정확도와 최신성이 제한됩니다.',
+        '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률, 조치 명령어를 근거와 함께 분석할 수 있습니다.',
+      ].join('\n');
+  }
+}
+
+export function getOffDomainGuardrail(
+  query: string
+): OffDomainGuardrailResult | null {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) {
+    return null;
+  }
+
+  if (EXTERNAL_ACTION_PATTERN.test(trimmedQuery)) {
+    return {
+      category: 'external_action',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('external_action'),
+    };
+  }
+
+  if (hasOperationalContext(trimmedQuery)) {
+    return null;
+  }
+
+  if (LIVE_FACT_PATTERN.test(trimmedQuery)) {
+    return {
+      category: 'live_fact',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('live_fact'),
+    };
+  }
+
+  if (LOCAL_RECOMMENDATION_PATTERN.test(trimmedQuery)) {
+    return {
+      category: 'local_recommendation',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('local_recommendation'),
+    };
+  }
+
+  if (PERSONAL_GENERAL_PATTERN.test(trimmedQuery)) {
+    return {
+      category: 'personal_general',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('personal_general'),
+    };
+  }
+
+  return null;
+}
