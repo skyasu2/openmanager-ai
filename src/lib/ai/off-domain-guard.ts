@@ -4,7 +4,8 @@ export type OffDomainGuardCategory =
   | 'live_fact'
   | 'external_action'
   | 'local_recommendation'
-  | 'personal_general';
+  | 'personal_general'
+  | 'general_coding';
 
 export interface OffDomainGuardrailResult {
   category: OffDomainGuardCategory;
@@ -17,7 +18,7 @@ const OFF_DOMAIN_WARNING =
   '서버 운영·모니터링 범위를 벗어난 질문이라 실시간 조회나 외부 실행 없이 제한된 안내만 제공합니다.';
 
 const OPERATIONAL_CONTEXT_PATTERN =
-  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|krl|rag/i;
+  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|운영|점검|명령어|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|promql|otel|runbook|krl|rag/i;
 
 const EXTERNAL_ACTION_PATTERN =
   /((캘린더|calendar|일정|회의|미팅).*(잡아|등록|추가|넣어|만들어|생성|예약|schedule))|(예약해|예약\s*(잡아|잡|해줘|해)|\bbook\b|\breserve\b)|(메일|이메일|email|문자|sms|슬랙|slack).*(보내|발송|전송|공유|send)/i;
@@ -31,9 +32,22 @@ const LOCAL_RECOMMENDATION_PATTERN =
 const PERSONAL_GENERAL_PATTERN =
   /운세|horoscope|점심|저녁|아침|메뉴|뭐\s*먹|번역|translate|일정\s*정리/i;
 
+const GENERAL_CODING_TOPIC_PATTERN =
+  /파이썬|python|자바스크립트|javascript|typescript|java|c\+\+|c#|golang|rust|leetcode|백준|프로그래머스|two\s*sum|fibonacci|피보나치|algorithm|알고리즘|코딩|코드/i;
+
+const GENERAL_CODING_REQUEST_PATTERN =
+  /짜줘|작성|만들|구현|풀어|풀어줘|생성|write|generate|implement|solve/i;
+
 function hasOperationalContext(query: string): boolean {
   return (
     hasExplicitServerReference(query) || OPERATIONAL_CONTEXT_PATTERN.test(query)
+  );
+}
+
+function isGeneralCodingRequest(query: string): boolean {
+  return (
+    GENERAL_CODING_TOPIC_PATTERN.test(query) &&
+    GENERAL_CODING_REQUEST_PATTERN.test(query)
   );
 }
 
@@ -66,6 +80,13 @@ function buildResponse(category: OffDomainGuardCategory): string {
         '저는 서버 운영·모니터링 중심 AI라 이 질문은 정확도와 최신성이 제한됩니다.',
         '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률, 조치 명령어를 근거와 함께 분석할 수 있습니다.',
       ].join('\n');
+    case 'general_coding':
+      return [
+        'OpenManager는 서버 운영·모니터링 중심 AI입니다.',
+        '일반 알고리즘 풀이, 학습용 코드 완성, 범용 코딩 문제 해결은 지원 범위 밖입니다.',
+        '',
+        '다만 로그 파싱, 모니터링 자동화, 운영 점검 스크립트, PromQL, 장애 대응 runbook처럼 서버 운영과 직접 연결된 코드는 도울 수 있습니다.',
+      ].join('\n');
   }
 }
 
@@ -88,6 +109,15 @@ export function getOffDomainGuardrail(
 
   if (hasOperationalContext(trimmedQuery)) {
     return null;
+  }
+
+  if (isGeneralCodingRequest(trimmedQuery)) {
+    return {
+      category: 'general_coding',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('general_coding'),
+    };
   }
 
   if (LIVE_FACT_PATTERN.test(trimmedQuery)) {
