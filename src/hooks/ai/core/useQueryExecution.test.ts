@@ -4,13 +4,19 @@
 
 import type { UIMessage } from '@ai-sdk/react';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { extractEntities } from '@/lib/ai/entity-extractor';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { QueryExecutionDeps } from './useQueryExecution';
 import { useQueryExecution } from './useQueryExecution';
 
+vi.mock('@/lib/ai/entity-extractor', () => ({
+  extractEntities: vi.fn(async () => ({ confidence: 0 })),
+}));
+
 describe('useQueryExecution', () => {
   const originalNodeEnv = process.env.NODE_ENV;
+  const mockExtractEntities = vi.mocked(extractEntities);
   const createBaseState = (): HybridQueryState => ({
     mode: 'streaming',
     complexity: null,
@@ -29,6 +35,11 @@ describe('useQueryExecution', () => {
   afterEach(() => {
     process.env.NODE_ENV = originalNodeEnv;
     vi.useRealTimers();
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockExtractEntities.mockResolvedValue({ confidence: 0 });
   });
 
   function createDeps(): QueryExecutionDeps {
@@ -267,6 +278,49 @@ describe('useQueryExecution', () => {
     )(createBaseState());
     expect(nextState.isLoading).toBe(false);
     expect(nextState.warning).toContain('서버 운영');
+  });
+
+  it('sendQuery off-domain query는 entity extraction 호출 전에 guard로 종료한다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = createDeps();
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery('비트코인 지금 가격 알려줘');
+    });
+    await Promise.resolve();
+
+    expect(mockExtractEntities).not.toHaveBeenCalled();
+    expect(deps.sendMessage).not.toHaveBeenCalled();
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+  });
+
+  it('clarification 후보 운영 질의에서 신뢰도 높은 entity가 있으면 바로 실행한다', async () => {
+    process.env.NODE_ENV = 'production';
+    mockExtractEntities.mockResolvedValue({
+      server: 'api-was-dc1-01',
+      confidence: 92,
+    });
+    const deps = createDeps();
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery('서버 상태 확인');
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockExtractEntities).toHaveBeenCalledWith('서버 상태 확인');
+    const clarificationStates = deps.setState.mock.calls
+      .map(([updater]) =>
+        typeof updater === 'function' ? updater(createBaseState()) : updater
+      )
+      .map((state) => state.clarification)
+      .filter(Boolean);
+
+    expect(clarificationStates).toHaveLength(0);
   });
 
   it('thinking mode면 streaming 후보 쿼리도 job-queue로 더 적극적으로 보낸다', async () => {

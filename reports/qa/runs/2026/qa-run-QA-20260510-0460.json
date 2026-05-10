@@ -1,0 +1,124 @@
+{
+  "runId": "QA-20260510-0460",
+  "recordedAt": "2026-05-10T09:09:14.056Z",
+  "recordedAtKst": "2026-05-10 18:09:14 KST",
+  "runTitle": "Local QA - AI NLQ Entity Extraction Hardening",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "mocked/local deterministic tests",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "eb8f7be2cb6e432a860f6eed9152abb03ffda27f"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI NLQ entity extraction API auth/rate-limit boundary",
+    "AI Assistant sendQuery off-domain guard order",
+    "clarification entity confidence trust boundary",
+    "entity extractor client fallback and normalization"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "live Groq call",
+    "release tag deployment"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "off-domain guard ordering, entity threshold, fallback, route wrapper regressions are covered by deterministic tests",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "new Groq-backed extraction route is protected by auth/rate-limit wrappers before model invocation",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "free-tier-sensitive Groq calls are now skipped for off-domain guard hits and limited to clarification candidates",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-nlq-entity-route-auth-rate-limit",
+      "title": "Protect NLQ entity extraction route with auth and rate limiting",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "route.test verifies auth/rate-limit denial before generateObject",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-nlq-off-domain-extractor-skip",
+      "title": "Skip entity extraction for off-domain guarded queries",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "useQueryExecution test verifies bitcoin query does not call extractEntities",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-nlq-entity-confidence-boundary",
+      "title": "Trust only known high-confidence extracted entities",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "entity normalizer and clarification tests cover unknown values and low-confidence server extraction",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted node Vitest: route/entity-extractor/clarification tests 50/50 passed",
+    "Targeted DOM Vitest: useQueryExecution tests 16/16 passed",
+    "npm run type-check passed",
+    "npm run test:quick passed",
+    "npm run test:contract passed 24/24",
+    "npm run lint passed with existing qa-tracker.json max-size info only",
+    "npm run docs:budget passed; active docs 72/90",
+    "git diff --check passed",
+    "Production 재검증은 semver tag 배포 이후 Vercel AI Assistant QA에서 수행"
+  ],
+  "links": []
+}

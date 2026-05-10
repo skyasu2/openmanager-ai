@@ -5,7 +5,10 @@
  * Best Practice: 명확화 다이얼로그로 성공률 67% → 91% 향상 가능
  */
 
-import type { ExtractedEntities } from './entity-extractor';
+import {
+  ENTITY_CONFIDENCE_THRESHOLD,
+  type ExtractedEntities,
+} from './entity-extractor';
 import type { QueryClassification } from './query-classifier';
 import { needsClarification } from './query-classifier';
 import { hasExplicitServerReference } from './server-scope-detection';
@@ -88,6 +91,15 @@ function hasSpecificConditions(query: string): boolean {
   );
 }
 
+function hasTrustedEntity(
+  entities: ExtractedEntities | undefined,
+  key: 'server' | 'metric' | 'timeRange'
+): boolean {
+  return Boolean(
+    entities?.[key] && entities.confidence >= ENTITY_CONFIDENCE_THRESHOLD
+  );
+}
+
 /**
  * 쿼리 분석 결과를 바탕으로 명확화가 필요한지 판단하고 옵션 생성
  */
@@ -117,7 +129,7 @@ export function generateClarification(
   }
 
   // LLM entity extraction으로 서버가 이미 특정된 경우 명확화 불필요
-  if (entities?.server) {
+  if (hasTrustedEntity(entities, 'server')) {
     return null;
   }
 
@@ -141,7 +153,7 @@ export function generateClarification(
     SERVER_PATTERNS.missing.test(query) &&
     !SERVER_PATTERNS.hasSpecific.test(query) &&
     !hasExplicitServerReference(query) &&
-    !entities?.server
+    !hasTrustedEntity(entities, 'server')
   ) {
     reasons.push('특정 서버가 명시되지 않음');
     options.push(
@@ -182,7 +194,7 @@ export function generateClarification(
   if (
     TIME_PATTERNS.missing.test(query) &&
     !TIME_PATTERNS.hasSpecific.test(query) &&
-    !entities?.timeRange
+    !hasTrustedEntity(entities, 'timeRange')
   ) {
     reasons.push('시간 범위가 명시되지 않음');
     options.push(
@@ -211,7 +223,7 @@ export function generateClarification(
   if (
     METRIC_PATTERNS.missing.test(query) &&
     !METRIC_PATTERNS.hasSpecific.test(query) &&
-    !entities?.metric
+    !hasTrustedEntity(entities, 'metric')
   ) {
     reasons.push('확인할 메트릭이 명시되지 않음');
     options.push(

@@ -13,12 +13,12 @@
  * Pattern follows server-services-map.ts: static config, keyed by serverId.
  */
 
-type ServerRegistryEntry = {
+type ServerRegistryEntry = Readonly<{
   serverId: string; // = Prometheus instance hostname part
   ip: string; // = Prometheus target address (static_configs.targets)
-};
+}>;
 
-const SERVER_REGISTRY: ServerRegistryEntry[] = [
+export const SERVER_REGISTRY = [
   // DC1-AZ1/AZ2 subnet (10.100.1.0/24)
   { serverId: 'lb-haproxy-dc1-01', ip: '10.100.1.1' },
   { serverId: 'lb-haproxy-dc1-03', ip: '10.100.1.2' },
@@ -39,7 +39,9 @@ const SERVER_REGISTRY: ServerRegistryEntry[] = [
   { serverId: 'api-was-dc1-03', ip: '10.100.2.21' },
   { serverId: 'db-mysql-dc1-backup', ip: '10.100.2.31' },
   { serverId: 'storage-s3gw-dc1-01', ip: '10.100.2.51' },
-];
+] as const satisfies readonly ServerRegistryEntry[];
+
+export type RegisteredServerId = (typeof SERVER_REGISTRY)[number]['serverId'];
 
 // O(1) lookup map, built once at module load
 const registryMap = new Map<string, string>(
@@ -54,6 +56,6 @@ export function getServerIP(serverId: string): string | undefined {
   return registryMap.get(serverId);
 }
 
-export function getRegisteredServerIds(): string[] {
+export function getRegisteredServerIds(): RegisteredServerId[] {
   return SERVER_REGISTRY.map((entry) => entry.serverId);
 }

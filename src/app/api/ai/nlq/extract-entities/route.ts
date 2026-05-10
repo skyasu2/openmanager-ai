@@ -7,9 +7,17 @@
 
 import { createGroq } from '@ai-sdk/groq';
 import { generateObject } from 'ai';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { SYSTEM_PROMPT } from '@/lib/ai/entity-extractor';
+import {
+  EXTRACTED_METRICS,
+  EXTRACTED_TIME_RANGES,
+  KNOWN_ENTITY_SERVER_IDS,
+  SYSTEM_PROMPT,
+} from '@/lib/ai/entity-extractor';
+import { withAuth } from '@/lib/auth/api-auth';
+import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 
 export const runtime = 'nodejs';
 export const maxDuration = 10;
@@ -17,13 +25,13 @@ export const maxDuration = 10;
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
 const EntitySchema = z.object({
-  server: z.string().nullable().optional(),
-  metric: z.enum(['cpu', 'memory', 'disk', 'network']).nullable().optional(),
-  timeRange: z.enum(['1h', '6h', '24h', '7d']).nullable().optional(),
+  server: z.enum(KNOWN_ENTITY_SERVER_IDS).nullable().optional(),
+  metric: z.enum(EXTRACTED_METRICS).nullable().optional(),
+  timeRange: z.enum(EXTRACTED_TIME_RANGES).nullable().optional(),
   confidence: z.number().min(0).max(100),
 });
 
-export async function POST(request: Request) {
+async function postHandler(request: NextRequest) {
   try {
     const { query } = await request.json();
 
@@ -48,3 +56,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ confidence: 0 }, { status: 200 });
   }
 }
+
+export const POST = withRateLimit(
+  rateLimiters.aiAnalysis,
+  withAuth(postHandler)
+);

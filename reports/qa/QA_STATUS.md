@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 17:01:49 KST
+> Generated at: 2026-05-10 18:16:42 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 457 |
+| Total Recorded Runs | 459 |
 | Total Runs (Counted) | 375 |
-| Non-counted Runs | 82 |
+| Non-counted Runs | 84 |
 | Total Checks | 3331 |
 | Passed | 3204 |
 | Failed | 117 |
-| Completed Items | 524 |
+| Completed Items | 528 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0458 (2026-05-10T07:26:58.691Z) |
-| Latest Recorded Run | QA-20260510-0459 (2026-05-10T08:01:49.702Z) |
+| Latest Recorded Run | QA-20260510-0461 (2026-05-10T09:16:42.071Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,12 +34,13 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0459 (2026-05-10T08:01:49.702Z)
+Latest run: QA-20260510-0461 (2026-05-10T09:16:42.071Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -49,7 +50,7 @@ Latest run: QA-20260510-0459 (2026-05-10T08:01:49.702Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T08:01:49.702Z -> 2026-05-10T08:01:49.702Z (24h)
+- Window: 2026-05-09T09:16:42.071Z -> 2026-05-10T09:16:42.071Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -60,7 +61,7 @@ Latest run: QA-20260510-0459 (2026-05-10T08:01:49.702Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T08:01:49.702Z -> 2026-05-10T08:01:49.702Z (24h)
+- Window: 2026-05-09T09:16:42.071Z -> 2026-05-10T09:16:42.071Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,10 +75,10 @@ Latest run: QA-20260510-0459 (2026-05-10T08:01:49.702Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 45819841
+- Deployment: SHA eb8f7be2
 - Coverage Packs: ai-core
-- Covered Surfaces: AI Assistant input guard, useQueryExecution streaming/job dispatch boundary, query-classifier off-domain classification
-- Skipped Surfaces: Vercel production browser QA, live LLM call, external weather/price/calendar integrations
+- Covered Surfaces: AI NLQ entity extraction API auth/rate-limit boundary, AI Assistant sendQuery off-domain guard order, clarification entity confidence trust boundary, entity extractor client fallback and normalization, entity extractor server inventory SSOT sync
+- Skipped Surfaces: Vercel production browser QA, live Groq call, release tag deployment
 
 ## Links (Latest Run)
 
@@ -243,6 +244,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-memory-topn-broad-ranking-korean-response: AI memory TOP-N broad ranking should answer in Korean without server_id clarification (completed 1회, last QA-20260510-0440)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
+- ai-nlq-entity-confidence-boundary: Trust only known high-confidence extracted entities (completed 2회, last QA-20260510-0461)
+- ai-nlq-entity-route-auth-rate-limit: Protect NLQ entity extraction route with auth and rate limiting (completed 2회, last QA-20260510-0461)
+- ai-nlq-entity-server-inventory-sync: Use server registry as NLQ entity extraction server inventory (completed 1회, last QA-20260510-0461)
+- ai-nlq-off-domain-extractor-skip: Skip entity extraction for off-domain guarded queries (completed 2회, last QA-20260510-0461)
 - ai-non-it-action-claim-guard: Prevent false completion claims for external action requests (completed 1회, last QA-20260510-0459)
 - ai-non-it-live-fact-guard: Prevent unsupported live/current factual claims for off-domain questions (completed 1회, last QA-20260510-0459)
 - ai-non-it-local-recommendation-quality: Improve local recommendation fallback quality (completed 1회, last QA-20260510-0459)
@@ -702,6 +707,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0461 | 2026-05-10T09:16:42.071Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening Registry Sync | 9 | 4 | 0 | 0 | 0 | 0 |
+| QA-20260510-0460 | 2026-05-10T09:09:14.056Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening | 8 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0459 | 2026-05-10T08:01:49.702Z | targeted | no | no | Local QA - AI Assistant Off-Domain Guardrail | 9 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0458 | 2026-05-10T07:26:58.691Z | targeted | no | yes | v8.11.122 Vercel AI Assistant Edge / Non-IT Prompt QA | 7 | 1 | 0 | 0 | 3 | 2 |
 | QA-20260510-0457 | 2026-05-10T05:49:28.256Z | targeted | yes | yes | v8.11.122 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -720,5 +727,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0444 | 2026-05-10T00:55:24.249Z | targeted | no | yes | Local AI Retrieval Dead Runtime Cleanup QA | 12 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260510-0443 | 2026-05-10T00:32:59.649Z | targeted | no | yes | Local AI Retrieval GraphRAG Tombstone Route Removal QA | 10 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260510-0442 | 2026-05-10T00:14:02.520Z | targeted | no | yes | Local AI Retrieval Legacy Graph Weight Cleanup QA | 9 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260510-0441 | 2026-05-09T23:12:15.456Z | targeted | no | yes | Local AI Engine Command Guidance Resource Intent QA | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260510-0440 | 2026-05-09T22:47:17.841Z | targeted | no | yes | Local AI Engine Memory TOP-N Routing Fix QA | 4 | 1 | 0 | 0 | 0 | 0 |

@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T08:01:49.702Z"
+    "updatedAt": "2026-05-10T09:16:42.071Z"
   },
   "sequence": {
-    "nextRunNumber": 460
+    "nextRunNumber": 462
   },
   "summary": {
-    "totalRecordedRuns": 457,
+    "totalRecordedRuns": 459,
     "totalRuns": 375,
-    "excludedRuns": 82,
+    "excludedRuns": 84,
     "totalChecks": 3331,
     "totalPassed": 3204,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 524,
+    "completedItems": 528,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0458",
     "lastRecordedAt": "2026-05-10T07:26:58.691Z",
-    "latestRecordedRunId": "QA-20260510-0459",
-    "latestRecordedAt": "2026-05-10T08:01:49.702Z"
+    "latestRecordedRunId": "QA-20260510-0461",
+    "latestRecordedAt": "2026-05-10T09:16:42.071Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12833,6 +12833,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-10T08:01:49.702Z"
+    },
+    "ai-nlq-entity-route-auth-rate-limit": {
+      "id": "ai-nlq-entity-route-auth-rate-limit",
+      "title": "Protect NLQ entity extraction route with auth and rate limiting",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0460",
+      "firstSeenAt": "2026-05-10T09:09:14.056Z",
+      "lastSeenRunId": "QA-20260510-0461",
+      "lastSeenAt": "2026-05-10T09:16:42.071Z",
+      "seenCount": 2,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "route.test verifies auth/rate-limit denial before generateObject",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T09:16:42.071Z"
+    },
+    "ai-nlq-off-domain-extractor-skip": {
+      "id": "ai-nlq-off-domain-extractor-skip",
+      "title": "Skip entity extraction for off-domain guarded queries",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0460",
+      "firstSeenAt": "2026-05-10T09:09:14.056Z",
+      "lastSeenRunId": "QA-20260510-0461",
+      "lastSeenAt": "2026-05-10T09:16:42.071Z",
+      "seenCount": 2,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "useQueryExecution test verifies bitcoin query does not call extractEntities",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T09:16:42.071Z"
+    },
+    "ai-nlq-entity-confidence-boundary": {
+      "id": "ai-nlq-entity-confidence-boundary",
+      "title": "Trust only known high-confidence extracted entities",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0460",
+      "firstSeenAt": "2026-05-10T09:09:14.056Z",
+      "lastSeenRunId": "QA-20260510-0461",
+      "lastSeenAt": "2026-05-10T09:16:42.071Z",
+      "seenCount": 2,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "entity normalizer and clarification tests cover unknown values and low-confidence server extraction",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T09:16:42.071Z"
+    },
+    "ai-nlq-entity-server-inventory-sync": {
+      "id": "ai-nlq-entity-server-inventory-sync",
+      "title": "Use server registry as NLQ entity extraction server inventory",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0461",
+      "firstSeenAt": "2026-05-10T09:16:42.071Z",
+      "lastSeenRunId": "QA-20260510-0461",
+      "lastSeenAt": "2026-05-10T09:16:42.071Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "entity-extractor test verifies KNOWN_ENTITY_SERVER_IDS equals getRegisteredServerIds and includes storage-s3gw-dc1-01",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T09:16:42.071Z"
     }
   },
   "runs": [
@@ -48927,6 +49023,163 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0460",
+      "recordedAt": "2026-05-10T09:09:14.056Z",
+      "recordedAtKst": "2026-05-10 18:09:14 KST",
+      "title": "Local QA - AI NLQ Entity Extraction Hardening",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0460.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "mocked/local deterministic tests",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "eb8f7be2cb6e432a860f6eed9152abb03ffda27f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI NLQ entity extraction API auth/rate-limit boundary",
+        "AI Assistant sendQuery off-domain guard order",
+        "clarification entity confidence trust boundary",
+        "entity extractor client fallback and normalization"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "live Groq call",
+        "release tag deployment"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "off-domain guard ordering, entity threshold, fallback, route wrapper regressions are covered by deterministic tests",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "new Groq-backed extraction route is protected by auth/rate-limit wrappers before model invocation",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "free-tier-sensitive Groq calls are now skipped for off-domain guard hits and limited to clarification candidates",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0461",
+      "recordedAt": "2026-05-10T09:16:42.071Z",
+      "recordedAtKst": "2026-05-10 18:16:42 KST",
+      "title": "Local QA - AI NLQ Entity Extraction Hardening Registry Sync",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0461.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "mocked/local deterministic tests",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "eb8f7be2cb6e432a860f6eed9152abb03ffda27f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI NLQ entity extraction API auth/rate-limit boundary",
+        "AI Assistant sendQuery off-domain guard order",
+        "clarification entity confidence trust boundary",
+        "entity extractor client fallback and normalization",
+        "entity extractor server inventory SSOT sync"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "live Groq call",
+        "release tag deployment"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "clarification suppression, confidence threshold, fallback, and registry drift coverage are deterministic",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "new Groq-backed extraction route is protected by auth/rate-limit wrappers before model invocation",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "free-tier-sensitive Groq calls are skipped for off-domain guard hits and limited to clarification candidates",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -48935,16 +49188,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 217,
-      "appropriateCount": 189,
+      "seenCount": 219,
+      "appropriateCount": 191,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 38,
-      "lastRunId": "QA-20260510-0459",
-      "lastSeenAt": "2026-05-10T08:01:49.702Z",
+      "lastRunId": "QA-20260510-0461",
+      "lastSeenAt": "2026-05-10T09:16:42.071Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "비 IT live fact, 외부 action, 지역 추천 질문을 deterministic guard와 회귀 테스트로 고정",
+      "lastRationale": "clarification suppression, confidence threshold, fallback, and registry drift coverage are deterministic",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -48969,16 +49222,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 59,
-      "appropriateCount": 44,
+      "seenCount": 61,
+      "appropriateCount": 46,
       "partialCount": 15,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260510-0459",
-      "lastSeenAt": "2026-05-10T08:01:49.702Z",
+      "lastRunId": "QA-20260510-0461",
+      "lastSeenAt": "2026-05-10T09:16:42.071Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "검증된 tool 실행 없이 외부 작업 완료를 주장하는 경로를 입력 경계에서 차단",
+      "lastRationale": "new Groq-backed extraction route is protected by auth/rate-limit wrappers before model invocation",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -48986,16 +49239,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 150,
-      "appropriateCount": 133,
+      "seenCount": 152,
+      "appropriateCount": 135,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260510-0457",
-      "lastSeenAt": "2026-05-10T05:49:28.256Z",
+      "lastRunId": "QA-20260510-0461",
+      "lastSeenAt": "2026-05-10T09:16:42.071Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Semver tag pipeline completed deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke successfully.",
+      "lastRationale": "free-tier-sensitive Groq calls are skipped for off-domain guard hits and limited to clarification candidates",
       "lastNextAction": ""
     },
     "test-automation": {

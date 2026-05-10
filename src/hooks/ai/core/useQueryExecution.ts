@@ -574,27 +574,37 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           return;
         }
 
-        // 1. 쿼리 분류 + 엔티티 추출 병렬 실행
-        const [classification, entities] = await Promise.all([
-          classifyQuery(query),
-          extractEntities(query),
-        ]);
+        if (getOffDomainGuardrail(query)) {
+          executeQuery(query);
+          return;
+        }
+
+        // 1. 쿼리 분류
+        const classification = await classifyQuery(query);
 
         if (process.env.NODE_ENV === 'development') {
           logger.info(
             `[HybridAI] Classification: intent=${classification.intent}, complexity=${classification.complexity}, confidence=${classification.confidence}%`
           );
-          logger.info(
-            `[HybridAI] Entities: server=${entities.server ?? 'none'}, metric=${entities.metric ?? 'none'}, timeRange=${entities.timeRange ?? 'none'}, confidence=${entities.confidence}%`
-          );
         }
 
-        // 2. 명확화 필요 여부 체크
-        const clarificationRequest = generateClarification(
-          query,
-          classification,
-          entities
-        );
+        let clarificationRequest = generateClarification(query, classification);
+
+        if (clarificationRequest) {
+          const entities = await extractEntities(query);
+
+          if (process.env.NODE_ENV === 'development') {
+            logger.info(
+              `[HybridAI] Entities: server=${entities.server ?? 'none'}, metric=${entities.metric ?? 'none'}, timeRange=${entities.timeRange ?? 'none'}, confidence=${entities.confidence}%`
+            );
+          }
+
+          clarificationRequest = generateClarification(
+            query,
+            classification,
+            entities
+          );
+        }
 
         if (clarificationRequest) {
           setState((prev) => ({

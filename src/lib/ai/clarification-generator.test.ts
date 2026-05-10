@@ -182,6 +182,26 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('신뢰도 높은 추출 서버가 있으면 서버 clarification을 스킵', () => {
+      expect(
+        generateClarification('서버 상태 확인', lowConfidence, {
+          server: 'api-was-dc1-01',
+          confidence: 90,
+        })
+      ).toBeNull();
+    });
+
+    it('신뢰도 낮은 추출 서버만 있으면 clarification을 유지', () => {
+      const result = generateClarification('서버 상태 확인', lowConfidence, {
+        server: 'api-was-dc1-01',
+        confidence: 50,
+      });
+
+      expect(result?.options.some((option) => option.id === 'server-all')).toBe(
+        true
+      );
+    });
+
     // 한국어 활용형 테스트
     it('"CPU 높아?" → clarification 스킵 (comparisonCondition 활용형)', () => {
       expect(generateClarification('CPU 높아?', lowConfidence)).toBeNull();
@@ -279,6 +299,17 @@ describe('generateClarification', () => {
 
     it('"성능이 느려" + CPU 지정이면 메트릭 clarification 스킵', () => {
       const result = generateClarification('CPU 성능이 느려', lowConfidence);
+      expect(
+        result === null || !result.options.some((o) => o.id === 'metric-cpu')
+      ).toBe(true);
+    });
+
+    it('신뢰도 높은 추출 메트릭이 있으면 메트릭 clarification을 스킵', () => {
+      const result = generateClarification('앱 성능이 느려', lowConfidence, {
+        metric: 'cpu',
+        confidence: 95,
+      });
+
       expect(
         result === null || !result.options.some((o) => o.id === 'metric-cpu')
       ).toBe(true);
