@@ -1,0 +1,78 @@
+{
+  "runId": "QA-20260510-0456",
+  "recordedAt": "2026-05-10T05:38:01.711Z",
+  "recordedAtKst": "2026-05-10 14:38:01 KST",
+  "runTitle": "AI Explicit Server ID Clarification Skip QA",
+  "owner": "codex",
+  "source": "local-vitest+gitlab-ci",
+  "environment": {
+    "target": "local+gitlab-main",
+    "url": "",
+    "frontend": "local",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "567f496bd33913fd2b88842a4e1ac7f8026812e1"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI sidebar NLQ clarification gate",
+    "query classifier confidence scoring",
+    "server-scope detection",
+    "GitLab main validate pipeline"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser retest",
+    "live LLM prompt execution"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "AI server ID clarification skip evidence",
+      "path": "reports/qa/evidence/qa-20260510-0456-ai-server-id-clarification.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-explicit-server-id-clarification-skip",
+      "title": "Skip NLQ clarification when a concrete server ID is present",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Added registry-backed explicit server detection and applied it to query classification and clarification generation. Regression tests cover api-was-dc1-01 and db-mysql-dc1-primary analysis queries.",
+      "note": "Fixes the v8.11.120/v8.11.121 QA finding where a query such as 'api-was-dc1-01 CPU 상태 분석해줘' still opened broad server-scope clarification.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation passed: targeted Vitest 82/82, type-check, lint, test:quick, test:contract 24/24, git diff --check.",
+    "GitLab main pipeline 2513341064 completed successfully for commit 567f496bd33913fd2b88842a4e1ac7f8026812e1.",
+    "Production deployment is not automatic for main push; semver tag release is still required if this fix must be deployed to Vercel/Cloud Run production."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2513341064",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513341064"
+    }
+  ]
+}

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T04:38:12.410Z"
+    "updatedAt": "2026-05-10T05:38:01.711Z"
   },
   "sequence": {
-    "nextRunNumber": 456
+    "nextRunNumber": 457
   },
   "summary": {
-    "totalRecordedRuns": 453,
-    "totalRuns": 372,
+    "totalRecordedRuns": 454,
+    "totalRuns": 373,
     "excludedRuns": 81,
-    "totalChecks": 3309,
-    "totalPassed": 3185,
+    "totalChecks": 3316,
+    "totalPassed": 3192,
     "totalFailed": 114,
     "completionRate": 100,
-    "completedItems": 518,
+    "completedItems": 519,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260510-0455",
-    "lastRecordedAt": "2026-05-10T04:38:12.410Z",
-    "latestRecordedRunId": "QA-20260510-0455",
-    "latestRecordedAt": "2026-05-10T04:38:12.410Z"
+    "lastRunId": "QA-20260510-0456",
+    "lastRecordedAt": "2026-05-10T05:38:01.711Z",
+    "latestRecordedRunId": "QA-20260510-0456",
+    "latestRecordedAt": "2026-05-10T05:38:01.711Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12689,6 +12689,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-10T04:38:12.410Z"
+    },
+    "ai-explicit-server-id-clarification-skip": {
+      "id": "ai-explicit-server-id-clarification-skip",
+      "title": "Skip NLQ clarification when a concrete server ID is present",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0456",
+      "firstSeenAt": "2026-05-10T05:38:01.711Z",
+      "lastSeenRunId": "QA-20260510-0456",
+      "lastSeenAt": "2026-05-10T05:38:01.711Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Added registry-backed explicit server detection and applied it to query classification and clarification generation. Regression tests cover api-was-dc1-01 and db-mysql-dc1-primary analysis queries.",
+      "lastNote": "Fixes the v8.11.120/v8.11.121 QA finding where a query such as 'api-was-dc1-01 CPU 상태 분석해줘' still opened broad server-scope clarification.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T05:38:01.711Z"
     }
   },
   "runs": [
@@ -48408,6 +48432,70 @@
         }
       ],
       "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0456",
+      "recordedAt": "2026-05-10T05:38:01.711Z",
+      "recordedAtKst": "2026-05-10 14:38:01 KST",
+      "title": "AI Explicit Server ID Clarification Skip QA",
+      "owner": "codex",
+      "source": "local-vitest+gitlab-ci",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0456.json",
+      "environment": {
+        "target": "local+gitlab-main",
+        "url": "",
+        "frontend": "local",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "567f496bd33913fd2b88842a4e1ac7f8026812e1"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI sidebar NLQ clarification gate",
+        "query classifier confidence scoring",
+        "server-scope detection",
+        "GitLab main validate pipeline"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser retest",
+        "live LLM prompt execution"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "AI server ID clarification skip evidence",
+          "path": "reports/qa/evidence/qa-20260510-0456-ai-server-id-clarification.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2513341064",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513341064"
+        }
+      ],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
       "pendingCount": 0,
