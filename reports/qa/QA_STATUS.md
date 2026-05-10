@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 14:38:02 KST
+> Generated at: 2026-05-10 14:49:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 454 |
-| Total Runs (Counted) | 373 |
+| Total Recorded Runs | 455 |
+| Total Runs (Counted) | 374 |
 | Non-counted Runs | 81 |
-| Total Checks | 3316 |
-| Passed | 3192 |
+| Total Checks | 3324 |
+| Passed | 3200 |
 | Failed | 114 |
-| Completed Items | 519 |
+| Completed Items | 520 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260510-0456 (2026-05-10T05:38:01.711Z) |
-| Latest Recorded Run | QA-20260510-0456 (2026-05-10T05:38:01.711Z) |
+| Last Counted Run | QA-20260510-0457 (2026-05-10T05:49:28.256Z) |
+| Latest Recorded Run | QA-20260510-0457 (2026-05-10T05:49:28.256Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0456 (2026-05-10T05:38:01.711Z)
+Latest run: QA-20260510-0457 (2026-05-10T05:49:28.256Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Vercel usage checked after v8.11.122 production release. Current billing period effective usage was 5.3789 USD, billed 0.0000 USD, with no unexpected billed usage flagged by the local usage guard. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T05:38:01.711Z -> 2026-05-10T05:38:01.711Z (24h)
+- Window: 2026-05-09T05:49:28.256Z -> 2026-05-10T05:49:28.256Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +59,7 @@ Latest run: QA-20260510-0456 (2026-05-10T05:38:01.711Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T05:38:01.711Z -> 2026-05-10T05:38:01.711Z (24h)
+- Window: 2026-05-09T05:49:28.256Z -> 2026-05-10T05:49:28.256Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -70,24 +71,25 @@ Latest run: QA-20260510-0456 (2026-05-10T05:38:01.711Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA 567f496b
-- Coverage Packs: ai-core
-- Covered Surfaces: AI sidebar NLQ clarification gate, query classifier confidence scoring, server-scope detection, GitLab main validate pipeline
-- Skipped Surfaces: Vercel production browser retest, live LLM prompt execution
+- Deployment: dpl_D7cNFNXRe5EFSes4dyP4Tyii2NJV / SHA 422c7aea
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: Vercel production /, Vercel production /login, Vercel production /api/version, GitLab semver tag pipeline, Cloud Run AI Engine deploy smoke
+- Skipped Surfaces: Full Playwright visual sweep, Live conversational AI prompt QA
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline 2513341064 | [GitLab pipeline 2513341064](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513341064) | - |
+| general | GitLab pipeline 2513344138 | [GitLab pipeline 2513344138](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513344138) | - |
+| general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | AI server ID clarification skip evidence | `reports/qa/evidence/qa-20260510-0456-ai-server-id-clarification.md` | - |
+| playwright-report | v8.11.122 release smoke evidence | `reports/qa/evidence/qa-20260510-0457-v811122-release-smoke.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -625,6 +627,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ui-landing-pass: 랜딩 페이지 로드 정상, v8.10.0 확인 (completed 1회, last QA-20260326-0190)
 - ui-ux-improvement-plan-p1-p3-closure: UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed (completed 1회, last QA-20260509-0436)
 - v8.11.121-rag-krl-production-release: Release RAG/KRL cleanup and DB index improvements to production (completed 1회, last QA-20260510-0455)
+- v8.11.122-ai-server-id-clarification-production-release: Release explicit server ID clarification fix to production (completed 1회, last QA-20260510-0457)
 - v811119-production-release-smoke: v8.11.119 production release smoke passed (completed 1회, last QA-20260509-0437)
 - v811120-production-release-smoke: v8.11.120 production release smoke passed (completed 1회, last QA-20260510-0438)
 - v81195-dashboard-core-routes-playwright-recheck: Dashboard core routes and AI assistant tabs render in Vercel production (completed 1회, last QA-20260504-0404)
@@ -695,6 +698,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0457 | 2026-05-10T05:49:28.256Z | targeted | yes | yes | v8.11.122 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0456 | 2026-05-10T05:38:01.711Z | targeted | no | yes | AI Explicit Server ID Clarification Skip QA | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0455 | 2026-05-10T04:38:12.410Z | targeted | yes | yes | v8.11.121 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0454 | 2026-05-10T03:52:25.277Z | targeted | no | yes | Supabase Low-value Unused Index Cleanup QA | 19 | 1 | 0 | 0 | 0 | 0 |
@@ -714,4 +718,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0440 | 2026-05-09T22:47:17.841Z | targeted | no | yes | Local AI Engine Memory TOP-N Routing Fix QA | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0439 | 2026-05-09T17:03:25.551Z | smoke | yes | yes | Vercel Production Smoke QA - v8.11.120 Frontend+AI | 13 | 0 | 2 | 0 | 0 | 0 |
 | QA-20260510-0438 | 2026-05-09T16:26:24.262Z | targeted | yes | yes | v8.11.120 Production Release Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260509-0437 | 2026-05-09T13:56:23.063Z | targeted | yes | yes | v8.11.119 Production Release Smoke | 3 | 1 | 0 | 0 | 0 | 0 |

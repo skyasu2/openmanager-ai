@@ -1,0 +1,112 @@
+{
+  "runId": "QA-20260510-0457",
+  "recordedAt": "2026-05-10T05:49:28.256Z",
+  "recordedAtKst": "2026-05-10 14:49:28 KST",
+  "runTitle": "v8.11.122 Production Release Smoke",
+  "owner": "codex",
+  "source": "gitlab-ci+release-script",
+  "environment": {
+    "target": "vercel-production+cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_D7cNFNXRe5EFSes4dyP4Tyii2NJV",
+    "deploymentUrl": "https://openmanager-lkhy2cb63-skyasus-projects.vercel.app",
+    "commitSha": "422c7aea5811c29ee4bb3d1b5b89650c551026ed"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core"],
+  "coveredSurfaces": [
+    "Vercel production /",
+    "Vercel production /login",
+    "Vercel production /api/version",
+    "GitLab semver tag pipeline",
+    "Cloud Run AI Engine deploy smoke"
+  ],
+  "skippedSurfaces": [
+    "Full Playwright visual sweep",
+    "Live conversational AI prompt QA"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Semver tag pipeline completed deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke successfully.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI server ID clarification fix passed local regression, contract tests, main validation, and production release smoke.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-10T14:48:22+09:00",
+      "summary": "Vercel usage checked after v8.11.122 production release. Current billing period effective usage was 5.3789 USD, billed 0.0000 USD, with no unexpected billed usage flagged by the local usage guard.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.11.122 release smoke evidence",
+      "path": "reports/qa/evidence/qa-20260510-0457-v811122-release-smoke.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "v8.11.122-ai-server-id-clarification-production-release",
+      "title": "Release explicit server ID clarification fix to production",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.122 release script completed. Production /api/version returned version 8.11.122, commit 422c7aea5811c29ee4bb3d1b5b89650c551026ed, release tag v8.11.122, pipeline 2513344138. GitLab jobs deploy, deploy_ai_engine, post_deploy_ai_engine_smoke, and post_deploy_smoke all succeeded.",
+      "note": "Production release includes fix(ai): skip clarification for explicit server ids.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Current production base gate passed for 8.11.121 before creating v8.11.122.",
+    "Post-release version smoke passed after Vercel deployment propagated: /, /login, and /api/version returned successfully.",
+    "Direct /api/version check returned 8.11.122 with releaseTag v8.11.122 and pipelineUrl https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513344138."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2513344138",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513344138"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    }
+  ]
+}
