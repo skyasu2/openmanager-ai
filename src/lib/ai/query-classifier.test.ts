@@ -129,6 +129,15 @@ describe('QueryClassifier', () => {
       expect(withServer.confidence).toBeGreaterThan(base.confidence);
     });
 
+    it('treats registered server IDs as explicit scope signals', async () => {
+      const result = await classifier.classify(
+        'api-was-dc1-01 CPU 상태 분석해줘'
+      );
+
+      expect(result.intent).toBe('analysis');
+      expect(result.confidence).toBeGreaterThanOrEqual(85);
+    });
+
     it('boosts confidence for time range keywords', async () => {
       const base = await classifier.classify('서버 상태');
       const withTime = await classifier.classify('최근 서버 상태');

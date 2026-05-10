@@ -157,6 +157,31 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('실제 서버 ID가 있으면 analysis intent여도 clarification을 스킵', () => {
+      expect(
+        generateClarification('api-was-dc1-01 CPU 상태 분석해줘', {
+          complexity: 4,
+          intent: 'analysis',
+          reasoning: 'Keyword match: Analysis/Coding',
+          confidence: 60,
+        })
+      ).toBeNull();
+    });
+
+    it('primary/replica 접미사가 있는 서버 ID도 명시 서버로 인식한다', () => {
+      expect(
+        generateClarification(
+          'db-mysql-dc1-primary 상세 분석, 위험한지 판단해줘',
+          {
+            complexity: 4,
+            intent: 'analysis',
+            reasoning: 'Keyword match: Analysis/Coding',
+            confidence: 60,
+          }
+        )
+      ).toBeNull();
+    });
+
     // 한국어 활용형 테스트
     it('"CPU 높아?" → clarification 스킵 (comparisonCondition 활용형)', () => {
       expect(generateClarification('CPU 높아?', lowConfidence)).toBeNull();

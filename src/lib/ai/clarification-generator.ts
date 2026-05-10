@@ -7,6 +7,7 @@
 
 import type { QueryClassification } from './query-classifier';
 import { needsClarification } from './query-classifier';
+import { hasExplicitServerReference } from './server-scope-detection';
 import { isFormattingOnlyRequest } from './utils/query-complexity';
 
 export interface ClarificationOption {
@@ -26,7 +27,7 @@ export interface ClarificationRequest {
 const SERVER_PATTERNS = {
   missing: /서버|server|상태|status|확인|check/i,
   hasSpecific:
-    /[a-z]+-[a-z]+-\d+|server-?\d+|web-\d+|db-\d+|api-\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i,
+    /web-\d+|db-\d+|api-\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i,
 };
 
 // 구체적 조건 패턴 (숫자 조건, 정렬, 필터링이 있으면 이미 구체적)
@@ -109,6 +110,10 @@ export function generateClarification(
     return null;
   }
 
+  if (hasExplicitServerReference(query)) {
+    return null;
+  }
+
   // 명확화가 필요하지 않으면 null 반환
   if (
     !needsClarification(classification.confidence, classification.complexity)
@@ -127,7 +132,8 @@ export function generateClarification(
   // 1. 서버 명시 필요 여부 체크
   if (
     SERVER_PATTERNS.missing.test(query) &&
-    !SERVER_PATTERNS.hasSpecific.test(query)
+    !SERVER_PATTERNS.hasSpecific.test(query) &&
+    !hasExplicitServerReference(query)
   ) {
     reasons.push('특정 서버가 명시되지 않음');
     options.push(
