@@ -1,0 +1,100 @@
+{
+  "runId": "QA-20260511-0468",
+  "recordedAt": "2026-05-10T16:02:00.870Z",
+  "recordedAtKst": "2026-05-11 01:02:00 KST",
+  "runTitle": "Local QA - AI Assistant Ops Procedure Artifact",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "Cloud Run AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "508c305f28e7f073d7ad31bc245dbe17744ed207"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Root App ops-procedure artifact contract and envelope metadata",
+    "AI Assistant artifact intent routing for Slack bash, Alertmanager, runbook, and follow-up threshold edits",
+    "Ops procedure generator evidence, secret safety, no-fake-function validator, and threshold patching",
+    "Ops procedure artifact renderer card with MD/JSON download actions",
+    "Artifact workspace restore and renderer registry support for ops-procedure",
+    "Cloud Run monitoring artifact classifier and Advisor routing policy alignment",
+    "Cloud Run supervisor shadow baseline for ops-procedure artifact classification",
+    "Root App type/lint/quick/contract gates",
+    "Cloud Run AI Engine type/full test gates"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "live provider calls",
+    "actual Slack webhook delivery",
+    "real Prometheus/Alertmanager deployment",
+    "production conversational AI QA for the new ops artifact prompts"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Ops artifact routing, follow-up edits, renderer support, and safety validators are covered by deterministic regression tests without live provider calls.",
+      "nextAction": "Run production conversational QA for script, Alertmanager, and log-runbook prompts after the next release deployment."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Generated artifacts preserve manual review, no secret persistence, no auto-execution, and notification-only/read-only safety levels for operational outputs.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-ops-procedure-artifact",
+      "title": "Structure operational scripts, alert rules, and runbooks as ops-procedure artifacts",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "failing spec commit b6be9fd58 and implementation commit 508c305f passed targeted/root/ai-engine local gates",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Initial failing specs were committed before implementation: ops-procedure intent, generator safety, renderer, workspace registry, and Cloud Run routing tests failed as expected.",
+    "Targeted Root App Vitest passed: chat-artifact intent, workspace registry/store, renderer registry, ops-procedure generator, ArtifactCards, useAIChatCore, useQueryExecution, and artifact-intent API route (81/81).",
+    "Targeted Cloud Run routing-policy consistency Vitest passed 5/5.",
+    "Root App generator/card recheck passed after final bash placeholder hardening (15/15), and generator-only recheck passed 4/4.",
+    "npm run type-check passed.",
+    "npm run lint passed with existing qa-tracker.json max-size info only.",
+    "npm run test:quick passed.",
+    "npm run test:contract passed 24/24.",
+    "cd cloud-run/ai-engine && npm run type-check passed.",
+    "cd cloud-run/ai-engine && npm run test passed 1086/1086.",
+    "git diff --check passed.",
+    "No live AI, Slack, Prometheus, Alertmanager, Vercel, or external provider call was executed for this deterministic local QA run."
+  ],
+  "links": []
+}

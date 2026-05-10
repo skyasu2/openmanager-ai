@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-11 00:20:03 KST
+> Generated at: 2026-05-11 01:02:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 465 |
+| Total Recorded Runs | 466 |
 | Total Runs (Counted) | 376 |
-| Non-counted Runs | 89 |
+| Non-counted Runs | 90 |
 | Total Checks | 3342 |
 | Passed | 3215 |
 | Failed | 117 |
-| Completed Items | 534 |
+| Completed Items | 535 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
-| Latest Recorded Run | QA-20260511-0467 (2026-05-10T15:20:02.963Z) |
+| Latest Recorded Run | QA-20260511-0468 (2026-05-10T16:02:00.870Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260511-0467 (2026-05-10T15:20:02.963Z)
+Latest run: QA-20260511-0468 (2026-05-10T16:02:00.870Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | Recheck the same prompt in production after the next release deployment. |
+| AI Quality Assurance Specialist | appropriate | no | Run production conversational QA for script, Alertmanager, and log-runbook prompts after the next release deployment. |
 | DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
@@ -49,7 +49,7 @@ Latest run: QA-20260511-0467 (2026-05-10T15:20:02.963Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T15:20:02.963Z -> 2026-05-10T15:20:02.963Z (24h)
+- Window: 2026-05-09T16:02:00.870Z -> 2026-05-10T16:02:00.870Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -60,7 +60,7 @@ Latest run: QA-20260511-0467 (2026-05-10T15:20:02.963Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T15:20:02.963Z -> 2026-05-10T15:20:02.963Z (24h)
+- Window: 2026-05-09T16:02:00.870Z -> 2026-05-10T16:02:00.870Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,10 +74,10 @@ Latest run: QA-20260511-0467 (2026-05-10T15:20:02.963Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 9d06193e
+- Deployment: SHA 508c305f
 - Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: Root App off-domain guard general_coding category, Root App query classifier off-domain category mapping, AI Assistant input boundary short-circuit before entity extraction and stream/job routing, Cloud Run monitoring supervisor prompt coding-boundary alignment, Root App type/lint/quick/contract gates, Cloud Run AI Engine type/full test gates
-- Skipped Surfaces: Vercel production browser QA, live provider calls, release tag deployment, production conversational AI QA for the new deterministic guard
+- Covered Surfaces: Root App ops-procedure artifact contract and envelope metadata, AI Assistant artifact intent routing for Slack bash, Alertmanager, runbook, and follow-up threshold edits, Ops procedure generator evidence, secret safety, no-fake-function validator, and threshold patching, Ops procedure artifact renderer card with MD/JSON download actions, Artifact workspace restore and renderer registry support for ops-procedure, Cloud Run monitoring artifact classifier and Advisor routing policy alignment, Cloud Run supervisor shadow baseline for ops-procedure artifact classification, Root App type/lint/quick/contract gates, Cloud Run AI Engine type/full test gates
+- Skipped Surfaces: Vercel production browser QA, live provider calls, actual Slack webhook delivery, real Prometheus/Alertmanager deployment, production conversational AI QA for the new ops artifact prompts
 
 ## Links (Latest Run)
 
@@ -194,6 +194,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-general-coding-boundary: Guard general coding and algorithm requests at the AI Assistant input boundary (completed 1회, last QA-20260511-0467)
 - ai-assistant-guest-login-mcp-check-v81136-20260427: AI assistant works through Vercel Playwright MCP guest login on v8.11.36 (completed 1회, last QA-20260427-0351)
+- ai-assistant-ops-procedure-artifact: Structure operational scripts, alert rules, and runbooks as ops-procedure artifacts (completed 1회, last QA-20260511-0468)
 - ai-assistant-real-chat-e2e-v81136: AI assistant Playwright MCP real chat QA on Vercel v8.11.36 (completed 1회, last QA-20260427-0350)
 - ai-assistant-static-health-label: Static AI Engine Active label removed (completed 1회, last QA-20260503-0396)
 - ai-assistant-ux-polish-p1-p2: AI Assistant typography scale, touch target, light surface, System Context status, and provider routing polish (completed 1회, last QA-20260429-0360)
@@ -712,6 +713,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0468 | 2026-05-10T16:02:00.870Z | targeted | no | no | Local QA - AI Assistant Ops Procedure Artifact | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0467 | 2026-05-10T15:20:02.963Z | targeted | no | no | Local QA - AI Assistant General Coding Boundary | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0466 | 2026-05-10T12:53:07.527Z | targeted | yes | yes | Vercel Production Targeted QA - AI Chat UX v8.11.124 | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260510-0465 | 2026-05-10T11:58:02.942Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Completion | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -731,4 +733,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0451 | 2026-05-10T03:10:45.254Z | targeted | no | yes | Remaining Legacy Vector Graph Helper Cleanup QA | 16 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0450 | 2026-05-10T02:56:17.274Z | targeted | no | yes | KRL Token-overlap Ranking Precision QA | 14 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0449 | 2026-05-10T02:46:15.891Z | targeted | no | yes | KRL Multi-token Recall Improvement QA | 15 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260510-0448 | 2026-05-10T02:27:03.074Z | targeted | no | yes | Live Supabase Legacy RAG RPC Cleanup Apply QA | 12 | 4 | 0 | 0 | 0 | 0 |

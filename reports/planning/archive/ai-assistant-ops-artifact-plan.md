@@ -1,16 +1,16 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-10
+> Last reviewed: 2026-05-11
 > Tags: ai-assistant, artifact, runbook, alerting, ops
 
 # AI Assistant Operational Artifact Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-10
-- TODO.md 연결: Backlog > AI Assistant operational artifact hardening
+- TODO.md 연결: Backlog 완료 이력 > AI Assistant operational artifact hardening
 - 관련 계획: [ai-chat-ux-improvement-plan.md](ai-chat-ux-improvement-plan.md), [ai-assistant-general-coding-boundary-plan.md](ai-assistant-general-coding-boundary-plan.md)
-- 근거 테스트: AI 어시스턴트 스크립트 테스트 3건
+- 근거 QA: `QA-20260511-0468` local deterministic ops artifact closure
 
 ## 목표
 
@@ -177,38 +177,38 @@ interface OpsProcedureArtifact extends ArtifactContractMetadata {
 
 ## 테스트 시나리오
 
-- [ ] `artifact type`: `ops-procedure`가 `ChatArtifact`, envelope, workspace registry, renderer registry를 통과한다.
-- [ ] `intent`: Slack/bash/webhook/script/runbook/Alertmanager 요청은 metrics보다 먼저 `ops-procedure`로 분류된다.
-- [ ] `no fake function`: Slack bash script artifact에 `filterServers(`, `getServerMetrics`, `searchKnowledgeBase` 같은 내부 tool call이 포함되지 않는다.
-- [ ] `secret safety`: Slack webhook URL 예시가 실제 URL literal을 저장하지 않고 `SLACK_WEBHOOK_URL` placeholder만 사용한다.
-- [ ] `follow-up edit`: `이 스크립트에서 임계치를 90%로 바꿔줘`가 직전 `ops-procedure.inputs.threshold`와 codeBlock을 갱신한다.
-- [ ] `log runbook`: warning/error log 질의가 `getServerLogs` 또는 monitoring data source evidence를 포함한 runbook artifact를 만든다.
-- [ ] `non-artifact guard`: `지금 CPU 높은 서버 TOP 3`와 일반 coding guard 케이스는 `ops-procedure`로 승격되지 않는다.
-- [ ] `renderer`: card에서 목적, 입력, 증거, 코드, 검증/제한 사항, 복사/다운로드 동작이 깨지지 않는다.
+- [x] `artifact type`: `ops-procedure`가 `ChatArtifact`, envelope, workspace registry, renderer registry를 통과한다.
+- [x] `intent`: Slack/bash/webhook/script/runbook/Alertmanager 요청은 metrics보다 먼저 `ops-procedure`로 분류된다.
+- [x] `no fake function`: Slack bash script artifact에 `filterServers(`, `getServerMetrics`, `searchKnowledgeBase` 같은 내부 tool call이 포함되지 않는다.
+- [x] `secret safety`: Slack webhook URL 예시가 실제 URL literal을 저장하지 않고 `SLACK_WEBHOOK_URL` placeholder만 사용한다.
+- [x] `follow-up edit`: `이 스크립트에서 임계치를 90%로 바꿔줘`가 직전 `ops-procedure.inputs.threshold`와 codeBlock을 갱신한다.
+- [x] `log runbook`: warning/error log 질의가 `getServerLogs` 또는 monitoring data source evidence를 포함한 runbook artifact를 만든다.
+- [x] `non-artifact guard`: `지금 CPU 높은 서버 TOP 3`와 일반 coding guard 케이스는 `ops-procedure`로 승격되지 않는다.
+- [x] `renderer`: card에서 목적, 입력, 증거, 코드, 검증/제한 사항, 복사/다운로드 동작이 깨지지 않는다.
 
 ## Task 목록
 
-> Status가 Approved이므로 구현 착수 가능하다. 단, 현재 Active의 AI Chat UI/UX 작업이 같은 renderer/markdown 컴포넌트를 수정하므로 충돌 여부를 Task 0에서 먼저 확인한다.
+> SDD 순서대로 failing test를 먼저 커밋한 뒤 구현/검증/QA 기록을 완료했다.
 
-- [ ] Task 0 — failing regression tests 추가
+- [x] Task 0 — failing regression tests 추가
   - routing, artifact schema, renderer, follow-up edit, script validator 실패 케이스를 먼저 고정
-- [ ] Task 1 — `ops-procedure` artifact contract 추가
+- [x] Task 1 — `ops-procedure` artifact contract 추가
   - `types.ts`, schema/workspace/renderer registry, unsupported fallback 유지
-- [ ] Task 2 — intent/routing 우선순위 보강
+- [x] Task 2 — intent/routing 우선순위 보강
   - script/bash/slack/webhook/alertmanager/runbook/log-response intent를 metrics보다 앞에 배치
   - 일반 coding guard와 운영 코드 예외가 충돌하지 않도록 테스트 고정
-- [ ] Task 3 — generator/evidence/validator 구현
+- [x] Task 3 — generator/evidence/validator 구현
   - metrics/log/KRL evidence pack 구성
   - fake function, hardcoded secret, executable honesty validator 추가
   - Alertmanager YAML 우선, bash fallback 원칙 적용
-- [ ] Task 4 — renderer/workspace/follow-up edit 연결
+- [x] Task 4 — renderer/workspace/follow-up edit 연결
   - `OpsProcedureArtifactCard`
   - threshold 수정 같은 follow-up artifact patch 처리
   - copy/download/replay pack 비교 동작 확인
-- [ ] Task 5 — 문서/QA 기록
+- [x] Task 5 — 문서/QA 기록
   - QA template 또는 run notes에 ops artifact 시나리오 추가 여부 판단
   - local deterministic QA 기록
-  - 배포 후 Vercel conversational QA에서 script/log/runbook 5문항 검증
+  - 배포 후 Vercel conversational QA에서 script/log/runbook 재검증은 `QA-20260511-0468` skipped surface / expert nextAction 후속으로 기록
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -245,12 +245,30 @@ interface OpsProcedureArtifact extends ArtifactContractMetadata {
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `npm run type-check` 통과
-- [ ] `npm run lint` 통과
-- [ ] `npm run test:quick` 통과
-- [ ] AI/API 계약 변경 범위에 대해 `npm run test:contract` 통과
-- [ ] Cloud Run 변경 시 `cd cloud-run/ai-engine && npm run type-check` 통과
-- [ ] Cloud Run 변경 시 `cd cloud-run/ai-engine && npm run test` 또는 targeted equivalent 통과
-- [ ] QA 기록 생성
-- [ ] Production QA에서 script/log/runbook artifact 5문항 중 fail 0건
+- [x] 테스트 시나리오 전체 통과
+- [x] `npm run type-check` 통과
+- [x] `npm run lint` 통과
+- [x] `npm run test:quick` 통과
+- [x] AI/API 계약 변경 범위에 대해 `npm run test:contract` 통과
+- [x] Cloud Run 변경 시 `cd cloud-run/ai-engine && npm run type-check` 통과
+- [x] Cloud Run 변경 시 `cd cloud-run/ai-engine && npm run test` 또는 targeted equivalent 통과
+- [x] QA 기록 생성: `QA-20260511-0468`
+- [x] Production QA에서 script/log/runbook artifact 재검증 후속 기록: `QA-20260511-0468` skipped surface / expert nextAction
+
+## Validation
+
+- Failing spec commit: `b6be9fd58 test(spec): ops procedure artifact add failing tests before implementation`
+- Implementation commit: `508c305f2 feat(ai): add ops procedure artifacts`
+- Targeted Root App Vitest: chat-artifact intent, workspace registry/store, renderer registry, ops-procedure generator, ArtifactCards, useAIChatCore, useQueryExecution, artifact-intent API route 81/81 PASS
+- Targeted Cloud Run routing-policy consistency Vitest: 5/5 PASS
+- Root App generator/card recheck: 15/15 PASS
+- Root App generator-only recheck: 4/4 PASS
+- `npm run type-check` PASS
+- `npm run lint` PASS (기존 `qa-tracker.json` max-size info only)
+- `npm run test:quick` PASS
+- `npm run test:contract` PASS (24/24)
+- `cd cloud-run/ai-engine && npm run type-check` PASS
+- `cd cloud-run/ai-engine && npm run test` PASS (1086/1086)
+- `git diff --check` PASS
+- QA 기록: `QA-20260511-0468`
+- 후속: 다음 release/tag 배포 후 Vercel production에서 Slack script, Alertmanager rule, log runbook artifact 생성·수정 재검증
