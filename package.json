@@ -251,6 +251,7 @@
     "vitals:playwright-integration": "npm run test:e2e:critical"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^3.0.38",
     "@ai-sdk/mistral": "^3.0.28",
     "@ai-sdk/react": "^3.0.140",
     "@dagrejs/dagre": "^2.0.4",

@@ -5,6 +5,7 @@
  * Best Practice: 명확화 다이얼로그로 성공률 67% → 91% 향상 가능
  */
 
+import type { ExtractedEntities } from './entity-extractor';
 import type { QueryClassification } from './query-classifier';
 import { needsClarification } from './query-classifier';
 import { hasExplicitServerReference } from './server-scope-detection';
@@ -92,7 +93,8 @@ function hasSpecificConditions(query: string): boolean {
  */
 export function generateClarification(
   query: string,
-  classification: QueryClassification
+  classification: QueryClassification,
+  entities?: ExtractedEntities
 ): ClarificationRequest | null {
   if (isFormattingOnlyRequest(query)) {
     return null;
@@ -111,6 +113,11 @@ export function generateClarification(
   }
 
   if (hasExplicitServerReference(query)) {
+    return null;
+  }
+
+  // LLM entity extraction으로 서버가 이미 특정된 경우 명확화 불필요
+  if (entities?.server) {
     return null;
   }
 
@@ -133,7 +140,8 @@ export function generateClarification(
   if (
     SERVER_PATTERNS.missing.test(query) &&
     !SERVER_PATTERNS.hasSpecific.test(query) &&
-    !hasExplicitServerReference(query)
+    !hasExplicitServerReference(query) &&
+    !entities?.server
   ) {
     reasons.push('특정 서버가 명시되지 않음');
     options.push(
@@ -173,7 +181,8 @@ export function generateClarification(
   // 2. 시간 범위 필요 여부 체크
   if (
     TIME_PATTERNS.missing.test(query) &&
-    !TIME_PATTERNS.hasSpecific.test(query)
+    !TIME_PATTERNS.hasSpecific.test(query) &&
+    !entities?.timeRange
   ) {
     reasons.push('시간 범위가 명시되지 않음');
     options.push(
@@ -201,7 +210,8 @@ export function generateClarification(
   // 3. 메트릭 유형 필요 여부 체크
   if (
     METRIC_PATTERNS.missing.test(query) &&
-    !METRIC_PATTERNS.hasSpecific.test(query)
+    !METRIC_PATTERNS.hasSpecific.test(query) &&
+    !entities?.metric
   ) {
     reasons.push('확인할 메트릭이 명시되지 않음');
     options.push(

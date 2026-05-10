@@ -11,6 +11,7 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
+import { extractEntities } from '@/lib/ai/entity-extractor';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { getOffDomainGuardrail } from '@/lib/ai/off-domain-guard';
 import { classifyQuery } from '@/lib/ai/query-classifier';
@@ -573,19 +574,26 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           return;
         }
 
-        // 1. 쿼리 분류 (Groq LLM 사용)
-        const classification = await classifyQuery(query);
+        // 1. 쿼리 분류 + 엔티티 추출 병렬 실행
+        const [classification, entities] = await Promise.all([
+          classifyQuery(query),
+          extractEntities(query),
+        ]);
 
         if (process.env.NODE_ENV === 'development') {
           logger.info(
             `[HybridAI] Classification: intent=${classification.intent}, complexity=${classification.complexity}, confidence=${classification.confidence}%`
+          );
+          logger.info(
+            `[HybridAI] Entities: server=${entities.server ?? 'none'}, metric=${entities.metric ?? 'none'}, timeRange=${entities.timeRange ?? 'none'}, confidence=${entities.confidence}%`
           );
         }
 
         // 2. 명확화 필요 여부 체크
         const clarificationRequest = generateClarification(
           query,
-          classification
+          classification,
+          entities
         );
 
         if (clarificationRequest) {
