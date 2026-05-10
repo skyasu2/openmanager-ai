@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 21:53:21 KST
+> Generated at: 2026-05-11 00:20:03 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 464 |
+| Total Recorded Runs | 465 |
 | Total Runs (Counted) | 376 |
-| Non-counted Runs | 88 |
+| Non-counted Runs | 89 |
 | Total Checks | 3342 |
 | Passed | 3215 |
 | Failed | 117 |
-| Completed Items | 533 |
+| Completed Items | 534 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
-| Latest Recorded Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
+| Latest Recorded Run | QA-20260511-0467 (2026-05-10T15:20:02.963Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0466 (2026-05-10T12:53:07.527Z)
+Latest run: QA-20260511-0467 (2026-05-10T15:20:02.963Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | Recheck the same prompt in production after the next release deployment. |
 | DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after production deployment; CLI reported effective 6.0506 USD, billed 0.0000 USD, chargeCount 5481 for the current period. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T12:53:07.527Z -> 2026-05-10T12:53:07.527Z (24h)
+- Window: 2026-05-09T15:20:02.963Z -> 2026-05-10T15:20:02.963Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -61,7 +60,7 @@ Latest run: QA-20260510-0466 (2026-05-10T12:53:07.527Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T12:53:07.527Z -> 2026-05-10T12:53:07.527Z (24h)
+- Window: 2026-05-09T15:20:02.963Z -> 2026-05-10T15:20:02.963Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,27 +72,24 @@ Latest run: QA-20260510-0466 (2026-05-10T12:53:07.527Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL / SHA cf5480e8
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: production / renders v8.11.124 version badge, production /system-boot redirects to /dashboard, production /dashboard renders and opens AI sidebar, AI sidebar header exposes 전체화면으로 보기 button, AI sidebar fullscreen handoff navigates to /dashboard/ai-assistant, /dashboard/ai-assistant AI Chat starter prompt cards render, /dashboard/ai-assistant conversation counter renders as 대화 0/50, Analyst tab entry auto-runs analysis and renders 전체 시스템 상태, Analyst server cards expose 상세 분석 펼치기/접기 action copy, browser console messages after tested production flows: 0, production /api/version reports v8.11.124 and GitLab pipeline 2513741959
-- Skipped Surfaces: Standard five-question conversational AI QA skipped because this change is UI/accessibility/rendering focused and did not modify prompts, routing, knowledge, data grounding, or response parsing., Reporter live generation skipped because the changed Reporter surface was empty-state CTA only and local/component tests already covered the regression., Cloud Run admin observability pack skipped; frontend release targeted QA only.
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA 9d06193e
+- Coverage Packs: ai-core, observability-pack
+- Covered Surfaces: Root App off-domain guard general_coding category, Root App query classifier off-domain category mapping, AI Assistant input boundary short-circuit before entity extraction and stream/job routing, Cloud Run monitoring supervisor prompt coding-boundary alignment, Root App type/lint/quick/contract gates, Cloud Run AI Engine type/full test gates
+- Skipped Surfaces: Vercel production browser QA, live provider calls, release tag deployment, production conversational AI QA for the new deterministic guard
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.124 pipeline | [GitLab v8.11.124 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959) | - |
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-qt46mwbes-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI Chat UX production fullscreen | `reports/qa/evidence/qa-20260510-ai-chat-ux-v811124.png` | - |
-| playwright-screenshot | Analyst auto-analysis production | `reports/qa/evidence/qa-20260510-analyst-auto-v811124.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -196,6 +192,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-double-scroll-v811112: AI Assistant page-level double scroll removed (completed 1회, last QA-20260507-0419)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
+- ai-assistant-general-coding-boundary: Guard general coding and algorithm requests at the AI Assistant input boundary (completed 1회, last QA-20260511-0467)
 - ai-assistant-guest-login-mcp-check-v81136-20260427: AI assistant works through Vercel Playwright MCP guest login on v8.11.36 (completed 1회, last QA-20260427-0351)
 - ai-assistant-real-chat-e2e-v81136: AI assistant Playwright MCP real chat QA on Vercel v8.11.36 (completed 1회, last QA-20260427-0350)
 - ai-assistant-static-health-label: Static AI Engine Active label removed (completed 1회, last QA-20260503-0396)
@@ -715,6 +712,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0467 | 2026-05-10T15:20:02.963Z | targeted | no | no | Local QA - AI Assistant General Coding Boundary | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0466 | 2026-05-10T12:53:07.527Z | targeted | yes | yes | Vercel Production Targeted QA - AI Chat UX v8.11.124 | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260510-0465 | 2026-05-10T11:58:02.942Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Completion | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260510-0464 | 2026-05-10T11:42:24.446Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Batch 1 | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -734,4 +732,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0450 | 2026-05-10T02:56:17.274Z | targeted | no | yes | KRL Token-overlap Ranking Precision QA | 14 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0449 | 2026-05-10T02:46:15.891Z | targeted | no | yes | KRL Multi-token Recall Improvement QA | 15 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0448 | 2026-05-10T02:27:03.074Z | targeted | no | yes | Live Supabase Legacy RAG RPC Cleanup Apply QA | 12 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260510-0447 | 2026-05-10T02:17:24.679Z | targeted | no | yes | Local Legacy RAG RPC Cleanup Docs and Test Hardening QA | 16 | 4 | 0 | 0 | 0 | 0 |

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-10 KST (`AI Engine audit low chain 제거`)
+**Last Updated**: 2026-05-11 KST (`AI Assistant general coding boundary hardening`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _현재 활성 작업 없음_ | — | Idle | 직전 활성 작업 `AI Chat UI/UX 개선`은 `v8.11.124` production deploy 및 `QA-20260510-0466` release-facing targeted QA까지 완료. 다음 후보는 Backlog P2 2건. |
+| _현재 활성 작업 없음_ | — | Idle | 직전 활성 작업 `AI Assistant general coding boundary hardening`은 local deterministic QA `QA-20260511-0467`까지 완료. 다음 후보는 Backlog P2 `AI Assistant operational artifact hardening`; P1 dependency audit는 Next same-major fixed release 대기. |
 
 ---
 
@@ -22,7 +22,6 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | Dependency security audit follow-up | P1 | Root full audit의 dev critical `commit-and-tag-version -> handlebars` 체인은 내부 `scripts/release/version-and-tag.mjs` release tool로 대체해 제거. AI Engine production/full audit의 Google Cloud logging low 체인은 `@google-cloud/pino-logging-gcp-config` 제거와 내부 Cloud Run pino structured logging config로 대체해 0건으로 해소. Root production/full audit는 `next@16.1.6` high 1건만 잔류. 같은-major fixed release(`next@16.1.7` 또는 `16.2.3+`)가 registry에 제공되면 즉시 업데이트하며, `npm audit fix --force`의 Next 15 downgrade는 금지. |
-| AI Assistant general coding boundary hardening | P2 | `QA-20260510-0463`의 일반 Python coding WARN 후속. 상세 계획: [ai-assistant-general-coding-boundary-plan.md](ai-assistant-general-coding-boundary-plan.md) |
 | AI Assistant operational artifact hardening | P2 | 운영 스크립트/Slack 알림/로그 대응 절차를 typed artifact로 생성·수정. 상세 계획: [ai-assistant-ops-artifact-plan.md](ai-assistant-ops-artifact-plan.md) |
 
 ---
@@ -38,6 +37,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI Assistant general coding boundary hardening~~ | — | **완료** — 일반 코딩/알고리즘/학습용 코드 요청을 `general_coding` deterministic guard로 short-circuit하고, 운영 문맥 코드 요청은 허용 예외로 유지. Cloud Run monitoring supervisor prompt도 frontend guard 정책과 정렬. Local targeted QA `QA-20260511-0467` 기록, 배포 후 production 재검증은 해당 QA의 skipped surface / expert nextAction 후속으로 남김. 상세 계획서 archive 이동: [archive/ai-assistant-general-coding-boundary-plan.md](archive/ai-assistant-general-coding-boundary-plan.md) |
 | ~~AI Chat UI/UX 개선 (B1·I1~I4·M1~M7)~~ | — | **완료** — AI Chat 코드블록/복사 접근성/빈 상태 prompt/대화 한도/Reporter CTA/Analyst 자동 분석/상세 분석 copy/sidebar fullscreen handoff 개선 완료. GitLab branch validate `2513712243` success, `v8.11.124` tag pipeline `2513741959` success, release-facing Vercel targeted QA `QA-20260510-0466` 기록. 상세 계획서 archive 이동: [archive/ai-chat-ux-improvement-plan.md](archive/ai-chat-ux-improvement-plan.md) |
 | ~~AI SDK v6 structured output migration~~ | — | **완료** — Root App NLQ entity extraction/artifact intent 라우트와 Cloud Run orchestrator structured-output helper를 deprecated `generateObject` 직접 호출에서 `generateText + Output.object`로 이전. `generateStructuredOutputWithFallback` 명명으로 helper 의미를 정렬하고 provider fallback/text JSON fallback/retry budget 동작은 유지. Local targeted QA `QA-20260510-0462` 기록. |
 | ~~AI NLQ entity extraction hardening~~ | — | **완료** — `/api/ai/nlq/extract-entities`에 `withAuth` + `withRateLimit` 적용, server registry 기반 enum + client response normalizer + confidence threshold로 LLM 추출값 신뢰 경계 보강, `sendQuery`에서 off-domain guard를 entity extraction보다 먼저 실행하도록 순서 조정. Local targeted QA `QA-20260510-0461` 기록. |

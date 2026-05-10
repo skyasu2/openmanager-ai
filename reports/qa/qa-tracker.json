@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T12:53:07.527Z"
+    "updatedAt": "2026-05-10T15:20:02.963Z"
   },
   "sequence": {
-    "nextRunNumber": 467
+    "nextRunNumber": 468
   },
   "summary": {
-    "totalRecordedRuns": 464,
+    "totalRecordedRuns": 465,
     "totalRuns": 376,
-    "excludedRuns": 88,
+    "excludedRuns": 89,
     "totalChecks": 3342,
     "totalPassed": 3215,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 533,
+    "completedItems": 534,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0466",
     "lastRecordedAt": "2026-05-10T12:53:07.527Z",
-    "latestRecordedRunId": "QA-20260510-0466",
-    "latestRecordedAt": "2026-05-10T12:53:07.527Z"
+    "latestRecordedRunId": "QA-20260511-0467",
+    "latestRecordedAt": "2026-05-10T15:20:02.963Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13049,6 +13049,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-10T12:53:07.527Z"
+    },
+    "ai-assistant-general-coding-boundary": {
+      "id": "ai-assistant-general-coding-boundary",
+      "title": "Guard general coding and algorithm requests at the AI Assistant input boundary",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260511-0467",
+      "firstSeenAt": "2026-05-10T15:20:02.963Z",
+      "lastSeenRunId": "QA-20260511-0467",
+      "lastSeenAt": "2026-05-10T15:20:02.963Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "off-domain guard, classifier, useQueryExecution, and Cloud Run prompt tests passed after implementation",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T15:20:02.963Z"
     }
   },
   "runs": [
@@ -49800,6 +49824,80 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0467",
+      "recordedAt": "2026-05-10T15:20:02.963Z",
+      "recordedAtKst": "2026-05-11 00:20:02 KST",
+      "title": "Local QA - AI Assistant General Coding Boundary",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0467.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "Cloud Run AI Engine local source",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "9d06193e64b260eaa7c1d37a329a5641b2c99b08"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Root App off-domain guard general_coding category",
+        "Root App query classifier off-domain category mapping",
+        "AI Assistant input boundary short-circuit before entity extraction and stream/job routing",
+        "Cloud Run monitoring supervisor prompt coding-boundary alignment",
+        "Root App type/lint/quick/contract gates",
+        "Cloud Run AI Engine type/full test gates"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "live provider calls",
+        "release tag deployment",
+        "production conversational AI QA for the new deterministic guard"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "General coding requests are now covered by deterministic guard, classifier, execution-boundary, and prompt-alignment tests without invoking live providers.",
+          "nextAction": "Recheck the same prompt in production after the next release deployment."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Operational code requests remain unguarded by regression tests, preserving log parsing, monitoring automation, PromQL, and runbook support.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -49808,17 +49906,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 222,
-      "appropriateCount": 194,
+      "seenCount": 223,
+      "appropriateCount": 195,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 38,
-      "lastRunId": "QA-20260510-0466",
-      "lastSeenAt": "2026-05-10T12:53:07.527Z",
+      "lastRunId": "QA-20260511-0467",
+      "lastSeenAt": "2026-05-10T15:20:02.963Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The tested change is UI/rendering/accessibility focused; no prompt, routing, data grounding, or response parsing behavior changed in this release.",
-      "lastNextAction": ""
+      "lastRationale": "General coding requests are now covered by deterministic guard, classifier, execution-boundary, and prompt-alignment tests without invoking live providers.",
+      "lastNextAction": "Recheck the same prompt in production after the next release deployment."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -49859,16 +49957,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 154,
-      "appropriateCount": 137,
+      "seenCount": 155,
+      "appropriateCount": 138,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260510-0466",
-      "lastSeenAt": "2026-05-10T12:53:07.527Z",
+      "lastRunId": "QA-20260511-0467",
+      "lastSeenAt": "2026-05-10T15:20:02.963Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2513741959 succeeded, production /api/version reports v8.11.124, and Vercel usage was checked after deployment.",
+      "lastRationale": "Operational code requests remain unguarded by regression tests, preserving log parsing, monitoring automation, PromQL, and runbook support.",
       "lastNextAction": ""
     },
     "test-automation": {

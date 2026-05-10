@@ -1,0 +1,95 @@
+{
+  "runId": "QA-20260511-0467",
+  "recordedAt": "2026-05-10T15:20:02.963Z",
+  "recordedAtKst": "2026-05-11 00:20:02 KST",
+  "runTitle": "Local QA - AI Assistant General Coding Boundary",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "Cloud Run AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "9d06193e64b260eaa7c1d37a329a5641b2c99b08"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Root App off-domain guard general_coding category",
+    "Root App query classifier off-domain category mapping",
+    "AI Assistant input boundary short-circuit before entity extraction and stream/job routing",
+    "Cloud Run monitoring supervisor prompt coding-boundary alignment",
+    "Root App type/lint/quick/contract gates",
+    "Cloud Run AI Engine type/full test gates"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "live provider calls",
+    "release tag deployment",
+    "production conversational AI QA for the new deterministic guard"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "General coding requests are now covered by deterministic guard, classifier, execution-boundary, and prompt-alignment tests without invoking live providers.",
+      "nextAction": "Recheck the same prompt in production after the next release deployment."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Operational code requests remain unguarded by regression tests, preserving log parsing, monitoring automation, PromQL, and runbook support.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-general-coding-boundary",
+      "title": "Guard general coding and algorithm requests at the AI Assistant input boundary",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "off-domain guard, classifier, useQueryExecution, and Cloud Run prompt tests passed after implementation",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Initial failing specs were committed before implementation: off-domain guard, query classifier, useQueryExecution, and Cloud Run prompt policy tests failed as expected.",
+    "Targeted Root App Vitest passed: src/lib/ai/off-domain-guard.test.ts, src/lib/ai/query-classifier.test.ts, src/hooks/ai/core/useQueryExecution.test.ts (88/88).",
+    "Targeted Cloud Run prompt Vitest passed: src/domains/monitoring/supervisor-prompt.test.ts (1/1).",
+    "npm run type-check passed.",
+    "npm run lint passed with existing qa-tracker.json max-size info only.",
+    "npm run test:quick passed.",
+    "npm run test:contract passed 24/24.",
+    "cd cloud-run/ai-engine && npm run type-check passed.",
+    "cd cloud-run/ai-engine && npm run test passed 1085/1085.",
+    "git diff --check passed.",
+    "No live AI or external provider call was executed for this boundary change."
+  ],
+  "links": []
+}

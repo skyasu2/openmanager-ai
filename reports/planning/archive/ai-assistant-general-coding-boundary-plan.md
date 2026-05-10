@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-10
+> Last reviewed: 2026-05-11
 > Tags: ai-assistant, guardrail, coding-boundary, qa
 
 # AI Assistant General Coding Boundary Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-10
-- TODO.md 연결: Backlog > AI Assistant general coding boundary hardening
+- TODO.md 연결: Backlog 완료 이력 > AI Assistant general coding boundary hardening
 - 근거 QA: `QA-20260510-0463` off-domain Python coding WARN
 
 ## 목표
@@ -80,35 +80,35 @@ AI Assistant가 서버 운영·모니터링 제품 경계를 유지하면서 일
 
 ### 테스트 시나리오
 
-- [ ] `off-domain-guard`: `파이썬 피보나치 코드 짜줘`가 `general_coding`으로 short-circuit된다.
-- [ ] `off-domain-guard`: `leetcode two sum 풀어줘`가 `general_coding`으로 short-circuit된다.
-- [ ] `off-domain-guard`: `Python으로 nginx access log 에러율 집계 스크립트 만들어줘`는 guard되지 않는다.
-- [ ] `query-classifier`: 일반 코딩 질문은 `off-domain` intent와 `general_coding` category를 가진다.
-- [ ] `useQueryExecution`: 일반 코딩 guard hit 시 `sendMessage`/`asyncQuery.sendQuery`/entity extraction이 호출되지 않는다.
-- [ ] Cloud Run prompt: 일반 질문 best-effort 문구가 일반 코딩 guard 정책과 충돌하지 않는다.
+- [x] `off-domain-guard`: `파이썬 피보나치 코드 짜줘`가 `general_coding`으로 short-circuit된다.
+- [x] `off-domain-guard`: `leetcode two sum 풀어줘`가 `general_coding`으로 short-circuit된다.
+- [x] `off-domain-guard`: `Python으로 nginx access log 에러율 집계 스크립트 만들어줘`는 guard되지 않는다.
+- [x] `query-classifier`: 일반 코딩 질문은 `off-domain` intent와 `general_coding` category를 가진다.
+- [x] `useQueryExecution`: 일반 코딩 guard hit 시 `sendMessage`/`asyncQuery.sendQuery`/entity extraction이 호출되지 않는다.
+- [x] Cloud Run prompt: 일반 질문 best-effort 문구가 일반 코딩 guard 정책과 충돌하지 않는다.
 
 ## Task 목록
 
-> Status가 Approved이므로 구현 착수 가능. 구현은 테스트 시나리오 기반 failing test를 먼저 추가한다.
+> SDD 순서대로 failing test를 먼저 커밋한 뒤 구현/검증/QA 기록을 완료했다.
 
-- [ ] Task 0 — failing regression tests 추가
+- [x] Task 0 — failing regression tests 추가
   - `off-domain-guard`, `query-classifier`, `useQueryExecution`에 일반 코딩 guard 기대값을 먼저 고정
-- [ ] Task 1 — `general_coding` category 구현
+- [x] Task 1 — `general_coding` category 구현
   - 코딩/알고리즘 패턴 추가
   - 운영 문맥 예외 적용
   - deterministic response template 추가
-- [ ] Task 2 — Cloud Run prompt 정책 정렬
+- [x] Task 2 — Cloud Run prompt 정책 정렬
   - 일반 질문 best-effort 문구에 “일반 코딩/알고리즘 생성은 frontend guard에서 제한” 의미 반영
   - 서버 운영 코드 요청은 허용된다는 경계 유지
-- [ ] Task 3 — 검증
+- [x] Task 3 — 검증
   - targeted Vitest
   - `npm run type-check`
   - `npm run lint`
   - `npm run test:quick`
   - AI/API 계약 표면 영향 판단 후 `npm run test:contract`
-- [ ] Task 4 — QA 기록
+- [x] Task 4 — QA 기록
   - local targeted QA 기록
-  - 배포 후 Vercel production에서 `파이썬 피보나치 코드 짜줘` 재검증
+  - 배포 후 Vercel production에서 `파이썬 피보나치 코드 짜줘` 재검증은 `QA-20260511-0467`의 `skippedSurfaces`/expert `nextAction` 후속으로 기록
   - WARN이 발생하면 QA JSON `notes` 또는 `pendingImprovements`에 명시
 
 ## 단계별 커밋/푸시/배포 판단
@@ -140,10 +140,26 @@ AI Assistant가 서버 운영·모니터링 제품 경계를 유지하면서 일
 
 ## 완료 기준
 
-- [ ] 일반 코딩 질문이 deterministic guard 응답으로 처리된다.
-- [ ] 운영 관련 코드/스크립트 요청은 기존 AI 경로를 유지한다.
-- [ ] targeted 테스트 전체 통과
-- [ ] `type-check`, `lint`, `test:quick` 통과
-- [ ] 계약 변경 영향이 있으면 `test:contract` 통과
-- [ ] QA 기록 생성
-- [ ] 배포 후 production QA에서 `QA-20260510-0463`의 Python coding WARN이 재발하지 않음
+- [x] 일반 코딩 질문이 deterministic guard 응답으로 처리된다.
+- [x] 운영 관련 코드/스크립트 요청은 기존 AI 경로를 유지한다.
+- [x] targeted 테스트 전체 통과
+- [x] `type-check`, `lint`, `test:quick` 통과
+- [x] 계약 변경 영향이 있으면 `test:contract` 통과
+- [x] QA 기록 생성: `QA-20260511-0467`
+- [x] 배포 후 production QA 재검증 후속 기록: `QA-20260511-0467` skipped surface / expert nextAction
+
+## Validation
+
+- Failing spec commit: `aa26aac0d test(spec): general coding boundary add failing tests before implementation`
+- Implementation commit: `9d06193e6 fix(ai): enforce general coding guard boundary`
+- Targeted Root App Vitest: `src/lib/ai/off-domain-guard.test.ts`, `src/lib/ai/query-classifier.test.ts`, `src/hooks/ai/core/useQueryExecution.test.ts` 88/88 PASS
+- Targeted Cloud Run prompt Vitest: `src/domains/monitoring/supervisor-prompt.test.ts` 1/1 PASS
+- `npm run type-check` PASS
+- `npm run lint` PASS (기존 `qa-tracker.json` max-size info only)
+- `npm run test:quick` PASS
+- `npm run test:contract` PASS (24/24)
+- `cd cloud-run/ai-engine && npm run type-check` PASS
+- `cd cloud-run/ai-engine && npm run test` PASS (1085/1085)
+- `git diff --check` PASS
+- QA 기록: `QA-20260511-0467`
+- 후속: 다음 release/tag 배포 후 Vercel production에서 `파이썬 피보나치 코드 짜줘` 재검증
