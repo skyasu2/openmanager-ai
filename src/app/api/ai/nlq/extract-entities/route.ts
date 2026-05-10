@@ -20,7 +20,7 @@ import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 
-export const runtime = 'nodejs';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
 export const maxDuration = 10;
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
