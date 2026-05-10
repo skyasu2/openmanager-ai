@@ -65,7 +65,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'critical',
     description:
-      'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject API를 통해 tool-calling LLM 응답, structured output, 스트리밍을 제공',
+      'Vercel이 개발한 AI 애플리케이션 프레임워크. generateText + Output.object와 streamText를 통해 tool-calling LLM 응답, structured output, 스트리밍을 제공',
     implementation:
       'deterministic/single-first 런타임을 기본값으로 두고, RCA/report/advisor/vision 같은 복잡 질의만 5개 라우팅 에이전트로 escalation',
     version: '6.0',

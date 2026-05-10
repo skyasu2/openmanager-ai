@@ -22,7 +22,7 @@ export interface ProviderHealth {
 export interface ModelCapabilities {
   /** 툴 호출(Function Calling) 지원 여부 */
   supportsToolCalling: boolean;
-  /** 구조화된 출력(Structured Output / generateObject) 지원 여부 */
+  /** 구조화된 출력(Structured Output / AI SDK Output.object) 지원 여부 */
   supportsStructuredOutput: boolean;
   /** 멀티모달(Vision) 지원 여부 */
   supportsVision: boolean;

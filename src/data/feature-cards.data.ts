@@ -22,7 +22,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '⚡ Groq Cloud: LPU 기반 초고속 500 Tokens/s 추론 (llama-4-scout-17b) — NLQ / Analyst / Tool-calling 1순위 모델',
         '🛡️ Mistral AI: mistral-small-latest — Groq/Cerebras 장애 또는 쿼터 초과 시 무료 티어 친화적 text last-resort fallback 담당',
         '👁️ Gemini Flash-Lite: Vision Agent 전용, 스크린샷과 긴 로그 컨텍스트 분석 — 사고 토큰 없는 안정적 비전 분석 경로',
-        '▲ Vercel AI SDK 6.0: streamText, generateObject 중심 API — tool-calling LLM과 structured output 기반 스트리밍 응답',
+        '▲ Vercel AI SDK 6.0: streamText, generateText + Output.object 중심 API — tool-calling LLM과 structured output 기반 스트리밍 응답',
         '🤖 Conditional Agent Escalation: 단순 조회는 deterministic/single path에 남기고 복잡 RCA/report/advisor/vision 요청만 전문 에이전트로 승격',
         '🧪 Custom Monitoring ML: SimpleAnomalyDetector + TrendPredictor.enhanced — 저지연·설명가능성 중심의 운영형 이상 탐지/예측',
         '🔍 Knowledge Retrieval Lite: BM25 RPC + metadata boost 기반 경량 지식 검색 — 외부 프레임워크 없이 직접 구성한 운영 지식 검색',

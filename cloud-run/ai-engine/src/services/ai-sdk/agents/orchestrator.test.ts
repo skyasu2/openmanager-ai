@@ -118,22 +118,28 @@ vi.mock('../../../lib/redis-client', async (importOriginal) => {
 
 // Mock AI SDK - now we mock the actual 'ai' package
 vi.mock('ai', () => ({
-  generateText: vi.fn(async () => ({
-    text: 'Mock response from generateText',
-    usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
-    finishReason: 'stop',
-    toolCalls: [],
-    steps: [],
-  })),
-  generateObject: vi.fn(async () => ({
-    object: {
-      selectedAgent: 'NLQ Agent',
-      confidence: 0.86,
-      reasoning: 'Mock reasoning for agent selection',
-    },
-    usage: { promptTokens: 50, completionTokens: 30, totalTokens: 80 },
-    finishReason: 'stop',
-  })),
+  generateText: vi.fn(async (options?: { output?: unknown }) =>
+    options?.output
+      ? {
+          output: {
+            selectedAgent: 'NLQ Agent',
+            confidence: 0.86,
+            reasoning: 'Mock reasoning for agent selection',
+          },
+          usage: { inputTokens: 50, outputTokens: 30, totalTokens: 80 },
+          finishReason: 'stop',
+        }
+      : {
+          text: 'Mock response from generateText',
+          usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
+          finishReason: 'stop',
+          toolCalls: [],
+          steps: [],
+        }
+  ),
+  Output: {
+    object: vi.fn((config: unknown) => ({ kind: 'object-output', config })),
+  },
   streamText: vi.fn(() => ({
     textStream: (async function* () {
       yield 'Mock ';

@@ -1,7 +1,7 @@
 /**
  * Zod Schemas for Multi-Agent Orchestration
  *
- * Type-safe structured output schemas for generateObject.
+ * Type-safe structured output schemas for AI SDK Output.object.
  * Replaces unsafe regex parsing with validated structured responses.
  *
  * @version 1.0.0
@@ -23,7 +23,7 @@ export type AgentName = (typeof AGENT_NAMES)[number];
 
 /**
  * Routing decision schema for orchestrator
- * Used with generateObject for type-safe agent selection
+ * Used with Output.object for type-safe agent selection
  */
 export const routingSchema = z.object({
   selectedAgent: z.enum(['NLQ Agent', 'Analyst Agent', 'Reporter Agent', 'Advisor Agent', 'Vision Agent', 'NONE']),

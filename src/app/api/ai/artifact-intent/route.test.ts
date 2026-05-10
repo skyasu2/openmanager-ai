@@ -14,8 +14,12 @@ const mocks = vi.hoisted(() => {
   return {
     capturedLimiters: [] as Array<{ config?: { maxRequests?: number } }>,
     createMistral: vi.fn(() => model),
-    generateObject: vi.fn(),
+    generateText: vi.fn(),
     model,
+    outputObject: vi.fn((config: unknown) => ({
+      kind: 'object-output',
+      config,
+    })),
   };
 });
 
@@ -24,7 +28,10 @@ vi.mock('@ai-sdk/mistral', () => ({
 }));
 
 vi.mock('ai', () => ({
-  generateObject: mocks.generateObject,
+  generateText: mocks.generateText,
+  Output: {
+    object: mocks.outputObject,
+  },
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
@@ -67,8 +74,13 @@ describe('artifact intent route', () => {
     process.env.MISTRAL_API_KEY = 'test-mistral-key';
     mocks.capturedLimiters.length = 0;
     mocks.createMistral.mockClear();
-    mocks.generateObject.mockReset();
+    mocks.generateText.mockReset();
     mocks.model.mockClear();
+    mocks.outputObject.mockReset();
+    mocks.outputObject.mockImplementation((config: unknown) => ({
+      kind: 'object-output',
+      config,
+    }));
   });
 
   it('binds POST to the AI analysis rate limiter', async () => {
@@ -87,7 +99,7 @@ describe('artifact intent route', () => {
     const body = await response.json();
 
     expect(body).toEqual({ kind: 'none', reason: 'llm_unavailable' });
-    expect(mocks.generateObject).not.toHaveBeenCalled();
+    expect(mocks.generateText).not.toHaveBeenCalled();
   });
 
   it('keeps non-candidate chat behind the local gate', async () => {
@@ -99,7 +111,7 @@ describe('artifact intent route', () => {
     const body = await response.json();
 
     expect(body).toEqual({ kind: 'none', reason: 'local_gate_none' });
-    expect(mocks.generateObject).not.toHaveBeenCalled();
+    expect(mocks.generateText).not.toHaveBeenCalled();
   });
 
   it('runs the local gate before checking provider availability', async () => {
@@ -112,12 +124,12 @@ describe('artifact intent route', () => {
     const body = await response.json();
 
     expect(body).toEqual({ kind: 'none', reason: 'local_gate_none' });
-    expect(mocks.generateObject).not.toHaveBeenCalled();
+    expect(mocks.generateText).not.toHaveBeenCalled();
   });
 
   it('classifies artifact candidates with deterministic Mistral structured output', async () => {
-    mocks.generateObject.mockResolvedValueOnce({
-      object: { kind: 'incident-report' },
+    mocks.generateText.mockResolvedValueOnce({
+      output: { kind: 'incident-report' },
     });
     const { POST } = await importRoute();
 
@@ -134,8 +146,9 @@ describe('artifact intent route', () => {
       apiKey: 'test-mistral-key',
     });
     expect(mocks.model).toHaveBeenCalledWith('ministral-3b-latest');
-    expect(mocks.generateObject).toHaveBeenCalledWith(
+    expect(mocks.generateText).toHaveBeenCalledWith(
       expect.objectContaining({
+        output: expect.objectContaining({ kind: 'object-output' }),
         temperature: 0,
         maxOutputTokens: 24,
         providerOptions: {
@@ -144,13 +157,19 @@ describe('artifact intent route', () => {
             structuredOutputs: true,
           },
         },
+        timeout: 3000,
+      })
+    );
+    expect(mocks.outputObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'artifact_intent',
       })
     );
   });
 
   it('maps monitoring-analysis classification', async () => {
-    mocks.generateObject.mockResolvedValueOnce({
-      object: { kind: 'monitoring-analysis' },
+    mocks.generateText.mockResolvedValueOnce({
+      output: { kind: 'monitoring-analysis' },
     });
     const { POST } = await importRoute();
 
@@ -166,7 +185,7 @@ describe('artifact intent route', () => {
   });
 
   it('falls back to none when Mistral returns none or fails', async () => {
-    mocks.generateObject.mockResolvedValueOnce({ object: { kind: 'none' } });
+    mocks.generateText.mockResolvedValueOnce({ output: { kind: 'none' } });
     const { POST } = await importRoute();
 
     const noneResponse = await POST(
@@ -177,9 +196,7 @@ describe('artifact intent route', () => {
       reason: 'llm_none',
     });
 
-    mocks.generateObject.mockRejectedValueOnce(
-      new Error('provider unavailable')
-    );
+    mocks.generateText.mockRejectedValueOnce(new Error('provider unavailable'));
     const errorResponse = await POST(
       createPostRequest({ query: '장애 리포트 만들어줘' })
     );

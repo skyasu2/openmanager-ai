@@ -119,7 +119,7 @@ vi.mock('./orchestrator-agent-stream', () => ({
 }));
 
 vi.mock('./orchestrator-object-fallback', () => ({
-  generateObjectWithFallback: (...args: unknown[]) =>
+  generateStructuredOutputWithFallback: (...args: unknown[]) =>
     mockGenerateObjectWithFallback(...args),
 }));
 

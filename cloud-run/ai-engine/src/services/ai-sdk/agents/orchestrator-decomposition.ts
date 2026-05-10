@@ -21,7 +21,7 @@ import {
 } from './orchestrator-routing';
 import { saveAgentFindingsToContext } from './orchestrator-context';
 import { logger } from '../../../lib/logger';
-import { generateObjectWithFallback } from './orchestrator-object-fallback';
+import { generateStructuredOutputWithFallback } from './orchestrator-object-fallback';
 import {
   streamTextInChunks,
   unifyResults,
@@ -143,7 +143,7 @@ ${query}
 - 최대 4개의 서브태스크로 제한
 - Vision Agent는 첨부 이미지/스크린샷이 필요한 경우에만 할당`;
 
-    const result = await generateObjectWithFallback({
+    const result = await generateStructuredOutputWithFallback({
       model,
       schema: taskDecomposeSchema,
       system: '복합 질문을 서브태스크로 분해하는 전문가입니다.',

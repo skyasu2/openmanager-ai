@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 18:16:42 KST
+> Generated at: 2026-05-10 19:00:24 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 459 |
+| Total Recorded Runs | 460 |
 | Total Runs (Counted) | 375 |
-| Non-counted Runs | 84 |
+| Non-counted Runs | 85 |
 | Total Checks | 3331 |
 | Passed | 3204 |
 | Failed | 117 |
-| Completed Items | 528 |
+| Completed Items | 531 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0458 (2026-05-10T07:26:58.691Z) |
-| Latest Recorded Run | QA-20260510-0461 (2026-05-10T09:16:42.071Z) |
+| Latest Recorded Run | QA-20260510-0462 (2026-05-10T10:00:23.786Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0461 (2026-05-10T09:16:42.071Z)
+Latest run: QA-20260510-0462 (2026-05-10T10:00:23.786Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -50,7 +50,7 @@ Latest run: QA-20260510-0461 (2026-05-10T09:16:42.071Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T09:16:42.071Z -> 2026-05-10T09:16:42.071Z (24h)
+- Window: 2026-05-09T10:00:23.786Z -> 2026-05-10T10:00:23.786Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -61,7 +61,7 @@ Latest run: QA-20260510-0461 (2026-05-10T09:16:42.071Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T09:16:42.071Z -> 2026-05-10T09:16:42.071Z (24h)
+- Window: 2026-05-09T10:00:23.786Z -> 2026-05-10T10:00:23.786Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,10 +75,10 @@ Latest run: QA-20260510-0461 (2026-05-10T09:16:42.071Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA eb8f7be2
-- Coverage Packs: ai-core
-- Covered Surfaces: AI NLQ entity extraction API auth/rate-limit boundary, AI Assistant sendQuery off-domain guard order, clarification entity confidence trust boundary, entity extractor client fallback and normalization, entity extractor server inventory SSOT sync
-- Skipped Surfaces: Vercel production browser QA, live Groq call, release tag deployment
+- Deployment: SHA f856b024
+- Coverage Packs: ai-core, observability-pack
+- Covered Surfaces: Root App NLQ entity extraction structured output route, Root App artifact intent structured output route, Cloud Run orchestrator structured output fallback helper, Cloud Run provider fallback and text JSON fallback behavior, AI SDK v6 architecture documentation alignment
+- Skipped Surfaces: Vercel production browser QA, live provider calls, release tag deployment
 
 ## Links (Latest Run)
 
@@ -301,6 +301,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-retrieval-representative-rag-smoke-expanded: Expand Supabase RAG smoke beyond two happy-path keywords (completed 1회, last QA-20260510-0449)
 - ai-retrieval-stale-test-mock-cleanup: Remove stale query-expansion/reranker mocks from searchKnowledgeBase tests (completed 1회, last QA-20260510-0444)
 - ai-retrieval-unused-graph-weight-index-removed: Remove unused legacy graph weight index (completed 1회, last QA-20260510-0451)
+- ai-sdk-v6-engine-output-object-migration: Migrate Cloud Run orchestrator structured output helper to generateText + Output.object (completed 1회, last QA-20260510-0462)
+- ai-sdk-v6-root-output-object-migration: Migrate Root App structured output routes to generateText + Output.object (completed 1회, last QA-20260510-0462)
+- ai-sdk-v6-structured-output-doc-alignment: Align active architecture copy with AI SDK v6 structured output best practice (completed 1회, last QA-20260510-0462)
 - ai-security-prompt-injection-smoke-v81197: Prompt-injection smoke does not leak secrets (completed 1회, last QA-20260505-0407)
 - ai-server-snapshot-artifact-cancellation-v81185: Server snapshot artifact respects cancellation and preserves production rendering (completed 1회, last QA-20260503-0395)
 - ai-server-snapshot-artifact-v81184: Server status snapshot artifact routes and renders in production without LLM/Cloud Run cost path (completed 1회, last QA-20260503-0394)
@@ -707,6 +710,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0462 | 2026-05-10T10:00:23.786Z | targeted | no | no | Local QA - AI SDK v6 Structured Output Migration | 10 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0461 | 2026-05-10T09:16:42.071Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening Registry Sync | 9 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0460 | 2026-05-10T09:09:14.056Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening | 8 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0459 | 2026-05-10T08:01:49.702Z | targeted | no | no | Local QA - AI Assistant Off-Domain Guardrail | 9 | 3 | 0 | 0 | 0 | 0 |
@@ -726,4 +730,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0445 | 2026-05-10T01:10:46.197Z | targeted | no | yes | Local AI Retrieval Actual-Use Smoke and Dependency Cleanup QA | 14 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0444 | 2026-05-10T00:55:24.249Z | targeted | no | yes | Local AI Retrieval Dead Runtime Cleanup QA | 12 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260510-0443 | 2026-05-10T00:32:59.649Z | targeted | no | yes | Local AI Retrieval GraphRAG Tombstone Route Removal QA | 10 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260510-0442 | 2026-05-10T00:14:02.520Z | targeted | no | yes | Local AI Retrieval Legacy Graph Weight Cleanup QA | 9 | 4 | 0 | 0 | 0 | 0 |

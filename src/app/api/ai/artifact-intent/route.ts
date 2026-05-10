@@ -2,11 +2,12 @@ import {
   createMistral,
   type MistralLanguageModelOptions,
 } from '@ai-sdk/mistral';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { shouldUseLLMChatArtifactIntent } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import { withAuth } from '@/lib/auth/api-auth';
+import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 
 export const maxDuration = 5;
@@ -45,14 +46,16 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ kind: 'none', reason: 'llm_unavailable' });
   }
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), CLASSIFIER_TIMEOUT_MS);
-
   try {
     const mistral = createMistral({ apiKey });
-    const { object } = await generateObject({
+    const { output } = await generateText({
       model: mistral(CLASSIFIER_MODEL),
-      schema: IntentSchema,
+      output: Output.object({
+        schema: IntentSchema,
+        name: 'artifact_intent',
+        description:
+          'Classify whether the query should open a report or monitoring analysis artifact flow.',
+      }),
       system: SYSTEM_PROMPT,
       prompt: query,
       temperature: 0,
@@ -63,23 +66,24 @@ async function handler(request: NextRequest): Promise<NextResponse> {
           structuredOutputs: true,
         } satisfies MistralLanguageModelOptions,
       },
-      abortSignal: controller.signal,
+      timeout: CLASSIFIER_TIMEOUT_MS,
     });
 
     if (
-      object.kind === 'incident-report' ||
-      object.kind === 'monitoring-analysis'
+      output.kind === 'incident-report' ||
+      output.kind === 'monitoring-analysis'
     ) {
       return NextResponse.json({
-        kind: object.kind,
+        kind: output.kind,
         reason: 'llm_artifact_classification',
       });
     }
     return NextResponse.json({ kind: 'none', reason: 'llm_none' });
-  } catch {
+  } catch (error) {
+    logger.warn('[AI artifact intent] classifier fallback', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return NextResponse.json({ kind: 'none', reason: 'llm_unavailable' });
-  } finally {
-    clearTimeout(timeoutId);
   }
 }
 

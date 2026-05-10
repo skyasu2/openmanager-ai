@@ -209,7 +209,7 @@ export const CEREBRAS_MODEL_POLICIES = {
     smokeEvidence: [
       '2026-05-02 smoke passed llama3.1-8b chat completions HTTP 200',
       'tool calling smoke passed',
-      'generateObject smoke passed',
+      'structured output smoke passed',
     ],
     reasoningCapability: NO_PROVIDER_NATIVE_REASONING,
     freeTierLimitSummary:

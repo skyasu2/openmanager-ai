@@ -6,7 +6,7 @@
  */
 
 import { createGroq } from '@ai-sdk/groq';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -17,6 +17,7 @@ import {
   SYSTEM_PROMPT,
 } from '@/lib/ai/entity-extractor';
 import { withAuth } from '@/lib/auth/api-auth';
+import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 
 export const runtime = 'nodejs';
@@ -32,27 +33,43 @@ const EntitySchema = z.object({
 });
 
 async function postHandler(request: NextRequest) {
+  let query: unknown;
+
   try {
-    const { query } = await request.json();
+    ({ query } = await request.json());
+  } catch {
+    return NextResponse.json({ confidence: 0 }, { status: 400 });
+  }
 
-    if (!query || typeof query !== 'string' || query.trim().length === 0) {
-      return NextResponse.json({ confidence: 0 }, { status: 400 });
-    }
+  if (!query || typeof query !== 'string' || query.trim().length === 0) {
+    return NextResponse.json({ confidence: 0 }, { status: 400 });
+  }
 
-    const { object } = await generateObject({
+  try {
+    const { output } = await generateText({
       model: groq('llama-4-scout-17b-8e-instruct'),
       system: SYSTEM_PROMPT,
       prompt: query,
-      schema: EntitySchema,
+      temperature: 0,
+      maxOutputTokens: 64,
+      output: Output.object({
+        schema: EntitySchema,
+        name: 'nlq_entities',
+        description:
+          'Extract server, metric, time range, and confidence for monitoring clarification.',
+      }),
     });
 
     return NextResponse.json({
-      server: object.server ?? undefined,
-      metric: object.metric ?? undefined,
-      timeRange: object.timeRange ?? undefined,
-      confidence: object.confidence,
+      server: output.server ?? undefined,
+      metric: output.metric ?? undefined,
+      timeRange: output.timeRange ?? undefined,
+      confidence: output.confidence,
     });
-  } catch {
+  } catch (error) {
+    logger.warn('[AI NLQ] entity extraction provider fallback', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return NextResponse.json({ confidence: 0 }, { status: 200 });
   }
 }

@@ -1,25 +1,31 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { LanguageModel } from 'ai';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
 vi.mock('../../../lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
 
-const mockGenerateObject = vi.fn();
 const mockGenerateText = vi.fn();
+const mockOutputObject = vi.fn((config: unknown) => ({
+  kind: 'object-output',
+  config,
+}));
 const mockSelectTextModel = vi.fn();
 
 vi.mock('ai', () => ({
-  generateObject: (...args: unknown[]) => mockGenerateObject(...args),
   generateText: (...args: unknown[]) => mockGenerateText(...args),
+  Output: {
+    object: (...args: unknown[]) => mockOutputObject(...args),
+  },
 }));
 
 vi.mock('./config/agent-model-selectors', () => ({
   selectTextModel: (...args: unknown[]) => mockSelectTextModel(...args),
 }));
 
-import { generateObjectWithFallback } from './orchestrator-object-fallback';
 import { __resetProviderRetryBudgetForTests } from '../../resilience/provider-fallback-control';
+import { generateStructuredOutputWithFallback } from './orchestrator-object-fallback';
 
 const testSchema = z.object({
   selectedAgent: z.string(),
@@ -29,8 +35,30 @@ const testSchema = z.object({
 
 type TestSchema = z.infer<typeof testSchema>;
 
+interface GenerateTextCall {
+  model?: unknown;
+  output?: unknown;
+  prompt?: string;
+}
+
+function languageModel(name: string): LanguageModel {
+  return { name } as unknown as LanguageModel;
+}
+
+function structuredCalls() {
+  return mockGenerateText.mock.calls.filter(([args]) =>
+    Boolean((args as GenerateTextCall).output)
+  );
+}
+
+function textFallbackCalls() {
+  return mockGenerateText.mock.calls.filter(
+    ([args]) => !Boolean((args as GenerateTextCall).output)
+  );
+}
+
 const baseOptions = {
-  model: {} as Parameters<typeof mockGenerateObject>[0]['model'],
+  model: languageModel('primary'),
   schema: testSchema,
   system: 'Test system prompt',
   prompt: 'Test prompt',
@@ -45,27 +73,31 @@ const baseOptions = {
   },
 };
 
-describe('generateObjectWithFallback', () => {
+describe('generateStructuredOutputWithFallback', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useRealTimers();
     __resetProviderRetryBudgetForTests();
     mockSelectTextModel.mockReset();
+    mockOutputObject.mockImplementation((config: unknown) => ({
+      kind: 'object-output',
+      config,
+    }));
   });
 
-  it('should return object from generateObject on success', async () => {
+  it('returns object from generateText Output.object on success', async () => {
     const expected: TestSchema = {
       selectedAgent: 'NLQ Agent',
       confidence: 0.95,
       reasoning: 'Simple query',
     };
 
-    mockGenerateObject.mockResolvedValue({
-      object: expected,
+    mockGenerateText.mockResolvedValue({
+      output: expected,
       usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
     });
 
-    const result = await generateObjectWithFallback(baseOptions);
+    const result = await generateStructuredOutputWithFallback(baseOptions);
 
     expect(result.object).toEqual(expected);
     expect(result.usage).toEqual({
@@ -73,83 +105,91 @@ describe('generateObjectWithFallback', () => {
       outputTokens: 50,
       totalTokens: 150,
     });
-    expect(mockGenerateText).not.toHaveBeenCalled();
+    expect(structuredCalls()).toHaveLength(1);
+    expect(textFallbackCalls()).toHaveLength(0);
+    expect(mockOutputObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        schema: testSchema,
+        name: 'structured_output',
+      })
+    );
   });
 
-  it('should fall back to text parsing on schema error', async () => {
-    mockGenerateObject.mockRejectedValue(
-      new Error('json_schema: invalid format')
-    );
+  it('falls back to text parsing on structured output schema error', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(new Error('json_schema: invalid format'))
+      .mockResolvedValueOnce({
+        text: JSON.stringify({
+          selectedAgent: 'Analyst Agent',
+          confidence: 0.8,
+          reasoning: 'Fallback parse',
+        }),
+        usage: { inputTokens: 200, outputTokens: 80, totalTokens: 280 },
+      });
 
-    const fallbackJson = JSON.stringify({
-      selectedAgent: 'Analyst Agent',
-      confidence: 0.8,
-      reasoning: 'Fallback parse',
-    });
-
-    mockGenerateText.mockResolvedValue({
-      text: fallbackJson,
-      usage: { inputTokens: 200, outputTokens: 80, totalTokens: 280 },
-    });
-
-    const result = await generateObjectWithFallback(baseOptions);
+    const result = await generateStructuredOutputWithFallback(baseOptions);
 
     expect(result.object.selectedAgent).toBe('Analyst Agent');
-    expect(mockGenerateText).toHaveBeenCalled();
+    expect(structuredCalls()).toHaveLength(1);
+    expect(textFallbackCalls()).toHaveLength(1);
   });
 
-  it('should handle code-fenced JSON in fallback text', async () => {
-    mockGenerateObject.mockRejectedValue(
-      new Error('failed to parse response')
-    );
-
-    const fencedResponse = `\`\`\`json
+  it('handles code-fenced JSON in fallback text', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(new Error('failed to parse response'))
+      .mockResolvedValueOnce({
+        text: `\`\`\`json
 {
   "selectedAgent": "Reporter Agent",
   "confidence": 0.7,
   "reasoning": "Report needed"
 }
-\`\`\``;
+\`\`\``,
+        usage: { inputTokens: 150, outputTokens: 60, totalTokens: 210 },
+      });
 
-    mockGenerateText.mockResolvedValue({
-      text: fencedResponse,
-      usage: { inputTokens: 150, outputTokens: 60, totalTokens: 210 },
-    });
-
-    const result = await generateObjectWithFallback(baseOptions);
+    const result = await generateStructuredOutputWithFallback(baseOptions);
 
     expect(result.object.selectedAgent).toBe('Reporter Agent');
   });
 
-  it('should rethrow non-schema errors without fallback', async () => {
-    mockGenerateObject.mockRejectedValue(new Error('API key invalid'));
+  it('rethrows non-schema errors without text fallback when provider fallback is unavailable', async () => {
+    mockGenerateText.mockRejectedValue(new Error('API key invalid'));
 
-    await expect(generateObjectWithFallback(baseOptions)).rejects.toThrow(
-      'API key invalid'
-    );
+    await expect(
+      generateStructuredOutputWithFallback({
+        ...baseOptions,
+        providerFallback: undefined,
+      })
+    ).rejects.toThrow('API key invalid');
 
-    expect(mockGenerateText).not.toHaveBeenCalled();
+    expect(structuredCalls()).toHaveLength(1);
+    expect(textFallbackCalls()).toHaveLength(0);
   });
 
-  it('should fall back to next provider on model access error', async () => {
-    const primaryModel = { name: 'primary' } as Parameters<typeof mockGenerateObject>[0]['model'];
-    const fallbackModel = { name: 'fallback' } as Parameters<typeof mockGenerateObject>[0]['model'];
+  it('falls back to next provider on model access error', async () => {
+    const primaryModel = languageModel('primary');
+    const fallbackModel = languageModel('fallback');
     const expected: TestSchema = {
       selectedAgent: 'Analyst Agent',
       confidence: 0.88,
       reasoning: 'Fallback provider succeeded',
     };
 
-    mockGenerateObject.mockImplementation(async ({ model }: { model: unknown }) => {
-      if (model === primaryModel) {
-        throw new Error('Model gpt-oss-120b does not exist or you do not have access to it.');
-      }
+    mockGenerateText.mockImplementation(
+      async ({ model }: { model: unknown }) => {
+        if (model === primaryModel) {
+          throw new Error(
+            'Model gpt-oss-120b does not exist or you do not have access to it.'
+          );
+        }
 
-      return {
-        object: expected,
-        usage: { inputTokens: 120, outputTokens: 40, totalTokens: 160 },
-      };
-    });
+        return {
+          output: expected,
+          usage: { inputTokens: 120, outputTokens: 40, totalTokens: 160 },
+        };
+      }
+    );
 
     mockSelectTextModel.mockReturnValue({
       model: fallbackModel,
@@ -157,7 +197,7 @@ describe('generateObjectWithFallback', () => {
       modelId: 'mistral-large-latest',
     });
 
-    const result = await generateObjectWithFallback({
+    const result = await generateStructuredOutputWithFallback({
       ...baseOptions,
       model: primaryModel,
     });
@@ -172,54 +212,58 @@ describe('generateObjectWithFallback', () => {
         requiredCapabilities: { requireStructuredOutput: true },
       }
     );
-    expect(mockGenerateText).not.toHaveBeenCalled();
+    expect(structuredCalls()).toHaveLength(2);
+    expect(textFallbackCalls()).toHaveLength(0);
   });
 
-  it('should rethrow provider error when no fallback model is available', async () => {
-    mockGenerateObject.mockRejectedValue(
-      new Error('Model gpt-oss-120b does not exist or you do not have access to it.')
+  it('rethrows provider error when no fallback model is available', async () => {
+    mockGenerateText.mockRejectedValue(
+      new Error(
+        'Model gpt-oss-120b does not exist or you do not have access to it.'
+      )
     );
     mockSelectTextModel.mockReturnValue(null);
 
-    await expect(generateObjectWithFallback(baseOptions)).rejects.toThrow(
+    await expect(
+      generateStructuredOutputWithFallback(baseOptions)
+    ).rejects.toThrow(
       'Model gpt-oss-120b does not exist or you do not have access to it.'
     );
   });
 
-  it('should fall back to the next provider when text fallback fails with a provider error', async () => {
-    const primaryModel =
-      {} as Parameters<typeof mockGenerateObject>[0]['model'];
-    const fallbackModel =
-      {} as Parameters<typeof mockGenerateObject>[0]['model'];
+  it('falls back to the next provider when text fallback fails with a provider error', async () => {
+    const primaryModel = languageModel('primary');
+    const fallbackModel = languageModel('fallback');
     const expected: TestSchema = {
       selectedAgent: 'Reporter Agent',
       confidence: 0.82,
       reasoning: 'Recovered on fallback provider',
     };
 
-    mockGenerateObject.mockImplementation(async ({ model }: { model: unknown }) => {
-      if (model === primaryModel) {
-        throw new Error('response format not supported');
+    mockGenerateText.mockImplementation(
+      async ({ model, output }: { model: unknown; output?: unknown }) => {
+        if (output) {
+          if (model === primaryModel) {
+            throw new Error('response format not supported');
+          }
+          return {
+            output: expected,
+            usage: { inputTokens: 90, outputTokens: 35, totalTokens: 125 },
+          };
+        }
+
+        if (model === primaryModel) {
+          const error = new Error('rate limit exceeded');
+          (error as Error & { status?: number }).status = 429;
+          throw error;
+        }
+
+        return {
+          text: JSON.stringify(expected),
+          usage: { inputTokens: 110, outputTokens: 45, totalTokens: 155 },
+        };
       }
-
-      return {
-        object: expected,
-        usage: { inputTokens: 90, outputTokens: 35, totalTokens: 125 },
-      };
-    });
-
-    mockGenerateText.mockImplementation(async ({ model }: { model: unknown }) => {
-      if (model === primaryModel) {
-        const error = new Error('rate limit exceeded');
-        (error as Error & { status?: number }).status = 429;
-        throw error;
-      }
-
-      return {
-        text: JSON.stringify(expected),
-        usage: { inputTokens: 110, outputTokens: 45, totalTokens: 155 },
-      };
-    });
+    );
 
     mockSelectTextModel.mockReturnValue({
       model: fallbackModel,
@@ -227,50 +271,43 @@ describe('generateObjectWithFallback', () => {
       modelId: 'mistral-large-latest',
     });
 
-    const result = await generateObjectWithFallback({
+    const result = await generateStructuredOutputWithFallback({
       ...baseOptions,
       model: primaryModel,
     });
 
     expect(result.object).toEqual(expected);
-    expect(mockSelectTextModel).toHaveBeenCalledWith(
-      'Orchestrator',
-      ['cerebras', 'groq', 'mistral'],
-      {
-        excludeProviders: ['cerebras'],
-        cbPrefix: 'orchestrator',
-        requiredCapabilities: { requireStructuredOutput: true },
-      }
-    );
-    expect(mockGenerateObject).toHaveBeenCalledTimes(2);
+    expect(structuredCalls()).toHaveLength(2);
+    expect(textFallbackCalls()).toHaveLength(1);
   });
 
-  it('should fall back to the next provider when schema fallback still returns invalid JSON', async () => {
-    const primaryModel =
-      {} as Parameters<typeof mockGenerateObject>[0]['model'];
-    const fallbackModel =
-      {} as Parameters<typeof mockGenerateObject>[0]['model'];
+  it('falls back to the next provider when schema fallback returns invalid JSON', async () => {
+    const primaryModel = languageModel('primary');
+    const fallbackModel = languageModel('fallback');
     const expected: TestSchema = {
       selectedAgent: 'Advisor Agent',
       confidence: 0.77,
       reasoning: 'Recovered on second provider after invalid JSON fallback',
     };
 
-    mockGenerateObject.mockImplementation(async ({ model }: { model: unknown }) => {
-      if (model === primaryModel) {
-        throw new Error('response format not supported');
+    mockGenerateText.mockImplementation(
+      async ({ model, output }: { model: unknown; output?: unknown }) => {
+        if (output) {
+          if (model === primaryModel) {
+            throw new Error('response format not supported');
+          }
+          return {
+            output: expected,
+            usage: { inputTokens: 95, outputTokens: 30, totalTokens: 125 },
+          };
+        }
+
+        return {
+          text: 'not valid json at all',
+          usage: { inputTokens: 80, outputTokens: 20, totalTokens: 100 },
+        };
       }
-
-      return {
-        object: expected,
-        usage: { inputTokens: 95, outputTokens: 30, totalTokens: 125 },
-      };
-    });
-
-    mockGenerateText.mockResolvedValue({
-      text: 'not valid json at all',
-      usage: { inputTokens: 80, outputTokens: 20, totalTokens: 100 },
-    });
+    );
 
     mockSelectTextModel.mockReturnValue({
       model: fallbackModel,
@@ -278,56 +315,58 @@ describe('generateObjectWithFallback', () => {
       modelId: 'mistral-large-latest',
     });
 
-    const result = await generateObjectWithFallback({
+    const result = await generateStructuredOutputWithFallback({
       ...baseOptions,
       model: primaryModel,
     });
 
     expect(result.object).toEqual(expected);
-    expect(mockGenerateObject).toHaveBeenCalledTimes(2);
-    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+    expect(structuredCalls()).toHaveLength(2);
+    expect(textFallbackCalls()).toHaveLength(1);
   });
 
-  it('should throw combined error when fallback text also fails parsing', async () => {
-    const originalError = new Error('Schema output validation failed: bad data');
-    mockGenerateObject.mockRejectedValue(originalError);
+  it('throws combined error when fallback text also fails parsing', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(
+        new Error('Schema output validation failed: bad data')
+      )
+      .mockResolvedValueOnce({
+        text: 'not valid json at all',
+        usage: {},
+      });
 
-    mockGenerateText.mockResolvedValue({
-      text: 'not valid json at all',
-      usage: {},
-    });
-
-    await expect(generateObjectWithFallback(baseOptions)).rejects.toThrow(
+    await expect(
+      generateStructuredOutputWithFallback(baseOptions)
+    ).rejects.toThrow(
       /Structured output failed and text fallback also failed/
     );
   });
 
-  it('should validate generateObject result against schema', async () => {
-    mockGenerateObject.mockResolvedValue({
-      object: { selectedAgent: 'NLQ Agent' },
-      usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
-    });
+  it('validates structured output result against schema', async () => {
+    mockGenerateText
+      .mockResolvedValueOnce({
+        output: { selectedAgent: 'NLQ Agent' },
+        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
+      })
+      .mockResolvedValueOnce({
+        text: JSON.stringify({
+          selectedAgent: 'NLQ Agent',
+          confidence: 0.9,
+          reasoning: 'Recovered via fallback',
+        }),
+        usage: { inputTokens: 200, outputTokens: 80, totalTokens: 280 },
+      });
 
-    const fallbackJson = JSON.stringify({
-      selectedAgent: 'NLQ Agent',
-      confidence: 0.9,
-      reasoning: 'Recovered via fallback',
-    });
-
-    mockGenerateText.mockResolvedValue({
-      text: fallbackJson,
-      usage: { inputTokens: 200, outputTokens: 80, totalTokens: 280 },
-    });
-
-    const result = await generateObjectWithFallback(baseOptions);
+    const result = await generateStructuredOutputWithFallback(baseOptions);
 
     expect(result.object.reasoning).toBe('Recovered via fallback');
-    expect(mockGenerateText).toHaveBeenCalled();
+    expect(structuredCalls()).toHaveLength(1);
+    expect(textFallbackCalls()).toHaveLength(1);
   });
 
-  it('should handle missing usage gracefully', async () => {
-    mockGenerateObject.mockResolvedValue({
-      object: {
+  it('handles missing usage gracefully', async () => {
+    mockGenerateText.mockResolvedValue({
+      output: {
         selectedAgent: 'Advisor Agent',
         confidence: 0.85,
         reasoning: 'Advice needed',
@@ -335,42 +374,40 @@ describe('generateObjectWithFallback', () => {
       usage: undefined,
     });
 
-    const result = await generateObjectWithFallback(baseOptions);
+    const result = await generateStructuredOutputWithFallback(baseOptions);
 
     expect(result.object.selectedAgent).toBe('Advisor Agent');
     expect(result.usage).toBeUndefined();
   });
 
-  it('should include fallbackPromptExtra in text fallback prompt', async () => {
-    mockGenerateObject.mockRejectedValue(
-      new Error('response format not supported')
-    );
+  it('includes fallbackPromptExtra in text fallback prompt', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(new Error('response format not supported'))
+      .mockResolvedValueOnce({
+        text: JSON.stringify({
+          selectedAgent: 'NLQ Agent',
+          confidence: 0.6,
+          reasoning: 'Extra context used',
+        }),
+        usage: {},
+      });
 
-    mockGenerateText.mockResolvedValue({
-      text: JSON.stringify({
-        selectedAgent: 'NLQ Agent',
-        confidence: 0.6,
-        reasoning: 'Extra context used',
-      }),
-      usage: {},
-    });
-
-    await generateObjectWithFallback({
+    await generateStructuredOutputWithFallback({
       ...baseOptions,
       fallbackPromptExtra: '에이전트는 5개입니다.',
     });
 
-    const callArgs = mockGenerateText.mock.calls[0][0];
+    const callArgs = textFallbackCalls()[0]?.[0] as GenerateTextCall;
     expect(callArgs.prompt).toContain('에이전트는 5개입니다.');
   });
 
   it('waits before switching providers after structured-output provider failure', async () => {
     vi.useFakeTimers();
 
-    mockGenerateObject
+    mockGenerateText
       .mockRejectedValueOnce(new Error('rate limit exceeded: 429'))
       .mockResolvedValueOnce({
-        object: {
+        output: {
           selectedAgent: 'Analyst Agent',
           confidence: 0.91,
           reasoning: 'Fallback after provider delay',
@@ -379,12 +416,12 @@ describe('generateObjectWithFallback', () => {
       });
 
     mockSelectTextModel.mockReturnValue({
-      model: { provider: 'groq' },
+      model: languageModel('groq'),
       provider: 'groq',
       modelId: 'groq-model',
     });
 
-    const promise = generateObjectWithFallback({
+    const promise = generateStructuredOutputWithFallback({
       ...baseOptions,
       operation: 'routing-delay-test',
       providerFallbackControl: {
@@ -394,30 +431,30 @@ describe('generateObjectWithFallback', () => {
     });
 
     await Promise.resolve();
-    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+    expect(structuredCalls()).toHaveLength(1);
 
     await vi.advanceTimersByTimeAsync(9);
-    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+    expect(structuredCalls()).toHaveLength(1);
 
     await vi.advanceTimersByTimeAsync(1);
     await Promise.resolve();
 
     const result = await promise;
     expect(result.object.selectedAgent).toBe('Analyst Agent');
-    expect(mockGenerateObject).toHaveBeenCalledTimes(2);
+    expect(structuredCalls()).toHaveLength(2);
     expect(mockSelectTextModel).toHaveBeenCalledTimes(1);
   });
 
   it('fails fast when retry budget blocks structured-output provider fallback', async () => {
-    mockGenerateObject.mockRejectedValueOnce(new Error('rate limit exceeded: 429'));
+    mockGenerateText.mockRejectedValueOnce(new Error('rate limit exceeded: 429'));
     mockSelectTextModel.mockReturnValue({
-      model: { provider: 'groq' },
+      model: languageModel('groq'),
       provider: 'groq',
       modelId: 'groq-model',
     });
 
     await expect(
-      generateObjectWithFallback({
+      generateStructuredOutputWithFallback({
         ...baseOptions,
         operation: 'routing-budget-test',
         providerFallbackControl: {
@@ -428,7 +465,7 @@ describe('generateObjectWithFallback', () => {
       })
     ).rejects.toThrow('rate limit exceeded: 429');
 
-    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+    expect(structuredCalls()).toHaveLength(1);
     expect(mockSelectTextModel).toHaveBeenCalledTimes(1);
   });
 
@@ -441,23 +478,23 @@ describe('generateObjectWithFallback', () => {
       reasoning: 'Recovered after delayed text fallback failure',
     };
 
-    mockGenerateObject
+    mockGenerateText
       .mockRejectedValueOnce(new Error('response format not supported'))
       .mockResolvedValueOnce({
-        object: expected,
+        text: 'not-json',
+        usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      })
+      .mockResolvedValueOnce({
+        output: expected,
         usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
       });
-    mockGenerateText.mockResolvedValueOnce({
-      text: 'not-json',
-      usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
-    });
     mockSelectTextModel.mockReturnValue({
-      model: { provider: 'groq' },
+      model: languageModel('groq'),
       provider: 'groq',
       modelId: 'groq-model',
     });
 
-    const promise = generateObjectWithFallback({
+    const promise = generateStructuredOutputWithFallback({
       ...baseOptions,
       operation: 'routing-text-fallback-test',
       providerFallbackControl: {
@@ -467,18 +504,18 @@ describe('generateObjectWithFallback', () => {
     });
 
     await Promise.resolve();
-    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
-    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+    expect(structuredCalls()).toHaveLength(1);
+    expect(textFallbackCalls()).toHaveLength(1);
 
     await vi.advanceTimersByTimeAsync(14);
-    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+    expect(structuredCalls()).toHaveLength(1);
 
     await vi.advanceTimersByTimeAsync(1);
     await Promise.resolve();
 
     const result = await promise;
     expect(result.object).toEqual(expected);
-    expect(mockGenerateObject).toHaveBeenCalledTimes(2);
+    expect(structuredCalls()).toHaveLength(2);
     expect(mockSelectTextModel).toHaveBeenCalledTimes(1);
   });
 });

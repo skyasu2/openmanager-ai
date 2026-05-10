@@ -1,4 +1,4 @@
-import { generateObject, generateText } from 'ai';
+import { generateText, Output } from 'ai';
 import { type ZodTypeAny, type ZodError } from 'zod';
 import { logger } from '../../../lib/logger';
 import { selectTextModel, type TextProvider } from './config/agent-model-selectors';
@@ -11,7 +11,7 @@ import {
 } from '../../resilience/provider-fallback-control';
 
 interface StructuredOutputFallbackOptions<T extends ZodTypeAny> {
-  model: Parameters<typeof generateObject>[0]['model'];
+  model: Parameters<typeof generateText>[0]['model'];
   schema: T;
   system: string;
   prompt: string;
@@ -78,6 +78,8 @@ const STRUCTURED_OUTPUT_ERROR_PATTERNS = [
   'output format',
   'must be a valid json',
   'failed to parse',
+  'no object generated',
+  'no output generated',
   'schema output validation failed',
 ];
 
@@ -234,7 +236,7 @@ async function prepareProviderFallback(
   return nextModelResult;
 }
 
-export async function generateObjectWithFallback<T extends ZodTypeAny>(
+export async function generateStructuredOutputWithFallback<T extends ZodTypeAny>(
   options: StructuredOutputFallbackOptions<T>
 ): Promise<StructuredOutputResult<Awaited<T['_output']>>> {
   const attemptedProviders = new Set<ProviderName>();
@@ -248,17 +250,23 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
 
   for (;;) {
     try {
-      const result = await generateObject({
+      const result = await generateText({
         model: currentModel,
-        schema: options.schema,
+        output: Output.object({
+          schema: options.schema,
+          name: 'structured_output',
+          description: `${options.operation} structured output`,
+        }),
         system: options.system,
         prompt: options.prompt,
         temperature: options.temperature,
       });
 
-      const parsedResult = options.schema.safeParse(result.object);
+      const parsedResult = options.schema.safeParse(result.output);
       if (!parsedResult.success) {
-        logger.error(`[${options.operation}] generateObject returned invalid schema output`);
+        logger.error(
+          `[${options.operation}] Output.object returned invalid schema output`
+        );
         const issueMessage = parsedResult.error.issues
           .map((issue: ZodError['issues'][number]) => issue.message)
           .join('; ');

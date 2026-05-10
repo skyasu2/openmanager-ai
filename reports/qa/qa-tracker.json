@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T09:16:42.071Z"
+    "updatedAt": "2026-05-10T10:00:23.786Z"
   },
   "sequence": {
-    "nextRunNumber": 462
+    "nextRunNumber": 463
   },
   "summary": {
-    "totalRecordedRuns": 459,
+    "totalRecordedRuns": 460,
     "totalRuns": 375,
-    "excludedRuns": 84,
+    "excludedRuns": 85,
     "totalChecks": 3331,
     "totalPassed": 3204,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 528,
+    "completedItems": 531,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0458",
     "lastRecordedAt": "2026-05-10T07:26:58.691Z",
-    "latestRecordedRunId": "QA-20260510-0461",
-    "latestRecordedAt": "2026-05-10T09:16:42.071Z"
+    "latestRecordedRunId": "QA-20260510-0462",
+    "latestRecordedAt": "2026-05-10T10:00:23.786Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12929,6 +12929,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-10T09:16:42.071Z"
+    },
+    "ai-sdk-v6-root-output-object-migration": {
+      "id": "ai-sdk-v6-root-output-object-migration",
+      "title": "Migrate Root App structured output routes to generateText + Output.object",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0462",
+      "firstSeenAt": "2026-05-10T10:00:23.786Z",
+      "lastSeenRunId": "QA-20260510-0462",
+      "lastSeenAt": "2026-05-10T10:00:23.786Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "NLQ and artifact-intent route tests verify Output.object calls, fallback behavior, auth, and rate limit boundaries",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T10:00:23.786Z"
+    },
+    "ai-sdk-v6-engine-output-object-migration": {
+      "id": "ai-sdk-v6-engine-output-object-migration",
+      "title": "Migrate Cloud Run orchestrator structured output helper to generateText + Output.object",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0462",
+      "firstSeenAt": "2026-05-10T10:00:23.786Z",
+      "lastSeenRunId": "QA-20260510-0462",
+      "lastSeenAt": "2026-05-10T10:00:23.786Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "orchestrator-object-fallback tests cover structured output success, text JSON fallback, provider fallback, retry budget, and delayed fallback",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T10:00:23.786Z"
+    },
+    "ai-sdk-v6-structured-output-doc-alignment": {
+      "id": "ai-sdk-v6-structured-output-doc-alignment",
+      "title": "Align active architecture copy with AI SDK v6 structured output best practice",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0462",
+      "firstSeenAt": "2026-05-10T10:00:23.786Z",
+      "lastSeenRunId": "QA-20260510-0462",
+      "lastSeenAt": "2026-05-10T10:00:23.786Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "docs:budget passed and active architecture docs no longer describe direct generateObject use",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T10:00:23.786Z"
     }
   },
   "runs": [
@@ -49180,6 +49252,86 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0462",
+      "recordedAt": "2026-05-10T10:00:23.786Z",
+      "recordedAtKst": "2026-05-10 19:00:23 KST",
+      "title": "Local QA - AI SDK v6 Structured Output Migration",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0462.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "Cloud Run AI Engine local source",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "f856b02497b0fe9367428814da31193923c0b495"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Root App NLQ entity extraction structured output route",
+        "Root App artifact intent structured output route",
+        "Cloud Run orchestrator structured output fallback helper",
+        "Cloud Run provider fallback and text JSON fallback behavior",
+        "AI SDK v6 architecture documentation alignment"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "live provider calls",
+        "release tag deployment"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "deprecated structured-output API migration is covered by deterministic route and orchestrator fallback tests",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "auth/rate-limit boundaries remain in place while provider fallback failure paths now log controlled fallback events",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run AI Engine full local test suite and root gates passed without live provider spend",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -49188,16 +49340,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 219,
-      "appropriateCount": 191,
+      "seenCount": 220,
+      "appropriateCount": 192,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 38,
-      "lastRunId": "QA-20260510-0461",
-      "lastSeenAt": "2026-05-10T09:16:42.071Z",
+      "lastRunId": "QA-20260510-0462",
+      "lastSeenAt": "2026-05-10T10:00:23.786Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "clarification suppression, confidence threshold, fallback, and registry drift coverage are deterministic",
+      "lastRationale": "deprecated structured-output API migration is covered by deterministic route and orchestrator fallback tests",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -49222,16 +49374,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 61,
-      "appropriateCount": 46,
+      "seenCount": 62,
+      "appropriateCount": 47,
       "partialCount": 15,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260510-0461",
-      "lastSeenAt": "2026-05-10T09:16:42.071Z",
+      "lastRunId": "QA-20260510-0462",
+      "lastSeenAt": "2026-05-10T10:00:23.786Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "new Groq-backed extraction route is protected by auth/rate-limit wrappers before model invocation",
+      "lastRationale": "auth/rate-limit boundaries remain in place while provider fallback failure paths now log controlled fallback events",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -49239,16 +49391,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 152,
-      "appropriateCount": 135,
+      "seenCount": 153,
+      "appropriateCount": 136,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260510-0461",
-      "lastSeenAt": "2026-05-10T09:16:42.071Z",
+      "lastRunId": "QA-20260510-0462",
+      "lastSeenAt": "2026-05-10T10:00:23.786Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "free-tier-sensitive Groq calls are skipped for off-domain guard hits and limited to clarification candidates",
+      "lastRationale": "Cloud Run AI Engine full local test suite and root gates passed without live provider spend",
       "lastNextAction": ""
     },
     "test-automation": {

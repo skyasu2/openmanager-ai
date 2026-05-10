@@ -1,17 +1,26 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockCreateGroq, mockGenerateObject } = vi.hoisted(() => ({
-  mockCreateGroq: vi.fn(() => (modelId: string) => ({ modelId })),
-  mockGenerateObject: vi.fn(),
-}));
+const { mockCreateGroq, mockGenerateText, mockOutputObject } = vi.hoisted(
+  () => ({
+    mockCreateGroq: vi.fn(() => (modelId: string) => ({ modelId })),
+    mockGenerateText: vi.fn(),
+    mockOutputObject: vi.fn((config: unknown) => ({
+      kind: 'object-output',
+      config,
+    })),
+  })
+);
 
 vi.mock('@ai-sdk/groq', () => ({
   createGroq: mockCreateGroq,
 }));
 
 vi.mock('ai', () => ({
-  generateObject: mockGenerateObject,
+  generateText: mockGenerateText,
+  Output: {
+    object: mockOutputObject,
+  },
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
@@ -54,8 +63,12 @@ describe('POST /api/ai/nlq/extract-entities', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreateGroq.mockReturnValue((modelId: string) => ({ modelId }));
-    mockGenerateObject.mockResolvedValue({
-      object: {
+    mockOutputObject.mockImplementation((config: unknown) => ({
+      kind: 'object-output',
+      config,
+    }));
+    mockGenerateText.mockResolvedValue({
+      output: {
         server: 'api-was-dc1-01',
         metric: 'cpu',
         timeRange: '1h',
@@ -73,7 +86,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     );
 
     expect(response.status).toBe(401);
-    expect(mockGenerateObject).not.toHaveBeenCalled();
+    expect(mockGenerateText).not.toHaveBeenCalled();
   });
 
   it('is protected by rate limiting before invoking Groq', async () => {
@@ -85,7 +98,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     );
 
     expect(response.status).toBe(429);
-    expect(mockGenerateObject).not.toHaveBeenCalled();
+    expect(mockGenerateText).not.toHaveBeenCalled();
   });
 
   it('returns extracted entities for valid requests', async () => {
@@ -99,10 +112,18 @@ describe('POST /api/ai/nlq/extract-entities', () => {
       timeRange: '1h',
       confidence: 93,
     });
-    expect(mockGenerateObject).toHaveBeenCalledWith(
+    expect(mockGenerateText).toHaveBeenCalledWith(
       expect.objectContaining({
         model: { modelId: 'llama-4-scout-17b-8e-instruct' },
         prompt: 'api-was-dc1-01 CPU 어때?',
+        temperature: 0,
+        maxOutputTokens: 64,
+        output: expect.objectContaining({ kind: 'object-output' }),
+      })
+    );
+    expect(mockOutputObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'nlq_entities',
       })
     );
   });
@@ -111,6 +132,30 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     const response = await POST(buildRequest({ query: '   ' }));
 
     expect(response.status).toBe(400);
-    expect(mockGenerateObject).not.toHaveBeenCalled();
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
+  it('does not invoke Groq for malformed JSON', async () => {
+    const response = await POST(
+      new NextRequest('http://localhost/api/ai/nlq/extract-entities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{bad-json',
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
+  it('falls back gracefully when structured output generation fails', async () => {
+    mockGenerateText.mockRejectedValueOnce(new Error('provider unavailable'));
+
+    const response = await POST(
+      buildRequest({ query: 'api-was-dc1-01 CPU 어때?' })
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ confidence: 0 });
   });
 });

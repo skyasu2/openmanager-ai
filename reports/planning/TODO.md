@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-10 KST (`AI NLQ entity extraction hardening 완료`)
+**Last Updated**: 2026-05-10 KST (`AI SDK v6 structured output migration 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI SDK v6 structured output migration~~ | — | **완료** — Root App NLQ entity extraction/artifact intent 라우트와 Cloud Run orchestrator structured-output helper를 deprecated `generateObject` 직접 호출에서 `generateText + Output.object`로 이전. `generateStructuredOutputWithFallback` 명명으로 helper 의미를 정렬하고 provider fallback/text JSON fallback/retry budget 동작은 유지. Local targeted QA `QA-20260510-0462` 기록. |
 | ~~AI NLQ entity extraction hardening~~ | — | **완료** — `/api/ai/nlq/extract-entities`에 `withAuth` + `withRateLimit` 적용, server registry 기반 enum + client response normalizer + confidence threshold로 LLM 추출값 신뢰 경계 보강, `sendQuery`에서 off-domain guard를 entity extraction보다 먼저 실행하도록 순서 조정. Local targeted QA `QA-20260510-0461` 기록. |
 | ~~AI Assistant off-domain guardrail 개선~~ | — | **완료** — 비 IT 실시간/외부작업 질문을 `useQueryExecution` 입력 경계에서 deterministic guard로 short-circuit해 `sendMessage`/job 호출을 차단. `off-domain-guard` utility와 classifier 패턴을 정렬하고 회귀 테스트 추가. Local targeted QA `QA-20260510-0459` 기록. 계획서 archive 이동: [archive/ai-assistant-off-domain-guard-plan.md](archive/ai-assistant-off-domain-guard-plan.md) |
 | ~~Supabase low-value unused index cleanup~~ | — | **완료** — Supabase performance advisor unused index 10건 중 FK/RLS 보조 인덱스는 보존하고, 코드 경로/복합 인덱스로 대체 가능한 단일 컬럼 인덱스 6건만 `20260510034213_drop_low_value_unused_operational_indexes.sql`로 제거. 운영 적용 후 advisor unused index INFO는 10건 → 4건으로 감소. 남은 4건(`security_audit_logs.user_id`, `incident_reports` FK 3개)은 의도적 보존. |

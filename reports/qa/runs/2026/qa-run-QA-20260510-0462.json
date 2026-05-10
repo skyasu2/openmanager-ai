@@ -1,0 +1,126 @@
+{
+  "runId": "QA-20260510-0462",
+  "recordedAt": "2026-05-10T10:00:23.786Z",
+  "recordedAtKst": "2026-05-10 19:00:23 KST",
+  "runTitle": "Local QA - AI SDK v6 Structured Output Migration",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "Cloud Run AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f856b02497b0fe9367428814da31193923c0b495"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Root App NLQ entity extraction structured output route",
+    "Root App artifact intent structured output route",
+    "Cloud Run orchestrator structured output fallback helper",
+    "Cloud Run provider fallback and text JSON fallback behavior",
+    "AI SDK v6 architecture documentation alignment"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "live provider calls",
+    "release tag deployment"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "deprecated structured-output API migration is covered by deterministic route and orchestrator fallback tests",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "auth/rate-limit boundaries remain in place while provider fallback failure paths now log controlled fallback events",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run AI Engine full local test suite and root gates passed without live provider spend",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-sdk-v6-root-output-object-migration",
+      "title": "Migrate Root App structured output routes to generateText + Output.object",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "NLQ and artifact-intent route tests verify Output.object calls, fallback behavior, auth, and rate limit boundaries",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-sdk-v6-engine-output-object-migration",
+      "title": "Migrate Cloud Run orchestrator structured output helper to generateText + Output.object",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "orchestrator-object-fallback tests cover structured output success, text JSON fallback, provider fallback, retry budget, and delayed fallback",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-sdk-v6-structured-output-doc-alignment",
+      "title": "Align active architecture copy with AI SDK v6 structured output best practice",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "docs:budget passed and active architecture docs no longer describe direct generateObject use",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Root targeted Node Vitest: NLQ/artifact-intent/entity/clarification tests 60/60 passed",
+    "Cloud Run targeted Vitest: orchestrator structured output/fallback/decomposition/execution timeout tests 60/60 passed",
+    "npm run type-check passed",
+    "cd cloud-run/ai-engine && npm run type-check passed",
+    "npm run test:quick passed",
+    "npm run test:contract passed 24/24",
+    "npm run lint passed with existing qa-tracker.json max-size info only",
+    "cd cloud-run/ai-engine && npm run test passed 1082/1082",
+    "npm run docs:budget passed; active docs 72/90",
+    "git diff --check passed"
+  ],
+  "links": []
+}

@@ -146,7 +146,7 @@ curl $SERVICE_URL/health  # Health check
 ## Current Notes
 
 - Vision 기본 모델은 `gemini-2.5-flash-lite`
-- Orchestrator는 `generateObjectWithFallback`로 structured routing 수행
+- Orchestrator는 `generateText + Output.object` 기반 structured routing fallback helper로 라우팅 수행
 - Agent 실행은 `streamText` / `generateTextWithRetry` 기반 tool loop
 - Orchestrator structured routing은 Groq-first로 Cerebras RPM을 보존하며, Cerebras tool loop는 기본 비활성 + capability gate로 선제 skip
 

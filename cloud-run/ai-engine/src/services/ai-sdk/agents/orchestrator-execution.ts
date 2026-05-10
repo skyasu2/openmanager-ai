@@ -56,7 +56,7 @@ import {
   executeSequentialSubtasksStream,
 } from './orchestrator-decomposition';
 import { executeAgentStream } from './orchestrator-agent-stream';
-import { generateObjectWithFallback } from './orchestrator-object-fallback';
+import { generateStructuredOutputWithFallback } from './orchestrator-object-fallback';
 import {
   createSupervisorTrace,
   finalizeTrace,
@@ -232,7 +232,7 @@ export async function executeMultiAgent(
     let routingDecision: RoutingDecision;
     try {
       const routingResult = await Promise.race([
-        generateObjectWithFallback({
+        generateStructuredOutputWithFallback({
           model,
           schema: routingSchema,
           system: `현재 날짜: ${getKSTDateTime().date} (KST)\n\n${ORCHESTRATOR_INSTRUCTIONS}`,
@@ -574,12 +574,14 @@ export async function* executeMultiAgentStream(
 
     // Phase 2D: LLM routing timeout — wrap with Promise.race + clearTimeout
     const routingTimeout = TIMEOUT_CONFIG.orchestrator.routingDecision;
-    let routingResult: Awaited<ReturnType<typeof generateObjectWithFallback>>;
+    let routingResult: Awaited<
+      ReturnType<typeof generateStructuredOutputWithFallback>
+    >;
     let routingTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
     try {
       routingResult = await Promise.race([
-        generateObjectWithFallback({
+        generateStructuredOutputWithFallback({
           model,
           schema: routingSchema,
           system: `현재 날짜: ${getKSTDateTime().date} (KST)\n\n${ORCHESTRATOR_INSTRUCTIONS}`,
