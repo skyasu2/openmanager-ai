@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.121](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.120...v8.11.121) (2026-05-10)
+
+
+### Bug Fixes
+
+* **ai:** prioritize resource command guidance ([f585e51](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f585e51b85cc42d1d21a17f06e1e5f3465456782))
+
+
+### Code Refactoring
+
+* **rag:** complete knowledge retrieval lite cleanup ([e0e6d0c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e0e6d0c66aabe86a2d8df4cdfc8c03c3d99bf513))
+
 ## [8.11.120](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.119...v8.11.120) (2026-05-09)
 
 
