@@ -25,16 +25,6 @@ vi.mock('../../lib/tavily-hybrid-rag', () => ({
   isTavilyAvailable: mockIsTavilyAvailable,
 }));
 
-vi.mock('../../lib/reranker', () => ({
-  isRerankerAvailable: vi.fn(() => false),
-  rerankDocuments: vi.fn(),
-}));
-
-vi.mock('../../lib/query-expansion', () => ({
-  shouldUseHyDE: vi.fn(() => false),
-  expandQueryWithHyDE: vi.fn(),
-}));
-
 vi.mock('../../lib/logger', () => ({
   logger: {
     warn: vi.fn(),

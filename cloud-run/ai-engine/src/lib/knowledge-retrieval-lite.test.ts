@@ -263,6 +263,78 @@ describe('retrieveKnowledgeEvidence', () => {
     );
   });
 
+  it('falls back to core CPU token when multi-word BM25 search is too narrow', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 'kb-cpu-runbook',
+            title: 'CPU 사용량 급증 대응 가이드',
+            content: 'CPU high load troubleshooting and process inspection guide',
+            category: 'incident',
+            tags: ['cpu', 'load', 'process'],
+            text_rank: 0.47,
+            metadata: { docType: 'runbook', serverRole: 'api' },
+          },
+        ],
+        error: null,
+      });
+
+    const result = await retrieveKnowledgeEvidence(
+      { query: 'cpu high load', limit: 3 },
+      { client: createClient(rpc) }
+    );
+
+    expect(rpc).toHaveBeenNthCalledWith(2, 'search_knowledge_text', {
+      p_query_text: 'cpu',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(result.evidenceCards[0]).toMatchObject({
+      id: 'kb-cpu-runbook',
+      title: 'CPU 사용량 급증 대응 가이드',
+    });
+    expect(result.evidenceCards[0]?.reason).toContain('query-fallback:cpu');
+  });
+
+  it('falls back to disk cleanup evidence for capacity action queries', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 'kb-disk-runbook',
+            title: '디스크 용량 부족 대응',
+            content: 'df, du, log rotation, and safe cleanup runbook',
+            category: 'incident',
+            tags: ['disk', 'storage', 'df', 'du'],
+            text_rank: 0.52,
+            metadata: { docType: 'runbook', serverRole: 'storage' },
+          },
+        ],
+        error: null,
+      });
+
+    const result = await retrieveKnowledgeEvidence(
+      { query: 'disk space cleanup', limit: 3 },
+      { client: createClient(rpc) }
+    );
+
+    expect(rpc).toHaveBeenNthCalledWith(2, 'search_knowledge_text', {
+      p_query_text: 'disk',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(result.evidenceCards[0]).toMatchObject({
+      id: 'kb-disk-runbook',
+      title: '디스크 용량 부족 대응',
+    });
+    expect(result.evidenceCards[0]?.reason).toContain('query-fallback:disk');
+  });
+
   it('returns unavailable metadata instead of falling back to external AI providers', async () => {
     const rpc = vi.fn().mockResolvedValue({
       data: null,

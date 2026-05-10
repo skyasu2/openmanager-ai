@@ -1,7 +1,6 @@
 export { recommendCommands } from './knowledge-command-tool';
 export {
   extractKeywordsFromQuery,
-  getDynamicSearchWeights,
   getDynamicThreshold,
   isCommandIntentQuery,
   mapSeverityFilter,

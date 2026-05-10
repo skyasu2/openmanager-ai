@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-08
+> Last reviewed: 2026-05-10
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
@@ -143,7 +143,7 @@ graph LR
 | 텍스트 정제 | `cloud-run/ai-engine/src/lib/text-sanitizer.ts` | LLM 출력의 중국어→한국어 51개 매핑, 러시아어·베트남어·독일어·가타카나 제거, JSON 재귀 정제 |
 | Prompt Guard | `cloud-run/ai-engine/src/lib/prompt-guard.ts` | Prompt Injection 방어: 입력 18개 + 출력 10개 패턴 (`ignore previous instructions`, `jailbreak`, `DAN mode` 등) |
 | RAG 문서 정규화 | `cloud-run/ai-engine/src/lib/rag-merge-planner.ts` | 문서 필드 trim, TF-IDF + Cosine 유사도 기반 중복 병합 (임계값 0.6) |
-| RAG 재순위정렬 | `cloud-run/ai-engine/src/lib/reranker.ts` | Groq LLM 기반 관련성 재순위정렬 (Cerebras fallback), 타임아웃 8초 |
+| RAG 재정렬 | `cloud-run/ai-engine/src/lib/knowledge-retrieval-lite.ts` | Supabase `search_knowledge_text` 결과를 category/tag/server metadata boost로 정렬. 별도 LLM reranker는 request path에서 제거됨 |
 | NLQ 명령어 | `cloud-run/ai-engine/src/services/ai-sdk/agents/config/instructions/nlq.ts` | 정량 기준 해석 ("높은"=70%+, "낮은"=30% 미만), 빈 결과 fallback chain (임계값 완화 → Top-N 대안) |
 
 #### 미구현 / 의도적 제외

@@ -13,7 +13,6 @@ import {
   DEFAULT_MAX_DURATION_SECONDS,
   FREE_TIER_TIMEOUTS,
   PRO_TIER_TIMEOUTS,
-  RAG_WEIGHTS_DEFAULT_KEYS,
   type AIProxyConfig,
 } from './config-schema';
 
@@ -104,23 +103,6 @@ export function loadAIProxyConfig(): AIProxyConfig {
         '503',
         'Stream error',
       ],
-    },
-    ragWeights: {
-      vector: parseDecimalWithDefault(
-        RAG_WEIGHTS_DEFAULT_KEYS.vector,
-        0.5,
-        (value) => value >= 0 && value <= 1,
-      ),
-      graph: parseDecimalWithDefault(
-        RAG_WEIGHTS_DEFAULT_KEYS.graph,
-        0.3,
-        (value) => value >= 0 && value <= 1,
-      ),
-      web: parseDecimalWithDefault(
-        RAG_WEIGHTS_DEFAULT_KEYS.web,
-        0.2,
-        (value) => value >= 0 && value <= 1,
-      ),
     },
     observability: {
       enableTraceId: parseOptionalBooleanEnv('AI_ENABLE_TRACE_ID') !== false,

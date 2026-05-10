@@ -13,7 +13,6 @@ import type {
   ComplexityCategoryWeights,
   ObservabilityConfig,
   ProxyEndpoint,
-  RAGWeightsConfig,
   StreamRetryConfig,
   VercelTier,
 } from './ai-proxy/config-schema';
@@ -24,7 +23,6 @@ export type {
   ComplexityCategoryWeights,
   ObservabilityConfig,
   ProxyEndpoint,
-  RAGWeightsConfig,
   StreamRetryConfig,
   VercelTier,
 } from './ai-proxy/config-schema';
@@ -115,10 +113,6 @@ export function calculateRetryDelay(attempt: number): number {
   const cappedDelay = Math.min(baseDelay, config.maxDelayMs);
   const jitter = cappedDelay * config.jitterFactor * (Math.random() * 2 - 1);
   return Math.max(100, Math.round(cappedDelay + jitter));
-}
-
-function getRAGWeights(): RAGWeightsConfig {
-  return getAIProxyConfig().ragWeights;
 }
 
 export function getObservabilityConfig(): ObservabilityConfig {

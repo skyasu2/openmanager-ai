@@ -24,60 +24,143 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: { persistSession: false },
 });
 
-const vector1024 = `[${Array.from({ length: 1024 }, (_, index) =>
-  index === 0 ? '0.001' : '0'
-).join(',')}]`;
-
 const checks = [
-  [
-    'match_knowledge_base',
-    { query_text: 'cpu', match_threshold: 0.1, match_count: 1 },
-  ],
-  [
-    'search_knowledge_base',
-    {
-      query_embedding: vector1024,
-      similarity_threshold: 0,
-      max_results: 1,
-      filter_category: null,
-      filter_severity: null,
-    },
-  ],
-  [
-    'match_documents',
-    { query_embedding: vector1024, match_count: 1, filter: {} },
-  ],
-  [
-    'hybrid_search_with_text',
-    {
-      p_query_embedding: vector1024,
+  {
+    label: 'search_knowledge_text:cpu',
+    minRows: 1,
+    args: {
       p_query_text: 'cpu',
-      p_similarity_threshold: 0,
-      p_text_weight: 0.3,
-      p_vector_weight: 0.5,
-      p_graph_weight: 0.2,
-      p_max_vector_results: 1,
-      p_max_text_results: 1,
-      p_max_graph_hops: 1,
-      p_max_total_results: 1,
+      p_max_results: 3,
       p_filter_category: null,
     },
-  ],
+  },
+  {
+    label: 'search_knowledge_text:cpu-high-load',
+    minRows: 1,
+    args: {
+      p_query_text: 'cpu high load',
+      p_max_results: 3,
+      p_filter_category: null,
+    },
+  },
+  {
+    label: 'search_knowledge_text:disk-cleanup',
+    minRows: 1,
+    args: {
+      p_query_text: 'disk space cleanup',
+      p_max_results: 3,
+      p_filter_category: null,
+    },
+  },
+  {
+    label: 'search_knowledge_text:redis-memory',
+    minRows: 1,
+    args: {
+      p_query_text: 'redis memory',
+      p_max_results: 3,
+      p_filter_category: null,
+    },
+  },
+  {
+    label: 'search_knowledge_text:topology',
+    minRows: 1,
+    args: {
+      p_query_text: 'server topology dependency',
+      p_max_results: 3,
+      p_filter_category: null,
+    },
+  },
+  {
+    label: 'search_knowledge_text:nginx-5xx-precision',
+    minRows: 1,
+    expectedTopTitleIncludesAny: ['웹 서버', 'Web 서버', 'Load Balancer'],
+    forbiddenTopTitleIncludesAny: ['Storage 서버'],
+    args: {
+      p_query_text: 'nginx 5xx gateway timeout',
+      p_max_results: 3,
+      p_filter_category: null,
+    },
+  },
+  {
+    label: 'search_knowledge_text:systemctl-command-backfill',
+    minRows: 1,
+    expectedTopTitleIncludesAny: ['Command: linux-systemctl'],
+    args: {
+      p_query_text: 'systemctl service status restart',
+      p_max_results: 3,
+      p_filter_category: 'command',
+    },
+  },
+  {
+    label: 'search_knowledge_text:sfc-command-backfill',
+    minRows: 1,
+    expectedTopTitleIncludesAny: ['Command: windows-sfc'],
+    args: {
+      p_query_text: 'sfc scannow dism',
+      p_max_results: 3,
+      p_filter_category: 'command',
+    },
+  },
+  {
+    label: 'search_knowledge_text:docker-run-command-backfill',
+    minRows: 1,
+    expectedTopTitleIncludesAny: ['Command: docker-run'],
+    args: {
+      p_query_text: 'docker run port volume',
+      p_max_results: 3,
+      p_filter_category: 'command',
+    },
+  },
 ];
 
 let failures = 0;
 
-for (const [name, args] of checks) {
-  const { data, error } = await supabase.rpc(name, args);
+for (const {
+  label,
+  args,
+  minRows,
+  expectedTopTitleIncludesAny,
+  forbiddenTopTitleIncludesAny,
+} of checks) {
+  const { data, error } = await supabase.rpc('search_knowledge_text', args);
 
   if (error) {
     failures += 1;
-    console.log(`[FAIL] ${name}: ${error.code || 'no_code'} ${error.message}`);
+    console.log(`[FAIL] ${label}: ${error.code || 'no_code'} ${error.message}`);
     continue;
   }
 
   const rowCount = Array.isArray(data) ? data.length : 'n/a';
-  console.log(`[PASS] ${name}: rows=${rowCount}`);
+  if (typeof rowCount !== 'number' || rowCount < minRows) {
+    failures += 1;
+    console.log(`[FAIL] ${label}: rows=${rowCount}, expected>=${minRows}`);
+    continue;
+  }
+
+  const topTitle = String(data[0]?.title ?? '');
+  if (
+    Array.isArray(expectedTopTitleIncludesAny) &&
+    !expectedTopTitleIncludesAny.some((expected) => topTitle.includes(expected))
+  ) {
+    failures += 1;
+    console.log(
+      `[FAIL] ${label}: topTitle="${topTitle}", expected one of ${expectedTopTitleIncludesAny.join(', ')}`
+    );
+    continue;
+  }
+
+  if (
+    Array.isArray(forbiddenTopTitleIncludesAny) &&
+    forbiddenTopTitleIncludesAny.some((forbidden) => topTitle.includes(forbidden))
+  ) {
+    failures += 1;
+    console.log(
+      `[FAIL] ${label}: topTitle="${topTitle}" contains forbidden precision marker`
+    );
+    continue;
+  }
+
+  console.log(`[PASS] ${label}: rows=${rowCount}, top="${topTitle}"`);
 }
 
 if (failures > 0) {

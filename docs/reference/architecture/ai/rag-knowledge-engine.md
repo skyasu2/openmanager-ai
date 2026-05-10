@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-26
+> Last reviewed: 2026-05-10
 > Canonical: docs/reference/architecture/ai/rag-knowledge-engine.md
 > Tags: ai,rag,knowledge-engine,architecture
 >
-> **v1.3.0** | Updated 2026-04-26
+> **v1.10.0** | Updated 2026-05-10
 >
 > 검색 증강 생성(RAG) 및 내부 지식 검색 아키텍처 상세 문서입니다.
 
@@ -32,22 +32,22 @@ OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Knowledge R
 
 | 지표 | 값 |
 |------|---:|
-| 총 문서 수 | 49 |
-| 타깃 길이(280~520자) | 48 |
+| 총 문서 수 | 60 |
+| 타깃 길이(280~520자) | 60 |
 | 타깃 미달(<280자) | 0 |
-| 하드 제한 초과(>600자) | 1 |
-| command 카테고리 | 18 (36.73%) |
+| 하드 제한 초과(>600자) | 0 |
+| command 카테고리 | 25 (41.67%) |
 | auto_generated | 0 |
 
 ### 운영 제약 (권장/하드)
 
 | 규칙 | 기준 |
 |------|------|
-| 총 문서 수 | 권장 `<=52`, 하드 `<=60` |
+| 총 문서 수 | 권장 `<=60`, 하드 `<=64` |
 | 문서 길이 | 권장 `280~520자`, 하드 `<=600자` |
 | 타깃 미달 비율 | `<=15%` |
 | 하드 초과 비율 | `<=8%` |
-| command 비중 | `<=38%` |
+| command 비중 | `<=42%` |
 | auto_generated 문서 | `<=1` |
 | placeholder 제목(예: `제목`) | `0` 유지 |
 
@@ -55,11 +55,11 @@ OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Knowledge R
 
 | 카테고리 | 목표 범위 |
 |----------|-----------|
-| command | 18~24 |
+| command | 18~25 |
 | incident | 8~12 |
 | best_practice | 8~12 |
 | troubleshooting | 8~12 |
-| architecture | 2~4 |
+| architecture | 2~5 |
 | security | 1~2 |
 
 ### 큐레이션 우선순위
@@ -85,10 +85,10 @@ OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Knowledge R
 | 기술 | 역할 | 구현체 |
 |------|------|--------|
 | **Retrieval Policy** | RAG on/off, feature 상태, suppressed reason 결정 | `retrieval-contract.ts`, supervisor/orchestrator routing |
-| **BM25 Text Search** | 내부 지식 키워드 검색 | Supabase RPC `search_knowledge_text` |
+| **BM25 Text Search** | 내부 지식 키워드 검색. exact/full query를 우선하고 결과가 좁으면 token-prefix OR recall fallback + token-overlap ranking 사용 | Supabase RPC `search_knowledge_text` |
 | **Metadata Boost** | 서버 역할, AZ, severity, category, tag 기반 재정렬 | `knowledge-retrieval-lite.ts` |
 | **EvidenceCard** | frontend/backend 공통 evidence 계약 | `retrieval-contract.ts` |
-| **Legacy Boundary** | `/api/ai/graphrag/*`, `useGraphRAG` 호환 경계 | `legacy-contracts.ts`, `routes/graphrag.ts` |
+| **Legacy Boundary** | `useGraphRAG` 입력 호환 경계 | `legacy-contracts.ts`, `knowledge-search-tool.ts` |
 
 ---
 
@@ -170,7 +170,7 @@ Supabase RPC `search_knowledge_text` 결과를 받아 category/tag/server metada
 | 단계 | 설명 |
 |------|------|
 | Query normalize | 빈 문자열/과도한 길이를 방어하고 검색어를 정규화 |
-| Text search | `search_knowledge_text` RPC 호출 |
+| Text search | `search_knowledge_text` RPC 호출. exact/full query match 우선, multi-token 운영 질의는 relaxed token-prefix fallback으로 recall 보강 후 token overlap으로 정렬 정밀도 보정 |
 | Metadata boost | 운영 도메인 metadata가 query/context와 맞으면 score 보정 |
 | Result cap | evidence budget에 맞춰 상위 결과만 반환 |
 | Unavailable fallback | Supabase/RPC 오류 시 `retrievalUsed=false`, `suppressedReason=unavailable`로 명시 |
@@ -194,14 +194,15 @@ Legacy boolean input인 `useGraphRAG`, `fastMode`, `includeWebSearch`는 호환 
 
 ### 4. Legacy Boundary (`legacy-contracts.ts`)
 
-Graph runtime 제거 후에도 기존 client가 갑자기 404를 받지 않도록 명시적인 410 경계를 유지합니다.
+Graph runtime endpoint 호환 기간은 종료됐습니다. `/api/ai/graphrag/*` route는 더 이상 등록하지 않으며, 남아 있는 호환 표면은 `searchKnowledgeBase.useGraphRAG` 입력을 무시하는 경계뿐입니다.
 
 | Legacy surface | 현재 동작 | Replacement |
 |----------------|-----------|-------------|
-| `POST /api/ai/graphrag/extract` | 410 Gone | `searchKnowledgeBase` |
-| `GET /api/ai/graphrag/stats` | 410 Gone | Knowledge Retrieval Lite telemetry |
-| `GET /api/ai/graphrag/related/:nodeId` | 410 Gone | `searchKnowledgeBase` |
+| `/api/ai/graphrag/*` | route 미등록 | `/api/ai/supervisor` + `searchKnowledgeBase` |
 | `searchKnowledgeBase.useGraphRAG` | compat-only input | Knowledge Retrieval Lite |
+| `search_knowledge_base`, `match_documents`, `hybrid_*` Supabase RPC | legacy vector/graph 함수. 운영 Supabase와 repo migration `20260510022419_drop_legacy_vector_graph_rag_rpcs.sql`에서 제거 완료 | `search_knowledge_text` |
+| `get_knowledge_neighbors`, `traverse_knowledge_graph`, `search_*vectors*`, `search_*commands*` helper RPC | legacy helper 함수. 운영 Supabase와 repo migration `20260510030704_drop_remaining_legacy_vector_graph_helpers.sql`에서 제거 완료 | `search_knowledge_text` |
+| `command_vectors`, `knowledge_relationships` | historical data inventory. request path에서 graph traversal 없음. `command_vectors` 누락 text는 `20260510032441`로 `knowledge_base`에 backfill, 테이블/embedding 컬럼은 보존 | `knowledge_base` corpus |
 
 ---
 
@@ -247,13 +248,13 @@ CREATE INDEX idx_kb_search_vector ON knowledge_base
 
 ```sql
 SELECT * FROM search_knowledge_text(
-  p_query := 'Redis 메모리 부족',
-  p_category := 'runbook',
-  p_limit := 5
+  p_query_text := 'Redis 메모리 부족',
+  p_max_results := 5,
+  p_filter_category := 'troubleshooting'
 );
 ```
 
-`knowledge_relationships` 및 pgvector 관련 migration은 historical schema로 남을 수 있지만, 현재 Knowledge Retrieval Lite request path의 필수 dependency가 아닙니다.
+`knowledge_relationships` 및 pgvector 관련 migration은 historical schema로 남을 수 있지만, 현재 Knowledge Retrieval Lite request path의 필수 dependency가 아닙니다. 2026-05-10 운영 DB 실측 기준 `knowledge_base.embedding` 52건, `command_vectors.embedding` 26건이 남아 있어 embedding 컬럼은 즉시 삭제하지 않고, 먼저 `command_vectors`에만 남은 text 7건을 `knowledge_base`로 backfill합니다. `search_knowledge_text`는 `plainto_tsquery` 기반 primary match를 먼저 정렬하고, `cpu high load`, `disk space cleanup`, `server topology dependency`처럼 여러 토큰이 섞인 운영 질의에는 token-prefix OR fallback rank를 낮은 가중치로 함께 반영합니다. 이후 query token overlap을 우선 정렬해 `nginx 5xx gateway timeout` 같은 질의에서 단일 `gateway` 토큰만 맞은 Storage 문서가 Web/LB 문서보다 위로 올라오는 노이즈를 줄입니다.
 
 ---
 
@@ -273,6 +274,13 @@ SELECT * FROM search_knowledge_text(
 
 | 버전 | 날짜 | 변경 내용 |
 |------|------|----------|
+| v1.10.0 | 2026-05-10 | `command_vectors`에만 남은 legacy command text를 `knowledge_base` KRL corpus로 backfill하는 migration 추가. 루트 embedding seed script 제거, drift guard 확장, full command inventory 기준 governance threshold 재조정 |
+| v1.9.0 | 2026-05-10 | 남은 legacy graph/command-vector helper RPC와 unused `idx_kr_weight` 제거. KRL RPC 및 search_vector trigger helper는 유지 |
+| v1.8.0 | 2026-05-10 | relaxed recall 이후 token-overlap precision ranking 추가. `nginx 5xx gateway timeout` smoke에서 Web/LB 문서가 Storage 단일 토큰 매치보다 우선되도록 검증 |
+| v1.7.0 | 2026-05-10 | `search_knowledge_text` multi-token recall fallback 추가. smoke 대상에 CPU high load, disk cleanup, topology 질의 추가. corpus 실측값 53건으로 갱신 |
+| v1.6.0 | 2026-05-10 | 운영 Supabase DB에 legacy vector/graph RPC cleanup 적용 완료. post-check 기준 legacy 6개 false, `search_knowledge_text` true |
+| v1.5.0 | 2026-05-10 | 운영 DB inventory 기준 legacy vector/graph Supabase RPC 제거 migration 추가. `command_vectors`/`knowledge_relationships` 테이블은 데이터 보존 대상으로 분리 |
+| v1.4.0 | 2026-05-10 | `/api/ai/graphrag/*` 410 tombstone route 제거 완료. active 호환 표면은 `searchKnowledgeBase.useGraphRAG` 입력 무시 처리만 유지 |
 | v1.3.0 | 2026-04-26 | Knowledge Retrieval Lite 기준으로 legacy graph runtime, external embedding, query-expansion/rerank/web fallback 설명 제거 |
 | v1.2.0 | 2026-02-23 | RAG corpus 운영 제약(문서 수/길이/카테고리 비중) 및 Best Practice 참조 추가 |
 | v1.1.0 | 2026-01-26 | query expansion, reranking, web augmentation 상세 추가 |

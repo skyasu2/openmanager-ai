@@ -1,0 +1,106 @@
+{
+  "runId": "QA-20260510-0442",
+  "recordedAt": "2026-05-10T00:14:02.520Z",
+  "recordedAtKst": "2026-05-10 09:14:02 KST",
+  "runTitle": "Local AI Retrieval Legacy Graph Weight Cleanup QA",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine-local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Knowledge Retrieval Lite helper exports",
+    "AI proxy config schema",
+    "legacy vector/graph RAG weight removal guard",
+    "GraphRAG compatibility boundary guard",
+    "root AI stream contract"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-retrieval-legacy-vector-graph-weight-cleanup",
+      "title": "Remove stale vector/graph RAG weighting surface from active runtime",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Removed unused getDynamicSearchWeights and AI_RAG_WEIGHT_* config; added guards for removed legacy weighting tokens.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-cleanup-targeted-vitest",
+      "title": "AI retrieval cleanup targeted Vitest suites pass",
+      "priority": "P2",
+      "evidence": "npx vitest run src/tools-ai-sdk/reporter-tools/knowledge.test.ts src/knowledge-runtime-cleanup.test.ts src/lib/knowledge-retrieval-lite.test.ts src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-cleanup-root-vitest",
+      "title": "Root AI proxy config targeted Vitest suite passes",
+      "priority": "P2",
+      "evidence": "npx vitest run src/config/ai-proxy.config.test.ts",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-cleanup-type-lint-contract",
+      "title": "Type, lint, quick, contract, and AI Engine full tests pass",
+      "priority": "P2",
+      "evidence": "npm run type-check; npm run lint; npm run test:quick; npm run test:contract; cd cloud-run/ai-engine && npm run type-check && npm run test",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Knowledge Retrieval Lite request path remains BM25 search_knowledge_text + metadata boost.",
+    "Legacy /api/ai/graphrag/* 410 tombstone remains intentionally on hold until external client usage logs are checked."
+  ],
+  "links": []
+}

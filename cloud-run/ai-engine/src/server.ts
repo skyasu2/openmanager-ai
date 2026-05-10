@@ -206,7 +206,6 @@ async function registerRoutes() {
     { generateRouter },
     { approvalRouter },
     { analyticsRouter },
-    { graphragRouter },
     { jobsRouter },
     { providersRouter },
   ] = await Promise.all([
@@ -214,7 +213,6 @@ async function registerRoutes() {
     import('./routes/generate.js'),
     import('./routes/approval.js'),
     import('./routes/analytics.js'),
-    import('./routes/graphrag.js'),
     import('./routes/jobs.js'),
     import('./routes/providers.js'),
   ]);
@@ -223,7 +221,6 @@ async function registerRoutes() {
   app.route('/api/ai/generate', generateRouter);
   app.route('/api/ai/approval', approvalRouter);
   app.route('/api/ai', analyticsRouter);
-  app.route('/api/ai/graphrag', graphragRouter);
   app.route('/api/jobs', jobsRouter);
   app.route('/api/ai/providers', providersRouter);
 

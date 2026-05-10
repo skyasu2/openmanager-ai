@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260510-0452",
+  "recordedAt": "2026-05-10T03:28:05.443Z",
+  "recordedAtKst": "2026-05-10 12:28:05 KST",
+  "runTitle": "RAG Command Vector Backfill and Legacy Seed Cleanup QA",
+  "owner": "codex",
+  "source": "supabase-mcp+local",
+  "environment": {
+    "target": "local+supabase-production",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine+supabase-production",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Supabase command_vectors to knowledge_base backfill",
+    "Knowledge Retrieval Lite live RPC smoke",
+    "Legacy embedding seed script cleanup",
+    "AI retrieval drift guards",
+    "AI/database architecture documentation"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 31,
+    "passed": 31,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-retrieval-command-vector-backfill",
+      "title": "Backfill command_vectors rows missing from KRL corpus",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Supabase MCP apply_migration succeeded for 20260510032441 backfill_remaining_command_vectors_to_knowledge_base. Post-check: knowledge_base=60, command_vectors=26, backfilled_rows=7, missing_after_backfill=0.",
+      "note": "No DROP TABLE or DROP COLUMN was performed because production still has non-null embedding values.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-legacy-embedding-seed-cleanup",
+      "title": "Remove root legacy embedding seed scripts",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Deleted src/scripts/seed-command-vectors.ts and related root seed-knowledge-base files. Drift guard now scans src/scripts and blocks command_vectors write paths and embedding vectorString seed writers.",
+      "note": "Canonical KRL seed path remains cloud-run/ai-engine/scripts/seed-knowledge-base.ts.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-command-backfill-live-smoke",
+      "title": "Verify backfilled command docs resolve through search_knowledge_text",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "npm run supabase:rag:smoke passed 9/9. Added command checks for systemctl, sfc/dism, and docker run; top results were Command: linux-systemctl, Command: windows-sfc, and Command: docker-run.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation passed: npm run supabase:rag:smoke, targeted Supabase hardening/drift tests 11/11, docs:budget, docs:ai-consistency, npm run type-check, npm run test:quick, npm run test:contract 24/24, npm run lint, cloud-run/ai-engine npm run type-check, cloud-run/ai-engine npm run test 1082/1082, git diff --check.",
+    "Root lint retained the existing informational warning that reports/qa/qa-tracker.json is 1.8MiB over the configured 1.0MiB processor size."
+  ],
+  "links": []
+}

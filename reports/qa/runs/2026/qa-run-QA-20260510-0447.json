@@ -1,0 +1,109 @@
+{
+  "runId": "QA-20260510-0447",
+  "recordedAt": "2026-05-10T02:17:24.679Z",
+  "recordedAtKst": "2026-05-10 11:17:24 KST",
+  "runTitle": "Local Legacy RAG RPC Cleanup Docs and Test Hardening QA",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "supabase-readonly-inventory",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Supabase legacy RAG RPC cleanup migration",
+    "Supabase migration contract tests",
+    "Knowledge Retrieval Lite live RPC smoke",
+    "AI retrieval drift guard",
+    "root and AI Engine local gates",
+    "AI/database architecture docs"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment",
+    "live Supabase DDL apply"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "legacy-rag-rpc-cleanup-restrict-drop",
+      "title": "Make legacy RAG RPC cleanup dependency-safe",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "supabase/migrations/20260510011500_drop_legacy_vector_graph_rag_rpcs.sql now uses DROP FUNCTION ... RESTRICT and skips null to_regprocedure values.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "legacy-rag-rpc-cleanup-contract-hardening",
+      "title": "Expand Supabase migration contract coverage",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "tests/unit/dev/supabase-security-hardening-contract.test.ts now asserts RESTRICT, no CASCADE, idempotent null skip, and table/column preservation.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "legacy-rag-rpc-doc-apply-checklist",
+      "title": "Document pre/post Supabase DDL checks",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "docs/reference/architecture/infrastructure/database.md now includes the pre/post to_regprocedure query and post-apply npm run supabase:rag:smoke check.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "legacy-rag-rpc-live-dependency-inventory",
+      "title": "Confirm live legacy RPC functions have no dependent objects",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Supabase read-only pg_depend query returned zero dependent objects for the six legacy vector/graph RAG RPC functions.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run does not apply DDL to the live Supabase database.",
+    "Live KRL smoke passed with search_knowledge_text:cpu rows=3 and search_knowledge_text:redis-memory rows=3.",
+    "AI Engine full test passed: 106 files, 1078 tests."
+  ],
+  "links": []
+}

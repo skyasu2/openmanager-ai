@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  getDynamicSearchWeights,
   isCommandIntentQuery,
   mapSeverityFilter,
   rebalanceRagResultsForMonitoring,
@@ -30,7 +29,7 @@ describe('knowledge helpers', () => {
         content: 'incident',
         category: 'incident',
         similarity: 0.92,
-        sourceType: 'vector',
+        sourceType: 'incident',
         hopDistance: 0,
       },
       {
@@ -39,7 +38,7 @@ describe('knowledge helpers', () => {
         content: 'linux',
         category: 'command',
         similarity: 0.9,
-        sourceType: 'vector',
+        sourceType: 'runbook',
         hopDistance: 0,
       },
       {
@@ -48,8 +47,8 @@ describe('knowledge helpers', () => {
         content: 'windows',
         category: 'command',
         similarity: 0.88,
-        sourceType: 'graph',
-        hopDistance: 1,
+        sourceType: 'runbook',
+        hopDistance: 0,
       },
       {
         id: 'd',
@@ -57,7 +56,7 @@ describe('knowledge helpers', () => {
         content: 'troubleshooting',
         category: 'troubleshooting',
         similarity: 0.87,
-        sourceType: 'vector',
+        sourceType: 'runbook',
         hopDistance: 0,
       },
     ];
@@ -69,44 +68,6 @@ describe('knowledge helpers', () => {
     expect(output.length).toBe(3);
   });
 
-  describe('getDynamicSearchWeights', () => {
-    it('boosts graph weight for incident category', () => {
-      const weights = getDynamicSearchWeights('서버 장애', 'incident');
-      expect(weights.graphWeight).toBe(0.35);
-      expect(weights.vectorWeight).toBe(0.4);
-      expect(weights.textWeight).toBe(0.25);
-    });
-
-    it('boosts graph weight for troubleshooting category', () => {
-      const weights = getDynamicSearchWeights('문제 해결', 'troubleshooting');
-      expect(weights.graphWeight).toBe(0.35);
-    });
-
-    it('boosts BM25 for technical term queries', () => {
-      const weights = getDynamicSearchWeights('redis maxmemory 설정');
-      expect(weights.textWeight).toBe(0.45);
-      expect(weights.vectorWeight).toBe(0.35);
-    });
-
-    it('returns balanced defaults for general queries', () => {
-      const weights = getDynamicSearchWeights('서버 느려짐');
-      expect(weights.vectorWeight).toBe(0.5);
-      expect(weights.textWeight).toBe(0.3);
-      expect(weights.graphWeight).toBe(0.2);
-    });
-
-    it('weights sum to 1.0', () => {
-      const cases = [
-        getDynamicSearchWeights('redis 설정'),
-        getDynamicSearchWeights('장애 분석', 'incident'),
-        getDynamicSearchWeights('일반 질문'),
-      ];
-      for (const w of cases) {
-        expect(w.vectorWeight + w.textWeight + w.graphWeight).toBeCloseTo(1.0);
-      }
-    });
-  });
-
   it('filters destructive command docs unless cleanup intent exists', () => {
     const input: RAGResultItem[] = [
       {
@@ -115,7 +76,7 @@ describe('knowledge helpers', () => {
         content: 'dangerous cleanup',
         category: 'command',
         similarity: 0.99,
-        sourceType: 'vector',
+        sourceType: 'runbook',
         hopDistance: 0,
       },
       {
@@ -124,7 +85,7 @@ describe('knowledge helpers', () => {
         content: 'incident runbook',
         category: 'incident',
         similarity: 0.8,
-        sourceType: 'vector',
+        sourceType: 'incident',
         hopDistance: 0,
       },
     ];

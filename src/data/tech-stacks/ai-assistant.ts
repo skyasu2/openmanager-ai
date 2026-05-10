@@ -137,7 +137,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'low',
     description:
-      '과거 GraphRAG/벡터 인덱싱 경로에서 사용하던 텍스트 임베딩 모델. 현재 AI assistant Knowledge Retrieval Lite request path에서는 사용하지 않음',
+      '과거 그래프/벡터 인덱싱 경로에서 사용하던 텍스트 임베딩 모델. 현재 AI assistant Knowledge Retrieval Lite request path에서는 사용하지 않음',
     implementation:
       '→ Cloud Run embedding endpoint와 runtime helper는 제거됨. 운영 질의의 지식 검색은 BM25 + metadata boost 중심으로 처리',
     version: 'mistral-embed (1024d)',

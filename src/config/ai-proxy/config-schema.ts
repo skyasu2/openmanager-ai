@@ -44,12 +44,6 @@ export const StreamRetryConfigSchema = z.object({
   ]),
 });
 
-export const RAGWeightsConfigSchema = z.object({
-  vector: z.number().min(0).max(1).default(0.5),
-  graph: z.number().min(0).max(1).default(0.3),
-  web: z.number().min(0).max(1).default(0.2),
-});
-
 export const ObservabilityConfigSchema = z.object({
   enableTraceId: z.boolean().default(true),
   traceIdHeader: z.string().default('X-Trace-Id'),
@@ -89,7 +83,6 @@ export const AIProxyConfigSchema = z.object({
   }),
   queryRouting: QueryRoutingConfigSchema,
   streamRetry: StreamRetryConfigSchema,
-  ragWeights: RAGWeightsConfigSchema,
   observability: ObservabilityConfigSchema,
   complexityWeights: ComplexityCategoryWeightsSchema,
 });
@@ -99,7 +92,6 @@ export type AIProxyConfig = z.infer<typeof AIProxyConfigSchema>;
 export type ProxyEndpoint = keyof AIProxyConfig['timeouts'];
 export type CacheEndpoint = keyof AIProxyConfig['cacheTTL'];
 export type StreamRetryConfig = z.infer<typeof StreamRetryConfigSchema>;
-export type RAGWeightsConfig = z.infer<typeof RAGWeightsConfigSchema>;
 export type ObservabilityConfig = z.infer<typeof ObservabilityConfigSchema>;
 export type ComplexityCategoryWeights = z.infer<typeof ComplexityCategoryWeightsSchema>;
 
@@ -115,12 +107,6 @@ export const PRO_TIER_TIMEOUTS = {
   'incident-report': { min: 20000, max: 45000, default: 30000 },
   'intelligent-monitoring': { min: 10000, max: 30000, default: 15000 },
   'analyze-server': { min: 8000, max: 25000, default: 12000 },
-} as const;
-
-export const RAG_WEIGHTS_DEFAULT_KEYS = {
-  vector: 'AI_RAG_WEIGHT_VECTOR',
-  graph: 'AI_RAG_WEIGHT_GRAPH',
-  web: 'AI_RAG_WEIGHT_WEB',
 } as const;
 
 export const COMPLEXITY_WEIGHTS_DEFAULT_KEYS = {

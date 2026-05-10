@@ -1,0 +1,107 @@
+{
+  "runId": "QA-20260510-0449",
+  "recordedAt": "2026-05-10T02:46:15.891Z",
+  "recordedAtKst": "2026-05-10 11:46:15 KST",
+  "runTitle": "KRL Multi-token Recall Improvement QA",
+  "owner": "codex",
+  "source": "supabase-mcp+local",
+  "environment": {
+    "target": "local+supabase-production",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine+supabase-production",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Knowledge Retrieval Lite runtime fallback candidates",
+    "Supabase search_knowledge_text relaxed recall RPC",
+    "Supabase production migration ledger",
+    "RAG representative live RPC smoke",
+    "AI Engine retrieval unit and SQL contract tests",
+    "RAG architecture documentation"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-retrieval-krl-relaxed-recall-rpc",
+      "title": "Improve search_knowledge_text recall for multi-token operational queries",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Supabase MCP apply_migration succeeded for 20260510024218 improve_search_knowledge_text_recall; live SQL probe returned rows=3 for cpu high load, disk space cleanup, redis memory, server topology dependency, mysql disk cleanup, and nginx 5xx gateway timeout.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-domain-fallback-candidates-expanded",
+      "title": "Expand Knowledge Retrieval Lite deterministic fallback candidates",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Added CPU, memory, disk, DB, nginx, topology, and security fallback candidates; targeted Vitest confirms CPU high load falls back to cpu and disk space cleanup falls back to disk.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-representative-rag-smoke-expanded",
+      "title": "Expand Supabase RAG smoke beyond two happy-path keywords",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "npm run supabase:rag:smoke now requires rows>=1 for cpu, cpu high load, disk space cleanup, redis memory, and server topology dependency; all returned rows=3.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-rag-doc-corpus-sync",
+      "title": "Synchronize RAG architecture document with live corpus and relaxed recall behavior",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "docs/reference/architecture/ai/rag-knowledge-engine.md updated to v1.7.0 with knowledge_base=53, target length=53, hard over-limit=0, command ratio=33.96%, and relaxed recall notes.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation passed: targeted Vitest 18/18, AI Engine type-check, AI Engine full test 1081/1081, root type-check, test:quick, test:contract 24/24, docs:budget, docs:ai-consistency, lint, git diff --check.",
+    "Root lint retained the existing informational warning that reports/qa/qa-tracker.json is 1.8MiB over the configured 1.0MiB processor size."
+  ],
+  "links": []
+}

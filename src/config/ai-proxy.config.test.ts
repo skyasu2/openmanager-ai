@@ -25,6 +25,9 @@ describe('ai-proxy.config facade', () => {
     delete process.env.AI_FUNCTION_TIMEOUT_RESERVE_MS;
     delete process.env.AI_FORCE_JOB_QUEUE_KEYWORDS;
     delete process.env.AI_STREAM_MAX_RETRIES;
+    delete process.env.AI_RAG_WEIGHT_VECTOR;
+    delete process.env.AI_RAG_WEIGHT_GRAPH;
+    delete process.env.AI_RAG_WEIGHT_WEB;
     reloadAIProxyConfig();
   });
 
@@ -69,5 +72,15 @@ describe('ai-proxy.config facade', () => {
     expect(isRetryableError('upstream socket hang up')).toBe(true);
     expect(isRetryableError('validation failed')).toBe(false);
     expect(calculateRetryDelay(1)).toBe(2200);
+  });
+
+  it('does not expose removed vector/graph RAG weight config', () => {
+    process.env.AI_RAG_WEIGHT_VECTOR = '0.9';
+    process.env.AI_RAG_WEIGHT_GRAPH = '0.9';
+    process.env.AI_RAG_WEIGHT_WEB = '0.9';
+
+    const config = reloadAIProxyConfig();
+
+    expect('ragWeights' in config).toBe(false);
   });
 });

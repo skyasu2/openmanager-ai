@@ -1,0 +1,95 @@
+{
+  "runId": "QA-20260510-0446",
+  "recordedAt": "2026-05-10T01:42:59.449Z",
+  "recordedAtKst": "2026-05-10 10:42:59 KST",
+  "runTitle": "Local Legacy Vector Graph RAG RPC Cleanup Migration QA",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "supabase-readonly-inventory",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Supabase legacy RAG RPC inventory",
+    "Supabase migration contract",
+    "Knowledge Retrieval Lite live RPC smoke",
+    "legacy retrieval drift guard",
+    "root type/lint/test gates",
+    "AI architecture docs"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment",
+    "live Supabase DDL apply"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "supabase-legacy-rag-rpc-readonly-inventory",
+      "title": "Confirm legacy vector/graph RAG RPCs remain in Supabase",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Supabase read-only inventory found search_knowledge_base, match_documents, match_knowledge_base, hybrid_search_with_text, hybrid_graph_vector_search, and hybrid_search_vectors still present; search_knowledge_text remains current KRL RPC.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "legacy-vector-graph-rag-rpc-cleanup-migration",
+      "title": "Add migration that drops only unused legacy vector/graph RAG RPC functions",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Added supabase/migrations/20260510011500_drop_legacy_vector_graph_rag_rpcs.sql and contract tests that preserve search_knowledge_text plus data tables.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "legacy-rag-table-cleanup-deferred",
+      "title": "Keep legacy data tables out of the RPC cleanup migration",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Supabase read-only counts found knowledge_base=53, command_vectors=26, knowledge_relationships=170; table deletion requires a separate data migration plan.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run prepares the repo migration and validates current KRL RPC behavior. It does not apply DDL to the live Supabase database.",
+    "Live KRL smoke passed with search_knowledge_text:cpu rows=3 and search_knowledge_text:redis-memory rows=3."
+  ],
+  "links": []
+}

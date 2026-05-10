@@ -1,0 +1,66 @@
+{
+  "runId": "QA-20260510-0453",
+  "recordedAt": "2026-05-10T03:33:36.166Z",
+  "recordedAtKst": "2026-05-10 12:33:36 KST",
+  "runTitle": "RAG Corpus Governance Rebaseline QA",
+  "owner": "codex",
+  "source": "local+supabase-production",
+  "environment": {
+    "target": "local+supabase-production",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine+supabase-production",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "RAG corpus governance thresholds",
+    "RAG distribution analyzer",
+    "AI Engine policy constants",
+    "AI/database architecture documentation"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-retrieval-rag-governance-rebaseline",
+      "title": "Rebaseline RAG corpus governance after full command inventory backfill",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "npm run rag:analyze returned governance 12/12 PASS after setting target docs <=60, hard <=64, command ratio <=42%, command range 18-25, architecture range 2-5.",
+      "note": "The corpus is now 60 docs, all in the 280-520 character target band, with no merge candidates.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation passed after policy change: npm run rag:analyze, cloud-run/ai-engine npm run type-check, cloud-run/ai-engine npm run test 1082/1082, npm run docs:budget, npm run docs:ai-consistency.",
+    "This rebaseline follows the production KRL corpus state after QA-20260510-0452 command vector backfill."
+  ],
+  "links": []
+}

@@ -1,0 +1,108 @@
+{
+  "runId": "QA-20260510-0445",
+  "recordedAt": "2026-05-10T01:10:46.197Z",
+  "recordedAtKst": "2026-05-10 10:10:46 KST",
+  "runTitle": "Local AI Retrieval Actual-Use Smoke and Dependency Cleanup QA",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine-local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Knowledge Retrieval Lite Supabase RPC",
+    "AI Engine dependency manifest",
+    "legacy retrieval drift guard",
+    "Cloud Run AI Engine type/test gate",
+    "root AI stream contract",
+    "QA tracker"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-retrieval-live-supabase-text-rpc-smoke",
+      "title": "Verify current Knowledge Retrieval Lite RPC works against Supabase",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "npm run supabase:rag:smoke returned [PASS] search_knowledge_text:cpu rows=3 and [PASS] search_knowledge_text:redis-memory rows=3.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-engine-unused-direct-dependency-cleanup",
+      "title": "Remove unused AI Engine direct dependencies",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Removed @upstash/redis, js-tiktoken, pg, and @types/pg from cloud-run/ai-engine/package.json after source/test/script import scan and AI Engine knip showed no direct usage.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-engine-langfuse-dynamic-import-kept",
+      "title": "Keep Langfuse dependency because it is dynamically loaded at runtime",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "cloud-run/ai-engine/src/services/observability/langfuse-client.ts uses import('langfuse' as string); knip reports it as unused because the import is intentionally dynamic.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-actual-use-cleanup-gates",
+      "title": "Actual-use cleanup local gates pass",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AI Engine type-check and full test passed; root type-check, lint, test:quick, and test:contract passed. Docs and whitespace checks are run after QA record generation.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Live Supabase RPC smoke was executed in this pass, unlike QA-20260510-0444 which only syntax-checked the smoke script.",
+    "AI Engine knip still reports Langfuse as an unused dependency, but this is a false positive caused by the deliberate string dynamic import used to keep startup resilient.",
+    "AI Engine knip still reports manual local provider scripts and exported public/barrel symbols; those remain review candidates, not confirmed dead runtime."
+  ],
+  "links": []
+}

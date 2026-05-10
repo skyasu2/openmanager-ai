@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 08:12:15 KST
+> Generated at: 2026-05-10 12:52:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 439 |
-| Total Runs (Counted) | 358 |
+| Total Recorded Runs | 452 |
+| Total Runs (Counted) | 371 |
 | Non-counted Runs | 81 |
-| Total Checks | 3105 |
-| Passed | 2981 |
+| Total Checks | 3301 |
+| Passed | 3177 |
 | Failed | 114 |
-| Completed Items | 472 |
+| Completed Items | 517 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260510-0441 (2026-05-09T23:12:15.456Z) |
-| Latest Recorded Run | QA-20260510-0441 (2026-05-09T23:12:15.456Z) |
+| Last Counted Run | QA-20260510-0454 (2026-05-10T03:52:25.277Z) |
+| Latest Recorded Run | QA-20260510-0454 (2026-05-10T03:52:25.277Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0441 (2026-05-09T23:12:15.456Z)
+Latest run: QA-20260510-0454 (2026-05-10T03:52:25.277Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260510-0441 (2026-05-09T23:12:15.456Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-08T23:12:15.456Z -> 2026-05-09T23:12:15.456Z (24h)
+- Window: 2026-05-09T03:52:25.277Z -> 2026-05-10T03:52:25.277Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +58,7 @@ Latest run: QA-20260510-0441 (2026-05-09T23:12:15.456Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-08T23:12:15.456Z -> 2026-05-09T23:12:15.456Z (24h)
+- Window: 2026-05-09T03:52:25.277Z -> 2026-05-10T03:52:25.277Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -72,10 +72,10 @@ Latest run: QA-20260510-0441 (2026-05-09T23:12:15.456Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA 3d38bc00
-- Coverage Packs: ai-core
-- Covered Surfaces: AI service command deterministic fast-path, AI command recommendation catalog, AI pre-filter direct response, AI supervisor stream direct command guidance, root AI stream contract
-- Skipped Surfaces: Vercel production retest, live LLM generation
+- Deployment: SHA f585e51b
+- Coverage Packs: ai-core, security-pack
+- Covered Surfaces: Supabase performance advisor unused indexes, incident_reports operational indexes, security_audit_logs operational indexes, approval_history RPC access path, database architecture documentation
+- Skipped Surfaces: Vercel production retest, live LLM generation, Cloud Run deployment
 
 ## Links (Latest Run)
 
@@ -221,9 +221,11 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-disk-threshold-answer-accuracy-drift: AI async job answer preserves DISK threshold and dashboard metric values (completed 2회, last QA-20260429-0368)
 - ai-domain-boundary-phase2-analysis-mode: AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking) (completed 1회, last QA-20260416-0297)
 - ai-engine-cloud-run-v81188-health: Cloud Run ai-engine v8.11.88 health and free-tier runtime limits verified (completed 1회, last QA-20260503-0399)
+- ai-engine-langfuse-dynamic-import-kept: Keep Langfuse dependency because it is dynamically loaded at runtime (completed 1회, last QA-20260510-0445)
 - ai-engine-precomputed-state-data-source-v811110: AI Engine precomputed-state data source decoupling verified in production (completed 1회, last QA-20260507-0418)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-engine-supervisor-runtime-host-wiring-v811107: Production supervisor stream and single-agent runtime host wiring verified (completed 1회, last QA-20260506-0413)
+- ai-engine-unused-direct-dependency-cleanup: Remove unused AI Engine direct dependencies (completed 1회, last QA-20260510-0445)
 - ai-explicit-server-summary-backfill: Explicit server action summary keeps named TOP2 servers and backfills partial tool payloads (completed 1회, last QA-20260430-0376)
 - ai-fallback-done-usage-metadata: Delegated summarization fallback should report delegated provider token usage (completed 1회, last QA-20260429-0367)
 - ai-feedback-removal-v811113: AI feedback feature removed from production (completed 1회, last QA-20260507-0420)
@@ -257,6 +259,37 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (completed 1회, last QA-20260423-0339)
 - ai-reporter-monitoring-rag-control-hidden-v811106: Reporter and monitoring AI surfaces no longer expose RAG toggles (completed 1회, last QA-20260505-0412)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
+- ai-retrieval-actual-use-cleanup-gates: Actual-use cleanup local gates pass (completed 1회, last QA-20260510-0445)
+- ai-retrieval-cleanup-root-vitest: Root AI proxy config targeted Vitest suite passes (completed 1회, last QA-20260510-0442)
+- ai-retrieval-cleanup-targeted-vitest: AI retrieval cleanup targeted Vitest suites pass (completed 1회, last QA-20260510-0442)
+- ai-retrieval-cleanup-type-lint-contract: Type, lint, quick, contract, and AI Engine full tests pass (completed 1회, last QA-20260510-0442)
+- ai-retrieval-command-backfill-live-smoke: Verify backfilled command docs resolve through search_knowledge_text (completed 1회, last QA-20260510-0452)
+- ai-retrieval-command-vector-backfill: Backfill command_vectors rows missing from KRL corpus (completed 1회, last QA-20260510-0452)
+- ai-retrieval-current-krl-trigger-helper-preserved: Preserve KRL RPC and current search_vector trigger helpers (completed 1회, last QA-20260510-0451)
+- ai-retrieval-dead-runtime-cleanup-gates: Retrieval cleanup targeted and broad local gates pass (completed 1회, last QA-20260510-0444)
+- ai-retrieval-dead-runtime-hyde-reranker-removal: Remove unused HyDE query expansion and LLM reranker runtime files (completed 1회, last QA-20260510-0444)
+- ai-retrieval-domain-fallback-candidates-expanded: Expand Knowledge Retrieval Lite deterministic fallback candidates (completed 1회, last QA-20260510-0449)
+- ai-retrieval-graphrag-compat-contract-reduction: Reduce legacy contracts to useGraphRAG input compatibility only (completed 1회, last QA-20260510-0443)
+- ai-retrieval-graphrag-route-removal-gates: Type, lint, quick, contract, docs, and AI Engine full tests pass (completed 1회, last QA-20260510-0443)
+- ai-retrieval-graphrag-route-removal-tests: Route removal and retrieval compatibility tests pass (completed 1회, last QA-20260510-0443)
+- ai-retrieval-graphrag-tombstone-route-removal: Remove legacy /api/ai/graphrag/* 410 tombstone route (completed 1회, last QA-20260510-0443)
+- ai-retrieval-graphrag-usage-log-check: Confirm no recent external usage before tombstone removal (completed 1회, last QA-20260510-0443)
+- ai-retrieval-krl-relaxed-recall-rpc: Improve search_knowledge_text recall for multi-token operational queries (completed 1회, last QA-20260510-0449)
+- ai-retrieval-krl-smoke-script-alignment: Align supabase:rag:smoke with Knowledge Retrieval Lite (completed 1회, last QA-20260510-0444)
+- ai-retrieval-krl-token-overlap-precision-ranking: Reduce broad relaxed fallback noise with token-overlap ranking (completed 1회, last QA-20260510-0450)
+- ai-retrieval-legacy-data-tables-preserved: Preserve historical RAG data tables while removing helper surface (completed 1회, last QA-20260510-0451)
+- ai-retrieval-legacy-drift-guard-expanded: Expand drift guard against removed retrieval runtime reintroduction (completed 1회, last QA-20260510-0444)
+- ai-retrieval-legacy-embedding-seed-cleanup: Remove root legacy embedding seed scripts (completed 1회, last QA-20260510-0452)
+- ai-retrieval-legacy-vector-graph-weight-cleanup: Remove stale vector/graph RAG weighting surface from active runtime (completed 1회, last QA-20260510-0442)
+- ai-retrieval-live-supabase-text-rpc-smoke: Verify current Knowledge Retrieval Lite RPC works against Supabase (completed 1회, last QA-20260510-0445)
+- ai-retrieval-rag-doc-corpus-sync: Synchronize RAG architecture document with live corpus and relaxed recall behavior (completed 1회, last QA-20260510-0449)
+- ai-retrieval-rag-doc-precision-sync: Document KRL token-overlap ranking behavior (completed 1회, last QA-20260510-0450)
+- ai-retrieval-rag-governance-rebaseline: Rebaseline RAG corpus governance after full command inventory backfill (completed 1회, last QA-20260510-0453)
+- ai-retrieval-rag-smoke-precision-guard: Add precision guard to live RAG smoke (completed 1회, last QA-20260510-0450)
+- ai-retrieval-remaining-legacy-helper-rpc-cleanup: Drop remaining unused legacy graph/vector helper RPCs (completed 1회, last QA-20260510-0451)
+- ai-retrieval-representative-rag-smoke-expanded: Expand Supabase RAG smoke beyond two happy-path keywords (completed 1회, last QA-20260510-0449)
+- ai-retrieval-stale-test-mock-cleanup: Remove stale query-expansion/reranker mocks from searchKnowledgeBase tests (completed 1회, last QA-20260510-0444)
+- ai-retrieval-unused-graph-weight-index-removed: Remove unused legacy graph weight index (completed 1회, last QA-20260510-0451)
 - ai-security-prompt-injection-smoke-v81197: Prompt-injection smoke does not leak secrets (completed 1회, last QA-20260505-0407)
 - ai-server-snapshot-artifact-cancellation-v81185: Server snapshot artifact respects cancellation and preserves production rendering (completed 1회, last QA-20260503-0395)
 - ai-server-snapshot-artifact-v81184: Server status snapshot artifact routes and renders in production without LLM/Cloud Run cost path (completed 1회, last QA-20260503-0394)
@@ -458,7 +491,17 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - langfuse-monitoring-traces-timeout: Authenticated /monitoring/traces endpoint times out in production (completed 1회, last QA-20260317-0113)
 - langfuse-multi-agent-traceid-live-proof: 멀티에이전트 sampled traceId 실운영 실측 (completed 1회, last QA-20260317-0116)
 - langfuse-multi-agent-traceid-propagation: 멀티에이전트 stream done metadata traceId 전파 (completed 1회, last QA-20260317-0115)
+- legacy-rag-rpc-cleanup-contract-hardening: Expand Supabase migration contract coverage (completed 1회, last QA-20260510-0447)
+- legacy-rag-rpc-cleanup-restrict-drop: Make legacy RAG RPC cleanup dependency-safe (completed 1회, last QA-20260510-0447)
+- legacy-rag-rpc-doc-apply-checklist: Document pre/post Supabase DDL checks (completed 1회, last QA-20260510-0447)
+- legacy-rag-rpc-live-dependency-inventory: Confirm live legacy RPC functions have no dependent objects (completed 1회, last QA-20260510-0447)
+- legacy-rag-table-cleanup-deferred: Keep legacy data tables out of the RPC cleanup migration (completed 1회, last QA-20260510-0446)
+- legacy-vector-graph-rag-rpc-cleanup-migration: Add migration that drops only unused legacy vector/graph RAG RPC functions (completed 1회, last QA-20260510-0446)
 - linux-label-normalization: 대시보드 카드 OS 표기를 Linux로 정규화 (completed 1회, last QA-20260322-0157)
+- live-supabase-advisor-post-ddl-check: Check Supabase advisors after DDL (completed 1회, last QA-20260510-0448)
+- live-supabase-krl-smoke-after-rpc-cleanup: Verify Knowledge Retrieval Lite still works after DB cleanup (completed 1회, last QA-20260510-0448)
+- live-supabase-legacy-rag-rpc-cleanup-applied: Apply legacy vector/graph RAG RPC cleanup to Supabase production (completed 1회, last QA-20260510-0448)
+- live-supabase-post-check-legacy-rpc-removed: Verify legacy vector/graph RAG RPCs are removed while KRL RPC remains (completed 1회, last QA-20260510-0448)
 - log-explorer-modal: 로그 탐색기 모달 (completed 1회, last QA-20260317-0114)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-header-self-loop-cta: 로그인 페이지 헤더 self-loop CTA 제거 (completed 1회, last QA-20260401-0204)
@@ -563,6 +606,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - storybook-smoke-script-stable-port: Storybook smoke 테스트 스크립트 안정화 (completed 1회, last QA-20260315-0102)
 - streaming-analysis-basis-data-source-promotion: 스트리밍 AI 응답의 데이터 소스 라벨을 실시간 데이터 분석으로 승격 (completed 1회, last QA-20260324-0175)
 - streaming-parity-type-build-fix: Streaming parity deferred metadata type mismatch fix builds on production (completed 1회, last QA-20260324-0174)
+- supabase-legacy-rag-rpc-readonly-inventory: Confirm legacy vector/graph RAG RPCs remain in Supabase (completed 1회, last QA-20260510-0446)
+- supabase-low-value-unused-index-cleanup: Drop low-value unused operational indexes while preserving FK/RLS support (completed 1회, last QA-20260510-0454)
 - supervisor-stream-contract-alignment: Supervisor stream sessionId/deviceType 계약 정렬 (completed 1회, last QA-20260325-0184)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
@@ -648,6 +693,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0454 | 2026-05-10T03:52:25.277Z | targeted | no | yes | Supabase Low-value Unused Index Cleanup QA | 19 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260510-0453 | 2026-05-10T03:33:36.166Z | targeted | no | yes | RAG Corpus Governance Rebaseline QA | 16 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260510-0452 | 2026-05-10T03:28:05.443Z | targeted | no | yes | RAG Command Vector Backfill and Legacy Seed Cleanup QA | 31 | 3 | 0 | 0 | 0 | 0 |
+| QA-20260510-0451 | 2026-05-10T03:10:45.254Z | targeted | no | yes | Remaining Legacy Vector Graph Helper Cleanup QA | 16 | 4 | 0 | 0 | 0 | 0 |
+| QA-20260510-0450 | 2026-05-10T02:56:17.274Z | targeted | no | yes | KRL Token-overlap Ranking Precision QA | 14 | 3 | 0 | 0 | 0 | 0 |
+| QA-20260510-0449 | 2026-05-10T02:46:15.891Z | targeted | no | yes | KRL Multi-token Recall Improvement QA | 15 | 4 | 0 | 0 | 0 | 0 |
+| QA-20260510-0448 | 2026-05-10T02:27:03.074Z | targeted | no | yes | Live Supabase Legacy RAG RPC Cleanup Apply QA | 12 | 4 | 0 | 0 | 0 | 0 |
+| QA-20260510-0447 | 2026-05-10T02:17:24.679Z | targeted | no | yes | Local Legacy RAG RPC Cleanup Docs and Test Hardening QA | 16 | 4 | 0 | 0 | 0 | 0 |
+| QA-20260510-0446 | 2026-05-10T01:42:59.449Z | targeted | no | yes | Local Legacy Vector Graph RAG RPC Cleanup Migration QA | 12 | 3 | 0 | 0 | 0 | 0 |
+| QA-20260510-0445 | 2026-05-10T01:10:46.197Z | targeted | no | yes | Local AI Retrieval Actual-Use Smoke and Dependency Cleanup QA | 14 | 4 | 0 | 0 | 0 | 0 |
+| QA-20260510-0444 | 2026-05-10T00:55:24.249Z | targeted | no | yes | Local AI Retrieval Dead Runtime Cleanup QA | 12 | 5 | 0 | 0 | 0 | 0 |
+| QA-20260510-0443 | 2026-05-10T00:32:59.649Z | targeted | no | yes | Local AI Retrieval GraphRAG Tombstone Route Removal QA | 10 | 5 | 0 | 0 | 0 | 0 |
+| QA-20260510-0442 | 2026-05-10T00:14:02.520Z | targeted | no | yes | Local AI Retrieval Legacy Graph Weight Cleanup QA | 9 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0441 | 2026-05-09T23:12:15.456Z | targeted | no | yes | Local AI Engine Command Guidance Resource Intent QA | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0440 | 2026-05-09T22:47:17.841Z | targeted | no | yes | Local AI Engine Memory TOP-N Routing Fix QA | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0439 | 2026-05-09T17:03:25.551Z | smoke | yes | yes | Vercel Production Smoke QA - v8.11.120 Frontend+AI | 13 | 0 | 2 | 0 | 0 | 0 |
@@ -655,16 +713,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260509-0437 | 2026-05-09T13:56:23.063Z | targeted | yes | yes | v8.11.119 Production Release Smoke | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0436 | 2026-05-09T12:15:44.170Z | targeted | no | yes | Local UI/UX Improvement Closure QA - P1/P2/P3 | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0435 | 2026-05-09T06:13:33.522Z | targeted | no | yes | Vercel Production AI Ops A5/C2/A1 Targeted Retest - v8.11.118 | 2 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260509-0434 | 2026-05-09T05:36:57.749Z | targeted | no | no | Local AI Ops A1/A5/C2 Deterministic Fallback QA | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260509-0433 | 2026-05-09T03:20:33.195Z | targeted | no | no | Local Dashboard AI Surface Boundary Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260509-0432 | 2026-05-09T00:32:58.510Z | targeted | no | yes | Vercel Production AI Ops B4/B5 Closure Retest - v8.11.118 | 2 | 2 | 2 | 0 | 0 | 0 |
-| QA-20260509-0431 | 2026-05-09T00:05:28.683Z | targeted | no | yes | Vercel Production AI Ops B4/B5 Submit Boundary Retest - v8.11.117 | 2 | 1 | 3 | 0 | 0 | 3 |
-| QA-20260509-0430 | 2026-05-08T17:45:28.422Z | targeted | no | yes | Vercel Production AI Ops Command Guidance Retest - v8.11.116 | 3 | 1 | 3 | 0 | 0 | 3 |
-| QA-20260509-0429 | 2026-05-08T16:33:50.518Z | targeted | no | yes | Vercel Production AI Ops Conversational Retest - v8.11.114 | 8 | 2 | 3 | 0 | 0 | 3 |
-| QA-20260509-0428 | 2026-05-08T15:49:21.373Z | targeted | no | yes | Vercel Production AI Ops Conversational QA - 15 Scenario Pack | 15 | 0 | 4 | 0 | 0 | 3 |
-| QA-20260509-0427 | 2026-05-08T15:14:17.014Z | targeted | no | no | Local Dashboard Server Detail UX QA - Modal Shell Removal and Header Actions | 8 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260508-0426 | 2026-05-08T14:07:10.491Z | targeted | no | no | Local Dashboard Server Layout QA - Card Density and Mobile Detail Overflow | 5 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260508-0425 | 2026-05-08T12:23:59.578Z | broad | yes | yes | v8.11.113 3일간 변경사항 Playwright Production QA | 13 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260508-0424 | 2026-05-08T07:24:22.394Z | targeted | no | yes | Local Playwright MCP QA - Nivo tooltip and anomaly visual closure | 7 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260508-0423 | 2026-05-08T06:59:43.939Z | targeted | no | no | Local Next.js Webpack Dev Fallback Stabilization | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260508-0422 | 2026-05-08T04:05:15.930Z | targeted | no | no | Local Nivo Chart Visual QA - Local Next.js Dev Server Exit Blocked | 2 | 0 | 0 | 0 | 0 | 0 |

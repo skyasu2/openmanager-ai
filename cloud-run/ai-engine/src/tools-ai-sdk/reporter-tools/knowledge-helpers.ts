@@ -71,43 +71,6 @@ export function getDynamicThreshold(query: string, category?: string): number {
   return 0.4;
 }
 
-export function getDynamicSearchWeights(
-  query: string,
-  category?: string,
-): {
-  vectorWeight: number;
-  textWeight: number;
-  graphWeight: number;
-} {
-  const q = query.toLowerCase();
-  const technicalTerms = [
-    'redis',
-    'nginx',
-    'docker',
-    'postgresql',
-    'mysql',
-    'kubernetes',
-    'k8s',
-    'oom',
-    'gc',
-    'ssl',
-    'tls',
-    'dns',
-  ];
-  const hasTechnicalTerms =
-    technicalTerms.filter((t) => q.includes(t)).length >= 1;
-
-  if (category === 'incident' || category === 'troubleshooting') {
-    return { vectorWeight: 0.4, textWeight: 0.25, graphWeight: 0.35 };
-  }
-
-  if (hasTechnicalTerms) {
-    return { vectorWeight: 0.35, textWeight: 0.45, graphWeight: 0.2 };
-  }
-
-  return { vectorWeight: 0.5, textWeight: 0.3, graphWeight: 0.2 };
-}
-
 export function mapSeverityFilter(
   severity?: ToolSeverityFilter,
 ): 'info' | 'warning' | 'critical' | undefined {

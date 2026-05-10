@@ -1,0 +1,107 @@
+{
+  "runId": "QA-20260510-0448",
+  "recordedAt": "2026-05-10T02:27:03.074Z",
+  "recordedAtKst": "2026-05-10 11:27:03 KST",
+  "runTitle": "Live Supabase Legacy RAG RPC Cleanup Apply QA",
+  "owner": "codex",
+  "source": "supabase-mcp",
+  "environment": {
+    "target": "supabase-production",
+    "url": "",
+    "frontend": "local",
+    "backend": "supabase-production",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Supabase production migration ledger",
+    "legacy vector/graph RAG RPC removal",
+    "Knowledge Retrieval Lite live RPC smoke",
+    "Supabase advisors",
+    "Supabase migration contract tests",
+    "AI/database architecture docs"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "live-supabase-legacy-rag-rpc-cleanup-applied",
+      "title": "Apply legacy vector/graph RAG RPC cleanup to Supabase production",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Supabase MCP apply_migration succeeded; ledger recorded 20260510022419 drop_legacy_vector_graph_rag_rpcs.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "live-supabase-post-check-legacy-rpc-removed",
+      "title": "Verify legacy vector/graph RAG RPCs are removed while KRL RPC remains",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Post-check returned false for search_knowledge_base, match_documents, match_knowledge_base, hybrid_search_with_text, hybrid_graph_vector_search, hybrid_search_vectors; search_knowledge_text remained true.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "live-supabase-krl-smoke-after-rpc-cleanup",
+      "title": "Verify Knowledge Retrieval Lite still works after DB cleanup",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "npm run supabase:rag:smoke returned search_knowledge_text:cpu rows=3 and search_knowledge_text:redis-memory rows=3; direct search_knowledge_text('cpu',3,null) returned 3 rows.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "live-supabase-advisor-post-ddl-check",
+      "title": "Check Supabase advisors after DDL",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Security advisor reported only existing leaked password protection warning; performance advisor reported existing unused index INFO items, no new RAG RPC blocker.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local migration filename was aligned to the applied Supabase ledger version: supabase/migrations/20260510022419_drop_legacy_vector_graph_rag_rpcs.sql.",
+    "Data tables were intentionally preserved: knowledge_base=53, command_vectors=26, knowledge_relationships=170."
+  ],
+  "links": []
+}

@@ -18,9 +18,11 @@ const SCAN_ROOTS = [
   'src/data',
   'src/components',
   'src/config',
+  'src/scripts',
   'cloud-run/ai-engine/README.md',
   'cloud-run/ai-engine/src',
   'cloud-run/ai-engine/scripts',
+  'scripts/test',
 ];
 
 const RULES: LegacyRetrievalRule[] = [
@@ -43,6 +45,30 @@ const RULES: LegacyRetrievalRule[] = [
   {
     label: 'removed hybrid vector/graph search helper',
     pattern: /hybrid-text-search\.ts|hybridTextVectorSearch|HybridTextSearch/,
+  },
+  {
+    label: 'removed LLM retrieval expansion/rerank runtime',
+    pattern:
+      /query-expansion\.ts|reranker\.ts|expandQueryWithHyDE|rerankDocuments|isRerankerAvailable/,
+  },
+  {
+    label: 'legacy command_vectors write path',
+    pattern:
+      /from\(['"]command_vectors['"]\)|\.from\(['"]command_vectors['"]\)/,
+  },
+  {
+    label: 'legacy embedding seed writer',
+    pattern:
+      /embedding:\s*vectorString|Mistral mistral-embed \(1024 dimensions\)/,
+  },
+  {
+    label: 'legacy vector/graph Supabase RAG smoke path',
+    pattern:
+      /search_knowledge_base|match_documents|hybrid_search_with_text|p_graph_weight|query_embedding/,
+    allowFiles: [
+      'docs/reference/architecture/ai/rag-knowledge-engine.md',
+      'docs/reference/architecture/infrastructure/database.md',
+    ],
   },
   {
     label: 'forced useGraphRAG runtime flag',

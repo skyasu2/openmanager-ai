@@ -1,0 +1,67 @@
+{
+  "runId": "QA-20260510-0454",
+  "recordedAt": "2026-05-10T03:52:25.277Z",
+  "recordedAtKst": "2026-05-10 12:52:25 KST",
+  "runTitle": "Supabase Low-value Unused Index Cleanup QA",
+  "owner": "codex",
+  "source": "supabase-mcp+local",
+  "environment": {
+    "target": "local+supabase-production",
+    "url": "",
+    "frontend": "local",
+    "backend": "supabase-production",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "security-pack"],
+  "coveredSurfaces": [
+    "Supabase performance advisor unused indexes",
+    "incident_reports operational indexes",
+    "security_audit_logs operational indexes",
+    "approval_history RPC access path",
+    "database architecture documentation"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 19,
+    "passed": 19,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "supabase-low-value-unused-index-cleanup",
+      "title": "Drop low-value unused operational indexes while preserving FK/RLS support",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Supabase MCP apply_migration succeeded for 20260510034213 drop_low_value_unused_operational_indexes. Post-check showed the 6 selected indexes removed and the 10 preserved FK/RLS/current access path indexes still present. Performance advisor unused index INFO decreased from 10 to 4.",
+      "note": "Remaining advisor items are intentionally preserved: security_audit_logs.user_id and incident_reports assigned_to/created_by/resolved_by FK/RLS support indexes.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation passed: targeted Supabase hardening contract test 11/11, approval history RPC smoke, docs:budget, docs:ai-consistency, git diff --check.",
+    "Supabase security advisor still reports existing Auth leaked password protection WARN; unchanged by this DB index cleanup."
+  ],
+  "links": []
+}

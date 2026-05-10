@@ -1,0 +1,108 @@
+{
+  "runId": "QA-20260510-0451",
+  "recordedAt": "2026-05-10T03:10:45.254Z",
+  "recordedAtKst": "2026-05-10 12:10:45 KST",
+  "runTitle": "Remaining Legacy Vector Graph Helper Cleanup QA",
+  "owner": "codex",
+  "source": "supabase-mcp+local",
+  "environment": {
+    "target": "local+supabase-production",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine+supabase-production",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Supabase legacy graph/vector helper RPC cleanup",
+    "Knowledge Retrieval Lite live RPC smoke",
+    "Supabase production migration ledger",
+    "Supabase advisors",
+    "AI retrieval drift guards",
+    "AI/database architecture documentation"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-retrieval-remaining-legacy-helper-rpc-cleanup",
+      "title": "Drop remaining unused legacy graph/vector helper RPCs",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Supabase MCP apply_migration succeeded for 20260510030704 drop_remaining_legacy_vector_graph_helpers. Post-check returned false for get_knowledge_neighbors, get_vector_stats, search_all_commands*, search_similar_*, search_vectors_*, and traverse_knowledge_graph.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-current-krl-trigger-helper-preserved",
+      "title": "Preserve KRL RPC and current search_vector trigger helpers",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Post-check returned true for search_knowledge_text, generate_knowledge_search_vector, and update_knowledge_search_vector.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-legacy-data-tables-preserved",
+      "title": "Preserve historical RAG data tables while removing helper surface",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Post-check returned true for knowledge_base, command_vectors, and knowledge_relationships; no DROP TABLE or DROP COLUMN in migration contract.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-unused-graph-weight-index-removed",
+      "title": "Remove unused legacy graph weight index",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "idx_kr_weight post-check returned false, and Supabase performance advisor no longer reports idx_kr_weight.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation passed: targeted Supabase hardening/drift tests 10/10, AI Engine SQL contract tests 4/4, npm run supabase:rag:smoke, root type-check, test:quick, test:contract 24/24, lint, AI Engine type-check, docs:budget, docs:ai-consistency, git diff --check.",
+    "Supabase advisors showed no new blocker. Security still has existing Auth leaked password protection WARN; performance advisor still reports unrelated incident/security/approval unused index INFO items.",
+    "Root lint retained the existing informational warning that reports/qa/qa-tracker.json is 1.8MiB over the configured 1.0MiB processor size."
+  ],
+  "links": []
+}

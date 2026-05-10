@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -60,6 +60,15 @@ describe('knowledge retrieval runtime cleanup', () => {
     expect(runtimeOffenders).toEqual([]);
   });
 
+  it('does not keep the legacy GraphRAG tombstone route registered', () => {
+    const routePath = join(srcRoot, 'routes', 'graphrag.ts');
+    const serverSource = readFileSync(join(srcRoot, 'server.ts'), 'utf-8');
+
+    expect(existsSync(routePath)).toBe(false);
+    expect(serverSource).not.toContain("import('./routes/graphrag.js')");
+    expect(serverSource).not.toContain("app.route('/api/ai/graphrag'");
+  });
+
   it('does not allow legacy GraphRAG telemetry env names in active runtime', () => {
     const offenders = listSourceFiles(srcRoot)
       .filter((path) => !path.endsWith('.test.ts'))
@@ -67,6 +76,26 @@ describe('knowledge retrieval runtime cleanup', () => {
         readFileSync(path, 'utf-8').includes('GRAPH_RAG_TELEMETRY_SAMPLE_RATE')
       )
       .map(toSrcRelativePath);
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('does not expose removed vector/graph weighting helpers in active runtime', () => {
+    const legacyTokens = [
+      ['get', 'Dynamic', 'Search', 'Weights'].join(''),
+      ['AI', '_RAG', '_WEIGHT', '_GRAPH'].join(''),
+      ['AI', '_RAG', '_WEIGHT', '_VECTOR'].join(''),
+      ['Vector', ' + BM25 + ', 'Graph'].join(''),
+    ];
+
+    const offenders = listSourceFiles(srcRoot)
+      .filter((path) => !path.endsWith('.test.ts'))
+      .flatMap((path) => {
+        const content = readFileSync(path, 'utf-8');
+        return legacyTokens
+          .filter((token) => content.includes(token))
+          .map((token) => `${toSrcRelativePath(path)}:${token}`);
+      });
 
     expect(offenders).toEqual([]);
   });

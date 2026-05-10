@@ -9,9 +9,41 @@ const SEARCH_KNOWLEDGE_TEXT_CONTRACT_MIGRATION = fileURLToPath(
   )
 );
 
+const SEARCH_KNOWLEDGE_TEXT_RECALL_MIGRATION = fileURLToPath(
+  new URL(
+    '../../../../supabase/migrations/20260510024218_improve_search_knowledge_text_recall.sql',
+    import.meta.url
+  )
+);
+
+const SEARCH_KNOWLEDGE_TEXT_PRECISION_MIGRATION = fileURLToPath(
+  new URL(
+    '../../../../supabase/migrations/20260510025317_tune_search_knowledge_text_precision.sql',
+    import.meta.url
+  )
+);
+
 function readContractMigration(): string {
   expect(existsSync(SEARCH_KNOWLEDGE_TEXT_CONTRACT_MIGRATION)).toBe(true);
   return readFileSync(SEARCH_KNOWLEDGE_TEXT_CONTRACT_MIGRATION, 'utf8');
+}
+
+function readRecallMigration(): string {
+  expect(existsSync(SEARCH_KNOWLEDGE_TEXT_RECALL_MIGRATION)).toBe(true);
+  return readFileSync(SEARCH_KNOWLEDGE_TEXT_RECALL_MIGRATION, 'utf8');
+}
+
+function readPrecisionMigration(): string {
+  expect(existsSync(SEARCH_KNOWLEDGE_TEXT_PRECISION_MIGRATION)).toBe(true);
+  return readFileSync(SEARCH_KNOWLEDGE_TEXT_PRECISION_MIGRATION, 'utf8');
+}
+
+function removedVectorRuntimeTerms(): string[] {
+  return [
+    ['query', 'embedding'].join('_'),
+    ['search', 'knowledge', 'base'].join('_'),
+    ['hybrid', 'graph', 'vector', 'search'].join('_'),
+  ];
 }
 
 describe('Knowledge Retrieval Lite SQL contract', () => {
@@ -35,5 +67,30 @@ describe('Knowledge Retrieval Lite SQL contract', () => {
     expect(sql).toContain(
       "kb.category IN ('incident', 'troubleshooting', 'best_practice')"
     );
+  });
+
+  it('adds relaxed token-prefix recall without replacing KRL with vector search', () => {
+    const sql = readRecallMigration();
+
+    expect(sql).toContain('CREATE OR REPLACE FUNCTION public.search_knowledge_text');
+    expect(sql).toContain("to_tsquery('simple', string_agg(token || ':*', ' | '))");
+    expect(sql).toContain('regexp_split_to_array');
+    expect(sql).toContain('primary_match');
+    expect(sql).toContain('relaxed_rank * 0.65');
+    for (const term of removedVectorRuntimeTerms()) {
+      expect(sql.toLowerCase()).not.toContain(term);
+    }
+  });
+
+  it('prioritizes token overlap to reduce broad relaxed fallback noise', () => {
+    const sql = readPrecisionMigration();
+
+    expect(sql).toContain('query_tokens text[]');
+    expect(sql).toContain('token_stats.token_match_count');
+    expect(sql).toContain('LEAST(ranked.token_match_count, 3) * 0.035');
+    expect(sql).toContain('ranked.token_match_count DESC');
+    for (const term of removedVectorRuntimeTerms()) {
+      expect(sql.toLowerCase()).not.toContain(term);
+    }
   });
 });

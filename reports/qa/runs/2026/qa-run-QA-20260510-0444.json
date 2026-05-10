@@ -1,0 +1,121 @@
+{
+  "runId": "QA-20260510-0444",
+  "recordedAt": "2026-05-10T00:55:24.249Z",
+  "recordedAtKst": "2026-05-10 09:55:24 KST",
+  "runTitle": "Local AI Retrieval Dead Runtime Cleanup QA",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine-local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Knowledge Retrieval Lite tool adapter",
+    "legacy retrieval drift guard",
+    "Supabase RAG smoke script contract",
+    "Cloud Run AI Engine type/test gate",
+    "root AI stream contract",
+    "AI architecture docs"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "live Supabase RPC smoke execution",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-retrieval-dead-runtime-hyde-reranker-removal",
+      "title": "Remove unused HyDE query expansion and LLM reranker runtime files",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Deleted cloud-run/ai-engine/src/lib/query-expansion.ts and cloud-run/ai-engine/src/lib/reranker.ts after active import scan and AI Engine knip reported both as unused.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-stale-test-mock-cleanup",
+      "title": "Remove stale query-expansion/reranker mocks from searchKnowledgeBase tests",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts no longer mocks removed modules.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-krl-smoke-script-alignment",
+      "title": "Align supabase:rag:smoke with Knowledge Retrieval Lite",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "scripts/test/supabase-rag-rpc-smoke.mjs now checks search_knowledge_text only; legacy vector/graph RPC calls were removed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-legacy-drift-guard-expanded",
+      "title": "Expand drift guard against removed retrieval runtime reintroduction",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "tests/unit/dev/ai-retrieval-legacy-drift.test.ts now blocks query-expansion/reranker and vector/graph RAG smoke tokens outside documented migration inventory.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-dead-runtime-cleanup-gates",
+      "title": "Retrieval cleanup targeted and broad local gates pass",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Targeted Vitest, root/AI Engine type-check, root lint/test:quick/test:contract, AI Engine full test, docs checks, and git diff --check passed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Live Supabase RPC execution was not run in this local deterministic cleanup pass; script syntax was checked with node --check.",
+    "database.md remains an allowed migration inventory exception for historical vector extension signatures."
+  ],
+  "links": []
+}

@@ -35,7 +35,7 @@ type KnowledgeTextRow = Record<string, unknown>;
 
 const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 10;
-const MAX_QUERY_CANDIDATES = 4;
+const MAX_QUERY_CANDIDATES = 6;
 
 const DOMAIN_QUERY_FALLBACKS = [
   {
@@ -56,6 +56,20 @@ const DOMAIN_QUERY_FALLBACKS = [
     candidates: ['redis memory', 'redis oom', 'cache memory', '레디스 메모리'],
   },
   {
+    domainSignals: [/memory|mem|메모리|메머리|멤/i],
+    symptomSignals: [/top|high|usage|사용|사용률|높|부족|pressure|oom/i],
+    candidates: ['memory', '메모리', 'memory usage', '메모리 사용률'],
+  },
+  {
+    domainSignals: [
+      /disk|storage|filesystem|\bfs\b|space|capacity|df|du|디스크|스토리지|저장소|용량/i,
+    ],
+    symptomSignals: [
+      /cleanup|clean\s*up|free|확보|정리|부족|full|높|사용|usage|capacity|space|용량|86/i,
+    ],
+    candidates: ['disk', '디스크', 'disk space', 'df du', '디스크 용량 부족'],
+  },
+  {
     domainSignals: [/redis|레디스|cache|캐시/i],
     symptomSignals: [/connection|pool|timeout|접속|연결|타임아웃|실패/i],
     candidates: [
@@ -73,6 +87,8 @@ const DOMAIN_QUERY_FALLBACKS = [
       'postgres connection pool',
       'db timeout',
       '데이터베이스 연결',
+      'database',
+      'mysql',
     ],
   },
   {
@@ -80,12 +96,29 @@ const DOMAIN_QUERY_FALLBACKS = [
       /nginx|엔진엑스|gateway|proxy|\blb\b|load\s*balancer|로드밸런서/i,
     ],
     symptomSignals: [/5xx|503|502|timeout|connection|타임아웃|연결/i],
-    candidates: ['nginx gateway', 'http 5xx', 'gateway timeout', '엔진엑스 장애'],
+    candidates: [
+      'nginx',
+      'gateway',
+      'nginx gateway',
+      'http 5xx',
+      'gateway timeout',
+      '엔진엑스 장애',
+    ],
   },
   {
     domainSignals: [/cpu|processor|프로세스|부하|load/i],
     symptomSignals: [/high|spike|높|과부하|지연/i],
-    candidates: ['cpu high load', 'cpu spike', '프로세스 부하'],
+    candidates: ['cpu', 'cpu high load', 'cpu spike', '프로세스 부하'],
+  },
+  {
+    domainSignals: [/topology|토폴로지|architecture|아키텍처|의존성|dependency/i],
+    symptomSignals: [/path|경로|구성|배치|dependency|의존|스냅샷|snapshot/i],
+    candidates: ['topology', '토폴로지', 'server topology', '인프라 토폴로지'],
+  },
+  {
+    domainSignals: [/security|보안|ssh|access|접근|인증/i],
+    symptomSignals: [/incident|인시던트|check|점검|대응|access|접근|ssh|auth|인증/i],
+    candidates: ['security', '보안', 'ssh access', '보안 인시던트'],
   },
 ] as const;
 

@@ -1,14 +1,14 @@
 /**
  * Tavily Hybrid RAG Module
  *
- * Integrates Tavily web search into the RAG pipeline for enhanced
- * knowledge retrieval. Combines internal KB with real-time web results.
+ * Integrates Tavily web search for the standalone searchWeb tool.
+ * Knowledge Retrieval Lite no longer calls this module as an automatic
+ * retrieval fallback.
  *
  * Architecture:
- * 1. Internal KB search (Vector + BM25 + Graph)
- * 2. Tavily web search (when KB results insufficient)
- * 3. Result merging and deduplication
- * 4. LLM reranking (optional)
+ * 1. Explicit web search request
+ * 2. Tavily search with sequential key failover
+ * 3. Result conversion for searchWeb consumers
  *
  * This module is the SSOT for Tavily search execution.
  * `web-search.ts` (AI SDK tool) imports from here.

@@ -1,0 +1,121 @@
+{
+  "runId": "QA-20260510-0443",
+  "recordedAt": "2026-05-10T00:32:59.649Z",
+  "recordedAtKst": "2026-05-10 09:32:59 KST",
+  "runTitle": "Local AI Retrieval GraphRAG Tombstone Route Removal QA",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "cloud-run-ai-engine-local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f585e51b85cc42d1d21a17f06e1e5f3465456782"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Cloud Run AI Engine route registration",
+    "legacy GraphRAG tombstone removal guard",
+    "Knowledge Retrieval Lite compatibility boundary",
+    "Cloud Run request logs for /api/ai/graphrag/*",
+    "root AI stream contract",
+    "AI architecture and dev-tools docs"
+  ],
+  "skippedSurfaces": [
+    "Vercel production retest",
+    "live LLM generation",
+    "Cloud Run deployment"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-retrieval-graphrag-tombstone-route-removal",
+      "title": "Remove legacy /api/ai/graphrag/* 410 tombstone route",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Deleted cloud-run/ai-engine/src/routes/graphrag.ts and route test; removed server.ts dynamic import and app.route('/api/ai/graphrag', ...).",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-graphrag-usage-log-check",
+      "title": "Confirm no recent external usage before tombstone removal",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "gcloud logging read showed 0 /api/ai/graphrag/* requestUrl hits in the last 7 days; newest 30-day hits were 2026-04-13 manual/curl-era calls.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-graphrag-compat-contract-reduction",
+      "title": "Reduce legacy contracts to useGraphRAG input compatibility only",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "legacy-contracts.ts no longer exports graphRuntimeRoutes or 410 payload helpers; searchKnowledgeBase.useGraphRAG remains compat-only.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-graphrag-route-removal-tests",
+      "title": "Route removal and retrieval compatibility tests pass",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "cd cloud-run/ai-engine && npx vitest run src/lib/legacy-contracts.test.ts src/knowledge-runtime-cleanup.test.ts src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts src/lib/knowledge-retrieval-lite.test.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-retrieval-graphrag-route-removal-gates",
+      "title": "Type, lint, quick, contract, docs, and AI Engine full tests pass",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AI Engine type-check/test, root type-check/lint/test:quick/test:contract, docs:budget, docs:ai-consistency, and git diff --check all passed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Knowledge Retrieval Lite remains BM25 search_knowledge_text + metadata boost; no GraphRAG runtime route remains registered.",
+    "/api/ai/graphrag/* will now fall through to normal missing-route behavior after API middleware instead of returning an explicit 410 tombstone.",
+    "This QA is local deterministic validation only because no production deployment was performed in this turn."
+  ],
+  "links": []
+}

@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-08
+> Last reviewed: 2026-05-10
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
@@ -853,15 +853,12 @@ precomputed-state.ts → buildPrecomputedStates()
 |-----------|--------|------|
 | `/api/ai/supervisor` | POST | 레거시 JSON/text 프록시 (local dev fallback, cache/plain callers, smoke/contract anchor) |
 | `/api/ai/generate[/stream]` | POST | 독립 텍스트 생성 |
-| `/api/ai/graphrag/extract` | POST | legacy graph runtime 410 shim. replacement: `searchKnowledgeBase` |
-| `/api/ai/graphrag/stats` | GET | legacy graph runtime 410 shim. replacement: `Knowledge Retrieval Lite` |
-| `/api/ai/graphrag/related/:nodeId` | GET | legacy graph runtime 410 shim. replacement: `searchKnowledgeBase` |
 | `/api/ai/approval` | POST | 의사결정 승인 워크플로우 |
 | `/api/ai/providers` | GET | Provider 상태 + 쿼타 |
 | `/api/ai` | GET | 사용량 분석 |
 | `/api/jobs` | POST | 비동기 Job 관리 |
 
-> Source of truth (2026-04-28): `cloud-run/ai-engine/src/server.ts`, `cloud-run/ai-engine/src/routes/graphrag.ts`, `cloud-run/ai-engine/src/lib/legacy-contracts.ts`.
+> Source of truth (2026-05-10): `cloud-run/ai-engine/src/server.ts`, `cloud-run/ai-engine/src/lib/legacy-contracts.ts`. `/api/ai/graphrag/*`는 호환 기간 종료 후 route 등록이 제거되었습니다.
 
 ## 10. Observability
 
@@ -877,7 +874,7 @@ precomputed-state.ts → buildPrecomputedStates()
 ```
 cloud-run/ai-engine/src/
 ├── server.ts                          # Hono 서버 (미들웨어, lazy route loading)
-├── routes/                            # 9개 API 라우트
+├── routes/                            # API 라우트
 ├── services/
 │   ├── ai-sdk/
 │   │   ├── model-provider.ts          # Provider 선택 (3-way fallback)
@@ -909,7 +906,7 @@ cloud-run/ai-engine/src/
 ├── lib/
 │   ├── knowledge-retrieval-lite.ts    # active 내부 지식 검색 (BM25 + metadata boost)
 │   ├── retrieval-contract.ts          # EvidenceCard/RetrievalMetadata SSOT
-│   ├── legacy-contracts.ts            # legacy graph runtime 410/useGraphRAG 경계
+│   ├── legacy-contracts.ts            # legacy useGraphRAG 입력 호환 경계
 │   ├── rag-doc-policy.ts              # knowledge_base corpus 길이/카테고리 정책
 │   └── rag-merge-planner.ts           # knowledge_base 중복 문서 merge 계획
 └── data/
