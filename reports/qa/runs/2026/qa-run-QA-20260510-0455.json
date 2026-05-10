@@ -1,0 +1,114 @@
+{
+  "runId": "QA-20260510-0455",
+  "recordedAt": "2026-05-10T04:38:12.410Z",
+  "recordedAtKst": "2026-05-10 13:38:12 KST",
+  "runTitle": "v8.11.121 Production Release Smoke",
+  "owner": "codex",
+  "source": "gitlab-ci+release-script",
+  "environment": {
+    "target": "vercel-production+cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_9xHn3w7dU9i7u2DFSAxVQkBUKbzy",
+    "deploymentUrl": "https://openmanager-pckpgc46g-skyasus-projects.vercel.app",
+    "commitSha": "9c0639006e1f27c003b3b8b7cf272079db15f064"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core"],
+  "coveredSurfaces": [
+    "Vercel production /",
+    "Vercel production /login",
+    "Vercel production /api/version",
+    "GitLab semver tag pipeline",
+    "Cloud Run AI Engine deploy smoke"
+  ],
+  "skippedSurfaces": [
+    "Full Playwright visual sweep",
+    "Live conversational AI prompt QA"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Semver tag pipeline completed deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke successfully.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Engine deploy smoke passed and the RAG/KRL cleanup had already passed local contract, smoke, and governance checks before release.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-10T13:37:13+09:00",
+      "summary": "Vercel usage checked after v8.11.121 production release. Current billing period effective usage was 5.3789 USD, billed 0.0000 USD, with no unexpected billed usage flagged by the local usage guard.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "release-smoke-evidence",
+      "label": "v8.11.121 release smoke evidence",
+      "path": "reports/qa/evidence/qa-20260510-0455-v811121-release-smoke.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "v8.11.121-rag-krl-production-release",
+      "title": "Release RAG/KRL cleanup and DB index improvements to production",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.121 release script completed. Production /api/version returned version 8.11.121, commit 9c0639006e1f27c003b3b8b7cf272079db15f064, release tag v8.11.121, pipeline 2513278417. GitLab jobs deploy, deploy_ai_engine, post_deploy_ai_engine_smoke, and post_deploy_smoke all succeeded.",
+      "note": "Release includes refactor(rag): complete knowledge retrieval lite cleanup and the preceding AI resource command guidance fix.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Runner health check passed before release: runner=ok docker=ok.",
+    "GitLab deploy readiness API check fell back to manual checklist because no token was visible to that script; the actual tag pipeline ran and completed successfully.",
+    "Current production base gate passed for 8.11.120 before creating v8.11.121.",
+    "Post-release version smoke passed after Vercel deployment propagated: /, /login, and /api/version returned successfully.",
+    "Direct /api/version check returned 8.11.121 with releaseTag v8.11.121 and pipelineUrl https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513278417."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2513278417",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513278417"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    }
+  ]
+}

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 12:52:25 KST
+> Generated at: 2026-05-10 13:38:12 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 452 |
-| Total Runs (Counted) | 371 |
+| Total Recorded Runs | 453 |
+| Total Runs (Counted) | 372 |
 | Non-counted Runs | 81 |
-| Total Checks | 3301 |
-| Passed | 3177 |
+| Total Checks | 3309 |
+| Passed | 3185 |
 | Failed | 114 |
-| Completed Items | 517 |
+| Completed Items | 518 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260510-0454 (2026-05-10T03:52:25.277Z) |
-| Latest Recorded Run | QA-20260510-0454 (2026-05-10T03:52:25.277Z) |
+| Last Counted Run | QA-20260510-0455 (2026-05-10T04:38:12.410Z) |
+| Latest Recorded Run | QA-20260510-0455 (2026-05-10T04:38:12.410Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0454 (2026-05-10T03:52:25.277Z)
+Latest run: QA-20260510-0455 (2026-05-10T04:38:12.410Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Vercel usage checked after v8.11.121 production release. Current billing period effective usage was 5.3789 USD, billed 0.0000 USD, with no unexpected billed usage flagged by the local usage guard. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T03:52:25.277Z -> 2026-05-10T03:52:25.277Z (24h)
+- Window: 2026-05-09T04:38:12.410Z -> 2026-05-10T04:38:12.410Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +59,7 @@ Latest run: QA-20260510-0454 (2026-05-10T03:52:25.277Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T03:52:25.277Z -> 2026-05-10T03:52:25.277Z (24h)
+- Window: 2026-05-09T04:38:12.410Z -> 2026-05-10T04:38:12.410Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -70,18 +71,19 @@ Latest run: QA-20260510-0454 (2026-05-10T03:52:25.277Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA f585e51b
-- Coverage Packs: ai-core, security-pack
-- Covered Surfaces: Supabase performance advisor unused indexes, incident_reports operational indexes, security_audit_logs operational indexes, approval_history RPC access path, database architecture documentation
-- Skipped Surfaces: Vercel production retest, live LLM generation, Cloud Run deployment
+- Deployment: dpl_9xHn3w7dU9i7u2DFSAxVQkBUKbzy / SHA 9c063900
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: Vercel production /, Vercel production /login, Vercel production /api/version, GitLab semver tag pipeline, Cloud Run AI Engine deploy smoke
+- Skipped Surfaces: Full Playwright visual sweep, Live conversational AI prompt QA
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab pipeline 2513278417 | [GitLab pipeline 2513278417](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513278417) | - |
+| general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
 
 ## Artifacts (Latest Run)
 
@@ -623,6 +625,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
 - ui-landing-pass: 랜딩 페이지 로드 정상, v8.10.0 확인 (completed 1회, last QA-20260326-0190)
 - ui-ux-improvement-plan-p1-p3-closure: UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed (completed 1회, last QA-20260509-0436)
+- v8.11.121-rag-krl-production-release: Release RAG/KRL cleanup and DB index improvements to production (completed 1회, last QA-20260510-0455)
 - v811119-production-release-smoke: v8.11.119 production release smoke passed (completed 1회, last QA-20260509-0437)
 - v811120-production-release-smoke: v8.11.120 production release smoke passed (completed 1회, last QA-20260510-0438)
 - v81195-dashboard-core-routes-playwright-recheck: Dashboard core routes and AI assistant tabs render in Vercel production (completed 1회, last QA-20260504-0404)
@@ -693,6 +696,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0455 | 2026-05-10T04:38:12.410Z | targeted | yes | yes | v8.11.121 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0454 | 2026-05-10T03:52:25.277Z | targeted | no | yes | Supabase Low-value Unused Index Cleanup QA | 19 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0453 | 2026-05-10T03:33:36.166Z | targeted | no | yes | RAG Corpus Governance Rebaseline QA | 16 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0452 | 2026-05-10T03:28:05.443Z | targeted | no | yes | RAG Command Vector Backfill and Legacy Seed Cleanup QA | 31 | 3 | 0 | 0 | 0 | 0 |
@@ -712,4 +716,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0438 | 2026-05-09T16:26:24.262Z | targeted | yes | yes | v8.11.120 Production Release Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0437 | 2026-05-09T13:56:23.063Z | targeted | yes | yes | v8.11.119 Production Release Smoke | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260509-0436 | 2026-05-09T12:15:44.170Z | targeted | no | yes | Local UI/UX Improvement Closure QA - P1/P2/P3 | 7 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260509-0435 | 2026-05-09T06:13:33.522Z | targeted | no | yes | Vercel Production AI Ops A5/C2/A1 Targeted Retest - v8.11.118 | 2 | 2 | 0 | 0 | 0 | 0 |

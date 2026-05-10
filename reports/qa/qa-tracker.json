@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T03:52:25.277Z"
+    "updatedAt": "2026-05-10T04:38:12.410Z"
   },
   "sequence": {
-    "nextRunNumber": 455
+    "nextRunNumber": 456
   },
   "summary": {
-    "totalRecordedRuns": 452,
-    "totalRuns": 371,
+    "totalRecordedRuns": 453,
+    "totalRuns": 372,
     "excludedRuns": 81,
-    "totalChecks": 3301,
-    "totalPassed": 3177,
+    "totalChecks": 3309,
+    "totalPassed": 3185,
     "totalFailed": 114,
     "completionRate": 100,
-    "completedItems": 517,
+    "completedItems": 518,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260510-0454",
-    "lastRecordedAt": "2026-05-10T03:52:25.277Z",
-    "latestRecordedRunId": "QA-20260510-0454",
-    "latestRecordedAt": "2026-05-10T03:52:25.277Z"
+    "lastRunId": "QA-20260510-0455",
+    "lastRecordedAt": "2026-05-10T04:38:12.410Z",
+    "latestRecordedRunId": "QA-20260510-0455",
+    "latestRecordedAt": "2026-05-10T04:38:12.410Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12665,6 +12665,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-10T03:52:25.277Z"
+    },
+    "v8.11.121-rag-krl-production-release": {
+      "id": "v8.11.121-rag-krl-production-release",
+      "title": "Release RAG/KRL cleanup and DB index improvements to production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0455",
+      "firstSeenAt": "2026-05-10T04:38:12.410Z",
+      "lastSeenRunId": "QA-20260510-0455",
+      "lastSeenAt": "2026-05-10T04:38:12.410Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.121 release script completed. Production /api/version returned version 8.11.121, commit 9c0639006e1f27c003b3b8b7cf272079db15f064, release tag v8.11.121, pipeline 2513278417. GitLab jobs deploy, deploy_ai_engine, post_deploy_ai_engine_smoke, and post_deploy_smoke all succeeded.",
+      "lastNote": "Release includes refactor(rag): complete knowledge retrieval lite cleanup and the preceding AI resource command guidance fix.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T04:38:12.410Z"
     }
   },
   "runs": [
@@ -48296,6 +48320,99 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0455",
+      "recordedAt": "2026-05-10T04:38:12.410Z",
+      "recordedAtKst": "2026-05-10 13:38:12 KST",
+      "title": "v8.11.121 Production Release Smoke",
+      "owner": "codex",
+      "source": "gitlab-ci+release-script",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0455.json",
+      "environment": {
+        "target": "vercel-production+cloud-run-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_9xHn3w7dU9i7u2DFSAxVQkBUKbzy",
+        "deploymentUrl": "https://openmanager-pckpgc46g-skyasus-projects.vercel.app",
+        "commitSha": "9c0639006e1f27c003b3b8b7cf272079db15f064"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /",
+        "Vercel production /login",
+        "Vercel production /api/version",
+        "GitLab semver tag pipeline",
+        "Cloud Run AI Engine deploy smoke"
+      ],
+      "skippedSurfaces": [
+        "Full Playwright visual sweep",
+        "Live conversational AI prompt QA"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Semver tag pipeline completed deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke successfully.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI Engine deploy smoke passed and the RAG/KRL cleanup had already passed local contract, smoke, and governance checks before release.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-10T13:37:13+09:00",
+          "summary": "Vercel usage checked after v8.11.121 production release. Current billing period effective usage was 5.3789 USD, billed 0.0000 USD, with no unexpected billed usage flagged by the local usage guard.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2513278417",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513278417"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -48304,16 +48421,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 213,
-      "appropriateCount": 186,
+      "seenCount": 214,
+      "appropriateCount": 187,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 37,
-      "lastRunId": "QA-20260509-0432",
-      "lastSeenAt": "2026-05-09T00:32:58.510Z",
+      "lastRunId": "QA-20260510-0455",
+      "lastSeenAt": "2026-05-10T04:38:12.410Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "B4/B5 command guidance closure retest passed with concrete Nginx/NFS command output and no visible clarification interception.",
+      "lastRationale": "AI Engine deploy smoke passed and the RAG/KRL cleanup had already passed local contract, smoke, and governance checks before release.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -48355,16 +48472,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 148,
-      "appropriateCount": 131,
+      "seenCount": 149,
+      "appropriateCount": 132,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260510-0438",
-      "lastSeenAt": "2026-05-09T16:26:24.262Z",
+      "lastRunId": "QA-20260510-0455",
+      "lastSeenAt": "2026-05-10T04:38:12.410Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab semver tag pipeline, release-script production smoke, and Vercel deployment inspection verified the deployed frontend version.",
+      "lastRationale": "Semver tag pipeline completed deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke successfully.",
       "lastNextAction": ""
     },
     "test-automation": {
