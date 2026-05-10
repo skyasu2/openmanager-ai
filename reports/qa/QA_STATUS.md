@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 20:58:09 KST
+> Generated at: 2026-05-10 21:53:21 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 463 |
-| Total Runs (Counted) | 375 |
+| Total Recorded Runs | 464 |
+| Total Runs (Counted) | 376 |
 | Non-counted Runs | 88 |
-| Total Checks | 3331 |
-| Passed | 3204 |
+| Total Checks | 3342 |
+| Passed | 3215 |
 | Failed | 117 |
-| Completed Items | 531 |
+| Completed Items | 533 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260510-0458 (2026-05-10T07:26:58.691Z) |
-| Latest Recorded Run | QA-20260510-0465 (2026-05-10T11:58:02.942Z) |
+| Last Counted Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
+| Latest Recorded Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0465 (2026-05-10T11:58:02.942Z)
+Latest run: QA-20260510-0466 (2026-05-10T12:53:07.527Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | Commit and deploy before release-facing Vercel QA. |
+| Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | not-applicable | skipped | normal | Local targeted QA only; no Vercel deployment and no production AI or Cloud Run chat invocation. |
+| vercel | cli | checked | normal | Vercel usage checked after production deployment; CLI reported effective 6.0506 USD, billed 0.0000 USD, chargeCount 5481 for the current period. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T11:58:02.942Z -> 2026-05-10T11:58:02.942Z (24h)
+- Window: 2026-05-09T12:53:07.527Z -> 2026-05-10T12:53:07.527Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -59,7 +61,7 @@ Latest run: QA-20260510-0465 (2026-05-10T11:58:02.942Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T11:58:02.942Z -> 2026-05-10T11:58:02.942Z (24h)
+- Window: 2026-05-09T12:53:07.527Z -> 2026-05-10T12:53:07.527Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -71,24 +73,27 @@ Latest run: QA-20260510-0465 (2026-05-10T11:58:02.942Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA ea576962
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: /dashboard/ai-assistant local render, Analyst tab entry triggers automatic batch analysis, AI Chat welcome state and conversation counter remain visible, Anomaly server detail action copy is inline expansion-oriented, Sidebar header fullscreen handoff is covered by component test, Component, type, lint, quick, contract, and whitespace gates passed
-- Skipped Surfaces: Live AI chat response send skipped to avoid external LLM and Cloud Run cost during local UI validation, Vercel production deployment QA skipped because this run validates local implementation before commit/deploy, Sidebar header fullscreen button browser recheck skipped on /dashboard/ai-assistant because that route renders the fullscreen workspace, not the sidebar dialog
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL / SHA cf5480e8
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: production / renders v8.11.124 version badge, production /system-boot redirects to /dashboard, production /dashboard renders and opens AI sidebar, AI sidebar header exposes 전체화면으로 보기 button, AI sidebar fullscreen handoff navigates to /dashboard/ai-assistant, /dashboard/ai-assistant AI Chat starter prompt cards render, /dashboard/ai-assistant conversation counter renders as 대화 0/50, Analyst tab entry auto-runs analysis and renders 전체 시스템 상태, Analyst server cards expose 상세 분석 펼치기/접기 action copy, browser console messages after tested production flows: 0, production /api/version reports v8.11.124 and GitLab pipeline 2513741959
+- Skipped Surfaces: Standard five-question conversational AI QA skipped because this change is UI/accessibility/rendering focused and did not modify prompts, routing, knowledge, data grounding, or response parsing., Reporter live generation skipped because the changed Reporter surface was empty-state CTA only and local/component tests already covered the regression., Cloud Run admin observability pack skipped; frontend release targeted QA only.
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab v8.11.124 pipeline | [GitLab v8.11.124 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-qt46mwbes-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Local AI Assistant Analyst auto-analysis smoke | `.playwright-mcp/page-2026-05-10T11-56-58-262Z.png` | - |
+| playwright-screenshot | AI Chat UX production fullscreen | `reports/qa/evidence/qa-20260510-ai-chat-ux-v811124.png` | - |
+| playwright-screenshot | Analyst auto-analysis production | `reports/qa/evidence/qa-20260510-analyst-auto-v811124.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -216,6 +221,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
 - ai-chat-sidebar-open: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
+- ai-chat-ux-build-runtime-regression: NLQ entity extraction route build regression fixed before production release (completed 1회, last QA-20260510-0466)
+- ai-chat-ux-v811124-production: AI Chat UI/UX improvements deployed and verified on Vercel production (completed 1회, last QA-20260510-0466)
 - ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 2회, last QA-20260318-0125)
 - ai-dashboard-query-asof-slot-drift: AI sidebar job requests use the dashboard-visible OTel data slot (completed 1회, last QA-20260429-0372)
 - ai-disk-cleanup-command-relevance: AI disk cleanup guidance should prioritize filesystem cleanup commands before MySQL diagnostics (completed 1회, last QA-20260510-0441)
@@ -708,6 +715,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0466 | 2026-05-10T12:53:07.527Z | targeted | yes | yes | Vercel Production Targeted QA - AI Chat UX v8.11.124 | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260510-0465 | 2026-05-10T11:58:02.942Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Completion | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260510-0464 | 2026-05-10T11:42:24.446Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Batch 1 | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260510-0463 | 2026-05-10T10:45:23.370Z | targeted | no | no | Entity Extraction Pipeline QA - LLM 명확화 사전차단 검증 | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -727,4 +735,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0449 | 2026-05-10T02:46:15.891Z | targeted | no | yes | KRL Multi-token Recall Improvement QA | 15 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0448 | 2026-05-10T02:27:03.074Z | targeted | no | yes | Live Supabase Legacy RAG RPC Cleanup Apply QA | 12 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0447 | 2026-05-10T02:17:24.679Z | targeted | no | yes | Local Legacy RAG RPC Cleanup Docs and Test Hardening QA | 16 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260510-0446 | 2026-05-10T01:42:59.449Z | targeted | no | yes | Local Legacy Vector Graph RAG RPC Cleanup Migration QA | 12 | 3 | 0 | 0 | 0 | 0 |

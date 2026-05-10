@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Pushed (GitLab validate success)
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-10
 > Tags: ai-chat, ux, codex
@@ -30,6 +30,14 @@ UI/UX를 평가한 결과를 바탕으로 작성. QA 연계: `QA-20260510-0463`.
 ## 작업 담당
 
 **Codex** 담당. Claude는 계획 설계·리뷰만 수행.
+
+## 완료 요약
+
+- 구현/로컬 검증: `QA-20260510-0464`, `QA-20260510-0465`
+- GitLab branch validate: `2513712243` success
+- production deploy: `v8.11.124`, GitLab tag pipeline `2513741959` success
+- release-facing Vercel targeted QA: `QA-20260510-0466`
+- 배포 중 `v8.11.123` tag pipeline `2513728658`은 Next.js `cacheComponents`와 명시적 `runtime='nodejs'` route segment config 충돌로 실패했고, `src/app/api/ai/nlq/extract-entities/route.ts`에서 기본 Node 런타임 선언으로 정리한 뒤 `v8.11.124`로 재배포 완료.
 
 ## 목표
 
@@ -242,7 +250,7 @@ Task 0에서 실제 파일명을 확정한다. 예상 범위:
 - [x] artifact/message 계약 영향이 있으면 `npm run test:contract` 통과
 - [x] Playwright targeted QA 기록 생성 (`QA-20260510-0464`, `QA-20260510-0465`)
 - [x] GitLab branch validate 통과 (`2513712243`, `fce3590b6`)
-- [ ] Production deploy 및 release-facing Vercel QA
+- [x] Production deploy 및 release-facing Vercel QA (`v8.11.124`, `QA-20260510-0466`)
 
 ---
 

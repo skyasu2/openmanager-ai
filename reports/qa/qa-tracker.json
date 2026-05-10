@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T11:58:02.942Z"
+    "updatedAt": "2026-05-10T12:53:07.527Z"
   },
   "sequence": {
-    "nextRunNumber": 466
+    "nextRunNumber": 467
   },
   "summary": {
-    "totalRecordedRuns": 463,
-    "totalRuns": 375,
+    "totalRecordedRuns": 464,
+    "totalRuns": 376,
     "excludedRuns": 88,
-    "totalChecks": 3331,
-    "totalPassed": 3204,
+    "totalChecks": 3342,
+    "totalPassed": 3215,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 531,
+    "completedItems": 533,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260510-0458",
-    "lastRecordedAt": "2026-05-10T07:26:58.691Z",
-    "latestRecordedRunId": "QA-20260510-0465",
-    "latestRecordedAt": "2026-05-10T11:58:02.942Z"
+    "lastRunId": "QA-20260510-0466",
+    "lastRecordedAt": "2026-05-10T12:53:07.527Z",
+    "latestRecordedRunId": "QA-20260510-0466",
+    "latestRecordedAt": "2026-05-10T12:53:07.527Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13001,6 +13001,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-10T10:00:23.786Z"
+    },
+    "ai-chat-ux-v811124-production": {
+      "id": "ai-chat-ux-v811124-production",
+      "title": "AI Chat UI/UX improvements deployed and verified on Vercel production",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0466",
+      "firstSeenAt": "2026-05-10T12:53:07.527Z",
+      "lastSeenRunId": "QA-20260510-0466",
+      "lastSeenAt": "2026-05-10T12:53:07.527Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.124 production targeted QA covered AI Chat starter prompts, Analyst auto-analysis, and sidebar fullscreen handoff.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T12:53:07.527Z"
+    },
+    "ai-chat-ux-build-runtime-regression": {
+      "id": "ai-chat-ux-build-runtime-regression",
+      "title": "NLQ entity extraction route build regression fixed before production release",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0466",
+      "firstSeenAt": "2026-05-10T12:53:07.527Z",
+      "lastSeenRunId": "QA-20260510-0466",
+      "lastSeenAt": "2026-05-10T12:53:07.527Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Removed incompatible explicit nodejs runtime segment config; npm run build/type-check/lint/test:quick/test:contract passed before v8.11.124 release.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T12:53:07.527Z"
     }
   },
   "runs": [
@@ -49626,6 +49674,132 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0466",
+      "recordedAt": "2026-05-10T12:53:07.527Z",
+      "recordedAtKst": "2026-05-10 21:53:07 KST",
+      "title": "Vercel Production Targeted QA - AI Chat UX v8.11.124",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0466.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL",
+        "deploymentUrl": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app",
+        "commitSha": "cf5480e855ff2476c928b7ff7f4399c664ff70ea"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "production / renders v8.11.124 version badge",
+        "production /system-boot redirects to /dashboard",
+        "production /dashboard renders and opens AI sidebar",
+        "AI sidebar header exposes 전체화면으로 보기 button",
+        "AI sidebar fullscreen handoff navigates to /dashboard/ai-assistant",
+        "/dashboard/ai-assistant AI Chat starter prompt cards render",
+        "/dashboard/ai-assistant conversation counter renders as 대화 0/50",
+        "Analyst tab entry auto-runs analysis and renders 전체 시스템 상태",
+        "Analyst server cards expose 상세 분석 펼치기/접기 action copy",
+        "browser console messages after tested production flows: 0",
+        "production /api/version reports v8.11.124 and GitLab pipeline 2513741959"
+      ],
+      "skippedSurfaces": [
+        "Standard five-question conversational AI QA skipped because this change is UI/accessibility/rendering focused and did not modify prompts, routing, knowledge, data grounding, or response parsing.",
+        "Reporter live generation skipped because the changed Reporter surface was empty-state CTA only and local/component tests already covered the regression.",
+        "Cloud Run admin observability pack skipped; frontend release targeted QA only."
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted Playwright MCP production QA covered the changed AI Chat starter prompt, sidebar fullscreen handoff, and Analyst auto-analysis surfaces after deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The tested change is UI/rendering/accessibility focused; no prompt, routing, data grounding, or response parsing behavior changed in this release.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2513741959 succeeded, production /api/version reports v8.11.124, and Vercel usage was checked after deployment.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-10T21:47:14+09:00",
+          "summary": "Vercel usage checked after production deployment; CLI reported effective 6.0506 USD, billed 0.0000 USD, chargeCount 5481 for the current period.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Chat UX production fullscreen",
+          "path": "reports/qa/evidence/qa-20260510-ai-chat-ux-v811124.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Analyst auto-analysis production",
+          "path": "reports/qa/evidence/qa-20260510-analyst-auto-v811124.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.124 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -49634,16 +49808,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 221,
-      "appropriateCount": 193,
+      "seenCount": 222,
+      "appropriateCount": 194,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 38,
-      "lastRunId": "QA-20260510-0463",
-      "lastSeenAt": "2026-05-10T10:45:23.370Z",
+      "lastRunId": "QA-20260510-0466",
+      "lastSeenAt": "2026-05-10T12:53:07.527Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "entity extraction 파이프라인의 명확화 false positive 해소를 핵심 시나리오로 검증. 서버ID 슬롯 감지 및 비감지 분기 모두 확인",
+      "lastRationale": "The tested change is UI/rendering/accessibility focused; no prompt, routing, data grounding, or response parsing behavior changed in this release.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -49685,16 +49859,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 153,
-      "appropriateCount": 136,
+      "seenCount": 154,
+      "appropriateCount": 137,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260510-0462",
-      "lastSeenAt": "2026-05-10T10:00:23.786Z",
+      "lastRunId": "QA-20260510-0466",
+      "lastSeenAt": "2026-05-10T12:53:07.527Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Run AI Engine full local test suite and root gates passed without live provider spend",
+      "lastRationale": "GitLab tag pipeline 2513741959 succeeded, production /api/version reports v8.11.124, and Vercel usage was checked after deployment.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -49702,17 +49876,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 187,
-      "appropriateCount": 169,
+      "seenCount": 188,
+      "appropriateCount": 170,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260510-0465",
-      "lastSeenAt": "2026-05-10T11:58:02.942Z",
+      "lastRunId": "QA-20260510-0466",
+      "lastSeenAt": "2026-05-10T12:53:07.527Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Local Playwright smoke and targeted component tests cover the remaining Analyst entry, detail expansion copy, and fullscreen discoverability UI changes.",
-      "lastNextAction": "Commit and deploy before release-facing Vercel QA."
+      "lastRationale": "Targeted Playwright MCP production QA covered the changed AI Chat starter prompt, sidebar fullscreen handoff, and Analyst auto-analysis surfaces after deployment.",
+      "lastNextAction": ""
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
