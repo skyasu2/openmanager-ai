@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.124](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.123...v8.11.124) (2026-05-10)
+
+
+### Bug Fixes
+
+* **ai:** remove incompatible nlq route runtime ([fc87f41](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fc87f4110806bbe952a2f568dc5fa7437a8ba680))
+
 ## [8.11.123](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.122...v8.11.123) (2026-05-10)
 
 
