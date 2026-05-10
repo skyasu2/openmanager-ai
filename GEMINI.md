@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.11.16 | Last reviewed: 2026-05-07 -->
+<!-- Version: 8.11.124 | Last reviewed: 2026-05-10 -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -104,7 +104,7 @@ When writing or analyzing code, ALWAYS adhere to the following principles:
 ### 1. End-to-End Excellence
 - **Feature Completeness**: Implement robust, production-ready features from UI components to backend logic and database schemas.
 - **Clean Code & Patterns**: Apply SOLID, DRY, and design patterns (Strategy, Factory, Singleton) to ensure maintainable and scalable codebases.
-- **Modern Stack Mastery**: Leverage the full potential of React 19, Next.js 16, and TypeScript 6.0.2 features.
+- **Modern Stack Mastery**: Leverage the full potential of React 19.2.4, Next.js 16.1.6, and TypeScript 6.0.3 features.
 
 ### 2. Resilience & Reliability (The "SRE Mindset" in Dev)
 - **Fail-Safe Design & Fallbacks**: Implement explicit fallbacks for critical paths (e.g., 3-way LLM fallback, Circuit Breakers, Exponential Backoff on 429/503 errors).
@@ -233,4 +233,4 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
 
 ---
 
-_Gemini Agent Configuration for OpenManager AI v8.11.16 | Last reviewed: 2026-05-07_
+_Gemini Agent Configuration for OpenManager AI v8.11.124 | Last reviewed: 2026-05-10_

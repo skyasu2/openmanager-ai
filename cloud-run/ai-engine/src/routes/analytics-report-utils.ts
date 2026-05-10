@@ -1,7 +1,8 @@
 import { randomUUID } from 'crypto';
+import { z } from 'zod';
 import { logger } from '../lib/logger';
 
-interface ToolBasedData {
+export interface ToolBasedData {
   id: string;
   title: string;
   severity: string;
@@ -39,6 +40,82 @@ interface ToolBasedData {
     hypotheses: string[];
     prevention: string[];
   };
+}
+
+const SeveritySchema = z.enum([
+  'critical',
+  'high',
+  'medium',
+  'low',
+  'warning',
+  'info',
+]);
+
+export const IncidentReportOutputSchema = z
+  .object({
+    title: z.string().optional(),
+    severity: SeveritySchema.optional(),
+    description: z.string().optional(),
+    affected_servers: z.array(z.string()).optional(),
+    affectedServers: z
+      .array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          severity: z.string(),
+          metric: z.string().optional(),
+          value: z.number().optional(),
+        })
+      )
+      .optional(),
+    root_cause: z.string().optional(),
+    recommendations: z
+      .array(
+        z.object({
+          action: z.string(),
+          priority: z.string(),
+          expected_impact: z.string(),
+        })
+      )
+      .optional(),
+    pattern: z.string().optional(),
+    postmortem: z
+      .object({
+        timeline: z.array(z.string()).optional(),
+        hypotheses: z.array(z.string()).optional(),
+        prevention: z.array(z.string()).optional(),
+      })
+      .optional(),
+  })
+  .passthrough();
+
+export type IncidentReportOutput = z.infer<typeof IncidentReportOutputSchema>;
+
+type IncidentReportFallback = Pick<
+  ToolBasedData,
+  | 'title'
+  | 'severity'
+  | 'affected_servers'
+  | 'affectedServers'
+  | 'recommendations'
+  | 'pattern'
+  | 'postmortem'
+>;
+
+export interface NormalizedIncidentReportOutput {
+  title: string;
+  severity: string;
+  description: string;
+  affected_servers: string[];
+  affectedServers: ToolBasedData['affectedServers'];
+  root_cause: string;
+  recommendations: Array<{
+    action: string;
+    priority: string;
+    expected_impact: string;
+  }>;
+  pattern: string;
+  postmortem: ToolBasedData['postmortem'];
 }
 
 /**
@@ -219,32 +296,49 @@ export function extractToolBasedData(
   };
 }
 
+export function normalizeAgentIncidentReportOutput(
+  parsed: Partial<IncidentReportOutput> | null | undefined,
+  fallback: IncidentReportFallback
+): NormalizedIncidentReportOutput {
+  const output = parsed ?? {};
+  const postmortem = output.postmortem;
+
+  return {
+    title: output.title || fallback.title,
+    severity: output.severity || fallback.severity,
+    description: output.description || '',
+    affected_servers: Array.isArray(output.affected_servers)
+      ? output.affected_servers
+      : fallback.affected_servers,
+    affectedServers: Array.isArray(output.affectedServers)
+      ? output.affectedServers
+      : fallback.affectedServers,
+    root_cause: output.root_cause || '',
+    recommendations: Array.isArray(output.recommendations)
+      ? output.recommendations
+      : fallback.recommendations,
+    pattern: output.pattern || fallback.pattern,
+    postmortem:
+      postmortem &&
+      Array.isArray(postmortem.timeline) &&
+      Array.isArray(postmortem.hypotheses) &&
+      Array.isArray(postmortem.prevention)
+        ? {
+            timeline: postmortem.timeline,
+            hypotheses: postmortem.hypotheses,
+            prevention: postmortem.prevention,
+          }
+        : fallback.postmortem,
+  };
+}
+
 /**
  * Parse JSON response from agent.
  */
 export function parseAgentJsonResponse(
   text: string,
-  fallback: Pick<
-    ToolBasedData,
-    | 'title'
-    | 'severity'
-    | 'affected_servers'
-    | 'affectedServers'
-    | 'recommendations'
-    | 'pattern'
-    | 'postmortem'
-  >
-): {
-  title: string;
-  severity: string;
-  description: string;
-  affected_servers: string[];
-  affectedServers: ToolBasedData['affectedServers'];
-  root_cause: string;
-  recommendations: Array<{ action: string; priority: string; expected_impact: string }>;
-  pattern: string;
-  postmortem: ToolBasedData['postmortem'];
-} {
+  fallback: IncidentReportFallback
+): NormalizedIncidentReportOutput {
   const jsonMatch =
     text.match(/```json\s*([\s\S]*?)\s*```/) || text.match(/\{[\s\S]*\}/);
 
@@ -253,29 +347,7 @@ export function parseAgentJsonResponse(
       const jsonStr = jsonMatch[1] || jsonMatch[0];
       const parsed = JSON.parse(jsonStr);
 
-      return {
-        title: parsed.title || fallback.title,
-        severity: parsed.severity || fallback.severity,
-        description: parsed.description || '',
-        affected_servers: Array.isArray(parsed.affected_servers)
-          ? parsed.affected_servers
-          : fallback.affected_servers,
-        affectedServers: Array.isArray(parsed.affectedServers)
-          ? parsed.affectedServers
-          : fallback.affectedServers,
-        root_cause: parsed.root_cause || '',
-        recommendations: Array.isArray(parsed.recommendations)
-          ? parsed.recommendations
-          : fallback.recommendations,
-        pattern: parsed.pattern || fallback.pattern,
-        postmortem:
-          parsed.postmortem &&
-          Array.isArray(parsed.postmortem.timeline) &&
-          Array.isArray(parsed.postmortem.hypotheses) &&
-          Array.isArray(parsed.postmortem.prevention)
-            ? parsed.postmortem
-            : fallback.postmortem,
-      };
+      return normalizeAgentIncidentReportOutput(parsed, fallback);
     } catch {
       logger.warn('[Incident Report] JSON parse failed, using regex extraction');
     }

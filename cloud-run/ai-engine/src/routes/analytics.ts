@@ -11,7 +11,7 @@
 
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { generateText } from 'ai';
+import { generateText, Output } from 'ai';
 import { logger } from '../lib/logger';
 import {
   detectAnomalies,
@@ -20,7 +20,7 @@ import {
   analyzePattern,
 } from '../tools-ai-sdk';
 import { handleApiError, jsonSuccess } from '../lib/error-handler';
-import { sanitizeChineseCharacters } from '../lib/text-sanitizer';
+import { sanitizeJsonStrings } from '../lib/text-sanitizer';
 import {
   normalizeQueryAsOf,
   runWithQueryAsOf,
@@ -29,7 +29,9 @@ import { getAgentConfig } from '../services/ai-sdk/agents/config';
 import { AgentFactory } from '../services/ai-sdk/agents/agent-factory';
 import {
   extractToolBasedData,
-  parseAgentJsonResponse,
+  IncidentReportOutputSchema,
+  normalizeAgentIncidentReportOutput,
+  type IncidentReportOutput,
 } from './analytics-report-utils';
 import {
   createMonitoringDataSource,
@@ -479,7 +481,7 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
       );
     }
 
-    // 3. Build prompt for Reporter Agent with JSON output request
+    // 3. Build prompt for Reporter Agent with AI SDK structured output.
     const metricsContext =
       metrics && metrics.length > 0
         ? `\n현재 서버 메트릭:\n${metrics
@@ -490,7 +492,7 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
             .join('\n')}`
         : '';
 
-    const prompt = `서버 장애 보고서를 JSON 형식으로 생성해주세요.
+    const prompt = `서버 장애 보고서의 구조화 필드를 작성해주세요.
 
 ## 요청 정보
 - 대상 서버: ${serverId || '전체 서버'}
@@ -505,45 +507,37 @@ ${metricsContext}
 - 타임라인: ${JSON.stringify(timelineData).slice(0, 300)}
 ${buildMonitoringEvidenceContext(monitoringGrounding)}
 
-## 중요: 반드시 아래 JSON 형식으로만 응답하세요
-
-\`\`\`json
-{
-  "title": "간결한 상황 요약 (예: 웹 서버 CPU 과부하 경고)",
-  "severity": "critical|high|medium|low 중 하나",
-  "description": "현재 상황에 대한 상세 설명 (2-3문장)",
-  "affected_servers": ["서버ID1", "서버ID2"],
-  "affectedServers": [
-    {"id": "server-01", "name": "api-server-01", "severity": "critical", "metric": "cpu", "value": 95}
-  ],
-  "root_cause": "근본 원인 분석 결과",
-  "recommendations": [
-    {"action": "조치 내용", "priority": "high|medium|low", "expected_impact": "예상 효과"}
-  ],
-  "pattern": "감지된 패턴 설명",
-  "postmortem": {
-    "timeline": ["10:00 - 최초 이상 감지"],
-    "hypotheses": ["주요 원인 가설"],
-    "prevention": ["재발 방지 액션"]
-  }
-}
-\`\`\`
-
-위 형식의 JSON만 출력하세요. 다른 텍스트는 포함하지 마세요.`;
+## 작성 필드
+- title: 간결한 상황 요약
+- severity: critical, high, medium, low, warning, info 중 하나
+- description: 현재 상황에 대한 상세 설명 2-3문장
+- affected_servers: 관련 서버 ID 목록
+- affectedServers: 관련 서버별 id, name, severity, metric, value
+- root_cause: 근본 원인 분석 결과
+- recommendations: action, priority, expected_impact 형식의 조치 목록
+- pattern: 감지된 패턴 설명
+- postmortem: timeline, hypotheses, prevention 목록`;
 
     logger.info('[Incident Report] Invoking Reporter Agent with JSON output...');
 
-    let result: Awaited<ReturnType<typeof generateText>>;
+    let agentReportOutput: IncidentReportOutput;
     try {
-      result = await generateText({
+      const result = await generateText({
         model: reporterModelResult.model,
         messages: [
           { role: 'system', content: reporterConfig.instructions },
           { role: 'user', content: prompt },
         ],
+        output: Output.object({
+          schema: IncidentReportOutputSchema,
+          name: 'incident_report',
+          description:
+            'Structured incident report for server monitoring analysis.',
+        }),
         temperature: 0.4,
         maxOutputTokens: 1024,
       });
+      agentReportOutput = sanitizeJsonStrings(result.output);
     } catch (reporterError) {
       if (isRecoverableReporterError(reporterError)) {
         const reason = getErrorMessage(reporterError);
@@ -563,9 +557,11 @@ ${buildMonitoringEvidenceContext(monitoringGrounding)}
     const durationMs = Date.now() - startTime;
     logger.info(`[Incident Report] Agent completed in ${durationMs}ms`);
 
-    // 4. Sanitize Chinese characters and parse JSON from agent response
-    const sanitizedText = sanitizeChineseCharacters(result.text);
-    const agentReport = parseAgentJsonResponse(sanitizedText, toolBasedData);
+    // 4. Normalize structured agent output with deterministic tool fallback fields.
+    const agentReport = normalizeAgentIncidentReportOutput(
+      agentReportOutput,
+      toolBasedData
+    );
 
     // 5. Merge tool-based data with agent response (agent takes precedence for text fields)
     const finalReport = {
@@ -596,7 +592,7 @@ ${buildMonitoringEvidenceContext(monitoringGrounding)}
       evidenceRefs: monitoringGrounding.evidenceRefs,
       monitoringTimeline: monitoringGrounding.timeline?.events ?? [],
       created_at: new Date().toISOString(),
-      _agentResponse: sanitizedText,
+      _agentResponse: JSON.stringify(agentReportOutput),
       _source: 'Reporter Agent + Tool Data (Hybrid)',
       _durationMs: durationMs,
     };

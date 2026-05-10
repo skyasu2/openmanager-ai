@@ -266,7 +266,7 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",
     "@xyflow/react": "^12.10.1",
-    "ai": "^6.0.156",
+    "ai": "^6.0.175",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "highlight.js": "^11.11.1",
@@ -325,7 +325,7 @@
     "markdownlint-cli2": "^0.21.0",
     "msw": "^2.12.10",
     "playwright": "^1.58.2",
-    "postcss": "^8.5.8",
+    "postcss": "^8.5.14",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "rollup": "^4.59.0",
     "storybook": "^10.2.10",
@@ -356,7 +356,13 @@
       "ai": "$ai"
     },
     "@valibot/to-json-schema": "1.5.0",
-    "markdown-it": "14.1.1"
+    "basic-ftp": "6.0.1",
+    "fast-xml-parser": "5.7.3",
+    "ip-address": "10.2.0",
+    "markdown-it": "14.1.1",
+    "postcss": "$postcss",
+    "protobufjs": "7.5.7",
+    "vite": "7.3.3"
   },
   "browserslist": {
     "production": [

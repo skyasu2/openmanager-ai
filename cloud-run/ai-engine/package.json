@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
-    "promptfoo": "^0.120.8",
+    "promptfoo": "0.121.3",
     "tsx": "^4.19.2",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5"
@@ -74,5 +74,13 @@
       "version": ">=11.0.0 <12.0.0",
       "onFail": "error"
     }
+  },
+  "overrides": {
+    "@anthropic-ai/sdk": "0.91.1",
+    "drizzle-orm": "0.45.2",
+    "node-forge": "1.4.0",
+    "qs": "6.15.1",
+    "socket.io-parser": "4.2.6",
+    "yaml": "2.8.4"
   }
 }

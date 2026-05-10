@@ -129,6 +129,7 @@ vi.mock('../lib/logger', () => ({
 
 vi.mock('../lib/text-sanitizer', () => ({
   sanitizeChineseCharacters: vi.fn((text: string) => text),
+  sanitizeJsonStrings: vi.fn(<T,>(value: T) => value),
 }));
 
 vi.mock('../tools-ai-sdk', () => ({
@@ -174,8 +175,19 @@ vi.mock('../tools-ai-sdk', () => ({
 }));
 
 vi.mock('ai', () => ({
+  Output: {
+    object: vi.fn((config) => config),
+  },
   generateText: vi.fn(async () => ({
-    text: '{"summary":"시스템 정상","recommendations":["모니터링 유지"],"confidence":0.9}',
+    output: {
+      title: '시스템 정상',
+      severity: 'info',
+      description: '정상',
+      affected_servers: [],
+      root_cause: '',
+      recommendations: [],
+      pattern: '정상',
+    },
     usage: { inputTokens: 50, outputTokens: 30, totalTokens: 80 },
   })),
 }));
@@ -428,7 +440,26 @@ describe('Analytics Routes', () => {
   describe('POST /analytics/incident-report', () => {
     it('인시던트 보고서를 생성한다', async () => {
       vi.mocked(generateText).mockResolvedValueOnce({
-        text: '```json\n{"title":"CPU 과부하","severity":"critical","description":"웹서버 CPU 95%","affected_servers":["web-01"],"root_cause":"트래픽 급증","recommendations":[{"action":"스케일아웃","priority":"high","expected_impact":"부하 분산"}],"pattern":"스파이크 패턴","postmortem":{"timeline":["10:00 - CPU spike"],"hypotheses":["트래픽 급증"],"prevention":["오토스케일 정책 재검토"]}}\n```',
+        output: {
+          title: 'CPU 과부하',
+          severity: 'critical',
+          description: '웹서버 CPU 95%',
+          affected_servers: ['web-01'],
+          root_cause: '트래픽 급증',
+          recommendations: [
+            {
+              action: '스케일아웃',
+              priority: 'high',
+              expected_impact: '부하 분산',
+            },
+          ],
+          pattern: '스파이크 패턴',
+          postmortem: {
+            timeline: ['10:00 - CPU spike'],
+            hypotheses: ['트래픽 급증'],
+            prevention: ['오토스케일 정책 재검토'],
+          },
+        },
         usage: { inputTokens: 200, outputTokens: 100, totalTokens: 300 },
       } as Awaited<ReturnType<typeof generateText>>);
 
@@ -458,7 +489,15 @@ describe('Analytics Routes', () => {
 
     it('Reporter 응답에 monitoring snapshot evidence refs를 포함한다', async () => {
       vi.mocked(generateText).mockResolvedValueOnce({
-        text: '{"title":"API WAS CPU 경고","severity":"warning","description":"API WAS CPU가 임계값을 초과했습니다.","affected_servers":["api-was-dc1-01"],"root_cause":"CPU 부하 상승","recommendations":[],"pattern":"CPU warning"}',
+        output: {
+          title: 'API WAS CPU 경고',
+          severity: 'warning',
+          description: 'API WAS CPU가 임계값을 초과했습니다.',
+          affected_servers: ['api-was-dc1-01'],
+          root_cause: 'CPU 부하 상승',
+          recommendations: [],
+          pattern: 'CPU warning',
+        },
         usage: { inputTokens: 200, outputTokens: 100, totalTokens: 300 },
       } as Awaited<ReturnType<typeof generateText>>);
 
@@ -490,7 +529,13 @@ describe('Analytics Routes', () => {
       );
       const generateTextInput = vi.mocked(generateText).mock.calls[0]?.[0];
       const prompt = generateTextInput?.messages?.[1]?.content;
+      expect(generateTextInput?.output).toMatchObject({
+        name: 'incident_report',
+        schema: expect.any(Object),
+      });
       expect(prompt).toContain('Monitoring evidenceRefs');
+      expect(prompt).toContain('작성 필드');
+      expect(prompt).not.toContain('```json');
     });
 
     it('Reporter Agent 사용 불가 시 fallback을 반환한다', async () => {
@@ -537,7 +582,15 @@ describe('Analytics Routes', () => {
 
     it('serverId 없이 전체 서버 분석을 수행한다', async () => {
       vi.mocked(generateText).mockResolvedValueOnce({
-        text: '{"title":"전체 점검","severity":"info","description":"정상","affected_servers":[],"root_cause":"","recommendations":[],"pattern":"정상"}',
+        output: {
+          title: '전체 점검',
+          severity: 'info',
+          description: '정상',
+          affected_servers: [],
+          root_cause: '',
+          recommendations: [],
+          pattern: '정상',
+        },
         usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
       } as Awaited<ReturnType<typeof generateText>>);
 
