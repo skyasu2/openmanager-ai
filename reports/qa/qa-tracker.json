@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T05:49:28.256Z"
+    "updatedAt": "2026-05-10T07:26:58.691Z"
   },
   "sequence": {
-    "nextRunNumber": 458
+    "nextRunNumber": 459
   },
   "summary": {
-    "totalRecordedRuns": 455,
-    "totalRuns": 374,
+    "totalRecordedRuns": 456,
+    "totalRuns": 375,
     "excludedRuns": 81,
-    "totalChecks": 3324,
-    "totalPassed": 3200,
-    "totalFailed": 114,
+    "totalChecks": 3331,
+    "totalPassed": 3204,
+    "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 520,
+    "completedItems": 521,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 22,
+    "wontFixItems": 25,
     "expertDomainsTracked": 13,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260510-0457",
-    "lastRecordedAt": "2026-05-10T05:49:28.256Z",
-    "latestRecordedRunId": "QA-20260510-0457",
-    "latestRecordedAt": "2026-05-10T05:49:28.256Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260510-0458",
+    "lastRecordedAt": "2026-05-10T07:26:58.691Z",
+    "latestRecordedRunId": "QA-20260510-0458",
+    "latestRecordedAt": "2026-05-10T07:26:58.691Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12737,6 +12737,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-10T05:49:28.256Z"
+    },
+    "v811122-explicit-server-id-production-regression": {
+      "id": "v811122-explicit-server-id-production-regression",
+      "title": "Explicit server ID questions no longer trigger broad server clarification",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260510-0458",
+      "firstSeenAt": "2026-05-10T07:26:58.691Z",
+      "lastSeenRunId": "QA-20260510-0458",
+      "lastSeenAt": "2026-05-10T07:26:58.691Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production AI sidebar prompt 'api-was-dc1-01 CPU 상태 분석해줘' returned CPU metrics without opening a clarification dialog.",
+      "lastNote": "Regression fix from v8.11.122 is working in Vercel production.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-10T07:26:58.691Z"
+    },
+    "ai-non-it-live-fact-guard": {
+      "id": "ai-non-it-live-fact-guard",
+      "title": "Prevent unsupported live/current factual claims for off-domain questions",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260510-0458",
+      "firstSeenAt": "2026-05-10T07:26:58.691Z",
+      "lastSeenRunId": "QA-20260510-0458",
+      "lastSeenAt": "2026-05-10T07:26:58.691Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Prompt '비트코인 지금 가격 알려줘' returned an unsupported exact value: '1,234,567 KRW'.",
+      "lastNote": "Return limitation/source guidance unless an approved live data tool is available.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-10T07:26:58.691Z"
+    },
+    "ai-non-it-action-claim-guard": {
+      "id": "ai-non-it-action-claim-guard",
+      "title": "Prevent false completion claims for external action requests",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260510-0458",
+      "firstSeenAt": "2026-05-10T07:26:58.691Z",
+      "lastSeenRunId": "QA-20260510-0458",
+      "lastSeenAt": "2026-05-10T07:26:58.691Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Prompt '내일 오후 3시에 팀 회의 일정 잡아줘' returned '회의가 잡혔습니다' without a calendar integration.",
+      "lastNote": "Return a copyable event draft and explain that direct scheduling is unavailable.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-10T07:26:58.691Z"
+    },
+    "ai-non-it-local-recommendation-quality": {
+      "id": "ai-non-it-local-recommendation-quality",
+      "title": "Improve local recommendation fallback quality",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260510-0458",
+      "firstSeenAt": "2026-05-10T07:26:58.691Z",
+      "lastSeenRunId": "QA-20260510-0458",
+      "lastSeenAt": "2026-05-10T07:26:58.691Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Prompt '강남역 근처 맛집 추천해줘' returned generic placeholder-like category names without sources or freshness caveat.",
+      "lastNote": "Ask for constraints or provide a clearly caveated generic checklist instead of invented venue-like claims.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-10T07:26:58.691Z"
     }
   },
   "runs": [
@@ -48624,6 +48720,144 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0458",
+      "recordedAt": "2026-05-10T07:26:58.691Z",
+      "recordedAtKst": "2026-05-10 16:26:58 KST",
+      "title": "v8.11.122 Vercel AI Assistant Edge / Non-IT Prompt QA",
+      "owner": "codex",
+      "source": "playwright-browser-script",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0458.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_D7cNFNXRe5EFSes4dyP4Tyii2NJV",
+        "deploymentUrl": "https://openmanager-lkhy2cb63-skyasus-projects.vercel.app",
+        "commitSha": "422c7aea5811c29ee4bb3d1b5b89650c551026ed"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /login guest PIN flow",
+        "Vercel production /dashboard AI sidebar",
+        "AI Chat explicit server ID prompt",
+        "AI Chat overall risk prompt",
+        "AI Chat non-IT current fact prompts",
+        "AI Chat non-IT external action prompt",
+        "AI Chat non-IT personal prompt"
+      ],
+      "skippedSurfaces": [
+        "Reporter tab",
+        "Anomaly/Trend tab",
+        "Full visual regression sweep",
+        "External live weather/market/restaurant/calendar tools"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 4,
+        "failed": 3
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar explicit server CPU",
+          "agent": "Supervisor/Cloud Run AI",
+          "provider": "unknown",
+          "model": "unknown",
+          "route": "/api/ai/jobs + /api/ai/jobs/[id]/stream",
+          "source": "Playwright conversation log",
+          "latencyMs": 3928,
+          "processingTimeMs": 2125
+        },
+        {
+          "surface": "AI sidebar overall risk server",
+          "agent": "Supervisor",
+          "provider": "unknown",
+          "model": "unknown",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright conversation log",
+          "latencyMs": 1713,
+          "processingTimeMs": 1368
+        },
+        {
+          "surface": "AI sidebar non-IT prompts",
+          "agent": "Supervisor",
+          "provider": "unknown",
+          "model": "unknown",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright conversation log",
+          "latencyMs": 6929,
+          "processingTimeMs": 3358
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Core monitoring prompts passed, but non-IT live/current fact and external action prompts can produce unsupported claims.",
+          "nextAction": "Add deterministic off-domain guard templates and regression tests for live facts, action requests, and local recommendations."
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The assistant falsely claimed a calendar event was scheduled without an integration/tool result, which is a capability overclaim.",
+          "nextAction": "Block action-completion claims unless a verified tool execution exists."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-10T16:23:27+09:00",
+          "summary": "Vercel usage checked after production AI Assistant edge QA. Current billing period effective usage was 6.0506 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "AI Assistant edge/non-IT QA report",
+          "path": "reports/qa/evidence/qa-20260510-v811122-ai-assistant-edge-non-it.md"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI Assistant edge/non-IT raw Playwright result",
+          "path": "reports/qa/evidence/qa-20260510-v811122-ai-assistant-edge-results.json"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Assistant edge/non-IT final screenshot",
+          "path": "reports/qa/evidence/qa-20260510-v811122-ai-assistant-edge-final.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production AI Assistant",
+          "url": "https://openmanager-ai.vercel.app/dashboard"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 3
     }
   ],
   "experts": {
@@ -48632,17 +48866,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 215,
+      "seenCount": 216,
       "appropriateCount": 188,
-      "partialCount": 27,
+      "partialCount": 28,
       "inappropriateCount": 0,
-      "improvementNeededCount": 37,
-      "lastRunId": "QA-20260510-0457",
-      "lastSeenAt": "2026-05-10T05:49:28.256Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "AI server ID clarification fix passed local regression, contract tests, main validation, and production release smoke.",
-      "lastNextAction": ""
+      "improvementNeededCount": 38,
+      "lastRunId": "QA-20260510-0458",
+      "lastSeenAt": "2026-05-10T07:26:58.691Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Core monitoring prompts passed, but non-IT live/current fact and external action prompts can produce unsupported claims.",
+      "lastNextAction": "Add deterministic off-domain guard templates and regression tests for live facts, action requests, and local recommendations."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -48666,17 +48900,17 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 57,
+      "seenCount": 58,
       "appropriateCount": 43,
-      "partialCount": 14,
+      "partialCount": 15,
       "inappropriateCount": 0,
-      "improvementNeededCount": 13,
-      "lastRunId": "QA-20260507-0419",
-      "lastSeenAt": "2026-05-07T01:09:27.132Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "General user-mode requests for implementation paths were refused before tools or providers executed, while PIN/developer mode remains intentionally separate.",
-      "lastNextAction": ""
+      "improvementNeededCount": 14,
+      "lastRunId": "QA-20260510-0458",
+      "lastSeenAt": "2026-05-10T07:26:58.691Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "The assistant falsely claimed a calendar event was scheduled without an integration/tool result, which is a capability overclaim.",
+      "lastNextAction": "Block action-completion claims unless a verified tool execution exists."
     },
     "sre-devops": {
       "domainId": "sre-devops",

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 14:49:28 KST
+> Generated at: 2026-05-10 16:27:00 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 455 |
-| Total Runs (Counted) | 374 |
+| Total Recorded Runs | 456 |
+| Total Runs (Counted) | 375 |
 | Non-counted Runs | 81 |
-| Total Checks | 3324 |
-| Passed | 3200 |
-| Failed | 114 |
-| Completed Items | 520 |
+| Total Checks | 3331 |
+| Passed | 3204 |
+| Failed | 117 |
+| Completed Items | 521 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 22 |
+| Wont-Fix Items | 25 |
 | Expert Domains Tracked | 13 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260510-0457 (2026-05-10T05:49:28.256Z) |
-| Latest Recorded Run | QA-20260510-0457 (2026-05-10T05:49:28.256Z) |
+| Last Counted Run | QA-20260510-0458 (2026-05-10T07:26:58.691Z) |
+| Latest Recorded Run | QA-20260510-0458 (2026-05-10T07:26:58.691Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,32 +34,33 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0457 (2026-05-10T05:49:28.256Z)
+Latest run: QA-20260510-0458 (2026-05-10T07:26:58.691Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Add deterministic off-domain guard templates and regression tests for live facts, action requests, and local recommendations. |
+| AI Security & Reliability Architect | partially-appropriate | yes | Block action-completion claims unless a verified tool execution exists. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after v8.11.122 production release. Current billing period effective usage was 5.3789 USD, billed 0.0000 USD, with no unexpected billed usage flagged by the local usage guard. |
+| vercel | cli | checked | normal | Vercel usage checked after production AI Assistant edge QA. Current billing period effective usage was 6.0506 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T05:49:28.256Z -> 2026-05-10T05:49:28.256Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
+- Window: 2026-05-09T07:26:58.691Z -> 2026-05-10T07:26:58.691Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 3
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| - | - | 0 | - | - | - | - | - | - | - |
+| Supervisor | unknown | 2 | 4321ms | 6929ms | - | - | 2363ms | 3358ms | QA-20260510-0458 |
+| Supervisor/Cloud Run AI | unknown | 1 | 3928ms | 3928ms | - | - | 2125ms | 2125ms | QA-20260510-0458 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T05:49:28.256Z -> 2026-05-10T05:49:28.256Z (24h)
+- Window: 2026-05-09T07:26:58.691Z -> 2026-05-10T07:26:58.691Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -71,29 +72,33 @@ Latest run: QA-20260510-0457 (2026-05-10T05:49:28.256Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
 - Deployment: dpl_D7cNFNXRe5EFSes4dyP4Tyii2NJV / SHA 422c7aea
-- Coverage Packs: core-routes-smoke, ai-core
-- Covered Surfaces: Vercel production /, Vercel production /login, Vercel production /api/version, GitLab semver tag pipeline, Cloud Run AI Engine deploy smoke
-- Skipped Surfaces: Full Playwright visual sweep, Live conversational AI prompt QA
+- Coverage Packs: ai-core
+- Covered Surfaces: Vercel production /login guest PIN flow, Vercel production /dashboard AI sidebar, AI Chat explicit server ID prompt, AI Chat overall risk prompt, AI Chat non-IT current fact prompts, AI Chat non-IT external action prompt, AI Chat non-IT personal prompt
+- Skipped Surfaces: Reporter tab, Anomaly/Trend tab, Full visual regression sweep, External live weather/market/restaurant/calendar tools
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline 2513344138 | [GitLab pipeline 2513344138](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513344138) | - |
-| general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
+| general | Production AI Assistant | [Production AI Assistant](https://openmanager-ai.vercel.app/dashboard) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.122 release smoke evidence | `reports/qa/evidence/qa-20260510-0457-v811122-release-smoke.md` | - |
+| playwright-report | AI Assistant edge/non-IT QA report | `reports/qa/evidence/qa-20260510-v811122-ai-assistant-edge-non-it.md` | - |
+| playwright-network | AI Assistant edge/non-IT raw Playwright result | `reports/qa/evidence/qa-20260510-v811122-ai-assistant-edge-results.json` | - |
+| playwright-screenshot | AI Assistant edge/non-IT final screenshot | `reports/qa/evidence/qa-20260510-v811122-ai-assistant-edge-final.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260510-0458)
+  next: Add deterministic off-domain guard templates and regression tests for live facts, action requests, and local recommendations.
+- ai-security-reliability: AI Security & Reliability Architect (last QA-20260510-0458)
+  next: Block action-completion claims unless a verified tool execution exists.
 
 ## Pending Improvements
 
@@ -105,7 +110,7 @@ Latest run: QA-20260510-0457 (2026-05-10T05:49:28.256Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 14
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 17
 
 ### Platform Constraint
 
@@ -154,6 +159,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-metric-ranking-memory-path-metadata: Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata (seen 1회, last QA-20260418-0304)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] ai-non-it-action-claim-guard: Prevent false completion claims for external action requests (seen 1회, last QA-20260510-0458)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] ai-non-it-live-fact-guard: Prevent unsupported live/current factual claims for off-domain questions (seen 1회, last QA-20260510-0458)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P4] ai-rewrite-report-style-quality: Formatting-only rewrite works but can return a terse two-line summary instead of polished report prose (seen 1회, last QA-20260504-0404)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-sidebar-answer-details-default-visibility: AI sidebar should show actionable response details inline by default when analysis metadata exists (seen 1회, last QA-20260430-0374)
@@ -169,6 +178,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] mobile-header-density: Review dashboard mobile header density around AI CTA and profile cluster (seen 1회, last QA-20260418-0303)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] ai-non-it-local-recommendation-quality: Improve local recommendation fallback quality (seen 1회, last QA-20260510-0458)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 
 ## Completed Improvements
@@ -630,6 +641,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - v8.11.122-ai-server-id-clarification-production-release: Release explicit server ID clarification fix to production (completed 1회, last QA-20260510-0457)
 - v811119-production-release-smoke: v8.11.119 production release smoke passed (completed 1회, last QA-20260509-0437)
 - v811120-production-release-smoke: v8.11.120 production release smoke passed (completed 1회, last QA-20260510-0438)
+- v811122-explicit-server-id-production-regression: Explicit server ID questions no longer trigger broad server clarification (completed 1회, last QA-20260510-0458)
 - v81195-dashboard-core-routes-playwright-recheck: Dashboard core routes and AI assistant tabs render in Vercel production (completed 1회, last QA-20260504-0404)
 - v81195-vercel-playwright-ai-routing-recheck: AI ranking and formatting rewrite production routes remain stable on v8.11.95 (completed 1회, last QA-20260504-0404)
 - validation-evidence-summary-clarity: Validation evidence summary 카피와 정보 우선순위 정리 (completed 1회, last QA-20260324-0171)
@@ -698,6 +710,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0458 | 2026-05-10T07:26:58.691Z | targeted | no | yes | v8.11.122 Vercel AI Assistant Edge / Non-IT Prompt QA | 7 | 1 | 0 | 0 | 3 | 2 |
 | QA-20260510-0457 | 2026-05-10T05:49:28.256Z | targeted | yes | yes | v8.11.122 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0456 | 2026-05-10T05:38:01.711Z | targeted | no | yes | AI Explicit Server ID Clarification Skip QA | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0455 | 2026-05-10T04:38:12.410Z | targeted | yes | yes | v8.11.121 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -717,4 +730,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0441 | 2026-05-09T23:12:15.456Z | targeted | no | yes | Local AI Engine Command Guidance Resource Intent QA | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0440 | 2026-05-09T22:47:17.841Z | targeted | no | yes | Local AI Engine Memory TOP-N Routing Fix QA | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0439 | 2026-05-09T17:03:25.551Z | smoke | yes | yes | Vercel Production Smoke QA - v8.11.120 Frontend+AI | 13 | 0 | 2 | 0 | 0 | 0 |
-| QA-20260510-0438 | 2026-05-09T16:26:24.262Z | targeted | yes | yes | v8.11.120 Production Release Smoke | 4 | 1 | 0 | 0 | 0 | 0 |

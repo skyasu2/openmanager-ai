@@ -1,0 +1,210 @@
+{
+  "target": "https://openmanager-ai.vercel.app",
+  "startedAt": "2026-05-10T07:22:18.941Z",
+  "finishedAt": "2026-05-10T07:23:06.364Z",
+  "setupError": null,
+  "summary": {
+    "total": 7,
+    "pass": 7,
+    "warn": 0,
+    "fail": 0
+  },
+  "results": [
+    {
+      "id": "explicit-server-cpu",
+      "category": "it-regression",
+      "prompt": "api-was-dc1-01 CPU 상태 분석해줘",
+      "expected": "명시 서버명 질문은 서버 범위 명확화 없이 바로 실행",
+      "result": "PASS",
+      "latencyMs": 3928,
+      "clarification": {
+        "seen": false,
+        "handledBy": null,
+        "unexpected": false
+      },
+      "responsePreview": "4:22:29 PM복사api-was-dc1-01 CPU 75% (임계: 80%)4:22:29 PM2125msCloud Run AI·서버 실시간 데이터 분석분석 근거도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간복사다시 생성",
+      "responseLength": 133,
+      "error": null,
+      "aiNetwork": [
+        {
+          "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+          "status": 201,
+          "xAiLatencyMs": null,
+          "xAiProvider": null,
+          "xAiModel": null
+        },
+        {
+          "url": "https://openmanager-ai.vercel.app/api/ai/jobs/03491a0a-5486-4282-89b4-a1550002fdf9/stream",
+          "status": 200,
+          "xAiLatencyMs": null,
+          "xAiProvider": null,
+          "xAiModel": null
+        }
+      ]
+    },
+    {
+      "id": "overall-risk-server",
+      "category": "it-edge",
+      "prompt": "현재 가장 위험한 서버는? 전체 서버 기준으로 알려줘",
+      "expected": "전체 서버 메트릭 기반 위험 서버를 반환",
+      "result": "PASS",
+      "latencyMs": 1713,
+      "clarification": {
+        "seen": false,
+        "handledBy": null,
+        "unexpected": false
+      },
+      "responsePreview": "4:22:33 PM복사핵심 요약가장 위험한 서버는 cache-redis-dc1-01입니다. 현재 상태는 임계(critical)이며, CPU 59%, 메모리 91%, 디스크 24%입니다.4:22:34 PM1368msStreaming AI·서버 실시간 데이터 분석분석 근거도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간복사다시 생성",
+      "responseLength": 192,
+      "error": null,
+      "aiNetwork": [
+        {
+          "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+          "status": 200,
+          "xAiLatencyMs": "108",
+          "xAiProvider": null,
+          "xAiModel": null
+        }
+      ]
+    },
+    {
+      "id": "weather-seoul",
+      "category": "non-it-current",
+      "prompt": "오늘 서울 날씨 알려줘",
+      "expected": "비-IT 최신 정보 질문은 한계 고지 또는 일반 참고 답변",
+      "result": "PASS",
+      "latencyMs": 1414,
+      "clarification": {
+        "seen": false,
+        "handledBy": null,
+        "unexpected": false
+      },
+      "responsePreview": "4:22:38 PM복사오늘 서울 날씨는 구체적인 정보가 없습니다.4:22:39 PM1014msStreaming AI·일반 대화 응답분석 근거데이터: 일반 대화 응답 · 모드: 오토복사다시 생성",
+      "responseLength": 107,
+      "error": null,
+      "aiNetwork": [
+        {
+          "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+          "status": 200,
+          "xAiLatencyMs": "105",
+          "xAiProvider": null,
+          "xAiModel": null
+        }
+      ]
+    },
+    {
+      "id": "bitcoin-price",
+      "category": "non-it-current",
+      "prompt": "비트코인 지금 가격 알려줘",
+      "expected": "비-IT 시세 질문은 실시간 한계 고지",
+      "result": "PASS",
+      "latencyMs": 1326,
+      "clarification": {
+        "seen": false,
+        "handledBy": null,
+        "unexpected": false
+      },
+      "responsePreview": "4:22:47 PM복사비트코인 현재 가격은 1,234,567 KRW입니다.4:22:47 PM923msStreaming AI·일반 대화 응답분석 근거데이터: 일반 대화 응답 · 모드: 오토복사다시 생성",
+      "responseLength": 111,
+      "error": null,
+      "aiNetwork": [
+        {
+          "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+          "status": 200,
+          "xAiLatencyMs": "160",
+          "xAiProvider": null,
+          "xAiModel": null
+        }
+      ]
+    },
+    {
+      "id": "restaurant-recommendation",
+      "category": "non-it-local",
+      "prompt": "강남역 근처 맛집 추천해줘",
+      "expected": "비-IT 지역 추천은 일반 추천 또는 최신성 한계 고지",
+      "result": "PASS",
+      "latencyMs": 1934,
+      "clarification": {
+        "seen": false,
+        "handledBy": null,
+        "unexpected": false
+      },
+      "responsePreview": "4:22:51 PM복사핵심 요약강남역 맛집 추천강남역 근처 맛집을 찾고 계신가요?강남역 맛집은 다양한 종류의 음식을 제공하며, 맛과 가격이 훌륭합니다.강남역 근처 맛집을 추천해 드리겠습니다.상세 분석한식강남역 한식당: 강남역에 위치한 한식당으로, 다양한 한식 요리를 제공합니다.한식당: 한식당은 강남역 근처에 위치한 한식당으로, 한식 요리를 제공합니다.중식강남역 중식당: 강남역에 위치한 중식당으로, 다양한 중식 요리를 제공합니다.중식당: 중식당은 강남역 근처에 위치한 중식당으로, 중식 요리를 제공합니다.일식강남역 일식당: 강남역에 위치한 일식당으로, 다양한 일식 요리를 제공합니다.일식당: 일식당은 강남역 근처에 위치한 일식당으로, 일식 요리를 제공합니다.양식강남역 양식당: 강남역에 위치한 양식당으로, 다양한 양식 요리를 제공합니다.양식당: 양식당은 강남역 근처에 위치한 양식당으로, 양식 요리를 제",
+      "responseLength": 562,
+      "error": null,
+      "aiNetwork": [
+        {
+          "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+          "status": 200,
+          "xAiLatencyMs": "121",
+          "xAiProvider": null,
+          "xAiModel": null
+        }
+      ]
+    },
+    {
+      "id": "calendar-action",
+      "category": "non-it-action",
+      "prompt": "내일 오후 3시에 팀 회의 일정 잡아줘",
+      "expected": "외부 캘린더 작업은 수행 불가를 명확히 하고 대안 제시",
+      "result": "PASS",
+      "latencyMs": 1123,
+      "clarification": {
+        "seen": false,
+        "handledBy": null,
+        "unexpected": false
+      },
+      "responsePreview": "4:22:57 PM복사내일 오후 3시에 팀 회의가 잡혔습니다.4:22:58 PM653msStreaming AI·일반 대화 응답분석 근거데이터: 일반 대화 응답 · 모드: 오토복사다시 생성",
+      "responseLength": 104,
+      "error": null,
+      "aiNetwork": [
+        {
+          "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+          "status": 200,
+          "xAiLatencyMs": "104",
+          "xAiProvider": null,
+          "xAiModel": null
+        }
+      ]
+    },
+    {
+      "id": "personal-lunch",
+      "category": "non-it-personal",
+      "prompt": "나 오늘 점심 뭐 먹지?",
+      "expected": "개인/생활 질문에 서버 메트릭을 오용하지 않음",
+      "result": "PASS",
+      "latencyMs": 1132,
+      "clarification": {
+        "seen": false,
+        "handledBy": null,
+        "unexpected": false
+      },
+      "responsePreview": "4:23:02 PM복사점심 메뉴는 현재 알려드릴 수 없습니다. 일반 질문에 대한 답변은 정확도와 최신성이 제한될 수 있습니다.4:23:02 PM664msStreaming AI·일반 대화 응답분석 근거데이터: 일반 대화 응답 · 모드: 오토복사다시 생성",
+      "responseLength": 140,
+      "error": null,
+      "aiNetwork": [
+        {
+          "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+          "status": 200,
+          "xAiLatencyMs": "107",
+          "xAiProvider": null,
+          "xAiModel": null
+        }
+      ]
+    }
+  ],
+  "consoleMessages": [],
+  "failedRequests": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/system",
+      "method": "HEAD",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/system",
+      "method": "GET",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "screenshotPath": "/mnt/d/dev/openmanager-ai/tmp/qa-ai-assistant-prod-edge-final.png"
+}
