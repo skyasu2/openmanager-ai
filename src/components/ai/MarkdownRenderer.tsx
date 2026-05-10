@@ -109,6 +109,7 @@ const CodeBlock = memo(function CodeBlock({
           onClick={handleCopy}
           className="flex items-center gap-1.5 rounded px-2 py-1 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
           title="코드 복사"
+          aria-label={copied ? '코드 복사됨' : '코드 복사'}
         >
           {copied ? (
             <>
@@ -127,6 +128,7 @@ const CodeBlock = memo(function CodeBlock({
       <pre className="overflow-x-hidden whitespace-pre-wrap break-words p-4 text-sm">
         <code
           ref={codeRef}
+          data-testid="markdown-code-block"
           className={`${className || ''} whitespace-pre-wrap break-words text-gray-100 font-mono leading-relaxed [overflow-wrap:anywhere]`}
         >
           {children}

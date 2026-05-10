@@ -1,6 +1,7 @@
 import { Bot, Brain, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
+import { getResponseLatencyLabel } from '@/lib/ai/response-latency-label';
 import {
   resolveAssistantResponseView,
   splitAssistantResponseDetails,
@@ -72,6 +73,9 @@ export const AIWorkspaceMessage = memo<{
     [assistantResponseView?.details]
   );
   const analysisBasis = message.metadata?.analysisBasis ?? null;
+  const responseLatencyLabel = getResponseLatencyLabel(
+    message.metadata?.processingTime
+  );
   const userFacingAssistantDetails =
     assistantResponseDetails.processDetails ??
     (!assistantResponseDetails.debugDetails
@@ -195,12 +199,14 @@ export const AIWorkspaceMessage = memo<{
               <p className="text-xs text-gray-500" suppressHydrationWarning>
                 {formatTime(message.timestamp)}
               </p>
-              {message.role === 'assistant' &&
-                message.metadata?.processingTime && (
-                  <p className="text-xs text-gray-400">
-                    · {message.metadata.processingTime}ms
-                  </p>
-                )}
+              {message.role === 'assistant' && responseLatencyLabel && (
+                <span
+                  className={`rounded-full border px-2 py-0.5 text-xs font-medium ${responseLatencyLabel.className}`}
+                  title={responseLatencyLabel.title}
+                >
+                  {responseLatencyLabel.label}
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-1">

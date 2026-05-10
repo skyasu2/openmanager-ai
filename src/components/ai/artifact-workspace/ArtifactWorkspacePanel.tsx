@@ -1,6 +1,13 @@
 'use client';
 
-import { Download, GitCompareArrows, Save, Trash2, Upload } from 'lucide-react';
+import {
+  Download,
+  GitCompareArrows,
+  HelpCircle,
+  Save,
+  Trash2,
+  Upload,
+} from 'lucide-react';
 import type { ChangeEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import type { ArtifactReplayPack } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
@@ -238,6 +245,14 @@ export function ArtifactWorkspacePanel({
           <p className="mt-0.5 text-xs text-slate-500">
             replay pack {replayPacks.length}개 · 현재 대화{' '}
             {supportedCurrentArtifactCount}개
+            <span
+              role="img"
+              aria-label="replay pack 설명"
+              className="ml-1 inline-flex align-[-2px] text-slate-400"
+              title="대화 이력과 분석 결과를 저장·불러오는 스냅샷"
+            >
+              <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+            </span>
           </p>
         </div>
         <button

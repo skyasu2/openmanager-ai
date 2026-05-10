@@ -314,6 +314,10 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               inputValue={input}
               setInputValue={setInput}
               handleSendInput={handleSendInput}
+              onStarterPromptSubmit={(prompt) => {
+                setInput(prompt);
+                handleSendInput(undefined, prompt);
+              }}
               sessionState={sessionState}
               onNewSession={handleNewSession}
               isGenerating={isLoading}
@@ -408,6 +412,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
             activeFunction={selectedFunction}
             onClose={onClose}
             onNewSession={handleNewSession}
+            onOpenFullscreen={handleOpenFullscreen}
           />
           <div className="flex-1 overflow-hidden pb-20 sm:pb-0">
             <AIErrorBoundary

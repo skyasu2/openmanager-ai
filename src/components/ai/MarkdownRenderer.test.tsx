@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 describe('MarkdownRenderer', () => {
+  const targetVariable = '$' + '{target}';
   const originalInnerTextDescriptor = Object.getOwnPropertyDescriptor(
     HTMLElement.prototype,
     'innerText'
@@ -56,7 +57,7 @@ describe('MarkdownRenderer', () => {
     );
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: '복사' }));
+      fireEvent.click(screen.getByRole('button', { name: '코드 복사' }));
       await Promise.resolve();
     });
 
@@ -96,5 +97,28 @@ describe('MarkdownRenderer', () => {
     expect(
       container.querySelector('div.my-3.flex.items-center.justify-center')
     ).not.toBeInTheDocument();
+  });
+
+  it('bash 코드 블록의 command substitution과 if 블록을 끝까지 렌더링해야 한다', () => {
+    const script = [
+      '```bash',
+      'filterServers() {',
+      '  local target="$(printf "%s" "$1")"',
+      `  if [[ -n "${targetVariable}" ]]; then`,
+      `    jq -r ".servers[] | select(.name == \\"${targetVariable}\\") | .name"`,
+      '  fi',
+      '  printf "%s\\n" "done"',
+      '}',
+      '```',
+    ].join('\n');
+
+    render(<MarkdownRenderer content={script} />);
+
+    const code = screen.getByTestId('markdown-code-block');
+
+    expect(code).toHaveTextContent('local target="$(printf "%s" "$1")"');
+    expect(code).toHaveTextContent(`if [[ -n "${targetVariable}" ]]; then`);
+    expect(code).toHaveTextContent('printf "%s\\n" "done"');
+    expect(code).toHaveTextContent('}');
   });
 });

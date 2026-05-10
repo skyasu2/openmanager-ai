@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
@@ -40,6 +40,9 @@ const createMessage = (
 
 describe('ChatMessageList', () => {
   it('does not expose the welcome screen as a chat log before any messages exist', () => {
+    const onStarterPromptSubmit = vi.fn();
+    const setInputValue = vi.fn();
+
     render(
       <ChatMessageList
         scrollContainerRef={createRef<HTMLDivElement>()}
@@ -50,7 +53,8 @@ describe('ChatMessageList', () => {
         MessageComponent={MessageComponent}
         isGenerating={false}
         regenerateResponse={vi.fn()}
-        setInputValue={vi.fn()}
+        setInputValue={setInputValue}
+        onStarterPromptSubmit={onStarterPromptSubmit}
       />
     );
 
@@ -58,6 +62,11 @@ describe('ChatMessageList', () => {
       screen.getByRole('button', { name: 'welcome prompt' })
     ).toBeVisible();
     expect(screen.queryByRole('log')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'welcome prompt' }));
+
+    expect(onStarterPromptSubmit).toHaveBeenCalledWith('prompt');
+    expect(setInputValue).not.toHaveBeenCalled();
   });
 
   it('exposes the message region as a live chat log once messages exist', () => {

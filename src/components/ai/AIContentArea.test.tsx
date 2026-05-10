@@ -156,6 +156,7 @@ describe('AIContentArea', () => {
 
     expect(analystPropsSpy).toHaveBeenCalledWith(
       expect.objectContaining({
+        autoAnalyzeOnVisible: true,
         queryAsOfDataSlot: {
           slotIndex: 42,
           minuteOfDay: 420,

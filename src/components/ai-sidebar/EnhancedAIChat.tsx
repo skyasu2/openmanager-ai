@@ -50,6 +50,7 @@ interface EnhancedAIChatProps {
   inputValue: string;
   setInputValue: (value: string) => void;
   handleSendInput: (attachments?: FileAttachment[]) => void;
+  onStarterPromptSubmit?: (prompt: string) => void;
   isGenerating: boolean;
   streamStatus?: AIStreamStatus;
   regenerateResponse: (messageId: string) => void;
@@ -99,6 +100,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   inputValue,
   setInputValue,
   handleSendInput,
+  onStarterPromptSubmit,
   isGenerating,
   streamStatus,
   regenerateResponse,
@@ -232,6 +234,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           isGenerating={isGenerating}
           regenerateResponse={regenerateResponse}
           setInputValue={setInputValue}
+          onStarterPromptSubmit={onStarterPromptSubmit}
         />
       )}
 

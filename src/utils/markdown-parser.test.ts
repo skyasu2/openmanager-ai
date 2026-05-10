@@ -76,6 +76,8 @@ describe('parseMarkdownLinks', () => {
 });
 
 describe('markdown parser legacy paths', () => {
+  const targetVariable = '$' + '{target}';
+
   it('preserves code block parsing behavior', () => {
     const blocks = parseMarkdownContent(
       'Hello\n```python\nprint("test")\n```\nbye'
@@ -89,6 +91,29 @@ describe('markdown parser legacy paths', () => {
       content: 'print("test")',
     });
     expect(blocks[2]).toMatchObject({ type: 'text', content: 'bye' });
+  });
+
+  it('preserves shell scripts with command substitution and trailing lines', () => {
+    const blocks = parseMarkdownContent(
+      [
+        '설명',
+        '```bash',
+        'filterServers() {',
+        '  local target="$(printf "%s" "$1")"',
+        `  if [[ -n "${targetVariable}" ]]; then`,
+        `    echo "${targetVariable}"`,
+        '  fi',
+        '  echo "done"',
+        '}',
+        '```',
+      ].join('\n')
+    );
+
+    expect(blocks[1]).toMatchObject({
+      type: 'code',
+      language: 'bash',
+      content: `filterServers() {\n  local target="$(printf "%s" "$1")"\n  if [[ -n "${targetVariable}" ]]; then\n    echo "${targetVariable}"\n  fi\n  echo "done"\n}`,
+    });
   });
 
   it('detects executable python code', () => {

@@ -9,7 +9,7 @@
 
 'use client';
 
-import { Brain, Plus, X } from 'lucide-react';
+import { Brain, Maximize2, Plus, X } from 'lucide-react';
 import type { FC } from 'react';
 import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
 import BasicTyping from '@/components/ui/BasicTyping';
@@ -26,12 +26,14 @@ const AI_SIDEBAR_SUBTITLES: Record<AIAssistantFunction, string> = {
 interface AISidebarHeaderProps {
   onClose: () => void;
   onNewSession?: () => void;
+  onOpenFullscreen?: () => void;
   activeFunction?: AIAssistantFunction;
 }
 
 export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
   onClose,
   onNewSession,
+  onOpenFullscreen,
   activeFunction = 'chat',
 }: AISidebarHeaderProps) => {
   const clearMessages = useAISidebarStore((state) => state.clearMessages);
@@ -81,6 +83,19 @@ export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
           enabled={isSystemStarted}
         />
       </div>
+
+      {onOpenFullscreen && (
+        <button
+          onClick={onOpenFullscreen}
+          className="hidden min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-purple-700 transition-colors hover:bg-purple-100 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 sm:inline-flex"
+          title="전체화면으로 보기"
+          aria-label="전체화면으로 보기"
+          type="button"
+        >
+          <Maximize2 className="h-4 w-4" aria-hidden="true" />
+          <span>전체화면</span>
+        </button>
+      )}
 
       {/* 새 대화 버튼 */}
       <button

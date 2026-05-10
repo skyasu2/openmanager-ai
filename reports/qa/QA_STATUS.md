@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-10 19:00:24 KST
+> Generated at: 2026-05-10 20:58:09 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 460 |
+| Total Recorded Runs | 463 |
 | Total Runs (Counted) | 375 |
-| Non-counted Runs | 85 |
+| Non-counted Runs | 88 |
 | Total Checks | 3331 |
 | Passed | 3204 |
 | Failed | 117 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0458 (2026-05-10T07:26:58.691Z) |
-| Latest Recorded Run | QA-20260510-0462 (2026-05-10T10:00:23.786Z) |
+| Latest Recorded Run | QA-20260510-0465 (2026-05-10T11:58:02.942Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260510-0462 (2026-05-10T10:00:23.786Z)
+Latest run: QA-20260510-0465 (2026-05-10T11:58:02.942Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | Commit and deploy before release-facing Vercel QA. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | not-applicable | skipped | normal | Local targeted QA only; no Vercel deployment and no production AI or Cloud Run chat invocation. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T10:00:23.786Z -> 2026-05-10T10:00:23.786Z (24h)
+- Window: 2026-05-09T11:58:02.942Z -> 2026-05-10T11:58:02.942Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -61,7 +59,7 @@ Latest run: QA-20260510-0462 (2026-05-10T10:00:23.786Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T10:00:23.786Z -> 2026-05-10T10:00:23.786Z (24h)
+- Window: 2026-05-09T11:58:02.942Z -> 2026-05-10T11:58:02.942Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,10 +73,10 @@ Latest run: QA-20260510-0462 (2026-05-10T10:00:23.786Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA f856b024
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: Root App NLQ entity extraction structured output route, Root App artifact intent structured output route, Cloud Run orchestrator structured output fallback helper, Cloud Run provider fallback and text JSON fallback behavior, AI SDK v6 architecture documentation alignment
-- Skipped Surfaces: Vercel production browser QA, live provider calls, release tag deployment
+- Deployment: SHA ea576962
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: /dashboard/ai-assistant local render, Analyst tab entry triggers automatic batch analysis, AI Chat welcome state and conversation counter remain visible, Anomaly server detail action copy is inline expansion-oriented, Sidebar header fullscreen handoff is covered by component test, Component, type, lint, quick, contract, and whitespace gates passed
+- Skipped Surfaces: Live AI chat response send skipped to avoid external LLM and Cloud Run cost during local UI validation, Vercel production deployment QA skipped because this run validates local implementation before commit/deploy, Sidebar header fullscreen button browser recheck skipped on /dashboard/ai-assistant because that route renders the fullscreen workspace, not the sidebar dialog
 
 ## Links (Latest Run)
 
@@ -90,7 +88,7 @@ Latest run: QA-20260510-0462 (2026-05-10T10:00:23.786Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Local AI Assistant Analyst auto-analysis smoke | `.playwright-mcp/page-2026-05-10T11-56-58-262Z.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -710,6 +708,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260510-0465 | 2026-05-10T11:58:02.942Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Completion | 8 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260510-0464 | 2026-05-10T11:42:24.446Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Batch 1 | 7 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260510-0463 | 2026-05-10T10:45:23.370Z | targeted | no | no | Entity Extraction Pipeline QA - LLM 명확화 사전차단 검증 | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260510-0462 | 2026-05-10T10:00:23.786Z | targeted | no | no | Local QA - AI SDK v6 Structured Output Migration | 10 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0461 | 2026-05-10T09:16:42.071Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening Registry Sync | 9 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0460 | 2026-05-10T09:09:14.056Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening | 8 | 3 | 0 | 0 | 0 | 0 |
@@ -727,6 +728,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0448 | 2026-05-10T02:27:03.074Z | targeted | no | yes | Live Supabase Legacy RAG RPC Cleanup Apply QA | 12 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0447 | 2026-05-10T02:17:24.679Z | targeted | no | yes | Local Legacy RAG RPC Cleanup Docs and Test Hardening QA | 16 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0446 | 2026-05-10T01:42:59.449Z | targeted | no | yes | Local Legacy Vector Graph RAG RPC Cleanup Migration QA | 12 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260510-0445 | 2026-05-10T01:10:46.197Z | targeted | no | yes | Local AI Retrieval Actual-Use Smoke and Dependency Cleanup QA | 14 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260510-0444 | 2026-05-10T00:55:24.249Z | targeted | no | yes | Local AI Retrieval Dead Runtime Cleanup QA | 12 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260510-0443 | 2026-05-10T00:32:59.649Z | targeted | no | yes | Local AI Retrieval GraphRAG Tombstone Route Removal QA | 10 | 5 | 0 | 0 | 0 | 0 |

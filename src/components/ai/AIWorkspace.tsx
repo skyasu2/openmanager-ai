@@ -408,6 +408,10 @@ export default function AIWorkspace({
           inputValue={input}
           setInputValue={setInput}
           handleSendInput={handleSendInput}
+          onStarterPromptSubmit={(prompt) => {
+            setInput(prompt);
+            handleSendInput(undefined, prompt);
+          }}
           sessionState={sessionState}
           onNewSession={handleNewSession}
           isGenerating={isLoading}

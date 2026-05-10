@@ -189,6 +189,24 @@ describe('AIWorkspaceMessage detail affordance', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows a response speed label instead of raw processing milliseconds beside messages', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-latency-label',
+      role: 'assistant',
+      content: '처리 시간을 사용자 친화적으로 표시합니다.',
+      timestamp: new Date('2026-04-10T17:15:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        processingTime: 1591,
+      },
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    expect(screen.getByText('응답 보통')).toBeInTheDocument();
+    expect(screen.queryByText(/1591ms/)).not.toBeInTheDocument();
+  });
+
   it('moves parity metadata into the debug tab when analysis metadata exists', () => {
     const message: EnhancedChatMessage = {
       id: 'assistant-4',

@@ -1,0 +1,124 @@
+{
+  "runId": "QA-20260510-0463",
+  "recordedAt": "2026-05-10T10:45:23.370Z",
+  "recordedAtKst": "2026-05-10 19:45:23 KST",
+  "runTitle": "Entity Extraction Pipeline QA - LLM 명확화 사전차단 검증",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "openmanager-lkhy2cb63-skyasus-projects.vercel.app",
+    "deploymentUrl": "https://openmanager-lkhy2cb63-skyasus-projects.vercel.app",
+    "commitSha": "eb8f7be2cb6e432a860f6eed9152abb03ffda27f"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI Chat - entity extraction 명확화 차단",
+    "AI Chat - 명확화 다이얼로그 정상 표시",
+    "AI Chat - 숫자 조건 쿼리 직접 응답",
+    "AI Chat - 명령어 가이드 응답",
+    "AI Chat - off-domain 처리",
+    "AI Chat - 서버ID+메트릭 복합 entity",
+    "자동장애 보고서 생성"
+  ],
+  "skippedSurfaces": ["이상감지/추세 탭", "전체화면 모드"],
+  "checks": {
+    "total": 7,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "entity extraction 파이프라인의 명확화 false positive 해소를 핵심 시나리오로 검증. 서버ID 슬롯 감지 및 비감지 분기 모두 확인",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "manual-dashboard",
+      "status": "checked",
+      "result": "unknown",
+      "checkedAt": "2026-05-10T10:36:09Z",
+      "summary": "",
+      "evidence": "",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-29-24-564Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-29-24-564Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-29-39-395Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-29-39-395Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-30-04-297Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-30-04-297Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-30-43-941Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-30-43-941Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-31-20-321Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-31-20-321Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-31-51-419Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-31-51-419Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-32-22-923Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-32-22-923Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-32-58-326Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-32-58-326Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-33-38-167Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-33-38-167Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-33-52-764Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-33-52-764Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-10T10-34-40-747Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-34-40-747Z.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

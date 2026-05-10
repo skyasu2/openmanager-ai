@@ -9,6 +9,7 @@ import { MonitoringAnalysisArtifactCard } from '@/components/ai/MonitoringAnalys
 import { ServerSnapshotArtifactCard } from '@/components/ai/ServerSnapshotArtifactCard';
 import { WebSourceCards } from '@/components/ai/WebSourceCards';
 import { convertThinkingStepsToUI } from '@/hooks/ai/useAIChatCore';
+import { getResponseLatencyLabel } from '@/lib/ai/response-latency-label';
 import {
   resolveAssistantResponseView,
   splitAssistantResponseDetails,
@@ -87,6 +88,9 @@ export const MessageComponent = memo<{
     [assistantResponseView?.details]
   );
   const shouldShowActionBar = hasTextContent;
+  const responseLatencyLabel = getResponseLatencyLabel(
+    message.metadata?.processingTime
+  );
   const isCollapsibleAssistantResponse = Boolean(
     assistantResponseView?.shouldCollapse
   );
@@ -233,12 +237,14 @@ export const MessageComponent = memo<{
                 : message.timestamp.toLocaleTimeString()}
             </p>
             {/* 처리 시간 표시 (assistant 메시지만) */}
-            {message.role === 'assistant' &&
-              message.metadata?.processingTime && (
-                <p className="text-xs text-gray-400">
-                  {message.metadata.processingTime}ms
-                </p>
-              )}
+            {message.role === 'assistant' && responseLatencyLabel && (
+              <span
+                className={`rounded-full border px-2 py-0.5 text-xs font-medium ${responseLatencyLabel.className}`}
+                title={responseLatencyLabel.title}
+              >
+                {responseLatencyLabel.label}
+              </span>
+            )}
           </div>
 
           {/* 인라인 메타데이터 + 분석 근거 (assistant 메시지 + 스트리밍 완료 + analysisBasis 있을 때만) */}

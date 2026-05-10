@@ -12,7 +12,7 @@ vi.mock('lucide-react', async (importOriginal) => {
   return {
     ...actual,
     ChevronDown: () => <svg data-testid="chevron-down" />,
-    ChevronRight: () => <svg data-testid="chevron-right" />,
+    ChevronUp: () => <svg data-testid="chevron-up" />,
     Server: () => <svg data-testid="server-icon" />,
     Cpu: () => <svg data-testid="cpu-icon" />,
     MemoryStick: () => <svg data-testid="memory-icon" />,
@@ -108,13 +108,21 @@ describe('ServerResultCard', () => {
     });
 
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+    expect(toggleButton).toHaveAccessibleName(
+      'cache-redis-dc1-01 상세 분석 펼치기'
+    );
     expect(screen.getByText('이상 1')).toBeInTheDocument();
     expect(screen.getByText('상승 추세 1')).toBeInTheDocument();
+    expect(screen.getByText('상세 분석 펼치기')).toBeInTheDocument();
+    expect(screen.queryByText('상세 분석 보기')).not.toBeInTheDocument();
     expect(screen.queryByText('현재 상태')).not.toBeInTheDocument();
 
     fireEvent.click(toggleButton);
 
     expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+    expect(toggleButton).toHaveAccessibleName(
+      'cache-redis-dc1-01 상세 분석 접기'
+    );
     expect(screen.getByText('현재 상태')).toBeInTheDocument();
     expect(screen.getByText('1h 후 예측')).toBeInTheDocument();
     expect(screen.getByText('AI 인사이트')).toBeInTheDocument();

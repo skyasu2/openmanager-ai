@@ -148,6 +148,91 @@ describe('ChatInputArea popover', () => {
     }
   });
 
+  it('anchors the tool popover to the input area with bounded height', () => {
+    renderComponent();
+
+    fireEvent.click(screen.getByRole('button', { name: '도구 메뉴 열기' }));
+
+    const popover = screen
+      .getByText('Web 검색 (외부 웹)')
+      .closest('[role="dialog"]');
+
+    expect(popover).toHaveClass('bottom-12');
+    expect(popover).toHaveClass('max-h-[min(70vh,28rem)]');
+    expect(popover).toHaveClass('overflow-y-auto');
+  });
+
+  it('shows an explicit warning near the session limit', () => {
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue=""
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+        sessionState={{
+          count: 40,
+          remaining: 10,
+          isWarning: true,
+          isLimitReached: false,
+        }}
+      />
+    );
+
+    expect(screen.getByText('대화 40/50')).toHaveClass('text-amber-700');
+    expect(screen.getByText('곧 한도 도달')).toBeInTheDocument();
+  });
+
+  it('shows a new conversation hint when the session limit is reached', () => {
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue=""
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+        sessionState={{
+          count: 50,
+          remaining: 0,
+          isWarning: true,
+          isLimitReached: true,
+        }}
+      />
+    );
+
+    expect(
+      screen.getByText('새 대화를 시작하면 계속 이용할 수 있습니다')
+    ).toBeInTheDocument();
+  });
+
   it('wraps the AI textarea in a submit form and submits through the send handler', () => {
     const onSendWithAttachments = vi.fn();
 
@@ -320,9 +405,7 @@ describe('ChatInputArea popover', () => {
     expect(
       screen.getByRole('button', { name: '심층 분석' })
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/숨겨진 모델 추론이 아니라 더 긴 분석/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/멀티 에이전트 분석 활성화/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '심층 분석' }));
 

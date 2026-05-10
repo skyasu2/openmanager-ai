@@ -67,4 +67,21 @@ describe('AISidebarHeader', () => {
 
     expect(mockClearMessages).toHaveBeenCalledTimes(1);
   });
+
+  it('헤더에서 전체화면 전환 버튼을 노출한다', () => {
+    const onOpenFullscreen = vi.fn();
+
+    render(
+      <AISidebarHeader
+        activeFunction="chat"
+        onClose={vi.fn()}
+        onOpenFullscreen={onOpenFullscreen}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '전체화면으로 보기' }));
+
+    expect(screen.getByText('전체화면')).toBeInTheDocument();
+    expect(onOpenFullscreen).toHaveBeenCalledTimes(1);
+  });
 });

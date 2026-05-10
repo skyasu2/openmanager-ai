@@ -31,7 +31,7 @@ import {
   ANALYSIS_MODE_LABELS,
   type AnalysisMode,
 } from '@/types/ai/analysis-mode';
-import type { SessionState } from '@/types/session';
+import { SESSION_LIMITS, type SessionState } from '@/types/session';
 
 interface ChatInputAreaProps {
   textareaRef: RefObject<HTMLTextAreaElement | null>;
@@ -106,6 +106,9 @@ export const ChatInputArea = memo(function ChatInputArea({
   // 활성화된 도구 수 (badge 표시용)
   const activeToolCount = webSearchEnabled ? 1 : 0;
   const showAnalysisModeBadge = analysisMode !== 'auto';
+  const sessionCount = sessionState?.count ?? 0;
+  const showSessionWarning =
+    Boolean(sessionState?.isWarning) && !sessionState?.isLimitReached;
 
   // 외부 클릭 시 popover 닫기
   useEffect(() => {
@@ -311,7 +314,9 @@ export const ChatInputArea = memo(function ChatInputArea({
               {isPopoverOpen && (
                 <div
                   ref={popoverRef}
-                  className="absolute bottom-12 left-0 z-50 w-64 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
+                  role="dialog"
+                  aria-label="도구 및 옵션"
+                  className="absolute bottom-12 left-0 z-50 max-h-[min(70vh,28rem)] w-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
                 >
                   {/* Web source mode */}
                   {onToggleWebSearch && (
@@ -385,8 +390,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                           )}
                         </div>
                         <p className="mt-2 text-xs leading-relaxed text-gray-500">
-                          심층 분석은 숨겨진 모델 추론이 아니라 더 긴
-                          분석/라우팅 경로입니다.
+                          멀티 에이전트 분석 활성화 · 예상 +5~15초
                         </p>
                       </div>
                     </>
@@ -469,6 +473,12 @@ export const ChatInputArea = memo(function ChatInputArea({
             </div>
           </form>
 
+          {sessionState?.isLimitReached && (
+            <div className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
+              새 대화를 시작하면 계속 이용할 수 있습니다
+            </div>
+          )}
+
           {/* 숨겨진 파일 입력 */}
           <input
             ref={fileInputRef}
@@ -485,8 +495,30 @@ export const ChatInputArea = memo(function ChatInputArea({
           {/* 하단 힌트 */}
           <div className="mt-2 flex items-center justify-between text-xs text-gray-400">
             <div className="flex items-center gap-2">
-              {sessionState && !sessionState.isWarning && (
-                <span>대화 {sessionState.count}/20</span>
+              {sessionState && (
+                <span
+                  className={
+                    sessionState.isLimitReached
+                      ? 'font-medium text-red-700'
+                      : showSessionWarning
+                        ? 'font-medium text-amber-700'
+                        : undefined
+                  }
+                  title={
+                    showSessionWarning
+                      ? '곧 한도 도달'
+                      : sessionState.isLimitReached
+                        ? '대화 한도 도달'
+                        : undefined
+                  }
+                >
+                  대화 {sessionCount}/{SESSION_LIMITS.MESSAGE_LIMIT}
+                </span>
+              )}
+              {showSessionWarning && (
+                <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
+                  곧 한도 도달
+                </span>
               )}
               {attachments.length > 0 && (
                 <span className="text-blue-500">

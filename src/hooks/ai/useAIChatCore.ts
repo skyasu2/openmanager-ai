@@ -130,7 +130,10 @@ export interface UseAIChatCoreReturn {
   cancel: () => void;
 
   // 입력 처리 (파일 첨부 지원)
-  handleSendInput: (attachments?: FileAttachment[]) => void;
+  handleSendInput: (
+    attachments?: FileAttachment[],
+    overrideText?: string
+  ) => void;
 
   // 명확화 기능
   clarification: ClarificationRequest | null;
@@ -814,9 +817,10 @@ export function useAIChatCore(
   // ============================================================================
 
   const handleSendInput = useCallback(
-    async (attachments?: FileAttachment[]) => {
+    async (attachments?: FileAttachment[], overrideText?: string) => {
       // 🎯 Fix: 텍스트 또는 첨부 중 하나는 있어야 전송
-      const hasText = input.trim().length > 0;
+      const textInput = overrideText ?? input;
+      const hasText = textInput.trim().length > 0;
       const hasAttachments = attachments && attachments.length > 0;
 
       if (!hasText && !hasAttachments) return;
@@ -829,7 +833,7 @@ export function useAIChatCore(
       }
 
       // 🎯 Fix: 첨부만 있을 경우 기본 텍스트 설정
-      const effectiveText = hasText ? input : '[이미지/파일 분석 요청]';
+      const effectiveText = hasText ? textInput : '[이미지/파일 분석 요청]';
 
       // 🎯 Batching: 스트리밍 중이면 큐에 추가 (즉시 전송하지 않음)
       if (hybridIsLoading) {

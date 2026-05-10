@@ -86,6 +86,10 @@ describe('ArtifactWorkspacePanel', () => {
     );
 
     expect(screen.getByText('아티팩트 워크스페이스')).toBeInTheDocument();
+    expect(screen.getByLabelText('replay pack 설명')).toHaveAttribute(
+      'title',
+      '대화 이력과 분석 결과를 저장·불러오는 스냅샷'
+    );
     expect(screen.getByText('저장된 replay pack 없음')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: '현재 대화 저장' })

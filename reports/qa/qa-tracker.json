@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T10:00:23.786Z"
+    "updatedAt": "2026-05-10T11:58:02.942Z"
   },
   "sequence": {
-    "nextRunNumber": 463
+    "nextRunNumber": 466
   },
   "summary": {
-    "totalRecordedRuns": 460,
+    "totalRecordedRuns": 463,
     "totalRuns": 375,
-    "excludedRuns": 85,
+    "excludedRuns": 88,
     "totalChecks": 3331,
     "totalPassed": 3204,
     "totalFailed": 117,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0458",
     "lastRecordedAt": "2026-05-10T07:26:58.691Z",
-    "latestRecordedRunId": "QA-20260510-0462",
-    "latestRecordedAt": "2026-05-10T10:00:23.786Z"
+    "latestRecordedRunId": "QA-20260510-0465",
+    "latestRecordedAt": "2026-05-10T11:58:02.942Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -49332,6 +49332,300 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0463",
+      "recordedAt": "2026-05-10T10:45:23.370Z",
+      "recordedAtKst": "2026-05-10 19:45:23 KST",
+      "title": "Entity Extraction Pipeline QA - LLM 명확화 사전차단 검증",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0463.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "openmanager-lkhy2cb63-skyasus-projects.vercel.app",
+        "deploymentUrl": "https://openmanager-lkhy2cb63-skyasus-projects.vercel.app",
+        "commitSha": "eb8f7be2cb6e432a860f6eed9152abb03ffda27f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI Chat - entity extraction 명확화 차단",
+        "AI Chat - 명확화 다이얼로그 정상 표시",
+        "AI Chat - 숫자 조건 쿼리 직접 응답",
+        "AI Chat - 명령어 가이드 응답",
+        "AI Chat - off-domain 처리",
+        "AI Chat - 서버ID+메트릭 복합 entity",
+        "자동장애 보고서 생성"
+      ],
+      "skippedSurfaces": [
+        "이상감지/추세 탭",
+        "전체화면 모드"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "entity extraction 파이프라인의 명확화 false positive 해소를 핵심 시나리오로 검증. 서버ID 슬롯 감지 및 비감지 분기 모두 확인",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "manual-dashboard",
+          "status": "checked",
+          "result": "unknown",
+          "checkedAt": "2026-05-10T10:36:09Z",
+          "summary": "",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-29-24-564Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-29-24-564Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-29-39-395Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-29-39-395Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-30-04-297Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-30-04-297Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-30-43-941Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-30-43-941Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-31-20-321Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-31-20-321Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-31-51-419Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-31-51-419Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-32-22-923Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-32-22-923Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-32-58-326Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-32-58-326Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-33-38-167Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-33-38-167Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-33-52-764Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-33-52-764Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-10T10-34-40-747Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-10T10-34-40-747Z.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0464",
+      "recordedAt": "2026-05-10T11:42:24.446Z",
+      "recordedAtKst": "2026-05-10 20:42:24 KST",
+      "title": "Local Playwright Targeted QA - AI Chat UX Batch 1",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0464.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local route handlers; external AI calls not invoked",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "ea576962b1dfdcacf84db1fedc0d12c054faf456"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant local render",
+        "AI Chat empty welcome prompt cards",
+        "AI Chat conversation counter 0/50",
+        "AI Chat local console cleanliness",
+        "Component and contract gates for markdown/code copy/message actions/starter prompts/session warning/artifact tooltip/latency labels"
+      ],
+      "skippedSurfaces": [
+        "Live AI response send skipped to avoid external LLM and Cloud Run cost during local validation",
+        "Vercel production deployment QA skipped because this run validates local implementation before commit/deploy",
+        "Tool menu browser click recheck skipped after local click probe did not open the dialog; component regression covers bounded popover attributes",
+        "I1, M6, and M7 remain open in reports/planning/ai-chat-ux-improvement-plan.md"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local Playwright smoke plus targeted component, quick, and contract gates cover the implemented AI Chat UI regression scope.",
+          "nextAction": "Complete I1, M6, and M7 before full plan closure."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "not-applicable",
+          "status": "skipped",
+          "result": "normal",
+          "checkedAt": "2026-05-10T20:45:00+09:00",
+          "summary": "Local targeted QA only; no Vercel deployment and no production AI or Cloud Run chat invocation.",
+          "evidence": "local-only QA",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Local AI Assistant empty chat smoke",
+          "path": ".playwright-mcp/page-2026-05-10T11-39-32-349Z.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260510-0465",
+      "recordedAt": "2026-05-10T11:58:02.942Z",
+      "recordedAtKst": "2026-05-10 20:58:02 KST",
+      "title": "Local Playwright Targeted QA - AI Chat UX Completion",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260510-0465.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000/dashboard/ai-assistant",
+        "frontend": "Next.js dev server",
+        "backend": "local route handlers; external AI chat calls not invoked",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "ea576962b1dfdcacf84db1fedc0d12c054faf456"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant local render",
+        "Analyst tab entry triggers automatic batch analysis",
+        "AI Chat welcome state and conversation counter remain visible",
+        "Anomaly server detail action copy is inline expansion-oriented",
+        "Sidebar header fullscreen handoff is covered by component test",
+        "Component, type, lint, quick, contract, and whitespace gates passed"
+      ],
+      "skippedSurfaces": [
+        "Live AI chat response send skipped to avoid external LLM and Cloud Run cost during local UI validation",
+        "Vercel production deployment QA skipped because this run validates local implementation before commit/deploy",
+        "Sidebar header fullscreen button browser recheck skipped on /dashboard/ai-assistant because that route renders the fullscreen workspace, not the sidebar dialog"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local Playwright smoke and targeted component tests cover the remaining Analyst entry, detail expansion copy, and fullscreen discoverability UI changes.",
+          "nextAction": "Commit and deploy before release-facing Vercel QA."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "not-applicable",
+          "status": "skipped",
+          "result": "normal",
+          "checkedAt": "2026-05-10T20:58:00+09:00",
+          "summary": "Local targeted QA only; no Vercel deployment and no production AI or Cloud Run chat invocation.",
+          "evidence": "local-only QA",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Local AI Assistant Analyst auto-analysis smoke",
+          "path": ".playwright-mcp/page-2026-05-10T11-56-58-262Z.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -49340,16 +49634,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 220,
-      "appropriateCount": 192,
+      "seenCount": 221,
+      "appropriateCount": 193,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 38,
-      "lastRunId": "QA-20260510-0462",
-      "lastSeenAt": "2026-05-10T10:00:23.786Z",
+      "lastRunId": "QA-20260510-0463",
+      "lastSeenAt": "2026-05-10T10:45:23.370Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "deprecated structured-output API migration is covered by deterministic route and orchestrator fallback tests",
+      "lastRationale": "entity extraction 파이프라인의 명확화 false positive 해소를 핵심 시나리오로 검증. 서버ID 슬롯 감지 및 비감지 분기 모두 확인",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -49408,17 +49702,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 185,
-      "appropriateCount": 167,
+      "seenCount": 187,
+      "appropriateCount": 169,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260510-0438",
-      "lastSeenAt": "2026-05-09T16:26:24.262Z",
+      "lastRunId": "QA-20260510-0465",
+      "lastSeenAt": "2026-05-10T11:58:02.942Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Targeted Playwright CLI smoke rendered the production dashboard and verified the overview server density regression fix.",
-      "lastNextAction": ""
+      "lastRationale": "Local Playwright smoke and targeted component tests cover the remaining Analyst entry, detail expansion copy, and fullscreen discoverability UI changes.",
+      "lastNextAction": "Commit and deploy before release-facing Vercel QA."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

@@ -51,7 +51,7 @@ describe('CodeExecutionBlock', () => {
     );
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: '복사' }));
+      fireEvent.click(screen.getByRole('button', { name: '코드 복사' }));
       await vi.runAllTicks();
     });
 

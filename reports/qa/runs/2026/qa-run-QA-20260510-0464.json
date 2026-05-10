@@ -1,0 +1,81 @@
+{
+  "runId": "QA-20260510-0464",
+  "recordedAt": "2026-05-10T11:42:24.446Z",
+  "recordedAtKst": "2026-05-10 20:42:24 KST",
+  "runTitle": "Local Playwright Targeted QA - AI Chat UX Batch 1",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local route handlers; external AI calls not invoked",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "ea576962b1dfdcacf84db1fedc0d12c054faf456"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant local render",
+    "AI Chat empty welcome prompt cards",
+    "AI Chat conversation counter 0/50",
+    "AI Chat local console cleanliness",
+    "Component and contract gates for markdown/code copy/message actions/starter prompts/session warning/artifact tooltip/latency labels"
+  ],
+  "skippedSurfaces": [
+    "Live AI response send skipped to avoid external LLM and Cloud Run cost during local validation",
+    "Vercel production deployment QA skipped because this run validates local implementation before commit/deploy",
+    "Tool menu browser click recheck skipped after local click probe did not open the dialog; component regression covers bounded popover attributes",
+    "I1, M6, and M7 remain open in reports/planning/ai-chat-ux-improvement-plan.md"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Local Playwright smoke plus targeted component, quick, and contract gates cover the implemented AI Chat UI regression scope.",
+      "nextAction": "Complete I1, M6, and M7 before full plan closure."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "not-applicable",
+      "status": "skipped",
+      "result": "normal",
+      "checkedAt": "2026-05-10T20:45:00+09:00",
+      "summary": "Local targeted QA only; no Vercel deployment and no production AI or Cloud Run chat invocation.",
+      "evidence": "local-only QA",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Local AI Assistant empty chat smoke",
+      "path": ".playwright-mcp/page-2026-05-10T11-39-32-349Z.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Implemented and verified B1, I2-I4, and M1-M5 from the AI Chat UI/UX plan.",
+    "Browser QA confirmed the local AI Assistant page title, welcome state, starter prompt presence, conversation counter, and zero console errors/warnings.",
+    "Tool menu bounded-height behavior is covered by component test, not by the local browser smoke."
+  ],
+  "links": []
+}

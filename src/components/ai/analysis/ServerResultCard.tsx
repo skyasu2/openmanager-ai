@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, ChevronRight, Server } from 'lucide-react';
+import { ChevronDown, ChevronUp, Server } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import type { ServerAnalysisResult } from '@/types/intelligent-monitoring.types';
 import { AnomalySection } from './AnomalySection';
@@ -52,6 +52,7 @@ export function ServerResultCard({
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
         aria-expanded={isExpanded}
+        aria-label={`${server.serverName} 상세 분석 ${isExpanded ? '접기' : '펼치기'}`}
         className="flex w-full items-center justify-between p-3 text-left"
       >
         <div className="min-w-0 space-y-2">
@@ -91,12 +92,12 @@ export function ServerResultCard({
           {isExpanded ? (
             <>
               <span>상세 분석 접기</span>
-              <ChevronDown className="h-4 w-4" />
+              <ChevronUp className="h-4 w-4" />
             </>
           ) : (
             <>
-              <span>상세 분석 보기</span>
-              <ChevronRight className="h-4 w-4" />
+              <span>상세 분석 펼치기</span>
+              <ChevronDown className="h-4 w-4" />
             </>
           )}
         </span>

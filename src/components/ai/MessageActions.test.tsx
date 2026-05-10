@@ -50,14 +50,14 @@ describe('MessageActions', () => {
 
     render(<MessageActions {...props} />);
 
-    fireEvent.click(screen.getByTitle('메시지 복사'));
+    fireEvent.click(screen.getByRole('button', { name: '메시지 복사' }));
 
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith('answer');
       expect(screen.getByText('복사됨')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByTitle('다시 생성'));
+    fireEvent.click(screen.getByRole('button', { name: '응답 다시 생성' }));
 
     expect(onRegenerate).toHaveBeenCalledWith('msg-2');
   });

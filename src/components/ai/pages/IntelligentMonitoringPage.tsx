@@ -13,7 +13,7 @@
 'use client';
 
 import { Monitor, Play, RefreshCw, Server } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
 import { useServerQuery } from '@/hooks/useServerQuery';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
@@ -34,6 +34,7 @@ import type { EnhancedServerMetrics } from '@/types/server';
 
 interface IntelligentMonitoringPageProps {
   queryAsOfDataSlot?: JobDataSlot;
+  autoAnalyzeOnVisible?: boolean;
 }
 
 function batchStatusToOverallStatus(
@@ -166,6 +167,7 @@ function adaptMonitoringBatchResponse(
 
 export default function IntelligentMonitoringPage({
   queryAsOfDataSlot,
+  autoAnalyzeOnVisible = false,
 }: IntelligentMonitoringPageProps = {}) {
   // 서버 데이터 (React Query)
   const {
@@ -180,6 +182,7 @@ export default function IntelligentMonitoringPage({
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const hasAutoAnalyzedRef = useRef(false);
 
   // 🔧 P3: useCallback으로 핸들러 메모이제이션
   const handleServerChange = useCallback(
@@ -348,6 +351,15 @@ export default function IntelligentMonitoringPage({
       setProgress({ current: 0, total: 0 });
     }
   }, [selectedServer, servers, analyzeSingleServer, queryAsOfDataSlot]);
+
+  useEffect(() => {
+    if (!autoAnalyzeOnVisible || hasAutoAnalyzedRef.current) {
+      return;
+    }
+
+    hasAutoAnalyzedRef.current = true;
+    void runAnalysis();
+  }, [autoAnalyzeOnVisible, runAnalysis]);
 
   const serverListStatusLabel = isServerListLoading
     ? '서버 목록 로딩 중'

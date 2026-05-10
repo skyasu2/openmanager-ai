@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-10 KST (`AI SDK v6 structured output migration 완료`)
+**Last Updated**: 2026-05-10 KST (`AI Chat UI/UX 개선 로컬 구현 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | Active Task 없음 |
+| AI Chat UI/UX 개선 (B1·I1~I4·M1~M7) | P2 | Implemented (Codex, local QA) | B1, I1~I4, M1~M7 구현/검증 완료. commit/push/deploy 미진행. 상세: [ai-chat-ux-improvement-plan.md](ai-chat-ux-improvement-plan.md) |
 
 ---
 
@@ -21,7 +21,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| — | — | Backlog 없음 |
+| AI Assistant general coding boundary hardening | P2 | `QA-20260510-0463`의 일반 Python coding WARN 후속. 상세 계획: [ai-assistant-general-coding-boundary-plan.md](ai-assistant-general-coding-boundary-plan.md) |
+| AI Assistant operational artifact hardening | P2 | 운영 스크립트/Slack 알림/로그 대응 절차를 typed artifact로 생성·수정. 상세 계획: [ai-assistant-ops-artifact-plan.md](ai-assistant-ops-artifact-plan.md) |
 
 ---
 

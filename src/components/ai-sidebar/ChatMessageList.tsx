@@ -23,6 +23,7 @@ interface ChatMessageListProps {
   isGenerating: boolean;
   regenerateResponse: (messageId: string) => void;
   setInputValue: (value: string) => void;
+  onStarterPromptSubmit?: (prompt: string) => void;
 }
 
 export const ChatMessageList = memo(function ChatMessageList({
@@ -35,6 +36,7 @@ export const ChatMessageList = memo(function ChatMessageList({
   isGenerating,
   regenerateResponse,
   setInputValue,
+  onStarterPromptSubmit,
 }: ChatMessageListProps) {
   const hasMessages = allMessages.length > 0;
   const liveRegionProps = hasMessages
@@ -77,7 +79,9 @@ export const ChatMessageList = memo(function ChatMessageList({
 
         {/* 웰컴 화면 */}
         {allMessages.length === 0 && (
-          <WelcomePromptCards onPromptClick={setInputValue} />
+          <WelcomePromptCards
+            onPromptClick={onStarterPromptSubmit ?? setInputValue}
+          />
         )}
 
         {/* 채팅 메시지 렌더링 */}

@@ -39,7 +39,7 @@ vi.mock('./analysis', () => ({
   }) => (
     <div>
       <button type="button">{server.serverName}</button>
-      <div>{defaultExpanded ? '상세 분석 접기' : '상세 분석 보기'}</div>
+      <div>{defaultExpanded ? '상세 분석 접기' : '상세 분석 펼치기'}</div>
     </div>
   ),
   AnomalySection: () => null,
@@ -204,7 +204,7 @@ describe('AnalysisResultsCard', () => {
     expect(serverButtons[0]).toHaveTextContent('cache-redis-dc1-01');
     expect(serverButtons[1]).toHaveTextContent('api-was-dc1-01');
     expect(screen.getAllByText('상세 분석 접기')).toHaveLength(2);
-    expect(screen.getByText('상세 분석 보기')).toBeInTheDocument();
+    expect(screen.getByText('상세 분석 펼치기')).toBeInTheDocument();
   });
 
   it('filters between issue servers and healthy servers', () => {

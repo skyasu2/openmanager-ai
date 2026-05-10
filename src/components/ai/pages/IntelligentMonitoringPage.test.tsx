@@ -80,6 +80,86 @@ describe('IntelligentMonitoringPage', () => {
     );
   });
 
+  it('탭 진입 시 전체 시스템 분석을 1회 자동 실행한다', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        success: true,
+        data: {
+          success: true,
+          sourceMode: 'replay-json',
+          queryAsOf: '2026-04-30T00:00:00.000Z',
+          slot: {
+            slotIndex: 42,
+            hour: 7,
+            slotInHour: 0,
+            minuteOfDay: 420,
+            timeLabel: '07:00',
+            startTime: '2026-04-30T00:00:00.000Z',
+            endTime: '2026-04-30T00:10:00.000Z',
+          },
+          summary: '현재 risk signal은 없습니다.',
+          servers: [
+            {
+              id: 'server-1',
+              name: '웹 서버 01',
+              type: 'web',
+              status: 'online',
+              cpu: 10,
+              memory: 20,
+              disk: 30,
+              network: 40,
+            },
+          ],
+          riskSignals: [],
+          evidenceRefs: [],
+          dataFreshness: {
+            generatedAt: '2026-02-15T03:56:41.821Z',
+            sourceUpdatedAt: '2026-02-15T03:56:41.821Z',
+            stale: false,
+          },
+        },
+      }),
+    });
+
+    const { rerender } = render(
+      <IntelligentMonitoringPage
+        autoAnalyzeOnVisible
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('has-result')).toBeInTheDocument();
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const request = mockFetch.mock.calls[0]?.[1];
+    expect(JSON.parse(String(request?.body))).toMatchObject({
+      action: 'analyze_batch',
+      serverId: 'all',
+      analysisType: 'full',
+    });
+
+    rerender(
+      <IntelligentMonitoringPage
+        autoAnalyzeOnVisible
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
   it('shows login CTA when analysis API returns 401', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,

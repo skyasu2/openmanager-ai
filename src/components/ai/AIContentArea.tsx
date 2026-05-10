@@ -82,6 +82,9 @@ export default function AIContentArea({
           <div className="h-full" data-testid="intelligent-monitoring-page">
             <Suspense fallback={<LoadingSpinner />}>
               <IntelligentMonitoringPage
+                autoAnalyzeOnVisible={
+                  selectedFunction === 'intelligent-monitoring'
+                }
                 queryAsOfDataSlot={queryAsOfDataSlot}
               />
             </Suspense>

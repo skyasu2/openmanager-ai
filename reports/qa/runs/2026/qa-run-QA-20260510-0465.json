@@ -1,0 +1,81 @@
+{
+  "runId": "QA-20260510-0465",
+  "recordedAt": "2026-05-10T11:58:02.942Z",
+  "recordedAtKst": "2026-05-10 20:58:02 KST",
+  "runTitle": "Local Playwright Targeted QA - AI Chat UX Completion",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000/dashboard/ai-assistant",
+    "frontend": "Next.js dev server",
+    "backend": "local route handlers; external AI chat calls not invoked",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "ea576962b1dfdcacf84db1fedc0d12c054faf456"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant local render",
+    "Analyst tab entry triggers automatic batch analysis",
+    "AI Chat welcome state and conversation counter remain visible",
+    "Anomaly server detail action copy is inline expansion-oriented",
+    "Sidebar header fullscreen handoff is covered by component test",
+    "Component, type, lint, quick, contract, and whitespace gates passed"
+  ],
+  "skippedSurfaces": [
+    "Live AI chat response send skipped to avoid external LLM and Cloud Run cost during local UI validation",
+    "Vercel production deployment QA skipped because this run validates local implementation before commit/deploy",
+    "Sidebar header fullscreen button browser recheck skipped on /dashboard/ai-assistant because that route renders the fullscreen workspace, not the sidebar dialog"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Local Playwright smoke and targeted component tests cover the remaining Analyst entry, detail expansion copy, and fullscreen discoverability UI changes.",
+      "nextAction": "Commit and deploy before release-facing Vercel QA."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "not-applicable",
+      "status": "skipped",
+      "result": "normal",
+      "checkedAt": "2026-05-10T20:58:00+09:00",
+      "summary": "Local targeted QA only; no Vercel deployment and no production AI or Cloud Run chat invocation.",
+      "evidence": "local-only QA",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Local AI Assistant Analyst auto-analysis smoke",
+      "path": ".playwright-mcp/page-2026-05-10T11-56-58-262Z.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Completed I1, M6, and M7 from reports/planning/ai-chat-ux-improvement-plan.md.",
+    "Browser QA confirmed title, welcome state, conversation counter, Analyst tab entry result/error-state visibility, and zero console errors/warnings.",
+    "No live AI chat prompt was sent in this local UI-focused run."
+  ],
+  "links": []
+}
