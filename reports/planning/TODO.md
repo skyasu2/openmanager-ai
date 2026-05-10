@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-10 KST (`AI Chat UI/UX 개선 로컬 구현 완료`)
+**Last Updated**: 2026-05-10 KST (`AI Chat UI/UX 개선 GitLab validate 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Chat UI/UX 개선 (B1·I1~I4·M1~M7) | P2 | Implemented (Codex, local QA) | B1, I1~I4, M1~M7 구현/검증 완료. commit/push/deploy 미진행. 상세: [ai-chat-ux-improvement-plan.md](ai-chat-ux-improvement-plan.md) |
+| AI Chat UI/UX 개선 (B1·I1~I4·M1~M7) | P2 | Pushed (GitLab validate success) | B1, I1~I4, M1~M7 구현/검증 완료. GitLab branch pipeline `2513712243` success. production deploy/QA 대기. 상세: [ai-chat-ux-improvement-plan.md](ai-chat-ux-improvement-plan.md) |
 
 ---
 

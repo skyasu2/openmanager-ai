@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Implemented (local QA)
+> Status: Pushed (GitLab validate success)
 > Doc type: How-to
 > Last reviewed: 2026-05-10
 > Tags: ai-chat, ux, codex
@@ -241,6 +241,8 @@ Task 0에서 실제 파일명을 확정한다. 예상 범위:
 - [x] `npm run test:quick` 통과
 - [x] artifact/message 계약 영향이 있으면 `npm run test:contract` 통과
 - [x] Playwright targeted QA 기록 생성 (`QA-20260510-0464`, `QA-20260510-0465`)
+- [x] GitLab branch validate 통과 (`2513712243`, `fce3590b6`)
+- [ ] Production deploy 및 release-facing Vercel QA
 
 ---
 
