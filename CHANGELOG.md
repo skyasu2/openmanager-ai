@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.123](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.122...v8.11.123) (2026-05-10)
+
+
+### Features
+
+* **ai:** improve chat ux flows ([5516792](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5516792fb35ab6570fb34d8780f45155a51976a6))
+* **ai:** LLM entity extraction pre-check to suppress false clarifications ([eb8f7be](https://gitlab.com/skyasu2/openmanager-ai/-/commit/eb8f7be2cb6e432a860f6eed9152abb03ffda27f))
+
+
+### Bug Fixes
+
+* **ai:** harden nlq entity extraction ([f856b02](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f856b02497b0fe9367428814da31193923c0b495))
+* **ai:** short-circuit off-domain assistant queries ([cacee2b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cacee2bd5cf4c2b7ec442f773ed3bed6338c8d50))
+
+
+### Code Refactoring
+
+* **ai:** migrate structured output to sdk v6 ([e6f33cb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e6f33cba5762cab28b4c3f0cd287a94d6097643a))
+
+
+### Tests
+
+* **qa:** record AI assistant non-IT edge QA ([4581984](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4581984120a6540c8abbeb7dd4c4f16cb06caa4b))
+* **qa:** record v8.11.122 release smoke ([41b1f98](https://gitlab.com/skyasu2/openmanager-ai/-/commit/41b1f98fad33b541aa3c674f0ea3a93e9e028c7e))
+
 ## [8.11.122](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.121...v8.11.122) (2026-05-10)
 
 
