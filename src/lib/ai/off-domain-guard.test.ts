@@ -68,4 +68,26 @@ describe('getOffDomainGuardrail', () => {
   ])('does not block infra-scoped query "%s"', (query) => {
     expect(getOffDomainGuardrail(query)).toBeNull();
   });
+
+  it.each([
+    '파이썬 피보나치 코드 짜줘',
+    'leetcode two sum 풀어줘',
+  ])('blocks general coding query "%s"', (query) => {
+    const result = getOffDomainGuardrail(query);
+
+    expect(result).toMatchObject({
+      category: 'general_coding',
+      shouldShortCircuit: true,
+    });
+    expect(result?.response).toContain('일반 알고리즘');
+    expect(result?.response).toContain('운영 점검 스크립트');
+  });
+
+  it.each([
+    'Python으로 nginx access log 에러율 집계 스크립트 만들어줘',
+    'CPU 사용률 점검 bash 스크립트 알려줘',
+    'PromQL로 CPU 80% 이상 서버 찾는 쿼리 알려줘',
+  ])('does not block ops-scoped coding query "%s"', (query) => {
+    expect(getOffDomainGuardrail(query)).toBeNull();
+  });
 });

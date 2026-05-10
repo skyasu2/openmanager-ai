@@ -107,6 +107,29 @@ describe('QueryClassifier', () => {
       expect(result.intent).not.toBe('off-domain');
       expect(result.isOffDomain).not.toBe(true);
     });
+
+    it.each([
+      '파이썬 피보나치 코드 짜줘',
+      'leetcode two sum 풀어줘',
+    ])('classifies general coding query "%s" as off-domain', async (query) => {
+      const result = await classifier.classify(query);
+
+      expect(result.intent).toBe('off-domain');
+      expect(result.isOffDomain).toBe(true);
+      expect(result.offDomainCategory).toBe('general_coding');
+      expect(result.reasoning).toContain('general_coding');
+    });
+
+    it.each([
+      'Python으로 nginx access log 에러율 집계 스크립트 만들어줘',
+      'CPU 사용률 점검 bash 스크립트 알려줘',
+      'PromQL로 CPU 80% 이상 서버 찾는 쿼리 알려줘',
+    ])('does not classify ops coding query "%s" as off-domain', async (query) => {
+      const result = await classifier.classify(query);
+
+      expect(result.intent).not.toBe('off-domain');
+      expect(result.isOffDomain).not.toBe(true);
+    });
   });
 
   describe('confidence boosters', () => {

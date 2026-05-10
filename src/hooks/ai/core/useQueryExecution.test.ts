@@ -296,6 +296,64 @@ describe('useQueryExecution', () => {
     expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
   });
 
+  it('general coding query는 LLM 전송 없이 deterministic guard 응답을 남긴다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = createDeps();
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery('파이썬 피보나치 코드 짜줘');
+    });
+
+    await Promise.resolve();
+
+    expect(deps.sendMessage).not.toHaveBeenCalled();
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+
+    const messagesUpdater = deps.setMessages.mock.calls.at(-1)?.[0];
+    expect(typeof messagesUpdater).toBe('function');
+
+    const nextMessages = (
+      messagesUpdater as (prev: UIMessage[]) => UIMessage[]
+    )([]);
+    expect(nextMessages).toHaveLength(2);
+    expect(nextMessages[0]?.role).toBe('user');
+    expect(nextMessages[1]?.role).toBe('assistant');
+    expect(nextMessages[1]?.parts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'text',
+          text: expect.stringContaining('일반 알고리즘'),
+        }),
+      ])
+    );
+
+    const stateUpdater = deps.setState.mock.calls.at(-1)?.[0];
+    expect(typeof stateUpdater).toBe('function');
+    const nextState = (
+      stateUpdater as (prev: HybridQueryState) => HybridQueryState
+    )(createBaseState());
+    expect(nextState.isLoading).toBe(false);
+    expect(nextState.warning).toContain('서버 운영');
+  });
+
+  it('sendQuery general coding query는 entity extraction 호출 전에 guard로 종료한다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = createDeps();
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery('leetcode two sum 풀어줘');
+    });
+    await Promise.resolve();
+
+    expect(mockExtractEntities).not.toHaveBeenCalled();
+    expect(deps.sendMessage).not.toHaveBeenCalled();
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+  });
+
   it('clarification 후보 운영 질의에서 신뢰도 높은 entity가 있으면 바로 실행한다', async () => {
     process.env.NODE_ENV = 'production';
     mockExtractEntities.mockResolvedValue({
