@@ -55,6 +55,28 @@ describe('routing policy consistency', () => {
     });
   });
 
+  it('routes operational script and log runbook requests to advisor-style multi-agent paths', () => {
+    expect(
+      selectExecutionMode('CPU 80% 이상 서버 슬랙 알림 bash 스크립트 짜줘')
+    ).toBe('multi');
+    expect(
+      preFilterQuery('CPU 80% 이상 서버 슬랙 알림 bash 스크립트 짜줘')
+    ).toMatchObject({
+      shouldHandoff: true,
+      suggestedAgent: 'Advisor Agent',
+    });
+
+    expect(
+      selectExecutionMode('로그 중 에러/경고 보고 원인과 대응 순서 알려줘')
+    ).toBe('multi');
+    expect(
+      preFilterQuery('로그 중 에러/경고 보고 원인과 대응 순서 알려줘')
+    ).toMatchObject({
+      shouldHandoff: true,
+      suggestedAgent: 'Advisor Agent',
+    });
+  });
+
   it('treats composite infra queries as multi-agent with a lower-confidence specialist hint', () => {
     const query = '서버 상태와 원인 분석을 비교하고 해결 방법도 알려줘';
     const preFilter = preFilterQuery(query);

@@ -145,6 +145,64 @@ describe('classifyChatArtifactIntent', () => {
     });
   });
 
+  it('routes operational script, alert rule, runbook, and follow-up edit requests to ops-procedure artifacts', () => {
+    expect(
+      classifyChatArtifactIntent(
+        'CPU 80% 이상 서버 슬랙 알림 bash 스크립트 짜줘'
+      )
+    ).toMatchObject({
+      kind: 'ops-procedure',
+      procedureType: 'script',
+      reason: 'ops_procedure_action_pattern',
+    });
+
+    expect(
+      classifyChatArtifactIntent(
+        'CPU 80% 이상 서버 Slack 알림 Alertmanager 설정 만들어줘'
+      )
+    ).toMatchObject({
+      kind: 'ops-procedure',
+      procedureType: 'alert-rule',
+      reason: 'ops_procedure_action_pattern',
+    });
+
+    expect(
+      classifyChatArtifactIntent(
+        '로그 중 에러/경고 보고 원인과 대응 순서 알려줘'
+      )
+    ).toMatchObject({
+      kind: 'ops-procedure',
+      procedureType: 'runbook',
+      reason: 'ops_procedure_action_pattern',
+    });
+
+    expect(
+      classifyChatArtifactIntent('이 스크립트에서 임계치를 90%로 바꿔줘')
+    ).toMatchObject({
+      kind: 'ops-procedure',
+      procedureType: 'script',
+      reason: 'ops_procedure_followup_edit_pattern',
+    });
+  });
+
+  it('does not promote metric lookups or general coding guard cases to ops-procedure artifacts', () => {
+    expect(
+      classifyChatArtifactIntent('지금 CPU 높은 서버 TOP 3')
+    ).toMatchObject({
+      kind: 'none',
+    });
+    expect(
+      classifyChatArtifactIntent('파이썬 피보나치 코드 짜줘')
+    ).toMatchObject({
+      kind: 'none',
+    });
+    expect(
+      shouldUseLLMChatArtifactIntent(
+        'CPU 80% 이상 서버 슬랙 알림 bash 스크립트 짜줘'
+      )
+    ).toBe(false);
+  });
+
   it('blocks artifact execution when query has a question mark (implicit path)', () => {
     // 물음표가 있으면 isImplicitKeywordRequest = false → none으로 폴백
     expect(classifyChatArtifactIntent('이상감지?')).toMatchObject({

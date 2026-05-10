@@ -4,10 +4,16 @@
 
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { MONITORING_ARTIFACT_DOMAIN_ID } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
 import type {
   MonitoringAnalysisArtifact,
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
+import {
+  ARTIFACT_CONTRACT_VERSION,
+  createArtifactEnvelope,
+} from '@/lib/ai/chat-artifacts/types';
+import { ArtifactRendererHost } from './domain-renderers/ArtifactRendererHost';
 import { IncidentReportArtifactCard } from './IncidentReportArtifactCard';
 import { MonitoringAnalysisArtifactCard } from './MonitoringAnalysisArtifactCard';
 import { ServerSnapshotArtifactCard } from './ServerSnapshotArtifactCard';
@@ -18,7 +24,87 @@ vi.mock('@/hooks/ai/useAIEntryController', () => ({
   }),
 }));
 
+const opsProcedureArtifact = {
+  kind: 'ops-procedure',
+  generatedAt: '2026-05-11T00:00:00.000Z',
+  title: 'CPU 80% Slack 알림 운영 절차',
+  summary: 'CPU 80% 이상 서버를 확인하고 Slack 알림 템플릿을 제공합니다.',
+  procedureType: 'script',
+  source: 'otel-static',
+  inputs: {
+    metric: 'cpu',
+    threshold: 80,
+    serverScope: 'all',
+    timeWindowMinutes: 10,
+    notificationTarget: 'slack-webhook',
+  },
+  evidence: [
+    {
+      id: 'metric-cpu-threshold',
+      kind: 'metric',
+      summary: '현재 OTel snapshot 기준 CPU 상위 서버를 확인했습니다.',
+      metric: 'cpu',
+      severity: 'warning',
+    },
+  ],
+  runbook: {
+    symptoms: ['CPU 80% 이상 서버가 Slack 알림 대상입니다.'],
+    likelyCauses: ['트래픽 증가 또는 프로세스 과점유'],
+    responseSteps: ['CPU 상위 프로세스를 확인합니다.'],
+    validationSteps: ['알림 발송 후 CPU 사용률을 재확인합니다.'],
+    rollbackOrStopConditions: [
+      '잘못된 webhook 또는 과도한 알림이면 중단합니다.',
+    ],
+    limitations: ['자동 실행되지 않는 템플릿입니다.'],
+  },
+  codeBlocks: [
+    {
+      id: 'slack-cpu-alert-bash',
+      title: 'Slack CPU threshold alert script',
+      language: 'bash',
+      content: 'SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL}"\nTHRESHOLD=80',
+      executable: false,
+      requiredEnv: ['SLACK_WEBHOOK_URL'],
+      safetyLevel: 'notification-only',
+      notes: ['Webhook URL은 secret으로 주입합니다.'],
+    },
+  ],
+  validation: {
+    noFakeFunctions: true,
+    noHardcodedSecrets: true,
+    requiresManualReview: true,
+  },
+} as const;
+
 describe('AI artifact cards', () => {
+  it('renders ops procedure artifact cards through the domain renderer host', () => {
+    const envelope = createArtifactEnvelope(opsProcedureArtifact, {
+      domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+      artifactVersion: ARTIFACT_CONTRACT_VERSION,
+      sourceMode: 'otel-static',
+      dataSlot: '07:00 KST',
+    });
+
+    render(
+      <ArtifactRendererHost
+        metadata={{
+          artifactEnvelopes: [envelope],
+        }}
+      />
+    );
+
+    expect(screen.getByText('운영 절차')).toBeInTheDocument();
+    expect(
+      screen.getByText('CPU 80% Slack 알림 운영 절차')
+    ).toBeInTheDocument();
+    expect(screen.getByText('script')).toBeInTheDocument();
+    expect(screen.getByText('SLACK_WEBHOOK_URL')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /MD 다운로드/i })).toBeEnabled();
+    expect(
+      screen.getByRole('button', { name: /JSON 다운로드/i })
+    ).toBeEnabled();
+  });
+
   it('renders incident report artifact actions', () => {
     render(
       <IncidentReportArtifactCard

@@ -42,6 +42,58 @@ const snapshotArtifact: ServerSnapshotArtifact = {
   alerts: [],
 };
 
+const opsProcedureArtifact = {
+  kind: 'ops-procedure',
+  generatedAt: '2026-05-11T00:00:00.000Z',
+  title: 'CPU 80% Slack 알림 운영 절차',
+  summary: 'CPU 80% 이상 서버를 확인하고 Slack 알림 템플릿을 제공합니다.',
+  procedureType: 'script',
+  source: 'otel-static',
+  inputs: {
+    metric: 'cpu',
+    threshold: 80,
+    serverScope: 'all',
+    timeWindowMinutes: 10,
+    notificationTarget: 'slack-webhook',
+  },
+  evidence: [
+    {
+      id: 'metric-cpu-threshold',
+      kind: 'metric',
+      summary: '현재 OTel snapshot 기준 CPU 상위 서버를 확인했습니다.',
+      metric: 'cpu',
+      severity: 'warning',
+    },
+  ],
+  runbook: {
+    symptoms: ['CPU 80% 이상 서버가 Slack 알림 대상입니다.'],
+    likelyCauses: ['트래픽 증가 또는 프로세스 과점유'],
+    responseSteps: ['CPU 상위 프로세스를 확인합니다.'],
+    validationSteps: ['알림 발송 후 CPU 사용률을 재확인합니다.'],
+    rollbackOrStopConditions: [
+      '잘못된 webhook 또는 과도한 알림이면 중단합니다.',
+    ],
+    limitations: ['자동 실행되지 않는 템플릿입니다.'],
+  },
+  codeBlocks: [
+    {
+      id: 'slack-cpu-alert-bash',
+      title: 'Slack CPU threshold alert script',
+      language: 'bash',
+      content: 'SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL}"\nTHRESHOLD=80',
+      executable: false,
+      requiredEnv: ['SLACK_WEBHOOK_URL'],
+      safetyLevel: 'notification-only',
+      notes: ['Webhook URL은 secret으로 주입합니다.'],
+    },
+  ],
+  validation: {
+    noFakeFunctions: true,
+    noHardcodedSecrets: true,
+    requiresManualReview: true,
+  },
+} as const;
+
 describe('artifact workspace registry and replay pack contract', () => {
   it('lists monitoring artifact families with local/session-first replay policy', () => {
     expect(listArtifactSchemaEntries()).toEqual([
@@ -64,6 +116,11 @@ describe('artifact workspace registry and replay pack contract', () => {
       expect.objectContaining({
         familyId: 'server-snapshot',
         legacyMetadataKey: 'serverSnapshotArtifact',
+      }),
+      expect.objectContaining({
+        familyId: 'ops-procedure',
+        artifactKind: 'ops-procedure',
+        legacyMetadataKey: 'opsProcedureArtifact',
       }),
     ]);
   });
@@ -130,6 +187,34 @@ describe('artifact workspace registry and replay pack contract', () => {
       added: [],
       changed: [],
     });
+  });
+
+  it('includes ops-procedure artifacts in replay packs without database writes', () => {
+    const envelope = createArtifactEnvelope(opsProcedureArtifact, {
+      domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+      sourceMode: 'otel-static',
+      dataSlot: '07:00 KST',
+      traceId: 'trace-ops-procedure-1',
+    });
+    const replayPack = createArtifactReplayPack({
+      workspaceId: 'workspace-ops-procedure',
+      createdAt: '2026-05-11T00:01:00.000Z',
+      envelopes: [envelope],
+    });
+
+    expect(replayPack.entries).toHaveLength(1);
+    expect(replayPack.entries[0]).toMatchObject({
+      schema: {
+        domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+        familyId: 'ops-procedure',
+        artifactKind: 'ops-procedure',
+        artifactVersion: ARTIFACT_CONTRACT_VERSION,
+      },
+      sourceMode: 'otel-static',
+      dataSlot: '07:00 KST',
+      payload: opsProcedureArtifact,
+    });
+    expect(readArtifactReplayPack(replayPack)).toEqual(replayPack);
   });
 
   it('drops unsupported replay entries without leaking raw unsafe payloads', () => {
