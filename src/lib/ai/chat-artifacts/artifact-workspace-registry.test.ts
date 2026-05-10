@@ -80,7 +80,7 @@ const opsProcedureArtifact = {
       id: 'slack-cpu-alert-bash',
       title: 'Slack CPU threshold alert script',
       language: 'bash',
-      content: 'SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL}"\nTHRESHOLD=80',
+      content: 'SLACK_WEBHOOK_URL="$SLACK_WEBHOOK_URL"\nTHRESHOLD=80',
       executable: false,
       requiredEnv: ['SLACK_WEBHOOK_URL'],
       safetyLevel: 'notification-only',

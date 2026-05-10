@@ -111,10 +111,54 @@ export interface ServerSnapshotArtifact extends ArtifactContractMetadata {
   }>;
 }
 
+export interface OpsProcedureArtifact extends ArtifactContractMetadata {
+  kind: 'ops-procedure';
+  generatedAt: string;
+  title: string;
+  summary: string;
+  procedureType: 'runbook' | 'alert-rule' | 'script';
+  source: 'tool-result' | 'otel-static';
+  queryAsOfDataSlot?: JobDataSlot;
+  inputs: {
+    metric?: 'cpu' | 'memory' | 'disk' | 'network';
+    threshold?: number;
+    serverScope?: 'all' | 'group' | 'server';
+    serverId?: string;
+    group?: string;
+    timeWindowMinutes?: number;
+    notificationTarget?: 'slack-webhook' | 'none';
+  };
+  evidence: ArtifactEvidence[];
+  runbook: {
+    symptoms: string[];
+    likelyCauses: string[];
+    responseSteps: string[];
+    validationSteps: string[];
+    rollbackOrStopConditions: string[];
+    limitations: string[];
+  };
+  codeBlocks: Array<{
+    id: string;
+    title: string;
+    language: 'bash' | 'yaml' | 'promql' | 'markdown';
+    content: string;
+    executable: boolean;
+    requiredEnv: string[];
+    safetyLevel: 'read-only' | 'notification-only' | 'mutating';
+    notes: string[];
+  }>;
+  validation: {
+    noFakeFunctions: boolean;
+    noHardcodedSecrets: boolean;
+    requiresManualReview: boolean;
+  };
+}
+
 export type ChatArtifact =
   | IncidentReportArtifact
   | MonitoringAnalysisArtifact
-  | ServerSnapshotArtifact;
+  | ServerSnapshotArtifact
+  | OpsProcedureArtifact;
 
 export interface ArtifactEnvelope<
   TArtifact extends ChatArtifact = ChatArtifact,

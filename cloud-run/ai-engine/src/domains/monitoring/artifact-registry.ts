@@ -2,6 +2,7 @@ export const MONITORING_ARTIFACT_KINDS = [
   'server-snapshot',
   'incident-report',
   'monitoring-analysis',
+  'ops-procedure',
 ] as const;
 
 export type MonitoringArtifactKind = (typeof MONITORING_ARTIFACT_KINDS)[number];
@@ -31,6 +32,14 @@ export function detectMonitoringArtifactKind(
     )
   ) {
     return MONITORING_ARTIFACT_KINDS[2];
+  }
+
+  if (
+    /(ops\s*procedure|운영\s*절차|runbook|런북|alertmanager|slack\s*alert|슬랙\s*알림\s*(스크립트|규칙|설정))/iu.test(
+      query
+    )
+  ) {
+    return MONITORING_ARTIFACT_KINDS[3];
   }
 
   return undefined;

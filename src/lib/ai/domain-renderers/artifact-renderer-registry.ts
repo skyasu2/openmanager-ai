@@ -77,7 +77,8 @@ function isArtifactKind(value: unknown): value is ArtifactRendererKind {
   return (
     value === 'incident-report' ||
     value === 'monitoring-analysis' ||
-    value === 'server-snapshot'
+    value === 'server-snapshot' ||
+    value === 'ops-procedure'
   );
 }
 
@@ -238,6 +239,7 @@ export function resolveArtifactRendererEntries(
     metadata.incidentReportArtifact,
     metadata.monitoringAnalysisArtifact,
     metadata.serverSnapshotArtifact,
+    metadata.opsProcedureArtifact,
   ];
 
   for (const artifact of legacyArtifacts) {

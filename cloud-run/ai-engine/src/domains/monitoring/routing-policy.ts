@@ -65,6 +65,7 @@ export function selectExecutionMode(
     /report|장애.*보고|일일.*리포트/i,
     /분석.*원인|원인.*분석|근본.*원인|rca|root.*cause/i,
     ADVISOR_QUERY_PATTERN,
+    /스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북/i,
     /유사.*장애|대응.*방안/i,
     /how.*to.*(fix|resolve|solve)|troubleshoot|trubleshoot/i,
     /용량.*계획|capacity|언제.*부족|얼마나.*남|증설.*필요/i,
@@ -87,7 +88,7 @@ export function selectExecutionMode(
     /상관관계|연관.*분석|correlat|같이.*올라|함께.*증가/i,
     /이상.*원인|비정상.*이유|스파이크.*원인|급증.*이유/i,
     /이상\s*(탐지|감지|확인|점검|있어|있나)|비정상|고장난|느린|안\s*되는/i,
-    /(명령어|cli|커맨드|command).*(추천|알려|확인|점검)|(추천|알려).*(명령어|cli|커맨드|command)|순서|재마운트|해야/i,
+    /(명령어|cli|커맨드|command|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북).*(추천|알려|확인|점검|작성|생성|만들)|(추천|알려|작성|생성|만들).*(명령어|cli|커맨드|command|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북)|순서|재마운트|해야/i,
   ];
 
   const compositeConnectors = [
@@ -137,7 +138,7 @@ const TOOL_ROUTING_PATTERNS = {
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
   math: /(?:계산|연산|수식|중앙값|표준편차|percentile|p\d{2}|증가율|성장률|지수|루트|\d+(?:\.\d+)?\s*(?:[+*\/\^]|\s-\s)\s*\d+)/i,
   advisor:
-    /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|재마운트|remount|troubleshoot|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
+    /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|troubleshoot|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
   serverGroup: /(db|web|cache|lb|api|storage|haproxy|nginx|mysql|redis|nfs|backend|백엔드|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
   logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
   metrics: /cpu|메모리|디스크|서버|상태|memory|disk/i,

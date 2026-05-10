@@ -10,6 +10,11 @@ type ChatArtifactIntentWithoutVersion =
   | { kind: 'monitoring-analysis'; reason: ChatArtifactIntentReason }
   | { kind: 'server-snapshot'; reason: ChatArtifactIntentReason }
   | {
+      kind: 'ops-procedure';
+      procedureType: 'runbook' | 'alert-rule' | 'script';
+      reason: ChatArtifactIntentReason;
+    }
+  | {
       kind: 'guidance';
       target: 'incident-report' | 'monitoring-analysis';
       reason: ChatArtifactIntentReason;
@@ -25,6 +30,8 @@ export type ChatArtifactIntentReason =
   | 'monitoring_action_pattern'
   | 'monitoring_guidance_pattern'
   | 'monitoring_implicit_artifact_keyword'
+  | 'ops_procedure_action_pattern'
+  | 'ops_procedure_followup_edit_pattern'
   | 'server_snapshot_action_pattern'
   | 'server_snapshot_implicit_artifact_keyword'
   | 'llm_artifact_classification'
@@ -56,6 +63,14 @@ const SERVER_SNAPSHOT_ARTIFACT_PATTERN =
   /(스냅샷|상태\s*(카드|리포트|보고서)|현황\s*카드|요약\s*카드|snapshot|status\s*(card|report)|export)/i;
 const SERVER_SNAPSHOT_ACTION_PATTERN =
   /(생성(?!\s*(방법|법|기능|설명|안내))|만들|만들어|보여줘|다운로드(?!\s*(방법|법|기능|설명|안내))|내려받|요청|뽑아|출력|export|generate|download|create)/i;
+const OPS_PROCEDURE_OPERATIONAL_CONTEXT_PATTERN =
+  /(서버|인프라|운영|모니터링|장애|로그|에러|경고|cpu|메모리|memory|디스크|disk|네트워크|network|promql|prometheus|alertmanager|slack|슬랙|webhook|runbook|런북)/i;
+const OPS_PROCEDURE_SHAPE_PATTERN =
+  /(스크립트|script|bash|shell|쉘|slack|슬랙|webhook|alertmanager|prometheus|promql|알림\s*(규칙|설정|스크립트)?|runbook|런북|대응\s*(순서|절차)|원인과\s*대응|확인\s*명령어)/i;
+const OPS_PROCEDURE_ACTION_PATTERN =
+  /(짜줘|작성|생성|만들|만들어|알려줘|정리|출력|generate|create|write|build|draft)/i;
+const OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN =
+  /(이\s*)?(스크립트|설정|룰|rule|runbook|런북|절차).*(임계치|임계값|threshold).*(바꿔|변경|수정|올려|낮춰|change|update)/i;
 const LLM_ARTIFACT_CANDIDATE_PATTERN =
   /(장애|인시던트|incident|보고서|리포트|report|이상\s*(감지|탐지)|이상감지|추세|트렌드|리스크|예측|모니터링|anomaly|forecast|trend|risk)/i;
 const LLM_ARTIFACT_ACTION_HINT_PATTERN =
@@ -83,6 +98,32 @@ function isFormattingOnlyRequest(query: string): boolean {
   );
 }
 
+function readOpsProcedureType(
+  query: string
+): 'runbook' | 'alert-rule' | 'script' {
+  if (
+    /alertmanager|prometheus|alert\s*rule|알림\s*(규칙|설정)|yaml/i.test(query)
+  ) {
+    return 'alert-rule';
+  }
+  if (
+    /runbook|런북|대응\s*(순서|절차)|원인과\s*대응|로그.*(원인|대응)/i.test(
+      query
+    )
+  ) {
+    return 'runbook';
+  }
+  return 'script';
+}
+
+function isOpsProcedureRequest(query: string): boolean {
+  return (
+    OPS_PROCEDURE_OPERATIONAL_CONTEXT_PATTERN.test(query) &&
+    OPS_PROCEDURE_SHAPE_PATTERN.test(query) &&
+    OPS_PROCEDURE_ACTION_PATTERN.test(query)
+  );
+}
+
 export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   const normalized = query.trim();
   if (!normalized) return withRuleVersion({ kind: 'none' });
@@ -91,6 +132,22 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
 
   if (isFormattingOnlyRequest(normalized)) {
     return withRuleVersion({ kind: 'none' });
+  }
+
+  if (OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN.test(normalized)) {
+    return withRuleVersion({
+      kind: 'ops-procedure',
+      procedureType: readOpsProcedureType(normalized),
+      reason: 'ops_procedure_followup_edit_pattern',
+    });
+  }
+
+  if (!isNegated && isOpsProcedureRequest(normalized)) {
+    return withRuleVersion({
+      kind: 'ops-procedure',
+      procedureType: readOpsProcedureType(normalized),
+      reason: 'ops_procedure_action_pattern',
+    });
   }
 
   if (
@@ -189,6 +246,12 @@ export function shouldUseLLMChatArtifactIntent(query: string): boolean {
   if (!normalized) return false;
   if (ARTIFACT_NEGATION_PATTERN.test(normalized)) return false;
   if (isFormattingOnlyRequest(normalized)) return false;
+  if (
+    OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN.test(normalized) ||
+    isOpsProcedureRequest(normalized)
+  ) {
+    return false;
+  }
   if (!LLM_ARTIFACT_CANDIDATE_PATTERN.test(normalized)) return false;
   if (LLM_ARTIFACT_ACTION_HINT_PATTERN.test(normalized)) return true;
 

@@ -81,6 +81,7 @@ export interface ArtifactWorkspaceHistoryMetadata {
   incidentReportArtifact?: unknown;
   monitoringAnalysisArtifact?: unknown;
   serverSnapshotArtifact?: unknown;
+  opsProcedureArtifact?: unknown;
 }
 
 export interface ArtifactWorkspaceStorage {
@@ -219,6 +220,7 @@ function readLegacyArtifacts(
     metadata.incidentReportArtifact,
     metadata.monitoringAnalysisArtifact,
     metadata.serverSnapshotArtifact,
+    metadata.opsProcedureArtifact,
   ]
     .filter(isSupportedChatArtifact)
     .filter((artifact) => !ignoredKinds.has(artifact.kind))

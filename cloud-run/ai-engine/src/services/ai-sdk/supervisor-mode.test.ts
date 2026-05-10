@@ -551,6 +551,7 @@ describe('supervisor planner shadow', () => {
       '서버 상태 스냅샷 카드',
       'server snapshot card',
     ];
+    const opsProcedureArtifactQueries = ['runbook 만들어줘'];
     const reportQueries = [
       '전체 서버 장애 원인 분석 보고서 만들어줘',
       'incident report 작성',
@@ -575,7 +576,6 @@ describe('supervisor planner shadow', () => {
       '조치 방안 알려줘',
       '해결 방법 추천',
       'remediation plan',
-      'runbook 만들어줘',
       'how to fix CPU spike',
       '최적화 권장사항',
     ];
@@ -614,6 +614,17 @@ describe('supervisor planner shadow', () => {
           executionPath: 'client-artifact',
           artifactKind: 'server-snapshot',
           reasonCodes: ['artifact_server-snapshot'],
+          decidedBy: 'frontend',
+        },
+      })),
+      ...opsProcedureArtifactQueries.map((query) => ({
+        query,
+        expectedExecutionMode: 'deterministic',
+        localDecision: {
+          intent: 'artifact',
+          executionPath: 'client-artifact',
+          artifactKind: 'ops-procedure',
+          reasonCodes: ['artifact_ops-procedure'],
           decidedBy: 'frontend',
         },
       })),

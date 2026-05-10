@@ -418,6 +418,18 @@ export function preFilterQuery(
       !isFormattingOnlyReportRequest(query) && REPORTER_QUERY_PATTERN.test(query);
     const isAdvisorIntent =
       isForceKnowledgeBaseIntent || ADVISOR_QUERY_PATTERN.test(query);
+    const isOpsProcedureIntent =
+      /(스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|대응\s*(순서|절차))/i.test(
+        query
+      );
+
+    if (isOpsProcedureIntent) {
+      return {
+        shouldHandoff: true,
+        suggestedAgent: 'Advisor Agent',
+        confidence: 0.9,
+      };
+    }
 
     const intentMatches = [
       isVisionIntent,

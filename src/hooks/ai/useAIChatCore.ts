@@ -44,10 +44,15 @@ import {
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
 import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
+import {
+  generateOpsProcedureArtifact,
+  patchOpsProcedureArtifactFromQuery,
+} from '@/lib/ai/chat-artifacts/ops-procedure-artifact';
 import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import {
   type ChatArtifact,
   createArtifactEnvelope,
+  type OpsProcedureArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
@@ -315,6 +320,8 @@ function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
       return '이상감지/추세 분석을 실행하고 있습니다.';
     case 'server-snapshot':
       return '서버 상태 스냅샷을 생성하고 있습니다.';
+    case 'ops-procedure':
+      return '운영 절차 아티팩트를 생성하고 있습니다.';
   }
 }
 
@@ -338,6 +345,17 @@ function getArtifactSuccessText(artifact: ChatArtifact): string {
       `- 주의/위험: ${artifact.totals.warning + artifact.totals.critical + artifact.totals.offline}대`,
       '',
       '아래 카드에서 MD/JSON 파일로 내려받을 수 있습니다.',
+    ].join('\n');
+  }
+
+  if (artifact.kind === 'ops-procedure') {
+    return [
+      '운영 절차 아티팩트를 생성했습니다.',
+      '',
+      `- 유형: ${artifact.procedureType}`,
+      `- 기준: ${artifact.inputs.metric?.toUpperCase() ?? 'metric'} ${artifact.inputs.threshold ?? '-'}%`,
+      '',
+      '아래 카드에서 MD/JSON 파일로 내려받고 코드/설정의 검증 상태를 확인할 수 있습니다.',
     ].join('\n');
   }
 
@@ -370,7 +388,9 @@ function getArtifactErrorText(
         ? '장애 보고서 작성'
         : kind === 'server-snapshot'
           ? '서버 상태 스냅샷 생성'
-          : '이상감지/추세 분석';
+          : kind === 'ops-procedure'
+            ? '운영 절차 생성'
+            : '이상감지/추세 분석';
     return `${target}을 중단했습니다.`;
   }
 
@@ -380,8 +400,55 @@ function getArtifactErrorText(
       ? '장애 보고서 작성'
       : kind === 'server-snapshot'
         ? '서버 상태 스냅샷 생성'
-        : '이상감지/추세 분석';
+        : kind === 'ops-procedure'
+          ? '운영 절차 생성'
+          : '이상감지/추세 분석';
   return `${target}을 완료하지 못했습니다. ${message}`;
+}
+
+function readOpsProcedureArtifactFromMetadata(
+  metadata: unknown
+): OpsProcedureArtifact | undefined {
+  if (typeof metadata !== 'object' || metadata === null) return undefined;
+  const record = metadata as Record<string, unknown>;
+
+  if (
+    typeof record.opsProcedureArtifact === 'object' &&
+    record.opsProcedureArtifact !== null &&
+    (record.opsProcedureArtifact as { kind?: unknown }).kind === 'ops-procedure'
+  ) {
+    return record.opsProcedureArtifact as OpsProcedureArtifact;
+  }
+
+  const envelopes = Array.isArray(record.artifactEnvelopes)
+    ? record.artifactEnvelopes
+    : [];
+  for (const envelope of envelopes) {
+    if (typeof envelope !== 'object' || envelope === null) continue;
+    const payload = (envelope as { payload?: unknown }).payload;
+    if (
+      (envelope as { kind?: unknown }).kind === 'ops-procedure' &&
+      typeof payload === 'object' &&
+      payload !== null &&
+      (payload as { kind?: unknown }).kind === 'ops-procedure'
+    ) {
+      return payload as OpsProcedureArtifact;
+    }
+  }
+
+  return undefined;
+}
+
+function findLastOpsProcedureArtifact(
+  messages: UIMessage[]
+): OpsProcedureArtifact | undefined {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const artifact = readOpsProcedureArtifactFromMetadata(
+      messages[index]?.metadata
+    );
+    if (artifact) return artifact;
+  }
+  return undefined;
 }
 
 function buildArtifactMetadata(
@@ -445,6 +512,26 @@ function buildArtifactMetadata(
           toolName: 'generateServerSnapshotArtifact',
           label: '서버 상태 스냅샷',
           summary: `${artifact.totals.total}대 서버 상태 스냅샷을 생성했습니다.`,
+          status: 'completed' as const,
+        },
+      ],
+    };
+  }
+
+  if (artifact.kind === 'ops-procedure') {
+    return {
+      artifactIntentReason: intentReason,
+      routeDecision,
+      assistantPlan,
+      assistantResult,
+      artifactEnvelopes: [artifactEnvelope],
+      opsProcedureArtifact: artifact,
+      toolsCalled: ['generateOpsProcedureArtifact'],
+      toolResultSummaries: [
+        {
+          toolName: 'generateOpsProcedureArtifact',
+          label: '운영 절차 아티팩트',
+          summary: `${artifact.procedureType} 절차를 생성했습니다.`,
           status: 'completed' as const,
         },
       ],
@@ -936,7 +1023,8 @@ export function useAIChatCore(
       if (
         artifactIntent.kind === 'incident-report' ||
         artifactIntent.kind === 'monitoring-analysis' ||
-        artifactIntent.kind === 'server-snapshot'
+        artifactIntent.kind === 'server-snapshot' ||
+        artifactIntent.kind === 'ops-procedure'
       ) {
         const artifactKind = artifactIntent.kind;
         setError(null);
@@ -982,12 +1070,31 @@ export function useAIChatCore(
                       queryAsOfDataSlot,
                       signal: abortController.signal,
                     })
-                  : await generateMonitoringAnalysisArtifact({
-                      query: effectiveText,
-                      sessionId,
-                      queryAsOfDataSlot,
-                      signal: abortController.signal,
-                    });
+                  : artifactKind === 'ops-procedure'
+                    ? artifactIntent.reason ===
+                      'ops_procedure_followup_edit_pattern'
+                      ? patchOpsProcedureArtifactFromQuery(
+                          findLastOpsProcedureArtifact(messagesRef.current) ??
+                            (await generateOpsProcedureArtifact({
+                              query: effectiveText,
+                              sessionId,
+                              queryAsOfDataSlot,
+                              signal: abortController.signal,
+                            })),
+                          effectiveText
+                        )
+                      : await generateOpsProcedureArtifact({
+                          query: effectiveText,
+                          sessionId,
+                          queryAsOfDataSlot,
+                          signal: abortController.signal,
+                        })
+                    : await generateMonitoringAnalysisArtifact({
+                        query: effectiveText,
+                        sessionId,
+                        queryAsOfDataSlot,
+                        signal: abortController.signal,
+                      });
 
             if (artifactRequestIdRef.current !== token) {
               return;
@@ -1057,13 +1164,17 @@ export function useAIChatCore(
                         ? 'generateIncidentReportArtifact'
                         : artifactKind === 'server-snapshot'
                           ? 'generateServerSnapshotArtifact'
-                          : 'generateMonitoringAnalysisArtifact',
+                          : artifactKind === 'ops-procedure'
+                            ? 'generateOpsProcedureArtifact'
+                            : 'generateMonitoringAnalysisArtifact',
                     label:
                       artifactKind === 'incident-report'
                         ? '장애 보고서 작성'
                         : artifactKind === 'server-snapshot'
                           ? '서버 상태 스냅샷'
-                          : '이상감지/추세 분석',
+                          : artifactKind === 'ops-procedure'
+                            ? '운영 절차 아티팩트'
+                            : '이상감지/추세 분석',
                     summary: errorText,
                     status: 'failed' as const,
                   },

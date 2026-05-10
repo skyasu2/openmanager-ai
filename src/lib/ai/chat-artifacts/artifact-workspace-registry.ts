@@ -32,7 +32,8 @@ export interface ArtifactSchemaEntry<
   legacyMetadataKey:
     | 'incidentReportArtifact'
     | 'monitoringAnalysisArtifact'
-    | 'serverSnapshotArtifact';
+    | 'serverSnapshotArtifact'
+    | 'opsProcedureArtifact';
   replayPolicy: ArtifactReplayPolicy;
   isPayload: (value: unknown) => value is TArtifact;
 }
@@ -139,6 +140,25 @@ function isServerSnapshotArtifact(
   );
 }
 
+function isOpsProcedureArtifact(
+  value: unknown
+): value is Extract<ChatArtifact, { kind: 'ops-procedure' }> {
+  return (
+    isRecord(value) &&
+    value.kind === 'ops-procedure' &&
+    !!readString(value.generatedAt) &&
+    !!readString(value.title) &&
+    !!readString(value.summary) &&
+    (value.procedureType === 'runbook' ||
+      value.procedureType === 'alert-rule' ||
+      value.procedureType === 'script') &&
+    isRecord(value.inputs) &&
+    isRecord(value.runbook) &&
+    Array.isArray(value.codeBlocks) &&
+    isRecord(value.validation)
+  );
+}
+
 const ARTIFACT_SCHEMA_ENTRIES: ArtifactSchemaEntry[] = [
   {
     domainId: MONITORING_ARTIFACT_DOMAIN_ID,
@@ -166,6 +186,15 @@ const ARTIFACT_SCHEMA_ENTRIES: ArtifactSchemaEntry[] = [
     legacyMetadataKey: 'serverSnapshotArtifact',
     replayPolicy: REPLAY_POLICY,
     isPayload: isServerSnapshotArtifact,
+  },
+  {
+    domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+    familyId: 'ops-procedure',
+    artifactKind: 'ops-procedure',
+    artifactVersion: ARTIFACT_CONTRACT_VERSION,
+    legacyMetadataKey: 'opsProcedureArtifact',
+    replayPolicy: REPLAY_POLICY,
+    isPayload: isOpsProcedureArtifact,
   },
 ];
 

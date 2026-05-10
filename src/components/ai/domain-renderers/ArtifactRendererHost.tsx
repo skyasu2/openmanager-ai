@@ -1,6 +1,7 @@
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
+  OpsProcedureArtifact,
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import {
@@ -11,6 +12,7 @@ import {
 } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
 import { IncidentReportArtifactCard } from '../IncidentReportArtifactCard';
 import { MonitoringAnalysisArtifactCard } from '../MonitoringAnalysisArtifactCard';
+import { OpsProcedureArtifactCard } from '../OpsProcedureArtifactCard';
 import { ServerSnapshotArtifactCard } from '../ServerSnapshotArtifactCard';
 
 interface ArtifactRendererHostProps {
@@ -53,6 +55,12 @@ function renderSupportedArtifact(entry: SupportedArtifactRendererEntry) {
       return (
         <ServerSnapshotArtifactCard
           artifact={entry.artifact as ServerSnapshotArtifact}
+        />
+      );
+    case 'ops-procedure':
+      return (
+        <OpsProcedureArtifactCard
+          artifact={entry.artifact as OpsProcedureArtifact}
         />
       );
   }
