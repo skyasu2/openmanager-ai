@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-09
+> Last reviewed: 2026-05-10
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
-> **v8.11.97+** | Updated 2026-05-09
+> **v8.11.122** | Updated 2026-05-10
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 

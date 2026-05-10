@@ -8,7 +8,7 @@
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
-> **v8.11.97** | Updated 2026-05-05
+> **v8.11.122** | Updated 2026-05-10
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview

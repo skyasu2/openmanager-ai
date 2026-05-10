@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-10
 > Canonical: docs/reference/architecture/infrastructure/resilience.md
 > Tags: resilience,circuit-breaker,fallback,retry,error-handling
 >
-> **프로젝트 버전**: v8.11.110 | **Updated**: 2026-05-07
+> **프로젝트 버전**: v8.11.122 | **Updated**: 2026-05-10
 
 ## 개요
 
