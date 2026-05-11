@@ -44,6 +44,8 @@ const SPECIFIC_CONDITION_PATTERNS = {
   // 비교 조건: "가장 높은", "가장 부하가 높았던", "높아", "최대", "최소"
   comparisonCondition:
     /(?:가장|제일).{0,24}(?:높|낮|많|적)|높[은아으았]|낮[은아으았]|많[은아으았]|적[은어으었]|최대|최소|highest|lowest|most|least/i,
+  // 피크/최댓값 질의: peak/load1/max처럼 특정 집계 의도가 있으면 서버명 없이도 전체 집계 질의로 실행 가능
+  peakIntent: /\b(?:peak|max)\b|피크|최고점|최댓값/i,
   // 필터 의도: "CPU 높은 서버 찾아줘", "메모리 많이 쓰는 서버 보여줘"
   filterIntent:
     /(?:cpu|메모리|디스크|memory|disk).+(?:찾아|알려|보여|목록)|(?:찾아|알려|보여).+(?:cpu|메모리|디스크|memory|disk)/i,
@@ -85,6 +87,7 @@ function hasSpecificConditions(query: string): boolean {
     SPECIFIC_CONDITION_PATTERNS.numericCondition.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.statusCondition.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.comparisonCondition.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.peakIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.filterIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.clarifiedSuffix.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.explicitScope.test(query)

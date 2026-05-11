@@ -236,6 +236,16 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('load1 peak compact 표현도 서버명 없이 clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?',
+          lowConfidence,
+          { confidence: 0 }
+        )
+      ).toBeNull();
+    });
+
     it('server scope intent frame에서 대상이 비어 있고 ambiguity가 높으면 clarification을 유지', () => {
       const result = generateClarification(
         '서버 상태 분석해줘',
