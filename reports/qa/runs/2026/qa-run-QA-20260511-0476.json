@@ -1,0 +1,167 @@
+{
+  "runId": "QA-20260511-0476",
+  "recordedAt": "2026-05-11T09:12:27.615Z",
+  "recordedAtKst": "2026-05-11 18:12:27 KST",
+  "runTitle": "Vercel Playwright MCP Targeted Check - post-main-push production state",
+  "owner": "codex",
+  "source": "playwright-mcp+vercel-mcp+curl",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL",
+    "deploymentUrl": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app",
+    "commitSha": "cf5480e855ff2476c928b7ff7f4399c664ff70ea"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "Vercel production alias https://openmanager-ai.vercel.app resolves to deployment dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL in READY state",
+    "/api/version returned v8.11.124, commit cf5480e855ff2476c928b7ff7f4399c664ff70ea, release tag v8.11.124, and GitLab pipeline 2513741959; this confirms post-push commit c933dc7eb is not yet deployed to Vercel production",
+    "/api/health returned success=true with database, cache, and ai services connected",
+    "Landing page rendered OpenManager AI production shell with v8.11.124, Next.js 16 + React 19, and system start CTA",
+    "System start CTA navigated through /system-boot to /dashboard",
+    "Dashboard rendered 18 total servers, 17 online, 1 warning, 0 risk, 0 offline, OpenTelemetry snapshot 18:00 KST slot 108/143, and resource warning Top 5",
+    "AI assistant sidebar opened from dashboard with AI engine status Ready",
+    "AI prompt '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?' returned a visible response: '17:00-18:00'",
+    "The same AI peak-load response used the generic conversation evidence path, not a deterministic metric/tool-grounded path",
+    "AI-related network requests returned HTTP 200/201 for /api/ai/wake-up, /api/health?service=ai, /api/ai/jobs, and /api/ai/jobs/:id/stream was visible in Performance API as EventSource/other"
+  ],
+  "skippedSurfaces": [
+    "This was not a release-gate run because Vercel production still points at v8.11.124 / cf5480e8, not pushed commit c933dc7eb",
+    "Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost on an unchanged production deployment",
+    "OAuth callback, modal detail pack, Reporter Agent, Analyst Agent, mobile viewport, and Cloud Run admin monitoring endpoints were not exercised in this targeted check",
+    "Browser console message export was skipped because the active Playwright MCP surface in this session did not expose console collection; network and screenshot evidence were captured instead"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 9,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar 24h peak-load question",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright MCP Performance API resource timing",
+      "latencyMs": 2380,
+      "processingTimeMs": 2380
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar 24h peak-load question",
+      "route": "/api/ai/jobs",
+      "executionMode": "single-agent",
+      "latencyMs": 2380,
+      "classification": "drift",
+      "driftReasonCodes": [],
+      "source": "visible assistant metadata showed '일반 대화 응답'"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production is healthy and READY; serving v8.11.124 / cf5480e8 is expected for this non-deploying main push because production deploys only through semver tag pipelines.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The 24-hour peak-load question no longer reproduced an empty response in this sample, but it remained generic and did not expose deterministic metric evidence or top-server context.",
+      "nextAction": "After the domain-evidence fix is released, rerun the peak-load question and require a metric-grounded response with time slot, load value, and top servers."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "This was correctly scoped as a non-counting targeted production check on an unchanged deployment, with durable screenshot/network evidence and Vercel usage verification.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-11T18:06:29+09:00",
+      "summary": "Current Vercel billing period reviewed after targeted production check; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI peak-load response screenshot",
+      "path": "reports/qa/evidence/qa-20260511-vercel-post-push-ai-peak.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Production AI network requests",
+      "path": "reports/qa/evidence/qa-20260511-vercel-post-push-network.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Production AI result and Performance API resource timing",
+      "path": "reports/qa/evidence/qa-20260511-vercel-post-push-ai-result.json"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-assistant-24h-peak-load-empty-response-v811124",
+      "title": "Production AI Assistant 24시간 피크 부하 질의가 deterministic metric evidence 없이 generic 응답으로 처리됨",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "This run returned a visible one-line answer instead of an empty body, but metadata still showed 일반 대화 응답 and lacked load value/top-server grounding. Keep open until the domain-evidence fix is deployed and retested.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run intentionally does not count toward summary because it rechecked the existing v8.11.124 production deployment after a non-deploying main push.",
+    "Vercel Git Integration is disabled; GitLab main validation succeeded for c933dc7eb, but production deploy requires semver tag CI.",
+    "mode audit: 24h peak-load query resolved through /api/ai/jobs with visible metadata '일반 대화 응답', so route/data grounding drift remains on current production."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Current production release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959"
+    },
+    {
+      "type": "general",
+      "label": "Post-push validate pipeline for undeployed commit c933dc7eb",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2515354490"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Current Vercel production deployment",
+      "url": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app/"
+    }
+  ]
+}

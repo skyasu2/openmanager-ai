@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-11T04:58:02.891Z",
-  "generatedAtKst": "2026-05-11 13:58:02 KST",
-  "trackerUpdatedAt": "2026-05-11T04:57:44.283Z",
+  "generatedAt": "2026-05-11T09:16:39.303Z",
+  "generatedAtKst": "2026-05-11 18:16:39 KST",
+  "trackerUpdatedAt": "2026-05-11T09:12:27.615Z",
   "totals": {
-    "recordedRuns": 473,
+    "recordedRuns": 474,
     "countedRuns": 377,
     "totalChecks": 3359,
     "totalPassed": 3231,
     "totalFailed": 118,
     "overallPassRatePct": 96.19,
-    "latestRecordedRunId": "QA-20260511-0475",
+    "latestRecordedRunId": "QA-20260511-0476",
     "lastCountedRunId": "QA-20260511-0475"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 291,
+      "totalRuns": 292,
       "countedRuns": 196
     },
     {
@@ -260,13 +260,13 @@
     {
       "priority": "P1",
       "totalItems": 235,
-      "recurringItems": 87,
+      "recurringItems": 88,
       "openItems": 1,
-      "openRecurringItems": 0,
+      "openRecurringItems": 1,
       "completedItems": 229,
       "wontFixItems": 5,
-      "recurrenceRatePct": 37.02,
-      "openRecurrenceRatePct": 0
+      "recurrenceRatePct": 37.45,
+      "openRecurrenceRatePct": 100
     },
     {
       "priority": "P2",
@@ -734,12 +734,12 @@
     "open": [
       {
         "id": "ai-assistant-24h-peak-load-empty-response-v811124",
-        "title": "Production AI Assistant 24시간 피크 부하 질의가 실질 본문 없이 완료됨",
+        "title": "Production AI Assistant 24시간 피크 부하 질의가 deterministic metric evidence 없이 generic 응답으로 처리됨",
         "status": "pending",
         "priority": "P1",
-        "seenCount": 1,
+        "seenCount": 2,
         "completedCount": 0,
-        "lastSeenRunId": "QA-20260511-0475",
+        "lastSeenRunId": "QA-20260511-0476",
         "lastResolvedRunId": null
       }
     ],
@@ -950,73 +950,43 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-10T04:57:44.283Z",
-    "windowEnd": "2026-05-11T04:57:44.283Z",
+    "windowStart": "2026-05-10T09:12:27.615Z",
+    "windowEnd": "2026-05-11T09:12:27.615Z",
     "recordedRunCount": 2,
-    "countedRunCount": 2,
-    "sampleCount": 7,
+    "countedRunCount": 1,
+    "sampleCount": 5,
     "buckets": [
       {
         "agent": "Supervisor",
-        "provider": "unknown",
-        "sampleCount": 2,
-        "runCount": 1,
-        "countedRunCount": 1,
-        "avgLatencyMs": 4321,
-        "p95LatencyMs": 6929,
-        "avgTtfbMs": null,
-        "p95TtfbMs": null,
-        "avgProcessingTimeMs": 2363,
-        "p95ProcessingTimeMs": 3358,
-        "latestRunId": "QA-20260510-0458",
-        "latestRecordedAt": "2026-05-10T07:26:58.691Z"
-      },
-      {
-        "agent": "Supervisor/Cloud Run AI",
-        "provider": "unknown",
-        "sampleCount": 1,
-        "runCount": 1,
-        "countedRunCount": 1,
-        "avgLatencyMs": 3928,
-        "p95LatencyMs": 3928,
-        "avgTtfbMs": null,
-        "p95TtfbMs": null,
-        "avgProcessingTimeMs": 2125,
-        "p95ProcessingTimeMs": 2125,
-        "latestRunId": "QA-20260510-0458",
-        "latestRecordedAt": "2026-05-10T07:26:58.691Z"
-      },
-      {
-        "agent": "Supervisor",
         "provider": "cloud-run-ai-engine",
-        "sampleCount": 4,
-        "runCount": 1,
+        "sampleCount": 5,
+        "runCount": 2,
         "countedRunCount": 1,
-        "avgLatencyMs": 1769,
+        "avgLatencyMs": 1891,
         "p95LatencyMs": 2708,
         "avgTtfbMs": null,
         "p95TtfbMs": null,
-        "avgProcessingTimeMs": 1769,
+        "avgProcessingTimeMs": 1891,
         "p95ProcessingTimeMs": 2708,
-        "latestRunId": "QA-20260511-0475",
-        "latestRecordedAt": "2026-05-11T04:57:44.283Z"
+        "latestRunId": "QA-20260511-0476",
+        "latestRecordedAt": "2026-05-11T09:12:27.615Z"
       }
     ]
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-10T04:57:44.283Z",
-    "windowEnd": "2026-05-11T04:57:44.283Z",
-    "recordedRunCount": 1,
+    "windowStart": "2026-05-10T09:12:27.615Z",
+    "windowEnd": "2026-05-11T09:12:27.615Z",
+    "recordedRunCount": 2,
     "countedRunCount": 1,
-    "sampleCount": 3,
-    "driftCount": 2,
-    "driftRatePct": 66.67,
-    "avgLatencyMs": 1878,
+    "sampleCount": 4,
+    "driftCount": 3,
+    "driftRatePct": 75,
+    "avgLatencyMs": 2003,
     "p95LatencyMs": 2708,
     "classificationCounts": {
       "matched": 1,
-      "drift": 2
+      "drift": 3
     },
     "reasonCodeCounts": {},
     "buckets": [
@@ -1034,6 +1004,19 @@
         "latestRecordedAt": "2026-05-11T04:57:44.283Z"
       },
       {
+        "route": "/api/ai/jobs",
+        "executionMode": "single-agent",
+        "sampleCount": 2,
+        "runCount": 2,
+        "countedRunCount": 1,
+        "driftCount": 2,
+        "driftRatePct": 100,
+        "avgLatencyMs": 1920,
+        "p95LatencyMs": 2380,
+        "latestRunId": "QA-20260511-0476",
+        "latestRecordedAt": "2026-05-11T09:12:27.615Z"
+      },
+      {
         "route": "generic conversation response",
         "executionMode": "single-agent",
         "sampleCount": 1,
@@ -1043,19 +1026,6 @@
         "driftRatePct": 100,
         "avgLatencyMs": 1465,
         "p95LatencyMs": 1465,
-        "latestRunId": "QA-20260511-0475",
-        "latestRecordedAt": "2026-05-11T04:57:44.283Z"
-      },
-      {
-        "route": "/api/ai/jobs",
-        "executionMode": "single-agent",
-        "sampleCount": 1,
-        "runCount": 1,
-        "countedRunCount": 1,
-        "driftCount": 1,
-        "driftRatePct": 100,
-        "avgLatencyMs": 1460,
-        "p95LatencyMs": 1460,
         "latestRunId": "QA-20260511-0475",
         "latestRecordedAt": "2026-05-11T04:57:44.283Z"
       }

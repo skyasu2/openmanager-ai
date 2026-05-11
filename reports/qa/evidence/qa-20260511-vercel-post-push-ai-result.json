@@ -1,0 +1,89 @@
+{
+  "errors": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/system",
+      "duration": 250,
+      "transferSize": 300,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/system",
+      "duration": 870,
+      "transferSize": 616,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/web-vitals",
+      "duration": 218,
+      "transferSize": 473,
+      "initiator": "beacon"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "duration": 6343,
+      "transferSize": 328,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/web-vitals",
+      "duration": 197,
+      "transferSize": 527,
+      "initiator": "beacon"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/system",
+      "duration": 6011,
+      "transferSize": 500,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/system",
+      "duration": 173,
+      "transferSize": 610,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/monitoring/report",
+      "duration": 291,
+      "transferSize": 1126,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/system",
+      "duration": 153,
+      "transferSize": 618,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+      "duration": 307,
+      "transferSize": 397,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/database",
+      "duration": 68,
+      "transferSize": 454,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+      "duration": 62,
+      "transferSize": 396,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "duration": 612,
+      "transferSize": 1065,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/d0036e5f-3d11-4a58-bcee-0ecfb9478fdc/stream",
+      "duration": 2380,
+      "transferSize": 2898,
+      "initiator": "other"
+    }
+  ],
+  "bodyText": "AI 어시스턴트\n\n서버 상태·로그·메트릭을 자연어로 질의\n\n전체화면\nAI Chat\n\nAI 기반 대화형 인터페이스\n\n지난 24시간 중 가장 부하가 높았던 시간대는 언제야?\n\n6:05:41 PM\n\n복사\n지난 24시간 중 가장 부하가 높았던 시간대는 17:00-18:00입니다.\n\n6:05:41 PM\n\n응답 보통\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n다시 생성\n대화 2/50\n서버 운영 중심\nEnter로 전송, Shift+Enter로 줄바꿈\n\nAI 기능\n\nAI Chat\n서버 질의, 트러블슈팅, 명령어 추천\n자동장애 보고서\nReporter Agent 장애 분석 보고서 생성\n이상감지/추세\n경량 이상 신호와 리스크 추세 분석\n전체 화면으로 보기"
+}
