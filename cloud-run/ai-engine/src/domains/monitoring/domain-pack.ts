@@ -8,7 +8,6 @@ import type {
   DomainDataSource,
   DomainFactPack,
   DomainInstructionSet,
-  DomainIntentFrame,
   DomainIntentParser,
   FactPackBuilder,
   ToolDefinition,
@@ -32,6 +31,7 @@ import { MONITORING_AGENT_TOOL_REGISTRY } from './tool-registry';
 import { selectExecutionMode } from './routing-policy';
 import { monitoringAgentRoleRegistry } from './agent-roles';
 import { monitoringPeakMetricEvidenceProvider } from './peak-metric-evidence-provider';
+import { parseMonitoringPeakMetricIntent } from './peak-metric-intent';
 import {
   MONITORING_DOMAIN_ID,
   MONITORING_DOMAIN_VERSION,
@@ -65,55 +65,6 @@ function isMonitoringArtifactKind(value: unknown): value is MonitoringArtifactKi
     typeof value === 'string' &&
     MONITORING_ARTIFACT_KINDS.includes(value as MonitoringArtifactKind)
   );
-}
-
-const PEAK_PATTERN = /가장|최고|최대|피크|높|high|peak|max/i;
-const TIME_QUESTION_PATTERN = /언제|시간대|시각|몇\s*시|when|time/i;
-const TIME_WINDOW_PATTERN =
-  /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|last\s*24/i;
-const HOURS_PATTERN = /(\d{1,2})\s*(?:시간|h|hr|hour)s?/i;
-const METRIC_PATTERNS: Array<{ metric: string; pattern: RegExp }> = [
-  { metric: 'load', pattern: /부하|로드|\bload(?:1|5)?\b/i },
-  { metric: 'cpu', pattern: /\bcpu\b|씨피유/i },
-  { metric: 'memory', pattern: /메모리|\bmem\b|\bmemory\b/i },
-  { metric: 'disk', pattern: /디스크|\bdisk\b|스토리지|\bstorage\b/i },
-  { metric: 'network', pattern: /네트워크|\bnetwork\b|\bnet\b/i },
-];
-
-function parseMonitoringPeakMetricFrame(
-  context: AssistantRequestContext
-): DomainIntentFrame | undefined {
-  const message = context.message;
-  const metric =
-    METRIC_PATTERNS.find(({ pattern }) => pattern.test(message))?.metric ??
-    undefined;
-
-  if (
-    !metric ||
-    !PEAK_PATTERN.test(message) ||
-    !TIME_QUESTION_PATTERN.test(message) ||
-    !TIME_WINDOW_PATTERN.test(message)
-  ) {
-    return undefined;
-  }
-
-  const parsedHours = Number(message.match(HOURS_PATTERN)?.[1]);
-  const windowHours =
-    Number.isFinite(parsedHours) && parsedHours > 0 ? parsedHours : 24;
-
-  return {
-    domainId: MONITORING_DOMAIN_ID,
-    intent: 'metric_peak',
-    capabilityId: MONITORING_PEAK_METRIC_CAPABILITY_ID,
-    scope: 'whole_fleet',
-    targets: [],
-    metric,
-    timeWindow: `${windowHours}h`,
-    aggregation: 'peak',
-    topN: 3,
-    ambiguity: 'low',
-    confidence: 0.9,
-  };
 }
 
 function toExecutionMode(
@@ -270,7 +221,7 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
 };
 
 export const monitoringIntentParser: DomainIntentParser = {
-  parse: parseMonitoringPeakMetricFrame,
+  parse: parseMonitoringPeakMetricIntent,
 };
 
 export const monitoringDomainPack: AssistantDomain = {

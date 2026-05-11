@@ -4,16 +4,9 @@ import type {
 } from '../../core/assistant-runtime';
 import { getMonitoringPeakMetric, type PeakMetricSlot } from './peak-metric';
 import {
-  MONITORING_DOMAIN_ID,
-  MONITORING_PEAK_METRIC_CAPABILITY_ID,
-} from './constants';
-
-interface ParsedPeakMetricRequest {
-  metric: string;
-  windowHours: number;
-  capabilityId?: string;
-  intent?: string;
-}
+  parseMonitoringPeakMetricFrame,
+  parseMonitoringPeakMetricMessage,
+} from './peak-metric-intent';
 
 function formatNumber(value: number): string {
   return value.toFixed(2).replace(/\.00$/, '');
@@ -21,91 +14,6 @@ function formatNumber(value: number): string {
 
 function formatMetricValue(value: number, unit = ''): string {
   return `${formatNumber(value)}${unit}`;
-}
-
-const PEAK_PATTERN = /가장|최고|최대|피크|높|high|peak|max/i;
-const TIME_QUESTION_PATTERN = /언제|시간대|시각|몇\s*시|when|time/i;
-const TIME_WINDOW_PATTERN =
-  /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|last\s*24/i;
-const HOURS_PATTERN = /(\d{1,2})\s*(?:시간|h|hr|hour)s?/i;
-const METRIC_PATTERNS: Array<{ metric: string; pattern: RegExp }> = [
-  { metric: 'load', pattern: /부하|로드|\bload(?:1|5)?\b/i },
-  { metric: 'cpu', pattern: /\bcpu\b|씨피유/i },
-  { metric: 'memory', pattern: /메모리|\bmem\b|\bmemory\b/i },
-  { metric: 'disk', pattern: /디스크|\bdisk\b|스토리지|\bstorage\b/i },
-  { metric: 'network', pattern: /네트워크|\bnetwork\b|\bnet\b/i },
-];
-
-function parsePeakMetricRequest(
-  message: string
-): ParsedPeakMetricRequest | null {
-  const metric =
-    METRIC_PATTERNS.find(({ pattern }) => pattern.test(message))?.metric ??
-    null;
-  if (
-    !metric ||
-    !PEAK_PATTERN.test(message) ||
-    !TIME_QUESTION_PATTERN.test(message) ||
-    !TIME_WINDOW_PATTERN.test(message)
-  ) {
-    return null;
-  }
-
-  const parsedHours = Number(message.match(HOURS_PATTERN)?.[1]);
-  return {
-    metric,
-    windowHours:
-      Number.isFinite(parsedHours) && parsedHours > 0 ? parsedHours : 24,
-  };
-}
-
-function normalizeFrameMetric(metric: string | undefined): string | null {
-  if (!metric) return null;
-  const normalized = metric.toLowerCase();
-  if (normalized === 'load1' || normalized === 'load5') return 'load';
-
-  return METRIC_PATTERNS.some((candidate) => candidate.metric === normalized)
-    ? normalized
-    : null;
-}
-
-function parseFrameWindowHours(timeWindow: string | undefined): number {
-  if (!timeWindow) return 24;
-
-  const parsedHours = Number(timeWindow.match(HOURS_PATTERN)?.[1]);
-  return Number.isFinite(parsedHours) && parsedHours > 0 ? parsedHours : 24;
-}
-
-function isPeakAggregation(aggregation: string | undefined): boolean {
-  if (!aggregation) return false;
-  return /peak|max|highest|최고|최대|피크/i.test(aggregation);
-}
-
-function parsePeakMetricFrame(
-  request: DomainEvidenceRequest
-): ParsedPeakMetricRequest | null {
-  const frame = request.intentFrame;
-  if (!frame || frame.domainId !== MONITORING_DOMAIN_ID) return null;
-
-  const capabilityId = request.capability?.id ?? frame.capabilityId;
-  if (
-    capabilityId !== undefined &&
-    capabilityId !== MONITORING_PEAK_METRIC_CAPABILITY_ID
-  ) {
-    return null;
-  }
-
-  if (frame.intent !== 'metric_peak') return null;
-
-  const metric = normalizeFrameMetric(frame.metric);
-  if (!metric || !isPeakAggregation(frame.aggregation)) return null;
-
-  return {
-    metric,
-    windowHours: parseFrameWindowHours(frame.timeWindow),
-    capabilityId: MONITORING_PEAK_METRIC_CAPABILITY_ID,
-    intent: frame.intent,
-  };
 }
 
 function buildPeakMetricFallbackAnswer(peak: PeakMetricSlot): string {
@@ -163,13 +71,14 @@ export const monitoringPeakMetricEvidenceProvider: DomainEvidenceProvider = {
   id: 'monitoring-peak-metric',
   canHandle(request: DomainEvidenceRequest): boolean {
     return (
-      parsePeakMetricFrame(request) !== null ||
-      parsePeakMetricRequest(request.message) !== null
+      parseMonitoringPeakMetricFrame(request) !== null ||
+      parseMonitoringPeakMetricMessage(request.message) !== null
     );
   },
   async resolve(request: DomainEvidenceRequest) {
     const parsed =
-      parsePeakMetricFrame(request) ?? parsePeakMetricRequest(request.message);
+      parseMonitoringPeakMetricFrame(request) ??
+      parseMonitoringPeakMetricMessage(request.message);
     if (!parsed) return null;
 
     const peak = getMonitoringPeakMetric(parsed);
