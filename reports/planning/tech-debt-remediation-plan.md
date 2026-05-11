@@ -23,7 +23,7 @@
 | P2 | API 라우트 테스트 미커버 | 일부 핵심 route handler 직접 테스트 미흡 — `/api/metrics` status label 결함 확인 |
 | P2 | `useAIChatCore.ts` artifact 로직 혼재 | line-guard 계획과 병행 |
 | P3 | pino v9 ↔ v10 이중화 | 완료 — 루트 v10.3.1 / AI Engine v10.3.1 |
-| P3 | React 19.2.4 → 19.2.6 패치 | 2 patch 뒤처짐 |
+| P3 | React 19.2.4 → 19.2.6 패치 | 완료 — 루트 React/React DOM 19.2.6 정렬 |
 
 > **P0 (Next.js CVE)** 는 이미 `Dependency security audit follow-up` Backlog에서 추적 중이며 이 계획서에서 중복 관리하지 않는다.  
 > **파일 크기 부채 (`AIWorkspace.tsx`, `LogExplorerModal.tsx` 등)** 는 `line-guard-current-hotspots-refactor-plan.md`가 담당한다.
@@ -209,18 +209,20 @@ cd cloud-run/ai-engine && node -e "require('pino'); console.log('ok')"
 
 ### 배경
 
-현재 `react@19.2.4`, 최신 `19.2.6` (2026-05-08 기준). 2 patch 뒤처짐. 보안 이슈는 없으나 버그 수정 포함.
+현재 `react@19.2.6`, `react-dom@19.2.6` (2026-05-11 npm registry 기준 최신 stable). 보안 이슈는 아니며 patch-level bugfix 정렬로 처리했다.
 
 ### 작업 단계
 
-- [ ] **Task 4-1**:
+- [x] **Task 4-1**:
   ```bash
   npm install react@^19.2.6 react-dom@^19.2.6
   npm run type-check
-  npm run test:quick
   ```
+  - 사용자 테스트 비용 지침에 따라 `npm run test:quick` 같은 broad suite는 생략.
+  - 대신 dependency import smoke, `npm run type-check`, `git diff --check`로 package-level 회귀 위험을 확인.
+  - `npm audit --omit=dev`는 React와 무관한 `next@16.1.6` high 1건만 잔류.
 
-- [ ] **Task 4-2**: 커밋
+- [x] **Task 4-2**: 커밋
   - 커밋: `chore: update react to 19.2.6`
 
 ---

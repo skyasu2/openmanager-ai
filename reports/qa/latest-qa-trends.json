@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-10T12:53:21.537Z",
-  "generatedAtKst": "2026-05-10 21:53:21 KST",
-  "trackerUpdatedAt": "2026-05-10T12:53:07.527Z",
+  "generatedAt": "2026-05-11T04:15:40.204Z",
+  "generatedAtKst": "2026-05-11 13:15:40 KST",
+  "trackerUpdatedAt": "2026-05-11T04:14:14.183Z",
   "totals": {
-    "recordedRuns": 464,
+    "recordedRuns": 472,
     "countedRuns": 376,
     "totalChecks": 3342,
     "totalPassed": 3215,
     "totalFailed": 117,
     "overallPassRatePct": 96.2,
-    "latestRecordedRunId": "QA-20260510-0466",
+    "latestRecordedRunId": "QA-20260511-0474",
     "lastCountedRunId": "QA-20260510-0466"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 282,
+      "totalRuns": 290,
       "countedRuns": 195
     },
     {
@@ -259,35 +259,35 @@
     },
     {
       "priority": "P1",
-      "totalItems": 233,
+      "totalItems": 234,
       "recurringItems": 87,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 228,
+      "completedItems": 229,
       "wontFixItems": 5,
-      "recurrenceRatePct": 37.34,
+      "recurrenceRatePct": 37.18,
       "openRecurrenceRatePct": 0
     },
     {
       "priority": "P2",
-      "totalItems": 245,
-      "recurringItems": 56,
+      "totalItems": 249,
+      "recurringItems": 57,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 230,
+      "completedItems": 234,
       "wontFixItems": 15,
-      "recurrenceRatePct": 22.86,
+      "recurrenceRatePct": 22.89,
       "openRecurrenceRatePct": 0
     },
     {
       "priority": "P3",
-      "totalItems": 33,
+      "totalItems": 35,
       "recurringItems": 14,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 32,
+      "completedItems": 34,
       "wontFixItems": 1,
-      "recurrenceRatePct": 42.42,
+      "recurrenceRatePct": 40,
       "openRecurrenceRatePct": 0
     },
     {
@@ -939,8 +939,8 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-09T12:53:07.527Z",
-    "windowEnd": "2026-05-10T12:53:07.527Z",
+    "windowStart": "2026-05-10T04:14:14.183Z",
+    "windowEnd": "2026-05-11T04:14:14.183Z",
     "recordedRunCount": 1,
     "countedRunCount": 1,
     "sampleCount": 3,
@@ -979,8 +979,8 @@
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-09T12:53:07.527Z",
-    "windowEnd": "2026-05-10T12:53:07.527Z",
+    "windowStart": "2026-05-10T04:14:14.183Z",
+    "windowEnd": "2026-05-11T04:14:14.183Z",
     "recordedRunCount": 0,
     "countedRunCount": 0,
     "sampleCount": 0,

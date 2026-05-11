@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`AI Engine pino v10 정렬 완료`)
+**Last Updated**: 2026-05-11 KST (`React 19.2.6 패치 정렬 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,7 +23,6 @@
 |------|----------|-------|
 | Dependency security audit follow-up | P1 | 2026-05-11 재확인: Root `npm audit --omit=dev`/full audit는 `next@16.1.6` high 1건(CVE 6종 묶음)만 잔류, AI Engine production/full audit는 0건. Vercel changelog 기준 패치 버전은 `next@16.2.6`(2026-05-07 발표)이나 npm stable registry에 미등록 — `npm view next dist-tags.latest`가 여전히 `16.1.6`. `npm audit fix --force`는 `next@15.5.12` breaking downgrade를 제안하므로 금지 유지. 같은-major fixed release가 `npm view next dist-tags.latest`에 `16.1.7` 이상 또는 `16.2.x` stable로 반영되면 즉시 `npm install next@latest`로 업데이트. dev critical `commit-and-tag-version -> handlebars` 체인은 내부 release tool로 대체 완료, AI Engine Google Cloud logging low 체인은 `pino-logging-gcp-config` 제거·내부 구현으로 해소 완료. |
 | API 라우트 테스트 커버리지 | P2 | 기존 “15개 무테스트” 표현은 stale/과장 요소가 있어 직접 route handler gap 중심으로 재분류. `/api/metrics` `openmanager_server_status` status label 결함은 failing test 선행 커밋 후 수정 완료. 잔여 후보는 `/api/ai/status`, `/api/csrf-token`, `/api/ai/supervisor` direct handler, `/api/servers` legacy route 등. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 2 |
-| React 19.2.4 → 19.2.6 패치 | P3 | 2 patch 뒤처짐. 단순 버전업. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 4 |
 
 ---
 
@@ -38,6 +37,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~React 19.2.4 → 19.2.6 패치~~ | — | **완료** — 루트 `react`/`react-dom`을 `19.2.4` → `19.2.6`으로 정렬. `npm view` 기준 최신 stable 확인 후 `npm install react@^19.2.6 react-dom@^19.2.6` 적용. 검증은 비용 큰 live/broad QA 없이 dependency import smoke, `npm run type-check`, `git diff --check` 중심으로 수행. Root `npm audit --omit=dev`는 React와 무관한 `next@16.1.6` high 1건만 잔류. |
 | ~~AI Engine pino v10 alignment~~ | — | **완료** — AI Engine `pino@9.14.0` → `pino@10.3.1` 정렬. Node runtime은 repo/AI Engine 모두 `>=24 <25`이고 Cloud Run Dockerfile도 Node 24라 pino v10의 `thread-stream@4` Node `>=20` 요구사항 충족. 비용 큰 live QA 없이 targeted logger test, AI Engine type-check, production audit로 검증. Local deterministic QA `QA-20260511-0473` 기록. |
 | ~~API metrics route status label contract~~ | — | **완료** — `/api/metrics`가 `openmanager_server_status` metric을 지원하지만 PromQL 결과의 `status` label 조건이 `server_status`로 되어 누락되던 실제 결함을 확인. `src/app/api/metrics/route.test.ts` failing test 선행 커밋 `5e143ab2e` 후 `openmanager_server_status` 조건으로 수정. Local deterministic QA `QA-20260511-0472` 기록. |
 | ~~Zod v4 AI Engine 마이그레이션~~ | — | **완료** — AI Engine `zod@3.25.76` → `zod@4.4.3` 정렬. v4 top-level format helper 회귀 테스트 추가, `vision-url-tool.ts`를 `z.url()`로 이전, Zod v4 `z.record(key, value)` 시그니처와 structured routing parse 타입 보정 완료. SDD failing test 선행 커밋 `6293ea221`. AI Engine `type-check`, targeted Vitest 4 files / 42 tests, full test 110 files / 1091 tests, root `test:contract` 24 tests, production/full `npm audit` 0 vulnerabilities, Local deterministic QA `QA-20260511-0471` 기록. 상세: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 1 |

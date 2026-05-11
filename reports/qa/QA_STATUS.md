@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-11 12:21:01 KST
+> Generated at: 2026-05-11 13:15:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 471 |
+| Total Recorded Runs | 472 |
 | Total Runs (Counted) | 376 |
-| Non-counted Runs | 95 |
+| Non-counted Runs | 96 |
 | Total Checks | 3342 |
 | Passed | 3215 |
 | Failed | 117 |
-| Completed Items | 539 |
+| Completed Items | 540 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
-| Expert Domains Tracked | 13 |
+| Expert Domains Tracked | 14 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
-| Latest Recorded Run | QA-20260511-0473 (2026-05-11T03:21:01.161Z) |
+| Latest Recorded Run | QA-20260511-0474 (2026-05-11T04:14:14.183Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260511-0473 (2026-05-11T03:21:01.161Z)
+Latest run: QA-20260511-0474 (2026-05-11T04:14:14.183Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
+| Frontend Platform Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
@@ -49,7 +49,7 @@ Latest run: QA-20260511-0473 (2026-05-11T03:21:01.161Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-10T03:21:01.161Z -> 2026-05-11T03:21:01.161Z (24h)
+- Window: 2026-05-10T04:14:14.183Z -> 2026-05-11T04:14:14.183Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -60,7 +60,7 @@ Latest run: QA-20260511-0473 (2026-05-11T03:21:01.161Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-10T03:21:01.161Z -> 2026-05-11T03:21:01.161Z (24h)
+- Window: 2026-05-10T04:14:14.183Z -> 2026-05-11T04:14:14.183Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,10 +74,10 @@ Latest run: QA-20260511-0473 (2026-05-11T03:21:01.161Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 0bf416fb
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: AI Engine pino dependency alignment, Cloud Run structured logger options, AI Engine TypeScript type-check, AI Engine production npm audit
-- Skipped Surfaces: AI Engine full Vitest suite, Vercel production browser QA, Cloud Run production smoke, live LLM/provider calls, conversational AI QA
+- Deployment: SHA 0c5d6918
+- Coverage Packs: core-routes-smoke, dashboard-core
+- Covered Surfaces: Root React dependency alignment, Root React DOM dependency alignment, React package import smoke, Root TypeScript type-check, Dependency audit triage
+- Skipped Surfaces: npm run test:quick, Vercel production browser QA, Cloud Run production smoke, live LLM/provider calls, conversational AI QA
 
 ## Links (Latest Run)
 
@@ -573,6 +573,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - query-provider-devtools-hydration-fix: React Query Devtools hydration mismatch removal (completed 1회, last QA-20260420-0316)
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
 - rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
+- react-19-2-6-patch-alignment: Align root React and React DOM to 19.2.6 (completed 1회, last QA-20260511-0474)
 - readme-qa-evidence-sync-20260325: README QA evidence snapshot sync (completed 1회, last QA-20260325-0185)
 - redis-circuit-health-schema-production: Cloud Run /health exposes redis circuit state as structured object (completed 1회, last QA-20260430-0375)
 - release-dod-contract-test: Release DoD: API contract test 통과 (completed 1회, last QA-20260226-0008)
@@ -717,6 +718,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0474 | 2026-05-11T04:14:14.183Z | targeted | no | no | Local QA - React 19.2.6 Patch Alignment | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0473 | 2026-05-11T03:21:01.161Z | targeted | no | no | Local QA - AI Engine Pino v10 Alignment | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0472 | 2026-05-11T03:08:32.044Z | targeted | no | no | Local QA - API Metrics Route Status Label Contract | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0471 | 2026-05-11T02:44:40.590Z | targeted | no | no | Local QA - AI Engine Zod v4 Migration | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -736,4 +738,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0457 | 2026-05-10T05:49:28.256Z | targeted | yes | yes | v8.11.122 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0456 | 2026-05-10T05:38:01.711Z | targeted | no | yes | AI Explicit Server ID Clarification Skip QA | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0455 | 2026-05-10T04:38:12.410Z | targeted | yes | yes | v8.11.121 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260510-0454 | 2026-05-10T03:52:25.277Z | targeted | no | yes | Supabase Low-value Unused Index Cleanup QA | 19 | 1 | 0 | 0 | 0 | 0 |

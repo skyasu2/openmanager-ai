@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T03:21:01.161Z"
+    "updatedAt": "2026-05-11T04:14:14.183Z"
   },
   "sequence": {
-    "nextRunNumber": 474
+    "nextRunNumber": 475
   },
   "summary": {
-    "totalRecordedRuns": 471,
+    "totalRecordedRuns": 472,
     "totalRuns": 376,
-    "excludedRuns": 95,
+    "excludedRuns": 96,
     "totalChecks": 3342,
     "totalPassed": 3215,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 539,
+    "completedItems": 540,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
-    "expertDomainsTracked": 13,
+    "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0466",
     "lastRecordedAt": "2026-05-10T12:53:07.527Z",
-    "latestRecordedRunId": "QA-20260511-0473",
-    "latestRecordedAt": "2026-05-11T03:21:01.161Z"
+    "latestRecordedRunId": "QA-20260511-0474",
+    "latestRecordedAt": "2026-05-11T04:14:14.183Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13193,6 +13193,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-11T03:21:01.161Z"
+    },
+    "react-19-2-6-patch-alignment": {
+      "id": "react-19-2-6-patch-alignment",
+      "title": "Align root React and React DOM to 19.2.6",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260511-0474",
+      "firstSeenAt": "2026-05-11T04:14:14.183Z",
+      "lastSeenRunId": "QA-20260511-0474",
+      "lastSeenAt": "2026-05-11T04:14:14.183Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "react and react-dom updated from 19.2.4 to 19.2.6; npm registry latest confirmed as 19.2.6; import smoke, root type-check, and git diff whitespace check passed.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-11T04:14:14.183Z"
     }
   },
   "runs": [
@@ -50469,6 +50493,80 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0474",
+      "recordedAt": "2026-05-11T04:14:14.183Z",
+      "recordedAtKst": "2026-05-11 13:14:14 KST",
+      "title": "Local QA - React 19.2.6 Patch Alignment",
+      "owner": "codex",
+      "source": "local-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0474.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "Cloud Run AI Engine local source",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "0c5d69184fc4a3e37e747cc6b844a1b25a0f2cb8"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "Root React dependency alignment",
+        "Root React DOM dependency alignment",
+        "React package import smoke",
+        "Root TypeScript type-check",
+        "Dependency audit triage"
+      ],
+      "skippedSurfaces": [
+        "npm run test:quick",
+        "Vercel production browser QA",
+        "Cloud Run production smoke",
+        "live LLM/provider calls",
+        "conversational AI QA"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-platform",
+          "domainName": "Frontend Platform Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The change is a patch-level React and React DOM dependency alignment; installed package versions, import smoke, and root type-check passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Validation used a small high-signal set for a package-only patch and intentionally avoided broad test coverage chasing or live external QA.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -50545,16 +50643,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 193,
-      "appropriateCount": 175,
+      "seenCount": 194,
+      "appropriateCount": 176,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260511-0473",
-      "lastSeenAt": "2026-05-11T03:21:01.161Z",
+      "lastRunId": "QA-20260511-0474",
+      "lastSeenAt": "2026-05-11T04:14:14.183Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The validation avoided broad coverage chasing and used the smallest high-signal checks for the changed logger dependency surface.",
+      "lastRationale": "Validation used a small high-signal set for a package-only patch and intentionally avoided broad test coverage chasing or live external QA.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -50691,6 +50789,23 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "AI Assistant no longer exposes feedback actions while preserving the expected copy and regenerate controls.",
+      "lastNextAction": ""
+    },
+    "frontend-platform": {
+      "domainId": "frontend-platform",
+      "domainName": "Frontend Platform Engineer",
+      "firstSeenRunId": "QA-20260511-0474",
+      "firstSeenAt": "2026-05-11T04:14:14.183Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260511-0474",
+      "lastSeenAt": "2026-05-11T04:14:14.183Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The change is a patch-level React and React DOM dependency alignment; installed package versions, import smoke, and root type-check passed.",
       "lastNextAction": ""
     }
   }

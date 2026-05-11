@@ -1,24 +1,24 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-10 21:53:21 KST
+> Generated at: 2026-05-11 13:15:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 464 |
+| Recorded Runs | 472 |
 | Counted Runs | 376 |
 | Total Checks | 3342 |
 | Total Passed | 3215 |
 | Total Failed | 117 |
 | Overall Pass Rate | 96.2% |
-| Latest Recorded Run | QA-20260510-0466 |
+| Latest Recorded Run | QA-20260511-0474 |
 | Last Counted Run | QA-20260510-0466 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T12:53:07.527Z -> 2026-05-10T12:53:07.527Z (24h)
+- Window: 2026-05-10T04:14:14.183Z -> 2026-05-11T04:14:14.183Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -29,7 +29,7 @@
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T12:53:07.527Z -> 2026-05-10T12:53:07.527Z (24h)
+- Window: 2026-05-10T04:14:14.183Z -> 2026-05-11T04:14:14.183Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -70,7 +70,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 282 | 195 |
+| targeted | 290 | 195 |
 | legacy | 137 | 137 |
 | broad | 34 | 33 |
 | release-gate | 6 | 6 |
@@ -81,9 +81,9 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
-| P1 | 233 | 87 | 37.34% | 0 | 0 | 0% | 228 | 5 |
-| P2 | 245 | 56 | 22.86% | 0 | 0 | 0% | 230 | 15 |
-| P3 | 33 | 14 | 42.42% | 0 | 0 | 0% | 32 | 1 |
+| P1 | 234 | 87 | 37.18% | 0 | 0 | 0% | 229 | 5 |
+| P2 | 249 | 57 | 22.89% | 0 | 0 | 0% | 234 | 15 |
+| P3 | 35 | 14 | 40% | 0 | 0 | 0% | 34 | 1 |
 | P4 | 1 | 0 | 0% | 0 | 0 | 0% | 0 | 1 |
 
 ## Deployment Regression Correlation
