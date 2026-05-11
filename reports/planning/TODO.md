@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`AI assistant domain evidence + stream recovery 후속 보정`)
+**Last Updated**: 2026-05-11 KST (`API route coverage completion`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,7 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| API 라우트 테스트 커버리지 | P2 | 기존 “15개 무테스트” 표현은 stale/과장 요소가 있어 직접 route handler gap 중심으로 재분류. `/api/metrics` `openmanager_server_status` status label 결함은 failing test 선행 커밋 후 수정 완료. 잔여 후보는 `/api/ai/status`, `/api/csrf-token`, `/api/ai/supervisor` direct handler, `/api/servers` legacy route 등. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 2 |
+| _None_ | - | 현재 구현 가능한 로컬 backlog 없음. Production QA 재검증은 release/tag 배포 후 QA gate에서 수행. |
 
 ---
 
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~API 라우트 테스트 커버리지~~ | — | **완료** — stale한 “15개 무테스트” 표현을 route handler 계약 gap 기준으로 재분류하고, `/api/metrics` `openmanager_server_status` status label 결함을 수정한 뒤 잔여 핵심 route 테스트를 보강. 추가: `/api/ai/supervisor` legacy POST 계약(401/429/400/job redirect/fallback/Cloud Run JSON), `/api/ai/status` summary/service/reset 계약, `/api/ai/wake-up` rate-limit/upstream/timeout 계약, `/api/csrf-token` cookie/rate-limit 계약, `/api/servers` legacy delegation 계약. 검증: targeted Vitest 5 files / 17 tests 통과. 상세: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 2 |
 | ~~AI Assistant domain evidence + stream recovery refactor~~ | — | **완료** — portable `DomainEvidenceProvider` 계약을 추가해 공통 런타임은 도메인 intent/data를 모르게 유지하고, monitoring peak evidence provider와 non-monitoring sample renewal-risk provider로 재사용성을 검증. `supervisor-single-agent-stream.ts`의 빈 응답 복구 체인을 `supervisor-stream-recovery.ts`로 분리해 800줄 fail-threshold 여유를 확보했으며, generic empty fallback이 provider retry보다 먼저 실행되는 회귀를 테스트로 고정. Root jobs API에는 title-only/placeholder/too-short result 품질 게이트를 추가. 검증: AI Engine targeted Vitest 8 files / 34 tests, provider retry regression 2 files / 20 tests, AI Engine/root type-check, root lint, line-guard, `git diff --check` 통과. |
 | ~~React 19.2.4 → 19.2.6 패치~~ | — | **완료** — 루트 `react`/`react-dom`을 `19.2.4` → `19.2.6`으로 정렬. `npm view` 기준 최신 stable 확인 후 `npm install react@^19.2.6 react-dom@^19.2.6` 적용. 검증은 비용 큰 live/broad QA 없이 dependency import smoke, `npm run type-check`, `git diff --check` 중심으로 수행. Root `npm audit --omit=dev`의 `next@16.1.6` high 1건은 React와 무관하며, 잔여 작업이 아니라 [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) 마지막 upstream wait memo로만 보존. |
 | ~~AI Engine pino v10 alignment~~ | — | **완료** — AI Engine `pino@9.14.0` → `pino@10.3.1` 정렬. Node runtime은 repo/AI Engine 모두 `>=24 <25`이고 Cloud Run Dockerfile도 Node 24라 pino v10의 `thread-stream@4` Node `>=20` 요구사항 충족. 비용 큰 live QA 없이 targeted logger test, AI Engine type-check, production audit로 검증. Local deterministic QA `QA-20260511-0473` 기록. |

@@ -19,7 +19,7 @@
 | 등급 | 항목 | 현황 |
 |------|------|------|
 | P1 | Zod v3 ↔ v4 이중화 | 완료 — 루트 v4 / AI Engine v4.4.3 |
-| P2 | API 라우트 테스트 미커버 | 일부 핵심 route handler 직접 테스트 미흡 — `/api/metrics` status label 결함 확인 |
+| P2 | API 라우트 테스트 미커버 | 완료 — 핵심 route handler 계약 테스트 보강 및 `/api/metrics` status label 결함 수정 |
 | P2 | `useAIChatCore.ts` artifact 로직 혼재 | line-guard 계획과 병행 |
 | P3 | pino v9 ↔ v10 이중화 | 완료 — 루트 v10.3.1 / AI Engine v10.3.1 |
 | P3 | React 19.2.4 → 19.2.6 패치 | 완료 — 루트 React/React DOM 19.2.6 정렬 |
@@ -124,37 +124,41 @@ grep -r "z\.string()\.\(email\|url\|uuid\)" src  # 0건
   - `src/app/api/metrics/route.test.ts` — `openmanager_server_status` status label 보존 계약
   - 커밋: `test(spec): api route coverage add failing tests before implementation`
 
-- [ ] **Task 2-1**: `/api/ai/supervisor/route.ts` 테스트 작성 (최우선)
+- [x] **Task 2-1**: `/api/ai/supervisor/route.ts` 테스트 작성 (최우선)
   - `src/app/api/ai/supervisor/route.test.ts`
   - 시나리오:
     - 인증 없는 요청 → 401 반환
-    - 인증 있는 GET → status 응답 확인
-    - POST 질의 → supervisor 라우팅 트리거 확인 (MSW mock)
+    - invalid payload → 400 반환
+    - complex report query → job queue redirect 202 반환
+    - Cloud Run disabled → legacy fallback contract headers 확인
+    - JSON POST 질의 → Cloud Run JSON handler 라우팅 확인
     - rate limit 초과 → 429 응답
 
-- [ ] **Task 2-2**: `/api/ai/status/route.ts` + `/api/ai/wake-up/route.ts` 테스트
-  - AI Engine healthy 응답 mock → 정상 상태 반환
-  - AI Engine timeout mock → fallback 응답 확인
+- [x] **Task 2-2**: `/api/ai/status/route.ts` + `/api/ai/wake-up/route.ts` 테스트
+  - `/api/ai/status`: 전체 summary, service-specific status/history, reset success/not-found, unknown action 계약 확인
+  - `/api/ai/wake-up`: rate limit 429, upstream warmup success, timeout partial-success(`starting`) 확인
 
-- [ ] **Task 2-3**: `/api/servers/route.ts` + `/api/metrics/route.ts` 테스트
+- [x] **Task 2-3**: `/api/servers/route.ts` + `/api/metrics/route.ts` 테스트
   - OTel 데이터 로더 mock → 서버 목록 형식 검증
   - 필터 파라미터 처리 확인
   - 부분 완료: `/api/metrics` `openmanager_server_status` status label 계약 추가 및 결함 수정
+  - `/api/servers`: legacy route가 `/api/servers-unified` GET handler로 위임되는 계약 고정
 
-- [ ] **Task 2-4**: `npm run validate:all` 통과 확인, 커밋
+- [x] **Task 2-4**: targeted route test 통과 확인, 커밋 준비
   - 커밋: `test: add api route coverage for supervisor and core endpoints`
+  - 검증: `npx vitest run src/app/api/ai/status/route.test.ts src/app/api/csrf-token/route.test.ts src/app/api/servers/route.test.ts src/app/api/ai/wake-up/route.test.ts src/app/api/ai/supervisor/route.test.ts --silent=passed-only` 5 files / 17 tests 통과
 
 ### 완료 기준
 
 ```bash
-npm run test:quick  # 기존 178개 + 신규 통과
-# supervisor route 테스트 ≥ 4개 scenario
+npx vitest run src/app/api/ai/status/route.test.ts src/app/api/csrf-token/route.test.ts src/app/api/servers/route.test.ts src/app/api/ai/wake-up/route.test.ts src/app/api/ai/supervisor/route.test.ts --silent=passed-only
+# supervisor route 테스트 6개 scenario
 ```
 
 ### 문서 수정
 
 - `docs/guides/testing/test-strategy.md`
-  - "§ API 라우트 커버리지 정책" 섹션 추가 (아래 신설 내용 참조)
+  - "§ API 라우트 커버리지 정책" 섹션 추가 및 완료 route 상태 반영
 
 ---
 

@@ -191,10 +191,10 @@ AI 관련 릴리즈 QA(broad/release-gate scope)에는 대화형 QA 결과를 `q
 - `src/app/api/(auth)/**` — Next-Auth 내부 위임 처리
 - `src/app/api/error-report/**` — 단순 외부 로그 포워드
 
-**우선순위 라우트** (2026-05-11 기준 미커버):
-- `src/app/api/ai/supervisor/route.ts` — Critical
-- `src/app/api/ai/status/route.ts`, `ai/wake-up/route.ts` — Medium
-- `src/app/api/servers/route.ts`, `metrics/route.ts` — High
+**2026-05-11 보강 완료 route**:
+- `src/app/api/ai/supervisor/route.ts` — Critical 계약(401/429/400/job redirect/fallback/Cloud Run JSON)
+- `src/app/api/ai/status/route.ts`, `src/app/api/ai/wake-up/route.ts` — Medium 상태·warmup 분기
+- `src/app/api/servers/route.ts`, `src/app/api/metrics/route.ts`, `src/app/api/csrf-token/route.ts` — High/Low legacy·metric·token 계약
 
 ---
 
