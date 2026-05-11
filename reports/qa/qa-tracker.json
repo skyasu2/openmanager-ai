@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T09:35:30.250Z"
+    "updatedAt": "2026-05-11T12:56:25.517Z"
   },
   "sequence": {
-    "nextRunNumber": 478
+    "nextRunNumber": 479
   },
   "summary": {
-    "totalRecordedRuns": 475,
-    "totalRuns": 377,
+    "totalRecordedRuns": 476,
+    "totalRuns": 378,
     "excludedRuns": 98,
-    "totalChecks": 3359,
-    "totalPassed": 3231,
+    "totalChecks": 3363,
+    "totalPassed": 3235,
     "totalFailed": 118,
-    "completionRate": 99.82,
-    "completedItems": 540,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 541,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260511-0475",
-    "lastRecordedAt": "2026-05-11T04:57:44.283Z",
-    "latestRecordedRunId": "QA-20260511-0477",
-    "latestRecordedAt": "2026-05-11T09:35:30.250Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260511-0478",
+    "lastRecordedAt": "2026-05-11T12:56:25.517Z",
+    "latestRecordedRunId": "QA-20260511-0478",
+    "latestRecordedAt": "2026-05-11T12:56:25.517Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13222,25 +13222,25 @@
       "id": "ai-assistant-24h-peak-load-empty-response-v811124",
       "title": "Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260511-0475",
       "firstSeenAt": "2026-05-11T04:57:44.283Z",
-      "lastSeenRunId": "QA-20260511-0477",
-      "lastSeenAt": "2026-05-11T09:35:30.250Z",
-      "seenCount": 3,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260511-0478",
+      "lastSeenAt": "2026-05-11T12:56:25.517Z",
+      "seenCount": 4,
+      "completedCount": 1,
       "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "reports/qa/evidence/qa-20260511-peak-variants-result.json",
-      "lastNote": "Variant probe: natural phrasing answered with recent/current metric evidence, compact '24h/load1/peak' phrasing incorrectly requested a specific server, and explicit whole-fleet phrasing returned a useful answer but still showed recent-1h metadata and load1/CPU unit ambiguity.",
+      "lastEvidence": "reports/qa/evidence/qa-20260511-v811127-peak-load-result.json",
+      "lastNote": "Closed on v8.11.127. Both natural Korean and compact 24h/load1/peak whole-fleet queries bypassed clarification and returned metric-grounded peak time plus server evidence.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-11T09:35:30.250Z"
+      "lastStatusChangeAt": "2026-05-11T12:56:25.517Z"
     }
   },
   "runs": [
@@ -51098,6 +51098,119 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0478",
+      "recordedAt": "2026-05-11T12:56:25.517Z",
+      "recordedAtKst": "2026-05-11 21:56:25 KST",
+      "title": "Vercel Playwright QA - AI Peak Load Semantic Intent Closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0478.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_AfNDWaTRvJFBtV8v2iiKJx5enYB5",
+        "deploymentUrl": "https://openmanager-gykosy0tx-skyasus-projects.vercel.app",
+        "commitSha": "28813729d8cbde84483e17c280083edb50e4271b"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /dashboard AI sidebar opened with AI engine status Ready",
+        "/api/version confirmed v8.11.127 / 28813729d8cbde84483e17c280083edb50e4271b",
+        "Natural Korean peak-load query: 지난 24시간 중 가장 부하가 높았던 시간대는 언제야? 근거와 상위 서버도 알려줘.",
+        "Compact peak-load query: 24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?",
+        "Clarification prompt did not appear for either whole-fleet peak-load query",
+        "Answers included peak time, load/load1 value, and affected server evidence"
+      ],
+      "skippedSurfaces": [
+        "Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost after two focused issue-closure prompts",
+        "Core route pack beyond /dashboard and /api/version",
+        "Reporter Agent",
+        "Analyst Agent",
+        "mobile viewport",
+        "Cloud Run admin observability surface"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previously open P1 peak-load phrasing issue was retested on the release-facing v8.11.127 deployment and both representative phrasings returned evidence-grounded answers without clarification blocking.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The live QA scope was intentionally narrow and paired with deterministic unit coverage for the two clarification regressions to avoid unnecessary LLM cost.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-11T21:54:05+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.11.127 targeted AI QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI peak-load v8.11.127 closure screenshot",
+          "path": "reports/qa/evidence/qa-20260511-v811127-peak-load.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI peak-load v8.11.127 structured result",
+          "path": "reports/qa/evidence/qa-20260511-v811127-peak-load-result.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "v8.11.127 release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2515981344"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-gykosy0tx-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -51106,17 +51219,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 229,
-      "appropriateCount": 198,
+      "seenCount": 230,
+      "appropriateCount": 199,
       "partialCount": 31,
       "inappropriateCount": 0,
       "improvementNeededCount": 41,
-      "lastRunId": "QA-20260511-0477",
-      "lastSeenAt": "2026-05-11T09:35:30.250Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Variant testing confirmed the production issue is broader than one empty/generic response: whole-fleet 24h peak-load intent is wording-sensitive, compact load1/24h phrasing triggers clarification, and passing phrasing still exposes a 1h evidence metadata mismatch.",
-      "lastNextAction": "Implement and deploy a domain evidence path that normalizes whole-fleet 24h peak/load/load1 phrasings, returns metric-grounded time slot plus top servers, and labels the evidence window accurately."
+      "lastRunId": "QA-20260511-0478",
+      "lastSeenAt": "2026-05-11T12:56:25.517Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The previously open P1 peak-load phrasing issue was retested on the release-facing v8.11.127 deployment and both representative phrasings returned evidence-grounded answers without clarification blocking.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -51174,16 +51287,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 197,
-      "appropriateCount": 179,
+      "seenCount": 198,
+      "appropriateCount": 180,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260511-0477",
-      "lastSeenAt": "2026-05-11T09:35:30.250Z",
+      "lastRunId": "QA-20260511-0478",
+      "lastSeenAt": "2026-05-11T12:56:25.517Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "This was correctly scoped as a small non-counting variant probe on unchanged production, with screenshot and structured evidence captured.",
+      "lastRationale": "The live QA scope was intentionally narrow and paired with deterministic unit coverage for the two clarification regressions to avoid unnecessary LLM cost.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

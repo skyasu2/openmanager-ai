@@ -1,0 +1,33 @@
+{
+  "target": "https://openmanager-ai.vercel.app",
+  "version": "8.11.127",
+  "releaseTag": "v8.11.127",
+  "commitSha": "28813729d8cbde84483e17c280083edb50e4271b",
+  "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2515981344",
+  "vercelDeploymentId": "dpl_AfNDWaTRvJFBtV8v2iiKJx5enYB5",
+  "vercelDeploymentUrl": "https://openmanager-gykosy0tx-skyasus-projects.vercel.app",
+  "checks": [
+    {
+      "name": "production version",
+      "status": "pass",
+      "observed": "8.11.127"
+    },
+    {
+      "name": "natural Korean 24h peak-load query",
+      "status": "pass",
+      "query": "지난 24시간 중 가장 부하가 높았던 시간대는 언제야? 근거와 상위 서버도 알려줘.",
+      "observed": "No clarification prompt. Answer included 2026-05-11 03:50, load value 16.58, and db-mysql-dc1-primary as the top affected server."
+    },
+    {
+      "name": "compact 24h load1 peak query",
+      "status": "pass",
+      "query": "24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?",
+      "observed": "No clarification prompt. Answer included 2026-05-11 03:50, load1 value 16.58, top average 9.08, and top servers db-mysql-dc1-primary, db-mysql-dc1-replica, api-was-dc1-01."
+    },
+    {
+      "name": "cost usage",
+      "status": "pass",
+      "observed": "Vercel usage checked after QA: effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090."
+    }
+  ]
+}
