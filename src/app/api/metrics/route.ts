@@ -139,7 +139,9 @@ async function executePromQLQuery(
       instance: m.serverId,
       job: m.serverType,
       environment: m.environment ?? 'production',
-      ...(metricName === 'server_status' ? { status: m.status } : {}),
+      ...(metricName === 'openmanager_server_status'
+        ? { status: m.status }
+        : {}),
     },
     value: [ts, extractor(m)],
   }));

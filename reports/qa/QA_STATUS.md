@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-11 11:44:41 KST
+> Generated at: 2026-05-11 12:08:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 469 |
+| Total Recorded Runs | 470 |
 | Total Runs (Counted) | 376 |
-| Non-counted Runs | 93 |
+| Non-counted Runs | 94 |
 | Total Checks | 3342 |
 | Passed | 3215 |
 | Failed | 117 |
-| Completed Items | 537 |
+| Completed Items | 538 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
-| Latest Recorded Run | QA-20260511-0471 (2026-05-11T02:44:40.590Z) |
+| Latest Recorded Run | QA-20260511-0472 (2026-05-11T03:08:32.044Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,13 +34,12 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260511-0471 (2026-05-11T02:44:40.590Z)
+Latest run: QA-20260511-0472 (2026-05-11T03:08:32.044Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -50,7 +49,7 @@ Latest run: QA-20260511-0471 (2026-05-11T02:44:40.590Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-10T02:44:40.590Z -> 2026-05-11T02:44:40.590Z (24h)
+- Window: 2026-05-10T03:08:32.044Z -> 2026-05-11T03:08:32.044Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -61,7 +60,7 @@ Latest run: QA-20260511-0471 (2026-05-11T02:44:40.590Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-10T02:44:40.590Z -> 2026-05-11T02:44:40.590Z (24h)
+- Window: 2026-05-10T03:08:32.044Z -> 2026-05-11T03:08:32.044Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,9 +74,9 @@ Latest run: QA-20260511-0471 (2026-05-11T02:44:40.590Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 6293ea22
-- Coverage Packs: ai-core
-- Covered Surfaces: AI Engine zod runtime dependency alignment, Vision URL tool schema validation, Agent structured output schemas, Orchestrator structured routing parse, Server metrics z.record schemas, AI Engine type-check, Vitest suites, and npm audit
+- Deployment: SHA 5e143ab2
+- Coverage Packs: core-routes-smoke, observability-pack
+- Covered Surfaces: /api/metrics route handler, PromQL metric registry response, openmanager_server_status PromQL vector contract, Root App type-check, lint, quick tests, and contract tests
 - Skipped Surfaces: Vercel production browser QA, Cloud Run production smoke, live LLM/provider calls, conversational AI QA
 
 ## Links (Latest Run)
@@ -363,6 +362,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - analyst-sidebar-state-retention-chat-switch: Analyst 선택 서버와 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - analyst-state-loss-on-chat-switch: Analyst 선택 서버와 결과가 chat 전환 후 유지 (completed 1회, last QA-20260319-0127)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
+- api-metrics-route-status-label-contract: Preserve status label for openmanager_server_status (completed 1회, last QA-20260511-0472)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - approval-history-runtime-smoke: approvalStore pending/decision/history/stats runtime path verified (completed 1회, last QA-20260411-0270)
 - assistant-plan-result-facade-m2: AssistantPlan and AssistantResult facade metadata released (completed 1회, last QA-20260503-0397)
@@ -716,6 +716,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0472 | 2026-05-11T03:08:32.044Z | targeted | no | no | Local QA - API Metrics Route Status Label Contract | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0471 | 2026-05-11T02:44:40.590Z | targeted | no | no | Local QA - AI Engine Zod v4 Migration | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0470 | 2026-05-11T02:13:17.338Z | targeted | no | no | Local QA - Line Guard Hotspot Buffer Polish | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0469 | 2026-05-11T02:04:07.454Z | targeted | no | no | Local QA - Line Guard Current Hotspots Refactor | 13 | 1 | 0 | 0 | 0 | 0 |
@@ -735,4 +736,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0455 | 2026-05-10T04:38:12.410Z | targeted | yes | yes | v8.11.121 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0454 | 2026-05-10T03:52:25.277Z | targeted | no | yes | Supabase Low-value Unused Index Cleanup QA | 19 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0453 | 2026-05-10T03:33:36.166Z | targeted | no | yes | RAG Corpus Governance Rebaseline QA | 16 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260510-0452 | 2026-05-10T03:28:05.443Z | targeted | no | yes | RAG Command Vector Backfill and Legacy Seed Cleanup QA | 31 | 3 | 0 | 0 | 0 | 0 |

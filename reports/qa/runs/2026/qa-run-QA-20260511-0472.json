@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260511-0472",
+  "recordedAt": "2026-05-11T03:08:32.044Z",
+  "recordedAtKst": "2026-05-11 12:08:32 KST",
+  "runTitle": "Local QA - API Metrics Route Status Label Contract",
+  "owner": "codex",
+  "source": "local-cli",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "Cloud Run AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "5e143ab2ef57685b2ff4630abcb1c3b6bcba9f7c"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": [
+    "/api/metrics route handler",
+    "PromQL metric registry response",
+    "openmanager_server_status PromQL vector contract",
+    "Root App type-check, lint, quick tests, and contract tests"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "Cloud Run production smoke",
+    "live LLM/provider calls",
+    "conversational AI QA"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "A failing route-level regression test first reproduced the missing status label, then the fix passed targeted, quick, contract, lint, and type-check gates.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The PromQL-style server status vector now preserves the server status label needed for downstream observability consumers.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "api-metrics-route-status-label-contract",
+      "title": "Preserve status label for openmanager_server_status",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/app/api/metrics/route.test.ts reproduced the missing status label before implementation; the route now emits status for openmanager_server_status.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Analysis found that the old '15 untested routes' statement was stale/over-broad: several routes have helper, integration, or stream tests already.",
+    "The remaining API route coverage issue is real where direct route handler contracts are missing; /api/metrics exposed an actual status label bug.",
+    "SDD failing-test baseline was committed first: 5e143ab2e test(spec): api route coverage add failing tests before implementation.",
+    "npx vitest run src/app/api/metrics/route.test.ts --silent=passed-only passed after implementation: 1 file / 2 tests.",
+    "npm run type-check passed.",
+    "npm run lint passed.",
+    "npm run test:quick passed.",
+    "npm run test:contract passed: 3 files / 24 tests.",
+    "npm run docs:budget, npm run docs:ai-consistency, and git diff --check passed.",
+    "No live AI, Vercel, Cloud Run production, or external provider call was executed for this deterministic local QA run."
+  ],
+  "links": []
+}

@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T02:44:40.590Z"
+    "updatedAt": "2026-05-11T03:08:32.044Z"
   },
   "sequence": {
-    "nextRunNumber": 472
+    "nextRunNumber": 473
   },
   "summary": {
-    "totalRecordedRuns": 469,
+    "totalRecordedRuns": 470,
     "totalRuns": 376,
-    "excludedRuns": 93,
+    "excludedRuns": 94,
     "totalChecks": 3342,
     "totalPassed": 3215,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 537,
+    "completedItems": 538,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0466",
     "lastRecordedAt": "2026-05-10T12:53:07.527Z",
-    "latestRecordedRunId": "QA-20260511-0471",
-    "latestRecordedAt": "2026-05-11T02:44:40.590Z"
+    "latestRecordedRunId": "QA-20260511-0472",
+    "latestRecordedAt": "2026-05-11T03:08:32.044Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13145,6 +13145,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-11T02:44:40.590Z"
+    },
+    "api-metrics-route-status-label-contract": {
+      "id": "api-metrics-route-status-label-contract",
+      "title": "Preserve status label for openmanager_server_status",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260511-0472",
+      "firstSeenAt": "2026-05-11T03:08:32.044Z",
+      "lastSeenRunId": "QA-20260511-0472",
+      "lastSeenAt": "2026-05-11T03:08:32.044Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/app/api/metrics/route.test.ts reproduced the missing status label before implementation; the route now emits status for openmanager_server_status.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-11T03:08:32.044Z"
     }
   },
   "runs": [
@@ -50276,6 +50300,78 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0472",
+      "recordedAt": "2026-05-11T03:08:32.044Z",
+      "recordedAtKst": "2026-05-11 12:08:32 KST",
+      "title": "Local QA - API Metrics Route Status Label Contract",
+      "owner": "codex",
+      "source": "local-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0472.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "Cloud Run AI Engine local source",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "5e143ab2ef57685b2ff4630abcb1c3b6bcba9f7c"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/api/metrics route handler",
+        "PromQL metric registry response",
+        "openmanager_server_status PromQL vector contract",
+        "Root App type-check, lint, quick tests, and contract tests"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "Cloud Run production smoke",
+        "live LLM/provider calls",
+        "conversational AI QA"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "A failing route-level regression test first reproduced the missing status label, then the fix passed targeted, quick, contract, lint, and type-check gates.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The PromQL-style server status vector now preserves the server status label needed for downstream observability consumers.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -50301,16 +50397,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 112,
-      "appropriateCount": 82,
+      "seenCount": 113,
+      "appropriateCount": 83,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260507-0418",
-      "lastSeenAt": "2026-05-06T21:59:27.519Z",
+      "lastRunId": "QA-20260511-0472",
+      "lastSeenAt": "2026-05-11T03:08:32.044Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The representative OTel query resolved the expected SSOT paths and explicitly avoided non-repo /opt/otel style paths.",
+      "lastRationale": "The PromQL-style server status vector now preserves the server status label needed for downstream observability consumers.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -50352,16 +50448,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 191,
-      "appropriateCount": 173,
+      "seenCount": 192,
+      "appropriateCount": 174,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260511-0471",
-      "lastSeenAt": "2026-05-11T02:44:40.590Z",
+      "lastRunId": "QA-20260511-0472",
+      "lastSeenAt": "2026-05-11T03:08:32.044Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The migration was covered by an SDD failing-test baseline, targeted schema regressions, full AI Engine Vitest, type-check, and audit gates.",
+      "lastRationale": "A failing route-level regression test first reproduced the missing status label, then the fix passed targeted, quick, contract, lint, and type-check gates.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

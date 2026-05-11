@@ -107,7 +107,7 @@ grep -r "z\.string()\.\(email\|url\|uuid\)" src  # 0건
 소스 파일 645개 대비 테스트 파일 423개로 전체 비율 65%는 양호하나, 일부 핵심 API route handler는 직접 테스트가 부족하다. 기존 "15개 무테스트" 표현은 현재 코드 기준으로 stale/과장 요소가 있다. 예를 들어 `/api/ai/supervisor`는 route handler 직접 테스트는 없지만 security/request/cloud-run/cache/session/stream 하위 테스트가 다수 존재한다. 따라서 이 작업은 숫자형 커버리지 확대가 아니라 실제 route handler 계약 결함을 고정하는 방향으로 축소한다.
 
 **확인된 실제 결함**:
-- `src/app/api/metrics/route.ts`는 `openmanager_server_status` metric을 지원하지만, PromQL 결과에 `status` label을 붙이는 조건이 `server_status`로 되어 있어 status label이 누락될 수 있다.
+- [x] `src/app/api/metrics/route.ts`는 `openmanager_server_status` metric을 지원하지만, PromQL 결과에 `status` label을 붙이는 조건이 `server_status`로 되어 있어 status label이 누락될 수 있었다. `src/app/api/metrics/route.test.ts` failing test 선행 커밋 후 `openmanager_server_status` 조건으로 수정 완료. Local deterministic QA `QA-20260511-0472` 기록.
 
 **무테스트 라우트 (우선순위 기준)**:
 
@@ -122,7 +122,7 @@ grep -r "z\.string()\.\(email\|url\|uuid\)" src  # 0건
 
 ### 작업 단계
 
-- [ ] **Task 2-0** (SDD): failing test 파일 선행 커밋
+- [x] **Task 2-0** (SDD): failing test 파일 선행 커밋
   - `src/app/api/metrics/route.test.ts` — `openmanager_server_status` status label 보존 계약
   - 커밋: `test(spec): api route coverage add failing tests before implementation`
 
@@ -141,6 +141,7 @@ grep -r "z\.string()\.\(email\|url\|uuid\)" src  # 0건
 - [ ] **Task 2-3**: `/api/servers/route.ts` + `/api/metrics/route.ts` 테스트
   - OTel 데이터 로더 mock → 서버 목록 형식 검증
   - 필터 파라미터 처리 확인
+  - 부분 완료: `/api/metrics` `openmanager_server_status` status label 계약 추가 및 결함 수정
 
 - [ ] **Task 2-4**: `npm run validate:all` 통과 확인, 커밋
   - 커밋: `test: add api route coverage for supervisor and core endpoints`
