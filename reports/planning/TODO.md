@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`Planning cleanup completion`)
+**Last Updated**: 2026-05-12 KST (`Semantic query routing plan approved`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 진행 중인 구현 작업 없음 |
+| AI Assistant Semantic Query Routing Phase 3 | High | Approved | Root `SemanticIntentFrame`을 Cloud Run `DomainIntentFrame` metadata로 연결하고, resolver/evidence validation/semantic trace를 보강. 계획서: [ai-assistant-semantic-query-routing-plan.md](ai-assistant-semantic-query-routing-plan.md) |
 
 ---
 
