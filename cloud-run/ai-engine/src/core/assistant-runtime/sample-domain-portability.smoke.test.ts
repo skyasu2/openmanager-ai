@@ -114,4 +114,26 @@ describe('sample domain pack portability smoke', () => {
       },
     });
   });
+
+  it('exposes a sample capability manifest without leaking provider implementation names', () => {
+    const capabilities = (
+      sampleDomainPack as unknown as { capabilities?: unknown }
+    ).capabilities;
+
+    expect(capabilities).toMatchObject({
+      domainId: 'sample-customer-success',
+      capabilities: [
+        {
+          id: 'sample.renewal_risk',
+          description: 'Sample renewal risk evidence lookup.',
+          intents: ['renewal_risk'],
+          requiredSlots: ['targets'],
+          optionalSlots: ['aggregation'],
+        },
+      ],
+    });
+    expect(JSON.stringify(capabilities)).not.toContain(
+      'sampleRenewalRiskEvidenceProvider'
+    );
+  });
 });

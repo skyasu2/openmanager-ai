@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`Semantic Intent Frame Phase 1 completion`)
+**Last Updated**: 2026-05-11 KST (`Domain Capability Resolver Phase 2 start`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 진행 중인 구현 작업 없음 |
+| AI Assistant Domain Capability Resolver Phase 2 | High | Approved | AI Engine evidence provider 선택을 domain-neutral capability/intent frame 계약으로 확장. 상세: [ai-assistant-domain-capability-resolver-plan.md](ai-assistant-domain-capability-resolver-plan.md) |
 
 ---
 

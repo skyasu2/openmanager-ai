@@ -292,10 +292,27 @@ describe('assistant runtime scaffold contract', () => {
     expect(source).toContain('dataSource?: DomainDataSource');
     expect(source).toContain('interface DomainEvidenceProvider');
     expect(source).toContain('interface DomainEvidenceResult');
+    expect(source).toContain('interface DomainCapability');
+    expect(source).toContain('interface DomainCapabilityManifest');
+    expect(source).toContain('interface DomainIntentFrame');
+    expect(source).toContain('interface DomainIntentParser');
+    expect(source).toContain('capabilities?: DomainCapabilityManifest');
+    expect(source).toContain('intentParser?: DomainIntentParser');
+    expect(source).toContain('intentFrame?: DomainIntentFrame');
+    expect(source).toContain('capability?: DomainCapability');
     expect(source).toContain('evidenceProviders?: DomainEvidenceProvider[]');
     expect(source).not.toContain('PrecomputedSlot');
     expect(source).not.toContain('ServerSnapshot');
     expect(source).not.toContain('PeakMetric');
+  });
+
+  it('exports capability and intent-frame contracts from the public runtime facade', () => {
+    const source = readFileSync(PUBLIC_RUNTIME_FACADE, 'utf8');
+
+    expect(source).toContain('DomainCapability');
+    expect(source).toContain('DomainCapabilityManifest');
+    expect(source).toContain('DomainIntentFrame');
+    expect(source).toContain('DomainIntentParser');
   });
 
   it('provides deterministic in-memory adapters for portability smoke tests', async () => {
