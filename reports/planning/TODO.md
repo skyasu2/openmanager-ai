@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`Line guard current hotspots refactor 완료`)
+**Last Updated**: 2026-05-11 KST (`Zod v4 AI Engine 마이그레이션 착수`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 활성 구현 작업 없음. |
+| Zod v4 AI Engine 마이그레이션 | P1 | In Progress (Codex) | Task 1-0 SDD failing tests 작성 중. 루트 `zod@4.3.6` / AI Engine `zod@3.25.76` 이중화 해소. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 1 |
 
 ---
 
@@ -22,7 +22,6 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | Dependency security audit follow-up | P1 | 2026-05-11 재확인: Root `npm audit --omit=dev`/full audit는 `next@16.1.6` high 1건(CVE 6종 묶음)만 잔류, AI Engine production/full audit는 0건. Vercel changelog 기준 패치 버전은 `next@16.2.6`(2026-05-07 발표)이나 npm stable registry에 미등록 — `npm view next dist-tags.latest`가 여전히 `16.1.6`. `npm audit fix --force`는 `next@15.5.12` breaking downgrade를 제안하므로 금지 유지. 같은-major fixed release가 `npm view next dist-tags.latest`에 `16.1.7` 이상 또는 `16.2.x` stable로 반영되면 즉시 `npm install next@latest`로 업데이트. dev critical `commit-and-tag-version -> handlebars` 체인은 내부 release tool로 대체 완료, AI Engine Google Cloud logging low 체인은 `pino-logging-gcp-config` 제거·내부 구현으로 해소 완료. |
-| Zod v4 AI Engine 마이그레이션 | P1 | 루트 `zod@4.3.6` / AI Engine `zod@3.25.76` 이중화 상태. `z.string().url()` 등 v3 API 사용 파일 확인 필요. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 1 |
 | API 라우트 테스트 커버리지 | P2 | `/api/ai/supervisor/route.ts` 포함 핵심 라우트 15개 무테스트. supervisor → status → wake-up → servers → metrics → csrf 순. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 2 |
 | pino v9 → v10 AI Engine 정렬 | P3 | AI Engine `pino@9.6.0`, 루트 `pino@10.3.1`. logger.ts 전면 재작성 직후라 v10 정렬 비용 낮음. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 3 |
 | React 19.2.4 → 19.2.6 패치 | P3 | 2 patch 뒤처짐. 단순 버전업. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 4 |
