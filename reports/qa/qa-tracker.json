@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-10T16:02:00.870Z"
+    "updatedAt": "2026-05-11T02:13:17.338Z"
   },
   "sequence": {
-    "nextRunNumber": 469
+    "nextRunNumber": 471
   },
   "summary": {
-    "totalRecordedRuns": 466,
+    "totalRecordedRuns": 468,
     "totalRuns": 376,
-    "excludedRuns": 90,
+    "excludedRuns": 92,
     "totalChecks": 3342,
     "totalPassed": 3215,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 535,
+    "completedItems": 536,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0466",
     "lastRecordedAt": "2026-05-10T12:53:07.527Z",
-    "latestRecordedRunId": "QA-20260511-0468",
-    "latestRecordedAt": "2026-05-10T16:02:00.870Z"
+    "latestRecordedRunId": "QA-20260511-0470",
+    "latestRecordedAt": "2026-05-11T02:13:17.338Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13097,6 +13097,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-10T16:02:00.870Z"
+    },
+    "line-guard-current-hotspots-refactor": {
+      "id": "line-guard-current-hotspots-refactor",
+      "title": "Add line-count buffer for near-threshold AI Engine stream files",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260511-0469",
+      "firstSeenAt": "2026-05-11T02:04:07.454Z",
+      "lastSeenRunId": "QA-20260511-0470",
+      "lastSeenAt": "2026-05-11T02:13:17.338Z",
+      "seenCount": 2,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "orchestrator-agent-stream.ts reduced to 786 lines and supervisor-single-agent-stream.ts reduced to 791 lines; npm run line-guard passed with 0 fail-threshold violations.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-11T02:13:17.338Z"
     }
   },
   "runs": [
@@ -50000,6 +50024,153 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0469",
+      "recordedAt": "2026-05-11T02:04:07.454Z",
+      "recordedAtKst": "2026-05-11 11:04:07 KST",
+      "title": "Local QA - Line Guard Current Hotspots Refactor",
+      "owner": "codex",
+      "source": "local-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0469.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "Cloud Run AI Engine local source",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "8ed8df05451aeeb392cf767c1865f125390ddefa"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Line guard production TS/TSX fail threshold gate",
+        "Root App useAIChatCore artifact/debug helper extraction",
+        "Cloud Run supervisor stream and single-agent stream helper extraction",
+        "Cloud Run orchestrator agent stream fallback/quota helper extraction",
+        "Cloud Run forced routing direct-knowledge, topology, and telemetry helper extraction",
+        "Cloud Run async jobs route request contract and result metadata helper extraction",
+        "Root App type/lint/quick/contract gates",
+        "Cloud Run AI Engine type/full test gates",
+        "Planning TODO and line-guard refactor closure evidence"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "Cloud Run production smoke",
+        "live LLM/provider calls",
+        "production conversational AI QA"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The refactor was verified with line-guard, targeted Vitest suites, root deterministic gates, and full AI Engine tests without changing public API shapes.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI stream, forced routing, job route, and artifact integration behavior were protected by deterministic regression suites; no live provider behavior was intentionally changed.",
+          "nextAction": "Run production conversational QA after the next deploy if this refactor is bundled with runtime AI behavior changes."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run AI Engine type/full tests and route-specific regression suites passed after splitting large stream, routing, and jobs modules.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0470",
+      "recordedAt": "2026-05-11T02:13:17.338Z",
+      "recordedAtKst": "2026-05-11 11:13:17 KST",
+      "title": "Local QA - Line Guard Hotspot Buffer Polish",
+      "owner": "codex",
+      "source": "local-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0470.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "Cloud Run AI Engine local source",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "8ed8df05451aeeb392cf767c1865f125390ddefa"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Line guard fail-threshold gate after near-threshold helper extraction",
+        "Cloud Run orchestrator agent stream server-count helper extraction",
+        "Cloud Run supervisor single-agent hard-timeout event helper extraction",
+        "AI Engine type-check and stream/routing targeted regression tests"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "Cloud Run production smoke",
+        "live LLM/provider calls"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The post-closure helper extraction changed only local helper boundaries and was covered by line-guard, AI Engine type-check, and stream/routing regression suites.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -50008,17 +50179,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 224,
-      "appropriateCount": 196,
+      "seenCount": 225,
+      "appropriateCount": 197,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 38,
-      "lastRunId": "QA-20260511-0468",
-      "lastSeenAt": "2026-05-10T16:02:00.870Z",
+      "lastRunId": "QA-20260511-0469",
+      "lastSeenAt": "2026-05-11T02:04:07.454Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Ops artifact routing, follow-up edits, renderer support, and safety validators are covered by deterministic regression tests without live provider calls.",
-      "lastNextAction": "Run production conversational QA for script, Alertmanager, and log-runbook prompts after the next release deployment."
+      "lastRationale": "AI stream, forced routing, job route, and artifact integration behavior were protected by deterministic regression suites; no live provider behavior was intentionally changed.",
+      "lastNextAction": "Run production conversational QA after the next deploy if this refactor is bundled with runtime AI behavior changes."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -50059,16 +50230,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 156,
-      "appropriateCount": 139,
+      "seenCount": 157,
+      "appropriateCount": 140,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260511-0468",
-      "lastSeenAt": "2026-05-10T16:02:00.870Z",
+      "lastRunId": "QA-20260511-0469",
+      "lastSeenAt": "2026-05-11T02:04:07.454Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Generated artifacts preserve manual review, no secret persistence, no auto-execution, and notification-only/read-only safety levels for operational outputs.",
+      "lastRationale": "Cloud Run AI Engine type/full tests and route-specific regression suites passed after splitting large stream, routing, and jobs modules.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -50076,16 +50247,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 188,
-      "appropriateCount": 170,
+      "seenCount": 190,
+      "appropriateCount": 172,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260510-0466",
-      "lastSeenAt": "2026-05-10T12:53:07.527Z",
+      "lastRunId": "QA-20260511-0470",
+      "lastSeenAt": "2026-05-11T02:13:17.338Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Targeted Playwright MCP production QA covered the changed AI Chat starter prompt, sidebar fullscreen handoff, and Analyst auto-analysis surfaces after deployment.",
+      "lastRationale": "The post-closure helper extraction changed only local helper boundaries and was covered by line-guard, AI Engine type-check, and stream/routing regression suites.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

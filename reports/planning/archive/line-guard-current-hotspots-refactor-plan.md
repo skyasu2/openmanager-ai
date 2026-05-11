@@ -1,12 +1,12 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-11
 > Tags: refactor,line-guard,ai-assistant,ai-engine,hotspots
 
 # Line Guard Current Hotspots Refactor Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-11
 - TODO.md 연결: Active Tasks > Line guard current hotspots refactor
 - 기준 게이트: `npm run line-guard`
@@ -20,12 +20,19 @@
 ## 현재 상태
 
 ```text
-npm run line-guard
+npm run line-guard (initial baseline, 2026-05-11)
   warn threshold: 500+
   fail threshold: 800+
   result: FAIL
   warn files: 40
   fail files: 5
+
+npm run line-guard (after Task 2, 2026-05-11)
+  result: FAIL
+  fail files: 2
+  remaining fail:
+    - cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-routing.ts (1182)
+    - cloud-run/ai-engine/src/routes/jobs.ts (978)
 ```
 
 ### 2026-05-11 진행 현황
@@ -35,20 +42,35 @@ npm run line-guard
 - 신규 helper: `chat-artifact-execution.ts` 302줄, `chat-artifact-metadata.ts` 347줄, `routing-debug-messages.ts` 130줄.
 - 현재 `npm run line-guard` 기준 fail은 5건 → 4건으로 감소. 남은 fail은 `supervisor-stream.ts`, `orchestrator-agent-stream.ts`, `orchestrator-routing.ts`, `routes/jobs.ts`.
 - 검증: `npm run test:dom -- src/hooks/ai/useAIChatCore.test.ts`, `npm run type-check`, `npm run lint` 통과.
+- Task 2 완료: `supervisor-stream.ts` 1,494줄 → 260줄, `orchestrator-agent-stream.ts` 1,202줄 → 799줄.
+- 신규 AI Engine helper: `stream-provider-fallback.ts`, `stream-quota.ts`, `supervisor-single-agent-stream.ts`, `supervisor-stream-helpers.ts`, `supervisor-direct-knowledge-stream.ts`, `supervisor-single-agent-events.ts`, `orchestrator-agent-stream-helpers.ts`.
+- 현재 `npm run line-guard` 기준 fail은 5건 → 2건으로 감소. 남은 fail은 `orchestrator-routing.ts`, `routes/jobs.ts`.
+- 검증: `cd cloud-run/ai-engine && npm run type-check`, AI Engine stream targeted tests, `cd cloud-run/ai-engine && npm run test` 통과. `npm run line-guard`는 남은 P2 대상 2건 때문에 fail 유지.
+- Task 3 완료: `orchestrator-routing.ts` 1,182줄 → 691줄.
+- 신규 routing helper: `orchestrator-routing-direct-knowledge.ts`, `orchestrator-routing-topology.ts`, `orchestrator-routing-telemetry.ts`.
+- 현재 `npm run line-guard` 기준 fail은 5건 → 1건으로 감소. 남은 fail은 `routes/jobs.ts`.
+- 검증: `cd cloud-run/ai-engine && npm run type-check`, `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-routing.test.ts --silent=passed-only` 통과.
+- Task 4 완료: `routes/jobs.ts` 978줄 → 738줄.
+- 신규 jobs helper: `jobs-request-contract.ts`, `jobs-result-metadata.ts`.
+- 현재 `npm run line-guard` 기준 800줄 이상 fail 0건. 500줄 이상 warn 41건은 관찰 대상으로 유지.
+- 검증: `cd cloud-run/ai-engine && npm run type-check`, `cd cloud-run/ai-engine && npx vitest run src/routes/jobs.test.ts src/routes/jobs.dispatch.test.ts --silent=passed-only`, `npm run line-guard` 통과.
+- Task 5 검증 일부 완료: `cd cloud-run/ai-engine && npm run test` 108 files / 1086 tests 통과, `npm run lint` 통과(info: `reports/qa/qa-tracker.json` 1.9MiB), `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check` 통과.
+- Task 5 완료: root `npm run type-check`, `npm run test:quick`, `npm run test:contract` 통과. Local deterministic QA `QA-20260511-0469` 기록.
+- 후속 buffer polish 완료: `orchestrator-agent-stream.ts` 799줄 → 786줄, `supervisor-single-agent-stream.ts` 798줄 → 791줄. `npm run line-guard`, AI Engine `type-check`, stream/routing targeted Vitest 3 files / 43 tests 통과. Local deterministic QA `QA-20260511-0470` 기록.
 
 ### 800줄 이상 분리 대상
 
 | 파일 | 줄 수 | 판단 | 우선순위 |
 |------|------:|------|----------|
-| `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts` | 1494 | provider fallback, quota, tool result, stream event 책임 혼재 | P1 |
-| `src/hooks/ai/useAIChatCore.ts` | 1287 | 채팅 상태, artifact intent/generation/metadata/error, QA/debug shortcut 책임 혼재 | P0 |
-| `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-agent-stream.ts` | 1202 | supervisor stream과 유사한 fallback/quota/repair 흐름 중복 | P1 |
-| `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-routing.ts` | 1182 | forced routing, direct knowledge parsing, topology response, resource catalog 혼재 | P2 |
-| `cloud-run/ai-engine/src/routes/jobs.ts` | 978 | job route validation, auth/context, dispatch, status/SSE 응답 혼재 | P2 |
+| `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts` | 260 | Task 2 완료: orchestration 진입점으로 축소 | Done |
+| `src/hooks/ai/useAIChatCore.ts` | 720 | Task 1 완료: artifact/debug helper 분리 | Done |
+| `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-agent-stream.ts` | 786 | Task 2 + buffer polish 완료: fallback/quota/stream helper와 server-count helper 분리 | Done/Watch |
+| `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-routing.ts` | 691 | Task 3 완료: direct knowledge/topology/telemetry helper 분리 | Done |
+| `cloud-run/ai-engine/src/routes/jobs.ts` | 738 | Task 4 완료: request contract/result metadata helper 분리 | Done |
 
 ### 500줄 이상 경고 관찰 대상
 
-- 즉시 분리 후보: `supervisor-single-agent.ts`, `AIWorkspace.tsx`, `orchestrator-execution.ts`, `LogExplorerModal.tsx`, `retry-with-fallback.ts`, `AlertHistoryModal.tsx`, `src/app/api/ai/supervisor/stream/v2/route.ts`
+- 즉시 분리 후보: `supervisor-single-agent-stream.ts`, `supervisor-single-agent.ts`, `AIWorkspace.tsx`, `orchestrator-execution.ts`, `LogExplorerModal.tsx`, `retry-with-fallback.ts`, `AlertHistoryModal.tsx`, `src/app/api/ai/supervisor/stream/v2/route.ts`
 - 관찰만: `ops-procedure-artifact.ts` 530줄. 800줄 미만이므로 이번 작업에서 분리하지 않는다. 다음 procedure type 또는 renderer 확장 시 markdown/json builder와 generator helper 분리를 검토한다.
 
 ## 범위
@@ -111,11 +133,11 @@ npm run line-guard
 - [x] `line-guard baseline`: 현재 `npm run line-guard`가 fail 5건을 보고하는 상태를 Task 0에 기록한다.
 - [x] `useAIChatCore artifact parity`: artifact intent/guidance/generation/follow-up edit 관련 기존 테스트가 refactor 후 동일하게 통과한다.
 - [x] `useAIChatCore public contract`: `UseAIChatCoreReturn` shape와 `convertThinkingStepsToUI` re-export가 유지된다.
-- [ ] `supervisor stream parity`: supervisor stream fallback, tool summary, deterministic recovery 관련 테스트가 동일하게 통과한다.
-- [ ] `agent stream parity`: orchestrator agent stream fallback, raw tool JSON suppression, deterministic repair 테스트가 동일하게 통과한다.
-- [ ] `forced routing parity`: direct knowledge/topology/resource catalog 관련 routing 테스트가 동일하게 통과한다.
-- [ ] `jobs route parity`: job create/status/stream route 테스트가 동일하게 통과한다.
-- [ ] `line-guard final`: 800줄 이상 fail 0건, 새 파일 800줄 이상 0건.
+- [x] `supervisor stream parity`: supervisor stream fallback, tool summary, deterministic recovery 관련 테스트가 동일하게 통과한다.
+- [x] `agent stream parity`: orchestrator agent stream fallback, raw tool JSON suppression, deterministic repair 테스트가 동일하게 통과한다.
+- [x] `forced routing parity`: direct knowledge/topology/resource catalog 관련 routing 테스트가 동일하게 통과한다.
+- [x] `jobs route parity`: job create/status/stream route 테스트가 동일하게 통과한다.
+- [x] `line-guard final`: 800줄 이상 fail 0건, 새 파일 800줄 이상 0건.
 
 ## Task 목록
 
@@ -129,16 +151,16 @@ npm run line-guard
   - artifact generation/metadata/error summary를 `core` helper로 분리
   - QA/debug shortcut message builder를 별도 helper로 분리
   - 완료 기준: `useAIChatCore.ts < 800 lines`, root targeted tests 통과
-- [ ] Task 2 — stream fallback/quota 공통부 분리
+- [x] Task 2 — stream fallback/quota 공통부 분리
   - `supervisor-stream.ts`와 `orchestrator-agent-stream.ts`의 provider fallback/quota helper를 공통 모듈로 추출
   - 완료 기준: 두 파일 모두 800 lines 미만, AI Engine stream targeted tests 통과
-- [ ] Task 3 — `orchestrator-routing` helper 분리
+- [x] Task 3 — `orchestrator-routing` helper 분리
   - direct knowledge normalizer, topology response, resource catalog helper 추출
-  - 완료 기준: `orchestrator-routing.ts < 800 lines`, routing targeted tests 통과
-- [ ] Task 4 — `routes/jobs` helper 분리
+  - 완료 기준: `orchestrator-routing.ts < 800 lines`, `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-routing.test.ts --silent=passed-only` 통과
+- [x] Task 4 — `routes/jobs` helper 분리
   - request contract, dispatch, stream response helper 추출
   - 완료 기준: `routes/jobs.ts < 800 lines`, jobs route targeted tests 통과
-- [ ] Task 5 — 최종 검증/QA 기록
+- [x] Task 5 — 최종 검증/QA 기록
   - `npm run line-guard` PASS
   - root/AI Engine 필수 smoke
   - local deterministic QA 기록
@@ -178,15 +200,15 @@ npm run line-guard
 
 ## 완료 기준
 
-- [ ] 800줄 이상 fail 파일 5건 모두 800줄 미만
-- [ ] 새로 만든 파일 중 800줄 이상 0건
-- [ ] `npm run line-guard` PASS
-- [ ] root targeted tests PASS
-- [ ] AI Engine targeted tests PASS
-- [ ] `npm run type-check` PASS
-- [ ] `npm run lint` PASS
-- [ ] `npm run test:quick` PASS
-- [ ] AI/API 계약 영향 범위 `npm run test:contract` PASS
-- [ ] `cd cloud-run/ai-engine && npm run type-check` PASS
-- [ ] `cd cloud-run/ai-engine && npm run test` PASS
-- [ ] QA 기록 생성
+- [x] 800줄 이상 fail 파일 5건 모두 800줄 미만
+- [x] 새로 만든 파일 중 800줄 이상 0건
+- [x] `npm run line-guard` PASS
+- [x] root targeted tests PASS
+- [x] AI Engine targeted tests PASS
+- [x] `npm run type-check` PASS
+- [x] `npm run lint` PASS
+- [x] `npm run test:quick` PASS
+- [x] AI/API 계약 영향 범위 `npm run test:contract` PASS
+- [x] `cd cloud-run/ai-engine && npm run type-check` PASS
+- [x] `cd cloud-run/ai-engine && npm run test` PASS
+- [x] QA 기록 생성: [QA-20260511-0469](../../qa/runs/2026/qa-run-QA-20260511-0469.json), buffer polish [QA-20260511-0470](../../qa/runs/2026/qa-run-QA-20260511-0470.json)

@@ -176,6 +176,28 @@ AI 관련 릴리즈 QA(broad/release-gate scope)에는 대화형 QA 결과를 `q
 
 ---
 
+## 1.8 API 라우트 커버리지 정책
+
+`src/app/api/**/**/route.ts` 파일은 아래 등급 기준으로 계약 테스트를 유지한다.
+
+| 등급 | 기준 | 필수 시나리오 |
+|------|------|--------------|
+| Critical | AI 질의 진입점, 인증 게이트 | 인증 실패(401) / 정상 응답 / rate limit(429) |
+| High | 서버·메트릭 데이터 API | 응답 형식 / 필터 파라미터 처리 |
+| Medium | 상태·헬스체크·wake-up API | healthy / degraded 분기 |
+| Low | 유틸리티 (version, csrf) | 최소 smoke (200 반환) |
+
+테스트 없이 머지 가능한 유일한 예외:
+- `src/app/api/(auth)/**` — Next-Auth 내부 위임 처리
+- `src/app/api/error-report/**` — 단순 외부 로그 포워드
+
+**우선순위 라우트** (2026-05-11 기준 미커버):
+- `src/app/api/ai/supervisor/route.ts` — Critical
+- `src/app/api/ai/status/route.ts`, `ai/wake-up/route.ts` — Medium
+- `src/app/api/servers/route.ts`, `metrics/route.ts` — High
+
+---
+
 ## 2. What We Test By Default
 
 ### 포함

@@ -7,35 +7,47 @@ import {
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
-import { buildMultimodalContent, extractToolResultOutput } from '../../../lib/ai-sdk-utils';
+import { buildMultimodalContent } from '../../../lib/ai-sdk-utils';
 import { logger } from '../../../lib/logger';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { createTimeoutSpan, logTimeoutEvent } from '../../observability/langfuse';
 import { getCircuitBreaker } from '../../resilience/circuit-breaker';
+import { waitBeforeAgentProviderFallback } from '../stream-provider-fallback';
 import {
-  markProviderQuotaCooldown,
-  reconcileProviderQuotaReservation,
-  reserveProviderQuota,
-  type ProviderName as QuotaProviderName,
+  markStreamProviderCooldown,
+  reconcileStreamQuota,
+  reserveStreamQuota,
   type ProviderQuotaReservation,
-} from '../../resilience/quota-tracker';
+} from '../stream-quota';
 import type { StreamEvent } from '../supervisor';
 import type { FileAttachment, ImageAttachment } from './base-agent';
 import {
   getAgentConfig,
   getAgentProviderOrder,
   getAgentMaxSteps,
-  executeReporterWithPipeline,
 } from './orchestrator-routing';
-import { saveAgentFindingsToContext } from './orchestrator-context';
-import { selectTextModel, type TextProvider, type ModelResult } from './config/agent-model-selectors';
+import {
+  buildAgentProviderAttempts,
+  buildAgentProviderRetryStatus,
+  buildToolResultsSummary,
+  collectAgentToolEvents,
+  countServersFromToolResults,
+  emitAllProvidersFailedEvent,
+  emitAgentSuccessDoneEvent,
+  emitNoOutputFallbackDoneEvent,
+  type CollectedToolResult,
+  estimateAgentStreamQuotaTokens,
+  getAgentInstructions,
+  getEvidenceToolResults,
+  selectSummarizationModel,
+  shouldRepairToolGroundedResponse,
+  streamReporterPipelineIfAvailable,
+} from './orchestrator-agent-stream-helpers';
 import {
   ORCHESTRATOR_CONFIG,
   type ProviderAttemptTelemetry,
 } from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
-import { evaluateAgentResponseQuality } from './response-quality';
-import { streamTextInChunks } from './orchestrator-decomposition';
 import {
   buildDeterministicSummaryFallback,
   buildDeterministicSummaryFromCurrentState,
@@ -47,262 +59,10 @@ import {
   resolveDomainSnapshot,
 } from './domain-data-source';
 
-const PROVIDER_FALLBACK_BASE_DELAY_MS = 120;
-const PROVIDER_FALLBACK_JITTER_MS = 280;
-const TOOL_GROUNDED_REPAIR_MIN_CHARS = 120;
-const TOOL_RESULT_SUMMARY_MAX_CHARS = 2000;
-const APPROX_CHARS_PER_TOKEN = 4;
 const STREAM_MAX_OUTPUT_TOKENS = 2048;
 const SUMMARY_MAX_OUTPUT_TOKENS = 1024;
 const RAW_TOOL_CALL_JSON_FALLBACK_TEXT =
   'AI 엔진이 도구 호출 정보를 응답 본문으로 반환해 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
-
-interface CollectedToolResult {
-  toolName: string;
-  result: unknown;
-}
-
-function getAgentInstructions(
-  config: NonNullable<ReturnType<typeof getAgentConfig>>,
-  query: string
-): string {
-  return config.getInstructions?.(query) ?? config.instructions;
-}
-
-function classifyProviderFallbackReason(errorMessage: string): string {
-  const normalized = errorMessage.toLowerCase();
-  if (
-    normalized.includes('rate limit') ||
-    normalized.includes('429') ||
-    normalized.includes('too many requests') ||
-    normalized.includes('too_many_requests') ||
-    normalized.includes('queue_exceeded') ||
-    normalized.includes('high traffic') ||
-    normalized.includes('quota_admission')
-  ) {
-    return 'rate_limit';
-  }
-  if (normalized.includes('timeout')) {
-    return 'timeout';
-  }
-  if (normalized.includes('no output')) {
-    return 'no_output';
-  }
-  if (normalized.includes('empty_response')) {
-    return 'empty_response';
-  }
-  if (normalized.includes('raw_tool_call_json')) {
-    return 'raw_tool_call_json';
-  }
-  if (
-    normalized.includes('low_information_response') ||
-    normalized.includes('heading_only_response')
-  ) {
-    return 'low_information_response';
-  }
-  if (
-    normalized.includes('does not exist') ||
-    normalized.includes('no access') ||
-    normalized.includes('model not found') ||
-    normalized.includes('404')
-  ) {
-    return 'model_unavailable';
-  }
-  if (
-    normalized.includes('unavailable') ||
-    normalized.includes('503') ||
-    normalized.includes('502') ||
-    normalized.includes('504')
-  ) {
-    return 'provider_unavailable';
-  }
-  return 'provider_error';
-}
-
-function isQuotaTrackedProvider(provider: string): provider is QuotaProviderName {
-  return (
-    provider === 'cerebras' ||
-    provider === 'groq' ||
-    provider === 'mistral' ||
-    provider === 'gemini'
-  );
-}
-
-function isProviderRateLimitErrorMessage(errorMessage: string): boolean {
-  const normalized = errorMessage.toLowerCase();
-  return (
-    normalized.includes('rate limit') ||
-    normalized.includes('429') ||
-    normalized.includes('too many requests') ||
-    normalized.includes('too_many_requests') ||
-    normalized.includes('queue_exceeded') ||
-    normalized.includes('high traffic')
-  );
-}
-
-function estimateQuotaTokens(
-  contents: Array<string | UserContent>,
-  maxOutputTokens: number
-): number {
-  const inputChars = contents.reduce((total, content) => {
-    if (typeof content === 'string') return total + content.length;
-    return total + JSON.stringify(content).length;
-  }, 0);
-
-  return Math.ceil(inputChars / APPROX_CHARS_PER_TOKEN) + maxOutputTokens;
-}
-
-async function reserveStreamQuota(
-  provider: string,
-  modelId: string,
-  estimatedTokens: number
-): Promise<ProviderQuotaReservation | null> {
-  if (!isQuotaTrackedProvider(provider)) return null;
-  return reserveProviderQuota(provider, estimatedTokens, modelId);
-}
-
-async function reconcileStreamQuota(
-  reservation: ProviderQuotaReservation | null,
-  actualTokensUsed: number
-): Promise<void> {
-  await reconcileProviderQuotaReservation(reservation, actualTokensUsed);
-}
-
-async function markStreamProviderCooldown(
-  provider: string,
-  modelId: string,
-  errorMessage: string
-): Promise<void> {
-  if (!isQuotaTrackedProvider(provider)) return;
-  if (!isProviderRateLimitErrorMessage(errorMessage)) return;
-  await markProviderQuotaCooldown(provider, modelId, errorMessage);
-}
-
-async function waitBeforeProviderFallback(
-  agentName: string,
-  provider: string,
-  reason: string
-): Promise<void> {
-  const jitter = Math.floor(Math.random() * (PROVIDER_FALLBACK_JITTER_MS + 1));
-  const delay = PROVIDER_FALLBACK_BASE_DELAY_MS + jitter;
-  logger.debug(
-    `[Stream ${agentName}] Provider fallback delay ${delay}ms (${provider}, reason=${reason})`
-  );
-  await new Promise((resolve) => setTimeout(resolve, delay));
-}
-
-function selectSummarizationModel(
-  providerAttempts: ModelResult[],
-  currentAttemptIndex: number,
-  excludedProviders: string[]
-): { modelResult: ModelResult; attemptIndex: number; delegated: boolean } {
-  for (
-    let nextIndex = currentAttemptIndex + 1;
-    nextIndex < providerAttempts.length;
-    nextIndex++
-  ) {
-    const nextAttempt = providerAttempts[nextIndex];
-    if (nextAttempt && !excludedProviders.includes(nextAttempt.provider)) {
-      return {
-        modelResult: nextAttempt,
-        attemptIndex: nextIndex,
-        delegated: true,
-      };
-    }
-  }
-
-  return {
-    modelResult: providerAttempts[currentAttemptIndex],
-    attemptIndex: currentAttemptIndex,
-    delegated: false,
-  };
-}
-
-function getSuggestedFollowUp(agentName: string, responseText: string): string | null {
-  if (agentName === 'Analyst Agent') {
-    if (/이상|anomal|critical|경고|임계/i.test(responseText)) {
-      return '해결 방법과 권장 조치를 알려줘';
-    }
-  }
-  if (agentName === 'NLQ Agent') {
-    if (/[89]\d%|100%|임계|경고|critical/i.test(responseText)) {
-      return '이상 원인을 분석해줘';
-    }
-  }
-  if (agentName === 'Reporter Agent') {
-    return '재발 방지 방안을 알려줘';
-  }
-  return null;
-}
-
-function getEvidenceToolResults(
-  collectedToolResults: CollectedToolResult[]
-): CollectedToolResult[] {
-  return collectedToolResults.filter((toolResult) => toolResult.toolName !== 'finalAnswer');
-}
-
-function isHeadingOnlyLine(line: string): boolean {
-  return /^(?:[#*\-\s\d.)]*(?:핵심\s*요약|분석\s*결과|분석|원인\s*분석|권장\s*조치|즉시\s*조치|조치|요약|현황|결론|summary|analysis|findings?|actions?|recommendations?)\s*[:：]?\s*)$/i.test(line);
-}
-
-function hasConcreteEvidence(text: string): boolean {
-  return /(?:\b[a-z]+-[a-z]+[-\w]*\d\b|\d{1,3}(?:\.\d+)?%|\b(?:cpu|mem|memory|disk|network)\b|메모리|디스크|네트워크|경고|위험|장애|error|warning|critical)/i.test(text);
-}
-
-function isLowInformationToolGroundedResponse(text: string): boolean {
-  const normalized = text.trim();
-  if (!normalized) return true;
-
-  const lines = normalized
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  if (
-    lines.length > 0 &&
-    lines.length <= 6 &&
-    lines.every(isHeadingOnlyLine)
-  ) {
-    return true;
-  }
-
-  if (
-    normalized.length < TOOL_GROUNDED_REPAIR_MIN_CHARS &&
-    !hasConcreteEvidence(normalized)
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
-function shouldRepairToolGroundedResponse(
-  fullResponseText: string,
-  collectedToolResults: CollectedToolResult[],
-  preferDeterministicSummary: boolean
-): boolean {
-  if (preferDeterministicSummary) return false;
-  if (getEvidenceToolResults(collectedToolResults).length === 0) return false;
-  return isLowInformationToolGroundedResponse(fullResponseText);
-}
-
-function buildToolResultsSummary(
-  collectedToolResults: CollectedToolResult[]
-): string {
-  const uniqueResults = new Map<string, unknown>();
-  for (const tr of getEvidenceToolResults(collectedToolResults)) {
-    if (!uniqueResults.has(tr.toolName)) {
-      uniqueResults.set(tr.toolName, tr.result);
-    }
-  }
-
-  return Array.from(uniqueResults.entries())
-    .map(
-      ([name, result]) =>
-        `[${name}]: ${JSON.stringify(result).slice(0, TOOL_RESULT_SUMMARY_MAX_CHARS)}`
-    )
-    .join('\n\n');
-}
 
 export async function* executeAgentStream(
   query: string,
@@ -357,43 +117,15 @@ export async function* executeAgentStream(
 
   // Phase 3: Reporter Pipeline — run deterministic pipeline first, then stream result
   if (agentName === 'Reporter Agent') {
-    try {
-      const pipelineResult = await executeReporterWithPipeline(
-        query,
-        startTime,
-        dataSource,
-        domainId
-      );
-      if (pipelineResult) {
-        const reporterTtfbMs = Date.now() - startTime;
-        logger.info(`[Stream Reporter] Pipeline succeeded, streaming result`);
-        yield* streamTextInChunks(pipelineResult.response);
-
-        // Phase 2C: Context saving
-        try { await saveAgentFindingsToContext(sessionId, agentName, pipelineResult.response); } catch { /* non-blocking */ }
-
-        const durationMs = Date.now() - startTime;
-        yield {
-          type: 'done',
-          data: {
-            success: true,
-            finalAgent: agentName,
-            toolsCalled: pipelineResult.toolsCalled,
-            handoffs: pipelineResult.handoffs,
-            usage: {
-              promptTokens: pipelineResult.usage?.promptTokens ?? 0,
-              completionTokens: pipelineResult.usage?.completionTokens ?? 0,
-              totalTokens: pipelineResult.usage?.totalTokens ?? 0,
-            },
-            metadata: { ...pipelineResult.metadata, durationMs, ttfbMs: reporterTtfbMs },
-          },
-        };
-        return;
-      }
-      logger.info(`[Stream Reporter] Pipeline failed, falling back to raw streamText`);
-    } catch (pipelineError) {
-      logger.warn(`[Stream Reporter] Pipeline error, falling back:`, pipelineError instanceof Error ? pipelineError.message : String(pipelineError));
-    }
+    const reporterHandled = yield* streamReporterPipelineIfAvailable({
+      query,
+      startTime,
+      dataSource,
+      domainId,
+      sessionId,
+      agentName,
+    });
+    if (reporterHandled) return;
   }
 
   // Vision Agent: use native model (gemini) directly, skip text provider chain
@@ -401,59 +133,23 @@ export async function* executeAgentStream(
   const nativeModel = isVisionAgent ? agentConfig.getModel() : null;
 
   // Phase 2A: Provider fallback — try multiple providers on failure
-  const TEXT_PROVIDERS: TextProvider[] = ['cerebras', 'groq', 'mistral'];
-  const rawProviderOrder = getAgentProviderOrder(agentName);
-  const providerOrder = isVisionAgent
-    ? [] // Vision Agent skips text providers
-    : rawProviderOrder.filter((p): p is TextProvider => TEXT_PROVIDERS.includes(p as TextProvider));
   const excludedProviders: string[] = [];
   let lastError: string | undefined;
 
   // Build provider attempt list: Vision Agent uses native model, others use text providers
-  const providerAttempts: ModelResult[] = [];
+  const providerAttempts = buildAgentProviderAttempts({
+    agentName,
+    isVisionAgent,
+    nativeModel,
+    rawProviderOrder: getAgentProviderOrder(agentName),
+  });
   const providerAttemptTelemetry: ProviderAttemptTelemetry[] = [];
-
-  if (isVisionAgent && nativeModel) {
-    // Vision Agent: single attempt with native model (gemini/openrouter)
-    providerAttempts.push(nativeModel);
-  } else if (isVisionAgent && !nativeModel) {
-    // Vision model unavailable — will fall through to "all providers exhausted"
-    logger.warn(`[Stream ${agentName}] Native vision model unavailable`);
-  }
-
-  // Text agents: build attempts from provider order
-  for (const attemptProvider of providerOrder) {
-    const circuitBreaker = getCircuitBreaker(`orchestrator-${attemptProvider}`);
-    if (!circuitBreaker.isAllowed()) {
-      logger.warn(`🔌 [Stream ${agentName}] CB OPEN for ${attemptProvider}, trying next`);
-      continue;
-    }
-
-    const modelResult = selectTextModel(agentName, [attemptProvider], {
-      requiredCapabilities: { requireToolCalling: true },
-    });
-    if (!modelResult) {
-      logger.debug(`[Stream ${agentName}] No model for ${attemptProvider}, trying next`);
-      continue;
-    }
-
-    providerAttempts.push(modelResult);
-  }
 
   providerLoop:
   for (let attemptIndex = 0; attemptIndex < providerAttempts.length; attemptIndex++) {
     const { model, provider, modelId } = providerAttempts[attemptIndex];
     if (excludedProviders.includes(provider)) continue;
     logger.debug(`[Stream ${agentName}] Attempting ${provider}/${modelId}`);
-
-    const buildProviderRetryStatus = (message: string): StreamEvent => ({
-      type: 'agent_status',
-      data: {
-        agent: agentName,
-        status: 'processing',
-        message,
-      },
-    });
 
     let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
     filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
@@ -486,7 +182,7 @@ export async function* executeAgentStream(
         : query;
       const userContent = buildMultimodalContent(promptWithContext, images, files);
       const systemContent = getAgentInstructions(agentConfig, query);
-      const estimatedTokens = estimateQuotaTokens(
+      const estimatedTokens = estimateAgentStreamQuotaTokens(
         [systemContent, userContent as UserContent],
         STREAM_MAX_OUTPUT_TOKENS
       );
@@ -510,10 +206,11 @@ export async function* executeAgentStream(
           `[Stream ${agentName}] Skipping ${provider}/${modelId}: quota admission ${quotaReservation.reason ?? 'blocked'}`
         );
         if (attemptIndex < providerAttempts.length - 1) {
-          yield buildProviderRetryStatus(
+          yield buildAgentProviderRetryStatus(
+            agentName,
             `${provider} 쿼터 보호로 대안 모델로 전환 중...`
           );
-          await waitBeforeProviderFallback(
+          await waitBeforeAgentProviderFallback(
             agentName,
             provider,
             'quota_admission'
@@ -552,7 +249,6 @@ export async function* executeAgentStream(
       let hardTimeoutReached = false;
       let textEmitted = false;
       let textDelivered = false;
-      const toolsCalled: string[] = [];
       let fullResponseText = '';
       let fallbackReason: string | undefined;
       const textDeltaGuard = createStructuredTextDeltaGuard();
@@ -656,10 +352,11 @@ export async function* executeAgentStream(
             durationMs: Date.now() - providerStartTime,
             error: lastError,
           });
-          yield buildProviderRetryStatus(
+          yield buildAgentProviderRetryStatus(
+            agentName,
             `${provider} 응답 형식 오류로 대안 모델로 전환 중...`
           );
-          await waitBeforeProviderFallback(
+          await waitBeforeAgentProviderFallback(
             agentName,
             provider,
             'raw_tool_call_json'
@@ -686,43 +383,11 @@ export async function* executeAgentStream(
       const finalElapsed = Date.now() - startTime;
       timeoutSpan.complete(true, finalElapsed);
 
-      let finalAnswerResult: { answer: string } | null = null;
-      const collectedToolResults: CollectedToolResult[] = [];
-
-      if (steps) {
-        for (const step of steps) {
-          if (step.toolCalls) {
-            for (const toolCall of step.toolCalls) {
-              toolsCalled.push(toolCall.toolName);
-              yield { type: 'tool_call', data: { name: toolCall.toolName } };
-            }
-          }
-          if (step.toolResults) {
-            for (const toolResult of step.toolResults) {
-              const toolResultOutput = extractToolResultOutput(toolResult);
-              collectedToolResults.push({
-                toolName: toolResult.toolName,
-                result: toolResultOutput,
-              });
-              // ⚠️ PARITY: supervisor-stream.ts:498 단일 에이전트 경로와 동일하게 tool_result를
-              // 상위 stream으로 yield 해야 함. 누락 시 프론트엔드 분석 근거 영역이 비어있게 됨.
-              if (toolResult.toolName !== 'finalAnswer') {
-                yield {
-                  type: 'tool_result',
-                  data: { toolName: toolResult.toolName, result: toolResultOutput },
-                };
-              }
-              if (
-                toolResult.toolName === 'finalAnswer' &&
-                toolResultOutput &&
-                typeof toolResultOutput === 'object'
-              ) {
-                finalAnswerResult = toolResultOutput as { answer: string };
-              }
-            }
-          }
-        }
-      }
+      const {
+        toolsCalled,
+        collectedToolResults,
+        finalAnswerResult,
+      } = yield* collectAgentToolEvents(steps);
 
       if (
         !textEmitted &&
@@ -742,22 +407,8 @@ export async function* executeAgentStream(
 
       // Re-evaluate after tool results are known — intent classification + data completeness.
       // This replaces the previous upfront regex check and makes routing data-driven.
-      const serverToolResults = collectedToolResults.filter(
-        (r) =>
-          r.toolName === 'getServerMetrics' ||
-          r.toolName === 'getServerMetricsAdvanced' ||
-          r.toolName === 'filterServers'
-      );
-      const toolResultServerCount = serverToolResults.reduce((sum, r) => {
-        if (r.result && typeof r.result === 'object' && 'servers' in r.result) {
-          const result = r.result as { servers?: unknown[]; summary?: { total?: unknown } };
-          const servers = result.servers;
-          const serverCount = Array.isArray(servers) ? servers.length : 0;
-          const total = typeof result.summary?.total === 'number' ? result.summary.total : 0;
-          return sum + Math.max(serverCount, total);
-        }
-        return sum;
-      }, 0);
+      const toolResultServerCount =
+        countServersFromToolResults(collectedToolResults);
       preferDeterministicSummary =
         toolResultServerCount > 0
           ? isDeterministicSummaryQuery(query, agentName, toolResultServerCount)
@@ -878,7 +529,7 @@ export async function* executeAgentStream(
           summaryReservation = await reserveStreamQuota(
             summaryProvider,
             summaryModelId,
-            estimateQuotaTokens(
+            estimateAgentStreamQuotaTokens(
               [summarySystemContent, summaryUserContent],
               SUMMARY_MAX_OUTPUT_TOKENS
             )
@@ -982,10 +633,11 @@ export async function* executeAgentStream(
         logger.warn(
           `[Stream ${agentName}] Empty response from ${provider}/${modelId}; trying next provider...`
         );
-        yield buildProviderRetryStatus(
+        yield buildAgentProviderRetryStatus(
+          agentName,
           `${provider} 응답 없음, 대안 모델로 전환 중...`
         );
-        await waitBeforeProviderFallback(
+        await waitBeforeAgentProviderFallback(
           agentName,
           provider,
           'empty_response'
@@ -1025,59 +677,22 @@ export async function* executeAgentStream(
       }
 
       const durationMs = Date.now() - startTime;
-      providerAttemptTelemetry.push({
-        provider: responseProvider,
-        modelId: responseModelId,
-        attempt: responseAttemptNumber,
-        durationMs: Date.now() - responseProviderStartTime,
-        ...(fallbackReason && responseProvider === provider
-          ? { error: fallbackReason }
-          : {}),
-      });
-      const usedFallback = providerAttemptTelemetry.length > 1;
-      const providerFallbackReason =
-        providerAttemptTelemetry.find((attempt) => attempt.error)?.error;
-      const quality = evaluateAgentResponseQuality(agentName, fullResponseText, {
+      yield* emitAgentSuccessDoneEvent({
+        agentName,
+        sessionId,
+        fullResponseText,
         durationMs,
         fallbackReason,
+        responseProvider,
+        responseModelId,
+        responseAttemptNumber,
+        responseProviderStartTime,
+        providerAttemptTelemetry,
+        currentProvider: provider,
+        responseUsage,
+        firstChunkMs,
+        toolsCalled,
       });
-      logger.info(`[Stream ${agentName}] Completed in ${durationMs}ms via ${responseProvider}, tools: [${toolsCalled.join(', ')}]`);
-
-      // Phase 2C: Save agent findings to context (non-blocking)
-      try { await saveAgentFindingsToContext(sessionId, agentName, fullResponseText); } catch { /* non-blocking */ }
-
-      const followUp = getSuggestedFollowUp(agentName, fullResponseText);
-
-      yield {
-        type: 'done',
-        data: {
-          success: true,
-          finalAgent: agentName,
-          toolsCalled,
-          handoffs: [{ from: 'Orchestrator', to: agentName, reason: 'Routing' }],
-          usage: {
-            promptTokens: responseUsage?.inputTokens ?? 0,
-            completionTokens: responseUsage?.outputTokens ?? 0,
-            totalTokens: responseUsage?.totalTokens ?? 0,
-          },
-          metadata: {
-            provider: responseProvider,
-            modelId: responseModelId,
-            durationMs,
-            responseChars: quality.responseChars,
-            formatCompliance: quality.formatCompliance,
-            qualityFlags: quality.qualityFlags,
-            latencyTier: quality.latencyTier,
-            ...(firstChunkMs !== null ? { ttfbMs: firstChunkMs } : {}),
-            providerAttempts: providerAttemptTelemetry,
-            usedFallback,
-            ...(providerFallbackReason
-              ? { fallbackReason: classifyProviderFallbackReason(providerFallbackReason) }
-              : {}),
-          },
-          ...(followUp && { suggestedFollowUp: followUp }),
-        },
-      };
       return; // Success — exit provider loop
     } catch (error) {
       const durationMs = Date.now() - startTime;
@@ -1101,10 +716,11 @@ export async function* executeAgentStream(
           logger.warn(
             `[Stream ${agentName}] No output from ${provider}/${modelId}, trying next provider...`
           );
-          yield buildProviderRetryStatus(
+          yield buildAgentProviderRetryStatus(
+            agentName,
             `${provider} 응답 없음, 대안 모델로 전환 중...`
           );
-          await waitBeforeProviderFallback(
+          await waitBeforeAgentProviderFallback(
             agentName,
             provider,
             'no_output'
@@ -1113,43 +729,17 @@ export async function* executeAgentStream(
         }
 
         logger.warn(`[Stream ${agentName}] No output from model (${provider}), providing fallback`);
-        const noOutputFallback = '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.';
-        markFirstChunk('no_output_fallback');
-        yield { type: 'text_delta', data: noOutputFallback };
-        providerAttemptTelemetry.push({
+        yield* emitNoOutputFallbackDoneEvent({
+          agentName,
           provider,
           modelId,
           attempt: attemptIndex + 1,
-          durationMs: Date.now() - providerStartTime,
-          error: 'NO_OUTPUT',
-        });
-        const quality = evaluateAgentResponseQuality(agentName, '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.', {
           durationMs,
-          fallbackReason: 'NO_OUTPUT',
+          providerStartTime,
+          firstChunkMs,
+          providerAttemptTelemetry,
+          markFirstChunk,
         });
-        yield {
-          type: 'done',
-          data: {
-            success: false,
-            finalAgent: agentName,
-            toolsCalled: [],
-            handoffs: [],
-            usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-            metadata: {
-              provider,
-              modelId,
-              durationMs,
-              responseChars: quality.responseChars,
-              formatCompliance: quality.formatCompliance,
-              qualityFlags: quality.qualityFlags,
-              latencyTier: quality.latencyTier,
-              ...(firstChunkMs !== null ? { ttfbMs: firstChunkMs } : {}),
-              providerAttempts: providerAttemptTelemetry,
-              usedFallback: providerAttemptTelemetry.length > 1,
-              fallbackReason: 'no_output',
-            },
-          },
-        };
         return;
       }
 
@@ -1172,10 +762,11 @@ export async function* executeAgentStream(
       });
       logger.warn(`[Stream ${agentName}] Provider ${provider} failed: ${errorMessage}, trying next...`);
       if (attemptIndex < providerAttempts.length - 1) {
-        yield buildProviderRetryStatus(
+        yield buildAgentProviderRetryStatus(
+          agentName,
           `${provider} 오류 발생, 대안 모델로 전환 중...`
         );
-        await waitBeforeProviderFallback(
+        await waitBeforeAgentProviderFallback(
           agentName,
           provider,
           'provider_error'
@@ -1187,16 +778,9 @@ export async function* executeAgentStream(
 
   // All providers exhausted
   logger.error(`❌ [Stream ${agentName}] All providers failed. Last error: ${lastError}`);
-  yield {
-    type: 'error',
-    data: {
-      code: 'STREAM_ERROR',
-      error: lastError ?? `All providers failed for ${agentName}`,
-      metadata: {
-        providerAttempts: providerAttemptTelemetry,
-        usedFallback: providerAttemptTelemetry.length > 1,
-        ...(lastError ? { fallbackReason: classifyProviderFallbackReason(lastError) } : {}),
-      },
-    },
-  };
+  yield emitAllProvidersFailedEvent({
+    agentName,
+    lastError,
+    providerAttemptTelemetry,
+  });
 }

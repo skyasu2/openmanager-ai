@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`Line guard current hotspots refactor Task 1`)
+**Last Updated**: 2026-05-11 KST (`Line guard current hotspots refactor 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Line guard current hotspots refactor | P2 | In Progress (Codex) | Task 0/1 완료. `src/hooks/ai/useAIChatCore.ts` 1,287줄 → 720줄, artifact execution/metadata/routing debug helper 분리. `npm run line-guard` fail 5건 → 4건으로 감소. 다음 대상은 AI Engine `supervisor-stream.ts`/`orchestrator-agent-stream.ts` 공통 fallback/quota 분리. 상세 계획: [line-guard-current-hotspots-refactor-plan.md](line-guard-current-hotspots-refactor-plan.md) |
+| _None_ | - | - | 현재 활성 구현 작업 없음. |
 
 ---
 
@@ -21,7 +21,11 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Dependency security audit follow-up | P1 | 2026-05-11 재확인: Root `npm audit --omit=dev`/full audit는 `next@16.1.6` high 1건만 잔류, AI Engine production/full audit는 0건. `npm view next version` 및 `npm view next@16 version` 기준 최신 Next 16은 여전히 `16.1.6`이라 같은-major fixed release 없음. `npm audit fix --force`는 `next@15.5.12` breaking downgrade를 제안하므로 금지 유지. Root full audit의 dev critical `commit-and-tag-version -> handlebars` 체인은 내부 `scripts/release/version-and-tag.mjs` release tool로 대체해 제거했고, AI Engine Google Cloud logging low 체인은 `@google-cloud/pino-logging-gcp-config` 제거와 내부 Cloud Run pino structured logging config로 대체해 해소 완료. 같은-major fixed release(`next@16.1.7` 또는 `16.2.3+`)가 registry에 제공되면 즉시 업데이트. |
+| Dependency security audit follow-up | P1 | 2026-05-11 재확인: Root `npm audit --omit=dev`/full audit는 `next@16.1.6` high 1건(CVE 6종 묶음)만 잔류, AI Engine production/full audit는 0건. Vercel changelog 기준 패치 버전은 `next@16.2.6`(2026-05-07 발표)이나 npm stable registry에 미등록 — `npm view next dist-tags.latest`가 여전히 `16.1.6`. `npm audit fix --force`는 `next@15.5.12` breaking downgrade를 제안하므로 금지 유지. 같은-major fixed release가 `npm view next dist-tags.latest`에 `16.1.7` 이상 또는 `16.2.x` stable로 반영되면 즉시 `npm install next@latest`로 업데이트. dev critical `commit-and-tag-version -> handlebars` 체인은 내부 release tool로 대체 완료, AI Engine Google Cloud logging low 체인은 `pino-logging-gcp-config` 제거·내부 구현으로 해소 완료. |
+| Zod v4 AI Engine 마이그레이션 | P1 | 루트 `zod@4.3.6` / AI Engine `zod@3.25.76` 이중화 상태. `z.string().url()` 등 v3 API 사용 파일 확인 필요. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 1 |
+| API 라우트 테스트 커버리지 | P2 | `/api/ai/supervisor/route.ts` 포함 핵심 라우트 15개 무테스트. supervisor → status → wake-up → servers → metrics → csrf 순. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 2 |
+| pino v9 → v10 AI Engine 정렬 | P3 | AI Engine `pino@9.6.0`, 루트 `pino@10.3.1`. logger.ts 전면 재작성 직후라 v10 정렬 비용 낮음. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 3 |
+| React 19.2.4 → 19.2.6 패치 | P3 | 2 patch 뒤처짐. 단순 버전업. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 4 |
 
 ---
 
@@ -36,6 +40,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~Line guard current hotspots refactor~~ | — | **완료** — 800줄 이상 fail-threshold hotspot 5건을 모두 800줄 미만으로 분리. `useAIChatCore.ts` 1,287줄 → 720줄, `supervisor-stream.ts` 1,494줄 → 260줄, `orchestrator-agent-stream.ts` 1,202줄 → 786줄, `orchestrator-routing.ts` 1,182줄 → 691줄, `routes/jobs.ts` 978줄 → 738줄. 후속 buffer polish로 `supervisor-single-agent-stream.ts` 798줄 → 791줄. `npm run line-guard` fail 5건 → 0건. Local deterministic QA `QA-20260511-0469`, buffer polish QA `QA-20260511-0470` 기록. 상세 계획서 archive 이동: [archive/line-guard-current-hotspots-refactor-plan.md](archive/line-guard-current-hotspots-refactor-plan.md) |
 | ~~AI Assistant operational artifact hardening~~ | — | **완료** — 운영 스크립트, Slack 알림 규칙, 로그 기반 대응 절차를 `ops-procedure` typed artifact로 생성·보존·수정하도록 구현. script/Alertmanager/runbook intent, follow-up threshold edit, artifact workspace/renderer, secret/fake function validator, Cloud Run routing alignment 반영. Local deterministic QA `QA-20260511-0468` 기록, 배포 후 production script/log/runbook conversational QA는 해당 QA의 skipped surface / expert nextAction 후속으로 남김. 상세 계획서 archive 이동: [archive/ai-assistant-ops-artifact-plan.md](archive/ai-assistant-ops-artifact-plan.md) |
 | ~~AI Assistant general coding boundary hardening~~ | — | **완료** — 일반 코딩/알고리즘/학습용 코드 요청을 `general_coding` deterministic guard로 short-circuit하고, 운영 문맥 코드 요청은 허용 예외로 유지. Cloud Run monitoring supervisor prompt도 frontend guard 정책과 정렬. Local targeted QA `QA-20260511-0467` 기록, 배포 후 production 재검증은 해당 QA의 skipped surface / expert nextAction 후속으로 남김. 상세 계획서 archive 이동: [archive/ai-assistant-general-coding-boundary-plan.md](archive/ai-assistant-general-coding-boundary-plan.md) |
 | ~~AI Chat UI/UX 개선 (B1·I1~I4·M1~M7)~~ | — | **완료** — AI Chat 코드블록/복사 접근성/빈 상태 prompt/대화 한도/Reporter CTA/Analyst 자동 분석/상세 분석 copy/sidebar fullscreen handoff 개선 완료. GitLab branch validate `2513712243` success, `v8.11.124` tag pipeline `2513741959` success, release-facing Vercel targeted QA `QA-20260510-0466` 기록. 상세 계획서 archive 이동: [archive/ai-chat-ux-improvement-plan.md](archive/ai-chat-ux-improvement-plan.md) |

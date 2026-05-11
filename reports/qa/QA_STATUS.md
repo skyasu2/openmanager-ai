@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-11 01:02:01 KST
+> Generated at: 2026-05-11 11:13:17 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 466 |
+| Total Recorded Runs | 468 |
 | Total Runs (Counted) | 376 |
-| Non-counted Runs | 90 |
+| Non-counted Runs | 92 |
 | Total Checks | 3342 |
 | Passed | 3215 |
 | Failed | 117 |
-| Completed Items | 535 |
+| Completed Items | 536 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
-| Latest Recorded Run | QA-20260511-0468 (2026-05-10T16:02:00.870Z) |
+| Latest Recorded Run | QA-20260511-0470 (2026-05-11T02:13:17.338Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,12 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260511-0468 (2026-05-10T16:02:00.870Z)
+Latest run: QA-20260511-0470 (2026-05-11T02:13:17.338Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | Run production conversational QA for script, Alertmanager, and log-runbook prompts after the next release deployment. |
-| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -49,7 +48,7 @@ Latest run: QA-20260511-0468 (2026-05-10T16:02:00.870Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-09T16:02:00.870Z -> 2026-05-10T16:02:00.870Z (24h)
+- Window: 2026-05-10T02:13:17.338Z -> 2026-05-11T02:13:17.338Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -60,7 +59,7 @@ Latest run: QA-20260511-0468 (2026-05-10T16:02:00.870Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-09T16:02:00.870Z -> 2026-05-10T16:02:00.870Z (24h)
+- Window: 2026-05-10T02:13:17.338Z -> 2026-05-11T02:13:17.338Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,10 +73,10 @@ Latest run: QA-20260511-0468 (2026-05-10T16:02:00.870Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 508c305f
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: Root App ops-procedure artifact contract and envelope metadata, AI Assistant artifact intent routing for Slack bash, Alertmanager, runbook, and follow-up threshold edits, Ops procedure generator evidence, secret safety, no-fake-function validator, and threshold patching, Ops procedure artifact renderer card with MD/JSON download actions, Artifact workspace restore and renderer registry support for ops-procedure, Cloud Run monitoring artifact classifier and Advisor routing policy alignment, Cloud Run supervisor shadow baseline for ops-procedure artifact classification, Root App type/lint/quick/contract gates, Cloud Run AI Engine type/full test gates
-- Skipped Surfaces: Vercel production browser QA, live provider calls, actual Slack webhook delivery, real Prometheus/Alertmanager deployment, production conversational AI QA for the new ops artifact prompts
+- Deployment: SHA 8ed8df05
+- Coverage Packs: ai-core
+- Covered Surfaces: Line guard fail-threshold gate after near-threshold helper extraction, Cloud Run orchestrator agent stream server-count helper extraction, Cloud Run supervisor single-agent hard-timeout event helper extraction, AI Engine type-check and stream/routing targeted regression tests
+- Skipped Surfaces: Vercel production browser QA, Cloud Run production smoke, live LLM/provider calls
 
 ## Links (Latest Run)
 
@@ -514,6 +513,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - legacy-rag-rpc-live-dependency-inventory: Confirm live legacy RPC functions have no dependent objects (completed 1회, last QA-20260510-0447)
 - legacy-rag-table-cleanup-deferred: Keep legacy data tables out of the RPC cleanup migration (completed 1회, last QA-20260510-0446)
 - legacy-vector-graph-rag-rpc-cleanup-migration: Add migration that drops only unused legacy vector/graph RAG RPC functions (completed 1회, last QA-20260510-0446)
+- line-guard-current-hotspots-refactor: Add line-count buffer for near-threshold AI Engine stream files (completed 2회, last QA-20260511-0470)
 - linux-label-normalization: 대시보드 카드 OS 표기를 Linux로 정규화 (completed 1회, last QA-20260322-0157)
 - live-supabase-advisor-post-ddl-check: Check Supabase advisors after DDL (completed 1회, last QA-20260510-0448)
 - live-supabase-krl-smoke-after-rpc-cleanup: Verify Knowledge Retrieval Lite still works after DB cleanup (completed 1회, last QA-20260510-0448)
@@ -713,6 +713,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0470 | 2026-05-11T02:13:17.338Z | targeted | no | no | Local QA - Line Guard Hotspot Buffer Polish | 3 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260511-0469 | 2026-05-11T02:04:07.454Z | targeted | no | no | Local QA - Line Guard Current Hotspots Refactor | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0468 | 2026-05-10T16:02:00.870Z | targeted | no | no | Local QA - AI Assistant Ops Procedure Artifact | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0467 | 2026-05-10T15:20:02.963Z | targeted | no | no | Local QA - AI Assistant General Coding Boundary | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0466 | 2026-05-10T12:53:07.527Z | targeted | yes | yes | Vercel Production Targeted QA - AI Chat UX v8.11.124 | 11 | 2 | 0 | 0 | 0 | 0 |
@@ -731,5 +733,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0453 | 2026-05-10T03:33:36.166Z | targeted | no | yes | RAG Corpus Governance Rebaseline QA | 16 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0452 | 2026-05-10T03:28:05.443Z | targeted | no | yes | RAG Command Vector Backfill and Legacy Seed Cleanup QA | 31 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0451 | 2026-05-10T03:10:45.254Z | targeted | no | yes | Remaining Legacy Vector Graph Helper Cleanup QA | 16 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260510-0450 | 2026-05-10T02:56:17.274Z | targeted | no | yes | KRL Token-overlap Ranking Precision QA | 14 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260510-0449 | 2026-05-10T02:46:15.891Z | targeted | no | yes | KRL Multi-token Recall Improvement QA | 15 | 4 | 0 | 0 | 0 | 0 |

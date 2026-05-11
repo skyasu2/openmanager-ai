@@ -26,13 +26,7 @@ import { logger } from '../lib/logger';
 import { logAPIKeyStatus, validateAPIKeys } from '../lib/model-config';
 import { createErrorResponse, ErrorCodes } from '../types/api-response';
 import { RATE_LIMIT_IDENTITY_HEADER } from '../middleware/rate-limiter';
-import {
-  RETRIEVAL_MODES,
-  RETRIEVAL_SUPPRESSED_REASONS,
-  type RetrievalMetadata,
-  type RetrievalMode,
-  type RetrievalSuppressedReason,
-} from '../lib/retrieval-contract';
+import type { RetrievalMetadata } from '../lib/retrieval-contract';
 import {
   markJobProcessing,
   storeJobResult,
@@ -56,15 +50,24 @@ import {
   parseHandoffEvent,
   resolveAgentStage,
 } from './jobs-route-helpers';
+import {
+  buildJobProcessTargetUrl,
+  extractJobProcessQueryAsOf,
+  extractJobProcessToolOptions,
+  isRecentProcessingJob,
+} from './jobs-request-contract';
+import {
+  extractProviderMetadata,
+  type JobProviderMetadata,
+  parseRetrievalMetadata,
+} from './jobs-result-metadata';
 import { executeSupervisorStream, logProviderStatus } from '../services/ai-sdk';
 import { getDefaultMonitoringAssistantRuntimeHost } from '../services/ai-sdk/monitoring-runtime-host';
-import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import type {
   AnalysisMode,
   SupervisorRequest,
 } from '../services/ai-sdk/supervisor-types';
 import {
-  normalizeQueryAsOf,
   runWithQueryAsOf,
   type QueryAsOf,
 } from '../data/query-as-of-context';
@@ -74,249 +77,6 @@ import {
 // ============================================================================
 
 export const jobsRouter = new Hono();
-
-type JobProcessToolOptions = Pick<
-  SupervisorRequest,
-  | 'analysisMode'
-  | 'enableRAG'
-  | 'enableWebSearch'
-  | 'internalDisclosureMode'
-  | 'localRouteDecision'
->;
-
-const RETRIEVAL_MODE_SET = new Set<string>(RETRIEVAL_MODES);
-const RETRIEVAL_SUPPRESSED_REASON_SET = new Set<string>(
-  RETRIEVAL_SUPPRESSED_REASONS
-);
-const PROCESSING_DUPLICATE_GRACE_MS = 30 * 60 * 1000;
-
-function isLocalTargetHostname(hostname: string): boolean {
-  return (
-    hostname === 'localhost' ||
-    hostname === '127.0.0.1' ||
-    hostname === '::1' ||
-    hostname.endsWith('.localhost')
-  );
-}
-
-function buildJobProcessTargetUrl(
-  requestUrl: string,
-  forwardedProto?: string
-): string {
-  const targetUrl = new URL('/api/jobs/process', requestUrl);
-  const forwardedScheme = forwardedProto
-    ?.split(',')[0]
-    ?.trim()
-    .toLowerCase();
-
-  if (forwardedScheme === 'https') {
-    targetUrl.protocol = 'https:';
-  } else if (
-    forwardedScheme === 'http' &&
-    isLocalTargetHostname(targetUrl.hostname)
-  ) {
-    targetUrl.protocol = 'http:';
-  } else if (
-    targetUrl.protocol === 'http:' &&
-    !isLocalTargetHostname(targetUrl.hostname)
-  ) {
-    targetUrl.protocol = 'https:';
-  }
-
-  return targetUrl.toString();
-}
-
-function isAnalysisMode(value: unknown): value is AnalysisMode {
-  return value === 'auto' || value === 'thinking';
-}
-
-function isWebSearchOption(
-  value: unknown
-): value is SupervisorRequest['enableWebSearch'] {
-  return value === true || value === false || value === 'auto';
-}
-
-function isInternalDisclosureMode(
-  value: unknown
-): value is SupervisorRequest['internalDisclosureMode'] {
-  return value === 'user' || value === 'developer';
-}
-
-function parseRetrievalMetadata(value: unknown): RetrievalMetadata | undefined {
-  if (!isRecord(value)) return undefined;
-  if (
-    typeof value.retrievalEnabled !== 'boolean' ||
-    typeof value.retrievalUsed !== 'boolean' ||
-    typeof value.retrievalMode !== 'string' ||
-    !RETRIEVAL_MODE_SET.has(value.retrievalMode) ||
-    typeof value.evidenceCount !== 'number' ||
-    !Number.isFinite(value.evidenceCount) ||
-    typeof value.webUsed !== 'boolean'
-  ) {
-    return undefined;
-  }
-
-  const suppressedReason =
-    typeof value.suppressedReason === 'string' &&
-    RETRIEVAL_SUPPRESSED_REASON_SET.has(value.suppressedReason)
-      ? (value.suppressedReason as RetrievalSuppressedReason)
-      : undefined;
-
-  return {
-    retrievalEnabled: value.retrievalEnabled,
-    retrievalUsed: value.retrievalUsed,
-    retrievalMode: value.retrievalMode as RetrievalMode,
-    ...(suppressedReason && { suppressedReason }),
-    evidenceCount: Math.max(0, Math.floor(value.evidenceCount)),
-    webUsed: value.webUsed,
-  };
-}
-
-type ProviderAttemptTelemetry = {
-  provider: string;
-  modelId?: string;
-  attempt?: number;
-  durationMs?: number;
-  error?: string;
-};
-
-type JobProviderMetadata = {
-  provider?: string;
-  modelId?: string;
-  providerAttempts?: ProviderAttemptTelemetry[];
-  usedFallback?: boolean;
-  fallbackReason?: string;
-  durationMs?: number;
-  ttfbMs?: number;
-  latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
-  resolvedMode?: 'single' | 'multi';
-  modeSelectionSource?: string;
-};
-
-function getNumberValue(value: unknown): number | undefined {
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return Math.max(0, Math.round(value));
-  }
-
-  if (typeof value === 'string' && value.trim().length > 0) {
-    const parsed = Number.parseInt(value, 10);
-    if (!Number.isNaN(parsed)) {
-      return Math.max(0, parsed);
-    }
-  }
-
-  return undefined;
-}
-
-function normalizeProviderAttempts(
-  value: unknown
-): ProviderAttemptTelemetry[] | undefined {
-  if (!Array.isArray(value)) return undefined;
-
-  const attempts = value
-    .map((entry) => {
-      if (!isRecord(entry)) return null;
-      const provider = getStringValue(entry.provider);
-      if (!provider) return null;
-      const modelId = getStringValue(entry.modelId);
-      const attempt = getNumberValue(entry.attempt);
-      const durationMs = getNumberValue(entry.durationMs);
-      const error = getStringValue(entry.error);
-      return {
-        provider,
-        ...(modelId && { modelId }),
-        ...(attempt !== undefined && { attempt }),
-        ...(durationMs !== undefined && { durationMs }),
-        ...(error && { error }),
-      };
-    })
-    .filter((entry): entry is ProviderAttemptTelemetry => entry !== null);
-
-  return attempts.length > 0 ? attempts : undefined;
-}
-
-function extractProviderMetadata(
-  metadata: Record<string, unknown>
-): JobProviderMetadata {
-  const provider = getStringValue(metadata.provider);
-  const modelId = getStringValue(metadata.modelId);
-  const fallbackReason = getStringValue(metadata.fallbackReason);
-  const durationMs = getNumberValue(metadata.durationMs);
-  const ttfbMs = getNumberValue(metadata.ttfbMs);
-  const modeSelectionSource = getStringValue(metadata.modeSelectionSource);
-  const latencyTier =
-    metadata.latencyTier === 'fast' ||
-    metadata.latencyTier === 'normal' ||
-    metadata.latencyTier === 'slow' ||
-    metadata.latencyTier === 'very_slow'
-      ? metadata.latencyTier
-      : undefined;
-  const resolvedMode =
-    metadata.resolvedMode === 'single' || metadata.resolvedMode === 'multi'
-      ? metadata.resolvedMode
-      : undefined;
-  const providerAttempts = normalizeProviderAttempts(metadata.providerAttempts);
-  const providerMetadata: JobProviderMetadata = {
-    ...(provider && { provider }),
-    ...(modelId && { modelId }),
-    ...(providerAttempts && { providerAttempts }),
-    ...(typeof metadata.usedFallback === 'boolean' && {
-      usedFallback: metadata.usedFallback,
-    }),
-    ...(fallbackReason && { fallbackReason }),
-    ...(durationMs !== undefined && { durationMs }),
-    ...(ttfbMs !== undefined && { ttfbMs }),
-    ...(latencyTier && { latencyTier }),
-    ...(resolvedMode && { resolvedMode }),
-    ...(modeSelectionSource && { modeSelectionSource }),
-  };
-
-  return providerMetadata;
-}
-
-function extractJobProcessToolOptions(
-  payload: Record<string, unknown>
-): JobProcessToolOptions {
-  const localRouteDecision = normalizeSupervisorLocalRouteDecision(
-    payload.localRouteDecision
-  );
-  if (payload.localRouteDecision !== undefined && !localRouteDecision) {
-    logger.warn('[Jobs] Ignoring invalid localRouteDecision payload');
-  }
-
-  return {
-    ...(isAnalysisMode(payload.analysisMode) && {
-      analysisMode: payload.analysisMode,
-    }),
-    ...(typeof payload.enableRAG === 'boolean' && {
-      enableRAG: payload.enableRAG,
-    }),
-    ...(isWebSearchOption(payload.enableWebSearch) && {
-      enableWebSearch: payload.enableWebSearch,
-    }),
-    ...(isInternalDisclosureMode(payload.internalDisclosureMode) && {
-      internalDisclosureMode: payload.internalDisclosureMode,
-    }),
-    ...(localRouteDecision && { localRouteDecision }),
-  };
-}
-
-function extractJobProcessQueryAsOf(
-  payload: Record<string, unknown>
-): QueryAsOf | undefined {
-  const queryAsOf = normalizeQueryAsOf(payload.queryAsOf);
-  if (payload.queryAsOf !== undefined && !queryAsOf) {
-    logger.warn('[Jobs] Ignoring invalid queryAsOf payload');
-  }
-  return queryAsOf;
-}
-
-function isRecentProcessingJob(startedAt?: string): boolean {
-  if (!startedAt) return true;
-  const startedAtMs = new Date(startedAt).getTime();
-  if (!Number.isFinite(startedAtMs)) return true;
-  return Date.now() - startedAtMs < PROCESSING_DUPLICATE_GRACE_MS;
-}
 
 /**
  * POST /api/jobs/process

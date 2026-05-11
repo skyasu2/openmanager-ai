@@ -1,0 +1,110 @@
+{
+  "runId": "QA-20260511-0469",
+  "recordedAt": "2026-05-11T02:04:07.454Z",
+  "recordedAtKst": "2026-05-11 11:04:07 KST",
+  "runTitle": "Local QA - Line Guard Current Hotspots Refactor",
+  "owner": "codex",
+  "source": "local-cli",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "Cloud Run AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "8ed8df05451aeeb392cf767c1865f125390ddefa"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Line guard production TS/TSX fail threshold gate",
+    "Root App useAIChatCore artifact/debug helper extraction",
+    "Cloud Run supervisor stream and single-agent stream helper extraction",
+    "Cloud Run orchestrator agent stream fallback/quota helper extraction",
+    "Cloud Run forced routing direct-knowledge, topology, and telemetry helper extraction",
+    "Cloud Run async jobs route request contract and result metadata helper extraction",
+    "Root App type/lint/quick/contract gates",
+    "Cloud Run AI Engine type/full test gates",
+    "Planning TODO and line-guard refactor closure evidence"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "Cloud Run production smoke",
+    "live LLM/provider calls",
+    "production conversational AI QA"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The refactor was verified with line-guard, targeted Vitest suites, root deterministic gates, and full AI Engine tests without changing public API shapes.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI stream, forced routing, job route, and artifact integration behavior were protected by deterministic regression suites; no live provider behavior was intentionally changed.",
+      "nextAction": "Run production conversational QA after the next deploy if this refactor is bundled with runtime AI behavior changes."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run AI Engine type/full tests and route-specific regression suites passed after splitting large stream, routing, and jobs modules.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "line-guard-current-hotspots-refactor",
+      "title": "Reduce current line-guard fail-threshold hotspots from 5 to 0",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "npm run line-guard passed with 0 fail-threshold violations after splitting useAIChatCore, supervisor-stream, orchestrator-agent-stream, orchestrator-routing, and routes/jobs hotspots.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Initial line-guard baseline reported 40 warn files and 5 fail files over 800 lines.",
+    "Final npm run line-guard passed with 41 warn files and 0 fail files; warn files remain observation targets only.",
+    "Task 1 split useAIChatCore.ts from 1287 lines to 720 lines and added chat artifact/debug helpers.",
+    "Task 2 split supervisor-stream.ts from 1494 lines to 260 lines and orchestrator-agent-stream.ts from 1202 lines to 799 lines.",
+    "Task 3 split orchestrator-routing.ts from 1182 lines to 691 lines.",
+    "Task 4 split routes/jobs.ts from 978 lines to 738 lines.",
+    "Targeted tests passed: useAIChatCore, AI Engine stream suites, orchestrator-routing, and jobs route/dispatch suites.",
+    "npm run type-check passed.",
+    "npm run lint passed with existing qa-tracker.json max-size info only.",
+    "npm run test:quick passed.",
+    "npm run test:contract passed 24/24.",
+    "cd cloud-run/ai-engine && npm run type-check passed.",
+    "cd cloud-run/ai-engine && npm run test passed 108 files / 1086 tests.",
+    "npm run docs:budget, npm run docs:ai-consistency, and git diff --check passed before closure.",
+    "No live AI, Vercel, Cloud Run production, or external provider call was executed for this deterministic local QA run."
+  ],
+  "links": []
+}

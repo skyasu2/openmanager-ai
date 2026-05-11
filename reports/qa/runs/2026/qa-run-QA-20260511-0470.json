@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260511-0470",
+  "recordedAt": "2026-05-11T02:13:17.338Z",
+  "recordedAtKst": "2026-05-11 11:13:17 KST",
+  "runTitle": "Local QA - Line Guard Hotspot Buffer Polish",
+  "owner": "codex",
+  "source": "local-cli",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "Cloud Run AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "8ed8df05451aeeb392cf767c1865f125390ddefa"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Line guard fail-threshold gate after near-threshold helper extraction",
+    "Cloud Run orchestrator agent stream server-count helper extraction",
+    "Cloud Run supervisor single-agent hard-timeout event helper extraction",
+    "AI Engine type-check and stream/routing targeted regression tests"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "Cloud Run production smoke",
+    "live LLM/provider calls"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The post-closure helper extraction changed only local helper boundaries and was covered by line-guard, AI Engine type-check, and stream/routing regression suites.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "line-guard-current-hotspots-refactor",
+      "title": "Add line-count buffer for near-threshold AI Engine stream files",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "orchestrator-agent-stream.ts reduced to 786 lines and supervisor-single-agent-stream.ts reduced to 791 lines; npm run line-guard passed with 0 fail-threshold violations.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Post-closure polish moved server-count extraction into orchestrator-agent-stream-helpers.ts.",
+    "Post-closure polish moved hard-timeout error event construction into supervisor-single-agent-events.ts.",
+    "Final line counts: orchestrator-agent-stream.ts 786, supervisor-single-agent-stream.ts 791, helper files 606 and 288 lines.",
+    "npm run line-guard passed with 41 warnings and 0 fail-threshold violations.",
+    "cd cloud-run/ai-engine && npm run type-check passed.",
+    "Targeted Vitest passed: orchestrator-agent-stream, orchestrator-routing, supervisor-domain-wiring contract; 3 files / 43 tests.",
+    "No live AI, Vercel, Cloud Run production, or external provider call was executed for this deterministic local QA run."
+  ],
+  "links": []
+}

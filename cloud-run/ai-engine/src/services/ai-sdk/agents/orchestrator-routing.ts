@@ -6,13 +6,8 @@
  * @version 4.0.0
  */
 
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { generateText, hasToolCall, stepCountIs } from 'ai';
-import {
-  generateTextWithRetry,
-  type ProviderAttempt,
-} from '../../resilience/retry-with-fallback';
+import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
@@ -33,10 +28,7 @@ import {
 } from './config/agent-model-selectors';
 import type { ImageAttachment, FileAttachment } from './base-agent';
 
-import type {
-  MultiAgentResponse,
-  ProviderAttemptTelemetry,
-} from './orchestrator-types';
+import type { MultiAgentResponse } from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
@@ -52,7 +44,6 @@ import {
   createRetrievalMetadata,
   legacyRagSourcesToEvidenceCards,
   type EvidenceCard,
-  type EvidenceSourceType,
   type RetrievalMetadata,
 } from '../../../lib/retrieval-contract';
 import { buildKnowledgeBaseGroundedAnswer } from '../supervisor-stream-citations';
@@ -61,6 +52,23 @@ import {
   createAgentDataSourceContext,
   resolveDomainSnapshot,
 } from './domain-data-source';
+import {
+  asDirectKnowledgeSearchResult,
+  asEvidenceCard,
+  asRetrievalMetadata,
+  buildGroundedNoEvidenceResponse,
+  buildTopologyDirectKnowledgeResponse,
+  resolveDirectKnowledgeEvidenceCards,
+  shouldUseGroundedKnowledgeAnswer,
+} from './orchestrator-routing-direct-knowledge';
+import {
+  buildStructuredTopologyBoundaryResponse,
+  isStructuredTopologyBoundaryQuery,
+} from './orchestrator-routing-topology';
+import {
+  resolveFallbackReason,
+  toProviderAttemptTelemetry,
+} from './orchestrator-routing-telemetry';
 export { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 export {
@@ -142,495 +150,6 @@ export function getAgentConfig(name: string): AgentConfig | null {
 
 export const getAgentProviderOrder = getRuntimeAgentProviderOrder;
 export const getAgentMaxSteps = getRuntimeAgentMaxSteps;
-
-interface DirectKnowledgeResultItem {
-  id?: string;
-  title: string;
-  content: string;
-  similarity: number;
-  sourceType: string;
-  category?: string;
-  url?: string;
-}
-
-interface DirectKnowledgeSearchResult {
-  success: boolean;
-  results: DirectKnowledgeResultItem[];
-  totalFound: number;
-  evidenceCards: EvidenceCard[];
-  retrieval?: RetrievalMetadata;
-}
-
-interface ResourceCatalog {
-  resources?: Record<string, Record<string, unknown>>;
-}
-
-interface StructuredTopologySnapshot {
-  totalServers: number;
-  roleCounts: Map<string, number>;
-  azCounts: Map<string, number>;
-  roleGroups: Array<{ role: string; serverIds: string[] }>;
-  statusCounts: Record<string, number>;
-  alertCount: number;
-  dataSources: string[];
-}
-
-interface ResourceCatalogCache {
-  filePath: string | null;
-  catalog: ResourceCatalog | null;
-}
-
-let resourceCatalogCache: ResourceCatalogCache | undefined;
-
-const STRUCTURED_TOPOLOGY_BOUNDARY_PATTERN =
-  /서버\s*(수|몇|목록|리스트|역할|role|상태|status)|몇\s*대|role|az|가용\s*영역|availability\s*zone|inventory|인벤토리/i;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
-function toNumber(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) ? value : null;
-}
-
-function asDirectKnowledgeResultItem(value: unknown): DirectKnowledgeResultItem | null {
-  if (!isRecord(value)) return null;
-  const title = typeof value.title === 'string' ? value.title : '';
-  const content = typeof value.content === 'string' ? value.content : '';
-  const similarity = toNumber(value.similarity) ?? 0;
-  const sourceType = typeof value.sourceType === 'string' ? value.sourceType : 'knowledge';
-
-  if (!title || !content) {
-    return null;
-  }
-
-  return {
-    ...(typeof value.id === 'string' && { id: value.id }),
-    title,
-    content,
-    similarity,
-    sourceType,
-    category: typeof value.category === 'string' ? value.category : undefined,
-    url: typeof value.url === 'string' ? value.url : undefined,
-  };
-}
-
-function asEvidenceSourceType(value: unknown): EvidenceSourceType {
-  return value === 'incident' ||
-    value === 'runbook' ||
-    value === 'web' ||
-    value === 'knowledge'
-    ? value
-    : 'knowledge';
-}
-
-function asEvidenceCard(value: unknown): EvidenceCard | null {
-  if (!isRecord(value)) return null;
-
-  const title = typeof value.title === 'string' ? value.title : '';
-  const summary = typeof value.summary === 'string' ? value.summary : '';
-  const score = toNumber(value.score) ?? 0;
-
-  if (!title || !summary) {
-    return null;
-  }
-
-  return {
-    id: typeof value.id === 'string' ? value.id : `evidence-${title}`,
-    title,
-    summary,
-    sourceType: asEvidenceSourceType(value.sourceType),
-    score: Math.min(1, Math.max(0, score)),
-    ...(typeof value.category === 'string' && { category: value.category }),
-    ...(typeof value.reason === 'string' && { reason: value.reason }),
-    ...(typeof value.url === 'string' && { url: value.url }),
-  };
-}
-
-function asRetrievalMetadata(value: unknown): RetrievalMetadata | undefined {
-  if (!isRecord(value)) return undefined;
-
-  return createRetrievalMetadata({
-    retrievalEnabled: value.retrievalEnabled === true,
-    retrievalUsed:
-      typeof value.retrievalUsed === 'boolean'
-        ? value.retrievalUsed
-        : undefined,
-    retrievalMode:
-      value.retrievalMode === 'off' ||
-      value.retrievalMode === 'lite' ||
-      value.retrievalMode === 'text-only' ||
-      value.retrievalMode === 'cosine-neighbor'
-        ? value.retrievalMode
-        : 'lite',
-    evidenceCount: toNumber(value.evidenceCount) ?? 0,
-    webUsed: value.webUsed === true,
-    suppressedReason:
-      value.suppressedReason === 'disabled' ||
-      value.suppressedReason === 'not_needed' ||
-      value.suppressedReason === 'no_results' ||
-      value.suppressedReason === 'budget_guard' ||
-      value.suppressedReason === 'unavailable'
-        ? value.suppressedReason
-        : undefined,
-  });
-}
-
-function toProviderAttemptTelemetry(
-  attempts: ProviderAttempt[]
-): ProviderAttemptTelemetry[] {
-  return attempts.map((attempt) => ({
-    provider: attempt.provider,
-    modelId: attempt.modelId,
-    attempt: attempt.attempt,
-    durationMs: attempt.durationMs,
-    ...(attempt.error ? { error: attempt.error } : {}),
-  }));
-}
-
-function resolveFallbackReason(
-  attempts: ProviderAttempt[],
-  usedFallback: boolean
-): string | undefined {
-  if (!usedFallback) {
-    return undefined;
-  }
-
-  const failedAttempt = attempts.find((attempt) => attempt.error);
-  if (!failedAttempt) {
-    return 'provider_fallback';
-  }
-
-  const normalizedError = failedAttempt.error?.toLowerCase() ?? '';
-  if (normalizedError.includes('rate limit') || normalizedError.includes('429')) {
-    return 'rate_limit';
-  }
-  if (normalizedError.includes('timeout')) {
-    return 'timeout';
-  }
-  if (
-    normalizedError.includes('missing required capabilities') ||
-    normalizedError.includes('tool-calling') ||
-    normalizedError.includes('structured-output')
-  ) {
-    return 'capability_mismatch';
-  }
-  if (
-    normalizedError.includes('does not exist') ||
-    normalizedError.includes('no access') ||
-    normalizedError.includes('model not found') ||
-    normalizedError.includes('404')
-  ) {
-    return 'model_unavailable';
-  }
-  if (
-    normalizedError.includes('unavailable') ||
-    normalizedError.includes('503') ||
-    normalizedError.includes('502') ||
-    normalizedError.includes('504')
-  ) {
-    return 'provider_unavailable';
-  }
-
-  return 'provider_error';
-}
-
-function asDirectKnowledgeSearchResult(value: unknown): DirectKnowledgeSearchResult | null {
-  if (!isRecord(value) || value.success !== true || !Array.isArray(value.results)) {
-    return null;
-  }
-
-  const results = value.results
-    .map(asDirectKnowledgeResultItem)
-    .filter((item): item is DirectKnowledgeResultItem => item !== null);
-
-  return {
-    success: true,
-    results,
-    totalFound: toNumber(value.totalFound) ?? results.length,
-    evidenceCards: Array.isArray(value.evidenceCards)
-      ? value.evidenceCards
-          .map(asEvidenceCard)
-          .filter((item): item is EvidenceCard => item !== null)
-      : [],
-    retrieval: asRetrievalMetadata(value.retrieval),
-  };
-}
-
-function readString(value: unknown): string | null {
-  return typeof value === 'string' && value.length > 0 ? value : null;
-}
-
-function incrementCount(map: Map<string, number>, key: string): void {
-  map.set(key, (map.get(key) ?? 0) + 1);
-}
-
-function formatCountMap(map: Map<string, number>): string {
-  return [...map.entries()]
-    .sort(([left], [right]) => left.localeCompare(right))
-    .map(([key, count]) => `${key}: ${count}`)
-    .join(', ');
-}
-
-function compactServerIds(serverIds: string[]): string {
-  return serverIds.slice().sort((left, right) => left.localeCompare(right)).join(', ');
-}
-
-function getStateServers(stateData: unknown): Array<{ id: string; status: string }> {
-  if (!isRecord(stateData) || !Array.isArray(stateData.servers)) {
-    return [];
-  }
-
-  return stateData.servers
-    .filter((server): server is Record<string, unknown> => isRecord(server) && typeof server.id === 'string')
-    .map((server) => ({
-      id: server.id as string,
-      status: typeof server.status === 'string' ? server.status : 'unknown',
-    }));
-}
-
-function getStateAlertCount(stateData: unknown, servers: Array<{ status: string }>): number {
-  if (isRecord(stateData) && Array.isArray(stateData.alerts)) {
-    return stateData.alerts.length;
-  }
-
-  return servers.filter((server) =>
-    ['warning', 'critical', 'offline'].includes(server.status)
-  ).length;
-}
-
-function loadResourceCatalog(): ResourceCatalog | null {
-  const candidates = [
-    // Prefer the tracked OTel SSOT so local generated copies cannot mask CI drift.
-    join(process.cwd(), 'public/data/otel-data/resource-catalog.json'),
-    join(process.cwd(), '..', '..', 'public/data/otel-data/resource-catalog.json'),
-    join(process.cwd(), 'data/otel-data/resource-catalog.json'),
-    join(process.cwd(), 'cloud-run/ai-engine/data/otel-data/resource-catalog.json'),
-  ];
-  const firstExistingCandidate = candidates.find((filePath) =>
-    existsSync(filePath)
-  ) ?? null;
-
-  if (
-    resourceCatalogCache !== undefined &&
-    resourceCatalogCache.filePath === firstExistingCandidate
-  ) {
-    return resourceCatalogCache.catalog;
-  }
-
-  for (const filePath of candidates) {
-    if (!existsSync(filePath)) continue;
-    try {
-      const catalog = JSON.parse(
-        readFileSync(filePath, 'utf-8')
-      ) as ResourceCatalog;
-      resourceCatalogCache = { filePath, catalog };
-      return catalog;
-    } catch (error) {
-      logger.warn(
-        `[Forced Routing] Failed to parse resource catalog ${filePath}:`,
-        error instanceof Error ? error.message : String(error)
-      );
-    }
-  }
-
-  resourceCatalogCache = { filePath: null, catalog: null };
-  return null;
-}
-
-function buildStructuredTopologySnapshot(
-  stateData?: unknown
-): StructuredTopologySnapshot | null {
-  const catalog = loadResourceCatalog();
-  const resources = catalog?.resources;
-  if (!resources || Object.keys(resources).length === 0) {
-    return null;
-  }
-  const stateServers = getStateServers(stateData);
-  if (stateServers.length === 0) {
-    return null;
-  }
-
-  const roleCounts = new Map<string, number>();
-  const azCounts = new Map<string, number>();
-  const roleGroups = new Map<string, string[]>();
-
-  for (const [serverId, attrs] of Object.entries(resources)) {
-    const role = readString(attrs['server.role']) ?? 'unknown';
-    const az = readString(attrs['cloud.availability_zone']) ?? 'unknown';
-    incrementCount(roleCounts, role);
-    incrementCount(azCounts, az);
-    roleGroups.set(role, [...(roleGroups.get(role) ?? []), serverId]);
-  }
-
-  const statusCounts = stateServers.reduce<Record<string, number>>(
-    (acc, server) => {
-      acc[server.status] = (acc[server.status] ?? 0) + 1;
-      return acc;
-    },
-    {}
-  );
-
-  return {
-    totalServers: Object.keys(resources).length,
-    roleCounts,
-    azCounts,
-    roleGroups: [...roleGroups.entries()]
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([role, serverIds]) => ({ role, serverIds: serverIds.sort() })),
-    statusCounts,
-    alertCount: getStateAlertCount(stateData, stateServers),
-    dataSources: ['otel-resource-catalog', 'domain-data-source'],
-  };
-}
-
-function isStructuredTopologyBoundaryQuery(query: string): boolean {
-  return STRUCTURED_TOPOLOGY_BOUNDARY_PATTERN.test(query);
-}
-
-function buildStructuredTopologyBoundaryResponse(
-  query: string,
-  startTime: number,
-  suggestedAgentName: string,
-  ragEnabled: boolean,
-  stateData?: unknown
-): MultiAgentResponse | null {
-  const snapshot = buildStructuredTopologySnapshot(stateData);
-  if (!snapshot) return null;
-
-  const roleGroupLines = snapshot.roleGroups
-    .map(({ role, serverIds }) => `- ${role}: ${compactServerIds(serverIds)}`)
-    .join('\n');
-  const statusSummary = Object.entries(snapshot.statusCounts)
-    .sort(([left], [right]) => left.localeCompare(right))
-    .map(([status, count]) => `${status}: ${count}`)
-    .join(', ');
-  const response = sanitizeChineseCharacters(
-    [
-      '### 인프라 구조화 상태 요약',
-      `- 질의: ${query}`,
-      `- 총 서버 수: ${snapshot.totalServers}대`,
-      `- 역할 분포: ${formatCountMap(snapshot.roleCounts)}`,
-      `- AZ 분포: ${formatCountMap(snapshot.azCounts)}`,
-      `- 현재 상태 요약: ${statusSummary || '상태 데이터 없음'}`,
-      `- 현재 알림 수: ${snapshot.alertCount}건`,
-      '',
-      '#### 역할별 서버',
-      roleGroupLines,
-      '',
-      '#### 근거 경계',
-      '- 서버 수, 역할, AZ, 현재 상태는 RAG 문서가 아니라 구조화된 OTel resource catalog와 도메인 dataSource를 정본으로 사용했습니다.',
-      '- 운영 절차나 장애 대응 방법이 필요하면 내부 지식 검색을 보조 근거로 별도 사용합니다.',
-    ].join('\n')
-  );
-  const durationMs = Date.now() - startTime;
-  const quality = evaluateAgentResponseQuality(suggestedAgentName, response, {
-    durationMs,
-  });
-
-  return {
-    success: true,
-    response,
-    evidenceCards: [
-      {
-        id: 'structured-topology-current-state',
-        title: 'Structured topology and current metrics state',
-        summary: `${snapshot.totalServers} servers from resource catalog; current status from precomputed state.`,
-        sourceType: 'knowledge',
-        score: 1,
-        category: 'structured-topology',
-        reason: `structured-evidence:${snapshot.dataSources.join('+')}`,
-      },
-    ],
-    handoffs: [
-      {
-        from: 'Orchestrator',
-        to: suggestedAgentName,
-        reason: 'Forced routing (structured topology boundary)',
-      },
-    ],
-    finalAgent: suggestedAgentName,
-    toolsCalled: ['structuredTopologyLookup', 'finalAnswer'],
-    usage: {
-      promptTokens: 0,
-      completionTokens: 0,
-      totalTokens: 0,
-    },
-    metadata: {
-      provider: 'deterministic',
-      modelId: 'structured-topology-state',
-      totalRounds: 1,
-      handoffCount: 1,
-      durationMs,
-      responseChars: quality.responseChars,
-      formatCompliance: quality.formatCompliance,
-      qualityFlags: quality.qualityFlags,
-      latencyTier: quality.latencyTier,
-      retrieval: createRetrievalMetadata({
-        retrievalEnabled: ragEnabled,
-        retrievalUsed: false,
-        retrievalMode: 'lite',
-        evidenceCount: 0,
-        suppressedReason: 'not_needed',
-        webUsed: false,
-      }),
-    },
-  };
-}
-
-function extractServerCountHint(results: DirectKnowledgeResultItem[]): number | null {
-  for (const result of results) {
-    const match = result.content.match(/총\s*(\d+)\s*대/);
-    if (match) {
-      return Number(match[1]);
-    }
-  }
-  return null;
-}
-
-function buildTopologyDirectKnowledgeResponse(
-  query: string,
-  results: DirectKnowledgeResultItem[],
-): string {
-  const topResults = results.slice(0, 3);
-  const sourceSummary = {
-    knowledge: results.filter((item) => item.sourceType === 'knowledge').length,
-    incident: results.filter((item) => item.sourceType === 'incident').length,
-    runbook: results.filter((item) => item.sourceType === 'runbook').length,
-    web: results.filter((item) => item.sourceType === 'web').length,
-  };
-  const serverCountHint = extractServerCountHint(results);
-  const titleBullets = topResults
-    .map((item, index) => `${index + 1}. ${item.title}`)
-    .join('\n');
-
-  return [
-    '### 인프라 토폴로지 요약',
-    `- 질의: ${query}`,
-    `- 근거 문서: ${results.length}건 (운영 지식 ${sourceSummary.knowledge}, 장애 이력 ${sourceSummary.incident}, 런북 ${sourceSummary.runbook}, 웹 ${sourceSummary.web})`,
-    serverCountHint !== null
-      ? `- 확인된 서버 규모 힌트: 총 ${serverCountHint}대`
-      : '- 서버 규모는 KB 문서 기준으로 파악되며, 실시간 수치는 별도 조회가 필요합니다.',
-    '',
-    '#### 문제/원인 관점',
-    '- 이번 요청은 장애 원인 진단보다 현재 구성/트래픽 경로 확인 목적입니다.',
-    '- 원인 분석이 필요하면 `findRootCause`/`correlateMetrics` 기반 추가 점검이 필요합니다.',
-    '',
-    '#### 핵심 근거 문서',
-    titleBullets,
-    '',
-    '#### 해결/권장 조치',
-    '1. `getServerMetrics`로 LB→WEB→APP→DB 구간의 현재 부하(CPU/메모리)를 즉시 확인하세요.',
-    '2. `getServerLogs`로 WEB/APP 계층 에러 로그를 교차 점검해 병목 지점을 좁히세요.',
-    '3. 토폴로지 변경 전에는 관련 runbook과 최근 incident 유사 사례를 함께 검토하세요.',
-  ].join('\n');
-}
-
-function shouldUseGroundedKnowledgeAnswer(query: string): boolean {
-  return /ssot|single\s*source\s*of\s*truth|pre-generated|파일\s*경로|코드\s*위치|데이터\s*로더|data\s*loader|(?:문서|파일|경로|위치|path)/i.test(
-    query
-  );
-}
 
 export async function executeForcedRouting(
   query: string,
@@ -738,18 +257,11 @@ export async function executeForcedRouting(
             0,
             evidenceBudget
           );
-          const directEvidenceCards =
-            parsedDirectResult.evidenceCards.length > 0
-              ? parsedDirectResult.evidenceCards.slice(0, evidenceBudget)
-              : legacyRagSourcesToEvidenceCards(
-                  directEvidence.map((item) => ({
-                    title: item.title,
-                    similarity: item.similarity,
-                    sourceType: item.sourceType,
-                    category: item.category,
-                    url: item.url,
-                  }))
-                );
+          const directEvidenceCards = resolveDirectKnowledgeEvidenceCards({
+            parsedDirectResult,
+            directEvidence,
+            evidenceBudget,
+          });
           const directRetrieval = createRetrievalMetadata({
             retrievalEnabled: true,
             retrievalUsed: directEvidenceCards.length > 0,
@@ -825,14 +337,11 @@ export async function executeForcedRouting(
         ) {
           const durationMs = Date.now() - startTime;
           const response = sanitizeChineseCharacters(
-            buildKnowledgeBaseGroundedAnswer(query, [
-              { toolName: 'searchKnowledgeBase', result: directSearchResult },
-            ], { internalDisclosureMode }) ??
-              [
-                '내부 근거를 찾지 못했습니다.',
-                `- 질의: ${query}`,
-                '- 정확한 repo 경로, 문서명, 운영 파일 위치는 추정하지 않습니다.',
-              ].join('\n')
+            buildGroundedNoEvidenceResponse({
+              query,
+              directSearchResult,
+              internalDisclosureMode,
+            })
           );
           const directRetrieval = createRetrievalMetadata({
             retrievalEnabled: true,
