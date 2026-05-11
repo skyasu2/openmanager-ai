@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-11 13:15:40 KST
+> Generated at: 2026-05-11 13:58:02 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 472 |
-| Total Runs (Counted) | 376 |
+| Total Recorded Runs | 473 |
+| Total Runs (Counted) | 377 |
 | Non-counted Runs | 96 |
-| Total Checks | 3342 |
-| Passed | 3215 |
-| Failed | 117 |
+| Total Checks | 3359 |
+| Passed | 3231 |
+| Failed | 118 |
 | Completed Items | 540 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
-| Latest Recorded Run | QA-20260511-0474 (2026-05-11T04:14:14.183Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.82% |
+| Last Counted Run | QA-20260511-0475 (2026-05-11T04:57:44.283Z) |
+| Latest Recorded Run | QA-20260511-0475 (2026-05-11T04:57:44.283Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,70 +34,79 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260511-0474 (2026-05-11T04:14:14.183Z)
+Latest run: QA-20260511-0475 (2026-05-11T04:57:44.283Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Frontend Platform Engineer | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Route time-window peak-load questions to deterministic metric analysis and fail visibly instead of rendering an empty substantive answer. |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after production status QA; effective 6.0506 USD, billed 0.0000 USD, chargeCount 5481. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-10T04:14:14.183Z -> 2026-05-11T04:14:14.183Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 3
+- Window: 2026-05-10T04:57:44.283Z -> 2026-05-11T04:57:44.283Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor | unknown | 2 | 4321ms | 6929ms | - | - | 2363ms | 3358ms | QA-20260510-0458 |
 | Supervisor/Cloud Run AI | unknown | 1 | 3928ms | 3928ms | - | - | 2125ms | 2125ms | QA-20260510-0458 |
+| Supervisor | cloud-run-ai-engine | 4 | 1769ms | 2708ms | - | - | 1769ms | 2708ms | QA-20260511-0475 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-10T04:14:14.183Z -> 2026-05-11T04:14:14.183Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
-- Drift rate: 0%
+- Window: 2026-05-10T04:57:44.283Z -> 2026-05-11T04:57:44.283Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 3
+- Drift rate: 66.67%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| - | - | 0 | 0% | - | - | - |
+| /api/ai/supervisor/stream/v2 | deterministic | 1 | 0% | 2708ms | 2708ms | QA-20260511-0475 |
+| generic conversation response | single-agent | 1 | 100% | 1465ms | 1465ms | QA-20260511-0475 |
+| /api/ai/jobs | single-agent | 1 | 100% | 1460ms | 1460ms | QA-20260511-0475 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 0c5d6918
-- Coverage Packs: core-routes-smoke, dashboard-core
-- Covered Surfaces: Root React dependency alignment, Root React DOM dependency alignment, React package import smoke, Root TypeScript type-check, Dependency audit triage
-- Skipped Surfaces: npm run test:quick, Vercel production browser QA, Cloud Run production smoke, live LLM/provider calls, conversational AI QA
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL / SHA cf5480e8
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: Vercel production deployment dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL was READY for alias https://openmanager-ai.vercel.app, /api/version returned version 8.11.124, Next.js 16.1.6, release tag v8.11.124, commit cf5480e855ff2476c928b7ff7f4399c664ff70ea, and GitLab pipeline 2513741959, /api/health returned success=true with database, cache, and ai services connected, Landing page rendered production shell, v8.11.124 version signal, Next.js 16 + React 19 stack label, Quad-Provider AI label, and system start CTA, System start CTA navigated through /system-boot to /dashboard without browser console warnings, Dashboard rendered 18 total servers, 17 online, 1 warning, 0 risk, 0 offline, OTel snapshot 13:40 KST, system resources, and Top 5 resource warnings, AI assistant sidebar opened from dashboard with AI engine status Ready, AI prompt '현재 서버 전체 상태를 요약해줘' returned a grounded server summary through /api/ai/supervisor/stream/v2 with total 18, warning 1, risk 0, offline 0, and cache-redis-dc1-01 memory issue evidence, AI prompt 'web-server-01 상태를 자세히 알려줘' returned a visible detailed answer, but used the generic conversation path instead of explicit metric-tool grounding, AI prompt '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?' returned a response card through the async jobs path, but the answer lacked a substantive body, AI prompt '지금 당장 조치가 필요한 서버가 있어?' triggered clarification, accepted 전체 서버, and returned an action-needed summary, AI prompt '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘' triggered clarification, accepted 전체 서버, and returned that no server matched network > 70% with fallback top-server context, /dashboard/ai-assistant fullscreen route opened from the sidebar handoff and preserved the 10/50 conversation state, Browser console check after the production flow reported 0 errors and 0 warnings, AI-related network requests returned HTTP 200/201 for /api/ai/wake-up, /api/health?service=ai, /api/ai/supervisor/stream/v2, /api/ai/nlq/extract-entities, and /api/ai/jobs, Vercel usage check passed with effective 6.0506 USD, billed 0.0000 USD, and chargeCount 5481 for the current billing period
+- Skipped Surfaces: OAuth provider callback success was not exercised because this run used guest mode to validate production frontend and AI assistant status, Reporter Agent and Analyst Agent advanced tabs were not exercised because the request focused on frontend deployment health and AI chat assistant behavior, Modal detail pack, alert/log drilldowns, topology interactions, and mobile viewport were not included in this targeted status run, Cloud Run admin monitoring endpoints were not called directly; Vercel /api/health and AI assistant network traffic were used as production-path evidence
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab release pipeline | [GitLab release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-qt46mwbes-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | AI assistant fullscreen handoff screenshot | `reports/qa/evidence/qa-20260511-v811124-vercel-ai-status.png` | - |
+| playwright-console | Production frontend console warnings/errors | `reports/qa/evidence/qa-20260511-v811124-vercel-ai-status-console.txt` | - |
+| playwright-network | Production AI network requests | `reports/qa/evidence/qa-20260511-v811124-vercel-ai-status-network.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260511-0475)
+  next: Route time-window peak-load questions to deterministic metric analysis and fail visibly instead of rendering an empty substantive answer.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-assistant-24h-peak-load-empty-response-v811124: Production AI Assistant 24시간 피크 부하 질의가 실질 본문 없이 완료됨 (seen 1회, last QA-20260511-0475)
 
 ## Deferred Improvements
 
@@ -718,6 +727,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0475 | 2026-05-11T04:57:44.283Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.124 frontend and AI assistant status | 17 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260511-0474 | 2026-05-11T04:14:14.183Z | targeted | no | no | Local QA - React 19.2.6 Patch Alignment | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0473 | 2026-05-11T03:21:01.161Z | targeted | no | no | Local QA - AI Engine Pino v10 Alignment | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0472 | 2026-05-11T03:08:32.044Z | targeted | no | no | Local QA - API Metrics Route Status Label Contract | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -737,4 +747,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0458 | 2026-05-10T07:26:58.691Z | targeted | no | yes | v8.11.122 Vercel AI Assistant Edge / Non-IT Prompt QA | 7 | 1 | 0 | 0 | 3 | 2 |
 | QA-20260510-0457 | 2026-05-10T05:49:28.256Z | targeted | yes | yes | v8.11.122 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0456 | 2026-05-10T05:38:01.711Z | targeted | no | yes | AI Explicit Server ID Clarification Skip QA | 7 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260510-0455 | 2026-05-10T04:38:12.410Z | targeted | yes | yes | v8.11.121 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |

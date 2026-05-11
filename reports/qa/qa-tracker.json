@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T04:14:14.183Z"
+    "updatedAt": "2026-05-11T04:57:44.283Z"
   },
   "sequence": {
-    "nextRunNumber": 475
+    "nextRunNumber": 476
   },
   "summary": {
-    "totalRecordedRuns": 472,
-    "totalRuns": 376,
+    "totalRecordedRuns": 473,
+    "totalRuns": 377,
     "excludedRuns": 96,
-    "totalChecks": 3342,
-    "totalPassed": 3215,
-    "totalFailed": 117,
-    "completionRate": 100,
+    "totalChecks": 3359,
+    "totalPassed": 3231,
+    "totalFailed": 118,
+    "completionRate": 99.82,
     "completedItems": 540,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260510-0466",
-    "lastRecordedAt": "2026-05-10T12:53:07.527Z",
-    "latestRecordedRunId": "QA-20260511-0474",
-    "latestRecordedAt": "2026-05-11T04:14:14.183Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260511-0475",
+    "lastRecordedAt": "2026-05-11T04:57:44.283Z",
+    "latestRecordedRunId": "QA-20260511-0475",
+    "latestRecordedAt": "2026-05-11T04:57:44.283Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13217,6 +13217,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-11T04:14:14.183Z"
+    },
+    "ai-assistant-24h-peak-load-empty-response-v811124": {
+      "id": "ai-assistant-24h-peak-load-empty-response-v811124",
+      "title": "Production AI Assistant 24시간 피크 부하 질의가 실질 본문 없이 완료됨",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260511-0475",
+      "firstSeenAt": "2026-05-11T04:57:44.283Z",
+      "lastSeenRunId": "QA-20260511-0475",
+      "lastSeenAt": "2026-05-11T04:57:44.283Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Playwright MCP production QA에서 '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?' 질의가 /api/ai/jobs 201 경로로 처리됐으나 응답 카드 본문이 비어 있거나 실질 답변이 없었다. 시간 범위 부하 분석 질의를 deterministic metric analysis로 라우팅하거나 명시 오류로 노출해야 한다.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-11T04:57:44.283Z"
     }
   },
   "runs": [
@@ -50567,6 +50591,207 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0475",
+      "recordedAt": "2026-05-11T04:57:44.283Z",
+      "recordedAtKst": "2026-05-11 13:57:44 KST",
+      "title": "Vercel Playwright MCP Targeted QA - v8.11.124 frontend and AI assistant status",
+      "owner": "codex",
+      "source": "playwright-mcp+vercel-api+curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0475.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL",
+        "deploymentUrl": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app",
+        "commitSha": "cf5480e855ff2476c928b7ff7f4399c664ff70ea"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production deployment dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL was READY for alias https://openmanager-ai.vercel.app",
+        "/api/version returned version 8.11.124, Next.js 16.1.6, release tag v8.11.124, commit cf5480e855ff2476c928b7ff7f4399c664ff70ea, and GitLab pipeline 2513741959",
+        "/api/health returned success=true with database, cache, and ai services connected",
+        "Landing page rendered production shell, v8.11.124 version signal, Next.js 16 + React 19 stack label, Quad-Provider AI label, and system start CTA",
+        "System start CTA navigated through /system-boot to /dashboard without browser console warnings",
+        "Dashboard rendered 18 total servers, 17 online, 1 warning, 0 risk, 0 offline, OTel snapshot 13:40 KST, system resources, and Top 5 resource warnings",
+        "AI assistant sidebar opened from dashboard with AI engine status Ready",
+        "AI prompt '현재 서버 전체 상태를 요약해줘' returned a grounded server summary through /api/ai/supervisor/stream/v2 with total 18, warning 1, risk 0, offline 0, and cache-redis-dc1-01 memory issue evidence",
+        "AI prompt 'web-server-01 상태를 자세히 알려줘' returned a visible detailed answer, but used the generic conversation path instead of explicit metric-tool grounding",
+        "AI prompt '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?' returned a response card through the async jobs path, but the answer lacked a substantive body",
+        "AI prompt '지금 당장 조치가 필요한 서버가 있어?' triggered clarification, accepted 전체 서버, and returned an action-needed summary",
+        "AI prompt '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘' triggered clarification, accepted 전체 서버, and returned that no server matched network > 70% with fallback top-server context",
+        "/dashboard/ai-assistant fullscreen route opened from the sidebar handoff and preserved the 10/50 conversation state",
+        "Browser console check after the production flow reported 0 errors and 0 warnings",
+        "AI-related network requests returned HTTP 200/201 for /api/ai/wake-up, /api/health?service=ai, /api/ai/supervisor/stream/v2, /api/ai/nlq/extract-entities, and /api/ai/jobs",
+        "Vercel usage check passed with effective 6.0506 USD, billed 0.0000 USD, and chargeCount 5481 for the current billing period"
+      ],
+      "skippedSurfaces": [
+        "OAuth provider callback success was not exercised because this run used guest mode to validate production frontend and AI assistant status",
+        "Reporter Agent and Analyst Agent advanced tabs were not exercised because the request focused on frontend deployment health and AI chat assistant behavior",
+        "Modal detail pack, alert/log drilldowns, topology interactions, and mobile viewport were not included in this targeted status run",
+        "Cloud Run admin monitoring endpoints were not called directly; Vercel /api/health and AI assistant network traffic were used as production-path evidence"
+      ],
+      "checks": {
+        "total": 17,
+        "passed": 16,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar overall server summary",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP visible response footer",
+          "latencyMs": 2708,
+          "processingTimeMs": 2708
+        },
+        {
+          "surface": "AI sidebar web-server-01 detail",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "generic conversation response",
+          "source": "Playwright MCP visible response footer",
+          "latencyMs": 1465,
+          "processingTimeMs": 1465
+        },
+        {
+          "surface": "AI sidebar 24h peak-load question",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/jobs",
+          "source": "Playwright MCP visible response footer and network log",
+          "latencyMs": 1460,
+          "processingTimeMs": 1460
+        },
+        {
+          "surface": "AI sidebar action-needed clarification flow",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "clarification -> generic conversation response",
+          "source": "Playwright MCP visible response footer",
+          "latencyMs": 1442,
+          "processingTimeMs": 1442
+        }
+      ],
+      "plannerShadowObservations": [
+        {
+          "surface": "AI assistant overall server summary",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 2708,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "visible assistant metadata"
+        },
+        {
+          "surface": "AI assistant web-server-01 detail",
+          "route": "generic conversation response",
+          "executionMode": "single-agent",
+          "latencyMs": 1465,
+          "classification": "drift",
+          "driftReasonCodes": [],
+          "source": "visible assistant metadata"
+        },
+        {
+          "surface": "AI assistant 24h peak-load question",
+          "route": "/api/ai/jobs",
+          "executionMode": "single-agent",
+          "latencyMs": 1460,
+          "classification": "drift",
+          "driftReasonCodes": [],
+          "source": "visible assistant response and network log"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production deployment is READY, public version/health endpoints are coherent, core dependencies are connected, and Vercel usage remains within the expected free-tier guardrail.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Core assistant UI and one grounded metric summary passed, but a standard 24-hour peak-load question completed without a substantive answer and some server-detail follow-ups used the generic route.",
+          "nextAction": "Route time-window peak-load questions to deterministic metric analysis and fail visibly instead of rendering an empty substantive answer."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The status run used real browser rendering, production network observation, console checks, deployment evidence, and durable QA artifacts.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-11T13:48:05+09:00",
+          "summary": "Current Vercel billing period reviewed after production status QA; effective 6.0506 USD, billed 0.0000 USD, chargeCount 5481.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant fullscreen handoff screenshot",
+          "path": "reports/qa/evidence/qa-20260511-v811124-vercel-ai-status.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Production frontend console warnings/errors",
+          "path": "reports/qa/evidence/qa-20260511-v811124-vercel-ai-status-console.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Production AI network requests",
+          "path": "reports/qa/evidence/qa-20260511-v811124-vercel-ai-status-network.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -50575,17 +50800,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 226,
+      "seenCount": 227,
       "appropriateCount": 198,
-      "partialCount": 28,
+      "partialCount": 29,
       "inappropriateCount": 0,
-      "improvementNeededCount": 38,
-      "lastRunId": "QA-20260511-0471",
-      "lastSeenAt": "2026-05-11T02:44:40.590Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The change preserves structured schema contracts and avoids live-provider behavior changes; deterministic local tests are the right QA surface.",
-      "lastNextAction": ""
+      "improvementNeededCount": 39,
+      "lastRunId": "QA-20260511-0475",
+      "lastSeenAt": "2026-05-11T04:57:44.283Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Core assistant UI and one grounded metric summary passed, but a standard 24-hour peak-load question completed without a substantive answer and some server-detail follow-ups used the generic route.",
+      "lastNextAction": "Route time-window peak-load questions to deterministic metric analysis and fail visibly instead of rendering an empty substantive answer."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -50626,16 +50851,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 159,
-      "appropriateCount": 142,
+      "seenCount": 160,
+      "appropriateCount": 143,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260511-0473",
-      "lastSeenAt": "2026-05-11T03:21:01.161Z",
+      "lastRunId": "QA-20260511-0475",
+      "lastSeenAt": "2026-05-11T04:57:44.283Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The change is dependency alignment on the AI Engine logger surface and was verified with runtime import, targeted logger tests, type-check, and production audit.",
+      "lastRationale": "Production deployment is READY, public version/health endpoints are coherent, core dependencies are connected, and Vercel usage remains within the expected free-tier guardrail.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -50643,16 +50868,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 194,
-      "appropriateCount": 176,
+      "seenCount": 195,
+      "appropriateCount": 177,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260511-0474",
-      "lastSeenAt": "2026-05-11T04:14:14.183Z",
+      "lastRunId": "QA-20260511-0475",
+      "lastSeenAt": "2026-05-11T04:57:44.283Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Validation used a small high-signal set for a package-only patch and intentionally avoided broad test coverage chasing or live external QA.",
+      "lastRationale": "The status run used real browser rendering, production network observation, console checks, deployment evidence, and durable QA artifacts.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
