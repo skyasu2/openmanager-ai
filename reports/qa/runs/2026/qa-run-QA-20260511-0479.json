@@ -1,0 +1,140 @@
+{
+  "runId": "QA-20260511-0479",
+  "recordedAt": "2026-05-11T14:39:01.439Z",
+  "recordedAtKst": "2026-05-11 23:39:01 KST",
+  "runTitle": "GitLab Release QA - v8.11.128 Domain Capability Resolver",
+  "owner": "codex",
+  "source": "gitlab-ci-release-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso",
+    "deploymentUrl": "https://openmanager-dohfe3pg3-skyasus-projects.vercel.app",
+    "commitSha": "86eca846646f85527cc299096bff9c4d8a2e5dff"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core"],
+  "coveredSurfaces": [
+    "GitLab semver tag pipeline v8.11.128 completed successfully",
+    "Vercel production deployment reached Ready and /api/version reports 8.11.128",
+    "Frontend post-deploy smoke covered /, /login, and /api/version",
+    "AI Engine Cloud Run deploy job completed successfully",
+    "AI Engine post-deploy smoke completed successfully",
+    "Domain capability resolver release commit d044ddb9d included in deployed tag"
+  ],
+  "skippedSurfaces": [
+    "Full five-question conversational AI QA was not repeated to avoid extra live LLM cost; v8.11.127 release-facing focused AI QA already closed the peak-load behavior and this release added deterministic runtime contracts with targeted unit coverage",
+    "Broad dashboard route pack",
+    "Reporter Agent",
+    "Analyst Agent",
+    "mobile viewport",
+    "manual Cloud Run trace inspection"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline deployed both Vercel frontend and Cloud Run AI Engine, then passed frontend and AI Engine post-deploy smoke jobs.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The AI behavior change is covered by deterministic AI Engine contract tests and previous release-facing focused peak-load QA; this release smoke verified the deployed AI Engine path without adding extra live LLM calls.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Targeted release QA scope matched the change risk: deployment/version checks, frontend smoke, AI Engine deploy, AI Engine post-deploy smoke, and local targeted unit/type checks from the implementation step.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-11T23:36:55+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.11.128 release; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-domain-capability-resolver-phase2",
+      "title": "AI Engine domain capability resolver Phase 2 release",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2516275363",
+      "note": "Released in v8.11.128 with common runtime capability/intent-frame contracts, monitoring metric_peak manifest/parser/provider integration, sample domain portability coverage, and raw message fallback preservation.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local implementation verification before release: AI Engine targeted Vitest 3 files / 19 tests, AI Engine type-check, git diff --check.",
+    "Release verification script confirmed production /api/version served 8.11.128 on attempt 23/81.",
+    "GitLab release pipeline 2516275363 success; deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke all succeeded.",
+    "Vercel inspect confirmed deployment dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso is Ready."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "AI Engine deploy job",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099788"
+    },
+    {
+      "type": "general",
+      "label": "AI Engine post-deploy smoke job",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099789"
+    },
+    {
+      "type": "general",
+      "label": "Frontend deploy job",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099787"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "v8.11.128 GitLab release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2516275363"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-dohfe3pg3-skyasus-projects.vercel.app/"
+    }
+  ]
+}

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T12:56:25.517Z"
+    "updatedAt": "2026-05-11T14:39:01.439Z"
   },
   "sequence": {
-    "nextRunNumber": 479
+    "nextRunNumber": 480
   },
   "summary": {
-    "totalRecordedRuns": 476,
-    "totalRuns": 378,
+    "totalRecordedRuns": 477,
+    "totalRuns": 379,
     "excludedRuns": 98,
-    "totalChecks": 3363,
-    "totalPassed": 3235,
+    "totalChecks": 3369,
+    "totalPassed": 3241,
     "totalFailed": 118,
     "completionRate": 100,
-    "completedItems": 541,
+    "completedItems": 542,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260511-0478",
-    "lastRecordedAt": "2026-05-11T12:56:25.517Z",
-    "latestRecordedRunId": "QA-20260511-0478",
-    "latestRecordedAt": "2026-05-11T12:56:25.517Z"
+    "lastRunId": "QA-20260511-0479",
+    "lastRecordedAt": "2026-05-11T14:39:01.439Z",
+    "latestRecordedRunId": "QA-20260511-0479",
+    "latestRecordedAt": "2026-05-11T14:39:01.439Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13241,6 +13241,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-11T12:56:25.517Z"
+    },
+    "ai-assistant-domain-capability-resolver-phase2": {
+      "id": "ai-assistant-domain-capability-resolver-phase2",
+      "title": "AI Engine domain capability resolver Phase 2 release",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260511-0479",
+      "firstSeenAt": "2026-05-11T14:39:01.439Z",
+      "lastSeenRunId": "QA-20260511-0479",
+      "lastSeenAt": "2026-05-11T14:39:01.439Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2516275363",
+      "lastNote": "Released in v8.11.128 with common runtime capability/intent-frame contracts, monitoring metric_peak manifest/parser/provider integration, sample domain portability coverage, and raw message fallback preservation.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-11T14:39:01.439Z"
     }
   },
   "runs": [
@@ -51211,6 +51235,132 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0479",
+      "recordedAt": "2026-05-11T14:39:01.439Z",
+      "recordedAtKst": "2026-05-11 23:39:01 KST",
+      "title": "GitLab Release QA - v8.11.128 Domain Capability Resolver",
+      "owner": "codex",
+      "source": "gitlab-ci-release-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0479.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso",
+        "deploymentUrl": "https://openmanager-dohfe3pg3-skyasus-projects.vercel.app",
+        "commitSha": "86eca846646f85527cc299096bff9c4d8a2e5dff"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab semver tag pipeline v8.11.128 completed successfully",
+        "Vercel production deployment reached Ready and /api/version reports 8.11.128",
+        "Frontend post-deploy smoke covered /, /login, and /api/version",
+        "AI Engine Cloud Run deploy job completed successfully",
+        "AI Engine post-deploy smoke completed successfully",
+        "Domain capability resolver release commit d044ddb9d included in deployed tag"
+      ],
+      "skippedSurfaces": [
+        "Full five-question conversational AI QA was not repeated to avoid extra live LLM cost; v8.11.127 release-facing focused AI QA already closed the peak-load behavior and this release added deterministic runtime contracts with targeted unit coverage",
+        "Broad dashboard route pack",
+        "Reporter Agent",
+        "Analyst Agent",
+        "mobile viewport",
+        "manual Cloud Run trace inspection"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline deployed both Vercel frontend and Cloud Run AI Engine, then passed frontend and AI Engine post-deploy smoke jobs.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The AI behavior change is covered by deterministic AI Engine contract tests and previous release-facing focused peak-load QA; this release smoke verified the deployed AI Engine path without adding extra live LLM calls.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted release QA scope matched the change risk: deployment/version checks, frontend smoke, AI Engine deploy, AI Engine post-deploy smoke, and local targeted unit/type checks from the implementation step.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-11T23:36:55+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.11.128 release; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "AI Engine deploy job",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099788"
+        },
+        {
+          "type": "general",
+          "label": "AI Engine post-deploy smoke job",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099789"
+        },
+        {
+          "type": "general",
+          "label": "Frontend deploy job",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099787"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "v8.11.128 GitLab release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2516275363"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-dohfe3pg3-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -51219,16 +51369,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 230,
-      "appropriateCount": 199,
+      "seenCount": 231,
+      "appropriateCount": 200,
       "partialCount": 31,
       "inappropriateCount": 0,
       "improvementNeededCount": 41,
-      "lastRunId": "QA-20260511-0478",
-      "lastSeenAt": "2026-05-11T12:56:25.517Z",
+      "lastRunId": "QA-20260511-0479",
+      "lastSeenAt": "2026-05-11T14:39:01.439Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The previously open P1 peak-load phrasing issue was retested on the release-facing v8.11.127 deployment and both representative phrasings returned evidence-grounded answers without clarification blocking.",
+      "lastRationale": "The AI behavior change is covered by deterministic AI Engine contract tests and previous release-facing focused peak-load QA; this release smoke verified the deployed AI Engine path without adding extra live LLM calls.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -51270,16 +51420,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 161,
-      "appropriateCount": 144,
+      "seenCount": 162,
+      "appropriateCount": 145,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260511-0476",
-      "lastSeenAt": "2026-05-11T09:12:27.615Z",
+      "lastRunId": "QA-20260511-0479",
+      "lastSeenAt": "2026-05-11T14:39:01.439Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production is healthy and READY; serving v8.11.124 / cf5480e8 is expected for this non-deploying main push because production deploys only through semver tag pipelines.",
+      "lastRationale": "GitLab tag pipeline deployed both Vercel frontend and Cloud Run AI Engine, then passed frontend and AI Engine post-deploy smoke jobs.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -51287,16 +51437,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 198,
-      "appropriateCount": 180,
+      "seenCount": 199,
+      "appropriateCount": 181,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260511-0478",
-      "lastSeenAt": "2026-05-11T12:56:25.517Z",
+      "lastRunId": "QA-20260511-0479",
+      "lastSeenAt": "2026-05-11T14:39:01.439Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The live QA scope was intentionally narrow and paired with deterministic unit coverage for the two clarification regressions to avoid unnecessary LLM cost.",
+      "lastRationale": "Targeted release QA scope matched the change risk: deployment/version checks, frontend smoke, AI Engine deploy, AI Engine post-deploy smoke, and local targeted unit/type checks from the implementation step.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

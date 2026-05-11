@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-11 21:56:27 KST
+> Generated at: 2026-05-11 23:39:02 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 476 |
-| Total Runs (Counted) | 378 |
+| Total Recorded Runs | 477 |
+| Total Runs (Counted) | 379 |
 | Non-counted Runs | 98 |
-| Total Checks | 3363 |
-| Passed | 3235 |
+| Total Checks | 3369 |
+| Passed | 3241 |
 | Failed | 118 |
-| Completed Items | 541 |
+| Completed Items | 542 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 14 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260511-0478 (2026-05-11T12:56:25.517Z) |
-| Latest Recorded Run | QA-20260511-0478 (2026-05-11T12:56:25.517Z) |
+| Last Counted Run | QA-20260511-0479 (2026-05-11T14:39:01.439Z) |
+| Latest Recorded Run | QA-20260511-0479 (2026-05-11T14:39:01.439Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,10 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260511-0478 (2026-05-11T12:56:25.517Z)
+Latest run: QA-20260511-0479 (2026-05-11T14:39:01.439Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| DevOps / SRE Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
@@ -45,11 +46,11 @@ Latest run: QA-20260511-0478 (2026-05-11T12:56:25.517Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.127 targeted AI QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.128 release; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-10T12:56:25.517Z -> 2026-05-11T12:56:25.517Z (24h)
+- Window: 2026-05-10T14:39:01.439Z -> 2026-05-11T14:39:01.439Z (24h)
 - Runs with observations: 3 recorded / 1 counted
 - Samples: 7
 
@@ -60,7 +61,7 @@ Latest run: QA-20260511-0478 (2026-05-11T12:56:25.517Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-10T12:56:25.517Z -> 2026-05-11T12:56:25.517Z (24h)
+- Window: 2026-05-10T14:39:01.439Z -> 2026-05-11T14:39:01.439Z (24h)
 - Runs with observations: 3 recorded / 1 counted
 - Samples: 7
 - Drift rate: 85.71%
@@ -78,25 +79,27 @@ Latest run: QA-20260511-0478 (2026-05-11T12:56:25.517Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_AfNDWaTRvJFBtV8v2iiKJx5enYB5 / SHA 28813729
-- Coverage Packs: ai-core
-- Covered Surfaces: Vercel production /dashboard AI sidebar opened with AI engine status Ready, /api/version confirmed v8.11.127 / 28813729d8cbde84483e17c280083edb50e4271b, Natural Korean peak-load query: 지난 24시간 중 가장 부하가 높았던 시간대는 언제야? 근거와 상위 서버도 알려줘., Compact peak-load query: 24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?, Clarification prompt did not appear for either whole-fleet peak-load query, Answers included peak time, load/load1 value, and affected server evidence
-- Skipped Surfaces: Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost after two focused issue-closure prompts, Core route pack beyond /dashboard and /api/version, Reporter Agent, Analyst Agent, mobile viewport, Cloud Run admin observability surface
+- Deployment: dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso / SHA 86eca846
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: GitLab semver tag pipeline v8.11.128 completed successfully, Vercel production deployment reached Ready and /api/version reports 8.11.128, Frontend post-deploy smoke covered /, /login, and /api/version, AI Engine Cloud Run deploy job completed successfully, AI Engine post-deploy smoke completed successfully, Domain capability resolver release commit d044ddb9d included in deployed tag
+- Skipped Surfaces: Full five-question conversational AI QA was not repeated to avoid extra live LLM cost; v8.11.127 release-facing focused AI QA already closed the peak-load behavior and this release added deterministic runtime contracts with targeted unit coverage, Broad dashboard route pack, Reporter Agent, Analyst Agent, mobile viewport, manual Cloud Run trace inspection
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
+| general | AI Engine deploy job | [AI Engine deploy job](https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099788) | - |
+| general | AI Engine post-deploy smoke job | [AI Engine post-deploy smoke job](https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099789) | - |
+| general | Frontend deploy job | [Frontend deploy job](https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099787) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| general | v8.11.127 release pipeline | [v8.11.127 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2515981344) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-gykosy0tx-skyasus-projects.vercel.app/) | - |
+| general | v8.11.128 GitLab release pipeline | [v8.11.128 GitLab release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2516275363) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-dohfe3pg3-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI peak-load v8.11.127 closure screenshot | `reports/qa/evidence/qa-20260511-v811127-peak-load.png` | - |
-| playwright-network | AI peak-load v8.11.127 structured result | `reports/qa/evidence/qa-20260511-v811127-peak-load-result.json` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -197,6 +200,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-artifact-short-keyword-pair-v81182: Representative short artifact keywords route correctly in production (completed 1회, last QA-20260502-0392)
 - ai-artifact-workspace-ui-wiring-v811108: AI artifact workspace UI wiring and compare UX production verification (completed 1회, last QA-20260506-0414)
 - ai-assistant-24h-peak-load-empty-response-v811124: Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임 (completed 1회, last QA-20260511-0478)
+- ai-assistant-domain-capability-resolver-phase2: AI Engine domain capability resolver Phase 2 release (completed 1회, last QA-20260511-0479)
 - ai-assistant-double-scroll-v811112: AI Assistant page-level double scroll removed (completed 1회, last QA-20260507-0419)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
@@ -726,6 +730,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0479 | 2026-05-11T14:39:01.439Z | targeted | yes | yes | GitLab Release QA - v8.11.128 Domain Capability Resolver | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0478 | 2026-05-11T12:56:25.517Z | targeted | yes | yes | Vercel Playwright QA - AI Peak Load Semantic Intent Closure | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0477 | 2026-05-11T09:35:30.250Z | targeted | no | no | Vercel Playwright MCP Targeted AI QA - 24h peak-load phrasing variants | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260511-0476 | 2026-05-11T09:12:27.615Z | targeted | no | no | Vercel Playwright MCP Targeted Check - post-main-push production state | 10 | 0 | 1 | 0 | 0 | 1 |
@@ -745,4 +750,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0462 | 2026-05-10T10:00:23.786Z | targeted | no | no | Local QA - AI SDK v6 Structured Output Migration | 10 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0461 | 2026-05-10T09:16:42.071Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening Registry Sync | 9 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260510-0460 | 2026-05-10T09:09:14.056Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening | 8 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260510-0459 | 2026-05-10T08:01:49.702Z | targeted | no | no | Local QA - AI Assistant Off-Domain Guardrail | 9 | 3 | 0 | 0 | 0 | 0 |
