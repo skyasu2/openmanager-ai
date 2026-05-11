@@ -1,0 +1,104 @@
+{
+  "runId": "QA-20260511-0471",
+  "recordedAt": "2026-05-11T02:44:40.590Z",
+  "recordedAtKst": "2026-05-11 11:44:40 KST",
+  "runTitle": "Local QA - AI Engine Zod v4 Migration",
+  "owner": "codex",
+  "source": "local-cli",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "Cloud Run AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "6293ea221f7a3ab190b9f4442704d90626031f04"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI Engine zod runtime dependency alignment",
+    "Vision URL tool schema validation",
+    "Agent structured output schemas",
+    "Orchestrator structured routing parse",
+    "Server metrics z.record schemas",
+    "AI Engine type-check, Vitest suites, and npm audit"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "Cloud Run production smoke",
+    "live LLM/provider calls",
+    "conversational AI QA"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The migration was covered by an SDD failing-test baseline, targeted schema regressions, full AI Engine Vitest, type-check, and audit gates.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The change preserves structured schema contracts and avoids live-provider behavior changes; deterministic local tests are the right QA surface.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The dependency alignment removed AI Engine Zod duplication and confirmed production/full npm audit results at 0 vulnerabilities.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "zod-v4-ai-engine-migration",
+      "title": "Migrate AI Engine from Zod v3 to Zod v4",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AI Engine zod dependency updated to 4.4.3; type-check, targeted Vitest, full Vitest, and production/full npm audit passed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "SDD failing-test baseline was committed first: 6293ea221 test(spec): zod v4 migration add failing tests before implementation.",
+    "cloud-run/ai-engine zod was migrated from 3.25.76 to 4.4.3.",
+    "vision-url-tool.ts now uses the Zod v4 top-level z.url() helper.",
+    "server metrics record schemas now use the Zod v4 z.record(key, value) signature.",
+    "orchestrator structured routing now parses the fallback object through routingSchema.parse before use.",
+    "Targeted Vitest passed: vision-url-tool, agent schemas, orchestrator object fallback, server metrics; 4 files / 42 tests.",
+    "cd cloud-run/ai-engine && npm run type-check passed.",
+    "cd cloud-run/ai-engine && npm run test passed: 110 files / 1091 tests.",
+    "cd cloud-run/ai-engine && npm audit --omit=dev passed with 0 vulnerabilities.",
+    "cd cloud-run/ai-engine && npm audit passed with 0 vulnerabilities.",
+    "npm run docs:budget, npm run docs:ai-consistency, and git diff --check passed before QA recording.",
+    "No live AI, Vercel, Cloud Run production, or external provider call was executed for this deterministic local QA run."
+  ],
+  "links": []
+}

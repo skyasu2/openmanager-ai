@@ -10,7 +10,7 @@
 - **작성일**: 2026-05-11
 - **분석 기반**: `npm audit`, npm registry 직접 비교, 코드 정적 분석 (2026-05-11 수행)
 - **TODO.md 연결**: Backlog > "Zod v4 AI Engine migration", "API 라우트 테스트 커버리지", "pino 버전 정렬"
-- **선행 작업**: `line-guard-current-hotspots-refactor-plan.md` (Active, 파일 크기 부채 담당)
+- **선행 작업**: `archive/line-guard-current-hotspots-refactor-plan.md` 완료
 
 ---
 
@@ -19,7 +19,7 @@
 | 등급 | 항목 | 현황 |
 |------|------|------|
 | P0 (보안, 대기) | Next.js CVE 6건 | upstream 패치 미출시 — Backlog 유지 |
-| P1 | Zod v3 ↔ v4 이중화 | 루트 v4.3.6 / AI Engine v3.25.76 |
+| P1 | Zod v3 ↔ v4 이중화 | 완료 — 루트 v4 / AI Engine v4.4.3 |
 | P2 | API 라우트 테스트 미커버 | 핵심 라우트 15개 무테스트 |
 | P2 | `useAIChatCore.ts` artifact 로직 혼재 | line-guard 계획과 병행 |
 | P3 | pino v9 ↔ v10 이중화 | 루트 v10 / AI Engine v9 |
@@ -60,21 +60,27 @@ grep -rn "z\.number()\." cloud-run/ai-engine/src --include="*.ts"
 
 ### 작업 단계
 
-- [ ] **Task 1-0** (SDD): failing test 선행 커밋
+- [x] **Task 1-0** (SDD): failing test 선행 커밋
   - `cloud-run/ai-engine/src/tools-ai-sdk/vision-url-tool.test.ts` — v4 API 기준 스키마 검증 테스트
   - `cloud-run/ai-engine/src/services/ai-sdk/agents/schemas.test.ts` — v4 호환 회귀 테스트
   - 커밋: `test(spec): zod v4 migration add failing tests before implementation`
 
-- [ ] **Task 1-1**: `cloud-run/ai-engine/package.json` zod `^3.24.1` → `^4.3.6`
+- [x] **Task 1-1**: `cloud-run/ai-engine/package.json` zod `^3.24.1` → `^4.4.3`
 
-- [ ] **Task 1-2**: AI Engine 소스 v3→v4 API 마이그레이션
+- [x] **Task 1-2**: AI Engine 소스 v3→v4 API 마이그레이션
   - `vision-url-tool.ts`: `z.string().url()` → `z.url()`
   - `schemas.ts` 전체 v4 호환 확인 (`.object()`, `.enum()`, `.number()` 등)
   - Error 파라미터 패턴 확인
 
-- [ ] **Task 1-3**: `npm run type-check` + `vitest run` AI Engine 통과 확인
+- [x] **Task 1-3**: `npm run type-check` + `vitest run` AI Engine 통과 확인
+  - `cd cloud-run/ai-engine && npm run type-check` 통과
+  - targeted Vitest 4 files / 42 tests 통과
+  - `cd cloud-run/ai-engine && npm run test` 110 files / 1091 tests 통과
+  - `npm run test:contract` 3 files / 24 tests 통과
+  - `cd cloud-run/ai-engine && npm audit --omit=dev`, full `npm audit` 0 vulnerabilities
+  - Local deterministic QA `QA-20260511-0471` 기록
 
-- [ ] **Task 1-4**: `package-lock.json` 재생성, 커밋
+- [x] **Task 1-4**: `package-lock.json` 재생성, 커밋
   - 커밋: `feat(ai-engine): migrate zod v3 to v4`
 
 ### 완료 기준

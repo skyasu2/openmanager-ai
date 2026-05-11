@@ -655,7 +655,9 @@ export async function* executeMultiAgentStream(
       if (routingTimeoutId !== undefined) clearTimeout(routingTimeoutId);
     }
 
-    const routingDecision = routingResult.object;
+    const routingDecision: RoutingDecision = routingSchema.parse(
+      routingResult.object
+    );
     logger.debug(`[Stream] LLM routing decision: ${routingDecision.selectedAgent} (confidence: ${routingDecision.confidence.toFixed(2)})`);
 
     const selectedAgent = getAgentFromRouting(routingDecision);

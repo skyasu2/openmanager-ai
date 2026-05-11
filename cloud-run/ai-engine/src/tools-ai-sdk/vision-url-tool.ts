@@ -11,7 +11,7 @@ export const analyzeUrlContent = tool({
 - "Stack Overflow 답변 요약해줘"`,
 
   inputSchema: z.object({
-    url: z.string().url().describe('분석할 URL'),
+    url: z.url().describe('분석할 URL'),
     extractSections: z
       .array(z.string())
       .optional()

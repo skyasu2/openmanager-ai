@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T02:13:17.338Z"
+    "updatedAt": "2026-05-11T02:44:40.590Z"
   },
   "sequence": {
-    "nextRunNumber": 471
+    "nextRunNumber": 472
   },
   "summary": {
-    "totalRecordedRuns": 468,
+    "totalRecordedRuns": 469,
     "totalRuns": 376,
-    "excludedRuns": 92,
+    "excludedRuns": 93,
     "totalChecks": 3342,
     "totalPassed": 3215,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 536,
+    "completedItems": 537,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0466",
     "lastRecordedAt": "2026-05-10T12:53:07.527Z",
-    "latestRecordedRunId": "QA-20260511-0470",
-    "latestRecordedAt": "2026-05-11T02:13:17.338Z"
+    "latestRecordedRunId": "QA-20260511-0471",
+    "latestRecordedAt": "2026-05-11T02:44:40.590Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13121,6 +13121,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-11T02:13:17.338Z"
+    },
+    "zod-v4-ai-engine-migration": {
+      "id": "zod-v4-ai-engine-migration",
+      "title": "Migrate AI Engine from Zod v3 to Zod v4",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260511-0471",
+      "firstSeenAt": "2026-05-11T02:44:40.590Z",
+      "lastSeenRunId": "QA-20260511-0471",
+      "lastSeenAt": "2026-05-11T02:44:40.590Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "AI Engine zod dependency updated to 4.4.3; type-check, targeted Vitest, full Vitest, and production/full npm audit passed.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-11T02:44:40.590Z"
     }
   },
   "runs": [
@@ -50171,6 +50195,87 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0471",
+      "recordedAt": "2026-05-11T02:44:40.590Z",
+      "recordedAtKst": "2026-05-11 11:44:40 KST",
+      "title": "Local QA - AI Engine Zod v4 Migration",
+      "owner": "codex",
+      "source": "local-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0471.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "Cloud Run AI Engine local source",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "6293ea221f7a3ab190b9f4442704d90626031f04"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI Engine zod runtime dependency alignment",
+        "Vision URL tool schema validation",
+        "Agent structured output schemas",
+        "Orchestrator structured routing parse",
+        "Server metrics z.record schemas",
+        "AI Engine type-check, Vitest suites, and npm audit"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "Cloud Run production smoke",
+        "live LLM/provider calls",
+        "conversational AI QA"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The migration was covered by an SDD failing-test baseline, targeted schema regressions, full AI Engine Vitest, type-check, and audit gates.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The change preserves structured schema contracts and avoids live-provider behavior changes; deterministic local tests are the right QA surface.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The dependency alignment removed AI Engine Zod duplication and confirmed production/full npm audit results at 0 vulnerabilities.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -50179,17 +50284,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 225,
-      "appropriateCount": 197,
+      "seenCount": 226,
+      "appropriateCount": 198,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 38,
-      "lastRunId": "QA-20260511-0469",
-      "lastSeenAt": "2026-05-11T02:04:07.454Z",
+      "lastRunId": "QA-20260511-0471",
+      "lastSeenAt": "2026-05-11T02:44:40.590Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI stream, forced routing, job route, and artifact integration behavior were protected by deterministic regression suites; no live provider behavior was intentionally changed.",
-      "lastNextAction": "Run production conversational QA after the next deploy if this refactor is bundled with runtime AI behavior changes."
+      "lastRationale": "The change preserves structured schema contracts and avoids live-provider behavior changes; deterministic local tests are the right QA surface.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -50230,16 +50335,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 157,
-      "appropriateCount": 140,
+      "seenCount": 158,
+      "appropriateCount": 141,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260511-0469",
-      "lastSeenAt": "2026-05-11T02:04:07.454Z",
+      "lastRunId": "QA-20260511-0471",
+      "lastSeenAt": "2026-05-11T02:44:40.590Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Run AI Engine type/full tests and route-specific regression suites passed after splitting large stream, routing, and jobs modules.",
+      "lastRationale": "The dependency alignment removed AI Engine Zod duplication and confirmed production/full npm audit results at 0 vulnerabilities.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -50247,16 +50352,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 190,
-      "appropriateCount": 172,
+      "seenCount": 191,
+      "appropriateCount": 173,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260511-0470",
-      "lastSeenAt": "2026-05-11T02:13:17.338Z",
+      "lastRunId": "QA-20260511-0471",
+      "lastSeenAt": "2026-05-11T02:44:40.590Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The post-closure helper extraction changed only local helper boundaries and was covered by line-guard, AI Engine type-check, and stream/routing regression suites.",
+      "lastRationale": "The migration was covered by an SDD failing-test baseline, targeted schema regressions, full AI Engine Vitest, type-check, and audit gates.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

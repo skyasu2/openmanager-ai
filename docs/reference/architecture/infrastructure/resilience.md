@@ -442,7 +442,7 @@ npm audit 결과
 ```
 
 **이력**:
-- 2026-05: AI Engine zod v3→v4 마이그레이션 예정 (`tech-debt-remediation-plan.md` Task 1)
+- 2026-05: AI Engine zod v3→v4 마이그레이션 완료 (`zod@4.4.3`, `tech-debt-remediation-plan.md` Task 1)
 - 2026-05: AI Engine pino v9→v10 정렬 예정 (Task 3)
 - 2026-05: AI Engine `@google-cloud/pino-logging-gcp-config` 제거 → `logger.ts` 내부 구현 완료
 

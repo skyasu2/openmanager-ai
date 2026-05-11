@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-11 11:13:17 KST
+> Generated at: 2026-05-11 11:44:41 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 468 |
+| Total Recorded Runs | 469 |
 | Total Runs (Counted) | 376 |
-| Non-counted Runs | 92 |
+| Non-counted Runs | 93 |
 | Total Checks | 3342 |
 | Passed | 3215 |
 | Failed | 117 |
-| Completed Items | 536 |
+| Completed Items | 537 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260510-0466 (2026-05-10T12:53:07.527Z) |
-| Latest Recorded Run | QA-20260511-0470 (2026-05-11T02:13:17.338Z) |
+| Latest Recorded Run | QA-20260511-0471 (2026-05-11T02:44:40.590Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,13 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260511-0470 (2026-05-11T02:13:17.338Z)
+Latest run: QA-20260511-0471 (2026-05-11T02:44:40.590Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -48,7 +50,7 @@ Latest run: QA-20260511-0470 (2026-05-11T02:13:17.338Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-10T02:13:17.338Z -> 2026-05-11T02:13:17.338Z (24h)
+- Window: 2026-05-10T02:44:40.590Z -> 2026-05-11T02:44:40.590Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -59,7 +61,7 @@ Latest run: QA-20260511-0470 (2026-05-11T02:13:17.338Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-10T02:13:17.338Z -> 2026-05-11T02:13:17.338Z (24h)
+- Window: 2026-05-10T02:44:40.590Z -> 2026-05-11T02:44:40.590Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,10 +75,10 @@ Latest run: QA-20260511-0470 (2026-05-11T02:13:17.338Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 8ed8df05
+- Deployment: SHA 6293ea22
 - Coverage Packs: ai-core
-- Covered Surfaces: Line guard fail-threshold gate after near-threshold helper extraction, Cloud Run orchestrator agent stream server-count helper extraction, Cloud Run supervisor single-agent hard-timeout event helper extraction, AI Engine type-check and stream/routing targeted regression tests
-- Skipped Surfaces: Vercel production browser QA, Cloud Run production smoke, live LLM/provider calls
+- Covered Surfaces: AI Engine zod runtime dependency alignment, Vision URL tool schema validation, Agent structured output schemas, Orchestrator structured routing parse, Server metrics z.record schemas, AI Engine type-check, Vitest suites, and npm audit
+- Skipped Surfaces: Vercel production browser QA, Cloud Run production smoke, live LLM/provider calls, conversational AI QA
 
 ## Links (Latest Run)
 
@@ -663,6 +665,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - vibe-qa-modal-replaced-with-cicd: Vibe Coding 모달의 QA 탭을 CI/CD 구조 설명으로 교체 (completed 1회, last QA-20260330-0200)
 - vision-production-latency-sample-refresh: Vision 최신 production latency 표본 보강 (completed 1회, last QA-20260421-0322)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
+- zod-v4-ai-engine-migration: Migrate AI Engine from Zod v3 to Zod v4 (completed 1회, last QA-20260511-0471)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
 - 단위-테스트-123-files-1698-tests-pass: 단위 테스트 123 files 1698 tests PASS (completed 1회, last QA-20260301-0032)
@@ -713,6 +716,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0471 | 2026-05-11T02:44:40.590Z | targeted | no | no | Local QA - AI Engine Zod v4 Migration | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0470 | 2026-05-11T02:13:17.338Z | targeted | no | no | Local QA - Line Guard Hotspot Buffer Polish | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0469 | 2026-05-11T02:04:07.454Z | targeted | no | no | Local QA - Line Guard Current Hotspots Refactor | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0468 | 2026-05-10T16:02:00.870Z | targeted | no | no | Local QA - AI Assistant Ops Procedure Artifact | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -732,4 +736,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0454 | 2026-05-10T03:52:25.277Z | targeted | no | yes | Supabase Low-value Unused Index Cleanup QA | 19 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0453 | 2026-05-10T03:33:36.166Z | targeted | no | yes | RAG Corpus Governance Rebaseline QA | 16 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0452 | 2026-05-10T03:28:05.443Z | targeted | no | yes | RAG Command Vector Backfill and Legacy Seed Cleanup QA | 31 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260510-0451 | 2026-05-10T03:10:45.254Z | targeted | no | yes | Remaining Legacy Vector Graph Helper Cleanup QA | 16 | 4 | 0 | 0 | 0 | 0 |

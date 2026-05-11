@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`Zod v4 AI Engine 마이그레이션 착수`)
+**Last Updated**: 2026-05-11 KST (`Zod v4 AI Engine 마이그레이션 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Zod v4 AI Engine 마이그레이션 | P1 | In Progress (Codex) | Task 1-0 SDD failing tests 작성 중. 루트 `zod@4.3.6` / AI Engine `zod@3.25.76` 이중화 해소. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 1 |
+| _None_ | - | - | 현재 활성 구현 작업 없음. |
 
 ---
 
@@ -39,6 +39,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~Zod v4 AI Engine 마이그레이션~~ | — | **완료** — AI Engine `zod@3.25.76` → `zod@4.4.3` 정렬. v4 top-level format helper 회귀 테스트 추가, `vision-url-tool.ts`를 `z.url()`로 이전, Zod v4 `z.record(key, value)` 시그니처와 structured routing parse 타입 보정 완료. SDD failing test 선행 커밋 `6293ea221`. AI Engine `type-check`, targeted Vitest 4 files / 42 tests, full test 110 files / 1091 tests, root `test:contract` 24 tests, production/full `npm audit` 0 vulnerabilities, Local deterministic QA `QA-20260511-0471` 기록. 상세: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 1 |
 | ~~Line guard current hotspots refactor~~ | — | **완료** — 800줄 이상 fail-threshold hotspot 5건을 모두 800줄 미만으로 분리. `useAIChatCore.ts` 1,287줄 → 720줄, `supervisor-stream.ts` 1,494줄 → 260줄, `orchestrator-agent-stream.ts` 1,202줄 → 786줄, `orchestrator-routing.ts` 1,182줄 → 691줄, `routes/jobs.ts` 978줄 → 738줄. 후속 buffer polish로 `supervisor-single-agent-stream.ts` 798줄 → 791줄. `npm run line-guard` fail 5건 → 0건. Local deterministic QA `QA-20260511-0469`, buffer polish QA `QA-20260511-0470` 기록. 상세 계획서 archive 이동: [archive/line-guard-current-hotspots-refactor-plan.md](archive/line-guard-current-hotspots-refactor-plan.md) |
 | ~~AI Assistant operational artifact hardening~~ | — | **완료** — 운영 스크립트, Slack 알림 규칙, 로그 기반 대응 절차를 `ops-procedure` typed artifact로 생성·보존·수정하도록 구현. script/Alertmanager/runbook intent, follow-up threshold edit, artifact workspace/renderer, secret/fake function validator, Cloud Run routing alignment 반영. Local deterministic QA `QA-20260511-0468` 기록, 배포 후 production script/log/runbook conversational QA는 해당 QA의 skipped surface / expert nextAction 후속으로 남김. 상세 계획서 archive 이동: [archive/ai-assistant-ops-artifact-plan.md](archive/ai-assistant-ops-artifact-plan.md) |
 | ~~AI Assistant general coding boundary hardening~~ | — | **완료** — 일반 코딩/알고리즘/학습용 코드 요청을 `general_coding` deterministic guard로 short-circuit하고, 운영 문맥 코드 요청은 허용 예외로 유지. Cloud Run monitoring supervisor prompt도 frontend guard 정책과 정렬. Local targeted QA `QA-20260511-0467` 기록, 배포 후 production 재검증은 해당 QA의 skipped surface / expert nextAction 후속으로 남김. 상세 계획서 archive 이동: [archive/ai-assistant-general-coding-boundary-plan.md](archive/ai-assistant-general-coding-boundary-plan.md) |
