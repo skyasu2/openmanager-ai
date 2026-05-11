@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`Zod v4 AI Engine 마이그레이션 완료`)
+**Last Updated**: 2026-05-11 KST (`API metrics route coverage 착수`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 활성 구현 작업 없음. |
+| API 라우트 테스트 커버리지 | P2 | In Progress (Codex) | Task 2 재분류: “15개 무테스트” 표현은 stale/과장 요소가 있어 실제 직접 route handler gap 중심으로 축소. `/api/metrics` status label 결함을 failing test로 먼저 고정 중. 상세 계획: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 2 |
 
 ---
 

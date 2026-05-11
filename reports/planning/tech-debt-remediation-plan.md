@@ -20,7 +20,7 @@
 |------|------|------|
 | P0 (보안, 대기) | Next.js CVE 6건 | upstream 패치 미출시 — Backlog 유지 |
 | P1 | Zod v3 ↔ v4 이중화 | 완료 — 루트 v4 / AI Engine v4.4.3 |
-| P2 | API 라우트 테스트 미커버 | 핵심 라우트 15개 무테스트 |
+| P2 | API 라우트 테스트 미커버 | 일부 핵심 route handler 직접 테스트 미흡 — `/api/metrics` status label 결함 확인 |
 | P2 | `useAIChatCore.ts` artifact 로직 혼재 | line-guard 계획과 병행 |
 | P3 | pino v9 ↔ v10 이중화 | 루트 v10 / AI Engine v9 |
 | P3 | React 19.2.4 → 19.2.6 패치 | 2 patch 뒤처짐 |
@@ -104,7 +104,10 @@ grep -r "z\.string()\.\(email\|url\|uuid\)" src  # 0건
 
 ### 배경
 
-소스 파일 645개 대비 테스트 파일 423개로 전체 비율 65%는 양호하나, **AI 핵심 진입점인 API 라우트** 중 15개가 무테스트다. 특히 `/api/ai/supervisor/route.ts`는 모든 AI 질의의 1차 처리를 담당하면서도 독립 테스트가 없다.
+소스 파일 645개 대비 테스트 파일 423개로 전체 비율 65%는 양호하나, 일부 핵심 API route handler는 직접 테스트가 부족하다. 기존 "15개 무테스트" 표현은 현재 코드 기준으로 stale/과장 요소가 있다. 예를 들어 `/api/ai/supervisor`는 route handler 직접 테스트는 없지만 security/request/cloud-run/cache/session/stream 하위 테스트가 다수 존재한다. 따라서 이 작업은 숫자형 커버리지 확대가 아니라 실제 route handler 계약 결함을 고정하는 방향으로 축소한다.
+
+**확인된 실제 결함**:
+- `src/app/api/metrics/route.ts`는 `openmanager_server_status` metric을 지원하지만, PromQL 결과에 `status` label을 붙이는 조건이 `server_status`로 되어 있어 status label이 누락될 수 있다.
 
 **무테스트 라우트 (우선순위 기준)**:
 
@@ -120,7 +123,7 @@ grep -r "z\.string()\.\(email\|url\|uuid\)" src  # 0건
 ### 작업 단계
 
 - [ ] **Task 2-0** (SDD): failing test 파일 선행 커밋
-  - 빈 describe 블록 + TODO 주석으로 테스트 시나리오 먼저 커밋
+  - `src/app/api/metrics/route.test.ts` — `openmanager_server_status` status label 보존 계약
   - 커밋: `test(spec): api route coverage add failing tests before implementation`
 
 - [ ] **Task 2-1**: `/api/ai/supervisor/route.ts` 테스트 작성 (최우선)
