@@ -22,7 +22,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { getComplexityThreshold } from '@/config/ai-proxy.config';
 import {
   type AgentStatusEventData,
   type AIStreamStatus,
@@ -32,32 +31,12 @@ import {
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import {
-  buildAssistantPlanFromRouteDecision,
-  buildAssistantResultFromRouteDecision,
-} from '@/lib/ai/assistant-contract';
-import {
-  type ChatArtifactIntentReason,
   classifyChatArtifactIntent,
-  createArtifactGuidanceMessage,
   fetchLLMChatArtifactIntent,
   shouldUseLLMChatArtifactIntent,
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
-import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
-import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
-import {
-  generateOpsProcedureArtifact,
-  patchOpsProcedureArtifactFromQuery,
-} from '@/lib/ai/chat-artifacts/ops-procedure-artifact';
-import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
-import {
-  type ChatArtifact,
-  createArtifactEnvelope,
-  type OpsProcedureArtifact,
-} from '@/lib/ai/chat-artifacts/types';
 import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
-import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
-import { buildRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -66,7 +45,14 @@ import {
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { SessionState } from '@/types/session';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import { buildFrontendQueryRoutingDecision } from './core/query-routing';
+import { startChatArtifactGeneration } from './core/chat-artifact-execution';
+import { createArtifactGuidanceMessages } from './core/chat-artifact-metadata';
+import {
+  createDebugRoutingMessages,
+  createQAAssistantMessages,
+  isDebugRoutingPrompt,
+  isQAThinkingVisualizerPrompt,
+} from './core/routing-debug-messages';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
@@ -165,396 +151,6 @@ export interface UseAIChatCoreReturn {
   warmingUp: boolean;
   /** 웜업 예상 대기 시간 (초) */
   estimatedWaitSeconds: number;
-}
-
-const QA_THINKING_VISUALIZER_PROMPT = '/qa-thinking-visualizer';
-const DEBUG_ROUTING_PROMPT = '/debug-routing';
-
-function isQAThinkingVisualizerPrompt(text: string): boolean {
-  const normalized = text.trim().toLowerCase();
-  return normalized.includes(QA_THINKING_VISUALIZER_PROMPT);
-}
-
-function isDebugRoutingPrompt(text: string): boolean {
-  return text.trim().toLowerCase().startsWith(DEBUG_ROUTING_PROMPT);
-}
-
-function createDebugRoutingMessages(
-  fullText: string,
-  analysisMode: import('@/types/ai/analysis-mode').AnalysisMode
-): [UIMessage, UIMessage] {
-  const query = fullText.replace(/^\/debug-routing\s*/i, '').trim();
-  const token = Date.now().toString(36);
-
-  const threshold = getComplexityThreshold(); // 기본 19
-  const routingDecision = buildFrontendQueryRoutingDecision({
-    query: query || '(쿼리 없음)',
-    complexityThreshold: threshold,
-    analysisMode,
-  });
-  const {
-    analysis,
-    forceJobQueue: forceResult,
-    modeAdjustedThreshold,
-    queryMode,
-  } = routingDecision;
-
-  const isComplex = queryMode === 'job-queue';
-  const routePath = isComplex
-    ? 'Job Queue (/api/ai/jobs)'
-    : 'Streaming (/api/ai/supervisor/stream/v2)';
-
-  const factorLines =
-    analysis.factors.length > 0
-      ? analysis.factors.map((f) => `  · ${f}`).join('\n')
-      : '  · (없음)';
-
-  const forceNote = forceResult.force
-    ? `\n⚡ 강제 Job Queue: 키워드 "${forceResult.matchedKeyword}" 감지`
-    : '';
-
-  const thinkingNote =
-    analysisMode === 'thinking'
-      ? `\n🧠 thinking 모드: threshold ${threshold} → ${modeAdjustedThreshold} (−8)`
-      : '';
-
-  const resultText =
-    `🔍 **Routing Debug**\n` +
-    `\`\`\`\n` +
-    `쿼리:       ${query || '(없음)'}\n` +
-    `복잡도:     ${analysis.level} (score: ${analysis.score})\n` +
-    `threshold:  ${modeAdjustedThreshold} (기본값: ${threshold})\n` +
-    `경로:       ${isComplex ? '🔄 ' : '⚡ '}${routePath}\n` +
-    `\`\`\`\n` +
-    `**factors**\n${factorLines}` +
-    forceNote +
-    thinkingNote;
-
-  const userMessage: UIMessage = {
-    id: `debug-user-${token}`,
-    role: 'user',
-    parts: [{ type: 'text', text: fullText }],
-  };
-  const assistantMessage: UIMessage = {
-    id: `debug-assistant-${token}`,
-    role: 'assistant',
-    parts: [{ type: 'text', text: resultText }],
-  };
-
-  return [userMessage, assistantMessage];
-}
-
-function createQAToolResultSummaries() {
-  return [
-    {
-      toolName: 'analyzeIntent',
-      label: '의도 분석',
-      summary: '질문의 핵심 의도를 분석해 서버 진단 요청으로 분류했습니다.',
-      status: 'completed' as const,
-    },
-    {
-      toolName: 'selectRoute',
-      label: '라우팅 결정',
-      summary: '실시간 메트릭 기반 분석 경로를 선택했습니다.',
-      status: 'completed' as const,
-    },
-    {
-      toolName: 'generateInsight',
-      label: '인사이트 생성',
-      summary: '우선 조치 항목과 근거를 구조화했습니다.',
-      status: 'completed' as const,
-    },
-  ];
-}
-
-function createQAAssistantMessages(text: string): [UIMessage, UIMessage] {
-  const token = Date.now().toString(36);
-  const userMessage: UIMessage = {
-    id: `qa-user-${token}`,
-    role: 'user',
-    parts: [{ type: 'text', text }],
-  };
-  const assistantMessage: UIMessage = {
-    id: `qa-assistant-${token}`,
-    role: 'assistant',
-    parts: [
-      {
-        type: 'text',
-        text: 'QA thinking visualizer 샘플 응답입니다. AI 처리 과정 토글을 펼쳐 단계 렌더링을 확인하세요.',
-      },
-    ],
-    metadata: {
-      traceId: `qa-trace-${token}`,
-      toolsCalled: ['analyzeIntent', 'selectRoute', 'generateInsight'],
-      toolResultSummaries: createQAToolResultSummaries(),
-    },
-  };
-
-  return [userMessage, assistantMessage];
-}
-
-function createTextMessage({
-  id,
-  role,
-  text,
-  metadata,
-}: {
-  id: string;
-  role: 'user' | 'assistant';
-  text: string;
-  metadata?: Record<string, unknown>;
-}): UIMessage {
-  return {
-    id,
-    role,
-    parts: [{ type: 'text', text }],
-    ...(metadata && { metadata }),
-  };
-}
-
-function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
-  switch (kind) {
-    case 'incident-report':
-      return '장애 보고서를 작성하고 있습니다.';
-    case 'monitoring-analysis':
-      return '이상감지/추세 분석을 실행하고 있습니다.';
-    case 'server-snapshot':
-      return '서버 상태 스냅샷을 생성하고 있습니다.';
-    case 'ops-procedure':
-      return '운영 절차 아티팩트를 생성하고 있습니다.';
-  }
-}
-
-function getArtifactSuccessText(artifact: ChatArtifact): string {
-  if (artifact.kind === 'incident-report') {
-    return [
-      '장애 보고서를 작성했습니다.',
-      '',
-      `- 제목: ${artifact.report.title}`,
-      `- 영향 서버: ${artifact.report.affectedServers.length}대`,
-      '',
-      '아래 카드에서 MD/TXT 파일로 내려받거나 장애 보고서 작성 화면에서 확인할 수 있습니다.',
-    ].join('\n');
-  }
-
-  if (artifact.kind === 'server-snapshot') {
-    return [
-      '서버 상태 스냅샷을 생성했습니다.',
-      '',
-      `- 총 서버: ${artifact.totals.total}대`,
-      `- 주의/위험: ${artifact.totals.warning + artifact.totals.critical + artifact.totals.offline}대`,
-      '',
-      '아래 카드에서 MD/JSON 파일로 내려받을 수 있습니다.',
-    ].join('\n');
-  }
-
-  if (artifact.kind === 'ops-procedure') {
-    return [
-      '운영 절차 아티팩트를 생성했습니다.',
-      '',
-      `- 유형: ${artifact.procedureType}`,
-      `- 기준: ${artifact.inputs.metric?.toUpperCase() ?? 'metric'} ${artifact.inputs.threshold ?? '-'}%`,
-      '',
-      '아래 카드에서 MD/JSON 파일로 내려받고 코드/설정의 검증 상태를 확인할 수 있습니다.',
-    ].join('\n');
-  }
-
-  return [
-    '이상감지/추세 분석을 완료했습니다.',
-    '',
-    `- 분석 서버: ${artifact.serverCount}대`,
-    `- 위험 신호: ${artifact.riskSignalCount}건`,
-    '',
-    '아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.',
-  ].join('\n');
-}
-
-function isAbortError(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'name' in error &&
-    (error as { name?: unknown }).name === 'AbortError'
-  );
-}
-
-function getArtifactErrorText(
-  kind: ChatArtifact['kind'],
-  error: unknown
-): string {
-  if (isAbortError(error)) {
-    const target =
-      kind === 'incident-report'
-        ? '장애 보고서 작성'
-        : kind === 'server-snapshot'
-          ? '서버 상태 스냅샷 생성'
-          : kind === 'ops-procedure'
-            ? '운영 절차 생성'
-            : '이상감지/추세 분석';
-    return `${target}을 중단했습니다.`;
-  }
-
-  const message = error instanceof Error ? error.message : String(error);
-  const target =
-    kind === 'incident-report'
-      ? '장애 보고서 작성'
-      : kind === 'server-snapshot'
-        ? '서버 상태 스냅샷 생성'
-        : kind === 'ops-procedure'
-          ? '운영 절차 생성'
-          : '이상감지/추세 분석';
-  return `${target}을 완료하지 못했습니다. ${message}`;
-}
-
-function readOpsProcedureArtifactFromMetadata(
-  metadata: unknown
-): OpsProcedureArtifact | undefined {
-  if (typeof metadata !== 'object' || metadata === null) return undefined;
-  const record = metadata as Record<string, unknown>;
-
-  if (
-    typeof record.opsProcedureArtifact === 'object' &&
-    record.opsProcedureArtifact !== null &&
-    (record.opsProcedureArtifact as { kind?: unknown }).kind === 'ops-procedure'
-  ) {
-    return record.opsProcedureArtifact as OpsProcedureArtifact;
-  }
-
-  const envelopes = Array.isArray(record.artifactEnvelopes)
-    ? record.artifactEnvelopes
-    : [];
-  for (const envelope of envelopes) {
-    if (typeof envelope !== 'object' || envelope === null) continue;
-    const payload = (envelope as { payload?: unknown }).payload;
-    if (
-      (envelope as { kind?: unknown }).kind === 'ops-procedure' &&
-      typeof payload === 'object' &&
-      payload !== null &&
-      (payload as { kind?: unknown }).kind === 'ops-procedure'
-    ) {
-      return payload as OpsProcedureArtifact;
-    }
-  }
-
-  return undefined;
-}
-
-function findLastOpsProcedureArtifact(
-  messages: UIMessage[]
-): OpsProcedureArtifact | undefined {
-  for (let index = messages.length - 1; index >= 0; index -= 1) {
-    const artifact = readOpsProcedureArtifactFromMetadata(
-      messages[index]?.metadata
-    );
-    if (artifact) return artifact;
-  }
-  return undefined;
-}
-
-function buildArtifactMetadata(
-  artifact: ChatArtifact,
-  intentReason: ChatArtifactIntentReason,
-  queryAsOfDataSlot?: JobDataSlot
-): Record<string, unknown> {
-  const routeDecision = buildRouteDecision({
-    intent: 'artifact',
-    executionPath: 'client-artifact',
-    artifactKind: artifact.kind,
-    reasonCodes: [intentReason],
-    decidedBy: 'frontend',
-    ...(queryAsOfDataSlot?.timeLabel && {
-      dataSlot: queryAsOfDataSlot.timeLabel,
-    }),
-  });
-  const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
-  const assistantResult = buildAssistantResultFromRouteDecision(routeDecision);
-  const artifactEnvelope = createArtifactEnvelope(artifact, {
-    domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
-    sourceMode:
-      artifact.sourceMode ??
-      (artifact.kind === 'server-snapshot' ? 'otel-static' : 'tool-result'),
-    ...(queryAsOfDataSlot?.timeLabel && {
-      dataSlot: queryAsOfDataSlot.timeLabel,
-    }),
-  });
-
-  if (artifact.kind === 'incident-report') {
-    return {
-      artifactIntentReason: intentReason,
-      routeDecision,
-      assistantPlan,
-      assistantResult,
-      artifactEnvelopes: [artifactEnvelope],
-      incidentReportArtifact: artifact,
-      toolsCalled: ['generateIncidentReportArtifact'],
-      toolResultSummaries: [
-        {
-          toolName: 'generateIncidentReportArtifact',
-          label: '장애 보고서 작성',
-          summary: `${artifact.report.title} 보고서를 생성했습니다.`,
-          status: 'completed' as const,
-        },
-      ],
-    };
-  }
-
-  if (artifact.kind === 'server-snapshot') {
-    return {
-      artifactIntentReason: intentReason,
-      routeDecision,
-      assistantPlan,
-      assistantResult,
-      artifactEnvelopes: [artifactEnvelope],
-      serverSnapshotArtifact: artifact,
-      toolsCalled: ['generateServerSnapshotArtifact'],
-      toolResultSummaries: [
-        {
-          toolName: 'generateServerSnapshotArtifact',
-          label: '서버 상태 스냅샷',
-          summary: `${artifact.totals.total}대 서버 상태 스냅샷을 생성했습니다.`,
-          status: 'completed' as const,
-        },
-      ],
-    };
-  }
-
-  if (artifact.kind === 'ops-procedure') {
-    return {
-      artifactIntentReason: intentReason,
-      routeDecision,
-      assistantPlan,
-      assistantResult,
-      artifactEnvelopes: [artifactEnvelope],
-      opsProcedureArtifact: artifact,
-      toolsCalled: ['generateOpsProcedureArtifact'],
-      toolResultSummaries: [
-        {
-          toolName: 'generateOpsProcedureArtifact',
-          label: '운영 절차 아티팩트',
-          summary: `${artifact.procedureType} 절차를 생성했습니다.`,
-          status: 'completed' as const,
-        },
-      ],
-    };
-  }
-
-  return {
-    artifactIntentReason: intentReason,
-    routeDecision,
-    assistantPlan,
-    assistantResult,
-    artifactEnvelopes: [artifactEnvelope],
-    monitoringAnalysisArtifact: artifact,
-    toolsCalled: ['generateMonitoringAnalysisArtifact'],
-    toolResultSummaries: [
-      {
-        toolName: 'generateMonitoringAnalysisArtifact',
-        label: '이상감지/추세 분석',
-        summary: `${artifact.serverCount}개 서버 분석과 위험 신호 ${artifact.riskSignalCount}건을 정리했습니다.`,
-        status: 'completed' as const,
-      },
-    ],
-  };
 }
 
 // ============================================================================
@@ -999,23 +595,16 @@ export function useAIChatCore(
         lastAttachmentsRef.current = attachments || null;
         pendingQueryRef.current = '';
         setInput('');
-        const token = Date.now().toString(36);
+        const [guidanceUserMessage, guidanceAssistantMessage] =
+          createArtifactGuidanceMessages({
+            query: effectiveText,
+            target: artifactIntent.target,
+            reason: artifactIntent.reason,
+          });
         setMessages([
           ...messages,
-          createTextMessage({
-            id: `artifact-guidance-user-${token}`,
-            role: 'user',
-            text: effectiveText,
-          }),
-          createTextMessage({
-            id: `artifact-guidance-assistant-${token}`,
-            role: 'assistant',
-            text: createArtifactGuidanceMessage(artifactIntent.target),
-            metadata: {
-              artifactIntentReason: artifactIntent.reason,
-              artifactIntentTarget: artifactIntent.target,
-            },
-          }),
+          guidanceUserMessage,
+          guidanceAssistantMessage,
         ]);
         return;
       }
@@ -1026,7 +615,6 @@ export function useAIChatCore(
         artifactIntent.kind === 'server-snapshot' ||
         artifactIntent.kind === 'ops-procedure'
       ) {
-        const artifactKind = artifactIntent.kind;
         setError(null);
         setStreamRagSources([]);
         lastQueryRef.current = effectiveText;
@@ -1034,175 +622,20 @@ export function useAIChatCore(
         pendingQueryRef.current = '';
         setInput('');
 
-        const token = Date.now().toString(36);
-        const userMessage = createTextMessage({
-          id: `artifact-user-${token}`,
-          role: 'user',
-          text: effectiveText,
+        startChatArtifactGeneration({
+          artifactIntent,
+          query: effectiveText,
+          sessionId,
+          queryAsOfDataSlot,
+          messages,
+          messagesRef,
+          setMessages,
+          setError,
+          setArtifactIsLoading,
+          artifactRequestIdRef,
+          artifactAbortControllerRef,
+          artifactInFlightRef,
         });
-        const pendingAssistantMessage = createTextMessage({
-          id: `artifact-assistant-${token}`,
-          role: 'assistant',
-          text: getArtifactLoadingText(artifactKind),
-        });
-        const fallbackArtifactMessages = [...messages, userMessage];
-        const abortController = new AbortController();
-        setMessages([...fallbackArtifactMessages, pendingAssistantMessage]);
-        artifactRequestIdRef.current = token;
-        artifactAbortControllerRef.current = abortController;
-        artifactInFlightRef.current = true;
-        setArtifactIsLoading(true);
-
-        void (async () => {
-          try {
-            const artifact =
-              artifactKind === 'incident-report'
-                ? await generateIncidentReportArtifact({
-                    query: effectiveText,
-                    sessionId,
-                    queryAsOfDataSlot,
-                    signal: abortController.signal,
-                  })
-                : artifactKind === 'server-snapshot'
-                  ? await generateServerSnapshotArtifact({
-                      query: effectiveText,
-                      sessionId,
-                      queryAsOfDataSlot,
-                      signal: abortController.signal,
-                    })
-                  : artifactKind === 'ops-procedure'
-                    ? artifactIntent.reason ===
-                      'ops_procedure_followup_edit_pattern'
-                      ? patchOpsProcedureArtifactFromQuery(
-                          findLastOpsProcedureArtifact(messagesRef.current) ??
-                            (await generateOpsProcedureArtifact({
-                              query: effectiveText,
-                              sessionId,
-                              queryAsOfDataSlot,
-                              signal: abortController.signal,
-                            })),
-                          effectiveText
-                        )
-                      : await generateOpsProcedureArtifact({
-                          query: effectiveText,
-                          sessionId,
-                          queryAsOfDataSlot,
-                          signal: abortController.signal,
-                        })
-                    : await generateMonitoringAnalysisArtifact({
-                        query: effectiveText,
-                        sessionId,
-                        queryAsOfDataSlot,
-                        signal: abortController.signal,
-                      });
-
-            if (artifactRequestIdRef.current !== token) {
-              return;
-            }
-
-            const finalMessage = createTextMessage({
-              id: pendingAssistantMessage.id,
-              role: 'assistant',
-              text: getArtifactSuccessText(artifact),
-              metadata: buildArtifactMetadata(
-                artifact,
-                artifactIntent.reason,
-                queryAsOfDataSlot
-              ),
-            });
-            const currentMessages = messagesRef.current;
-            const nextMessages = currentMessages.some(
-              (message) => message.id === pendingAssistantMessage.id
-            )
-              ? currentMessages.map((message) =>
-                  message.id === pendingAssistantMessage.id
-                    ? finalMessage
-                    : message
-                )
-              : [...fallbackArtifactMessages, finalMessage];
-
-            setError(null);
-            setMessages(nextMessages);
-          } catch (requestError) {
-            if (artifactRequestIdRef.current !== token) {
-              return;
-            }
-
-            const errorText = getArtifactErrorText(artifactKind, requestError);
-            const routeDecision = buildRouteDecision({
-              intent: 'artifact',
-              executionPath: 'client-artifact',
-              artifactKind,
-              reasonCodes: [artifactIntent.reason],
-              decidedBy: 'frontend',
-              ...(queryAsOfDataSlot?.timeLabel && {
-                dataSlot: queryAsOfDataSlot.timeLabel,
-              }),
-            });
-            const errorMessage = createTextMessage({
-              id: pendingAssistantMessage.id,
-              role: 'assistant',
-              text: errorText,
-              metadata: {
-                artifactIntentReason: artifactIntent.reason,
-                routeDecision,
-                assistantPlan:
-                  buildAssistantPlanFromRouteDecision(routeDecision),
-                assistantResult: buildAssistantResultFromRouteDecision(
-                  routeDecision,
-                  {
-                    status: 'failed',
-                    errorCode: isAbortError(requestError)
-                      ? 'ARTIFACT_ABORTED'
-                      : 'ARTIFACT_GENERATION_FAILED',
-                  }
-                ),
-                toolResultSummaries: [
-                  {
-                    toolName:
-                      artifactKind === 'incident-report'
-                        ? 'generateIncidentReportArtifact'
-                        : artifactKind === 'server-snapshot'
-                          ? 'generateServerSnapshotArtifact'
-                          : artifactKind === 'ops-procedure'
-                            ? 'generateOpsProcedureArtifact'
-                            : 'generateMonitoringAnalysisArtifact',
-                    label:
-                      artifactKind === 'incident-report'
-                        ? '장애 보고서 작성'
-                        : artifactKind === 'server-snapshot'
-                          ? '서버 상태 스냅샷'
-                          : artifactKind === 'ops-procedure'
-                            ? '운영 절차 아티팩트'
-                            : '이상감지/추세 분석',
-                    summary: errorText,
-                    status: 'failed' as const,
-                  },
-                ],
-              },
-            });
-            const currentMessages = messagesRef.current;
-            const nextMessages = currentMessages.some(
-              (message) => message.id === pendingAssistantMessage.id
-            )
-              ? currentMessages.map((message) =>
-                  message.id === pendingAssistantMessage.id
-                    ? errorMessage
-                    : message
-                )
-              : [...fallbackArtifactMessages, errorMessage];
-
-            setError(errorText);
-            setMessages(nextMessages);
-          } finally {
-            if (artifactRequestIdRef.current === token) {
-              artifactRequestIdRef.current = null;
-              artifactAbortControllerRef.current = null;
-              artifactInFlightRef.current = false;
-              setArtifactIsLoading(false);
-            }
-          }
-        })();
         return;
       }
 

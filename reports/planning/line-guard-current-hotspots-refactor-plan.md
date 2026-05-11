@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: Plan
 > Last reviewed: 2026-05-11
 > Tags: refactor,line-guard,ai-assistant,ai-engine,hotspots
 
 # Line Guard Current Hotspots Refactor Plan
 
-- 상태: Approved
+- 상태: In Progress
 - 작성일: 2026-05-11
-- TODO.md 연결: Backlog > Line guard current hotspots refactor
+- TODO.md 연결: Active Tasks > Line guard current hotspots refactor
 - 기준 게이트: `npm run line-guard`
 
 ## 목표
@@ -27,6 +27,14 @@ npm run line-guard
   warn files: 40
   fail files: 5
 ```
+
+### 2026-05-11 진행 현황
+
+- Task 0 기준선 고정 완료: 최초 `npm run line-guard` 기준 500줄 이상 warn 40건, 800줄 이상 fail 5건.
+- Task 1 완료: `src/hooks/ai/useAIChatCore.ts` 1,287줄 → 720줄.
+- 신규 helper: `chat-artifact-execution.ts` 302줄, `chat-artifact-metadata.ts` 347줄, `routing-debug-messages.ts` 130줄.
+- 현재 `npm run line-guard` 기준 fail은 5건 → 4건으로 감소. 남은 fail은 `supervisor-stream.ts`, `orchestrator-agent-stream.ts`, `orchestrator-routing.ts`, `routes/jobs.ts`.
+- 검증: `npm run test:dom -- src/hooks/ai/useAIChatCore.test.ts`, `npm run type-check`, `npm run lint` 통과.
 
 ### 800줄 이상 분리 대상
 
@@ -70,7 +78,7 @@ npm run line-guard
 - `src/hooks/ai/useAIChatCore.ts`
 - 신규 후보: `src/hooks/ai/core/chat-artifact-execution.ts`
 - 신규 후보: `src/hooks/ai/core/chat-artifact-metadata.ts`
-- 신규 후보: `src/hooks/ai/core/debug-routing-messages.ts`
+- 신규 후보: `src/hooks/ai/core/routing-debug-messages.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-agent-stream.ts`
 - 신규 후보: `cloud-run/ai-engine/src/services/ai-sdk/stream-provider-fallback.ts`
@@ -100,9 +108,9 @@ npm run line-guard
 
 ### 테스트 시나리오
 
-- [ ] `line-guard baseline`: 현재 `npm run line-guard`가 fail 5건을 보고하는 상태를 Task 0에 기록한다.
-- [ ] `useAIChatCore artifact parity`: artifact intent/guidance/generation/follow-up edit 관련 기존 테스트가 refactor 후 동일하게 통과한다.
-- [ ] `useAIChatCore public contract`: `UseAIChatCoreReturn` shape와 `convertThinkingStepsToUI` re-export가 유지된다.
+- [x] `line-guard baseline`: 현재 `npm run line-guard`가 fail 5건을 보고하는 상태를 Task 0에 기록한다.
+- [x] `useAIChatCore artifact parity`: artifact intent/guidance/generation/follow-up edit 관련 기존 테스트가 refactor 후 동일하게 통과한다.
+- [x] `useAIChatCore public contract`: `UseAIChatCoreReturn` shape와 `convertThinkingStepsToUI` re-export가 유지된다.
 - [ ] `supervisor stream parity`: supervisor stream fallback, tool summary, deterministic recovery 관련 테스트가 동일하게 통과한다.
 - [ ] `agent stream parity`: orchestrator agent stream fallback, raw tool JSON suppression, deterministic repair 테스트가 동일하게 통과한다.
 - [ ] `forced routing parity`: direct knowledge/topology/resource catalog 관련 routing 테스트가 동일하게 통과한다.
@@ -113,11 +121,11 @@ npm run line-guard
 
 > 착수 전 Status가 Approved인지 확인한다. 기존 `npm run line-guard`가 이미 failing gate이므로 Task 0은 새로운 인위적 failing test가 아니라 현재 failing gate와 관련 targeted tests를 기준선으로 고정한다.
 
-- [ ] Task 0 — 기준선 고정
+- [x] Task 0 — 기준선 고정
   - `npm run line-guard` fail 5건 기록
   - 대상 파일별 현재 public export/import 사용처 확인
   - 관련 targeted test 명령 목록 확정
-- [ ] Task 1 — `useAIChatCore` 책임 분리
+- [x] Task 1 — `useAIChatCore` 책임 분리
   - artifact generation/metadata/error summary를 `core` helper로 분리
   - QA/debug shortcut message builder를 별도 helper로 분리
   - 완료 기준: `useAIChatCore.ts < 800 lines`, root targeted tests 통과

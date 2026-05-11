@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`Line guard current hotspots refactor plan`)
+**Last Updated**: 2026-05-11 KST (`Line guard current hotspots refactor Task 1`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _현재 활성 작업 없음_ | — | Idle | 직전 활성 작업 `AI Assistant operational artifact hardening`은 local deterministic QA `QA-20260511-0468`까지 완료. 다음 후보는 Backlog P2 `Line guard current hotspots refactor`; P1 dependency audit는 Next same-major fixed release 대기. |
+| Line guard current hotspots refactor | P2 | In Progress (Codex) | Task 0/1 완료. `src/hooks/ai/useAIChatCore.ts` 1,287줄 → 720줄, artifact execution/metadata/routing debug helper 분리. `npm run line-guard` fail 5건 → 4건으로 감소. 다음 대상은 AI Engine `supervisor-stream.ts`/`orchestrator-agent-stream.ts` 공통 fallback/quota 분리. 상세 계획: [line-guard-current-hotspots-refactor-plan.md](line-guard-current-hotspots-refactor-plan.md) |
 
 ---
 
@@ -22,7 +22,6 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | Dependency security audit follow-up | P1 | 2026-05-11 재확인: Root `npm audit --omit=dev`/full audit는 `next@16.1.6` high 1건만 잔류, AI Engine production/full audit는 0건. `npm view next version` 및 `npm view next@16 version` 기준 최신 Next 16은 여전히 `16.1.6`이라 같은-major fixed release 없음. `npm audit fix --force`는 `next@15.5.12` breaking downgrade를 제안하므로 금지 유지. Root full audit의 dev critical `commit-and-tag-version -> handlebars` 체인은 내부 `scripts/release/version-and-tag.mjs` release tool로 대체해 제거했고, AI Engine Google Cloud logging low 체인은 `@google-cloud/pino-logging-gcp-config` 제거와 내부 Cloud Run pino structured logging config로 대체해 해소 완료. 같은-major fixed release(`next@16.1.7` 또는 `16.2.3+`)가 registry에 제공되면 즉시 업데이트. |
-| Line guard current hotspots refactor | P2 | `npm run line-guard` 기준 500줄 이상 warn 40건, 800줄 이상 fail 5건 확인. 기능 변경 없이 800줄 이상 파일(`supervisor-stream.ts`, `useAIChatCore.ts`, `orchestrator-agent-stream.ts`, `orchestrator-routing.ts`, `routes/jobs.ts`)을 단계적으로 분리해 fail 0건으로 복구. `ops-procedure-artifact.ts`는 530줄 warn이지만 이번 범위에서는 관찰만. 상세 계획: [line-guard-current-hotspots-refactor-plan.md](line-guard-current-hotspots-refactor-plan.md) |
 
 ---
 
