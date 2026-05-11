@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-11T09:16:39.303Z",
-  "generatedAtKst": "2026-05-11 18:16:39 KST",
-  "trackerUpdatedAt": "2026-05-11T09:12:27.615Z",
+  "generatedAt": "2026-05-11T09:35:44.740Z",
+  "generatedAtKst": "2026-05-11 18:35:44 KST",
+  "trackerUpdatedAt": "2026-05-11T09:35:30.250Z",
   "totals": {
-    "recordedRuns": 474,
+    "recordedRuns": 475,
     "countedRuns": 377,
     "totalChecks": 3359,
     "totalPassed": 3231,
     "totalFailed": 118,
     "overallPassRatePct": 96.19,
-    "latestRecordedRunId": "QA-20260511-0476",
+    "latestRecordedRunId": "QA-20260511-0477",
     "lastCountedRunId": "QA-20260511-0475"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 292,
+      "totalRuns": 293,
       "countedRuns": 196
     },
     {
@@ -734,12 +734,12 @@
     "open": [
       {
         "id": "ai-assistant-24h-peak-load-empty-response-v811124",
-        "title": "Production AI Assistant 24시간 피크 부하 질의가 deterministic metric evidence 없이 generic 응답으로 처리됨",
+        "title": "Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임",
         "status": "pending",
         "priority": "P1",
-        "seenCount": 2,
+        "seenCount": 3,
         "completedCount": 0,
-        "lastSeenRunId": "QA-20260511-0476",
+        "lastSeenRunId": "QA-20260511-0477",
         "lastResolvedRunId": null
       }
     ],
@@ -950,46 +950,74 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-10T09:12:27.615Z",
-    "windowEnd": "2026-05-11T09:12:27.615Z",
-    "recordedRunCount": 2,
+    "windowStart": "2026-05-10T09:35:30.250Z",
+    "windowEnd": "2026-05-11T09:35:30.250Z",
+    "recordedRunCount": 3,
     "countedRunCount": 1,
-    "sampleCount": 5,
+    "sampleCount": 7,
     "buckets": [
       {
         "agent": "Supervisor",
         "provider": "cloud-run-ai-engine",
-        "sampleCount": 5,
-        "runCount": 2,
+        "sampleCount": 6,
+        "runCount": 3,
         "countedRunCount": 1,
-        "avgLatencyMs": 1891,
-        "p95LatencyMs": 2708,
+        "avgLatencyMs": 3504,
+        "p95LatencyMs": 11571,
         "avgTtfbMs": null,
         "p95TtfbMs": null,
-        "avgProcessingTimeMs": 1891,
-        "p95ProcessingTimeMs": 2708,
-        "latestRunId": "QA-20260511-0476",
-        "latestRecordedAt": "2026-05-11T09:12:27.615Z"
+        "avgProcessingTimeMs": 3504,
+        "p95ProcessingTimeMs": 11571,
+        "latestRunId": "QA-20260511-0477",
+        "latestRecordedAt": "2026-05-11T09:35:30.250Z"
+      },
+      {
+        "agent": "Supervisor",
+        "provider": "streaming-ai",
+        "sampleCount": 1,
+        "runCount": 1,
+        "countedRunCount": 0,
+        "avgLatencyMs": 2473,
+        "p95LatencyMs": 2473,
+        "avgTtfbMs": null,
+        "p95TtfbMs": null,
+        "avgProcessingTimeMs": 2473,
+        "p95ProcessingTimeMs": 2473,
+        "latestRunId": "QA-20260511-0477",
+        "latestRecordedAt": "2026-05-11T09:35:30.250Z"
       }
     ]
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-10T09:12:27.615Z",
-    "windowEnd": "2026-05-11T09:12:27.615Z",
-    "recordedRunCount": 2,
+    "windowStart": "2026-05-10T09:35:30.250Z",
+    "windowEnd": "2026-05-11T09:35:30.250Z",
+    "recordedRunCount": 3,
     "countedRunCount": 1,
-    "sampleCount": 4,
-    "driftCount": 3,
-    "driftRatePct": 75,
-    "avgLatencyMs": 2003,
-    "p95LatencyMs": 2708,
+    "sampleCount": 7,
+    "driftCount": 6,
+    "driftRatePct": 85.71,
+    "avgLatencyMs": 3256,
+    "p95LatencyMs": 11571,
     "classificationCounts": {
       "matched": 1,
-      "drift": 3
+      "drift": 6
     },
     "reasonCodeCounts": {},
     "buckets": [
+      {
+        "route": "/api/ai/jobs",
+        "executionMode": "single-agent",
+        "sampleCount": 3,
+        "runCount": 3,
+        "countedRunCount": 1,
+        "driftCount": 3,
+        "driftRatePct": 100,
+        "avgLatencyMs": 5137,
+        "p95LatencyMs": 11571,
+        "latestRunId": "QA-20260511-0477",
+        "latestRecordedAt": "2026-05-11T09:35:30.250Z"
+      },
       {
         "route": "/api/ai/supervisor/stream/v2",
         "executionMode": "deterministic",
@@ -1004,17 +1032,17 @@
         "latestRecordedAt": "2026-05-11T04:57:44.283Z"
       },
       {
-        "route": "/api/ai/jobs",
+        "route": "/api/ai/supervisor/stream/v2",
         "executionMode": "single-agent",
-        "sampleCount": 2,
-        "runCount": 2,
-        "countedRunCount": 1,
-        "driftCount": 2,
+        "sampleCount": 1,
+        "runCount": 1,
+        "countedRunCount": 0,
+        "driftCount": 1,
         "driftRatePct": 100,
-        "avgLatencyMs": 1920,
-        "p95LatencyMs": 2380,
-        "latestRunId": "QA-20260511-0476",
-        "latestRecordedAt": "2026-05-11T09:12:27.615Z"
+        "avgLatencyMs": 2473,
+        "p95LatencyMs": 2473,
+        "latestRunId": "QA-20260511-0477",
+        "latestRecordedAt": "2026-05-11T09:35:30.250Z"
       },
       {
         "route": "generic conversation response",
@@ -1028,6 +1056,19 @@
         "p95LatencyMs": 1465,
         "latestRunId": "QA-20260511-0475",
         "latestRecordedAt": "2026-05-11T04:57:44.283Z"
+      },
+      {
+        "route": "/api/ai/nlq/extract-entities",
+        "executionMode": "deterministic",
+        "sampleCount": 1,
+        "runCount": 1,
+        "countedRunCount": 0,
+        "driftCount": 1,
+        "driftRatePct": 100,
+        "avgLatencyMs": 738,
+        "p95LatencyMs": 738,
+        "latestRunId": "QA-20260511-0477",
+        "latestRecordedAt": "2026-05-11T09:35:30.250Z"
       }
     ]
   },

@@ -1,45 +1,48 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-11 18:16:39 KST
+> Generated at: 2026-05-11 18:35:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 474 |
+| Recorded Runs | 475 |
 | Counted Runs | 377 |
 | Total Checks | 3359 |
 | Total Passed | 3231 |
 | Total Failed | 118 |
 | Overall Pass Rate | 96.19% |
-| Latest Recorded Run | QA-20260511-0476 |
+| Latest Recorded Run | QA-20260511-0477 |
 | Last Counted Run | QA-20260511-0475 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-10T09:12:27.615Z -> 2026-05-11T09:12:27.615Z (24h)
-- Runs with observations: 2 recorded / 1 counted
-- Samples: 5
+- Window: 2026-05-10T09:35:30.250Z -> 2026-05-11T09:35:30.250Z (24h)
+- Runs with observations: 3 recorded / 1 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 5 | 1891ms | 2708ms | - | - | 1891ms | 2708ms | QA-20260511-0476 |
+| Supervisor | cloud-run-ai-engine | 6 | 3504ms | 11571ms | - | - | 3504ms | 11571ms | QA-20260511-0477 |
+| Supervisor | streaming-ai | 1 | 2473ms | 2473ms | - | - | 2473ms | 2473ms | QA-20260511-0477 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-10T09:12:27.615Z -> 2026-05-11T09:12:27.615Z (24h)
-- Runs with observations: 2 recorded / 1 counted
-- Samples: 4
-- Drift rate: 75%
-- Classification counts: {"matched":1,"drift":3}
+- Window: 2026-05-10T09:35:30.250Z -> 2026-05-11T09:35:30.250Z (24h)
+- Runs with observations: 3 recorded / 1 counted
+- Samples: 7
+- Drift rate: 85.71%
+- Classification counts: {"matched":1,"drift":6}
 - Reason code counts: {}
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
+| /api/ai/jobs | single-agent | 3 | 100% | 5137ms | 11571ms | QA-20260511-0477 |
 | /api/ai/supervisor/stream/v2 | deterministic | 1 | 0% | 2708ms | 2708ms | QA-20260511-0475 |
-| /api/ai/jobs | single-agent | 2 | 100% | 1920ms | 2380ms | QA-20260511-0476 |
+| /api/ai/supervisor/stream/v2 | single-agent | 1 | 100% | 2473ms | 2473ms | QA-20260511-0477 |
 | generic conversation response | single-agent | 1 | 100% | 1465ms | 1465ms | QA-20260511-0475 |
+| /api/ai/nlq/extract-entities | deterministic | 1 | 100% | 738ms | 738ms | QA-20260511-0477 |
 
 ## Warnings
 
@@ -71,7 +74,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 292 | 196 |
+| targeted | 293 | 196 |
 | legacy | 137 | 137 |
 | broad | 34 | 33 |
 | release-gate | 6 | 6 |
@@ -142,7 +145,7 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
-| ai-assistant-24h-peak-load-empty-response-v811124 | P1 | pending | 2 | QA-20260511-0476 | Production AI Assistant 24시간 피크 부하 질의가 deterministic metric evidence 없이 generic 응답으로 처리됨 |
+| ai-assistant-24h-peak-load-empty-response-v811124 | P1 | pending | 3 | QA-20260511-0477 | Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임 |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

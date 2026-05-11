@@ -1,0 +1,76 @@
+{
+  "target": "https://openmanager-ai.vercel.app/dashboard",
+  "capturedAt": "2026-05-11T09:31:49.715Z",
+  "capturedAtKst": "2026-05-11 18:31:49 KST",
+  "scope": "AI Assistant 24h peak-load phrasing variants",
+  "productionVersion": "v8.11.124",
+  "summary": {
+    "totalVariants": 3,
+    "pass": 0,
+    "warn": 2,
+    "fail": 1,
+    "mainFinding": "The production AI assistant can return a visible answer for some 24h peak-load phrasings, but routing and evidence are inconsistent. Generic Korean phrasing uses recent/current metric evidence, compact load1/24h wording triggers an unnecessary server-specific clarification, and explicit whole-fleet wording reaches Cloud Run/job streaming but still labels the evidence period as recent 1 hour."
+  },
+  "variants": [
+    {
+      "prompt": "최근 하루 동안 서버 부하가 가장 높았던 시간대와 근거를 알려줘",
+      "outcome": "warn",
+      "routeObserved": "/api/ai/supervisor/stream/v2",
+      "visibleAnswer": "최근 하루 동안 서버 부하가 가장 높았던 시간대는 18:20 KST 기준이며, 가장 높은 CPU 사용률을 기록한 서버는 api-was-dc1-01로 96%의 CPU 사용률을 보였습니다. 이는 지난 24시간 전체 서버 평균 CPU 사용률인 60.3%보다 높은 수치입니다.",
+      "visibleMetadata": "Streaming AI · 서버 실시간 데이터 분석 · 도구: 서버 메트릭 상세 조회 · 모드: 오토 · 기간: 최근 1시간",
+      "finding": "The answer is visible and metric-related, but it uses current/recent metric evidence instead of a clear 24h time-window peak slot."
+    },
+    {
+      "prompt": "24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?",
+      "outcome": "fail",
+      "routeObserved": "/api/ai/nlq/extract-entities",
+      "visibleAnswer": "조금 더 구체적으로 알려주세요 · 특정 서버가 명시되지 않음",
+      "visibleMetadata": "Clarification UI offered whole-server and role filters instead of answering.",
+      "finding": "Compact operator-style phrasing was misclassified as needing a specific server, even though the question asks for whole-window peak context."
+    },
+    {
+      "prompt": "전체 서버 기준으로 지난 24시간 load1이 가장 높았던 시각과 상위 서버 3개를 알려줘",
+      "outcome": "warn",
+      "routeObserved": "/api/ai/jobs + /api/ai/jobs/:id/stream",
+      "visibleAnswer": "지난 24시간 load1 최고치 96%를 기록한 시점은 2026-05-11 03:20 KST입니다. 상위 3대 서버: api-was-dc1-01 (CPU 96%, 메모리 88%), api-was-dc1-02 (CPU 89%, 메모리 60%), lb-haproxy-dc1-01 (CPU 86%, 메모리 43%).",
+      "visibleMetadata": "Cloud Run AI · 서버 실시간 데이터 분석 · 도구: 서버 메트릭 상세 조회 · 모드: 오토 · 기간: 최근 1시간",
+      "finding": "Explicit whole-fleet wording reaches the job/stream path and returns a useful answer, but the evidence metadata still says recent 1 hour and the load1 value appears to be reported as CPU percent."
+    }
+  ],
+  "networkResources": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "durationMs": 4182,
+      "transferSize": 328,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "durationMs": 2473,
+      "transferSize": 16396,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "durationMs": 738,
+      "transferSize": 322,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "durationMs": 432,
+      "transferSize": 1070,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/f79644bc-4da1-44e5-b04a-b905b31d2247/stream",
+      "durationMs": 11571,
+      "transferSize": 6136,
+      "initiator": "other"
+    }
+  ],
+  "evidence": {
+    "screenshot": "reports/qa/evidence/qa-20260511-peak-variants.png",
+    "resultJson": "reports/qa/evidence/qa-20260511-peak-variants-result.json"
+  }
+}

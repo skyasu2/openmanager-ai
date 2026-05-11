@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-11 18:16:39 KST
+> Generated at: 2026-05-11 18:35:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 474 |
+| Total Recorded Runs | 475 |
 | Total Runs (Counted) | 377 |
-| Non-counted Runs | 97 |
+| Non-counted Runs | 98 |
 | Total Checks | 3359 |
 | Passed | 3231 |
 | Failed | 118 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 1 |
 | Completion Rate | 99.82% |
 | Last Counted Run | QA-20260511-0475 (2026-05-11T04:57:44.283Z) |
-| Latest Recorded Run | QA-20260511-0476 (2026-05-11T09:12:27.615Z) |
+| Latest Recorded Run | QA-20260511-0477 (2026-05-11T09:35:30.250Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,42 +34,44 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260511-0476 (2026-05-11T09:12:27.615Z)
+Latest run: QA-20260511-0477 (2026-05-11T09:35:30.250Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | partially-appropriate | yes | After the domain-evidence fix is released, rerun the peak-load question and require a metric-grounded response with time slot, load value, and top servers. |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Implement and deploy a domain evidence path that normalizes whole-fleet 24h peak/load/load1 phrasings, returns metric-grounded time slot plus top servers, and labels the evidence window accurately. |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after targeted production check; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after targeted AI variant QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-10T09:12:27.615Z -> 2026-05-11T09:12:27.615Z (24h)
-- Runs with observations: 2 recorded / 1 counted
-- Samples: 5
+- Window: 2026-05-10T09:35:30.250Z -> 2026-05-11T09:35:30.250Z (24h)
+- Runs with observations: 3 recorded / 1 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 5 | 1891ms | 2708ms | - | - | 1891ms | 2708ms | QA-20260511-0476 |
+| Supervisor | cloud-run-ai-engine | 6 | 3504ms | 11571ms | - | - | 3504ms | 11571ms | QA-20260511-0477 |
+| Supervisor | streaming-ai | 1 | 2473ms | 2473ms | - | - | 2473ms | 2473ms | QA-20260511-0477 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-10T09:12:27.615Z -> 2026-05-11T09:12:27.615Z (24h)
-- Runs with observations: 2 recorded / 1 counted
-- Samples: 4
-- Drift rate: 75%
+- Window: 2026-05-10T09:35:30.250Z -> 2026-05-11T09:35:30.250Z (24h)
+- Runs with observations: 3 recorded / 1 counted
+- Samples: 7
+- Drift rate: 85.71%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
+| /api/ai/jobs | single-agent | 3 | 100% | 5137ms | 11571ms | QA-20260511-0477 |
 | /api/ai/supervisor/stream/v2 | deterministic | 1 | 0% | 2708ms | 2708ms | QA-20260511-0475 |
-| /api/ai/jobs | single-agent | 2 | 100% | 1920ms | 2380ms | QA-20260511-0476 |
+| /api/ai/supervisor/stream/v2 | single-agent | 1 | 100% | 2473ms | 2473ms | QA-20260511-0477 |
 | generic conversation response | single-agent | 1 | 100% | 1465ms | 1465ms | QA-20260511-0475 |
+| /api/ai/nlq/extract-entities | deterministic | 1 | 100% | 738ms | 738ms | QA-20260511-0477 |
 
 ## Coverage (Latest Run)
 
@@ -77,35 +79,32 @@ Latest run: QA-20260511-0476 (2026-05-11T09:12:27.615Z)
 - Release-Facing: no
 - Counts Toward Summary: no
 - Deployment: dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL / SHA cf5480e8
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Vercel production alias https://openmanager-ai.vercel.app resolves to deployment dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL in READY state, /api/version returned v8.11.124, commit cf5480e855ff2476c928b7ff7f4399c664ff70ea, release tag v8.11.124, and GitLab pipeline 2513741959; this confirms post-push commit c933dc7eb is not yet deployed to Vercel production, /api/health returned success=true with database, cache, and ai services connected, Landing page rendered OpenManager AI production shell with v8.11.124, Next.js 16 + React 19, and system start CTA, System start CTA navigated through /system-boot to /dashboard, Dashboard rendered 18 total servers, 17 online, 1 warning, 0 risk, 0 offline, OpenTelemetry snapshot 18:00 KST slot 108/143, and resource warning Top 5, AI assistant sidebar opened from dashboard with AI engine status Ready, AI prompt '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?' returned a visible response: '17:00-18:00', The same AI peak-load response used the generic conversation evidence path, not a deterministic metric/tool-grounded path, AI-related network requests returned HTTP 200/201 for /api/ai/wake-up, /api/health?service=ai, /api/ai/jobs, and /api/ai/jobs/:id/stream was visible in Performance API as EventSource/other
-- Skipped Surfaces: This was not a release-gate run because Vercel production still points at v8.11.124 / cf5480e8, not pushed commit c933dc7eb, Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost on an unchanged production deployment, OAuth callback, modal detail pack, Reporter Agent, Analyst Agent, mobile viewport, and Cloud Run admin monitoring endpoints were not exercised in this targeted check, Browser console message export was skipped because the active Playwright MCP surface in this session did not expose console collection; network and screenshot evidence were captured instead
+- Coverage Packs: ai-core
+- Covered Surfaces: Vercel production AI sidebar opened from /dashboard with AI engine status Ready, Variant 1 Korean natural phrasing: '최근 하루 동안 서버 부하가 가장 높았던 시간대와 근거를 알려줘', Variant 2 compact operator phrasing: '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?', Variant 3 explicit whole-fleet phrasing: '전체 서버 기준으로 지난 24시간 load1이 가장 높았던 시각과 상위 서버 3개를 알려줘', /api/version confirmed production still serves v8.11.124 / cf5480e855ff2476c928b7ff7f4399c664ff70ea, /api/health returned success=true with database, cache, and ai services connected
+- Skipped Surfaces: Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost on an unchanged production deployment, Core route, auth, dashboard modal, Reporter Agent, Analyst Agent, mobile viewport, and Cloud Run admin monitoring surfaces were not exercised in this phrasing-only probe
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Current production release pipeline | [Current production release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959) | - |
-| general | Post-push validate pipeline for undeployed commit c933dc7eb | [Post-push validate pipeline for undeployed commit c933dc7eb](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2515354490) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Current Vercel production deployment | [Current Vercel production deployment](https://openmanager-qt46mwbes-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI peak-load response screenshot | `reports/qa/evidence/qa-20260511-vercel-post-push-ai-peak.png` | - |
-| playwright-network | Production AI network requests | `reports/qa/evidence/qa-20260511-vercel-post-push-network.txt` | - |
-| playwright-network | Production AI result and Performance API resource timing | `reports/qa/evidence/qa-20260511-vercel-post-push-ai-result.json` | - |
+| playwright-screenshot | AI peak-load phrasing variants screenshot | `reports/qa/evidence/qa-20260511-peak-variants.png` | - |
+| playwright-network | AI peak-load phrasing variants structured result | `reports/qa/evidence/qa-20260511-peak-variants-result.json` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260511-0476)
-  next: After the domain-evidence fix is released, rerun the peak-load question and require a metric-grounded response with time slot, load value, and top servers.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260511-0477)
+  next: Implement and deploy a domain evidence path that normalizes whole-fleet 24h peak/load/load1 phrasings, returns metric-grounded time slot plus top servers, and labels the evidence window accurately.
 
 ## Pending Improvements
 
-- [P1] ai-assistant-24h-peak-load-empty-response-v811124: Production AI Assistant 24시간 피크 부하 질의가 deterministic metric evidence 없이 generic 응답으로 처리됨 (seen 2회, last QA-20260511-0476)
+- [P1] ai-assistant-24h-peak-load-empty-response-v811124: Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임 (seen 3회, last QA-20260511-0477)
 
 ## Deferred Improvements
 
@@ -726,6 +725,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260511-0477 | 2026-05-11T09:35:30.250Z | targeted | no | no | Vercel Playwright MCP Targeted AI QA - 24h peak-load phrasing variants | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260511-0476 | 2026-05-11T09:12:27.615Z | targeted | no | no | Vercel Playwright MCP Targeted Check - post-main-push production state | 10 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260511-0475 | 2026-05-11T04:57:44.283Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.124 frontend and AI assistant status | 17 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260511-0474 | 2026-05-11T04:14:14.183Z | targeted | no | no | Local QA - React 19.2.6 Patch Alignment | 6 | 1 | 0 | 0 | 0 | 0 |
@@ -745,4 +745,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0460 | 2026-05-10T09:09:14.056Z | targeted | no | no | Local QA - AI NLQ Entity Extraction Hardening | 8 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0459 | 2026-05-10T08:01:49.702Z | targeted | no | no | Local QA - AI Assistant Off-Domain Guardrail | 9 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260510-0458 | 2026-05-10T07:26:58.691Z | targeted | no | yes | v8.11.122 Vercel AI Assistant Edge / Non-IT Prompt QA | 7 | 1 | 0 | 0 | 3 | 2 |
-| QA-20260510-0457 | 2026-05-10T05:49:28.256Z | targeted | yes | yes | v8.11.122 Production Release Smoke | 8 | 1 | 0 | 0 | 0 | 0 |

@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T09:12:27.615Z"
+    "updatedAt": "2026-05-11T09:35:30.250Z"
   },
   "sequence": {
-    "nextRunNumber": 477
+    "nextRunNumber": 478
   },
   "summary": {
-    "totalRecordedRuns": 474,
+    "totalRecordedRuns": 475,
     "totalRuns": 377,
-    "excludedRuns": 97,
+    "excludedRuns": 98,
     "totalChecks": 3359,
     "totalPassed": 3231,
     "totalFailed": 118,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260511-0475",
     "lastRecordedAt": "2026-05-11T04:57:44.283Z",
-    "latestRecordedRunId": "QA-20260511-0476",
-    "latestRecordedAt": "2026-05-11T09:12:27.615Z"
+    "latestRecordedRunId": "QA-20260511-0477",
+    "latestRecordedAt": "2026-05-11T09:35:30.250Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13220,27 +13220,27 @@
     },
     "ai-assistant-24h-peak-load-empty-response-v811124": {
       "id": "ai-assistant-24h-peak-load-empty-response-v811124",
-      "title": "Production AI Assistant 24시간 피크 부하 질의가 deterministic metric evidence 없이 generic 응답으로 처리됨",
+      "title": "Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임",
       "priority": "P1",
       "status": "pending",
       "firstSeenRunId": "QA-20260511-0475",
       "firstSeenAt": "2026-05-11T04:57:44.283Z",
-      "lastSeenRunId": "QA-20260511-0476",
-      "lastSeenAt": "2026-05-11T09:12:27.615Z",
-      "seenCount": 2,
+      "lastSeenRunId": "QA-20260511-0477",
+      "lastSeenAt": "2026-05-11T09:35:30.250Z",
+      "seenCount": 3,
       "completedCount": 0,
-      "pendingCount": 2,
+      "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
-      "lastNote": "This run returned a visible one-line answer instead of an empty body, but metadata still showed 일반 대화 응답 and lacked load value/top-server grounding. Keep open until the domain-evidence fix is deployed and retested.",
+      "lastEvidence": "reports/qa/evidence/qa-20260511-peak-variants-result.json",
+      "lastNote": "Variant probe: natural phrasing answered with recent/current metric evidence, compact '24h/load1/peak' phrasing incorrectly requested a specific server, and explicit whole-fleet phrasing returned a useful answer but still showed recent-1h metadata and load1/CPU unit ambiguity.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-11T09:12:27.615Z"
+      "lastStatusChangeAt": "2026-05-11T09:35:30.250Z"
     }
   },
   "runs": [
@@ -50947,6 +50947,157 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0477",
+      "recordedAt": "2026-05-11T09:35:30.250Z",
+      "recordedAtKst": "2026-05-11 18:35:30 KST",
+      "title": "Vercel Playwright MCP Targeted AI QA - 24h peak-load phrasing variants",
+      "owner": "codex",
+      "source": "playwright-mcp+curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0477.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FL6sxSAvt1apQNm8FGwMRibZsgxL",
+        "deploymentUrl": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app",
+        "commitSha": "cf5480e855ff2476c928b7ff7f4399c664ff70ea"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production AI sidebar opened from /dashboard with AI engine status Ready",
+        "Variant 1 Korean natural phrasing: '최근 하루 동안 서버 부하가 가장 높았던 시간대와 근거를 알려줘'",
+        "Variant 2 compact operator phrasing: '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?'",
+        "Variant 3 explicit whole-fleet phrasing: '전체 서버 기준으로 지난 24시간 load1이 가장 높았던 시각과 상위 서버 3개를 알려줘'",
+        "/api/version confirmed production still serves v8.11.124 / cf5480e855ff2476c928b7ff7f4399c664ff70ea",
+        "/api/health returned success=true with database, cache, and ai services connected"
+      ],
+      "skippedSurfaces": [
+        "Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost on an unchanged production deployment",
+        "Core route, auth, dashboard modal, Reporter Agent, Analyst Agent, mobile viewport, and Cloud Run admin monitoring surfaces were not exercised in this phrasing-only probe"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 0,
+        "failed": 3
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar peak-load variant 1",
+          "agent": "Supervisor",
+          "provider": "streaming-ai",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP Performance API resource timing",
+          "latencyMs": 2473,
+          "processingTimeMs": 2473
+        },
+        {
+          "surface": "AI sidebar peak-load variant 3",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright MCP Performance API resource timing",
+          "latencyMs": 11571,
+          "processingTimeMs": 11571
+        }
+      ],
+      "plannerShadowObservations": [
+        {
+          "surface": "AI sidebar peak-load variant 1",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "single-agent",
+          "latencyMs": 2473,
+          "classification": "drift",
+          "driftReasonCodes": [],
+          "source": "Visible metadata showed '기간: 최근 1시간' for a recent-day peak-load question"
+        },
+        {
+          "surface": "AI sidebar peak-load variant 2",
+          "route": "/api/ai/nlq/extract-entities",
+          "executionMode": "deterministic",
+          "latencyMs": 738,
+          "classification": "drift",
+          "driftReasonCodes": [],
+          "source": "Clarification UI said '특정 서버가 명시되지 않음'"
+        },
+        {
+          "surface": "AI sidebar peak-load variant 3",
+          "route": "/api/ai/jobs",
+          "executionMode": "single-agent",
+          "latencyMs": 11571,
+          "classification": "drift",
+          "driftReasonCodes": [],
+          "source": "Answer included a peak time and top servers, but metadata still showed '기간: 최근 1시간'"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Variant testing confirmed the production issue is broader than one empty/generic response: whole-fleet 24h peak-load intent is wording-sensitive, compact load1/24h phrasing triggers clarification, and passing phrasing still exposes a 1h evidence metadata mismatch.",
+          "nextAction": "Implement and deploy a domain evidence path that normalizes whole-fleet 24h peak/load/load1 phrasings, returns metric-grounded time slot plus top servers, and labels the evidence window accurately."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "This was correctly scoped as a small non-counting variant probe on unchanged production, with screenshot and structured evidence captured.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-11T18:33:35+09:00",
+          "summary": "Current Vercel billing period reviewed after targeted AI variant QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI peak-load phrasing variants screenshot",
+          "path": "reports/qa/evidence/qa-20260511-peak-variants.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI peak-load phrasing variants structured result",
+          "path": "reports/qa/evidence/qa-20260511-peak-variants-result.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Current production release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -50955,17 +51106,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 228,
+      "seenCount": 229,
       "appropriateCount": 198,
-      "partialCount": 30,
+      "partialCount": 31,
       "inappropriateCount": 0,
-      "improvementNeededCount": 40,
-      "lastRunId": "QA-20260511-0476",
-      "lastSeenAt": "2026-05-11T09:12:27.615Z",
+      "improvementNeededCount": 41,
+      "lastRunId": "QA-20260511-0477",
+      "lastSeenAt": "2026-05-11T09:35:30.250Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The 24-hour peak-load question no longer reproduced an empty response in this sample, but it remained generic and did not expose deterministic metric evidence or top-server context.",
-      "lastNextAction": "After the domain-evidence fix is released, rerun the peak-load question and require a metric-grounded response with time slot, load value, and top servers."
+      "lastRationale": "Variant testing confirmed the production issue is broader than one empty/generic response: whole-fleet 24h peak-load intent is wording-sensitive, compact load1/24h phrasing triggers clarification, and passing phrasing still exposes a 1h evidence metadata mismatch.",
+      "lastNextAction": "Implement and deploy a domain evidence path that normalizes whole-fleet 24h peak/load/load1 phrasings, returns metric-grounded time slot plus top servers, and labels the evidence window accurately."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -51023,16 +51174,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 196,
-      "appropriateCount": 178,
+      "seenCount": 197,
+      "appropriateCount": 179,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260511-0476",
-      "lastSeenAt": "2026-05-11T09:12:27.615Z",
+      "lastRunId": "QA-20260511-0477",
+      "lastSeenAt": "2026-05-11T09:35:30.250Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "This was correctly scoped as a non-counting targeted production check on an unchanged deployment, with durable screenshot/network evidence and Vercel usage verification.",
+      "lastRationale": "This was correctly scoped as a small non-counting variant probe on unchanged production, with screenshot and structured evidence captured.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
