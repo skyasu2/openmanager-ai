@@ -117,7 +117,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
         model: { modelId: 'llama-4-scout-17b-8e-instruct' },
         prompt: 'api-was-dc1-01 CPU 어때?',
         temperature: 0,
-        maxOutputTokens: 64,
+        maxOutputTokens: 160,
         output: expect.objectContaining({ kind: 'object-output' }),
       })
     );

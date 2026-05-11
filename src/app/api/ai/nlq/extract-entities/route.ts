@@ -14,6 +14,14 @@ import {
   EXTRACTED_METRICS,
   EXTRACTED_TIME_RANGES,
   KNOWN_ENTITY_SERVER_IDS,
+  normalizeExtractedEntities,
+  SEMANTIC_AGGREGATIONS,
+  SEMANTIC_AMBIGUITIES,
+  SEMANTIC_DOMAINS,
+  SEMANTIC_INTENTS,
+  SEMANTIC_METRICS,
+  SEMANTIC_SCOPES,
+  SEMANTIC_TIME_WINDOWS,
   SYSTEM_PROMPT,
 } from '@/lib/ai/entity-extractor';
 import { withAuth } from '@/lib/auth/api-auth';
@@ -25,10 +33,24 @@ export const maxDuration = 10;
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
+const SemanticIntentFrameSchema = z.object({
+  domain: z.enum(SEMANTIC_DOMAINS),
+  intent: z.enum(SEMANTIC_INTENTS),
+  scope: z.enum(SEMANTIC_SCOPES),
+  targets: z.array(z.string()),
+  metric: z.enum(SEMANTIC_METRICS),
+  timeWindow: z.enum(SEMANTIC_TIME_WINDOWS),
+  aggregation: z.enum(SEMANTIC_AGGREGATIONS),
+  topN: z.number().int().positive().max(20).nullable().optional(),
+  ambiguity: z.enum(SEMANTIC_AMBIGUITIES),
+  confidence: z.number().min(0).max(100),
+});
+
 const EntitySchema = z.object({
   server: z.enum(KNOWN_ENTITY_SERVER_IDS).nullable().optional(),
   metric: z.enum(EXTRACTED_METRICS).nullable().optional(),
   timeRange: z.enum(EXTRACTED_TIME_RANGES).nullable().optional(),
+  intentFrame: SemanticIntentFrameSchema.nullable().optional(),
   confidence: z.number().min(0).max(100),
 });
 
@@ -51,21 +73,16 @@ async function postHandler(request: NextRequest) {
       system: SYSTEM_PROMPT,
       prompt: query,
       temperature: 0,
-      maxOutputTokens: 64,
+      maxOutputTokens: 160,
       output: Output.object({
         schema: EntitySchema,
         name: 'nlq_entities',
         description:
-          'Extract server, metric, time range, and confidence for monitoring clarification.',
+          'Extract monitoring entities and a semantic intent frame for clarification.',
       }),
     });
 
-    return NextResponse.json({
-      server: output.server ?? undefined,
-      metric: output.metric ?? undefined,
-      timeRange: output.timeRange ?? undefined,
-      confidence: output.confidence,
-    });
+    return NextResponse.json(normalizeExtractedEntities(output));
   } catch (error) {
     logger.warn('[AI NLQ] entity extraction provider fallback', {
       error: error instanceof Error ? error.message : String(error),

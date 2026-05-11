@@ -221,7 +221,7 @@ describe('generateClarification', () => {
               ambiguity: 'low',
               confidence: 91,
             },
-          } as any
+          }
         )
       ).toBeNull();
     });
@@ -243,7 +243,7 @@ describe('generateClarification', () => {
             ambiguity: 'high',
             confidence: 88,
           },
-        } as any
+        }
       );
 
       expect(result?.options.some((option) => option.id === 'server-all')).toBe(

@@ -100,6 +100,45 @@ function hasTrustedEntity(
   );
 }
 
+function getTrustedIntentFrame(entities: ExtractedEntities | undefined) {
+  const frame = entities?.intentFrame;
+  if (
+    !frame ||
+    frame.domain !== 'monitoring' ||
+    frame.confidence < ENTITY_CONFIDENCE_THRESHOLD
+  ) {
+    return null;
+  }
+
+  return frame;
+}
+
+function hasTrustedWholeFleetScope(
+  entities: ExtractedEntities | undefined
+): boolean {
+  const frame = getTrustedIntentFrame(entities);
+  return Boolean(
+    frame &&
+      frame.scope === 'whole_fleet' &&
+      frame.intent !== 'unknown' &&
+      frame.ambiguity !== 'high'
+  );
+}
+
+function hasTrustedIntentMetric(
+  entities: ExtractedEntities | undefined
+): boolean {
+  const frame = getTrustedIntentFrame(entities);
+  return Boolean(frame && frame.metric !== 'unknown');
+}
+
+function hasTrustedIntentTimeWindow(
+  entities: ExtractedEntities | undefined
+): boolean {
+  const frame = getTrustedIntentFrame(entities);
+  return Boolean(frame && frame.timeWindow !== 'unknown');
+}
+
 /**
  * 쿼리 분석 결과를 바탕으로 명확화가 필요한지 판단하고 옵션 생성
  */
@@ -153,7 +192,8 @@ export function generateClarification(
     SERVER_PATTERNS.missing.test(query) &&
     !SERVER_PATTERNS.hasSpecific.test(query) &&
     !hasExplicitServerReference(query) &&
-    !hasTrustedEntity(entities, 'server')
+    !hasTrustedEntity(entities, 'server') &&
+    !hasTrustedWholeFleetScope(entities)
   ) {
     reasons.push('특정 서버가 명시되지 않음');
     options.push(
@@ -194,7 +234,8 @@ export function generateClarification(
   if (
     TIME_PATTERNS.missing.test(query) &&
     !TIME_PATTERNS.hasSpecific.test(query) &&
-    !hasTrustedEntity(entities, 'timeRange')
+    !hasTrustedEntity(entities, 'timeRange') &&
+    !hasTrustedIntentTimeWindow(entities)
   ) {
     reasons.push('시간 범위가 명시되지 않음');
     options.push(
@@ -223,7 +264,8 @@ export function generateClarification(
   if (
     METRIC_PATTERNS.missing.test(query) &&
     !METRIC_PATTERNS.hasSpecific.test(query) &&
-    !hasTrustedEntity(entities, 'metric')
+    !hasTrustedEntity(entities, 'metric') &&
+    !hasTrustedIntentMetric(entities)
   ) {
     reasons.push('확인할 메트릭이 명시되지 않음');
     options.push(

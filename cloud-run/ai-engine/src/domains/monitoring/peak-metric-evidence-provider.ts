@@ -14,8 +14,9 @@ function formatMetricValue(value: number, unit = ''): string {
 
 const PEAK_PATTERN = /가장|최고|최대|피크|높|high|peak|max/i;
 const TIME_QUESTION_PATTERN = /언제|시간대|시각|몇\s*시|when|time/i;
-const TIME_WINDOW_PATTERN = /24\s*시간|하루|최근|지난|last\s*24/i;
-const HOURS_PATTERN = /(\d{1,2})\s*(시간|hour)s?/i;
+const TIME_WINDOW_PATTERN =
+  /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|last\s*24/i;
+const HOURS_PATTERN = /(\d{1,2})\s*(?:시간|h|hr|hour)s?/i;
 const METRIC_PATTERNS: Array<{ metric: string; pattern: RegExp }> = [
   { metric: 'load', pattern: /부하|로드|\bload(?:1|5)?\b/i },
   { metric: 'cpu', pattern: /\bcpu\b|씨피유/i },

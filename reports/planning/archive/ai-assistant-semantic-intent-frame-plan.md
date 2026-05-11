@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-05-11
 
 # AI Assistant Semantic Intent Frame Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-11
-- TODO.md 연결: Active Tasks > AI Assistant Semantic Intent Frame Phase 1
+- TODO.md 연결: Backlog 완료 이력 > AI Assistant Semantic Intent Frame Phase 1
 
 ## 목표
 
@@ -80,19 +80,19 @@ interface SemanticIntentFrame {
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] `normalizeExtractedEntities`는 valid intent frame을 보존하고 unknown enum 값을 제거한다.
-- [ ] `extractEntities`는 route 응답의 `intentFrame`을 client model에 전달한다.
-- [ ] `generateClarification`은 `scope=whole_fleet`, `intent=metric_peak`, `metric=load1`, `timeWindow=24h`이면 서버명이 없어도 clarification을 반환하지 않는다.
-- [ ] `generateClarification`은 `scope=server`인데 targets가 비어 있고 ambiguity가 높으면 서버 clarification을 유지한다.
-- [ ] monitoring peak evidence provider는 `24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?`를 처리한다.
+- [x] `normalizeExtractedEntities`는 valid intent frame을 보존하고 unknown enum 값을 제거한다.
+- [x] `extractEntities`는 route 응답의 `intentFrame`을 client model에 전달한다.
+- [x] `generateClarification`은 `scope=whole_fleet`, `intent=metric_peak`, `metric=load1`, `timeWindow=24h`이면 서버명이 없어도 clarification을 반환하지 않는다.
+- [x] `generateClarification`은 `scope=server`인데 targets가 비어 있고 ambiguity가 높으면 서버 clarification을 유지한다.
+- [x] monitoring peak evidence provider는 `24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?`를 처리한다.
 
 ## Task 목록
 
-- [ ] Task 0 — failing test 커밋: 위 테스트 시나리오를 구현 전 실패 상태로 추가
-- [ ] Task 1 — semantic intent frame 타입/normalizer/API schema 확장
-- [ ] Task 2 — clarification 판단에 intent frame 반영
-- [ ] Task 3 — monitoring peak provider alias 보강
-- [ ] Task 4 — 문서/TODO 정리 및 targeted 검증
+- [x] Task 0 — failing test 커밋: 위 테스트 시나리오를 구현 전 실패 상태로 추가
+- [x] Task 1 — semantic intent frame 타입/normalizer/API schema 확장
+- [x] Task 2 — clarification 판단에 intent frame 반영
+- [x] Task 3 — monitoring peak provider alias 보강
+- [x] Task 4 — 문서/TODO 정리 및 targeted 검증
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -112,8 +112,8 @@ interface SemanticIntentFrame {
 
 ## 완료 기준
 
-- [ ] targeted root unit tests 통과
-- [ ] targeted AI Engine unit tests 통과
-- [ ] `git diff --check` 통과
-- [ ] `entity-extractor`/clarification/provider 계약이 provider 이름 누출 없이 유지됨
-- [ ] production live LLM QA는 release/tag 배포 후 별도 QA gate로 남김
+- [x] targeted root unit tests 통과
+- [x] targeted AI Engine unit tests 통과
+- [x] `git diff --check` 통과
+- [x] `entity-extractor`/clarification/provider 계약이 provider 이름 누출 없이 유지됨
+- [x] production live LLM QA는 release/tag 배포 후 별도 QA gate로 남김
