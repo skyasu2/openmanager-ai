@@ -82,4 +82,36 @@ describe('sample domain pack portability smoke', () => {
       sampleDomainPack.agentRoles?.resolveRole('unknown-role')
     ).toBeUndefined();
   });
+
+  it('registers sample evidence providers without monitoring-specific contracts', async () => {
+    const request = createSampleDomainRequest(
+      'Which account has the highest renewal risk?'
+    );
+    const provider = sampleDomainPack.evidenceProviders?.[0];
+
+    expect(
+      provider?.canHandle({
+        requestId: request.id,
+        domainId: sampleDomainPack.id,
+        message: request.message,
+        messages: request.messages,
+        sessionId: request.sessionId,
+      })
+    ).toBe(true);
+    await expect(
+      provider?.resolve({
+        requestId: request.id,
+        domainId: sampleDomainPack.id,
+        message: request.message,
+        messages: request.messages,
+        sessionId: request.sessionId,
+      })
+    ).resolves.toMatchObject({
+      id: 'sample-renewal-risk-evidence',
+      metadata: {
+        accountId: 'acct-123',
+        risk: 'high',
+      },
+    });
+  });
 });

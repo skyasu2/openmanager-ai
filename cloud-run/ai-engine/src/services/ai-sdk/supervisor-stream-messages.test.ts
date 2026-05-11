@@ -113,4 +113,30 @@ describe('buildSupervisorStreamMessages', () => {
     expect(finalContent).toContain('cache-redis-dc1-03 CPU 45%');
     expect(finalContent).toContain('[사용자 재작성 요청]');
   });
+
+  it('appends caller-provided domain evidence into the system prompt', () => {
+    const request = {
+      sessionId: 'session-peak-metric',
+      messages: [
+        {
+          role: 'user' as const,
+          content: '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?',
+        },
+      ],
+    };
+
+    const messages = buildSupervisorStreamMessages(
+      request,
+      createSystemPrompt(),
+      [
+        '[결정적 도메인 피크 지표 근거]',
+        '위 수치와 시간대를 바꾸지 말고, 첫 문장에 결론을 답하세요.',
+        '그 다음 1-2문장으로 운영 관점 해석을 덧붙이세요.',
+      ].join('\n')
+    );
+
+    expect(messages[0]?.content).toContain('[결정적 도메인 피크 지표 근거]');
+    expect(messages[0]?.content).toContain('첫 문장에 결론');
+    expect(messages[0]?.content).toContain('1-2문장으로 운영 관점 해석');
+  });
 });

@@ -28,6 +28,7 @@ import { createMonitoringSystemPrompt } from './supervisor-prompt';
 import { MONITORING_AGENT_TOOL_REGISTRY } from './tool-registry';
 import { selectExecutionMode } from './routing-policy';
 import { monitoringAgentRoleRegistry } from './agent-roles';
+import { monitoringPeakMetricEvidenceProvider } from './peak-metric-evidence-provider';
 
 export const MONITORING_DOMAIN_ID = 'openmanager-monitoring';
 export const MONITORING_DOMAIN_VERSION = '2026-05-05-v1';
@@ -206,4 +207,5 @@ export const monitoringDomainPack: AssistantDomain = {
   facts: monitoringFactPackBuilder,
   agentRoles: monitoringAgentRoleRegistry,
   dataSource: monitoringDomainDataSource,
+  evidenceProviders: [monitoringPeakMetricEvidenceProvider],
 };

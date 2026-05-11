@@ -277,7 +277,8 @@ describe('AI Job Stream Route', () => {
     mockRedisMGet.mockResolvedValue([
       {
         status: 'completed',
-        result: 'done',
+        result:
+          '작업이 완료되었습니다. 충분한 본문 응답을 포함하므로 stream result 이벤트로 전달됩니다.',
         startedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
       },
@@ -362,7 +363,8 @@ describe('AI Job Stream Route', () => {
     mockRedisMGet.mockResolvedValue([
       {
         status: 'completed',
-        result: 'done',
+        result:
+          '작업이 완료되었습니다. provider telemetry와 함께 충분한 본문 응답을 전달합니다.',
         targetAgent: 'Analyst Agent',
         startedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
@@ -418,5 +420,36 @@ describe('AI Job Stream Route', () => {
     expect(text).not.toContain('sk-test-1234567890abcdef');
     expect(text).not.toContain('owner-secret');
     expect(text).not.toContain('"complexity"');
+  });
+
+  it('should emit error when a completed job has no substantive response body', async () => {
+    mockGetSystemRunningFlag.mockResolvedValue(true);
+    mockRedisGet.mockResolvedValue({
+      status: 'completed',
+      startedAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+    });
+    mockRedisMGet.mockResolvedValue([
+      {
+        status: 'completed',
+        result: '# 분석 결과',
+        startedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+      },
+      null,
+    ]);
+
+    const request = new NextRequest(
+      'http://localhost/api/ai/jobs/job-empty/stream'
+    );
+    const response = await GET(request, {
+      params: Promise.resolve({ id: 'job-empty' }),
+    });
+
+    expect(response.status).toBe(200);
+    const text = await response.text();
+    expect(text).toContain('event: error');
+    expect(text).toContain('substantive response body');
+    expect(text).not.toContain('event: result');
   });
 });

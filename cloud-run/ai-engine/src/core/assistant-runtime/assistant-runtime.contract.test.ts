@@ -290,8 +290,12 @@ describe('assistant runtime scaffold contract', () => {
     expect(source).toContain('interface DomainSnapshot');
     expect(source).toContain('interface DomainHistoryEntry');
     expect(source).toContain('dataSource?: DomainDataSource');
+    expect(source).toContain('interface DomainEvidenceProvider');
+    expect(source).toContain('interface DomainEvidenceResult');
+    expect(source).toContain('evidenceProviders?: DomainEvidenceProvider[]');
     expect(source).not.toContain('PrecomputedSlot');
     expect(source).not.toContain('ServerSnapshot');
+    expect(source).not.toContain('PeakMetric');
   });
 
   it('provides deterministic in-memory adapters for portability smoke tests', async () => {

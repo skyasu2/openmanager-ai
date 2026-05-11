@@ -51,6 +51,11 @@ import {
   type SupervisorInternalDisclosureMode,
 } from '../supervisor/internal-disclosure-mode';
 import { buildScopedJobListKey, resolveJobOwnerKey } from './job-ownership';
+import {
+  getSubstantiveJobResultContent,
+  JOB_RESULT_QUALITY_FAILURE_MESSAGE,
+  shouldFailCompletedJobResult,
+} from './job-result-quality';
 
 // ============================================
 // 상수 정의
@@ -367,14 +372,17 @@ export const GET = withRateLimit(rateLimiters.default, withAuth(handleGET));
  * Redis Job을 API 응답 형식으로 변환
  */
 function mapJobToResponse(job: AIJob): JobStatusResponse {
+  const substantiveResult = getSubstantiveJobResultContent(job.result);
+  const qualityFailed = shouldFailCompletedJobResult(job.status, job.result);
+
   return {
     jobId: job.id,
     type: job.type,
-    status: job.status,
+    status: qualityFailed ? 'failed' : job.status,
     progress: job.progress,
     currentStep: job.currentStep,
-    result: job.result ? { content: job.result } : null,
-    error: job.error,
+    result: substantiveResult ? { content: substantiveResult } : null,
+    error: qualityFailed ? JOB_RESULT_QUALITY_FAILURE_MESSAGE : job.error,
     errorDetails: job.errorDetails ?? null,
     createdAt: job.createdAt,
     startedAt: job.startedAt,

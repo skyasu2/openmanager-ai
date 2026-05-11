@@ -14,6 +14,7 @@ const {
   mockMarkProviderQuotaCooldown,
   mockReconcileProviderQuotaReservation,
   mockReserveProviderQuota,
+  mockWaitBeforeSupervisorProviderFallback,
 } = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
   mockStreamText: vi.fn(),
@@ -58,6 +59,7 @@ const {
         status: {},
       })
   ),
+  mockWaitBeforeSupervisorProviderFallback: vi.fn(async () => undefined),
 }));
 
 vi.mock('ai', () => ({
@@ -79,6 +81,10 @@ vi.mock('./model-provider', () => ({
   getVisionAgentModel: vi.fn(() => null),
   recordModelUsage: mockRecordModelUsage,
   logProviderStatus: vi.fn(),
+}));
+
+vi.mock('./stream-provider-fallback', () => ({
+  waitBeforeSupervisorProviderFallback: mockWaitBeforeSupervisorProviderFallback,
 }));
 
 vi.mock('../../config/timeout-config', () => ({
@@ -639,6 +645,63 @@ describe('supervisor degraded single fallback', () => {
         },
       },
     });
+  });
+
+  it('retries the next provider before emitting generic empty-response fallback', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+    mockGetSupervisorModel
+      .mockReturnValueOnce({
+        model: { modelId: 'groq-model' },
+        provider: 'groq',
+        modelId: 'groq-model',
+      })
+      .mockReturnValueOnce({
+        model: { modelId: 'cerebras-model' },
+        provider: 'cerebras',
+        modelId: 'cerebras-model',
+      });
+    mockStreamText
+      .mockReturnValueOnce({
+        fullStream: (async function* () {
+          yield { type: 'error', error: new Error('empty provider output') };
+        })(),
+        textStream: (async function* () {})(),
+        steps: Promise.resolve([]),
+        usage: Promise.resolve({ inputTokens: 1, outputTokens: 0, totalTokens: 1 }),
+      })
+      .mockReturnValueOnce({
+        fullStream: (async function* () {
+          yield {
+            type: 'text-delta',
+            text: 'second provider recovered answer',
+          };
+        })(),
+        textStream: (async function* () {})(),
+        steps: Promise.resolve([]),
+        usage: Promise.resolve({ inputTokens: 1, outputTokens: 2, totalTokens: 3 }),
+      });
+
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [{ role: 'user', content: '서버 상태 알려줘' }],
+      sessionId: 'session-provider-retry-before-empty-fallback',
+    })) {
+      events.push(event);
+    }
+
+    const text = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(mockStreamText).toHaveBeenCalledTimes(2);
+    expect(mockWaitBeforeSupervisorProviderFallback).toHaveBeenCalledWith(
+      'groq',
+      'empty_output_with_error'
+    );
+    expect(text).toContain('second provider recovered answer');
+    expect(text).not.toContain('응답 본문이 비어');
   });
 
   it('keeps original stream error when degraded single is not allowed', async () => {

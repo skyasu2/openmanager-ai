@@ -102,7 +102,8 @@ describe('GET /api/ai/jobs', () => {
         status: 'completed',
         progress: 100,
         currentStep: 'done',
-        result: 'result text',
+        result:
+          '작업 결과 본문입니다. 목록 조회에서는 충분한 길이의 완료 응답만 result로 노출합니다.',
         error: null,
         errorDetails: {
           kind: 'rate-limit',

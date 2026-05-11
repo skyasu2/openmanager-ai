@@ -63,16 +63,22 @@ function buildFormattingRewriteContent(
 
 export function buildSupervisorStreamMessages(
   request: SupervisorRequest,
-  systemPrompt: string
+  systemPrompt: string,
+  systemPromptAppendix?: string
 ): ModelMessage[] {
   const queryAsOfInstruction = buildQueryAsOfInstruction(request.queryAsOf);
+  const systemContent = [
+    systemPrompt,
+    queryAsOfInstruction,
+    systemPromptAppendix,
+  ]
+    .filter((part): part is string => Boolean(part))
+    .join('\n\n');
 
   return [
     {
       role: 'system',
-      content: queryAsOfInstruction
-        ? `${systemPrompt}\n\n${queryAsOfInstruction}`
-        : systemPrompt,
+      content: systemContent,
     },
     ...request.messages.map((message, index): ModelMessage => {
       const isLastUserMessage =

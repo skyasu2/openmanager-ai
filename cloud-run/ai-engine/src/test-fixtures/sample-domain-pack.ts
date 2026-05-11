@@ -6,6 +6,7 @@ import type {
   AssistantRequest,
   AssistantRequestContext,
   ArtifactCandidate,
+  DomainEvidenceProvider,
   DomainFactPack,
   ToolDefinition,
 } from '../core/assistant-runtime';
@@ -103,6 +104,32 @@ const sampleAgentRoleRegistry: AgentRoleRegistry = {
   },
 };
 
+export const sampleRenewalRiskEvidenceProvider: DomainEvidenceProvider = {
+  id: 'sample-renewal-risk-evidence',
+  canHandle(request) {
+    return /renewal risk|highest risk|risk account|위험/i.test(request.message);
+  },
+  async resolve() {
+    return {
+      id: 'sample-renewal-risk-evidence',
+      prompt: [
+        '[Deterministic sample renewal-risk evidence]',
+        'Question asks which sample customer account has the highest renewal risk.',
+        'Highest-risk account: acct-123',
+        'Risk: high',
+        'Use these facts unchanged, then add one short business interpretation sentence.',
+      ].join('\n'),
+      fallback:
+        'acct-123 has the highest renewal risk in the sample fixture. Business interpretation: prioritize a follow-up because the account health is warning-level.',
+      metadata: {
+        accountId: 'acct-123',
+        risk: 'high',
+        source: 'sample-fixture',
+      },
+    };
+  },
+};
+
 export const sampleDomainPack: AssistantDomain = {
   id: SAMPLE_DOMAIN_ID,
   version: SAMPLE_DOMAIN_VERSION,
@@ -155,6 +182,7 @@ export const sampleDomainPack: AssistantDomain = {
     },
   },
   agentRoles: sampleAgentRoleRegistry,
+  evidenceProviders: [sampleRenewalRiskEvidenceProvider],
 };
 
 export function createSampleDomainRequest(message: string): AssistantRequest {

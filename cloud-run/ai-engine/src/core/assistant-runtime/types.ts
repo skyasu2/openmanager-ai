@@ -130,6 +130,23 @@ export interface DomainHistoryEntry {
   data: unknown;
 }
 
+export interface DomainEvidenceRequest extends AssistantRequestContext {
+  dataSource?: DomainDataSource;
+}
+
+export interface DomainEvidenceResult {
+  id: string;
+  prompt: string;
+  fallback: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface DomainEvidenceProvider {
+  id: string;
+  canHandle(request: DomainEvidenceRequest): boolean;
+  resolve(request: DomainEvidenceRequest): Promise<DomainEvidenceResult | null>;
+}
+
 export interface DomainDataSource {
   snapshot(context: AssistantRequestContext): Promise<DomainSnapshot>;
   history(
@@ -148,6 +165,7 @@ export interface AssistantDomain {
   facts?: FactPackBuilder;
   agentRoles?: AgentRoleRegistry;
   dataSource?: DomainDataSource;
+  evidenceProviders?: DomainEvidenceProvider[];
 }
 
 export interface AssistantStateStore {

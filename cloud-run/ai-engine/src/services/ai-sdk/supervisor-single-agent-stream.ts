@@ -40,14 +40,9 @@ import {
   buildSupervisorStreamMessages,
   getLastUserQueryText,
 } from './supervisor-stream-messages';
-import {
-  buildWebCitationAppendix,
-  buildWebSearchFallbackAnswer,
-  hasWebSearchFallbackAnswer,
-} from './supervisor-stream-citations';
-import {
-  shouldRefuseInternalImplementationPathRequest,
-} from './internal-disclosure-policy';
+import { buildWebCitationAppendix } from './supervisor-stream-citations';
+import { resolveDomainEvidenceForStream } from './supervisor-domain-evidence';
+import { shouldRefuseInternalImplementationPathRequest } from './internal-disclosure-policy';
 import {
   buildCircuitOpenErrorEvent,
   buildHardTimeoutErrorEvent,
@@ -59,11 +54,9 @@ import {
   streamNoProviderFallback,
 } from './supervisor-single-agent-events';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
-import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
 import { streamDirectKnowledgeSearchIfMatched } from './supervisor-direct-knowledge-stream';
 import {
   buildAgentStepEvent,
-  executeSearchWebFallbackFromSteps,
   estimateSupervisorStreamQuotaTokens,
   markSupervisorStreamCooldown,
   readToolStep,
@@ -72,6 +65,10 @@ import {
   textStreamAsFullStream,
   type CollectedToolResult,
 } from './supervisor-stream-helpers';
+import {
+  emitGenericEmptySupervisorStreamFallback,
+  recoverEmptySupervisorStreamOutput,
+} from './supervisor-stream-recovery';
 import type {
   StreamEvent,
   SupervisorRequest,
@@ -98,7 +95,6 @@ export async function* streamSingleAgent(
   const excludedProviders: ProviderName[] = [];
   const MAX_PROVIDER_ATTEMPTS = 3;
 
-  // Provider-independent setup (hoisted outside retry loop)
   const queryText = getLastUserQueryText(request.messages);
   const runtimeHost = request.runtimeHost;
   if (!runtimeHost) {
@@ -123,10 +119,13 @@ export async function* streamSingleAgent(
     return;
   }
 
-  const modelMessages = buildSupervisorStreamMessages(
+  const domainEvidence = await resolveDomainEvidenceForStream({
     request,
-    runtimeHost.createSystemPrompt({ deviceType: request.deviceType })
-  );
+    query: queryText,
+    domain: runtimeHost.domain,
+  });
+  const systemPrompt = runtimeHost.createSystemPrompt({ deviceType: request.deviceType });
+  const modelMessages = buildSupervisorStreamMessages(request, systemPrompt, domainEvidence?.prompt);
 
   let webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
   if (webSearchEnabled && !isTavilyAvailable()) {
@@ -526,100 +525,36 @@ export async function* streamSingleAgent(
         yield* emitDisplayText(fallbackText);
       }
 
-      const deterministicSummary = buildDeterministicSummaryFallback(
+      const recovery = yield* recoverEmptySupervisorStreamOutput({
+        fullText,
+        firstChunkMs,
+        streamError,
         queryText,
-        'Supervisor',
-        collectedToolResults
-      );
-      if (fullText.trim().length === 0 && deterministicSummary) {
-        fullText = deterministicSummary;
-        if (firstChunkMs === null) {
-          firstChunkMs = Date.now() - providerStartTime;
-          logger.info(
-            `[SupervisorStream] TTFB recovered via deterministic summary: ${firstChunkMs}ms (${provider}/${modelId})`
-          );
-        }
-        yield { type: 'text_delta', data: fullText };
-        logger.info('[SupervisorStream] Recovered response from deterministic tool summary');
-        if (streamError !== null) {
-          logger.warn(
-            '[SupervisorStream] Suppressed stream error after deterministic tool summary recovery:',
-            streamError.message
-          );
-          streamError = null;
-        }
-      }
-
-      // Recover response from finalAnswer tool result when textStream was empty
-      // (LLM may produce no text when it only calls tools and terminates via finalAnswer)
-      if (fullText.trim().length === 0) {
-        for (const step of steps) {
-          if (fullText.trim().length > 0) break;
-          if (step.toolResults) {
-            for (const tr of step.toolResults) {
-              if (tr.toolName === 'finalAnswer') {
-                const trOutput = extractToolResultOutput(tr);
-                if (trOutput && typeof trOutput === 'object') {
-                  const finalResult = trOutput as Record<string, unknown>;
-                  if ('answer' in finalResult && typeof finalResult.answer === 'string' && finalResult.answer.trim().length > 0) {
-                    fullText = finalResult.answer;
-                    if (firstChunkMs === null) {
-                      firstChunkMs = Date.now() - providerStartTime;
-                      logger.info(
-                        `[SupervisorStream] TTFB recovered via finalAnswer: ${firstChunkMs}ms (${provider}/${modelId})`
-                      );
-                    }
-                    yield { type: 'text_delta', data: fullText };
-                    logger.info('[SupervisorStream] Recovered response from finalAnswer tool result');
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      if (fullText.trim().length === 0) {
-        if (!hasWebSearchFallbackAnswer(collectedToolResults)) {
-          const recoveredSearchWebResult =
-            await executeSearchWebFallbackFromSteps(
-              steps,
-              queryText,
-              filteredTools
-            );
-          if (recoveredSearchWebResult) {
-            collectedToolResults.push(recoveredSearchWebResult);
-          }
-        }
-        const webSearchFallback =
-          buildWebSearchFallbackAnswer(collectedToolResults);
-        if (webSearchFallback) {
-          fullText = webSearchFallback;
-          if (firstChunkMs === null) {
-            firstChunkMs = Date.now() - providerStartTime;
-            logger.info(
-              `[SupervisorStream] TTFB recovered via web search fallback: ${firstChunkMs}ms (${provider}/${modelId})`
-            );
-          }
-          yield { type: 'text_delta', data: fullText };
-          logger.info(
-            '[SupervisorStream] Recovered empty response from searchWeb tool result'
-          );
-        }
-      }
+        domainEvidence,
+        steps,
+        collectedToolResults,
+        filteredTools,
+        provider,
+        modelId,
+        providerStartTime,
+        startTime,
+      });
+      fullText = recovery.fullText;
+      firstChunkMs = recovery.firstChunkMs;
+      streamError = recovery.streamError;
 
       // ★ Provider retry: if no text produced + stream error, try next provider
       if (fullText.trim().length === 0 && streamError !== null) {
         const failedError = streamError as Error;
         excludedProviders.push(provider);
-      finalizeTrace(trace, '', false, {
-        toolsCalled,
-        stepsExecuted: steps.length,
-        durationMs: Date.now() - startTime,
-        error: failedError.message,
-        ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
-        ...buildDegradedMetadata(degradedFallbackContext, {}),
-      });
+        finalizeTrace(trace, '', false, {
+          toolsCalled,
+          stepsExecuted: steps.length,
+          durationMs: Date.now() - startTime,
+          error: failedError.message,
+          ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+          ...buildDegradedMetadata(degradedFallbackContext, {}),
+        });
 
         if (!hasImages && attempt < MAX_PROVIDER_ATTEMPTS - 1) {
           logger.warn(
@@ -636,30 +571,14 @@ export async function* streamSingleAgent(
       }
 
       if (fullText.trim().length === 0) {
-        const fallbackText =
-          '응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.';
-        const durationAtEmpty = Date.now() - startTime;
-        logger.warn({
-          event: 'empty_stream_output',
+        fullText = yield* emitGenericEmptySupervisorStreamFallback({
+          streamError,
+          queryText,
+          steps,
           provider,
           modelId,
-          query: queryText.substring(0, 100),
-          stepsCount: steps.length,
-          toolsCalled: steps.flatMap((s) => s.toolCalls?.map((tc) => tc.toolName) || []),
-          durationMs: durationAtEmpty,
-          hasStreamError: streamError !== null,
-          streamErrorMessage: streamError !== null ? (streamError as Error).message : null,
-        }, '[SupervisorStream] Empty stream output — diagnosing root cause');
-        yield {
-          type: 'warning',
-          data: {
-            code: 'EMPTY_RESPONSE',
-            message:
-              '모델이 빈 응답을 반환했습니다. 기본 안내 문구로 대체합니다.',
-          },
-        };
-        yield { type: 'text_delta', data: fallbackText };
-        fullText = fallbackText;
+          startTime,
+        });
       }
 
       if (streamError !== null) {

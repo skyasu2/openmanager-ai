@@ -111,7 +111,8 @@ describe('GET /api/ai/jobs/[id]', () => {
       status: 'completed',
       progress: 100,
       currentStep: 'completed',
-      result: '완료',
+      result:
+        '분석이 완료되었습니다. provider telemetry가 포함된 충분한 본문 응답을 함께 반환합니다.',
       error: null,
       createdAt: now,
       startedAt: now,
@@ -165,6 +166,47 @@ describe('GET /api/ai/jobs/[id]', () => {
     });
     expect(payload.metadata).not.toHaveProperty('ownerKey');
     expect(payload.metadata).not.toHaveProperty('complexity');
+  });
+
+  it('completed job의 본문이 빈약하면 failed 상태로 노출한다', async () => {
+    const now = new Date().toISOString();
+    mockRedisGet.mockResolvedValueOnce({
+      id: 'job-empty',
+      type: 'analysis',
+      sessionId: 'session-1',
+      query: '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?',
+      status: 'completed',
+      progress: 100,
+      currentStep: 'completed',
+      result: '# 분석 결과',
+      error: null,
+      createdAt: now,
+      startedAt: now,
+      completedAt: now,
+      processingTimeMs: 1000,
+      metadata: {
+        complexity: 'complex',
+        estimatedTime: 45,
+        factors: {},
+        ownerKey: 'owner-secret',
+      },
+    });
+
+    const request = new NextRequest('http://localhost/api/ai/jobs/job-empty');
+    const response = await GET(request, {
+      params: Promise.resolve({ id: 'job-empty' }),
+    });
+
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as {
+      status: string;
+      result: unknown;
+      error: string | null;
+    };
+
+    expect(payload.status).toBe('failed');
+    expect(payload.result).toBeNull();
+    expect(payload.error).toContain('substantive response body');
   });
 });
 
