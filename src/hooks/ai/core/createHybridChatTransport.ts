@@ -5,7 +5,9 @@ import {
   TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
 import { BREAKPOINTS } from '@/config/constants';
+import type { SemanticIntentFrame } from '@/lib/ai/entity-extractor';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import { buildSemanticIntentRequestMetadata } from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
@@ -25,6 +27,10 @@ interface CreateHybridChatTransportParams {
   analysisModeRef: MutableRefObject<AnalysisMode | undefined>;
   queryAsOfDataSlotRef?: MutableRefObject<JobDataSlot | undefined>;
   localRouteDecisionRef?: MutableRefObject<RouteDecision | undefined>;
+  currentQueryRef?: MutableRefObject<string | null>;
+  semanticIntentFrameRef?: MutableRefObject<
+    SemanticIntentFrame | undefined | null
+  >;
 }
 
 export function createHybridChatTransport(
@@ -39,6 +45,8 @@ export function createHybridChatTransport(
     analysisModeRef,
     queryAsOfDataSlotRef,
     localRouteDecisionRef,
+    currentQueryRef,
+    semanticIntentFrameRef,
   } = params;
 
   return new DefaultChatTransport({
@@ -58,19 +66,27 @@ export function createHybridChatTransport(
 
       return headers;
     },
-    body: () => ({
-      ...buildSourceToolRequestOptions({
-        webSearchEnabled: webSearchEnabledRef.current,
-        ragEnabled: ragEnabledRef.current,
-      }),
-      analysisMode: analysisModeRef.current,
-      ...(queryAsOfDataSlotRef?.current && {
-        queryAsOfDataSlot: queryAsOfDataSlotRef.current,
-      }),
-      ...(localRouteDecisionRef?.current && {
-        localRouteDecision: localRouteDecisionRef.current,
-      }),
-    }),
+    body: () => {
+      const semanticIntentPayload = buildSemanticIntentRequestMetadata({
+        frame: semanticIntentFrameRef?.current,
+        originalQuery: currentQueryRef?.current,
+      });
+
+      return {
+        ...buildSourceToolRequestOptions({
+          webSearchEnabled: webSearchEnabledRef.current,
+          ragEnabled: ragEnabledRef.current,
+        }),
+        analysisMode: analysisModeRef.current,
+        ...(queryAsOfDataSlotRef?.current && {
+          queryAsOfDataSlot: queryAsOfDataSlotRef.current,
+        }),
+        ...(localRouteDecisionRef?.current && {
+          localRouteDecision: localRouteDecisionRef.current,
+        }),
+        ...semanticIntentPayload,
+      };
+    },
     prepareReconnectToStreamRequest: ({ id }) => ({
       api: `${apiEndpoint}?sessionId=${id}`,
     }),

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-12 KST (`Semantic query routing plan approved`)
+**Last Updated**: 2026-05-12 KST (`Semantic query routing phase 3 completed`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant Semantic Query Routing Phase 3 | High | Approved | Root `SemanticIntentFrame`을 Cloud Run `DomainIntentFrame` metadata로 연결하고, resolver/evidence validation/semantic trace를 보강. 계획서: [ai-assistant-semantic-query-routing-plan.md](ai-assistant-semantic-query-routing-plan.md) |
+| _None_ | - | - | 현재 Active Task 없음. |
 
 ---
 
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI Assistant Semantic Query Routing Phase 3~~ | — | **완료** — Root `SemanticIntentFrame`을 Cloud Run `DomainIntentFrame` metadata로 변환해 AI SDK transport, Vercel BFF, Cloud Run supervisor request metadata로 전달. AI Engine semantic metadata normalizer, resolver metadata 우선순위, evidence validation, semantic trace/reasonCodes, deterministic eval seed를 추가해 monitoring 외 domain pack으로 이식 가능한 query routing contract를 확정. 검증: root targeted Vitest 4 files / 73 tests, AI Engine targeted Vitest 2 files / 12 tests, root/AI Engine type-check, root lint, `git diff --check` 통과. 상세 계획서 archive 이동: [archive/ai-assistant-semantic-query-routing-plan.md](archive/ai-assistant-semantic-query-routing-plan.md) |
 | ~~AI Assistant Domain Capability Resolver Phase 2~~ | — | **완료** — AI Engine 공통 런타임에 `DomainCapabilityManifest`/`DomainIntentFrame`/`DomainIntentParser` 계약을 추가하고, resolver가 metadata frame/domain parser/capability lookup을 provider request로 전달. monitoring `metric_peak` manifest/parser/provider 연결, sample renewal-risk frame portability로 monitoring 외 도메인 재사용성 검증. raw message fallback 유지. 검증: AI Engine targeted Vitest 3 files / 19 tests, AI Engine type-check 통과. 상세 계획서 archive 이동: [archive/ai-assistant-domain-capability-resolver-plan.md](archive/ai-assistant-domain-capability-resolver-plan.md) |
 | ~~AI Assistant Semantic Intent Frame Phase 1~~ | — | **완료** — NLQ entity extraction에 optional `SemanticIntentFrame` 계약을 추가하고, clarification을 원문 텍스트가 아닌 frame 힌트 기준으로 보강. `scope=whole_fleet`이면 서버명이 없어도 서버 clarification으로 차단하지 않으며, provider 구현체 이름은 normalizer/API 응답에서 제거. AI Engine monitoring peak evidence provider는 `24h/load1/peak` 표현을 처리하도록 alias 보강. 검증: targeted root Vitest 3 files / 58 tests, AI Engine targeted Vitest 1 file / 3 tests, root type-check, `git diff --check` 통과. 상세 계획서 archive 이동: [archive/ai-assistant-semantic-intent-frame-plan.md](archive/ai-assistant-semantic-intent-frame-plan.md) |
 | ~~API 라우트 테스트 커버리지~~ | — | **완료** — stale한 “15개 무테스트” 표현을 route handler 계약 gap 기준으로 재분류하고, `/api/metrics` `openmanager_server_status` status label 결함을 수정한 뒤 잔여 핵심 route 테스트를 보강. 추가: `/api/ai/supervisor` legacy POST 계약(401/429/400/job redirect/fallback/Cloud Run JSON), `/api/ai/status` summary/service/reset 계약, `/api/ai/wake-up` rate-limit/upstream/timeout 계약, `/api/csrf-token` cookie/rate-limit 계약, `/api/servers` legacy delegation 계약. 검증: targeted Vitest 5 files / 17 tests 통과. 상세: [archive/tech-debt-remediation-plan.md](archive/tech-debt-remediation-plan.md) Task 2 |

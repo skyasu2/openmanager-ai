@@ -39,6 +39,7 @@ import {
 } from '../data/query-as-of-context';
 import { logger } from '../lib/logger';
 import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
+import { normalizeSupervisorSemanticMetadata } from '../services/ai-sdk/supervisor-semantic-metadata';
 import { getDefaultMonitoringAssistantRuntimeHost } from '../services/ai-sdk/monitoring-runtime-host';
 import { flushLangfuseBestEffort } from '../services/observability/langfuse-flush';
 import { extractTraceId } from './supervisor-trace';
@@ -113,9 +114,31 @@ const streamRequestSchema = z.object({
   queryAsOf: z.unknown().optional(),
   deviceType: z.enum(['mobile', 'desktop']).optional(),
   localRouteDecision: z.unknown().optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+  semanticQueryTrace: z.unknown().optional(),
 });
 
 type StreamSupervisorRequest = z.infer<typeof streamRequestSchema>;
+
+function normalizeRequestSemanticMetadata(params: {
+  metadata?: StreamSupervisorRequest['metadata'];
+  semanticQueryTrace?: StreamSupervisorRequest['semanticQueryTrace'];
+  logContext: string;
+}): Record<string, unknown> | undefined {
+  const result = normalizeSupervisorSemanticMetadata({
+    metadata: params.metadata,
+    semanticQueryTrace: params.semanticQueryTrace,
+  });
+
+  if (result.reasonCodes.length > 0) {
+    logger.warn(
+      { reasonCodes: result.reasonCodes },
+      `${params.logContext}: dropped invalid semantic metadata`
+    );
+  }
+
+  return result.metadata;
+}
 
 export const supervisorRouter = new Hono();
 
@@ -146,6 +169,8 @@ supervisorRouter.post('/', async (c: Context) => {
       queryAsOf: rawQueryAsOf,
       deviceType,
       localRouteDecision: rawLocalRouteDecision,
+      metadata: rawMetadata,
+      semanticQueryTrace: rawSemanticQueryTrace,
     } = parseResult.data;
     const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
     if (rawQueryAsOf !== undefined && !queryAsOf) {
@@ -156,6 +181,11 @@ supervisorRouter.post('/', async (c: Context) => {
     if (rawLocalRouteDecision !== undefined && !localRouteDecision) {
       logger.warn('[Supervisor] Ignoring invalid localRouteDecision payload');
     }
+    const metadata = normalizeRequestSemanticMetadata({
+      metadata: rawMetadata,
+      semanticQueryTrace: rawSemanticQueryTrace,
+      logContext: 'Supervisor',
+    });
 
     // 🎯 W3C Trace Context: traceparent 헤더에서 trace-id 추출
     const traceparent = c.req.header('traceparent');
@@ -218,6 +248,7 @@ supervisorRouter.post('/', async (c: Context) => {
         queryAsOf,
         deviceType,
         localRouteDecision,
+        metadata,
       })
     );
 
@@ -306,6 +337,8 @@ supervisorRouter.post('/stream', async (c: Context) => {
       queryAsOf: rawQueryAsOf,
       deviceType,
       localRouteDecision: rawLocalRouteDecision,
+      metadata: rawMetadata,
+      semanticQueryTrace: rawSemanticQueryTrace,
     } = parseResult.data;
     const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
     if (rawQueryAsOf !== undefined && !queryAsOf) {
@@ -318,6 +351,11 @@ supervisorRouter.post('/stream', async (c: Context) => {
         '[SupervisorStream] Ignoring invalid localRouteDecision payload'
       );
     }
+    const metadata = normalizeRequestSemanticMetadata({
+      metadata: rawMetadata,
+      semanticQueryTrace: rawSemanticQueryTrace,
+      logContext: 'SupervisorStream',
+    });
 
     // 2. Get last user query for logging
     const lastMessage = messages[messages.length - 1];
@@ -366,6 +404,7 @@ supervisorRouter.post('/stream', async (c: Context) => {
           deviceType,
           ...(internalDisclosureMode && { internalDisclosureMode }),
           localRouteDecision,
+          metadata,
         };
 
         await runWithQueryAsOf(queryAsOf, async () => {
@@ -456,6 +495,8 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       queryAsOf: rawQueryAsOf,
       deviceType,
       localRouteDecision: rawLocalRouteDecision,
+      metadata: rawMetadata,
+      semanticQueryTrace: rawSemanticQueryTrace,
     } =
       parseResult.data;
     const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
@@ -469,6 +510,11 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
         '[SupervisorStreamV2] Ignoring invalid localRouteDecision payload'
       );
     }
+    const metadata = normalizeRequestSemanticMetadata({
+      metadata: rawMetadata,
+      semanticQueryTrace: rawSemanticQueryTrace,
+      logContext: 'SupervisorStreamV2',
+    });
 
     // 2. Get last user query for logging
     const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
@@ -530,6 +576,7 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       queryAsOf,
       deviceType,
       localRouteDecision,
+      metadata,
       runtimeHost: getDefaultMonitoringAssistantRuntimeHost(),
     });
 

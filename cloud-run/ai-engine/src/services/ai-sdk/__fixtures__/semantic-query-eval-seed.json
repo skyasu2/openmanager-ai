@@ -1,0 +1,112 @@
+[
+  {
+    "query": "최근 24시간 load1 피크 알려줘",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "load1",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "load1",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "24h 기준 load5 peak가 언제였고 어떤 서버가 영향이 컸어?",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "load5",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "전체 서버 CPU가 가장 높았던 최근 시간대 알려줘",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "cpu",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "서버 한 대를 지정하지 않았지만 전체 서버 기준 메모리 최고 시간대 알려줘",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "memory",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "최근 24시간 load1 피크 같긴 한데 확신이 낮은 parser 결과",
+    "expectedFrame": null,
+    "expectedReasonCodes": ["semantic_frame_low_confidence"]
+  },
+  {
+    "query": "서버 상태가 뭔가 높은 것 같은데 알아서 판단해줘",
+    "expectedFrame": null,
+    "expectedReasonCodes": ["semantic_frame_high_ambiguity"]
+  },
+  {
+    "query": "채용 후보자 이탈 위험 최고 항목 알려줘",
+    "expectedFrame": null,
+    "expectedReasonCodes": ["semantic_frame_unknown_domain"]
+  }
+]

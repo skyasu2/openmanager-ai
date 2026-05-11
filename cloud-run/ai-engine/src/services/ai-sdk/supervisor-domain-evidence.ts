@@ -8,7 +8,12 @@ import type {
   DomainIntentFrame,
   DomainIntentScope,
 } from '../../core/assistant-runtime';
+import { logger } from '../../lib/logger';
 import type { SupervisorRequest } from './supervisor-types';
+import {
+  normalizeSemanticQueryTrace,
+  type SemanticQueryTrace,
+} from './supervisor-semantic-metadata';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -141,6 +146,103 @@ function createEvidenceContext(params: {
   };
 }
 
+function validateDomainEvidenceResult(
+  evidence: DomainEvidenceResult
+): { valid: boolean; reasonCodes: string[] } {
+  const reasonCodes: string[] = [];
+  if (evidence.prompt.trim().length === 0) {
+    reasonCodes.push('evidence_prompt_empty');
+  }
+  if (evidence.fallback.trim().length === 0) {
+    reasonCodes.push('evidence_fallback_empty');
+  }
+
+  return {
+    valid: reasonCodes.length === 0,
+    reasonCodes,
+  };
+}
+
+function buildValidatedSemanticQueryTrace(params: {
+  context: DomainEvidenceRequest;
+  domain: AssistantDomain;
+  capability?: DomainCapability;
+  evidence: DomainEvidenceResult;
+  providerId: string;
+}): SemanticQueryTrace | undefined {
+  const baseTrace = normalizeSemanticQueryTrace(
+    params.context.metadata?.semanticQueryTrace
+  );
+  const intentFrame = params.context.intentFrame;
+  if (!baseTrace && !intentFrame) return undefined;
+
+  const selectedDomain =
+    baseTrace?.selectedDomain ?? intentFrame?.domainId ?? params.domain.id;
+  const selectedCapability =
+    baseTrace?.selectedCapability ??
+    params.capability?.id ??
+    intentFrame?.capabilityId;
+  const reasonCodes = new Set(baseTrace?.reasonCodes ?? []);
+  if (
+    intentFrame?.capabilityId &&
+    params.evidence.metadata?.capabilityId !== intentFrame.capabilityId
+  ) {
+    reasonCodes.add('semantic_frame_raw_fallback_used');
+  }
+  reasonCodes.add('semantic_frame_evidence_validated');
+
+  return {
+    originalQuery: baseTrace?.originalQuery ?? params.context.message,
+    ...(selectedDomain && { selectedDomain }),
+    ...(selectedCapability && { selectedCapability }),
+    selectedEvidenceProvider: params.providerId,
+    evidenceAvailable: true,
+    clarificationRequired: false,
+    reasonCodes: Array.from(reasonCodes),
+  };
+}
+
+function attachSemanticQueryTrace(
+  evidence: DomainEvidenceResult,
+  semanticQueryTrace: SemanticQueryTrace | undefined
+): DomainEvidenceResult {
+  if (!semanticQueryTrace) return evidence;
+
+  return {
+    ...evidence,
+    metadata: {
+      ...(evidence.metadata ?? {}),
+      semanticQueryTrace,
+    },
+  };
+}
+
+function logSemanticProviderMiss(params: {
+  context: DomainEvidenceRequest;
+  domain: AssistantDomain;
+  capability?: DomainCapability;
+}) {
+  const baseTrace = normalizeSemanticQueryTrace(
+    params.context.metadata?.semanticQueryTrace
+  );
+  const intentFrame = params.context.intentFrame;
+  if (!baseTrace && !intentFrame) return;
+
+  logger.info(
+    {
+      originalQuery: baseTrace?.originalQuery ?? params.context.message,
+      selectedDomain:
+        baseTrace?.selectedDomain ?? intentFrame?.domainId ?? params.domain.id,
+      selectedCapability:
+        baseTrace?.selectedCapability ??
+        params.capability?.id ??
+        intentFrame?.capabilityId,
+      reasonCodes: ['semantic_frame_provider_miss'],
+    },
+    '[DomainEvidence] semantic frame provider miss; continuing with general stream path'
+  );
+}
+
 export async function resolveDomainEvidenceSupport(params: {
   query: string;
   domain: AssistantDomain;
@@ -171,8 +273,28 @@ export async function resolveDomainEvidenceSupport(params: {
   for (const provider of providers) {
     if (!provider.canHandle(context)) continue;
     const evidence = await provider.resolve(context);
-    if (evidence) return evidence;
+    if (!evidence) continue;
+
+    const validation = validateDomainEvidenceResult(evidence);
+    if (!validation.valid) continue;
+
+    return attachSemanticQueryTrace(
+      evidence,
+      buildValidatedSemanticQueryTrace({
+        context,
+        domain: params.domain,
+        capability,
+        evidence,
+        providerId: provider.id,
+      })
+    );
   }
+
+  logSemanticProviderMiss({
+    context,
+    domain: params.domain,
+    capability,
+  });
 
   return null;
 }
@@ -187,5 +309,6 @@ export function resolveDomainEvidenceForStream(params: {
     domain: params.domain,
     sessionId: params.request.sessionId,
     traceId: params.request.traceId,
+    metadata: params.request.metadata,
   });
 }

@@ -73,6 +73,7 @@ import {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 } from '@/lib/ai/constants/stream-errors';
+import type { SemanticIntentFrame } from '@/lib/ai/entity-extractor';
 import {
   type AIRateLimitErrorDetails,
   inferAIErrorDetailsFromMessage,
@@ -341,6 +342,9 @@ export function useHybridAIQuery(
     queryAsOfDataSlot
   );
   const currentRouteDecisionRef = useRef<RouteDecision | undefined>(undefined);
+  const semanticIntentFrameRef = useRef<SemanticIntentFrame | undefined>(
+    undefined
+  );
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
@@ -408,6 +412,8 @@ export function useHybridAIQuery(
         analysisModeRef,
         queryAsOfDataSlotRef,
         localRouteDecisionRef: currentRouteDecisionRef,
+        currentQueryRef,
+        semanticIntentFrameRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
@@ -576,6 +582,7 @@ export function useHybridAIQuery(
       pendingQuery: pendingQueryRef,
       pendingAttachments: pendingAttachmentsRef,
       rateLimitBlock: rateLimitBlockRef,
+      semanticIntentFrame: semanticIntentFrameRef,
     },
     analysisMode,
     ragEnabled,

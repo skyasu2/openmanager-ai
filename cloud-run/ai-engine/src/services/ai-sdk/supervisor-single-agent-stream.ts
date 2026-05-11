@@ -679,6 +679,7 @@ export async function* streamSingleAgent(
         attempt,
         capturedError,
         ragSources,
+        semanticQueryTrace: domainEvidence?.metadata?.semanticQueryTrace,
       });
       return;
     } catch (error) {

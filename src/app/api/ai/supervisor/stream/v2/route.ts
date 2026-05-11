@@ -283,6 +283,8 @@ export const POST = withRateLimit(
         analysisMode,
         queryAsOfDataSlot,
         localRouteDecision: rawLocalRouteDecision,
+        metadata,
+        semanticQueryTrace,
       } = parseResult.data;
       const queryAsOf = buildJobQueryAsOf(
         new Date().toISOString(),
@@ -496,6 +498,11 @@ export const POST = withRateLimit(
                 queryAsOf,
                 ...(internalDisclosureMode && { internalDisclosureMode }),
                 ...(localRouteDecision && { localRouteDecision }),
+                ...(metadata && { metadata }),
+                ...(semanticQueryTrace !== undefined &&
+                semanticQueryTrace !== null
+                  ? { semanticQueryTrace }
+                  : {}),
               }),
               signal: AbortSignal.timeout(timeoutMs),
             });

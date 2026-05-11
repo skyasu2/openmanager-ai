@@ -11,11 +11,15 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
-import { extractEntities } from '@/lib/ai/entity-extractor';
+import {
+  extractEntities,
+  type SemanticIntentFrame,
+} from '@/lib/ai/entity-extractor';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { getOffDomainGuardrail } from '@/lib/ai/off-domain-guard';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import { buildSemanticIntentRequestMetadata } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
@@ -82,6 +86,19 @@ function buildRateLimitCooldownMessage(
   return '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.';
 }
 
+const SEMANTIC_METRIC_PATTERN =
+  /부하|로드|\bload(?:1|5)?\b|cpu|씨피유|메모리|\bmem(?:ory)?\b|디스크|\bdisk\b|네트워크|\bnet(?:work)?\b/i;
+const SEMANTIC_PEAK_PATTERN = /피크|peak|max|최고|최대|높/i;
+const SEMANTIC_TIME_WINDOW_PATTERN = /24\s*시간|\b24h\b|최근|지난|last\s*24/i;
+
+function shouldExtractSemanticIntentFrame(query: string): boolean {
+  return (
+    SEMANTIC_METRIC_PATTERN.test(query) ||
+    (SEMANTIC_PEAK_PATTERN.test(query) &&
+      SEMANTIC_TIME_WINDOW_PATTERN.test(query))
+  );
+}
+
 export interface QueryExecutionDeps {
   complexityThreshold: number;
   asyncQuery: AsyncQueryLike;
@@ -99,6 +116,9 @@ export interface QueryExecutionDeps {
     pendingQuery: MutableRefObject<string | null>;
     pendingAttachments: MutableRefObject<FileAttachment[] | null>;
     rateLimitBlock: MutableRefObject<ActiveRateLimitBlock | null>;
+    semanticIntentFrame?: MutableRefObject<
+      SemanticIntentFrame | undefined | null
+    >;
   };
   analysisMode?: AnalysisMode;
   ragEnabled?: boolean;
@@ -423,6 +443,10 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         if (shouldUseLocalDevLegacyFallback) {
           const sanitizedMessages = getSanitizedMessagesForSend();
           const nextMessages = [...sanitizedMessages, requestUserMessage];
+          const semanticIntentPayload = buildSemanticIntentRequestMetadata({
+            frame: refs.semanticIntentFrame?.current,
+            originalQuery: trimmedQuery,
+          });
 
           setMessages(nextMessages);
 
@@ -439,6 +463,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
                 webSearchEnabled,
                 ragEnabled,
               }),
+              ...semanticIntentPayload,
             }),
           })
             .then(async (response) => {
@@ -558,6 +583,9 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       // 원본 쿼리 및 첨부 파일 저장 (명확화 플로우에서 사용)
       refs.pendingQuery.current = query;
       refs.pendingAttachments.current = attachments || null;
+      if (refs.semanticIntentFrame) {
+        refs.semanticIntentFrame.current = undefined;
+      }
 
       // 초기화
       setState((prev) => ({ ...prev, error: null, errorDetails: null }));
@@ -590,20 +618,25 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
 
         let clarificationRequest = generateClarification(query, classification);
 
-        if (clarificationRequest) {
+        if (clarificationRequest || shouldExtractSemanticIntentFrame(query)) {
           const entities = await extractEntities(query);
+          if (refs.semanticIntentFrame) {
+            refs.semanticIntentFrame.current = entities.intentFrame;
+          }
 
           if (process.env.NODE_ENV === 'development') {
             logger.info(
-              `[HybridAI] Entities: server=${entities.server ?? 'none'}, metric=${entities.metric ?? 'none'}, timeRange=${entities.timeRange ?? 'none'}, confidence=${entities.confidence}%`
+              `[HybridAI] Entities: server=${entities.server ?? 'none'}, metric=${entities.metric ?? 'none'}, timeRange=${entities.timeRange ?? 'none'}, intent=${entities.intentFrame?.intent ?? 'none'}, confidence=${entities.confidence}%`
             );
           }
 
-          clarificationRequest = generateClarification(
-            query,
-            classification,
-            entities
-          );
+          if (clarificationRequest) {
+            clarificationRequest = generateClarification(
+              query,
+              classification,
+              entities
+            );
+          }
         }
 
         if (clarificationRequest) {

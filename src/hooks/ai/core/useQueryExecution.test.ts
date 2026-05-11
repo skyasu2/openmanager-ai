@@ -11,6 +11,7 @@ import type { QueryExecutionDeps } from './useQueryExecution';
 import { useQueryExecution } from './useQueryExecution';
 
 vi.mock('@/lib/ai/entity-extractor', () => ({
+  ENTITY_CONFIDENCE_THRESHOLD: 80,
   extractEntities: vi.fn(async () => ({ confidence: 0 })),
 }));
 

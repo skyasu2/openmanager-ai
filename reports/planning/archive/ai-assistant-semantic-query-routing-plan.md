@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-12
 > Tags: ai-assistant,semantic-parser,intent-frame,domain-resolver,ai-sdk
 
 # AI Assistant Semantic Query Routing Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-12
 - TODO.md 연결: Active Tasks > AI Assistant Semantic Query Routing Phase 3
 - 기준 archive:
@@ -192,54 +192,54 @@ interface SemanticQueryTrace {
 
 ## 테스트 시나리오 (구현 전 확정)
 
-- [ ] Root mapper는 valid monitoring `metric_peak/load1/24h/whole_fleet` frame을 `openmanager-monitoring` `DomainIntentFrame`으로 변환한다.
-- [ ] Root mapper는 `domain='unknown'`, `intent='unknown'`, `ambiguity='high'`, `confidence < 80` frame을 Cloud Run body에 싣지 않고 drop reasonCode를 반환한다.
-- [ ] confidence threshold 미만 frame은 `createHybridChatTransport` body에 포함되지 않고 `semantic_frame_low_confidence`가 trace/log reasonCode로 남는다.
-- [ ] Vercel stream v2 route는 optional semantic frame을 Cloud Run request body의 `metadata.intentFrame`으로 전달한다.
-- [ ] client AI SDK transport body는 semantic frame을 request body에 보존한다.
-- [ ] Cloud Run supervisor stream/json route는 `metadata.intentFrame`을 validate/normalize해 `SupervisorRequest.metadata`에 보존한다.
-- [ ] `resolveDomainEvidenceForStream`은 request metadata frame을 `resolveDomainEvidenceSupport`에 전달하고, domain parser보다 metadata frame을 우선한다.
-- [ ] monitoring peak provider는 metadata frame만으로 evidence를 생성하고 raw regex fallback 없이도 동작한다.
-- [ ] 동일 peak 질의는 raw only, frame only, frame+raw 세 입력에서 동일한 deterministic evidence 핵심값을 반환한다.
-- [ ] invalid metadata frame이 들어오면 `semantic_frame_invalid` reasonCode가 기록되고 raw fallback 또는 일반 stream 답변 경로가 깨지지 않는다.
-- [ ] provider miss 시 `semantic_frame_provider_miss`와 `semantic_frame_raw_fallback_used` reasonCode가 기록되고 기존 raw fallback이 호출된다.
-- [ ] `scope=whole_fleet` 질의는 서버명이 없어도 clarification으로 막히지 않는다.
-- [ ] semantic query trace는 selected domain/capability/evidence availability/reasonCodes를 internal metadata/log에 남기고 provider 이름을 user-facing answer에 노출하지 않는다.
+- [x] Root mapper는 valid monitoring `metric_peak/load1/24h/whole_fleet` frame을 `openmanager-monitoring` `DomainIntentFrame`으로 변환한다.
+- [x] Root mapper는 `domain='unknown'`, `intent='unknown'`, `ambiguity='high'`, `confidence < 80` frame을 Cloud Run body에 싣지 않고 drop reasonCode를 반환한다.
+- [x] confidence threshold 미만 frame은 `createHybridChatTransport` body에 포함되지 않고 `semantic_frame_low_confidence`가 trace/log reasonCode로 남는다.
+- [x] Vercel stream v2 route는 optional semantic frame을 Cloud Run request body의 `metadata.intentFrame`으로 전달한다.
+- [x] client AI SDK transport body는 semantic frame을 request body에 보존한다.
+- [x] Cloud Run supervisor stream/json route는 `metadata.intentFrame`을 validate/normalize해 `SupervisorRequest.metadata`에 보존한다.
+- [x] `resolveDomainEvidenceForStream`은 request metadata frame을 `resolveDomainEvidenceSupport`에 전달하고, domain parser보다 metadata frame을 우선한다.
+- [x] monitoring peak provider는 metadata frame만으로 evidence를 생성하고 raw regex fallback 없이도 동작한다.
+- [x] 동일 peak 질의는 raw only, frame only, frame+raw 세 입력에서 동일한 deterministic evidence 핵심값을 반환한다.
+- [x] invalid metadata frame이 들어오면 `semantic_frame_invalid` reasonCode가 기록되고 raw fallback 또는 일반 stream 답변 경로가 깨지지 않는다.
+- [x] provider miss 시 `semantic_frame_provider_miss`와 `semantic_frame_raw_fallback_used` reasonCode가 기록되고 기존 raw fallback이 호출된다.
+- [x] `scope=whole_fleet` 질의는 서버명이 없어도 clarification으로 막히지 않는다.
+- [x] semantic query trace는 selected domain/capability/evidence availability/reasonCodes를 internal metadata/log에 남기고 provider 이름을 user-facing answer에 노출하지 않는다.
 
 ## Task 목록
 
 > 착수 전 Status가 Approved인지 확인한다. 구현 Task는 failing spec 커밋 이후 진행한다.
 
-- [ ] Task 0 — failing specs 작성
+- [x] Task 0 — failing specs 작성
   - mapper contract
   - Vercel stream/json forwarding
   - Cloud Run request normalization
   - resolver metadata priority
   - provider frame-only evidence
-- [ ] Task 1 — Root semantic frame mapper/validator 정리
+- [x] Task 1 — Root semantic frame mapper/validator 정리
   - provider/function 이름 노출 금지
   - confidence/ambiguity/drop rule 고정
   - clarification 기존 동작 유지
-- [ ] Task 2 — Vercel BFF request forwarding
+- [x] Task 2 — Vercel BFF request forwarding
   - stream v2 primary path
   - legacy JSON fallback path
   - `createHybridChatTransport` body callback의 semantic frame forwarding
   - invalid semantic frame drop log
-- [ ] Task 3 — Cloud Run request metadata wiring
+- [x] Task 3 — Cloud Run request metadata wiring
   - supervisor schema
   - `SupervisorRequest.metadata`
   - stream/json/job 영향을 최소화
-- [ ] Task 4 — AI Engine resolver/provider validation 보강
+- [x] Task 4 — AI Engine resolver/provider validation 보강
   - metadata frame 우선순위 고정
   - `DomainEvidenceValidationResult` helper 추가
   - provider-local validation에서 required evidence field 검증
   - raw fallback 유지
-- [ ] Task 5 — semantic query trace/eval seed 추가
+- [x] Task 5 — semantic query trace/eval seed 추가
   - deterministic log metadata
   - `cloud-run/ai-engine/src/services/ai-sdk/__fixtures__/semantic-query-eval-seed.json`에 비용 없는 deterministic seed 8-12건 추가
   - seed 포맷: `{ query, expectedFrame, expectedReasonCodes, expectedEvidence? }`
   - 비용 큰 live LLM 테스트 제외
-- [ ] Task 6 — 문서/TODO/검증 정리
+- [x] Task 6 — 문서/TODO/검증 정리
   - plan Task 체크
   - TODO.md 상태 갱신
   - targeted tests, type-check, diff check
@@ -281,14 +281,25 @@ interface SemanticQueryTrace {
 - API/AI 계약 변경이므로 root `npm run test:contract`는 변경 범위가 안정된 뒤 1회 실행한다.
 - 비용이 발생하거나 오래 걸리는 live LLM/production Playwright QA는 이번 구현 검증의 기본값에서 제외하고, release/tag 배포 후 QA gate에서 필요 시 1회성으로 수행한다.
 
+## 검증 결과
+
+- `npx vitest run src/lib/ai/semantic-intent-frame.test.ts src/hooks/ai/core/createHybridChatTransport.test.ts src/app/api/ai/supervisor/schemas.test.ts src/app/api/ai/supervisor/stream/v2/route.test.ts` — 4 files / 73 tests passed
+- `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-domain-evidence.test.ts src/services/ai-sdk/supervisor-semantic-metadata.test.ts` — 2 files / 12 tests passed
+- `npm run type-check` — passed
+- `cd cloud-run/ai-engine && npm run type-check` — passed
+- `npm run lint` — passed (1 existing Biome info: `reports/qa/qa-tracker.json` size)
+- `git diff --check` — passed
+
+`npm run test:quick`, `npm run test:contract`, live LLM QA, production Playwright QA는 비용/시간 대비 과한 범위라 이번 구현 검증에서는 실행하지 않았다. release/tag 배포 전 QA gate에서 필요 시 1회성으로 수행한다.
+
 ## 완료 기준
 
-- [ ] Root `SemanticIntentFrame`이 Cloud Run `DomainIntentFrame` metadata로 안전하게 전달된다.
-- [ ] AI Engine resolver가 metadata frame을 domain parser보다 우선 사용한다.
-- [ ] monitoring peak evidence provider가 frame-only 경로로 deterministic evidence를 생성한다.
-- [ ] invalid/low-confidence frame은 기존 raw fallback 또는 일반 stream 경로를 깨지 않는다.
-- [ ] LLM이 provider 구현체 이름을 알거나 선택하지 않는다.
-- [ ] evidence 없는 수치·시간·서버명이 최종 답변에 임의 생성되지 않도록 검증 경계가 있다.
-- [ ] semantic query trace가 internal logger/metadata에 기록되고 reasonCodes로 분기 추적 가능하다.
-- [ ] targeted tests와 type-check가 통과한다.
-- [ ] TODO.md와 plan 상태가 완료 기준에 맞게 갱신된다.
+- [x] Root `SemanticIntentFrame`이 Cloud Run `DomainIntentFrame` metadata로 안전하게 전달된다.
+- [x] AI Engine resolver가 metadata frame을 domain parser보다 우선 사용한다.
+- [x] monitoring peak evidence provider가 frame-only 경로로 deterministic evidence를 생성한다.
+- [x] invalid/low-confidence frame은 기존 raw fallback 또는 일반 stream 경로를 깨지 않는다.
+- [x] LLM이 provider 구현체 이름을 알거나 선택하지 않는다.
+- [x] evidence 없는 수치·시간·서버명이 최종 답변에 임의 생성되지 않도록 검증 경계가 있다.
+- [x] semantic query trace가 internal logger/metadata에 기록되고 reasonCodes로 분기 추적 가능하다.
+- [x] targeted tests와 type-check가 통과한다.
+- [x] TODO.md와 plan 상태가 완료 기준에 맞게 갱신된다.

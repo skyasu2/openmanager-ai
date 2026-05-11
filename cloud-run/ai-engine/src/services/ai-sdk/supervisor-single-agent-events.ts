@@ -230,6 +230,7 @@ export function buildSingleAgentDoneEvent({
   attempt,
   capturedError,
   ragSources,
+  semanticQueryTrace,
 }: SingleAgentResponseContext & {
   provider: string;
   modelId: string;
@@ -242,6 +243,7 @@ export function buildSingleAgentDoneEvent({
   attempt: number;
   capturedError: Error | null;
   ragSources: unknown[];
+  semanticQueryTrace?: unknown;
 }): StreamEvent {
   return {
     type: 'done',
@@ -273,6 +275,9 @@ export function buildSingleAgentDoneEvent({
           }),
         }),
         ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
+        ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
+          ? { semanticQueryTrace }
+          : {}),
         ...buildDegradedMetadata(degradedFallbackContext, {}),
         ...(attempt > 0 && { providerRetries: attempt }),
       },

@@ -145,6 +145,8 @@ export interface SupervisorRequest {
   deviceType?: 'mobile' | 'desktop';
   /** BFF/frontend route decision captured before Cloud Run planning. */
   localRouteDecision?: SupervisorLocalRouteDecision;
+  /** Structured semantic parser metadata forwarded by the BFF. */
+  metadata?: Record<string, unknown>;
   /** Internal portable runtime host. Defaults to the monitoring domain pack. */
   runtimeHost?: AssistantRuntimeHost;
   /**
