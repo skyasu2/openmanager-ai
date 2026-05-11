@@ -30,6 +30,44 @@ describe('normalizeExtractedEntities', () => {
     });
   });
 
+  it('keeps a valid semantic intent frame without exposing provider internals', () => {
+    expect(
+      normalizeExtractedEntities({
+        metric: 'load1',
+        timeRange: '24h',
+        confidence: 91,
+        intentFrame: {
+          domain: 'monitoring',
+          intent: 'metric_peak',
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'load1',
+          timeWindow: '24h',
+          aggregation: 'peak',
+          topN: 5,
+          ambiguity: 'low',
+          confidence: 91,
+          provider: 'monitoringPeakMetricEvidenceProvider',
+        },
+      })
+    ).toEqual({
+      timeRange: '24h',
+      confidence: 91,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        topN: 5,
+        ambiguity: 'low',
+        confidence: 91,
+      },
+    });
+  });
+
   it('drops unknown entity values instead of trusting arbitrary payloads', () => {
     expect(
       normalizeExtractedEntities({
@@ -39,6 +77,25 @@ describe('normalizeExtractedEntities', () => {
         confidence: 90,
       })
     ).toEqual({ confidence: 90 });
+  });
+
+  it('drops invalid semantic intent frame enum values', () => {
+    expect(
+      normalizeExtractedEntities({
+        confidence: 80,
+        intentFrame: {
+          domain: 'monitoring',
+          intent: 'call_provider_directly',
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'load1',
+          timeWindow: '24h',
+          aggregation: 'peak',
+          ambiguity: 'low',
+          confidence: 80,
+        },
+      })
+    ).toEqual({ confidence: 80 });
   });
 });
 
@@ -58,6 +115,17 @@ describe('extractEntities', () => {
           metric: 'cpu',
           timeRange: '1h',
           confidence: 91,
+          intentFrame: {
+            domain: 'monitoring',
+            intent: 'metric_peak',
+            scope: 'whole_fleet',
+            targets: [],
+            metric: 'load1',
+            timeWindow: '24h',
+            aggregation: 'peak',
+            ambiguity: 'low',
+            confidence: 91,
+          },
         }),
         { status: 200 }
       );
@@ -69,6 +137,17 @@ describe('extractEntities', () => {
       metric: 'cpu',
       timeRange: '1h',
       confidence: 91,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        ambiguity: 'low',
+        confidence: 91,
+      },
     });
 
     expect(fetchMock).toHaveBeenCalledWith(

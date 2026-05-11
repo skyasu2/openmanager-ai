@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 활성 구현 작업 없음. |
+| AI Assistant Semantic Intent Frame Phase 1 | High | Approved | 자연어 질의를 앞단 LLM semantic parser 힌트로 보강하되 provider 구현체는 노출하지 않음. 상세: [ai-assistant-semantic-intent-frame-plan.md](ai-assistant-semantic-intent-frame-plan.md) |
 
 ---
 

@@ -128,6 +128,58 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     );
   });
 
+  it('returns a semantic intent frame without exposing provider implementation names', async () => {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
+        metric: 'load1',
+        timeRange: '24h',
+        confidence: 91,
+        intentFrame: {
+          domain: 'monitoring',
+          intent: 'metric_peak',
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'load1',
+          timeWindow: '24h',
+          aggregation: 'peak',
+          topN: 3,
+          ambiguity: 'low',
+          confidence: 91,
+          provider: 'monitoringPeakMetricEvidenceProvider',
+        },
+      },
+    });
+
+    const response = await POST(
+      buildRequest({
+        query: '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?',
+      })
+    );
+
+    await expect(response.json()).resolves.toEqual({
+      timeRange: '24h',
+      confidence: 91,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        topN: 3,
+        ambiguity: 'low',
+        confidence: 91,
+      },
+    });
+    expect(mockGenerateText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        maxOutputTokens: 160,
+        output: expect.objectContaining({ kind: 'object-output' }),
+      })
+    );
+  });
+
   it('does not invoke Groq for empty queries', async () => {
     const response = await POST(buildRequest({ query: '   ' }));
 

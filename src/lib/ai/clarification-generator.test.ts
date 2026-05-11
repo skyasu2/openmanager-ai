@@ -202,6 +202,55 @@ describe('generateClarification', () => {
       );
     });
 
+    it('whole_fleet metric_peak intent frame이면 서버명이 없어도 clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?',
+          lowConfidence,
+          {
+            confidence: 91,
+            intentFrame: {
+              domain: 'monitoring',
+              intent: 'metric_peak',
+              scope: 'whole_fleet',
+              targets: [],
+              metric: 'load1',
+              timeWindow: '24h',
+              aggregation: 'peak',
+              topN: 3,
+              ambiguity: 'low',
+              confidence: 91,
+            },
+          } as any
+        )
+      ).toBeNull();
+    });
+
+    it('server scope intent frame에서 대상이 비어 있고 ambiguity가 높으면 clarification을 유지', () => {
+      const result = generateClarification(
+        '서버 상태 분석해줘',
+        lowConfidence,
+        {
+          confidence: 88,
+          intentFrame: {
+            domain: 'monitoring',
+            intent: 'server_health',
+            scope: 'server',
+            targets: [],
+            metric: 'unknown',
+            timeWindow: 'unknown',
+            aggregation: 'summary',
+            ambiguity: 'high',
+            confidence: 88,
+          },
+        } as any
+      );
+
+      expect(result?.options.some((option) => option.id === 'server-all')).toBe(
+        true
+      );
+    });
+
     // 한국어 활용형 테스트
     it('"CPU 높아?" → clarification 스킵 (comparisonCondition 활용형)', () => {
       expect(generateClarification('CPU 높아?', lowConfidence)).toBeNull();

@@ -25,6 +25,13 @@ describe('supervisor domain evidence support', () => {
       )
     ).toBe(true);
     expect(
+      provider?.canHandle(
+        createEvidenceRequest(
+          '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?'
+        )
+      )
+    ).toBe(true);
+    expect(
       provider?.canHandle(createEvidenceRequest('부하가 높으면 조치 방법 알려줘'))
     ).toBe(false);
   });
