@@ -226,6 +226,16 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('비교 어순이 벌어진 전체 부하 피크 질의는 서버명 없이도 clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          '지난 24시간 중 가장 부하가 높았던 시간대는 언제야? 근거와 상위 서버도 알려줘.',
+          lowConfidence,
+          { confidence: 0 }
+        )
+      ).toBeNull();
+    });
+
     it('server scope intent frame에서 대상이 비어 있고 ambiguity가 높으면 clarification을 유지', () => {
       const result = generateClarification(
         '서버 상태 분석해줘',

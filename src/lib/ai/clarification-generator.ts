@@ -41,9 +41,9 @@ const SPECIFIC_CONDITION_PATTERNS = {
   // 상태 조건: "경고 상태인", "정상인", "오프라인", "다운된"
   statusCondition:
     /경고\s*(상태)?인|정상인|오프라인|다운|critical|warning|online|offline|down/i,
-  // 비교 조건: "가장 높은", "제일 높은", "높아", "높으면", "최대", "최소"
+  // 비교 조건: "가장 높은", "가장 부하가 높았던", "높아", "최대", "최소"
   comparisonCondition:
-    /(?:가장|제일)\s*(높|낮|많|적)|높[은아으]|낮[은아으]|많[은아으]|적[은어으]|최대|최소|highest|lowest|most|least/i,
+    /(?:가장|제일).{0,24}(?:높|낮|많|적)|높[은아으았]|낮[은아으았]|많[은아으았]|적[은어으었]|최대|최소|highest|lowest|most|least/i,
   // 필터 의도: "CPU 높은 서버 찾아줘", "메모리 많이 쓰는 서버 보여줘"
   filterIntent:
     /(?:cpu|메모리|디스크|memory|disk).+(?:찾아|알려|보여|목록)|(?:찾아|알려|보여).+(?:cpu|메모리|디스크|memory|disk)/i,
