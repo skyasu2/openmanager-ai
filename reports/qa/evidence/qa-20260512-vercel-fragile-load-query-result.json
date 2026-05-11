@@ -1,0 +1,74 @@
+{
+  "target": "https://openmanager-ai.vercel.app",
+  "url": "https://openmanager-ai.vercel.app/dashboard",
+  "capturedAt": "2026-05-11T17:02:03.090Z",
+  "dialogText": "AI 어시스턴트\n\n서버 상태·로그·메트릭을 자연어로 질의\n\n전체화면\nAI Chat\n\nAI 기반 대화형 인터페이스\n\n서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도.\n\n2:00:00 AM\n\n복사\n최근 24시간 중 1분 load 최고치 시각: 2026-05-11 01:40 KST (슬롯 10 기준)\n\n\n근거 수치:\napi-was-dc1-01 서버: CPU 96% (144개 데이터포인트 중 최대값)\n슬롯 10(01:40 KST) 시점의 데이터 기준\n\n2:00:00 AM\n\n응답 느림\nCloud Run AI\n·\n서버 실시간 데이터 분석\n분석 근거\n\n도구: 서버 메트릭 상세 조회 · 모드: 오토 · 기간: 최근 1시간\n\n복사\nwhole fleet 기준 last 24h load1 max timestamp랑 top contributors만 알려줘. 서버명 지정 없음.\n\n2:00:00 AM\n\n복사\n지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-10 (어제) 03:50입니다.\n\n\n기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n최고값: 16.58\n상위 평균: 9.08\n\n\n상위 서버\ndb-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\ndb-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\napi-was-dc1-01 (api-was-dc1-01): 4.87\n\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.\n\n2:00:00 AM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\nCPU 사용률 말고, 최근 24시간 load1만 기준으로 전체 서버 피크 시각과 상위 3대 알려줘.\n\n2:00:06 AM\n\n복사\n지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-10 (어제) 03:50입니다.\n\n\n기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n최고값: 16.58\n상위 평균: 9.08\n\n\n상위 서버\ndb-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\ndb-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\napi-was-dc1-01 (api-was-dc1-01): 4.87\n\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.\n\n2:00:29 AM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.\n\n2:00:49 AM\n\n복사\n최근 24시간 중 시스템 부하가 가장 높았던 시점은 01:40 KST 슬롯(100번째 분)입니다.\n**주범 서버: api-was-dc1-01 (CPU 96%, 메모리 88%)**로, 전체 서버 중 CPU 최대치를 기록했습니다.\n\n\n(시스템 load 기준 상위 5대 서버: api-was-dc1-01(96%), api-was-dc1-02(89%), lb-haproxy-dc1-01(86%), db-mysql-dc1-primary(84%), cache-redis-dc1-01(77%))\n\n2:00:49 AM\n\n응답 느림\nCloud Run AI\n·\n서버 실시간 데이터 분석\n분석 근거\n\n도구: 서버 메트릭 상세 조회 · 모드: 오토 · 기간: 최근 1시간\n\n복사\n다시 생성\n대화 8/50\n서버 운영 중심\nEnter로 전송, Shift+Enter로 줄바꿈\n\nAI 기능\n\nAI Chat\n서버 질의, 트러블슈팅, 명령어 추천\n자동장애 보고서\nReporter Agent 장애 분석 보고서 생성\n이상감지/추세\n경량 이상 신호와 리스크 추세 분석\n전체 화면으로 보기",
+  "resources": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "duration": 4437,
+      "transferSize": 328,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "duration": 1066,
+      "transferSize": 1065,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/8661be76-49b4-4a92-9c44-21609f0cf5c7/stream",
+      "duration": 1777,
+      "transferSize": 3258,
+      "initiator": "other"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "duration": 1799,
+      "transferSize": 6326,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "duration": 621,
+      "transferSize": 1070,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/a2b0dc25-34e0-4237-b56c-aed61b52656a/stream",
+      "duration": 10624,
+      "transferSize": 5130,
+      "initiator": "other"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "duration": 1208,
+      "transferSize": 6371,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "duration": 422,
+      "transferSize": 1070,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/4f442a4d-405d-4327-8887-ef2de112830a/stream",
+      "duration": 2136,
+      "transferSize": 3090,
+      "initiator": "other"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "duration": 432,
+      "transferSize": 1069,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/75a511ba-e10d-4a04-b015-79624d03ef49/stream",
+      "duration": 15416,
+      "transferSize": 6917,
+      "initiator": "other"
+    }
+  ]
+}

@@ -54,6 +54,20 @@ describe('supervisor domain evidence support', () => {
       )
     ).toBe(true);
     expect(
+      provider?.canHandle(
+        createEvidenceRequest(
+          '서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도.'
+        )
+      )
+    ).toBe(true);
+    expect(
+      provider?.canHandle(
+        createEvidenceRequest(
+          '최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.'
+        )
+      )
+    ).toBe(true);
+    expect(
       provider?.canHandle(createEvidenceRequest('부하가 높으면 조치 방법 알려줘'))
     ).toBe(false);
   });
@@ -149,6 +163,30 @@ describe('supervisor domain evidence support', () => {
       metric: 'load',
       windowHours: 24,
     });
+  });
+
+  it('keeps natural load phrasing on the load peak evidence path instead of generic CPU metrics', async () => {
+    const queries = [
+      '서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도.',
+      '최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.',
+    ];
+
+    for (const query of queries) {
+      const support = await resolveDomainEvidenceSupport({
+        query,
+        domain: monitoringDomainPack,
+        sessionId: 'fragile-load-phrasing',
+      });
+
+      expect(support?.id).toBe('monitoring-peak-metric');
+      expect(support?.prompt).toContain('1분 평균 로드(load1)');
+      expect(support?.prompt).not.toContain('CPU 사용률');
+      expect(support?.metadata).toMatchObject({
+        metric: 'load',
+        sourceMetric: 'load1',
+        windowHours: 24,
+      });
+    }
   });
 
   it('keeps raw-only, frame-only, and frame-plus-raw peak evidence in parity', async () => {

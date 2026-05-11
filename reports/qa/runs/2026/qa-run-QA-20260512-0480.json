@@ -1,0 +1,178 @@
+{
+  "runId": "QA-20260512-0480",
+  "recordedAt": "2026-05-11T16:49:15.653Z",
+  "recordedAtKst": "2026-05-12 01:49:15 KST",
+  "runTitle": "Vercel Playwright QA - AI peak-load regression recheck on v8.11.128",
+  "owner": "codex",
+  "source": "playwright-mcp+vercel-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso",
+    "deploymentUrl": "https://openmanager-dohfe3pg3-skyasus-projects.vercel.app",
+    "commitSha": "86eca846646f85527cc299096bff9c4d8a2e5dff"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Vercel production deployment dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso is Ready and aliased to https://openmanager-ai.vercel.app",
+    "/api/version reports v8.11.128, commit 86eca846646f85527cc299096bff9c4d8a2e5dff, and release pipeline 2516275363",
+    "Dashboard guest flow opened the AI sidebar with AI engine status Ready",
+    "Natural Korean peak-load query returned a substantive answer with peak time 2026-05-10 03:50, load1 value 16.58, and top servers db-mysql-dc1-primary, db-mysql-dc1-replica, api-was-dc1-01",
+    "Compact whole-fleet query '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?' did not trigger clarification and returned peak time, load1 value, top average, and top server evidence",
+    "AI network requests returned 200/201 for /api/ai/wake-up, /api/ai/jobs, /api/ai/jobs/:id/stream, and /api/ai/supervisor/stream/v2",
+    "Browser console reported 0 warnings and 0 errors"
+  ],
+  "skippedSurfaces": [
+    "Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost; this run targeted the previously failing peak-load phrasing family",
+    "Core route pack beyond landing-to-dashboard guest flow",
+    "Reporter Agent",
+    "Analyst Agent",
+    "mobile viewport",
+    "Cloud Run admin observability surface"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar natural Korean 24h peak-load query",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright MCP Performance API resource timing",
+      "latencyMs": 1777,
+      "processingTimeMs": 1777
+    },
+    {
+      "surface": "AI sidebar compact 24h load1 peak query",
+      "agent": "Supervisor",
+      "provider": "streaming-ai",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP Performance API resource timing",
+      "latencyMs": 1799,
+      "processingTimeMs": 1799
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar natural Korean 24h peak-load query",
+      "route": "/api/ai/jobs/[id]/stream",
+      "executionMode": "single-agent",
+      "latencyMs": 1777,
+      "classification": "drift",
+      "driftReasonCodes": [],
+      "source": "visible assistant metadata still showed generic conversation path on deployed v8.11.128"
+    },
+    {
+      "surface": "AI sidebar compact 24h load1 peak query",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 1799,
+      "classification": "drift",
+      "driftReasonCodes": [],
+      "source": "visible assistant metadata still showed generic conversation path on deployed v8.11.128"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The previously failing peak-load phrasing family returned substantive metric-grounded answers for both natural Korean and compact 24h/load1/peak whole-fleet prompts without clarification blocking.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production deployment is Ready, /api/version matches v8.11.128, AI paths returned HTTP 200/201, and Vercel usage remains within the expected no-billed-usage guardrail.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run used the real Vercel UI flow and captured structured network/result/console evidence while avoiding broad live LLM repetition.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-12T01:39:27+09:00",
+      "summary": "Current Vercel billing period reviewed after targeted AI peak-load QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "AI peak-load regression structured result",
+      "path": "reports/qa/evidence/qa-20260512-vercel-peak-load-result.json"
+    },
+    {
+      "type": "playwright-network",
+      "label": "AI peak-load network requests",
+      "path": "reports/qa/evidence/qa-20260512-vercel-peak-load-network.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "AI peak-load console messages",
+      "path": "reports/qa/evidence/qa-20260512-vercel-peak-load-console.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-24h-peak-load-empty-response-v811124",
+      "title": "Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260512-vercel-peak-load-result.json",
+      "note": "Rechecked on v8.11.128. Natural Korean and compact 24h/load1/peak whole-fleet queries returned peak time, load1 value, and top server evidence without clarification blocking.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This QA confirms the current v8.11.128 production behavior, not the later f2e63badf semantic query routing Phase 3 commit, which is not deployed yet.",
+    "Visible assistant metadata still reports the generic conversation path on v8.11.128; the user-facing regression is closed, while the newer semantic metadata routing remains a deploy-follow-up if desired."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "v8.11.128 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2516275363"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-dohfe3pg3-skyasus-projects.vercel.app/"
+    }
+  ]
+}

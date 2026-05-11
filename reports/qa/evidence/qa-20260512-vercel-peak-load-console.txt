@@ -1,0 +1,5 @@
+Playwright MCP console collection for Vercel production peak-load QA.
+
+Total messages at warning level or above: 0
+Errors: 0
+Warnings: 0

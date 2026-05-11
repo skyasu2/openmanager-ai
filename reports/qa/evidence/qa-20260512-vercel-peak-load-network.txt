@@ -1,0 +1,12 @@
+Vercel production AI network requests observed by Playwright MCP.
+
+[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+[GET/EventSource] https://openmanager-ai.vercel.app/api/ai/jobs/8661be76-49b4-4a92-9c44-21609f0cf5c7/stream => completed
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+
+Performance API resources:
+- /api/ai/wake-up: 4437ms, initiator=fetch, transferSize=328
+- /api/ai/jobs: 1066ms, initiator=fetch, transferSize=1065
+- /api/ai/jobs/8661be76-49b4-4a92-9c44-21609f0cf5c7/stream: 1777ms, initiator=other, transferSize=3258
+- /api/ai/supervisor/stream/v2: 1799ms, initiator=fetch, transferSize=6326

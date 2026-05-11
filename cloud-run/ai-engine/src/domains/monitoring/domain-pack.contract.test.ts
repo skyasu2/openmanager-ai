@@ -185,4 +185,34 @@ describe('monitoring domain pack contract', () => {
       },
     });
   });
+
+  it('parses natural whole-fleet load pressure phrasing as a peak metric capability', async () => {
+    const context = {
+      requestId: 'monitoring-load-phrasing-1',
+      domainId: monitoringDomainPack.id,
+      message:
+        '최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.',
+      messages: [
+        {
+          role: 'user' as const,
+          content:
+            '최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.',
+        },
+      ],
+    };
+
+    const frame = await Promise.resolve(
+      monitoringDomainPack.intentParser?.parse(context)
+    );
+
+    expect(frame).toMatchObject({
+      domainId: 'openmanager-monitoring',
+      intent: 'metric_peak',
+      capabilityId: 'monitoring.metric_peak',
+      scope: 'whole_fleet',
+      metric: 'load',
+      timeWindow: '24h',
+      aggregation: 'peak',
+    });
+  });
 });
