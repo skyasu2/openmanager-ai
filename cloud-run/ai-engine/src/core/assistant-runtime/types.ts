@@ -130,8 +130,50 @@ export interface DomainHistoryEntry {
   data: unknown;
 }
 
+export interface DomainCapability {
+  id: string;
+  description: string;
+  intents: string[];
+  requiredSlots?: string[];
+  optionalSlots?: string[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface DomainCapabilityManifest {
+  domainId: string;
+  version?: string;
+  capabilities: DomainCapability[];
+}
+
+export type DomainIntentScope = 'whole_fleet' | 'entity' | 'group' | 'unknown';
+
+export type DomainIntentAmbiguity = 'low' | 'medium' | 'high';
+
+export interface DomainIntentFrame {
+  domainId: string;
+  intent: string;
+  capabilityId?: string;
+  scope: DomainIntentScope;
+  targets: string[];
+  metric?: string;
+  timeWindow?: string;
+  aggregation?: string;
+  topN?: number;
+  ambiguity: DomainIntentAmbiguity;
+  confidence: number;
+  slots?: Record<string, unknown>;
+}
+
+export interface DomainIntentParser {
+  parse(
+    context: AssistantRequestContext
+  ): DomainIntentFrame | undefined | Promise<DomainIntentFrame | undefined>;
+}
+
 export interface DomainEvidenceRequest extends AssistantRequestContext {
   dataSource?: DomainDataSource;
+  intentFrame?: DomainIntentFrame;
+  capability?: DomainCapability;
 }
 
 export interface DomainEvidenceResult {
@@ -165,6 +207,8 @@ export interface AssistantDomain {
   facts?: FactPackBuilder;
   agentRoles?: AgentRoleRegistry;
   dataSource?: DomainDataSource;
+  capabilities?: DomainCapabilityManifest;
+  intentParser?: DomainIntentParser;
   evidenceProviders?: DomainEvidenceProvider[];
 }
 

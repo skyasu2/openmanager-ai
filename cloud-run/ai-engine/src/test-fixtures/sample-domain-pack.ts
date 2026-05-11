@@ -6,6 +6,7 @@ import type {
   AssistantRequest,
   AssistantRequestContext,
   ArtifactCandidate,
+  DomainCapabilityManifest,
   DomainEvidenceProvider,
   DomainFactPack,
   ToolDefinition,
@@ -14,6 +15,7 @@ import type {
 export const SAMPLE_DOMAIN_ID = 'sample-customer-success';
 export const SAMPLE_DOMAIN_VERSION = '2026-05-05-test';
 export const SAMPLE_HEALTH_ARTIFACT_KIND = 'sample-health-summary';
+export const SAMPLE_RENEWAL_RISK_CAPABILITY_ID = 'sample.renewal_risk';
 
 export const sampleDomainToolInput = {
   accountId: 'acct-123',
@@ -107,27 +109,50 @@ const sampleAgentRoleRegistry: AgentRoleRegistry = {
 export const sampleRenewalRiskEvidenceProvider: DomainEvidenceProvider = {
   id: 'sample-renewal-risk-evidence',
   canHandle(request) {
-    return /renewal risk|highest risk|risk account|위험/i.test(request.message);
+    return (
+      request.intentFrame?.domainId === SAMPLE_DOMAIN_ID &&
+      request.intentFrame.intent === 'renewal_risk' &&
+      (request.capability?.id === SAMPLE_RENEWAL_RISK_CAPABILITY_ID ||
+        request.intentFrame.capabilityId === SAMPLE_RENEWAL_RISK_CAPABILITY_ID)
+    ) ||
+      /renewal risk|highest risk|risk account|위험/i.test(request.message);
   },
-  async resolve() {
+  async resolve(request) {
+    const accountId = request.intentFrame?.targets[0] ?? 'acct-123';
     return {
       id: 'sample-renewal-risk-evidence',
       prompt: [
         '[Deterministic sample renewal-risk evidence]',
         'Question asks which sample customer account has the highest renewal risk.',
-        'Highest-risk account: acct-123',
+        `Highest-risk account: ${accountId}`,
         'Risk: high',
         'Use these facts unchanged, then add one short business interpretation sentence.',
       ].join('\n'),
-      fallback:
-        'acct-123 has the highest renewal risk in the sample fixture. Business interpretation: prioritize a follow-up because the account health is warning-level.',
+      fallback: `${accountId} has the highest renewal risk in the sample fixture. Business interpretation: prioritize a follow-up because the account health is warning-level.`,
       metadata: {
-        accountId: 'acct-123',
+        ...(request.intentFrame && {
+          capabilityId: SAMPLE_RENEWAL_RISK_CAPABILITY_ID,
+        }),
+        accountId,
         risk: 'high',
         source: 'sample-fixture',
       },
     };
   },
+};
+
+export const sampleCapabilities: DomainCapabilityManifest = {
+  domainId: SAMPLE_DOMAIN_ID,
+  version: SAMPLE_DOMAIN_VERSION,
+  capabilities: [
+    {
+      id: SAMPLE_RENEWAL_RISK_CAPABILITY_ID,
+      description: 'Sample renewal risk evidence lookup.',
+      intents: ['renewal_risk'],
+      requiredSlots: ['targets'],
+      optionalSlots: ['aggregation'],
+    },
+  ],
 };
 
 export const sampleDomainPack: AssistantDomain = {
@@ -182,6 +207,7 @@ export const sampleDomainPack: AssistantDomain = {
     },
   },
   agentRoles: sampleAgentRoleRegistry,
+  capabilities: sampleCapabilities,
   evidenceProviders: [sampleRenewalRiskEvidenceProvider],
 };
 

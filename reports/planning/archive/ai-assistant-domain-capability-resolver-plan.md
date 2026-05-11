@@ -1,10 +1,10 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-05-11
 
 # AI Assistant Domain Capability Resolver Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-11
 - TODO.md 연결: Active Tasks > AI Assistant Domain Capability Resolver Phase 2
 
@@ -73,20 +73,20 @@ interface DomainIntentFrame {
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] runtime public contract가 `DomainCapabilityManifest`, `DomainIntentFrame`, `DomainIntentParser`를 export한다.
-- [ ] monitoring domain이 `monitoring.metric_peak` capability를 manifest로 노출한다.
-- [ ] resolver는 `intentParser`가 만든 `metric_peak` frame을 provider request에 전달하고, provider는 raw query regex 없이도 frame으로 처리한다.
-- [ ] resolver는 `metadata.intentFrame`이 있으면 parser보다 우선 사용한다.
-- [ ] non-monitoring sample domain도 같은 capability/frame 계약으로 evidence를 resolve한다.
-- [ ] capability/frame이 없는 기존 domain/provider는 raw message fallback으로 계속 동작한다.
+- [x] runtime public contract가 `DomainCapabilityManifest`, `DomainIntentFrame`, `DomainIntentParser`를 export한다.
+- [x] monitoring domain이 `monitoring.metric_peak` capability를 manifest로 노출한다.
+- [x] resolver는 `intentParser`가 만든 `metric_peak` frame을 provider request에 전달하고, provider는 raw query regex 없이도 frame으로 처리한다.
+- [x] resolver는 `metadata.intentFrame`이 있으면 parser보다 우선 사용한다.
+- [x] non-monitoring sample domain도 같은 capability/frame 계약으로 evidence를 resolve한다.
+- [x] capability/frame이 없는 기존 domain/provider는 raw message fallback으로 계속 동작한다.
 
 ## Task 목록
 
 - [x] Task 0 — failing test 커밋: 위 테스트 시나리오를 구현 전 실패 상태로 추가
-- [ ] Task 1 — assistant runtime capability/intent frame 타입 계약 추가
-- [ ] Task 2 — resolver에 metadata frame / domain parser / capability lookup 흐름 추가
-- [ ] Task 3 — monitoring + sample domain manifest/parser/provider 연결
-- [ ] Task 4 — 문서/TODO 정리 및 targeted 검증
+- [x] Task 1 — assistant runtime capability/intent frame 타입 계약 추가
+- [x] Task 2 — resolver에 metadata frame / domain parser / capability lookup 흐름 추가
+- [x] Task 3 — monitoring + sample domain manifest/parser/provider 연결
+- [x] Task 4 — 문서/TODO 정리 및 targeted 검증
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -106,8 +106,8 @@ interface DomainIntentFrame {
 
 ## 완료 기준
 
-- [ ] targeted AI Engine unit tests 통과
-- [ ] AI Engine type-check 통과
-- [ ] `git diff --check` 통과
-- [ ] 공통 runtime이 domain-neutral 상태 유지
-- [ ] production live QA는 release/tag 배포 후 필요 시 별도 QA gate에서 수행
+- [x] targeted AI Engine unit tests 통과
+- [x] AI Engine type-check 통과
+- [x] `git diff --check` 통과
+- [x] 공통 runtime이 domain-neutral 상태 유지
+- [x] production live QA는 release/tag 배포 후 필요 시 별도 QA gate에서 수행

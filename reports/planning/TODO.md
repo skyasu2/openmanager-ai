@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-11 KST (`Domain Capability Resolver Phase 2 start`)
+**Last Updated**: 2026-05-11 KST (`Domain Capability Resolver Phase 2 completion`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant Domain Capability Resolver Phase 2 | High | Approved | AI Engine evidence provider 선택을 domain-neutral capability/intent frame 계약으로 확장. 상세: [ai-assistant-domain-capability-resolver-plan.md](ai-assistant-domain-capability-resolver-plan.md) |
+| _None_ | - | - | 현재 진행 중인 구현 작업 없음 |
 
 ---
 
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI Assistant Domain Capability Resolver Phase 2~~ | — | **완료** — AI Engine 공통 런타임에 `DomainCapabilityManifest`/`DomainIntentFrame`/`DomainIntentParser` 계약을 추가하고, resolver가 metadata frame/domain parser/capability lookup을 provider request로 전달. monitoring `metric_peak` manifest/parser/provider 연결, sample renewal-risk frame portability로 monitoring 외 도메인 재사용성 검증. raw message fallback 유지. 검증: AI Engine targeted Vitest 3 files / 19 tests, AI Engine type-check 통과. 상세 계획서 archive 이동: [archive/ai-assistant-domain-capability-resolver-plan.md](archive/ai-assistant-domain-capability-resolver-plan.md) |
 | ~~AI Assistant Semantic Intent Frame Phase 1~~ | — | **완료** — NLQ entity extraction에 optional `SemanticIntentFrame` 계약을 추가하고, clarification을 원문 텍스트가 아닌 frame 힌트 기준으로 보강. `scope=whole_fleet`이면 서버명이 없어도 서버 clarification으로 차단하지 않으며, provider 구현체 이름은 normalizer/API 응답에서 제거. AI Engine monitoring peak evidence provider는 `24h/load1/peak` 표현을 처리하도록 alias 보강. 검증: targeted root Vitest 3 files / 58 tests, AI Engine targeted Vitest 1 file / 3 tests, root type-check, `git diff --check` 통과. 상세 계획서 archive 이동: [archive/ai-assistant-semantic-intent-frame-plan.md](archive/ai-assistant-semantic-intent-frame-plan.md) |
 | ~~API 라우트 테스트 커버리지~~ | — | **완료** — stale한 “15개 무테스트” 표현을 route handler 계약 gap 기준으로 재분류하고, `/api/metrics` `openmanager_server_status` status label 결함을 수정한 뒤 잔여 핵심 route 테스트를 보강. 추가: `/api/ai/supervisor` legacy POST 계약(401/429/400/job redirect/fallback/Cloud Run JSON), `/api/ai/status` summary/service/reset 계약, `/api/ai/wake-up` rate-limit/upstream/timeout 계약, `/api/csrf-token` cookie/rate-limit 계약, `/api/servers` legacy delegation 계약. 검증: targeted Vitest 5 files / 17 tests 통과. 상세: [tech-debt-remediation-plan.md](tech-debt-remediation-plan.md) Task 2 |
 | ~~AI Assistant domain evidence + stream recovery refactor~~ | — | **완료** — portable `DomainEvidenceProvider` 계약을 추가해 공통 런타임은 도메인 intent/data를 모르게 유지하고, monitoring peak evidence provider와 non-monitoring sample renewal-risk provider로 재사용성을 검증. `supervisor-single-agent-stream.ts`의 빈 응답 복구 체인을 `supervisor-stream-recovery.ts`로 분리해 800줄 fail-threshold 여유를 확보했으며, generic empty fallback이 provider retry보다 먼저 실행되는 회귀를 테스트로 고정. Root jobs API에는 title-only/placeholder/too-short result 품질 게이트를 추가. 검증: AI Engine targeted Vitest 8 files / 34 tests, provider retry regression 2 files / 20 tests, AI Engine/root type-check, root lint, line-guard, `git diff --check` 통과. |
