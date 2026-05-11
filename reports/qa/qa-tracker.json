@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T03:08:32.044Z"
+    "updatedAt": "2026-05-11T03:21:01.161Z"
   },
   "sequence": {
-    "nextRunNumber": 473
+    "nextRunNumber": 474
   },
   "summary": {
-    "totalRecordedRuns": 470,
+    "totalRecordedRuns": 471,
     "totalRuns": 376,
-    "excludedRuns": 94,
+    "excludedRuns": 95,
     "totalChecks": 3342,
     "totalPassed": 3215,
     "totalFailed": 117,
     "completionRate": 100,
-    "completedItems": 538,
+    "completedItems": 539,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260510-0466",
     "lastRecordedAt": "2026-05-10T12:53:07.527Z",
-    "latestRecordedRunId": "QA-20260511-0472",
-    "latestRecordedAt": "2026-05-11T03:08:32.044Z"
+    "latestRecordedRunId": "QA-20260511-0473",
+    "latestRecordedAt": "2026-05-11T03:21:01.161Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13169,6 +13169,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-11T03:08:32.044Z"
+    },
+    "ai-engine-pino-v10-alignment": {
+      "id": "ai-engine-pino-v10-alignment",
+      "title": "Align AI Engine pino to v10",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260511-0473",
+      "firstSeenAt": "2026-05-11T03:21:01.161Z",
+      "lastSeenRunId": "QA-20260511-0473",
+      "lastSeenAt": "2026-05-11T03:21:01.161Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "AI Engine pino updated from installed 9.14.0 to 10.3.1; targeted logger tests, type-check, runtime import, and production npm audit passed.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-11T03:21:01.161Z"
     }
   },
   "runs": [
@@ -50372,6 +50396,79 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260511-0473",
+      "recordedAt": "2026-05-11T03:21:01.161Z",
+      "recordedAtKst": "2026-05-11 12:21:01 KST",
+      "title": "Local QA - AI Engine Pino v10 Alignment",
+      "owner": "codex",
+      "source": "local-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260511-0473.json",
+      "environment": {
+        "target": "local-workspace",
+        "url": "",
+        "frontend": "Next.js local source",
+        "backend": "Cloud Run AI Engine local source",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "0bf416fb65d0a61cf0c3663aad477fce64b51b61"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "AI Engine pino dependency alignment",
+        "Cloud Run structured logger options",
+        "AI Engine TypeScript type-check",
+        "AI Engine production npm audit"
+      ],
+      "skippedSurfaces": [
+        "AI Engine full Vitest suite",
+        "Vercel production browser QA",
+        "Cloud Run production smoke",
+        "live LLM/provider calls",
+        "conversational AI QA"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The change is dependency alignment on the AI Engine logger surface and was verified with runtime import, targeted logger tests, type-check, and production audit.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The validation avoided broad coverage chasing and used the smallest high-signal checks for the changed logger dependency surface.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -50431,16 +50528,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 158,
-      "appropriateCount": 141,
+      "seenCount": 159,
+      "appropriateCount": 142,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260511-0471",
-      "lastSeenAt": "2026-05-11T02:44:40.590Z",
+      "lastRunId": "QA-20260511-0473",
+      "lastSeenAt": "2026-05-11T03:21:01.161Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The dependency alignment removed AI Engine Zod duplication and confirmed production/full npm audit results at 0 vulnerabilities.",
+      "lastRationale": "The change is dependency alignment on the AI Engine logger surface and was verified with runtime import, targeted logger tests, type-check, and production audit.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -50448,16 +50545,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 192,
-      "appropriateCount": 174,
+      "seenCount": 193,
+      "appropriateCount": 175,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260511-0472",
-      "lastSeenAt": "2026-05-11T03:08:32.044Z",
+      "lastRunId": "QA-20260511-0473",
+      "lastSeenAt": "2026-05-11T03:21:01.161Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "A failing route-level regression test first reproduced the missing status label, then the fix passed targeted, quick, contract, lint, and type-check gates.",
+      "lastRationale": "The validation avoided broad coverage chasing and used the smallest high-signal checks for the changed logger dependency surface.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

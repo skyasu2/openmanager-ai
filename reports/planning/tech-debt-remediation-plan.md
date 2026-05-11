@@ -22,7 +22,7 @@
 | P1 | Zod v3 ↔ v4 이중화 | 완료 — 루트 v4 / AI Engine v4.4.3 |
 | P2 | API 라우트 테스트 미커버 | 일부 핵심 route handler 직접 테스트 미흡 — `/api/metrics` status label 결함 확인 |
 | P2 | `useAIChatCore.ts` artifact 로직 혼재 | line-guard 계획과 병행 |
-| P3 | pino v9 ↔ v10 이중화 | 루트 v10 / AI Engine v9 |
+| P3 | pino v9 ↔ v10 이중화 | 완료 — 루트 v10.3.1 / AI Engine v10.3.1 |
 | P3 | React 19.2.4 → 19.2.6 패치 | 2 patch 뒤처짐 |
 
 > **P0 (Next.js CVE)** 는 이미 `Dependency security audit follow-up` Backlog에서 추적 중이며 이 계획서에서 중복 관리하지 않는다.  
@@ -175,17 +175,23 @@ npm run test:quick  # 기존 178개 + 신규 통과
 
 ### 작업 단계
 
-- [ ] **Task 3-1**: pino v9 → v10 변경점 확인
+- [x] **Task 3-1**: pino v9 → v10 변경점 확인
   ```bash
   npm view pino@10 peerDependencies
   # CHANGELOG 상 breaking change 확인
   ```
+  - 실제 사용처는 `cloud-run/ai-engine/src/lib/logger.ts` 단일 surface.
+  - lockfile 기준 `thread-stream@4.1.0`은 Node `>=20`을 요구하나 repo/AI Engine engines와 Cloud Run Dockerfile은 Node 24라 충족.
 
-- [ ] **Task 3-2**: `cloud-run/ai-engine/package.json` `pino: "^9.6.0"` → `"^10.3.1"`
+- [x] **Task 3-2**: `cloud-run/ai-engine/package.json` `pino: "^9.6.0"` → `"^10.3.1"`
 
-- [ ] **Task 3-3**: `logger.ts` v10 호환 확인 (대부분 호환 예상)
+- [x] **Task 3-3**: `logger.ts` v10 호환 확인
+  - `npx vitest run src/lib/logger.test.ts --silent=passed-only` 1 file / 2 tests 통과
 
-- [ ] **Task 3-4**: AI Engine 테스트 통과 확인, 커밋
+- [x] **Task 3-4**: AI Engine targeted 검증 통과 확인, 커밋
+  - `cd cloud-run/ai-engine && npm run type-check` 통과
+  - `cd cloud-run/ai-engine && npm audit --omit=dev` 0 vulnerabilities
+  - Local deterministic QA `QA-20260511-0473` 기록
   - 커밋: `chore(ai-engine): align pino to v10`
 
 ### 완료 기준

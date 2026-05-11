@@ -1,0 +1,91 @@
+{
+  "runId": "QA-20260511-0473",
+  "recordedAt": "2026-05-11T03:21:01.161Z",
+  "recordedAtKst": "2026-05-11 12:21:01 KST",
+  "runTitle": "Local QA - AI Engine Pino v10 Alignment",
+  "owner": "codex",
+  "source": "local-cli",
+  "environment": {
+    "target": "local-workspace",
+    "url": "",
+    "frontend": "Next.js local source",
+    "backend": "Cloud Run AI Engine local source",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "0bf416fb65d0a61cf0c3663aad477fce64b51b61"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "AI Engine pino dependency alignment",
+    "Cloud Run structured logger options",
+    "AI Engine TypeScript type-check",
+    "AI Engine production npm audit"
+  ],
+  "skippedSurfaces": [
+    "AI Engine full Vitest suite",
+    "Vercel production browser QA",
+    "Cloud Run production smoke",
+    "live LLM/provider calls",
+    "conversational AI QA"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The change is dependency alignment on the AI Engine logger surface and was verified with runtime import, targeted logger tests, type-check, and production audit.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The validation avoided broad coverage chasing and used the smallest high-signal checks for the changed logger dependency surface.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-engine-pino-v10-alignment",
+      "title": "Align AI Engine pino to v10",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AI Engine pino updated from installed 9.14.0 to 10.3.1; targeted logger tests, type-check, runtime import, and production npm audit passed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Root app already used pino@10.3.1; AI Engine manifest previously allowed pino ^9.6.0 and installed 9.14.0.",
+    "AI Engine package manifest and lockfile now resolve pino@10.3.1.",
+    "pino v10 pulls thread-stream@4.1.0 with Node >=20; repo and AI Engine engines are >=24 <25 and the Cloud Run Dockerfile uses Node 24.",
+    "node -e import smoke passed: pino function export, version 10.3.1.",
+    "npx vitest run src/lib/logger.test.ts --silent=passed-only passed: 1 file / 2 tests.",
+    "cd cloud-run/ai-engine && npm run type-check passed.",
+    "cd cloud-run/ai-engine && npm audit --omit=dev passed with 0 vulnerabilities.",
+    "No full AI Engine test suite, live AI, Vercel, Cloud Run production, or external provider call was executed because the changed risk surface is limited to the logger dependency."
+  ],
+  "links": []
+}
