@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 
 // 🎯 Fix: Import actual schema to prevent drift between test and production
-import { filePartSchema, requestSchemaLoose } from './schemas';
+import { filePartSchema, requestSchema, requestSchemaLoose } from './schemas';
 
 describe('filePartSchema validation', () => {
   describe('빈 문자열 검증', () => {
@@ -216,6 +216,33 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
       const result = requestSchemaLoose.safeParse(input);
       expect(result.success).toBe(true);
       expect(result.data?.analysisMode).toBe('thinking');
+    });
+
+    it('should accept semantic intent metadata for Cloud Run forwarding', () => {
+      const input = {
+        messages: [{ role: 'user', content: '최근 24시간 load1 피크 알려줘' }],
+        metadata: {
+          intentFrame: {
+            domainId: 'openmanager-monitoring',
+            intent: 'metric_peak',
+            capabilityId: 'monitoring.metric_peak',
+            scope: 'whole_fleet',
+            targets: [],
+            metric: 'load1',
+            timeWindow: '24h',
+            aggregation: 'peak',
+            ambiguity: 'low',
+            confidence: 0.91,
+          },
+        },
+        semanticQueryTrace: {
+          originalQuery: '최근 24시간 load1 피크 알려줘',
+          reasonCodes: [],
+        },
+      };
+
+      expect(requestSchemaLoose.safeParse(input).success).toBe(true);
+      expect(requestSchema.safeParse(input).success).toBe(true);
     });
 
     it('should accept message with createdAt as string', () => {

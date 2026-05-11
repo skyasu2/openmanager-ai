@@ -1,5 +1,6 @@
 import type { MutableRefObject } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import type { SemanticIntentFrame } from '@/lib/ai/entity-extractor';
 
 const { mockDefaultChatTransport } = vi.hoisted(() => ({
   mockDefaultChatTransport: vi.fn(function DefaultChatTransport(config) {
@@ -64,6 +65,84 @@ describe('createHybridChatTransport', () => {
         ruleVersion: '2026-05-03-v1',
         decidedBy: 'frontend',
       },
+    });
+  });
+
+  it('forwards valid semantic intent frames through the AI SDK transport body', () => {
+    const semanticIntentFrame: SemanticIntentFrame = {
+      domain: 'monitoring',
+      intent: 'metric_peak',
+      scope: 'whole_fleet',
+      targets: [],
+      metric: 'load1',
+      timeWindow: '24h',
+      aggregation: 'peak',
+      topN: 3,
+      ambiguity: 'low',
+      confidence: 91,
+    };
+
+    createHybridChatTransport({
+      apiEndpoint: '/api/ai/supervisor/stream/v2',
+      traceIdRef: ref('trace-semantic-frame'),
+      traceIdHeader: 'X-Trace-Id',
+      webSearchEnabledRef: ref(undefined),
+      ragEnabledRef: ref(undefined),
+      analysisModeRef: ref('auto'),
+      currentQueryRef: ref('최근 24시간 load1 피크 알려줘'),
+      semanticIntentFrameRef: ref(semanticIntentFrame),
+    });
+
+    const transportConfig = mockDefaultChatTransport.mock.calls.at(-1)?.[0] as {
+      body: () => Record<string, unknown>;
+    };
+
+    expect(transportConfig.body()).toMatchObject({
+      metadata: {
+        intentFrame: {
+          domainId: 'openmanager-monitoring',
+          capabilityId: 'monitoring.metric_peak',
+          confidence: 0.91,
+        },
+      },
+      semanticQueryTrace: {
+        originalQuery: '최근 24시간 load1 피크 알려줘',
+        selectedDomain: 'openmanager-monitoring',
+        selectedCapability: 'monitoring.metric_peak',
+      },
+    });
+  });
+
+  it('drops low-confidence semantic frames from the transport body but keeps reason codes', () => {
+    createHybridChatTransport({
+      apiEndpoint: '/api/ai/supervisor/stream/v2',
+      traceIdRef: ref('trace-low-confidence-frame'),
+      traceIdHeader: 'X-Trace-Id',
+      webSearchEnabledRef: ref(undefined),
+      ragEnabledRef: ref(undefined),
+      analysisModeRef: ref('auto'),
+      currentQueryRef: ref('최근 24시간 load1 피크 알려줘'),
+      semanticIntentFrameRef: ref({
+        domain: 'monitoring',
+        intent: 'metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        ambiguity: 'low',
+        confidence: 79,
+      }),
+    });
+
+    const transportConfig = mockDefaultChatTransport.mock.calls.at(-1)?.[0] as {
+      body: () => Record<string, unknown>;
+    };
+    const body = transportConfig.body();
+
+    expect(body.metadata).toBeUndefined();
+    expect(body.semanticQueryTrace).toMatchObject({
+      reasonCodes: ['semantic_frame_low_confidence'],
     });
   });
 });

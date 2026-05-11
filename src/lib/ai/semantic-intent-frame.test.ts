@@ -1,0 +1,92 @@
+import { describe, expect, it } from 'vitest';
+import {
+  ENTITY_CONFIDENCE_THRESHOLD,
+  type SemanticIntentFrame,
+} from './entity-extractor';
+import {
+  buildSemanticIntentRequestMetadata,
+  toDomainIntentFrame,
+} from './semantic-intent-frame';
+
+const validPeakFrame: SemanticIntentFrame = {
+  domain: 'monitoring',
+  intent: 'metric_peak',
+  scope: 'whole_fleet',
+  targets: [],
+  metric: 'load1',
+  timeWindow: '24h',
+  aggregation: 'peak',
+  topN: 5,
+  ambiguity: 'low',
+  confidence: 91,
+};
+
+describe('semantic intent frame mapping', () => {
+  it('uses the Phase 1 confidence threshold as the forwarding cutoff', () => {
+    expect(ENTITY_CONFIDENCE_THRESHOLD).toBe(80);
+  });
+
+  it('maps a root monitoring peak frame into the Cloud Run domain frame contract', () => {
+    expect(toDomainIntentFrame(validPeakFrame)).toEqual({
+      intentFrame: {
+        domainId: 'openmanager-monitoring',
+        intent: 'metric_peak',
+        capabilityId: 'monitoring.metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        topN: 5,
+        ambiguity: 'low',
+        confidence: 0.91,
+      },
+      reasonCodes: [],
+    });
+  });
+
+  it.each([
+    [
+      'semantic_frame_low_confidence',
+      { ...validPeakFrame, confidence: ENTITY_CONFIDENCE_THRESHOLD - 1 },
+    ],
+    ['semantic_frame_high_ambiguity', { ...validPeakFrame, ambiguity: 'high' }],
+    ['semantic_frame_unknown_domain', { ...validPeakFrame, domain: 'unknown' }],
+    ['semantic_frame_unknown_intent', { ...validPeakFrame, intent: 'unknown' }],
+  ] as const)('drops %s frames before Cloud Run forwarding', (reasonCode, frame) => {
+    expect(toDomainIntentFrame(frame as SemanticIntentFrame)).toEqual({
+      reasonCodes: [reasonCode],
+    });
+  });
+
+  it('builds metadata only for valid frames and keeps drop reasons in trace metadata', () => {
+    const validPayload = buildSemanticIntentRequestMetadata({
+      frame: validPeakFrame,
+      originalQuery: '최근 24시간 load1 피크 알려줘',
+    });
+    expect(validPayload.metadata).toEqual({
+      intentFrame: expect.objectContaining({
+        domainId: 'openmanager-monitoring',
+        capabilityId: 'monitoring.metric_peak',
+      }),
+    });
+    expect(validPayload.semanticQueryTrace).toMatchObject({
+      originalQuery: '최근 24시간 load1 피크 알려줘',
+      selectedDomain: 'openmanager-monitoring',
+      selectedCapability: 'monitoring.metric_peak',
+      evidenceAvailable: false,
+      clarificationRequired: false,
+      reasonCodes: [],
+    });
+
+    const droppedPayload = buildSemanticIntentRequestMetadata({
+      frame: { ...validPeakFrame, confidence: 79 },
+      originalQuery: '최근 24시간 load1 피크 알려줘',
+    });
+    expect(droppedPayload.metadata).toBeUndefined();
+    expect(droppedPayload.semanticQueryTrace).toMatchObject({
+      reasonCodes: ['semantic_frame_low_confidence'],
+      evidenceAvailable: false,
+    });
+  });
+});

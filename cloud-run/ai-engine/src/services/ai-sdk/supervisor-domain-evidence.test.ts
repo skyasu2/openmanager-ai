@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
 import { sampleDomainPack } from '../../test-fixtures/sample-domain-pack';
-import { resolveDomainEvidenceSupport } from './supervisor-domain-evidence';
+import type { SupervisorRequest } from './supervisor-types';
+import {
+  resolveDomainEvidenceForStream,
+  resolveDomainEvidenceSupport,
+} from './supervisor-domain-evidence';
 
 const monitoringMetricPeakFrame = {
   domainId: monitoringDomainPack.id,
@@ -88,6 +92,28 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('passes stream request metadata frames into domain evidence resolution', async () => {
+    const support = await resolveDomainEvidenceForStream({
+      request: {
+        messages: [
+          { role: 'user', content: 'frame only request without load keywords' },
+        ],
+        sessionId: 'session-stream-frame-peak',
+        metadata: {
+          intentFrame: monitoringMetricPeakFrame,
+        },
+      } as SupervisorRequest,
+      query: 'frame only request without load keywords',
+      domain: monitoringDomainPack,
+    });
+
+    expect(support?.id).toBe('monitoring-peak-metric');
+    expect(support?.metadata).toMatchObject({
+      capabilityId: 'monitoring.metric_peak',
+      intent: 'metric_peak',
+    });
+  });
+
   it('lets providers handle capability intent frames without matching raw regex text', () => {
     const provider = monitoringDomainPack.evidenceProviders?.[0];
     const request = {
@@ -122,6 +148,78 @@ describe('supervisor domain evidence support', () => {
     expect(support?.metadata).toMatchObject({
       metric: 'load',
       windowHours: 24,
+    });
+  });
+
+  it('keeps raw-only, frame-only, and frame-plus-raw peak evidence in parity', async () => {
+    const rawQuery = '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?';
+    const rawOnly = await resolveDomainEvidenceSupport({
+      query: rawQuery,
+      domain: monitoringDomainPack,
+      sessionId: 'raw-only',
+    });
+    const frameOnly = await resolveDomainEvidenceSupport({
+      query: 'frame only request without load keywords',
+      domain: monitoringDomainPack,
+      sessionId: 'frame-only',
+      metadata: {
+        intentFrame: monitoringMetricPeakFrame,
+      },
+    } as Parameters<typeof resolveDomainEvidenceSupport>[0] & {
+      metadata: Record<string, unknown>;
+    });
+    const framePlusRaw = await resolveDomainEvidenceSupport({
+      query: rawQuery,
+      domain: monitoringDomainPack,
+      sessionId: 'frame-plus-raw',
+      metadata: {
+        intentFrame: monitoringMetricPeakFrame,
+      },
+    } as Parameters<typeof resolveDomainEvidenceSupport>[0] & {
+      metadata: Record<string, unknown>;
+    });
+
+    expect(frameOnly?.metadata).toMatchObject({
+      slotIndex: rawOnly?.metadata?.slotIndex,
+      timestamp: rawOnly?.metadata?.timestamp,
+      sourceMetric: rawOnly?.metadata?.sourceMetric,
+      windowHours: rawOnly?.metadata?.windowHours,
+    });
+    expect(framePlusRaw?.metadata).toMatchObject({
+      slotIndex: rawOnly?.metadata?.slotIndex,
+      timestamp: rawOnly?.metadata?.timestamp,
+      sourceMetric: rawOnly?.metadata?.sourceMetric,
+      windowHours: rawOnly?.metadata?.windowHours,
+    });
+  });
+
+  it('records semantic query trace metadata when deterministic evidence is validated', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: 'frame only request without load keywords',
+      domain: monitoringDomainPack,
+      sessionId: 'semantic-trace',
+      metadata: {
+        intentFrame: monitoringMetricPeakFrame,
+        semanticQueryTrace: {
+          originalQuery: '최근 24시간 load1 피크 알려줘',
+          reasonCodes: [],
+        },
+      },
+    } as Parameters<typeof resolveDomainEvidenceSupport>[0] & {
+      metadata: Record<string, unknown>;
+    });
+
+    expect(support?.metadata).toMatchObject({
+      semanticQueryTrace: {
+        originalQuery: '최근 24시간 load1 피크 알려줘',
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_peak',
+        selectedEvidenceProvider: 'monitoring-peak-metric',
+        evidenceAvailable: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_evidence_validated',
+        ]),
+      },
     });
   });
 

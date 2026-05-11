@@ -560,6 +560,60 @@ describe('Supervisor Stream V2 Route', () => {
       });
     });
 
+    it('semantic intent metadata와 trace를 Cloud Run으로 전달해야 함', async () => {
+      const metadata = {
+        intentFrame: {
+          domainId: 'openmanager-monitoring',
+          intent: 'metric_peak',
+          capabilityId: 'monitoring.metric_peak',
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'load1',
+          timeWindow: '24h',
+          aggregation: 'peak',
+          ambiguity: 'low',
+          confidence: 0.91,
+        },
+      };
+      const semanticQueryTrace = {
+        originalQuery: '최근 24시간 load1 피크 알려줘',
+        selectedDomain: 'openmanager-monitoring',
+        selectedCapability: 'monitoring.metric_peak',
+        evidenceAvailable: false,
+        clarificationRequired: false,
+        reasonCodes: [],
+      };
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: 'user', content: '최근 24시간 load1 피크 알려줘' },
+            ],
+            metadata,
+            semanticQueryTrace,
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      const body = JSON.parse(String(fetchOptions.body));
+      expect(body).toMatchObject({
+        sessionId: 'session-1234',
+        metadata,
+        semanticQueryTrace,
+      });
+    });
+
     it('PIN guest auth context이면 Cloud Run에 developer disclosure mode를 서버 측에서만 전달한다', async () => {
       mockGetAPIAuthContext.mockReturnValue({
         authType: 'guest',
