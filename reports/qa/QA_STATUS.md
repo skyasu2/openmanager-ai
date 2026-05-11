@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-12 02:04:06 KST
+> Generated at: 2026-05-12 08:30:21 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 479 |
-| Total Runs (Counted) | 381 |
+| Total Recorded Runs | 480 |
+| Total Runs (Counted) | 382 |
 | Non-counted Runs | 98 |
-| Total Checks | 3377 |
-| Passed | 3247 |
+| Total Checks | 3379 |
+| Passed | 3249 |
 | Failed | 120 |
-| Completed Items | 542 |
-| Pending Items | 1 |
+| Completed Items | 543 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.82% |
-| Last Counted Run | QA-20260512-0481 (2026-05-11T17:04:04.232Z) |
-| Latest Recorded Run | QA-20260512-0481 (2026-05-11T17:04:04.232Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260512-0482 (2026-05-11T23:30:16.424Z) |
+| Latest Recorded Run | QA-20260512-0482 (2026-05-11T23:30:16.424Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260512-0481 (2026-05-11T17:04:04.232Z)
+Latest run: QA-20260512-0482 (2026-05-11T23:30:16.424Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Route load/부하/system load natural phrasing through the semantic IntentFrame metric_peak/load1 capability before generic server metric fallback. |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
@@ -46,25 +46,25 @@ Latest run: QA-20260512-0481 (2026-05-11T17:04:04.232Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after targeted fragile load-query QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.129 targeted fragile load-query closure QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-10T17:04:04.232Z -> 2026-05-11T17:04:04.232Z (24h)
-- Runs with observations: 5 recorded / 3 counted
-- Samples: 10
+- Window: 2026-05-10T23:30:16.424Z -> 2026-05-11T23:30:16.424Z (24h)
+- Runs with observations: 6 recorded / 4 counted
+- Samples: 12
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 8 | 5350ms | 20000ms | - | - | 5350ms | 20000ms | QA-20260512-0481 |
+| Supervisor | cloud-run-ai-engine | 10 | 4612ms | 20000ms | - | - | 4612ms | 20000ms | QA-20260512-0482 |
 | Supervisor | streaming-ai | 2 | 2136ms | 2473ms | - | - | 2136ms | 2473ms | QA-20260512-0480 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-10T17:04:04.232Z -> 2026-05-11T17:04:04.232Z (24h)
-- Runs with observations: 5 recorded / 3 counted
-- Samples: 10
-- Drift rate: 90%
+- Window: 2026-05-10T23:30:16.424Z -> 2026-05-11T23:30:16.424Z (24h)
+- Runs with observations: 6 recorded / 4 counted
+- Samples: 11
+- Drift rate: 81.82%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
@@ -72,7 +72,7 @@ Latest run: QA-20260512-0481 (2026-05-11T17:04:04.232Z)
 | /api/ai/jobs | single-agent | 3 | 100% | 5137ms | 11571ms | QA-20260511-0477 |
 | /api/ai/supervisor/stream/v2 | deterministic | 1 | 0% | 2708ms | 2708ms | QA-20260511-0475 |
 | /api/ai/supervisor/stream/v2 | single-agent | 2 | 100% | 2136ms | 2473ms | QA-20260512-0480 |
-| /api/ai/jobs/[id]/stream | single-agent | 1 | 100% | 1777ms | 1777ms | QA-20260512-0480 |
+| /api/ai/jobs/[id]/stream | single-agent | 2 | 50% | 1802ms | 1827ms | QA-20260512-0482 |
 | generic conversation response | single-agent | 1 | 100% | 1465ms | 1465ms | QA-20260511-0475 |
 | /api/ai/nlq/extract-entities | deterministic | 1 | 100% | 738ms | 738ms | QA-20260511-0477 |
 
@@ -81,35 +81,36 @@ Latest run: QA-20260512-0481 (2026-05-11T17:04:04.232Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso / SHA 86eca846
+- Deployment: dpl_BkQYTY7ZkvN5fybyD9zCjr4HQY55 / SHA 4a8d5be2
 - Coverage Packs: ai-core
-- Covered Surfaces: Vercel production deployment dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso is Ready and aliased to https://openmanager-ai.vercel.app, /api/version reports v8.11.128, commit 86eca846646f85527cc299096bff9c4d8a2e5dff, and release pipeline 2516275363, Dashboard guest flow opened the AI sidebar with AI engine status Ready, Fragile whole-fleet load phrasing variants were tested through the real UI path without bypassing CSRF, Explicit 'whole fleet / last 24h / load1 / max timestamp' query returned the expected peak timestamp 2026-05-10 03:50, load1 16.58, and top contributors, Explicit Korean query with 'CPU 사용률 말고 ... load1만' returned the expected peak timestamp 2026-05-10 03:50, load1 16.58, and top contributors, Browser console reported 0 warnings and 0 errors
-- Skipped Surfaces: Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost; this run targeted vulnerable peak-load phrasing only, Core route pack beyond dashboard AI sidebar, Reporter Agent, Analyst Agent, mobile viewport, Cloud Run admin observability surface
+- Covered Surfaces: Vercel production deployment dpl_BkQYTY7ZkvN5fybyD9zCjr4HQY55 is Ready and aliased to https://openmanager-ai.vercel.app, /api/version reports v8.11.129, commit 4a8d5be20bbd1502f4d72ed54e0917a846b1e50a, and release pipeline 2517338884, Dashboard guest flow opened the AI sidebar with AI engine status Ready, Previously failing fragile whole-fleet load phrasing variants were tested through the real UI path without bypassing CSRF, Prompt with 서버명 intentionally omitted and 1분 load 제일 튄 시각 returned load1 24h peak timestamp 2026-05-12 03:50, peak 16.58, average 9.08, and top servers, Prompt with CPU excluded and 시스템 load/제일 버거웠던 때 returned load1 24h peak timestamp 2026-05-12 03:50 and culprit server db-mysql-dc1-primary 16.58, Browser console reported 0 warnings and 0 errors; API network calls returned 200/201
+- Skipped Surfaces: Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost; this run targeted the known vulnerable peak-load phrasing only, Core route pack beyond dashboard AI sidebar, Reporter Agent, Analyst Agent, mobile viewport, Cloud Run admin observability surface
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| general | v8.11.128 release pipeline | [v8.11.128 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2516275363) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-dohfe3pg3-skyasus-projects.vercel.app/) | - |
+| general | v8.11.129 release pipeline | [v8.11.129 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517338884) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-mezfd60h4-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | Fragile load-query raw result and resource timings | `reports/qa/evidence/qa-20260512-vercel-fragile-load-query-result.json` | - |
-| playwright-network | Fragile load-query network requests | `reports/qa/evidence/qa-20260512-vercel-fragile-load-query-network.txt` | - |
-| playwright-console | Fragile load-query console messages | `reports/qa/evidence/qa-20260512-vercel-fragile-load-query-console.txt` | - |
+| playwright-screenshot | v8.11.129 fragile load-query closure dialog screenshot | `reports/qa/evidence/qa-20260512-v811129-load-phrasing-dialog.png` | - |
+| playwright-network | v8.11.129 fragile load-query runtime evidence and resource timings | `reports/qa/evidence/qa-20260512-v811129-load-phrasing-runtime.json` | - |
+| playwright-network | v8.11.129 fragile load-query network requests | `reports/qa/evidence/qa-20260512-v811129-load-phrasing-network.txt` | - |
+| playwright-console | v8.11.129 fragile load-query console messages | `reports/qa/evidence/qa-20260512-v811129-load-phrasing-console.txt` | - |
+| playwright-report | v8.11.129 fragile load-query dialog text transcript | `reports/qa/evidence/qa-20260512-v811129-load-phrasing-dialog.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260512-0481)
-  next: Route load/부하/system load natural phrasing through the semantic IntentFrame metric_peak/load1 capability before generic server metric fallback.
+- None
 
 ## Pending Improvements
 
-- [P1] ai-assistant-load-natural-language-metric-drift-v811128: AI Assistant natural load phrasing can drift from load1/24h whole-fleet intent to CPU/recent-1h metric evidence (seen 1회, last QA-20260512-0481)
+- None
 
 ## Deferred Improvements
 
@@ -208,6 +209,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-general-coding-boundary: Guard general coding and algorithm requests at the AI Assistant input boundary (completed 1회, last QA-20260511-0467)
 - ai-assistant-guest-login-mcp-check-v81136-20260427: AI assistant works through Vercel Playwright MCP guest login on v8.11.36 (completed 1회, last QA-20260427-0351)
+- ai-assistant-load-natural-language-metric-drift-v811128: AI Assistant natural load phrasing stays on load1/24h whole-fleet peak evidence after v8.11.129 semantic parser fix (completed 1회, last QA-20260512-0482)
 - ai-assistant-ops-procedure-artifact: Structure operational scripts, alert rules, and runbooks as ops-procedure artifacts (completed 1회, last QA-20260511-0468)
 - ai-assistant-real-chat-e2e-v81136: AI assistant Playwright MCP real chat QA on Vercel v8.11.36 (completed 1회, last QA-20260427-0350)
 - ai-assistant-static-health-label: Static AI Engine Active label removed (completed 1회, last QA-20260503-0396)
@@ -732,6 +734,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260512-0482 | 2026-05-11T23:30:16.424Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query closure on v8.11.129 | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0481 | 2026-05-11T17:04:04.232Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query phrasing probe on v8.11.128 | 4 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260512-0480 | 2026-05-11T16:49:15.653Z | targeted | yes | yes | Vercel Playwright QA - AI peak-load regression recheck on v8.11.128 | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0479 | 2026-05-11T14:39:01.439Z | targeted | yes | yes | GitLab Release QA - v8.11.128 Domain Capability Resolver | 6 | 1 | 0 | 0 | 0 | 0 |
@@ -751,4 +754,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260510-0465 | 2026-05-10T11:58:02.942Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Completion | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260510-0464 | 2026-05-10T11:42:24.446Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Batch 1 | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260510-0463 | 2026-05-10T10:45:23.370Z | targeted | no | no | Entity Extraction Pipeline QA - LLM 명확화 사전차단 검증 | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260510-0462 | 2026-05-10T10:00:23.786Z | targeted | no | no | Local QA - AI SDK v6 Structured Output Migration | 10 | 3 | 0 | 0 | 0 | 0 |

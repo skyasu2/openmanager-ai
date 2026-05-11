@@ -1,0 +1,6 @@
+[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+[GET] https://openmanager-ai.vercel.app/api/version => [200]

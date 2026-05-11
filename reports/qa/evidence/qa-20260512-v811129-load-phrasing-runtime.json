@@ -1,0 +1,102 @@
+{
+  "capturedAt": "2026-05-11T23:27:44.407Z",
+  "url": "https://openmanager-ai.vercel.app/dashboard",
+  "version": {
+    "version": "8.11.129",
+    "buildVersion": "8.11.129",
+    "nextjs": "16.1.6",
+    "environment": "production",
+    "commitSha": "4a8d5be20bbd1502f4d72ed54e0917a846b1e50a",
+    "shortCommitSha": "4a8d5be20b",
+    "releaseTag": "v8.11.129",
+    "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517338884",
+    "deploymentProvider": "vercel",
+    "timestamp": "2026-05-11T23:27:45.103Z"
+  },
+  "checks": [
+    {
+      "query": "서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도.",
+      "expected": [
+        "load1",
+        "24h/recent day",
+        "whole fleet",
+        "peak slot",
+        "top servers"
+      ],
+      "verdict": "pass"
+    },
+    {
+      "query": "최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.",
+      "expected": [
+        "load1/system load",
+        "recent day",
+        "whole fleet",
+        "culprit server"
+      ],
+      "verdict": "pass"
+    }
+  ],
+  "notes": [
+    "Both previously failing fragile Korean phrasings resolved to monitoring load1 peak evidence on production v8.11.129.",
+    "The footer still labels the response as general chat, but the visible answer/evidence content is load-peak grounded and non-blocking for this regression."
+  ],
+  "resourceTimings": [
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "initiatorType": "fetch",
+      "duration": 798,
+      "transferSize": 328,
+      "startTime": 26585
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 1041,
+      "transferSize": 322,
+      "startTime": 65687
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "initiatorType": "fetch",
+      "duration": 966,
+      "transferSize": 1070,
+      "startTime": 66754
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs/2db12f31-5ffc-49e4-bf0e-570e82cdcf6c/stream",
+      "initiatorType": "other",
+      "duration": 1827,
+      "transferSize": 3262,
+      "startTime": 67723
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 758,
+      "transferSize": 322,
+      "startTime": 170552
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "initiatorType": "fetch",
+      "duration": 628,
+      "transferSize": 1069,
+      "startTime": 171325
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs/c7e8b6e5-11b5-4dc8-8b2d-cd39d6b74036/stream",
+      "initiatorType": "other",
+      "duration": 1492,
+      "transferSize": 3058,
+      "startTime": 171956
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/version",
+      "initiatorType": "fetch",
+      "duration": 75,
+      "transferSize": 545,
+      "startTime": 259241
+    }
+  ],
+  "dialogText": "AI 어시스턴트\n\n서버 상태·로그·메트릭을 자연어로 질의\n\n전체화면\nAI Chat\n\nAI 기반 대화형 인터페이스\n\n서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도.\n\n8:24:15 AM\n\n복사\n지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n\n기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n최고값: 16.58\n상위 평균: 9.08\n\n\n상위 서버\ndb-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\ndb-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\napi-was-dc1-01 (api-was-dc1-01): 4.87\n\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.\n\n8:26:08 AM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.\n\n8:26:10 AM\n\n복사\n지난 24시간 동안 서버의 로드(load1)가 가장 높았던 시간대는 2026년 5월 12일 03:50입니다. 이때 로드 평균은 9.08였으며, 최고치를 기록한 서버는 db-mysql-dc1-primary로 16.58까지 치솟았습니다. \n\n\n이는 데이터베이스 서버의 부하가 급증했음을 의미하며, 상위 프로세스나 최근 배포된 스케줄러, 트래픽 분산 등을 점검할 필요가 있습니다.\n\n8:26:10 AM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n다시 생성\n대화 4/50\n서버 운영 중심\nEnter로 전송, Shift+Enter로 줄바꿈\n\nAI 기능\n\nAI Chat\n서버 질의, 트러블슈팅, 명령어 추천\n자동장애 보고서\nReporter Agent 장애 분석 보고서 생성\n이상감지/추세\n경량 이상 신호와 리스크 추세 분석\n전체 화면으로 보기"
+}

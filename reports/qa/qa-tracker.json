@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-11T17:04:04.232Z"
+    "updatedAt": "2026-05-11T23:30:16.424Z"
   },
   "sequence": {
-    "nextRunNumber": 482
+    "nextRunNumber": 483
   },
   "summary": {
-    "totalRecordedRuns": 479,
-    "totalRuns": 381,
+    "totalRecordedRuns": 480,
+    "totalRuns": 382,
     "excludedRuns": 98,
-    "totalChecks": 3377,
-    "totalPassed": 3247,
+    "totalChecks": 3379,
+    "totalPassed": 3249,
     "totalFailed": 120,
-    "completionRate": 99.82,
-    "completedItems": 542,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 543,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260512-0481",
-    "lastRecordedAt": "2026-05-11T17:04:04.232Z",
-    "latestRecordedRunId": "QA-20260512-0481",
-    "latestRecordedAt": "2026-05-11T17:04:04.232Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260512-0482",
+    "lastRecordedAt": "2026-05-11T23:30:16.424Z",
+    "latestRecordedRunId": "QA-20260512-0482",
+    "latestRecordedAt": "2026-05-11T23:30:16.424Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13268,27 +13268,27 @@
     },
     "ai-assistant-load-natural-language-metric-drift-v811128": {
       "id": "ai-assistant-load-natural-language-metric-drift-v811128",
-      "title": "AI Assistant natural load phrasing can drift from load1/24h whole-fleet intent to CPU/recent-1h metric evidence",
+      "title": "AI Assistant natural load phrasing stays on load1/24h whole-fleet peak evidence after v8.11.129 semantic parser fix",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260512-0481",
       "firstSeenAt": "2026-05-11T17:04:04.232Z",
-      "lastSeenRunId": "QA-20260512-0481",
-      "lastSeenAt": "2026-05-11T17:04:04.232Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260512-0482",
+      "lastSeenAt": "2026-05-11T23:30:16.424Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "reports/qa/evidence/qa-20260512-vercel-fragile-load-query-result.json",
-      "lastNote": "Two vulnerable prompts failed: '최근 하루 중 1분 load가 제일 튄 시각' returned CPU 96% and recent-1h metadata, and 'CPU 말고 시스템 load 기준' still returned CPU/memory evidence. Explicit load1 prompts pass, so the issue is semantic metric/time-window drift in natural phrasing.",
+      "lastEvidence": "reports/qa/evidence/qa-20260512-v811129-load-phrasing-runtime.json",
+      "lastNote": "Closure for QA-20260512-0481: both previously failing prompts now return load1 peak timestamp 2026-05-12 03:50, peak 16.58, average 9.08, and top contributor db-mysql-dc1-primary without drifting to CPU/memory or recent-1h evidence.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-11T17:04:04.232Z"
+      "lastStatusChangeAt": "2026-05-11T23:30:16.424Z"
     }
   },
   "runs": [
@@ -51697,6 +51697,172 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260512-0482",
+      "recordedAt": "2026-05-11T23:30:16.424Z",
+      "recordedAtKst": "2026-05-12 08:30:16 KST",
+      "title": "Vercel Playwright QA - AI fragile load-query closure on v8.11.129",
+      "owner": "codex",
+      "source": "playwright-mcp+vercel-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260512-0482.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_BkQYTY7ZkvN5fybyD9zCjr4HQY55",
+        "deploymentUrl": "https://openmanager-mezfd60h4-skyasus-projects.vercel.app",
+        "commitSha": "4a8d5be20bbd1502f4d72ed54e0917a846b1e50a"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production deployment dpl_BkQYTY7ZkvN5fybyD9zCjr4HQY55 is Ready and aliased to https://openmanager-ai.vercel.app",
+        "/api/version reports v8.11.129, commit 4a8d5be20bbd1502f4d72ed54e0917a846b1e50a, and release pipeline 2517338884",
+        "Dashboard guest flow opened the AI sidebar with AI engine status Ready",
+        "Previously failing fragile whole-fleet load phrasing variants were tested through the real UI path without bypassing CSRF",
+        "Prompt with 서버명 intentionally omitted and 1분 load 제일 튄 시각 returned load1 24h peak timestamp 2026-05-12 03:50, peak 16.58, average 9.08, and top servers",
+        "Prompt with CPU excluded and 시스템 load/제일 버거웠던 때 returned load1 24h peak timestamp 2026-05-12 03:50 and culprit server db-mysql-dc1-primary 16.58",
+        "Browser console reported 0 warnings and 0 errors; API network calls returned 200/201"
+      ],
+      "skippedSurfaces": [
+        "Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost; this run targeted the known vulnerable peak-load phrasing only",
+        "Core route pack beyond dashboard AI sidebar",
+        "Reporter Agent",
+        "Analyst Agent",
+        "mobile viewport",
+        "Cloud Run admin observability surface"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar fragile Korean load phrasing - omitted server / 1분 load peak",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright Performance API resource timing",
+          "latencyMs": 1827,
+          "processingTimeMs": 1827
+        },
+        {
+          "surface": "AI sidebar fragile Korean load phrasing - CPU excluded / system load",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright Performance API resource timing",
+          "latencyMs": 1492,
+          "processingTimeMs": 1492
+        }
+      ],
+      "plannerShadowObservations": [
+        {
+          "surface": "AI sidebar fragile load phrasing closure",
+          "route": "/api/ai/jobs/[id]/stream",
+          "executionMode": "single-agent",
+          "latencyMs": 1827,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "Visible answers stayed grounded to load1/24h whole-fleet peak evidence for both previously failing natural Korean variants."
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The semantic parser/domain resolver fix kept both previously failing Korean load phrasings on load1, recent-24h, whole-fleet peak evidence and included numeric support plus a short operational interpretation.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production deployment is Ready, /api/version matches v8.11.129, API paths returned HTTP 200/201, and Vercel usage remains within the no-billed-usage guardrail.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run used a small risk-based Playwright MCP prompt set with durable screenshot, transcript, network, console, and resource-timing evidence instead of broad live LLM repetition.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-12T08:28:03+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.11.129 targeted fragile load-query closure QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.129 fragile load-query closure dialog screenshot",
+          "path": "reports/qa/evidence/qa-20260512-v811129-load-phrasing-dialog.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.129 fragile load-query runtime evidence and resource timings",
+          "path": "reports/qa/evidence/qa-20260512-v811129-load-phrasing-runtime.json"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.129 fragile load-query network requests",
+          "path": "reports/qa/evidence/qa-20260512-v811129-load-phrasing-network.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.129 fragile load-query console messages",
+          "path": "reports/qa/evidence/qa-20260512-v811129-load-phrasing-console.txt"
+        },
+        {
+          "type": "playwright-report",
+          "label": "v8.11.129 fragile load-query dialog text transcript",
+          "path": "reports/qa/evidence/qa-20260512-v811129-load-phrasing-dialog.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "v8.11.129 release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517338884"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-mezfd60h4-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -51705,17 +51871,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 233,
-      "appropriateCount": 201,
+      "seenCount": 234,
+      "appropriateCount": 202,
       "partialCount": 32,
       "inappropriateCount": 0,
       "improvementNeededCount": 42,
-      "lastRunId": "QA-20260512-0481",
-      "lastSeenAt": "2026-05-11T17:04:04.232Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The explicit load1 forms pass, but natural Korean load phrasing can drift to CPU/memory evidence and recent-1h metadata even when the user asks for recent 하루 and excludes CPU.",
-      "lastNextAction": "Route load/부하/system load natural phrasing through the semantic IntentFrame metric_peak/load1 capability before generic server metric fallback."
+      "lastRunId": "QA-20260512-0482",
+      "lastSeenAt": "2026-05-11T23:30:16.424Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The semantic parser/domain resolver fix kept both previously failing Korean load phrasings on load1, recent-24h, whole-fleet peak evidence and included numeric support plus a short operational interpretation.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -51756,16 +51922,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 164,
-      "appropriateCount": 147,
+      "seenCount": 165,
+      "appropriateCount": 148,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260512-0481",
-      "lastSeenAt": "2026-05-11T17:04:04.232Z",
+      "lastRunId": "QA-20260512-0482",
+      "lastSeenAt": "2026-05-11T23:30:16.424Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production deployment is Ready, /api/version matches v8.11.128, AI paths returned HTTP 200/201, and Vercel usage remains within the expected no-billed-usage guardrail.",
+      "lastRationale": "The production deployment is Ready, /api/version matches v8.11.129, API paths returned HTTP 200/201, and Vercel usage remains within the no-billed-usage guardrail.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -51773,16 +51939,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 201,
-      "appropriateCount": 183,
+      "seenCount": 202,
+      "appropriateCount": 184,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260512-0481",
-      "lastSeenAt": "2026-05-11T17:04:04.232Z",
+      "lastRunId": "QA-20260512-0482",
+      "lastSeenAt": "2026-05-11T23:30:16.424Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run used a small risk-based prompt set through Playwright MCP and captured structured result, network, and console evidence without broad live LLM repetition.",
+      "lastRationale": "The run used a small risk-based Playwright MCP prompt set with durable screenshot, transcript, network, console, and resource-timing evidence instead of broad live LLM repetition.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
