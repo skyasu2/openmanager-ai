@@ -17,6 +17,7 @@ import {
 import {
   getLastUserQueryText,
 } from './supervisor-stream-messages';
+import { resolveDomainEvidenceForStream } from './supervisor-domain-evidence';
 import {
   buildInternalImplementationPathPolicyMetadata,
   buildInternalImplementationPathRefusal,
@@ -50,6 +51,11 @@ export async function* executeSupervisorStream(
   );
   const mode = modeDecision.resolvedMode;
   const queryText = getLastUserQueryText(runtimeRequest.messages);
+  const domainEvidence = await resolveDomainEvidenceForStream({
+    request: runtimeRequest,
+    query: queryText,
+    domain: runtimeContext.host.domain,
+  }) ?? undefined;
 
   logger.info({
     sessionId: request.sessionId,
@@ -135,6 +141,7 @@ export async function* executeSupervisorStream(
         images: request.images,
         files: request.files,
         dataSource: runtimeContext.host.domain.dataSource,
+        domainEvidencePrompt: domainEvidence?.prompt,
       })) {
         if (event.type === 'error') {
           const errorData = event.data as { code?: string };
@@ -167,7 +174,8 @@ export async function* executeSupervisorStream(
                 degradedReason,
               },
               modeDecision,
-              runtimeMetadata
+              runtimeMetadata,
+              domainEvidence
             );
             return;
           }
@@ -232,7 +240,8 @@ export async function* executeSupervisorStream(
             degradedReason: 'multi_agent_runtime_error',
           },
           modeDecision,
-          runtimeMetadata
+          runtimeMetadata,
+          domainEvidence
         );
         return;
       }
@@ -255,6 +264,7 @@ export async function* executeSupervisorStream(
     runtimeTools,
     undefined,
     modeDecision,
-    runtimeMetadata
+    runtimeMetadata,
+    domainEvidence
   );
 }

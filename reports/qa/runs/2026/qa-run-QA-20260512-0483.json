@@ -1,0 +1,239 @@
+{
+  "runId": "QA-20260512-0483",
+  "recordedAt": "2026-05-12T02:07:18.555Z",
+  "recordedAtKst": "2026-05-12 11:07:18 KST",
+  "runTitle": "Vercel Playwright QA - AI semantic routing regression check on v8.11.131",
+  "owner": "codex",
+  "source": "playwright-mcp+vercel-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Fh3V7SSnGvFRuvHus9ieRRWidArA",
+    "deploymentUrl": "https://openmanager-gnek5t0j9-skyasus-projects.vercel.app",
+    "commitSha": "b6414889fe777456bfd70f82582657571b310a50"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Vercel production deployment dpl_Fh3V7SSnGvFRuvHus9ieRRWidArA is Ready and aliased to https://openmanager-ai.vercel.app",
+    "/api/version reports v8.11.131, commit b6414889fe777456bfd70f82582657571b310a50, and release pipeline 2517513574",
+    "Dashboard guest flow opened the AI sidebar with AI engine status Ready",
+    "Previously failing peak-load question returned load1 24h peak timestamp 2026-05-12 03:50, peak 16.58, average 9.08, and top servers",
+    "Previously failing omitted-server / whole-fleet 1분 load phrasing returned load1 24h peak timestamp 2026-05-12 03:50 and top server db-mysql-dc1-primary 16.58",
+    "Previously failing CPU-excluded / 시스템 load / 제일 버거웠던 때 phrasing returned load1 24h peak timestamp 2026-05-12 03:50 and culprit servers",
+    "Advice-only load phrasing did not return the deterministic peak timestamp, so the immediate peak false-positive was avoided",
+    "Composite peak-plus-response-guidance query routed to /api/ai/supervisor/stream/v2 with localRouteDecision complexity_below_threshold and missed deterministic peak evidence",
+    "Browser console reported 0 warnings and 0 errors; AI API network calls returned 200/201"
+  ],
+  "skippedSurfaces": [
+    "Full five-question conversational AI QA was not repeated to avoid unnecessary live LLM cost; this run targeted semantic routing regressions only",
+    "Core route pack beyond landing/dashboard AI sidebar",
+    "Reporter Agent",
+    "Analyst Agent",
+    "mobile viewport",
+    "Cloud Run admin observability surface"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 6,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar standard 24h peak-load question",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 1979,
+      "processingTimeMs": 1979
+    },
+    {
+      "surface": "AI sidebar omitted-server whole-fleet 1분 load peak question",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 1676,
+      "processingTimeMs": 1676
+    },
+    {
+      "surface": "AI sidebar CPU-excluded system-load peak question",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 1378,
+      "processingTimeMs": 1378
+    },
+    {
+      "surface": "AI sidebar advice-only load question",
+      "agent": "Supervisor",
+      "provider": "streaming-ai",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 1528,
+      "processingTimeMs": 1528
+    },
+    {
+      "surface": "AI sidebar composite load peak plus response guidance question",
+      "agent": "Supervisor",
+      "provider": "streaming-ai",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 4716,
+      "processingTimeMs": 4716
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "Previously failing peak-load phrasing set",
+      "route": "/api/ai/jobs/[id]/stream",
+      "executionMode": "single-agent",
+      "latencyMs": 1979,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "Three prior fragile peak-load phrasings stayed grounded to load1/24h whole-fleet peak evidence."
+    },
+    {
+      "surface": "Composite load peak plus response guidance question",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 4716,
+      "classification": "drift",
+      "driftReasonCodes": [],
+      "source": "Prompt contained load + 피크 + 최근 하루 but local route decision stayed complexity_below_threshold and the answer omitted the deterministic 24h peak timestamp."
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The known fragile peak-load questions now pass, but a composite load peak plus response-guidance prompt still bypasses deterministic peak evidence and returns a generic streaming answer.",
+      "nextAction": "Route explicit metric_peak frames and raw semantic peak evidence before generic streaming for composite advice prompts."
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The advice-only load question avoided peak false-positive routing, but the response included potentially mutating operational commands without a deterministic evidence/safety envelope.",
+      "nextAction": "Add a safe ops-advice evidence path or output guard that separates diagnosis, read-only verification, and mutating commands."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production deployment is Ready, /api/version matches v8.11.131, GitLab release pipeline succeeded, and Vercel usage remains within the no-billed-usage guardrail.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run used a small risk-based Playwright MCP prompt set with request, runtime, console, and timing evidence instead of broad live LLM repetition.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-12T10:58:35+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.11.131 targeted semantic routing QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "v8.11.131 AI semantic routing network requests",
+      "path": "reports/qa/evidence/qa-20260512-v811131-ai-semantic-routing-network.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.131 AI semantic routing runtime transcript and resource timings",
+      "path": "reports/qa/evidence/qa-20260512-v811131-ai-semantic-routing-runtime.json"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.131 AI semantic routing console messages",
+      "path": "reports/qa/evidence/qa-20260512-v811131-ai-semantic-routing-console.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-load-fragile-phrasing-v811131",
+      "title": "Previously failing Korean peak-load phrasings stay grounded to load1 24h whole-fleet evidence on v8.11.131",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-assistant-peak-load-composite-routing-v811131",
+      "title": "Composite load peak plus response-guidance prompt should still use deterministic peak evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "The prompt '최근 하루 load 피크 시간과 대응 방법 알려줘' routed to /api/ai/supervisor/stream/v2 as complexity_below_threshold and omitted the deterministic load1 24h peak timestamp.",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-load-advice-safety-v811131",
+      "title": "Load advice responses should not propose mutating commands without a safety envelope",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "The prompt '최근 하루 load 높아서 힘들 때 조치 방법 알려줘' avoided peak false-positive routing but suggested system/runtime command changes without deterministic validation.",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "v8.11.131 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517513574"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-gnek5t0j9-skyasus-projects.vercel.app/"
+    }
+  ]
+}

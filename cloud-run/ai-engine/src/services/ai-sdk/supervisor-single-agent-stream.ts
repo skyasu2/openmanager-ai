@@ -4,6 +4,7 @@ import {
   type ToolSet,
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../config/timeout-config';
+import type { DomainEvidenceResult } from '../../core/assistant-runtime';
 import { extractRagSources, extractToolResultOutput, type RagSource } from '../../lib/ai-sdk-utils';
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
@@ -81,6 +82,7 @@ export async function* streamSingleAgent(
   degradedFallbackContext?: SupervisorDegradedFallbackContext,
   modeDecision?: ResolvedSupervisorModeDecision,
   runtimeMetadata?: AssistantRuntimeMetadata,
+  resolvedDomainEvidence?: DomainEvidenceResult,
 ): AsyncGenerator<StreamEvent> {
   const hasImages = request.images && request.images.length > 0;
   const routeDecision = modeDecision
@@ -119,11 +121,13 @@ export async function* streamSingleAgent(
     return;
   }
 
-  const domainEvidence = await resolveDomainEvidenceForStream({
-    request,
-    query: queryText,
-    domain: runtimeHost.domain,
-  });
+  const domainEvidence =
+    resolvedDomainEvidence ??
+    (await resolveDomainEvidenceForStream({
+      request,
+      query: queryText,
+      domain: runtimeHost.domain,
+    }));
   const systemPrompt = runtimeHost.createSystemPrompt({ deviceType: request.deviceType });
   const modelMessages = buildSupervisorStreamMessages(request, systemPrompt, domainEvidence?.prompt);
 

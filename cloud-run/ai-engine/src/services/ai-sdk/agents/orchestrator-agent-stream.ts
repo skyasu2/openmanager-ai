@@ -76,6 +76,7 @@ export async function* executeAgentStream(
   contextSummary?: string | null,
   dataSource?: DomainDataSource,
   domainId?: string,
+  domainEvidencePrompt?: string,
 ): AsyncGenerator<StreamEvent> {
   // Buffer model text for queries that may be answered deterministically; once
   // tool results are available, the route is re-evaluated with data evidence.
@@ -181,7 +182,12 @@ export async function* executeAgentStream(
         ? `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}`
         : query;
       const userContent = buildMultimodalContent(promptWithContext, images, files);
-      const systemContent = getAgentInstructions(agentConfig, query);
+      const systemContent = [
+        getAgentInstructions(agentConfig, query),
+        domainEvidencePrompt,
+      ]
+        .filter((part): part is string => Boolean(part))
+        .join('\n\n');
       const estimatedTokens = estimateAgentStreamQuotaTokens(
         [systemContent, userContent as UserContent],
         STREAM_MAX_OUTPUT_TOKENS

@@ -6,6 +6,7 @@ const {
   mockGenerateText,
   mockStreamText,
   mockExecuteMultiAgent,
+  mockExecuteMultiAgentStream,
   mockGetSupervisorModel,
   mockRecordModelUsage,
   mockIsSingleModeAllowed,
@@ -19,6 +20,7 @@ const {
   mockGenerateText: vi.fn(),
   mockStreamText: vi.fn(),
   mockExecuteMultiAgent: vi.fn(),
+  mockExecuteMultiAgentStream: vi.fn(),
   mockGetSupervisorModel: vi.fn(() => ({
     model: { modelId: 'groq-model' },
     provider: 'groq',
@@ -99,7 +101,7 @@ vi.mock('../../tools-ai-sdk', () => ({
 
 vi.mock('./agents', () => ({
   executeMultiAgent: mockExecuteMultiAgent,
-  executeMultiAgentStream: vi.fn(async function* () {}),
+  executeMultiAgentStream: mockExecuteMultiAgentStream,
 }));
 
 vi.mock('./model-provider', () => ({
@@ -236,6 +238,7 @@ import {
   createInMemoryAssistantRuntimeAdapters,
   type AssistantDomain,
   type AssistantRequestContext,
+  type DomainEvidenceProvider,
   type ToolDefinition,
 } from '../../core/assistant-runtime';
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
@@ -258,7 +261,10 @@ const sampleDataSource = {
   history: vi.fn(async () => []),
 };
 
-function createSampleDomain(tool: ToolDefinition): AssistantDomain {
+function createSampleDomain(
+  tool: ToolDefinition,
+  evidenceProviders?: DomainEvidenceProvider[]
+): AssistantDomain {
   const domain = {
     id: 'sample-support',
     version: '2026-05-06-test',
@@ -285,12 +291,13 @@ function createSampleDomain(tool: ToolDefinition): AssistantDomain {
       },
     },
     dataSource: sampleDataSource,
+    ...(evidenceProviders && { evidenceProviders }),
   };
 
   return domain as AssistantDomain;
 }
 
-function createSampleRuntimeHost() {
+function createSampleRuntimeHost(evidenceProviders?: DomainEvidenceProvider[]) {
   const sampleTool: ToolDefinition = {
     name: SAMPLE_TOOL_NAME,
     description: 'Returns deterministic sample account health.',
@@ -310,7 +317,7 @@ function createSampleRuntimeHost() {
   };
 
   return createAssistantRuntimeHost({
-    domain: createSampleDomain(sampleTool),
+    domain: createSampleDomain(sampleTool, evidenceProviders),
     adapters: createInMemoryAssistantRuntimeAdapters(),
     adapterKinds: {
       stateStore: 'in-memory',
@@ -381,6 +388,7 @@ describe('supervisor domain wiring contract', () => {
         totalTokens: 3,
       }),
     });
+    mockExecuteMultiAgentStream.mockImplementation(async function* () {});
   });
 
   it('uses the injected runtime host domain toolset for supervisor stream execution', async () => {
@@ -449,6 +457,51 @@ describe('supervisor domain wiring contract', () => {
       expect.objectContaining({
         domainId: 'sample-support',
         dataSource: sampleDataSource,
+      })
+    );
+  });
+
+  it('passes deterministic domain evidence into multi-agent stream execution', async () => {
+    mockSelectExecutionMode.mockReturnValue('multi');
+    mockExecuteMultiAgentStream.mockImplementation(async function* () {
+      yield {
+        type: 'done',
+        data: {
+          success: true,
+          metadata: {},
+        },
+      };
+    });
+
+    const evidenceProvider: DomainEvidenceProvider = {
+      id: 'sample-stream-evidence',
+      canHandle: () => true,
+      async resolve() {
+        return {
+          id: 'sample-stream-evidence',
+          prompt: '[Deterministic sample stream evidence]\nKeep account acct-123 unchanged.',
+          fallback: 'acct-123 is the deterministic account.',
+        };
+      },
+    };
+
+    const events = [];
+    for await (const event of executeSupervisorStream(
+      createSupervisorRequest(createSampleRuntimeHost([evidenceProvider]))
+    )) {
+      events.push(event);
+    }
+
+    expect(events.at(-1)).toMatchObject({
+      type: 'done',
+      data: { success: true },
+    });
+    expect(mockExecuteMultiAgentStream).toHaveBeenCalledTimes(1);
+    expect(mockExecuteMultiAgentStream.mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({
+        domainEvidencePrompt: expect.stringContaining(
+          '[Deterministic sample stream evidence]'
+        ),
       })
     );
   });

@@ -152,11 +152,13 @@ const COMMAND_RECOMMENDATIONS: CommandRecommendation[] = [
 const SERVICE_COMMAND_PATTERN =
   /(haproxy|nginx|mysql|redis|nfs|백엔드|액세스\s*로그|access\s*log|5xx|마운트|재마운트|remount|slow\s*query|느린\s*쿼리|bigkeys)/i;
 const RESOURCE_COMMAND_PATTERN =
-  /(디스크|disk|용량|capacity|space|filesystem|파일시스템|inode|아이노드|cpu|프로세스|부하|메모리|memory|oom)/i;
+  /(디스크|disk|용량|capacity|space|filesystem|파일시스템|inode|아이노드|cpu|프로세스|부하|로드|\bload(?:1|5)?\b|메모리|memory|oom)/i;
 const COMMAND_GUIDANCE_PATTERN =
   /(명령어|커맨드|cli|어떻게|방법|순서|확인하는|확인하고|확인\s*명령|점검|분석하는|재마운트|remount|큰지\s*확인|확보|정리|cleanup)/i;
 const RESOURCE_COMMAND_GUIDANCE_PATTERN =
-  /(명령어|커맨드|cli|확인\s*명령|점검\s*명령|용량.*확보|확보.*명령|정리|cleanup)/i;
+  /(명령어|커맨드|cli|방법|대응|조치|해결|확인\s*명령|점검\s*명령|용량.*확보|확보.*명령|정리|cleanup)/i;
+const EXPLICIT_PEAK_TIME_EVIDENCE_PATTERN =
+  /(?:피크|peak|max|highest|최고|최대|최고점|최댓값).*(?:시간|시간대|시각|시점|언제|구간)|(?:시간|시간대|시각|시점|언제|구간).*(?:피크|peak|max|highest|최고|최대|최고점|최댓값)/i;
 const SERVICE_KEYWORDS = ['haproxy', 'nginx', 'mysql', 'redis', 'nfs'] as const;
 const GENERIC_KEYWORDS = new Set([
   '서버',
@@ -187,6 +189,10 @@ const MEMORY_INSPECTION_COMMANDS = [
 ] as const;
 
 export function isServiceCommandGuidanceQuery(query: string): boolean {
+  if (EXPLICIT_PEAK_TIME_EVIDENCE_PATTERN.test(query)) {
+    return false;
+  }
+
   if (SERVICE_COMMAND_PATTERN.test(query)) {
     return COMMAND_GUIDANCE_PATTERN.test(query);
   }
@@ -216,6 +222,11 @@ export function extractCommandKeywordsFromQuery(query: string): string[] {
   if (/capacity|space|용량|확보/i.test(query)) keywords.add('용량');
   if (/cleanup|clean\s*up|정리/i.test(query)) keywords.add('정리');
   if (/inode|아이노드/i.test(query)) keywords.add('inode');
+  if (/부하|로드|\bload(?:1|5)?\b/i.test(query)) {
+    keywords.add('부하');
+    keywords.add('확인');
+  }
+  if (/방법|대응|조치|해결/i.test(query)) keywords.add('방법');
 
   return [...keywords];
 }
@@ -273,7 +284,7 @@ function hasDiskCapacityIntent(keywords: string[]): boolean {
 function hasCpuInspectionIntent(keywords: string[]): boolean {
   return (
     hasAny(keywords, ['cpu', '프로세서', '부하']) &&
-    hasAny(keywords, ['확인', '점검', '명령어', '프로세스'])
+    hasAny(keywords, ['확인', '점검', '명령어', '프로세스', '방법', '대응', '조치', '해결'])
   );
 }
 
@@ -319,7 +330,10 @@ export function buildServiceCommandGuidanceAnswer(query: string): string | null 
 
   if (recommendations.length === 0) return null;
 
-  const lines = ['바로 확인할 명령어는 아래 순서로 실행하면 됩니다.'];
+  const lines = [
+    '바로 확인할 명령어는 아래 순서로 실행하면 됩니다.',
+    '아래는 읽기 전용 진단을 우선한 순서입니다. 재시작, 삭제, sysctl 변경 같은 조치는 결과 확인 후 승인된 절차로만 진행하세요.',
+  ];
   recommendations.forEach((recommendation, index) => {
     lines.push(
       '',

@@ -162,7 +162,8 @@ export async function executeForcedRouting(
   contextSummary?: string | null,
   dataSource?: DomainDataSource,
   domainId?: string,
-  internalDisclosureMode?: InternalDisclosureMode
+  internalDisclosureMode?: InternalDisclosureMode,
+  domainEvidencePrompt?: string
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Forced Routing] Looking up agent config: "${suggestedAgentName}"`);
   const dataSourceContext = createAgentDataSourceContext({ query, domainId });
@@ -401,6 +402,12 @@ export async function executeForcedRouting(
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
       : '';
   const executionPrompt = buildContextAwarePrompt(`${query}${attachmentHint}`, contextSummary);
+  const systemContent = [
+    getAgentInstructions(agentConfig, query),
+    domainEvidencePrompt,
+  ]
+    .filter((part): part is string => Boolean(part))
+    .join('\n\n');
 
   // Per-agent maxSteps: Analyst/Reporter need more steps for multi-tool workflows
   const agentMaxSteps = getAgentMaxSteps(suggestedAgentName);
@@ -409,7 +416,7 @@ export async function executeForcedRouting(
     const retryResult = await generateTextWithRetry(
       {
         messages: [
-          { role: 'system', content: getAgentInstructions(agentConfig, query) },
+          { role: 'system', content: systemContent },
           { role: 'user', content: executionPrompt },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],

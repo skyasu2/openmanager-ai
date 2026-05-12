@@ -79,6 +79,8 @@ export interface MultiAgentRequest {
    */
   files?: FileAttachment[];
   dataSource?: DomainDataSource;
+  /** Deterministic domain evidence prompt resolved before agent routing. */
+  domainEvidencePrompt?: string;
 }
 
 export interface MultiAgentResponse {

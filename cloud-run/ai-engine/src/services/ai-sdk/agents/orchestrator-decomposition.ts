@@ -58,6 +58,7 @@ async function executeSubtaskWithTimeout(
   dataSource: DomainDataSource | undefined,
   domainId: string | undefined,
   internalDisclosureMode: MultiAgentRequest['internalDisclosureMode'] | undefined,
+  domainEvidencePrompt: string | undefined,
   logPrefix: string
 ): Promise<MultiAgentResponse | null> {
   const subtaskTimeoutMs = TIMEOUT_CONFIG.subtask.hard;
@@ -88,7 +89,8 @@ async function executeSubtaskWithTimeout(
     undefined,
     dataSource,
     domainId,
-    internalDisclosureMode
+    internalDisclosureMode,
+    domainEvidencePrompt
   );
 
   try {
@@ -230,6 +232,7 @@ export async function executeParallelSubtasks(
       dataSource,
       domainId,
       internalDisclosureMode,
+      undefined,
       'Parallel'
     );
     return { subtask, result, index };
@@ -313,7 +316,8 @@ export async function* executeParallelSubtasksStream(
   files?: FileAttachment[],
   dataSource?: DomainDataSource,
   domainId?: string,
-  internalDisclosureMode?: MultiAgentRequest['internalDisclosureMode']
+  internalDisclosureMode?: MultiAgentRequest['internalDisclosureMode'],
+  domainEvidencePrompt?: string
 ): AsyncGenerator<StreamEvent> {
   logger.info(`[ParallelStream] Executing ${subtasks.length} subtasks in parallel...`);
 
@@ -343,6 +347,7 @@ export async function* executeParallelSubtasksStream(
       dataSource,
       domainId,
       internalDisclosureMode,
+      domainEvidencePrompt,
       'ParallelStream'
     );
     return { subtask, result, index };
@@ -448,7 +453,8 @@ export async function* executeSequentialSubtasksStream(
   files?: FileAttachment[],
   dataSource?: DomainDataSource,
   domainId?: string,
-  internalDisclosureMode?: MultiAgentRequest['internalDisclosureMode']
+  internalDisclosureMode?: MultiAgentRequest['internalDisclosureMode'],
+  domainEvidencePrompt?: string
 ): AsyncGenerator<StreamEvent> {
   logger.info(`[SequentialStream] Executing ${subtasks.length} subtasks sequentially...`);
 
@@ -493,6 +499,7 @@ export async function* executeSequentialSubtasksStream(
       dataSource,
       domainId,
       internalDisclosureMode,
+      domainEvidencePrompt,
       'SequentialStream'
     );
 

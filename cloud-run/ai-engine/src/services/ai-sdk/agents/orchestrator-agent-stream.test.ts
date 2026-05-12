@@ -174,7 +174,8 @@ function createTestDataSource() {
 async function collectEvents(
   query: string,
   dataSource = createTestDataSource(),
-  domainId = 'sample-support'
+  domainId = 'sample-support',
+  domainEvidencePrompt?: string
 ) {
   const events: Array<{ type: string; data: unknown }> = [];
   for await (const event of executeAgentStream(
@@ -188,7 +189,8 @@ async function collectEvents(
     undefined,
     undefined,
     dataSource,
-    domainId
+    domainId,
+    domainEvidencePrompt
   )) {
     events.push(event);
   }
@@ -215,6 +217,51 @@ describe('executeAgentStream', () => {
     mockStreamTextInChunks.mockImplementation(function* (text: string) {
       yield { type: 'text_delta', data: text };
     });
+  });
+
+  it('adds deterministic domain evidence to the agent system prompt for composite advice queries', async () => {
+    mockStreamText.mockReturnValue(
+      createStreamResult({
+        chunks: ['피크 근거를 포함한 대응 요약'],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'finalAnswer' }],
+            toolResults: [
+              {
+                toolName: 'finalAnswer',
+                result: { answer: '피크 근거를 포함한 대응 요약' },
+              },
+            ],
+          },
+        ],
+      })
+    );
+
+    await collectEvents(
+      '최근 하루 load 피크 시간과 대응 방법 알려줘',
+      createTestDataSource(),
+      'openmanager-monitoring',
+      [
+        '[결정적 monitoring 피크 지표 근거]',
+        '최고 시간대: 2026-05-12 03:50',
+        '최고값: 16.58',
+        '위 수치와 시간대를 바꾸지 말고, 첫 문장에 결론을 답하세요.',
+      ].join('\n')
+    );
+
+    const firstCall = mockStreamText.mock.calls[0]?.[0] as {
+      messages?: Array<{ role: string; content: string }>;
+    };
+
+    expect(firstCall.messages?.[0]?.content).toContain(
+      '[결정적 monitoring 피크 지표 근거]'
+    );
+    expect(firstCall.messages?.[0]?.content).toContain(
+      '최고 시간대: 2026-05-12 03:50'
+    );
+    expect(firstCall.messages?.[1]?.content).toBe(
+      '최근 하루 load 피크 시간과 대응 방법 알려줘'
+    );
   });
 
   it('uses deterministic fallback for starter summary prompts without extra LLM summarization', async () => {

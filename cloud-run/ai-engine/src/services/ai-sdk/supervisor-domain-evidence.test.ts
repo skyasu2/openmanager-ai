@@ -178,6 +178,7 @@ describe('supervisor domain evidence support', () => {
       '전체 서버가 최근 24시간 중 제일 힘들었던 순간은? CPU 빼고 로드 기준',
       '최근 24시간 load가 가장 높았던 구간',
       '최근 하루 부하 최고점 top server',
+      '최근 하루 load 피크 시간과 대응 방법 알려줘',
     ];
 
     for (const query of queries) {

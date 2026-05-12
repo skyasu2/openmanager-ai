@@ -1,0 +1,21 @@
+[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+  Request body: {"query":"지난 24시간 중 가장 부하가 높았던 시간대는 언제야?"}
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+  Request body: {"query":"지난 24시간 중 가장 부하가 높았던 시간대는 언제야?","options":{"sessionId":"session-3d1254c9-1713-4a0b-8cd6-5d9d3aa53ac8","metadata":{"analysisMode":"auto","queryAsOfDataSlot":{"slotIndex":65,"minuteOfDay":650,"timeLabel":"10:50 KST"}}}}
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+  Request body: {"query":"서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도."}
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+  Request body: {"query":"서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도.","options":{"sessionId":"session-3d1254c9-1713-4a0b-8cd6-5d9d3aa53ac8","metadata":{"analysisMode":"auto","queryAsOfDataSlot":{"slotIndex":65,"minuteOfDay":650,"timeLabel":"10:50 KST"}}}}
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+  Request body: {"query":"최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지."}
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+  Request body: {"query":"최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.","options":{"sessionId":"session-3d1254c9-1713-4a0b-8cd6-5d9d3aa53ac8","metadata":{"analysisMode":"auto","queryAsOfDataSlot":{"slotIndex":65,"minuteOfDay":650,"timeLabel":"10:50 KST"}}}}
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+  Request body: {"query":"최근 하루 load 높아서 힘들 때 조치 방법 알려줘"}
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+  Request body: {"analysisMode":"auto","queryAsOfDataSlot":{"slotIndex":65,"minuteOfDay":650,"timeLabel":"10:50 KST"},"localRouteDecision":{"intent":"chat","executionPath":"stream","complexity":"simple","reasonCodes":["complexity_below_threshold"],"ruleVersion":"2026-05-03-v1","dataSlot":"10:50 KST","decidedBy":"frontend"},"id":"session-3d1254c9-1713-4a0b-8cd6-5d9d3aa53ac8","messages":[{"parts":[{"type":"text","text":"최근 하루 load 높아서 힘들 때 조치 방법 알려줘"}],"id":"fc2k5vjYoVN1bazc","role":"user"}],"trigger":"submit-message"}
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+  Request body: {"query":"최근 하루 load 피크 시간과 대응 방법 알려줘"}
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+  Request body: {"analysisMode":"auto","queryAsOfDataSlot":{"slotIndex":65,"minuteOfDay":650,"timeLabel":"10:50 KST"},"localRouteDecision":{"intent":"chat","executionPath":"stream","complexity":"simple","reasonCodes":["complexity_below_threshold"],"ruleVersion":"2026-05-03-v1","dataSlot":"10:50 KST","decidedBy":"frontend"},"id":"session-3d1254c9-1713-4a0b-8cd6-5d9d3aa53ac8","messages":[{"parts":[{"type":"text","text":"최근 하루 load 피크 시간과 대응 방법 알려줘"}],"id":"rqTLwJizkLzoJHyv","role":"user"}],"trigger":"submit-message"}

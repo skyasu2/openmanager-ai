@@ -509,13 +509,41 @@ export async function* executeMultiAgentStream(
     logger.info(`[Stream] Complex query detected, using Orchestrator-Worker stream pattern (${decomposition.subtasks.length} subtasks)`);
 
     if (decomposition.requiresSequential) {
-      yield* streamWithTrace(trace, startTime, executeSequentialSubtasksStream(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files, request.dataSource, request.domainId, request.internalDisclosureMode
-      ));
+      yield* streamWithTrace(
+        trace,
+        startTime,
+        executeSequentialSubtasksStream(
+          decomposition.subtasks,
+          startTime,
+          webSearchEnabled,
+          ragEnabled,
+          request.sessionId,
+          request.images,
+          request.files,
+          request.dataSource,
+          request.domainId,
+          request.internalDisclosureMode,
+          request.domainEvidencePrompt
+        )
+      );
     } else {
-      yield* streamWithTrace(trace, startTime, executeParallelSubtasksStream(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files, request.dataSource, request.domainId, request.internalDisclosureMode
-      ));
+      yield* streamWithTrace(
+        trace,
+        startTime,
+        executeParallelSubtasksStream(
+          decomposition.subtasks,
+          startTime,
+          webSearchEnabled,
+          ragEnabled,
+          request.sessionId,
+          request.images,
+          request.files,
+          request.dataSource,
+          request.domainId,
+          request.internalDisclosureMode,
+          request.domainEvidencePrompt
+        )
+      );
     }
     return;
   }
@@ -544,9 +572,24 @@ export async function* executeMultiAgentStream(
       };
     }
 
-    yield* streamWithTrace(trace, startTime, executeAgentStream(
-      query, forcedTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary, request.dataSource, request.domainId
-    ));
+    yield* streamWithTrace(
+      trace,
+      startTime,
+      executeAgentStream(
+        query,
+        forcedTarget.targetAgent,
+        startTime,
+        request.sessionId,
+        webSearchEnabled,
+        ragEnabled,
+        request.images,
+        request.files,
+        contextSummary,
+        request.dataSource,
+        request.domainId,
+        request.domainEvidencePrompt
+      )
+    );
     return;
   }
 
@@ -646,6 +689,7 @@ export async function* executeMultiAgentStream(
             contextSummary,
             request.dataSource,
             request.domainId,
+            request.domainEvidencePrompt,
           )
         );
         return;
@@ -686,7 +730,20 @@ export async function* executeMultiAgentStream(
       yield* streamWithTrace(
         trace,
         startTime,
-        executeAgentStream(query, selectedTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary, request.dataSource, request.domainId)
+        executeAgentStream(
+          query,
+          selectedTarget.targetAgent,
+          startTime,
+          request.sessionId,
+          webSearchEnabled,
+          ragEnabled,
+          request.images,
+          request.files,
+          contextSummary,
+          request.dataSource,
+          request.domainId,
+          request.domainEvidencePrompt
+        )
       );
       return;
     }
@@ -716,7 +773,20 @@ export async function* executeMultiAgentStream(
       yield* streamWithTrace(
         trace,
         startTime,
-        executeAgentStream(query, fallbackTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary, request.dataSource, request.domainId)
+        executeAgentStream(
+          query,
+          fallbackTarget.targetAgent,
+          startTime,
+          request.sessionId,
+          webSearchEnabled,
+          ragEnabled,
+          request.images,
+          request.files,
+          contextSummary,
+          request.dataSource,
+          request.domainId,
+          request.domainEvidencePrompt
+        )
       );
       return;
     }

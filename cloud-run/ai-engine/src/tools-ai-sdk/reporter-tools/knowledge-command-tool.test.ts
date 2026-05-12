@@ -121,4 +121,25 @@ describe('recommendCommands', () => {
     expect(answer).toContain('du -xhd1 / 2>/dev/null | sort -hr | head -20');
     expect(answer).not.toContain('SHOW FULL PROCESSLIST');
   });
+
+  it('uses read-only host diagnostics for generic load advice questions', () => {
+    const answer = buildServiceCommandGuidanceAnswer(
+      '최근 하루 load 높아서 힘들 때 조치 방법 알려줘'
+    );
+
+    expect(answer).toContain('읽기 전용');
+    expect(answer).toContain('top -o cpu');
+    expect(answer).toContain('ps aux --sort=-%cpu | head -10');
+    expect(answer).not.toContain('/proc/sys');
+    expect(answer).not.toContain('sysctl -w');
+    expect(answer).not.toContain('systemctl restart');
+  });
+
+  it('does not short-circuit explicit peak-time evidence questions into command-only guidance', () => {
+    const answer = buildServiceCommandGuidanceAnswer(
+      '최근 하루 load 피크 시간과 대응 방법 알려줘'
+    );
+
+    expect(answer).toBeNull();
+  });
 });
