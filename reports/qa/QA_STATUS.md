@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-13 00:34:21 KST
+> Generated at: 2026-05-13 02:54:33 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 487 |
-| Total Runs (Counted) | 389 |
+| Total Recorded Runs | 488 |
+| Total Runs (Counted) | 390 |
 | Non-counted Runs | 98 |
-| Total Checks | 3451 |
-| Passed | 3317 |
+| Total Checks | 3461 |
+| Passed | 3327 |
 | Failed | 124 |
-| Completed Items | 553 |
+| Completed Items | 554 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260513-0489 (2026-05-12T15:34:19.485Z) |
-| Latest Recorded Run | QA-20260513-0489 (2026-05-12T15:34:19.485Z) |
+| Last Counted Run | QA-20260513-0490 (2026-05-12T17:54:33.608Z) |
+| Latest Recorded Run | QA-20260513-0490 (2026-05-12T17:54:33.608Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,51 +34,50 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260513-0489 (2026-05-12T15:34:19.485Z)
+Latest run: QA-20260513-0490 (2026-05-12T17:54:33.608Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| DevOps / SRE Engineer | partially-appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.140 production QA. effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699; no billed usage spike observed. |
+| gcp-cloud-run | gcloud | checked | normal | Free-tier deploy guard passed; live Cloud Run limits are cpu=1 and memory=512Mi; max instance remains 1 per deploy summary. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-11T15:34:19.485Z -> 2026-05-12T15:34:19.485Z (24h)
-- Runs with observations: 9 recorded / 9 counted
-- Samples: 25
+- Window: 2026-05-11T17:54:33.608Z -> 2026-05-12T17:54:33.608Z (24h)
+- Runs with observations: 7 recorded / 7 counted
+- Samples: 22
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 13 | 4500ms | 20000ms | - | - | 4500ms | 20000ms | QA-20260512-0485 |
+| Supervisor | cloud-run-ai-engine | 11 | 3339ms | 15964ms | - | - | 3339ms | 15964ms | QA-20260512-0485 |
 | Supervisor | vercel-bff-cloud-run | 5 | 4519ms | 12587ms | - | - | 4519ms | 12587ms | QA-20260512-0486 |
-| Supervisor | streaming-ai | 3 | 2681ms | 4716ms | - | - | 2681ms | 4716ms | QA-20260512-0483 |
+| Supervisor | streaming-ai | 2 | 3122ms | 4716ms | - | - | 3122ms | 4716ms | QA-20260512-0483 |
 | Supervisor | groq | 2 | 1736ms | 2569ms | - | - | 1736ms | 2569ms | QA-20260512-0488 |
 | Cloud Run AI | groq | 1 | 1074ms | 1074ms | - | - | 1074ms | 1074ms | QA-20260512-0487 |
 | Supervisor | deterministic | 1 | 552ms | 552ms | - | - | 552ms | 552ms | QA-20260512-0488 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-11T15:34:19.485Z -> 2026-05-12T15:34:19.485Z (24h)
-- Runs with observations: 9 recorded / 9 counted
-- Samples: 18
-- Drift rate: 38.89%
+- Window: 2026-05-11T17:54:33.608Z -> 2026-05-12T17:54:33.608Z (24h)
+- Runs with observations: 7 recorded / 7 counted
+- Samples: 15
+- Drift rate: 26.67%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| mixed streaming/job path | single-agent | 1 | 100% | 20000ms | 20000ms | QA-20260512-0481 |
 | /api/ai/supervisor/stream | multi-agent | 1 | 0% | 15964ms | 15964ms | QA-20260512-0485 |
 | /api/ai/supervisor/stream/v2 | multi-agent | 4 | 0% | 4888ms | 12587ms | QA-20260512-0486 |
-| /api/ai/supervisor/stream/v2 | single-agent | 4 | 50% | 1854ms | 4716ms | QA-20260512-0488 |
-| /api/ai/jobs/[id]/stream | single-agent | 7 | 57.14% | 2260ms | 3427ms | QA-20260512-0487 |
+| /api/ai/supervisor/stream/v2 | single-agent | 3 | 33.33% | 1873ms | 4716ms | QA-20260512-0488 |
+| /api/ai/jobs/[id]/stream | single-agent | 6 | 50% | 2341ms | 3427ms | QA-20260512-0487 |
 | /api/ai/supervisor/stream/v2 | deterministic | 1 | 0% | 552ms | 552ms | QA-20260512-0488 |
 
 ## Coverage (Latest Run)
@@ -86,25 +85,24 @@ Latest run: QA-20260513-0489 (2026-05-12T15:34:19.485Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_4jNrMiAxv5X9A1h5iNeFxqRZVBYc / SHA 1e1d49bf
-- Coverage Packs: ai-core
-- Covered Surfaces: GitLab tag deploy pipeline 2519666338 success for v8.11.140, Vercel production /api/version reports 8.11.140, releaseTag v8.11.140, commit 1e1d49bf22dd6a2d339b5e86d18929d47b36e91a, Vercel production deployment dpl_4jNrMiAxv5X9A1h5iNeFxqRZVBYc READY, AI sidebar on /dashboard opens on v8.11.140, Conversational AI QA standard Q1-Q4 passed during the release QA sequence before the follow-up fix, Standard Q5 follow-up filter query no longer opens clarification after v8.11.140 fix, Q5 response uses Cloud Run AI server realtime data analysis with tool basis '대상 서버 추리기'
-- Skipped Surfaces: Full dashboard broad smoke, Mobile viewport matrix, Reporter Agent advanced report generation, Analyst advanced trend drilldown, Cloud Run admin /monitoring and /monitoring/traces, Prompt-injection pack beyond the follow-up clarification regression
+- Deployment: ai-engine-00457-rgg / SHA 7d42b336
+- Coverage Packs: ai-core, observability-pack
+- Covered Surfaces: Cloud Run manual fallback deploy for v8.11.141, Cloud Build 77aaee05-4f50-40da-9ab3-27369ea294e7 SUCCESS, Cloud Run revision ai-engine-00457-rgg serving 100% traffic, Cloud Run /health reports version 8.11.141, Cloud Run runtime limits cpu=1;memory=512Mi, Unauthenticated Cloud Run /monitoring returns HTTP 403, Direct /api/ai/supervisor off-domain realtime query returns deterministic off-domain guard, Direct /api/ai/supervisor memory TOP-N query returns ranked servers with percentages, TOP-N response does not leak internal scaffold markers, TOP-N response does not return the previous '없습니다' hallucination
+- Skipped Surfaces: Vercel frontend production redeploy was skipped; this change only deploys Cloud Run AI Engine, Full Vercel browser AI sidebar standard five-question QA, Reporter Agent advanced report generation, Analyst advanced trend drilldown, Mobile viewport matrix, Prompt-injection pack beyond off-domain direct supervisor guard
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.140 deploy pipeline | [GitLab v8.11.140 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519666338) | - |
-| general | Production alias | [Production alias](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-r6le6yhmz-skyasus-projects.vercel.app/) | - |
+| general | Cloud Build manual fallback build | [Cloud Build manual fallback build](https://console.cloud.google.com/cloud-build/builds/77aaee05-4f50-40da-9ab3-27369ea294e7?project=490817238363) | - |
+| general | GitLab v8.11.141 created pipeline | [GitLab v8.11.141 created pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519981693) | Pipeline remained status=created; manual Cloud Run fallback was used. |
+| monitoring | Cloud Run ai-engine service | [Cloud Run ai-engine service](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | v8.11.140 follow-up filter query answer without clarification | `reports/qa/evidence/qa-20260513-v811140-followup-filter-no-clarification.png` | - |
-| playwright-network | v8.11.140 AI routing QA summary | `reports/qa/evidence/qa-20260513-v811140-ai-routing-qa-summary.txt` | - |
+| playwright-network | v8.11.141 Cloud Run direct AI regression QA summary | `reports/qa/evidence/qa-20260513-v811141-cloud-run-direct-ai-regression.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -258,6 +256,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-engine-langfuse-dynamic-import-kept: Keep Langfuse dependency because it is dynamically loaded at runtime (completed 1회, last QA-20260510-0445)
 - ai-engine-pino-v10-alignment: Align AI Engine pino to v10 (completed 1회, last QA-20260511-0473)
 - ai-engine-precomputed-state-data-source-v811110: AI Engine precomputed-state data source decoupling verified in production (completed 1회, last QA-20260507-0418)
+- ai-engine-response-quality-regression-v811141-deploy: Deploy AI Engine response quality regression fixes to Cloud Run (completed 1회, last QA-20260513-0490)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-engine-supervisor-runtime-host-wiring-v811107: Production supervisor stream and single-agent runtime host wiring verified (completed 1회, last QA-20260506-0413)
 - ai-engine-unused-direct-dependency-cleanup: Remove unused AI Engine direct dependencies (completed 1회, last QA-20260510-0445)
@@ -748,6 +747,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260513-0490 | 2026-05-12T17:54:33.608Z | targeted | yes | yes | Cloud Run Direct QA - v8.11.141 AI Response Quality Regression | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0489 | 2026-05-12T15:34:19.485Z | targeted | yes | yes | v8.11.140 AI Routing Follow-up Clarification Production QA | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0488 | 2026-05-12T12:51:00.717Z | targeted | yes | yes | Vercel Production QA - v8.11.138 Peak Advice P1 Closure | 16 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260512-0487 | 2026-05-12T10:53:59.087Z | targeted | yes | yes | Vercel Playwright QA - v8.11.137 Semantic Trace Job Path | 8 | 1 | 0 | 0 | 1 | 1 |
@@ -767,4 +767,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260511-0473 | 2026-05-11T03:21:01.161Z | targeted | no | no | Local QA - AI Engine Pino v10 Alignment | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0472 | 2026-05-11T03:08:32.044Z | targeted | no | no | Local QA - API Metrics Route Status Label Contract | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0471 | 2026-05-11T02:44:40.590Z | targeted | no | no | Local QA - AI Engine Zod v4 Migration | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260511-0470 | 2026-05-11T02:13:17.338Z | targeted | no | no | Local QA - Line Guard Hotspot Buffer Polish | 3 | 1 | 0 | 0 | 0 | 0 |

@@ -1,0 +1,25 @@
+Cloud Run direct QA evidence - v8.11.141
+
+Target:
+- URL: https://ai-engine-jdhrhws7ia-an.a.run.app
+- Revision: ai-engine-00457-rgg
+- Commit: 7d42b336708727ef6f4b48f1a3f81512834c554c
+- Deploy path: manual Cloud Run fallback after GitLab tag pipeline 2519981693 remained created
+
+Deployment and guard checks:
+- deploy.sh free-tier guardrails: pass
+- Cloud Build: 77aaee05-4f50-40da-9ab3-27369ea294e7 SUCCESS
+- Cloud Run health: HTTP 200, version 8.11.141
+- Runtime limits: cpu=1;memory=512Mi
+- Unauthenticated /monitoring: HTTP 403 expected
+
+Regression checks:
+- Off-domain direct supervisor query "오늘 날씨 어때?": HTTP 200, success=true, provider=deterministic, modelId=off-domain-guard, toolsCalled=[]
+- TOP-N direct supervisor query "메모리 사용률 높은 서버 TOP 3만 알려줘. 순서와 수치를 포함해줘.": HTTP 200, success=true, response listed db-mysql-dc1-primary 83%, db-mysql-dc1-replica 70%, cache-redis-dc1-03 60%
+- Scaffold leakage scan: no "[응답 가이드]", "이 값을 사용자에게 전달하세요", or "순서를 바꾸지 말고" in the TOP-N response
+- TOP-N "없습니다" hallucination scan: absent
+
+Notes:
+- GitLab tag pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519981693
+- Pipeline status at deploy time: created, jobs not runner-assigned
+- CI gate was skipped for the manual fallback deployment.

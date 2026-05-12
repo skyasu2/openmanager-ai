@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-12T15:34:19.485Z"
+    "updatedAt": "2026-05-12T17:54:33.608Z"
   },
   "sequence": {
-    "nextRunNumber": 490
+    "nextRunNumber": 491
   },
   "summary": {
-    "totalRecordedRuns": 487,
-    "totalRuns": 389,
+    "totalRecordedRuns": 488,
+    "totalRuns": 390,
     "excludedRuns": 98,
-    "totalChecks": 3451,
-    "totalPassed": 3317,
+    "totalChecks": 3461,
+    "totalPassed": 3327,
     "totalFailed": 124,
     "completionRate": 100,
-    "completedItems": 553,
+    "completedItems": 554,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260513-0489",
-    "lastRecordedAt": "2026-05-12T15:34:19.485Z",
-    "latestRecordedRunId": "QA-20260513-0489",
-    "latestRecordedAt": "2026-05-12T15:34:19.485Z"
+    "lastRunId": "QA-20260513-0490",
+    "lastRecordedAt": "2026-05-12T17:54:33.608Z",
+    "latestRecordedRunId": "QA-20260513-0490",
+    "latestRecordedAt": "2026-05-12T17:54:33.608Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13553,6 +13553,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-12T15:34:19.485Z"
+    },
+    "ai-engine-response-quality-regression-v811141-deploy": {
+      "id": "ai-engine-response-quality-regression-v811141-deploy",
+      "title": "Deploy AI Engine response quality regression fixes to Cloud Run",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260513-0490",
+      "firstSeenAt": "2026-05-12T17:54:33.608Z",
+      "lastSeenRunId": "QA-20260513-0490",
+      "lastSeenAt": "2026-05-12T17:54:33.608Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Cloud Run v8.11.141 health passed and direct supervisor off-domain/TOP-N/scaffold regression probes passed.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-12T17:54:33.608Z"
     }
   },
   "runs": [
@@ -53401,6 +53425,144 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260513-0490",
+      "recordedAt": "2026-05-12T17:54:33.608Z",
+      "recordedAtKst": "2026-05-13 02:54:33 KST",
+      "title": "Cloud Run Direct QA - v8.11.141 AI Response Quality Regression",
+      "owner": "codex",
+      "source": "curl-cloud-run",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260513-0490.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "Vercel skipped",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00457-rgg",
+        "deploymentUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "commitSha": "7d42b336708727ef6f4b48f1a3f81512834c554c"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Cloud Run manual fallback deploy for v8.11.141",
+        "Cloud Build 77aaee05-4f50-40da-9ab3-27369ea294e7 SUCCESS",
+        "Cloud Run revision ai-engine-00457-rgg serving 100% traffic",
+        "Cloud Run /health reports version 8.11.141",
+        "Cloud Run runtime limits cpu=1;memory=512Mi",
+        "Unauthenticated Cloud Run /monitoring returns HTTP 403",
+        "Direct /api/ai/supervisor off-domain realtime query returns deterministic off-domain guard",
+        "Direct /api/ai/supervisor memory TOP-N query returns ranked servers with percentages",
+        "TOP-N response does not leak internal scaffold markers",
+        "TOP-N response does not return the previous '없습니다' hallucination"
+      ],
+      "skippedSurfaces": [
+        "Vercel frontend production redeploy was skipped; this change only deploys Cloud Run AI Engine",
+        "Full Vercel browser AI sidebar standard five-question QA",
+        "Reporter Agent advanced report generation",
+        "Analyst advanced trend drilldown",
+        "Mobile viewport matrix",
+        "Prompt-injection pack beyond off-domain direct supervisor guard"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The three response-quality regressions were verified directly against the deployed Cloud Run supervisor path.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Health, version, runtime limits, and monitoring auth boundary were checked on the live Cloud Run service.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The off-domain direct supervisor path now returns a deterministic guard response without LLM/tool escalation.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "Manual Cloud Run fallback succeeded because the GitLab tag pipeline remained stuck in created state; the CI gate was explicitly skipped and recorded.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local deterministic gates and focused production regression probes cover the changed AI Engine risk surface.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "gcp-cloud-run",
+          "method": "gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T02:52:19+09:00",
+          "summary": "Free-tier deploy guard passed; live Cloud Run limits are cpu=1 and memory=512Mi; max instance remains 1 per deploy summary.",
+          "evidence": "deploy.sh guard output + gcloud run services describe ai-engine --region asia-northeast1",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "v8.11.141 Cloud Run direct AI regression QA summary",
+          "path": "reports/qa/evidence/qa-20260513-v811141-cloud-run-direct-ai-regression.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Build manual fallback build",
+          "url": "https://console.cloud.google.com/cloud-build/builds/77aaee05-4f50-40da-9ab3-27369ea294e7?project=490817238363"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.11.141 created pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519981693",
+          "note": "Pipeline remained status=created; manual Cloud Run fallback was used."
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine service",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -53409,16 +53571,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 241,
-      "appropriateCount": 207,
+      "seenCount": 242,
+      "appropriateCount": 208,
       "partialCount": 34,
       "inappropriateCount": 0,
       "improvementNeededCount": 44,
-      "lastRunId": "QA-20260513-0489",
-      "lastSeenAt": "2026-05-12T15:34:19.485Z",
+      "lastRunId": "QA-20260513-0490",
+      "lastSeenAt": "2026-05-12T17:54:33.608Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI routing and clarification regression was reproduced, fixed, redeployed, and rechecked with the standard follow-up query.",
+      "lastRationale": "The three response-quality regressions were verified directly against the deployed Cloud Run supervisor path.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -53426,16 +53588,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 117,
-      "appropriateCount": 87,
+      "seenCount": 118,
+      "appropriateCount": 88,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260513-0489",
-      "lastSeenAt": "2026-05-12T15:34:19.485Z",
+      "lastRunId": "QA-20260513-0490",
+      "lastSeenAt": "2026-05-12T17:54:33.608Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Answer retained Cloud Run AI analysis basis and server realtime data tool metadata.",
+      "lastRationale": "Health, version, runtime limits, and monitoring auth boundary were checked on the live Cloud Run service.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -53443,16 +53605,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 68,
-      "appropriateCount": 50,
+      "seenCount": 69,
+      "appropriateCount": 51,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260513-0489",
-      "lastSeenAt": "2026-05-12T15:34:19.485Z",
+      "lastRunId": "QA-20260513-0490",
+      "lastSeenAt": "2026-05-12T17:54:33.608Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "No unsafe command or mutation path was introduced; fix only narrows frontend clarification gating for follow-up context references.",
+      "lastRationale": "The off-domain direct supervisor path now returns a deterministic guard response without LLM/tool escalation.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -53460,16 +53622,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 171,
+      "seenCount": 172,
       "appropriateCount": 154,
-      "partialCount": 17,
+      "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260513-0489",
-      "lastSeenAt": "2026-05-12T15:34:19.485Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260513-0490",
+      "lastSeenAt": "2026-05-12T17:54:33.608Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab semver tag pipeline completed successfully and Vercel production served the expected version and commit.",
+      "lastRationale": "Manual Cloud Run fallback succeeded because the GitLab tag pipeline remained stuck in created state; the CI gate was explicitly skipped and recorded.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -53477,16 +53639,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 208,
-      "appropriateCount": 190,
+      "seenCount": 209,
+      "appropriateCount": 191,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260513-0489",
-      "lastSeenAt": "2026-05-12T15:34:19.485Z",
+      "lastRunId": "QA-20260513-0490",
+      "lastSeenAt": "2026-05-12T17:54:33.608Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Regression is covered by targeted Vitest and production Playwright MCP evidence.",
+      "lastRationale": "Local deterministic gates and focused production regression probes cover the changed AI Engine risk surface.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
