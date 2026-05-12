@@ -1,10 +1,10 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-05-13
 
 # AI Assistant Response Quality Regression Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-13
 - TODO.md 연결: Active Tasks > AI Assistant response quality regression hardening
 
@@ -56,21 +56,31 @@ quality evaluator
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] TOP-N direct supervisor: `getServerMetricsAdvanced`가 상위 서버 데이터를 반환하면 finalAnswer의 "없습니다"를 무시하고 deterministic TOP-N 응답을 반환한다.
-- [ ] Scaffold sanitizer: `[응답 가이드] ... 이 값을 사용자에게 전달하세요.` 형태의 응답은 사용자 응답에서 내부 문구가 제거된다.
-- [ ] Tool answer contract: `getServerMetricsAdvanced.answer`는 내부 instruction marker 없이 user-facing 한국어 요약을 반환한다.
-- [ ] Off-domain guard: `오늘 날씨 어때?` 같은 비운영 실시간 질의는 AI Engine 직접 호출에서도 실패/LLM 호출 대신 deterministic off-domain 응답을 반환한다.
-- [ ] Quality evaluator: `db-mysql-dc1-primary 82%`처럼 서버명과 퍼센트 근거가 있는 짧은 답변은 `TOO_SHORT`와 `formatCompliance=false`를 발생시키지 않는다.
+- [x] TOP-N direct supervisor: `getServerMetricsAdvanced`가 상위 서버 데이터를 반환하면 finalAnswer의 "없습니다"를 무시하고 deterministic TOP-N 응답을 반환한다.
+- [x] Scaffold sanitizer: `[응답 가이드] ... 이 값을 사용자에게 전달하세요.` 형태의 응답은 사용자 응답에서 내부 문구가 제거된다.
+- [x] Tool answer contract: `getServerMetricsAdvanced.answer`는 내부 instruction marker 없이 user-facing 한국어 요약을 반환한다.
+- [x] Off-domain guard: `오늘 날씨 어때?` 같은 비운영 실시간 질의는 AI Engine 직접 호출에서도 실패/LLM 호출 대신 deterministic off-domain 응답을 반환한다.
+- [x] Quality evaluator: `db-mysql-dc1-primary 82%`처럼 서버명과 퍼센트 근거가 있는 짧은 답변은 `TOO_SHORT`와 `formatCompliance=false`를 발생시키지 않는다.
 
 ## Task 목록
 
 > 착수 전 Status가 Approved인지 확인한다.
 
-- [ ] Task 0 — failing test 커밋: 위 테스트 시나리오를 먼저 실패 상태로 고정한다.
-- [ ] Task 1 — deterministic TOP-N synthesis를 single-agent direct path에 연결한다.
-- [ ] Task 2 — user-facing sanitizer와 tool answer scaffold 제거를 적용한다.
-- [ ] Task 3 — AI Engine off-domain guard와 TOO_SHORT 정량 응답 예외를 적용한다.
-- [ ] Task 4 — AI Engine targeted tests/type-check와 docs whitespace 검증을 통과시킨다.
+- [x] Task 0 — failing test 커밋: 위 테스트 시나리오를 먼저 실패 상태로 고정한다.
+- [x] Task 1 — deterministic TOP-N synthesis를 single-agent direct path에 연결한다.
+- [x] Task 2 — user-facing sanitizer와 tool answer scaffold 제거를 적용한다.
+- [x] Task 3 — AI Engine off-domain guard와 TOO_SHORT 정량 응답 예외를 적용한다.
+- [x] Task 4 — AI Engine targeted tests/type-check와 docs whitespace 검증을 통과시킨다.
+
+## 검증 결과
+
+- Failing spec 확인: targeted Vitest 4 files / 79 tests 중 6 failed.
+- 구현 후 targeted Vitest: 4 files / 79 tests passed.
+- AI Engine type-check: passed.
+- AI Engine full test: 117 files / 1162 tests passed.
+- `git diff --check`: passed.
+- `npm run docs:budget`: passed.
+- `npm run docs:ai-consistency`: passed.
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -91,7 +101,7 @@ quality evaluator
 
 ## 완료 기준
 
-- [ ] AI Engine targeted regression tests 통과.
-- [ ] `cd cloud-run/ai-engine && npm run type-check` 통과.
-- [ ] `git diff --check` 통과.
-- [ ] TODO.md 완료 이력 갱신 및 plan archive 이동.
+- [x] AI Engine targeted regression tests 통과.
+- [x] `cd cloud-run/ai-engine && npm run type-check` 통과.
+- [x] `git diff --check` 통과.
+- [x] TODO.md 완료 이력 갱신 및 plan archive 이동.

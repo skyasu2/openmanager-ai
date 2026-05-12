@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`AI response quality regression hardening in progress`)
+**Last Updated**: 2026-05-13 KST (`AI response quality regression hardening complete`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant response quality regression hardening | P1 | In Progress (Codex) | TOP-N deterministic synthesis, response scaffold sanitizer, AI Engine off-domain guard, concise quantitative answer quality fix. Plan: [ai-assistant-response-quality-regression-plan.md](ai-assistant-response-quality-regression-plan.md) |
+| _None_ | - | - | 현재 진행 중인 계획 작업 없음. |
 
 ---
 
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI Assistant response quality regression hardening~~ | — | **완료** — Production 직접 Cloud Run supervisor 회귀를 재현한 failing spec 커밋 `a6d76c6a9` 후 구현 커밋 `10ae60c7f`로 TOP-N direct single-agent deterministic synthesis, user-facing response sanitizer, `getServerMetricsAdvanced.answer` scaffold 제거, AI Engine off-domain guard, 짧은 정량 metric answer `TOO_SHORT` false positive 완화를 적용. 검증: targeted Vitest 4 files / 79 tests, AI Engine type-check, AI Engine full test 117 files / 1162 tests, `git diff --check`, `docs:budget`, `docs:ai-consistency` 통과. 상세 계획서 archive 이동: [archive/ai-assistant-response-quality-regression-plan.md](archive/ai-assistant-response-quality-regression-plan.md) |
 | ~~AI Assistant routing decision trace hardening~~ | — | **완료** — QueryRoutingSignals/ RoutingDecisionTrace 공통 계약을 추가해 mode/tool/pre-filter/agent/context 판단 근거를 sanitized metadata로 추적 가능하게 정렬하고, Context Store structured findings 우선 저장 + legacy regex fallback reasonCode를 도입. Phase 1~3 AI Engine targeted/full tests, root follow-up clarification regression test, type/lint/quick gate 통과. `v8.11.139` tag pipeline `2519567410` success로 AI Engine 배포 완료 후 production conversational QA에서 follow-up filter clarification 회귀를 발견해 `e9fbece4d` 수정, `v8.11.140` tag pipeline `2519666338` success 및 `QA-20260513-0489` PASS/pending 0으로 closure. 상세 계획서 archive 이동: [archive/ai-assistant-routing-decision-trace-hardening-plan.md](archive/ai-assistant-routing-decision-trace-hardening-plan.md) |
 | ~~AI Assistant weekly stabilization and QA hardening~~ | — | **완료** — `QA-20260512-0484`의 P1 3건을 분석해 composite peak+advice mutating command 경로를 deterministic read-only answer로 short-circuit하도록 수정. SDD failing test 커밋 `aa3c7950e`, 구현 커밋 `98b8e2e4d`, `main` pipeline `2519044003` success, release `v8.11.138` tag pipeline `2519054015` success. Production `QA-20260512-0488`에서 composite read-only guidance, whole-fleet load1 no empty-summary, action-needed no clarification을 모두 PASS로 기록했고 QA pending 0 확인. 상세 계획서 archive 이동: [archive/ai-assistant-weekly-stabilization-plan.md](archive/ai-assistant-weekly-stabilization-plan.md) |
 | ~~AI Assistant Semantic Query Routing Phase 3~~ | — | **완료** — Root `SemanticIntentFrame`을 Cloud Run `DomainIntentFrame` metadata로 변환해 AI SDK transport, Vercel BFF, Cloud Run supervisor request metadata로 전달. AI Engine semantic metadata normalizer, resolver metadata 우선순위, evidence validation, semantic trace/reasonCodes, deterministic eval seed를 추가해 monitoring 외 domain pack으로 이식 가능한 query routing contract를 확정. 검증: root targeted Vitest 4 files / 73 tests, AI Engine targeted Vitest 2 files / 12 tests, root/AI Engine type-check, root lint, `git diff --check` 통과. 상세 계획서 archive 이동: [archive/ai-assistant-semantic-query-routing-plan.md](archive/ai-assistant-semantic-query-routing-plan.md) |
