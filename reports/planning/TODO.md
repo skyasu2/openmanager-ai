@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`AI routing decision trace hardening complete`)
+**Last Updated**: 2026-05-13 KST (`AI response quality regression hardening in progress`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 진행 중인 계획 작업 없음. |
+| AI Assistant response quality regression hardening | P1 | In Progress (Codex) | TOP-N deterministic synthesis, response scaffold sanitizer, AI Engine off-domain guard, concise quantitative answer quality fix. Plan: [ai-assistant-response-quality-regression-plan.md](ai-assistant-response-quality-regression-plan.md) |
 
 ---
 
