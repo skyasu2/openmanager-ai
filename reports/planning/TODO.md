@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant routing decision trace hardening | High | In Progress | Phase 2 완료: pre-filter/LLM agent decision source를 sanitized `routingDecisionTrace` metadata로 기록. Phase 3 Context Store structured findings 대기. 상세: [ai-assistant-routing-decision-trace-hardening-plan.md](ai-assistant-routing-decision-trace-hardening-plan.md) |
+| AI Assistant routing decision trace hardening | High | In Progress | Phase 3 local 완료: Context Store structured findings 우선 저장 + legacy regex fallback reasonCode 추가. GitLab push/Cloud Run 배포 판단 대기. 상세: [ai-assistant-routing-decision-trace-hardening-plan.md](ai-assistant-routing-decision-trace-hardening-plan.md) |
 
 ---
 

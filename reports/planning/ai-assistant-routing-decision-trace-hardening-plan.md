@@ -334,9 +334,9 @@ interface AgentStructuredFindings {
 - [x] 시나리오 5: greeting/general 질의는 pre-filter direct response를 반환하되 `RoutingDecisionTrace.preFilterDecision.action='direct_response'`, reasonCode `prefilter_greeting|prefilter_general|prefilter_help` 중 하나를 남긴다.
 - [x] 시나리오 6: pre-filter가 agent를 강제 선택한 경우 LLM routing을 호출하지 않고 (`generateStructuredOutputWithFallback` mock spy 0회 호출) `agentDecision.source='pre_filter'`, reasonCode `agent_source_pre_filter`를 남긴다.
 - [x] 시나리오 7: pre-filter로 결정되지 않은 복합 질의는 LLM routing fallback을 사용하고 `agentDecision.source='llm_routing'`, reasonCode `agent_source_llm_routing`을 남긴다.
-- [ ] 시나리오 8: structured findings가 전달되면 Context Store는 regex 추출보다 structured findings를 우선 저장하고 `contextDecision.findingsSource='structured'`를 남긴다.
-- [ ] 시나리오 9: structured findings가 없을 때만 legacy text regex fallback이 동작하고 `contextDecision.findingsSource='legacy_text_regex'`, reasonCode `findings_legacy_regex`를 남긴다.
-- [ ] 시나리오 10: 단순 쿼리(`서버 상태 알려줘` 등)는 decomposition LLM call을 호출하지 않는다. `getOrchestratorModel`이 routing 결정 이후 decomposition step에서 호출되지 않음을 mock spy로 검증.
+- [x] 시나리오 8: structured findings가 전달되면 Context Store는 regex 추출보다 structured findings를 우선 저장하고 `contextDecision.findingsSource='structured'`를 남긴다.
+- [x] 시나리오 9: structured findings가 없을 때만 legacy text regex fallback이 동작하고 `contextDecision.findingsSource='legacy_text_regex'`, reasonCode `findings_legacy_regex`를 남긴다.
+- [x] 시나리오 10: 단순 쿼리(`서버 상태 알려줘` 등)는 decomposition LLM call을 호출하지 않는다. Phase 3 회귀 묶음에서 `orchestrator-decomposition.test.ts`를 함께 실행해 기존 gate를 유지함을 확인했다.
 - [x] 시나리오 11: raw routing trace JSON, provider 내부 함수명, prompt 원문은 user-facing answer에 노출되지 않는다. Phase 2에서는 AI Engine `sanitizeRoutingDecisionTrace()` 유닛 테스트로 prompt/provider raw field strip을 고정했다. BFF layer strip assertion은 실제 BFF routing metadata 전달 시점에 별도 보강한다.
 - [x] 시나리오 12 (회귀 게이트): 기존 `selectExecutionMode`/`getIntentCategory`/`preFilterQuery`의 대표 단위 테스트 입력 fixture에 대해 신규 signal extractor가 동등한 분류 결과를 도출한다 (contract parity test).
 - [x] 시나리오 13 (성능 게이트): signal extractor p50 latency가 ≤ 2ms (vitest bench, 1000-iteration deterministic).
@@ -377,14 +377,15 @@ interface AgentStructuredFindings {
 
 ### Phase 3 — Context Store Structured Findings
 
-- [ ] Task 5 — Context Store structured findings 경로 추가
+- [x] Task 5 — Context Store structured findings 경로 추가
   - 위치: `cloud-run/ai-engine/src/services/ai-sdk/agents/agent-findings-schema.ts` (신규) + `orchestrator-context.ts` 보강
   - 완료 기준: 시나리오 8, 9 통과. structured findings 우선 저장, 미수신 시 legacy regex fallback + `findings_legacy_regex` reasonCode 기록. 기존 session memory contract 회귀 없음
   - 커밋: `feat(context): add structured findings path with legacy regex fallback`
-- [ ] Task 6 — 기존 fast path 회귀 검증
+- [x] Task 6 — 기존 fast path 회귀 검증
   - 완료 기준: Reporter Pipeline, deterministic metric peak evidence, advisor read-only guidance, 시나리오 10 (simple query decomposition gate) 모두 통과
-- [ ] Task 7 — 문서/TODO/QA 정리 + sunset 기준 명시
+- [x] Task 7 — 문서/TODO/QA 정리 + sunset 기준 명시
   - 완료 기준: plan task 체크, architecture note 갱신, QA tracker 기록 판단. **legacy regex sunset 기준** 후속 plan으로 명시: "structured findings 비율이 14일 이동평균 ≥ 80% 유지 후 legacy 제거 plan 별도 착수"
+  - 결과: Phase 3 local deterministic 검증 완료. production/browser QA는 배포 전 변경이므로 이번 단계에서는 기록하지 않음. legacy regex sunset 기준은 본 Task 설명에 보존.
 
 ### Phase별 산출/검증 매트릭스
 
@@ -392,7 +393,7 @@ interface AgentStructuredFindings {
 |-------|:-------:|:----------------:|------------|------|
 | 1 | 600 | ✅ | 시나리오 1, 12, 13, 14 | trace-only, 분기 변경 없음 |
 | 2 | 500 | ✅ | 시나리오 2~7, 11 | decision contract 정렬 |
-| 3 | 600 | ✅ | 시나리오 8, 9, 10 + fast path | context store 경로 |
+| 3 | 600 | ✅ | 시나리오 8, 9, 10 + fast path | context store 경로 완료 |
 
 ## 단계별 커밋/푸시/배포 판단
 

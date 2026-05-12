@@ -9,8 +9,15 @@ import {
   appendAffectedServers,
   appendAnomalies,
   appendMetrics,
+  appendRecommendedCommands,
   updateSessionContext,
 } from './context-store';
+import {
+  type AgentStructuredFindings,
+  type ContextFindingsDecision,
+  hasNormalizedStructuredFindings,
+  normalizeAgentStructuredFindings,
+} from './agent-findings-schema';
 import { isVisionQuery } from './vision-agent';
 import type { PreFilterResult } from './orchestrator-types';
 import { logger } from '../../../lib/logger';
@@ -61,16 +68,54 @@ const ANOMALY_INDICATORS = [
 export async function saveAgentFindingsToContext(
   sessionId: string,
   agentName: string,
-  response: string
-): Promise<void> {
+  response: string,
+  structuredFindings?: AgentStructuredFindings
+): Promise<ContextFindingsDecision> {
   try {
     const normalizedAgent = agentName.toLowerCase();
+
+    if (structuredFindings) {
+      const normalizedFindings =
+        normalizeAgentStructuredFindings(structuredFindings);
+
+      if (hasNormalizedStructuredFindings(normalizedFindings)) {
+        if (normalizedFindings.affectedServers.length > 0) {
+          await appendAffectedServers(
+            sessionId,
+            normalizedFindings.affectedServers
+          );
+        }
+        if (normalizedFindings.anomalies.length > 0) {
+          await appendAnomalies(sessionId, normalizedFindings.anomalies);
+        }
+        if (normalizedFindings.metrics.length > 0) {
+          await appendMetrics(sessionId, normalizedFindings.metrics);
+        }
+        if (normalizedFindings.recommendedCommands.length > 0) {
+          await appendRecommendedCommands(
+            sessionId,
+            normalizedFindings.recommendedCommands
+          );
+        }
+
+        logger.info(
+          `[Context] ${agentName} saved structured findings: servers=${normalizedFindings.affectedServers.length}, anomalies=${normalizedFindings.anomalies.length}, metrics=${normalizedFindings.metrics.length}, commands=${normalizedFindings.recommendedCommands.length}`
+        );
+        return {
+          findingsSource: 'structured',
+          reasonCodes: ['findings_structured'],
+        };
+      }
+    }
+
+    let legacyFindingsSaved = false;
 
     // NLQ Agent: Extract affected servers
     if (normalizedAgent.includes('nlq')) {
       const servers = extractServerNames(response);
       if (servers.length > 0) {
         await appendAffectedServers(sessionId, servers);
+        legacyFindingsSaved = true;
         logger.info(`[Context] NLQ Agent saved ${servers.length} servers: [${servers.slice(0, 3).join(', ')}${servers.length > 3 ? '...' : ''}]`);
       }
     }
@@ -80,6 +125,7 @@ export async function saveAgentFindingsToContext(
       const anomalies = extractAnomalies(response);
       if (anomalies.length > 0) {
         await appendAnomalies(sessionId, anomalies);
+        legacyFindingsSaved = true;
         logger.info(`[Context] Analyst Agent saved ${anomalies.length} anomalies`);
       }
     }
@@ -89,6 +135,7 @@ export async function saveAgentFindingsToContext(
       const metrics = extractMetrics(response);
       if (metrics.length > 0) {
         await appendMetrics(sessionId, metrics);
+        legacyFindingsSaved = true;
         logger.info(`[Context] Reporter Agent saved ${metrics.length} metrics`);
       }
     }
@@ -98,9 +145,23 @@ export async function saveAgentFindingsToContext(
       await updateSessionContext(sessionId, { lastAgent: agentName });
       logger.info(`[Context] Advisor Agent updated lastAgent`);
     }
+
+    return legacyFindingsSaved
+      ? {
+          findingsSource: 'legacy_text_regex',
+          reasonCodes: ['findings_legacy_regex'],
+        }
+      : {
+          findingsSource: 'none',
+          reasonCodes: ['findings_none'],
+        };
   } catch (error) {
     // Non-critical: log but don't throw
     logger.warn(`[Context] Failed to save findings for ${agentName}:`, error);
+    return {
+      findingsSource: 'none',
+      reasonCodes: ['findings_none'],
+    };
   }
 }
 
