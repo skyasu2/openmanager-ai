@@ -94,6 +94,7 @@
     "git:verify:canonical": "bash scripts/git/verify-canonical-routing.sh",
     "gitlab:deploy:check": "node scripts/gitlab/check-main-protection.mjs",
     "gitlab:pipeline:head": "bash scripts/gitlab/check-head-pipeline.sh",
+    "gitlab:pipeline:inspect": "bash scripts/gitlab/inspect-pipeline.sh",
     "gitlab:protection:check": "node scripts/gitlab/check-main-protection.mjs",
     "grafana:export": "tsx scripts/grafana/otlp-export.ts --all",
     "grafana:export:hour": "tsx scripts/grafana/otlp-export.ts --hour",
