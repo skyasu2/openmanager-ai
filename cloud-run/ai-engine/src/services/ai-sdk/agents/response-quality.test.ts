@@ -177,4 +177,15 @@ describe('evaluateAgentResponseQuality', () => {
     expect(result.qualityFlags).toContain('FORCED_TOOL_RETRY');
     expect(result.qualityFlags).toContain('TOO_SHORT');
   });
+
+  it('accepts concise grounded metric answers without TOO_SHORT false positive', () => {
+    const result = evaluateAgentResponseQuality(
+      'Supervisor',
+      'db-mysql-dc1-primary 82%',
+      { durationMs: 500 }
+    );
+
+    expect(result.qualityFlags).not.toContain('TOO_SHORT');
+    expect(result.formatCompliance).toBe(true);
+  });
 });

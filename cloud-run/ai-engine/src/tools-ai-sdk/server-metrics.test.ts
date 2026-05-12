@@ -524,7 +524,8 @@ describe('getServerMetricsAdvanced', () => {
     expect(result.answer).toContain('1. cache-redis-dc1-02 88%');
     expect(result.answer).toContain('2. cache-redis-dc1-01 85%');
     expect(result.answer).toContain('3. web-nginx-dc1-02 82%');
-    expect(result.answer).toContain('순서를 바꾸지 말고 그대로 사용자에게 전달하세요.');
+    expect(result.answer).not.toContain('[응답 가이드]');
+    expect(result.answer).not.toContain('순서를 바꾸지 말고 그대로 사용자에게 전달하세요.');
   });
 
   it('uses query-as-of slot for current range lookups', async () => {

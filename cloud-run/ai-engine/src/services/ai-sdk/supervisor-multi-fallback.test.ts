@@ -308,6 +308,137 @@ describe('supervisor degraded single fallback', () => {
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
   });
 
+  it('prefers deterministic advanced metric ranking over empty finalAnswer in direct single-agent execution', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+    mockGenerateText.mockResolvedValueOnce({
+      text: '',
+      steps: [
+        {
+          toolCalls: [
+            { toolCallId: 'metrics-call', toolName: 'getServerMetricsAdvanced' },
+            { toolCallId: 'final-answer-call', toolName: 'finalAnswer' },
+          ],
+          toolResults: [
+            {
+              toolCallId: 'metrics-call',
+              toolName: 'getServerMetricsAdvanced',
+              result: {
+                responseKind: 'current_metric_ranking',
+                servers: [
+                  {
+                    id: 'api-was-dc1-01',
+                    name: 'api-was-dc1-01',
+                    status: 'online',
+                    metrics: { cpu: 85 },
+                  },
+                  {
+                    id: 'api-was-dc1-02',
+                    name: 'api-was-dc1-02',
+                    status: 'online',
+                    metrics: { cpu: 78 },
+                  },
+                  {
+                    id: 'db-mysql-dc1-primary',
+                    name: 'db-mysql-dc1-primary',
+                    status: 'online',
+                    metrics: { cpu: 76 },
+                  },
+                ],
+              },
+            },
+            {
+              toolCallId: 'final-answer-call',
+              toolName: 'finalAnswer',
+              result: { answer: 'CPU 부하가 가장 높은 서버 TOP 3는 없습니다.' },
+            },
+          ],
+        },
+      ],
+      usage: { inputTokens: 3, outputTokens: 4, totalTokens: 7 },
+    });
+
+    const result = await executeSupervisor({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content: '현재 가장 CPU 부하가 높은 서버 TOP 3',
+        },
+      ],
+      sessionId: 'session-direct-advanced-ranking',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.response).toContain('📊 **CPU 사용률 상위 3대**');
+      expect(result.response).toContain('1. api-was-dc1-01: CPU 85%');
+      expect(result.response).toContain('2. api-was-dc1-02: CPU 78%');
+      expect(result.response).toContain('3. db-mysql-dc1-primary: CPU 76%');
+      expect(result.response).not.toContain('없습니다');
+    }
+  });
+
+  it('strips internal response scaffold from direct single-agent final answers', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+    mockGenerateText.mockResolvedValueOnce({
+      text: '',
+      steps: [
+        {
+          toolCalls: [{ toolCallId: 'final-answer-call', toolName: 'finalAnswer' }],
+          toolResults: [
+            {
+              toolCallId: 'final-answer-call',
+              toolName: 'finalAnswer',
+              result: {
+                answer:
+                  '[응답 가이드] 지난 24시간 CPU 가장 높은 서버: api-was-dc1-01 (cpu_max=96%). 이 값을 사용자에게 전달하세요.',
+              },
+            },
+          ],
+        },
+      ],
+      usage: { inputTokens: 3, outputTokens: 4, totalTokens: 7 },
+    });
+
+    const result = await executeSupervisor({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content: '24시간 동안 CPU 가장 높았던 서버',
+        },
+      ],
+      sessionId: 'session-direct-scaffold-sanitizer',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.response).toContain('지난 24시간 CPU 가장 높은 서버');
+      expect(result.response).toContain('api-was-dc1-01');
+      expect(result.response).not.toContain('[응답 가이드]');
+      expect(result.response).not.toContain('이 값을 사용자에게 전달하세요');
+    }
+  });
+
+  it('short-circuits off-domain realtime queries before direct single-agent model routing', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+
+    const result = await executeSupervisor({
+      mode: 'auto',
+      messages: [{ role: 'user', content: '오늘 날씨 어때?' }],
+      sessionId: 'session-direct-off-domain',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.response).toContain('실시간 외부 조회 도구가 연결되어 있지 않아');
+      expect(result.metadata.provider).toBe('deterministic');
+      expect(result.metadata.modelId).toBe('off-domain-guard');
+      expect(result.toolsCalled).toEqual([]);
+    }
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
   it('falls back to single-agent when multi-agent returns MODEL_UNAVAILABLE and degraded single is allowed', async () => {
     mockIsSingleModeAllowed.mockReturnValue(true);
 

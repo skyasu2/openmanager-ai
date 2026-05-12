@@ -10,6 +10,7 @@ import {
   containsForeignCharacters,
   sanitizeChineseCharacters,
   sanitizeJsonStrings,
+  sanitizeUserFacingResponse,
 } from './text-sanitizer';
 
 // ============================================================================
@@ -118,6 +119,23 @@ describe('sanitizeChineseCharacters', () => {
 
   it('should handle empty/null-like input', () => {
     expect(sanitizeChineseCharacters('')).toBe('');
+  });
+});
+
+// ============================================================================
+// sanitizeUserFacingResponse
+// ============================================================================
+
+describe('sanitizeUserFacingResponse', () => {
+  it('strips internal response guide scaffold while preserving the answer', () => {
+    const result = sanitizeUserFacingResponse(
+      '[응답 가이드] 지난 24시간 CPU 가장 높은 서버: api-was-dc1-01 (cpu_max=96%). 이 값을 사용자에게 전달하세요.'
+    );
+
+    expect(result).toContain('지난 24시간 CPU 가장 높은 서버');
+    expect(result).toContain('api-was-dc1-01');
+    expect(result).not.toContain('[응답 가이드]');
+    expect(result).not.toContain('이 값을 사용자에게 전달하세요');
   });
 });
 
