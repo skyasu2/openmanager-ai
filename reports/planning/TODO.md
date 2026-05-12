@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`AI response quality regression hardening complete`)
+**Last Updated**: 2026-05-13 KST (`AI Engine line-guard regression cleanup complete`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI Engine line-guard regression cleanup~~ | — | **완료** — `orchestrator-execution.ts` streaming entrypoint를 `orchestrator-execution-stream.ts`로 분리하고, `supervisor-single-agent.ts` tool result summary helper를 `supervisor-tool-results.ts`로 분리해 line-guard fail 2건을 0건으로 복구. 검증: `npm run line-guard`, AI Engine type-check, targeted Vitest 3 files / 27 tests, AI Engine full test 117 files / 1162 tests, `git diff --check` 통과. |
 | ~~AI Assistant response quality regression hardening~~ | — | **완료** — Production 직접 Cloud Run supervisor 회귀를 재현한 failing spec 커밋 `a6d76c6a9` 후 구현 커밋 `10ae60c7f`로 TOP-N direct single-agent deterministic synthesis, user-facing response sanitizer, `getServerMetricsAdvanced.answer` scaffold 제거, AI Engine off-domain guard, 짧은 정량 metric answer `TOO_SHORT` false positive 완화를 적용. 검증: targeted Vitest 4 files / 79 tests, AI Engine type-check, AI Engine full test 117 files / 1162 tests, `git diff --check`, `docs:budget`, `docs:ai-consistency` 통과. 상세 계획서 archive 이동: [archive/ai-assistant-response-quality-regression-plan.md](archive/ai-assistant-response-quality-regression-plan.md) |
 | ~~AI Assistant routing decision trace hardening~~ | — | **완료** — QueryRoutingSignals/ RoutingDecisionTrace 공통 계약을 추가해 mode/tool/pre-filter/agent/context 판단 근거를 sanitized metadata로 추적 가능하게 정렬하고, Context Store structured findings 우선 저장 + legacy regex fallback reasonCode를 도입. Phase 1~3 AI Engine targeted/full tests, root follow-up clarification regression test, type/lint/quick gate 통과. `v8.11.139` tag pipeline `2519567410` success로 AI Engine 배포 완료 후 production conversational QA에서 follow-up filter clarification 회귀를 발견해 `e9fbece4d` 수정, `v8.11.140` tag pipeline `2519666338` success 및 `QA-20260513-0489` PASS/pending 0으로 closure. 상세 계획서 archive 이동: [archive/ai-assistant-routing-decision-trace-hardening-plan.md](archive/ai-assistant-routing-decision-trace-hardening-plan.md) |
 | ~~AI Assistant weekly stabilization and QA hardening~~ | — | **완료** — `QA-20260512-0484`의 P1 3건을 분석해 composite peak+advice mutating command 경로를 deterministic read-only answer로 short-circuit하도록 수정. SDD failing test 커밋 `aa3c7950e`, 구현 커밋 `98b8e2e4d`, `main` pipeline `2519044003` success, release `v8.11.138` tag pipeline `2519054015` success. Production `QA-20260512-0488`에서 composite read-only guidance, whole-fleet load1 no empty-summary, action-needed no clarification을 모두 PASS로 기록했고 QA pending 0 확인. 상세 계획서 archive 이동: [archive/ai-assistant-weekly-stabilization-plan.md](archive/ai-assistant-weekly-stabilization-plan.md) |
