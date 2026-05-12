@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-12T12:51:00.717Z"
+    "updatedAt": "2026-05-12T15:34:19.485Z"
   },
   "sequence": {
-    "nextRunNumber": 489
+    "nextRunNumber": 490
   },
   "summary": {
-    "totalRecordedRuns": 486,
-    "totalRuns": 388,
+    "totalRecordedRuns": 487,
+    "totalRuns": 389,
     "excludedRuns": 98,
-    "totalChecks": 3442,
-    "totalPassed": 3308,
+    "totalChecks": 3451,
+    "totalPassed": 3317,
     "totalFailed": 124,
     "completionRate": 100,
-    "completedItems": 552,
+    "completedItems": 553,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260512-0488",
-    "lastRecordedAt": "2026-05-12T12:51:00.717Z",
-    "latestRecordedRunId": "QA-20260512-0488",
-    "latestRecordedAt": "2026-05-12T12:51:00.717Z"
+    "lastRunId": "QA-20260513-0489",
+    "lastRecordedAt": "2026-05-12T15:34:19.485Z",
+    "latestRecordedRunId": "QA-20260513-0489",
+    "latestRecordedAt": "2026-05-12T15:34:19.485Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13529,6 +13529,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-12T10:53:59.087Z"
+    },
+    "ai-followup-filter-clarification-regression": {
+      "id": "ai-followup-filter-clarification-regression",
+      "title": "AI follow-up server filter query should not be blocked by clarification",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260513-0489",
+      "firstSeenAt": "2026-05-12T15:34:19.485Z",
+      "lastSeenRunId": "QA-20260513-0489",
+      "lastSeenAt": "2026-05-12T15:34:19.485Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.140 production retest: '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘' returned a direct Cloud Run AI answer without clarification.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-12T15:34:19.485Z"
     }
   },
   "runs": [
@@ -53239,6 +53263,144 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260513-0489",
+      "recordedAt": "2026-05-12T15:34:19.485Z",
+      "recordedAtKst": "2026-05-13 00:34:19 KST",
+      "title": "v8.11.140 AI Routing Follow-up Clarification Production QA",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260513-0489.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_4jNrMiAxv5X9A1h5iNeFxqRZVBYc",
+        "deploymentUrl": "https://openmanager-r6le6yhmz-skyasus-projects.vercel.app",
+        "commitSha": "1e1d49bf22dd6a2d339b5e86d18929d47b36e91a"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag deploy pipeline 2519666338 success for v8.11.140",
+        "Vercel production /api/version reports 8.11.140, releaseTag v8.11.140, commit 1e1d49bf22dd6a2d339b5e86d18929d47b36e91a",
+        "Vercel production deployment dpl_4jNrMiAxv5X9A1h5iNeFxqRZVBYc READY",
+        "AI sidebar on /dashboard opens on v8.11.140",
+        "Conversational AI QA standard Q1-Q4 passed during the release QA sequence before the follow-up fix",
+        "Standard Q5 follow-up filter query no longer opens clarification after v8.11.140 fix",
+        "Q5 response uses Cloud Run AI server realtime data analysis with tool basis '대상 서버 추리기'"
+      ],
+      "skippedSurfaces": [
+        "Full dashboard broad smoke",
+        "Mobile viewport matrix",
+        "Reporter Agent advanced report generation",
+        "Analyst advanced trend drilldown",
+        "Cloud Run admin /monitoring and /monitoring/traces",
+        "Prompt-injection pack beyond the follow-up clarification regression"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI routing and clarification regression was reproduced, fixed, redeployed, and rechecked with the standard follow-up query.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Answer retained Cloud Run AI analysis basis and server realtime data tool metadata.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "No unsafe command or mutation path was introduced; fix only narrows frontend clarification gating for follow-up context references.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab semver tag pipeline completed successfully and Vercel production served the expected version and commit.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Regression is covered by targeted Vitest and production Playwright MCP evidence.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T00:30:17+09:00",
+          "summary": "Current billing period checked after v8.11.140 production QA. effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699; no billed usage spike observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.140 follow-up filter query answer without clarification",
+          "path": "reports/qa/evidence/qa-20260513-v811140-followup-filter-no-clarification.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.140 AI routing QA summary",
+          "path": "reports/qa/evidence/qa-20260513-v811140-ai-routing-qa-summary.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.140 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519666338"
+        },
+        {
+          "type": "general",
+          "label": "Production alias",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-r6le6yhmz-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -53247,16 +53409,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 240,
-      "appropriateCount": 206,
+      "seenCount": 241,
+      "appropriateCount": 207,
       "partialCount": 34,
       "inappropriateCount": 0,
       "improvementNeededCount": 44,
-      "lastRunId": "QA-20260512-0488",
-      "lastSeenAt": "2026-05-12T12:51:00.717Z",
+      "lastRunId": "QA-20260513-0489",
+      "lastSeenAt": "2026-05-12T15:34:19.485Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The three P1 regressions from QA-20260512-0484 were retested on v8.11.138 with direct production API evidence plus browser AI sidebar evidence.",
+      "lastRationale": "AI routing and clarification regression was reproduced, fixed, redeployed, and rechecked with the standard follow-up query.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -53264,16 +53426,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 116,
-      "appropriateCount": 86,
+      "seenCount": 117,
+      "appropriateCount": 87,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260512-0488",
-      "lastSeenAt": "2026-05-12T12:51:00.717Z",
+      "lastRunId": "QA-20260513-0489",
+      "lastSeenAt": "2026-05-12T15:34:19.485Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Whole-fleet load1 no-server phrasing returned the known 24h load1 peak, top servers, and semantic metric_peak evidence metadata instead of empty-summary fallback.",
+      "lastRationale": "Answer retained Cloud Run AI analysis basis and server realtime data tool metadata.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -53281,16 +53443,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 67,
-      "appropriateCount": 49,
+      "seenCount": 68,
+      "appropriateCount": 50,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260512-0488",
-      "lastSeenAt": "2026-05-12T12:51:00.717Z",
+      "lastRunId": "QA-20260513-0489",
+      "lastSeenAt": "2026-05-12T15:34:19.485Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The composite peak-load advice answer stayed in the read-only guidance envelope and did not emit apt install, systemctl restart, or other unsupported mutating commands.",
+      "lastRationale": "No unsafe command or mutation path was introduced; fix only narrows frontend clarification gating for follow-up context references.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -53298,16 +53460,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 170,
-      "appropriateCount": 153,
+      "seenCount": 171,
+      "appropriateCount": 154,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260512-0488",
-      "lastSeenAt": "2026-05-12T12:51:00.717Z",
+      "lastRunId": "QA-20260513-0489",
+      "lastSeenAt": "2026-05-12T15:34:19.485Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline deployed frontend and AI Engine successfully, production /api/version matches v8.11.138, and Vercel usage remained billed 0.0000 USD.",
+      "lastRationale": "GitLab semver tag pipeline completed successfully and Vercel production served the expected version and commit.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -53315,16 +53477,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 207,
-      "appropriateCount": 189,
+      "seenCount": 208,
+      "appropriateCount": 190,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260512-0488",
-      "lastSeenAt": "2026-05-12T12:51:00.717Z",
+      "lastRunId": "QA-20260513-0489",
+      "lastSeenAt": "2026-05-12T15:34:19.485Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Local contract tests, full AI Engine tests, direct production API QA, and Playwright browser evidence cover the changed deterministic and UI-facing paths.",
+      "lastRationale": "Regression is covered by targeted Vitest and production Playwright MCP evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

@@ -1,0 +1,19 @@
+QA: v8.11.140 AI routing decision trace hardening production targeted recheck
+Time: 2026-05-13T00:32:03+09:00
+Target: https://openmanager-ai.vercel.app
+
+Deployment proof
+- /api/version: version=8.11.140, releaseTag=v8.11.140, commitSha=1e1d49bf22dd6a2d339b5e86d18929d47b36e91a
+- GitLab tag pipeline: 2519666338 success
+- Vercel deployment: dpl_4jNrMiAxv5X9A1h5iNeFxqRZVBYc READY
+
+Conversational AI QA
+- Q1 "현재 서버 전체 상태를 요약해줘": PASS on pre-fix v8.11.139 run. Answer included 18 total, 17 normal, 1 warning, 0 critical/offline, average CPU/MEM/DISK, and storage warning.
+- Q2 "web-server-01 상태를 자세히 알려줘": PASS with minor metadata note on pre-fix v8.11.139 run. Answer included CPU, memory, disk, logs, network in/out, and stable trend.
+- Q3 "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?": PASS on pre-fix v8.11.139 run. Answer used Cloud Run AI monitoring peak evidence and returned load1 peak, top servers, and operational interpretation.
+- Q4 "지금 당장 조치가 필요한 서버가 있어?": PASS on pre-fix v8.11.139 run. Answer avoided server-name clarification and identified no urgent action, with disk warning context.
+- Q5 "방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘": FAIL on v8.11.139 because frontend clarification blocked the follow-up query. Fixed in commit e9fbece4d and redeployed as v8.11.140.
+- Q5 v8.11.140 retest: PASS. The same query no longer opened clarification, returned a direct Cloud Run AI answer, and showed analysis basis "도구: 대상 서버 추리기 · 모드: 오토 · 기간: 최근 1시간".
+
+Remaining note
+- The Q5 response says there are no servers matching network > 70%, but the wording "현재 network 상위 3대를 참고하세요" does not list the top 3. This is usable and non-blocking for the tested clarification regression, but response polish can be improved separately.

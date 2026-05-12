@@ -1,0 +1,152 @@
+{
+  "runId": "QA-20260513-0489",
+  "recordedAt": "2026-05-12T15:34:19.485Z",
+  "recordedAtKst": "2026-05-13 00:34:19 KST",
+  "runTitle": "v8.11.140 AI Routing Follow-up Clarification Production QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_4jNrMiAxv5X9A1h5iNeFxqRZVBYc",
+    "deploymentUrl": "https://openmanager-r6le6yhmz-skyasus-projects.vercel.app",
+    "commitSha": "1e1d49bf22dd6a2d339b5e86d18929d47b36e91a"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "GitLab tag deploy pipeline 2519666338 success for v8.11.140",
+    "Vercel production /api/version reports 8.11.140, releaseTag v8.11.140, commit 1e1d49bf22dd6a2d339b5e86d18929d47b36e91a",
+    "Vercel production deployment dpl_4jNrMiAxv5X9A1h5iNeFxqRZVBYc READY",
+    "AI sidebar on /dashboard opens on v8.11.140",
+    "Conversational AI QA standard Q1-Q4 passed during the release QA sequence before the follow-up fix",
+    "Standard Q5 follow-up filter query no longer opens clarification after v8.11.140 fix",
+    "Q5 response uses Cloud Run AI server realtime data analysis with tool basis '대상 서버 추리기'"
+  ],
+  "skippedSurfaces": [
+    "Full dashboard broad smoke",
+    "Mobile viewport matrix",
+    "Reporter Agent advanced report generation",
+    "Analyst advanced trend drilldown",
+    "Cloud Run admin /monitoring and /monitoring/traces",
+    "Prompt-injection pack beyond the follow-up clarification regression"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI routing and clarification regression was reproduced, fixed, redeployed, and rechecked with the standard follow-up query.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Answer retained Cloud Run AI analysis basis and server realtime data tool metadata.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "No unsafe command or mutation path was introduced; fix only narrows frontend clarification gating for follow-up context references.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab semver tag pipeline completed successfully and Vercel production served the expected version and commit.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Regression is covered by targeted Vitest and production Playwright MCP evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-13T00:30:17+09:00",
+      "summary": "Current billing period checked after v8.11.140 production QA. effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699; no billed usage spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.140 follow-up filter query answer without clarification",
+      "path": "reports/qa/evidence/qa-20260513-v811140-followup-filter-no-clarification.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.140 AI routing QA summary",
+      "path": "reports/qa/evidence/qa-20260513-v811140-ai-routing-qa-summary.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-followup-filter-clarification-regression",
+      "title": "AI follow-up server filter query should not be blocked by clarification",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.140 production retest: '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘' returned a direct Cloud Run AI answer without clarification.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "mode audit: follow-up filter query resolved without clarification and showed Cloud Run AI server realtime data analysis basis.",
+    "v8.11.139 production QA found Q5 clarification regression; commit e9fbece4d fixed the frontend clarification generator and v8.11.140 redeploy verified the same query.",
+    "Q5 answer states no servers match network > 70%; wording mentions top 3 reference without listing them, but this is non-blocking for the tested clarification regression."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.140 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519666338"
+    },
+    {
+      "type": "general",
+      "label": "Production alias",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-r6le6yhmz-skyasus-projects.vercel.app/"
+    }
+  ]
+}
