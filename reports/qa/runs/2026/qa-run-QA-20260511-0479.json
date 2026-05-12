@@ -81,6 +81,13 @@
     }
   ],
   "artifacts": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "historical-no-durable-evidence",
+    "recordedAt": "2026-05-13T03:04:02+09:00",
+    "recordedBy": "codex",
+    "reason": "This GitLab release smoke run was recorded with pipeline and deployment links but without a contemporaneous durable artifact under reports/qa/evidence. Backfilling later evidence would misrepresent the original run state, so the debt is acknowledged for audit separation."
+  },
   "completedImprovements": [
     {
       "id": "ai-assistant-domain-capability-resolver-phase2",
@@ -103,7 +110,8 @@
     "Local implementation verification before release: AI Engine targeted Vitest 3 files / 19 tests, AI Engine type-check, git diff --check.",
     "Release verification script confirmed production /api/version served 8.11.128 on attempt 23/81.",
     "GitLab release pipeline 2516275363 success; deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke all succeeded.",
-    "Vercel inspect confirmed deployment dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso is Ready."
+    "Vercel inspect confirmed deployment dpl_DHdZWyaDQmUoS8sWbivAHX7rFbso is Ready.",
+    "Historical artifact debt acknowledged on 2026-05-13: the original GitLab release smoke record has no durable local evidence artifact, and later-dated backfill would not preserve the original run state."
   ],
   "links": [
     {

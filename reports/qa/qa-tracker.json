@@ -51635,6 +51635,13 @@
         }
       ],
       "artifacts": [],
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "historical-no-durable-evidence",
+        "recordedAt": "2026-05-13T03:04:02+09:00",
+        "recordedBy": "codex",
+        "reason": "This GitLab release smoke run was recorded with pipeline and deployment links but without a contemporaneous durable artifact under reports/qa/evidence. Backfilling later evidence would misrepresent the original run state, so the debt is acknowledged for audit separation."
+      },
       "links": [
         {
           "type": "general",

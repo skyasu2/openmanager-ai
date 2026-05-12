@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`AI Engine line-guard regression cleanup complete`)
+**Last Updated**: 2026-05-13 KST (`CI/QA operational triage cleanup complete`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~CI/QA operational triage cleanup~~ | — | **완료** — v8.11.141 배포 후 남은 문제를 런타임/CI/QA evidence로 분리 진단. GitLab tag pipeline `created` 정체 시 `gitlab:pipeline:head -- --wait`가 기존 pipeline을 `not_created`로 오판하지 않도록 timeout 보고를 수정했고, `QA-20260511-0479` historical no-durable-evidence 상태를 `artifactDebt`로 분리해 recent counted run artifact warning을 해소. 검증: `bash -n scripts/gitlab/check-head-pipeline.sh`, targeted GitLab pipeline wait smoke, `npm run qa:evidence:audit`. |
 | ~~AI Engine line-guard regression cleanup~~ | — | **완료** — `orchestrator-execution.ts` streaming entrypoint를 `orchestrator-execution-stream.ts`로 분리하고, `supervisor-single-agent.ts` tool result summary helper를 `supervisor-tool-results.ts`로 분리해 line-guard fail 2건을 0건으로 복구. 검증: `npm run line-guard`, AI Engine type-check, targeted Vitest 3 files / 27 tests, AI Engine full test 117 files / 1162 tests, `git diff --check` 통과. |
 | ~~AI Assistant response quality regression hardening~~ | — | **완료** — Production 직접 Cloud Run supervisor 회귀를 재현한 failing spec 커밋 `a6d76c6a9` 후 구현 커밋 `10ae60c7f`로 TOP-N direct single-agent deterministic synthesis, user-facing response sanitizer, `getServerMetricsAdvanced.answer` scaffold 제거, AI Engine off-domain guard, 짧은 정량 metric answer `TOO_SHORT` false positive 완화를 적용. 검증: targeted Vitest 4 files / 79 tests, AI Engine type-check, AI Engine full test 117 files / 1162 tests, `git diff --check`, `docs:budget`, `docs:ai-consistency` 통과. 상세 계획서 archive 이동: [archive/ai-assistant-response-quality-regression-plan.md](archive/ai-assistant-response-quality-regression-plan.md) |
 | ~~AI Assistant routing decision trace hardening~~ | — | **완료** — QueryRoutingSignals/ RoutingDecisionTrace 공통 계약을 추가해 mode/tool/pre-filter/agent/context 판단 근거를 sanitized metadata로 추적 가능하게 정렬하고, Context Store structured findings 우선 저장 + legacy regex fallback reasonCode를 도입. Phase 1~3 AI Engine targeted/full tests, root follow-up clarification regression test, type/lint/quick gate 통과. `v8.11.139` tag pipeline `2519567410` success로 AI Engine 배포 완료 후 production conversational QA에서 follow-up filter clarification 회귀를 발견해 `e9fbece4d` 수정, `v8.11.140` tag pipeline `2519666338` success 및 `QA-20260513-0489` PASS/pending 0으로 closure. 상세 계획서 archive 이동: [archive/ai-assistant-routing-decision-trace-hardening-plan.md](archive/ai-assistant-routing-decision-trace-hardening-plan.md) |

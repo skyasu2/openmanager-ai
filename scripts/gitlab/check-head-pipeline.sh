@@ -34,6 +34,10 @@ Examples:
   bash scripts/gitlab/check-head-pipeline.sh
   bash scripts/gitlab/check-head-pipeline.sh --wait
   npm run gitlab:pipeline:head -- --wait
+
+When --wait times out after observing a non-terminal pipeline, the script
+prints that pipeline with note=pipeline_not_terminal_after_wait instead of
+reporting not_created.
 EOF
 }
 
@@ -213,11 +217,13 @@ fi
 ENCODED_PROJECT_PATH="$(printf '%s' "$PROJECT_PATH" | sed 's#/#%2F#g')"
 
 attempt=1
+last_pipeline_line=""
 while true; do
   pipeline_json="$(pipeline_request "$ENCODED_PROJECT_PATH" "$TARGET_SHA" "$GITLAB_TOKEN")"
   pipeline_line="$(printf '%s\n' "$pipeline_json" | pipeline_line_from_json)"
 
   if [[ -n "$pipeline_line" ]]; then
+    last_pipeline_line="$pipeline_line"
     pipeline_status="$(pipeline_status_from_line "$pipeline_line")"
     printf '%s\n' "$pipeline_line"
 
@@ -246,6 +252,13 @@ while true; do
   fi
 
   if (( attempt >= MAX_ATTEMPTS )); then
+    if [[ -n "$last_pipeline_line" ]]; then
+      printf '%s note=pipeline_not_terminal_after_wait attempts=%s\n' \
+        "$last_pipeline_line" \
+        "$MAX_ATTEMPTS"
+      exit 0
+    fi
+
     print_pipeline_line \
       "none" \
       "not_created" \
