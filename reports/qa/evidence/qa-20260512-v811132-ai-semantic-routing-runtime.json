@@ -1,0 +1,328 @@
+{
+  "recordedAt": "2026-05-12T03:52:31.572Z",
+  "url": "https://openmanager-ai.vercel.app/dashboard",
+  "title": "Dashboard | OpenManager AI",
+  "dialogText": "AI 어시스턴트\n\n서버 상태·로그·메트릭을 자연어로 질의\n\n전체화면\nAI Chat\n\nAI 기반 대화형 인터페이스\n\n현재 서버 전체 상태를 요약해줘\n\n12:50:42 PM\n\n복사\n\n핵심 요약\n\n📊 서버 현황 요약\n• 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대\n• 평균 CPU: 33%, 메모리: 46%, 디스크: 37%\n\n\n⚠️ 주의 서버\n• api-was-dc1-01: CPU 80% (상승 추세 ↑)\n\n\n📈 추세\n• api-was-dc1-01: CPU 평균 59% → 현재 80% (+21%p, 상승 추세 ↑)\n\n\n💡 권고\n• api-was-dc1-01: 상위 프로세스와 예약 작업을 확인하고, 10분 이상 같은 추세가 이어지면 요청 분산을 검토하세요.\n\n12:50:42 PM\n\n응답 보통\nCloud Run AI\n·\n서버 실시간 데이터 분석\n분석 근거\n\n도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간\n\n복사\nweb-server-01 상태를 자세히 알려줘\n\n12:50:42 PM\n\n복사\n🖥️ web-server-01 상태 상세\n• 상태: 온라인(정상)\n• CPU: 23% (평균 21%, 최대 32%)\n• 메모리: 41% (평균 38%, 최대 50%)\n• 디스크: 29% (평균 25%, 최대 35%)\n\n\n최근 6시간간 안정적인 상태를 유지하고 있습니다. 📊\n\n\n시스템 로그를 확인해 볼까요?\n\n12:50:42 PM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n지난 24시간 중 가장 부하가 높았던 시간대는 언제야?\n\n12:50:42 PM\n\n복사\n지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n\n기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n최고값: 16.58\n상위 평균: 9.08\n\n\n상위 서버\ndb-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\ndb-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\napi-was-dc1-01 (api-was-dc1-01): 4.87\n\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.\n\n12:50:42 PM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n지금 당장 조치가 필요한 서버가 있어? (전체 서버)\n\n12:50:42 PM\n\n복사\n긴급 조치가 필요한 서버는 없습니다.\n\n\n다만 주의 수준인 서버가 1대 있습니다.\n\n\napi-was-dc1-01: CPU 80% 상승 추세\n\n\n서버별 상태 요약:\n\n\n온라인 서버: 17대\n경고: 1대 (api-was-dc1-01)\n위험: 0대\n오프라인: 0대\n\n12:50:42 PM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘 (전체 서버)\n\n12:50:42 PM\n\n복사\n조건(network > 70%)에 맞는 서버가 없습니다. 현재 network 상위 3대를 참고하세요.\n\n12:50:42 PM\n\n응답 빠름\nCloud Run AI\n·\n서버 실시간 데이터 분석\n분석 근거\n\n도구: 대상 서버 추리기 · 모드: 오토 · 기간: 최근 1시간\n\n복사\n최근 하루 load 피크 시간과 대응 방법 알려줘\n\n12:50:42 PM\n\n복사\n문제 요약: 최근24시간 로드(load1) 최고 시간대와 대응 방법### 💡 원인 분석- 최근24시간 로드(load1) 최고 시간대는2026-05-1203:50 (2026-05-12T03:50:00+09:00)로 확인되었습니다.\n최고값은16.58이며, 상위 평균은9.08입니다.\n상위 서버는 db-mysql-dc1-primary=16.58, db-mysql-dc1-replica=5.80, api-was-dc1-01=4.87로 나타났습니다.\n\n\n🛠️ 권장 조치 절차1. 진단: 현재 서버 로드 상황을 확인합니다.\n top -o %CPU\n조치: 로드 증가의 원인을 파악하고, 필요 시 서버 리소스를 추가하거나 부하를 분산합니다.\n sudo apt-get update && sudo apt-get install -y nginx ⚠️ 서비스 재시작 필요3. 검증: 서버 로드 상황을 다시 확인합니다.\n top -o %CPU\n\n\n⚠️ 주의사항- 서버 로드 증가는 다양한 원인으로 인해 발생할 수 있으므로, 추가적인 모니터링과 분석이 필요할 수 있습니다.\n\n12:50:42 PM\n\n응답 보통\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n최근 하루 load 피크 시간과 대응 방법 알려줘\n\n12:50:42 PM\n\n복사\n문제 요약: 최근24시간 로드(load1) 최고 시간대와 대응 방법### 💡 원인 분석- 최근24시간 로드(load1) 최고 시간대는2026-05-1203:50 (2026-05-12T03:50:00+09:00)로 확인되었습니다.\n최고값은16.58이며, 상위 평균은9.08입니다.\n상위 서버는 db-mysql-dc1-primary=16.58, db-mysql-dc1-replica=5.80, api-was-dc1-01=4.87로 나타났습니다.\n\n\n🛠️ 권장 조치 절차1. 진단: 현재 서버 로드 상황을 확인합니다.\n top -o %CPU\n조치: 로드 증가의 원인을 분석하고, 필요 시 서버 리소스를 추가하거나 부하를 분산합니다.\n sudo apt-get update && sudo apt-get install -y nginx ⚠️ 서비스 재시작 필요3. 검증: 서버 로드 상황을 재확인합니다.\n top -o %CPU\n\n\n⚠️ 주의사항- 로드 증가의 원인을 정확히 파악하여 적절한 조치를 취해야 합니다.\n서버 리소스 추가 또는 부하 분산 시, 서비스에 미치는 영향을 주의해야 합니다.\n\n12:50:42 PM\n\n응답 보통\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n데이터: 일반 대화 응답 · 모드: 오토\n\n복사\n최근 하루 load 높아서 힘들 때 조치 방법 알려줘\n\n12:50:42 PM\n\n복사\n바로 확인할 명령어는 아래 순서로 실행하면 됩니다.\n아래는 읽기 전용 진단을 우선한 순서입니다. 재시작, 삭제, sysctl 변경 같은 조치는 결과 확인 후 승인된 절차로만 진행하세요.\n\n\nCPU 사용량 상위 프로세스 조회\nBASH\n복사\ntop -o cpu\nCPU 사용량이 높은 프로세스 상위 10개 확인\nBASH\n복사\nps aux --sort=-%cpu | head -10\n운영 환경의 socket path, export, 로그 경로가 다르면 실제 설정값으로 바꿔 실행하세요.\n\n12:50:42 PM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n도구: 조치 명령어 정리 · 모드: 오토\n\n복사\n서버명 없이 전체 시스템에서 어제부터 지금까지 load1이 제일 튄 때랑 원인 후보만 알려줘\n\n12:50:42 PM\n\n복사\n응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.\n\n12:50:42 PM\n\n응답 보통\nCloud Run AI\n·\n서버 실시간 데이터 분석\n분석 근거\n\n도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간\n\n복사\n최근 하루 load 높아서 힘들 때 조치 방법 알려줘\n\n12:50:42 PM\n\n복사\n바로 확인할 명령어는 아래 순서로 실행하면 됩니다.\n아래는 읽기 전용 진단을 우선한 순서입니다. 재시작, 삭제, sysctl 변경 같은 조치는 결과 확인 후 승인된 절차로만 진행하세요.\n\n\nCPU 사용량 상위 프로세스 조회\nBASH\n복사\ntop -o cpu\nCPU 사용량이 높은 프로세스 상위 10개 확인\nBASH\n복사\nps aux --sort=-%cpu | head -10\n운영 환경의 socket path, export, 로그 경로가 다르면 실제 설정값으로 바꿔 실행하세요.\n\n12:50:42 PM\n\n응답 빠름\nCloud Run AI\n·\n일반 대화 응답\n분석 근거\n\n도구: 조치 명령어 정리 · 모드: 오토\n\n복사\n서버명 없이 전체 시스템에서 어제부터 지금까지 load1이 제일 튄 때랑 원인 후보만 알려줘\n\n12:50:46 PM\n\n복사\n응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.\n\n12:52:04 PM\n\n응답 보통\nCloud Run AI\n·\n서버 실시간 데이터 분석\n분석 근거\n\n도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간\n\n복사\n서버명 없이 전체 시스템에서 어제부터 지금까지 load1이 제일 튄 때랑 원인 후보만 알려줘\n\n12:52:08 PM\n\n복사\n응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.\n\n12:52:08 PM\n\n응답 보통\nCloud Run AI\n·\n서버 실시간 데이터 분석\n분석 근거\n\n도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간\n\n복사\n다시 생성\n대화 24/50\n서버 운영 중심\nEnter로 전송, Shift+Enter로 줄바꿈\n\nAI 기능\n\nAI Chat\n서버 질의, 트러블슈팅, 명령어 추천\n자동장애 보고서\nReporter Agent 장애 분석 보고서 생성\n이상감지/추세\n경량 이상 신호와 리스크 추세 분석\n전체 화면으로 보기",
+  "checks": [
+    {
+      "id": "q1-overall-status",
+      "query": "현재 서버 전체 상태를 요약해줘",
+      "verdict": "pass",
+      "evidence": "전체 18대, 정상 17대, 경고 1대, api-was-dc1-01 CPU 80% 포함 여부"
+    },
+    {
+      "id": "q2-web-server-detail",
+      "query": "web-server-01 상태를 자세히 알려줘",
+      "verdict": "pass",
+      "evidence": "web-server-01 CPU/MEM/Disk 수치 포함 여부"
+    },
+    {
+      "id": "q3-24h-peak-load",
+      "query": "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?",
+      "verdict": "pass",
+      "evidence": "24h load1 peak timestamp/value/top servers 포함 여부"
+    },
+    {
+      "id": "q4-action-needed",
+      "query": "지금 당장 조치가 필요한 서버가 있어?",
+      "verdict": "pass",
+      "evidence": "초기 clarification 발생 후 전체 서버 선택 시 답변 가능"
+    },
+    {
+      "id": "q5-network-context",
+      "query": "방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘",
+      "verdict": "pass",
+      "evidence": "맥락 질의에 network 조건 결과를 반환"
+    },
+    {
+      "id": "composite-peak-plus-advice",
+      "query": "최근 하루 load 피크 시간과 대응 방법 알려줘",
+      "verdict": "fail",
+      "evidence": "피크 증거는 포함됐지만 근거 없는 mutating install command가 포함됨"
+    },
+    {
+      "id": "advice-only-readonly",
+      "query": "최근 하루 load 높아서 힘들 때 조치 방법 알려줘",
+      "verdict": "pass",
+      "evidence": "읽기 전용 명령과 변경성 조치 금지 안내 포함 여부"
+    },
+    {
+      "id": "whole-fleet-load1-brittle",
+      "query": "서버명 없이 전체 시스템에서 어제부터 지금까지 load1이 제일 튄 때랑 원인 후보만 알려줘",
+      "verdict": "fail",
+      "evidence": "whole-fleet load1 질의가 빈 요약으로 실패"
+    }
+  ],
+  "resources": [
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "initiatorType": "fetch",
+      "duration": 5153,
+      "transferSize": 328,
+      "startTime": 15505,
+      "responseEnd": 20658
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+      "initiatorType": "fetch",
+      "duration": 622,
+      "transferSize": 397,
+      "startTime": 32570,
+      "responseEnd": 33191
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+      "initiatorType": "fetch",
+      "duration": 47,
+      "transferSize": 396,
+      "startTime": 88981,
+      "responseEnd": 89028
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 3518,
+      "transferSize": 11529,
+      "startTime": 118854,
+      "responseEnd": 122372
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 1393,
+      "transferSize": 17100,
+      "startTime": 158307,
+      "responseEnd": 159700
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 1296,
+      "transferSize": 322,
+      "startTime": 250195,
+      "responseEnd": 251491
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "initiatorType": "fetch",
+      "duration": 1206,
+      "transferSize": 1065,
+      "startTime": 251517,
+      "responseEnd": 252723
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs/b9f7e8b6-ff49-41ec-aae5-7eeecaa0e74e/stream",
+      "initiatorType": "other",
+      "duration": 1753,
+      "transferSize": 3217,
+      "startTime": 252726,
+      "responseEnd": 254479
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 836,
+      "transferSize": 322,
+      "startTime": 342114,
+      "responseEnd": 342950
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 1383,
+      "transferSize": 17303,
+      "startTime": 363708,
+      "responseEnd": 365091
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+      "initiatorType": "fetch",
+      "duration": 57,
+      "transferSize": 396,
+      "startTime": 388981,
+      "responseEnd": 389038
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 483,
+      "transferSize": 322,
+      "startTime": 396308,
+      "responseEnd": 396791
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "initiatorType": "fetch",
+      "duration": 650,
+      "transferSize": 1069,
+      "startTime": 397825,
+      "responseEnd": 398476
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs/8f9da217-0dfa-43bb-9f15-d1b4840d2704/stream",
+      "initiatorType": "other",
+      "duration": 2368,
+      "transferSize": 3250,
+      "startTime": 398478,
+      "responseEnd": 400846
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 458,
+      "transferSize": 322,
+      "startTime": 434036,
+      "responseEnd": 434494
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 472,
+      "transferSize": 322,
+      "startTime": 487858,
+      "responseEnd": 488331
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 3166,
+      "transferSize": 41527,
+      "startTime": 488366,
+      "responseEnd": 491532
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 445,
+      "transferSize": 322,
+      "startTime": 526012,
+      "responseEnd": 526456
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 2929,
+      "transferSize": 43558,
+      "startTime": 526490,
+      "responseEnd": 529419
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 447,
+      "transferSize": 322,
+      "startTime": 535384,
+      "responseEnd": 535831
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 410,
+      "transferSize": 6189,
+      "startTime": 535868,
+      "responseEnd": 536278
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 476,
+      "transferSize": 322,
+      "startTime": 612085,
+      "responseEnd": 612561
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "initiatorType": "fetch",
+      "duration": 474,
+      "transferSize": 1069,
+      "startTime": 612581,
+      "responseEnd": 613055
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs/066108e1-b411-46d9-90f0-caf122ee76c1/stream",
+      "initiatorType": "other",
+      "duration": 3427,
+      "transferSize": 3024,
+      "startTime": 613056,
+      "responseEnd": 616483
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 480,
+      "transferSize": 322,
+      "startTime": 617955,
+      "responseEnd": 618434
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 326,
+      "transferSize": 6189,
+      "startTime": 618489,
+      "responseEnd": 618815
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 468,
+      "transferSize": 322,
+      "startTime": 626995,
+      "responseEnd": 627463
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "initiatorType": "fetch",
+      "duration": 504,
+      "transferSize": 1069,
+      "startTime": 627484,
+      "responseEnd": 627989
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs/3150898c-d336-4adb-a500-d7ee262763da/stream",
+      "initiatorType": "other",
+      "duration": 3450,
+      "transferSize": 3018,
+      "startTime": 627991,
+      "responseEnd": 631441
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+      "initiatorType": "fetch",
+      "duration": 72,
+      "transferSize": 394,
+      "startTime": 688981,
+      "responseEnd": 689054
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 500,
+      "transferSize": 322,
+      "startTime": 709897,
+      "responseEnd": 710397
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "initiatorType": "fetch",
+      "duration": 432,
+      "transferSize": 1069,
+      "startTime": 710421,
+      "responseEnd": 710853
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/jobs/31820009-85af-4d58-a544-8fca2a8d21a5/stream",
+      "initiatorType": "other",
+      "duration": 3384,
+      "transferSize": 8009,
+      "startTime": 710856,
+      "responseEnd": 714240
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "pass": 6,
+    "warn": 0,
+    "fail": 2
+  }
+}

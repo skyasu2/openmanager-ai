@@ -54,7 +54,10 @@ const SPECIFIC_CONDITION_PATTERNS = {
     /\(전체 서버\)|\(web-server 그룹\)|\(db-server 그룹\)|\(loadbalancer 그룹\)|\(cache 그룹\)|\(최근 \d+시간\)|\(최근 24시간\)|\(지난 7일\)/i,
   // 명시적 스코프: "모든 서버", "전체 서버" 등 스코프가 명확한 쿼리
   explicitScope:
-    /모든\s*(서버|server)|전체\s*(서버|server)|전부|all\s*(서버|server)/i,
+    /모든\s*(서버|server)|전체\s*(서버|server|시스템|system)|서버명\s*없이|전부|all\s*(서버|server|systems?)|whole\s*(fleet|system)/i,
+  // 전체 서버 탐색 의도: 특정 서버명이 없어도 fleet scan으로 실행 가능
+  fleetScanIntent:
+    /(?:조치|대응|확인).{0,16}필요.{0,16}서버|서버.{0,16}(?:조치|대응|확인).{0,16}필요|문제.{0,12}있는.{0,12}서버|위험.{0,12}서버|경고.{0,12}서버|장애.{0,12}서버|당장.{0,12}서버/i,
 };
 
 // 시간 관련 명확화 패턴
@@ -90,7 +93,8 @@ function hasSpecificConditions(query: string): boolean {
     SPECIFIC_CONDITION_PATTERNS.peakIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.filterIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.clarifiedSuffix.test(query) ||
-    SPECIFIC_CONDITION_PATTERNS.explicitScope.test(query)
+    SPECIFIC_CONDITION_PATTERNS.explicitScope.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.fleetScanIntent.test(query)
   );
 }
 

@@ -65,6 +65,7 @@ function buildPeakMetricPrompt(peak: PeakMetricSlot): string {
     `상위 서버: ${topServers}`,
     '위 수치와 시간대를 바꾸지 말고, 첫 문장에 결론을 답하세요.',
     `그 다음 1-2문장으로 운영 관점 해석을 덧붙이세요.${fallbackNotice}`,
+    '사용자가 대응/조치 방법을 함께 물어도 이 근거만으로 패키지 설치, 서비스 재시작, 파일 삭제, 설정 변경 같은 변형 명령어를 제안하지 말고 읽기 전용 확인 항목으로 제한하세요.',
   ].join('\n');
 }
 

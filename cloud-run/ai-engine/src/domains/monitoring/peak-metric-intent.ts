@@ -23,7 +23,7 @@ const EXTREME_OR_PEAK_PATTERN =
 const TEMPORAL_OR_RANKING_FOCUS_PATTERN =
   /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|때|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|영향.*서버|어떤\s*서버/i;
 const TIME_WINDOW_PATTERN =
-  /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|last\s*24|last\s*day|past\s*day/i;
+  /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|어제(?:부터)?|지금까지|부터\s*지금|last\s*24|last\s*day|past\s*day|since\s*yesterday|from\s*yesterday\s*to\s*now/i;
 const ADVICE_SEEKING_PATTERN = /조치|방법|해결|어떻게|대응|처리|해야\s*해|어쩌/i;
 const EXPLICIT_PEAK_OR_RANKING_REQUEST_PATTERN =
   /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|영향.*서버|어떤\s*서버|피크|최고점|최댓값|peak|max|highest/i;

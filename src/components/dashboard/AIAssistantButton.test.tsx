@@ -28,6 +28,18 @@ describe('AIAssistantButton', () => {
     expect(screen.getByText('AI 어시스턴트')).toBeDefined();
   });
 
+  it('keeps the text label hidden until wide desktop widths to avoid header crowding', () => {
+    render(
+      <AIAssistantButton
+        isOpen={false}
+        isEnabled={false}
+        onClick={mockOnClick}
+      />
+    );
+
+    expect(screen.getByText('AI 어시스턴트').className).toContain('xl:inline');
+  });
+
   it('calls onClick handler when clicked', () => {
     render(
       <AIAssistantButton

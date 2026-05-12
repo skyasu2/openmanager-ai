@@ -313,6 +313,24 @@ describe('generateClarification', () => {
       // 중요한 것은 에러 없이 동작하는 것
       expect(result === null || result.options.length > 0).toBe(true);
     });
+
+    it('"지금 당장 조치가 필요한 서버가 있어?" → 전체 서버 탐색으로 clarification 스킵', () => {
+      expect(
+        generateClarification(
+          '지금 당장 조치가 필요한 서버가 있어?',
+          lowConfidence
+        )
+      ).toBeNull();
+    });
+
+    it('"서버명 없이 전체 시스템" 스코프는 서버명 clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          '서버명 없이 전체 시스템에서 어제부터 지금까지 load1이 제일 튄 때랑 원인 후보만 알려줘',
+          lowConfidence
+        )
+      ).toBeNull();
+    });
   });
 
   describe('모호한 쿼리', () => {

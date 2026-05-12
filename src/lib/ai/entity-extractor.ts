@@ -139,7 +139,7 @@ Output format (JSON only, no explanation):
 }
 
 Rules:
-- "24h", "last 24h", "최근 24시간", "최근 하루", "지난 24시간" => timeWindow "24h".
+- "24h", "last 24h", "최근 24시간", "최근 하루", "지난 24시간", "어제부터 지금까지", "since yesterday", "from yesterday to now" => timeWindow "24h".
 - "load", "load1", "load average", "로드", "부하", "system pressure" with peak/max/highest wording => metric "load1" and intent "metric_peak" when a peak time, peak interval, or top load is requested.
 - "1분 load", "system load", "시스템 load", "제일 튄 시각", "제일 버거웠던 때", "제일 힘들었던 순간", "가장 높았던 구간", "부하 최고점 top server" with recent/day/time wording => metric "load1", timeWindow "24h", aggregation "peak".
 - If the user says "CPU 말고" or "not CPU" and also mentions load/system load, do not select CPU; select metric "load1".

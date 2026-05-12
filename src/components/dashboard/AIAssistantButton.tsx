@@ -46,12 +46,12 @@ export const AIAssistantButton = memo(function AIAssistantButton({
   }, []);
 
   return (
-    <div className="relative" suppressHydrationWarning>
+    <div className="relative shrink-0" suppressHydrationWarning>
       <button
         type="button"
         onClick={onClick}
         data-testid="ai-assistant"
-        className={`group relative transform cursor-pointer touch-manipulation overflow-hidden rounded-xl p-3 transition-all duration-300 hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:outline-hidden ${
+        className={`group relative min-h-11 min-w-11 transform cursor-pointer touch-manipulation overflow-hidden rounded-xl p-3 transition-all duration-300 hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:outline-hidden ${
           isMounted && (isOpen || isEnabled)
             ? 'scale-105 text-white shadow-lg shadow-purple-500/50'
             : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
@@ -88,7 +88,7 @@ export const AIAssistantButton = memo(function AIAssistantButton({
           >
             <Bot className="h-5 w-5" />
           </div>
-          <span className="hidden text-sm font-medium sm:inline">
+          <span className="hidden text-sm font-medium xl:inline">
             AI 어시스턴트
           </span>
         </div>

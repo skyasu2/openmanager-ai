@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-12T02:07:18.555Z"
+    "updatedAt": "2026-05-12T03:58:50.223Z"
   },
   "sequence": {
-    "nextRunNumber": 484
+    "nextRunNumber": 485
   },
   "summary": {
-    "totalRecordedRuns": 481,
-    "totalRuns": 383,
+    "totalRecordedRuns": 482,
+    "totalRuns": 384,
     "excludedRuns": 98,
-    "totalChecks": 3387,
-    "totalPassed": 3255,
-    "totalFailed": 122,
-    "completionRate": 99.63,
-    "completedItems": 544,
-    "pendingItems": 2,
+    "totalChecks": 3395,
+    "totalPassed": 3261,
+    "totalFailed": 124,
+    "completionRate": 99.45,
+    "completedItems": 546,
+    "pendingItems": 3,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260512-0483",
-    "lastRecordedAt": "2026-05-12T02:07:18.555Z",
-    "latestRecordedRunId": "QA-20260512-0483",
-    "latestRecordedAt": "2026-05-12T02:07:18.555Z"
+    "expertDomainsOpenGaps": 3,
+    "lastRunId": "QA-20260512-0484",
+    "lastRecordedAt": "2026-05-12T03:58:50.223Z",
+    "latestRecordedRunId": "QA-20260512-0484",
+    "latestRecordedAt": "2026-05-12T03:58:50.223Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13318,49 +13318,121 @@
       "id": "ai-assistant-peak-load-composite-routing-v811131",
       "title": "Composite load peak plus response-guidance prompt should still use deterministic peak evidence",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260512-0483",
       "firstSeenAt": "2026-05-12T02:07:18.555Z",
-      "lastSeenRunId": "QA-20260512-0483",
-      "lastSeenAt": "2026-05-12T02:07:18.555Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "",
+      "lastEvidence": "v8.11.132 composite prompt included 2026-05-12 03:50 load1 peak, value 16.58, average 9.08, and top servers.",
       "lastNote": "The prompt '최근 하루 load 피크 시간과 대응 방법 알려줘' routed to /api/ai/supervisor/stream/v2 as complexity_below_threshold and omitted the deterministic load1 24h peak timestamp.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-12T02:07:18.555Z"
+      "lastStatusChangeAt": "2026-05-12T03:58:50.223Z"
     },
     "ai-assistant-load-advice-safety-v811131": {
       "id": "ai-assistant-load-advice-safety-v811131",
-      "title": "Load advice responses should not propose mutating commands without a safety envelope",
+      "title": "Load advice responses should not propose mutating commands without a safety envelope for advice-only prompts",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260512-0483",
       "firstSeenAt": "2026-05-12T02:07:18.555Z",
-      "lastSeenRunId": "QA-20260512-0483",
-      "lastSeenAt": "2026-05-12T02:07:18.555Z",
+      "lastSeenRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
+      "seenCount": 2,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Advice-only load prompt returned read-only top/ps commands and warned that restart/delete/sysctl changes require an approved procedure.",
+      "lastNote": "The prompt '최근 하루 load 높아서 힘들 때 조치 방법 알려줘' avoided peak false-positive routing but suggested system/runtime command changes without deterministic validation.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-12T03:58:50.223Z"
+    },
+    "ai-assistant-composite-load-advice-mutating-command-v811132": {
+      "id": "ai-assistant-composite-load-advice-mutating-command-v811132",
+      "title": "Composite peak-load advice answer must not emit unsupported mutating package-install commands",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260512-0484",
+      "firstSeenAt": "2026-05-12T03:58:50.223Z",
+      "lastSeenRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
       "seenCount": 1,
       "completedCount": 0,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
-      "owner": "codex",
+      "owner": "",
       "lastEvidence": "",
-      "lastNote": "The prompt '최근 하루 load 높아서 힘들 때 조치 방법 알려줘' avoided peak false-positive routing but suggested system/runtime command changes without deterministic validation.",
+      "lastNote": "The composite prompt included deterministic peak evidence but then suggested sudo apt-get update && sudo apt-get install -y nginx, which is unrelated and mutating.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-12T02:07:18.555Z"
+      "lastStatusChangeAt": "2026-05-12T03:58:50.223Z"
+    },
+    "ai-assistant-whole-fleet-load1-empty-summary-v811132": {
+      "id": "ai-assistant-whole-fleet-load1-empty-summary-v811132",
+      "title": "Whole-fleet load1 spike phrasing should route to metric_peak evidence instead of empty-summary fallback",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260512-0484",
+      "firstSeenAt": "2026-05-12T03:58:50.223Z",
+      "lastSeenRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "The prompt explicitly said no server name and whole system, but production returned “응답 본문이 비어 있어...” rather than the known load1 peak evidence.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-12T03:58:50.223Z"
+    },
+    "ai-assistant-action-needed-over-clarification-v811132": {
+      "id": "ai-assistant-action-needed-over-clarification-v811132",
+      "title": "Whole-fleet action-needed question should not require a server name before answering",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260512-0484",
+      "firstSeenAt": "2026-05-12T03:58:50.223Z",
+      "lastSeenRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "The standard Q4 “지금 당장 조치가 필요한 서버가 있어?” initially showed a missing-server clarification; selecting whole-fleet produced a valid answer.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-12T03:58:50.223Z"
     }
   },
   "runs": [
@@ -52137,6 +52209,230 @@
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260512-0484",
+      "recordedAt": "2026-05-12T03:58:50.223Z",
+      "recordedAtKst": "2026-05-12 12:58:50 KST",
+      "title": "Vercel Playwright QA - AI semantic routing regression check on v8.11.132",
+      "owner": "codex",
+      "source": "playwright-mcp+vercel-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260512-0484.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_4abnPiNGVtn9Wj5ZYG9xton3DLc6",
+        "deploymentUrl": "https://openmanager-fnkic8yvt-skyasus-projects.vercel.app",
+        "commitSha": "d7ee00270cbf8f301950d390b7122bee8fd3b6a5"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production deployment dpl_4abnPiNGVtn9Wj5ZYG9xton3DLc6 is Ready and aliased to https://openmanager-ai.vercel.app",
+        "/api/version reports v8.11.132, commit d7ee00270cbf8f301950d390b7122bee8fd3b6a5, release tag v8.11.132, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517604435",
+        "Dashboard guest flow opened the AI sidebar with AI engine status Ready",
+        "Conversational AI QA Q1 overall status returned 18 total servers, 17 normal, 1 warning, and api-was-dc1-01 CPU 80%",
+        "Conversational AI QA Q2 web-server-01 detail returned CPU 23%, memory 41%, disk 29%",
+        "Conversational AI QA Q3 previous peak-load failure returned deterministic load1 24h peak at 2026-05-12 03:50 with value 16.58 and top servers",
+        "Conversational AI QA Q4 initially over-clarified because no server was named, but selecting whole-fleet returned no urgent server and one warning server api-was-dc1-01",
+        "Conversational AI QA Q5 context follow-up returned no network > 70% servers",
+        "Previous composite peak-plus-advice prompt now includes deterministic peak evidence, closing the missing-evidence portion of the v8.11.131 failure",
+        "Advice-only load phrasing now returns read-only diagnostic commands and explicitly warns that restart/delete/sysctl changes require approved procedure",
+        "Browser console reported 0 warnings and 0 errors; AI API network calls returned 200/201"
+      ],
+      "skippedSurfaces": [
+        "Core route pack beyond landing/dashboard AI sidebar was not repeated; this run targeted AI semantic routing after v8.11.132 deploy",
+        "Reporter Agent and Analyst Agent advanced surfaces",
+        "Mobile viewport and visual regression matrix",
+        "Cloud Run admin observability endpoints beyond deployment health already covered by tag pipeline smoke"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 6,
+        "failed": 2
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar Q1 overall status summary",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright Performance API resource timing",
+          "latencyMs": 3518,
+          "processingTimeMs": 3518
+        },
+        {
+          "surface": "AI sidebar Q3 deterministic 24h peak-load evidence",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright Performance API resource timing",
+          "latencyMs": 1753,
+          "processingTimeMs": 1753
+        },
+        {
+          "surface": "AI sidebar composite peak plus advice prompt",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright Performance API resource timing",
+          "latencyMs": 3427,
+          "processingTimeMs": 3427
+        },
+        {
+          "surface": "AI sidebar advice-only read-only command guidance",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright Performance API resource timing",
+          "latencyMs": 326,
+          "processingTimeMs": 326
+        },
+        {
+          "surface": "AI sidebar whole-fleet load1 brittle phrasing failure",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright Performance API resource timing",
+          "latencyMs": 3384,
+          "processingTimeMs": 3384
+        }
+      ],
+      "plannerShadowObservations": [
+        {
+          "surface": "Composite load peak plus response guidance question",
+          "route": "/api/ai/jobs/[id]/stream",
+          "executionMode": "single-agent",
+          "latencyMs": 3427,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "v8.11.132 now attaches deterministic peak evidence to the composite prompt."
+        },
+        {
+          "surface": "Composite load peak plus response guidance safety envelope",
+          "route": "/api/ai/jobs/[id]/stream",
+          "executionMode": "single-agent",
+          "latencyMs": 3427,
+          "classification": "drift",
+          "driftReasonCodes": [],
+          "source": "The answer included sudo apt-get update && sudo apt-get install -y nginx without evidence or approval gate."
+        },
+        {
+          "surface": "Whole-fleet load1 brittle phrasing",
+          "route": "/api/ai/jobs/[id]/stream",
+          "executionMode": "single-agent",
+          "latencyMs": 3384,
+          "classification": "drift",
+          "driftReasonCodes": [],
+          "source": "The prompt explicitly said no server name and whole system, but the response returned an empty-summary fallback."
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Standard conversational QA mostly passed and previous peak evidence drift is fixed, but two production prompts still fail: composite advice includes unsupported mutating commands, and a whole-fleet load1 phrasing returns an empty-summary fallback.",
+          "nextAction": "Add a safety envelope for composite advice answers and preserve whole_fleet metric_peak intent for explicit no-server load1 phrasings."
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Advice-only load guidance is now read-only, but the composite peak-plus-advice path still emitted sudo apt-get install -y nginx without evidence or approval gating.",
+          "nextAction": "Apply the read-only/mutating-command guard after any evidence-based final answer generation, not only in the command catalog path."
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The deterministic 24h peak load evidence is correct for canonical phrasing, but the explicit whole-fleet load1 phrasing did not resolve to the same evidence and returned an empty summary.",
+          "nextAction": "Normalize whole_fleet + load1 + peak/spike + since/yesterday phrasings into the same metric_peak frame before clarification."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.11.132 is deployed on Vercel and Cloud Run, /api/version matches the release tag, the tag pipeline succeeded, and Vercel usage remains billed 0.0000 USD.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run used Playwright MCP through the real UI path, recorded console/network/runtime evidence, and kept the live LLM prompt set targeted to the known risk.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-12T03:58:20.264Z",
+          "summary": "Current Vercel billing period reviewed before v8.11.132 targeted semantic routing QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "v8.11.132 AI semantic routing network requests",
+          "path": "reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-network.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.132 AI semantic routing runtime transcript and resource timings",
+          "path": "reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-runtime.json"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.132 AI semantic routing console messages",
+          "path": "reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-console.txt"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.132 AI sidebar final failure screenshot",
+          "path": "reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-dialog.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "v8.11.132 release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517604435"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-fnkic8yvt-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 3,
+      "completedCount": 2,
+      "pendingCount": 3,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -52145,17 +52441,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 235,
+      "seenCount": 236,
       "appropriateCount": 202,
-      "partialCount": 33,
+      "partialCount": 34,
       "inappropriateCount": 0,
-      "improvementNeededCount": 43,
-      "lastRunId": "QA-20260512-0483",
-      "lastSeenAt": "2026-05-12T02:07:18.555Z",
+      "improvementNeededCount": 44,
+      "lastRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The known fragile peak-load questions now pass, but a composite load peak plus response-guidance prompt still bypasses deterministic peak evidence and returns a generic streaming answer.",
-      "lastNextAction": "Route explicit metric_peak frames and raw semantic peak evidence before generic streaming for composite advice prompts."
+      "lastRationale": "Standard conversational QA mostly passed and previous peak evidence drift is fixed, but two production prompts still fail: composite advice includes unsupported mutating commands, and a whole-fleet load1 phrasing returns an empty-summary fallback.",
+      "lastNextAction": "Add a safety envelope for composite advice answers and preserve whole_fleet metric_peak intent for explicit no-server load1 phrasings."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -52179,33 +52475,33 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 63,
+      "seenCount": 64,
       "appropriateCount": 47,
-      "partialCount": 16,
+      "partialCount": 17,
       "inappropriateCount": 0,
-      "improvementNeededCount": 15,
-      "lastRunId": "QA-20260512-0483",
-      "lastSeenAt": "2026-05-12T02:07:18.555Z",
+      "improvementNeededCount": 16,
+      "lastRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The advice-only load question avoided peak false-positive routing, but the response included potentially mutating operational commands without a deterministic evidence/safety envelope.",
-      "lastNextAction": "Add a safe ops-advice evidence path or output guard that separates diagnosis, read-only verification, and mutating commands."
+      "lastRationale": "Advice-only load guidance is now read-only, but the composite peak-plus-advice path still emitted sudo apt-get install -y nginx without evidence or approval gating.",
+      "lastNextAction": "Apply the read-only/mutating-command guard after any evidence-based final answer generation, not only in the command catalog path."
     },
     "sre-devops": {
       "domainId": "sre-devops",
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 166,
-      "appropriateCount": 149,
+      "seenCount": 167,
+      "appropriateCount": 150,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260512-0483",
-      "lastSeenAt": "2026-05-12T02:07:18.555Z",
+      "lastRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production deployment is Ready, /api/version matches v8.11.131, GitLab release pipeline succeeded, and Vercel usage remains within the no-billed-usage guardrail.",
+      "lastRationale": "v8.11.132 is deployed on Vercel and Cloud Run, /api/version matches the release tag, the tag pipeline succeeded, and Vercel usage remains billed 0.0000 USD.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -52213,16 +52509,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 203,
-      "appropriateCount": 185,
+      "seenCount": 204,
+      "appropriateCount": 186,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260512-0483",
-      "lastSeenAt": "2026-05-12T02:07:18.555Z",
+      "lastRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run used a small risk-based Playwright MCP prompt set with request, runtime, console, and timing evidence instead of broad live LLM repetition.",
+      "lastRationale": "The run used Playwright MCP through the real UI path, recorded console/network/runtime evidence, and kept the live LLM prompt set targeted to the known risk.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -52230,17 +52526,17 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 63,
+      "seenCount": 64,
       "appropriateCount": 43,
-      "partialCount": 20,
+      "partialCount": 21,
       "inappropriateCount": 0,
-      "improvementNeededCount": 20,
-      "lastRunId": "QA-20260507-0418",
-      "lastSeenAt": "2026-05-06T21:59:27.519Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard and AI Engine now read the same OTel data-source family through the decoupled dataSource contract, and production output named the expected files.",
-      "lastNextAction": ""
+      "improvementNeededCount": 21,
+      "lastRunId": "QA-20260512-0484",
+      "lastSeenAt": "2026-05-12T03:58:50.223Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "The deterministic 24h peak load evidence is correct for canonical phrasing, but the explicit whole-fleet load1 phrasing did not resolve to the same evidence and returned an empty summary.",
+      "lastNextAction": "Normalize whole_fleet + load1 + peak/spike + since/yesterday phrasings into the same metric_peak frame before clarification."
     },
     "infra-reliability": {
       "domainId": "infra-reliability",

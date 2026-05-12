@@ -148,16 +148,18 @@ const DashboardHeader = memo(function DashboardHeader({
       suppressHydrationWarning
       className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs"
     >
-      <div className="flex min-w-0 items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
+      <div className="flex min-w-0 items-center justify-between gap-3 py-4 pr-4 pl-16 sm:gap-4 sm:pr-6 lg:px-6">
         {/* 왼쪽: 브랜드 로고 */}
-        <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden pr-3">
+        <div className="flex min-w-0 flex-1 basis-0 items-center gap-4 overflow-hidden">
           <OpenManagerLogo variant="light" compactOnMobile href="/" />
         </div>
 
         {/* 중앙: 실시간 정보 + 세션 카운트다운 */}
         {isDesktopLayout && (
-          <div className="hidden items-center gap-4 lg:flex">
-            <RealTimeDisplay />
+          <div className="hidden min-w-0 shrink items-center justify-center gap-3 overflow-hidden px-2 lg:flex xl:gap-4">
+            <div className="hidden xl:block">
+              <RealTimeDisplay />
+            </div>
             <SessionCountdown />
           </div>
         )}

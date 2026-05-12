@@ -8,6 +8,7 @@ import {
   parseMonitoringPeakMetricMessage,
 } from './peak-metric-intent';
 import { getMonitoringPeakMetric, getPeakMetricSlot } from './peak-metric';
+import { monitoringPeakMetricEvidenceProvider } from './peak-metric-evidence-provider';
 
 describe('getPeakMetricSlot', () => {
   it('returns the highest load slot in the recent 24h OTel window', () => {
@@ -53,6 +54,7 @@ describe('parseMonitoringPeakMetricMessage', () => {
       '최근 하루 시스템 pressure 최대 구간은?',
       '최근 24시간 load가 가장 높았던 구간',
       '최근 하루 부하 최고점 top server',
+      '서버명 없이 전체 시스템에서 어제부터 지금까지 load1이 제일 튄 때랑 원인 후보만 알려줘',
     ];
 
     for (const query of queries) {
@@ -127,5 +129,20 @@ describe('parseMonitoringPeakMetricMessage', () => {
       metric: 'load',
       windowHours: 24,
     });
+  });
+
+  it('keeps composite peak-and-advice requests evidence-bound and read-only', async () => {
+    const query = '최근 하루 load 피크 시간과 대응 방법 알려줘';
+    const evidence = await monitoringPeakMetricEvidenceProvider.resolve({
+      requestId: 'peak-advice-safety',
+      domainId: MONITORING_DOMAIN_ID,
+      message: query,
+      messages: [{ role: 'user', content: query }],
+    });
+
+    expect(evidence).not.toBeNull();
+    expect(evidence?.prompt).toContain('읽기 전용');
+    expect(evidence?.prompt).toContain('패키지 설치');
+    expect(evidence?.prompt).toContain('서비스 재시작');
   });
 });

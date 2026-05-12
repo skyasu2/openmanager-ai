@@ -1,0 +1,292 @@
+{
+  "runId": "QA-20260512-0484",
+  "recordedAt": "2026-05-12T03:58:50.223Z",
+  "recordedAtKst": "2026-05-12 12:58:50 KST",
+  "runTitle": "Vercel Playwright QA - AI semantic routing regression check on v8.11.132",
+  "owner": "codex",
+  "source": "playwright-mcp+vercel-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_4abnPiNGVtn9Wj5ZYG9xton3DLc6",
+    "deploymentUrl": "https://openmanager-fnkic8yvt-skyasus-projects.vercel.app",
+    "commitSha": "d7ee00270cbf8f301950d390b7122bee8fd3b6a5"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Vercel production deployment dpl_4abnPiNGVtn9Wj5ZYG9xton3DLc6 is Ready and aliased to https://openmanager-ai.vercel.app",
+    "/api/version reports v8.11.132, commit d7ee00270cbf8f301950d390b7122bee8fd3b6a5, release tag v8.11.132, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517604435",
+    "Dashboard guest flow opened the AI sidebar with AI engine status Ready",
+    "Conversational AI QA Q1 overall status returned 18 total servers, 17 normal, 1 warning, and api-was-dc1-01 CPU 80%",
+    "Conversational AI QA Q2 web-server-01 detail returned CPU 23%, memory 41%, disk 29%",
+    "Conversational AI QA Q3 previous peak-load failure returned deterministic load1 24h peak at 2026-05-12 03:50 with value 16.58 and top servers",
+    "Conversational AI QA Q4 initially over-clarified because no server was named, but selecting whole-fleet returned no urgent server and one warning server api-was-dc1-01",
+    "Conversational AI QA Q5 context follow-up returned no network > 70% servers",
+    "Previous composite peak-plus-advice prompt now includes deterministic peak evidence, closing the missing-evidence portion of the v8.11.131 failure",
+    "Advice-only load phrasing now returns read-only diagnostic commands and explicitly warns that restart/delete/sysctl changes require approved procedure",
+    "Browser console reported 0 warnings and 0 errors; AI API network calls returned 200/201"
+  ],
+  "skippedSurfaces": [
+    "Core route pack beyond landing/dashboard AI sidebar was not repeated; this run targeted AI semantic routing after v8.11.132 deploy",
+    "Reporter Agent and Analyst Agent advanced surfaces",
+    "Mobile viewport and visual regression matrix",
+    "Cloud Run admin observability endpoints beyond deployment health already covered by tag pipeline smoke"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 6,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar Q1 overall status summary",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 3518,
+      "processingTimeMs": 3518
+    },
+    {
+      "surface": "AI sidebar Q3 deterministic 24h peak-load evidence",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 1753,
+      "processingTimeMs": 1753
+    },
+    {
+      "surface": "AI sidebar composite peak plus advice prompt",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 3427,
+      "processingTimeMs": 3427
+    },
+    {
+      "surface": "AI sidebar advice-only read-only command guidance",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 326,
+      "processingTimeMs": 326
+    },
+    {
+      "surface": "AI sidebar whole-fleet load1 brittle phrasing failure",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API resource timing",
+      "latencyMs": 3384,
+      "processingTimeMs": 3384
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "Composite load peak plus response guidance question",
+      "route": "/api/ai/jobs/[id]/stream",
+      "executionMode": "single-agent",
+      "latencyMs": 3427,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "v8.11.132 now attaches deterministic peak evidence to the composite prompt."
+    },
+    {
+      "surface": "Composite load peak plus response guidance safety envelope",
+      "route": "/api/ai/jobs/[id]/stream",
+      "executionMode": "single-agent",
+      "latencyMs": 3427,
+      "classification": "drift",
+      "driftReasonCodes": [],
+      "source": "The answer included sudo apt-get update && sudo apt-get install -y nginx without evidence or approval gate."
+    },
+    {
+      "surface": "Whole-fleet load1 brittle phrasing",
+      "route": "/api/ai/jobs/[id]/stream",
+      "executionMode": "single-agent",
+      "latencyMs": 3384,
+      "classification": "drift",
+      "driftReasonCodes": [],
+      "source": "The prompt explicitly said no server name and whole system, but the response returned an empty-summary fallback."
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Standard conversational QA mostly passed and previous peak evidence drift is fixed, but two production prompts still fail: composite advice includes unsupported mutating commands, and a whole-fleet load1 phrasing returns an empty-summary fallback.",
+      "nextAction": "Add a safety envelope for composite advice answers and preserve whole_fleet metric_peak intent for explicit no-server load1 phrasings."
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Advice-only load guidance is now read-only, but the composite peak-plus-advice path still emitted sudo apt-get install -y nginx without evidence or approval gating.",
+      "nextAction": "Apply the read-only/mutating-command guard after any evidence-based final answer generation, not only in the command catalog path."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The deterministic 24h peak load evidence is correct for canonical phrasing, but the explicit whole-fleet load1 phrasing did not resolve to the same evidence and returned an empty summary.",
+      "nextAction": "Normalize whole_fleet + load1 + peak/spike + since/yesterday phrasings into the same metric_peak frame before clarification."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.11.132 is deployed on Vercel and Cloud Run, /api/version matches the release tag, the tag pipeline succeeded, and Vercel usage remains billed 0.0000 USD.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run used Playwright MCP through the real UI path, recorded console/network/runtime evidence, and kept the live LLM prompt set targeted to the known risk.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-12T03:58:20.264Z",
+      "summary": "Current Vercel billing period reviewed before v8.11.132 targeted semantic routing QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "v8.11.132 AI semantic routing network requests",
+      "path": "reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-network.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.132 AI semantic routing runtime transcript and resource timings",
+      "path": "reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-runtime.json"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.132 AI semantic routing console messages",
+      "path": "reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-console.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.132 AI sidebar final failure screenshot",
+      "path": "reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-dialog.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-peak-load-composite-routing-v811131",
+      "title": "Composite load peak plus response-guidance prompt should still use deterministic peak evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.132 composite prompt included 2026-05-12 03:50 load1 peak, value 16.58, average 9.08, and top servers.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-load-advice-safety-v811131",
+      "title": "Load advice responses should not propose mutating commands without a safety envelope for advice-only prompts",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Advice-only load prompt returned read-only top/ps commands and warned that restart/delete/sysctl changes require an approved procedure.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-assistant-composite-load-advice-mutating-command-v811132",
+      "title": "Composite peak-load advice answer must not emit unsupported mutating package-install commands",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "The composite prompt included deterministic peak evidence but then suggested sudo apt-get update && sudo apt-get install -y nginx, which is unrelated and mutating.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-whole-fleet-load1-empty-summary-v811132",
+      "title": "Whole-fleet load1 spike phrasing should route to metric_peak evidence instead of empty-summary fallback",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "The prompt explicitly said no server name and whole system, but production returned “응답 본문이 비어 있어...” rather than the known load1 peak evidence.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-action-needed-over-clarification-v811132",
+      "title": "Whole-fleet action-needed question should not require a server name before answering",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "The standard Q4 “지금 당장 조치가 필요한 서버가 있어?” initially showed a missing-server clarification; selecting whole-fleet produced a valid answer.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "release decision: no-go for AI semantic routing quality until the two failed checks are fixed and rerun.",
+    "mode audit: mixed /api/ai/supervisor/stream/v2 and /api/ai/jobs paths observed; no HTTP failures in captured AI network requests.",
+    "Q4 clarification was treated as a tracked UX/intent issue even though selecting whole-fleet produced a correct answer.",
+    "The screenshot captures the final empty-summary failure state in the AI sidebar."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "v8.11.132 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517604435"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-fnkic8yvt-skyasus-projects.vercel.app/"
+    }
+  ]
+}
