@@ -165,6 +165,7 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.routeDecision) ||
     Boolean(result.assistantPlan) ||
     Boolean(result.assistantResult) ||
+    Boolean(result.semanticQueryTrace) ||
     (result.toolsCalled && result.toolsCalled.length > 0) ||
     hasExplicitHandoffHistory ||
     (result.toolResultSummaries && result.toolResultSummaries.length > 0) ||
@@ -200,6 +201,9 @@ export function buildAssistantMessageFromAsyncResult(
           }),
           ...(result.assistantResult && {
             assistantResult: result.assistantResult,
+          }),
+          ...(result.semanticQueryTrace && {
+            semanticQueryTrace: result.semanticQueryTrace,
           }),
           ...(hasExplicitHandoffHistory && {
             handoffHistory: result.handoffHistory,

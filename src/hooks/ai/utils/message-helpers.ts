@@ -11,6 +11,10 @@ import {
 } from '@/lib/ai/assistant-contract';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import {
+  normalizeSemanticQueryTrace,
+  type SemanticQueryTrace,
+} from '@/lib/ai/semantic-intent-frame';
+import {
   extractTextFromUIMessage,
   normalizeAIResponse,
 } from '@/lib/ai/utils/message-normalizer';
@@ -64,6 +68,22 @@ function findRetrievalMetadataFromToolParts(toolParts: ToolPartWithCallId[]) {
     if (retrieval) return retrieval;
   }
   return undefined;
+}
+
+function getSemanticEvidenceDataSource(
+  semanticQueryTrace: SemanticQueryTrace | undefined
+): string | undefined {
+  if (!semanticQueryTrace?.evidenceAvailable) return undefined;
+
+  if (semanticQueryTrace.selectedCapability === 'monitoring.metric_peak') {
+    return '모니터링 피크 지표 근거';
+  }
+
+  if (semanticQueryTrace.selectedDomain === 'openmanager-monitoring') {
+    return '모니터링 도메인 근거';
+  }
+
+  return '도메인 근거 기반 응답';
 }
 
 // ============================================================================
@@ -243,6 +263,9 @@ export function transformUIMessageToEnhanced(
   const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
   const assistantPlan = normalizeAssistantPlan(metadata?.assistantPlan);
   const assistantResult = normalizeAssistantResult(metadata?.assistantResult);
+  const semanticQueryTrace = normalizeSemanticQueryTrace(
+    metadata?.semanticQueryTrace
+  );
   const incidentReportArtifact = metadata?.incidentReportArtifact;
   const monitoringAnalysisArtifact = metadata?.monitoringAnalysisArtifact;
   const serverSnapshotArtifact = metadata?.serverSnapshotArtifact;
@@ -317,6 +340,8 @@ export function transformUIMessageToEnhanced(
         analysisMode: metadata?.analysisMode,
       });
     const retrievalIndicatesKnowledgeUse = Boolean(retrieval?.retrievalUsed);
+    const semanticEvidenceDataSource =
+      getSemanticEvidenceDataSource(semanticQueryTrace);
 
     // dataSource 결정: 실제 도구 호출 기반 + 토글 상태 반영
     let dataSource: string;
@@ -326,6 +351,8 @@ export function transformUIMessageToEnhanced(
       dataSource = `RAG 지식베이스 검색 (${ragSources.length}건)`;
     } else if (retrievalIndicatesKnowledgeUse) {
       dataSource = `RAG 지식베이스 검색 (${retrieval?.evidenceCount ?? 0}건)`;
+    } else if (semanticEvidenceDataSource) {
+      dataSource = semanticEvidenceDataSource;
     } else if (hasServerAnalysisEvidence) {
       dataSource = '서버 실시간 데이터 분석';
     } else if (effectiveRagEnabled) {
@@ -361,6 +388,7 @@ export function transformUIMessageToEnhanced(
       routeDecision ||
       assistantPlan ||
       assistantResult ||
+      semanticQueryTrace ||
       assistantResponseView ||
       hasChatArtifact ||
       hasArtifactIntentMetadata ||
@@ -373,6 +401,7 @@ export function transformUIMessageToEnhanced(
             ...(routeDecision && { routeDecision }),
             ...(assistantPlan && { assistantPlan }),
             ...(assistantResult && { assistantResult }),
+            ...(semanticQueryTrace && { semanticQueryTrace }),
             ...(typeof metadata?.processingTime === 'number' && {
               processingTime: metadata.processingTime,
             }),

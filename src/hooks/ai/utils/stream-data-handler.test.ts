@@ -442,6 +442,35 @@ describe('handleStreamDataPart', () => {
       );
     });
 
+    it('should persist semanticQueryTrace metadata from stream done events', () => {
+      const semanticQueryTrace = {
+        originalQuery: '제일 버거웠던 때를 load 기준으로 알려줘',
+        selectedDomain: 'openmanager-monitoring',
+        selectedCapability: 'monitoring.metric_peak',
+        selectedEvidenceProvider: 'monitoring-peak-metric',
+        evidenceAvailable: true,
+        clarificationRequired: false,
+        reasonCodes: ['semantic_frame_evidence_validated'],
+      };
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          metadata: {
+            semanticQueryTrace,
+          },
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          semanticQueryTrace,
+        })
+      );
+    });
+
     it('should persist AssistantPlan and AssistantResult facade metadata from stream done events', () => {
       const routeDecision = {
         intent: 'chat',

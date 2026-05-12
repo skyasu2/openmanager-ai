@@ -355,6 +355,15 @@ describe('buildAssistantMessageFromAsyncResult', () => {
       routeDecision,
       status: 'completed' as const,
     };
+    const semanticQueryTrace = {
+      originalQuery: '제일 버거웠던 때를 load 기준으로 알려줘',
+      selectedDomain: 'openmanager-monitoring',
+      selectedCapability: 'monitoring.metric_peak',
+      selectedEvidenceProvider: 'monitoring-peak-metric',
+      evidenceAvailable: true,
+      clarificationRequired: false,
+      reasonCodes: ['semantic_frame_evidence_validated'],
+    };
     const result: AsyncQueryResult = {
       success: true,
       response: '분석 완료',
@@ -370,6 +379,7 @@ describe('buildAssistantMessageFromAsyncResult', () => {
       routeDecision,
       assistantPlan,
       assistantResult,
+      semanticQueryTrace,
       providerAttempts: [
         {
           provider: 'cerebras',
@@ -405,6 +415,7 @@ describe('buildAssistantMessageFromAsyncResult', () => {
       routeDecision,
       assistantPlan,
       assistantResult,
+      semanticQueryTrace,
       providerAttempts: [
         {
           provider: 'cerebras',

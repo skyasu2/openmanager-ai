@@ -195,6 +195,42 @@ describe('transformMessages', () => {
     ).toEqual(routeDecision);
   });
 
+  it('labels validated semantic peak evidence instead of generic chat source', () => {
+    const semanticQueryTrace = {
+      originalQuery: '제일 버거웠던 때를 load 기준으로 알려줘',
+      selectedDomain: 'openmanager-monitoring',
+      selectedCapability: 'monitoring.metric_peak',
+      selectedEvidenceProvider: 'monitoring-peak-metric',
+      evidenceAvailable: true,
+      clarificationRequired: false,
+      reasonCodes: ['semantic_frame_evidence_validated'],
+    };
+
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: '제일 버거웠던 때를 load 기준으로 알려줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: 'load1 피크는 03:50입니다.',
+          metadata: { semanticQueryTrace },
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+
+    expect(assistant?.metadata?.semanticQueryTrace).toEqual(semanticQueryTrace);
+    expect(assistant?.metadata?.analysisBasis?.dataSource).toBe(
+      '모니터링 피크 지표 근거'
+    );
+  });
+
   it('preserves AssistantPlan and AssistantResult facade metadata for assistant messages', () => {
     const routeDecision = {
       intent: 'chat' as const,

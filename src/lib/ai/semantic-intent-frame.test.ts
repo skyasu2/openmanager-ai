@@ -5,6 +5,7 @@ import {
 } from './entity-extractor';
 import {
   buildSemanticIntentRequestMetadata,
+  normalizeSemanticQueryTrace,
   toDomainIntentFrame,
 } from './semantic-intent-frame';
 
@@ -87,6 +88,28 @@ describe('semantic intent frame mapping', () => {
     expect(droppedPayload.semanticQueryTrace).toMatchObject({
       reasonCodes: ['semantic_frame_low_confidence'],
       evidenceAvailable: false,
+    });
+  });
+
+  it('normalizes backend semantic query traces with validated evidence reason codes', () => {
+    expect(
+      normalizeSemanticQueryTrace({
+        originalQuery: '제일 버거웠던 때를 load 기준으로 알려줘',
+        selectedDomain: 'openmanager-monitoring',
+        selectedCapability: 'monitoring.metric_peak',
+        selectedEvidenceProvider: 'monitoring-peak-metric',
+        evidenceAvailable: true,
+        clarificationRequired: false,
+        reasonCodes: ['semantic_frame_evidence_validated'],
+      })
+    ).toEqual({
+      originalQuery: '제일 버거웠던 때를 load 기준으로 알려줘',
+      selectedDomain: 'openmanager-monitoring',
+      selectedCapability: 'monitoring.metric_peak',
+      selectedEvidenceProvider: 'monitoring-peak-metric',
+      evidenceAvailable: true,
+      clarificationRequired: false,
+      reasonCodes: ['semantic_frame_evidence_validated'],
     });
   });
 });

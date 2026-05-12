@@ -252,6 +252,37 @@ describe('chat-history-storage', () => {
       });
     });
 
+    it('persists semanticQueryTrace metadata for assistant messages', () => {
+      const semanticQueryTrace = {
+        originalQuery: '제일 버거웠던 때를 load 기준으로 알려줘',
+        selectedDomain: 'openmanager-monitoring',
+        selectedCapability: 'monitoring.metric_peak',
+        selectedEvidenceProvider: 'monitoring-peak-metric',
+        evidenceAvailable: true,
+        clarificationRequired: false,
+        reasonCodes: ['semantic_frame_evidence_validated'],
+      };
+      const messages = [
+        {
+          ...makeMessage({
+            id: 'assistant-semantic-trace',
+            role: 'assistant',
+            content: 'load1 피크는 03:50입니다.',
+          }),
+          metadata: {
+            semanticQueryTrace,
+          },
+        },
+      ];
+
+      saveChatHistory('s-semantic-trace', messages as never[]);
+
+      const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
+      expect(stored.messages[0].metadata).toEqual({
+        semanticQueryTrace,
+      });
+    });
+
     it('persists AssistantPlan and AssistantResult facade metadata for assistant messages', () => {
       const routeDecision = {
         intent: 'job',

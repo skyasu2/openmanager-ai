@@ -10,6 +10,7 @@ import {
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
+import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
 import { logger } from '@/lib/logging';
 import { calculateBackoff } from '@/lib/utils/retry';
@@ -208,6 +209,9 @@ export function connectAsyncQuerySSE(
       const assistantResult = normalizeAssistantResult(
         metadata.assistantResult
       );
+      const semanticQueryTrace = normalizeSemanticQueryTrace(
+        metadata.semanticQueryTrace
+      );
 
       onResult({
         success: true,
@@ -249,6 +253,7 @@ export function connectAsyncQuerySSE(
         ...(routeDecision && { routeDecision }),
         ...(assistantPlan && { assistantPlan }),
         ...(assistantResult && { assistantResult }),
+        ...(semanticQueryTrace && { semanticQueryTrace }),
         ...(metadata.analysisMode === 'auto' ||
         metadata.analysisMode === 'thinking'
           ? { analysisMode: metadata.analysisMode }

@@ -21,6 +21,10 @@ import {
   normalizeRouteDecision,
   type RouteDecision,
 } from '@/lib/ai/route-decision';
+import {
+  normalizeSemanticQueryTrace,
+  type SemanticQueryTrace,
+} from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
@@ -49,6 +53,7 @@ export interface StoredMessageMetadata {
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
+  semanticQueryTrace?: SemanticQueryTrace;
   toolsCalled?: string[];
   ragSources?: Array<{
     title: string;
@@ -153,6 +158,9 @@ export function saveChatHistory(
         const assistantResult = normalizeAssistantResult(
           metadata?.assistantResult
         );
+        const semanticQueryTrace = normalizeSemanticQueryTrace(
+          metadata?.semanticQueryTrace
+        );
         const hasExplicitHandoffHistory = Array.isArray(
           metadata?.handoffHistory
         );
@@ -166,6 +174,7 @@ export function saveChatHistory(
           routeDecision ||
           assistantPlan ||
           assistantResult ||
+          semanticQueryTrace ||
           metadata?.assistantResponseView ||
           metadata?.artifactIntentReason ||
           metadata?.artifactIntentTarget ||
@@ -202,6 +211,9 @@ export function saveChatHistory(
                 }),
                 ...(assistantResult && {
                   assistantResult,
+                }),
+                ...(semanticQueryTrace && {
+                  semanticQueryTrace,
                 }),
                 ...(metadata?.assistantResponseView && {
                   assistantResponseView: metadata.assistantResponseView,

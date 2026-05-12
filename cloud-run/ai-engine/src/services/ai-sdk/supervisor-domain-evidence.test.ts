@@ -167,6 +167,15 @@ describe('supervisor domain evidence support', () => {
     expect(support?.metadata).toMatchObject({
       metric: 'load',
       windowHours: 24,
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_peak',
+        selectedEvidenceProvider: 'monitoring-peak-metric',
+        evidenceAvailable: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_evidence_validated',
+        ]),
+      },
     });
   });
 
@@ -283,10 +292,18 @@ describe('supervisor domain evidence support', () => {
       '[Deterministic sample renewal-risk evidence]'
     );
     expect(support?.fallback).toContain('acct-123');
-    expect(support?.metadata).toEqual({
+    expect(support?.metadata).toMatchObject({
       accountId: 'acct-123',
       risk: 'high',
       source: 'sample-fixture',
+      semanticQueryTrace: {
+        selectedDomain: sampleDomainPack.id,
+        selectedEvidenceProvider: 'sample-renewal-risk-evidence',
+        evidenceAvailable: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_evidence_validated',
+        ]),
+      },
     });
   });
 

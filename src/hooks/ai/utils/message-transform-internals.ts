@@ -11,6 +11,7 @@ import type {
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import {
   getToolDescription,
@@ -58,6 +59,7 @@ export type MessageMetadata = {
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
+  semanticQueryTrace?: SemanticQueryTrace;
   assistantResponseView?: StructuredAssistantResponse;
   artifactIntentReason?: ChatArtifactIntentReason;
   artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';

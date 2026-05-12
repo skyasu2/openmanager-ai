@@ -10,6 +10,7 @@ import {
   normalizeDeveloperContextStreamPayload,
 } from '@/lib/ai/developer-panel';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
+import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import type {
   AgentStatusEventData,
@@ -155,6 +156,16 @@ function extractAssistantResultFromDoneData(
 ) {
   const directAssistantResult = readDoneDataField(doneData, 'assistantResult');
   return normalizeAssistantResult(directAssistantResult);
+}
+
+function extractSemanticQueryTraceFromDoneData(
+  doneData: ResponseSourceData | undefined
+) {
+  const directSemanticQueryTrace = readDoneDataField(
+    doneData,
+    'semanticQueryTrace'
+  );
+  return normalizeSemanticQueryTrace(directSemanticQueryTrace);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -411,6 +422,7 @@ export function handleStreamDataPart(
     const routeDecision = extractRouteDecisionFromDoneData(doneData);
     const assistantPlan = extractAssistantPlanFromDoneData(doneData);
     const assistantResult = extractAssistantResultFromDoneData(doneData);
+    const semanticQueryTrace = extractSemanticQueryTraceFromDoneData(doneData);
     const normalizedHandoffHistory = normalizeHandoffHistory(
       pendingMessageMetadata.handoffHistory
     );
@@ -428,6 +440,7 @@ export function handleStreamDataPart(
       ...(routeDecision && { routeDecision }),
       ...(assistantPlan && { assistantPlan }),
       ...(assistantResult && { assistantResult }),
+      ...(semanticQueryTrace && { semanticQueryTrace }),
       ...(normalizedHandoffHistory && {
         handoffHistory: normalizedHandoffHistory,
       }),
@@ -447,6 +460,7 @@ export function handleStreamDataPart(
       routeDecision ||
       assistantPlan ||
       assistantResult ||
+      semanticQueryTrace ||
       normalizedHandoffHistory !== undefined ||
       pendingToolResults.length > 0 ||
       Object.keys(pendingMessageMetadata).length > 0

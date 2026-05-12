@@ -25,6 +25,7 @@ import type {
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
@@ -128,6 +129,8 @@ export interface ChatMessage {
     assistantPlan?: AssistantPlan;
     /** read-only assistant result facade derived from routeDecision */
     assistantResult?: AssistantResult;
+    /** semantic parser/evidence routing trace for domain evidence answers */
+    semanticQueryTrace?: SemanticQueryTrace;
     /** 접을 수 있는 응답 뷰 */
     assistantResponseView?: {
       summary: string;

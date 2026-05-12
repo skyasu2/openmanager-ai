@@ -30,7 +30,7 @@ export interface SemanticQueryTrace {
   selectedEvidenceProvider?: string;
   evidenceAvailable: boolean;
   clarificationRequired: boolean;
-  reasonCodes: SemanticFrameReasonCode[];
+  reasonCodes: string[];
 }
 
 export interface SemanticIntentFrameMapping {
@@ -52,6 +52,25 @@ const DOMAIN_ID_BY_SEMANTIC_DOMAIN = {
 const CAPABILITY_ID_BY_SEMANTIC_INTENT = {
   metric_peak: 'monitoring.metric_peak',
 } as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function readString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+function readStringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+
+  const values = value
+    .map(readString)
+    .filter((item): item is string => item !== undefined);
+  return values.length === value.length ? values : undefined;
+}
 
 function mapSemanticScope(
   scope: SemanticIntentFrame['scope']
@@ -139,5 +158,29 @@ export function buildSemanticIntentRequestMetadata(params: {
       },
     }),
     semanticQueryTrace: trace,
+  };
+}
+
+export function normalizeSemanticQueryTrace(
+  value: unknown
+): SemanticQueryTrace | undefined {
+  if (!isRecord(value)) return undefined;
+
+  const originalQuery = readString(value.originalQuery);
+  const reasonCodes = readStringArray(value.reasonCodes);
+  if (!originalQuery || reasonCodes === undefined) return undefined;
+
+  const selectedDomain = readString(value.selectedDomain);
+  const selectedCapability = readString(value.selectedCapability);
+  const selectedEvidenceProvider = readString(value.selectedEvidenceProvider);
+
+  return {
+    originalQuery,
+    ...(selectedDomain && { selectedDomain }),
+    ...(selectedCapability && { selectedCapability }),
+    ...(selectedEvidenceProvider && { selectedEvidenceProvider }),
+    evidenceAvailable: value.evidenceAvailable === true,
+    clarificationRequired: value.clarificationRequired === true,
+    reasonCodes,
   };
 }

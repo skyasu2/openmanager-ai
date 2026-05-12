@@ -36,6 +36,7 @@ import {
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
@@ -100,6 +101,7 @@ export interface AsyncQueryResult {
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
+  semanticQueryTrace?: SemanticQueryTrace;
   error?: string;
   /** Langfuse trace ID for observability correlation */
   traceId?: string;

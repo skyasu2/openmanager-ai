@@ -6,6 +6,7 @@ import {
   normalizeAssistantResult,
 } from '@/lib/ai/assistant-contract';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
+import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import {
@@ -63,6 +64,9 @@ export function useChatHistory<TMessage extends RestoredMessage>({
       const assistantResult = normalizeAssistantResult(
         metadata?.assistantResult
       );
+      const semanticQueryTrace = normalizeSemanticQueryTrace(
+        metadata?.semanticQueryTrace
+      );
       const hasExplicitHandoffHistory = Array.isArray(metadata?.handoffHistory);
 
       if (
@@ -75,6 +79,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !routeDecision &&
         !assistantPlan &&
         !assistantResult &&
+        !semanticQueryTrace &&
         !metadata?.assistantResponseView &&
         !metadata?.artifactIntentReason &&
         !metadata?.artifactIntentTarget &&
@@ -119,6 +124,9 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(assistantResult && {
           assistantResult,
+        }),
+        ...(semanticQueryTrace && {
+          semanticQueryTrace,
         }),
         ...(metadata?.assistantResponseView && {
           assistantResponseView: metadata.assistantResponseView,

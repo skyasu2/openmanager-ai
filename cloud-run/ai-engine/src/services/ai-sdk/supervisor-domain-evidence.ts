@@ -174,15 +174,21 @@ function buildValidatedSemanticQueryTrace(params: {
     params.context.metadata?.semanticQueryTrace
   );
   const intentFrame = params.context.intentFrame;
-  if (!baseTrace && !intentFrame) return undefined;
+  const evidenceCapabilityId = readString(
+    params.evidence.metadata?.capabilityId
+  );
 
   const selectedDomain =
     baseTrace?.selectedDomain ?? intentFrame?.domainId ?? params.domain.id;
   const selectedCapability =
     baseTrace?.selectedCapability ??
     params.capability?.id ??
-    intentFrame?.capabilityId;
+    intentFrame?.capabilityId ??
+    evidenceCapabilityId;
   const reasonCodes = new Set(baseTrace?.reasonCodes ?? []);
+  if (!baseTrace && !intentFrame) {
+    reasonCodes.add('semantic_frame_raw_fallback_used');
+  }
   if (
     intentFrame?.capabilityId &&
     params.evidence.metadata?.capabilityId !== intentFrame.capabilityId
@@ -215,6 +221,27 @@ function attachSemanticQueryTrace(
       semanticQueryTrace,
     },
   };
+}
+
+function logSemanticEvidenceValidated(params: {
+  context: DomainEvidenceRequest;
+  semanticQueryTrace: SemanticQueryTrace | undefined;
+}) {
+  if (!params.semanticQueryTrace) return;
+
+  logger.info(
+    {
+      originalQuery: params.semanticQueryTrace.originalQuery,
+      selectedDomain: params.semanticQueryTrace.selectedDomain,
+      selectedCapability: params.semanticQueryTrace.selectedCapability,
+      selectedEvidenceProvider:
+        params.semanticQueryTrace.selectedEvidenceProvider,
+      evidenceAvailable: params.semanticQueryTrace.evidenceAvailable,
+      reasonCodes: params.semanticQueryTrace.reasonCodes,
+      traceId: params.context.traceId,
+    },
+    '[DomainEvidence] semantic evidence validated'
+  );
 }
 
 function logSemanticProviderMiss(params: {
@@ -278,16 +305,16 @@ export async function resolveDomainEvidenceSupport(params: {
     const validation = validateDomainEvidenceResult(evidence);
     if (!validation.valid) continue;
 
-    return attachSemanticQueryTrace(
+    const semanticQueryTrace = buildValidatedSemanticQueryTrace({
+      context,
+      domain: params.domain,
+      capability,
       evidence,
-      buildValidatedSemanticQueryTrace({
-        context,
-        domain: params.domain,
-        capability,
-        evidence,
-        providerId: provider.id,
-      })
-    );
+      providerId: provider.id,
+    });
+    logSemanticEvidenceValidated({ context, semanticQueryTrace });
+
+    return attachSemanticQueryTrace(evidence, semanticQueryTrace);
   }
 
   logSemanticProviderMiss({
