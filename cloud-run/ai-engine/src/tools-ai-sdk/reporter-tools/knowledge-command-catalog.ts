@@ -156,7 +156,9 @@ const RESOURCE_COMMAND_PATTERN =
 const COMMAND_GUIDANCE_PATTERN =
   /(명령어|커맨드|cli|어떻게|방법|순서|확인하는|확인하고|확인\s*명령|점검|분석하는|재마운트|remount|큰지\s*확인|확보|정리|cleanup)/i;
 const RESOURCE_COMMAND_GUIDANCE_PATTERN =
-  /(명령어|커맨드|cli|방법|대응|조치|해결|확인\s*명령|점검\s*명령|용량.*확보|확보.*명령|정리|cleanup)/i;
+  /(명령어|커맨드|cli|확인\s*명령|점검\s*명령|용량.*확보|확보.*명령|정리|cleanup)/i;
+const LOAD_ADVICE_GUIDANCE_PATTERN =
+  /(부하|로드|\bload(?:1|5)?\b).*(방법|대응|조치|해결)|(방법|대응|조치|해결).*(부하|로드|\bload(?:1|5)?\b)/i;
 const EXPLICIT_PEAK_TIME_EVIDENCE_PATTERN =
   /(?:피크|peak|max|highest|최고|최대|최고점|최댓값).*(?:시간|시간대|시각|시점|언제|구간)|(?:시간|시간대|시각|시점|언제|구간).*(?:피크|peak|max|highest|최고|최대|최고점|최댓값)/i;
 const SERVICE_KEYWORDS = ['haproxy', 'nginx', 'mysql', 'redis', 'nfs'] as const;
@@ -199,7 +201,8 @@ export function isServiceCommandGuidanceQuery(query: string): boolean {
 
   return (
     RESOURCE_COMMAND_PATTERN.test(query) &&
-    RESOURCE_COMMAND_GUIDANCE_PATTERN.test(query)
+    (RESOURCE_COMMAND_GUIDANCE_PATTERN.test(query) ||
+      LOAD_ADVICE_GUIDANCE_PATTERN.test(query))
   );
 }
 

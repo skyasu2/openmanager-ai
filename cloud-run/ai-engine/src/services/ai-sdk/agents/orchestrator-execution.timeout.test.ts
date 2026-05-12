@@ -311,6 +311,7 @@ describe('executeMultiAgent timeout contract', () => {
       undefined,
       null,
       undefined,
+      undefined,
       undefined
     );
 
@@ -363,6 +364,7 @@ describe('executeMultiAgent timeout contract', () => {
       [{ data: 'base64', mimeType: 'image/png' }],
       undefined,
       null,
+      undefined,
       undefined,
       undefined
     );
