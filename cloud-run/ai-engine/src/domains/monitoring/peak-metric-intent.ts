@@ -19,9 +19,9 @@ export interface ParsedPeakMetricRequest {
 const DEFAULT_PEAK_WINDOW_HOURS = 24;
 
 const EXTREME_OR_PEAK_PATTERN =
-  /가장|제일|최고|최대|피크|최고점|최댓값|높|힘들(?:었|었던|었나|었어|었냐|던)?|튀(?:는|었|었다|었던|었는|었냐|었어|었고|ㄴ|었나)?|튄|스파이크|spike|버거(?:운|웠|웠던|웠나|웠어)|부담|압박|몰린|집중|high|highest|peak|max/i;
+  /가장|제일|최고|최대|피크|최고점|최댓값|높|힘들(?:었|었던|었나|었어|었냐|던)?|튀(?:는|었|었다|었던|었는|었냐|었어|었고|ㄴ|었나)?|튄|스파이크|spike|버거(?:운|웠|웠던|웠나|웠어)|부담|압박|몰린|집중|병목|이상치|포화|\bbottleneck\b|\boutlier\b|\banomal(?:y|ies)\b|\bsaturation\b|high|highest|peak|max/i;
 const TEMPORAL_OR_RANKING_FOCUS_PATTERN =
-  /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|때|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|영향.*서버|어떤\s*서버/i;
+  /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|때|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|범인\s*서버|영향.*서버|어떤\s*서버|어느\s*서버/i;
 const TIME_WINDOW_PATTERN =
   /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|어제(?:부터)?|지금까지|부터\s*지금|last\s*24|last\s*day|past\s*day|since\s*yesterday|from\s*yesterday\s*to\s*now/i;
 const ADVICE_SEEKING_PATTERN = /조치|방법|해결|어떻게|대응|처리|해야\s*해|어쩌/i;

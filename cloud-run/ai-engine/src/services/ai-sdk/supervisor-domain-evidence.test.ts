@@ -208,6 +208,66 @@ describe('supervisor domain evidence support', () => {
     }
   });
 
+  it.each([
+    {
+      persona: 'server monitoring expert',
+      query:
+        '모니터링 전문가처럼 최근 하루 시스템 load 병목이 발생한 구간과 영향 서버를 짚어줘',
+    },
+    {
+      persona: 'ai quality expert',
+      query:
+        'AI 품질 검증용으로 last 24h node_load1 outlier timestamp and top server evidence를 알려줘',
+    },
+    {
+      persona: 'qc qa tester',
+      query:
+        'QC/QA 관점에서 AI가 실제 서버 모니터링 데이터를 쓰는지 확인하려고 해. 최근 24시간 load1 이상치 구간과 상위 서버 근거를 보여줘',
+    },
+    {
+      persona: 'security vulnerability investigator',
+      query:
+        '보안 취약점 탐색 관점에서 비정상 부하 징후를 보려 한다. 지난 하루 load anomaly 구간과 어느 서버가 영향이 컸는지 읽기 전용 근거만 알려줘',
+    },
+    {
+      persona: 'error-hunting user',
+      query:
+        '오류 잡으려고 묻는다. 최근 24시간 전체 서버 부하 이상치 구간과 범인 서버는?',
+    },
+    {
+      persona: 'exploratory operator',
+      query:
+        '장애 재현 관점에서 지난 하루 load saturation 구간과 어느 서버가 영향이 컸는지, 대응 체크만 알려줘',
+    },
+  ])(
+    'routes $persona natural language peak questions to monitoring evidence',
+    async ({ query }) => {
+      const support = await resolveDomainEvidenceSupport({
+        query,
+        domain: monitoringDomainPack,
+        sessionId: 'expert-natural-language-peak',
+      });
+
+      expect(support?.id).toBe('monitoring-peak-metric');
+      expect(support?.prompt).toContain('[결정적 monitoring 피크 지표 근거]');
+      expect(support?.prompt).toContain('읽기 전용 확인 항목');
+      expect(support?.metadata).toMatchObject({
+        metric: 'load',
+        sourceMetric: 'load1',
+        windowHours: 24,
+        semanticQueryTrace: {
+          selectedDomain: monitoringDomainPack.id,
+          selectedCapability: 'monitoring.metric_peak',
+          selectedEvidenceProvider: 'monitoring-peak-metric',
+          evidenceAvailable: true,
+          reasonCodes: expect.arrayContaining([
+            'semantic_frame_evidence_validated',
+          ]),
+        },
+      });
+    }
+  );
+
   it('keeps raw-only, frame-only, and frame-plus-raw peak evidence in parity', async () => {
     const rawQuery = '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?';
     const rawOnly = await resolveDomainEvidenceSupport({

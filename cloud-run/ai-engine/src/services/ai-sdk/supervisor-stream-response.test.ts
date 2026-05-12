@@ -260,4 +260,72 @@ describe('createSupervisorStreamResponse', () => {
       },
     });
   });
+
+  it('preserves upstream semanticQueryTrace when mapping done to data-done', async () => {
+    const semanticQueryTrace = {
+      originalQuery: '최근 24시간 전체 서버 load1 이상치 구간과 범인 서버는?',
+      selectedDomain: 'openmanager-monitoring',
+      selectedCapability: 'monitoring.metric_peak',
+      selectedEvidenceProvider: 'monitoring-peak-metric',
+      evidenceAvailable: true,
+      clarificationRequired: false,
+      reasonCodes: ['semantic_frame_evidence_validated'],
+    };
+
+    mockExecuteSupervisorStream.mockReturnValue((async function* () {
+      yield { type: 'text_delta', data: 'load1 피크는 03:50입니다.' };
+      yield {
+        type: 'done',
+        data: {
+          success: true,
+          metadata: {
+            mode: 'multi',
+            provider: 'mock-orchestrator',
+            semanticQueryTrace,
+          },
+        },
+      };
+    })());
+
+    const response = createSupervisorStreamResponse({
+      sessionId: 'session-semantic-trace',
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content: '최근 24시간 전체 서버 load1 이상치 구간과 범인 서버는?',
+        },
+      ],
+    }) as unknown as {
+      stream: {
+        execute: (args: {
+          writer: { write: (chunk: unknown) => void };
+        }) => Promise<void>;
+      };
+    };
+
+    const writes: unknown[] = [];
+    await response.stream.execute({
+      writer: {
+        write: (chunk: unknown) => {
+          writes.push(chunk);
+        },
+      },
+    });
+
+    expect(writes).toContainEqual(
+      expect.objectContaining({
+        type: 'data-done',
+        data: expect.objectContaining({
+          metadata: expect.objectContaining({
+            provider: 'mock-orchestrator',
+            semanticQueryTrace,
+            assistantResult: expect.objectContaining({
+              status: 'completed',
+            }),
+          }),
+        }),
+      })
+    );
+  });
 });
