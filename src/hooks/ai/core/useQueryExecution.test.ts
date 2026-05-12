@@ -594,6 +594,58 @@ describe('useQueryExecution', () => {
     );
   });
 
+  it('job queue 요청에 semantic intent metadata를 전달한다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = {
+      ...createDeps(),
+      complexityThreshold: -1,
+    };
+    deps.refs.semanticIntentFrame = {
+      current: {
+        domain: 'monitoring',
+        intent: 'metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        topN: 3,
+        ambiguity: 'low',
+        confidence: 95,
+      },
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+    const query = '지난 24시간 중 load1 피크 시간대 보고서를 만들어줘';
+
+    act(() => {
+      result.current.executeQuery(query);
+    });
+
+    await waitFor(() => {
+      expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(
+        query,
+        expect.objectContaining({
+          intentFrame: expect.objectContaining({
+            domainId: 'openmanager-monitoring',
+            capabilityId: 'monitoring.metric_peak',
+            intent: 'metric_peak',
+            metric: 'load1',
+            timeWindow: '24h',
+          }),
+          semanticQueryTrace: expect.objectContaining({
+            originalQuery: query,
+            selectedDomain: 'openmanager-monitoring',
+            selectedCapability: 'monitoring.metric_peak',
+            evidenceAvailable: false,
+            clarificationRequired: false,
+            reasonCodes: [],
+          }),
+        })
+      );
+    });
+  });
+
   it('만료된 Retry-After cooldown은 자동 해제하고 streaming 전송을 진행한다', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-04-18T12:00:00.000Z'));

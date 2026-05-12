@@ -19,7 +19,11 @@ import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { getOffDomainGuardrail } from '@/lib/ai/off-domain-guard';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import type { RouteDecision } from '@/lib/ai/route-decision';
-import { buildSemanticIntentRequestMetadata } from '@/lib/ai/semantic-intent-frame';
+import {
+  buildSemanticIntentRequestMetadata,
+  type DomainIntentFramePayload,
+  type SemanticQueryTrace,
+} from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
@@ -50,6 +54,8 @@ interface AsyncJobRequestOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
+  intentFrame?: DomainIntentFramePayload;
+  semanticQueryTrace?: SemanticQueryTrace;
 }
 
 type SendMessageLike = (message: {
@@ -388,6 +394,10 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             ragEnabled,
             webSearchEnabled,
           }),
+          ...buildJobSemanticOptions({
+            frame: refs.semanticIntentFrame?.current,
+            originalQuery: trimmedQuery,
+          }),
         };
         const jobQueueRequest =
           Object.keys(jobQueueOptions).length > 0
@@ -671,4 +681,23 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
   );
 
   return { executeQuery, sendQuery };
+}
+
+function buildJobSemanticOptions(params: {
+  frame: SemanticIntentFrame | undefined | null;
+  originalQuery: string;
+}): Pick<AsyncJobRequestOptions, 'intentFrame' | 'semanticQueryTrace'> {
+  const semanticIntentPayload = buildSemanticIntentRequestMetadata({
+    frame: params.frame,
+    originalQuery: params.originalQuery,
+  });
+
+  return {
+    ...(semanticIntentPayload.metadata?.intentFrame && {
+      intentFrame: semanticIntentPayload.metadata.intentFrame,
+    }),
+    ...(semanticIntentPayload.semanticQueryTrace && {
+      semanticQueryTrace: semanticIntentPayload.semanticQueryTrace,
+    }),
+  };
 }

@@ -395,6 +395,90 @@ describe('Jobs Routes', () => {
       );
     });
 
+    it('semantic intent metadata를 supervisor와 결과 metadata에 보존한다', async () => {
+      const intentFrame = {
+        domainId: 'openmanager-monitoring',
+        intent: 'metric_peak',
+        capabilityId: 'monitoring.metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        ambiguity: 'low',
+        confidence: 0.95,
+      };
+      const initialTrace = {
+        originalQuery: '지난 24시간 load1 피크 시간대 알려줘',
+        selectedDomain: 'openmanager-monitoring',
+        selectedCapability: 'monitoring.metric_peak',
+        evidenceAvailable: false,
+        clarificationRequired: false,
+        reasonCodes: [],
+      };
+      const validatedTrace = {
+        ...initialTrace,
+        selectedEvidenceProvider: 'monitoring-peak-metric',
+        evidenceAvailable: true,
+        reasonCodes: ['semantic_frame_evidence_validated'],
+      };
+
+      vi.mocked(executeSupervisorStream).mockImplementationOnce(
+        async function* () {
+          yield { type: 'text_delta', data: 'AI 응답' };
+          yield {
+            type: 'done',
+            data: {
+              success: true,
+              finalAgent: 'NLQ Agent',
+              metadata: {
+                semanticQueryTrace: validatedTrace,
+              },
+            },
+          };
+        }
+      );
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-semantic-trace',
+          messages: [
+            {
+              role: 'user',
+              content: '지난 24시간 load1 피크 시간대 알려줘',
+            },
+          ],
+          sessionId: 'session-semantic-trace',
+          metadata: {
+            intentFrame,
+            semanticQueryTrace: initialTrace,
+          },
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      expect(vi.mocked(executeSupervisorStream)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sessionId: 'session-semantic-trace',
+          metadata: expect.objectContaining({
+            intentFrame,
+            semanticQueryTrace: initialTrace,
+          }),
+        })
+      );
+      expect(vi.mocked(storeJobResult)).toHaveBeenCalledWith(
+        'job-semantic-trace',
+        'AI 응답',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            semanticQueryTrace: validatedTrace,
+          }),
+        })
+      );
+    });
+
     it('localRouteDecision을 supervisor stream 요청에 보존한다', async () => {
       const localRouteDecision = {
         intent: 'job',

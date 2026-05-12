@@ -1,4 +1,5 @@
 import { logger } from '../lib/logger';
+import { normalizeSupervisorSemanticMetadata } from '../services/ai-sdk/supervisor-semantic-metadata';
 import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import type {
   AnalysisMode,
@@ -16,6 +17,7 @@ export type JobProcessToolOptions = Pick<
   | 'enableWebSearch'
   | 'internalDisclosureMode'
   | 'localRouteDecision'
+  | 'metadata'
 >;
 
 const PROCESSING_DUPLICATE_GRACE_MS = 30 * 60 * 1000;
@@ -81,6 +83,16 @@ export function extractJobProcessToolOptions(
   if (payload.localRouteDecision !== undefined && !localRouteDecision) {
     logger.warn('[Jobs] Ignoring invalid localRouteDecision payload');
   }
+  const semanticMetadata = normalizeSupervisorSemanticMetadata({
+    metadata: payload.metadata,
+    semanticQueryTrace: payload.semanticQueryTrace,
+  });
+  if (
+    (payload.metadata !== undefined || payload.semanticQueryTrace !== undefined) &&
+    semanticMetadata.reasonCodes.length > 0
+  ) {
+    logger.warn('[Jobs] Ignoring invalid semantic metadata payload');
+  }
 
   return {
     ...(isAnalysisMode(payload.analysisMode) && {
@@ -96,6 +108,7 @@ export function extractJobProcessToolOptions(
       internalDisclosureMode: payload.internalDisclosureMode,
     }),
     ...(localRouteDecision && { localRouteDecision }),
+    ...(semanticMetadata.metadata && { metadata: semanticMetadata.metadata }),
   };
 }
 

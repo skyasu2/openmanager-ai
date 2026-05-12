@@ -8,6 +8,10 @@ import {
   normalizeRouteDecision,
   type RouteDecision,
 } from '@/lib/ai/route-decision';
+import {
+  normalizeSemanticQueryTrace,
+  type SemanticQueryTrace,
+} from '@/lib/ai/semantic-intent-frame';
 
 export interface ClientProviderAttempt {
   provider: string;
@@ -46,6 +50,7 @@ export interface ClientJobMetadata {
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
+  semanticQueryTrace?: SemanticQueryTrace;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -184,6 +189,9 @@ export function sanitizeJobMetadataForClient(
   const routeDecision = normalizeRouteDecision(metadata.routeDecision);
   const assistantPlan = normalizeAssistantPlan(metadata.assistantPlan);
   const assistantResult = normalizeAssistantResult(metadata.assistantResult);
+  const semanticQueryTrace = normalizeSemanticQueryTrace(
+    metadata.semanticQueryTrace
+  );
   const providerAttempts = normalizeProviderAttempts(metadata.providerAttempts);
   const handoffs = normalizeHandoffs(metadata.handoffs);
   const toolResultSummaries = normalizeToolResultSummaries(
@@ -214,6 +222,7 @@ export function sanitizeJobMetadataForClient(
     ...(routeDecision && { routeDecision }),
     ...(assistantPlan && { assistantPlan }),
     ...(assistantResult && { assistantResult }),
+    ...(semanticQueryTrace && { semanticQueryTrace }),
   };
 
   return Object.keys(result).length > 0 ? result : undefined;

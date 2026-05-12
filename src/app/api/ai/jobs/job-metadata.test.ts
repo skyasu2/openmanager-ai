@@ -111,4 +111,25 @@ describe('sanitizeJobMetadataForClient', () => {
       assistantResult,
     });
   });
+
+  it('keeps normalized semanticQueryTrace for client analysis-basis labels', () => {
+    const semanticQueryTrace = {
+      originalQuery: '지난 24시간 load1 피크 시간대 알려줘',
+      selectedDomain: 'openmanager-monitoring',
+      selectedCapability: 'monitoring.metric_peak',
+      selectedEvidenceProvider: 'monitoring-peak-metric',
+      evidenceAvailable: true,
+      clarificationRequired: false,
+      reasonCodes: ['semantic_frame_evidence_validated'],
+    };
+
+    const metadata = sanitizeJobMetadataForClient({
+      semanticQueryTrace,
+      providerRawPayload: { shouldNotLeak: true },
+    });
+
+    expect(metadata).toEqual({
+      semanticQueryTrace,
+    });
+  });
 });

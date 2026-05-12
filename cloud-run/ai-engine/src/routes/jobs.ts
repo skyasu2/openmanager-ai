@@ -62,6 +62,10 @@ import {
   parseRetrievalMetadata,
 } from './jobs-result-metadata';
 import { executeSupervisorStream, logProviderStatus } from '../services/ai-sdk';
+import {
+  normalizeSemanticQueryTrace,
+  type SemanticQueryTrace,
+} from '../services/ai-sdk/supervisor-semantic-metadata';
 import { getDefaultMonitoringAssistantRuntimeHost } from '../services/ai-sdk/monitoring-runtime-host';
 import type {
   AnalysisMode,
@@ -345,6 +349,7 @@ async function processJobSynchronously({
   enableWebSearch,
   internalDisclosureMode,
   localRouteDecision,
+  metadata,
   queryAsOf,
   startTime,
 }: {
@@ -356,6 +361,7 @@ async function processJobSynchronously({
   enableWebSearch?: SupervisorRequest['enableWebSearch'];
   internalDisclosureMode?: SupervisorRequest['internalDisclosureMode'];
   localRouteDecision?: SupervisorRequest['localRouteDecision'];
+  metadata?: SupervisorRequest['metadata'];
   queryAsOf?: QueryAsOf;
   startTime: number;
 }): Promise<{ status: 'completed' | 'failed'; error?: string }> {
@@ -405,6 +411,7 @@ async function processJobSynchronously({
     let routeDecision: unknown;
     let assistantPlan: unknown;
     let assistantResult: unknown;
+    let semanticQueryTrace: SemanticQueryTrace | undefined;
     let providerMetadata: JobProviderMetadata = {};
     let toolResultSummaries:
       | Array<{
@@ -428,6 +435,7 @@ async function processJobSynchronously({
       enableWebSearch,
       internalDisclosureMode,
       localRouteDecision,
+      metadata,
       queryAsOf,
       runtimeHost: getDefaultMonitoringAssistantRuntimeHost(),
     })) {
@@ -569,6 +577,9 @@ async function processJobSynchronously({
         routeDecision = metadata.routeDecision ?? routeDecision;
         assistantPlan = metadata.assistantPlan ?? assistantPlan;
         assistantResult = metadata.assistantResult ?? assistantResult;
+        semanticQueryTrace =
+          normalizeSemanticQueryTrace(metadata.semanticQueryTrace) ??
+          semanticQueryTrace;
         providerMetadata = {
           ...providerMetadata,
           ...extractProviderMetadata(metadata),
@@ -624,6 +635,7 @@ async function processJobSynchronously({
         ...(routeDecision !== undefined && { routeDecision }),
         ...(assistantPlan !== undefined && { assistantPlan }),
         ...(assistantResult !== undefined && { assistantResult }),
+        ...(semanticQueryTrace && { semanticQueryTrace }),
         ...providerMetadata,
         handoffs,
         ...(toolResultSummaries && toolResultSummaries.length > 0 && {

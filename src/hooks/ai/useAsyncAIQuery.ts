@@ -36,7 +36,10 @@ import {
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
-import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
+import type {
+  DomainIntentFramePayload,
+  SemanticQueryTrace,
+} from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
@@ -150,6 +153,8 @@ export interface AsyncQueryRequestOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
+  intentFrame?: DomainIntentFramePayload;
+  semanticQueryTrace?: SemanticQueryTrace;
 }
 
 // ============================================================================
@@ -331,6 +336,12 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
                       }),
                       ...(requestOptions?.queryAsOfDataSlot && {
                         queryAsOfDataSlot: requestOptions.queryAsOfDataSlot,
+                      }),
+                      ...(requestOptions?.intentFrame && {
+                        intentFrame: requestOptions.intentFrame,
+                      }),
+                      ...(requestOptions?.semanticQueryTrace && {
+                        semanticQueryTrace: requestOptions.semanticQueryTrace,
                       }),
                     },
                   },

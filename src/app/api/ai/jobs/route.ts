@@ -20,6 +20,7 @@ import {
   type RouteDecision,
   type RouteDecisionComplexity,
 } from '@/lib/ai/route-decision';
+import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import {
   analyzeJobQueryComplexity,
   inferJobType,
@@ -86,6 +87,7 @@ interface JobToolOptions {
   enableWebSearch?: boolean;
   internalDisclosureMode?: SupervisorInternalDisclosureMode;
   localRouteDecision?: RouteDecision;
+  metadata?: Record<string, unknown>;
 }
 
 function mapJobComplexityToRouteDecision(
@@ -108,6 +110,15 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
   const analysisMode = metadata?.analysisMode;
   const enableRAG = metadata?.enableRAG;
   const enableWebSearch = metadata?.enableWebSearch;
+  const semanticQueryTrace = normalizeSemanticQueryTrace(
+    metadata?.semanticQueryTrace
+  );
+  const semanticMetadata = {
+    ...(metadata?.intentFrame !== undefined
+      ? { intentFrame: metadata.intentFrame }
+      : {}),
+    ...(semanticQueryTrace && { semanticQueryTrace }),
+  };
 
   return {
     ...(isAnalysisMode(analysisMode) && {
@@ -118,6 +129,9 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
     }),
     ...(typeof enableWebSearch === 'boolean' && {
       enableWebSearch,
+    }),
+    ...(Object.keys(semanticMetadata).length > 0 && {
+      metadata: semanticMetadata,
     }),
   };
 }

@@ -79,6 +79,7 @@ import {
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import { buildSemanticIntentRequestMetadata } from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
@@ -452,6 +453,10 @@ export function useHybridAIQuery(
           stopChatRef.current();
         },
         runJobQueueQuery: (query: string) => {
+          const semanticIntentPayload = buildSemanticIntentRequestMetadata({
+            frame: semanticIntentFrameRef.current,
+            originalQuery: query,
+          });
           const jobQueueOptions = {
             ...(analysisModeRef.current && {
               analysisMode: analysisModeRef.current,
@@ -462,6 +467,12 @@ export function useHybridAIQuery(
             ...buildSourceToolRequestOptions({
               webSearchEnabled: webSearchEnabledRef.current,
               ragEnabled: ragEnabledRef.current,
+            }),
+            ...(semanticIntentPayload.metadata?.intentFrame && {
+              intentFrame: semanticIntentPayload.metadata.intentFrame,
+            }),
+            ...(semanticIntentPayload.semanticQueryTrace && {
+              semanticQueryTrace: semanticIntentPayload.semanticQueryTrace,
             }),
           };
 
