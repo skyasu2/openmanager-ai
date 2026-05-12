@@ -1,0 +1,34 @@
+OpenManager QA evidence - v8.11.138 peak/advice P1 closure
+Recorded: 2026-05-12 21:47:48 KST
+
+Scope
+- Release: v8.11.138
+- Release commit: 4bd8557ae84b3ed2694e33d2b65f5e6e56c7bf67
+- Vercel deployment: dpl_8K1EVJvoSWCMK79skHC9V8xbZhhb
+- Vercel deployment URL: https://openmanager-6jnvt3ppk-skyasus-projects.vercel.app
+- Production alias: https://openmanager-ai.vercel.app
+- GitLab tag deploy pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519054015
+
+Production version
+- /api/version: 8.11.138, releaseTag=v8.11.138, commit=4bd8557ae84b3ed2694e33d2b65f5e6e56c7bf67
+
+Results
+- composite-peak-advice-read-only: PASS, HTTP 200, latency 552ms, provider=deterministic, tools=["monitoring-peak-metric"], evidence=monitoring-peak-metric
+- whole-fleet-load1-no-empty-summary: PASS, HTTP 200, latency 902ms, provider=groq, tools=[], evidence=monitoring-peak-metric
+- action-needed-api-whole-fleet-answer: PASS, HTTP 200, latency 2569ms, provider=groq, tools=["getServerMetrics"], evidence=-
+- ui-action-needed-no-clarification: PASS, clarificationVisible=false, screenshot=reports/qa/evidence/qa-20260512-v811138-action-needed-no-clarification.png
+
+Safety assertions
+- Composite read-only guidance: true
+- Composite forbidden mutating command match: none
+- Whole-fleet load1 empty-summary fallback: absent
+- Whole-fleet semantic evidence provider: monitoring-peak-metric
+- Action-needed UI clarification dialog: absent
+
+Representative answer previews
+- composite: 지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다. - 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값 - 최고값: 16.58 - 상위 평균: 9.08 상위 서버 1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58 2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80 3. api-was-dc1-01 (api-was-dc1-01): 4.87 운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다. 읽기 전용 확인 항목 1. 피크 시간대 상위 서버에서 `uptime`, `top -b -n1 -o %CPU`, `ps -eo pid,ppid,cmd,%cpu,%mem --sort=-%cpu |
+- whole-fleet: 지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다. - 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값 - 최고값: 16.58 - 상위 평균: 9.08 상위 서버 1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58 2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80 3. api-was-dc1-01 (api-was-dc1-01): 4.87 운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.
+- action-needed API: 긴급 조치가 필요한 서버가 있습니다. * lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태) * api-was-dc1-01 서버 (CPU 77%, 경고 상태) * api-was-dc1-02 서버 (CPU 73%, 경고 상태) 이 서버들의 상태를 면밀히 모니터링하고, 필요에 따라 적절한 조치를 취해주시기 바랍니다.
+- action-needed UI: 지금 당장 조치가 필요한 서버가 있어?9:47:44 PM복사핵심 요약긴급 조치가 필요한 서버가 있습니다. lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)api-was-dc1-01 서버 (CPU 77%, 경고 상태)api-was-dc1-02 서버 (CPU 73%, 경고 상태)이 서버들의 CPU 사용률이 높습니다. 서버 상태를 확인하고 적절한 조치를 취해 주세요.9:47:46 PM응답 보통Streaming AI·서버 실시간 데이터 분석분석 근거도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간복사다시 생성
+
+Failed checks: none

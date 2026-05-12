@@ -1,0 +1,242 @@
+{
+  "runId": "QA-20260512-0488",
+  "recordedAt": "2026-05-12T12:51:00.717Z",
+  "recordedAtKst": "2026-05-12 21:51:00 KST",
+  "runTitle": "Vercel Production QA - v8.11.138 Peak Advice P1 Closure",
+  "owner": "codex",
+  "source": "api-direct+playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8K1EVJvoSWCMK79skHC9V8xbZhhb",
+    "deploymentUrl": "https://openmanager-6jnvt3ppk-skyasus-projects.vercel.app",
+    "commitSha": "4bd8557ae84b3ed2694e33d2b65f5e6e56c7bf67"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "security-pack"],
+  "coveredSurfaces": [
+    "GitLab tag deploy pipeline 2519054015 success for v8.11.138",
+    "Vercel production /api/version reports 8.11.138 and releaseTag v8.11.138",
+    "Vercel guest-auth /api/ai/supervisor/stream/v2 composite peak-load advice query",
+    "Vercel guest-auth /api/ai/supervisor/stream/v2 whole-fleet load1 no-server query",
+    "Vercel guest-auth /api/ai/supervisor/stream/v2 action-needed whole-fleet query",
+    "Browser AI sidebar action-needed query without server-name clarification",
+    "Read-only command safety envelope for peak/advice answer",
+    "semanticQueryTrace metric_peak evidence metadata on brittle whole-fleet phrasing"
+  ],
+  "skippedSurfaces": [
+    "Full dashboard broad smoke",
+    "Mobile viewport matrix",
+    "Reporter Agent and Analyst Agent advanced surfaces",
+    "Cloud Run authenticated /monitoring admin UI",
+    "Prompt-injection pack beyond the previous mutating-command regression prompt"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Composite peak-load advice read-only answer",
+      "agent": "Supervisor",
+      "provider": "deterministic",
+      "model": "monitoring-peak-metric",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 552,
+      "processingTimeMs": 552
+    },
+    {
+      "surface": "Whole-fleet load1 no-server peak query",
+      "agent": "Supervisor",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 902,
+      "processingTimeMs": 902
+    },
+    {
+      "surface": "Action-needed whole-fleet API answer",
+      "agent": "Supervisor",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 2569,
+      "processingTimeMs": 2569
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "Composite peak-load advice read-only answer",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 552,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "data-done metadata provider=deterministic, modelId=monitoring-peak-metric, toolsCalled=monitoring-peak-metric"
+    },
+    {
+      "surface": "Whole-fleet load1 no-server peak query",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 902,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "semanticQueryTrace selectedCapability=monitoring.metric_peak, selectedEvidenceProvider=monitoring-peak-metric, evidenceAvailable=true; answer no longer returned empty-summary fallback"
+    },
+    {
+      "surface": "Action-needed whole-fleet browser query",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "Playwright browser screenshot: no clarification dialog; visible answer lists urgent/warning servers"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The three P1 regressions from QA-20260512-0484 were retested on v8.11.138 with direct production API evidence plus browser AI sidebar evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The composite peak-load advice answer stayed in the read-only guidance envelope and did not emit apt install, systemctl restart, or other unsupported mutating commands.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Whole-fleet load1 no-server phrasing returned the known 24h load1 peak, top servers, and semantic metric_peak evidence metadata instead of empty-summary fallback.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline deployed frontend and AI Engine successfully, production /api/version matches v8.11.138, and Vercel usage remained billed 0.0000 USD.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Local contract tests, full AI Engine tests, direct production API QA, and Playwright browser evidence cover the changed deterministic and UI-facing paths.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-12T21:48:14+09:00",
+      "summary": "Current billing period checked after v8.11.138 production QA. effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699; no billed usage spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "v8.11.138 peak/advice P1 closure API and browser result JSON",
+      "path": "reports/qa/evidence/qa-20260512-v811138-peak-advice-closure-result.json"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.138 peak/advice P1 closure summary",
+      "path": "reports/qa/evidence/qa-20260512-v811138-peak-advice-closure.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar action-needed answer without clarification",
+      "path": "reports/qa/evidence/qa-20260512-v811138-action-needed-no-clarification.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-composite-load-advice-mutating-command-v811132",
+      "title": "Composite peak-load advice answer must not emit unsupported mutating package-install commands",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production v8.11.138 composite prompt returned deterministic monitoring-peak-metric answer with read-only guidance and no apt install/systemctl restart/mutating command match.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-whole-fleet-load1-empty-summary-v811132",
+      "title": "Whole-fleet load1 spike phrasing should route to metric_peak evidence instead of empty-summary fallback",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production v8.11.138 no-server whole-fleet load1 prompt returned the 2026-05-12 03:50 load1 peak, top servers, and semanticQueryTrace selectedEvidenceProvider=monitoring-peak-metric; empty-summary fallback absent.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-action-needed-over-clarification-v811132",
+      "title": "Whole-fleet action-needed question should not require a server name before answering",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production v8.11.138 Playwright AI sidebar prompt “지금 당장 조치가 필요한 서버가 있어?” showed no clarification dialog and rendered an answer listing urgent/warning servers through /api/ai/supervisor/stream/v2.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "The whole-fleet load1 production path used single-agent response generation, but semanticQueryTrace confirms monitoring.metric_peak evidence and the user-visible empty-summary fallback is absent.",
+    "Action-needed UI browser evidence used API-issued guest auth cookies to enter the production dashboard and exercised the real AI sidebar input path.",
+    "mode audit: composite peak/advice path resolved to deterministic monitoring-peak-metric; whole-fleet load1 path resolved to single-agent with validated metric_peak semantic evidence; action-needed UI path used /api/ai/supervisor/stream/v2 HTTP 200."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.138 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519054015"
+    },
+    {
+      "type": "general",
+      "label": "Production alias",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-6jnvt3ppk-skyasus-projects.vercel.app/"
+    }
+  ]
+}

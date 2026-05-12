@@ -1,0 +1,822 @@
+{
+  "target": "https://openmanager-ai.vercel.app",
+  "checkedAtKst": "2026-05-12 21:47:48 KST",
+  "expected": {
+    "version": "8.11.138",
+    "commitSha": "4bd8557ae84b3ed2694e33d2b65f5e6e56c7bf67",
+    "deploymentId": "dpl_8K1EVJvoSWCMK79skHC9V8xbZhhb",
+    "deploymentUrl": "https://openmanager-6jnvt3ppk-skyasus-projects.vercel.app"
+  },
+  "version": {
+    "version": "8.11.138",
+    "buildVersion": "8.11.138",
+    "nextjs": "16.1.6",
+    "environment": "production",
+    "commitSha": "4bd8557ae84b3ed2694e33d2b65f5e6e56c7bf67",
+    "shortCommitSha": "4bd8557ae8",
+    "releaseTag": "v8.11.138",
+    "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2519054015",
+    "deploymentProvider": "vercel",
+    "timestamp": "2026-05-12T12:40:38.342Z"
+  },
+  "auth": {
+    "csrf": "ok",
+    "guestLogin": "ok",
+    "countryCode": "KR"
+  },
+  "apiResults": [
+    {
+      "id": "composite-peak-advice-read-only",
+      "query": "최근 하루 load 피크 시간과 대응 방법 알려줘",
+      "status": 200,
+      "ok": true,
+      "latencyMs": 552,
+      "contentType": "text/event-stream",
+      "answer": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-dc1-01 (api-was-dc1-01): 4.87\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.\n\n읽기 전용 확인 항목\n1. 피크 시간대 상위 서버에서 `uptime`, `top -b -n1 -o %CPU`, `ps -eo pid,ppid,cmd,%cpu,%mem --sort=-%cpu | head`로 현재 부하와 상위 프로세스를 확인합니다.\n2. 같은 시간대 애플리케이션/DB 로그와 배치 스케줄을 조회해 트래픽 집중, 배치 실행, upstream 병목 여부를 대조합니다.\n3. 패키지 설치, 서비스 재시작, 파일 삭제, 설정 변경은 이 근거만으로 제안하지 말고 별도 승인 절차 이후에만 검토합니다.",
+      "answerPreview": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-dc1-01 (api-was-dc1-01): 4.87\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.\n\n읽기 전용 확인 항목\n1. 피크 시간대 상위 서버에서 `uptime`, `top -b -n1 -o %CPU`, `ps -eo pid,ppid,cmd,%cpu,%mem --sort=-%cpu | head`로 현재 부하와 상위 프로세스를 확인합니다.\n2. 같은 시간대 애플리케이션/DB 로그와 배치 스케줄을 조회해 트래픽 집중, 배치 실행, upstream 병목 여부를 대조합니다.\n3. 패키지 설치, 서비스 재시작, 파일 삭제, 설정 변경은 이 근거만으로 제안하지 말고 별도 승인 절차 이후에만 검토합니다.",
+      "eventTypes": [
+        "data-developer-context",
+        "data-start",
+        "data-mode",
+        "text-start",
+        "text-delta",
+        "text-end",
+        "data-done"
+      ],
+      "mode": {
+        "mode": "multi",
+        "requestedMode": "auto",
+        "resolvedMode": "multi",
+        "modeSelectionSource": "auto_complexity",
+        "autoSelectedByComplexity": "multi",
+        "analysisMode": "auto",
+        "routeDecision": {
+          "intent": "chat",
+          "executionPath": "stream",
+          "mode": "multi",
+          "reasonCodes": ["auto_complexity"],
+          "ruleVersion": "2026-05-03-v1",
+          "dataSlot": "21:40 KST",
+          "traceId": "aae9cdf3884d2c8a2e02f3d1497914f8",
+          "decidedBy": "cloud-run"
+        },
+        "assistantPlan": {
+          "kind": "chat",
+          "planVersion": "2026-05-03-v1",
+          "routeDecision": {
+            "intent": "chat",
+            "executionPath": "stream",
+            "mode": "multi",
+            "reasonCodes": ["auto_complexity"],
+            "ruleVersion": "2026-05-03-v1",
+            "dataSlot": "21:40 KST",
+            "traceId": "aae9cdf3884d2c8a2e02f3d1497914f8",
+            "decidedBy": "cloud-run"
+          },
+          "executionPath": "stream",
+          "executionMode": "multi-agent",
+          "stream": true,
+          "job": false,
+          "reasonCodes": ["auto_complexity"],
+          "plannerShadow": {
+            "plannerVersion": "2026-05-03-v1",
+            "candidate": {
+              "kind": "chat",
+              "executionPath": "stream",
+              "executionMode": "single-agent",
+              "reasonCodes": ["single_agent_default"],
+              "decidedBy": "cloud-run"
+            },
+            "drift": {
+              "matched": false,
+              "reasonCodes": ["local_decision_missing"]
+            },
+            "latencyMs": 1
+          },
+          "dataSlot": "21:40 KST",
+          "traceId": "aae9cdf3884d2c8a2e02f3d1497914f8",
+          "decidedBy": "cloud-run"
+        }
+      },
+      "done": {
+        "durationMs": 5,
+        "success": true,
+        "toolsCalled": ["monitoring-peak-metric"],
+        "usage": {
+          "promptTokens": 0,
+          "completionTokens": 0,
+          "totalTokens": 0
+        },
+        "metadata": {
+          "provider": "deterministic",
+          "modelId": "monitoring-peak-metric",
+          "stepsExecuted": 0,
+          "durationMs": 5,
+          "mode": "multi",
+          "queryAsOf": {
+            "createdAt": "2026-05-12T12:40:40.072Z",
+            "source": "vercel-static-otel",
+            "datasetVersion": "24h-rotating-v1.0.0",
+            "dataSlot": {
+              "slotIndex": 130,
+              "minuteOfDay": 1300,
+              "timeLabel": "21:40 KST"
+            }
+          },
+          "requestedMode": "auto",
+          "resolvedMode": "multi",
+          "modeSelectionSource": "auto_complexity",
+          "autoSelectedByComplexity": "multi",
+          "analysisMode": "auto",
+          "routeDecision": {
+            "intent": "chat",
+            "executionPath": "stream",
+            "mode": "multi",
+            "reasonCodes": ["auto_complexity"],
+            "ruleVersion": "2026-05-03-v1",
+            "dataSlot": "21:40 KST",
+            "traceId": "aae9cdf3884d2c8a2e02f3d1497914f8",
+            "decidedBy": "cloud-run"
+          },
+          "assistantPlan": {
+            "kind": "chat",
+            "planVersion": "2026-05-03-v1",
+            "routeDecision": {
+              "intent": "chat",
+              "executionPath": "stream",
+              "mode": "multi",
+              "reasonCodes": ["auto_complexity"],
+              "ruleVersion": "2026-05-03-v1",
+              "dataSlot": "21:40 KST",
+              "traceId": "aae9cdf3884d2c8a2e02f3d1497914f8",
+              "decidedBy": "cloud-run"
+            },
+            "executionPath": "stream",
+            "executionMode": "multi-agent",
+            "stream": true,
+            "job": false,
+            "reasonCodes": ["auto_complexity"],
+            "plannerShadow": {
+              "plannerVersion": "2026-05-03-v1",
+              "candidate": {
+                "kind": "chat",
+                "executionPath": "stream",
+                "executionMode": "single-agent",
+                "reasonCodes": ["single_agent_default"],
+                "decidedBy": "cloud-run"
+              },
+              "drift": {
+                "matched": false,
+                "reasonCodes": ["local_decision_missing"]
+              },
+              "latencyMs": 1
+            },
+            "dataSlot": "21:40 KST",
+            "traceId": "aae9cdf3884d2c8a2e02f3d1497914f8",
+            "decidedBy": "cloud-run"
+          },
+          "assistantRuntime": {
+            "domainId": "openmanager-monitoring",
+            "domainVersion": "2026-05-05-v1",
+            "routeKind": "chat",
+            "executionPath": "stream",
+            "executionMode": "multi-agent",
+            "reasonCodes": ["monitoring_multi_route"],
+            "adapterKinds": {
+              "stateStore": "in-memory",
+              "sessionStore": "in-memory",
+              "jobQueue": "in-memory",
+              "artifactStore": "in-memory",
+              "vectorStore": "empty"
+            }
+          },
+          "assistantResult": {
+            "kind": "chat",
+            "resultVersion": "2026-05-03-v1",
+            "routeDecision": {
+              "intent": "chat",
+              "executionPath": "stream",
+              "mode": "multi",
+              "reasonCodes": ["auto_complexity"],
+              "ruleVersion": "2026-05-03-v1",
+              "dataSlot": "21:40 KST",
+              "traceId": "aae9cdf3884d2c8a2e02f3d1497914f8",
+              "decidedBy": "cloud-run"
+            },
+            "status": "completed",
+            "traceId": "aae9cdf3884d2c8a2e02f3d1497914f8"
+          },
+          "domainEvidence": {
+            "id": "monitoring-peak-metric",
+            "responsePolicy": "deterministic_read_only_advice"
+          },
+          "semanticQueryTrace": {
+            "originalQuery": "최근 하루 load 피크 시간과 대응 방법 알려줘",
+            "selectedDomain": "openmanager-monitoring",
+            "selectedCapability": "monitoring.metric_peak",
+            "selectedEvidenceProvider": "monitoring-peak-metric",
+            "evidenceAvailable": true,
+            "clarificationRequired": false,
+            "reasonCodes": ["semantic_frame_evidence_validated"]
+          }
+        },
+        "responseSummary": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-dc1-01 (api-was-dc1-01): 4.87\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.\n\n읽기 전용 확인 항목\n1. 피크 시간대 상위 서버에서 `uptime`, `top -b -n1 -o %CPU`, `ps -eo pid,ppid,cmd,%cpu,%mem --sort=-%cpu | head`로 현재 부하와 상위 프로세스를 확인합니다.\n2. 같은 시간대 애플리케이션/DB 로그와 배치 스케줄을 조회해 트래픽 집중, 배치 실행, upstream 병목 여부를 대조합니다.\n3. 패키지 설치, 서비스 재시작, 파일 삭제, 설정 변경은 이 근거만으로 제안하지 말고 별도 승인 절차 이후에만 검토합니다.",
+        "responseDetails": null,
+        "responseShouldCollapse": false
+      },
+      "checks": [
+        {
+          "name": "HTTP 200",
+          "pass": true,
+          "evidence": "200"
+        },
+        {
+          "name": "deterministic peak answer",
+          "pass": true,
+          "evidence": "{\"provider\":\"deterministic\",\"modelId\":\"monitoring-peak-metric\"}"
+        },
+        {
+          "name": "uses monitoring peak evidence tool",
+          "pass": true,
+          "evidence": "[\"monitoring-peak-metric\"]"
+        },
+        {
+          "name": "contains read-only guidance section",
+          "pass": true,
+          "evidence": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-d"
+        },
+        {
+          "name": "contains peak/load evidence",
+          "pass": true,
+          "evidence": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-d"
+        },
+        {
+          "name": "does not emit unsupported mutating commands",
+          "pass": true,
+          "evidence": "none"
+        }
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "whole-fleet-load1-no-empty-summary",
+      "query": "서버명 없이 전체 시스템에서 어제부터 지금까지 load1이 제일 튄 때랑 원인 후보만 알려줘",
+      "status": 200,
+      "ok": true,
+      "latencyMs": 902,
+      "contentType": "text/event-stream",
+      "answer": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-dc1-01 (api-was-dc1-01): 4.87\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.",
+      "answerPreview": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-dc1-01 (api-was-dc1-01): 4.87\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.",
+      "eventTypes": [
+        "data-developer-context",
+        "data-start",
+        "data-mode",
+        "text-start",
+        "text-delta",
+        "text-end",
+        "data-done"
+      ],
+      "mode": {
+        "mode": "single",
+        "requestedMode": "auto",
+        "resolvedMode": "single",
+        "modeSelectionSource": "auto_complexity",
+        "autoSelectedByComplexity": "single",
+        "analysisMode": "auto",
+        "routeDecision": {
+          "intent": "chat",
+          "executionPath": "stream",
+          "mode": "single",
+          "reasonCodes": ["auto_complexity"],
+          "ruleVersion": "2026-05-03-v1",
+          "dataSlot": "21:40 KST",
+          "traceId": "f245c829c119e28c2e02f3d149791322",
+          "decidedBy": "cloud-run"
+        },
+        "assistantPlan": {
+          "kind": "chat",
+          "planVersion": "2026-05-03-v1",
+          "routeDecision": {
+            "intent": "chat",
+            "executionPath": "stream",
+            "mode": "single",
+            "reasonCodes": ["auto_complexity"],
+            "ruleVersion": "2026-05-03-v1",
+            "dataSlot": "21:40 KST",
+            "traceId": "f245c829c119e28c2e02f3d149791322",
+            "decidedBy": "cloud-run"
+          },
+          "executionPath": "stream",
+          "executionMode": "single-agent",
+          "stream": true,
+          "job": false,
+          "reasonCodes": ["auto_complexity"],
+          "plannerShadow": {
+            "plannerVersion": "2026-05-03-v1",
+            "candidate": {
+              "kind": "chat",
+              "executionPath": "stream",
+              "executionMode": "single-agent",
+              "reasonCodes": ["single_agent_default"],
+              "decidedBy": "cloud-run"
+            },
+            "drift": {
+              "matched": false,
+              "reasonCodes": ["local_decision_missing"]
+            },
+            "latencyMs": 1
+          },
+          "dataSlot": "21:40 KST",
+          "traceId": "f245c829c119e28c2e02f3d149791322",
+          "decidedBy": "cloud-run"
+        }
+      },
+      "done": {
+        "durationMs": 665,
+        "success": true,
+        "toolsCalled": [],
+        "usage": {
+          "promptTokens": 0,
+          "completionTokens": 0,
+          "totalTokens": 0
+        },
+        "metadata": {
+          "provider": "groq",
+          "modelId": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "stepsExecuted": 1,
+          "durationMs": 665,
+          "mode": "single",
+          "queryAsOf": {
+            "createdAt": "2026-05-12T12:40:40.437Z",
+            "source": "vercel-static-otel",
+            "datasetVersion": "24h-rotating-v1.0.0",
+            "dataSlot": {
+              "slotIndex": 130,
+              "minuteOfDay": 1300,
+              "timeLabel": "21:40 KST"
+            }
+          },
+          "requestedMode": "auto",
+          "resolvedMode": "single",
+          "modeSelectionSource": "auto_complexity",
+          "autoSelectedByComplexity": "single",
+          "analysisMode": "auto",
+          "routeDecision": {
+            "intent": "chat",
+            "executionPath": "stream",
+            "mode": "single",
+            "reasonCodes": ["auto_complexity"],
+            "ruleVersion": "2026-05-03-v1",
+            "dataSlot": "21:40 KST",
+            "traceId": "f245c829c119e28c2e02f3d149791322",
+            "decidedBy": "cloud-run"
+          },
+          "assistantPlan": {
+            "kind": "chat",
+            "planVersion": "2026-05-03-v1",
+            "routeDecision": {
+              "intent": "chat",
+              "executionPath": "stream",
+              "mode": "single",
+              "reasonCodes": ["auto_complexity"],
+              "ruleVersion": "2026-05-03-v1",
+              "dataSlot": "21:40 KST",
+              "traceId": "f245c829c119e28c2e02f3d149791322",
+              "decidedBy": "cloud-run"
+            },
+            "executionPath": "stream",
+            "executionMode": "single-agent",
+            "stream": true,
+            "job": false,
+            "reasonCodes": ["auto_complexity"],
+            "plannerShadow": {
+              "plannerVersion": "2026-05-03-v1",
+              "candidate": {
+                "kind": "chat",
+                "executionPath": "stream",
+                "executionMode": "single-agent",
+                "reasonCodes": ["single_agent_default"],
+                "decidedBy": "cloud-run"
+              },
+              "drift": {
+                "matched": false,
+                "reasonCodes": ["local_decision_missing"]
+              },
+              "latencyMs": 1
+            },
+            "dataSlot": "21:40 KST",
+            "traceId": "f245c829c119e28c2e02f3d149791322",
+            "decidedBy": "cloud-run"
+          },
+          "assistantResult": {
+            "kind": "chat",
+            "resultVersion": "2026-05-03-v1",
+            "routeDecision": {
+              "intent": "chat",
+              "executionPath": "stream",
+              "mode": "single",
+              "reasonCodes": ["auto_complexity"],
+              "ruleVersion": "2026-05-03-v1",
+              "dataSlot": "21:40 KST",
+              "traceId": "f245c829c119e28c2e02f3d149791322",
+              "decidedBy": "cloud-run"
+            },
+            "status": "completed",
+            "traceId": "f245c829c119e28c2e02f3d149791322"
+          },
+          "assistantRuntime": {
+            "domainId": "openmanager-monitoring",
+            "domainVersion": "2026-05-05-v1",
+            "routeKind": "chat",
+            "executionPath": "stream",
+            "executionMode": "single-agent",
+            "reasonCodes": ["monitoring_single_route"],
+            "adapterKinds": {
+              "stateStore": "in-memory",
+              "sessionStore": "in-memory",
+              "jobQueue": "in-memory",
+              "artifactStore": "in-memory",
+              "vectorStore": "empty"
+            }
+          },
+          "semanticQueryTrace": {
+            "originalQuery": "서버명 없이 전체 시스템에서 어제부터 지금까지 load1이 제일 튄 때랑 원인 후보만 알려줘",
+            "selectedDomain": "openmanager-monitoring",
+            "selectedCapability": "monitoring.metric_peak",
+            "selectedEvidenceProvider": "monitoring-peak-metric",
+            "evidenceAvailable": true,
+            "clarificationRequired": false,
+            "reasonCodes": ["semantic_frame_evidence_validated"]
+          }
+        },
+        "responseSummary": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-dc1-01 (api-was-dc1-01): 4.87\n\n운영 해석: 이 시간대는 관측 창 안에서 순간 피크가 가장 컸던 구간입니다. 같은 계층의 서버가 함께 높다면 배치, 트래픽 집중, 또는 upstream 병목을 우선 확인하는 것이 좋습니다.",
+        "responseDetails": null,
+        "responseShouldCollapse": false
+      },
+      "checks": [
+        {
+          "name": "HTTP 200",
+          "pass": true,
+          "evidence": "200"
+        },
+        {
+          "name": "uses monitoring peak evidence metadata",
+          "pass": true,
+          "evidence": "{\"selectedCapability\":\"monitoring.metric_peak\",\"selectedEvidenceProvider\":\"monitoring-peak-metric\",\"evidenceAvailable\":true,\"toolsCalled\":[]}"
+        },
+        {
+          "name": "does not return empty-summary fallback",
+          "pass": true,
+          "evidence": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica ("
+        },
+        {
+          "name": "contains whole-fleet load1 peak evidence",
+          "pass": true,
+          "evidence": "지난 24시간 기준 1분 평균 로드(load1) 최고 시간대는 2026-05-12 03:50입니다.\n\n- 기준: monitoring OTel 슬롯의 서버별 1분 평균 로드(load1) 최대값\n- 최고값: 16.58\n- 상위 평균: 9.08\n\n상위 서버\n1. db-mysql-dc1-primary (db-mysql-dc1-primary): 16.58\n2. db-mysql-dc1-replica (db-mysql-dc1-replica): 5.80\n3. api-was-d"
+        }
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "action-needed-api-whole-fleet-answer",
+      "query": "지금 당장 조치가 필요한 서버가 있어?",
+      "status": 200,
+      "ok": true,
+      "latencyMs": 2569,
+      "contentType": "text/event-stream",
+      "answer": "긴급 조치가 필요한 서버가 있습니다. \n\n* lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)\n* api-was-dc1-01 서버 (CPU 77%, 경고 상태)\n* api-was-dc1-02 서버 (CPU 73%, 경고 상태)\n\n이 서버들의 상태를 면밀히 모니터링하고, 필요에 따라 적절한 조치를 취해주시기 바랍니다.",
+      "answerPreview": "긴급 조치가 필요한 서버가 있습니다. \n\n* lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)\n* api-was-dc1-01 서버 (CPU 77%, 경고 상태)\n* api-was-dc1-02 서버 (CPU 73%, 경고 상태)\n\n이 서버들의 상태를 면밀히 모니터링하고, 필요에 따라 적절한 조치를 취해주시기 바랍니다.",
+      "eventTypes": [
+        "data-developer-context",
+        "data-start",
+        "data-mode",
+        "data-agent-step",
+        "data-agent-step",
+        "text-start",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "text-delta",
+        "data-tool-call",
+        "data-tool-result",
+        "text-end",
+        "data-done"
+      ],
+      "mode": {
+        "mode": "single",
+        "requestedMode": "auto",
+        "resolvedMode": "single",
+        "modeSelectionSource": "auto_complexity",
+        "autoSelectedByComplexity": "single",
+        "analysisMode": "auto",
+        "routeDecision": {
+          "intent": "chat",
+          "executionPath": "stream",
+          "mode": "single",
+          "reasonCodes": ["auto_complexity"],
+          "ruleVersion": "2026-05-03-v1",
+          "dataSlot": "21:40 KST",
+          "traceId": "97b1394d86a614102e02f3d149791021",
+          "decidedBy": "cloud-run"
+        },
+        "assistantPlan": {
+          "kind": "chat",
+          "planVersion": "2026-05-03-v1",
+          "routeDecision": {
+            "intent": "chat",
+            "executionPath": "stream",
+            "mode": "single",
+            "reasonCodes": ["auto_complexity"],
+            "ruleVersion": "2026-05-03-v1",
+            "dataSlot": "21:40 KST",
+            "traceId": "97b1394d86a614102e02f3d149791021",
+            "decidedBy": "cloud-run"
+          },
+          "executionPath": "stream",
+          "executionMode": "single-agent",
+          "stream": true,
+          "job": false,
+          "reasonCodes": ["auto_complexity"],
+          "plannerShadow": {
+            "plannerVersion": "2026-05-03-v1",
+            "candidate": {
+              "kind": "chat",
+              "executionPath": "stream",
+              "executionMode": "multi-agent",
+              "reasonCodes": ["advisor_request"],
+              "escalationReasonCodes": ["advisor_requested"],
+              "decidedBy": "cloud-run"
+            },
+            "drift": {
+              "matched": false,
+              "reasonCodes": ["local_decision_missing"]
+            },
+            "latencyMs": 1
+          },
+          "dataSlot": "21:40 KST",
+          "traceId": "97b1394d86a614102e02f3d149791021",
+          "decidedBy": "cloud-run"
+        }
+      },
+      "done": {
+        "durationMs": 2111,
+        "success": true,
+        "toolsCalled": ["getServerMetrics"],
+        "usage": {
+          "promptTokens": 7952,
+          "completionTokens": 89,
+          "totalTokens": 8041
+        },
+        "metadata": {
+          "provider": "groq",
+          "modelId": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "stepsExecuted": 2,
+          "durationMs": 2110,
+          "mode": "single",
+          "queryAsOf": {
+            "createdAt": "2026-05-12T12:40:41.304Z",
+            "source": "vercel-static-otel",
+            "datasetVersion": "24h-rotating-v1.0.0",
+            "dataSlot": {
+              "slotIndex": 130,
+              "minuteOfDay": 1300,
+              "timeLabel": "21:40 KST"
+            }
+          },
+          "requestedMode": "auto",
+          "resolvedMode": "single",
+          "modeSelectionSource": "auto_complexity",
+          "autoSelectedByComplexity": "single",
+          "analysisMode": "auto",
+          "routeDecision": {
+            "intent": "chat",
+            "executionPath": "stream",
+            "mode": "single",
+            "reasonCodes": ["auto_complexity"],
+            "ruleVersion": "2026-05-03-v1",
+            "dataSlot": "21:40 KST",
+            "traceId": "97b1394d86a614102e02f3d149791021",
+            "decidedBy": "cloud-run"
+          },
+          "assistantPlan": {
+            "kind": "chat",
+            "planVersion": "2026-05-03-v1",
+            "routeDecision": {
+              "intent": "chat",
+              "executionPath": "stream",
+              "mode": "single",
+              "reasonCodes": ["auto_complexity"],
+              "ruleVersion": "2026-05-03-v1",
+              "dataSlot": "21:40 KST",
+              "traceId": "97b1394d86a614102e02f3d149791021",
+              "decidedBy": "cloud-run"
+            },
+            "executionPath": "stream",
+            "executionMode": "single-agent",
+            "stream": true,
+            "job": false,
+            "reasonCodes": ["auto_complexity"],
+            "plannerShadow": {
+              "plannerVersion": "2026-05-03-v1",
+              "candidate": {
+                "kind": "chat",
+                "executionPath": "stream",
+                "executionMode": "multi-agent",
+                "reasonCodes": ["advisor_request"],
+                "escalationReasonCodes": ["advisor_requested"],
+                "decidedBy": "cloud-run"
+              },
+              "drift": {
+                "matched": false,
+                "reasonCodes": ["local_decision_missing"]
+              },
+              "latencyMs": 1
+            },
+            "dataSlot": "21:40 KST",
+            "traceId": "97b1394d86a614102e02f3d149791021",
+            "decidedBy": "cloud-run"
+          },
+          "assistantResult": {
+            "kind": "chat",
+            "resultVersion": "2026-05-03-v1",
+            "routeDecision": {
+              "intent": "chat",
+              "executionPath": "stream",
+              "mode": "single",
+              "reasonCodes": ["auto_complexity"],
+              "ruleVersion": "2026-05-03-v1",
+              "dataSlot": "21:40 KST",
+              "traceId": "97b1394d86a614102e02f3d149791021",
+              "decidedBy": "cloud-run"
+            },
+            "status": "completed",
+            "traceId": "97b1394d86a614102e02f3d149791021"
+          },
+          "assistantRuntime": {
+            "domainId": "openmanager-monitoring",
+            "domainVersion": "2026-05-05-v1",
+            "routeKind": "chat",
+            "executionPath": "stream",
+            "executionMode": "single-agent",
+            "reasonCodes": ["monitoring_single_route"],
+            "adapterKinds": {
+              "stateStore": "in-memory",
+              "sessionStore": "in-memory",
+              "jobQueue": "in-memory",
+              "artifactStore": "in-memory",
+              "vectorStore": "empty"
+            }
+          }
+        },
+        "responseSummary": "긴급 조치가 필요한 서버가 있습니다. \n\n* lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)\n* api-was-dc1-01 서버 (CPU 77%, 경고 상태)\n* api-was-dc1-02 서버 (CPU 73%, 경고 상태)\n\n이 서버들의 상태를 면밀히 모니터링하고, 필요에 따라 적절한 조치를 취해주시기 바랍니다.",
+        "responseDetails": null,
+        "responseShouldCollapse": false
+      },
+      "checks": [
+        {
+          "name": "HTTP 200",
+          "pass": true,
+          "evidence": "200"
+        },
+        {
+          "name": "does not ask for server name",
+          "pass": true,
+          "evidence": "긴급 조치가 필요한 서버가 있습니다. \n\n* lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)\n* api-was-dc1-01 서버 (CPU 77%, 경고 상태)\n* api-was-dc1-02 서버 (CPU 73%, 경고 상태)\n\n이 서버들의 상태를 면밀히 모니터링하고, 필요에 따라 적절한 조치를 취해주시기 바랍니다."
+        },
+        {
+          "name": "returns action-needed whole-fleet answer",
+          "pass": true,
+          "evidence": "긴급 조치가 필요한 서버가 있습니다. \n\n* lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)\n* api-was-dc1-01 서버 (CPU 77%, 경고 상태)\n* api-was-dc1-02 서버 (CPU 73%, 경고 상태)\n\n이 서버들의 상태를 면밀히 모니터링하고, 필요에 따라 적절한 조치를 취해주시기 바랍니다."
+        }
+      ],
+      "result": "pass"
+    }
+  ],
+  "browserResult": {
+    "id": "ui-action-needed-no-clarification",
+    "query": "지금 당장 조치가 필요한 서버가 있어?",
+    "result": "pass",
+    "clarificationVisible": false,
+    "responsePreview": "지금 당장 조치가 필요한 서버가 있어?9:47:44 PM복사핵심 요약긴급 조치가 필요한 서버가 있습니다. lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)api-was-dc1-01 서버 (CPU 77%, 경고 상태)api-was-dc1-02 서버 (CPU 73%, 경고 상태)이 서버들의 CPU 사용률이 높습니다. 서버 상태를 확인하고 적절한 조치를 취해 주세요.9:47:46 PM응답 보통Streaming AI·서버 실시간 데이터 분석분석 근거도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간복사다시 생성",
+    "network": [
+      {
+        "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+        "status": 200,
+        "method": "POST"
+      },
+      {
+        "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+        "status": 200,
+        "method": "POST"
+      }
+    ],
+    "screenshotPath": "reports/qa/evidence/qa-20260512-v811138-action-needed-no-clarification.png",
+    "checks": [
+      {
+        "name": "clarification dialog not visible after submit",
+        "pass": true,
+        "evidence": "false"
+      },
+      {
+        "name": "visible response does not ask for a server name",
+        "pass": true,
+        "evidence": "지금 당장 조치가 필요한 서버가 있어?9:47:44 PM복사핵심 요약긴급 조치가 필요한 서버가 있습니다. lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)api-was-dc1-01 서버 (CPU 77%, 경고 상태)api-was-dc1-02 서버 (CPU 73%, 경고 상태)이 서버들의 CPU 사용률이 높습니다. 서버 상태를 확인하고 적절한 조치를 취해 주세요.9:47:46 PM응답 보통Streaming AI·서버 실시간 데이터 분석분석 근거도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간복사다시 생성"
+      },
+      {
+        "name": "visible response contains whole-fleet action-needed content",
+        "pass": true,
+        "evidence": "지금 당장 조치가 필요한 서버가 있어?9:47:44 PM복사핵심 요약긴급 조치가 필요한 서버가 있습니다. lb-haproxy-dc1-01 서버 (CPU 85%, 임계 상태)api-was-dc1-01 서버 (CPU 77%, 경고 상태)api-was-dc1-02 서버 (CPU 73%, 경고 상태)이 서버들의 CPU 사용률이 높습니다. 서버 상태를 확인하고 적절한 조치를 취해 주세요.9:47:46 PM응답 보통Streaming AI·서버 실시간 데이터 분석분석 근거도구: 서버 메트릭 조회 · 모드: 오토 · 기간: 최근 1시간복사다시 생성"
+      }
+    ]
+  },
+  "summary": {
+    "totalChecks": 16,
+    "passed": 16,
+    "failed": 0,
+    "result": "pass"
+  }
+}
