@@ -22,6 +22,8 @@ import {
   REPORTER_QUERY_PATTERN,
   isFormattingOnlyReportRequest,
 } from '../../services/ai-sdk/query-routing-signals';
+import { extractQueryRoutingSignals } from '../../services/ai-sdk/routing/query-routing-signals';
+import { createRoutingDecisionTrace } from '../../services/ai-sdk/routing/routing-decision-trace';
 
 export function createSystemPrompt(deviceType?: string): string {
   return createMonitoringSystemPrompt(deviceType);
@@ -45,6 +47,10 @@ export function selectExecutionMode(
   query: string,
   analysisMode?: AnalysisMode
 ): SupervisorMode {
+  void createRoutingDecisionTrace(
+    extractQueryRoutingSignals(query, { analysisMode })
+  );
+
   const q = query.toLowerCase();
   const hasInfraContext = INFRA_CONTEXT_PATTERN.test(q);
 
@@ -145,6 +151,8 @@ const TOOL_ROUTING_PATTERNS = {
 } as const;
 
 export function getIntentCategory(query: string): IntentCategory {
+  void createRoutingDecisionTrace(extractQueryRoutingSignals(query));
+
   const q = query.toLowerCase();
 
   if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) return 'anomaly';
@@ -252,6 +260,11 @@ export function createPrepareStep(
     enableRAG?: boolean;
   }
 ) {
+  const routingTrace = createRoutingDecisionTrace(
+    extractQueryRoutingSignals(query)
+  );
+  void routingTrace;
+
   const q = query.toLowerCase();
   const webSearchEnabled = options?.enableWebSearch === true;
   const ragEnabled = options?.enableRAG === true;

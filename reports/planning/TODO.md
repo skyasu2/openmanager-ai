@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 active 작업 없음. |
+| AI Assistant routing decision trace hardening | High | In Progress | Phase 1 trace-only 완료: `QueryRoutingSignals`/`RoutingDecisionTrace` skeleton 추가, 기존 mode/tool/pre-filter 분기 parity 유지. Phase 2 decision contract alignment 대기. 상세: [ai-assistant-routing-decision-trace-hardening-plan.md](ai-assistant-routing-decision-trace-hardening-plan.md) |
 
 ---
 

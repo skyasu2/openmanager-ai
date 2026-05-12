@@ -22,6 +22,8 @@ import {
   REPORTER_QUERY_PATTERN,
   isFormattingOnlyReportRequest,
 } from '../query-routing-signals';
+import { extractQueryRoutingSignals } from '../routing/query-routing-signals';
+import { createRoutingDecisionTrace } from '../routing/routing-decision-trace';
 import { buildServiceCommandGuidanceAnswer } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 
 // ============================================================================
@@ -316,6 +318,13 @@ export function preFilterQuery(
   query: string,
   context: PreFilterContext = {},
 ): PreFilterResult {
+  void createRoutingDecisionTrace(
+    extractQueryRoutingSignals(query, {
+      hasImageAttachments: context.hasImageAttachments,
+      hasFileAttachments: context.hasFileAttachments,
+    })
+  );
+
   const normalized = query.trim().toLowerCase();
 
   // 1. Check greeting patterns - direct response
