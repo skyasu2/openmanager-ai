@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-12 18:02:46 KST
+> Generated at: 2026-05-12 19:53:59 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 484 |
-| Total Runs (Counted) | 386 |
+| Total Recorded Runs | 485 |
+| Total Runs (Counted) | 387 |
 | Non-counted Runs | 98 |
-| Total Checks | 3418 |
-| Passed | 3284 |
+| Total Checks | 3426 |
+| Passed | 3292 |
 | Failed | 124 |
-| Completed Items | 548 |
+| Completed Items | 549 |
 | Pending Items | 3 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 22 |
+| Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 99.46% |
-| Last Counted Run | QA-20260512-0486 (2026-05-12T09:02:46.154Z) |
-| Latest Recorded Run | QA-20260512-0486 (2026-05-12T09:02:46.154Z) |
+| Last Counted Run | QA-20260512-0487 (2026-05-12T10:53:59.087Z) |
+| Latest Recorded Run | QA-20260512-0487 (2026-05-12T10:53:59.087Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,78 +34,76 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260512-0486 (2026-05-12T09:02:46.154Z)
+Latest run: QA-20260512-0487 (2026-05-12T10:53:59.087Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| AI Security & Reliability Architect | partially-appropriate | yes | Add a separate prompt-injection and malformed-ops-query regression pack when broader AI QA is scheduled. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.136 production QA; effective usage 7.3966 USD, billed usage 0.0000 USD, charge count 6699. |
+| vercel | cli | checked | normal | Current billing period checked after production QA. effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699; no billed usage spike observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-11T09:02:46.154Z -> 2026-05-12T09:02:46.154Z (24h)
-- Runs with observations: 9 recorded / 7 counted
-- Samples: 24
+- Window: 2026-05-11T10:53:59.087Z -> 2026-05-12T10:53:59.087Z (24h)
+- Runs with observations: 8 recorded / 8 counted
+- Samples: 22
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 15 | 4830ms | 20000ms | - | - | 4830ms | 20000ms | QA-20260512-0485 |
+| Supervisor | cloud-run-ai-engine | 13 | 4500ms | 20000ms | - | - | 4500ms | 20000ms | QA-20260512-0485 |
 | Supervisor | vercel-bff-cloud-run | 5 | 4519ms | 12587ms | - | - | 4519ms | 12587ms | QA-20260512-0486 |
-| Supervisor | streaming-ai | 4 | 2629ms | 4716ms | - | - | 2629ms | 4716ms | QA-20260512-0483 |
+| Supervisor | streaming-ai | 3 | 2681ms | 4716ms | - | - | 2681ms | 4716ms | QA-20260512-0483 |
+| Cloud Run AI | groq | 1 | 1074ms | 1074ms | - | - | 1074ms | 1074ms | QA-20260512-0487 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-11T09:02:46.154Z -> 2026-05-12T09:02:46.154Z (24h)
-- Runs with observations: 9 recorded / 7 counted
-- Samples: 18
-- Drift rate: 55.56%
+- Window: 2026-05-11T10:53:59.087Z -> 2026-05-12T10:53:59.087Z (24h)
+- Runs with observations: 8 recorded / 8 counted
+- Samples: 15
+- Drift rate: 46.67%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
 | mixed streaming/job path | single-agent | 1 | 100% | 20000ms | 20000ms | QA-20260512-0481 |
 | /api/ai/supervisor/stream | multi-agent | 1 | 0% | 15964ms | 15964ms | QA-20260512-0485 |
 | /api/ai/supervisor/stream/v2 | multi-agent | 4 | 0% | 4888ms | 12587ms | QA-20260512-0486 |
-| /api/ai/jobs | single-agent | 2 | 100% | 6976ms | 11571ms | QA-20260511-0477 |
-| /api/ai/supervisor/stream/v2 | single-agent | 3 | 100% | 2996ms | 4716ms | QA-20260512-0483 |
-| /api/ai/jobs/[id]/stream | single-agent | 6 | 50% | 2637ms | 3427ms | QA-20260512-0484 |
-| /api/ai/nlq/extract-entities | deterministic | 1 | 100% | 738ms | 738ms | QA-20260511-0477 |
+| /api/ai/supervisor/stream/v2 | single-agent | 2 | 100% | 3258ms | 4716ms | QA-20260512-0483 |
+| /api/ai/jobs/[id]/stream | single-agent | 7 | 57.14% | 2260ms | 3427ms | QA-20260512-0487 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB / SHA 4fc66e54
-- Coverage Packs: core-routes-smoke, ai-core, security-pack
-- Covered Surfaces: GitLab main validate pipeline 2518523204 success, GitLab tag deploy pipeline 2518533893 success, Vercel production /api/version 8.11.136, Cloud Run /health 8.11.136, Vercel guest-auth /api/ai/supervisor/stream/v2 standard conversational QA, QC/QA persona semantic metric_peak evidence query, security vulnerability investigator read-only anomaly evidence query, semanticQueryTrace propagation through data-done metadata
-- Skipped Surfaces: Playwright MCP browser UI rendering, Visible Korean evidence label text in UI, Mobile viewport matrix, Reporter/Analyst advanced surfaces, Cloud Run authenticated /monitoring admin UI
+- Deployment: 5yUzn2ACWhh5rtCb6q3ea4PHcHo4 / SHA 7825ff30
+- Coverage Packs: ai-core
+- Covered Surfaces: AI assistant sidebar, /api/ai/nlq/extract-entities, /api/ai/jobs, /api/ai/jobs/[id]/stream, Cloud Run AI Engine /jobs/process semantic metadata propagation
+- Skipped Surfaces: Full dashboard broad smoke, Reporter Agent, Anomaly trend tab, Security prompt-injection pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main validate pipeline | [GitLab main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518523204) | implementation commit validate success |
-| general | GitLab v8.11.136 deploy pipeline | [GitLab v8.11.136 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518533893) | tag pipeline success: deploy, deploy_ai_engine, and post-deploy smoke jobs passed |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-b9s0l4xun-skyasus-projects.vercel.app/) | deployment id dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB |
+| general | GitLab tag pipeline v8.11.137 | [GitLab tag pipeline v8.11.137](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518842455) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-ab385meo4-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | v8.11.136 natural-language AI API QA transcript | `reports/qa/evidence/qa-20260512-v811136-natural-language-api-qa.txt` | - |
+| playwright-screenshot | AI sidebar semantic trace pass | `reports/qa/evidence/qa-20260512-v811137-semantic-trace-pass.png` | - |
+| playwright-network | AI semantic trace job-path result | `reports/qa/evidence/qa-20260512-v811137-semantic-trace-result.json` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-security-reliability: AI Security & Reliability Architect (last QA-20260512-0487)
+  next: Add a separate prompt-injection and malformed-ops-query regression pack when broader AI QA is scheduled.
 
 ## Pending Improvements
 
@@ -119,7 +117,7 @@ Latest run: QA-20260512-0486 (2026-05-12T09:02:46.154Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 14
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 15
 
 ### Platform Constraint
 
@@ -164,6 +162,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
   - note: 포트폴리오 운영성 우선 규칙: 실운영 오탐/미탐 주간 자동 리포트는 데모/포트폴리오 범위 밖의 운영 프로세스 자동화이므로 WONT-FIX 유지
+- [P2] ai-adversarial-natural-language-qa-pack: Add QC/security-style natural-language AI regression prompts (seen 1회, last QA-20260512-0487)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-agent-type-metadata: AI Chat 에이전트 타입 메타데이터 표시 개선 (seen 1회, last QA-20260326-0190)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-metric-ranking-memory-path-metadata: Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata (seen 1회, last QA-20260418-0304)
@@ -331,6 +331,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-sdk-v6-root-output-object-migration: Migrate Root App structured output routes to generateText + Output.object (completed 1회, last QA-20260510-0462)
 - ai-sdk-v6-structured-output-doc-alignment: Align active architecture copy with AI SDK v6 structured output best practice (completed 1회, last QA-20260510-0462)
 - ai-security-prompt-injection-smoke-v81197: Prompt-injection smoke does not leak secrets (completed 1회, last QA-20260505-0407)
+- ai-semantic-trace-job-path-v811137: Preserve semanticQueryTrace for production AI job-path monitoring peak answers (completed 1회, last QA-20260512-0487)
 - ai-server-snapshot-artifact-cancellation-v81185: Server snapshot artifact respects cancellation and preserves production rendering (completed 1회, last QA-20260503-0395)
 - ai-server-snapshot-artifact-v81184: Server status snapshot artifact routes and renders in production without LLM/Cloud Run cost path (completed 1회, last QA-20260503-0394)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
@@ -740,6 +741,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260512-0487 | 2026-05-12T10:53:59.087Z | targeted | yes | yes | Vercel Playwright QA - v8.11.137 Semantic Trace Job Path | 8 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260512-0486 | 2026-05-12T09:02:46.154Z | targeted | yes | yes | Vercel API QA - v8.11.136 Natural-Language Semantic Peak Coverage | 14 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0485 | 2026-05-12T07:52:35.206Z | targeted | yes | yes | Vercel API QA - v8.11.135 Multi-Agent Semantic Trace | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0484 | 2026-05-12T03:58:50.223Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.132 | 8 | 2 | 3 | 0 | 0 | 3 |
@@ -759,4 +761,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260511-0470 | 2026-05-11T02:13:17.338Z | targeted | no | no | Local QA - Line Guard Hotspot Buffer Polish | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0469 | 2026-05-11T02:04:07.454Z | targeted | no | no | Local QA - Line Guard Current Hotspots Refactor | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0468 | 2026-05-10T16:02:00.870Z | targeted | no | no | Local QA - AI Assistant Ops Procedure Artifact | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260511-0467 | 2026-05-10T15:20:02.963Z | targeted | no | no | Local QA - AI Assistant General Coding Boundary | 9 | 1 | 0 | 0 | 0 | 0 |

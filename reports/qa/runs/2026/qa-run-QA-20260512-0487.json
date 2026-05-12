@@ -1,0 +1,166 @@
+{
+  "runId": "QA-20260512-0487",
+  "recordedAt": "2026-05-12T10:53:59.087Z",
+  "recordedAtKst": "2026-05-12 19:53:59 KST",
+  "runTitle": "Vercel Playwright QA - v8.11.137 Semantic Trace Job Path",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "5yUzn2ACWhh5rtCb6q3ea4PHcHo4",
+    "deploymentUrl": "https://openmanager-ab385meo4-skyasus-projects.vercel.app",
+    "commitSha": "7825ff303f49425db0dcd9b15a9ac4a2364c4316"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI assistant sidebar",
+    "/api/ai/nlq/extract-entities",
+    "/api/ai/jobs",
+    "/api/ai/jobs/[id]/stream",
+    "Cloud Run AI Engine /jobs/process semantic metadata propagation"
+  ],
+  "skippedSurfaces": [
+    "Full dashboard broad smoke",
+    "Reporter Agent",
+    "Anomaly trend tab",
+    "Security prompt-injection pack"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar monitoring peak query",
+      "agent": "Cloud Run AI",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "assistant metadata processingTime",
+      "latencyMs": 1074,
+      "processingTimeMs": 1074
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar monitoring peak query",
+      "route": "/api/ai/jobs/[id]/stream",
+      "executionMode": "single-agent",
+      "latencyMs": 1,
+      "classification": "drift",
+      "driftReasonCodes": [
+        "execution_path_mismatch",
+        "execution_mode_mismatch"
+      ],
+      "source": "assistant metadata plannerShadow"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The previous regression was reproduced through the production AI job path and verified fixed with persisted semanticQueryTrace metadata.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The natural-language monitoring query returned the expected peak time, load metric, and monitoring peak evidence label.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "This targeted run did not execute the broader QC/security adversarial prompt pack requested for future natural-language QA.",
+      "nextAction": "Add a separate prompt-injection and malformed-ops-query regression pack when broader AI QA is scheduled."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-12T19:48:55+09:00",
+      "summary": "Current billing period checked after production QA. effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699; no billed usage spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar semantic trace pass",
+      "path": "reports/qa/evidence/qa-20260512-v811137-semantic-trace-pass.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "AI semantic trace job-path result",
+      "path": "reports/qa/evidence/qa-20260512-v811137-semantic-trace-result.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-semantic-trace-job-path-v811137",
+      "title": "Preserve semanticQueryTrace for production AI job-path monitoring peak answers",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-adversarial-natural-language-qa-pack",
+      "title": "Add QC/security-style natural-language AI regression prompts",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Production version v8.11.137 was confirmed before the final browser run.",
+    "The final run reloaded the dashboard after deployment, opened the AI assistant, sent the monitoring peak query, and verified the visible label was 모니터링 피크 지표 근거.",
+    "The assistant metadata included semanticQueryTrace selectedCapability=monitoring.metric_peak and selectedEvidenceProvider=monitoring-peak-metric.",
+    "The client POST /api/ai/jobs request still showed only analysisMode and queryAsOfDataSlot metadata in this Playwright capture; acceptance for this fix is based on the persisted job result metadata and visible UI label."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.137",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518842455"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-ab385meo4-skyasus-projects.vercel.app/"
+    }
+  ]
+}

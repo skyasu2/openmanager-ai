@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-12T09:02:46.154Z"
+    "updatedAt": "2026-05-12T10:53:59.087Z"
   },
   "sequence": {
-    "nextRunNumber": 487
+    "nextRunNumber": 488
   },
   "summary": {
-    "totalRecordedRuns": 484,
-    "totalRuns": 386,
+    "totalRecordedRuns": 485,
+    "totalRuns": 387,
     "excludedRuns": 98,
-    "totalChecks": 3418,
-    "totalPassed": 3284,
+    "totalChecks": 3426,
+    "totalPassed": 3292,
     "totalFailed": 124,
     "completionRate": 99.46,
-    "completedItems": 548,
+    "completedItems": 549,
     "pendingItems": 3,
     "deferredItems": 0,
-    "wontFixItems": 22,
+    "wontFixItems": 23,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260512-0486",
-    "lastRecordedAt": "2026-05-12T09:02:46.154Z",
-    "latestRecordedRunId": "QA-20260512-0486",
-    "latestRecordedAt": "2026-05-12T09:02:46.154Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260512-0487",
+    "lastRecordedAt": "2026-05-12T10:53:59.087Z",
+    "latestRecordedRunId": "QA-20260512-0487",
+    "latestRecordedAt": "2026-05-12T10:53:59.087Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13481,6 +13481,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-12T09:02:46.154Z"
+    },
+    "ai-semantic-trace-job-path-v811137": {
+      "id": "ai-semantic-trace-job-path-v811137",
+      "title": "Preserve semanticQueryTrace for production AI job-path monitoring peak answers",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260512-0487",
+      "firstSeenAt": "2026-05-12T10:53:59.087Z",
+      "lastSeenRunId": "QA-20260512-0487",
+      "lastSeenAt": "2026-05-12T10:53:59.087Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-12T10:53:59.087Z"
+    },
+    "ai-adversarial-natural-language-qa-pack": {
+      "id": "ai-adversarial-natural-language-qa-pack",
+      "title": "Add QC/security-style natural-language AI regression prompts",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260512-0487",
+      "firstSeenAt": "2026-05-12T10:53:59.087Z",
+      "lastSeenRunId": "QA-20260512-0487",
+      "lastSeenAt": "2026-05-12T10:53:59.087Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-12T10:53:59.087Z"
     }
   },
   "runs": [
@@ -52851,6 +52899,143 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260512-0487",
+      "recordedAt": "2026-05-12T10:53:59.087Z",
+      "recordedAtKst": "2026-05-12 19:53:59 KST",
+      "title": "Vercel Playwright QA - v8.11.137 Semantic Trace Job Path",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260512-0487.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "5yUzn2ACWhh5rtCb6q3ea4PHcHo4",
+        "deploymentUrl": "https://openmanager-ab385meo4-skyasus-projects.vercel.app",
+        "commitSha": "7825ff303f49425db0dcd9b15a9ac4a2364c4316"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI assistant sidebar",
+        "/api/ai/nlq/extract-entities",
+        "/api/ai/jobs",
+        "/api/ai/jobs/[id]/stream",
+        "Cloud Run AI Engine /jobs/process semantic metadata propagation"
+      ],
+      "skippedSurfaces": [
+        "Full dashboard broad smoke",
+        "Reporter Agent",
+        "Anomaly trend tab",
+        "Security prompt-injection pack"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar monitoring peak query",
+          "agent": "Cloud Run AI",
+          "provider": "groq",
+          "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "assistant metadata processingTime",
+          "latencyMs": 1074,
+          "processingTimeMs": 1074
+        }
+      ],
+      "plannerShadowObservations": [
+        {
+          "surface": "AI sidebar monitoring peak query",
+          "route": "/api/ai/jobs/[id]/stream",
+          "executionMode": "single-agent",
+          "latencyMs": 1,
+          "classification": "drift",
+          "driftReasonCodes": [
+            "execution_path_mismatch",
+            "execution_mode_mismatch"
+          ],
+          "source": "assistant metadata plannerShadow"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previous regression was reproduced through the production AI job path and verified fixed with persisted semanticQueryTrace metadata.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The natural-language monitoring query returned the expected peak time, load metric, and monitoring peak evidence label.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "This targeted run did not execute the broader QC/security adversarial prompt pack requested for future natural-language QA.",
+          "nextAction": "Add a separate prompt-injection and malformed-ops-query regression pack when broader AI QA is scheduled."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-12T19:48:55+09:00",
+          "summary": "Current billing period checked after production QA. effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699; no billed usage spike observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI sidebar semantic trace pass",
+          "path": "reports/qa/evidence/qa-20260512-v811137-semantic-trace-pass.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI semantic trace job-path result",
+          "path": "reports/qa/evidence/qa-20260512-v811137-semantic-trace-result.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.11.137",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518842455"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-ab385meo4-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -52859,16 +53044,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 238,
-      "appropriateCount": 204,
+      "seenCount": 239,
+      "appropriateCount": 205,
       "partialCount": 34,
       "inappropriateCount": 0,
       "improvementNeededCount": 44,
-      "lastRunId": "QA-20260512-0486",
-      "lastSeenAt": "2026-05-12T09:02:46.154Z",
+      "lastRunId": "QA-20260512-0487",
+      "lastSeenAt": "2026-05-12T10:53:59.087Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Standard conversational QA plus QC/QA persona queries validated production stream behavior and semantic evidence metadata.",
+      "lastRationale": "The previous regression was reproduced through the production AI job path and verified fixed with persisted semanticQueryTrace metadata.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -52876,16 +53061,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 114,
-      "appropriateCount": 84,
+      "seenCount": 115,
+      "appropriateCount": 85,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260512-0486",
-      "lastSeenAt": "2026-05-12T09:02:46.154Z",
+      "lastRunId": "QA-20260512-0487",
+      "lastSeenAt": "2026-05-12T10:53:59.087Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Metric peak evidence queries selected monitoring.metric_peak and monitoring-peak-metric using production OTel-backed Cloud Run runtime.",
+      "lastRationale": "The natural-language monitoring query returned the expected peak time, load metric, and monitoring peak evidence label.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -52893,17 +53078,17 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 65,
+      "seenCount": 66,
       "appropriateCount": 48,
-      "partialCount": 17,
+      "partialCount": 18,
       "inappropriateCount": 0,
-      "improvementNeededCount": 16,
-      "lastRunId": "QA-20260512-0486",
-      "lastSeenAt": "2026-05-12T09:02:46.154Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Security-investigator phrasing was handled as read-only monitoring evidence and did not require mutating command output.",
-      "lastNextAction": ""
+      "improvementNeededCount": 17,
+      "lastRunId": "QA-20260512-0487",
+      "lastSeenAt": "2026-05-12T10:53:59.087Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "This targeted run did not execute the broader QC/security adversarial prompt pack requested for future natural-language QA.",
+      "lastNextAction": "Add a separate prompt-injection and malformed-ops-query regression pack when broader AI QA is scheduled."
     },
     "sre-devops": {
       "domainId": "sre-devops",
