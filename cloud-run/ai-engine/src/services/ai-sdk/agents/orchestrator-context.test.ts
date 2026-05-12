@@ -1,10 +1,25 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const {
+  mockAppendAffectedServers,
+  mockAppendAnomalies,
+  mockAppendMetrics,
+  mockAppendRecommendedCommands,
+  mockUpdateSessionContext,
+} = vi.hoisted(() => ({
+  mockAppendAffectedServers: vi.fn(),
+  mockAppendAnomalies: vi.fn(),
+  mockAppendMetrics: vi.fn(),
+  mockAppendRecommendedCommands: vi.fn(),
+  mockUpdateSessionContext: vi.fn(),
+}));
 
 vi.mock('./context-store', () => ({
-  appendAffectedServers: vi.fn(),
-  appendAnomalies: vi.fn(),
-  appendMetrics: vi.fn(),
-  updateSessionContext: vi.fn(),
+  appendAffectedServers: mockAppendAffectedServers,
+  appendAnomalies: mockAppendAnomalies,
+  appendMetrics: mockAppendMetrics,
+  appendRecommendedCommands: mockAppendRecommendedCommands,
+  updateSessionContext: mockUpdateSessionContext,
 }));
 
 vi.mock('./vision-agent', () => ({
@@ -13,7 +28,11 @@ vi.mock('./vision-agent', () => ({
   ),
 }));
 
-import { preFilterQuery } from './orchestrator-context';
+import { preFilterQuery, saveAgentFindingsToContext } from './orchestrator-context';
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe('preFilterQuery', () => {
   it('returns direct response for greetings', () => {
@@ -117,5 +136,97 @@ describe('preFilterQuery', () => {
     expect(result.shouldHandoff).toBe(true);
     expect(result.suggestedAgent).toBeDefined();
     expect(result.confidence).toBe(0.68);
+  });
+});
+
+describe('saveAgentFindingsToContext', () => {
+  it('prefers structured findings over legacy response regex extraction', async () => {
+    const decision = await saveAgentFindingsToContext(
+      'session-structured',
+      'Reporter Agent',
+      '서버: regex-server-01 CPU: 99%',
+      {
+        agentName: 'Reporter Agent',
+        affectedServers: ['web-01'],
+        metrics: [
+          {
+            name: 'cpu',
+            value: 77,
+            unit: '%',
+            server: 'web-01',
+            timeWindow: 'recent',
+          },
+        ],
+        anomalies: [
+          {
+            server: 'web-01',
+            metric: 'cpu',
+            severity: 'critical',
+            summary: 'CPU saturation',
+            value: 97,
+            threshold: 90,
+          },
+        ],
+        recommendations: [
+          {
+            action: 'top -H -p <pid>',
+            safety: 'read_only',
+          },
+        ],
+      }
+    );
+
+    expect(decision).toEqual({
+      findingsSource: 'structured',
+      reasonCodes: ['findings_structured'],
+    });
+    expect(mockAppendAffectedServers).toHaveBeenCalledWith('session-structured', ['web-01']);
+    expect(mockAppendMetrics).toHaveBeenCalledWith(
+      'session-structured',
+      expect.arrayContaining([
+        expect.objectContaining({
+          serverId: 'web-01',
+          serverName: 'web-01',
+          cpu: 77,
+          status: 'warning',
+        }),
+      ])
+    );
+    expect(mockAppendAnomalies).toHaveBeenCalledWith(
+      'session-structured',
+      expect.arrayContaining([
+        expect.objectContaining({
+          serverId: 'web-01',
+          metric: 'cpu',
+          severity: 'critical',
+          description: 'CPU saturation',
+        }),
+      ])
+    );
+    expect(mockAppendRecommendedCommands).toHaveBeenCalledWith(
+      'session-structured',
+      ['top -H -p <pid>']
+    );
+    expect(mockAppendAffectedServers).not.toHaveBeenCalledWith(
+      'session-structured',
+      expect.arrayContaining(['regex-server-01'])
+    );
+  });
+
+  it('uses legacy text regex fallback when structured findings are absent', async () => {
+    const decision = await saveAgentFindingsToContext(
+      'session-legacy',
+      'NLQ Agent',
+      '서버: web-server-01 CPU: 91%'
+    );
+
+    expect(decision).toEqual({
+      findingsSource: 'legacy_text_regex',
+      reasonCodes: ['findings_legacy_regex'],
+    });
+    expect(mockAppendAffectedServers).toHaveBeenCalledWith(
+      'session-legacy',
+      ['web-server-01']
+    );
   });
 });
