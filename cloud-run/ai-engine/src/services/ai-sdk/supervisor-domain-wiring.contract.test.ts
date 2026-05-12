@@ -524,6 +524,58 @@ describe('supervisor domain wiring contract', () => {
     );
   });
 
+  it('short-circuits composite peak-advice evidence to a deterministic read-only answer', async () => {
+    const runtimeHost = createMonitoringAssistantRuntimeHost();
+    const events = [];
+
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content: '최근 하루 load 피크 시간과 대응 방법 알려줘',
+        },
+      ],
+      sessionId: 'session-peak-advice-safety',
+      enableRAG: false,
+      enableWebSearch: false,
+      runtimeHost,
+    })) {
+      events.push(event);
+    }
+
+    const streamedText = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+    const doneEvent = events.find((event) => event.type === 'done');
+
+    expect(mockStreamText).not.toHaveBeenCalled();
+    expect(mockExecuteMultiAgentStream).not.toHaveBeenCalled();
+    expect(streamedText).toContain('최고 시간대');
+    expect(streamedText).toContain('읽기 전용 확인 항목');
+    expect(streamedText).not.toMatch(
+      /apt(?:-get)?\s+install|systemctl\s+restart/i
+    );
+    expect(doneEvent).toMatchObject({
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: ['monitoring-peak-metric'],
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'monitoring-peak-metric',
+          semanticQueryTrace: {
+            selectedCapability: 'monitoring.metric_peak',
+            selectedEvidenceProvider: 'monitoring-peak-metric',
+            evidenceAvailable: true,
+            clarificationRequired: false,
+          },
+        },
+      },
+    });
+  });
+
   it('keeps monitoring compatibility tools available through the default monitoring domain pack', () => {
     const host = createMonitoringAssistantRuntimeHost();
     const context: AssistantRequestContext = {
