@@ -107,6 +107,15 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('직전 분석 대상을 참조하는 후속 필터 질의는 clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+          lowConfidence
+        )
+      ).toBeNull();
+    });
+
     it('최신 외부 문서/버전 질의는 서버 scope clarification을 스킵', () => {
       expect(
         generateClarification(
