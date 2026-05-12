@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-12T03:58:50.223Z"
+    "updatedAt": "2026-05-12T07:52:35.206Z"
   },
   "sequence": {
-    "nextRunNumber": 485
+    "nextRunNumber": 486
   },
   "summary": {
-    "totalRecordedRuns": 482,
-    "totalRuns": 384,
+    "totalRecordedRuns": 483,
+    "totalRuns": 385,
     "excludedRuns": 98,
-    "totalChecks": 3395,
-    "totalPassed": 3261,
+    "totalChecks": 3404,
+    "totalPassed": 3270,
     "totalFailed": 124,
     "completionRate": 99.45,
-    "completedItems": 546,
+    "completedItems": 547,
     "pendingItems": 3,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260512-0484",
-    "lastRecordedAt": "2026-05-12T03:58:50.223Z",
-    "latestRecordedRunId": "QA-20260512-0484",
-    "latestRecordedAt": "2026-05-12T03:58:50.223Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260512-0485",
+    "lastRecordedAt": "2026-05-12T07:52:35.206Z",
+    "latestRecordedRunId": "QA-20260512-0485",
+    "latestRecordedAt": "2026-05-12T07:52:35.206Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13433,6 +13433,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-12T03:58:50.223Z"
+    },
+    "ai-assistant-multi-agent-semantic-trace-v811135": {
+      "id": "ai-assistant-multi-agent-semantic-trace-v811135",
+      "title": "Multi-agent supervisor stream preserves semanticQueryTrace for monitoring metric_peak evidence",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260512-0485",
+      "firstSeenAt": "2026-05-12T07:52:35.206Z",
+      "lastSeenRunId": "QA-20260512-0485",
+      "lastSeenAt": "2026-05-12T07:52:35.206Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Vercel guest-auth stream and Cloud Run direct stream both returned resolvedMode=multi with semanticQueryTrace present, selectedCapability=monitoring.metric_peak, selectedEvidenceProvider=monitoring-peak-metric.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-12T07:52:35.206Z"
     }
   },
   "runs": [
@@ -52433,6 +52457,172 @@
       "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260512-0485",
+      "recordedAt": "2026-05-12T07:52:35.206Z",
+      "recordedAtKst": "2026-05-12 16:52:35 KST",
+      "title": "Vercel API QA - v8.11.135 Multi-Agent Semantic Trace",
+      "owner": "codex",
+      "source": "api-direct",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260512-0485.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk",
+        "deploymentUrl": "https://openmanager-pl9llq6zm-skyasus-projects.vercel.app",
+        "commitSha": "cca5c46985b0181f829354473e746d61b8b01571"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag deploy pipeline v8.11.135 success",
+        "Vercel production /api/version reports 8.11.135",
+        "Cloud Run direct /api/ai/supervisor/stream multi-agent done metadata",
+        "Vercel guest-auth /api/ai/supervisor/stream/v2 UIMessageStream data-done metadata",
+        "semanticQueryTrace preserved for monitoring.metric_peak evidence",
+        "Vercel usage guard after production deployment"
+      ],
+      "skippedSurfaces": [
+        "Playwright MCP browser rendering",
+        "Visible Korean evidence label text in UI",
+        "Full conversational five-question UI QA",
+        "Mobile viewport matrix",
+        "Reporter/Analyst advanced surfaces",
+        "Cloud Run admin monitoring UI"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Cloud Run multi-agent semantic trace stream",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream",
+          "source": "direct Node fetch wall clock",
+          "latencyMs": 15964,
+          "processingTimeMs": 15964
+        },
+        {
+          "surface": "Vercel guest-auth multi-agent semantic trace stream",
+          "agent": "Supervisor",
+          "provider": "vercel-bff-cloud-run",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "direct Node fetch wall clock",
+          "latencyMs": 12587,
+          "processingTimeMs": 12587
+        }
+      ],
+      "plannerShadowObservations": [
+        {
+          "surface": "Cloud Run monitoring.metric_peak semantic frame",
+          "route": "/api/ai/supervisor/stream",
+          "executionMode": "multi-agent",
+          "latencyMs": 15964,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "done metadata resolvedMode=multi; semanticQueryTrace present"
+        },
+        {
+          "surface": "Vercel monitoring.metric_peak semantic frame",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "multi-agent",
+          "latencyMs": 12587,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "UIMessageStream data-done metadata resolvedMode=multi; semanticQueryTrace present"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The targeted AI stream contract was validated through both Cloud Run direct and Vercel BFF paths.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The GitLab release pipeline deployed frontend and AI Engine successfully and production version metadata matches the release commit.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The modified metadata contract can be tested without browser automation by asserting data-done/done stream metadata over HTTP.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The monitoring.metric_peak semantic frame selected monitoring-peak-metric evidence and preserved semanticQueryTrace in the emitted metadata.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-12T16:44:54+09:00",
+          "summary": "Current billing period reviewed after v8.11.135 production QA; effective usage 7.3966 USD, billed usage 0.0000 USD, charge count 6699.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "v8.11.135 semantic trace API smoke transcript",
+          "path": "reports/qa/evidence/qa-20260512-v811135-semantic-trace-api-smoke.txt",
+          "note": "Direct HTTP/API evidence without Playwright MCP; verifies stream metadata consumed by UI, not visual rendering."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.135 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518187637",
+          "note": "tag pipeline success: deploy, deploy_ai_engine, and post-deploy smoke jobs passed"
+        },
+        {
+          "type": "general",
+          "label": "Production alias",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "/api/version returned 8.11.135"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-pl9llq6zm-skyasus-projects.vercel.app/",
+          "note": "deployment id dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -52441,17 +52631,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 236,
-      "appropriateCount": 202,
+      "seenCount": 237,
+      "appropriateCount": 203,
       "partialCount": 34,
       "inappropriateCount": 0,
       "improvementNeededCount": 44,
-      "lastRunId": "QA-20260512-0484",
-      "lastSeenAt": "2026-05-12T03:58:50.223Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Standard conversational QA mostly passed and previous peak evidence drift is fixed, but two production prompts still fail: composite advice includes unsupported mutating commands, and a whole-fleet load1 phrasing returns an empty-summary fallback.",
-      "lastNextAction": "Add a safety envelope for composite advice answers and preserve whole_fleet metric_peak intent for explicit no-server load1 phrasings."
+      "lastRunId": "QA-20260512-0485",
+      "lastSeenAt": "2026-05-12T07:52:35.206Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The targeted AI stream contract was validated through both Cloud Run direct and Vercel BFF paths.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -52492,16 +52682,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 167,
-      "appropriateCount": 150,
+      "seenCount": 168,
+      "appropriateCount": 151,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260512-0484",
-      "lastSeenAt": "2026-05-12T03:58:50.223Z",
+      "lastRunId": "QA-20260512-0485",
+      "lastSeenAt": "2026-05-12T07:52:35.206Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.11.132 is deployed on Vercel and Cloud Run, /api/version matches the release tag, the tag pipeline succeeded, and Vercel usage remains billed 0.0000 USD.",
+      "lastRationale": "The GitLab release pipeline deployed frontend and AI Engine successfully and production version metadata matches the release commit.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -52509,16 +52699,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 204,
-      "appropriateCount": 186,
+      "seenCount": 205,
+      "appropriateCount": 187,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260512-0484",
-      "lastSeenAt": "2026-05-12T03:58:50.223Z",
+      "lastRunId": "QA-20260512-0485",
+      "lastSeenAt": "2026-05-12T07:52:35.206Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run used Playwright MCP through the real UI path, recorded console/network/runtime evidence, and kept the live LLM prompt set targeted to the known risk.",
+      "lastRationale": "The modified metadata contract can be tested without browser automation by asserting data-done/done stream metadata over HTTP.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -52526,17 +52716,17 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 64,
-      "appropriateCount": 43,
+      "seenCount": 65,
+      "appropriateCount": 44,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260512-0484",
-      "lastSeenAt": "2026-05-12T03:58:50.223Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The deterministic 24h peak load evidence is correct for canonical phrasing, but the explicit whole-fleet load1 phrasing did not resolve to the same evidence and returned an empty summary.",
-      "lastNextAction": "Normalize whole_fleet + load1 + peak/spike + since/yesterday phrasings into the same metric_peak frame before clarification."
+      "lastRunId": "QA-20260512-0485",
+      "lastSeenAt": "2026-05-12T07:52:35.206Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The monitoring.metric_peak semantic frame selected monitoring-peak-metric evidence and preserved semanticQueryTrace in the emitted metadata.",
+      "lastNextAction": ""
     },
     "infra-reliability": {
       "domainId": "infra-reliability",

@@ -1,0 +1,78 @@
+OpenManager QA evidence - v8.11.135 semantic trace API smoke
+Recorded: 2026-05-12T16:50:05+09:00
+
+Scope
+- Recent fix: preserve domainEvidence.metadata.semanticQueryTrace in multi-agent supervisor stream done metadata.
+- Method: direct HTTP/API smoke without Playwright MCP.
+- This verifies the stream metadata consumed by the UI, not visual rendering of the label text.
+
+Deployment
+- GitLab tag: v8.11.135
+- Release commit: cca5c46985b0181f829354473e746d61b8b01571
+- GitLab tag deploy pipeline: 2518187637 success
+- Pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518187637
+- Vercel production deployment: dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk
+- Vercel deployment URL: https://openmanager-pl9llq6zm-skyasus-projects.vercel.app
+- Production alias: https://openmanager-ai.vercel.app
+- /api/version: version 8.11.135, releaseTag v8.11.135, commit cca5c46985b0181f829354473e746d61b8b01571
+
+Cloud Run direct stream smoke
+- Route: /api/ai/supervisor/stream
+- Auth: X-API-Key using CLOUD_RUN_API_SECRET
+- Query forced auto multi-agent path with monitoring.metric_peak semantic frame.
+- HTTP status: 200
+- Event count: 346
+- doneFound: true
+- success: true
+- resolvedMode: multi
+- modeSelectionSource: auto_complexity
+- selectedCapability: monitoring.metric_peak
+- selectedEvidenceProvider: monitoring-peak-metric
+- evidenceAvailable: true
+- reasonCodes:
+  - semantic_frame_forwarded_for_multi_smoke
+  - semantic_frame_evidence_validated
+- semanticQueryTrace present in done metadata: true
+- Tools called:
+  - detectAnomaliesAllServers
+  - getServerMetricsAdvanced
+  - getServerMetricsAdvanced
+  - detectAnomalies
+  - detectAnomalies
+- Wall-clock latency observed by shell: 15964 ms
+
+Vercel API guest-auth stream smoke
+- CSRF route: GET /api/csrf-token
+- Guest auth route: POST /api/auth/guest-login
+- Stream route: POST /api/ai/supervisor/stream/v2
+- Auth: guest login cookies from production API flow
+- Query forced auto multi-agent path with monitoring.metric_peak semantic frame.
+- CSRF status: 200
+- login status: 200
+- stream status: 200
+- UIMessageStream data-done chunk parsed: true
+- chunkCount: 136
+- success: true
+- resolvedMode: multi
+- modeSelectionSource: auto_complexity
+- selectedCapability: monitoring.metric_peak
+- selectedEvidenceProvider: monitoring-peak-metric
+- evidenceAvailable: true
+- reasonCodes:
+  - semantic_frame_forwarded_for_vercel_guest_api_smoke
+  - semantic_frame_evidence_validated
+- semanticQueryTrace present in data-done metadata: true
+- Wall-clock latency observed by shell: 12587 ms
+
+Usage guard
+- Command: npm run check:usage:vercel
+- Status: pass
+- Current period: 2026-05-01T07:00:00.000Z..2026-05-12T07:44:54.000Z
+- Effective usage: 7.3966 USD
+- Billed usage: 0.0000 USD
+- Charge count: 6699
+
+Limitations
+- Playwright MCP/browser UI rendering was not run.
+- The actual visible Korean evidence label was not visually inspected in the app.
+- Full conversational five-question UI QA, mobile viewport matrix, Reporter/Analyst advanced surfaces, and Cloud Run admin monitoring UI were not repeated.

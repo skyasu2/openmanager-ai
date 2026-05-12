@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-12 12:58:52 KST
+> Generated at: 2026-05-12 16:52:35 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 482 |
-| Total Runs (Counted) | 384 |
+| Total Recorded Runs | 483 |
+| Total Runs (Counted) | 385 |
 | Non-counted Runs | 98 |
-| Total Checks | 3395 |
-| Passed | 3261 |
+| Total Checks | 3404 |
+| Passed | 3270 |
 | Failed | 124 |
-| Completed Items | 546 |
+| Completed Items | 547 |
 | Pending Items | 3 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 3 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 99.45% |
-| Last Counted Run | QA-20260512-0484 (2026-05-12T03:58:50.223Z) |
-| Latest Recorded Run | QA-20260512-0484 (2026-05-12T03:58:50.223Z) |
+| Last Counted Run | QA-20260512-0485 (2026-05-12T07:52:35.206Z) |
+| Latest Recorded Run | QA-20260512-0485 (2026-05-12T07:52:35.206Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,48 +34,48 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260512-0484 (2026-05-12T03:58:50.223Z)
+Latest run: QA-20260512-0485 (2026-05-12T07:52:35.206Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Add a safety envelope for composite advice answers and preserve whole_fleet metric_peak intent for explicit no-server load1 phrasings. |
-| AI Security & Reliability Architect | partially-appropriate | yes | Apply the read-only/mutating-command guard after any evidence-based final answer generation, not only in the command catalog path. |
-| Data Quality & Metrics Analyst | partially-appropriate | yes | Normalize whole_fleet + load1 + peak/spike + since/yesterday phrasings into the same metric_peak frame before clarification. |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed before v8.11.132 targeted semantic routing QA; effective 6.7213 USD, billed 0.0000 USD, chargeCount 6090. |
+| vercel | cli | checked | normal | Current billing period reviewed after v8.11.135 production QA; effective usage 7.3966 USD, billed usage 0.0000 USD, charge count 6699. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-11T03:58:50.223Z -> 2026-05-12T03:58:50.223Z (24h)
+- Window: 2026-05-11T07:52:35.206Z -> 2026-05-12T07:52:35.206Z (24h)
 - Runs with observations: 8 recorded / 6 counted
-- Samples: 22
+- Samples: 20
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 18 | 3531ms | 20000ms | - | - | 3531ms | 20000ms | QA-20260512-0484 |
+| Supervisor | cloud-run-ai-engine | 15 | 4830ms | 20000ms | - | - | 4830ms | 20000ms | QA-20260512-0485 |
+| Supervisor | vercel-bff-cloud-run | 1 | 12587ms | 12587ms | - | - | 12587ms | 12587ms | QA-20260512-0485 |
 | Supervisor | streaming-ai | 4 | 2629ms | 4716ms | - | - | 2629ms | 4716ms | QA-20260512-0483 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-11T03:58:50.223Z -> 2026-05-12T03:58:50.223Z (24h)
+- Window: 2026-05-11T07:52:35.206Z -> 2026-05-12T07:52:35.206Z (24h)
 - Runs with observations: 8 recorded / 6 counted
-- Samples: 16
-- Drift rate: 75%
+- Samples: 15
+- Drift rate: 66.67%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
 | mixed streaming/job path | single-agent | 1 | 100% | 20000ms | 20000ms | QA-20260512-0481 |
-| /api/ai/jobs | single-agent | 3 | 100% | 5137ms | 11571ms | QA-20260511-0477 |
+| /api/ai/supervisor/stream | multi-agent | 1 | 0% | 15964ms | 15964ms | QA-20260512-0485 |
+| /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 12587ms | 12587ms | QA-20260512-0485 |
+| /api/ai/jobs | single-agent | 2 | 100% | 6976ms | 11571ms | QA-20260511-0477 |
 | /api/ai/supervisor/stream/v2 | single-agent | 3 | 100% | 2996ms | 4716ms | QA-20260512-0483 |
 | /api/ai/jobs/[id]/stream | single-agent | 6 | 50% | 2637ms | 3427ms | QA-20260512-0484 |
-| /api/ai/supervisor/stream/v2 | deterministic | 1 | 0% | 2708ms | 2708ms | QA-20260511-0475 |
-| generic conversation response | single-agent | 1 | 100% | 1465ms | 1465ms | QA-20260511-0475 |
 | /api/ai/nlq/extract-entities | deterministic | 1 | 100% | 738ms | 738ms | QA-20260511-0477 |
 
 ## Coverage (Latest Run)
@@ -83,36 +83,29 @@ Latest run: QA-20260512-0484 (2026-05-12T03:58:50.223Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_4abnPiNGVtn9Wj5ZYG9xton3DLc6 / SHA d7ee0027
+- Deployment: dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk / SHA cca5c469
 - Coverage Packs: ai-core
-- Covered Surfaces: Vercel production deployment dpl_4abnPiNGVtn9Wj5ZYG9xton3DLc6 is Ready and aliased to https://openmanager-ai.vercel.app, /api/version reports v8.11.132, commit d7ee00270cbf8f301950d390b7122bee8fd3b6a5, release tag v8.11.132, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517604435, Dashboard guest flow opened the AI sidebar with AI engine status Ready, Conversational AI QA Q1 overall status returned 18 total servers, 17 normal, 1 warning, and api-was-dc1-01 CPU 80%, Conversational AI QA Q2 web-server-01 detail returned CPU 23%, memory 41%, disk 29%, Conversational AI QA Q3 previous peak-load failure returned deterministic load1 24h peak at 2026-05-12 03:50 with value 16.58 and top servers, Conversational AI QA Q4 initially over-clarified because no server was named, but selecting whole-fleet returned no urgent server and one warning server api-was-dc1-01, Conversational AI QA Q5 context follow-up returned no network > 70% servers, Previous composite peak-plus-advice prompt now includes deterministic peak evidence, closing the missing-evidence portion of the v8.11.131 failure, Advice-only load phrasing now returns read-only diagnostic commands and explicitly warns that restart/delete/sysctl changes require approved procedure, Browser console reported 0 warnings and 0 errors; AI API network calls returned 200/201
-- Skipped Surfaces: Core route pack beyond landing/dashboard AI sidebar was not repeated; this run targeted AI semantic routing after v8.11.132 deploy, Reporter Agent and Analyst Agent advanced surfaces, Mobile viewport and visual regression matrix, Cloud Run admin observability endpoints beyond deployment health already covered by tag pipeline smoke
+- Covered Surfaces: GitLab tag deploy pipeline v8.11.135 success, Vercel production /api/version reports 8.11.135, Cloud Run direct /api/ai/supervisor/stream multi-agent done metadata, Vercel guest-auth /api/ai/supervisor/stream/v2 UIMessageStream data-done metadata, semanticQueryTrace preserved for monitoring.metric_peak evidence, Vercel usage guard after production deployment
+- Skipped Surfaces: Playwright MCP browser rendering, Visible Korean evidence label text in UI, Full conversational five-question UI QA, Mobile viewport matrix, Reporter/Analyst advanced surfaces, Cloud Run admin monitoring UI
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| general | v8.11.132 release pipeline | [v8.11.132 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2517604435) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-fnkic8yvt-skyasus-projects.vercel.app/) | - |
+| general | GitLab v8.11.135 deploy pipeline | [GitLab v8.11.135 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518187637) | tag pipeline success: deploy, deploy_ai_engine, and post-deploy smoke jobs passed |
+| general | Production alias | [Production alias](https://openmanager-ai.vercel.app/) | /api/version returned 8.11.135 |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-pl9llq6zm-skyasus-projects.vercel.app/) | deployment id dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | v8.11.132 AI semantic routing network requests | `reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-network.txt` | - |
-| playwright-network | v8.11.132 AI semantic routing runtime transcript and resource timings | `reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-runtime.json` | - |
-| playwright-console | v8.11.132 AI semantic routing console messages | `reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-console.txt` | - |
-| playwright-screenshot | v8.11.132 AI sidebar final failure screenshot | `reports/qa/evidence/qa-20260512-v811132-ai-semantic-routing-dialog.png` | - |
+| playwright-network | v8.11.135 semantic trace API smoke transcript | `reports/qa/evidence/qa-20260512-v811135-semantic-trace-api-smoke.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260512-0484)
-  next: Add a safety envelope for composite advice answers and preserve whole_fleet metric_peak intent for explicit no-server load1 phrasings.
 - ai-security-reliability: AI Security & Reliability Architect (last QA-20260512-0484)
   next: Apply the read-only/mutating-command guard after any evidence-based final answer generation, not only in the command catalog path.
-- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260512-0484)
-  next: Normalize whole_fleet + load1 + peak/spike + since/yesterday phrasings into the same metric_peak frame before clarification.
 
 ## Pending Improvements
 
@@ -220,6 +213,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-load-advice-safety-v811131: Load advice responses should not propose mutating commands without a safety envelope for advice-only prompts (completed 1회, last QA-20260512-0484)
 - ai-assistant-load-fragile-phrasing-v811131: Previously failing Korean peak-load phrasings stay grounded to load1 24h whole-fleet evidence on v8.11.131 (completed 1회, last QA-20260512-0483)
 - ai-assistant-load-natural-language-metric-drift-v811128: AI Assistant natural load phrasing stays on load1/24h whole-fleet peak evidence after v8.11.129 semantic parser fix (completed 1회, last QA-20260512-0482)
+- ai-assistant-multi-agent-semantic-trace-v811135: Multi-agent supervisor stream preserves semanticQueryTrace for monitoring metric_peak evidence (completed 1회, last QA-20260512-0485)
 - ai-assistant-ops-procedure-artifact: Structure operational scripts, alert rules, and runbooks as ops-procedure artifacts (completed 1회, last QA-20260511-0468)
 - ai-assistant-peak-load-composite-routing-v811131: Composite load peak plus response-guidance prompt should still use deterministic peak evidence (completed 1회, last QA-20260512-0484)
 - ai-assistant-real-chat-e2e-v81136: AI assistant Playwright MCP real chat QA on Vercel v8.11.36 (completed 1회, last QA-20260427-0350)
@@ -745,6 +739,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260512-0485 | 2026-05-12T07:52:35.206Z | targeted | yes | yes | Vercel API QA - v8.11.135 Multi-Agent Semantic Trace | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0484 | 2026-05-12T03:58:50.223Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.132 | 8 | 2 | 3 | 0 | 0 | 3 |
 | QA-20260512-0483 | 2026-05-12T02:07:18.555Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.131 | 8 | 1 | 2 | 0 | 0 | 2 |
 | QA-20260512-0482 | 2026-05-11T23:30:16.424Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query closure on v8.11.129 | 2 | 1 | 0 | 0 | 0 | 0 |
@@ -764,4 +759,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260511-0468 | 2026-05-10T16:02:00.870Z | targeted | no | no | Local QA - AI Assistant Ops Procedure Artifact | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0467 | 2026-05-10T15:20:02.963Z | targeted | no | no | Local QA - AI Assistant General Coding Boundary | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260510-0466 | 2026-05-10T12:53:07.527Z | targeted | yes | yes | Vercel Production Targeted QA - AI Chat UX v8.11.124 | 11 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260510-0465 | 2026-05-10T11:58:02.942Z | targeted | no | no | Local Playwright Targeted QA - AI Chat UX Completion | 8 | 0 | 0 | 0 | 0 | 0 |

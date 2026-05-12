@@ -1,0 +1,180 @@
+{
+  "runId": "QA-20260512-0485",
+  "recordedAt": "2026-05-12T07:52:35.206Z",
+  "recordedAtKst": "2026-05-12 16:52:35 KST",
+  "runTitle": "Vercel API QA - v8.11.135 Multi-Agent Semantic Trace",
+  "owner": "codex",
+  "source": "api-direct",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk",
+    "deploymentUrl": "https://openmanager-pl9llq6zm-skyasus-projects.vercel.app",
+    "commitSha": "cca5c46985b0181f829354473e746d61b8b01571"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "GitLab tag deploy pipeline v8.11.135 success",
+    "Vercel production /api/version reports 8.11.135",
+    "Cloud Run direct /api/ai/supervisor/stream multi-agent done metadata",
+    "Vercel guest-auth /api/ai/supervisor/stream/v2 UIMessageStream data-done metadata",
+    "semanticQueryTrace preserved for monitoring.metric_peak evidence",
+    "Vercel usage guard after production deployment"
+  ],
+  "skippedSurfaces": [
+    "Playwright MCP browser rendering",
+    "Visible Korean evidence label text in UI",
+    "Full conversational five-question UI QA",
+    "Mobile viewport matrix",
+    "Reporter/Analyst advanced surfaces",
+    "Cloud Run admin monitoring UI"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Cloud Run multi-agent semantic trace stream",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 15964,
+      "processingTimeMs": 15964
+    },
+    {
+      "surface": "Vercel guest-auth multi-agent semantic trace stream",
+      "agent": "Supervisor",
+      "provider": "vercel-bff-cloud-run",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 12587,
+      "processingTimeMs": 12587
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "Cloud Run monitoring.metric_peak semantic frame",
+      "route": "/api/ai/supervisor/stream",
+      "executionMode": "multi-agent",
+      "latencyMs": 15964,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "done metadata resolvedMode=multi; semanticQueryTrace present"
+    },
+    {
+      "surface": "Vercel monitoring.metric_peak semantic frame",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "multi-agent",
+      "latencyMs": 12587,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "UIMessageStream data-done metadata resolvedMode=multi; semanticQueryTrace present"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The targeted AI stream contract was validated through both Cloud Run direct and Vercel BFF paths.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The GitLab release pipeline deployed frontend and AI Engine successfully and production version metadata matches the release commit.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The modified metadata contract can be tested without browser automation by asserting data-done/done stream metadata over HTTP.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The monitoring.metric_peak semantic frame selected monitoring-peak-metric evidence and preserved semanticQueryTrace in the emitted metadata.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-12T16:44:54+09:00",
+      "summary": "Current billing period reviewed after v8.11.135 production QA; effective usage 7.3966 USD, billed usage 0.0000 USD, charge count 6699.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "v8.11.135 semantic trace API smoke transcript",
+      "path": "reports/qa/evidence/qa-20260512-v811135-semantic-trace-api-smoke.txt",
+      "note": "Direct HTTP/API evidence without Playwright MCP; verifies stream metadata consumed by UI, not visual rendering."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-multi-agent-semantic-trace-v811135",
+      "title": "Multi-agent supervisor stream preserves semanticQueryTrace for monitoring metric_peak evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Vercel guest-auth stream and Cloud Run direct stream both returned resolvedMode=multi with semanticQueryTrace present, selectedCapability=monitoring.metric_peak, selectedEvidenceProvider=monitoring-peak-metric.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "No Playwright MCP was used for this targeted retest.",
+    "This run validates the backend/BFF stream metadata required for the UI evidence label, but does not visually confirm the rendered Korean label text.",
+    "mode audit: semantic monitoring.metric_peak frame forced auto-resolved-multi in both direct Cloud Run and Vercel guest-auth API paths; execution mode matched expected multi-agent."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.135 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518187637",
+      "note": "tag pipeline success: deploy, deploy_ai_engine, and post-deploy smoke jobs passed"
+    },
+    {
+      "type": "general",
+      "label": "Production alias",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "/api/version returned 8.11.135"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-pl9llq6zm-skyasus-projects.vercel.app/",
+      "note": "deployment id dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk"
+    }
+  ]
+}
