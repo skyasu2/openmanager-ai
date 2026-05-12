@@ -243,23 +243,23 @@ export const getServerMetricsAdvanced = tool({
               : 'cpu';
 
         const rankingAnswer = isCurrentRankingQuery
-          ? `[응답 가이드] ${getMetricLabel(rankingMetric)} 상위 ${filteredResults.length}대는 ` +
+          ? `${getMetricLabel(rankingMetric)} 상위 ${filteredResults.length}대는 ` +
             filteredResults
               .map((server, index) => {
                 const metricValue = server.metrics[rankingMetric] ?? 0;
                 return `${index + 1}. ${server.name} ${metricValue}%`;
               })
               .join(', ') +
-            '입니다. 순서를 바꾸지 말고 그대로 사용자에게 전달하세요.'
+            '입니다.'
           : null;
 
         const interpretation = rankingAnswer ||
           (Object.keys(globalSummary).length > 0
-            ? `[응답 가이드] ${timeRangeKr} 전체 ${filteredResults.length}대 서버 집계: ` +
+            ? `${timeRangeKr} 전체 ${filteredResults.length}대 서버 집계: ` +
               Object.entries(globalSummary)
                 .map(([k, v]) => `${k}=${v}%`)
                 .join(', ') +
-              '. 이 값을 사용자에게 전달하세요.'
+              '.'
             : null);
 
         return {

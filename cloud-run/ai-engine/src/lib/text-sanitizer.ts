@@ -188,6 +188,23 @@ export function sanitizeChineseCharacters(text: string): string {
 }
 
 /**
+ * Remove internal prompt/tool scaffolds before a response crosses the public
+ * assistant boundary. This keeps tool-facing guidance from becoming user copy.
+ */
+export function sanitizeUserFacingResponse(text: string): string {
+  if (!text) {
+    return text;
+  }
+
+  return sanitizeChineseCharacters(text)
+    .replace(/\[응답\s*가이드\]\s*/g, '')
+    .replace(/\s*순서를\s*바꾸지\s*말고\s*그대로\s*사용자에게\s*전달하세요\.?/g, '')
+    .replace(/\s*이\s*값을\s*사용자에게\s*전달하세요\.?/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+/**
  * Sanitize a JSON object's string values recursively
  * Useful for API responses that have nested text fields
  */

@@ -95,6 +95,13 @@ function getAgentResponsePolicy(agentName: string): AgentResponsePolicy {
   return AGENT_RESPONSE_POLICIES[agentName] ?? DEFAULT_POLICY;
 }
 
+function isConciseGroundedMetricAnswer(text: string): boolean {
+  return (
+    /\b(?:lb|web|api|was|db|cache|storage|backup|monitoring|worker)-[a-z0-9-]+/i.test(text) &&
+    /\d{1,3}(?:\.\d+)?%/.test(text)
+  );
+}
+
 // Advisor Agent uses Mistral + multiple tool calls — observed 35~86s in production.
 // Separate thresholds prevent false VERY_SLOW flags for structurally slow agents.
 const ADVISOR_LATENCY_THRESHOLDS = { fast: 8_000, normal: 20_000, slow: 40_000 };
@@ -138,7 +145,10 @@ export function evaluateAgentResponseQuality(
 
   if (responseChars === 0) {
     qualityFlags.push('EMPTY_RESPONSE');
-  } else if (responseChars < policy.minChars) {
+  } else if (
+    responseChars < policy.minChars &&
+    !isConciseGroundedMetricAnswer(normalized)
+  ) {
     qualityFlags.push('TOO_SHORT');
   }
 

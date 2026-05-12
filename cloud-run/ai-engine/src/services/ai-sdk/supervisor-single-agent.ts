@@ -37,6 +37,8 @@ import {
 import { getCircuitBreaker, CircuitOpenError } from '../resilience/circuit-breaker';
 import { extractToolResultOutput, extractRagSources, type RagSource } from '../../lib/ai-sdk-utils';
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
+import { getOffDomainGuardrail } from '../../lib/off-domain-guard';
+import { sanitizeUserFacingResponse } from '../../lib/text-sanitizer';
 
 import {
   SupervisorRequest,
@@ -74,6 +76,8 @@ import {
   buildInternalImplementationPathRefusal,
   shouldRefuseInternalImplementationPathRequest,
 } from './internal-disclosure-policy';
+import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
+import type { CollectedToolResult } from './agents/orchestrator-summary-payload';
 
 export { executeSupervisorStream } from './supervisor-stream';
 
@@ -223,6 +227,36 @@ export async function executeSupervisor(
       usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
       metadata: {
         ...buildInternalImplementationPathPolicyMetadata(durationMs),
+        ...buildSupervisorModeMetadata(modeDecision),
+        ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
+      },
+    };
+  }
+
+  const offDomainGuardrail = getOffDomainGuardrail(queryText);
+  if (offDomainGuardrail) {
+    const durationMs = Date.now() - startTime;
+    const response = sanitizeUserFacingResponse(offDomainGuardrail.response);
+    const quality = evaluateAgentResponseQuality('Supervisor', response, {
+      durationMs,
+    });
+
+    return {
+      success: true,
+      response,
+      toolsCalled: [],
+      toolResults: [],
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      metadata: {
+        provider: 'deterministic',
+        modelId: 'off-domain-guard',
+        stepsExecuted: 0,
+        durationMs,
+        responseChars: quality.responseChars,
+        formatCompliance: quality.formatCompliance,
+        qualityFlags: quality.qualityFlags,
+        latencyTier: quality.latencyTier,
+        mode: mode,
         ...buildSupervisorModeMetadata(modeDecision),
         ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
       },
@@ -620,6 +654,7 @@ async function executeSupervisorAttempt(
 
       const toolsCalled: string[] = [];
       const toolResults: Record<string, unknown>[] = [];
+      const collectedToolResults: CollectedToolResult[] = [];
       const toolResultSummaries: Array<{
         toolName: string;
         label: string;
@@ -640,6 +675,10 @@ async function executeSupervisorAttempt(
             const trOutput = extractToolResultOutput(tr);
             if (trOutput) {
               toolResults.push(trOutput as Record<string, unknown>);
+              collectedToolResults.push({
+                toolName: tr.toolName,
+                result: trOutput,
+              });
               toolResultSummaries.push(
                 buildToolResultSummary(tr.toolName, trOutput)
               );
@@ -658,7 +697,14 @@ async function executeSupervisorAttempt(
         }
       }
 
-      const response = finalAnswerResult?.answer ?? result.text;
+      const deterministicResponse = buildDeterministicSummaryFallback(
+        queryText,
+        'Supervisor',
+        collectedToolResults
+      );
+      const response = sanitizeUserFacingResponse(
+        deterministicResponse ?? finalAnswerResult?.answer ?? result.text
+      );
 
       const durationMs = Date.now() - startTime;
       const quality = evaluateAgentResponseQuality('Supervisor', response, {
