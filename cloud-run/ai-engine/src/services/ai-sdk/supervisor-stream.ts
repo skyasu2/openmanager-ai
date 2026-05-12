@@ -1,3 +1,4 @@
+import type { DomainEvidenceResult } from '../../core/assistant-runtime';
 import { logger } from '../../lib/logger';
 import { isSingleModeAllowed } from '../../lib/config-parser';
 import { executeMultiAgentStream } from './agents';
@@ -26,6 +27,15 @@ import {
 import { buildServiceCommandGuidanceAnswer } from '../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 import { streamSingleAgent } from './supervisor-single-agent-stream';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
+
+function shouldUseDeterministicDomainEvidenceAnswer(
+  domainEvidence: DomainEvidenceResult | undefined
+): boolean {
+  return (
+    domainEvidence?.metadata?.responsePolicy ===
+    'deterministic_read_only_advice'
+  );
+}
 
 export async function* executeSupervisorStream(
   request: SupervisorRequest
@@ -90,6 +100,43 @@ export async function* executeSupervisorStream(
           assistantPlan,
           assistantRuntime: runtimeMetadata,
           assistantResult: buildSupervisorAssistantResult(routeDecision),
+          ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
+            ? { semanticQueryTrace }
+            : {}),
+        },
+      },
+    };
+    return;
+  }
+
+  if (
+    domainEvidence &&
+    shouldUseDeterministicDomainEvidenceAnswer(domainEvidence)
+  ) {
+    const durationMs = Date.now() - startTime;
+    yield { type: 'text_delta', data: domainEvidence.fallback };
+    yield {
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: [domainEvidence.id],
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        metadata: {
+          provider: 'deterministic',
+          modelId: domainEvidence.id,
+          stepsExecuted: 0,
+          durationMs,
+          mode,
+          ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
+          ...buildSupervisorModeMetadata(modeDecision),
+          routeDecision,
+          assistantPlan,
+          assistantRuntime: runtimeMetadata,
+          assistantResult: buildSupervisorAssistantResult(routeDecision),
+          domainEvidence: {
+            id: domainEvidence.id,
+            responsePolicy: domainEvidence.metadata?.responsePolicy,
+          },
           ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
             ? { semanticQueryTrace }
             : {}),

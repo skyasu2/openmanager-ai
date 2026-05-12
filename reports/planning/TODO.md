@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-12 KST (`Semantic query routing phase 3 completed`)
+**Last Updated**: 2026-05-12 KST (`Weekly AI stabilization local fix in progress`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 Active Task 없음. |
+| AI Assistant weekly stabilization and QA hardening | High | In Progress (Codex) | composite peak+advice mutating command 경로 로컬 수정/검증 완료. Production QA와 OPS/QC 질문팩 기록 대기. 상세: [ai-assistant-weekly-stabilization-plan.md](ai-assistant-weekly-stabilization-plan.md) |
 
 ---
 

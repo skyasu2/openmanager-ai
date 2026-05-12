@@ -12,6 +12,7 @@ import type { PeakMetric } from './peak-metric';
 export interface ParsedPeakMetricRequest {
   metric: PeakMetric;
   windowHours: number;
+  responseGuidanceRequested?: boolean;
   capabilityId?: string;
   intent?: string;
 }
@@ -73,6 +74,9 @@ export function parseMonitoringPeakMetricMessage(
   return {
     metric,
     windowHours: parseWindowHours(message),
+    ...(ADVICE_SEEKING_PATTERN.test(message) && {
+      responseGuidanceRequested: true,
+    }),
   };
 }
 
@@ -143,6 +147,9 @@ export function parseMonitoringPeakMetricFrame(
   return {
     metric,
     windowHours: parseFrameWindowHours(frame.timeWindow),
+    ...(ADVICE_SEEKING_PATTERN.test(request.message) && {
+      responseGuidanceRequested: true,
+    }),
     capabilityId: MONITORING_PEAK_METRIC_CAPABILITY_ID,
     intent: frame.intent,
   };
