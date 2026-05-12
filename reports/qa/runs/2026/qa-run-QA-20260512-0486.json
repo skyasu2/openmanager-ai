@@ -1,0 +1,216 @@
+{
+  "runId": "QA-20260512-0486",
+  "recordedAt": "2026-05-12T09:02:46.154Z",
+  "recordedAtKst": "2026-05-12 18:02:46 KST",
+  "runTitle": "Vercel API QA - v8.11.136 Natural-Language Semantic Peak Coverage",
+  "owner": "codex",
+  "source": "api-direct",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB",
+    "deploymentUrl": "https://openmanager-b9s0l4xun-skyasus-projects.vercel.app",
+    "commitSha": "4fc66e54dca3ffca970080f7db6717c999920228"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "security-pack"],
+  "coveredSurfaces": [
+    "GitLab main validate pipeline 2518523204 success",
+    "GitLab tag deploy pipeline 2518533893 success",
+    "Vercel production /api/version 8.11.136",
+    "Cloud Run /health 8.11.136",
+    "Vercel guest-auth /api/ai/supervisor/stream/v2 standard conversational QA",
+    "QC/QA persona semantic metric_peak evidence query",
+    "security vulnerability investigator read-only anomaly evidence query",
+    "semanticQueryTrace propagation through data-done metadata"
+  ],
+  "skippedSurfaces": [
+    "Playwright MCP browser UI rendering",
+    "Visible Korean evidence label text in UI",
+    "Mobile viewport matrix",
+    "Reporter/Analyst advanced surfaces",
+    "Cloud Run authenticated /monitoring admin UI"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Standard conversational server summary",
+      "agent": "Supervisor",
+      "provider": "vercel-bff-cloud-run",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 3040,
+      "processingTimeMs": 3040
+    },
+    {
+      "surface": "Standard monitoring metric peak query",
+      "agent": "Supervisor",
+      "provider": "vercel-bff-cloud-run",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 3658,
+      "processingTimeMs": 3658
+    },
+    {
+      "surface": "QC/QA metric peak evidence query",
+      "agent": "Supervisor",
+      "provider": "vercel-bff-cloud-run",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 1705,
+      "processingTimeMs": 1705
+    },
+    {
+      "surface": "Security read-only anomaly evidence query",
+      "agent": "Supervisor",
+      "provider": "vercel-bff-cloud-run",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Node fetch wall clock",
+      "latencyMs": 1603,
+      "processingTimeMs": 1603
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "Standard monitoring metric peak query",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "multi-agent",
+      "latencyMs": 3658,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "data-done metadata resolvedMode=multi; semanticQueryTrace present"
+    },
+    {
+      "surface": "QC/QA metric peak evidence query",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "multi-agent",
+      "latencyMs": 1705,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "detailed chunk inspection: assistantResult.status=completed; semanticQueryTrace selectedEvidenceProvider=monitoring-peak-metric"
+    },
+    {
+      "surface": "Security read-only anomaly evidence query",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "multi-agent",
+      "latencyMs": 1603,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "detailed chunk inspection: assistantResult.status=completed; semanticQueryTrace selectedEvidenceProvider=monitoring-peak-metric"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Standard conversational QA plus QC/QA persona queries validated production stream behavior and semantic evidence metadata.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Metric peak evidence queries selected monitoring.metric_peak and monitoring-peak-metric using production OTel-backed Cloud Run runtime.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Security-investigator phrasing was handled as read-only monitoring evidence and did not require mutating command output.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab CI deployed frontend and AI Engine, post-deploy smoke passed, and Cloud Run health reported version 8.11.136.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "New local contract tests cover stream metadata conversion and natural-language persona routing; production API QA covers the deployed path.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-12T17:59:00+09:00",
+      "summary": "Current billing period reviewed after v8.11.136 production QA; effective usage 7.3966 USD, billed usage 0.0000 USD, charge count 6699.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "v8.11.136 natural-language AI API QA transcript",
+      "path": "reports/qa/evidence/qa-20260512-v811136-natural-language-api-qa.txt",
+      "note": "Direct Vercel/Cloud Run API evidence without Playwright MCP; validates authenticated stream metadata and conversational AI behavior."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-expert-qc-security-semantic-peak-v811136",
+      "title": "Expert, QC/QA, and security natural-language monitoring questions route to metric peak evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production Vercel guest-auth stream validated standard peak, QC/QA, and security read-only anomaly queries with semanticQueryTrace selectedCapability=monitoring.metric_peak and selectedEvidenceProvider=monitoring-peak-metric.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "No Playwright MCP was used for this targeted retest.",
+    "This run validates production API behavior, stream metadata, and natural-language AI answers; browser rendering remains skipped.",
+    "mode audit: standard peak, QC/QA, and security read-only anomaly queries returned semantic metric_peak evidence metadata through the Vercel BFF and Cloud Run stream path."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main validate pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518523204",
+      "note": "implementation commit validate success"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.11.136 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518533893",
+      "note": "tag pipeline success: deploy, deploy_ai_engine, and post-deploy smoke jobs passed"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-b9s0l4xun-skyasus-projects.vercel.app/",
+      "note": "deployment id dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB"
+    }
+  ]
+}

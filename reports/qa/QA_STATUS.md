@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-12 16:52:35 KST
+> Generated at: 2026-05-12 18:02:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 483 |
-| Total Runs (Counted) | 385 |
+| Total Recorded Runs | 484 |
+| Total Runs (Counted) | 386 |
 | Non-counted Runs | 98 |
-| Total Checks | 3404 |
-| Passed | 3270 |
+| Total Checks | 3418 |
+| Passed | 3284 |
 | Failed | 124 |
-| Completed Items | 547 |
+| Completed Items | 548 |
 | Pending Items | 3 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.45% |
-| Last Counted Run | QA-20260512-0485 (2026-05-12T07:52:35.206Z) |
-| Latest Recorded Run | QA-20260512-0485 (2026-05-12T07:52:35.206Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 99.46% |
+| Last Counted Run | QA-20260512-0486 (2026-05-12T09:02:46.154Z) |
+| Latest Recorded Run | QA-20260512-0486 (2026-05-12T09:02:46.154Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,45 +34,46 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260512-0485 (2026-05-12T07:52:35.206Z)
+Latest run: QA-20260512-0486 (2026-05-12T09:02:46.154Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.135 production QA; effective usage 7.3966 USD, billed usage 0.0000 USD, charge count 6699. |
+| vercel | cli | checked | normal | Current billing period reviewed after v8.11.136 production QA; effective usage 7.3966 USD, billed usage 0.0000 USD, charge count 6699. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-11T07:52:35.206Z -> 2026-05-12T07:52:35.206Z (24h)
-- Runs with observations: 8 recorded / 6 counted
-- Samples: 20
+- Window: 2026-05-11T09:02:46.154Z -> 2026-05-12T09:02:46.154Z (24h)
+- Runs with observations: 9 recorded / 7 counted
+- Samples: 24
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor | cloud-run-ai-engine | 15 | 4830ms | 20000ms | - | - | 4830ms | 20000ms | QA-20260512-0485 |
-| Supervisor | vercel-bff-cloud-run | 1 | 12587ms | 12587ms | - | - | 12587ms | 12587ms | QA-20260512-0485 |
+| Supervisor | vercel-bff-cloud-run | 5 | 4519ms | 12587ms | - | - | 4519ms | 12587ms | QA-20260512-0486 |
 | Supervisor | streaming-ai | 4 | 2629ms | 4716ms | - | - | 2629ms | 4716ms | QA-20260512-0483 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-11T07:52:35.206Z -> 2026-05-12T07:52:35.206Z (24h)
-- Runs with observations: 8 recorded / 6 counted
-- Samples: 15
-- Drift rate: 66.67%
+- Window: 2026-05-11T09:02:46.154Z -> 2026-05-12T09:02:46.154Z (24h)
+- Runs with observations: 9 recorded / 7 counted
+- Samples: 18
+- Drift rate: 55.56%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
 | mixed streaming/job path | single-agent | 1 | 100% | 20000ms | 20000ms | QA-20260512-0481 |
 | /api/ai/supervisor/stream | multi-agent | 1 | 0% | 15964ms | 15964ms | QA-20260512-0485 |
-| /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 12587ms | 12587ms | QA-20260512-0485 |
+| /api/ai/supervisor/stream/v2 | multi-agent | 4 | 0% | 4888ms | 12587ms | QA-20260512-0486 |
 | /api/ai/jobs | single-agent | 2 | 100% | 6976ms | 11571ms | QA-20260511-0477 |
 | /api/ai/supervisor/stream/v2 | single-agent | 3 | 100% | 2996ms | 4716ms | QA-20260512-0483 |
 | /api/ai/jobs/[id]/stream | single-agent | 6 | 50% | 2637ms | 3427ms | QA-20260512-0484 |
@@ -83,29 +84,28 @@ Latest run: QA-20260512-0485 (2026-05-12T07:52:35.206Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk / SHA cca5c469
-- Coverage Packs: ai-core
-- Covered Surfaces: GitLab tag deploy pipeline v8.11.135 success, Vercel production /api/version reports 8.11.135, Cloud Run direct /api/ai/supervisor/stream multi-agent done metadata, Vercel guest-auth /api/ai/supervisor/stream/v2 UIMessageStream data-done metadata, semanticQueryTrace preserved for monitoring.metric_peak evidence, Vercel usage guard after production deployment
-- Skipped Surfaces: Playwright MCP browser rendering, Visible Korean evidence label text in UI, Full conversational five-question UI QA, Mobile viewport matrix, Reporter/Analyst advanced surfaces, Cloud Run admin monitoring UI
+- Deployment: dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB / SHA 4fc66e54
+- Coverage Packs: core-routes-smoke, ai-core, security-pack
+- Covered Surfaces: GitLab main validate pipeline 2518523204 success, GitLab tag deploy pipeline 2518533893 success, Vercel production /api/version 8.11.136, Cloud Run /health 8.11.136, Vercel guest-auth /api/ai/supervisor/stream/v2 standard conversational QA, QC/QA persona semantic metric_peak evidence query, security vulnerability investigator read-only anomaly evidence query, semanticQueryTrace propagation through data-done metadata
+- Skipped Surfaces: Playwright MCP browser UI rendering, Visible Korean evidence label text in UI, Mobile viewport matrix, Reporter/Analyst advanced surfaces, Cloud Run authenticated /monitoring admin UI
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.135 deploy pipeline | [GitLab v8.11.135 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518187637) | tag pipeline success: deploy, deploy_ai_engine, and post-deploy smoke jobs passed |
-| general | Production alias | [Production alias](https://openmanager-ai.vercel.app/) | /api/version returned 8.11.135 |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-pl9llq6zm-skyasus-projects.vercel.app/) | deployment id dpl_H9KAkBrJjdvcXPpo4SD5q99oyJsk |
+| general | GitLab main validate pipeline | [GitLab main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518523204) | implementation commit validate success |
+| general | GitLab v8.11.136 deploy pipeline | [GitLab v8.11.136 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518533893) | tag pipeline success: deploy, deploy_ai_engine, and post-deploy smoke jobs passed |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-b9s0l4xun-skyasus-projects.vercel.app/) | deployment id dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | v8.11.135 semantic trace API smoke transcript | `reports/qa/evidence/qa-20260512-v811135-semantic-trace-api-smoke.txt` | - |
+| playwright-network | v8.11.136 natural-language AI API QA transcript | `reports/qa/evidence/qa-20260512-v811136-natural-language-api-qa.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-security-reliability: AI Security & Reliability Architect (last QA-20260512-0484)
-  next: Apply the read-only/mutating-command guard after any evidence-based final answer generation, not only in the command catalog path.
+- None
 
 ## Pending Improvements
 
@@ -206,6 +206,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-24h-peak-load-empty-response-v811124: Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임 (completed 2회, last QA-20260512-0480)
 - ai-assistant-domain-capability-resolver-phase2: AI Engine domain capability resolver Phase 2 release (completed 1회, last QA-20260511-0479)
 - ai-assistant-double-scroll-v811112: AI Assistant page-level double scroll removed (completed 1회, last QA-20260507-0419)
+- ai-assistant-expert-qc-security-semantic-peak-v811136: Expert, QC/QA, and security natural-language monitoring questions route to metric peak evidence (completed 1회, last QA-20260512-0486)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-general-coding-boundary: Guard general coding and algorithm requests at the AI Assistant input boundary (completed 1회, last QA-20260511-0467)
@@ -739,6 +740,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260512-0486 | 2026-05-12T09:02:46.154Z | targeted | yes | yes | Vercel API QA - v8.11.136 Natural-Language Semantic Peak Coverage | 14 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0485 | 2026-05-12T07:52:35.206Z | targeted | yes | yes | Vercel API QA - v8.11.135 Multi-Agent Semantic Trace | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0484 | 2026-05-12T03:58:50.223Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.132 | 8 | 2 | 3 | 0 | 0 | 3 |
 | QA-20260512-0483 | 2026-05-12T02:07:18.555Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.131 | 8 | 1 | 2 | 0 | 0 | 2 |
@@ -758,4 +760,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260511-0469 | 2026-05-11T02:04:07.454Z | targeted | no | no | Local QA - Line Guard Current Hotspots Refactor | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0468 | 2026-05-10T16:02:00.870Z | targeted | no | no | Local QA - AI Assistant Ops Procedure Artifact | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0467 | 2026-05-10T15:20:02.963Z | targeted | no | no | Local QA - AI Assistant General Coding Boundary | 9 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260510-0466 | 2026-05-10T12:53:07.527Z | targeted | yes | yes | Vercel Production Targeted QA - AI Chat UX v8.11.124 | 11 | 2 | 0 | 0 | 0 | 0 |

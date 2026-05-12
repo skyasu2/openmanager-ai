@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-12T07:52:35.206Z"
+    "updatedAt": "2026-05-12T09:02:46.154Z"
   },
   "sequence": {
-    "nextRunNumber": 486
+    "nextRunNumber": 487
   },
   "summary": {
-    "totalRecordedRuns": 483,
-    "totalRuns": 385,
+    "totalRecordedRuns": 484,
+    "totalRuns": 386,
     "excludedRuns": 98,
-    "totalChecks": 3404,
-    "totalPassed": 3270,
+    "totalChecks": 3418,
+    "totalPassed": 3284,
     "totalFailed": 124,
-    "completionRate": 99.45,
-    "completedItems": 547,
+    "completionRate": 99.46,
+    "completedItems": 548,
     "pendingItems": 3,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260512-0485",
-    "lastRecordedAt": "2026-05-12T07:52:35.206Z",
-    "latestRecordedRunId": "QA-20260512-0485",
-    "latestRecordedAt": "2026-05-12T07:52:35.206Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260512-0486",
+    "lastRecordedAt": "2026-05-12T09:02:46.154Z",
+    "latestRecordedRunId": "QA-20260512-0486",
+    "latestRecordedAt": "2026-05-12T09:02:46.154Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13457,6 +13457,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-12T07:52:35.206Z"
+    },
+    "ai-assistant-expert-qc-security-semantic-peak-v811136": {
+      "id": "ai-assistant-expert-qc-security-semantic-peak-v811136",
+      "title": "Expert, QC/QA, and security natural-language monitoring questions route to metric peak evidence",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260512-0486",
+      "firstSeenAt": "2026-05-12T09:02:46.154Z",
+      "lastSeenRunId": "QA-20260512-0486",
+      "lastSeenAt": "2026-05-12T09:02:46.154Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production Vercel guest-auth stream validated standard peak, QC/QA, and security read-only anomaly queries with semanticQueryTrace selectedCapability=monitoring.metric_peak and selectedEvidenceProvider=monitoring-peak-metric.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-12T09:02:46.154Z"
     }
   },
   "runs": [
@@ -52623,6 +52647,210 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260512-0486",
+      "recordedAt": "2026-05-12T09:02:46.154Z",
+      "recordedAtKst": "2026-05-12 18:02:46 KST",
+      "title": "Vercel API QA - v8.11.136 Natural-Language Semantic Peak Coverage",
+      "owner": "codex",
+      "source": "api-direct",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260512-0486.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB",
+        "deploymentUrl": "https://openmanager-b9s0l4xun-skyasus-projects.vercel.app",
+        "commitSha": "4fc66e54dca3ffca970080f7db6717c999920228"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "security-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab main validate pipeline 2518523204 success",
+        "GitLab tag deploy pipeline 2518533893 success",
+        "Vercel production /api/version 8.11.136",
+        "Cloud Run /health 8.11.136",
+        "Vercel guest-auth /api/ai/supervisor/stream/v2 standard conversational QA",
+        "QC/QA persona semantic metric_peak evidence query",
+        "security vulnerability investigator read-only anomaly evidence query",
+        "semanticQueryTrace propagation through data-done metadata"
+      ],
+      "skippedSurfaces": [
+        "Playwright MCP browser UI rendering",
+        "Visible Korean evidence label text in UI",
+        "Mobile viewport matrix",
+        "Reporter/Analyst advanced surfaces",
+        "Cloud Run authenticated /monitoring admin UI"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Standard conversational server summary",
+          "agent": "Supervisor",
+          "provider": "vercel-bff-cloud-run",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "direct Node fetch wall clock",
+          "latencyMs": 3040,
+          "processingTimeMs": 3040
+        },
+        {
+          "surface": "Standard monitoring metric peak query",
+          "agent": "Supervisor",
+          "provider": "vercel-bff-cloud-run",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "direct Node fetch wall clock",
+          "latencyMs": 3658,
+          "processingTimeMs": 3658
+        },
+        {
+          "surface": "QC/QA metric peak evidence query",
+          "agent": "Supervisor",
+          "provider": "vercel-bff-cloud-run",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "direct Node fetch wall clock",
+          "latencyMs": 1705,
+          "processingTimeMs": 1705
+        },
+        {
+          "surface": "Security read-only anomaly evidence query",
+          "agent": "Supervisor",
+          "provider": "vercel-bff-cloud-run",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "direct Node fetch wall clock",
+          "latencyMs": 1603,
+          "processingTimeMs": 1603
+        }
+      ],
+      "plannerShadowObservations": [
+        {
+          "surface": "Standard monitoring metric peak query",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "multi-agent",
+          "latencyMs": 3658,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "data-done metadata resolvedMode=multi; semanticQueryTrace present"
+        },
+        {
+          "surface": "QC/QA metric peak evidence query",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "multi-agent",
+          "latencyMs": 1705,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "detailed chunk inspection: assistantResult.status=completed; semanticQueryTrace selectedEvidenceProvider=monitoring-peak-metric"
+        },
+        {
+          "surface": "Security read-only anomaly evidence query",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "multi-agent",
+          "latencyMs": 1603,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "detailed chunk inspection: assistantResult.status=completed; semanticQueryTrace selectedEvidenceProvider=monitoring-peak-metric"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Standard conversational QA plus QC/QA persona queries validated production stream behavior and semantic evidence metadata.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Metric peak evidence queries selected monitoring.metric_peak and monitoring-peak-metric using production OTel-backed Cloud Run runtime.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Security-investigator phrasing was handled as read-only monitoring evidence and did not require mutating command output.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab CI deployed frontend and AI Engine, post-deploy smoke passed, and Cloud Run health reported version 8.11.136.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "New local contract tests cover stream metadata conversion and natural-language persona routing; production API QA covers the deployed path.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-12T17:59:00+09:00",
+          "summary": "Current billing period reviewed after v8.11.136 production QA; effective usage 7.3966 USD, billed usage 0.0000 USD, charge count 6699.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "v8.11.136 natural-language AI API QA transcript",
+          "path": "reports/qa/evidence/qa-20260512-v811136-natural-language-api-qa.txt",
+          "note": "Direct Vercel/Cloud Run API evidence without Playwright MCP; validates authenticated stream metadata and conversational AI behavior."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518523204",
+          "note": "implementation commit validate success"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.11.136 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2518533893",
+          "note": "tag pipeline success: deploy, deploy_ai_engine, and post-deploy smoke jobs passed"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-b9s0l4xun-skyasus-projects.vercel.app/",
+          "note": "deployment id dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -52631,16 +52859,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 237,
-      "appropriateCount": 203,
+      "seenCount": 238,
+      "appropriateCount": 204,
       "partialCount": 34,
       "inappropriateCount": 0,
       "improvementNeededCount": 44,
-      "lastRunId": "QA-20260512-0485",
-      "lastSeenAt": "2026-05-12T07:52:35.206Z",
+      "lastRunId": "QA-20260512-0486",
+      "lastSeenAt": "2026-05-12T09:02:46.154Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The targeted AI stream contract was validated through both Cloud Run direct and Vercel BFF paths.",
+      "lastRationale": "Standard conversational QA plus QC/QA persona queries validated production stream behavior and semantic evidence metadata.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -52648,16 +52876,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 113,
-      "appropriateCount": 83,
+      "seenCount": 114,
+      "appropriateCount": 84,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260511-0472",
-      "lastSeenAt": "2026-05-11T03:08:32.044Z",
+      "lastRunId": "QA-20260512-0486",
+      "lastSeenAt": "2026-05-12T09:02:46.154Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The PromQL-style server status vector now preserves the server status label needed for downstream observability consumers.",
+      "lastRationale": "Metric peak evidence queries selected monitoring.metric_peak and monitoring-peak-metric using production OTel-backed Cloud Run runtime.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -52665,33 +52893,33 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 64,
-      "appropriateCount": 47,
+      "seenCount": 65,
+      "appropriateCount": 48,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260512-0484",
-      "lastSeenAt": "2026-05-12T03:58:50.223Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Advice-only load guidance is now read-only, but the composite peak-plus-advice path still emitted sudo apt-get install -y nginx without evidence or approval gating.",
-      "lastNextAction": "Apply the read-only/mutating-command guard after any evidence-based final answer generation, not only in the command catalog path."
+      "lastRunId": "QA-20260512-0486",
+      "lastSeenAt": "2026-05-12T09:02:46.154Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Security-investigator phrasing was handled as read-only monitoring evidence and did not require mutating command output.",
+      "lastNextAction": ""
     },
     "sre-devops": {
       "domainId": "sre-devops",
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 168,
-      "appropriateCount": 151,
+      "seenCount": 169,
+      "appropriateCount": 152,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260512-0485",
-      "lastSeenAt": "2026-05-12T07:52:35.206Z",
+      "lastRunId": "QA-20260512-0486",
+      "lastSeenAt": "2026-05-12T09:02:46.154Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The GitLab release pipeline deployed frontend and AI Engine successfully and production version metadata matches the release commit.",
+      "lastRationale": "GitLab CI deployed frontend and AI Engine, post-deploy smoke passed, and Cloud Run health reported version 8.11.136.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -52699,16 +52927,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 205,
-      "appropriateCount": 187,
+      "seenCount": 206,
+      "appropriateCount": 188,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260512-0485",
-      "lastSeenAt": "2026-05-12T07:52:35.206Z",
+      "lastRunId": "QA-20260512-0486",
+      "lastSeenAt": "2026-05-12T09:02:46.154Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The modified metadata contract can be tested without browser automation by asserting data-done/done stream metadata over HTTP.",
+      "lastRationale": "New local contract tests cover stream metadata conversion and natural-language persona routing; production API QA covers the deployed path.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

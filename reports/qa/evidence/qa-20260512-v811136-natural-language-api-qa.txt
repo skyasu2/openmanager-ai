@@ -1,0 +1,67 @@
+OpenManager QA evidence - v8.11.136 natural-language AI API QA
+Recorded: 2026-05-12T18:00:00+09:00
+
+Scope
+- Release: v8.11.136
+- Release commit: 4fc66e54dca3ffca970080f7db6717c999920228
+- Implementation commit: 9afbbea09d93e6e7ea12223fd7734e865e35607f
+- GitLab main validate pipeline: 2518523204 success
+- GitLab tag deploy pipeline: 2518533893 success
+- Vercel production deployment: dpl_3YVJN1qfLKNT1mQ5zn1BTWqWKGwB
+- Vercel deployment URL: https://openmanager-b9s0l4xun-skyasus-projects.vercel.app
+- Production alias: https://openmanager-ai.vercel.app
+- Cloud Run service URL: https://ai-engine-jdhrhws7ia-an.a.run.app
+
+Local validation before release
+- AI Engine targeted tests: 2 files / 20 tests passed
+- AI Engine type-check: passed
+- AI Engine full test: 115 files / 1134 tests passed
+- Root contract test: 3 files / 24 tests passed
+- docs:budget: PASS, 73/90 active docs, no changed docs
+- docs:ai-consistency: PASS, scanned 26
+- git diff --check: passed
+
+Deployment verification
+- /api/version returned version 8.11.136, releaseTag v8.11.136, commit 4fc66e54dca3ffca970080f7db6717c999920228, pipeline 2518533893.
+- Cloud Run /health returned 200 with version 8.11.136 and routesReady=true.
+- Cloud Run /monitoring without API key returned 403, expected for protected admin endpoint.
+- Vercel usage check passed. Current billing period effective usage 7.3966 USD, billed usage 0.0000 USD, chargeCount 6699.
+
+Vercel guest-auth API QA method
+- GET /api/csrf-token: 200
+- POST /api/auth/guest-login: 200
+- POST /api/ai/supervisor/stream/v2 through production alias
+- Browser/Playwright MCP was not used; this validates the authenticated Vercel BFF plus Cloud Run stream path and returned metadata.
+
+Conversational AI QA results
+- standard-summary: HTTP 200, stream completed, resolvedMode=multi, modeSelectionSource=auto_complexity, latency 3040 ms.
+- standard-server-detail: HTTP 200, stream completed, resolvedMode=multi, modeSelectionSource=auto_complexity, latency 2205 ms.
+- standard-peak: HTTP 200, stream completed, resolvedMode=multi, selectedCapability=monitoring.metric_peak, selectedEvidenceProvider=monitoring-peak-metric, evidenceAvailable=true, reasonCodes=["semantic_frame_evidence_validated"], latency 3658 ms.
+- standard-action-needed: HTTP 200, stream completed, resolvedMode=multi, modeSelectionSource=auto_complexity, latency 621 ms.
+- standard-network-filter: HTTP 200, stream completed, resolvedMode=multi, modeSelectionSource=auto_complexity, latency 1655 ms.
+
+Persona QA results
+- qc-qa-tester query: "QC/QA 관점에서 AI가 실제 서버 모니터링 데이터를 쓰는지 확인하려고 해. 최근 24시간 load1 이상치 구간과 상위 서버 근거를 보여줘"
+  - HTTP 200.
+  - Detailed chunk inspection: assistantResult.status=completed.
+  - semanticQueryTrace selectedCapability=monitoring.metric_peak.
+  - semanticQueryTrace selectedEvidenceProvider=monitoring-peak-metric.
+  - semanticQueryTrace evidenceAvailable=true.
+  - reasonCodes=["semantic_frame_evidence_validated"].
+- security-vulnerability-investigator query: "보안 취약점 탐색 관점에서 비정상 부하 징후를 보려 한다. 지난 하루 load anomaly 구간과 어느 서버가 영향이 컸는지 읽기 전용 근거만 알려줘"
+  - HTTP 200.
+  - Detailed chunk inspection: assistantResult.status=completed.
+  - semanticQueryTrace selectedCapability=monitoring.metric_peak.
+  - semanticQueryTrace selectedEvidenceProvider=monitoring-peak-metric.
+  - semanticQueryTrace evidenceAvailable=true.
+  - reasonCodes=["semantic_frame_evidence_validated"].
+
+Review notes
+- Code review found no P0/P1/P2 blockers.
+- The natural-language parser expansion remains gated by metric, time-window, and temporal/server focus checks.
+- The security persona query requests read-only evidence only; no mutating command suggestion was required or validated.
+
+Limitations
+- UI rendering of the evidence label was not visually inspected.
+- Playwright MCP and mobile viewport matrix were not run.
+- This run validates production API behavior, stream metadata, and conversational answers, not browser layout.
