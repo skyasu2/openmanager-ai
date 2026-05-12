@@ -17,6 +17,7 @@ import type {
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
 import type { InternalDisclosureMode } from '../internal-disclosure-policy';
+import type { SanitizedRoutingDecisionTrace } from '../routing/routing-decision-trace';
 
 // ============================================================================
 // Configuration
@@ -131,6 +132,8 @@ export interface MultiAgentResponse {
     usedFallback?: boolean;
     /** Retrieval execution contract for UI/Langfuse: enabled vs used vs suppressed. */
     retrieval?: RetrievalMetadata;
+    /** Sanitized internal routing trace for diagnostics; raw prompts/provider internals are stripped. */
+    routingDecisionTrace?: SanitizedRoutingDecisionTrace;
   };
 }
 

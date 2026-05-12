@@ -26,6 +26,18 @@ import {
 import { resolveRAGSetting, resolveWebSearchSetting } from './orchestrator-web-search';
 import { preFilterQuery, saveAgentFindingsToContext } from './orchestrator-context';
 import { getKSTDateTime } from '../../../lib/time-utils';
+import { extractQueryRoutingSignals } from '../routing/query-routing-signals';
+import {
+  attachAgentDecision,
+  attachPreFilterDecision,
+  createAgentDecisionFromFallback,
+  createAgentDecisionFromLlmRouting,
+  createAgentDecisionFromPreFilter,
+  createPreFilterDecision,
+  createRoutingDecisionTrace,
+  sanitizeRoutingDecisionTrace,
+  type RoutingDecisionTrace,
+} from '../routing/routing-decision-trace';
 
 import {
   getOrchestratorModel,
@@ -64,6 +76,19 @@ import {
 
 export { getRecentHandoffs };
 
+function attachRoutingDecisionTrace(
+  response: MultiAgentResponse,
+  routingTrace: RoutingDecisionTrace
+): MultiAgentResponse {
+  return {
+    ...response,
+    metadata: {
+      ...response.metadata,
+      routingDecisionTrace: sanitizeRoutingDecisionTrace(routingTrace),
+    },
+  };
+}
+
 // ============================================================================
 // Main Execution Functions
 // ============================================================================
@@ -93,6 +118,13 @@ export async function executeMultiAgent(
   const ragEnabled = resolveRAGSetting(request.enableRAG, query);
   logger.debug(`[WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
   logger.debug(`[RAG] Setting resolved: ${ragEnabled} (request: ${request.enableRAG})`);
+  let routingTrace = createRoutingDecisionTrace(
+    extractQueryRoutingSignals(query, {
+      analysisMode: request.analysisMode,
+      hasImageAttachments: !!(request.images && request.images.length > 0),
+      hasFileAttachments: !!(request.files && request.files.length > 0),
+    })
+  );
 
   const sessionContext = await getOrCreateSessionContext(request.sessionId, query);
   logger.debug(`[Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
@@ -103,10 +135,17 @@ export async function executeMultiAgent(
     hasImageAttachments: !!(request.images && request.images.length > 0),
     hasFileAttachments: !!(request.files && request.files.length > 0),
   });
+  routingTrace = attachPreFilterDecision(
+    routingTrace,
+    createPreFilterDecision(query, preFilterResult)
+  );
   logger.debug(`[PreFilter] Query: "${query.substring(0, 50)}..." → Suggested: ${preFilterResult.suggestedAgent || 'none'} (confidence: ${preFilterResult.confidence})`);
 
   if (!preFilterResult.shouldHandoff && preFilterResult.directResponse) {
-    const response = buildFastPathResponse(preFilterResult.directResponse, startTime);
+    const response = attachRoutingDecisionTrace(
+      buildFastPathResponse(preFilterResult.directResponse, startTime),
+      routingTrace
+    );
     logger.info(
       `[Fast Path] Direct response in ${response.metadata.durationMs}ms (confidence: ${preFilterResult.confidence})`
     );
@@ -194,12 +233,22 @@ export async function executeMultiAgent(
     if (forcedResult) {
       logger.info(`[Orchestrator] Forced routing succeeded`);
       const finalAgentName = forcedResult.finalAgent ?? suggestedAgentName;
+      routingTrace = attachAgentDecision(
+        routingTrace,
+        createAgentDecisionFromPreFilter({
+          selectedAgent: finalAgentName,
+          confidence: preFilterResult.confidence,
+        })
+      );
       await saveAgentFindingsToContext(
         request.sessionId,
         finalAgentName,
         forcedResult.response
       );
-      return finalizeMultiAgentResponse(trace, forcedResult);
+      return finalizeMultiAgentResponse(
+        trace,
+        attachRoutingDecisionTrace(forcedResult, routingTrace)
+      );
     }
     logger.warn('[Orchestrator] Forced routing failed, falling back to LLM routing');
   } else {
@@ -295,6 +344,13 @@ export async function executeMultiAgent(
 
         if (fallbackResult) {
           const finalAgentName = fallbackResult.finalAgent ?? suggestedAgent;
+          routingTrace = attachAgentDecision(
+            routingTrace,
+            createAgentDecisionFromFallback({
+              selectedAgent: finalAgentName,
+              confidence: preFilterResult.confidence,
+            })
+          );
           await saveAgentFindingsToContext(
             request.sessionId,
             finalAgentName,
@@ -302,18 +358,24 @@ export async function executeMultiAgent(
           );
 
           const isTimeoutError = /timeout/i.test(errorMessage);
-          return finalizeMultiAgentResponse(trace, {
-            ...fallbackResult,
-            handoffs: [
+          return finalizeMultiAgentResponse(
+            trace,
+            attachRoutingDecisionTrace(
               {
-                from: 'Orchestrator',
-                to: finalAgentName,
-                reason: isTimeoutError
-                  ? 'Fallback routing (routing timeout)'
-                  : 'Fallback routing (routing failure)',
+                ...fallbackResult,
+                handoffs: [
+                  {
+                    from: 'Orchestrator',
+                    to: finalAgentName,
+                    reason: isTimeoutError
+                      ? 'Fallback routing (routing timeout)'
+                      : 'Fallback routing (routing failure)',
+                  },
+                ],
               },
-            ],
-          });
+              routingTrace
+            )
+          );
         }
       }
 
@@ -352,20 +414,33 @@ export async function executeMultiAgent(
 
       if (agentResult) {
         const finalAgentName = agentResult.finalAgent ?? selectedAgent;
+        routingTrace = attachAgentDecision(
+          routingTrace,
+          createAgentDecisionFromLlmRouting({
+            selectedAgent: finalAgentName,
+            confidence: routingDecision.confidence,
+          })
+        );
         await saveAgentFindingsToContext(
           request.sessionId,
           finalAgentName,
           agentResult.response
         );
 
-        return finalizeMultiAgentResponse(trace, {
-          ...agentResult,
-          handoffs: [{
-            from: 'Orchestrator',
-            to: finalAgentName,
-            reason: 'LLM routing decision',
-          }],
-        });
+        return finalizeMultiAgentResponse(
+          trace,
+          attachRoutingDecisionTrace(
+            {
+              ...agentResult,
+              handoffs: [{
+                from: 'Orchestrator',
+                to: finalAgentName,
+                reason: 'LLM routing decision',
+              }],
+            },
+            routingTrace
+          )
+        );
       }
     }
 
@@ -402,20 +477,33 @@ export async function executeMultiAgent(
 
       if (fallbackResult) {
         const finalAgentName = fallbackResult.finalAgent ?? suggestedAgent;
+        routingTrace = attachAgentDecision(
+          routingTrace,
+          createAgentDecisionFromFallback({
+            selectedAgent: finalAgentName,
+            confidence: preFilterResult.confidence,
+          })
+        );
         await saveAgentFindingsToContext(
           request.sessionId,
           finalAgentName,
           fallbackResult.response
         );
 
-        return finalizeMultiAgentResponse(trace, {
-          ...fallbackResult,
-          handoffs: [{
-            from: 'Orchestrator',
-            to: finalAgentName,
-            reason: 'Fallback routing (LLM inconclusive)',
-          }],
-        });
+        return finalizeMultiAgentResponse(
+          trace,
+          attachRoutingDecisionTrace(
+            {
+              ...fallbackResult,
+              handoffs: [{
+                from: 'Orchestrator',
+                to: finalAgentName,
+                reason: 'Fallback routing (LLM inconclusive)',
+              }],
+            },
+            routingTrace
+          )
+        );
       }
     }
 
@@ -423,25 +511,36 @@ export async function executeMultiAgent(
     const fallbackResponse = routingDecision.reasoning || '죄송합니다. 질문을 처리할 적절한 에이전트를 찾지 못했습니다.';
     const quality = evaluateAgentResponseQuality('Orchestrator', fallbackResponse, { durationMs });
 
-    return finalizeMultiAgentResponse(trace, {
-      success: true,
-      response: fallbackResponse,
-      handoffs: [],
-      finalAgent: 'Orchestrator',
-      toolsCalled: [],
-      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-      metadata: {
-        provider,
-        modelId,
-        totalRounds: 1,
-        handoffCount: 0,
-        durationMs,
-        responseChars: quality.responseChars,
-        formatCompliance: quality.formatCompliance,
-        qualityFlags: quality.qualityFlags,
-        latencyTier: quality.latencyTier,
-      },
-    });
+    routingTrace = attachAgentDecision(
+      routingTrace,
+      createAgentDecisionFromFallback({})
+    );
+
+    return finalizeMultiAgentResponse(
+      trace,
+      attachRoutingDecisionTrace(
+        {
+          success: true,
+          response: fallbackResponse,
+          handoffs: [],
+          finalAgent: 'Orchestrator',
+          toolsCalled: [],
+          usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+          metadata: {
+            provider,
+            modelId,
+            totalRounds: 1,
+            handoffCount: 0,
+            durationMs,
+            responseChars: quality.responseChars,
+            formatCompliance: quality.formatCompliance,
+            qualityFlags: quality.qualityFlags,
+            latencyTier: quality.latencyTier,
+          },
+        },
+        routingTrace
+      )
+    );
   } catch (error) {
     const durationMs = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : String(error);

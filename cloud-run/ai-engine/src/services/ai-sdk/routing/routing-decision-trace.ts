@@ -2,6 +2,20 @@ import type { QueryRoutingSignals } from './query-routing-signals';
 
 export const ROUTING_DECISION_TRACE_VERSION = '2026-05-12-v1' as const;
 
+type AgentRoutingSource = 'pre_filter' | 'llm_routing' | 'fallback';
+
+interface PreFilterResultLike {
+  shouldHandoff: boolean;
+  directResponse?: string;
+  suggestedAgent?: string;
+  confidence: number;
+}
+
+interface AgentDecisionInput {
+  selectedAgent?: string;
+  confidence?: number;
+}
+
 export interface RoutingDecisionTrace {
   version: typeof ROUTING_DECISION_TRACE_VERSION;
   signals: QueryRoutingSignals;
@@ -68,6 +82,145 @@ export function createRoutingDecisionTrace(
       confidence: signals.preFilter.confidence,
       reasonCodes: signals.preFilter.reasonCodes,
     },
+  };
+}
+
+function getSuggestedAgentReasonCode(agentName: string | undefined): string {
+  const normalized = (agentName ?? '').toLowerCase();
+  if (normalized.includes('reporter')) return 'prefilter_suggest_reporter';
+  if (normalized.includes('analyst')) return 'prefilter_suggest_analyst';
+  if (normalized.includes('advisor')) return 'prefilter_suggest_advisor';
+  if (normalized.includes('vision')) return 'prefilter_vision_attachment';
+  return 'prefilter_suggest_nlq';
+}
+
+function getDirectResponseReasonCode(query: string): string {
+  if (/^(안녕하세요|안녕|하이|헬로|hi|hello|hey|반가워|좋은\s*(아침|오후|저녁))[\s!?.]*$/i.test(query)) {
+    return 'prefilter_greeting';
+  }
+  if (/도움말|help|뭘\s*할\s*수/i.test(query)) return 'prefilter_help';
+  return 'prefilter_general';
+}
+
+export function createPreFilterDecision(
+  query: string,
+  result: PreFilterResultLike
+): NonNullable<RoutingDecisionTrace['preFilterDecision']> {
+  if (!result.shouldHandoff && result.directResponse) {
+    return {
+      action: 'direct_response',
+      confidence: result.confidence,
+      reasonCodes: [getDirectResponseReasonCode(query)],
+    };
+  }
+
+  if (result.suggestedAgent) {
+    return {
+      action: 'suggest_agent',
+      suggestedAgent: result.suggestedAgent,
+      confidence: result.confidence,
+      reasonCodes: [getSuggestedAgentReasonCode(result.suggestedAgent)],
+    };
+  }
+
+  return {
+    action: 'continue',
+    confidence: result.confidence,
+    reasonCodes: ['prefilter_continue'],
+  };
+}
+
+export function createToolDecision(
+  signals: QueryRoutingSignals,
+  options: {
+    allowedTools: string[];
+    forcedTool?: string;
+  }
+): NonNullable<RoutingDecisionTrace['toolDecision']> {
+  const intentCategory = options.allowedTools.includes('recommendCommands')
+    ? 'advisor'
+    : signals.intent;
+  const reasonCodes = [`tool_intent_${intentCategory}`];
+  if (options.forcedTool) {
+    reasonCodes.push(`tool_force_${options.forcedTool}`);
+  }
+
+  return {
+    intentCategory,
+    allowedTools: options.allowedTools,
+    ...(options.forcedTool ? { forcedTool: options.forcedTool } : {}),
+    reasonCodes,
+  };
+}
+
+function createAgentDecision(
+  source: AgentRoutingSource,
+  input: AgentDecisionInput
+): NonNullable<RoutingDecisionTrace['agentDecision']> {
+  const reasonCode =
+    source === 'pre_filter'
+      ? 'agent_source_pre_filter'
+      : source === 'llm_routing'
+        ? 'agent_source_llm_routing'
+        : input.selectedAgent
+          ? 'agent_source_fallback_suggested'
+          : 'agent_source_fallback_default_nlq';
+
+  return {
+    source,
+    ...(input.selectedAgent ? { selectedAgent: input.selectedAgent } : {}),
+    ...(typeof input.confidence === 'number'
+      ? { confidence: input.confidence }
+      : {}),
+    reasonCodes: [reasonCode],
+  };
+}
+
+export function createAgentDecisionFromPreFilter(
+  input: AgentDecisionInput
+): NonNullable<RoutingDecisionTrace['agentDecision']> {
+  return createAgentDecision('pre_filter', input);
+}
+
+export function createAgentDecisionFromLlmRouting(
+  input: AgentDecisionInput
+): NonNullable<RoutingDecisionTrace['agentDecision']> {
+  return createAgentDecision('llm_routing', input);
+}
+
+export function createAgentDecisionFromFallback(
+  input: AgentDecisionInput
+): NonNullable<RoutingDecisionTrace['agentDecision']> {
+  return createAgentDecision('fallback', input);
+}
+
+export function attachPreFilterDecision(
+  trace: RoutingDecisionTrace,
+  preFilterDecision: NonNullable<RoutingDecisionTrace['preFilterDecision']>
+): RoutingDecisionTrace {
+  return {
+    ...trace,
+    preFilterDecision,
+  };
+}
+
+export function attachToolDecision(
+  trace: RoutingDecisionTrace,
+  toolDecision: NonNullable<RoutingDecisionTrace['toolDecision']>
+): RoutingDecisionTrace {
+  return {
+    ...trace,
+    toolDecision,
+  };
+}
+
+export function attachAgentDecision(
+  trace: RoutingDecisionTrace,
+  agentDecision: NonNullable<RoutingDecisionTrace['agentDecision']>
+): RoutingDecisionTrace {
+  return {
+    ...trace,
+    agentDecision,
   };
 }
 
