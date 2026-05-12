@@ -4,6 +4,7 @@ import type {
 } from '../../core/assistant-runtime';
 import { getMonitoringPeakMetric, type PeakMetricSlot } from './peak-metric';
 import {
+  type ParsedPeakMetricRequest,
   parseMonitoringPeakMetricFrame,
   parseMonitoringPeakMetricMessage,
 } from './peak-metric-intent';
@@ -67,18 +68,23 @@ function buildPeakMetricPrompt(peak: PeakMetricSlot): string {
   ].join('\n');
 }
 
+function parsePeakMetricRequest(
+  request: DomainEvidenceRequest
+): ParsedPeakMetricRequest | null {
+  if (request.intentFrame) {
+    return parseMonitoringPeakMetricFrame(request);
+  }
+
+  return parseMonitoringPeakMetricMessage(request.message);
+}
+
 export const monitoringPeakMetricEvidenceProvider: DomainEvidenceProvider = {
   id: 'monitoring-peak-metric',
   canHandle(request: DomainEvidenceRequest): boolean {
-    return (
-      parseMonitoringPeakMetricFrame(request) !== null ||
-      parseMonitoringPeakMetricMessage(request.message) !== null
-    );
+    return parsePeakMetricRequest(request) !== null;
   },
   async resolve(request: DomainEvidenceRequest) {
-    const parsed =
-      parseMonitoringPeakMetricFrame(request) ??
-      parseMonitoringPeakMetricMessage(request.message);
+    const parsed = parsePeakMetricRequest(request);
     if (!parsed) return null;
 
     const peak = getMonitoringPeakMetric(parsed);

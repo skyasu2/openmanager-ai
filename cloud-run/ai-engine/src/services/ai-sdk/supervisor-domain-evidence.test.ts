@@ -70,6 +70,11 @@ describe('supervisor domain evidence support', () => {
     expect(
       provider?.canHandle(createEvidenceRequest('부하가 높으면 조치 방법 알려줘'))
     ).toBe(false);
+    expect(
+      provider?.canHandle(
+        createEvidenceRequest('최근 하루 load 높아서 힘들 때 조치 방법 알려줘')
+      )
+    ).toBe(false);
   });
 
   it('exposes monitoring peak metric as a domain capability instead of a provider name', () => {

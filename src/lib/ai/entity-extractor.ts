@@ -35,6 +35,8 @@ export const KNOWN_ENTITY_SERVER_IDS = getRegisteredServerIds() as [
 
 export type KnownEntityServerId = RegisteredServerId;
 
+// Legacy top-level metric slots stay limited to dashboard metrics.
+// Load metrics are carried by intentFrame.metric as load1/load5.
 export const EXTRACTED_METRICS = ['cpu', 'memory', 'disk', 'network'] as const;
 export type ExtractedMetric = (typeof EXTRACTED_METRICS)[number];
 

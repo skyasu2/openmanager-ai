@@ -24,6 +24,9 @@ const TEMPORAL_OR_RANKING_FOCUS_PATTERN =
   /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|때|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|영향.*서버|어떤\s*서버/i;
 const TIME_WINDOW_PATTERN =
   /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|last\s*24|last\s*day|past\s*day/i;
+const ADVICE_SEEKING_PATTERN = /조치|방법|해결|어떻게|대응|처리|해야\s*해|어쩌/i;
+const EXPLICIT_PEAK_OR_RANKING_REQUEST_PATTERN =
+  /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|영향.*서버|어떤\s*서버|피크|최고점|최댓값|peak|max|highest/i;
 const HOURS_PATTERN = /(\d{1,2})\s*(?:시간|h|hr|hour)s?/i;
 const METRIC_PATTERNS: Array<{ metric: PeakMetric; pattern: RegExp }> = [
   {
@@ -44,6 +47,13 @@ function parseWindowHours(message: string): number {
     : DEFAULT_PEAK_WINDOW_HOURS;
 }
 
+function isAdviceOnlyRequest(message: string): boolean {
+  return (
+    ADVICE_SEEKING_PATTERN.test(message) &&
+    !EXPLICIT_PEAK_OR_RANKING_REQUEST_PATTERN.test(message)
+  );
+}
+
 export function parseMonitoringPeakMetricMessage(
   message: string
 ): ParsedPeakMetricRequest | null {
@@ -52,6 +62,7 @@ export function parseMonitoringPeakMetricMessage(
     null;
   if (
     !metric ||
+    isAdviceOnlyRequest(message) ||
     !EXTREME_OR_PEAK_PATTERN.test(message) ||
     !TEMPORAL_OR_RANKING_FOCUS_PATTERN.test(message) ||
     !TIME_WINDOW_PATTERN.test(message)

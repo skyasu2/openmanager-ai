@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { parseMonitoringPeakMetricMessage } from './peak-metric-intent';
+import {
+  MONITORING_DOMAIN_ID,
+  MONITORING_PEAK_METRIC_CAPABILITY_ID,
+} from './constants';
+import {
+  parseMonitoringPeakMetricFrame,
+  parseMonitoringPeakMetricMessage,
+} from './peak-metric-intent';
 import { getMonitoringPeakMetric, getPeakMetricSlot } from './peak-metric';
 
 describe('getPeakMetricSlot', () => {
@@ -69,5 +76,56 @@ describe('parseMonitoringPeakMetricMessage', () => {
     expect(
       parseMonitoringPeakMetricMessage('최근 하루 load timeout 조치 방법 알려줘')
     ).toBeNull();
+    expect(
+      parseMonitoringPeakMetricMessage(
+        '최근 하루 load 높아서 힘들 때 조치 방법 알려줘'
+      )
+    ).toBeNull();
+  });
+
+  it('keeps peak questions routable when they also ask for response guidance', () => {
+    expect(
+      parseMonitoringPeakMetricMessage(
+        '최근 하루 load 피크 시간과 대응 방법 알려줘'
+      )
+    ).toMatchObject({
+      metric: 'load',
+      windowHours: 24,
+    });
+  });
+
+  it('keeps message and frame parsing aligned for peak load requests', () => {
+    const query = '최근 24시간 load가 가장 높았던 구간';
+    const fromMessage = parseMonitoringPeakMetricMessage(query);
+    const fromFrame = parseMonitoringPeakMetricFrame({
+      requestId: 'peak-frame-parity',
+      domainId: MONITORING_DOMAIN_ID,
+      message: query,
+      messages: [{ role: 'user', content: query }],
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_peak',
+        capabilityId: MONITORING_PEAK_METRIC_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        topN: 3,
+        ambiguity: 'low',
+        confidence: 0.9,
+      },
+    });
+
+    expect(fromMessage).toMatchObject({
+      metric: 'load',
+      windowHours: 24,
+    });
+    expect(fromFrame).toMatchObject({
+      capabilityId: MONITORING_PEAK_METRIC_CAPABILITY_ID,
+      intent: 'metric_peak',
+      metric: 'load',
+      windowHours: 24,
+    });
   });
 });
