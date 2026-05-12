@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-10
+> Last reviewed: 2026-05-12
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
-> **v8.11.124** | Updated 2026-05-10
+> **v8.11.129** | Updated 2026-05-12
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -208,7 +208,102 @@ flowchart LR
                      │ to Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-05-10): `src/hooks/ai/useHybridAIQuery.ts`, `src/hooks/ai/useAIChatCore.ts`, `src/app/api/ai/supervisor/stream/v2/route.ts`, `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `src/app/api/ai/artifact-intent/route.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-messages.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-summary-fallback.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/analytics.ts`, `cloud-run/ai-engine/src/routes/analytics-report-utils.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
+> Source of truth (2026-05-12): `src/hooks/ai/useHybridAIQuery.ts`, `src/hooks/ai/useAIChatCore.ts`, `src/app/api/ai/supervisor/stream/v2/route.ts`, `src/lib/ai/entity-extractor.ts`, `src/lib/ai/semantic-intent-frame.ts`, `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `src/app/api/ai/artifact-intent/route.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-messages.ts`, `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-intent.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-evidence-provider.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-summary-fallback.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/analytics.ts`, `cloud-run/ai-engine/src/routes/analytics-report-utils.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
+
+### Semantic Query Routing 상세
+
+자연어 질의는 정규식만으로 직접 답하지 않습니다. 앞단 LLM은 답변 생성기가 아니라 `SemanticIntentFrame` 생성기로 제한하고, 실제 데이터 조회·provider 선택·수치 계산은 domain resolver와 deterministic evidence provider가 담당합니다. Root semantic parser가 실패하거나 frame이 drop되면 Cloud Run domain parser가 보수적 fallback으로 동작합니다.
+
+```
+Browser Query
+  |
+  v
++--------------------------------------------------------------+
+| Root App                                                     |
+| src/lib/ai/entity-extractor.ts                               |
+| src/lib/ai/semantic-intent-frame.ts                          |
+|                                                              |
+|  1. cheap guard                                              |
+|     - off-domain                                             |
+|     - general coding                                         |
+|  2. semantic parser                                          |
+|     - generateText + Output.object + Zod                     |
+|     - returns SemanticIntentFrame?                           |
+|  3. frame gate                                               |
+|     - confidence < 80          -> drop                       |
+|     - ambiguity = high         -> drop                       |
+|     - domain/intent = unknown  -> drop                       |
++---------------------------+----------------------------------+
+                            |
+                            | metadata.intentFrame
+                            v
++--------------------------------------------------------------+
+| Vercel BFF                                                   |
+| /api/ai/supervisor/stream/v2                                 |
+|                                                              |
+|  - auth / CSRF / prompt-injection guard                      |
+|  - semanticQueryTrace 보존                                  |
+|  - Cloud Run-safe DomainIntentFrame payload 전달             |
++---------------------------+----------------------------------+
+                            |
+                            v
++--------------------------------------------------------------+
+| Cloud Run Supervisor                                         |
+| supervisor-semantic-metadata.ts                              |
+| supervisor-domain-evidence.ts                                |
+|                                                              |
+|  1. metadata frame normalize                                 |
+|  2. resolveDomainEvidenceForStream()                         |
+|     - metadata frame 우선                                    |
+|     - domain.intentParser fallback                           |
+|  3. domain capability lookup                                 |
+|     - e.g. monitoring.metric_peak                            |
++---------------------------+----------------------------------+
+                            |
+                            v
++--------------------------------------------------------------+
+| Monitoring Domain Pack                                       |
+| domain-pack.ts                                               |
+| peak-metric-intent.ts                                        |
+| peak-metric-evidence-provider.ts                             |
+|                                                              |
+|  canHandle(frame or concept-level parser)                    |
+|       |                                                      |
+|       v                                                      |
+|  getMonitoringPeakMetric()                                   |
+|       |                                                      |
+|       v                                                      |
+|  deterministic evidence                                      |
+|  - slotIndex / timestamp / sourceMetric / windowHours        |
+|  - top servers / max value / average top value               |
++---------------------------+----------------------------------+
+                            |
+                            v
++--------------------------------------------------------------+
+| Final Answer Generator                                       |
+|                                                              |
+|  - evidence prompt 기반 1-2문장 운영 해석                    |
+|  - evidence 없는 수치·원인 임의 생성 금지                    |
+|  - provider 구현체 이름은 user-facing answer에 노출 금지     |
++--------------------------------------------------------------+
+```
+
+Peak metric 예시는 다음처럼 해석됩니다.
+
+```
+"최근 하루 부하 최고점 top server"
+  -> SemanticIntentFrame 또는 domain parser fallback
+  -> domainId=openmanager-monitoring
+  -> intent=metric_peak
+  -> capabilityId=monitoring.metric_peak
+  -> scope=whole_fleet
+  -> metric=load/load1
+  -> timeWindow=24h
+  -> aggregation=peak
+  -> monitoringPeakMetricEvidenceProvider
+  -> deterministic OTel slot scan
+  -> evidence-grounded final answer
+```
 
 ### 기능 모듈 ASCII 맵
 

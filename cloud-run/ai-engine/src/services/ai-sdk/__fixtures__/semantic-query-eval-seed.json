@@ -95,6 +95,101 @@
     }
   },
   {
+    "query": "전체 서버 기준 지난 하루 중 load average가 가장 높았던 시간은?",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "load1",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "전체 서버가 최근 24시간 중 제일 힘들었던 순간은? CPU 빼고 로드 기준",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "load1",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "최근 24시간 load가 가장 높았던 구간",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "load1",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "최근 하루 시스템 pressure 최대 구간은?",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "load1",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
+    "query": "최근 하루 부하 최고점 top server",
+    "expectedFrame": {
+      "domainId": "openmanager-monitoring",
+      "intent": "metric_peak",
+      "capabilityId": "monitoring.metric_peak",
+      "scope": "whole_fleet",
+      "targets": [],
+      "metric": "load1",
+      "timeWindow": "24h",
+      "aggregation": "peak",
+      "ambiguity": "low"
+    },
+    "expectedReasonCodes": ["semantic_frame_evidence_validated"],
+    "expectedEvidence": {
+      "providerId": "monitoring-peak-metric",
+      "metadataKeys": ["slotIndex", "timestamp", "sourceMetric", "windowHours"]
+    }
+  },
+  {
     "query": "전체 서버 CPU가 가장 높았던 최근 시간대 알려줘",
     "expectedFrame": {
       "domainId": "openmanager-monitoring",

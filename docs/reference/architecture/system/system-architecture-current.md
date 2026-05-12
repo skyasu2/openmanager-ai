@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-05-09
+> Last reviewed: 2026-05-12
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -147,34 +147,91 @@ graph TB
 - `src/app/api/servers-unified/route.ts`
 - `src/services/metrics/MetricsProvider.ts`
 
-### Flow 2: AI Chat
+### Flow 2: AI Chat / Semantic Query Routing
 
 ```
 1. User → AI Sidebar → 질의 입력
 2. src/components/ai-sidebar/EnhancedAIChat.tsx
-3. useHybridAIQuery() 기본 경로 → POST /api/ai/supervisor/stream/v2
-4. /api/ai/supervisor/stream/v2/route.ts:
+3. useQueryExecution() cheap guard:
+   a. off-domain / general coding guard
+   b. optional NLQ semantic parser 호출
+   c. SemanticIntentFrame + semanticQueryTrace 생성
+4. useHybridAIQuery() 기본 경로 → POST /api/ai/supervisor/stream/v2
+5. /api/ai/supervisor/stream/v2/route.ts:
    a. Auth 검증 (NextAuth session)
    b. Prompt injection guard
-   c. normalized message shaping + optional resumable stream 관리 (`AI_RESUMABLE_STREAMS_ENABLED=true`)
+   c. normalized message + semantic metadata 보존
    d. Proxy → Cloud Run UIMessageStream v2 (X-API-Key header)
-5. Cloud Run:
+6. Cloud Run:
    a. cloud-run/ai-engine/src/routes/supervisor.ts → 수신
-   b. Supervisor: 질의 복잡도 판단 (Single vs Multi-agent)
-   c. Orchestrator: intent 분류 → Agent handoff
-   d. 선택된 Agent 실행 (NLQ/Analyst/Reporter/Advisor/Vision)
-   e. finalAnswer tool 종료 신호로 응답 완료
-6. UIMessageStream → Vercel Proxy → Browser
-7. 스트리밍 응답 렌더링 (진행 중 stream renderer, 완료 응답은 MarkdownRenderer)
+   b. supervisor-semantic-metadata.ts → DomainIntentFrame 정규화
+   c. resolveDomainEvidenceForStream() → metadata frame 우선, domain parser fallback
+   d. DomainCapabilityManifest → DomainEvidenceProvider 선택
+   e. deterministic evidence provider가 데이터 조회/계산/검증 수행
+   f. LLM은 evidence prompt를 근거로 짧은 운영 해석만 생성
+7. UIMessageStream → Vercel Proxy → Browser
+8. 스트리밍 응답 렌더링 (진행 중 stream renderer, 완료 응답은 MarkdownRenderer)
 
 > 참고: `/api/ai/supervisor`는 아직 삭제되지 않았지만, 현재는 local dev JSON fallback 및 plain/cache caller용 legacy proxy로 유지됩니다.
 ```
 
+현재 peak-load 질의는 다음 구조로 처리됩니다. LLM은 내부 provider 구현체 이름을 알지 못하고, provider 선택과 수치 계산은 domain resolver와 deterministic provider가 담당합니다.
+
+```
+User Query
+  │
+  ├─ Root App cheap guards
+  │    ├─ off-domain guard
+  │    └─ general coding guard
+  │
+  ├─ Front semantic parser (/api/ai/nlq/extract-entities)
+  │    └─ SemanticIntentFrame?
+  │       {
+  │         domain: "monitoring",
+  │         intent: "metric_peak",
+  │         scope: "whole_fleet",
+  │         metric: "load1",
+  │         timeWindow: "24h",
+  │         aggregation: "peak"
+  │       }
+  │
+  ├─ Vercel BFF
+  │    └─ SemanticIntentFrame -> Cloud Run metadata.intentFrame
+  │
+  └─ Cloud Run AI Engine
+       │
+       ├─ supervisor-semantic-metadata.ts
+       │    └─ validate/drop invalid frames + semanticQueryTrace
+       │
+       ├─ resolveDomainEvidenceForStream()
+       │    ├─ metadata intentFrame 우선
+       │    └─ monitoringDomainPack.intentParser fallback
+       │
+       ├─ monitoring DomainCapabilityManifest
+       │    └─ capabilityId: monitoring.metric_peak
+       │
+       ├─ monitoringPeakMetricEvidenceProvider
+       │    ├─ canHandle(frame or concept-level parser)
+       │    ├─ getMonitoringPeakMetric()
+       │    └─ validate evidence / build fallback answer
+       │
+       └─ Final Answer Generator
+            ├─ evidence prompt 기반 설명
+            └─ 수치 임의 생성 금지
+```
+
 **핵심 파일 경로**:
 - `src/hooks/ai/useHybridAIQuery.ts`
+- `src/lib/ai/entity-extractor.ts`
+- `src/lib/ai/semantic-intent-frame.ts`
 - `src/app/api/ai/supervisor/stream/v2/route.ts`
 - `src/app/api/ai/supervisor/route.ts` (legacy fallback)
 - `cloud-run/ai-engine/src/routes/supervisor.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.ts`
+- `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`
+- `cloud-run/ai-engine/src/domains/monitoring/peak-metric-intent.ts`
+- `cloud-run/ai-engine/src/domains/monitoring/peak-metric-evidence-provider.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator.ts`
 

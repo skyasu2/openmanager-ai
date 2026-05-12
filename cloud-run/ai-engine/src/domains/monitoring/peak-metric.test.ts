@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { parseMonitoringPeakMetricMessage } from './peak-metric-intent';
 import { getMonitoringPeakMetric, getPeakMetricSlot } from './peak-metric';
 
 describe('getPeakMetricSlot', () => {
@@ -34,5 +35,39 @@ describe('getPeakMetricSlot', () => {
     expect(peak?.requestedMetric).toBe('load');
     expect(peak?.sourceLabel).toContain('로드');
     expect(peak?.topServers.length).toBeGreaterThan(0);
+  });
+});
+
+describe('parseMonitoringPeakMetricMessage', () => {
+  it('recognizes concept-level peak load phrasing variants without exact sentence matching', () => {
+    const queries = [
+      '전체 서버 기준 지난 하루 중 load average가 가장 높았던 시간은?',
+      '전체 서버가 최근 24시간 중 제일 힘들었던 순간은? CPU 빼고 로드 기준',
+      '최근 하루 시스템 pressure 최대 구간은?',
+      '최근 24시간 load가 가장 높았던 구간',
+      '최근 하루 부하 최고점 top server',
+    ];
+
+    for (const query of queries) {
+      expect(parseMonitoringPeakMetricMessage(query)).toMatchObject({
+        metric: 'load',
+        windowHours: 24,
+      });
+    }
+  });
+
+  it('does not route general load advice to the peak metric capability', () => {
+    expect(
+      parseMonitoringPeakMetricMessage('부하가 높으면 조치 방법 알려줘')
+    ).toBeNull();
+    expect(
+      parseMonitoringPeakMetricMessage('최근 하루 부하 조치 방법 알려줘')
+    ).toBeNull();
+    expect(
+      parseMonitoringPeakMetricMessage('최근 24시간 부하가 높으면 조치 방법 알려줘')
+    ).toBeNull();
+    expect(
+      parseMonitoringPeakMetricMessage('최근 하루 load timeout 조치 방법 알려줘')
+    ).toBeNull();
   });
 });

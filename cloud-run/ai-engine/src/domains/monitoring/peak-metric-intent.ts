@@ -19,9 +19,9 @@ export interface ParsedPeakMetricRequest {
 const DEFAULT_PEAK_WINDOW_HOURS = 24;
 
 const EXTREME_OR_PEAK_PATTERN =
-  /가장|제일|최고|최대|피크|최고점|최댓값|높|튀(?:는|었|었다|었던|었는|었냐|었어|었고|ㄴ|었나)?|튄|스파이크|spike|버거(?:운|웠|웠던|웠나|웠어)|부담|압박|몰린|집중|high|highest|peak|max/i;
-const TIME_QUESTION_PATTERN =
-  /언제|시간대|시각|시점|몇\s*시|때|when|time|timestamp/i;
+  /가장|제일|최고|최대|피크|최고점|최댓값|높|힘들(?:었|었던|었나|었어|었냐|던)?|튀(?:는|었|었다|었던|었는|었냐|었어|었고|ㄴ|었나)?|튄|스파이크|spike|버거(?:운|웠|웠던|웠나|웠어)|부담|압박|몰린|집중|high|highest|peak|max/i;
+const TEMPORAL_OR_RANKING_FOCUS_PATTERN =
+  /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|때|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|영향.*서버|어떤\s*서버/i;
 const TIME_WINDOW_PATTERN =
   /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|last\s*24|last\s*day|past\s*day/i;
 const HOURS_PATTERN = /(\d{1,2})\s*(?:시간|h|hr|hour)s?/i;
@@ -29,7 +29,7 @@ const METRIC_PATTERNS: Array<{ metric: PeakMetric; pattern: RegExp }> = [
   {
     metric: 'load',
     pattern:
-      /부하|로드|시스템\s*load|system\s*load|load\s*average|\bload(?:1|5)?\b|node_load[15]\b/i,
+      /부하|로드|시스템\s*(?:load|pressure)|system\s*(?:load|pressure)|load\s*(?:average|avg)|\bload(?:1|5)?\b|node_load[15]\b/i,
   },
   { metric: 'cpu', pattern: /\bcpu\b|씨피유/i },
   { metric: 'memory', pattern: /메모리|\bmem\b|\bmemory\b/i },
@@ -53,7 +53,7 @@ export function parseMonitoringPeakMetricMessage(
   if (
     !metric ||
     !EXTREME_OR_PEAK_PATTERN.test(message) ||
-    !TIME_QUESTION_PATTERN.test(message) ||
+    !TEMPORAL_OR_RANKING_FOCUS_PATTERN.test(message) ||
     !TIME_WINDOW_PATTERN.test(message)
   ) {
     return null;

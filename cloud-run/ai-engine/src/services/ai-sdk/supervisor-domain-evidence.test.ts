@@ -169,6 +169,10 @@ describe('supervisor domain evidence support', () => {
     const queries = [
       '서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도.',
       '최근 하루 동안 전체 서버가 제일 버거웠던 때가 언제야? CPU 말고 시스템 load 기준으로, 주범 서버까지.',
+      '전체 서버 기준 지난 하루 중 load average가 가장 높았던 시간은?',
+      '전체 서버가 최근 24시간 중 제일 힘들었던 순간은? CPU 빼고 로드 기준',
+      '최근 24시간 load가 가장 높았던 구간',
+      '최근 하루 부하 최고점 top server',
     ];
 
     for (const query of queries) {
