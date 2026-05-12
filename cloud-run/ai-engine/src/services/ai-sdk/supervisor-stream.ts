@@ -56,6 +56,7 @@ export async function* executeSupervisorStream(
     query: queryText,
     domain: runtimeContext.host.domain,
   }) ?? undefined;
+  const semanticQueryTrace = domainEvidence?.metadata?.semanticQueryTrace;
 
   logger.info({
     sessionId: request.sessionId,
@@ -89,6 +90,9 @@ export async function* executeSupervisorStream(
           assistantPlan,
           assistantRuntime: runtimeMetadata,
           assistantResult: buildSupervisorAssistantResult(routeDecision),
+          ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
+            ? { semanticQueryTrace }
+            : {}),
         },
       },
     };
@@ -117,6 +121,9 @@ export async function* executeSupervisorStream(
           assistantPlan,
           assistantRuntime: runtimeMetadata,
           assistantResult: buildSupervisorAssistantResult(routeDecision),
+          ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
+            ? { semanticQueryTrace }
+            : {}),
         },
       },
     };
@@ -208,6 +215,9 @@ export async function* executeSupervisorStream(
                     errorCode: 'SUPERVISOR_STREAM_FAILED',
                   }),
                 }),
+                ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
+                  ? { semanticQueryTrace }
+                  : {}),
               },
             },
           };

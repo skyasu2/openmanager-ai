@@ -468,7 +468,9 @@ describe('supervisor domain wiring contract', () => {
         type: 'done',
         data: {
           success: true,
-          metadata: {},
+          metadata: {
+            provider: 'mock-orchestrator',
+          },
         },
       };
     });
@@ -494,7 +496,23 @@ describe('supervisor domain wiring contract', () => {
 
     expect(events.at(-1)).toMatchObject({
       type: 'done',
-      data: { success: true },
+      data: {
+        success: true,
+        metadata: {
+          provider: 'mock-orchestrator',
+          semanticQueryTrace: {
+            originalQuery: 'account health please',
+            selectedDomain: 'sample-support',
+            selectedEvidenceProvider: 'sample-stream-evidence',
+            evidenceAvailable: true,
+            clarificationRequired: false,
+            reasonCodes: expect.arrayContaining([
+              'semantic_frame_raw_fallback_used',
+              'semantic_frame_evidence_validated',
+            ]),
+          },
+        },
+      },
     });
     expect(mockExecuteMultiAgentStream).toHaveBeenCalledTimes(1);
     expect(mockExecuteMultiAgentStream.mock.calls[0]?.[0]).toEqual(
