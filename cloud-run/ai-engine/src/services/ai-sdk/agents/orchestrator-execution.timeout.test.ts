@@ -137,6 +137,7 @@ vi.mock('../../observability/langfuse', () => ({
 
 import { executeMultiAgent } from './orchestrator-execution';
 import { executeMultiAgentStream } from './orchestrator-execution';
+import { getAgentFromRouting } from './schemas';
 
 describe('executeMultiAgent timeout contract', () => {
   beforeEach(() => {
@@ -375,5 +376,104 @@ describe('executeMultiAgent timeout contract', () => {
 
     expect(statusMessages.some((message) => message.includes('라우팅 타임아웃'))).toBe(true);
     expect(statusMessages.some((message) => message.includes('Vision Agent 사용 불가'))).toBe(true);
+  });
+
+  it('records pre-filter forced routing source without calling LLM routing', async () => {
+    const contextModule = await import('./orchestrator-context');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Reporter Agent',
+      confidence: 0.9,
+    });
+    mockExecuteForcedRouting.mockResolvedValueOnce({
+      success: true,
+      response: 'Reporter forced response',
+      handoffs: [],
+      finalAgent: 'Reporter Agent',
+      toolsCalled: [],
+      usage: {
+        promptTokens: 10,
+        completionTokens: 5,
+        totalTokens: 15,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-reporter',
+        totalRounds: 1,
+        handoffCount: 0,
+        durationMs: 25,
+      },
+    });
+
+    const result = await executeMultiAgent({
+      messages: [{ role: 'user', content: '장애 보고서 작성해줘' }],
+      sessionId: 'routing-trace-prefilter-source',
+    });
+
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.metadata.routingDecisionTrace?.agentDecision).toMatchObject({
+        source: 'pre_filter',
+        selectedAgent: 'Reporter Agent',
+        reasonCodes: ['agent_source_pre_filter'],
+      });
+    }
+  });
+
+  it('records LLM routing source when pre-filter is not decisive', async () => {
+    const contextModule = await import('./orchestrator-context');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      confidence: 0.5,
+    });
+    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Analyst Agent');
+    mockGenerateObjectWithFallback.mockResolvedValueOnce({
+      object: {
+        selectedAgent: 'ANALYST',
+        confidence: 0.72,
+        reasoning: 'Need anomaly analysis',
+      },
+      usage: {
+        inputTokens: 12,
+        outputTokens: 8,
+        totalTokens: 20,
+      },
+    });
+    mockExecuteForcedRouting.mockResolvedValueOnce({
+      success: true,
+      response: 'Analyst routed response',
+      handoffs: [],
+      finalAgent: 'Analyst Agent',
+      toolsCalled: [],
+      usage: {
+        promptTokens: 10,
+        completionTokens: 5,
+        totalTokens: 15,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-analyst',
+        totalRounds: 1,
+        handoffCount: 0,
+        durationMs: 25,
+      },
+    });
+
+    const result = await executeMultiAgent({
+      messages: [{ role: 'user', content: '왜 느려졌는지 분석해줘' }],
+      sessionId: 'routing-trace-llm-source',
+    });
+
+    expect(mockGenerateObjectWithFallback).toHaveBeenCalledOnce();
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.metadata.routingDecisionTrace?.agentDecision).toMatchObject({
+        source: 'llm_routing',
+        selectedAgent: 'Analyst Agent',
+        confidence: 0.72,
+        reasonCodes: ['agent_source_llm_routing'],
+      });
+    }
   });
 });
