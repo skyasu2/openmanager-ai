@@ -9,6 +9,8 @@ WAIT_FOR_COMPLETION=0
 POLL_INTERVAL_SECONDS=15
 MAX_ATTEMPTS=40
 GITLAB_API_BASE_URL="${GITLAB_API_BASE_URL:-https://gitlab.com/api/v4}"
+GITLAB_CURL_CONNECT_TIMEOUT_SECONDS="${GITLAB_CURL_CONNECT_TIMEOUT_SECONDS:-10}"
+GITLAB_CURL_MAX_TIME_SECONDS="${GITLAB_CURL_MAX_TIME_SECONDS:-30}"
 
 usage() {
   cat <<'EOF'
@@ -38,6 +40,9 @@ Examples:
 When --wait times out after observing a non-terminal pipeline, the script
 prints that pipeline with note=pipeline_not_terminal_after_wait instead of
 reporting not_created.
+
+When --wait is still waiting for GitLab to create a pipeline for the SHA, the
+script prints not_created progress lines with note=waiting_for_pipeline_creation.
 EOF
 }
 
@@ -49,6 +54,7 @@ print_pipeline_line() {
   local pipeline_updated_at="$5"
   local pipeline_url="$6"
   local pipeline_note="${7:-}"
+  local pipeline_extra="${8:-}"
 
   printf 'id=%s status=%s sha=%s ref=%s updated_at=%s url=%s' \
     "$pipeline_id" \
@@ -60,6 +66,10 @@ print_pipeline_line() {
 
   if [[ -n "$pipeline_note" ]]; then
     printf ' note=%s' "$pipeline_note"
+  fi
+
+  if [[ -n "$pipeline_extra" ]]; then
+    printf ' %s' "$pipeline_extra"
   fi
 
   printf '\n'
@@ -165,6 +175,8 @@ pipeline_request() {
   curl -fsSL \
     --retry 3 \
     --retry-delay 1 \
+    --connect-timeout "$GITLAB_CURL_CONNECT_TIMEOUT_SECONDS" \
+    --max-time "$GITLAB_CURL_MAX_TIME_SECONDS" \
     --header "PRIVATE-TOKEN: $token" \
     "${GITLAB_API_BASE_URL%/}/projects/${encoded_project_path}/pipelines?sha=${sha}&per_page=1"
 }
@@ -249,6 +261,16 @@ while true; do
         "no_pipeline_found_for_sha"
       exit 0
     fi
+
+    print_pipeline_line \
+      "none" \
+      "not_created" \
+      "$TARGET_SHA" \
+      "$CURRENT_REF" \
+      "none" \
+      "none" \
+      "waiting_for_pipeline_creation" \
+      "attempt=$attempt"
   fi
 
   if (( attempt >= MAX_ATTEMPTS )); then
@@ -266,7 +288,8 @@ while true; do
       "$CURRENT_REF" \
       "none" \
       "none" \
-      "no_pipeline_found_after_wait"
+      "no_pipeline_found_after_wait" \
+      "attempts=$MAX_ATTEMPTS"
     exit 0
   fi
 

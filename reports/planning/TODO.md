@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`CI/QA operational triage cleanup complete`)
+**Last Updated**: 2026-05-13 KST (`CI wait progress and QA evidence audit refresh complete`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -30,12 +30,13 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | P2: Local Docker/WSL storage hygiene | Medium | tracking-only | 주기 점검 기준 추가. 비파괴 감사는 `npm run storage:audit` / 상세 Docker 확인은 `npm run storage:audit -- --docker-verbose`. 2026-05-08 감사: `/mnt/d` 4%, WSL `/` 8%, `/mnt/c` 66% 사용. Docker images 10.11GiB, build cache 0B, volumes 309.3MiB이며 대부분 실행 중인 Supabase/GitHub MCP 컨테이너에 연결됨. 즉시 삭제보다 Supabase 중지 후 prune 여부 판단. WSL 상위 정리 후보는 `.npm` 9.7GiB, `.gemini/backups` 2.7GiB, `.codex/sessions` 2.6GiB, `.npm/_npx` 2.5GiB, `.cache/uv` 2.4GiB, browser cache 각 1.2GiB, `tmp/root-artifacts` 641MiB. 삭제 전 QA evidence는 `npm run qa:evidence:audit` 확인. |
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-08 `npm run qa:evidence:audit` 재확인: missing durable artifact paths `0`, orphan durable evidence `8개`, recent counted runs without artifacts `0`, `reports/qa=90.09MiB`, `reports/qa/evidence=84.09MiB`, archive candidates `7개/2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-13 `npm run qa:evidence:audit` 재확인: missing durable artifact paths `0`, orphan durable evidence `19개`, recent counted runs without artifacts `0`, acknowledged artifact debt run `1개(QA-20260511-0479)`, `reports/qa=101.45MiB`, `reports/qa/evidence=94.75MiB`, archive candidates `7개/2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건. orphan evidence는 삭제 전 각 run/repro 참조 가치 확인이 필요하며, referenced legacy evidence 36.40MiB는 policy-protected proof 가능성이 높아 explicit cleanup batch 없이는 보존. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog (완료 이력)
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~CI wait progress and QA evidence audit refresh~~ | — | **완료** — `runner-health-check.sh`가 로컬 runner/Docker 확인만 보장한다는 한계를 명시하고 출력에 `scope=local`을 추가. `gitlab:pipeline:head -- --wait`가 pipeline 생성 대기 중에도 `waiting_for_pipeline_creation` 진행 줄을 출력하도록 보강하고 GitLab API curl timeout을 추가. QA evidence On Hold 수치를 2026-05-13 감사 결과로 갱신. 검증: shell syntax, runner health check, pipeline wait smoke, `npm run qa:evidence:audit`, `git diff --check`. |
 | ~~CI/QA operational triage cleanup~~ | — | **완료** — v8.11.141 배포 후 남은 문제를 런타임/CI/QA evidence로 분리 진단. GitLab tag pipeline `created` 정체 시 `gitlab:pipeline:head -- --wait`가 기존 pipeline을 `not_created`로 오판하지 않도록 timeout 보고를 수정했고, `QA-20260511-0479` historical no-durable-evidence 상태를 `artifactDebt`로 분리해 recent counted run artifact warning을 해소. 검증: `bash -n scripts/gitlab/check-head-pipeline.sh`, targeted GitLab pipeline wait smoke, `npm run qa:evidence:audit`. |
 | ~~AI Engine line-guard regression cleanup~~ | — | **완료** — `orchestrator-execution.ts` streaming entrypoint를 `orchestrator-execution-stream.ts`로 분리하고, `supervisor-single-agent.ts` tool result summary helper를 `supervisor-tool-results.ts`로 분리해 line-guard fail 2건을 0건으로 복구. 검증: `npm run line-guard`, AI Engine type-check, targeted Vitest 3 files / 27 tests, AI Engine full test 117 files / 1162 tests, `git diff --check` 통과. |
 | ~~AI Assistant response quality regression hardening~~ | — | **완료** — Production 직접 Cloud Run supervisor 회귀를 재현한 failing spec 커밋 `a6d76c6a9` 후 구현 커밋 `10ae60c7f`로 TOP-N direct single-agent deterministic synthesis, user-facing response sanitizer, `getServerMetricsAdvanced.answer` scaffold 제거, AI Engine off-domain guard, 짧은 정량 metric answer `TOO_SHORT` false positive 완화를 적용. 검증: targeted Vitest 4 files / 79 tests, AI Engine type-check, AI Engine full test 117 files / 1162 tests, `git diff --check`, `docs:budget`, `docs:ai-consistency` 통과. 상세 계획서 archive 이동: [archive/ai-assistant-response-quality-regression-plan.md](archive/ai-assistant-response-quality-regression-plan.md) |

@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 # scripts/ci/runner-health-check.sh
-# CI runner 가용 여부를 한 번 확인하고 결과를 exit code로 반환
+# 로컬 CI runner 프로세스와 Docker 가용 여부를 한 번 확인하고 결과를 exit code로 반환
 #
-# exit 0: runner 정상 (CI 게이트 통과 가능)
-# exit 1: runner/Docker 미가동 (CI 스킵 후 vercel --prod fallback 필요)
+# exit 0: 로컬 runner/Docker 정상
+# exit 1: 로컬 runner/Docker 미가동 (CI 스킵 후 vercel --prod fallback 필요)
+#
+# 주의: 이 스크립트는 GitLab scheduler, pipeline 생성, runner tag matching,
+# job 배정을 증명하지 않는다. push/tag 후에는 별도로
+# `npm run gitlab:pipeline:head -- --wait` 결과를 확인해야 한다.
 #
 # AI 배포 흐름에서 사용:
 #   if bash scripts/ci/runner-health-check.sh; then
@@ -40,12 +44,12 @@ fi
 
 if $RUNNER_OK && $DOCKER_OK; then
   if [[ "$QUIET" != "--quiet" ]]; then
-    echo "runner=ok docker=ok"
+    echo "runner=ok docker=ok scope=local"
   fi
   exit 0
 else
   if [[ "$QUIET" != "--quiet" ]]; then
-    echo "runner=${RUNNER_OK} docker=${DOCKER_OK}"
+    echo "runner=${RUNNER_OK} docker=${DOCKER_OK} scope=local"
   fi
   exit 1
 fi
