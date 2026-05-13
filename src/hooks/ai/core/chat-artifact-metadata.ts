@@ -69,6 +69,8 @@ export function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
       return '장애 보고서를 작성하고 있습니다.';
     case 'monitoring-analysis':
       return '이상감지/추세 분석을 실행하고 있습니다.';
+    case 'server-monitoring-analysis':
+      return '단일 서버 이상감지/추세 분석을 실행하고 있습니다.';
     case 'server-snapshot':
       return '서버 상태 스냅샷을 생성하고 있습니다.';
     case 'ops-procedure':
@@ -113,6 +115,18 @@ export function getArtifactSuccessText(artifact: ChatArtifact): string {
       }%`,
       '',
       '아래 카드에서 MD/JSON 파일로 내려받고 코드/설정의 검증 상태를 확인할 수 있습니다.',
+    ].join('\n');
+  }
+
+  if (artifact.kind === 'server-monitoring-analysis') {
+    return [
+      '단일 서버 이상감지/추세 분석을 완료했습니다.',
+      '',
+      `- 서버: ${artifact.serverName}`,
+      `- 상태: ${artifact.overallStatus}`,
+      `- 이상 신호: ${artifact.server.anomalyDetection?.anomalyCount ?? 0}건`,
+      '',
+      '아래 카드에서 MD/JSON 파일로 내려받을 수 있습니다.',
     ].join('\n');
   }
 
@@ -230,6 +244,26 @@ export function buildArtifactMetadata(
     };
   }
 
+  if (artifact.kind === 'server-monitoring-analysis') {
+    return {
+      artifactIntentReason: intentReason,
+      routeDecision,
+      assistantPlan,
+      assistantResult,
+      artifactEnvelopes: [artifactEnvelope],
+      serverMonitoringAnalysisArtifact: artifact,
+      toolsCalled: ['generateServerMonitoringArtifact'],
+      toolResultSummaries: [
+        {
+          toolName: 'generateServerMonitoringArtifact',
+          label: '단일 서버 이상감지/추세 분석',
+          summary: `${artifact.serverName} 분석 결과를 ${artifact.overallStatus} 상태로 정리했습니다.`,
+          status: 'completed' as const,
+        },
+      ],
+    };
+  }
+
   return {
     artifactIntentReason: intentReason,
     routeDecision,
@@ -332,6 +366,11 @@ function getArtifactToolDescriptor(kind: ChatArtifact['kind']): {
         toolName: 'generateMonitoringAnalysisArtifact',
         label: '이상감지/추세 분석',
       };
+    case 'server-monitoring-analysis':
+      return {
+        toolName: 'generateServerMonitoringArtifact',
+        label: '단일 서버 이상감지/추세 분석',
+      };
   }
 }
 
@@ -345,5 +384,7 @@ function getArtifactActionLabel(kind: ChatArtifact['kind']): string {
       return '운영 절차 생성';
     case 'monitoring-analysis':
       return '이상감지/추세 분석';
+    case 'server-monitoring-analysis':
+      return '단일 서버 이상감지/추세 분석';
   }
 }

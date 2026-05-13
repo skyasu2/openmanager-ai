@@ -15,6 +15,9 @@ import {
   type ChatArtifact,
   type ChatArtifactRequest,
   createArtifactEnvelope,
+  type IncidentReportArtifact,
+  type MonitoringAnalysisArtifact,
+  type ServerMonitoringAnalysisArtifact,
   type ServerMonitoringArtifactRequest,
 } from './types';
 
@@ -49,35 +52,36 @@ export type SaveArtifactExecutionReplayPackResult =
       reason: 'unsupported_artifact' | 'storage_unavailable';
     };
 
-export async function executeChatArtifact<
-  TKind extends ExecutableSurfaceArtifactKind,
->(
-  request: ExecuteChatArtifactRequest<TKind>
-): Promise<ExecutableSurfaceArtifact<TKind>> {
+export function executeChatArtifact(
+  request: ExecuteChatArtifactRequest<'incident-report'>
+): Promise<IncidentReportArtifact>;
+export function executeChatArtifact(
+  request: ExecuteChatArtifactRequest<'monitoring-analysis'>
+): Promise<MonitoringAnalysisArtifact>;
+export function executeChatArtifact(
+  request: ExecuteChatArtifactRequest<'server-monitoring-analysis'>
+): Promise<ServerMonitoringAnalysisArtifact>;
+export async function executeChatArtifact(
+  request: ExecuteChatArtifactRequest
+): Promise<ChatArtifact> {
   switch (request.kind) {
     case 'incident-report': {
       const { kind: _kind, ...artifactRequest } =
         request as ExecuteChatArtifactRequestByKind['incident-report'];
       void _kind;
-      return generateIncidentReportArtifact(artifactRequest) as Promise<
-        ExecutableSurfaceArtifact<TKind>
-      >;
+      return generateIncidentReportArtifact(artifactRequest);
     }
     case 'monitoring-analysis': {
       const { kind: _kind, ...artifactRequest } =
         request as ExecuteChatArtifactRequestByKind['monitoring-analysis'];
       void _kind;
-      return generateMonitoringAnalysisArtifact(artifactRequest) as Promise<
-        ExecutableSurfaceArtifact<TKind>
-      >;
+      return generateMonitoringAnalysisArtifact(artifactRequest);
     }
     case 'server-monitoring-analysis': {
       const { kind: _kind, ...serverRequest } =
         request as ExecuteChatArtifactRequestByKind['server-monitoring-analysis'];
       void _kind;
-      return generateServerMonitoringArtifact(serverRequest) as Promise<
-        ExecutableSurfaceArtifact<TKind>
-      >;
+      return generateServerMonitoringArtifact(serverRequest);
     }
   }
 
