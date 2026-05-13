@@ -1,10 +1,10 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Last reviewed: 2026-05-13
 
 # Server Monitoring Artifact Surface Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-13
 - TODO.md 연결: Active Tasks > Server monitoring artifact surface
 
@@ -107,7 +107,7 @@ ServerMonitoringAnalysisArtifact
 - [x] Task 3 — auto-report dead code 제거
 - [x] Task 4 — 아키텍처 문서/다이어그램 갱신
 - [x] Task 5 — targeted/type/lint/test 검증
-- [ ] Task 6 — 계획서 완료 처리 및 archive 이동
+- [x] Task 6 — 계획서 완료 처리 및 archive 이동
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -127,13 +127,13 @@ ServerMonitoringAnalysisArtifact
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `npm run type-check` 통과
-- [ ] `npm run lint` 통과
-- [ ] `npm run test:quick` 통과
-- [ ] `npm run test:contract` 통과
-- [ ] `npm run line-guard` 통과
-- [ ] `npm run docs:budget` 통과
-- [ ] `npm run docs:ai-consistency` 통과
-- [ ] `git diff --check` 통과
-- [ ] 단일 서버 분석 결과가 artifact replay store에 저장됨
+- [x] 테스트 시나리오 전체 통과
+- [x] `npm run type-check` 통과
+- [x] `npm run lint` 통과
+- [x] `npm run test:quick` 통과
+- [x] `npm run test:contract` 통과
+- [x] `npm run line-guard` 통과
+- [x] `npm run docs:budget` 통과
+- [x] `npm run docs:ai-consistency` 통과
+- [x] `git diff --check` 통과
+- [x] 단일 서버 분석 결과가 artifact replay store에 저장됨

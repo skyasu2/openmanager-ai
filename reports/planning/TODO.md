@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`Server monitoring artifact surface 진행`)
+**Last Updated**: 2026-05-13 KST (`Server monitoring artifact surface 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Server monitoring artifact surface | High | In Progress (Codex) | 단일 서버 이상감지/추세 분석을 기능 탭 direct fetch에서 artifact execution + replay surface로 통합. 상세: [server-monitoring-artifact-surface-plan.md](server-monitoring-artifact-surface-plan.md) |
+| _None_ | - | - | 현재 진행 중인 작업 없음. |
 
 ---
 
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~Server monitoring artifact surface~~ | — | **완료** — 단일 서버 이상감지/추세 분석을 direct fetch에서 `server-monitoring-analysis` typed artifact로 전환하고, artifact execution/replay/schema/renderer에 흡수. 기능 탭 selected-server 경로는 `executeChatArtifact`를 사용하며 자연어 artifact intent classifier target은 확장하지 않고 서버 선택 context가 있는 surface로 분리. auto-report stale export cleanup 및 아키텍처 다이어그램/문서 갱신 완료. 검증: targeted Vitest 7 files / 57 tests, `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `npm run line-guard`, `npm run docs:budget`, `npm run docs:ai-consistency`, `npm run docs:components:verify`, `npm run knip:ci`, `git diff --check`. 상세 계획서 archive 이동: [archive/server-monitoring-artifact-surface-plan.md](archive/server-monitoring-artifact-surface-plan.md) |
 | ~~AI artifact surface unification~~ | — | **완료** — Chat 자연어 artifact 실행 경로와 장애보고서/전체 시스템 이상감지 기능 탭 실행 경로를 `artifact-execution` helper로 통합. 기능 탭 생성 결과를 `ArtifactEnvelope` 기반 local-session replay pack으로 저장하고, 장애보고서 직접 API 변환 중복을 제거. 검증: targeted Vitest 3 files / 15 tests, `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `npm run line-guard`, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-artifact-surface-unification-plan.md](archive/ai-artifact-surface-unification-plan.md) |
 | ~~AI architecture cleanup + status automation~~ | — | **완료** — P1~P4에서 query routing signal SSOT 정렬, artifact workspace corrupt storage regression coverage, supervisor routing re-export 제거, guest disclosure intent 주석화를 완료. P5에서 `docs/status.md` 자동 갱신 마커와 `scripts/docs/update-status.ts`, `docs:status:update/check`, release commit 연동 및 publish drift check를 추가. 검증: status dry-run/write/check, historical docs lint, Biome targeted check, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-architecture-cleanup-plan.md](archive/ai-architecture-cleanup-plan.md) |
 | ~~GitLab pipeline resource diagnostics~~ | — | **완료** — v8.11.141 tag pipeline을 재분석해 `deploy` job이 `resource_group=production`에서 `waiting_for_resource`이고 후속 jobs는 stage-blocked `created` 상태임을 확인. `gitlab:pipeline:inspect`를 추가해 pipeline/jobs/resource queue/diagnosis를 한 번에 출력하도록 보강. 검증: pipeline inspect smoke, fake SHA no-pipeline path, docs checks, `git diff --check`. |
