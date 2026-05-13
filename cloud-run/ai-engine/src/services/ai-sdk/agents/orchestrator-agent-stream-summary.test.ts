@@ -32,6 +32,8 @@ vi.mock('ai', async (importOriginal) => {
 
 vi.mock('../../../lib/logger', () => ({
   logger: {
+    debug: vi.fn(),
+    error: vi.fn(),
     info: vi.fn(),
     warn: vi.fn(),
   },
