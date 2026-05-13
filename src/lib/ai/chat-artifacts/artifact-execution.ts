@@ -7,26 +7,37 @@ import {
   createArtifactWorkspaceStore,
 } from './artifact-workspace-store';
 import { generateIncidentReportArtifact } from './incident-report-artifact';
-import { generateMonitoringAnalysisArtifact } from './monitoring-analysis-artifact';
+import {
+  generateMonitoringAnalysisArtifact,
+  generateServerMonitoringArtifact,
+} from './monitoring-analysis-artifact';
 import {
   type ChatArtifact,
   type ChatArtifactRequest,
   createArtifactEnvelope,
+  type ServerMonitoringArtifactRequest,
 } from './types';
 
 export type ExecutableSurfaceArtifactKind =
   | 'incident-report'
-  | 'monitoring-analysis';
+  | 'monitoring-analysis'
+  | 'server-monitoring-analysis';
 
 export type ExecutableSurfaceArtifact<
   TKind extends ExecutableSurfaceArtifactKind = ExecutableSurfaceArtifactKind,
 > = Extract<ChatArtifact, { kind: TKind }>;
 
+type ExecuteChatArtifactRequestByKind = {
+  'incident-report': ChatArtifactRequest & { kind: 'incident-report' };
+  'monitoring-analysis': ChatArtifactRequest & { kind: 'monitoring-analysis' };
+  'server-monitoring-analysis': ServerMonitoringArtifactRequest & {
+    kind: 'server-monitoring-analysis';
+  };
+};
+
 export type ExecuteChatArtifactRequest<
   TKind extends ExecutableSurfaceArtifactKind = ExecutableSurfaceArtifactKind,
-> = ChatArtifactRequest & {
-  kind: TKind;
-};
+> = ExecuteChatArtifactRequestByKind[TKind];
 
 export type SaveArtifactExecutionReplayPackResult =
   | {
@@ -40,24 +51,39 @@ export type SaveArtifactExecutionReplayPackResult =
 
 export async function executeChatArtifact<
   TKind extends ExecutableSurfaceArtifactKind,
->({
-  kind,
-  ...request
-}: ExecuteChatArtifactRequest<TKind>): Promise<
-  ExecutableSurfaceArtifact<TKind>
-> {
-  switch (kind) {
-    case 'incident-report':
-      return generateIncidentReportArtifact(request) as Promise<
+>(
+  request: ExecuteChatArtifactRequest<TKind>
+): Promise<ExecutableSurfaceArtifact<TKind>> {
+  switch (request.kind) {
+    case 'incident-report': {
+      const { kind: _kind, ...artifactRequest } =
+        request as ExecuteChatArtifactRequestByKind['incident-report'];
+      void _kind;
+      return generateIncidentReportArtifact(artifactRequest) as Promise<
         ExecutableSurfaceArtifact<TKind>
       >;
-    case 'monitoring-analysis':
-      return generateMonitoringAnalysisArtifact(request) as Promise<
+    }
+    case 'monitoring-analysis': {
+      const { kind: _kind, ...artifactRequest } =
+        request as ExecuteChatArtifactRequestByKind['monitoring-analysis'];
+      void _kind;
+      return generateMonitoringAnalysisArtifact(artifactRequest) as Promise<
         ExecutableSurfaceArtifact<TKind>
       >;
+    }
+    case 'server-monitoring-analysis': {
+      const { kind: _kind, ...serverRequest } =
+        request as ExecuteChatArtifactRequestByKind['server-monitoring-analysis'];
+      void _kind;
+      return generateServerMonitoringArtifact(serverRequest) as Promise<
+        ExecutableSurfaceArtifact<TKind>
+      >;
+    }
   }
 
-  throw new Error(`Unsupported artifact kind: ${kind satisfies never}`);
+  throw new Error(
+    `Unsupported artifact kind: ${(request as { kind: string }).kind}`
+  );
 }
 
 function safeWorkspaceSegment(value: string): string {

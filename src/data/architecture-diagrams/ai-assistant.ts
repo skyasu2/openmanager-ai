@@ -4,7 +4,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
   id: 'ai-assistant',
   title: 'AI Assistant Runtime Architecture',
   description:
-    '현재 구현 기준 as-built 구조. Next.js stream route가 Cloud Run Supervisor로 위임하고, 5개 routing LLM agent + deterministic Evaluator/Optimizer/recovery fallback을 무료 한도 내 provider gate로 운영.',
+    '현재 구현 기준 as-built 구조. Next.js stream route가 Cloud Run Supervisor로 위임하고, Chat/기능 탭 artifact execution surface가 typed artifact와 local-session replay pack을 공유.',
   layers: [
     {
       title: 'Client',
@@ -29,6 +29,13 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
           sublabel: '/api/ai/supervisor/stream/v2',
           type: 'secondary',
           icon: '▲',
+        },
+        {
+          id: 'artifact-execution',
+          label: 'Artifact Execution',
+          sublabel: 'Chat + function tabs',
+          type: 'highlight',
+          icon: '▣',
         },
       ],
     },
@@ -151,12 +158,22 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
           type: 'secondary',
           icon: '🔄',
         },
+        {
+          id: 'artifact-replay',
+          label: 'Artifact Replay',
+          sublabel: 'Envelope + session store',
+          type: 'secondary',
+          icon: '↺',
+        },
       ],
     },
   ],
   connections: [
     { from: 'user', to: 'vercel-proxy', label: 'POST' },
+    { from: 'user', to: 'artifact-execution', label: 'Artifact' },
     { from: 'vercel-proxy', to: 'orchestrator', label: 'Proxy' },
+    { from: 'artifact-execution', to: 'vercel-proxy', label: 'Generate' },
+    { from: 'artifact-execution', to: 'artifact-replay', label: 'Save' },
     { from: 'orchestrator', to: 'nlq', label: 'Handoff' },
     { from: 'orchestrator', to: 'analyst', label: 'Handoff' },
     { from: 'orchestrator', to: 'reporter', label: 'Handoff' },
@@ -172,8 +189,10 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'nlq', to: 'websearch', type: 'dashed' },
     { from: 'nlq', to: 'knowledgelite', type: 'dashed' },
     { from: 'reporter', to: 'otel-data', type: 'dashed' },
+    { from: 'artifact-execution', to: 'otel-data', type: 'dashed' },
     { from: 'orchestrator', to: 'uimessagestream', label: 'Stream' },
     { from: 'uimessagestream', to: 'resumable', type: 'dashed' },
+    { from: 'artifact-replay', to: 'user', label: 'Restore' },
     { from: 'uimessagestream', to: 'user', label: 'Response' },
   ],
 };

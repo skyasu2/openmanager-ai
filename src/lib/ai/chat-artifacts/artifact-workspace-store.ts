@@ -80,6 +80,7 @@ export interface ArtifactWorkspaceHistoryMetadata {
   artifactEnvelopes?: ArtifactEnvelope[];
   incidentReportArtifact?: unknown;
   monitoringAnalysisArtifact?: unknown;
+  serverMonitoringAnalysisArtifact?: unknown;
   serverSnapshotArtifact?: unknown;
   opsProcedureArtifact?: unknown;
 }
@@ -219,6 +220,7 @@ function readLegacyArtifacts(
   return [
     metadata.incidentReportArtifact,
     metadata.monitoringAnalysisArtifact,
+    metadata.serverMonitoringAnalysisArtifact,
     metadata.serverSnapshotArtifact,
     metadata.opsProcedureArtifact,
   ]

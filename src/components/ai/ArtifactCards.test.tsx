@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { MONITORING_ARTIFACT_DOMAIN_ID } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
 import type {
   MonitoringAnalysisArtifact,
+  ServerMonitoringAnalysisArtifact,
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import {
@@ -76,6 +77,32 @@ const opsProcedureArtifact = {
   },
 } as const;
 
+const serverMonitoringArtifact: ServerMonitoringAnalysisArtifact = {
+  kind: 'server-monitoring-analysis',
+  generatedAt: '2026-05-13T00:00:00.000Z',
+  title: '웹 서버 01 이상감지/추세 분석',
+  summary: '웹 서버 01 상태 정상',
+  serverId: 'server-1',
+  serverName: '웹 서버 01',
+  overallStatus: 'online',
+  analysis: {
+    success: true,
+    serverId: 'server-1',
+    analysisType: 'full',
+    timestamp: '2026-05-13T00:00:00.000Z',
+  },
+  server: {
+    success: true,
+    serverId: 'server-1',
+    serverName: '웹 서버 01',
+    analysisType: 'full',
+    timestamp: '2026-05-13T00:00:00.000Z',
+    overallStatus: 'online',
+  },
+  dataSlot: '07:00 KST',
+  sourceMode: 'tool-result',
+};
+
 describe('AI artifact cards', () => {
   it('renders ops procedure artifact cards through the domain renderer host', () => {
     const envelope = createArtifactEnvelope(opsProcedureArtifact, {
@@ -103,6 +130,36 @@ describe('AI artifact cards', () => {
     expect(
       screen.getByRole('button', { name: /JSON 다운로드/i })
     ).toBeEnabled();
+  });
+
+  it('renders selected server monitoring artifacts through the domain renderer host', () => {
+    const envelope = createArtifactEnvelope(serverMonitoringArtifact, {
+      domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+      artifactVersion: ARTIFACT_CONTRACT_VERSION,
+      sourceMode: 'tool-result',
+      dataSlot: '07:00 KST',
+    });
+
+    render(
+      <ArtifactRendererHost
+        metadata={{
+          artifactEnvelopes: [envelope],
+        }}
+      />
+    );
+
+    expect(
+      screen.getByText('단일 서버 이상감지/추세 분석')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('웹 서버 01 이상감지/추세 분석')
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '웹 서버 01' })).toHaveAttribute(
+      'href',
+      '/dashboard/servers/server-1'
+    );
+    expect(screen.getByRole('button', { name: /Markdown/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /JSON/i })).toBeEnabled();
   });
 
   it('renders incident report artifact actions', () => {

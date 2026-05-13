@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-12
+> Last reviewed: 2026-05-13
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
-> **v8.11.129** | Updated 2026-05-12
+> **v8.11.144** | Updated 2026-05-13
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -208,7 +208,7 @@ flowchart LR
                      │ to Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-05-12): `src/hooks/ai/useHybridAIQuery.ts`, `src/hooks/ai/useAIChatCore.ts`, `src/app/api/ai/supervisor/stream/v2/route.ts`, `src/lib/ai/entity-extractor.ts`, `src/lib/ai/semantic-intent-frame.ts`, `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `src/app/api/ai/artifact-intent/route.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-messages.ts`, `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-intent.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-evidence-provider.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-summary-fallback.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/analytics.ts`, `cloud-run/ai-engine/src/routes/analytics-report-utils.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
+> Source of truth (2026-05-13): `src/hooks/ai/useHybridAIQuery.ts`, `src/hooks/ai/useAIChatCore.ts`, `src/app/api/ai/supervisor/stream/v2/route.ts`, `src/lib/ai/entity-extractor.ts`, `src/lib/ai/semantic-intent-frame.ts`, `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `src/lib/ai/chat-artifacts/artifact-execution.ts`, `src/lib/ai/chat-artifacts/monitoring-analysis-artifact.ts`, `src/lib/ai/chat-artifacts/artifact-workspace-registry.ts`, `src/app/api/ai/artifact-intent/route.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-messages.ts`, `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-intent.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-evidence-provider.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-summary-fallback.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/analytics.ts`, `cloud-run/ai-engine/src/routes/analytics-report-utils.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
 
 ### Semantic Query Routing 상세
 
@@ -427,6 +427,36 @@ Loading contract
     `-- artifact generation started       -> setArtifactIsLoading(true)
 ```
 
+#### Module 1.1. 기능 탭 Artifact 실행 Surface
+
+기능 탭은 자연어 intent classifier를 새 target으로 늘리지 않습니다. 탭은 이미 사용자가 기능과 scope를 선택한 상태이므로 `artifact-execution` helper만 공유하고, 필요한 서버 context를 명시 입력으로 전달합니다.
+
+```text
+AI Assistant function tab
+  |
+  +-- Auto incident report
+  |     -> executeChatArtifact(kind: incident-report)
+  |     -> generateIncidentReportArtifact()
+  |
+  +-- Whole-system anomaly/trend
+  |     -> executeChatArtifact(kind: monitoring-analysis)
+  |     -> generateMonitoringAnalysisArtifact()
+  |     -> POST /api/ai/intelligent-monitoring { action: analyze_batch }
+  |
+  `-- Selected-server anomaly/trend
+        -> executeChatArtifact(kind: server-monitoring-analysis)
+        -> generateServerMonitoringArtifact()
+        -> POST /api/ai/intelligent-monitoring { action: analyze_server }
+
+All generated artifacts
+  -> ChatArtifact + ArtifactEnvelope
+  -> artifact-workspace-registry schema guard
+  -> local-session replay pack
+  -> page adapter or typed artifact renderer card
+```
+
+`server-monitoring-analysis`는 기능 탭의 선택 서버 context(`serverId`, `serverName`, current metrics)를 요구하므로 현재 artifact intent classifier의 target에는 포함하지 않습니다. 자연어 채팅에서 단일 서버 분석을 직접 artifact로 승격하려면 entity extraction confidence와 서버 disambiguation 계약을 먼저 확장해야 합니다.
+
 #### Module 2. LLM Provider Fallback Chain
 
 Provider chain은 단일 전역 순서가 아니라 실행 위치별 policy로 나뉩니다. Orchestrator는 Groq-first로 Cerebras RPM을 보존하고, Analyst/Reporter/Advisor는 Cerebras-first policy를 갖지만 16K/32K context floor에서 `llama3.1-8b`는 capability gate에 의해 요청 전 skip될 수 있습니다.
@@ -490,6 +520,11 @@ Server snapshot artifact
     |
     `-- MetricsProvider OTel static data
           no LLM, no Cloud Run artifact route, no DB write
+
+Selected-server monitoring artifact
+    |
+    `-- /api/ai/intelligent-monitoring analyze_server
+          feature-tab scoped server context, typed replay artifact
 ```
 
 #### Module 3. Multi-Agent 오케스트레이션

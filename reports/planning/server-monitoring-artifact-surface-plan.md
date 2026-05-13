@@ -1,10 +1,10 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Last reviewed: 2026-05-13
 
 # Server Monitoring Artifact Surface Plan
 
-- 상태: Approved
+- 상태: In Progress
 - 작성일: 2026-05-13
 - TODO.md 연결: Active Tasks > Server monitoring artifact surface
 
@@ -101,12 +101,12 @@ ServerMonitoringAnalysisArtifact
 
 > 착수 전 Status가 Approved인지 확인한다.
 
-- [ ] Task 0 — failing test 커밋
-- [ ] Task 1 — 단일 서버 artifact kind/generator/execution/store 구현
-- [ ] Task 2 — `IntelligentMonitoringPage` direct fetch 제거 및 replay 저장 연결
-- [ ] Task 3 — auto-report dead code 제거
-- [ ] Task 4 — 아키텍처 문서/다이어그램 갱신
-- [ ] Task 5 — targeted/type/lint/test 검증
+- [x] Task 0 — failing test 커밋
+- [x] Task 1 — 단일 서버 artifact kind/generator/execution/store 구현
+- [x] Task 2 — `IntelligentMonitoringPage` direct fetch 제거 및 replay 저장 연결
+- [x] Task 3 — auto-report dead code 제거
+- [x] Task 4 — 아키텍처 문서/다이어그램 갱신
+- [x] Task 5 — targeted/type/lint/test 검증
 - [ ] Task 6 — 계획서 완료 처리 및 archive 이동
 
 ## 단계별 커밋/푸시/배포 판단

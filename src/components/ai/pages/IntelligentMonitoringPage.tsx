@@ -21,12 +21,10 @@ import {
   executeChatArtifact,
   saveArtifactExecutionReplayPack,
 } from '@/lib/ai/chat-artifacts/artifact-execution';
-import { createQueryAsOf } from '@/lib/ai/query-as-of';
-import { logger } from '@/lib/logging';
+import type { ServerMonitoringCurrentMetrics } from '@/lib/ai/chat-artifacts/types';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AnalysisResponse,
-  CloudRunAnalysisResponse,
   MetricAnomalyResult,
   MonitoringBatchAnalysisResponse,
   MonitoringBatchRiskSignal,
@@ -170,6 +168,26 @@ function adaptMonitoringBatchResponse(
   };
 }
 
+function createServerMonitoringCurrentMetrics(
+  serverData?: EnhancedServerMetrics
+): ServerMonitoringCurrentMetrics | undefined {
+  if (!serverData) return undefined;
+
+  return {
+    cpu: serverData.cpu,
+    memory: serverData.memory,
+    disk: serverData.disk,
+    network: serverData.network,
+    load1: serverData.systemInfo?.loadAverage?.split(',')[0]
+      ? Number.parseFloat(serverData.systemInfo.loadAverage.split(',')[0]!)
+      : undefined,
+    load5: serverData.systemInfo?.loadAverage?.split(',')[1]
+      ? Number.parseFloat(serverData.systemInfo.loadAverage.split(',')[1]!)
+      : undefined,
+    cpuCores: serverData.specs?.cpu_cores,
+  };
+}
+
 export default function IntelligentMonitoringPage({
   queryAsOfDataSlot,
   autoAnalyzeOnVisible = false,
@@ -203,85 +221,22 @@ export default function IntelligentMonitoringPage({
       serverId: string,
       serverName: string,
       serverData?: EnhancedServerMetrics
-    ): Promise<ServerAnalysisResult | null> => {
-      try {
-        // Prepare current metrics for AI Engine
-        const currentMetrics = serverData
-          ? {
-              cpu: serverData.cpu,
-              memory: serverData.memory,
-              disk: serverData.disk,
-              network: serverData.network,
-              load1: serverData.systemInfo?.loadAverage?.split(',')[0]
-                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[0]!)
-                : undefined,
-              load5: serverData.systemInfo?.loadAverage?.split(',')[1]
-                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[1]!)
-                : undefined,
-              cpuCores: serverData.specs?.cpu_cores,
-            }
-          : undefined;
+    ): Promise<ServerAnalysisResult> => {
+      const artifact = await executeChatArtifact({
+        kind: 'server-monitoring-analysis',
+        query: `${serverName} 이상감지/추세 분석`,
+        sessionId: 'intelligent-monitoring-page',
+        serverId,
+        serverName,
+        currentMetrics: createServerMonitoringCurrentMetrics(serverData),
+        queryAsOfDataSlot,
+      });
+      saveArtifactExecutionReplayPack({
+        artifact,
+        workspaceId: createArtifactExecutionWorkspaceId(artifact),
+      });
 
-        const response = await fetch('/api/ai/intelligent-monitoring', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'analyze_server',
-            serverId,
-            analysisType: 'full',
-            currentMetrics,
-            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
-          }),
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error(
-              '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.'
-            );
-          }
-          logger.error(`[${serverName}] API 요청 실패: ${response.status}`);
-          return null;
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-          logger.error(`[${serverName}] 분석 실패:`, data.error);
-          return null;
-        }
-
-        const analysisData = data.data as CloudRunAnalysisResponse;
-
-        // 전체 상태 판단
-        let overallStatus: 'online' | 'warning' | 'critical' = 'online';
-        if (analysisData.anomalyDetection?.hasAnomalies) {
-          const anomalyResults = analysisData.anomalyDetection.results;
-          const severities = Object.values(anomalyResults).map(
-            (r) => r.severity
-          );
-          if (severities.includes('high')) {
-            overallStatus = 'critical';
-          } else if (severities.includes('medium')) {
-            overallStatus = 'warning';
-          }
-        }
-
-        return {
-          ...analysisData,
-          serverName,
-          overallStatus,
-        };
-      } catch (err) {
-        if (
-          err instanceof Error &&
-          err.message.includes('로그인이 필요합니다')
-        ) {
-          throw err;
-        }
-        logger.error(`[${serverName}] 분석 오류:`, err);
-        return null;
-      }
+      return artifact.server;
     },
     [queryAsOfDataSlot]
   );
@@ -308,11 +263,6 @@ export default function IntelligentMonitoringPage({
           serverInfo // Pass server info
         );
 
-        if (!serverResult) {
-          throw new Error('서버 분석에 실패했습니다.');
-        }
-
-        // 단일 서버도 CloudRunAnalysisResponse로 반환
         setResult(serverResult);
       } else {
         // 전체 시스템 분석은 Chat과 동일한 artifact execution layer를 사용한다.

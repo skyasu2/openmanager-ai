@@ -1,13 +1,19 @@
 import { z } from 'zod';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import type {
+  CloudRunAnalysisResponse,
+  MetricAnomalyResult,
   MonitoringBatchAnalysisResponse,
   MonitoringBatchEvidenceRef,
+  ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
 import {
+  type ArtifactEvidence,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
   type MonitoringAnalysisArtifact,
+  type ServerMonitoringAnalysisArtifact,
+  type ServerMonitoringArtifactRequest,
 } from './types';
 
 const MonitoringBatchServerSchema = z
@@ -161,10 +167,34 @@ const MonitoringBatchAnalysisResponseSchema = z
     } as MonitoringBatchAnalysisResponse;
   });
 
+const ServerMonitoringAnalysisResponseSchema = z
+  .object({
+    success: z.literal(true),
+    serverId: z.string(),
+    analysisType: z.enum(['full', 'anomaly', 'trend', 'pattern']),
+    timestamp: z.string(),
+    _source: z.string().optional(),
+  })
+  .passthrough()
+  .transform(
+    (
+      analysis
+    ): CloudRunAnalysisResponse & {
+      _source?: string;
+    } => analysis as CloudRunAnalysisResponse & { _source?: string }
+  );
+
 export function parseMonitoringBatchAnalysisResponse(
   value: unknown
 ): MonitoringBatchAnalysisResponse | null {
   const parsed = MonitoringBatchAnalysisResponseSchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
+
+export function parseServerMonitoringAnalysisResponse(
+  value: unknown
+): (CloudRunAnalysisResponse & { _source?: string }) | null {
+  const parsed = ServerMonitoringAnalysisResponseSchema.safeParse(value);
   return parsed.success ? parsed.data : null;
 }
 
@@ -216,6 +246,116 @@ function mapMonitoringFactPackEvidence(
     ...(evidence.metric ? { metric: evidence.metric } : {}),
     severity: evidence.severity,
   }));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizePublicSeverity(
+  severity: unknown
+): ArtifactEvidence['severity'] {
+  if (severity === 'high' || severity === 'critical') return 'critical';
+  if (severity === 'medium' || severity === 'warning') return 'warning';
+  return 'info';
+}
+
+function normalizeAnomalyStatusSeverity(
+  severity: unknown
+): MetricAnomalyResult['severity'] | 'critical' | 'warning' | undefined {
+  if (
+    severity === 'low' ||
+    severity === 'medium' ||
+    severity === 'high' ||
+    severity === 'critical' ||
+    severity === 'warning'
+  ) {
+    return severity;
+  }
+  return undefined;
+}
+
+function readServerAnomalyResults(
+  analysis: CloudRunAnalysisResponse
+): Record<string, unknown> {
+  return isRecord(analysis.anomalyDetection?.results)
+    ? analysis.anomalyDetection.results
+    : {};
+}
+
+function deriveServerOverallStatus(
+  analysis: CloudRunAnalysisResponse
+): ServerAnalysisResult['overallStatus'] {
+  if (!analysis.anomalyDetection?.hasAnomalies) {
+    return 'online';
+  }
+
+  const severities = Object.values(readServerAnomalyResults(analysis))
+    .map((result) =>
+      isRecord(result)
+        ? normalizeAnomalyStatusSeverity(result.severity)
+        : undefined
+    )
+    .filter((severity): severity is NonNullable<typeof severity> => !!severity);
+
+  if (
+    severities.includes('high') ||
+    severities.includes('critical') ||
+    analysis.anomalyDetection.anomalyCount > 1
+  ) {
+    return 'critical';
+  }
+  if (
+    severities.includes('medium') ||
+    severities.includes('warning') ||
+    analysis.anomalyDetection.anomalyCount > 0
+  ) {
+    return 'warning';
+  }
+
+  return 'online';
+}
+
+function summarizeServerMonitoringAnalysis(
+  server: ServerAnalysisResult
+): Pick<ServerMonitoringAnalysisArtifact, 'title' | 'summary'> {
+  const anomalyCount = server.anomalyDetection?.anomalyCount ?? 0;
+  const risingMetrics =
+    server.trendPrediction?.summary?.increasingMetrics ?? [];
+
+  return {
+    title: `${server.serverName} 이상감지/추세 분석`,
+    summary:
+      anomalyCount > 0
+        ? `${server.serverName}에서 이상 신호 ${anomalyCount}건 감지`
+        : risingMetrics.length > 0
+          ? `${server.serverName}에서 상승 추세 ${risingMetrics.length}건 감지`
+          : `${server.serverName} 상태 정상`,
+  };
+}
+
+function mapServerMonitoringEvidence(
+  server: ServerAnalysisResult
+): ArtifactEvidence[] | undefined {
+  const evidence = Object.entries(readServerAnomalyResults(server))
+    .map(([metric, rawResult]): ArtifactEvidence | undefined => {
+      if (!isRecord(rawResult)) return undefined;
+      const isAnomaly = rawResult.isAnomaly === true;
+      if (!isAnomaly) return undefined;
+
+      const severity = normalizePublicSeverity(rawResult.severity);
+      return {
+        id: `${server.serverId}-${metric}-anomaly`,
+        kind: 'metric',
+        serverId: server.serverId,
+        metric,
+        severity,
+        summary: `${server.serverName} ${metric} 이상 신호 ${severity}`,
+      };
+    })
+    .filter((entry): entry is ArtifactEvidence => entry !== undefined);
+
+  return evidence.length > 0 ? evidence : undefined;
 }
 
 export async function generateMonitoringAnalysisArtifact({
@@ -275,6 +415,78 @@ export async function generateMonitoringAnalysisArtifact({
       sourceMode: 'tool-result',
       dataSlot: analysis.slot.timeLabel,
       evidence,
+    }
+  );
+}
+
+export async function generateServerMonitoringArtifact({
+  query,
+  sessionId,
+  serverId,
+  serverName,
+  currentMetrics,
+  queryAsOfDataSlot,
+  signal,
+}: ServerMonitoringArtifactRequest): Promise<ServerMonitoringAnalysisArtifact> {
+  const response = await fetch('/api/ai/intelligent-monitoring', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify({
+      action: 'analyze_server',
+      serverId,
+      analysisType: 'full',
+      query,
+      sessionId,
+      currentMetrics,
+      queryAsOf: createQueryAsOf(queryAsOfDataSlot),
+    }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.');
+    }
+    throw new Error(`이상감지/추세 분석 요청 실패: ${response.status}`);
+  }
+
+  const data = (await response.json()) as {
+    success?: boolean;
+    data?: unknown;
+    _source?: unknown;
+  };
+  const analysis = parseServerMonitoringAnalysisResponse(data.data);
+  if (!data.success || !analysis) {
+    throw new Error('단일 서버 이상감지/추세 분석 데이터를 받지 못했습니다.');
+  }
+
+  const server: ServerAnalysisResult = {
+    ...analysis,
+    serverName,
+    overallStatus: deriveServerOverallStatus(analysis),
+  };
+  const summary = summarizeServerMonitoringAnalysis(server);
+  const source =
+    analysis._source ||
+    (typeof data._source === 'string' ? data._source : undefined);
+
+  return attachArtifactEnvelopeMetadata(
+    {
+      kind: 'server-monitoring-analysis',
+      generatedAt: new Date().toISOString(),
+      ...summary,
+      serverId,
+      serverName,
+      overallStatus: server.overallStatus,
+      analysis,
+      server,
+      source,
+      queryAsOfDataSlot,
+    },
+    {
+      sourceMode: 'tool-result',
+      dataSlot: queryAsOfDataSlot?.timeLabel,
+      evidence: mapServerMonitoringEvidence(server),
     }
   );
 }

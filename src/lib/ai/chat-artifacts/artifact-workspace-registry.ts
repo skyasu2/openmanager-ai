@@ -32,6 +32,7 @@ export interface ArtifactSchemaEntry<
   legacyMetadataKey:
     | 'incidentReportArtifact'
     | 'monitoringAnalysisArtifact'
+    | 'serverMonitoringAnalysisArtifact'
     | 'serverSnapshotArtifact'
     | 'opsProcedureArtifact';
   replayPolicy: ArtifactReplayPolicy;
@@ -122,6 +123,25 @@ function isMonitoringAnalysisArtifact(
   );
 }
 
+function isServerMonitoringAnalysisArtifact(
+  value: unknown
+): value is Extract<ChatArtifact, { kind: 'server-monitoring-analysis' }> {
+  return (
+    isRecord(value) &&
+    value.kind === 'server-monitoring-analysis' &&
+    !!readString(value.generatedAt) &&
+    !!readString(value.title) &&
+    !!readString(value.summary) &&
+    !!readString(value.serverId) &&
+    !!readString(value.serverName) &&
+    (value.overallStatus === 'online' ||
+      value.overallStatus === 'warning' ||
+      value.overallStatus === 'critical') &&
+    isRecord(value.analysis) &&
+    isRecord(value.server)
+  );
+}
+
 function isServerSnapshotArtifact(
   value: unknown
 ): value is Extract<ChatArtifact, { kind: 'server-snapshot' }> {
@@ -177,6 +197,15 @@ const ARTIFACT_SCHEMA_ENTRIES: ArtifactSchemaEntry[] = [
     legacyMetadataKey: 'monitoringAnalysisArtifact',
     replayPolicy: REPLAY_POLICY,
     isPayload: isMonitoringAnalysisArtifact,
+  },
+  {
+    domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+    familyId: 'server-monitoring-analysis',
+    artifactKind: 'server-monitoring-analysis',
+    artifactVersion: ARTIFACT_CONTRACT_VERSION,
+    legacyMetadataKey: 'serverMonitoringAnalysisArtifact',
+    replayPolicy: REPLAY_POLICY,
+    isPayload: isServerMonitoringAnalysisArtifact,
   },
   {
     domainId: MONITORING_ARTIFACT_DOMAIN_ID,

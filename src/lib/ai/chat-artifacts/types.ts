@@ -1,6 +1,10 @@
 import type { IncidentReport } from '@/components/ai/pages/auto-report/types';
 import type { JobDataSlot } from '@/types/ai-jobs';
-import type { MonitoringBatchAnalysisResponse } from '@/types/intelligent-monitoring.types';
+import type {
+  CloudRunAnalysisResponse,
+  MonitoringBatchAnalysisResponse,
+  ServerAnalysisResult,
+} from '@/types/intelligent-monitoring.types';
 
 export const ARTIFACT_CONTRACT_VERSION = '2026-05-03-v1';
 
@@ -67,6 +71,37 @@ export interface MonitoringAnalysisArtifact extends ArtifactContractMetadata {
   warningServers: number;
   criticalServers: number;
   analysis: MonitoringBatchAnalysisResponse;
+  source?: string;
+  queryAsOfDataSlot?: JobDataSlot;
+}
+
+export interface ServerMonitoringCurrentMetrics {
+  cpu?: number;
+  memory?: number;
+  disk?: number;
+  network?: number;
+  load1?: number;
+  load5?: number;
+  cpuCores?: number;
+}
+
+export interface ServerMonitoringArtifactRequest extends ChatArtifactRequest {
+  serverId: string;
+  serverName: string;
+  currentMetrics?: ServerMonitoringCurrentMetrics;
+}
+
+export interface ServerMonitoringAnalysisArtifact
+  extends ArtifactContractMetadata {
+  kind: 'server-monitoring-analysis';
+  generatedAt: string;
+  title: string;
+  summary: string;
+  serverId: string;
+  serverName: string;
+  overallStatus: ServerAnalysisResult['overallStatus'];
+  analysis: CloudRunAnalysisResponse;
+  server: ServerAnalysisResult;
   source?: string;
   queryAsOfDataSlot?: JobDataSlot;
 }
@@ -157,6 +192,7 @@ export interface OpsProcedureArtifact extends ArtifactContractMetadata {
 export type ChatArtifact =
   | IncidentReportArtifact
   | MonitoringAnalysisArtifact
+  | ServerMonitoringAnalysisArtifact
   | ServerSnapshotArtifact
   | OpsProcedureArtifact;
 

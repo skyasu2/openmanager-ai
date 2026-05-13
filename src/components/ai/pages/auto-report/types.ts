@@ -118,16 +118,3 @@ export interface IncidentReport {
     severity: string;
   }>;
 }
-
-/**
- * 서버 메트릭 데이터
- */
-export interface ServerMetric {
-  server_id: string;
-  server_name: string;
-  cpu: number;
-  memory: number;
-  disk: number;
-  network: number;
-  timestamp: string;
-}
