@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-13 | **현재 버전 스냅샷**: v8.11.141
+**상태 스냅샷 기준일**: 2026-05-13 | **현재 버전 스냅샷**: v8.11.142
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.142** (2026-05-13) — Features: docs: automate status snapshot updates; Code Refactoring: ai-engine: use canonical routing signal imports; Code Refactoring: ai: remove supervisor routing re-export
 - **v8.11.141** (2026-05-13) — Code Refactoring: ai-engine: split line-guard hotspots; Bug Fixes: harden AI response quality regressions; Tests: spec: add AI response quality regression specs
 - **v8.11.140** (2026-05-13) — Bug Fixes: ai: skip clarification for follow-up server filters
 - **v8.11.139** (2026-05-12) — Features: context: add structured findings path with legacy regex fallback; Features: routing: add query routing trace skeleton; Tests: spec: add structured findings context tests
 - **v8.11.138** (2026-05-12) — Bug Fixes: ai-engine: keep peak advice read-only; Tests: spec: add composite peak advice regression; Tests: qa: record semantic trace job path retest
-- **v8.11.137** (2026-05-12) — Bug Fixes: ai: preserve semantic trace for job QA labels; Tests: qa: record v8.11.136 natural language api qa
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
