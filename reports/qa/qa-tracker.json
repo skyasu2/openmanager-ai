@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-12T17:54:33.608Z"
+    "updatedAt": "2026-05-13T02:09:08.202Z"
   },
   "sequence": {
-    "nextRunNumber": 491
+    "nextRunNumber": 492
   },
   "summary": {
-    "totalRecordedRuns": 488,
-    "totalRuns": 390,
+    "totalRecordedRuns": 489,
+    "totalRuns": 391,
     "excludedRuns": 98,
-    "totalChecks": 3461,
-    "totalPassed": 3327,
+    "totalChecks": 3471,
+    "totalPassed": 3337,
     "totalFailed": 124,
     "completionRate": 100,
-    "completedItems": 554,
+    "completedItems": 555,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260513-0490",
-    "lastRecordedAt": "2026-05-12T17:54:33.608Z",
-    "latestRecordedRunId": "QA-20260513-0490",
-    "latestRecordedAt": "2026-05-12T17:54:33.608Z"
+    "lastRunId": "QA-20260513-0491",
+    "lastRecordedAt": "2026-05-13T02:09:08.202Z",
+    "latestRecordedRunId": "QA-20260513-0491",
+    "latestRecordedAt": "2026-05-13T02:09:08.202Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13577,6 +13577,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-12T17:54:33.608Z"
+    },
+    "release-v811142-production-alignment": {
+      "id": "release-v811142-production-alignment",
+      "title": "Align Frontend and AI Engine production deployments to v8.11.142",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260513-0491",
+      "firstSeenAt": "2026-05-13T02:09:08.202Z",
+      "lastSeenRunId": "QA-20260513-0491",
+      "lastSeenAt": "2026-05-13T02:09:08.202Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Frontend /api/version and Cloud Run /health both report 8.11.142; GitLab pipeline 2520832116 completed success.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-13T02:09:08.202Z"
     }
   },
   "runs": [
@@ -53570,6 +53594,153 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260513-0491",
+      "recordedAt": "2026-05-13T02:09:08.202Z",
+      "recordedAtKst": "2026-05-13 11:09:08 KST",
+      "title": "Production Deploy QA - v8.11.142 Frontend and AI Engine Alignment",
+      "owner": "codex",
+      "source": "curl-gcloud-gitlab-vercel",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260513-0491.json",
+      "environment": {
+        "target": "production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5Rf1dHnkD7CvvYJ8NfjPWX6GLo5e / ai-engine-00458-vt2",
+        "deploymentUrl": "https://openmanager-fvyo3962b-skyasus-projects.vercel.app / https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "commitSha": "c1ff8ca54237541d0a3d51316756ae6ddef9ecbe"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Release v8.11.142 commit and tag were created and pushed to GitLab",
+        "GitLab tag pipeline 2520832116 completed success",
+        "Vercel production /api/version reports version 8.11.142 and commit c1ff8ca54237541d0a3d51316756ae6ddef9ecbe",
+        "Vercel production /api/health reports database/cache/ai healthy",
+        "Cloud Run /health reports version 8.11.142",
+        "Cloud Run revision ai-engine-00458-vt2 serves 100% traffic",
+        "Cloud Run runtime limits remain cpu=1, memory=512Mi, maxScale=1",
+        "Unauthenticated Cloud Run /monitoring returns HTTP 403",
+        "Vercel usage check shows no billed usage in the current period",
+        "Release smoke passed after initial GitLab runner pending delay"
+      ],
+      "skippedSurfaces": [
+        "Full browser route matrix",
+        "Conversational AI standard five-question QA",
+        "Reporter Agent advanced report generation",
+        "Analyst advanced trend drilldown",
+        "Mobile viewport matrix"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "This run verified deployment/version propagation and AI Engine health, but did not rerun the conversational five-question AI pack because no new runtime AI behavior was added in the release commit itself.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run verified Cloud Run health, revision traffic, unauthenticated monitoring boundary, and free-tier runtime limits.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The deployment preserved the expected /monitoring 403 boundary for unauthenticated access.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The tag pipeline initially waited for runner assignment, Vercel manual fallback closed frontend drift, and the GitLab pipeline subsequently completed deploy/deploy_ai_engine/smoke successfully.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Focused release-facing smoke covered the deployment surfaces that were drifted: Frontend version, health, Cloud Run version, revision traffic, auth boundary, and usage guard.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T11:07:46+09:00",
+          "summary": "Vercel usage checked after production fallback deploy; current billing period effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T11:07:13+09:00",
+          "summary": "Cloud Run ai-engine revision ai-engine-00458-vt2 serves 100% traffic with cpu=1, memory=512Mi, maxScale=1.",
+          "evidence": "gcloud run services describe ai-engine --region asia-northeast1",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "v8.11.142 release deploy smoke summary",
+          "path": "reports/qa/evidence/qa-20260513-v811142-release-deploy-smoke.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.142 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2520832116"
+        },
+        {
+          "type": "general",
+          "label": "Vercel v8.11.142 deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/2WC9RW7w4Xcz7RuMkUQM8FQudHfR"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine service",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -53578,16 +53749,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 242,
+      "seenCount": 243,
       "appropriateCount": 208,
-      "partialCount": 34,
+      "partialCount": 35,
       "inappropriateCount": 0,
       "improvementNeededCount": 44,
-      "lastRunId": "QA-20260513-0490",
-      "lastSeenAt": "2026-05-12T17:54:33.608Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260513-0491",
+      "lastSeenAt": "2026-05-13T02:09:08.202Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The three response-quality regressions were verified directly against the deployed Cloud Run supervisor path.",
+      "lastRationale": "This run verified deployment/version propagation and AI Engine health, but did not rerun the conversational five-question AI pack because no new runtime AI behavior was added in the release commit itself.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -53595,16 +53766,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 118,
-      "appropriateCount": 88,
+      "seenCount": 119,
+      "appropriateCount": 89,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260513-0490",
-      "lastSeenAt": "2026-05-12T17:54:33.608Z",
+      "lastRunId": "QA-20260513-0491",
+      "lastSeenAt": "2026-05-13T02:09:08.202Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Health, version, runtime limits, and monitoring auth boundary were checked on the live Cloud Run service.",
+      "lastRationale": "The run verified Cloud Run health, revision traffic, unauthenticated monitoring boundary, and free-tier runtime limits.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -53612,16 +53783,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 69,
-      "appropriateCount": 51,
+      "seenCount": 70,
+      "appropriateCount": 52,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260513-0490",
-      "lastSeenAt": "2026-05-12T17:54:33.608Z",
+      "lastRunId": "QA-20260513-0491",
+      "lastSeenAt": "2026-05-13T02:09:08.202Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The off-domain direct supervisor path now returns a deterministic guard response without LLM/tool escalation.",
+      "lastRationale": "The deployment preserved the expected /monitoring 403 boundary for unauthenticated access.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -53629,16 +53800,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 172,
-      "appropriateCount": 154,
+      "seenCount": 173,
+      "appropriateCount": 155,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260513-0490",
-      "lastSeenAt": "2026-05-12T17:54:33.608Z",
-      "lastFit": "partially-appropriate",
+      "lastRunId": "QA-20260513-0491",
+      "lastSeenAt": "2026-05-13T02:09:08.202Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Manual Cloud Run fallback succeeded because the GitLab tag pipeline remained stuck in created state; the CI gate was explicitly skipped and recorded.",
+      "lastRationale": "The tag pipeline initially waited for runner assignment, Vercel manual fallback closed frontend drift, and the GitLab pipeline subsequently completed deploy/deploy_ai_engine/smoke successfully.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -53646,16 +53817,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 209,
-      "appropriateCount": 191,
+      "seenCount": 210,
+      "appropriateCount": 192,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260513-0490",
-      "lastSeenAt": "2026-05-12T17:54:33.608Z",
+      "lastRunId": "QA-20260513-0491",
+      "lastSeenAt": "2026-05-13T02:09:08.202Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Local deterministic gates and focused production regression probes cover the changed AI Engine risk surface.",
+      "lastRationale": "Focused release-facing smoke covered the deployment surfaces that were drifted: Frontend version, health, Cloud Run version, revision traffic, auth boundary, and usage guard.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

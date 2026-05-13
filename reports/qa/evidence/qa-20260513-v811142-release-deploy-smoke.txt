@@ -1,0 +1,22 @@
+QA-20260513-v8.11.142 release deploy smoke evidence
+
+Target:
+- Frontend: https://openmanager-ai.vercel.app
+- Cloud Run AI Engine: https://ai-engine-jdhrhws7ia-an.a.run.app
+- GitLab pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2520832116
+
+Release:
+- version: 8.11.142
+- commit: c1ff8ca54237541d0a3d51316756ae6ddef9ecbe
+- tag: v8.11.142
+
+Observed checks:
+- Frontend /api/version returned version=8.11.142, buildVersion=8.11.142, commitSha=c1ff8ca54237541d0a3d51316756ae6ddef9ecbe, releaseTag=v8.11.142.
+- Frontend /api/health returned healthy with database/cache/ai connected.
+- Cloud Run /health returned status=ok, service=ai-engine, version=8.11.142, routesReady=true.
+- Cloud Run latest ready revision was ai-engine-00458-vt2 and traffic was 100%.
+- Cloud Run unauthenticated /monitoring returned HTTP 403.
+- Cloud Run runtime limits remained cpu=1, memory=512Mi, maxScale=1.
+- GitLab pipeline 2520832116 completed success; deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke jobs all passed.
+- Vercel production direct fallback was used while the tag pipeline was initially pending; GitLab CI later completed successfully.
+- Vercel usage check returned billed=0.0000 USD for the current billing period.
