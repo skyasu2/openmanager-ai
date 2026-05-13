@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-13 14:03:01 KST
+> Generated at: 2026-05-13 14:24:10 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 493 |
-| Total Runs (Counted) | 394 |
+| Total Recorded Runs | 494 |
+| Total Runs (Counted) | 395 |
 | Non-counted Runs | 99 |
-| Total Checks | 3498 |
-| Passed | 3363 |
+| Total Checks | 3501 |
+| Passed | 3366 |
 | Failed | 125 |
-| Completed Items | 557 |
-| Pending Items | 1 |
+| Completed Items | 558 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 3 |
-| Completion Rate | 99.82% |
-| Last Counted Run | QA-20260513-0495 (2026-05-13T05:02:59.311Z) |
-| Latest Recorded Run | QA-20260513-0495 (2026-05-13T05:02:59.311Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260513-0496 (2026-05-13T05:24:07.631Z) |
+| Latest Recorded Run | QA-20260513-0496 (2026-05-13T05:24:07.631Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,42 +34,42 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260513-0495 (2026-05-13T05:02:59.311Z)
+Latest run: QA-20260513-0496 (2026-05-13T05:24:07.631Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | Deploy Reporter structured-output schema fix and rerun the 3-feature AI Assistant QA. |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | yes | Keep strict schema regression coverage for nested structured-output fields. |
-| DevOps / SRE Engineer | appropriate | yes | Release a patch version and verify Cloud Run Reporter generation on production. |
+| AI Security & Reliability Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after production AI Assistant QA: effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699. |
+| vercel | cli | checked | normal | Current billing period checked after production closure QA: effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-12T05:02:59.311Z -> 2026-05-13T05:02:59.311Z (24h)
-- Runs with observations: 5 recorded / 5 counted
-- Samples: 13
+- Window: 2026-05-12T05:24:07.631Z -> 2026-05-13T05:24:07.631Z (24h)
+- Runs with observations: 6 recorded / 6 counted
+- Samples: 16
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor | cloud-run-ai-engine | 1 | 15964ms | 15964ms | - | - | 15964ms | 15964ms | QA-20260512-0485 |
 | Supervisor | vercel-bff-cloud-run | 5 | 4519ms | 12587ms | - | - | 4519ms | 12587ms | QA-20260512-0486 |
-| Supervisor | cloud-run | 1 | 3481ms | 3481ms | - | - | - | - | QA-20260513-0495 |
+| Supervisor | cloud-run | 2 | 3484ms | 3486ms | - | - | - | - | QA-20260513-0496 |
 | Supervisor | groq | 2 | 1736ms | 2569ms | - | - | 1736ms | 2569ms | QA-20260512-0488 |
-| Reporter Agent | cloud-run | 1 | 1720ms | 1720ms | - | - | - | - | QA-20260513-0495 |
-| Analyst / Monitoring Analysis | cloud-run | 1 | 1116ms | 1116ms | - | - | - | - | QA-20260513-0495 |
+| Reporter Agent | cloud-run | 2 | 2047ms | 2373ms | - | - | - | - | QA-20260513-0496 |
+| Analyst / Monitoring Analysis | cloud-run | 2 | 1093ms | 1116ms | - | - | - | - | QA-20260513-0496 |
 | Cloud Run AI | groq | 1 | 1074ms | 1074ms | - | - | 1074ms | 1074ms | QA-20260512-0487 |
 | Supervisor | deterministic | 1 | 552ms | 552ms | - | - | 552ms | 552ms | QA-20260512-0488 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-12T05:02:59.311Z -> 2026-05-13T05:02:59.311Z (24h)
+- Window: 2026-05-12T05:24:07.631Z -> 2026-05-13T05:24:07.631Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 9
 - Drift rate: 11.11%
@@ -87,7 +87,7 @@ Latest run: QA-20260513-0495 (2026-05-13T05:02:59.311Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_CZcfiaUHeyXJ5eFZZhNtMbPjWjnu / SHA 6b7e6408
+- Deployment: dpl_HYnFzNmCeri7QZiyxGSebLcycmvX / SHA fb61ce00
 - Coverage Packs: ai-core, ai-advanced-surface
 - Covered Surfaces: AI Assistant AI Chat, AI Assistant Auto Incident Report, AI Assistant Anomaly/Trend
 - Skipped Surfaces: mobile viewport matrix, OAuth provider completion, broad dashboard route pack
@@ -96,31 +96,25 @@ Latest run: QA-20260513-0495 (2026-05-13T05:02:59.311Z)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.143 pipeline | [GitLab v8.11.143 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521039196) | - |
+| general | GitLab v8.11.144 pipeline | [GitLab v8.11.144 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521174683) | - |
 | general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI Chat feature pass | `reports/qa/evidence/qa-20260513-v811143-ai-chat-function.png` | - |
-| playwright-screenshot | Reporter feature failure | `reports/qa/evidence/qa-20260513-v811143-ai-reporter-function.png` | - |
-| playwright-screenshot | Reporter template failure | `reports/qa/evidence/qa-20260513-v811143-ai-reporter-template-function.png` | - |
-| playwright-screenshot | Anomaly trend feature pass | `reports/qa/evidence/qa-20260513-v811143-ai-anomaly-trend-function.png` | - |
-| playwright-report | AI Assistant 3-feature summary and root cause | `reports/qa/evidence/qa-20260513-v811143-ai-assistant-3features-summary.md` | - |
+| playwright-screenshot | AI Chat closure pass | `reports/qa/evidence/qa-20260513-v811144-ai-chat-closure.png` | - |
+| playwright-screenshot | Reporter closure pass | `reports/qa/evidence/qa-20260513-v811144-ai-reporter-closure.png` | - |
+| playwright-screenshot | Anomaly trend closure pass | `reports/qa/evidence/qa-20260513-v811144-ai-anomaly-trend-closure.png` | - |
+| playwright-report | AI Assistant 3-feature closure summary | `reports/qa/evidence/qa-20260513-v811144-ai-assistant-3features-closure-summary.md` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260513-0495)
-  next: Deploy Reporter structured-output schema fix and rerun the 3-feature AI Assistant QA.
-- ai-security-reliability: AI Security & Reliability Architect (last QA-20260513-0495)
-  next: Keep strict schema regression coverage for nested structured-output fields.
-- sre-devops: DevOps / SRE Engineer (last QA-20260513-0495)
-  next: Release a patch version and verify Cloud Run Reporter generation on production.
+- None
 
 ## Pending Improvements
 
-- [P0] reporter-structured-output-production-deploy: Deploy Reporter structured output schema fix (seen 1회, last QA-20260513-0495)
+- None
 
 ## Deferred Improvements
 
@@ -638,6 +632,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
 - reporter-structured-output-local-fix: Reporter structured output schema local fix prepared (completed 1회, last QA-20260513-0495)
+- reporter-structured-output-production-deploy: Deploy Reporter structured output schema fix (completed 1회, last QA-20260513-0496)
 - root-auth-session-lazy-imports: Defer auth/session/store heavy imports on the root path (completed 2회, last QA-20260422-0329)
 - root-client-provider-prune: Remove unused root AccessibilityProvider wrapper (completed 1회, last QA-20260422-0326)
 - root-client-runtime-split: Non-critical root client runtime modules split behind dynamic wrapper (completed 1회, last QA-20260419-0314)
@@ -760,6 +755,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260513-0496 | 2026-05-13T05:24:07.631Z | targeted | yes | yes | Production QA - v8.11.144 AI Assistant 3-Feature Closure | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0495 | 2026-05-13T05:02:59.311Z | targeted | yes | yes | Production QA - v8.11.143 AI Assistant 3-Feature Check | 3 | 1 | 1 | 0 | 0 | 3 |
 | QA-20260513-0494 | 2026-05-13T04:07:53.842Z | targeted | yes | yes | Production QA - v8.11.143 Score Deduction Closure | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0493 | 2026-05-13T03:45:28.442Z | targeted | no | no | Diagnostic Follow-up - v8.11.142 Frontend Score Deductions | 16 | 0 | 0 | 0 | 0 | 0 |
@@ -779,4 +775,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260511-0479 | 2026-05-11T14:39:01.439Z | targeted | yes | yes | GitLab Release QA - v8.11.128 Domain Capability Resolver | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0478 | 2026-05-11T12:56:25.517Z | targeted | yes | yes | Vercel Playwright QA - AI Peak Load Semantic Intent Closure | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0477 | 2026-05-11T09:35:30.250Z | targeted | no | no | Vercel Playwright MCP Targeted AI QA - 24h peak-load phrasing variants | 3 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260511-0476 | 2026-05-11T09:12:27.615Z | targeted | no | no | Vercel Playwright MCP Targeted Check - post-main-push production state | 10 | 0 | 1 | 0 | 0 | 1 |

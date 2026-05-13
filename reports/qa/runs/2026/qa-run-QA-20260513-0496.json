@@ -1,0 +1,179 @@
+{
+  "runId": "QA-20260513-0496",
+  "recordedAt": "2026-05-13T05:24:07.631Z",
+  "recordedAtKst": "2026-05-13 14:24:07 KST",
+  "runTitle": "Production QA - v8.11.144 AI Assistant 3-Feature Closure",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_HYnFzNmCeri7QZiyxGSebLcycmvX",
+    "deploymentUrl": "https://openmanager-mg07ozqcv-skyasus-projects.vercel.app",
+    "commitSha": "fb61ce00bda07b6a020f6c60f6b921378d8d70f9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "AI Assistant AI Chat",
+    "AI Assistant Auto Incident Report",
+    "AI Assistant Anomaly/Trend"
+  ],
+  "skippedSurfaces": [
+    "mobile viewport matrix",
+    "OAuth provider completion",
+    "broad dashboard route pack"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Assistant AI Chat",
+      "agent": "Supervisor",
+      "provider": "cloud-run",
+      "model": "runtime-selected",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright resource timing",
+      "latencyMs": 3486
+    },
+    {
+      "surface": "AI Assistant Auto Incident Report",
+      "agent": "Reporter Agent",
+      "provider": "cloud-run",
+      "model": "runtime-selected",
+      "route": "/api/ai/incident-report",
+      "source": "Playwright resource timing",
+      "latencyMs": 2373
+    },
+    {
+      "surface": "AI Assistant Anomaly/Trend",
+      "agent": "Analyst / Monitoring Analysis",
+      "provider": "cloud-run",
+      "model": "tool-based monitoring analysis",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "Playwright resource timing",
+      "latencyMs": 1070
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The three requested AI Assistant production functions passed on v8.11.144 after the Reporter structured-output fix.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Chat, Reporter, and Anomaly/Trend outputs matched current dashboard signals: 18 servers, 17 normal, 1 warning, cache-redis memory risk.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Reporter no longer falls back from invalid structured-output schema and no scaffold marker leakage was observed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline completed successfully and Cloud Run serves ai-engine-00460-ng4 with 100% traffic.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP verified the three production surfaces with durable screenshots and resource timing.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-13T14:22:23+09:00",
+      "summary": "Current billing period checked after production closure QA: effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Chat closure pass",
+      "path": "reports/qa/evidence/qa-20260513-v811144-ai-chat-closure.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter closure pass",
+      "path": "reports/qa/evidence/qa-20260513-v811144-ai-reporter-closure.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Anomaly trend closure pass",
+      "path": "reports/qa/evidence/qa-20260513-v811144-ai-anomaly-trend-closure.png"
+    },
+    {
+      "type": "playwright-report",
+      "label": "AI Assistant 3-feature closure summary",
+      "path": "reports/qa/evidence/qa-20260513-v811144-ai-assistant-3features-closure-summary.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "reporter-structured-output-production-deploy",
+      "title": "Deploy Reporter structured output schema fix",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.144 GitLab pipeline 2521174683 succeeded; Cloud Run ai-engine-00460-ng4 serves 100% traffic; production Reporter generated a report card.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "AI Chat PASS: answer included whole-fleet status and cache-redis-dc1-01 memory 83% with no scaffold leakage.",
+    "Reporter PASS: production UI generated a visible incident report card; no 보고서 생성 실패 fallback banner.",
+    "Anomaly/Trend PASS: whole-system analysis rendered 18 servers, 1 warning, cache-redis-dc1-01 memory 81%, and no scaffold leakage.",
+    "Architecture note: incident-report and monitoring-analysis artifact generators already exist, but the function tabs still call their APIs directly; artifact unification should be tracked as a separate SDD plan."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.144 pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521174683"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

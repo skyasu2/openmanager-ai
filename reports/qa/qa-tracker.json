@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-13T05:02:59.311Z"
+    "updatedAt": "2026-05-13T05:24:07.631Z"
   },
   "sequence": {
-    "nextRunNumber": 496
+    "nextRunNumber": 497
   },
   "summary": {
-    "totalRecordedRuns": 493,
-    "totalRuns": 394,
+    "totalRecordedRuns": 494,
+    "totalRuns": 395,
     "excludedRuns": 99,
-    "totalChecks": 3498,
-    "totalPassed": 3363,
+    "totalChecks": 3501,
+    "totalPassed": 3366,
     "totalFailed": 125,
-    "completionRate": 99.82,
-    "completedItems": 557,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 558,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260513-0495",
-    "lastRecordedAt": "2026-05-13T05:02:59.311Z",
-    "latestRecordedRunId": "QA-20260513-0495",
-    "latestRecordedAt": "2026-05-13T05:02:59.311Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260513-0496",
+    "lastRecordedAt": "2026-05-13T05:24:07.631Z",
+    "latestRecordedRunId": "QA-20260513-0496",
+    "latestRecordedAt": "2026-05-13T05:24:07.631Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13654,25 +13654,25 @@
       "id": "reporter-structured-output-production-deploy",
       "title": "Deploy Reporter structured output schema fix",
       "priority": "P0",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260513-0495",
       "firstSeenAt": "2026-05-13T05:02:59.311Z",
-      "lastSeenRunId": "QA-20260513-0495",
-      "lastSeenAt": "2026-05-13T05:02:59.311Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260513-0496",
+      "lastSeenAt": "2026-05-13T05:24:07.631Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.11.144 GitLab pipeline 2521174683 succeeded; Cloud Run ai-engine-00460-ng4 serves 100% traffic; production Reporter generated a report card.",
       "lastNote": "Production v8.11.143 still serves the failing Reporter schema until a new Cloud Run revision is deployed.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-13T05:02:59.311Z"
+      "lastStatusChangeAt": "2026-05-13T05:24:07.631Z"
     }
   },
   "runs": [
@@ -54448,6 +54448,171 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260513-0496",
+      "recordedAt": "2026-05-13T05:24:07.631Z",
+      "recordedAtKst": "2026-05-13 14:24:07 KST",
+      "title": "Production QA - v8.11.144 AI Assistant 3-Feature Closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260513-0496.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_HYnFzNmCeri7QZiyxGSebLcycmvX",
+        "deploymentUrl": "https://openmanager-mg07ozqcv-skyasus-projects.vercel.app",
+        "commitSha": "fb61ce00bda07b6a020f6c60f6b921378d8d70f9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "AI Assistant AI Chat",
+        "AI Assistant Auto Incident Report",
+        "AI Assistant Anomaly/Trend"
+      ],
+      "skippedSurfaces": [
+        "mobile viewport matrix",
+        "OAuth provider completion",
+        "broad dashboard route pack"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Assistant AI Chat",
+          "agent": "Supervisor",
+          "provider": "cloud-run",
+          "model": "runtime-selected",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright resource timing",
+          "latencyMs": 3486
+        },
+        {
+          "surface": "AI Assistant Auto Incident Report",
+          "agent": "Reporter Agent",
+          "provider": "cloud-run",
+          "model": "runtime-selected",
+          "route": "/api/ai/incident-report",
+          "source": "Playwright resource timing",
+          "latencyMs": 2373
+        },
+        {
+          "surface": "AI Assistant Anomaly/Trend",
+          "agent": "Analyst / Monitoring Analysis",
+          "provider": "cloud-run",
+          "model": "tool-based monitoring analysis",
+          "route": "/api/ai/intelligent-monitoring",
+          "source": "Playwright resource timing",
+          "latencyMs": 1070
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The three requested AI Assistant production functions passed on v8.11.144 after the Reporter structured-output fix.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI Chat, Reporter, and Anomaly/Trend outputs matched current dashboard signals: 18 servers, 17 normal, 1 warning, cache-redis memory risk.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Reporter no longer falls back from invalid structured-output schema and no scaffold marker leakage was observed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline completed successfully and Cloud Run serves ai-engine-00460-ng4 with 100% traffic.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP verified the three production surfaces with durable screenshots and resource timing.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T14:22:23+09:00",
+          "summary": "Current billing period checked after production closure QA: effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Chat closure pass",
+          "path": "reports/qa/evidence/qa-20260513-v811144-ai-chat-closure.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter closure pass",
+          "path": "reports/qa/evidence/qa-20260513-v811144-ai-reporter-closure.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Anomaly trend closure pass",
+          "path": "reports/qa/evidence/qa-20260513-v811144-ai-anomaly-trend-closure.png"
+        },
+        {
+          "type": "playwright-report",
+          "label": "AI Assistant 3-feature closure summary",
+          "path": "reports/qa/evidence/qa-20260513-v811144-ai-assistant-3features-closure-summary.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.144 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521174683"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -54456,33 +54621,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 246,
-      "appropriateCount": 211,
+      "seenCount": 247,
+      "appropriateCount": 212,
       "partialCount": 35,
       "inappropriateCount": 0,
       "improvementNeededCount": 45,
-      "lastRunId": "QA-20260513-0495",
-      "lastSeenAt": "2026-05-13T05:02:59.311Z",
+      "lastRunId": "QA-20260513-0496",
+      "lastSeenAt": "2026-05-13T05:24:07.631Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "AI Chat and Anomaly/Trend passed, but Reporter production surface failed despite HTTP 200 due fallback payload.",
-      "lastNextAction": "Deploy Reporter structured-output schema fix and rerun the 3-feature AI Assistant QA."
+      "lastImprovementNeeded": false,
+      "lastRationale": "The three requested AI Assistant production functions passed on v8.11.144 after the Reporter structured-output fix.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 121,
-      "appropriateCount": 91,
+      "seenCount": 122,
+      "appropriateCount": 92,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260513-0495",
-      "lastSeenAt": "2026-05-13T05:02:59.311Z",
+      "lastRunId": "QA-20260513-0496",
+      "lastSeenAt": "2026-05-13T05:24:07.631Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI Chat and Anomaly/Trend outputs matched current dashboard signals: 18 servers, 17 normal, 1 warning, cache-redis-dc1-01 memory 84%.",
+      "lastRationale": "AI Chat, Reporter, and Anomaly/Trend outputs matched current dashboard signals: 18 servers, 17 normal, 1 warning, cache-redis memory risk.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -54490,50 +54655,50 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 71,
-      "appropriateCount": 53,
+      "seenCount": 72,
+      "appropriateCount": 54,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260513-0495",
-      "lastSeenAt": "2026-05-13T05:02:59.311Z",
+      "lastRunId": "QA-20260513-0496",
+      "lastSeenAt": "2026-05-13T05:24:07.631Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Reporter failure came from strict structured-output schema incompatibility, not user input or prompt leakage.",
-      "lastNextAction": "Keep strict schema regression coverage for nested structured-output fields."
+      "lastImprovementNeeded": false,
+      "lastRationale": "Reporter no longer falls back from invalid structured-output schema and no scaffold marker leakage was observed.",
+      "lastNextAction": ""
     },
     "sre-devops": {
       "domainId": "sre-devops",
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 176,
-      "appropriateCount": 158,
+      "seenCount": 177,
+      "appropriateCount": 159,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260513-0495",
-      "lastSeenAt": "2026-05-13T05:02:59.311Z",
+      "lastRunId": "QA-20260513-0496",
+      "lastSeenAt": "2026-05-13T05:24:07.631Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Cloud Run logs identified the upstream 400 while Vercel response was HTTP 200 fallback, so deploy and post-deploy QA closure are required.",
-      "lastNextAction": "Release a patch version and verify Cloud Run Reporter generation on production."
+      "lastImprovementNeeded": false,
+      "lastRationale": "GitLab tag pipeline completed successfully and Cloud Run serves ai-engine-00460-ng4 with 100% traffic.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 213,
-      "appropriateCount": 195,
+      "seenCount": 214,
+      "appropriateCount": 196,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260513-0495",
-      "lastSeenAt": "2026-05-13T05:02:59.311Z",
+      "lastRunId": "QA-20260513-0496",
+      "lastSeenAt": "2026-05-13T05:24:07.631Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP covered the three requested AI Assistant functions with durable screenshots and resource timing.",
+      "lastRationale": "Playwright MCP verified the three production surfaces with durable screenshots and resource timing.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
