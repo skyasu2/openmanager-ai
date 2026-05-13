@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active Canonical
 > Doc type: Runbook
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-13
 > Canonical: docs/operations/deployment-guide.md
 > Tags: operations,deployment,gitlab,vercel,cloud-run
 
@@ -32,7 +32,7 @@ npm run gitlab:protection:check
 | 확인 | 기준 |
 |---|---|
 | remote | canonical push/fetch 대상은 `gitlab` |
-| runner | `wsl2-docker` self-hosted runner가 살아 있으면 GitLab CI 경로 사용 |
+| runner | `wsl2-docker` self-hosted runner/Docker 가용성 확인. 실제 pipeline 생성/배정은 push 후 별도 확인 |
 | protected tag | GitLab protected tag 패턴 `v*.*.*` 필요 |
 | secrets | `VERCEL_TOKEN`, `GCP_SERVICE_KEY`, `GCP_PROJECT_ID`는 GitLab protected CI variables 기준 |
 
@@ -66,6 +66,14 @@ git push gitlab main
 ```bash
 npm run gitlab:pipeline:head -- --wait
 ```
+
+`status=created|pending|running|waiting_for_resource` 또는 `note=pipeline_not_terminal_after_wait`로 남으면 pipeline/job/resource queue를 확인합니다.
+
+```bash
+npm run gitlab:pipeline:inspect -- --pipeline <id>
+```
+
+`waiting_for_resource`는 runner 장애로 단정하지 말고 production `resource_group` 점유 여부를 먼저 확인합니다.
 
 1. release script로 semver tag를 만들고 GitLab에 tag를 함께 push합니다.
 

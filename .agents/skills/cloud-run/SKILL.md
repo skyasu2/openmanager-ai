@@ -16,7 +16,7 @@ Production deployment authority is GitLab CI. Direct `cloud-run/ai-engine/deploy
 
 1. Choose the deploy path.
 - Default production path: committed change -> `$git-workflow` -> `git push gitlab ...` -> GitLab CI `deploy_ai_engine`.
-- Before CI deploy, check runner availability: `bash scripts/ci/runner-health-check.sh`.
+- Before CI deploy, check local runner/Docker availability: `bash scripts/ci/runner-health-check.sh`. This does not prove GitLab scheduler, pipeline creation, runner tag matching, or `resource_group` assignment.
 - Direct manual deploy is allowed only when the user explicitly asks for it, the runner is unavailable, or emergency recovery is needed. Report that the CI gate was skipped.
 
 1. Run preflight checks.
@@ -38,7 +38,7 @@ Production deployment authority is GitLab CI. Direct `cloud-run/ai-engine/deploy
 - If custom machine settings are present, stop and fix before deployment.
 
 1. Deploy.
-- CI path: use `$git-workflow` to push the committed `HEAD`, then verify `npm run gitlab:pipeline:head -- --wait`. For a production release, push the prepared semver tag with `git push gitlab --follow-tags`.
+- CI path: use `$git-workflow` to push the committed `HEAD`, then verify `npm run gitlab:pipeline:head -- --wait`. If the pipeline remains nonterminal, inspect it with `npm run gitlab:pipeline:inspect -- --pipeline <id>`. For a production release, push the prepared semver tag with `git push gitlab --follow-tags`.
 - Manual fallback only: `cd cloud-run/ai-engine && bash deploy.sh`.
 
 1. Verify service health.
@@ -111,6 +111,7 @@ Production deployment authority is GitLab CI. Direct `cloud-run/ai-engine/deploy
 - If sandbox blocks DNS/network/auth (`NameResolutionError`, `EAI_AGAIN`), rerun with escalated permissions.
 - If deploy succeeds but health fails, wait 10-20s and retry once.
 - If runner health fails and manual fallback is used, state explicitly that the CI gate was skipped.
+- If GitLab pipeline status remains `created`, `pending`, `running`, or `waiting_for_resource` after the wait, inspect jobs/resource queues before classifying it as runner outage.
 - If service regression is confirmed, follow `references/rollback.md`.
 - If CLI commands fail due to project not set, stop and request selection.
 

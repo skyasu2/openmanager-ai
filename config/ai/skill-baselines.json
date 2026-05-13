@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewed": "2026-05-07",
+  "lastReviewed": "2026-05-13",
   "policy": {
     "standardsDoc": "docs/guides/ai/skill-standards.md",
     "geminiSameNameOverlay": "forbidden",
@@ -17,6 +17,7 @@
       "invariants": [
         "Check cost and free-tier guardrails before deploy.",
         "Prefer GitLab CI deploy_ai_engine as the production deploy authority; direct Cloud Run deploy is an explicit fallback.",
+        "Treat runner-health-check as a local runner/Docker probe only; verify pushed/tag pipelines separately and inspect nonterminal/resource-group waits.",
         "Verify Docker, type-check, service health, and rollback path.",
         "Do not suggest higher-cost Cloud Build or Cloud Run machine settings."
       ],
@@ -91,6 +92,7 @@
         "Default push target is gitlab, not GitHub public snapshot.",
         "Treat GitHub public snapshot as frontend-only and refresh it only through npm run sync:github.",
         "After gitlab push, verify the pushed HEAD pipeline when GitLab token access is available.",
+        "Diagnose nonterminal GitLab pipelines with gitlab:pipeline:inspect before classifying runner outage or using a manual fallback.",
         "Do not stage or revert unrelated user changes."
       ],
       "adapters": {

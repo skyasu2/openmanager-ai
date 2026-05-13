@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.11.124 | Last reviewed: 2026-05-10 -->
+<!-- Version: 8.11.141 | Last reviewed: 2026-05-13 -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -45,7 +45,7 @@
 ## 💻 Agent Dev Server Protocol
 > **개발 서버 포트 지정**: Gemini 또는 Antigravity 등 AI 에이전트가 로컬 개발 서버를 구동할 때는 기본 포트(3000)를 피하고 **3004 또는 3005 포트를 사용**해야 합니다. (동시 작업 시 Port 충돌 방지)
 
-## 🗂 Repository & Delivery Topology (2026-05-07)
+## 🗂 Repository & Delivery Topology (2026-05-13)
 - **GitLab private (`gitlab`)**가 canonical development repo입니다. 전체 이력, 테스트, 문서, QA 자산, 내부 규칙은 GitLab 기준으로 유지합니다.
 - **Vercel Frontend**는 GitLab CI `deploy` job이 `vercel build --prod` 후 `vercel deploy --prebuilt --prod`로 production 배포합니다. Vercel Git Integration은 해제된 상태입니다.
 - **GitHub public (`github-public`, `origin` legacy)**는 frontend-only public snapshot입니다. `.github/`, docs/, tests/, scripts/, reports/, cloud-run/, 내부 agent 설정은 제외합니다. 동기화는 `npm run sync:github` (`scripts/sync/github-sync.sh`) 으로만 수행하며 canonical repo나 기본 배포 소스가 아닙니다.
@@ -53,6 +53,7 @@
 - **로컬 전체 검증 기본값**은 여전히 `npm run ci:local:docker` / `npm run ci:local:docker:full` 입니다. broad/release 변경에서 GitLab CI와 별도로 사용합니다.
 - 따라서 Gemini는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택해야 합니다.
 - `GITLAB_TOKEN`이 환경변수 또는 `.env.local`에 있으면 `git push gitlab ...` 직후 `npm run gitlab:pipeline:head -- --wait`로 pushed SHA의 GitLab pipeline을 확인하고, 최종 보고에 `pipeline id/status/url`를 포함합니다. `status=not_created`면 해당 SHA에 pipeline이 생성되지 않았음을 명시합니다.
+- pipeline 확인 결과가 `note=pipeline_not_terminal_after_wait`이거나 `status=created|pending|running|waiting_for_resource`로 남으면 `npm run gitlab:pipeline:inspect -- --pipeline <id>`로 jobs/resource queue를 확인한 뒤 원인을 보고합니다.
 
 ## ✅ QA Operation Protocol (Final Gate)
 - QA 상태 기준선: `reports/qa/qa-tracker.json` + `reports/qa/QA_STATUS.md` (과거 baseline 리포트는 Git history의 historical evidence로만 확인)
@@ -64,10 +65,11 @@
   - `npm run qa:status`
 
 ## 📦 CI/CD & Deployment Protocol
-- **Conditional Deployment Strategy (Runner Check)**: 배포 수행 전 `bash scripts/ci/runner-health-check.sh`를 실행하여 Runner 상태를 감지합니다.
-  - **Exit 0 (Runner 정상)**: `git push --follow-tags gitlab main` 경로로 canonical GitLab CI 배포를 사용합니다. deploy job은 semver 태그 기준으로만 실행됩니다.
-  - **Exit 1 (Runner 미가동)**: `vercel --prod`로 직접 배포하고, 사용자에게 `"CI 게이트 스킵 후 직접 배포했습니다. runner가 미가동 상태였습니다."`라고 명확히 보고합니다.
-- **배포 권한 및 환경**: Vercel Git Integration은 해제되어 있으며, 정상 시에는 GitLab CI가 배포 권한을 보유합니다. runner 미가동 시에만 직접 배포 fallback을 사용합니다.
+- **Conditional Deployment Strategy (Runner Check)**: 배포 수행 전 `bash scripts/ci/runner-health-check.sh`를 실행합니다. 이 스크립트는 로컬 `gitlab-runner`/Docker 가용성만 확인하며 GitLab scheduler, pipeline 생성, runner tag matching, `resource_group` 배정 성공을 증명하지 않습니다.
+  - **Exit 0 (로컬 runner/Docker 정상)**: `git push --follow-tags gitlab main` 경로로 canonical GitLab CI 배포를 사용하되, 직후 `npm run gitlab:pipeline:head -- --wait`로 실제 pipeline 상태를 확인합니다.
+  - **Nonterminal pipeline**: `created|pending|running|waiting_for_resource` 또는 `note=pipeline_not_terminal_after_wait`이면 `npm run gitlab:pipeline:inspect -- --pipeline <id>`로 job/resource queue를 확인합니다.
+  - **Exit 1 (로컬 runner/Docker 미가동)**: `vercel --prod` 직접 배포 fallback은 사용자 승인 또는 긴급 복구 상황에서만 사용하고, `"CI 게이트 스킵 후 직접 배포했습니다. runner가 미가동 상태였습니다."`라고 명확히 보고합니다.
+- **배포 권한 및 환경**: Vercel Git Integration은 해제되어 있으며, 정상 시에는 GitLab CI가 배포 권한을 보유합니다. production `resource_group`을 stale pipeline이 점유하는 경우에는 실제 배포/QA가 별도 완료됐거나 사용자 승인이 있을 때만 cancel/clear합니다.
 - broad/release 변경은 push 전 `npm run ci:local:docker`를 추가로 수행하여 로컬 검증을 마칩니다.
 - GitHub 공개 snapshot 동기화는 기본 배포 루프에 섞지 말고, 명시적 요청 시 `npm run sync:github` 으로만 수행합니다.
 

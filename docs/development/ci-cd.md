@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-08
+> Last reviewed: 2026-05-13
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,gitlab,vercel,github-actions,automation
 
@@ -22,8 +22,9 @@
 npm run deploy:smart
 ```
 
-- `scripts/ci/runner-health-check.sh`가 `exit 0`이면 `git push --follow-tags gitlab main` 경로로 CI 배포를 사용합니다.
-- `exit 1`이면 CI 게이트를 건너뛰고 `vercel --prod` 직접 배포로 전환하며, 스킵 사실을 콘솔에 명시적으로 출력합니다.
+- `scripts/ci/runner-health-check.sh`가 `exit 0`이면 로컬 runner/Docker가 살아 있다는 뜻입니다. 이후 `git push --follow-tags gitlab main` 경로로 CI 배포를 시작하고 `npm run gitlab:pipeline:head -- --wait`로 실제 pipeline 상태를 확인합니다.
+- pipeline이 `created`, `pending`, `running`, `waiting_for_resource` 또는 `note=pipeline_not_terminal_after_wait` 상태로 남으면 `npm run gitlab:pipeline:inspect -- --pipeline <id>`로 jobs/resource queue를 진단합니다.
+- `runner-health-check.sh` `exit 1`이면 CI 게이트를 건너뛰고 `vercel --prod` 직접 배포로 전환할 수 있으며, 스킵 사실을 콘솔에 명시적으로 출력합니다.
 
 ## 파이프라인 흐름
 

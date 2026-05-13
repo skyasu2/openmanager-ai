@@ -9,7 +9,7 @@ description: Safe GitLab-canonical git commit, push, MR/PR, and public snapshot 
 
 Use a deterministic commit/push/PR flow with safety checks.
 
-## Current topology (2026-05-07)
+## Current topology (2026-05-13)
 
 - `gitlab` remote: canonical private repo, full history/tests/docs/QA assets, release/tag authority
 - `github-public` remote: preferred public GitHub frontend-only snapshot with minimal public-only history
@@ -19,10 +19,11 @@ Use a deterministic commit/push/PR flow with safety checks.
 - Exact job names/rules live in `.gitlab-ci.yml`; do not hardcode them in a commit message or review unless you re-read that file first.
 - Current stable shape:
   - canonical validation runs on self-hosted `wsl2-docker`
-  - frontend production deploy runs on GitLab.com shared runner via `vercel build --prod` + `vercel deploy --prebuilt --prod`
+  - frontend production deploy runs through GitLab CI via `vercel build --prod` + `vercel deploy --prebuilt --prod`
   - production deploy uses serialized execution (`resource_group: production`)
   - AI Engine production deploy runs in the `deploy_ai_engine` job through `cloud-run/ai-engine/deploy.sh`
   - post-deploy smoke validates frontend and AI Engine health
+  - `scripts/ci/runner-health-check.sh` is only a local runner/Docker probe; it does not prove GitLab scheduler, pipeline creation, runner tag matching, or `resource_group` assignment
 - GitHub public repo: frontend/public assets only, no `.github/`, docs, tests, scripts, reports, cloud-run, internal agent settings, releases/tags, issues/wiki/projects; not a deployment control plane
 
 Never assume `github-public/main` or `origin/main` is the canonical branch. Always inspect `git remote -v` before any push/fetch/rebase.
@@ -98,6 +99,9 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - Preferred SSOT command: `npm run gitlab:pipeline:head -- --wait`
 - The script checks the current `HEAD` SHA and falls back to `.env.local` `GITLAB_TOKEN` when `glab` is unavailable.
 - If the script reports `status=not_created`, say explicitly that GitLab did not create a pipeline for that SHA (for example because CI skip rules matched).
+- If the script reports `note=pipeline_not_terminal_after_wait` or leaves `status=created|pending|running|waiting_for_resource`, run `npm run gitlab:pipeline:inspect -- --pipeline <id>` and report the job/resource queue diagnosis.
+- Treat `waiting_for_resource` as a serialized production `resource_group` condition until inspected. Do not classify it as runner outage by default.
+- Cancel or clear stale production `resource_group` blockers only when a manual deploy/QA already completed or the user explicitly approves that cleanup.
 - If no token is available, say explicitly that remote pipeline status could not be auto-verified.
 - Final delivery message must include `pipeline id/status/url` when verification was possible.
 
@@ -112,6 +116,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 1. Validate locally (`pre-push`, targeted tests, or `npm run ci:local:docker` as needed).
 1. Push canonical change: `git push gitlab main`
 1. Treat GitLab CI status as the deployment authority; verify the pushed `HEAD` with `npm run gitlab:pipeline:head -- --wait` rather than relying on stale memory.
+1. If the pipeline is still nonterminal after the wait, inspect it with `npm run gitlab:pipeline:inspect -- --pipeline <id>` before choosing a fallback.
 1. If a release/tag was created: `git push gitlab --follow-tags`
 1. Refresh public code repo only when needed: `npm run sync:github`
 1. Do not treat GitHub as deployment status, release authority, or issue tracker.
