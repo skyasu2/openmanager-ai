@@ -63,6 +63,30 @@ const incidentReportArtifact: IncidentReportArtifact = {
   },
 };
 
+const serverMonitoringArtifact = {
+  kind: 'server-monitoring-analysis',
+  generatedAt: '2026-05-13T01:00:00.000Z',
+  title: '웹 서버 01 이상감지/추세 분석',
+  summary: '웹 서버 01 상태 정상',
+  serverId: 'server-1',
+  serverName: '웹 서버 01',
+  overallStatus: 'online',
+  analysis: {
+    success: true,
+    serverId: 'server-1',
+    analysisType: 'full',
+    timestamp: '2026-05-13T01:00:00.000Z',
+  },
+  server: {
+    success: true,
+    serverId: 'server-1',
+    serverName: '웹 서버 01',
+    analysisType: 'full',
+    timestamp: '2026-05-13T01:00:00.000Z',
+    overallStatus: 'online',
+  },
+} as const;
+
 describe('artifact workspace store', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -479,6 +503,38 @@ describe('artifact workspace store', () => {
       sourceMode: 'restored-legacy',
       traceId: 'trace-history-legacy',
       payload: incidentReportArtifact,
+    });
+  });
+
+  it('restores selected server monitoring artifacts from legacy chat metadata', () => {
+    const replayPack = extractArtifactReplayPackFromChatHistory({
+      workspaceId: 'workspace-server-monitoring-history',
+      createdAt: '2026-05-13T01:20:00.000Z',
+      messages: [
+        {
+          id: 'assistant-server-monitoring',
+          role: 'assistant',
+          content: '단일 서버 이상감지/추세 분석을 생성했습니다.',
+          timestamp: '2026-05-13T01:00:00.000Z',
+          metadata: {
+            traceId: 'trace-server-monitoring-history',
+            serverMonitoringAnalysisArtifact: serverMonitoringArtifact,
+          },
+        },
+      ],
+    });
+
+    expect(replayPack.entries).toHaveLength(1);
+    expect(replayPack.entries[0]).toMatchObject({
+      schema: {
+        domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+        familyId: 'server-monitoring-analysis',
+        artifactKind: 'server-monitoring-analysis',
+        artifactVersion: ARTIFACT_CONTRACT_VERSION,
+      },
+      sourceMode: 'restored-legacy',
+      traceId: 'trace-server-monitoring-history',
+      payload: serverMonitoringArtifact,
     });
   });
 });

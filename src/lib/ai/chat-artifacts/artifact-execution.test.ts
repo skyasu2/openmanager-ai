@@ -5,7 +5,10 @@ import {
   saveArtifactExecutionReplayPack,
 } from './artifact-execution';
 import { generateIncidentReportArtifact } from './incident-report-artifact';
-import { generateMonitoringAnalysisArtifact } from './monitoring-analysis-artifact';
+import {
+  generateMonitoringAnalysisArtifact,
+  generateServerMonitoringArtifact,
+} from './monitoring-analysis-artifact';
 
 vi.mock('./incident-report-artifact', () => ({
   generateIncidentReportArtifact: vi.fn(),
@@ -13,6 +16,7 @@ vi.mock('./incident-report-artifact', () => ({
 
 vi.mock('./monitoring-analysis-artifact', () => ({
   generateMonitoringAnalysisArtifact: vi.fn(),
+  generateServerMonitoringArtifact: vi.fn(),
 }));
 
 const mockGenerateIncidentReportArtifact = vi.mocked(
@@ -20,6 +24,9 @@ const mockGenerateIncidentReportArtifact = vi.mocked(
 );
 const mockGenerateMonitoringAnalysisArtifact = vi.mocked(
   generateMonitoringAnalysisArtifact
+);
+const mockGenerateServerMonitoringArtifact = vi.mocked(
+  generateServerMonitoringArtifact
 );
 
 describe('artifact execution layer', () => {
@@ -109,6 +116,64 @@ describe('artifact execution layer', () => {
       })
     );
     expect(mockGenerateIncidentReportArtifact).not.toHaveBeenCalled();
+  });
+
+  it('routes selected server monitoring execution through the server artifact generator', async () => {
+    const artifact = {
+      kind: 'server-monitoring-analysis',
+      generatedAt: '2026-05-13T00:00:00.000Z',
+      title: '웹 서버 01 이상감지/추세 분석',
+      summary: '웹 서버 01에서 이상 신호 1건 감지',
+      serverId: 'server-1',
+      serverName: '웹 서버 01',
+      overallStatus: 'critical',
+      analysis: {
+        success: true,
+        serverId: 'server-1',
+        analysisType: 'full',
+        timestamp: '2026-05-13T00:00:00.000Z',
+      },
+      server: {
+        success: true,
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+        analysisType: 'full',
+        timestamp: '2026-05-13T00:00:00.000Z',
+        overallStatus: 'critical',
+      },
+    } as const;
+    mockGenerateServerMonitoringArtifact.mockResolvedValue(artifact);
+
+    await expect(
+      executeChatArtifact({
+        kind: 'server-monitoring-analysis',
+        query: '웹 서버 01 이상감지/추세 분석',
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+        currentMetrics: {
+          cpu: 92,
+          memory: 51,
+          disk: 33,
+          network: 12,
+        },
+      })
+    ).resolves.toBe(artifact);
+
+    expect(mockGenerateServerMonitoringArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: '웹 서버 01 이상감지/추세 분석',
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+        currentMetrics: {
+          cpu: 92,
+          memory: 51,
+          disk: 33,
+          network: 12,
+        },
+      })
+    );
+    expect(mockGenerateIncidentReportArtifact).not.toHaveBeenCalled();
+    expect(mockGenerateMonitoringAnalysisArtifact).not.toHaveBeenCalled();
   });
 
   it('stores generated artifacts as local-session replay packs', () => {

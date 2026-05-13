@@ -94,6 +94,30 @@ const opsProcedureArtifact = {
   },
 } as const;
 
+const serverMonitoringArtifact = {
+  kind: 'server-monitoring-analysis',
+  generatedAt: '2026-05-13T00:00:00.000Z',
+  title: '웹 서버 01 이상감지/추세 분석',
+  summary: '웹 서버 01에서 이상 신호 1건 감지',
+  serverId: 'server-1',
+  serverName: '웹 서버 01',
+  overallStatus: 'critical',
+  analysis: {
+    success: true,
+    serverId: 'server-1',
+    analysisType: 'full',
+    timestamp: '2026-05-13T00:00:00.000Z',
+  },
+  server: {
+    success: true,
+    serverId: 'server-1',
+    serverName: '웹 서버 01',
+    analysisType: 'full',
+    timestamp: '2026-05-13T00:00:00.000Z',
+    overallStatus: 'critical',
+  },
+} as const;
+
 describe('artifact workspace registry and replay pack contract', () => {
   it('lists monitoring artifact families with local/session-first replay policy', () => {
     expect(listArtifactSchemaEntries()).toEqual([
@@ -112,6 +136,11 @@ describe('artifact workspace registry and replay pack contract', () => {
       expect.objectContaining({
         familyId: 'monitoring-analysis',
         legacyMetadataKey: 'monitoringAnalysisArtifact',
+      }),
+      expect.objectContaining({
+        familyId: 'server-monitoring-analysis',
+        artifactKind: 'server-monitoring-analysis',
+        legacyMetadataKey: 'serverMonitoringAnalysisArtifact',
       }),
       expect.objectContaining({
         familyId: 'server-snapshot',
@@ -213,6 +242,34 @@ describe('artifact workspace registry and replay pack contract', () => {
       sourceMode: 'otel-static',
       dataSlot: '07:00 KST',
       payload: opsProcedureArtifact,
+    });
+    expect(readArtifactReplayPack(replayPack)).toEqual(replayPack);
+  });
+
+  it('includes selected server monitoring artifacts in replay packs', () => {
+    const envelope = createArtifactEnvelope(serverMonitoringArtifact, {
+      domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+      sourceMode: 'tool-result',
+      dataSlot: '07:00 KST',
+      traceId: 'trace-server-monitoring-1',
+    });
+    const replayPack = createArtifactReplayPack({
+      workspaceId: 'workspace-server-monitoring',
+      createdAt: '2026-05-13T00:01:00.000Z',
+      envelopes: [envelope],
+    });
+
+    expect(replayPack.entries).toHaveLength(1);
+    expect(replayPack.entries[0]).toMatchObject({
+      schema: {
+        domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+        familyId: 'server-monitoring-analysis',
+        artifactKind: 'server-monitoring-analysis',
+        artifactVersion: ARTIFACT_CONTRACT_VERSION,
+      },
+      sourceMode: 'tool-result',
+      dataSlot: '07:00 KST',
+      payload: serverMonitoringArtifact,
     });
     expect(readArtifactReplayPack(replayPack)).toEqual(replayPack);
   });

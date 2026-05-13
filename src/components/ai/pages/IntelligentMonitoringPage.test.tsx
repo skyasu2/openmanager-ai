@@ -94,6 +94,98 @@ const monitoringArtifact = {
   },
 } as const;
 
+const serverMonitoringArtifact = {
+  kind: 'server-monitoring-analysis',
+  generatedAt: '2026-05-13T00:00:00.000Z',
+  title: '웹 서버 01 이상감지/추세 분석',
+  summary: '웹 서버 01 상태 정상',
+  serverId: 'server-1',
+  serverName: '웹 서버 01',
+  overallStatus: 'online',
+  analysis: {
+    success: true,
+    serverId: 'server-1',
+    analysisType: 'full',
+    timestamp: '2026-03-18T14:10:00.000Z',
+    anomalyDetection: {
+      success: true,
+      serverId: 'server-1',
+      serverName: '웹 서버 01',
+      anomalyCount: 0,
+      hasAnomalies: false,
+      results: {},
+      timestamp: '2026-03-18T14:10:00.000Z',
+      _algorithm: 'test',
+      _engine: 'test',
+      _cached: false,
+    },
+    trendPrediction: {
+      success: true,
+      serverId: 'server-1',
+      serverName: '웹 서버 01',
+      predictionHorizon: '1h',
+      results: {},
+      summary: {
+        increasingMetrics: [],
+        hasRisingTrends: false,
+      },
+      timestamp: '2026-03-18T14:10:00.000Z',
+      _algorithm: 'test',
+      _engine: 'test',
+      _cached: false,
+    },
+    patternAnalysis: {
+      success: true,
+      patterns: [],
+      detectedIntent: 'analysis',
+      analysisResults: [],
+      _mode: 'test',
+    },
+  },
+  server: {
+    success: true,
+    serverId: 'server-1',
+    serverName: '웹 서버 01',
+    analysisType: 'full',
+    timestamp: '2026-03-18T14:10:00.000Z',
+    anomalyDetection: {
+      success: true,
+      serverId: 'server-1',
+      serverName: '웹 서버 01',
+      anomalyCount: 0,
+      hasAnomalies: false,
+      results: {},
+      timestamp: '2026-03-18T14:10:00.000Z',
+      _algorithm: 'test',
+      _engine: 'test',
+      _cached: false,
+    },
+    trendPrediction: {
+      success: true,
+      serverId: 'server-1',
+      serverName: '웹 서버 01',
+      predictionHorizon: '1h',
+      results: {},
+      summary: {
+        increasingMetrics: [],
+        hasRisingTrends: false,
+      },
+      timestamp: '2026-03-18T14:10:00.000Z',
+      _algorithm: 'test',
+      _engine: 'test',
+      _cached: false,
+    },
+    patternAnalysis: {
+      success: true,
+      patterns: [],
+      detectedIntent: 'analysis',
+      analysisResults: [],
+      _mode: 'test',
+    },
+    overallStatus: 'online',
+  },
+} as const;
+
 vi.mock('@/hooks/useServerQuery', () => ({
   useServerQuery: () => mockUseServerQuery(),
 }));
@@ -221,11 +313,9 @@ describe('IntelligentMonitoringPage', () => {
   });
 
   it('shows login CTA when analysis API returns 401', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 401,
-      json: async () => ({}),
-    });
+    mockExecuteChatArtifact.mockRejectedValueOnce(
+      new Error('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.')
+    );
 
     render(
       <IntelligentMonitoringPage
@@ -252,57 +342,18 @@ describe('IntelligentMonitoringPage', () => {
       'href',
       '/login'
     );
+    expect(mockExecuteChatArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'server-monitoring-analysis',
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+      })
+    );
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('keeps selected server after analysis and reset without exposing a RAG toggle', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        success: true,
-        data: {
-          success: true,
-          serverId: 'server-1',
-          serverName: '웹 서버 01',
-          analysisType: 'full',
-          timestamp: '2026-03-18T14:10:00.000Z',
-          anomalyDetection: {
-            success: true,
-            serverId: 'server-1',
-            serverName: '웹 서버 01',
-            anomalyCount: 0,
-            hasAnomalies: false,
-            results: {},
-            timestamp: '2026-03-18T14:10:00.000Z',
-            _algorithm: 'test',
-            _engine: 'test',
-            _cached: false,
-          },
-          trendPrediction: {
-            success: true,
-            serverId: 'server-1',
-            serverName: '웹 서버 01',
-            predictionHorizon: '1h',
-            results: {},
-            summary: {
-              increasingMetrics: [],
-              hasRisingTrends: false,
-            },
-            timestamp: '2026-03-18T14:10:00.000Z',
-            _algorithm: 'test',
-            _engine: 'test',
-            _cached: false,
-          },
-          patternAnalysis: {
-            success: true,
-            patterns: [],
-            detectedIntent: 'analysis',
-            analysisResults: [],
-            _mode: 'test',
-          },
-        },
-      }),
-    });
+    mockExecuteChatArtifact.mockResolvedValueOnce(serverMonitoringArtifact);
 
     render(
       <IntelligentMonitoringPage
@@ -326,13 +377,34 @@ describe('IntelligentMonitoringPage', () => {
       expect(screen.getByText('has-result')).toBeInTheDocument();
     });
 
-    const request = mockFetch.mock.calls[0]?.[1];
-    expect(request).toBeDefined();
-    expect(JSON.parse(String(request?.body))).toMatchObject({
-      action: 'analyze_server',
-      serverId: 'server-1',
-    });
-    expect(JSON.parse(String(request?.body))).not.toHaveProperty('enableRAG');
+    expect(mockExecuteChatArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'server-monitoring-analysis',
+        query: '웹 서버 01 이상감지/추세 분석',
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+        currentMetrics: {
+          cpu: 10,
+          memory: 20,
+          disk: 30,
+          network: 40,
+        },
+        queryAsOfDataSlot: {
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        },
+      })
+    );
+    expect(mockSaveArtifactExecutionReplayPack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        artifact: serverMonitoringArtifact,
+        workspaceId: expect.stringContaining(
+          'surface:server-monitoring-analysis:'
+        ),
+      })
+    );
+    expect(mockFetch).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole('button', { name: '초기화' }));
 

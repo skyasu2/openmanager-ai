@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   generateMonitoringAnalysisArtifact,
+  generateServerMonitoringArtifact,
   parseMonitoringBatchAnalysisResponse,
 } from './monitoring-analysis-artifact';
 import { ARTIFACT_CONTRACT_VERSION } from './types';
@@ -79,6 +80,47 @@ const validFactPack = {
     },
   ],
 };
+
+const validServerAnalysisResponse = {
+  success: true,
+  serverId: 'server-1',
+  analysisType: 'full',
+  timestamp: '2026-05-13T00:00:00.000Z',
+  anomalyDetection: {
+    success: true,
+    serverId: 'server-1',
+    serverName: '웹 서버 01',
+    anomalyCount: 1,
+    hasAnomalies: true,
+    results: {
+      cpu: {
+        metric: 'cpu',
+        value: 92,
+        severity: 'critical',
+        isAnomaly: true,
+      },
+    },
+    timestamp: '2026-05-13T00:00:00.000Z',
+  },
+  trendPrediction: {
+    success: true,
+    serverId: 'server-1',
+    serverName: '웹 서버 01',
+    predictionHorizon: '1h',
+    results: {},
+    summary: {
+      increasingMetrics: ['cpu'],
+      hasRisingTrends: true,
+    },
+    timestamp: '2026-05-13T00:00:00.000Z',
+  },
+  patternAnalysis: {
+    success: true,
+    patterns: [],
+    detectedIntent: 'analysis',
+    analysisResults: [],
+  },
+} as const;
 
 describe('parseMonitoringBatchAnalysisResponse', () => {
   it('accepts the full monitoring batch artifact contract', () => {
@@ -283,5 +325,122 @@ describe('generateMonitoringAnalysisArtifact', () => {
           'FactPack 기준 api-was-dc1-01 CPU가 critical 임계치를 초과했습니다.',
       }),
     ]);
+  });
+});
+
+describe('generateServerMonitoringArtifact', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  it('routes a selected server analysis through the typed artifact contract', async () => {
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: validServerAnalysisResponse,
+      }),
+    } as Response);
+
+    const artifact = await generateServerMonitoringArtifact({
+      query: '웹 서버 01 이상감지/추세 분석',
+      sessionId: 'session-test',
+      serverId: 'server-1',
+      serverName: '웹 서버 01',
+      currentMetrics: {
+        cpu: 92,
+        memory: 51,
+        disk: 33,
+        network: 12,
+      },
+      queryAsOfDataSlot: {
+        slotIndex: 42,
+        minuteOfDay: 420,
+        timeLabel: '07:00 KST',
+      },
+    });
+
+    const request = vi.mocked(fetch).mock.calls[0]?.[1] as RequestInit;
+    expect(JSON.parse(String(request.body))).toMatchObject({
+      action: 'analyze_server',
+      serverId: 'server-1',
+      analysisType: 'full',
+      query: '웹 서버 01 이상감지/추세 분석',
+      sessionId: 'session-test',
+      currentMetrics: {
+        cpu: 92,
+        memory: 51,
+        disk: 33,
+        network: 12,
+      },
+      queryAsOf: {
+        source: 'vercel-static-otel',
+        datasetVersion: '24h-rotating-v1.0.0',
+        dataSlot: {
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        },
+      },
+    });
+
+    expect(artifact).toMatchObject({
+      artifactVersion: ARTIFACT_CONTRACT_VERSION,
+      kind: 'server-monitoring-analysis',
+      sourceMode: 'tool-result',
+      dataSlot: '07:00 KST',
+      serverId: 'server-1',
+      serverName: '웹 서버 01',
+      overallStatus: 'critical',
+      server: {
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+        overallStatus: 'critical',
+      },
+    });
+    expect(artifact.evidence).toEqual([
+      expect.objectContaining({
+        id: 'server-1-cpu-anomaly',
+        kind: 'metric',
+        serverId: 'server-1',
+        metric: 'cpu',
+        severity: 'critical',
+      }),
+    ]);
+  });
+
+  it('keeps auth and malformed response failures user-facing', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      json: async () => ({}),
+    } as Response);
+
+    await expect(
+      generateServerMonitoringArtifact({
+        query: '웹 서버 01 분석',
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+      })
+    ).rejects.toThrow('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.');
+
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: {
+          success: true,
+          serverId: 'server-1',
+        },
+      }),
+    } as Response);
+
+    await expect(
+      generateServerMonitoringArtifact({
+        query: '웹 서버 01 분석',
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+      })
+    ).rejects.toThrow('단일 서버 이상감지/추세 분석 데이터를 받지 못했습니다.');
   });
 });
