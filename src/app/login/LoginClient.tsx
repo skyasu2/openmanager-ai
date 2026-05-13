@@ -392,7 +392,7 @@ export default function LoginClient() {
             </p>
             <a
               href="/privacy"
-              className="mt-1.5 inline-block text-xs text-white/60 transition-colors hover:text-white/85"
+              className="mt-1.5 inline-flex min-h-8 items-center justify-center px-2 text-xs text-white/60 transition-colors hover:text-white/85"
             >
               개인정보 처리방침
             </a>

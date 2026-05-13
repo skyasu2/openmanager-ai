@@ -1,0 +1,52 @@
+QA-20260513 v8.11.142 score deduction follow-up
+
+Target:
+- https://openmanager-ai.vercel.app
+- version: 8.11.142
+- production commit: c1ff8ca54237541d0a3d51316756ae6ddef9ecbe
+
+Reason:
+- The previous non-AI frontend QA scored 92/100 with deductions for:
+  - mobile matrix not executed
+  - AI Assistant excluded by request
+  - CSS preload warning observed on /privacy
+
+Mobile follow-up:
+- Viewports: 390x844 and 768x1024.
+- Routes: /, /login, /privacy, deliberate 404 route, /dashboard via system start.
+- Result: no horizontal overflow on tested routes.
+- Dashboard rendered status summary and AI Assistant button on both tested viewports.
+- Small tap target observations:
+  - /login privacy footer link height was 16px.
+  - /privacy back link height was 16px.
+  - 404 secondary recommendation links were 20px.
+
+AI Assistant follow-up:
+- UI path: dashboard AI Assistant sidebar.
+- Standard conversational QA questions executed:
+  1. 현재 서버 전체 상태를 요약해줘
+  2. web-server-01 상태를 자세히 알려줘
+  3. 지난 24시간 중 가장 부하가 높았던 시간대는 언제야?
+  4. 지금 당장 조치가 필요한 서버가 있어?
+  5. 방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘
+- Result: 5/5 pass.
+- Console: no warning/error observed during the AI flow.
+- Evidence: qa-20260513-v811142-ai-sidebar-five-question.png.
+
+CSS preload warning analysis:
+- Observed warning:
+  The resource /_next/static/chunks/13c1ca927ab84bf9.css was preloaded but not used.
+- The chunk contains landing effect classes from landing-effects.css.
+- Most likely root cause:
+  Next.js Link default prefetch on secondary /privacy and 404 links preloads destination CSS even when the user stays on the current route.
+- Local code improvement applied:
+  - Disable prefetch for /privacy back link and 404 secondary navigation links.
+  - Increase text-link touch target height for /login privacy footer, /privacy back link, and 404 secondary links.
+- Production verification status:
+  pending deploy and post-deploy Playwright console recheck.
+
+Usage:
+- npm run check:usage:vercel
+- effective=7.3966 USD
+- billed=0.0000 USD
+- chargeCount=6699

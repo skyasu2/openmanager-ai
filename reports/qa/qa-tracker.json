@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-13T02:51:02.949Z"
+    "updatedAt": "2026-05-13T03:45:28.442Z"
   },
   "sequence": {
-    "nextRunNumber": 493
+    "nextRunNumber": 494
   },
   "summary": {
-    "totalRecordedRuns": 490,
+    "totalRecordedRuns": 491,
     "totalRuns": 392,
-    "excludedRuns": 98,
+    "excludedRuns": 99,
     "totalChecks": 3485,
     "totalPassed": 3351,
     "totalFailed": 124,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260513-0492",
     "lastRecordedAt": "2026-05-13T02:51:02.949Z",
-    "latestRecordedRunId": "QA-20260513-0492",
-    "latestRecordedAt": "2026-05-13T02:51:02.949Z"
+    "latestRecordedRunId": "QA-20260513-0493",
+    "latestRecordedAt": "2026-05-13T03:45:28.442Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -53933,6 +53933,141 @@
         }
       ],
       "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260513-0493",
+      "recordedAt": "2026-05-13T03:45:28.442Z",
+      "recordedAtKst": "2026-05-13 12:45:28 KST",
+      "title": "Diagnostic Follow-up - v8.11.142 Frontend Score Deductions",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260513-0493.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5Rf1dHnkD7CvvYJ8NfjPWX6GLo5e",
+        "deploymentUrl": "https://openmanager-fvyo3962b-skyasus-projects.vercel.app",
+        "commitSha": "c1ff8ca54237541d0a3d51316756ae6ddef9ecbe"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Mobile 390x844 landing/login/privacy/404/dashboard smoke",
+        "Tablet 768x1024 landing/login/privacy/404/dashboard smoke",
+        "AI Assistant sidebar open and standard five-question conversational QA",
+        "CSS preload warning root-cause analysis for /privacy and 404 secondary links",
+        "Vercel usage check after live diagnostic QA"
+      ],
+      "skippedSurfaces": [
+        "Reporter Agent generation",
+        "Analyst advanced full analysis",
+        "Mobile AI Assistant conversational matrix",
+        "Post-deploy CSS warning recheck"
+      ],
+      "checks": {
+        "total": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T12:43:56+09:00",
+          "summary": "Vercel usage checked after mobile and AI Assistant diagnostic follow-up; current billing period effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Mobile landing 390",
+          "path": "reports/qa/evidence/qa-20260513-v811142-mobile-390-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Mobile login 390",
+          "path": "reports/qa/evidence/qa-20260513-v811142-mobile-390-login.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Mobile privacy 390",
+          "path": "reports/qa/evidence/qa-20260513-v811142-mobile-390-privacy.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Mobile 404 390",
+          "path": "reports/qa/evidence/qa-20260513-v811142-mobile-390-not-found.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Mobile dashboard 390",
+          "path": "reports/qa/evidence/qa-20260513-v811142-mobile-390-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Tablet landing 768",
+          "path": "reports/qa/evidence/qa-20260513-v811142-tablet-768-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Tablet login 768",
+          "path": "reports/qa/evidence/qa-20260513-v811142-tablet-768-login.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Tablet privacy 768",
+          "path": "reports/qa/evidence/qa-20260513-v811142-tablet-768-privacy.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Tablet 404 768",
+          "path": "reports/qa/evidence/qa-20260513-v811142-tablet-768-not-found.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Tablet dashboard 768",
+          "path": "reports/qa/evidence/qa-20260513-v811142-tablet-768-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Assistant five-question sidebar",
+          "path": "reports/qa/evidence/qa-20260513-v811142-ai-sidebar-five-question.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Deduction follow-up summary",
+          "path": "reports/qa/evidence/qa-20260513-v811142-deduction-followup-summary.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,

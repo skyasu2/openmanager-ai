@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-13 11:53:04 KST
+> Generated at: 2026-05-13 12:45:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 490 |
+| Total Recorded Runs | 491 |
 | Total Runs (Counted) | 392 |
-| Non-counted Runs | 98 |
+| Non-counted Runs | 99 |
 | Total Checks | 3485 |
 | Passed | 3351 |
 | Failed | 124 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260513-0492 (2026-05-13T02:51:02.949Z) |
-| Latest Recorded Run | QA-20260513-0492 (2026-05-13T02:51:02.949Z) |
+| Latest Recorded Run | QA-20260513-0493 (2026-05-13T03:45:28.442Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,25 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260513-0492 (2026-05-13T02:51:02.949Z)
+Latest run: QA-20260513-0493 (2026-05-13T03:45:28.442Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Frontend UI/UX Engineer | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after Playwright MCP frontend QA; current billing period effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699. |
+| vercel | cli | checked | normal | Vercel usage checked after mobile and AI Assistant diagnostic follow-up; current billing period effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-12T02:51:02.949Z -> 2026-05-13T02:51:02.949Z (24h)
+- Window: 2026-05-12T03:45:28.442Z -> 2026-05-13T03:45:28.442Z (24h)
 - Runs with observations: 5 recorded / 5 counted
 - Samples: 15
 
@@ -66,7 +62,7 @@ Latest run: QA-20260513-0492 (2026-05-13T02:51:02.949Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-12T02:51:02.949Z -> 2026-05-13T02:51:02.949Z (24h)
+- Window: 2026-05-12T03:45:28.442Z -> 2026-05-13T03:45:28.442Z (24h)
 - Runs with observations: 5 recorded / 5 counted
 - Samples: 12
 - Drift rate: 25%
@@ -82,37 +78,35 @@ Latest run: QA-20260513-0492 (2026-05-13T02:51:02.949Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
+- Release-Facing: no
+- Counts Toward Summary: no
 - Deployment: dpl_5Rf1dHnkD7CvvYJ8NfjPWX6GLo5e / SHA c1ff8ca5
-- Coverage Packs: core-routes-smoke, dashboard-core, modal-detail-pack
-- Covered Surfaces: Landing page render and v8.11.142 footer badge, System start CTA /system-boot to /dashboard flow, Dashboard overview status summary and resource overview, Dashboard status filter for warning servers, Server list compact view and all-server expansion, Server detail direct route from resource warning, Server detail tabs: summary, performance analysis, logs and network, Alerts page active alert and history, Logs page count, filters, and realtime anchor, Topology page 18 nodes / 24 edges diagram and filters, Login page OAuth/email/guest/privacy UI, Privacy page render and 404 custom page render, Production frontend visual/layout smoke screenshots
-- Skipped Surfaces: AI Assistant sidebar open/send, /dashboard/ai-assistant fullscreen workspace, Conversational AI standard five-question QA, Analyst Agent advanced analysis, Reporter Agent report generation, AI streaming/job/SSE path, Mobile viewport matrix
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: Mobile 390x844 landing/login/privacy/404/dashboard smoke, Tablet 768x1024 landing/login/privacy/404/dashboard smoke, AI Assistant sidebar open and standard five-question conversational QA, CSS preload warning root-cause analysis for /privacy and 404 secondary links, Vercel usage check after live diagnostic QA
+- Skipped Surfaces: Reporter Agent generation, Analyst advanced full analysis, Mobile AI Assistant conversational matrix, Post-deploy CSS warning recheck
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.142 pipeline | [GitLab v8.11.142 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2520832116) | - |
 | general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Landing page | `reports/qa/evidence/qa-20260513-v811142-frontend-landing.png` | - |
-| playwright-screenshot | Dashboard overview | `reports/qa/evidence/qa-20260513-v811142-dashboard-overview.png` | - |
-| playwright-screenshot | Servers page | `reports/qa/evidence/qa-20260513-v811142-servers-page.png` | - |
-| playwright-screenshot | Server detail | `reports/qa/evidence/qa-20260513-v811142-server-detail.png` | - |
-| playwright-screenshot | Alerts page | `reports/qa/evidence/qa-20260513-v811142-alerts-page.png` | - |
-| playwright-screenshot | Logs page | `reports/qa/evidence/qa-20260513-v811142-logs-page.png` | - |
-| playwright-screenshot | Topology page | `reports/qa/evidence/qa-20260513-v811142-topology-page.png` | - |
-| playwright-network | Frontend non-AI Playwright QA summary | `reports/qa/evidence/qa-20260513-v811142-frontend-non-ai-playwright-summary.txt` | - |
-| playwright-network | Console warning log | `reports/qa/evidence/qa-20260513-v811142-console-warnings.log` | - |
-| playwright-screenshot | Servers page all expanded | `reports/qa/evidence/qa-20260513-v811142-servers-all-expanded.png` | - |
-| playwright-screenshot | Server performance tab | `reports/qa/evidence/qa-20260513-v811142-server-performance-tab.png` | - |
-| playwright-screenshot | Server logs and network tab | `reports/qa/evidence/qa-20260513-v811142-server-log-network-tab.png` | - |
-| playwright-screenshot | Login page | `reports/qa/evidence/qa-20260513-v811142-login-page.png` | - |
+| playwright-screenshot | Mobile landing 390 | `reports/qa/evidence/qa-20260513-v811142-mobile-390-landing.png` | - |
+| playwright-screenshot | Mobile login 390 | `reports/qa/evidence/qa-20260513-v811142-mobile-390-login.png` | - |
+| playwright-screenshot | Mobile privacy 390 | `reports/qa/evidence/qa-20260513-v811142-mobile-390-privacy.png` | - |
+| playwright-screenshot | Mobile 404 390 | `reports/qa/evidence/qa-20260513-v811142-mobile-390-not-found.png` | - |
+| playwright-screenshot | Mobile dashboard 390 | `reports/qa/evidence/qa-20260513-v811142-mobile-390-dashboard.png` | - |
+| playwright-screenshot | Tablet landing 768 | `reports/qa/evidence/qa-20260513-v811142-tablet-768-landing.png` | - |
+| playwright-screenshot | Tablet login 768 | `reports/qa/evidence/qa-20260513-v811142-tablet-768-login.png` | - |
+| playwright-screenshot | Tablet privacy 768 | `reports/qa/evidence/qa-20260513-v811142-tablet-768-privacy.png` | - |
+| playwright-screenshot | Tablet 404 768 | `reports/qa/evidence/qa-20260513-v811142-tablet-768-not-found.png` | - |
+| playwright-screenshot | Tablet dashboard 768 | `reports/qa/evidence/qa-20260513-v811142-tablet-768-dashboard.png` | - |
+| playwright-screenshot | AI Assistant five-question sidebar | `reports/qa/evidence/qa-20260513-v811142-ai-sidebar-five-question.png` | - |
+| playwright-network | Deduction follow-up summary | `reports/qa/evidence/qa-20260513-v811142-deduction-followup-summary.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -758,6 +752,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260513-0493 | 2026-05-13T03:45:28.442Z | targeted | no | no | Diagnostic Follow-up - v8.11.142 Frontend Score Deductions | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0492 | 2026-05-13T02:51:02.949Z | targeted | yes | yes | Vercel Playwright QA - v8.11.142 Frontend Non-AI Status and Design | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0491 | 2026-05-13T02:09:08.202Z | targeted | yes | yes | Production Deploy QA - v8.11.142 Frontend and AI Engine Alignment | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0490 | 2026-05-12T17:54:33.608Z | targeted | yes | yes | Cloud Run Direct QA - v8.11.141 AI Response Quality Regression | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -777,4 +772,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260511-0476 | 2026-05-11T09:12:27.615Z | targeted | no | no | Vercel Playwright MCP Targeted Check - post-main-push production state | 10 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260511-0475 | 2026-05-11T04:57:44.283Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.124 frontend and AI assistant status | 17 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260511-0474 | 2026-05-11T04:14:14.183Z | targeted | no | no | Local QA - React 19.2.6 Patch Alignment | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260511-0473 | 2026-05-11T03:21:01.161Z | targeted | no | no | Local QA - AI Engine Pino v10 Alignment | 5 | 1 | 0 | 0 | 0 | 0 |
