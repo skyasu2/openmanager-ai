@@ -194,6 +194,56 @@ describe('artifact workspace store', () => {
     expect(store.listReplayPacks()).toEqual([]);
   });
 
+  it('returns an empty workspace when persisted storage contains corrupted JSON', () => {
+    const storage = {
+      getItem: () => 'not-json',
+      setItem: () => undefined,
+      removeItem: () => undefined,
+    };
+
+    expect(createArtifactWorkspaceStore({ storage }).listReplayPacks()).toEqual(
+      []
+    );
+  });
+
+  it('returns an empty workspace when persisted storage is absent', () => {
+    const storage = {
+      getItem: () => null,
+      setItem: () => undefined,
+      removeItem: () => undefined,
+    };
+
+    expect(createArtifactWorkspaceStore({ storage }).listReplayPacks()).toEqual(
+      []
+    );
+  });
+
+  it('restores replay packs from legacy snapshots without a storeVersion field', () => {
+    const pack = createArtifactReplayPack({
+      workspaceId: 'workspace-legacy-snapshot',
+      createdAt: '2026-05-06T01:10:00.000Z',
+      envelopes: [
+        createArtifactEnvelope(snapshotArtifact, {
+          domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+          sourceMode: 'otel-static',
+        }),
+      ],
+    });
+    const storage = {
+      getItem: () =>
+        JSON.stringify({
+          updatedAt: '2026-05-06T01:10:00.000Z',
+          replayPacks: [pack],
+        }),
+      setItem: () => undefined,
+      removeItem: () => undefined,
+    };
+
+    expect(createArtifactWorkspaceStore({ storage }).listReplayPacks()).toEqual(
+      [pack]
+    );
+  });
+
   it('summarizes replay pack comparisons for compare UX', () => {
     const expected = createArtifactReplayPack({
       workspaceId: 'workspace-compare',
