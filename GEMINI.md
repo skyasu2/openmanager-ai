@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.11.141 | Last reviewed: 2026-05-13 -->
+<!-- Version: 8.11.145 | Last reviewed: 2026-05-13 -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -68,7 +68,7 @@
 - **Conditional Deployment Strategy (Runner Check)**: 배포 수행 전 `bash scripts/ci/runner-health-check.sh`를 실행합니다. 이 스크립트는 로컬 `gitlab-runner`/Docker 가용성만 확인하며 GitLab scheduler, pipeline 생성, runner tag matching, `resource_group` 배정 성공을 증명하지 않습니다.
   - **Exit 0 (로컬 runner/Docker 정상)**: `git push --follow-tags gitlab main` 경로로 canonical GitLab CI 배포를 사용하되, 직후 `npm run gitlab:pipeline:head -- --wait`로 실제 pipeline 상태를 확인합니다.
   - **Nonterminal pipeline**: `created|pending|running|waiting_for_resource` 또는 `note=pipeline_not_terminal_after_wait`이면 `npm run gitlab:pipeline:inspect -- --pipeline <id>`로 job/resource queue를 확인합니다.
-  - **Exit 1 (로컬 runner/Docker 미가동)**: `vercel --prod` 직접 배포 fallback은 사용자 승인 또는 긴급 복구 상황에서만 사용하고, `"CI 게이트 스킵 후 직접 배포했습니다. runner가 미가동 상태였습니다."`라고 명확히 보고합니다.
+  - **Exit 1 (로컬 runner/Docker 미가동)**: production 배포를 진행하지 말고 runner를 복구한 뒤 tag pipeline을 재시도/재확인합니다.
 - **배포 권한 및 환경**: Vercel Git Integration은 해제되어 있으며, 정상 시에는 GitLab CI가 배포 권한을 보유합니다. production `resource_group`을 stale pipeline이 점유하는 경우에는 실제 배포/QA가 별도 완료됐거나 사용자 승인이 있을 때만 cancel/clear합니다.
 - broad/release 변경은 push 전 `npm run ci:local:docker`를 추가로 수행하여 로컬 검증을 마칩니다.
 - GitHub 공개 snapshot 동기화는 기본 배포 루프에 섞지 말고, 명시적 요청 시 `npm run sync:github` 으로만 수행합니다.

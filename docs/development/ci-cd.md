@@ -16,15 +16,9 @@
 
 이 문서는 CI/CD 토폴로지와 정책 배경을 설명하는 reference입니다. 실제 배포/롤백 절차를 따라야 할 때는 [Deployment Guide](../operations/deployment-guide.md)와 [Rollback Guide](../operations/rollback-guide.md)를 먼저 사용합니다.
 
-배포 시작 시점의 runner 상태에 따라 자동 분기하려면 아래 명령을 사용합니다.
-
-```bash
-npm run deploy:smart
-```
-
 - `scripts/ci/runner-health-check.sh`가 `exit 0`이면 로컬 runner/Docker가 살아 있다는 뜻입니다. 이후 `git push --follow-tags gitlab main` 경로로 CI 배포를 시작하고 `npm run gitlab:pipeline:head -- --wait`로 실제 pipeline 상태를 확인합니다.
 - pipeline이 `created`, `pending`, `running`, `waiting_for_resource` 또는 `note=pipeline_not_terminal_after_wait` 상태로 남으면 `npm run gitlab:pipeline:inspect -- --pipeline <id>`로 jobs/resource queue를 진단합니다.
-- `runner-health-check.sh` `exit 1`이면 CI 게이트를 건너뛰고 `vercel --prod` 직접 배포로 전환할 수 있으며, 스킵 사실을 콘솔에 명시적으로 출력합니다.
+- `runner-health-check.sh` `exit 1`이면 production 배포를 직접 우회하지 않고 runner를 복구한 뒤 기존 tag pipeline을 retry/재확인합니다.
 
 ## 파이프라인 흐름
 
@@ -230,7 +224,7 @@ npm run ci:gitlab:check
 판단 기준:
 - 현재 모든 GitLab CI job은 `tags: [wsl2-docker]`가 붙은 self-hosted runner에서 실행되어 GitLab compute minutes를 소모하지 않습니다.
 - semver tag deploy도 같은 self-hosted runner를 사용하므로, runner가 살아 있으면 shared runner quota 이슈 없이 배포됩니다.
-- 긴급 fallback이 정말 필요할 때만 `vercel --prod` 직접 배포를 사용합니다.
+- runner가 내려가면 직접 배포로 우회하지 않고 runner 복구 후 기존 GitLab pipeline을 retry/재확인합니다.
 
 ### 권장 실행 순서
 
@@ -286,7 +280,6 @@ npm run storybook:build:ci
 - 대규모 UI 컴포넌트 구조 변경 또는 story 대량 추가/삭제 후
 - release 전 Storybook 정적 산출물까지 확인해야 하는 경우
 - smoke는 통과했지만 preview bundle이나 static build drift가 의심되는 경우
-- 임시 우회가 정말 필요할 때만 `npm run deploy:smart`의 direct `vercel --prod` fallback을 사용합니다.
 - Merge Request가 열려 있는 branch는 duplicate pipeline 방지를 위해 branch push pipeline 대신 MR pipeline이 우선합니다.
 
 즉, **현재는 self-hosted validate + self-hosted semver tag deploy + local Docker CI 보강 검증** 구성이 기본 운영값입니다.
@@ -625,7 +618,7 @@ Dependabot PR 생성
 
 ## Part 3: 배포 전략
 
-이 섹션은 배포 절차 runbook이 아니라 CI/CD 구조와 권한 경계를 설명합니다. 실제 실행 순서, 사전 점검, fallback 판단은 [Deployment Guide](../operations/deployment-guide.md)를 SSOT로 사용합니다.
+이 섹션은 배포 절차 runbook이 아니라 CI/CD 구조와 권한 경계를 설명합니다. 실제 실행 순서, 사전 점검, runner 장애 대응은 [Deployment Guide](../operations/deployment-guide.md)를 SSOT로 사용합니다.
 
 ### Frontend — GitLab CI 경유 Vercel 배포
 
@@ -636,7 +629,7 @@ Dependabot PR 생성
 | Git integration | Vercel Git Integration 해제. Git push만으로 Vercel 자동 빌드 없음 |
 | Standard trigger | semver tag `v*.*.*` 포함 `git push --follow-tags gitlab main` |
 | Validation trigger | `git push gitlab main`은 validate 전용 |
-| Emergency fallback | runner 장애 시 [Deployment Guide](../operations/deployment-guide.md#runner-장애-시-fallback) 기준으로만 `npm run deploy:smart` 사용 |
+| Runner 장애 대응 | runner 장애 시 [Deployment Guide](../operations/deployment-guide.md#runner-장애-시-대응) 기준으로 복구 후 기존 tag pipeline retry/재확인 |
 
 운영 메모:
 

@@ -128,18 +128,34 @@ else
   fail "release-manual workflow should be removed in GitLab-first topology"
 fi
 
-protected_count="$(count_pattern_matches '\$CI_COMMIT_REF_PROTECTED == "true"' .gitlab-ci.yml)"
-if [[ "${protected_count:-0}" -ge 3 ]]; then
-  pass ".gitlab-ci.yml has protected-main deploy gates ($protected_count)"
+semver_tag_rule_count="$(count_pattern_matches 'CI_COMMIT_TAG =~ /\^v' .gitlab-ci.yml)"
+if [[ "${semver_tag_rule_count:-0}" -ge 4 ]]; then
+  pass ".gitlab-ci.yml has semver tag deploy/smoke gates ($semver_tag_rule_count)"
 else
-  fail ".gitlab-ci.yml missing protected-main deploy gates (found: ${protected_count:-0})"
+  fail ".gitlab-ci.yml missing semver tag deploy/smoke gates (found: ${semver_tag_rule_count:-0})"
 fi
 
-deploy_safe_cmd="$(node -p "require('./package.json').scripts['deploy:safe']" 2>/dev/null || true)"
-if [[ "$deploy_safe_cmd" == *"deploy:guard:canonical"* ]]; then
-  pass "deploy:safe includes canonical deploy guard"
+protected_tag_guidance_count="$(count_pattern_matches 'protect the tag pattern' .gitlab-ci.yml)"
+if [[ "${protected_tag_guidance_count:-0}" -ge 2 ]]; then
+  pass ".gitlab-ci.yml documents protected tag variable exposure ($protected_tag_guidance_count)"
 else
-  fail "deploy:safe is missing deploy:guard:canonical"
+  warn ".gitlab-ci.yml should document protected tag variable exposure"
+fi
+
+local_vercel_deploy_scripts="$(
+  node -p "const s=require('./package.json').scripts||{}; ['deploy:safe','deploy:smart','deploy:guard:canonical'].filter((key)=>s[key]).join(',')" \
+    2>/dev/null || true
+)"
+if [[ -z "$local_vercel_deploy_scripts" ]]; then
+  pass "local Vercel deploy fallback scripts removed from package.json"
+else
+  fail "package.json still exposes local Vercel deploy fallback scripts: $local_vercel_deploy_scripts"
+fi
+
+if [[ ! -f "scripts/deploy/deploy-with-runner-fallback.sh" && ! -f "scripts/deploy/guard-canonical-deploy.sh" ]]; then
+  pass "local Vercel deploy fallback shell entrypoints removed"
+else
+  fail "local Vercel deploy fallback shell entrypoints should be removed"
 fi
 
 if [[ -f "scripts/gitlab/check-main-protection.mjs" ]]; then

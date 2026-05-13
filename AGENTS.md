@@ -1,6 +1,6 @@
 # AGENTS.md - OpenManager Codex 실행 규칙
 
-<!-- Version: 6.1.11 -->
+<!-- Version: 6.1.12 -->
 **이 문서는 OpenManager AI 프로젝트 내에서 Codex 에이전트 전용 실행 규칙만 정의합니다.**
 
 ## 1) 정책 참조 구조 (SSOT)
@@ -115,9 +115,8 @@
 - **배포 전 runner 상태 확인**: `bash scripts/ci/runner-health-check.sh`
   - 이 스크립트는 로컬 `gitlab-runner`/Docker 가용성만 확인합니다. `exit 0`은 GitLab scheduler, pipeline 생성, runner tag matching, `resource_group` 배정 성공을 의미하지 않습니다.
   - `exit 0` → tag/push 후 GitLab pipeline 상태를 별도 확인합니다.
-  - `exit 1` → runner 미가동으로 CI 배포 불가. 직접 fallback을 쓰면 사용자에게 "CI 게이트 스킵됨"을 명시 보고합니다.
+  - `exit 1` → runner 미가동으로 CI 배포 불가. runner를 복구한 뒤 tag pipeline을 재시도/재확인합니다.
 - production `resource_group`을 stale pipeline이 점유하는 경우에는 실제 배포/QA가 별도 완료됐거나 사용자 승인이 있을 때만 cancel/clear합니다.
-- **CI 스킵 fallback**: `vercel --prod` (소스 업로드). 로컬 `vercel build --prod`는 WSL2 `fonts.gstatic.com` 차단으로 실패 가능
 - 로컬 전체 검증 표준 경로는 `npm run ci:local:docker` (SSOT 유지, CI와 별개)입니다.
 
 ## 2.7 작업 계획서 규칙 (Codex)

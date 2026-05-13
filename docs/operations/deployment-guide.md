@@ -14,11 +14,11 @@
 
 Production deploy 권위는 GitLab CI semver tag pipeline입니다. Frontend는 Vercel production, AI Engine은 Cloud Run production으로 배포합니다. GitHub public remote는 frontend-only public snapshot이며 배포 source가 아닙니다.
 
-| 대상 | 표준 경로 | 보조/예외 경로 |
-|---|---|---|
-| Frontend | GitLab CI `deploy` job → `vercel build --prod` → `vercel deploy --prebuilt --prod` | runner 장애 시 `npm run deploy:smart`의 `vercel --prod` fallback |
-| AI Engine | GitLab CI `deploy_ai_engine` job → `cloud-run/ai-engine/deploy.sh` | 로컬 `gcloud` 인증 후 `cd cloud-run/ai-engine && bash deploy.sh` |
-| Public snapshot | `npm run sync:github` | frontend/public assets only. 직접 `git push origin/github-public` 금지 |
+| 대상 | 활성 경로 |
+|---|---|
+| Frontend | GitLab CI `deploy` job → `vercel build --prod` → `vercel deploy --prebuilt --prod` |
+| AI Engine | GitLab CI `deploy_ai_engine` job → `cloud-run/ai-engine/deploy.sh` |
+| Public snapshot | `npm run sync:github`으로 frontend/public assets only 동기화. 직접 `git push origin/github-public` 금지 |
 
 ## 배포 전 확인
 
@@ -106,15 +106,16 @@ npm run qa:evidence:audit
 | QA evidence | 실환경 QA를 수행했다면 `reports/qa`에 기록 |
 | 비용 | Vercel/GCP 사용량 급증이 없는지 확인 |
 
-## Runner 장애 시 fallback
+## Runner 장애 시 대응
 
-runner가 내려가 있으면 기본 대응은 runner 복구입니다. 긴급 배포가 필요할 때만 fallback을 사용합니다.
+runner가 내려가 있으면 production 배포를 직접 우회하지 않고 runner를 복구합니다.
 
 ```bash
-npm run deploy:smart
+npm run ci:runner:health
+npm run gitlab:pipeline:inspect -- --pipeline <id>
 ```
 
-fallback은 CI 게이트를 우회하므로 최종 보고에 반드시 `CI gate skipped`를 명시합니다. AI Engine production 배포는 가능하면 GitLab CI 또는 `cloud-run/ai-engine/deploy.sh` 표준 경로를 사용합니다.
+복구 후에는 기존 pending job을 이어서 실행하거나 failed job을 retry합니다. 같은 semver tag를 다시 push해도 새 pipeline이 생성되지 않으므로 기존 tag pipeline의 job 상태를 기준으로 처리합니다.
 
 ## 관련 문서
 
