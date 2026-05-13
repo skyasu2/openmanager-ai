@@ -3,11 +3,23 @@ import { describe, expect, it } from 'vitest';
 import { getIntentCategory, selectExecutionMode } from '../supervisor-routing';
 import { preFilterQuery } from '../agents/orchestrator-context';
 import {
+  extractQueryRoutingSignals as extractLegacyQueryRoutingSignals,
+} from '../query-routing-signals';
+import {
   extractQueryRoutingSignals,
   mapQuerySignalsToIntentCategory,
 } from './query-routing-signals';
 
 describe('extractQueryRoutingSignals', () => {
+  it('keeps the legacy query-routing-signals path as a canonical re-export', () => {
+    const query =
+      '지난 24시간 중 전체 서버에서 load1이 가장 높았던 시간대와 서버 TOP3 알려줘';
+
+    expect(extractLegacyQueryRoutingSignals(query)).toEqual(
+      extractQueryRoutingSignals(query)
+    );
+  });
+
   it('extracts whole-fleet load1 peak metric signals', () => {
     const signals = extractQueryRoutingSignals(
       '지난 24시간 중 전체 서버에서 load1이 가장 높았던 시간대와 서버 TOP3 알려줘'
