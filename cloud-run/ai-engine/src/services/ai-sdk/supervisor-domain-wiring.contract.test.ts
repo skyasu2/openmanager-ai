@@ -196,7 +196,7 @@ vi.mock('../../lib/config-parser', () => ({
   })),
 }));
 
-vi.mock('./supervisor-routing', () => ({
+vi.mock('../../domains/monitoring/routing-policy', () => ({
   createSystemPrompt: vi.fn(() => 'system-prompt'),
   RETRY_CONFIG: {
     maxRetries: 0,

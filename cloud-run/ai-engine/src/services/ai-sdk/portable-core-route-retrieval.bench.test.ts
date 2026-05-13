@@ -9,7 +9,7 @@ import {
   buildSupervisorRouteDecision,
   resolveSupervisorModeDecision,
 } from './supervisor-mode';
-import { createPrepareStep } from './supervisor-routing';
+import { createPrepareStep } from '../../domains/monitoring/routing-policy';
 import type { SupervisorRequest } from './supervisor-types';
 
 function buildRequest(query: string): SupervisorRequest {

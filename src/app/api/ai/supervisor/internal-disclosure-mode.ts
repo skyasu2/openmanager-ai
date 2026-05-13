@@ -17,6 +17,8 @@ export function resolveSupervisorInternalDisclosureMode(
     return 'developer';
   }
 
+  // PIN 인증 완료된 guest 세션은 서버가 발급한 userId를 가진다.
+  // userId 없는 익명 guest는 내부 구현 disclosure 모드로 승격하지 않는다.
   if (authContext.authType === 'guest' && authContext.userId) {
     return 'developer';
   }

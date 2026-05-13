@@ -5,7 +5,7 @@ import {
   getIntentCategory,
   selectExecutionMode,
   shouldForceWebSearch,
-} from './supervisor-routing';
+} from './routing-policy';
 
 // Mock Tavily availability for deterministic tests
 vi.mock('../../lib/tavily-hybrid-rag', () => ({

@@ -1,5 +1,5 @@
 import type { SupervisorResponse } from './supervisor-types';
-import type { IntentCategory } from './supervisor-routing';
+import type { IntentCategory } from '../../domains/monitoring/routing-policy';
 
 const QUALITY_RETRY_FLAGS = new Set(['EMPTY_RESPONSE', 'NO_OUTPUT']);
 

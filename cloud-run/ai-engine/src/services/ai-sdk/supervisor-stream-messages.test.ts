@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createSystemPrompt } from './supervisor-routing';
+import { createSystemPrompt } from '../../domains/monitoring/routing-policy';
 import {
   buildSupervisorStreamMessages,
   getLastUserQueryText,

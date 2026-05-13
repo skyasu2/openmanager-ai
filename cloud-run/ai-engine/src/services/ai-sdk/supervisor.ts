@@ -7,7 +7,7 @@
  *
  * Split into:
  * - supervisor-types.ts: Types, StreamEvent
- * - supervisor-routing.ts: Mode selection, prepareStep, intent classification
+ * - domains/monitoring/routing-policy.ts: Mode selection, prepareStep, intent classification
  * - supervisor-single-agent.ts: Single/multi agent execution + streaming
  * - supervisor-stream-response.ts: UIMessageStream response generation
  *

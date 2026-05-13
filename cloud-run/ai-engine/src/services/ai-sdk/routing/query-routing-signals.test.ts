@@ -1,6 +1,9 @@
 import { performance } from 'node:perf_hooks';
 import { describe, expect, it } from 'vitest';
-import { getIntentCategory, selectExecutionMode } from '../supervisor-routing';
+import {
+  getIntentCategory,
+  selectExecutionMode,
+} from '../../../domains/monitoring/routing-policy';
 import { preFilterQuery } from '../agents/orchestrator-context';
 import {
   extractQueryRoutingSignals as extractLegacyQueryRoutingSignals,

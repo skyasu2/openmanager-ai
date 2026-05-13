@@ -14,7 +14,7 @@ vi.mock('./agents/vision-agent', () => ({
 }));
 
 import { preFilterQuery } from './agents/orchestrator-context';
-import { selectExecutionMode } from './supervisor-routing';
+import { selectExecutionMode } from '../../domains/monitoring/routing-policy';
 
 describe('routing policy consistency', () => {
   it('keeps greetings on the cheapest path', () => {

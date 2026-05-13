@@ -67,7 +67,7 @@ import {
 import {
   RETRY_CONFIG,
   getIntentCategory,
-} from './supervisor-routing';
+} from '../../domains/monitoring/routing-policy';
 
 import { evaluateAgentResponseQuality } from './agents/response-quality';
 import { shouldRetryForQuality } from './supervisor-quality-retry';
