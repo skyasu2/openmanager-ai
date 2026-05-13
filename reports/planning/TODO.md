@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-14 KST (`AI Assistant 변경분 커밋 안정화 완료`)
+**Last Updated**: 2026-05-14 KST (`AI Assistant 심층 커밋 평가 보강 반영`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 진행 중인 작업 없음. |
+| P1: AI Assistant 안정화 커밋 전달 마감 | High | ready | 로컬 `main`에는 `0ca8d9b88 refactor(ai): clarify assistant agent runtime roles` 안정화 커밋과 심층 평가 follow-up 커밋이 `gitlab/main`보다 앞서 있음. 심층 평가에서 지적된 fallback/summary/theme hook 직접 테스트 보강을 follow-up으로 정리하고, `memory/ops-knowledge.md`는 활성 문서 참조 보존을 위해 포함하기로 결정. 다음 단계는 `git push gitlab main`, `npm run gitlab:pipeline:head -- --wait`로 pushed SHA pipeline 확인. |
 
 ---
 
@@ -21,7 +21,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: 커밋 후 line-guard warning buffer polish | Low | 커밋 완료 후 별도 작은 리팩터 묶음으로 진행. 현재 fail-threshold는 0건이며 warning만 41건. 후보: `LogExplorerModal.tsx`, `retry-with-fallback.ts`, `AIWorkspace.tsx`, `supervisor stream route`, `AlertHistoryModal.tsx`. |
+| P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 최근 20커밋 평가에서 `0ca8d9b88`이 134파일 단일 커밋으로 리뷰/cherry-pick 가능성이 낮다는 점을 확인. 이미 검증 완료된 로컬 커밋은 전달 마감 우선으로 유지하되, 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 가능한 한 2~3개 논리 커밋으로 분리하는 기준을 작업 계획/커밋 단계에 반영. |
+| P3: 커밋 후 line-guard warning buffer polish | Low | 커밋 완료 후 별도 작은 리팩터 묶음으로 진행. 현재 fail-threshold는 0건이며 warning만 41건. 상위 후보: `src/components/dashboard/log-explorer/LogExplorerModal.tsx` 728줄, `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts` 723줄, `src/components/ai/AIWorkspace.tsx` 710줄, `src/app/api/ai/supervisor/stream/v2/route.ts` 708줄, `src/components/dashboard/alert-history/AlertHistoryModal.tsx` 708줄. |
 
 ---
 
