@@ -17,7 +17,7 @@ import type {
   SupervisorRouteDecisionMode,
 } from './supervisor-types';
 import { selectExecutionMode } from '../../domains/monitoring/routing-policy';
-import { isFormattingOnlyReportRequest } from './query-routing-signals';
+import { isFormattingOnlyReportRequest } from './routing/query-routing-signals';
 
 export type ResolvedSupervisorMode = Exclude<SupervisorMode, 'auto'>;
 export type SupervisorAssistantExecutionMode =

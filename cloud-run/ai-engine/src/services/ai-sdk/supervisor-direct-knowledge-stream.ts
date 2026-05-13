@@ -1,7 +1,7 @@
 import type { ToolSet } from 'ai';
 import { extractRagSources } from '../../lib/ai-sdk-utils';
 import { logger } from '../../lib/logger';
-import { FORCE_KB_QUERY_PATTERN } from './query-routing-signals';
+import { FORCE_KB_QUERY_PATTERN } from './routing/query-routing-signals';
 import {
   buildDegradedMetadata,
   type SupervisorDegradedFallbackContext,

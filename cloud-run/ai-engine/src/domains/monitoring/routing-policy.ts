@@ -21,8 +21,8 @@ import {
   INFRA_CONTEXT_PATTERN,
   REPORTER_QUERY_PATTERN,
   isFormattingOnlyReportRequest,
-} from '../../services/ai-sdk/query-routing-signals';
-import { extractQueryRoutingSignals } from '../../services/ai-sdk/routing/query-routing-signals';
+  extractQueryRoutingSignals,
+} from '../../services/ai-sdk/routing/query-routing-signals';
 import { createRoutingDecisionTrace } from '../../services/ai-sdk/routing/routing-decision-trace';
 
 export function createSystemPrompt(deviceType?: string): string {

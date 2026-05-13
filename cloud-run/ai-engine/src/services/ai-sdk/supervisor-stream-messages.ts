@@ -1,7 +1,7 @@
 import type { ModelMessage, UserContent } from 'ai';
 import { buildMultimodalContent } from '../../lib/ai-sdk-utils';
 import type { SupervisorRequest } from './supervisor-types';
-import { isFormattingOnlyReportRequest } from './query-routing-signals';
+import { isFormattingOnlyReportRequest } from './routing/query-routing-signals';
 
 export function getLastUserQueryText(
   messages: SupervisorRequest['messages']

@@ -33,7 +33,7 @@ import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-sea
 import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 import { evaluateAgentResponseQuality } from './response-quality';
-import { FORCE_KB_QUERY_PATTERN } from '../query-routing-signals';
+import { FORCE_KB_QUERY_PATTERN } from '../routing/query-routing-signals';
 import type { ModelCapabilityRequirements } from '../provider-capabilities';
 import {
   buildDeterministicSummaryFallback,

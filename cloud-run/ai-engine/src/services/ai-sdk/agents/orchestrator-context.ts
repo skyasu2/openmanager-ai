@@ -28,8 +28,8 @@ import {
   FORCE_KB_QUERY_PATTERN,
   REPORTER_QUERY_PATTERN,
   isFormattingOnlyReportRequest,
-} from '../query-routing-signals';
-import { extractQueryRoutingSignals } from '../routing/query-routing-signals';
+  extractQueryRoutingSignals,
+} from '../routing/query-routing-signals';
 import { createRoutingDecisionTrace } from '../routing/routing-decision-trace';
 import { buildServiceCommandGuidanceAnswer } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 
