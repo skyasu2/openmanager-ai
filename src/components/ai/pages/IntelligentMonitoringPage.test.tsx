@@ -8,9 +8,100 @@ import IntelligentMonitoringPage from './IntelligentMonitoringPage';
 
 const mockFetch = vi.fn();
 const mockUseServerQuery = vi.fn();
+const mockExecuteChatArtifact = vi.fn();
+const mockSaveArtifactExecutionReplayPack = vi.fn();
+
+const monitoringArtifact = {
+  kind: 'monitoring-analysis',
+  generatedAt: '2026-05-13T00:00:00.000Z',
+  title: '전체 서버 이상감지/추세 분석',
+  summary: '1대 서버에서 risk signal이 감지되었습니다.',
+  serverCount: 2,
+  riskSignalCount: 1,
+  warningServers: 1,
+  criticalServers: 0,
+  analysis: {
+    success: true,
+    sourceMode: 'replay-json',
+    queryAsOf: '2026-04-30T00:00:00.000Z',
+    slot: {
+      slotIndex: 42,
+      hour: 7,
+      slotInHour: 0,
+      minuteOfDay: 420,
+      timeLabel: '07:00',
+      startTime: '2026-04-30T00:00:00.000Z',
+      endTime: '2026-04-30T00:10:00.000Z',
+    },
+    summary: '1대 서버에서 risk signal이 감지되었습니다.',
+    servers: [
+      {
+        id: 'server-1',
+        name: '웹 서버 01',
+        type: 'web',
+        status: 'warning',
+        cpu: 86,
+        memory: 51,
+        disk: 33,
+        network: 12,
+      },
+      {
+        id: 'server-2',
+        name: 'DB 서버 01',
+        type: 'database',
+        status: 'online',
+        cpu: 38,
+        memory: 44,
+        disk: 57,
+        network: 9,
+      },
+    ],
+    riskSignals: [
+      {
+        id: 'risk-server-1-cpu',
+        serverId: 'server-1',
+        serverName: '웹 서버 01',
+        serverType: 'web',
+        metric: 'cpu',
+        value: 86,
+        threshold: 80,
+        trend: 'up',
+        severity: 'warning',
+        evidenceRefId: 'evidence-risk-server-1-cpu',
+      },
+    ],
+    evidenceRefs: [
+      {
+        id: 'evidence-risk-server-1-cpu',
+        kind: 'metric',
+        serverId: 'server-1',
+        metric: 'cpu',
+        timeRange: {
+          from: '2026-04-30T00:00:00.000Z',
+          to: '2026-04-30T00:10:00.000Z',
+        },
+        summary: '웹 서버 01 cpu warning threshold exceeded',
+        value: 86,
+        threshold: 80,
+        severity: 'warning',
+      },
+    ],
+    dataFreshness: {
+      generatedAt: '2026-02-15T03:56:41.821Z',
+      sourceUpdatedAt: '2026-02-15T03:56:41.821Z',
+      stale: false,
+    },
+  },
+} as const;
 
 vi.mock('@/hooks/useServerQuery', () => ({
   useServerQuery: () => mockUseServerQuery(),
+}));
+
+vi.mock('@/lib/ai/chat-artifacts/artifact-execution', () => ({
+  executeChatArtifact: (...args: unknown[]) => mockExecuteChatArtifact(...args),
+  saveArtifactExecutionReplayPack: (...args: unknown[]) =>
+    mockSaveArtifactExecutionReplayPack(...args),
 }));
 
 vi.mock('@/components/ai/AnalysisResultsCard', () => ({
@@ -38,6 +129,8 @@ describe('IntelligentMonitoringPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal('fetch', mockFetch);
+    mockExecuteChatArtifact.mockResolvedValue(monitoringArtifact);
+    mockSaveArtifactExecutionReplayPack.mockReturnValue({ saved: true });
     mockUseServerQuery.mockReturnValue({
       data: [
         {
@@ -81,48 +174,6 @@ describe('IntelligentMonitoringPage', () => {
   });
 
   it('탭 진입 시 전체 시스템 분석을 1회 자동 실행한다', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        success: true,
-        data: {
-          success: true,
-          sourceMode: 'replay-json',
-          queryAsOf: '2026-04-30T00:00:00.000Z',
-          slot: {
-            slotIndex: 42,
-            hour: 7,
-            slotInHour: 0,
-            minuteOfDay: 420,
-            timeLabel: '07:00',
-            startTime: '2026-04-30T00:00:00.000Z',
-            endTime: '2026-04-30T00:10:00.000Z',
-          },
-          summary: '현재 risk signal은 없습니다.',
-          servers: [
-            {
-              id: 'server-1',
-              name: '웹 서버 01',
-              type: 'web',
-              status: 'online',
-              cpu: 10,
-              memory: 20,
-              disk: 30,
-              network: 40,
-            },
-          ],
-          riskSignals: [],
-          evidenceRefs: [],
-          dataFreshness: {
-            generatedAt: '2026-02-15T03:56:41.821Z',
-            sourceUpdatedAt: '2026-02-15T03:56:41.821Z',
-            stale: false,
-          },
-        },
-      }),
-    });
-
     const { rerender } = render(
       <IntelligentMonitoringPage
         autoAnalyzeOnVisible
@@ -138,13 +189,20 @@ describe('IntelligentMonitoringPage', () => {
       expect(screen.getByText('has-result')).toBeInTheDocument();
     });
 
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    const request = mockFetch.mock.calls[0]?.[1];
-    expect(JSON.parse(String(request?.body))).toMatchObject({
-      action: 'analyze_batch',
-      serverId: 'all',
-      analysisType: 'full',
-    });
+    expect(mockExecuteChatArtifact).toHaveBeenCalledTimes(1);
+    expect(mockExecuteChatArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'monitoring-analysis',
+        query: '전체 시스템 이상감지/추세 분석',
+      })
+    );
+    expect(mockSaveArtifactExecutionReplayPack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        artifact: monitoringArtifact,
+        workspaceId: expect.stringContaining('surface:monitoring-analysis:'),
+      })
+    );
+    expect(mockFetch).not.toHaveBeenCalled();
 
     rerender(
       <IntelligentMonitoringPage
@@ -157,7 +215,7 @@ describe('IntelligentMonitoringPage', () => {
       />
     );
 
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockExecuteChatArtifact).toHaveBeenCalledTimes(1);
   });
 
   it('shows login CTA when analysis API returns 401', async () => {
@@ -304,86 +362,6 @@ describe('IntelligentMonitoringPage', () => {
         },
       ],
     });
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        success: true,
-        data: {
-          success: true,
-          sourceMode: 'replay-json',
-          queryAsOf: '2026-04-30T00:00:00.000Z',
-          slot: {
-            slotIndex: 42,
-            hour: 7,
-            slotInHour: 0,
-            minuteOfDay: 420,
-            timeLabel: '07:00',
-            startTime: '2026-04-30T00:00:00.000Z',
-            endTime: '2026-04-30T00:10:00.000Z',
-          },
-          summary: '1대 서버에서 risk signal이 감지되었습니다.',
-          servers: [
-            {
-              id: 'server-1',
-              name: '웹 서버 01',
-              type: 'web',
-              status: 'warning',
-              cpu: 86,
-              memory: 51,
-              disk: 33,
-              network: 12,
-            },
-            {
-              id: 'server-2',
-              name: 'DB 서버 01',
-              type: 'database',
-              status: 'online',
-              cpu: 38,
-              memory: 44,
-              disk: 57,
-              network: 9,
-            },
-          ],
-          riskSignals: [
-            {
-              id: 'risk-server-1-cpu',
-              serverId: 'server-1',
-              serverName: '웹 서버 01',
-              serverType: 'web',
-              metric: 'cpu',
-              value: 86,
-              threshold: 80,
-              trend: 'up',
-              severity: 'warning',
-              evidenceRefId: 'evidence-risk-server-1-cpu',
-            },
-          ],
-          evidenceRefs: [
-            {
-              id: 'evidence-risk-server-1-cpu',
-              kind: 'metric',
-              serverId: 'server-1',
-              metric: 'cpu',
-              timeRange: {
-                from: '2026-04-30T00:00:00.000Z',
-                to: '2026-04-30T00:10:00.000Z',
-              },
-              summary: '웹 서버 01 cpu warning threshold exceeded',
-              value: 86,
-              threshold: 80,
-              severity: 'warning',
-            },
-          ],
-          dataFreshness: {
-            generatedAt: '2026-02-15T03:56:41.821Z',
-            sourceUpdatedAt: '2026-02-15T03:56:41.821Z',
-            stale: false,
-          },
-        },
-      }),
-    });
-
     render(
       <IntelligentMonitoringPage
         queryAsOfDataSlot={{
@@ -400,23 +378,17 @@ describe('IntelligentMonitoringPage', () => {
       expect(screen.getByText('has-result')).toBeInTheDocument();
     });
 
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    const request = mockFetch.mock.calls[0]?.[1];
-    expect(request).toBeDefined();
-    expect(JSON.parse(String(request?.body))).toMatchObject({
-      action: 'analyze_batch',
-      serverId: 'all',
-      analysisType: 'full',
-      queryAsOf: {
-        source: 'vercel-static-otel',
-        datasetVersion: '24h-rotating-v1.0.0',
-        dataSlot: {
+    expect(mockExecuteChatArtifact).toHaveBeenCalledTimes(1);
+    expect(mockExecuteChatArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'monitoring-analysis',
+        queryAsOfDataSlot: {
           slotIndex: 42,
           minuteOfDay: 420,
           timeLabel: '07:00 KST',
         },
-      },
-    });
-    expect(JSON.parse(String(request?.body))).not.toHaveProperty('enableRAG');
+      })
+    );
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });

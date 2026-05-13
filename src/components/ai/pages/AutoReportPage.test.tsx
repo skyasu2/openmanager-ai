@@ -8,6 +8,35 @@ import AutoReportPage from './auto-report/AutoReportPage';
 
 const mockFetch = vi.fn();
 const mockUseServerQuery = vi.fn();
+const mockExecuteChatArtifact = vi.fn();
+const mockSaveArtifactExecutionReplayPack = vi.fn();
+
+const reportArtifact = {
+  kind: 'incident-report',
+  generatedAt: '2026-05-13T00:00:00.000Z',
+  report: {
+    id: 'report-1',
+    title: 'API 서버 CPU 사용률 급증',
+    severity: 'critical',
+    timestamp: new Date('2026-03-18T14:00:00.000Z'),
+    affectedServers: ['api-was-dc1-01'],
+    description: 'CPU 사용률이 임계치를 초과했습니다.',
+    status: 'active',
+    systemSummary: {
+      totalServers: 1,
+      healthyServers: 0,
+      warningServers: 0,
+      criticalServers: 1,
+    },
+    recommendations: [
+      {
+        action: '트래픽 분산을 확인하세요.',
+        priority: 'high',
+        expected_impact: '응답 지연 완화',
+      },
+    ],
+  },
+} as const;
 
 vi.mock('next/link', () => ({
   __esModule: true,
@@ -35,6 +64,12 @@ vi.mock('lucide-react', () => ({
 
 vi.mock('@/hooks/useServerQuery', () => ({
   useServerQuery: () => mockUseServerQuery(),
+}));
+
+vi.mock('@/lib/ai/chat-artifacts/artifact-execution', () => ({
+  executeChatArtifact: (...args: unknown[]) => mockExecuteChatArtifact(...args),
+  saveArtifactExecutionReplayPack: (...args: unknown[]) =>
+    mockSaveArtifactExecutionReplayPack(...args),
 }));
 
 vi.mock('@/config/rules/loader', () => ({
@@ -77,6 +112,8 @@ describe('AutoReportPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal('fetch', mockFetch);
+    mockExecuteChatArtifact.mockResolvedValue(reportArtifact);
+    mockSaveArtifactExecutionReplayPack.mockReturnValue({ saved: true });
     mockUseServerQuery.mockReturnValue({
       data: [
         {
@@ -93,15 +130,6 @@ describe('AutoReportPage', () => {
   });
 
   it('빈 상태에서 Reporter 빠른 시작 칩을 제공하고 선택한 힌트를 요청에 포함한다', async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        success: false,
-        message: 'stop after request assertion',
-      }),
-    });
-
     render(<AutoReportPage />);
 
     expect(
@@ -117,47 +145,19 @@ describe('AutoReportPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /정기 운영 보고서/ }));
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockExecuteChatArtifact).toHaveBeenCalledTimes(1);
     });
 
-    const request = mockFetch.mock.calls[0]?.[1];
-    expect(JSON.parse(String(request?.body))).toMatchObject({
-      action: 'generate',
-      query: '최근 24시간 운영 상태를 정기 운영 보고서로 요약해줘',
-      category: 'operations',
-      severity: 'info',
-    });
+    expect(mockExecuteChatArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'incident-report',
+        query: '최근 24시간 운영 상태를 정기 운영 보고서로 요약해줘',
+      })
+    );
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('keeps generated reports visible after the page remounts', async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        success: true,
-        report: {
-          id: 'report-1',
-          title: 'API 서버 CPU 사용률 급증',
-          severity: 'critical',
-          created_at: '2026-03-18T14:00:00.000Z',
-          affected_servers: ['api-was-dc1-01'],
-          description: 'CPU 사용률이 임계치를 초과했습니다.',
-          system_summary: {
-            total_servers: 1,
-            healthy_servers: 0,
-            warning_servers: 0,
-            critical_servers: 1,
-          },
-          recommendations: [
-            {
-              action: '트래픽 분산을 확인하세요.',
-              priority: 'high',
-            },
-          ],
-        },
-      }),
-    });
-
     const { unmount } = render(<AutoReportPage />);
 
     fireEvent.click(screen.getByTestId('report-generate-btn'));
@@ -167,7 +167,13 @@ describe('AutoReportPage', () => {
         screen.getByRole('heading', { name: 'API 서버 CPU 사용률 급증' })
       ).toBeInTheDocument();
     });
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockExecuteChatArtifact).toHaveBeenCalledTimes(1);
+    expect(mockSaveArtifactExecutionReplayPack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        artifact: reportArtifact,
+        workspaceId: expect.stringContaining('surface:incident-report:'),
+      })
+    );
 
     unmount();
 
@@ -179,10 +185,9 @@ describe('AutoReportPage', () => {
   });
 
   it('renders a client-side login link when the report API requires auth', async () => {
-    mockFetch.mockResolvedValue({
-      ok: false,
-      status: 401,
-    });
+    mockExecuteChatArtifact.mockRejectedValue(
+      new Error('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.')
+    );
 
     render(<AutoReportPage />);
 
@@ -200,15 +205,6 @@ describe('AutoReportPage', () => {
   });
 
   it('sends dashboard queryAsOf data slot when generating a report', async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        success: false,
-        message: 'stop after request assertion',
-      }),
-    });
-
     render(
       <AutoReportPage
         queryAsOfDataSlot={{
@@ -222,32 +218,22 @@ describe('AutoReportPage', () => {
     fireEvent.click(screen.getByTestId('report-generate-btn'));
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockExecuteChatArtifact).toHaveBeenCalledTimes(1);
     });
 
-    const request = mockFetch.mock.calls[0]?.[1];
-    expect(JSON.parse(String(request?.body))).toMatchObject({
-      action: 'generate',
-      queryAsOf: {
-        source: 'vercel-static-otel',
-        datasetVersion: '24h-rotating-v1.0.0',
-        dataSlot: {
+    expect(mockExecuteChatArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'incident-report',
+        queryAsOfDataSlot: {
           slotIndex: 42,
           minuteOfDay: 420,
           timeLabel: '07:00 KST',
         },
-      },
-    });
-    expect(JSON.parse(String(request?.body))).not.toHaveProperty('enableRAG');
+      })
+    );
   });
 
   it('does not render the persistent history tab', () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ success: true }),
-    });
-
     render(<AutoReportPage />);
 
     expect(
@@ -256,20 +242,15 @@ describe('AutoReportPage', () => {
   });
 
   it('marks a report resolved locally without PATCH persistence', async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        success: true,
-        report: {
-          id: 'report-local-resolve',
-          title: '세션 내 보고서',
-          severity: 'warning',
-          created_at: '2026-03-18T14:00:00.000Z',
-          affected_servers: ['api-was-dc1-01'],
-          description: '세션 내 상태 변경 검증',
-        },
-      }),
+    mockExecuteChatArtifact.mockResolvedValue({
+      ...reportArtifact,
+      report: {
+        ...reportArtifact.report,
+        id: 'report-local-resolve',
+        title: '세션 내 보고서',
+        severity: 'warning',
+        description: '세션 내 상태 변경 검증',
+      },
     });
 
     render(<AutoReportPage />);
@@ -285,7 +266,7 @@ describe('AutoReportPage', () => {
     fireEvent.click(screen.getAllByRole('button', { name: '해결 완료' })[0]);
 
     expect(screen.getByText('resolved')).toBeInTheDocument();
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    expect(mockFetch.mock.calls[0]?.[1]).toMatchObject({ method: 'POST' });
+    expect(mockExecuteChatArtifact).toHaveBeenCalledTimes(1);
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });
