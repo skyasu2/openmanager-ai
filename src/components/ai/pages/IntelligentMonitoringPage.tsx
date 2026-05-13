@@ -16,6 +16,11 @@ import { Monitor, Play, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
 import { useServerQuery } from '@/hooks/useServerQuery';
+import {
+  createArtifactExecutionWorkspaceId,
+  executeChatArtifact,
+  saveArtifactExecutionReplayPack,
+} from '@/lib/ai/chat-artifacts/artifact-execution';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import { logger } from '@/lib/logging';
 import type { JobDataSlot } from '@/types/ai-jobs';
@@ -310,39 +315,20 @@ export default function IntelligentMonitoringPage({
         // 단일 서버도 CloudRunAnalysisResponse로 반환
         setResult(serverResult);
       } else {
-        // 전체 시스템 분석은 Cloud Run batch endpoint 1회 호출로 처리한다.
+        // 전체 시스템 분석은 Chat과 동일한 artifact execution layer를 사용한다.
         setProgress({ current: 0, total: 1 });
-        const response = await fetch('/api/ai/intelligent-monitoring', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'analyze_batch',
-            serverId: 'all',
-            analysisType: 'full',
-            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
-          }),
+        const artifact = await executeChatArtifact({
+          kind: 'monitoring-analysis',
+          query: '전체 시스템 이상감지/추세 분석',
+          sessionId: 'intelligent-monitoring-page',
+          queryAsOfDataSlot,
         });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error(
-              '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.'
-            );
-          }
-          throw new Error('전체 시스템 분석에 실패했습니다.');
-        }
-
-        const data = await response.json();
-        if (!data.success || !data.data) {
-          throw new Error('전체 시스템 분석에 실패했습니다.');
-        }
-
+        saveArtifactExecutionReplayPack({
+          artifact,
+          workspaceId: createArtifactExecutionWorkspaceId(artifact),
+        });
         setProgress({ current: 1, total: 1 });
-        setResult(
-          adaptMonitoringBatchResponse(
-            data.data as MonitoringBatchAnalysisResponse
-          )
-        );
+        setResult(adaptMonitoringBatchResponse(artifact.analysis));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '알 수 없는 오류');

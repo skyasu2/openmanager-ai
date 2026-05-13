@@ -13,15 +13,17 @@
 import { AlertCircle, FileText, RefreshCw, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
-import { rulesLoader } from '@/config/rules/loader';
 import { useServerQuery } from '@/hooks/useServerQuery';
-import { createQueryAsOf } from '@/lib/ai/query-as-of';
+import {
+  createArtifactExecutionWorkspaceId,
+  executeChatArtifact,
+  saveArtifactExecutionReplayPack,
+} from '@/lib/ai/chat-artifacts/artifact-execution';
 import { logger } from '@/lib/logging';
 import type { JobDataSlot } from '@/types/ai-jobs';
 
 import ReportCard from './ReportCard';
-import type { IncidentReport, ServerMetric } from './types';
-import { extractNumericValue, mapSeverity } from './utils';
+import type { IncidentReport } from './types';
 
 // ============================================================================
 // Module-level cache — survives Activity hide/show and potential remounts
@@ -68,50 +70,6 @@ const REPORT_QUICK_STARTS: ReportQuickStart[] = [
   },
 ];
 
-function normalizeRecommendations(
-  recommendations: unknown
-): IncidentReport['recommendations'] {
-  if (!Array.isArray(recommendations)) return [];
-
-  return recommendations.map((recommendation) => {
-    const item = recommendation as {
-      action?: string;
-      priority?: string;
-      expected_impact?: string;
-    };
-
-    return {
-      action: item.action || '추가 조치 필요',
-      priority: item.priority || 'medium',
-      expected_impact: item.expected_impact || '영향 감소',
-    };
-  });
-}
-
-function normalizeRelatedServers(report: Record<string, unknown>) {
-  if (!Array.isArray(report.affectedServers)) return [];
-
-  return report.affectedServers
-    .filter(
-      (
-        server
-      ): server is {
-        id?: string;
-        name?: string;
-        severity?: string;
-        metric?: string;
-        value?: number;
-      } => typeof server === 'object' && server !== null
-    )
-    .map((server) => ({
-      id: server.id || server.name || 'unknown-server',
-      name: server.name || server.id || 'unknown-server',
-      severity: server.severity || 'info',
-      metric: server.metric,
-      value: server.value,
-    }));
-}
-
 export default function AutoReportPage({
   queryAsOfDataSlot,
 }: AutoReportPageProps = {}) {
@@ -149,175 +107,21 @@ export default function AutoReportPage({
       setError(null);
 
       try {
-        const metrics: ServerMetric[] = servers.map((server) => ({
-          server_id: server.id,
-          server_name: server.name,
-          cpu: extractNumericValue(server.cpu ?? 0),
-          memory: extractNumericValue(server.memory ?? 0),
-          disk: extractNumericValue(server.disk ?? 0),
-          network: extractNumericValue(server.network ?? 0),
-          timestamp: new Date().toISOString(),
-        }));
-
-        const response = await fetch('/api/ai/incident-report', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'generate',
-            metrics,
-            notify: true,
-            ...(preset
-              ? {
-                  query: preset.query,
-                  category: preset.category,
-                  severity: preset.severity,
-                }
-              : {}),
-            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
-          }),
+        const artifact = await executeChatArtifact({
+          kind: 'incident-report',
+          query:
+            preset?.query ?? '현재 이상 징후를 장애 보고서 형식으로 정리해줘',
+          sessionId: 'auto-report-page',
+          queryAsOfDataSlot,
         });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            setError('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.');
-            return;
-          }
-          throw new Error(`API 오류: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Fallback 응답 처리
-        if (data.source === 'fallback' || !data.success) {
-          setError(
-            data.message ||
-              '보고서 생성 서비스가 일시적으로 불안정합니다. 잠시 후 다시 시도해주세요.'
-          );
-          return;
-        }
-
-        // 보고서 데이터 없음 처리
-        if (!data.report) {
-          setError('보고서 데이터를 받지 못했습니다. 다시 시도해주세요.');
-          return;
-        }
-
-        if (data.success && data.report) {
-          // 시스템 요약: API 데이터 우선, 없으면 로컬 계산
-          const apiSystemSummary = data.report.system_summary;
-          const systemSummary = apiSystemSummary
-            ? {
-                totalServers: apiSystemSummary.total_servers ?? metrics.length,
-                healthyServers:
-                  apiSystemSummary.healthy_servers ??
-                  apiSystemSummary.online_servers ??
-                  0,
-                warningServers: apiSystemSummary.warning_servers ?? 0,
-                criticalServers: apiSystemSummary.critical_servers ?? 0,
-              }
-            : (() => {
-                const statusCounts = { online: 0, warning: 0, critical: 0 };
-                for (const m of metrics) {
-                  const status = rulesLoader.getServerStatus({
-                    cpu: m.cpu,
-                    memory: m.memory,
-                    disk: m.disk,
-                  });
-                  statusCounts[status]++;
-                }
-                return {
-                  totalServers: metrics.length,
-                  healthyServers: statusCounts.online,
-                  warningServers: statusCounts.warning,
-                  criticalServers: statusCounts.critical,
-                };
-              })();
-
-          // 이상 항목: API 데이터 우선, 없으면 로컬 계산
-          const apiAnomalies = data.report.anomalies;
-          const anomalies =
-            Array.isArray(apiAnomalies) && apiAnomalies.length > 0
-              ? apiAnomalies
-              : metrics
-                  .filter(
-                    (m) =>
-                      rulesLoader.isWarning('cpu', m.cpu) ||
-                      rulesLoader.isCritical('cpu', m.cpu) ||
-                      rulesLoader.isWarning('memory', m.memory) ||
-                      rulesLoader.isCritical('memory', m.memory) ||
-                      rulesLoader.isWarning('disk', m.disk) ||
-                      rulesLoader.isCritical('disk', m.disk)
-                  )
-                  .flatMap((m) => {
-                    const items = [];
-                    if (
-                      rulesLoader.isWarning('cpu', m.cpu) ||
-                      rulesLoader.isCritical('cpu', m.cpu)
-                    )
-                      items.push({
-                        server_id: m.server_id,
-                        server_name: m.server_name,
-                        metric: 'CPU',
-                        value: m.cpu,
-                        severity: rulesLoader.isCritical('cpu', m.cpu)
-                          ? 'critical'
-                          : 'warning',
-                      });
-                    if (
-                      rulesLoader.isWarning('memory', m.memory) ||
-                      rulesLoader.isCritical('memory', m.memory)
-                    )
-                      items.push({
-                        server_id: m.server_id,
-                        server_name: m.server_name,
-                        metric: 'Memory',
-                        value: m.memory,
-                        severity: rulesLoader.isCritical('memory', m.memory)
-                          ? 'critical'
-                          : 'warning',
-                      });
-                    if (
-                      rulesLoader.isWarning('disk', m.disk) ||
-                      rulesLoader.isCritical('disk', m.disk)
-                    )
-                      items.push({
-                        server_id: m.server_id,
-                        server_name: m.server_name,
-                        metric: 'Disk',
-                        value: m.disk,
-                        severity: rulesLoader.isCritical('disk', m.disk)
-                          ? 'critical'
-                          : 'warning',
-                      });
-                    return items;
-                  });
-
-          const newReport: IncidentReport = {
-            id: data.report.id,
-            title: data.report.title,
-            severity: mapSeverity(data.report.severity),
-            timestamp: new Date(data.report.created_at),
-            affectedServers:
-              data.report.affected_servers ||
-              normalizeRelatedServers(data.report).map((server) => server.id),
-            relatedServers: normalizeRelatedServers(data.report),
-            description:
-              data.report.root_cause_analysis?.primary_cause ||
-              data.report.description ||
-              '새로운 이상 징후가 감지되었습니다.',
-            status: 'active',
-            pattern: data.report.pattern,
-            recommendations: normalizeRecommendations(
-              data.report.recommendations
-            ),
-            systemSummary,
-            anomalies,
-            timeline: data.report.timeline,
-            postmortem: data.report.postmortem,
-          };
-
-          setReports((prev) => [newReport, ...prev]);
-        }
+        saveArtifactExecutionReplayPack({
+          artifact,
+          workspaceId: createArtifactExecutionWorkspaceId(artifact),
+        });
+        setReports((prev) => [
+          artifact.report,
+          ...prev.filter((report) => report.id !== artifact.report.id),
+        ]);
       } catch (err) {
         logger.error('보고서 생성 실패:', err);
         setError(
@@ -329,7 +133,7 @@ export default function AutoReportPage({
         setIsGenerating(false);
       }
     },
-    [servers, setReports, queryAsOfDataSlot]
+    [servers.length, setReports, queryAsOfDataSlot]
   );
 
   // Event handlers

@@ -67,6 +67,8 @@ vi.mock('@/hooks/useServerQuery', () => ({
 }));
 
 vi.mock('@/lib/ai/chat-artifacts/artifact-execution', () => ({
+  createArtifactExecutionWorkspaceId: (artifact: { kind: string }) =>
+    `surface:${artifact.kind}:test`,
   executeChatArtifact: (...args: unknown[]) => mockExecuteChatArtifact(...args),
   saveArtifactExecutionReplayPack: (...args: unknown[]) =>
     mockSaveArtifactExecutionReplayPack(...args),

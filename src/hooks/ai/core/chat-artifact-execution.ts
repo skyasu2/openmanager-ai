@@ -1,11 +1,10 @@
 import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
+import { executeChatArtifact } from '@/lib/ai/chat-artifacts/artifact-execution';
 import type {
   ChatArtifactIntent,
   ChatArtifactIntentReason,
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
-import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
-import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
 import {
   generateOpsProcedureArtifact,
   patchOpsProcedureArtifactFromQuery,
@@ -170,7 +169,8 @@ async function generateChatArtifact({
 }): Promise<ChatArtifact> {
   switch (artifactIntent.kind) {
     case 'incident-report':
-      return generateIncidentReportArtifact({
+      return executeChatArtifact({
+        kind: 'incident-report',
         query,
         sessionId,
         queryAsOfDataSlot,
@@ -193,7 +193,8 @@ async function generateChatArtifact({
         messagesRef,
       });
     case 'monitoring-analysis':
-      return generateMonitoringAnalysisArtifact({
+      return executeChatArtifact({
+        kind: 'monitoring-analysis',
         query,
         sessionId,
         queryAsOfDataSlot,
