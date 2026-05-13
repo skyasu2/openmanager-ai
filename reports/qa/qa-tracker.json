@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-13T04:07:53.842Z"
+    "updatedAt": "2026-05-13T05:02:59.311Z"
   },
   "sequence": {
-    "nextRunNumber": 495
+    "nextRunNumber": 496
   },
   "summary": {
-    "totalRecordedRuns": 492,
-    "totalRuns": 393,
+    "totalRecordedRuns": 493,
+    "totalRuns": 394,
     "excludedRuns": 99,
-    "totalChecks": 3495,
-    "totalPassed": 3361,
-    "totalFailed": 124,
-    "completionRate": 100,
-    "completedItems": 556,
-    "pendingItems": 0,
+    "totalChecks": 3498,
+    "totalPassed": 3363,
+    "totalFailed": 125,
+    "completionRate": 99.82,
+    "completedItems": 557,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260513-0494",
-    "lastRecordedAt": "2026-05-13T04:07:53.842Z",
-    "latestRecordedRunId": "QA-20260513-0494",
-    "latestRecordedAt": "2026-05-13T04:07:53.842Z"
+    "expertDomainsOpenGaps": 3,
+    "lastRunId": "QA-20260513-0495",
+    "lastRecordedAt": "2026-05-13T05:02:59.311Z",
+    "latestRecordedRunId": "QA-20260513-0495",
+    "latestRecordedAt": "2026-05-13T05:02:59.311Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13625,6 +13625,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-13T04:07:53.842Z"
+    },
+    "reporter-structured-output-local-fix": {
+      "id": "reporter-structured-output-local-fix",
+      "title": "Reporter structured output schema local fix prepared",
+      "priority": "P0",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260513-0495",
+      "firstSeenAt": "2026-05-13T05:02:59.311Z",
+      "lastSeenRunId": "QA-20260513-0495",
+      "lastSeenAt": "2026-05-13T05:02:59.311Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Commit a4d10314c; AI Engine type-check and full test passed locally",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-13T05:02:59.311Z"
+    },
+    "reporter-structured-output-production-deploy": {
+      "id": "reporter-structured-output-production-deploy",
+      "title": "Deploy Reporter structured output schema fix",
+      "priority": "P0",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260513-0495",
+      "firstSeenAt": "2026-05-13T05:02:59.311Z",
+      "lastSeenRunId": "QA-20260513-0495",
+      "lastSeenAt": "2026-05-13T05:02:59.311Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production v8.11.143 still serves the failing Reporter schema until a new Cloud Run revision is deployed.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-13T05:02:59.311Z"
     }
   },
   "runs": [
@@ -54230,6 +54278,176 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260513-0495",
+      "recordedAt": "2026-05-13T05:02:59.311Z",
+      "recordedAtKst": "2026-05-13 14:02:59 KST",
+      "title": "Production QA - v8.11.143 AI Assistant 3-Feature Check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260513-0495.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_CZcfiaUHeyXJ5eFZZhNtMbPjWjnu",
+        "deploymentUrl": "https://openmanager-6lvl60rzk-skyasus-projects.vercel.app",
+        "commitSha": "6b7e640866d3a7a57868a4611d20f98c8d10a0e5"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "AI Assistant AI Chat",
+        "AI Assistant Auto Incident Report",
+        "AI Assistant Anomaly/Trend"
+      ],
+      "skippedSurfaces": [
+        "mobile viewport matrix",
+        "OAuth provider completion",
+        "broad dashboard route pack"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Assistant AI Chat",
+          "agent": "Supervisor",
+          "provider": "cloud-run",
+          "model": "runtime-selected",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright resource timing",
+          "latencyMs": 3481
+        },
+        {
+          "surface": "AI Assistant Auto Incident Report",
+          "agent": "Reporter Agent",
+          "provider": "cloud-run",
+          "model": "runtime-selected",
+          "route": "/api/ai/incident-report",
+          "source": "Playwright resource timing + Cloud Run logs",
+          "latencyMs": 1720
+        },
+        {
+          "surface": "AI Assistant Anomaly/Trend",
+          "agent": "Analyst / Monitoring Analysis",
+          "provider": "cloud-run",
+          "model": "tool-based monitoring analysis",
+          "route": "/api/ai/intelligent-monitoring",
+          "source": "Playwright resource timing",
+          "latencyMs": 1116
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "AI Chat and Anomaly/Trend passed, but Reporter production surface failed despite HTTP 200 due fallback payload.",
+          "nextAction": "Deploy Reporter structured-output schema fix and rerun the 3-feature AI Assistant QA."
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI Chat and Anomaly/Trend outputs matched current dashboard signals: 18 servers, 17 normal, 1 warning, cache-redis-dc1-01 memory 84%.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Reporter failure came from strict structured-output schema incompatibility, not user input or prompt leakage.",
+          "nextAction": "Keep strict schema regression coverage for nested structured-output fields."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Cloud Run logs identified the upstream 400 while Vercel response was HTTP 200 fallback, so deploy and post-deploy QA closure are required.",
+          "nextAction": "Release a patch version and verify Cloud Run Reporter generation on production."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP covered the three requested AI Assistant functions with durable screenshots and resource timing.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T14:00:42+09:00",
+          "summary": "Current billing period checked after production AI Assistant QA: effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Chat feature pass",
+          "path": "reports/qa/evidence/qa-20260513-v811143-ai-chat-function.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter feature failure",
+          "path": "reports/qa/evidence/qa-20260513-v811143-ai-reporter-function.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter template failure",
+          "path": "reports/qa/evidence/qa-20260513-v811143-ai-reporter-template-function.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Anomaly trend feature pass",
+          "path": "reports/qa/evidence/qa-20260513-v811143-ai-anomaly-trend-function.png"
+        },
+        {
+          "type": "playwright-report",
+          "label": "AI Assistant 3-feature summary and root cause",
+          "path": "reports/qa/evidence/qa-20260513-v811143-ai-assistant-3features-summary.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.143 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521039196"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 3,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -54238,33 +54456,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 245,
-      "appropriateCount": 210,
+      "seenCount": 246,
+      "appropriateCount": 211,
       "partialCount": 35,
       "inappropriateCount": 0,
-      "improvementNeededCount": 44,
-      "lastRunId": "QA-20260513-0494",
-      "lastSeenAt": "2026-05-13T04:07:53.842Z",
+      "improvementNeededCount": 45,
+      "lastRunId": "QA-20260513-0495",
+      "lastSeenAt": "2026-05-13T05:02:59.311Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "QA-20260513-0493 exercised the AI Assistant sidebar standard five-question flow with 5/5 pass before this closure deployment.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "AI Chat and Anomaly/Trend passed, but Reporter production surface failed despite HTTP 200 due fallback payload.",
+      "lastNextAction": "Deploy Reporter structured-output schema fix and rerun the 3-feature AI Assistant QA."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 120,
-      "appropriateCount": 90,
+      "seenCount": 121,
+      "appropriateCount": 91,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260513-0492",
-      "lastSeenAt": "2026-05-13T02:51:02.949Z",
+      "lastRunId": "QA-20260513-0495",
+      "lastSeenAt": "2026-05-13T05:02:59.311Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard status summary, warning filter, server detail metrics, alerts, logs, and topology surfaces showed consistent monitoring state for the v8.11.142 production deployment.",
+      "lastRationale": "AI Chat and Anomaly/Trend outputs matched current dashboard signals: 18 servers, 17 normal, 1 warning, cache-redis-dc1-01 memory 84%.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -54272,50 +54490,50 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 70,
-      "appropriateCount": 52,
+      "seenCount": 71,
+      "appropriateCount": 53,
       "partialCount": 18,
       "inappropriateCount": 0,
-      "improvementNeededCount": 17,
-      "lastRunId": "QA-20260513-0491",
-      "lastSeenAt": "2026-05-13T02:09:08.202Z",
+      "improvementNeededCount": 18,
+      "lastRunId": "QA-20260513-0495",
+      "lastSeenAt": "2026-05-13T05:02:59.311Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The deployment preserved the expected /monitoring 403 boundary for unauthenticated access.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "Reporter failure came from strict structured-output schema incompatibility, not user input or prompt leakage.",
+      "lastNextAction": "Keep strict schema regression coverage for nested structured-output fields."
     },
     "sre-devops": {
       "domainId": "sre-devops",
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 175,
-      "appropriateCount": 157,
+      "seenCount": 176,
+      "appropriateCount": 158,
       "partialCount": 18,
       "inappropriateCount": 0,
-      "improvementNeededCount": 21,
-      "lastRunId": "QA-20260513-0494",
-      "lastSeenAt": "2026-05-13T04:07:53.842Z",
+      "improvementNeededCount": 22,
+      "lastRunId": "QA-20260513-0495",
+      "lastSeenAt": "2026-05-13T05:02:59.311Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2521039196 succeeded, Vercel serves v8.11.143, Cloud Run revision ai-engine-00459-5gg is deployed, and Vercel billed usage remains 0.0000 USD.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "Cloud Run logs identified the upstream 400 while Vercel response was HTTP 200 fallback, so deploy and post-deploy QA closure are required.",
+      "lastNextAction": "Release a patch version and verify Cloud Run Reporter generation on production."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 212,
-      "appropriateCount": 194,
+      "seenCount": 213,
+      "appropriateCount": 195,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260513-0494",
-      "lastSeenAt": "2026-05-13T04:07:53.842Z",
+      "lastRunId": "QA-20260513-0495",
+      "lastSeenAt": "2026-05-13T05:02:59.311Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The prior missing mobile and AI Assistant coverage was closed by QA-20260513-0493, and this release-facing recheck confirmed the deployed CSS warning/tap-target fix.",
+      "lastRationale": "Playwright MCP covered the three requested AI Assistant functions with durable screenshots and resource timing.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
