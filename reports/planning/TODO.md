@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`GitLab pipeline resource diagnostics complete`)
+**Last Updated**: 2026-05-13 KST (`AI 아키텍처 클린업 P1~P4 진행`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 진행 중인 계획 작업 없음. |
+| AI 아키텍처 클린업 + status.md 자동화 (P1~P5) | High | In Progress (Codex) | [ai-architecture-cleanup-plan.md](ai-architecture-cleanup-plan.md) — P1~P4 완료, P5 status.md 동적 갱신 자동화 대기 |
 
 ---
 
