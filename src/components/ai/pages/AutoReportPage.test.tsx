@@ -186,6 +186,25 @@ describe('AutoReportPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('generates reports through the artifact layer even when dashboard server data is empty', async () => {
+    mockUseServerQuery.mockReturnValue({
+      data: [],
+      isLoading: false,
+    });
+
+    render(<AutoReportPage />);
+
+    fireEvent.click(screen.getByTestId('report-generate-btn'));
+
+    await waitFor(() => {
+      expect(mockExecuteChatArtifact).toHaveBeenCalledTimes(1);
+    });
+
+    expect(
+      screen.getByRole('heading', { name: 'API 서버 CPU 사용률 급증' })
+    ).toBeInTheDocument();
+  });
+
   it('renders a client-side login link when the report API requires auth', async () => {
     mockExecuteChatArtifact.mockRejectedValue(
       new Error('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.')

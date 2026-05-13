@@ -64,7 +64,7 @@ function safeWorkspaceSegment(value: string): string {
   return (
     value
       .trim()
-      .replace(/[^a-zA-Z0-9:_-]+/g, '-')
+      .replace(/[^a-zA-Z0-9_-]+/g, '-')
       .replace(/^-+|-+$/g, '')
       .slice(0, 120) || 'artifact'
   );
@@ -112,6 +112,11 @@ export function saveArtifactExecutionReplayPack({
 
   try {
     store.saveReplayPack(replayPack);
+    const restoredReplayPack = store.readReplayPack(workspaceId);
+    if (!restoredReplayPack || restoredReplayPack.entries.length === 0) {
+      return { saved: false, reason: 'storage_unavailable' };
+    }
+
     return { saved: true, replayPack };
   } catch {
     return { saved: false, reason: 'storage_unavailable' };

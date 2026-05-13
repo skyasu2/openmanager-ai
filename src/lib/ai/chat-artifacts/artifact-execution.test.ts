@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  createArtifactExecutionWorkspaceId,
   executeChatArtifact,
   saveArtifactExecutionReplayPack,
 } from './artifact-execution';
@@ -111,6 +112,7 @@ describe('artifact execution layer', () => {
   });
 
   it('stores generated artifacts as local-session replay packs', () => {
+    let storedReplayPack: unknown;
     const saveReplayPack = vi.fn();
     const artifact = {
       kind: 'incident-report',
@@ -136,9 +138,12 @@ describe('artifact execution layer', () => {
           persistence: 'local-session-first',
           allowsDatabaseWritesByDefault: false,
         },
-        saveReplayPack,
+        saveReplayPack: (pack) => {
+          storedReplayPack = pack;
+          saveReplayPack(pack);
+        },
         importReplayPackExport: vi.fn(),
-        readReplayPack: vi.fn(),
+        readReplayPack: vi.fn(() => storedReplayPack),
         listReplayPacks: vi.fn(() => []),
         clear: vi.fn(),
       },
@@ -157,6 +162,66 @@ describe('artifact execution layer', () => {
           }),
         ],
       })
+    );
+  });
+
+  it('reports storage_unavailable when the store silently drops the replay pack', () => {
+    const artifact = {
+      kind: 'incident-report',
+      generatedAt: '2026-05-13T00:00:00.000Z',
+      sourceMode: 'tool-result',
+      artifactVersion: '2026-05-03-v1',
+      report: {
+        id: 'report-1',
+        title: 'Redis memory warning',
+        severity: 'warning',
+        timestamp: new Date('2026-05-13T00:00:00.000Z'),
+        affectedServers: ['cache-redis-dc1-01'],
+        description: 'memory warning',
+        status: 'active',
+      },
+    } as const;
+
+    const result = saveArtifactExecutionReplayPack({
+      artifact,
+      workspaceId: 'surface:incident-report:test',
+      store: {
+        policy: {
+          persistence: 'local-session-first',
+          allowsDatabaseWritesByDefault: false,
+        },
+        saveReplayPack: vi.fn(),
+        importReplayPackExport: vi.fn(),
+        readReplayPack: vi.fn(() => undefined),
+        listReplayPacks: vi.fn(() => []),
+        clear: vi.fn(),
+      },
+    });
+
+    expect(result).toEqual({
+      saved: false,
+      reason: 'storage_unavailable',
+    });
+  });
+
+  it('creates delimiter-safe workspace ids from artifact metadata', () => {
+    const artifact = {
+      kind: 'incident-report',
+      generatedAt: '2026-05-13T00:00:00.000Z',
+      dataSlot: '07:00 KST',
+      report: {
+        id: 'report-1',
+        title: 'Redis memory warning',
+        severity: 'warning',
+        timestamp: new Date('2026-05-13T00:00:00.000Z'),
+        affectedServers: ['cache-redis-dc1-01'],
+        description: 'memory warning',
+        status: 'active',
+      },
+    } as const;
+
+    expect(createArtifactExecutionWorkspaceId(artifact)).toBe(
+      'surface:incident-report:07-00-KST:2026-05-13T00-00-00-000Z'
     );
   });
 });

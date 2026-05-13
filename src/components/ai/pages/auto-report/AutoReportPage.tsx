@@ -13,7 +13,6 @@
 import { AlertCircle, FileText, RefreshCw, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
-import { useServerQuery } from '@/hooks/useServerQuery';
 import {
   createArtifactExecutionWorkspaceId,
   executeChatArtifact,
@@ -73,9 +72,6 @@ const REPORT_QUICK_STARTS: ReportQuickStart[] = [
 export default function AutoReportPage({
   queryAsOfDataSlot,
 }: AutoReportPageProps = {}) {
-  // Server data (React Query)
-  const { data: servers = [], isLoading: isServersLoading } = useServerQuery();
-
   // Reports state — initialized from module-level cache
   const [reports, setReportsState] = useState<IncidentReport[]>(reportsCache);
   const setReports = useCallback(
@@ -99,10 +95,6 @@ export default function AutoReportPage({
   // Generate new report
   const handleGenerateReport = useCallback(
     async (preset?: ReportQuickStart) => {
-      if (servers.length === 0) {
-        setError('서버 데이터를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-        return;
-      }
       setIsGenerating(true);
       setError(null);
 
@@ -133,7 +125,7 @@ export default function AutoReportPage({
         setIsGenerating(false);
       }
     },
-    [servers.length, setReports, queryAsOfDataSlot]
+    [setReports, queryAsOfDataSlot]
   );
 
   // Event handlers
@@ -212,19 +204,13 @@ export default function AutoReportPage({
               type="button"
               data-testid="report-generate-btn"
               onClick={() => handleGenerateReport()}
-              disabled={isGenerating || isServersLoading}
+              disabled={isGenerating}
               className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-red-500 px-3 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
                 className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`}
               />
-              <span>
-                {isServersLoading
-                  ? '서버 로딩 중...'
-                  : isGenerating
-                    ? '생성 중...'
-                    : '새 보고서'}
-              </span>
+              <span>{isGenerating ? '생성 중...' : '새 보고서'}</span>
             </button>
           </div>
         </div>
@@ -327,7 +313,7 @@ export default function AutoReportPage({
                   key={preset.id}
                   type="button"
                   onClick={() => handleGenerateReport(preset)}
-                  disabled={isGenerating || isServersLoading}
+                  disabled={isGenerating}
                   className="rounded-lg border border-red-100 bg-white px-3 py-2 text-left transition-colors hover:border-red-200 hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
                 >
                   <span className="block text-sm font-semibold text-gray-800">
@@ -343,17 +329,13 @@ export default function AutoReportPage({
               type="button"
               data-testid="report-generate-cta"
               onClick={() => handleGenerateReport()}
-              disabled={isGenerating || isServersLoading}
+              disabled={isGenerating}
               className="inline-flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-sm text-white transition-all hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
-                className={`h-4 w-4 ${isGenerating || isServersLoading ? 'animate-spin' : ''}`}
+                className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`}
               />
-              <span>
-                {isServersLoading
-                  ? '서버 데이터 로딩 중...'
-                  : '첫 보고서 생성하기'}
-              </span>
+              <span>첫 보고서 생성하기</span>
             </button>
           </div>
         )}
