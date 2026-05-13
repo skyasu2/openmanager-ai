@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-14 KST (`AI Assistant 심층 커밋 평가 보강 반영`)
+**Last Updated**: 2026-05-14 KST (`AI Assistant 전달 마감 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P1: AI Assistant 안정화 커밋 전달 마감 | High | ready | 로컬 `main`에는 `0ca8d9b88 refactor(ai): clarify assistant agent runtime roles` 안정화 커밋과 심층 평가 follow-up 커밋이 `gitlab/main`보다 앞서 있음. 심층 평가에서 지적된 fallback/summary/theme hook 직접 테스트 보강을 follow-up으로 정리하고, `memory/ops-knowledge.md`는 활성 문서 참조 보존을 위해 포함하기로 결정. 다음 단계는 `git push gitlab main`, `npm run gitlab:pipeline:head -- --wait`로 pushed SHA pipeline 확인. |
+| _None_ | - | - | 현재 진행 중인 작업 없음. |
 
 ---
 
@@ -38,6 +38,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI Assistant 안정화 커밋 전달 마감~~ | — | **완료** — `0ca8d9b88 refactor(ai): clarify assistant agent runtime roles`를 GitLab main에 전달. 심층 평가 후 follow-up으로 fallback/summary/theme hook 직접 테스트(`52067050d`), component dependency map 갱신(`4b52e30f7`), CI no-provider 환경 logger mock 보강(`957a84659`)을 추가했다. `memory/ops-knowledge.md`는 활성 문서 참조 보존 대상으로 포함. GitLab pipeline `2523752216` success: `https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2523752216`. |
 | ~~AI Assistant 변경분 커밋 전 안정화~~ | — | **완료** — 추가 line-guard polish보다 커밋 우선으로 판단하고, AI Assistant 역할/라우팅/문서/라인가드 완충 리팩터 변경분을 단일 안정화 묶음으로 정리했다. 최종 게이트: root `test:quick`, `type-check`, `lint`, `test:contract`, `line-guard`, AI Engine `type-check`, `test`, `docs:budget`, `docs:ai-consistency`, `git diff --check` 통과. `memory/ops-knowledge.md`는 로컬 메모라 커밋 대상에서 제외. |
 | ~~AI Assistant 설계 개선 (agent role/tool/runtime routing cleanup)~~ | — | **완료** — Cloud Run `NLQ Agent` 사용자 노출명을 `Metrics Query Agent`로 정렬하고 legacy alias 호환을 유지했다. Metrics Query/Reporter/Advisor 역할별 tool allowlist를 재조정하고, Cerebras 2026-05-27 contingency, Vercel preprocessing runtime gate, Orchestrator confidence/decomposition gate, monitoring tool policy 일원화, Domain Evidence 승격, `matchPatterns` metadata-only 정리, root `metric_peak` local-first entity extraction을 완료했다. Metrics Query Cerebras-first 전환은 provider 조건 미충족으로 On Hold 추적. 검증: AI Engine/root targeted Vitest, AI Engine full test, root `type-check`, `test:quick`, `test:contract`, `lint:changed`, `docs:budget`, `docs:ai-consistency`, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-assistant-agent-runtime-improvements-plan.md](archive/ai-assistant-agent-runtime-improvements-plan.md) |
 | ~~AI Assistant 설계 개선 (artifact route guard + entity routing polish)~~ | — | **완료** — 재검토 결과 artifact BFF 우회는 실제 결함이 아니라 다이어그램 표현 오해로 판정하고, 실제 개선 필요 항목만 반영. `incident-report`/`intelligent-monitoring` POST에 `aiAnalysis` rate-limit 계약을 추가하고, Groq text model ID를 `meta-llama/llama-4-scout-17b-16e-instruct`로 통일. `extractEntitiesCached()` 5분 TTL/in-flight cache, 자연어 부하 표현 semantic gate, Cloud Run zero-token 문서 표현 정정을 완료. 검증: targeted node/dom Vitest, `npm run type-check`, `npm run lint:changed`, `npm run test:quick`, `npm run test:contract`, `npm run line-guard`, `docs:budget`, `docs:ai-consistency`, `docs:lint:changed`, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-assistant-design-improvements.md](archive/ai-assistant-design-improvements.md) |
