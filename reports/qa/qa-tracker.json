@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-13T03:45:28.442Z"
+    "updatedAt": "2026-05-13T04:07:53.842Z"
   },
   "sequence": {
-    "nextRunNumber": 494
+    "nextRunNumber": 495
   },
   "summary": {
-    "totalRecordedRuns": 491,
-    "totalRuns": 392,
+    "totalRecordedRuns": 492,
+    "totalRuns": 393,
     "excludedRuns": 99,
-    "totalChecks": 3485,
-    "totalPassed": 3351,
+    "totalChecks": 3495,
+    "totalPassed": 3361,
     "totalFailed": 124,
     "completionRate": 100,
-    "completedItems": 555,
+    "completedItems": 556,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260513-0492",
-    "lastRecordedAt": "2026-05-13T02:51:02.949Z",
-    "latestRecordedRunId": "QA-20260513-0493",
-    "latestRecordedAt": "2026-05-13T03:45:28.442Z"
+    "lastRunId": "QA-20260513-0494",
+    "lastRecordedAt": "2026-05-13T04:07:53.842Z",
+    "latestRecordedRunId": "QA-20260513-0494",
+    "latestRecordedAt": "2026-05-13T04:07:53.842Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13601,6 +13601,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-13T02:09:08.202Z"
+    },
+    "frontend-score-deduction-followup": {
+      "id": "frontend-score-deduction-followup",
+      "title": "Close frontend score deduction follow-up gaps",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260513-0494",
+      "firstSeenAt": "2026-05-13T04:07:53.842Z",
+      "lastSeenRunId": "QA-20260513-0494",
+      "lastSeenAt": "2026-05-13T04:07:53.842Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "QA-20260513-0493 plus v8.11.143 post-deploy Playwright recheck",
+      "lastNote": "Mobile matrix and AI Assistant gap were verified; CSS preload warning root cause was fixed by disabling non-critical Link prefetch and enlarging small text tap targets.",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-13T04:07:53.842Z"
     }
   },
   "runs": [
@@ -54073,6 +54097,139 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260513-0494",
+      "recordedAt": "2026-05-13T04:07:53.842Z",
+      "recordedAtKst": "2026-05-13 13:07:53 KST",
+      "title": "Production QA - v8.11.143 Score Deduction Closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260513-0494.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "v8.11.143-gitlab-tag-pipeline",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "6b7e640866d3a7a57868a4611d20f98c8d10a0e5"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "v8.11.143 production version alignment",
+        "Mobile /privacy console and tap-target recheck",
+        "Mobile custom 404 console and tap-target recheck",
+        "Mobile /login console and tap-target recheck",
+        "Score deduction follow-up closure for mobile matrix, AI Assistant, and CSS preload warning"
+      ],
+      "skippedSurfaces": [
+        "Full broad route matrix",
+        "Reporter Agent generation",
+        "Analyst advanced full analysis",
+        "Mobile AI Assistant conversational matrix"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux",
+          "domainName": "Frontend UI/UX Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Mobile /privacy, /login, and custom 404 recheck showed no horizontal overflow, no small tap-target findings, and no visible layout regression after the link target adjustments.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The prior missing mobile and AI Assistant coverage was closed by QA-20260513-0493, and this release-facing recheck confirmed the deployed CSS warning/tap-target fix.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "QA-20260513-0493 exercised the AI Assistant sidebar standard five-question flow with 5/5 pass before this closure deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2521039196 succeeded, Vercel serves v8.11.143, Cloud Run revision ai-engine-00459-5gg is deployed, and Vercel billed usage remains 0.0000 USD.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T13:06:39+09:00",
+          "summary": "Vercel usage checked after v8.11.143 score deduction closure QA; current billing period effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.143 privacy mobile recheck",
+          "path": "reports/qa/evidence/qa-20260513-v811143-privacy-mobile-recheck.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.143 404 mobile recheck",
+          "path": "reports/qa/evidence/qa-20260513-v811143-not-found-mobile-recheck.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.143 login mobile recheck",
+          "path": "reports/qa/evidence/qa-20260513-v811143-login-mobile-recheck.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.143 score deduction closure summary",
+          "path": "reports/qa/evidence/qa-20260513-v811143-score-deduction-closure-summary.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.143 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521039196"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -54081,16 +54238,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 244,
-      "appropriateCount": 209,
+      "seenCount": 245,
+      "appropriateCount": 210,
       "partialCount": 35,
       "inappropriateCount": 0,
       "improvementNeededCount": 44,
-      "lastRunId": "QA-20260513-0492",
-      "lastSeenAt": "2026-05-13T02:51:02.949Z",
+      "lastRunId": "QA-20260513-0494",
+      "lastSeenAt": "2026-05-13T04:07:53.842Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI Assistant, analyst, reporter, and streaming paths were intentionally excluded by request.",
+      "lastRationale": "QA-20260513-0493 exercised the AI Assistant sidebar standard five-question flow with 5/5 pass before this closure deployment.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -54132,16 +54289,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 174,
-      "appropriateCount": 156,
+      "seenCount": 175,
+      "appropriateCount": 157,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260513-0492",
-      "lastSeenAt": "2026-05-13T02:51:02.949Z",
+      "lastRunId": "QA-20260513-0494",
+      "lastSeenAt": "2026-05-13T04:07:53.842Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel production remained on v8.11.142 during the run and usage check showed billed=0.0000 USD.",
+      "lastRationale": "GitLab tag pipeline 2521039196 succeeded, Vercel serves v8.11.143, Cloud Run revision ai-engine-00459-5gg is deployed, and Vercel billed usage remains 0.0000 USD.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -54149,16 +54306,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 211,
-      "appropriateCount": 193,
+      "seenCount": 212,
+      "appropriateCount": 194,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260513-0492",
-      "lastSeenAt": "2026-05-13T02:51:02.949Z",
+      "lastRunId": "QA-20260513-0494",
+      "lastSeenAt": "2026-05-13T04:07:53.842Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP exercised representative non-AI production frontend flows and captured durable screenshots plus console warning evidence.",
+      "lastRationale": "The prior missing mobile and AI Assistant coverage was closed by QA-20260513-0493, and this release-facing recheck confirmed the deployed CSS warning/tap-target fix.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -54285,16 +54442,16 @@
       "domainName": "Frontend UI/UX Engineer",
       "firstSeenRunId": "QA-20260507-0419",
       "firstSeenAt": "2026-05-07T01:09:27.132Z",
-      "seenCount": 3,
-      "appropriateCount": 3,
+      "seenCount": 4,
+      "appropriateCount": 4,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260513-0492",
-      "lastSeenAt": "2026-05-13T02:51:02.949Z",
+      "lastRunId": "QA-20260513-0494",
+      "lastSeenAt": "2026-05-13T04:07:53.842Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Landing, login, dashboard, server detail, alerts, logs, topology, and 404 surfaces rendered without visible blocking layout or interaction regressions in desktop Playwright MCP smoke.",
+      "lastRationale": "Mobile /privacy, /login, and custom 404 recheck showed no horizontal overflow, no small tap-target findings, and no visible layout regression after the link target adjustments.",
       "lastNextAction": ""
     },
     "frontend-platform": {

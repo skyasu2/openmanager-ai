@@ -1,0 +1,33 @@
+QA-20260513 v8.11.143 score deduction closure
+
+Target:
+- https://openmanager-ai.vercel.app
+- version: 8.11.143
+- commit: 6b7e640866d3a7a57868a4611d20f98c8d10a0e5
+- GitLab tag pipeline: 2521039196
+
+Deployment:
+- Frontend production serves v8.11.143.
+- GitLab tag pipeline 2521039196 completed successfully.
+- Cloud Run ai-engine revision ai-engine-00459-5gg deployed by the tag pipeline.
+
+Recheck scope:
+- /privacy at 390x844 mobile viewport.
+- deliberate 404 route at 390x844 mobile viewport.
+- /login at 390x844 mobile viewport.
+
+Results:
+- /privacy: no console warning/error, no horizontal overflow, small tap targets 0.
+- 404: expected 404 resource console entry only, no CSS preload warning, no horizontal overflow, small tap targets 0.
+- /login: no console warning/error, no horizontal overflow, small tap targets 0.
+- CSS preload warning for /_next/static/chunks/13c1ca927ab84bf9.css was not reproduced on /privacy or 404 after the prefetch change.
+
+Notes:
+- /login still preloads landing-effects.css, but it is used on the login page and produced no unused-preload warning.
+- The deliberate 404 route produced the expected browser resource 404 entry while rendering the custom 404 page.
+
+Usage:
+- npm run check:usage:vercel
+- effective=7.3966 USD
+- billed=0.0000 USD
+- chargeCount=6699
