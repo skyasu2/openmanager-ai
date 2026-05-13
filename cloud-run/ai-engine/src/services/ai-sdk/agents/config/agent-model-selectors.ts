@@ -23,6 +23,7 @@ import {
 } from '../../model-provider-core';
 import { checkProviderStatus } from '../../model-provider-status';
 import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
+import { METRICS_QUERY_AGENT_NAME } from '../../../../core/assistant-runtime/agent-name-compat';
 import { getAgentProviderOrder } from './agent-runtime-policy';
 
 export interface ModelResult {
@@ -173,12 +174,19 @@ export function selectTextModel(
 // ============================================================================
 
 /**
- * NLQ model: Groq(llama-4-scout) → Cerebras(short-context only) → Mistral
+ * Metrics Query model: Groq(llama-4-scout) → Cerebras(short-context only) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
-  return selectTextModel('NLQ Agent', getAgentProviderOrder('NLQ Agent'), {
-    requiredCapabilities: { requireToolCalling: true, minContextTokens: 16_000 },
-  });
+  return selectTextModel(
+    METRICS_QUERY_AGENT_NAME,
+    getAgentProviderOrder(METRICS_QUERY_AGENT_NAME),
+    {
+      requiredCapabilities: {
+        requireToolCalling: true,
+        minContextTokens: 16_000,
+      },
+    }
+  );
 }
 
 /**

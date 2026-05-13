@@ -7,7 +7,7 @@
  * - Orchestrator: Rule-based + LLM fallback routing for complex requests
  *
  * Agents:
- * - NLQ Agent (Groq -> Cerebras -> Mistral): Natural language query processing + summaries
+ * - Metrics Query Agent (Groq -> Cerebras -> Mistral): metric lookup, filtering, ranking, and summaries
  * - Analyst Agent (Cerebras -> Groq -> Mistral): Anomaly detection, trend prediction
  * - Reporter Agent (Cerebras -> Groq -> Mistral): Incident reports, timelines
  * - Advisor Agent (Cerebras -> Groq -> Mistral): Troubleshooting guides, Knowledge Retrieval Lite
@@ -56,8 +56,9 @@ export {
 // Individual Agent Exports
 // ============================================================================
 
-// NLQ Agent
+// Metrics Query Agent
 export {
+  createMetricsQueryAgent,
   createNlqAgent,
 } from './nlq-agent';
 
@@ -147,7 +148,7 @@ export function getAvailableAgentsStatus(): {
   const status = AgentFactory.getAvailabilityStatus();
 
   const agents: Record<string, boolean> = {
-    'NLQ Agent': status.nlq,
+    'Metrics Query Agent': status.nlq,
     'Analyst Agent': status.analyst,
     'Reporter Agent': status.reporter,
     'Advisor Agent': status.advisor,

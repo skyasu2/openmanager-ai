@@ -1,5 +1,6 @@
 import type { UserContent } from 'ai';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
+import { isMetricsQueryRuntimeName } from '../../../core/assistant-runtime/agent-name-compat';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import { logger } from '../../../lib/logger';
 import { getCircuitBreaker } from '../../resilience/circuit-breaker';
@@ -496,7 +497,7 @@ export function getSuggestedFollowUp(
       return '해결 방법과 권장 조치를 알려줘';
     }
   }
-  if (agentName === 'NLQ Agent') {
+  if (isMetricsQueryRuntimeName(agentName)) {
     if (/[89]\d%|100%|임계|경고|critical/i.test(responseText)) {
       return '이상 원인을 분석해줘';
     }

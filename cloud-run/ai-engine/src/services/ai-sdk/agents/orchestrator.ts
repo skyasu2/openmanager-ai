@@ -5,7 +5,7 @@
  * Uses AI SDK v6 native generateText/streamText with stopWhen conditions.
  *
  * Architecture:
- * Orchestrator (Rule-based + LLM fallback) → NLQ/Analyst/Reporter/Advisor/Vision
+ * Orchestrator (Rule-based + LLM fallback) → Metrics Query/Analyst/Reporter/Advisor/Vision
  *
  * Split into:
  * - orchestrator-types.ts: Types, config, system prompt

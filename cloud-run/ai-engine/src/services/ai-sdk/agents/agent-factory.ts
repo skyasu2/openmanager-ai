@@ -4,12 +4,17 @@ import { BaseAgent, type AgentResult, type AgentRunOptions, type AgentStreamEven
 import {
   AGENT_CONFIGS,
   getAgentConfig,
-  isAgentName,
+  normalizeAgentName,
   type AgentConfig,
   type AgentName,
 } from './config';
 import { logger } from '../../../lib/logger';
 import type { AssistantDomain } from '../../../core/assistant-runtime';
+import {
+  LEGACY_NLQ_AGENT_NAME,
+  METRICS_QUERY_AGENT_NAME,
+  METRICS_QUERY_AGENT_TYPE,
+} from '../../../core/assistant-runtime/agent-name-compat';
 
 export type AgentType =
   | 'nlq'
@@ -21,7 +26,7 @@ export type AgentType =
   | 'optimizer';
 
 const AGENT_TYPE_TO_CONFIG_KEY: Record<AgentType, AgentName> = {
-  nlq: 'NLQ Agent',
+  [METRICS_QUERY_AGENT_TYPE]: METRICS_QUERY_AGENT_NAME,
   analyst: 'Analyst Agent',
   reporter: 'Reporter Agent',
   advisor: 'Advisor Agent',
@@ -32,7 +37,8 @@ const AGENT_TYPE_TO_CONFIG_KEY: Record<AgentType, AgentName> = {
 
 const CONFIG_KEY_TO_AGENT_TYPE = Object.fromEntries(
   Object.entries(AGENT_TYPE_TO_CONFIG_KEY).map(([k, v]) => [v, k])
-) as Record<AgentName, AgentType>;
+) as Record<AgentName | typeof LEGACY_NLQ_AGENT_NAME, AgentType>;
+CONFIG_KEY_TO_AGENT_TYPE[LEGACY_NLQ_AGENT_NAME] = METRICS_QUERY_AGENT_TYPE;
 
 function isAgentType(value: string): value is AgentType {
   return Object.prototype.hasOwnProperty.call(AGENT_TYPE_TO_CONFIG_KEY, value);
@@ -80,20 +86,21 @@ export class AgentFactory {
   }
 
   static createByName(configKey: string): BaseAgent | null {
-    if (!isAgentName(configKey)) {
+    const normalizedConfigKey = normalizeAgentName(configKey);
+    if (!normalizedConfigKey) {
       logger.warn(`[AgentFactory] Unknown config key: ${configKey}`);
       return null;
     }
 
-    const type = CONFIG_KEY_TO_AGENT_TYPE[configKey];
+    const type = CONFIG_KEY_TO_AGENT_TYPE[normalizedConfigKey];
     if (!type) {
-      const config = getAgentConfig(configKey);
+      const config = getAgentConfig(normalizedConfigKey);
       if (!config) {
         logger.warn(`[AgentFactory] Unknown config key: ${configKey}`);
         return null;
       }
 
-      return AgentFactory.createConfigAgent(configKey);
+      return AgentFactory.createConfigAgent(normalizedConfigKey);
     }
 
     return AgentFactory.create(type);
@@ -122,14 +129,15 @@ export class AgentFactory {
       return null;
     }
 
-    if (!isAgentName(runtimeConfigKey)) {
+    const normalizedRuntimeConfigKey = normalizeAgentName(runtimeConfigKey);
+    if (!normalizedRuntimeConfigKey) {
       logger.warn(
         `[AgentFactory] Unknown runtime config binding for role ${roleId}: ${runtimeConfigKey}`
       );
       return null;
     }
 
-    return AgentFactory.createByName(runtimeConfigKey);
+    return AgentFactory.createByName(normalizedRuntimeConfigKey);
   }
 
   static getAvailableTypes(): AgentType[] {

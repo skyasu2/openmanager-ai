@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`Server monitoring artifact surface 완료`)
+**Last Updated**: 2026-05-14 KST (`AI Assistant 변경분 커밋 안정화 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,7 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 구현 가능한 로컬 backlog 없음. |
+| P3: 커밋 후 line-guard warning buffer polish | Low | 커밋 완료 후 별도 작은 리팩터 묶음으로 진행. 현재 fail-threshold는 0건이며 warning만 41건. 후보: `LogExplorerModal.tsx`, `retry-with-fallback.ts`, `AIWorkspace.tsx`, `supervisor stream route`, `AlertHistoryModal.tsx`. |
 
 ---
 
@@ -29,6 +29,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| P2: Metrics Query Agent Cerebras-first 전환 | Medium | provider-gated | Cerebras replacement가 16K+ context/tool/structured smoke를 통과하거나, 2026-05-27 `llama3.1-8b` deprecation 이후 runtime 모델 정책이 확정될 때까지 보류. 현재는 Groq primary 유지. 상세: [archive/ai-assistant-agent-runtime-improvements-plan.md](archive/ai-assistant-agent-runtime-improvements-plan.md) Task 9 |
 | P2: Local Docker/WSL storage hygiene | Medium | tracking-only | 주기 점검 기준 추가. 비파괴 감사는 `npm run storage:audit` / 상세 Docker 확인은 `npm run storage:audit -- --docker-verbose`. 2026-05-08 감사: `/mnt/d` 4%, WSL `/` 8%, `/mnt/c` 66% 사용. Docker images 10.11GiB, build cache 0B, volumes 309.3MiB이며 대부분 실행 중인 Supabase/GitHub MCP 컨테이너에 연결됨. 즉시 삭제보다 Supabase 중지 후 prune 여부 판단. WSL 상위 정리 후보는 `.npm` 9.7GiB, `.gemini/backups` 2.7GiB, `.codex/sessions` 2.6GiB, `.npm/_npx` 2.5GiB, `.cache/uv` 2.4GiB, browser cache 각 1.2GiB, `tmp/root-artifacts` 641MiB. 삭제 전 QA evidence는 `npm run qa:evidence:audit` 확인. |
 | P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-13 `npm run qa:evidence:audit` 재확인: missing durable artifact paths `0`, orphan durable evidence `19개`, recent counted runs without artifacts `0`, acknowledged artifact debt run `1개(QA-20260511-0479)`, `reports/qa=101.45MiB`, `reports/qa/evidence=94.75MiB`, archive candidates `7개/2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건. orphan evidence는 삭제 전 각 run/repro 참조 가치 확인이 필요하며, referenced legacy evidence 36.40MiB는 policy-protected proof 가능성이 높아 explicit cleanup batch 없이는 보존. 새 evidence 누적 시점에만 재평가. |
 
@@ -36,6 +37,9 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI Assistant 변경분 커밋 전 안정화~~ | — | **완료** — 추가 line-guard polish보다 커밋 우선으로 판단하고, AI Assistant 역할/라우팅/문서/라인가드 완충 리팩터 변경분을 단일 안정화 묶음으로 정리했다. 최종 게이트: root `test:quick`, `type-check`, `lint`, `test:contract`, `line-guard`, AI Engine `type-check`, `test`, `docs:budget`, `docs:ai-consistency`, `git diff --check` 통과. `memory/ops-knowledge.md`는 로컬 메모라 커밋 대상에서 제외. |
+| ~~AI Assistant 설계 개선 (agent role/tool/runtime routing cleanup)~~ | — | **완료** — Cloud Run `NLQ Agent` 사용자 노출명을 `Metrics Query Agent`로 정렬하고 legacy alias 호환을 유지했다. Metrics Query/Reporter/Advisor 역할별 tool allowlist를 재조정하고, Cerebras 2026-05-27 contingency, Vercel preprocessing runtime gate, Orchestrator confidence/decomposition gate, monitoring tool policy 일원화, Domain Evidence 승격, `matchPatterns` metadata-only 정리, root `metric_peak` local-first entity extraction을 완료했다. Metrics Query Cerebras-first 전환은 provider 조건 미충족으로 On Hold 추적. 검증: AI Engine/root targeted Vitest, AI Engine full test, root `type-check`, `test:quick`, `test:contract`, `lint:changed`, `docs:budget`, `docs:ai-consistency`, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-assistant-agent-runtime-improvements-plan.md](archive/ai-assistant-agent-runtime-improvements-plan.md) |
+| ~~AI Assistant 설계 개선 (artifact route guard + entity routing polish)~~ | — | **완료** — 재검토 결과 artifact BFF 우회는 실제 결함이 아니라 다이어그램 표현 오해로 판정하고, 실제 개선 필요 항목만 반영. `incident-report`/`intelligent-monitoring` POST에 `aiAnalysis` rate-limit 계약을 추가하고, Groq text model ID를 `meta-llama/llama-4-scout-17b-16e-instruct`로 통일. `extractEntitiesCached()` 5분 TTL/in-flight cache, 자연어 부하 표현 semantic gate, Cloud Run zero-token 문서 표현 정정을 완료. 검증: targeted node/dom Vitest, `npm run type-check`, `npm run lint:changed`, `npm run test:quick`, `npm run test:contract`, `npm run line-guard`, `docs:budget`, `docs:ai-consistency`, `docs:lint:changed`, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-assistant-design-improvements.md](archive/ai-assistant-design-improvements.md) |
 | ~~Server monitoring artifact surface~~ | — | **완료** — 단일 서버 이상감지/추세 분석을 direct fetch에서 `server-monitoring-analysis` typed artifact로 전환하고, artifact execution/replay/schema/renderer에 흡수. 기능 탭 selected-server 경로는 `executeChatArtifact`를 사용하며 자연어 artifact intent classifier target은 확장하지 않고 서버 선택 context가 있는 surface로 분리. auto-report stale export cleanup 및 아키텍처 다이어그램/문서 갱신 완료. 검증: targeted Vitest 7 files / 57 tests, `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `npm run line-guard`, `npm run docs:budget`, `npm run docs:ai-consistency`, `npm run docs:components:verify`, `npm run knip:ci`, `git diff --check`. 상세 계획서 archive 이동: [archive/server-monitoring-artifact-surface-plan.md](archive/server-monitoring-artifact-surface-plan.md) |
 | ~~AI artifact surface unification~~ | — | **완료** — Chat 자연어 artifact 실행 경로와 장애보고서/전체 시스템 이상감지 기능 탭 실행 경로를 `artifact-execution` helper로 통합. 기능 탭 생성 결과를 `ArtifactEnvelope` 기반 local-session replay pack으로 저장하고, 장애보고서 직접 API 변환 중복을 제거. 검증: targeted Vitest 3 files / 15 tests, `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `npm run line-guard`, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-artifact-surface-unification-plan.md](archive/ai-artifact-surface-unification-plan.md) |
 | ~~AI architecture cleanup + status automation~~ | — | **완료** — P1~P4에서 query routing signal SSOT 정렬, artifact workspace corrupt storage regression coverage, supervisor routing re-export 제거, guest disclosure intent 주석화를 완료. P5에서 `docs/status.md` 자동 갱신 마커와 `scripts/docs/update-status.ts`, `docs:status:update/check`, release commit 연동 및 publish drift check를 추가. 검증: status dry-run/write/check, historical docs lint, Biome targeted check, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-architecture-cleanup-plan.md](archive/ai-architecture-cleanup-plan.md) |

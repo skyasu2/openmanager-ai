@@ -1,3 +1,5 @@
+import { normalizeAgentRuntimeName } from '../../../core/assistant-runtime/agent-name-compat';
+
 export type LatencyTier = 'fast' | 'normal' | 'slow' | 'very_slow';
 
 interface RequiredPatternRule {
@@ -29,7 +31,7 @@ const CONFIDENCE_SCORE_PATTERN =
   /(?:\*\*)?(?:신뢰도|confidence)(?:\*\*)?\s*[:：]\s*\d{1,3}(?:\.\d+)?%/i;
 
 const AGENT_RESPONSE_POLICIES: Record<string, AgentResponsePolicy> = {
-  'NLQ Agent': {
+  'Metrics Query Agent': {
     minChars: 140,
     maxChars: 2500,
     requiredPatterns: [
@@ -92,7 +94,8 @@ export interface ResponseQualityMetrics {
 }
 
 function getAgentResponsePolicy(agentName: string): AgentResponsePolicy {
-  return AGENT_RESPONSE_POLICIES[agentName] ?? DEFAULT_POLICY;
+  const normalizedAgentName = normalizeAgentRuntimeName(agentName);
+  return AGENT_RESPONSE_POLICIES[normalizedAgentName] ?? DEFAULT_POLICY;
 }
 
 function isConciseGroundedMetricAnswer(text: string): boolean {

@@ -68,11 +68,11 @@ export const Handoff: Story = {
   args: {
     content: `사용자 질문을 분석하고 있습니다.
 
-🔄 **Orchestrator** → **NLQ Agent**: 서버 메트릭 조회 요청
+🔄 **Orchestrator** → **Metrics Query Agent**: 서버 메트릭 조회 요청
 
 서버 데이터를 조회한 결과, web-server-03의 CPU 사용률이 높습니다.
 
-🔄 **NLQ Agent** → **Analyst Agent**: 패턴 분석 필요
+🔄 **Metrics Query Agent** → **Analyst Agent**: 패턴 분석 필요
 
 분석이 완료되었습니다. 최근 트래픽 급증이 원인으로 보입니다.`,
   },

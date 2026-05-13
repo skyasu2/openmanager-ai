@@ -9,4 +9,11 @@ describe('ADVISOR_INSTRUCTIONS', () => {
     expect(ADVISOR_INSTRUCTIONS).toContain('서비스 재시작');
     expect(ADVISOR_INSTRUCTIONS).toContain('실행을 보류');
   });
+
+  it('does not instruct Advisor to call Analyst-owned RCA tools directly', () => {
+    expect(ADVISOR_INSTRUCTIONS).not.toContain('detectAnomalies');
+    expect(ADVISOR_INSTRUCTIONS).not.toContain('correlateMetrics');
+    expect(ADVISOR_INSTRUCTIONS).not.toContain('findRootCause');
+    expect(ADVISOR_INSTRUCTIONS).toContain('Analyst Agent');
+  });
 });

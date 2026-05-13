@@ -145,7 +145,7 @@ import { logger } from '../lib/logger';
  * All available tools for the AI SDK Supervisor
  */
 export const allTools: ToolSet = {
-  // Server Metrics (NLQ)
+  // Server metrics / Metrics Query Agent
   getServerMetrics,
   getServerMetricsAdvanced,
   filterServers,

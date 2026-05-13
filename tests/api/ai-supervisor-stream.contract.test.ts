@@ -59,7 +59,10 @@ describe('AI Supervisor Stream v2 Contract', () => {
       },
       { type: 'text_delta', data: 'MSW 계약 테스트 ' },
       { type: 'text_delta', data: '응답입니다.' },
-      { type: 'done', data: { success: true, finalAgent: 'NLQ Agent' } },
+      {
+        type: 'done',
+        data: { success: true, finalAgent: 'Metrics Query Agent' },
+      },
     ];
 
     server.use(
@@ -169,7 +172,10 @@ describe('AI Supervisor Stream v2 Contract', () => {
       { type: 'text_delta', data: '서버 현황: ' },
       { type: 'text_delta', data: '18대 정상' },
       { type: 'step_finish', data: { agent: 'nlq-agent', stepIndex: 0 } },
-      { type: 'done', data: { success: true, finalAgent: 'NLQ Agent' } },
+      {
+        type: 'done',
+        data: { success: true, finalAgent: 'Metrics Query Agent' },
+      },
     ];
 
     server.use(

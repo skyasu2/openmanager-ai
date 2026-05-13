@@ -405,7 +405,7 @@ export const POST = withRateLimit(
 //
 // All AI agents run on Cloud Run ai-engine:
 // - Supervisor (Groq Llama-8b): Intent classification & routing
-// - NLQ Agent (Groq Llama-70b): Server metrics queries
+// - Metrics Query Agent (Groq Llama-70b): Server metrics queries
 // - Analyst Agent (Mistral): Pattern analysis & anomaly detection
 // - Reporter Agent (Cerebras): Incident reports & RAG
 //

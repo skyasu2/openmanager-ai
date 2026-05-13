@@ -26,6 +26,10 @@ import {
 } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
 import type { AsyncQueryProgress } from '@/hooks/ai/useAsyncAIQuery';
+import {
+  METRICS_QUERY_AGENT_NAME,
+  normalizeAgentDisplayName,
+} from '@/lib/ai/agent-name-compat';
 
 // ============================================================================
 // Types
@@ -55,8 +59,8 @@ interface StageConfig {
 const AGENT_ROLE_LABELS: Record<string, string> = {
   Orchestrator: '분석 조율',
   supervisor: '분석 조율',
-  'NLQ Agent': '자연어 분석',
-  nlq: '자연어 분석',
+  [METRICS_QUERY_AGENT_NAME]: '메트릭 조회',
+  nlq: '메트릭 조회',
   'Analyst Agent': '심층 분석',
   analyst: '심층 분석',
   'Reporter Agent': '보고서 생성',
@@ -110,7 +114,7 @@ const STAGE_CONFIG: Record<string, StageConfig> = {
   },
   nlq: {
     icon: <Search className="h-4 w-4 animate-pulse" />,
-    defaultMessage: 'NLQ Agent가 자연어 쿼리 처리 중...',
+    defaultMessage: `${METRICS_QUERY_AGENT_NAME}가 서버 메트릭을 조회 중...`,
     color: 'text-teal-600',
   },
   analyst: {
@@ -343,7 +347,8 @@ function getAgentRoleLabel(agent?: string | null): string | null {
     return null;
   }
 
-  return AGENT_ROLE_LABELS[agent] ?? agent;
+  const normalizedAgent = normalizeAgentDisplayName(agent) ?? agent;
+  return AGENT_ROLE_LABELS[normalizedAgent] ?? normalizedAgent;
 }
 
 function formatExecutionPath(path?: string[]): string | null {

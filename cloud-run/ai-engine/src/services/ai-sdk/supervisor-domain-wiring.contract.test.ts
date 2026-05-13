@@ -576,6 +576,71 @@ describe('supervisor domain wiring contract', () => {
     });
   });
 
+  it.each([
+    {
+      query: '현재 CPU 사용률 상위 3대 알려줘',
+      providerId: 'monitoring-metric-ranking',
+      capabilityId: 'monitoring.metric_ranking',
+      expectedText: 'CPU 사용률 상위 3대',
+    },
+    {
+      query: '현재 모든 서버 상태 요약해줘',
+      providerId: 'monitoring-server-health',
+      capabilityId: 'monitoring.server_health',
+      expectedText: '서버 현황 요약',
+    },
+  ])(
+    'short-circuits $providerId evidence to a zero-token deterministic stream answer',
+    async ({ query, providerId, capabilityId, expectedText }) => {
+      const runtimeHost = createMonitoringAssistantRuntimeHost();
+      const events = [];
+
+      for await (const event of executeSupervisorStream({
+        mode: 'auto',
+        messages: [{ role: 'user', content: query }],
+        sessionId: `session-${providerId}`,
+        enableRAG: false,
+        enableWebSearch: false,
+        runtimeHost,
+      })) {
+        events.push(event);
+      }
+
+      const streamedText = events
+        .filter((event) => event.type === 'text_delta')
+        .map((event) => String(event.data))
+        .join('');
+      const doneEvent = events.find((event) => event.type === 'done');
+
+      expect(mockStreamText).not.toHaveBeenCalled();
+      expect(mockExecuteMultiAgentStream).not.toHaveBeenCalled();
+      expect(streamedText).toContain(expectedText);
+      expect(doneEvent).toMatchObject({
+        type: 'done',
+        data: {
+          success: true,
+          toolsCalled: [providerId],
+          usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+          metadata: {
+            provider: 'deterministic',
+            modelId: providerId,
+            domainEvidence: {
+              id: providerId,
+              responsePolicy: 'deterministic_answer',
+              capabilityId,
+            },
+            semanticQueryTrace: {
+              selectedCapability: capabilityId,
+              selectedEvidenceProvider: providerId,
+              evidenceAvailable: true,
+              clarificationRequired: false,
+            },
+          },
+        },
+      });
+    }
+  );
+
   it('keeps monitoring compatibility tools available through the default monitoring domain pack', () => {
     const host = createMonitoringAssistantRuntimeHost();
     const context: AssistantRequestContext = {

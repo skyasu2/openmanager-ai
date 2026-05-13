@@ -15,6 +15,10 @@ import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
 import { classifyQueryIntent } from '../../services/ai-sdk/agents/orchestrator-query-intent';
 import {
+  resolveMonitoringToolPolicy,
+  type MonitoringToolIntent,
+} from '../../services/ai-sdk/agents/config/monitoring-tool-policy';
+import {
   ADVISOR_QUERY_PATTERN,
   COMPOSITE_QUERY_PATTERNS,
   FORCE_KB_QUERY_PATTERN,
@@ -195,6 +199,23 @@ export function shouldForceWebSearch(query: string): boolean {
   );
 }
 
+type PrepareStepToolChoice =
+  | 'auto'
+  | 'required'
+  | { type: 'tool'; toolName: string };
+
+function resolvePrepareStepToolPolicy(intent: MonitoringToolIntent): {
+  activeTools: ToolName[];
+  toolChoice: PrepareStepToolChoice;
+} {
+  const policy = resolveMonitoringToolPolicy(intent);
+
+  return {
+    activeTools: policy.activeTools as ToolName[],
+    toolChoice: policy.toolChoice,
+  };
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -276,10 +297,7 @@ export function createPrepareStep(
     }
 
     if (isFormattingOnlyReportRequest(q)) {
-      return {
-        activeTools: ['finalAnswer'] as ToolName[],
-        toolChoice: 'required' as const,
-      };
+      return resolvePrepareStepToolPolicy('formattingOnly');
     }
 
     const shouldForceRealtimeMetric = shouldForceRealtimeServerMetricTool(q);
@@ -293,79 +311,54 @@ export function createPrepareStep(
         '[PrepareStep] Metric ranking query detected, forcing getServerMetricsAdvanced'
       );
       if (stepNumber > 0) {
-        return {
-          activeTools: ['finalAnswer'] as ToolName[],
-          toolChoice: 'required' as const,
-        };
+        return resolvePrepareStepToolPolicy('general');
       }
 
-      return {
-        activeTools: ['getServerMetricsAdvanced', 'finalAnswer'] as ToolName[],
-        toolChoice: {
-          type: 'tool',
-          toolName: 'getServerMetricsAdvanced',
-        } as const,
-      };
+      return resolvePrepareStepToolPolicy('metricRanking');
     }
 
     if (shouldForceRealtimeMetric) {
       logger.debug('[PrepareStep] Direct realtime server metric query detected, forcing getServerMetrics');
       if (stepNumber > 0) {
-        return {
-          activeTools: ['finalAnswer'] as ToolName[],
-          toolChoice: 'required' as const,
-        };
+        return resolvePrepareStepToolPolicy('general');
       }
 
-      return {
-        activeTools: ['getServerMetrics', 'finalAnswer'] as ToolName[],
-        toolChoice: { type: 'tool', toolName: 'getServerMetrics' } as const,
-      };
+      return resolvePrepareStepToolPolicy('realtimeMetric');
     }
 
     if (isGeneralBestEffort) {
       if (shouldForceWeb && stepNumber === 0 && isTavilyAvailable()) {
-        return {
-          activeTools: ['searchWeb', 'finalAnswer'] as ToolName[],
-          toolChoice: { type: 'tool', toolName: 'searchWeb' } as const,
-        };
+        return resolvePrepareStepToolPolicy('webOnly');
       }
 
-      return {
-        activeTools: ['finalAnswer'] as ToolName[],
-        toolChoice: 'required' as const,
-      };
+      return resolvePrepareStepToolPolicy('general');
     }
 
     // ── Step 1: 패턴 라우팅 — 쿼리 의도에 맞는 기본 도구 세트 결정 ──
     let activeTools: ToolName[];
     let toolChoice: 'auto' | 'required' | { type: 'tool'; toolName: string };
 
+    let policyIntent: MonitoringToolIntent;
+
     if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) {
-      activeTools = ['detectAnomalies', 'predictTrends', 'analyzePattern', 'getServerMetrics', 'finalAnswer'];
-      toolChoice = 'required';
+      policyIntent = 'anomaly';
     } else if (TOOL_ROUTING_PATTERNS.math.test(q)) {
-      activeTools = ['evaluateMathExpression', 'computeSeriesStats', 'estimateCapacityProjection', 'finalAnswer'];
-      toolChoice = 'required';
+      policyIntent = 'math';
     } else if (TOOL_ROUTING_PATTERNS.prediction.test(q)) {
-      activeTools = ['predictTrends', 'analyzePattern', 'detectAnomalies', 'correlateMetrics', 'estimateCapacityProjection', 'finalAnswer'];
-      toolChoice = 'required';
+      policyIntent = 'prediction';
     } else if (TOOL_ROUTING_PATTERNS.rca.test(q)) {
-      activeTools = ['findRootCause', 'buildIncidentTimeline', 'correlateMetrics', 'getServerMetrics', 'detectAnomalies', 'finalAnswer'];
-      toolChoice = 'required';
+      policyIntent = 'rca';
     } else if (TOOL_ROUTING_PATTERNS.advisor.test(q)) {
-      activeTools = ['recommendCommands', 'finalAnswer'];
-      toolChoice = 'required';
+      policyIntent = 'advisor';
     } else if (TOOL_ROUTING_PATTERNS.logs.test(q)) {
-      activeTools = ['getServerLogs', 'getServerMetrics', 'filterServers', 'finalAnswer'];
-      toolChoice = 'required';
+      policyIntent = 'logs';
     } else if (TOOL_ROUTING_PATTERNS.serverGroup.test(q)) {
-      activeTools = ['getServerByGroup', 'getServerByGroupAdvanced', 'filterServers', 'finalAnswer'];
-      toolChoice = 'auto';
+      policyIntent = 'serverGroup';
     } else {
-      activeTools = ['getServerMetrics', 'getServerMetricsAdvanced', 'filterServers', 'getServerByGroup', 'finalAnswer'];
-      toolChoice = 'auto';
+      policyIntent = 'metrics';
     }
+
+    ({ activeTools, toolChoice } = resolvePrepareStepToolPolicy(policyIntent));
 
     // ── Step 2: Route-then-Augment — 사용자 토글에 따라 도구 주입/제거 ──
     const finalAnswerIdx = activeTools.indexOf('finalAnswer');

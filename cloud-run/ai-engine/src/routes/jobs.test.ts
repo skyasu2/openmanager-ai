@@ -52,7 +52,7 @@ vi.mock('../services/ai-sdk', () => ({
       type: 'done',
       data: {
         success: true,
-        finalAgent: 'NLQ Agent',
+        finalAgent: 'Metrics Query Agent',
         toolsCalled: ['detectAnomalies'],
         ragSources: [],
         metadata: {
@@ -128,7 +128,7 @@ describe('Jobs Routes', () => {
         'job-123',
         'AI 응답',
         expect.objectContaining({
-          targetAgent: 'NLQ Agent',
+          targetAgent: 'Metrics Query Agent',
           toolsCalled: ['detectAnomalies'],
           ragSources: [],
           startedAt: expect.any(String),
@@ -430,7 +430,7 @@ describe('Jobs Routes', () => {
             type: 'done',
             data: {
               success: true,
-              finalAgent: 'NLQ Agent',
+              finalAgent: 'Metrics Query Agent',
               metadata: {
                 semanticQueryTrace: validatedTrace,
               },

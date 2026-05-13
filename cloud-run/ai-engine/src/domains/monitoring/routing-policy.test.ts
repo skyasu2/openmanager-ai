@@ -28,7 +28,7 @@ describe('createSystemPrompt', () => {
     expect(prompt).toContain('이상감지/분석 질의는 Analyst Agent');
     expect(prompt).toContain('보고서 생성은 Reporter Agent');
     expect(prompt).toContain('해결 방법/명령어 추천은 Advisor Agent');
-    expect(prompt).toContain('단순 메트릭 조회는 NLQ Agent');
+    expect(prompt).toContain('단순 메트릭 조회는 Metrics Query Agent');
     expect(prompt).toContain('이미지/스크린샷 분석은 Vision Agent');
   });
 

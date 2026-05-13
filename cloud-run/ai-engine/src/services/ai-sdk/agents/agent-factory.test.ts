@@ -180,7 +180,7 @@ describe('AgentFactory', { timeout: 15000 }, () => {
       const agent = AgentFactory.create('nlq');
 
       expect(agent).not.toBeNull();
-      expect(agent!.getName()).toBe('NLQ Agent');
+      expect(agent!.getName()).toBe('Metrics Query Agent');
     });
 
     it('should create agent for type "analyst"', () => {
@@ -239,10 +239,17 @@ describe('AgentFactory', { timeout: 15000 }, () => {
 
   describe('createByName()', () => {
     it('should create agent by config key name', () => {
+      const agent = AgentFactory.createByName('Metrics Query Agent');
+
+      expect(agent).not.toBeNull();
+      expect(agent!.getName()).toBe('Metrics Query Agent');
+    });
+
+    it('should accept legacy NLQ Agent config key as an alias', () => {
       const agent = AgentFactory.createByName('NLQ Agent');
 
       expect(agent).not.toBeNull();
-      expect(agent!.getName()).toBe('NLQ Agent');
+      expect(agent!.getName()).toBe('Metrics Query Agent');
     });
 
     it('should create Analyst Agent by name', () => {
@@ -388,7 +395,7 @@ describe('AgentFactory', { timeout: 15000 }, () => {
       const agent = AgentFactory.createByDomain('nlq', monitoringDomainPack);
 
       expect(agent).not.toBeNull();
-      expect(agent!.getName()).toBe('NLQ Agent');
+      expect(agent!.getName()).toBe('Metrics Query Agent');
     });
 
     it('should preserve legacy-compatible fallback when domain has no registry', () => {
@@ -400,7 +407,7 @@ describe('AgentFactory', { timeout: 15000 }, () => {
       const agent = AgentFactory.createByDomain('nlq', domainWithoutRegistry);
 
       expect(agent).not.toBeNull();
-      expect(agent!.getName()).toBe('NLQ Agent');
+      expect(agent!.getName()).toBe('Metrics Query Agent');
     });
 
     it('should return null for unknown domain role ids', () => {
@@ -422,7 +429,7 @@ describe('AgentFactory', { timeout: 15000 }, () => {
 
   describe('Type Mappings', () => {
     it('should correctly map agent types to config keys', () => {
-      expect(AGENT_TYPE_TO_CONFIG_KEY.nlq).toBe('NLQ Agent');
+      expect(AGENT_TYPE_TO_CONFIG_KEY.nlq).toBe('Metrics Query Agent');
       expect(AGENT_TYPE_TO_CONFIG_KEY.analyst).toBe('Analyst Agent');
       expect(AGENT_TYPE_TO_CONFIG_KEY.reporter).toBe('Reporter Agent');
       expect(AGENT_TYPE_TO_CONFIG_KEY.advisor).toBe('Advisor Agent');
@@ -432,6 +439,7 @@ describe('AgentFactory', { timeout: 15000 }, () => {
     });
 
     it('should correctly map config keys to agent types', () => {
+      expect(CONFIG_KEY_TO_AGENT_TYPE['Metrics Query Agent']).toBe('nlq');
       expect(CONFIG_KEY_TO_AGENT_TYPE['NLQ Agent']).toBe('nlq');
       expect(CONFIG_KEY_TO_AGENT_TYPE['Analyst Agent']).toBe('analyst');
       expect(CONFIG_KEY_TO_AGENT_TYPE['Reporter Agent']).toBe('reporter');

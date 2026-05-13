@@ -12,7 +12,7 @@ import { createMonitoringSystemPrompt } from './supervisor-prompt';
 import { AGENT_CONFIGS } from '../../services/ai-sdk/agents/config';
 
 const EXPECTED_MONITORING_AGENT_ROLES = [
-  { id: 'nlq', name: 'NLQ Agent', runtimeConfigKey: 'NLQ Agent' },
+  { id: 'nlq', name: 'Metrics Query Agent', runtimeConfigKey: 'Metrics Query Agent' },
   { id: 'analyst', name: 'Analyst Agent', runtimeConfigKey: 'Analyst Agent' },
   { id: 'reporter', name: 'Reporter Agent', runtimeConfigKey: 'Reporter Agent' },
   { id: 'advisor', name: 'Advisor Agent', runtimeConfigKey: 'Advisor Agent' },
@@ -213,6 +213,46 @@ describe('monitoring domain pack contract', () => {
       metric: 'load',
       timeWindow: '24h',
       aggregation: 'peak',
+    });
+  });
+
+  it('parses current ranking and server health queries as deterministic evidence capabilities', async () => {
+    const rankingFrame = await Promise.resolve(
+      monitoringDomainPack.intentParser?.parse({
+        requestId: 'monitoring-current-ranking-1',
+        domainId: monitoringDomainPack.id,
+        message: '현재 CPU 사용률 상위 3대 알려줘',
+        messages: [
+          { role: 'user' as const, content: '현재 CPU 사용률 상위 3대 알려줘' },
+        ],
+      })
+    );
+    const healthFrame = await Promise.resolve(
+      monitoringDomainPack.intentParser?.parse({
+        requestId: 'monitoring-server-health-1',
+        domainId: monitoringDomainPack.id,
+        message: '현재 모든 서버 상태 요약해줘',
+        messages: [
+          { role: 'user' as const, content: '현재 모든 서버 상태 요약해줘' },
+        ],
+      })
+    );
+
+    expect(rankingFrame).toMatchObject({
+      domainId: 'openmanager-monitoring',
+      intent: 'metric_ranking',
+      capabilityId: 'monitoring.metric_ranking',
+      metric: 'cpu',
+      timeWindow: 'current',
+      aggregation: 'top_n',
+      topN: 3,
+    });
+    expect(healthFrame).toMatchObject({
+      domainId: 'openmanager-monitoring',
+      intent: 'server_health',
+      capabilityId: 'monitoring.server_health',
+      timeWindow: 'current',
+      aggregation: 'summary',
     });
   });
 });

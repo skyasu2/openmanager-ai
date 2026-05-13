@@ -175,7 +175,7 @@ describe('selectTextModel capability requirements', () => {
     expect(getReporterModel()?.provider).toBe('groq');
   });
 
-  it('keeps NLQ on models with at least 16K context when Groq is unavailable', () => {
+  it('keeps Metrics Query on models with at least 16K context when Groq is unavailable', () => {
     mockCheckProviderStatus.mockReturnValue({
       cerebras: true,
       groq: false,
@@ -224,11 +224,11 @@ describe('selectTextModel capability requirements', () => {
 
   it('uses agent-specific circuit breaker keys for the same provider', () => {
     mockGetCircuitBreaker.mockImplementation((key: string) => ({
-      isAllowed: () => key !== 'nlq-agent-groq',
+      isAllowed: () => key !== 'metrics-query-agent-groq',
     }));
 
     const nlqResult = selectTextModel(
-      'NLQ Agent',
+      'Metrics Query Agent',
       ['groq', 'cerebras'],
       { requiredCapabilities: { requireToolCalling: true } }
     );
@@ -240,7 +240,9 @@ describe('selectTextModel capability requirements', () => {
 
     expect(nlqResult?.provider).toBe('cerebras');
     expect(analystResult?.provider).toBe('groq');
-    expect(mockGetCircuitBreaker).toHaveBeenCalledWith('nlq-agent-groq');
+    expect(mockGetCircuitBreaker).toHaveBeenCalledWith(
+      'metrics-query-agent-groq'
+    );
     expect(mockGetCircuitBreaker).toHaveBeenCalledWith('analyst-agent-groq');
   });
 });

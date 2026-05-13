@@ -25,12 +25,12 @@ describe('routing policy consistency', () => {
     expect(preFilter.directResponse).toContain('서버 모니터링 AI');
   });
 
-  it('keeps simple metric lookups on single-agent while preserving NLQ fast-path for multi mode', () => {
+  it('keeps simple metric lookups on single-agent while preserving Metrics Query fast-path for multi mode', () => {
     const preFilter = preFilterQuery('CPU 알려줘');
 
     expect(selectExecutionMode('CPU 알려줘')).toBe('single');
     expect(preFilter.shouldHandoff).toBe(true);
-    expect(preFilter.suggestedAgent).toBe('NLQ Agent');
+    expect(preFilter.suggestedAgent).toBe('Metrics Query Agent');
     expect(preFilter.confidence).toBe(0.86);
   });
 
@@ -38,7 +38,7 @@ describe('routing policy consistency', () => {
     expect(selectExecutionMode('서버 상태 요약해줘')).toBe('multi');
     expect(preFilterQuery('서버 상태 요약해줘')).toMatchObject({
       shouldHandoff: true,
-      suggestedAgent: 'NLQ Agent',
+      suggestedAgent: 'Metrics Query Agent',
       confidence: 0.86,
     });
 
@@ -77,13 +77,13 @@ describe('routing policy consistency', () => {
     });
   });
 
-  it('treats composite infra queries as multi-agent with a lower-confidence specialist hint', () => {
+  it('treats composite infra queries as multi-agent with a forced specialist hint', () => {
     const query = '서버 상태와 원인 분석을 비교하고 해결 방법도 알려줘';
     const preFilter = preFilterQuery(query);
 
     expect(selectExecutionMode(query)).toBe('multi');
     expect(preFilter.shouldHandoff).toBe(true);
     expect(preFilter.suggestedAgent).toBeDefined();
-    expect(preFilter.confidence).toBe(0.68);
+    expect(preFilter.confidence).toBe(0.85);
   });
 });

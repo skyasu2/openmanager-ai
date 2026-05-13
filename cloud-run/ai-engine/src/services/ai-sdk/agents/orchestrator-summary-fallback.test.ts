@@ -25,10 +25,10 @@ describe('buildDeterministicSummaryFallback', () => {
     ).toBe(false);
   });
 
-  it('builds a deterministic NLQ summary from getServerMetrics results', () => {
+  it('builds a deterministic Metrics Query summary from getServerMetrics results', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -63,7 +63,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('추세 섹션에서 평균 대비 변화량을 보여주고 권고를 더 구체화한다', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -106,7 +106,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('returns null for unrelated non-summary queries', () => {
     const summary = buildDeterministicSummaryFallback(
       '최근 에러 로그를 보여줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -123,7 +123,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('excludes offline servers from average metrics while preserving offline count', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -145,7 +145,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('honors requested attention server and exactly two immediate actions', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 전체 서버 상태를 운영자에게 보고하듯 요약해줘. 반드시 총 서버 수, 정상/경고/위험 수, 가장 주의할 서버 1대와 즉시 조치 2개를 포함해줘.',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -210,7 +210,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('surfaces HAProxy CPU and backend distribution checks from group payloads', () => {
     const summary = buildDeterministicSummaryFallback(
       'HAProxy가 지금 어떤 상태야? 백엔드 서버들 잘 분산되고 있어?',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerByGroup',
@@ -449,7 +449,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('builds deterministic CPU top-N ranking with one check item per server', () => {
     const summary = buildDeterministicSummaryFallback(
       'CPU 사용률이 가장 높은 서버 3대를 현재 수치와 함께 순서대로 알려주고, 운영자가 바로 확인할 항목을 서버별로 1개씩 제안해줘.',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -479,7 +479,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('builds deterministic CPU top-N ranking from getServerMetricsAdvanced results', () => {
     const summary = buildDeterministicSummaryFallback(
       'CPU 상위 3개 서버를 현재 대시보드 수치 기준으로 짧게 알려줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetricsAdvanced',
@@ -599,7 +599,7 @@ describe('buildDeterministicSummaryFallback', () => {
 
     const memorySummary = buildDeterministicSummaryFallback(
       'MEM 사용률 90% 이상 서버 찾아줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       toolResults
     );
     expect(memorySummary).toContain('메모리 사용률 90% 이상 서버 1대');
@@ -608,7 +608,7 @@ describe('buildDeterministicSummaryFallback', () => {
 
     const cpuSummary = buildDeterministicSummaryFallback(
       'CPU >= 70 서버 찾아줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       toolResults
     );
     expect(cpuSummary).toContain('CPU 사용률 70% 이상 서버 1대');
@@ -619,7 +619,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('uses the requested metric for top-N rankings instead of hardcoding CPU', () => {
     const summary = buildDeterministicSummaryFallback(
       'DISK 사용률이 가장 높은 서버 2대 알려줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -643,7 +643,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('keeps actionable memory TOP-N queries deterministic and Korean', () => {
     const summary = buildDeterministicSummaryFallback(
       '메모리 높은 서버 TOP 3, 조치 방법도 알려줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -670,7 +670,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('builds deterministic status filters without treating them as metric thresholds', () => {
     const summary = buildDeterministicSummaryFallback(
       'status: warning 서버 알려줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -692,7 +692,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('formats filterServers results even when no server matched', () => {
     const summary = buildDeterministicSummaryFallback(
       'DISK >= 80 서버 찾아줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'filterServers',
@@ -722,7 +722,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('prefers getServerMetrics over filterServers when both tool payloads are present', () => {
     const summary = buildDeterministicSummaryFallback(
       'DISK >= 80 서버 찾아줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'filterServers',
@@ -761,7 +761,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('returns null for malformed getServerMetrics payloads before considering later tools', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -789,7 +789,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('formats empty status filters from filter summary totals', () => {
     const summary = buildDeterministicSummaryFallback(
       'status: critical 서버 알려줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'filterServers',
@@ -811,7 +811,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('uses filterServers summary matched count when returned rows are partial', () => {
     const summary = buildDeterministicSummaryFallback(
       'DISK >= 70 서버 찾아줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'filterServers',
@@ -838,7 +838,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('trusts filterServers returned rows instead of re-filtering by threshold', () => {
     const summary = buildDeterministicSummaryFallback(
       'CPU >= 80 서버 찾아줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'filterServers',
@@ -861,7 +861,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('builds deterministic network top-N ranking with network-specific checks', () => {
     const summary = buildDeterministicSummaryFallback(
       '네트워크 사용률이 가장 높은 서버 2대 알려줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -886,7 +886,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('builds deterministic ascending CPU rankings and excludes offline servers', () => {
     const summary = buildDeterministicSummaryFallback(
       'CPU 사용률이 가장 낮은 서버 2대 알려줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         {
           toolName: 'getServerMetrics',
@@ -910,17 +910,17 @@ describe('buildDeterministicSummaryFallback', () => {
 
   it('routes data queries to deterministic when servers are present, LLM-required queries always to LLM', () => {
     // Data queries with servers present → deterministic
-    expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent', 3)).toBe(true);
-    expect(isDeterministicSummaryQuery('CPU 높은 서버 찾아줘', 'NLQ Agent', 5)).toBe(true);
+    expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'Metrics Query Agent', 3)).toBe(true);
+    expect(isDeterministicSummaryQuery('CPU 높은 서버 찾아줘', 'Metrics Query Agent', 5)).toBe(true);
     expect(isDeterministicSummaryQuery('DISK 사용률 70% 이상 서버를 위험도 순으로 알려줘', 'Analyst Agent', 4)).toBe(true);
     // Same queries with agentName ignored — result depends on intent + server count, not agentName
     expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'Analyst Agent', 3)).toBe(true);
     // No servers → always false regardless of query type
-    expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent', 0)).toBe(false);
+    expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'Metrics Query Agent', 0)).toBe(false);
     // LLM-required intents → always false regardless of server count
-    expect(isDeterministicSummaryQuery('왜 서버가 갑자기 느려졌어?', 'NLQ Agent', 10)).toBe(false);
+    expect(isDeterministicSummaryQuery('왜 서버가 갑자기 느려졌어?', 'Metrics Query Agent', 10)).toBe(false);
     expect(isDeterministicSummaryQuery('다음 주 CPU 사용률 예측해줘', 'Analyst Agent', 10)).toBe(false);
-    expect(isDeterministicSummaryQuery('어떻게 해야 서버 부하를 줄일 수 있어?', 'NLQ Agent', 10)).toBe(false);
+    expect(isDeterministicSummaryQuery('어떻게 해야 서버 부하를 줄일 수 있어?', 'Metrics Query Agent', 10)).toBe(false);
     expect(
       isDeterministicSummaryQuery(
         '현재 위험/경고 서버를 기준으로 운영자가 해야 할 조치 3가지만 제안해줘',
@@ -940,7 +940,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('builds deterministic summary from current state when tool results are absent', () => {
     const summary = buildDeterministicSummaryFromCurrentState(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       sampleDomainState
     );
 
@@ -952,7 +952,7 @@ describe('buildDeterministicSummaryFallback', () => {
   it('does not label snapshot-only threshold values as rising trend evidence', () => {
     const summary = buildDeterministicSummaryFromCurrentState(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       {
         servers: [
           { id: 'api-01', status: 'critical', cpu: 92, memory: 88, disk: 40 },

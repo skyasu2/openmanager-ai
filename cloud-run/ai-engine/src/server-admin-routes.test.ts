@@ -95,7 +95,7 @@ describe('server-admin-routes', () => {
         data: [
           {
             id: 'trace-aux',
-            name: 'timeout_monitor_NLQ Agent_stream',
+            name: 'timeout_monitor_Metrics Query Agent_stream',
             sessionId: 'session-old',
             input: 'older input',
             output: 'older output',
@@ -159,7 +159,7 @@ describe('server-admin-routes', () => {
         data: [
           {
             id: 'trace-aux',
-            name: 'timeout_monitor_NLQ Agent_stream',
+            name: 'timeout_monitor_Metrics Query Agent_stream',
             sessionId: 'session-target',
             input: 'input',
             output: 'output',
@@ -184,7 +184,7 @@ describe('server-admin-routes', () => {
       traces: [
         {
           id: 'trace-aux',
-          name: 'timeout_monitor_NLQ Agent_stream',
+          name: 'timeout_monitor_Metrics Query Agent_stream',
           traceUrl: 'https://langfuse.example.com/project/project-aux/traces/trace-aux',
         },
       ],

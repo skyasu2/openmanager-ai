@@ -19,6 +19,10 @@ import {
   Search,
 } from 'lucide-react';
 import { memo } from 'react';
+import {
+  METRICS_QUERY_AGENT_NAME,
+  normalizeAgentDisplayName,
+} from '@/lib/ai/agent-name-compat';
 
 interface AgentHandoffBadgeProps {
   /** Source agent name */
@@ -35,7 +39,7 @@ interface AgentHandoffBadgeProps {
 const AGENT_ICONS: Record<string, typeof Bot> = {
   Orchestrator: Bot,
   'OpenManager Orchestrator': Bot,
-  'NLQ Agent': Search,
+  [METRICS_QUERY_AGENT_NAME]: Search,
   'Analyst Agent': Cpu,
   'Reporter Agent': FileText,
   'Advisor Agent': HelpCircle,
@@ -56,7 +60,7 @@ const AGENT_COLORS: Record<
     text: 'text-purple-700',
     border: 'border-purple-200',
   },
-  'NLQ Agent': {
+  [METRICS_QUERY_AGENT_NAME]: {
     bg: 'bg-blue-50',
     text: 'text-blue-700',
     border: 'border-blue-200',
@@ -115,10 +119,12 @@ export function containsHandoffMarker(text: string): boolean {
  */
 export const AgentHandoffBadge = memo<AgentHandoffBadgeProps>(
   ({ from, to, reason, compact = false }) => {
-    const FromIcon = AGENT_ICONS[from] || Bot;
-    const ToIcon = AGENT_ICONS[to] || Bot;
-    const fromColor = AGENT_COLORS[from] || DEFAULT_COLOR;
-    const toColor = AGENT_COLORS[to] || DEFAULT_COLOR;
+    const displayFrom = normalizeAgentDisplayName(from) ?? from;
+    const displayTo = normalizeAgentDisplayName(to) ?? to;
+    const FromIcon = AGENT_ICONS[displayFrom] || Bot;
+    const ToIcon = AGENT_ICONS[displayTo] || Bot;
+    const fromColor = AGENT_COLORS[displayFrom] || DEFAULT_COLOR;
+    const toColor = AGENT_COLORS[displayTo] || DEFAULT_COLOR;
 
     if (compact) {
       return (
@@ -126,7 +132,7 @@ export const AgentHandoffBadge = memo<AgentHandoffBadgeProps>(
           <FromIcon className="h-3 w-3" />
           <ArrowRight className="h-2.5 w-2.5 text-gray-400" />
           <ToIcon className="h-3 w-3" />
-          <span>{to}</span>
+          <span>{displayTo}</span>
         </span>
       );
     }
@@ -139,7 +145,7 @@ export const AgentHandoffBadge = memo<AgentHandoffBadgeProps>(
             className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 ${fromColor.bg} ${fromColor.text} ${fromColor.border}`}
           >
             <FromIcon className="h-3.5 w-3.5" />
-            <span className="text-xs font-medium">{from}</span>
+            <span className="text-xs font-medium">{displayFrom}</span>
           </div>
 
           {/* Arrow */}
@@ -150,7 +156,7 @@ export const AgentHandoffBadge = memo<AgentHandoffBadgeProps>(
             className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 ${toColor.bg} ${toColor.text} ${toColor.border}`}
           >
             <ToIcon className="h-3.5 w-3.5" />
-            <span className="text-xs font-medium">{to}</span>
+            <span className="text-xs font-medium">{displayTo}</span>
           </div>
 
           {/* Reason (if provided) */}

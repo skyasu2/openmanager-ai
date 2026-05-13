@@ -20,6 +20,7 @@ const {
   mockProxyToCloudRun,
   mockDebugInfo,
   mockDebugError,
+  capturedLimiters,
 } = vi.hoisted(() => ({
   mockGetDefaultTimeout: vi.fn(),
   mockGetCurrentMaxDuration: vi.fn(),
@@ -35,10 +36,29 @@ const {
   mockProxyToCloudRun: vi.fn(),
   mockDebugInfo: vi.fn(),
   mockDebugError: vi.fn(),
+  capturedLimiters: [] as Array<{ config?: { maxRequests?: number } }>,
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
   withAuth: (handler: unknown) => handler,
+}));
+
+vi.mock('@/lib/security/rate-limiter', () => ({
+  rateLimiters: {
+    aiAnalysis: {
+      config: {
+        maxRequests: 10,
+        dailyLimit: 100,
+      },
+    },
+  },
+  withRateLimit: (
+    limiter: { config?: { maxRequests?: number } },
+    handler: unknown
+  ) => {
+    capturedLimiters.push(limiter);
+    return handler;
+  },
 }));
 
 vi.mock('@/config/ai-proxy.config', () => ({
@@ -140,6 +160,10 @@ describe('/api/ai/incident-report POST', () => {
         message: '인시던트 보고서 생성이 일시적으로 불가능합니다.',
       },
     });
+  });
+
+  it('binds report generation to the AI analysis rate limiter', () => {
+    expect(capturedLimiters[0]?.config?.maxRequests).toBe(10);
   });
 
   it('generate 액션은 캐시를 우회하고 Cloud Run 결과를 반환한다', async () => {

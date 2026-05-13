@@ -1,3 +1,9 @@
+import {
+  METRICS_QUERY_AGENT_NAME,
+  METRICS_QUERY_AGENT_TYPE,
+  normalizeAgentRuntimeName,
+} from '../core/assistant-runtime/agent-name-compat';
+
 type JobStreamHandoff = { from: string; to: string; reason?: string };
 
 type JobProgressMetadata = {
@@ -24,8 +30,8 @@ type JobErrorDetails = {
 const AGENT_STAGE_MAP: Record<string, string> = {
   Orchestrator: 'routing',
   supervisor: 'routing',
-  'NLQ Agent': 'nlq',
-  nlq: 'nlq',
+  [METRICS_QUERY_AGENT_NAME]: METRICS_QUERY_AGENT_TYPE,
+  [METRICS_QUERY_AGENT_TYPE]: METRICS_QUERY_AGENT_TYPE,
   'Analyst Agent': 'analyst',
   analyst: 'analyst',
   'Reporter Agent': 'reporter',
@@ -39,8 +45,8 @@ const AGENT_STAGE_MAP: Record<string, string> = {
 const AGENT_ROLE_LABELS: Record<string, string> = {
   Orchestrator: '분석 조율',
   supervisor: '분석 조율',
-  'NLQ Agent': '자연어 분석',
-  nlq: '자연어 분석',
+  [METRICS_QUERY_AGENT_NAME]: '메트릭 조회',
+  [METRICS_QUERY_AGENT_TYPE]: '메트릭 조회',
   'Analyst Agent': '심층 분석',
   analyst: '심층 분석',
   'Reporter Agent': '보고서 생성',
@@ -138,7 +144,8 @@ function inferRateLimitSourceFromMessage(
 }
 
 export function getAgentLabel(agent: string): string {
-  return AGENT_ROLE_LABELS[agent] ?? agent;
+  const normalizedAgent = normalizeAgentRuntimeName(agent);
+  return AGENT_ROLE_LABELS[normalizedAgent] ?? normalizedAgent;
 }
 
 function buildStageDetail(
@@ -288,7 +295,8 @@ export function extractJobErrorDetails(
 
 export function resolveAgentStage(agent?: string): string {
   if (!agent) return 'processing';
-  return AGENT_STAGE_MAP[agent] ?? 'processing';
+  const normalizedAgent = normalizeAgentRuntimeName(agent);
+  return AGENT_STAGE_MAP[normalizedAgent] ?? 'processing';
 }
 
 export function appendExecutionPath(

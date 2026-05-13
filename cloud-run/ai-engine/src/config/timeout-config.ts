@@ -102,7 +102,7 @@ export const TIMEOUT_CONFIG = {
 
   /**
    * Agent level
-   * - Individual agent execution (NLQ, Analyst, Reporter, Advisor)
+   * - Individual agent execution (Metrics Query, Analyst, Reporter, Advisor)
    * - Tool calling + response generation
    */
   agent: {

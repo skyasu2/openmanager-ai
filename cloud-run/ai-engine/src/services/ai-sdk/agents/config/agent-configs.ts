@@ -45,6 +45,10 @@ import {
 import { getAgentToolAllowlist } from './agent-runtime-policy';
 import { resolveDefaultMonitoringAgentTools } from './agent-tool-registry';
 import { resolveMonitoringAgentRoleByRuntimeConfigKey } from '../../../../domains/monitoring/agent-roles';
+import {
+  METRICS_QUERY_AGENT_NAME,
+  normalizeAgentRuntimeName,
+} from '../../../../core/assistant-runtime/agent-name-compat';
 
 // ============================================================================
 // Type Definitions
@@ -66,7 +70,11 @@ export interface AgentConfig {
   getInstructions?: (query: string) => string;
   /** Available tools for the agent */
   tools: ToolsMap;
-  /** Patterns for automatic routing */
+  /**
+   * Metadata-only catalog hints.
+   * Runtime query matching is owned by routing/query-routing-signals.ts.
+   * Empty lists still mark pipeline-internal agents as unavailable for public routing.
+   */
   matchPatterns: (string | RegExp)[];
 }
 
@@ -75,7 +83,7 @@ export interface AgentConfig {
 // ============================================================================
 
 export const AGENT_NAMES = [
-  'NLQ Agent',
+  METRICS_QUERY_AGENT_NAME,
   'Analyst Agent',
   'Reporter Agent',
   'Advisor Agent',
@@ -105,14 +113,14 @@ function getDomainAgentRole(agentName: AgentName) {
 }
 
 export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
-  'NLQ Agent': {
-    name: 'NLQ Agent',
-    description: getDomainAgentRole('NLQ Agent').description,
+  'Metrics Query Agent': {
+    name: 'Metrics Query Agent',
+    description: getDomainAgentRole('Metrics Query Agent').description,
     getModel: getNlqModel,
     instructions: NLQ_INSTRUCTIONS,
     getInstructions: getNlqInstructions,
-    tools: buildAgentTools('NLQ Agent'),
-    matchPatterns: [...getDomainAgentRole('NLQ Agent').matchPatterns],
+    tools: buildAgentTools('Metrics Query Agent'),
+    matchPatterns: [...getDomainAgentRole('Metrics Query Agent').matchPatterns],
   },
 
   'Analyst Agent': {
@@ -204,13 +212,19 @@ export function isAgentName(name: string): name is AgentName {
   return Object.prototype.hasOwnProperty.call(AGENT_CONFIGS, name);
 }
 
+export function normalizeAgentName(name: string): AgentName | undefined {
+  const normalizedName = normalizeAgentRuntimeName(name);
+  return isAgentName(normalizedName) ? normalizedName : undefined;
+}
+
 /**
  * Get agent config by name
  */
 export function getAgentConfig(name: AgentName): AgentConfig;
 export function getAgentConfig(name: string): AgentConfig | undefined;
 export function getAgentConfig(name: string): AgentConfig | undefined {
-  return isAgentName(name) ? AGENT_CONFIGS[name] : undefined;
+  const normalizedName = normalizeAgentName(name);
+  return normalizedName ? AGENT_CONFIGS[normalizedName] : undefined;
 }
 
 export function getAgentInstructions(
@@ -222,13 +236,13 @@ export function getAgentInstructions(
 
 /**
  * Check if agent is available (has valid model and is routable)
- * Agents with empty matchPatterns are internal-only (e.g., Evaluator, Optimizer)
+ * Agents with empty metadata matchPatterns are internal-only (e.g., Evaluator, Optimizer).
  */
 export function isAgentAvailable(name: AgentName): boolean;
 export function isAgentAvailable(name: string): boolean {
   const config = getAgentConfig(name);
   if (!config) return false;
-  // Internal agents (matchPatterns: []) are not publicly available
+  // Internal agents (matchPatterns: []) are not publicly routable.
   if (config.matchPatterns.length === 0) return false;
   return config.getModel() !== null;
 }

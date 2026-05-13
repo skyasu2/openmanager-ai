@@ -53,7 +53,7 @@ export {
 } from './agents/reporter-pipeline';
 
 // Individual Agent Convenience
-export { createNlqAgent } from './agents/nlq-agent';
+export { createMetricsQueryAgent, createNlqAgent } from './agents/nlq-agent';
 export { createAnalystAgent } from './agents/analyst-agent';
 export { createReporterAgent, generateHighQualityReport } from './agents/reporter-agent';
 export { createAdvisorAgent } from './agents/advisor-agent';

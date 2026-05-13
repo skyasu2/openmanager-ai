@@ -332,7 +332,7 @@ await pipeline.exec();
 |-------|-----|-----|-----|------|
 | **Supervisor** (single) | Groq | Cerebras | Mistral | 단순 쿼리 1 LLM 호출 |
 | **Orchestrator** | Groq | Cerebras | Mistral | 라우팅 JSON만 생성 — Groq-first로 Cerebras RPM 절약 |
-| **NLQ Agent** | Groq | Cerebras | Mistral | 16K+ context 요구 |
+| **Metrics Query Agent** | Groq | Cerebras | Mistral | 16K+ context, 수식/통계/용량 계산 포함 |
 | **Analyst Agent** | Cerebras | Groq | Mistral | 32K+ context 요구 |
 | **Reporter Agent** | Cerebras | Groq | Mistral | 32K+ context 요구 |
 | **Advisor Agent** | Cerebras | Groq | Mistral | 32K+ context 요구 |

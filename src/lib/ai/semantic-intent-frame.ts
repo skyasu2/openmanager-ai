@@ -51,6 +51,7 @@ const DOMAIN_ID_BY_SEMANTIC_DOMAIN = {
 
 const CAPABILITY_ID_BY_SEMANTIC_INTENT = {
   metric_peak: 'monitoring.metric_peak',
+  server_health: 'monitoring.server_health',
 } as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {

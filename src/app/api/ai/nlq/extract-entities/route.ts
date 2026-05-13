@@ -1,8 +1,11 @@
 /**
  * POST /api/ai/nlq/extract-entities
  *
- * Groq llama-4-scout-17b로 쿼리에서 엔티티(server/metric/timeRange)를 추출.
+ * Groq Llama 4 Scout로 쿼리에서 엔티티(server/metric/timeRange)를 추출.
  * 클래리피케이션 사전 차단에 사용됩니다.
+ *
+ * Note: URL의 `nlq`는 Natural Language Query 기능 카테고리를 가리키는 feature slug이며,
+ * Cloud Run의 에이전트 이름("Metrics Query Agent")과는 별개입니다.
  */
 
 import { createGroq } from '@ai-sdk/groq';
@@ -10,9 +13,11 @@ import { generateText, Output } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { GROQ_TEXT_MODEL_ID } from '@/config/ai-providers';
 import {
   EXTRACTED_METRICS,
   EXTRACTED_TIME_RANGES,
+  extractLocalSemanticEntities,
   KNOWN_ENTITY_SERVER_IDS,
   normalizeExtractedEntities,
   SEMANTIC_AGGREGATIONS,
@@ -67,9 +72,14 @@ async function postHandler(request: NextRequest) {
     return NextResponse.json({ confidence: 0 }, { status: 400 });
   }
 
+  const localEntities = extractLocalSemanticEntities(query);
+  if (localEntities) {
+    return NextResponse.json(localEntities);
+  }
+
   try {
     const { output } = await generateText({
-      model: groq('llama-4-scout-17b-8e-instruct'),
+      model: groq(GROQ_TEXT_MODEL_ID),
       system: SYSTEM_PROMPT,
       prompt: query,
       temperature: 0,

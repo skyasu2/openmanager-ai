@@ -180,7 +180,7 @@ async function collectEvents(
   const events: Array<{ type: string; data: unknown }> = [];
   for await (const event of executeAgentStream(
     query,
-    'NLQ Agent',
+    'Metrics Query Agent',
     Date.now(),
     'test-session',
     true,
@@ -399,7 +399,7 @@ describe('executeAgentStream', () => {
 
     const retryStatusEvent = events.find((event) => event.type === 'agent_status');
     expect(retryStatusEvent?.data).toMatchObject({
-      agent: 'NLQ Agent',
+      agent: 'Metrics Query Agent',
       status: 'processing',
       message: 'cerebras 쿼터 보호로 대안 모델로 전환 중...',
     });
@@ -756,7 +756,7 @@ describe('executeAgentStream', () => {
     const retryStatusEvent = events.find((event) => event.type === 'agent_status');
     expect(retryStatusEvent).toBeDefined();
     expect(retryStatusEvent?.data).toMatchObject({
-      agent: 'NLQ Agent',
+      agent: 'Metrics Query Agent',
       status: 'processing',
       message: 'cerebras 응답 없음, 대안 모델로 전환 중...',
     });
@@ -804,7 +804,7 @@ describe('executeAgentStream', () => {
 
     expect(retryStatusEvent).toBeDefined();
     expect(retryStatusEvent?.data).toMatchObject({
-      agent: 'NLQ Agent',
+      agent: 'Metrics Query Agent',
       status: 'processing',
       message: 'cerebras 응답 없음, 대안 모델로 전환 중...',
     });
@@ -866,7 +866,7 @@ describe('executeAgentStream', () => {
 
     const retryStatusEvent = events.find((event) => event.type === 'agent_status');
     expect(retryStatusEvent?.data).toMatchObject({
-      agent: 'NLQ Agent',
+      agent: 'Metrics Query Agent',
       status: 'processing',
       message: 'cerebras 응답 형식 오류로 대안 모델로 전환 중...',
     });
@@ -903,7 +903,7 @@ describe('executeAgentStream', () => {
 
     for await (const event of executeAgentStream(
       'CPU 사용률 알려줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       startTime,
       'test-session',
       true,

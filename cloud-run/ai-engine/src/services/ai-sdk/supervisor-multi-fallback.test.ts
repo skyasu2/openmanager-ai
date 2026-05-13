@@ -132,10 +132,6 @@ vi.mock('../../domains/monitoring/domain-pack', () => ({
   },
 }));
 
-vi.mock('../../domains/monitoring/routing-policy', () => ({
-  createPrepareStep: vi.fn(() => undefined),
-}));
-
 vi.mock('./agents/orchestrator-web-search', () => ({
   filterToolsByRAG: vi.fn((tools: unknown) => tools),
   filterToolsByWebSearch: vi.fn((tools: unknown) => tools),

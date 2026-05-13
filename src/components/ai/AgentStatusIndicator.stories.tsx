@@ -20,7 +20,7 @@ export const Thinking: Story = {
 
 export const Processing: Story = {
   args: {
-    agent: 'NLQ Agent',
+    agent: 'Metrics Query Agent',
     status: 'processing',
   },
 };

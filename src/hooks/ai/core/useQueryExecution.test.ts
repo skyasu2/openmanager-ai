@@ -8,7 +8,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { extractEntities } from '@/lib/ai/entity-extractor';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { QueryExecutionDeps } from './useQueryExecution';
-import { useQueryExecution } from './useQueryExecution';
+import {
+  clearEntityExtractionCacheForTesting,
+  shouldExtractSemanticIntentFrame,
+  useQueryExecution,
+} from './useQueryExecution';
 
 vi.mock('@/lib/ai/entity-extractor', () => ({
   ENTITY_CONFIDENCE_THRESHOLD: 80,
@@ -40,6 +44,7 @@ describe('useQueryExecution', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    clearEntityExtractionCacheForTesting();
     mockExtractEntities.mockResolvedValue({ confidence: 0 });
   });
 
@@ -380,6 +385,49 @@ describe('useQueryExecution', () => {
       .filter(Boolean);
 
     expect(clarificationStates).toHaveLength(0);
+  });
+
+  it('semantic entity extraction 결과를 정규화된 세션 쿼리 기준으로 재사용한다', async () => {
+    process.env.NODE_ENV = 'production';
+    mockExtractEntities.mockResolvedValue({
+      confidence: 95,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        topN: 3,
+        ambiguity: 'low',
+        confidence: 95,
+      },
+    });
+    const deps = createDeps();
+    deps.refs.semanticIntentFrame = { current: null };
+    const query = '지난 24시간 load1 피크 알려줘';
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery(query);
+      await result.current.sendQuery(`  ${query}  `);
+    });
+    await Promise.resolve();
+
+    expect(mockExtractEntities).toHaveBeenCalledTimes(1);
+    expect(deps.sendMessage).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    ['어떤 서버가 제일 힘들어?', true],
+    ['느린 서버 찾아줘', true],
+    ['서버 부담 큰 곳', true],
+    ['서버 상태 어때?', false],
+    ['알려줘', false],
+  ])('semantic extraction gate를 자연어 부하 표현에만 연다: %s', (query, expected) => {
+    expect(shouldExtractSemanticIntentFrame(query)).toBe(expected);
   });
 
   it('thinking mode면 streaming 후보 쿼리도 job-queue로 더 적극적으로 보낸다', async () => {

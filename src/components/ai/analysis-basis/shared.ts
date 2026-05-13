@@ -1,4 +1,8 @@
 import {
+  METRICS_QUERY_AGENT_NAME,
+  normalizeAgentDisplayName,
+} from '@/lib/ai/agent-name-compat';
+import {
   getToolLabel,
   hasToolPresentation,
 } from '@/lib/ai/utils/tool-presentation';
@@ -67,8 +71,8 @@ export interface FailureReasonEntry {
 const AGENT_ROLE_LABELS: Record<string, string> = {
   Orchestrator: '분석 조율',
   supervisor: '분석 조율',
-  'NLQ Agent': '자연어 분석',
-  nlq: '자연어 분석',
+  [METRICS_QUERY_AGENT_NAME]: '메트릭 조회',
+  nlq: '메트릭 조회',
   'Analyst Agent': '심층 분석',
   analyst: '심층 분석',
   'Reporter Agent': '보고서 생성',
@@ -123,7 +127,8 @@ export function extractDomain(url: string): string {
 }
 
 export function getAgentRoleLabel(name: string): string {
-  return AGENT_ROLE_LABELS[name] ?? name;
+  const normalizedName = normalizeAgentDisplayName(name) ?? name;
+  return AGENT_ROLE_LABELS[normalizedName] ?? normalizedName;
 }
 
 export function buildExecutionPath(

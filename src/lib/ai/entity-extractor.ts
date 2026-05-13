@@ -1,10 +1,10 @@
 /**
- * LLM Entity Extractor — Groq llama-4-scout-17b 기반
+ * LLM Entity Extractor — Groq Llama 4 Scout 기반
  *
  * 쿼리에서 server_id / metric / time_range 슬롯을 추출하여
  * 불필요한 클래리피케이션을 사전 차단합니다.
  *
- * 모델: Groq llama-4-scout-17b (500K TPD, 무료)
+ * 모델: Groq meta-llama/llama-4-scout-17b-16e-instruct (500K TPD, 무료)
  * 평균 레이턴시: ~200ms (단문 JSON 추출)
  */
 
@@ -109,6 +109,18 @@ export interface SemanticIntentFrame {
   ambiguity: SemanticAmbiguity;
   confidence: number;
 }
+
+const LOCAL_METRIC_PEAK_CONFIDENCE = 94;
+const LOCAL_METRIC_PEAK_PATTERN =
+  /가장|제일|최고|최대|피크|최고점|최댓값|높|힘들(?:었|었던|었나|었어|었냐|던)?|튀(?:는|었|었다|었던|었는|었냐|었어|었고|ㄴ|었나)?|튄|스파이크|spike|버거(?:운|웠|웠던|웠나|웠어)|부담|압박|몰린|집중|병목|이상치|포화|\bbottleneck\b|\boutlier\b|\banomal(?:y|ies)\b|\bsaturation\b|high|highest|peak|max/i;
+const LOCAL_METRIC_PEAK_TIME_FOCUS_PATTERN =
+  /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|때|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|범인\s*서버|영향.*서버|어떤\s*서버|어느\s*서버/i;
+const LOCAL_METRIC_PEAK_WINDOW_PATTERN =
+  /24\s*시간|\b24\s*h(?:ours?)?\b|하루|최근|지난|어제(?:부터)?|지금까지|부터\s*지금|last\s*24|last\s*day|past\s*day|since\s*yesterday|from\s*yesterday\s*to\s*now/i;
+const LOCAL_LOAD_METRIC_PATTERN =
+  /부하|로드|시스템\s*(?:load|pressure)|system\s*(?:load|pressure)|load\s*(?:average|avg)|\bload(?:1|5)?\b|node_load[15]\b/i;
+const LOCAL_METRIC_PEAK_COMPLEX_PATTERN =
+  /조치|방법|해결|어떻게|대응|처리|해야\s*해|어쩌|원인|왜|분석|보고서|리포트|명령어|command|script|runbook/i;
 
 const SYSTEM_PROMPT = `You are an entity extractor for a server monitoring system.
 Extract entities from the user query and return ONLY valid JSON.
@@ -231,6 +243,58 @@ function normalizeTargets(value: unknown): string[] {
     .map((target) => target.trim())
     .filter((target) => target.length > 0 && target.length <= 80)
     .slice(0, 10);
+}
+
+function containsKnownServerId(query: string): boolean {
+  const normalizedQuery = query.toLowerCase();
+  return KNOWN_ENTITY_SERVER_IDS.some((serverId) =>
+    normalizedQuery.includes(serverId.toLowerCase())
+  );
+}
+
+function extractLocalPeakMetric(query: string): ExtractedEntities | null {
+  if (containsKnownServerId(query)) return null;
+  if (LOCAL_METRIC_PEAK_COMPLEX_PATTERN.test(query)) return null;
+  if (!LOCAL_LOAD_METRIC_PATTERN.test(query)) return null;
+  if (!LOCAL_METRIC_PEAK_PATTERN.test(query)) return null;
+  if (!LOCAL_METRIC_PEAK_TIME_FOCUS_PATTERN.test(query)) return null;
+  if (!LOCAL_METRIC_PEAK_WINDOW_PATTERN.test(query)) return null;
+
+  const metric: SemanticMetric = /\bload5\b|node_load5/i.test(query)
+    ? 'load5'
+    : 'load1';
+  const topNMatch = query.match(/(?:top|상위)\s*(\d{1,2})/i);
+  const parsedTopN = Number(topNMatch?.[1]);
+  const topN =
+    Number.isInteger(parsedTopN) && parsedTopN > 0
+      ? Math.min(parsedTopN, 20)
+      : 3;
+
+  return {
+    timeRange: '24h',
+    confidence: LOCAL_METRIC_PEAK_CONFIDENCE,
+    intentFrame: {
+      domain: 'monitoring',
+      intent: 'metric_peak',
+      scope: 'whole_fleet',
+      targets: [],
+      metric,
+      timeWindow: '24h',
+      aggregation: 'peak',
+      topN,
+      ambiguity: 'low',
+      confidence: LOCAL_METRIC_PEAK_CONFIDENCE,
+    },
+  };
+}
+
+export function extractLocalSemanticEntities(
+  query: string
+): ExtractedEntities | null {
+  const normalizedQuery = query.trim();
+  if (!normalizedQuery) return null;
+
+  return extractLocalPeakMetric(normalizedQuery);
 }
 
 export function normalizeSemanticIntentFrame(

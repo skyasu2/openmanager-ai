@@ -4,6 +4,7 @@ import {
   getIntentCategory,
   selectExecutionMode,
 } from '../../../domains/monitoring/routing-policy';
+import { MONITORING_AGENT_MATCH_PATTERN_USAGE } from '../../../domains/monitoring/agent-roles';
 import { preFilterQuery } from '../agents/orchestrator-context';
 import {
   extractQueryRoutingSignals as extractLegacyQueryRoutingSignals,
@@ -11,9 +12,15 @@ import {
 import {
   extractQueryRoutingSignals,
   mapQuerySignalsToIntentCategory,
+  MONITORING_RUNTIME_ROUTING_SOURCE,
 } from './query-routing-signals';
 
 describe('extractQueryRoutingSignals', () => {
+  it('declares routing signals as runtime SSOT and role matchPatterns as metadata-only', () => {
+    expect(MONITORING_RUNTIME_ROUTING_SOURCE).toBe('query-routing-signals');
+    expect(MONITORING_AGENT_MATCH_PATTERN_USAGE).toBe('metadata-only');
+  });
+
   it('keeps the legacy query-routing-signals path as a canonical re-export', () => {
     const query =
       '지난 24시간 중 전체 서버에서 load1이 가장 높았던 시간대와 서버 TOP3 알려줘';

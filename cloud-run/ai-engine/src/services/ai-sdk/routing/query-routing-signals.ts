@@ -1,5 +1,13 @@
 import type { AnalysisMode, SupervisorMode } from '../supervisor-types';
 
+/**
+ * Runtime routing SSOT for monitoring query signals.
+ * Agent role matchPatterns stay metadata-only and must not be evaluated as
+ * runtime routing predicates.
+ */
+export const MONITORING_RUNTIME_ROUTING_SOURCE =
+  'query-routing-signals' as const;
+
 export const INFRA_CONTEXT_PATTERN =
   /서버|서벼|썹|인프라|시스템|시스탬|모니터링|당직|알림|알람|로그|마운트|백엔드|로드\s*밸런서|캐시|스토리지|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|haproxy|nginx|mysql|redis|nfs|primary|replica|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load|backend|mount/i;
 
@@ -440,7 +448,7 @@ function buildPreFilterSignal(
     (hasCompositeSignal(query) && (intentMatches >= 1 || query.length >= 70));
 
   if (likelyCompositeQuery) {
-    let suggestedAgent = 'NLQ Agent';
+    let suggestedAgent = 'Metrics Query Agent';
     let reasonCode = 'prefilter_suggest_nlq';
     if (isReporterIntent) {
       suggestedAgent = 'Reporter Agent';
@@ -499,7 +507,7 @@ function buildPreFilterSignal(
 
   return {
     action: 'suggest_agent',
-    suggestedAgent: 'NLQ Agent',
+    suggestedAgent: 'Metrics Query Agent',
     confidence: 0.86,
     reasonCodes: ['prefilter_suggest_nlq'],
   };

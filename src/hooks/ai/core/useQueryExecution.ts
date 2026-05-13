@@ -11,10 +11,7 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
-import {
-  extractEntities,
-  type SemanticIntentFrame,
-} from '@/lib/ai/entity-extractor';
+import type { SemanticIntentFrame } from '@/lib/ai/entity-extractor';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { getOffDomainGuardrail } from '@/lib/ai/off-domain-guard';
 import { classifyQuery } from '@/lib/ai/query-classifier';
@@ -33,8 +30,17 @@ import {
   generateMessageId,
   sanitizeMessages,
 } from '../utils/hybrid-query-utils';
+import {
+  extractEntitiesCached,
+  shouldExtractSemanticIntentFrame,
+} from './entity-extraction-cache';
 import { buildFrontendQueryRoutingDecision } from './query-routing';
 import { buildSourceToolRequestOptions } from './source-tool-request-options';
+
+export {
+  clearEntityExtractionCacheForTesting,
+  shouldExtractSemanticIntentFrame,
+} from './entity-extraction-cache';
 
 // ============================================================================
 // Types
@@ -90,19 +96,6 @@ function buildRateLimitCooldownMessage(
   }
 
   return '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.';
-}
-
-const SEMANTIC_METRIC_PATTERN =
-  /부하|로드|\bload(?:1|5)?\b|cpu|씨피유|메모리|\bmem(?:ory)?\b|디스크|\bdisk\b|네트워크|\bnet(?:work)?\b/i;
-const SEMANTIC_PEAK_PATTERN = /피크|peak|max|최고|최대|높/i;
-const SEMANTIC_TIME_WINDOW_PATTERN = /24\s*시간|\b24h\b|최근|지난|last\s*24/i;
-
-function shouldExtractSemanticIntentFrame(query: string): boolean {
-  return (
-    SEMANTIC_METRIC_PATTERN.test(query) ||
-    (SEMANTIC_PEAK_PATTERN.test(query) &&
-      SEMANTIC_TIME_WINDOW_PATTERN.test(query))
-  );
 }
 
 export interface QueryExecutionDeps {
@@ -629,7 +622,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         let clarificationRequest = generateClarification(query, classification);
 
         if (clarificationRequest || shouldExtractSemanticIntentFrame(query)) {
-          const entities = await extractEntities(query);
+          const entities = await extractEntitiesCached(query);
           if (refs.semanticIntentFrame) {
             refs.semanticIntentFrame.current = entities.intentFrame;
           }

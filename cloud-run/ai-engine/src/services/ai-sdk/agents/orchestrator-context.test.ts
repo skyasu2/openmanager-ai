@@ -42,10 +42,10 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBeGreaterThanOrEqual(0.9);
   });
 
-  it('returns generic NLQ suggestion for simple server metric query', () => {
+  it('returns generic Metrics Query suggestion for simple server metric query', () => {
     const result = preFilterQuery('서버 상태 알려줘');
     expect(result.shouldHandoff).toBe(true);
-    expect(result.suggestedAgent).toBe('NLQ Agent');
+    expect(result.suggestedAgent).toBe('Metrics Query Agent');
     expect(result.confidence).toBe(0.86);
   });
 
@@ -120,7 +120,7 @@ describe('preFilterQuery', () => {
     );
 
     expect(result.shouldHandoff).toBe(true);
-    expect(result.suggestedAgent).toBe('NLQ Agent');
+    expect(result.suggestedAgent).toBe('Metrics Query Agent');
     expect(result.confidence).toBe(0.86);
   });
 
@@ -131,11 +131,36 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBe(0.9);
   });
 
+  it('routes runtime-only advisor signals without evaluating role matchPatterns', () => {
+    const result = preFilterQuery('server runbook 절차 알려줘');
+
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('Advisor Agent');
+    expect(result.confidence).toBe(0.9);
+  });
+
   it('provides fallback agent hint for composite infra query', () => {
     const result = preFilterQuery('서버 상태와 원인 분석을 비교하고 해결 방법도 알려줘');
     expect(result.shouldHandoff).toBe(true);
     expect(result.suggestedAgent).toBeDefined();
-    expect(result.confidence).toBe(0.68);
+    expect(result.confidence).toBe(0.85);
+  });
+
+  it('keeps pre-filter handoff confidence out of the LLM routing gray band', () => {
+    const queries = [
+      '서버 상태 알려줘',
+      'CPU 급증 원인 분석해줘',
+      '장애 보고서 작성해줘',
+      '메모리 부족 해결 방법 알려줘',
+      '서버 상태와 원인 분석을 비교하고 해결 방법도 알려줘',
+      'unknown off topic',
+    ];
+
+    for (const query of queries) {
+      const result = preFilterQuery(query);
+      const inGrayBand = result.confidence > 0.65 && result.confidence < 0.85;
+      expect(inGrayBand).toBe(false);
+    }
   });
 });
 
@@ -216,7 +241,7 @@ describe('saveAgentFindingsToContext', () => {
   it('uses legacy text regex fallback when structured findings are absent', async () => {
     const decision = await saveAgentFindingsToContext(
       'session-legacy',
-      'NLQ Agent',
+      'Metrics Query Agent',
       '서버: web-server-01 CPU: 91%'
     );
 

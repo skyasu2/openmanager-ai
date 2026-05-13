@@ -20,7 +20,7 @@
 |---|---|
 | Supervisor | 요청 수신, mode 결정, single/multi path 선택, stream metadata 보존 |
 | Orchestrator | intent routing, pre-filter, specialist handoff, deterministic summary fallback |
-| NLQ Agent | 서버/메트릭 조회와 데이터 기반 질의 응답 |
+| Metrics Query Agent | 서버 메트릭 조회, 필터링, 수식/통계 계산, 용량 추정 |
 | Analyst Agent | anomaly, RCA, trend, monitoring snapshot 분석 |
 | Reporter Agent | incident/report artifact 생성과 deterministic Eval/Opt pipeline |
 | Advisor Agent | 운영 조치 제안, Knowledge Retrieval Lite evidence 활용 |

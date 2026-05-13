@@ -11,7 +11,7 @@
 export interface AIProviderConfig {
   /** Provider 이름 */
   name: string;
-  /** 역할 (Primary, NLQ Agent, Verifier 등) */
+  /** 역할 (Primary, Metrics Query Agent, Verifier 등) */
   role: string;
   /** 모델명 */
   model: string;
@@ -23,6 +23,9 @@ export interface AIProviderConfig {
   dailyTokenLimit?: string;
 }
 
+export const GROQ_TEXT_MODEL_ID =
+  'meta-llama/llama-4-scout-17b-16e-instruct';
+
 /**
  * 현재 활성화된 AI Provider 목록
  * - registry-core.yaml과 동기화 유지 필요
@@ -31,9 +34,9 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     name: 'Groq',
     role: 'Primary text routing',
-    model: 'llama-4-scout-17b',
+    model: GROQ_TEXT_MODEL_ID,
     description:
-      'Primary text provider for Supervisor, Verifier, NLQ, Analyst, Reporter, and Advisor requests',
+      'Primary text provider for Supervisor, Verifier, Metrics Query, Analyst, Reporter, and Advisor requests',
     color: 'bg-purple-500',
   },
   {

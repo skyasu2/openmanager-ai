@@ -22,11 +22,21 @@ import {
 
 describe('parseAgentStatus', () => {
   it('should parse valid agent_status data', () => {
+    const data = { agent: 'Metrics Query Agent', status: 'thinking' };
+    const result = parseAgentStatus(data);
+
+    expect(result).toEqual({
+      agent: 'Metrics Query Agent',
+      status: 'thinking',
+    });
+  });
+
+  it('should normalize legacy NLQ Agent status data', () => {
     const data = { agent: 'NLQ Agent', status: 'thinking' };
     const result = parseAgentStatus(data);
 
     expect(result).toEqual({
-      agent: 'NLQ Agent',
+      agent: 'Metrics Query Agent',
       status: 'thinking',
     });
   });
@@ -62,7 +72,7 @@ describe('parseAgentStatus', () => {
   });
 
   it('should return null for invalid status', () => {
-    const data = { agent: 'NLQ Agent', status: 'unknown' };
+    const data = { agent: 'Metrics Query Agent', status: 'unknown' };
     const result = parseAgentStatus(data);
 
     expect(result).toBeNull();
@@ -93,10 +103,19 @@ describe('parseAgentStatus', () => {
 describe('AgentStatusIndicator', () => {
   describe('Default Mode', () => {
     it('should render agent name and thinking status', () => {
+      render(
+        <AgentStatusIndicator agent="Metrics Query Agent" status="thinking" />
+      );
+
+      expect(screen.getByText('Metrics Query Agent')).toBeInTheDocument();
+      expect(screen.getByText('• 분석 중...')).toBeInTheDocument();
+    });
+
+    it('should render legacy NLQ Agent as Metrics Query Agent', () => {
       render(<AgentStatusIndicator agent="NLQ Agent" status="thinking" />);
 
-      expect(screen.getByText('NLQ Agent')).toBeInTheDocument();
-      expect(screen.getByText('• 분석 중...')).toBeInTheDocument();
+      expect(screen.getByText('Metrics Query Agent')).toBeInTheDocument();
+      expect(screen.queryByText('NLQ Agent')).not.toBeInTheDocument();
     });
 
     it('should render processing status', () => {
@@ -128,7 +147,7 @@ describe('AgentStatusIndicator', () => {
       const agents = [
         'Orchestrator',
         'OpenManager Orchestrator',
-        'NLQ Agent',
+        'Metrics Query Agent',
         'Analyst Agent',
         'Reporter Agent',
         'Advisor Agent',
@@ -193,15 +212,23 @@ describe('AgentStatusIndicator', () => {
   describe('Compact Mode', () => {
     it('should render in compact mode', () => {
       render(
-        <AgentStatusIndicator agent="NLQ Agent" status="thinking" compact />
+        <AgentStatusIndicator
+          agent="Metrics Query Agent"
+          status="thinking"
+          compact
+        />
       );
 
-      expect(screen.getByText('NLQ Agent')).toBeInTheDocument();
+      expect(screen.getByText('Metrics Query Agent')).toBeInTheDocument();
     });
 
     it('should have smaller styling in compact mode', () => {
       const { container } = render(
-        <AgentStatusIndicator agent="NLQ Agent" status="processing" compact />
+        <AgentStatusIndicator
+          agent="Metrics Query Agent"
+          status="processing"
+          compact
+        />
       );
 
       const compactBadge = container.querySelector('div.inline-flex');
@@ -212,7 +239,7 @@ describe('AgentStatusIndicator', () => {
   describe('Status Animations', () => {
     it('should have pulse animation for thinking status', () => {
       const { container } = render(
-        <AgentStatusIndicator agent="NLQ Agent" status="thinking" />
+        <AgentStatusIndicator agent="Metrics Query Agent" status="thinking" />
       );
 
       const animatedDiv = container.querySelector('.animate-pulse');
@@ -221,7 +248,7 @@ describe('AgentStatusIndicator', () => {
 
     it('should not have pulse animation for completed status', () => {
       const { container } = render(
-        <AgentStatusIndicator agent="NLQ Agent" status="completed" />
+        <AgentStatusIndicator agent="Metrics Query Agent" status="completed" />
       );
 
       const animatedDiv = container.querySelector('.animate-pulse');
@@ -230,11 +257,15 @@ describe('AgentStatusIndicator', () => {
 
     it('should render thinking status in compact mode', () => {
       render(
-        <AgentStatusIndicator agent="NLQ Agent" status="thinking" compact />
+        <AgentStatusIndicator
+          agent="Metrics Query Agent"
+          status="thinking"
+          compact
+        />
       );
 
       // compact 모드에서도 에이전트 이름이 표시됨
-      expect(screen.getByText('NLQ Agent')).toBeInTheDocument();
+      expect(screen.getByText('Metrics Query Agent')).toBeInTheDocument();
     });
   });
 

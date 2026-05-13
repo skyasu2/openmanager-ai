@@ -364,7 +364,7 @@ describe('AIWorkspace', () => {
   it('does not expose internal agent names in fullscreen function navigation', () => {
     render(<AIWorkspace />);
 
-    expect(screen.queryByText('NLQ Agent')).not.toBeInTheDocument();
+    expect(screen.queryByText('Metrics Query Agent')).not.toBeInTheDocument();
     expect(screen.queryByText('Reporter Agent')).not.toBeInTheDocument();
   });
 

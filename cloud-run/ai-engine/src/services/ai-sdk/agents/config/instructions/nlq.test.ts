@@ -4,14 +4,15 @@ import {
   NLQ_BASE_INSTRUCTIONS,
 } from './nlq';
 
-describe('NLQ instruction layering', () => {
-  it('keeps base instructions compact enough for every NLQ request', () => {
+describe('Metrics Query instruction layering', () => {
+  it('keeps base instructions compact enough for every Metrics Query request', () => {
     const lineCount = NLQ_BASE_INSTRUCTIONS.trim().split('\n').length;
 
     expect(lineCount).toBeLessThanOrEqual(80);
     expect(NLQ_BASE_INSTRUCTIONS).toContain('getServerMetrics');
     expect(NLQ_BASE_INSTRUCTIONS).toContain('getServerMetricsAdvanced');
     expect(NLQ_BASE_INSTRUCTIONS).toContain('filterServers');
+    expect(NLQ_BASE_INSTRUCTIONS).not.toContain('searchKnowledgeBase');
   });
 
   it('injects status-summary context only for summary/status requests', () => {

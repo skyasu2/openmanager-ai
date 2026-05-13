@@ -21,6 +21,7 @@ import {
 import { isVisionQuery } from './vision-agent';
 import type { PreFilterResult } from './orchestrator-types';
 import { logger } from '../../../lib/logger';
+import { isMetricsQueryRuntimeName } from '../../../core/assistant-runtime/agent-name-compat';
 import {
   ADVISOR_QUERY_PATTERN,
   ANALYST_QUERY_PATTERN,
@@ -110,13 +111,13 @@ export async function saveAgentFindingsToContext(
 
     let legacyFindingsSaved = false;
 
-    // NLQ Agent: Extract affected servers
-    if (normalizedAgent.includes('nlq')) {
+    // Metrics Query Agent: Extract affected servers
+    if (isMetricsQueryRuntimeName(agentName)) {
       const servers = extractServerNames(response);
       if (servers.length > 0) {
         await appendAffectedServers(sessionId, servers);
         legacyFindingsSaved = true;
-        logger.info(`[Context] NLQ Agent saved ${servers.length} servers: [${servers.slice(0, 3).join(', ')}${servers.length > 3 ? '...' : ''}]`);
+        logger.info(`[Context] Metrics Query Agent saved ${servers.length} servers: [${servers.slice(0, 3).join(', ')}${servers.length > 3 ? '...' : ''}]`);
       }
     }
 
@@ -514,7 +515,7 @@ export function preFilterQuery(
       (hasCompositeSignal && (intentMatches >= 1 || query.length >= 70));
 
     if (likelyCompositeQuery) {
-      let fallbackAgent = 'NLQ Agent';
+      let fallbackAgent = 'Metrics Query Agent';
       if (isReporterIntent) fallbackAgent = 'Reporter Agent';
       else if (isAnalystIntent) fallbackAgent = 'Analyst Agent';
       else if (isAdvisorIntent) fallbackAgent = 'Advisor Agent';
@@ -522,11 +523,11 @@ export function preFilterQuery(
       return {
         shouldHandoff: true,
         suggestedAgent: fallbackAgent,
-        confidence: 0.68,
+        confidence: 0.85,
       };
     }
 
-    let suggestedAgent = 'NLQ Agent';
+    let suggestedAgent = 'Metrics Query Agent';
     let confidence = 0.8;
 
     if (isVisionIntent) {
@@ -542,7 +543,7 @@ export function preFilterQuery(
       suggestedAgent = 'Advisor Agent';
       confidence = isForceKnowledgeBaseIntent ? 0.9 : 0.87;
     } else {
-      // Generic metric/status query: force NLQ for clear infra metric intent.
+      // Generic metric/status query: force Metrics Query for clear infra metric intent.
       confidence = 0.86;
     }
 

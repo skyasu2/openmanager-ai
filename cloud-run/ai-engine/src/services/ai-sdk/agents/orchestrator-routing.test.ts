@@ -35,10 +35,10 @@ vi.mock('../../../lib/ai-sdk-utils', () => ({
 }));
 
 vi.mock('./config', () => ({
-  AGENT_NAMES: ['NLQ Agent', 'Advisor Agent'],
+  AGENT_NAMES: ['Metrics Query Agent', 'Advisor Agent'],
   AGENT_CONFIGS: {
-    'NLQ Agent': {
-      name: 'NLQ Agent',
+    'Metrics Query Agent': {
+      name: 'Metrics Query Agent',
       instructions: 'Test instructions',
       tools: {
         getServerMetrics: { execute: vi.fn() },
@@ -62,10 +62,10 @@ vi.mock('./config', () => ({
   ),
   getAgentMaxSteps: vi.fn((agentName: string) =>
     agentName === 'Analyst Agent' || agentName === 'Reporter Agent'
-      ? 10
+      ? 5
       : agentName === 'Vision Agent'
-        ? 5
-        : 7
+        ? 2
+        : 4
   ),
   MISTRAL_FIRST_PROVIDER_ORDER: ['mistral', 'groq', 'cerebras'],
   getAgentProviderOrder: vi.fn((agentName: string) =>
@@ -77,9 +77,9 @@ vi.mock('./config', () => ({
   ),
   getOrchestratorProviderOrder: vi.fn(() => ['cerebras', 'groq', 'mistral']),
   getAgentConfig: (name: string) =>
-    name === 'NLQ Agent'
+    name === 'Metrics Query Agent'
       ? {
-          name: 'NLQ Agent',
+          name: 'Metrics Query Agent',
           instructions: 'Test instructions',
           tools: {
             getServerMetrics: { execute: vi.fn() },
@@ -248,14 +248,14 @@ describe('executeForcedRouting', () => {
   });
 
   it('returns expanded max steps only for Analyst/Reporter agents', () => {
-    expect(getAgentMaxSteps('NLQ Agent')).toBe(7);
-    expect(getAgentMaxSteps('Advisor Agent')).toBe(7);
-    expect(getAgentMaxSteps('Vision Agent')).toBe(5);
-    expect(getAgentMaxSteps('Analyst Agent')).toBe(10);
-    expect(getAgentMaxSteps('Reporter Agent')).toBe(10);
+    expect(getAgentMaxSteps('Metrics Query Agent')).toBe(4);
+    expect(getAgentMaxSteps('Advisor Agent')).toBe(4);
+    expect(getAgentMaxSteps('Vision Agent')).toBe(2);
+    expect(getAgentMaxSteps('Analyst Agent')).toBe(5);
+    expect(getAgentMaxSteps('Reporter Agent')).toBe(5);
   });
 
-  it('uses deterministic fallback for empty NLQ summary responses without a second retry call', async () => {
+  it('uses deterministic fallback for empty Metrics Query summary responses without a second retry call', async () => {
     mockGenerateTextWithRetry.mockResolvedValueOnce(
       createRetryResult({
         text: '   ',
@@ -309,7 +309,7 @@ describe('executeForcedRouting', () => {
 
     const result = await executeForcedRouting(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       Date.now(),
       true,
       true,
@@ -323,7 +323,7 @@ describe('executeForcedRouting', () => {
     expect(result?.response).toContain('📊 **서버 현황 요약**');
     expect(result?.response).toContain('api-01');
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(1);
-    expect(mockStepCountIs).toHaveBeenCalledWith(7);
+    expect(mockStepCountIs).toHaveBeenCalledWith(4);
   });
 
   it('overrides generated summary text with deterministic summary for parity-sensitive prompts', async () => {
@@ -370,7 +370,7 @@ describe('executeForcedRouting', () => {
 
     const result = await executeForcedRouting(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       Date.now(),
       true,
       true,
@@ -395,7 +395,7 @@ describe('executeForcedRouting', () => {
 
     const result = await executeForcedRouting(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       Date.now(),
       true,
       true,
@@ -426,7 +426,7 @@ describe('executeForcedRouting', () => {
 
     const result = await executeForcedRouting(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       Date.now(),
       true,
       true,
@@ -480,7 +480,7 @@ describe('executeForcedRouting', () => {
 
     const result = await executeForcedRouting(
       '최근 에러 로그 보여줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       Date.now()
     );
 
@@ -527,7 +527,7 @@ describe('executeForcedRouting', () => {
 
     const result = await executeForcedRouting(
       '최근 에러 로그 보여줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       Date.now()
     );
 
@@ -559,7 +559,7 @@ describe('executeForcedRouting', () => {
 
     await executeForcedRouting(
       'CPU 높은 서버 찾아줘',
-      'NLQ Agent',
+      'Metrics Query Agent',
       Date.now(),
       true,
       true,
@@ -990,7 +990,7 @@ describe('executeForcedRouting', () => {
 
 describe('provider order policy', () => {
   it('splits text agent provider order by workload group', () => {
-    expect(getAgentProviderOrder('NLQ Agent')).toEqual([
+    expect(getAgentProviderOrder('Metrics Query Agent')).toEqual([
       'groq',
       'cerebras',
       'mistral',

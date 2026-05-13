@@ -30,17 +30,26 @@ import { createMonitoringSystemPrompt } from './supervisor-prompt';
 import { MONITORING_AGENT_TOOL_REGISTRY } from './tool-registry';
 import { selectExecutionMode } from './routing-policy';
 import { monitoringAgentRoleRegistry } from './agent-roles';
+import {
+  monitoringMetricRankingEvidenceProvider,
+  monitoringServerHealthEvidenceProvider,
+  parseCurrentMetricsEvidenceRequest,
+} from './current-metrics-evidence-provider';
 import { monitoringPeakMetricEvidenceProvider } from './peak-metric-evidence-provider';
 import { parseMonitoringPeakMetricIntent } from './peak-metric-intent';
 import {
   MONITORING_DOMAIN_ID,
   MONITORING_DOMAIN_VERSION,
+  MONITORING_METRIC_RANKING_CAPABILITY_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
+  MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
 export {
   MONITORING_DOMAIN_ID,
   MONITORING_DOMAIN_VERSION,
+  MONITORING_METRIC_RANKING_CAPABILITY_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
+  MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
 
 type RuntimeTool = {
@@ -217,11 +226,50 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       requiredSlots: ['metric', 'timeWindow', 'aggregation'],
       optionalSlots: ['topN', 'targets', 'scope'],
     },
+    {
+      id: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+      description:
+        'Resolve current metric Top-N rankings directly from monitoring snapshots.',
+      intents: ['metric_ranking', 'metric_current'],
+      requiredSlots: ['metric', 'aggregation'],
+      optionalSlots: ['topN', 'rankOrder', 'scope'],
+    },
+    {
+      id: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+      description:
+        'Resolve current whole-fleet server health summaries directly from monitoring snapshots.',
+      intents: ['server_health'],
+      requiredSlots: ['aggregation'],
+      optionalSlots: ['targets', 'scope'],
+    },
   ],
 };
 
 export const monitoringIntentParser: DomainIntentParser = {
-  parse: parseMonitoringPeakMetricIntent,
+  parse(context) {
+    const peakFrame = parseMonitoringPeakMetricIntent(context);
+    if (peakFrame) return peakFrame;
+
+    const currentMetricsFrame = parseCurrentMetricsEvidenceRequest(context);
+    if (!currentMetricsFrame) return undefined;
+
+    return {
+      domainId: MONITORING_DOMAIN_ID,
+      intent: currentMetricsFrame.intent,
+      capabilityId: currentMetricsFrame.capabilityId,
+      scope: 'whole_fleet',
+      targets: [],
+      ...(currentMetricsFrame.metric && { metric: currentMetricsFrame.metric }),
+      timeWindow: 'current',
+      aggregation:
+        currentMetricsFrame.intent === 'metric_ranking' ? 'top_n' : 'summary',
+      ...(currentMetricsFrame.rankCount && {
+        topN: currentMetricsFrame.rankCount,
+      }),
+      ambiguity: 'low',
+      confidence: 0.9,
+    };
+  },
 };
 
 export const monitoringDomainPack: AssistantDomain = {
@@ -238,5 +286,9 @@ export const monitoringDomainPack: AssistantDomain = {
   dataSource: monitoringDomainDataSource,
   capabilities: monitoringCapabilities,
   intentParser: monitoringIntentParser,
-  evidenceProviders: [monitoringPeakMetricEvidenceProvider],
+  evidenceProviders: [
+    monitoringPeakMetricEvidenceProvider,
+    monitoringMetricRankingEvidenceProvider,
+    monitoringServerHealthEvidenceProvider,
+  ],
 };

@@ -1,5 +1,5 @@
 /**
- * NLQ (Natural Language Query) Agent
+ * Metrics Query Agent
  *
  * Handles all server data queries - from simple to complex:
  * - Simple: "서버 상태 요약", "CPU 높은 서버"
@@ -16,17 +16,25 @@
 import { AgentFactory, type BaseAgent } from './agent-factory';
 
 /**
- * Create a new NLQ Agent instance
+ * Create a new Metrics Query Agent instance
  *
  * @example
  * ```typescript
- * const agent = createNlqAgent();
+ * const agent = createMetricsQueryAgent();
  * if (agent) {
  *   const result = await agent.run('서버 상태 알려줘');
  *   console.log(result.text);
  * }
  * ```
  */
-export function createNlqAgent(): BaseAgent | null {
+export function createMetricsQueryAgent(): BaseAgent | null {
   return AgentFactory.create('nlq');
+}
+
+/**
+ * @deprecated Use createMetricsQueryAgent(). The internal AgentType remains
+ * `nlq` as a legacy stable id, but the runtime role is Metrics Query Agent.
+ */
+export function createNlqAgent(): BaseAgent | null {
+  return createMetricsQueryAgent();
 }

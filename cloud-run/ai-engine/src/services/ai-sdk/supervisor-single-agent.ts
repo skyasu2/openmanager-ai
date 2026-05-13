@@ -78,6 +78,7 @@ import {
 } from './internal-disclosure-policy';
 import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
 import type { CollectedToolResult } from './agents/orchestrator-summary-payload';
+import { buildNoProviderFallbackResponse } from './supervisor-no-provider-fallback';
 import { buildToolResultSummary } from './supervisor-tool-results';
 
 export { executeSupervisorStream } from './supervisor-stream';
@@ -416,13 +417,7 @@ async function executeSupervisorAttempt(
     const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error('❌ [Supervisor] No available providers:', errorMessage);
 
-    // Graceful fallback: 사용자 친화적 응답 반환 (에러 대신)
     const durationMs = Date.now() - startTime;
-    const fallbackResponse = '현재 AI 엔진 모델이 일시적으로 사용 불가능합니다. 잠시 후 다시 시도해주세요.';
-    const quality = evaluateAgentResponseQuality('Supervisor', fallbackResponse, {
-      durationMs,
-      fallbackReason: 'NO_PROVIDER',
-    });
     finalizeTrace(trace, 'Provider unavailable - fallback response', false, {
       durationMs,
       excludedProviders: excludeProviders,
@@ -433,29 +428,12 @@ async function executeSupervisorAttempt(
       }),
     });
 
-    return {
-      success: true,
-      response: fallbackResponse,
-      toolsCalled: [],
-      toolResults: [],
-      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-      metadata: {
-        provider: 'none' as ProviderName,
-        modelId: 'none',
-        stepsExecuted: 0,
-        durationMs,
-        responseChars: quality.responseChars,
-        formatCompliance: quality.formatCompliance,
-        qualityFlags: quality.qualityFlags,
-        latencyTier: quality.latencyTier,
-        ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
-        ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
-        ...buildDegradedMetadata(degradedFallbackContext, {
-          fallback: true,
-          fallbackReason: 'no_provider',
-        }),
-      },
-    };
+    return buildNoProviderFallbackResponse({
+      durationMs,
+      modeDecision,
+      runtimeMetadata,
+      degradedFallbackContext,
+    });
   }
 
   const circuitBreaker = getCircuitBreaker(`supervisor-${provider}`);

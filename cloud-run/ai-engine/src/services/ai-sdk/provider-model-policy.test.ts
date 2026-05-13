@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest';
 import * as providerModelPolicy from './provider-model-policy';
 import {
   CEREBRAS_MODEL_POLICIES,
+  CEREBRAS_DEPRECATION_CONTINGENCY,
   CEREBRAS_GPT_OSS_MODEL_ID,
+  CEREBRAS_LLAMA_DEPRECATION_DATE,
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   CEREBRAS_QWEN_DEPRECATION_DATE,
   CEREBRAS_QWEN_MODEL_ID,
+  CEREBRAS_ZAI_GLM_MODEL_ID,
   DEFAULT_CEREBRAS_MODEL,
   getStaleProviderModelPolicyFindings,
   getCerebrasModelPolicy,
@@ -79,7 +82,8 @@ describe('provider model policy SSOT', () => {
         requestsPerDay: 14_400,
         tokensPerDay: 1_000_000,
       },
-      blockAfterDeprecation: false,
+      deprecationDate: CEREBRAS_LLAMA_DEPRECATION_DATE,
+      blockAfterDeprecation: true,
       smokeStatus: 'green',
     });
   });
@@ -94,6 +98,41 @@ describe('provider model policy SSOT', () => {
       smokeStatus: 'red',
       blockAfterDeprecation: false,
     });
+  });
+
+  it('records the 2026-05-13 Cerebras account smoke matrix, including non-runtime visible models', () => {
+    expect(
+      getCerebrasModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID).smokeEvidence
+    ).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('2026-05-13'),
+        expect.stringContaining('chat completion HTTP 200'),
+      ])
+    );
+    expect(
+      getCerebrasModelPolicy(CEREBRAS_QWEN_MODEL_ID).smokeEvidence
+    ).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('2026-05-13'),
+        expect.stringContaining('429 queue/quota'),
+      ])
+    );
+    expect(
+      getCerebrasModelPolicy(CEREBRAS_GPT_OSS_MODEL_ID).smokeEvidence
+    ).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('2026-05-13'),
+        expect.stringContaining('404'),
+      ])
+    );
+
+    expect(CEREBRAS_DEPRECATION_CONTINGENCY.visibleButExcludedModels).toContain(
+      CEREBRAS_ZAI_GLM_MODEL_ID
+    );
+    expect(CEREBRAS_DEPRECATION_CONTINGENCY.fallbackChainAfterDeprecation).toEqual([
+      'groq',
+      'mistral',
+    ]);
   });
 
   it('exposes quota from the same policy object used by metadata and selectors', () => {
@@ -118,7 +157,15 @@ describe('provider model policy SSOT', () => {
         getCerebrasRuntimeModelPolicies(),
         new Date('2026-05-28T00:00:00Z')
       )
-    ).toEqual([]);
+    ).toEqual([
+      {
+        provider: 'cerebras',
+        modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+        severity: 'P1',
+        reason: `${CEREBRAS_LLAMA_FALLBACK_MODEL_ID} is blocked for cerebras after ${CEREBRAS_LLAMA_DEPRECATION_DATE}`,
+        replacement: 'groq:meta-llama/llama-4-scout-17b-16e-instruct',
+      },
+    ]);
   });
 
   it('does not recommend another same-date blocked Cerebras runtime model', () => {

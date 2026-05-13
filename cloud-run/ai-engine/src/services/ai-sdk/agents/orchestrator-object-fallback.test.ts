@@ -87,7 +87,7 @@ describe('generateStructuredOutputWithFallback', () => {
 
   it('returns object from generateText Output.object on success', async () => {
     const expected: TestSchema = {
-      selectedAgent: 'NLQ Agent',
+      selectedAgent: 'Metrics Query Agent',
       confidence: 0.95,
       reasoning: 'Simple query',
     };
@@ -345,12 +345,12 @@ describe('generateStructuredOutputWithFallback', () => {
   it('validates structured output result against schema', async () => {
     mockGenerateText
       .mockResolvedValueOnce({
-        output: { selectedAgent: 'NLQ Agent' },
+        output: { selectedAgent: 'Metrics Query Agent' },
         usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
       })
       .mockResolvedValueOnce({
         text: JSON.stringify({
-          selectedAgent: 'NLQ Agent',
+          selectedAgent: 'Metrics Query Agent',
           confidence: 0.9,
           reasoning: 'Recovered via fallback',
         }),
@@ -385,7 +385,7 @@ describe('generateStructuredOutputWithFallback', () => {
       .mockRejectedValueOnce(new Error('response format not supported'))
       .mockResolvedValueOnce({
         text: JSON.stringify({
-          selectedAgent: 'NLQ Agent',
+          selectedAgent: 'Metrics Query Agent',
           confidence: 0.6,
           reasoning: 'Extra context used',
         }),

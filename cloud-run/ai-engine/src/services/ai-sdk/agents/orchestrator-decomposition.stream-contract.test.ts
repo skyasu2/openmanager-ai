@@ -53,7 +53,7 @@ describe('orchestrator decomposition stream contract', () => {
         success: true,
         response: 'NLQ response',
         handoffs: [],
-        finalAgent: 'NLQ Agent',
+        finalAgent: 'Metrics Query Agent',
         toolsCalled: ['getServerMetrics'],
         usage: {
           promptTokens: 10,
@@ -92,7 +92,7 @@ describe('orchestrator decomposition stream contract', () => {
 
     for await (const event of mod.executeParallelSubtasksStream(
       [
-        { task: '서버 상태 조회', agent: 'NLQ Agent' },
+        { task: '서버 상태 조회', agent: 'Metrics Query Agent' },
         { task: '이상 징후 분석', agent: 'Analyst Agent' },
       ],
       Date.now(),
@@ -183,7 +183,7 @@ describe('orchestrator decomposition stream contract', () => {
         success: true,
         response: 'NLQ response',
         handoffs: [],
-        finalAgent: 'NLQ Agent',
+        finalAgent: 'Metrics Query Agent',
         toolsCalled: ['getServerMetrics'],
         usage: {
           promptTokens: 10,
@@ -204,7 +204,7 @@ describe('orchestrator decomposition stream contract', () => {
 
     for await (const event of mod.executeParallelSubtasksStream(
       [
-        { task: '서버 상태 조회', agent: 'NLQ Agent' },
+        { task: '서버 상태 조회', agent: 'Metrics Query Agent' },
         { task: '이상 징후 분석', agent: 'Analyst Agent' },
       ],
       Date.now(),
@@ -415,7 +415,7 @@ describe('orchestrator decomposition stream contract', () => {
 
     for await (const event of mod.executeParallelSubtasksStream(
       [
-        { task: '서버 상태 조회', agent: 'NLQ Agent' },
+        { task: '서버 상태 조회', agent: 'Metrics Query Agent' },
         { task: '이상 징후 분석', agent: 'Analyst Agent' },
       ],
       Date.now(),
@@ -446,7 +446,7 @@ describe('orchestrator decomposition stream contract', () => {
         subtaskCount: 2,
         completedCount: 0,
         failedCount: 2,
-        failedAgents: ['NLQ Agent', 'Analyst Agent'],
+        failedAgents: ['Metrics Query Agent', 'Analyst Agent'],
       },
     });
   });

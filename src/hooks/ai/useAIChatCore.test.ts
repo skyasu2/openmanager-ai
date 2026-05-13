@@ -769,6 +769,56 @@ describe('useAIChatCore', () => {
     expect(mocks.sendQuery).toHaveBeenCalledWith('보고서 뽑아줘', undefined);
   });
 
+  it('does not fall through to chat sendQuery when LLM artifact classification resolves to an artifact', async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ kind: 'incident-report' }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    mocks.generateIncidentReportArtifact.mockResolvedValue({
+      kind: 'incident-report',
+      generatedAt: '2026-05-02T00:00:00.000Z',
+      report: {
+        id: 'incident-llm-classified',
+        title: 'LLM 분류 보고서',
+        severity: 'warning',
+        timestamp: new Date('2026-05-02T00:00:00.000Z'),
+        affectedServers: ['api-was-dc1-01'],
+        description: 'LLM classifier short-circuit 검증',
+        status: 'active',
+      },
+    });
+
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      result.current.setInput('보고서 뽑아줘');
+    });
+
+    await act(async () => {
+      await result.current.handleSendInput();
+    });
+
+    await waitFor(() => {
+      expect(mocks.generateIncidentReportArtifact).toHaveBeenCalledTimes(1);
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/ai/artifact-intent',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ query: '보고서 뽑아줘' }),
+      })
+    );
+    expect(mocks.sendQuery).not.toHaveBeenCalled();
+    expect(result.current.messages[1]?.content).toContain(
+      '장애 보고서를 작성했습니다'
+    );
+    expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
+      'llm_artifact_classification'
+    );
+  });
+
   it('aborts an in-flight artifact request when stop is invoked', async () => {
     let capturedSignal: AbortSignal | undefined;
     mocks.generateIncidentReportArtifact.mockImplementation(

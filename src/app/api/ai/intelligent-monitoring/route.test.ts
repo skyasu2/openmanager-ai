@@ -16,6 +16,7 @@ const {
   mockProxyToCloudRun,
   mockStartAITimer,
   mockWithAICache,
+  capturedLimiters,
 } = vi.hoisted(() => ({
   mockBuildAITimingHeaders: vi.fn(),
   mockCreateFallbackResponse: vi.fn(),
@@ -27,6 +28,7 @@ const {
   mockProxyToCloudRun: vi.fn(),
   mockStartAITimer: vi.fn(),
   mockWithAICache: vi.fn(),
+  capturedLimiters: [] as Array<{ config?: { maxRequests?: number } }>,
 }));
 
 vi.mock('@/config/ai-proxy.config', () => ({
@@ -60,6 +62,24 @@ vi.mock('@/lib/ai-proxy/proxy', () => ({
 
 vi.mock('@/lib/auth/api-auth', () => ({
   withAuth: (handler: unknown) => handler,
+}));
+
+vi.mock('@/lib/security/rate-limiter', () => ({
+  rateLimiters: {
+    aiAnalysis: {
+      config: {
+        maxRequests: 10,
+        dailyLimit: 100,
+      },
+    },
+  },
+  withRateLimit: (
+    limiter: { config?: { maxRequests?: number } },
+    handler: unknown
+  ) => {
+    capturedLimiters.push(limiter);
+    return handler;
+  },
 }));
 
 vi.mock('@/types/type-utils', () => ({
@@ -125,6 +145,10 @@ describe('/api/ai/intelligent-monitoring POST', () => {
         cached: false,
       })
     );
+  });
+
+  it('binds monitoring analysis to the AI analysis rate limiter', () => {
+    expect(capturedLimiters[0]?.config?.maxRequests).toBe(10);
   });
 
   it('전체 시스템 batch 분석은 Cloud Run monitoring analyze-batch로 프록시한다', async () => {

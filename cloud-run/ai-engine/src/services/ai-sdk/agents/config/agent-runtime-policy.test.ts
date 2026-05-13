@@ -15,6 +15,13 @@ import {
   getOrchestratorProviderOrder,
 } from './index';
 import {
+  getMonitoringIntentOwnerAgent,
+  getMonitoringIntentTools,
+  getUncoveredMonitoringIntentTools,
+  type MonitoringToolIntent,
+} from './monitoring-tool-policy';
+
+import {
   resolveAgentToolsFromRuntimeHost,
   resolveDefaultMonitoringAgentTools,
 } from './agent-tool-registry';
@@ -22,7 +29,7 @@ import {
 const CONFIG_DIR = dirname(fileURLToPath(import.meta.url));
 
 const EXPECTED_POLICIES = {
-  'NLQ Agent': {
+  'Metrics Query Agent': {
     providerOrder: ['groq', 'cerebras', 'mistral'],
     maxSteps: 4,
     evidenceBudget: 2,
@@ -32,7 +39,9 @@ const EXPECTED_POLICIES = {
       'filterServers',
       'getServerByGroup',
       'getServerByGroupAdvanced',
-      'searchKnowledgeBase',
+      'evaluateMathExpression',
+      'computeSeriesStats',
+      'estimateCapacityProjection',
       'searchWeb',
       'finalAnswer',
     ],
@@ -50,6 +59,8 @@ const EXPECTED_POLICIES = {
       'analyzePattern',
       'correlateMetrics',
       'findRootCause',
+      'buildIncidentTimeline',
+      'estimateCapacityProjection',
       'searchKnowledgeBase',
       'finalAnswer',
     ],
@@ -65,8 +76,6 @@ const EXPECTED_POLICIES = {
       'searchKnowledgeBase',
       'searchWeb',
       'buildIncidentTimeline',
-      'findRootCause',
-      'correlateMetrics',
       'finalAnswer',
     ],
   },
@@ -79,9 +88,6 @@ const EXPECTED_POLICIES = {
       'recommendCommands',
       'searchWeb',
       'getServerLogs',
-      'findRootCause',
-      'correlateMetrics',
-      'detectAnomalies',
       'finalAnswer',
     ],
   },
@@ -110,7 +116,7 @@ const EXPECTED_POLICIES = {
   'Vision Agent': {
     providerOrder: [],
     nativeProviderOrder: ['gemini', 'openrouter'],
-    maxSteps: 5,
+    maxSteps: 2,
     evidenceBudget: 0,
     toolAllowlist: ['analyzeScreenshot', 'finalAnswer'],
   },
@@ -140,6 +146,47 @@ describe('agent runtime policy SSOT', () => {
       expect(Object.keys(AGENT_CONFIGS[agentName].tools).sort()).toEqual(
         [...getAgentToolAllowlist(agentName)].sort()
       );
+    }
+  });
+
+  it('keeps metric/math lookup on Metrics Query and RCA analysis on Analyst only', () => {
+    const nlqAllowlist = getAgentToolAllowlist('Metrics Query Agent');
+    const analystAllowlist = getAgentToolAllowlist('Analyst Agent');
+    const reporterAllowlist = getAgentToolAllowlist('Reporter Agent');
+    const advisorAllowlist = getAgentToolAllowlist('Advisor Agent');
+
+    expect(nlqAllowlist).toEqual(
+      expect.arrayContaining([
+        'evaluateMathExpression',
+        'computeSeriesStats',
+        'estimateCapacityProjection',
+      ])
+    );
+    expect(nlqAllowlist).not.toContain('searchKnowledgeBase');
+
+    expect(analystAllowlist).toEqual(
+      expect.arrayContaining(['findRootCause', 'correlateMetrics'])
+    );
+    expect(reporterAllowlist).not.toContain('findRootCause');
+    expect(reporterAllowlist).not.toContain('correlateMetrics');
+    expect(advisorAllowlist).not.toContain('findRootCause');
+    expect(advisorAllowlist).not.toContain('correlateMetrics');
+    expect(advisorAllowlist).not.toContain('detectAnomalies');
+  });
+
+  it('keeps single-path intent tool overlays inside their owner agent ceilings', () => {
+    const intentOwners: MonitoringToolIntent[] = [
+      'math',
+      'prediction',
+      'metricRanking',
+      'realtimeMetric',
+      'rca',
+    ];
+
+    for (const intent of intentOwners) {
+      expect(getMonitoringIntentOwnerAgent(intent)).toBeDefined();
+      expect(getUncoveredMonitoringIntentTools(intent)).toEqual([]);
+      expect(getMonitoringIntentTools(intent)).toContain('finalAnswer');
     }
   });
 
@@ -204,7 +251,9 @@ describe('agent runtime policy SSOT', () => {
       'mistral',
     ]);
     expect(getAgentMaxSteps('Reporter Agent')).toBe(5);
-    expect(getAgentEvidenceBudget('NLQ Agent')).toBe(2);
+    expect(getAgentMaxSteps('Vision Agent')).toBe(2);
+    expect(getAgentEvidenceBudget('Metrics Query Agent')).toBe(2);
+    expect(getAgentEvidenceBudget('NLQ Agent')).toBe(2); // backward-compat alias: 'NLQ Agent' → 'Metrics Query Agent'
     expect(getAgentRuntimePolicy('Unknown Agent')).toMatchObject({
       providerOrder: ['groq', 'cerebras', 'mistral'],
       maxSteps: 4,

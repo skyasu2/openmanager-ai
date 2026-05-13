@@ -34,6 +34,23 @@ describe('agent structured schemas zod v4 compatibility', () => {
     expect(isValidAgentName('Unknown Agent')).toBe(false);
   });
 
+  it('normalizes legacy NLQ Agent output to Metrics Query Agent', () => {
+    expect(
+      routingSchema.parse({
+        selectedAgent: 'NLQ Agent',
+        confidence: 0.9,
+        reasoning: 'legacy model output',
+      }).selectedAgent
+    ).toBe('Metrics Query Agent');
+
+    expect(
+      taskDecomposeSchema.parse({
+        subtasks: [{ task: '서버 상태 조회', agent: 'NLQ Agent' }],
+        requiresSequential: false,
+      }).subtasks[0]?.agent
+    ).toBe('Metrics Query Agent');
+  });
+
   it('preserves nested schema validation for task and anomaly outputs', () => {
     expect(
       taskDecomposeSchema.parse({

@@ -78,16 +78,35 @@ describe('supervisor domain evidence support', () => {
   });
 
   it('exposes monitoring peak metric as a domain capability instead of a provider name', () => {
-    expect(readCapabilities(monitoringDomainPack)).toMatchObject({
-      domainId: monitoringDomainPack.id,
-      capabilities: [
+    const capabilities = readCapabilities(monitoringDomainPack) as {
+      domainId: string;
+      capabilities: Array<{
+        id: string;
+        intents: string[];
+        requiredSlots?: string[];
+      }>;
+    };
+
+    expect(capabilities.domainId).toBe(monitoringDomainPack.id);
+    expect(capabilities.capabilities).toEqual(
+      expect.arrayContaining([
         expect.objectContaining({
           id: 'monitoring.metric_peak',
           intents: ['metric_peak'],
           requiredSlots: ['metric', 'timeWindow', 'aggregation'],
         }),
-      ],
-    });
+        expect.objectContaining({
+          id: 'monitoring.metric_ranking',
+          intents: ['metric_ranking', 'metric_current'],
+          requiredSlots: ['metric', 'aggregation'],
+        }),
+        expect.objectContaining({
+          id: 'monitoring.server_health',
+          intents: ['server_health'],
+          requiredSlots: ['aggregation'],
+        }),
+      ])
+    );
   });
 
   it('passes metadata intent frames into providers before raw message fallback', async () => {
@@ -171,6 +190,59 @@ describe('supervisor domain evidence support', () => {
         selectedDomain: monitoringDomainPack.id,
         selectedCapability: 'monitoring.metric_peak',
         selectedEvidenceProvider: 'monitoring-peak-metric',
+        evidenceAvailable: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_evidence_validated',
+        ]),
+      },
+    });
+  });
+
+  it('resolves current metric ranking as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '현재 CPU 사용률 상위 3대 알려줘',
+      domain: monitoringDomainPack,
+      sessionId: 'session-current-ranking',
+      traceId: 'trace-current-ranking',
+    });
+
+    expect(support?.id).toBe('monitoring-metric-ranking');
+    expect(support?.fallback).toContain('CPU 사용률 상위 3대');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.metric_ranking',
+      intent: 'metric_ranking',
+      metric: 'cpu',
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_ranking',
+        selectedEvidenceProvider: 'monitoring-metric-ranking',
+        evidenceAvailable: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_evidence_validated',
+        ]),
+      },
+    });
+  });
+
+  it('resolves current server health as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '현재 모든 서버 상태 요약해줘',
+      domain: monitoringDomainPack,
+      sessionId: 'session-server-health',
+      traceId: 'trace-server-health',
+    });
+
+    expect(support?.id).toBe('monitoring-server-health');
+    expect(support?.fallback).toContain('서버 현황 요약');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.server_health',
+      intent: 'server_health',
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.server_health',
+        selectedEvidenceProvider: 'monitoring-server-health',
         evidenceAvailable: true,
         reasonCodes: expect.arrayContaining([
           'semantic_frame_evidence_validated',

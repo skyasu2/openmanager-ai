@@ -46,7 +46,7 @@ graph TB
     subgraph CloudRun["Cloud Run (AI Engine)"]
         Hono["Hono Server"]
         Supervisor["Supervisor<br/>(Dual-Mode)"]
-        Agents["7 Agents + Orchestrator<br/>(NLQ, Analyst, Reporter,<br/>Advisor, Vision, Evaluator, Optimizer)"]
+        Agents["7 Agents + Orchestrator<br/>(Metrics Query, Analyst, Reporter,<br/>Advisor, Vision, Evaluator, Optimizer)"]
         PreComp["Precomputed State<br/>(Tiered Data)"]
     end
 
@@ -104,7 +104,7 @@ graph TB
 │  Cloud Run (AI Engine, Node.js 24 + Hono)                            │
 │  ┌──────────────┐  ┌───────────────────┐  ┌───────────────────────┐ │
 │  │ Supervisor    │  │ 7 Agents + Orch.  │  │ Circuit Breaker       │ │
-│  │ (Dual-Mode)   │  │ NLQ/Analyst/...   │  │ Quota Tracker         │ │
+│  │ (Dual-Mode)   │  │ Metrics/Analyst    │  │ Quota Tracker         │ │
 │  └──────────────┘  └───────────────────┘  └───────────────────────┘ │
 └──────────────────────────────────┬───────────────────────────────────┘
                                    │
@@ -154,7 +154,7 @@ graph TB
 2. src/components/ai-sidebar/EnhancedAIChat.tsx
 3. useQueryExecution() cheap guard:
    a. off-domain / general coding guard
-   b. optional NLQ semantic parser 호출
+   b. optional semantic entity parser (/api/ai/nlq/extract-entities, URL의 nlq는 feature slug) 호출
    c. SemanticIntentFrame + semanticQueryTrace 생성
 4. useHybridAIQuery() 기본 경로 → POST /api/ai/supervisor/stream/v2
 5. /api/ai/supervisor/stream/v2/route.ts:
@@ -184,7 +184,7 @@ User Query
   │    ├─ off-domain guard
   │    └─ general coding guard
   │
-  ├─ Front semantic parser (/api/ai/nlq/extract-entities)
+  ├─ Front semantic parser (/api/ai/nlq/extract-entities)  ← URL의 nlq는 feature slug, 에이전트 이름 아님
   │    └─ SemanticIntentFrame?
   │       {
   │         domain: "monitoring",
@@ -342,7 +342,7 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 | Agent | Provider (Primary) | Role | 라우팅 |
 |-------|-------------------|------|--------|
 | **Orchestrator** | Groq primary (fallback: Cerebras `llama3.1-8b` → Mistral) | Intent 분류, Agent 핸드오프 | 진입점 |
-| **NLQ** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 서버 메트릭 조회 (단순+복합) | 외부 |
+| **Metrics Query** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 서버 메트릭 조회 (단순+복합) | 외부 |
 | **Analyst** | Cerebras `llama3.1-8b` when context permits (fallback: Groq → Mistral) | 이상 감지, 추세 예측 | 외부 |
 | **Reporter** | Cerebras `llama3.1-8b` when context permits (fallback: Groq → Mistral) | 장애 보고서, 타임라인 | 외부 |
 | **Advisor** | Cerebras `llama3.1-8b` when context permits (fallback: Groq → Mistral) | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
@@ -387,7 +387,7 @@ CLOSED (정상) ──5회 실패──► OPEN (차단) ──30초──► HA
 
 ```
 Structured routing: Groq → Cerebras → Mistral
-Group A tool loop (Supervisor/NLQ/Orchestrator): Groq → Cerebras → Mistral
+Group A tool loop (Supervisor/Metrics Query/Orchestrator): Groq → Cerebras → Mistral
 Group B tool loop (Analyst/Reporter/Advisor/Verifier): Cerebras → Groq → Mistral
 Vision: Gemini Flash-Lite → OpenRouter
 모두 실패 → Static Fallback Response

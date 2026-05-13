@@ -35,7 +35,7 @@ graph LR
     subgraph CloudRun["Cloud Run AI Engine"]
         Supervisor["Supervisor (듀얼모드)"]
         Orchestrator["Orchestrator (모듈 분할)"]
-        Agents["7 Execution Agents<br/>(NLQ/Analyst/Reporter/<br/>Advisor/Vision/Evaluator/Optimizer)"]
+        Agents["7 Execution Agents<br/>(Metrics Query/Analyst/Reporter/<br/>Advisor/Vision/Evaluator/Optimizer)"]
         Provider["Quad-Provider LLM"]
         PreComp["Pre-computed 144슬롯"]
         Dispatch["/api/jobs/dispatch"]
@@ -95,7 +95,7 @@ graph LR
 | Agent 라우팅 | 쿼리 타입 힌트 전달 | Supervisor 자동 라우팅 | Backend 주도 |
 | 조건부 Multi-Agent 오케스트레이션 | - | Orchestrator (복잡 질의 escalation) | Backend 전담 |
 | Agent 진행 상태 표시 | InlineAgentStatus | step annotations 전송 | 양쪽 완벽 |
-| Agent 종류 (7종) | - | NLQ/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer | Backend 전담 |
+| Agent 종류 (7종) | - | Metrics Query/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer | Backend 전담 |
 
 ### 2.3 쿼리 처리 시스템
 
@@ -144,7 +144,7 @@ graph LR
 | Prompt Guard | `cloud-run/ai-engine/src/lib/prompt-guard.ts` | Prompt Injection 방어: 입력 18개 + 출력 10개 패턴 (`ignore previous instructions`, `jailbreak`, `DAN mode` 등) |
 | RAG 문서 정규화 | `cloud-run/ai-engine/src/lib/rag-merge-planner.ts` | 문서 필드 trim, TF-IDF + Cosine 유사도 기반 중복 병합 (임계값 0.6) |
 | RAG 재정렬 | `cloud-run/ai-engine/src/lib/knowledge-retrieval-lite.ts` | Supabase `search_knowledge_text` 결과를 category/tag/server metadata boost로 정렬. 별도 LLM reranker는 request path에서 제거됨 |
-| NLQ 명령어 | `cloud-run/ai-engine/src/services/ai-sdk/agents/config/instructions/nlq.ts` | 정량 기준 해석 ("높은"=70%+, "낮은"=30% 미만), 빈 결과 fallback chain (임계값 완화 → Top-N 대안) |
+| Metrics Query 지침 | `cloud-run/ai-engine/src/services/ai-sdk/agents/config/instructions/nlq.ts` | 정량 기준 해석 ("높은"=70%+, "낮은"=30% 미만), 빈 결과 fallback chain (임계값 완화 → Top-N 대안). 파일명은 legacy `nlq` id를 유지 |
 
 #### 미구현 / 의도적 제외
 
@@ -272,7 +272,7 @@ Supervisor (deterministic/single-first)
         ├── Pattern-Based Routing (규칙 기반)
         ├── LLM Fallback Routing
         └── Agent Factory → 7종 에이전트
-            ├── NLQ Agent (자연어 쿼리)
+            ├── Metrics Query Agent (메트릭 조회/필터링/요약)
             ├── Analyst Agent (이상치/트렌드)
             ├── Reporter Agent (보고서)
             ├── Advisor Agent (트러블슈팅)

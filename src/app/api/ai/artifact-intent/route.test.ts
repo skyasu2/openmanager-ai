@@ -3,7 +3,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => {
   const model = vi.fn((modelId: string) => ({
@@ -70,8 +70,28 @@ async function importRoute() {
 }
 
 describe('artifact intent route', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+  const originalVercelEnv = process.env.VERCEL_ENV;
+  const originalScalePlanConfirmed = process.env.MISTRAL_SCALE_PLAN_CONFIRMED;
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
+    if (originalVercelEnv === undefined) {
+      delete process.env.VERCEL_ENV;
+    } else {
+      process.env.VERCEL_ENV = originalVercelEnv;
+    }
+    if (originalScalePlanConfirmed === undefined) {
+      delete process.env.MISTRAL_SCALE_PLAN_CONFIRMED;
+    } else {
+      process.env.MISTRAL_SCALE_PLAN_CONFIRMED = originalScalePlanConfirmed;
+    }
+  });
+
   beforeEach(() => {
     process.env.MISTRAL_API_KEY = 'test-mistral-key';
+    delete process.env.VERCEL_ENV;
+    delete process.env.MISTRAL_SCALE_PLAN_CONFIRMED;
     mocks.capturedLimiters.length = 0;
     mocks.createMistral.mockClear();
     mocks.generateText.mockReset();
@@ -125,6 +145,44 @@ describe('artifact intent route', () => {
 
     expect(body).toEqual({ kind: 'none', reason: 'local_gate_none' });
     expect(mocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it('blocks the Mistral classifier in production unless Scale plan usage is explicitly confirmed', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.VERCEL_ENV = 'production';
+    const { POST } = await importRoute();
+
+    const response = await POST(
+      createPostRequest({ query: '장애 리포트 만들어줘' })
+    );
+    const body = await response.json();
+
+    expect(body).toEqual({
+      kind: 'none',
+      reason: 'production_llm_gate_disabled',
+    });
+    expect(mocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it('allows the production classifier only when Scale plan usage is confirmed', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.VERCEL_ENV = 'production';
+    process.env.MISTRAL_SCALE_PLAN_CONFIRMED = 'true';
+    mocks.generateText.mockResolvedValueOnce({
+      output: { kind: 'incident-report' },
+    });
+    const { POST } = await importRoute();
+
+    const response = await POST(
+      createPostRequest({ query: '장애 리포트 만들어줘' })
+    );
+    const body = await response.json();
+
+    expect(body).toEqual({
+      kind: 'incident-report',
+      reason: 'llm_artifact_classification',
+    });
+    expect(mocks.generateText).toHaveBeenCalledTimes(1);
   });
 
   it('classifies artifact candidates with deterministic Mistral structured output', async () => {

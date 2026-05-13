@@ -2,11 +2,21 @@ import type {
   AgentRole,
   AgentRoleRegistry,
 } from '../../core/assistant-runtime';
+import {
+  buildAgentNameLookupEntries,
+  METRICS_QUERY_AGENT_NAME,
+} from '../../core/assistant-runtime/agent-name-compat';
+
+/**
+ * Monitoring agent role matchPatterns are metadata-only catalog hints.
+ * Runtime query matching is owned by services/ai-sdk/routing/query-routing-signals.ts.
+ */
+export const MONITORING_AGENT_MATCH_PATTERN_USAGE = 'metadata-only' as const;
 
 export const MONITORING_AGENT_ROLES = [
   {
     id: 'nlq',
-    name: 'NLQ Agent',
+    name: METRICS_QUERY_AGENT_NAME,
     description:
       '서버 상태 조회, CPU/메모리/디스크 메트릭 질의, 시간 범위 집계(지난 N시간 평균/최대), 서버 목록 확인 및 필터링, 상태 요약, 웹 검색을 처리합니다.',
     matchPatterns: [
@@ -40,23 +50,19 @@ export const MONITORING_AGENT_ROLES = [
       'tldr',
       'summary',
       /요약.*해|간단.*알려/i,
-      '검색',
-      'search',
-      '찾아',
       '뭐야',
       '뭔가요',
       '알려줘',
-      /에러|error|오류/i,
-      /해결|solution|fix/i,
-      /방법|how to/i,
     ],
     capabilities: [
       'metric-query',
       'server-filtering',
       'status-summary',
+      'math-helper',
+      'capacity-projection',
       'web-search',
     ],
-    runtimeConfigKey: 'NLQ Agent',
+    runtimeConfigKey: METRICS_QUERY_AGENT_NAME,
   },
   {
     id: 'analyst',
@@ -200,7 +206,9 @@ const MONITORING_AGENT_ROLES_BY_ID: ReadonlyMap<string, AgentRole> = new Map(
 );
 
 const MONITORING_AGENT_ROLES_BY_NAME: ReadonlyMap<string, AgentRole> = new Map(
-  MONITORING_AGENT_ROLES.map((role): [string, AgentRole] => [role.name, role])
+  MONITORING_AGENT_ROLES.flatMap((role): Array<[string, AgentRole]> =>
+    buildAgentNameLookupEntries(role.name, role)
+  )
 );
 
 const MONITORING_AGENT_ROLES_BY_RUNTIME_CONFIG_KEY: ReadonlyMap<
@@ -209,7 +217,7 @@ const MONITORING_AGENT_ROLES_BY_RUNTIME_CONFIG_KEY: ReadonlyMap<
 > = new Map(
   MONITORING_AGENT_ROLES.flatMap((role): Array<[string, AgentRole]> =>
     role.runtimeConfigKey
-      ? [[role.runtimeConfigKey, role]]
+      ? buildAgentNameLookupEntries(role.runtimeConfigKey, role)
       : []
   )
 );

@@ -6,9 +6,18 @@ export const CEREBRAS_QWEN_DEPRECATION_DATE = '2026-05-27';
 export const CEREBRAS_GPT_OSS_MODEL_ID = 'gpt-oss-120b';
 export const CEREBRAS_LLAMA_FALLBACK_MODEL_ID = 'llama3.1-8b';
 export const CEREBRAS_LLAMA_DEPRECATION_DATE = '2026-05-27';
+export const CEREBRAS_ZAI_GLM_MODEL_ID = 'zai-glm-4.7';
 export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
 export const CEREBRAS_DEPRECATION_REPLACEMENT =
   'groq:meta-llama/llama-4-scout-17b-16e-instruct';
+export const CEREBRAS_DEPRECATION_CONTINGENCY = {
+  date: CEREBRAS_LLAMA_DEPRECATION_DATE,
+  affectedRuntimeAgents: ['Analyst Agent', 'Reporter Agent', 'Advisor Agent'],
+  fallbackChainAfterDeprecation: ['groq', 'mistral'],
+  visibleButExcludedModels: [CEREBRAS_ZAI_GLM_MODEL_ID],
+  action:
+    'Confirm replacement model entitlement before 2026-05-27; Mistral 2 RPM cannot absorb Cerebras burst fallback.',
+} as const;
 
 export type ProviderModelRole = 'primary' | 'fallback' | 'vision' | 'excluded';
 export type ProviderModelLifecycle = 'production' | 'preview' | 'custom';
@@ -179,7 +188,7 @@ export const CEREBRAS_MODEL_POLICIES = {
     blockAfterDeprecation: true,
     smokeStatus: 'red',
     smokeEvidence: [
-      '2026-04-30 account smoke returned 429 high traffic',
+      '2026-05-13 account smoke returned 429 queue/quota',
       'official Cerebras docs list this as a Preview model, not Production',
     ],
     reasoningCapability: NO_PROVIDER_NATIVE_REASONING,
@@ -204,12 +213,12 @@ export const CEREBRAS_MODEL_POLICIES = {
       tokensPerDay: 1_000_000,
     },
     deprecationDate: CEREBRAS_LLAMA_DEPRECATION_DATE,
-    blockAfterDeprecation: false,
+    blockAfterDeprecation: true,
     smokeStatus: 'green',
     smokeEvidence: [
-      '2026-05-02 smoke passed llama3.1-8b chat completions HTTP 200',
-      'tool calling smoke passed',
-      'structured output smoke passed',
+      '2026-05-13 current account chat completion HTTP 200',
+      '2026-05-13 retained as short-context runtime only; not evidence for Metrics Query 16K primary promotion',
+      'tool calling and structured output smoke previously passed',
     ],
     reasoningCapability: NO_PROVIDER_NATIVE_REASONING,
     freeTierLimitSummary:
@@ -229,7 +238,7 @@ export const CEREBRAS_MODEL_POLICIES = {
     blockAfterDeprecation: false,
     smokeStatus: 'red',
     smokeEvidence: [
-      'current account chat completions smoke returned 404',
+      '2026-05-13 current account chat completions smoke returned 404',
       'not shown in account free-tier Limits list',
     ],
     reasoningCapability: CEREBRAS_GPT_OSS_PROVIDER_REASONING,

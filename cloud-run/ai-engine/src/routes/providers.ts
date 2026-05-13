@@ -49,7 +49,7 @@ providersRouter.get('/', (c: Context) => {
         toolCallingEnabled: isCerebrasToolCallingEnabled(),
       },
       groq: {
-        role: 'Primary (Supervisor/NLQ) + fallback for Cerebras-first agents',
+        role: 'Primary (Supervisor/Metrics Query) + fallback for Cerebras-first agents',
         model: getGroqModelId(),
       },
       mistral: { role: 'Last-resort text fallback', model: getMistralModelId() },

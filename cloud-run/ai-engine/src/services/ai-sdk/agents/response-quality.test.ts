@@ -70,7 +70,7 @@ describe('evaluateAgentResponseQuality', () => {
 
   it('flags Chinese characters without failing format compliance by itself', () => {
     const result = evaluateAgentResponseQuality(
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         '서버 현황 요약: 전체 18대 중 정상 17대, 경고 1대입니다.',
         'CPU: 52%, 메모리: 48%, 디스크: 41%, 네트워크: 22%',
@@ -84,9 +84,9 @@ describe('evaluateAgentResponseQuality', () => {
     expect(result.formatCompliance).toBe(true);
   });
 
-  it('accepts NLQ response when it includes required structure', () => {
+  it('accepts Metrics Query response when it includes required structure', () => {
     const result = evaluateAgentResponseQuality(
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         '📊 서버 현황 요약',
         '전체 3대: 정상 2대, 경고 1대',
@@ -103,9 +103,9 @@ describe('evaluateAgentResponseQuality', () => {
     expect(result.formatCompliance).toBe(true);
   });
 
-  it('flags NLQ response when no server scope is provided', () => {
+  it('flags Metrics Query response when no server scope is provided', () => {
     const result = evaluateAgentResponseQuality(
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         '이상은 없습니다.',
         'CPU: 52%',
@@ -118,9 +118,9 @@ describe('evaluateAgentResponseQuality', () => {
     expect(result.formatCompliance).toBe(false);
   });
 
-  it('accepts NLQ response when overall server count is included', () => {
+  it('accepts Metrics Query response when overall server count is included', () => {
     const result = evaluateAgentResponseQuality(
-      'NLQ Agent',
+      'Metrics Query Agent',
       [
         '서버 현황 요약: 전체 18대 모두 정상입니다.',
         'CPU: 52%, 메모리: 48%, 디스크: 41%, 네트워크: 22%',

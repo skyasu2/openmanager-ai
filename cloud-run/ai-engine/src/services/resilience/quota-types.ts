@@ -8,6 +8,15 @@ import {
   type CerebrasRuntimeModelId,
 } from '../ai-sdk/provider-model-policy';
 
+/*
+ * CEREBRAS DEPRECATION 2026-05-27
+ * After this date llama3.1-8b is expected to be unavailable.
+ * Fallback chain degrades to:
+ *   Analyst/Reporter/Advisor: Groq (RPD 1K) -> Mistral (RPM 2)
+ * Effective single primary: Groq. Mistral RPM 2 cannot absorb bursts.
+ * Action: confirm replacement model entitlement before this date.
+ */
+
 /** LLM Provider 이름 (모델 선택용) */
 export type LLMProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini';
 

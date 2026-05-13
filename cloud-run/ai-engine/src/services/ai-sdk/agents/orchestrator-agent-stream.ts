@@ -1,5 +1,4 @@
 import {
-  generateText,
   hasToolCall,
   stepCountIs,
   streamText,
@@ -29,20 +28,18 @@ import {
 import {
   buildAgentProviderAttempts,
   buildAgentProviderRetryStatus,
-  buildToolResultsSummary,
   collectAgentToolEvents,
   countServersFromToolResults,
   emitAllProvidersFailedEvent,
   emitAgentSuccessDoneEvent,
   emitNoOutputFallbackDoneEvent,
-  type CollectedToolResult,
   estimateAgentStreamQuotaTokens,
   getAgentInstructions,
   getEvidenceToolResults,
-  selectSummarizationModel,
   shouldRepairToolGroundedResponse,
   streamReporterPipelineIfAvailable,
 } from './orchestrator-agent-stream-helpers';
+import { runSummarizationFallback } from './orchestrator-agent-stream-summary';
 import {
   ORCHESTRATOR_CONFIG,
   type ProviderAttemptTelemetry,
@@ -60,7 +57,6 @@ import {
 } from './domain-data-source';
 
 const STREAM_MAX_OUTPUT_TOKENS = 2048;
-const SUMMARY_MAX_OUTPUT_TOKENS = 1024;
 const RAW_TOOL_CALL_JSON_FALLBACK_TEXT =
   'AI 엔진이 도구 호출 정보를 응답 본문으로 반환해 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
 
@@ -232,7 +228,7 @@ export async function* executeAgentStream(
           { role: 'system', content: systemContent },
           { role: 'user', content: userContent as UserContent },
         ],
-        tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
+        tools: filteredTools as Parameters<typeof streamText>[0]['tools'],
         // Keep extra headroom only for multi-tool Analyst/Reporter paths.
         // Other agents use the tighter default cap to reduce unnecessary loops.
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
@@ -490,120 +486,39 @@ export async function* executeAgentStream(
           `[Stream ${agentName}] ${summarizationReason} with ${getEvidenceToolResults(collectedToolResults).length} tool results — attempting summarization fallback`
         );
 
-        let summaryReservation: ProviderQuotaReservation | null = null;
-        let summaryReservationReconciled = false;
-        let summaryProviderForCooldown = '';
-        let summaryModelIdForCooldown = '';
-        const reconcileSummaryQuotaOnce = async (actualTokensUsed: number) => {
-          if (summaryReservationReconciled) return;
-          await reconcileStreamQuota(summaryReservation, actualTokensUsed);
-          summaryReservationReconciled = true;
-        };
+        const summaryResult = await runSummarizationFallback({
+          query,
+          agentName,
+          provider,
+          modelId,
+          providerStartTime,
+          providerAttempts,
+          attemptIndex,
+          excludedProviders,
+          collectedToolResults,
+          summarizationReason,
+          providerAttemptTelemetry,
+        });
 
-        try {
-          const toolResultsSummary = buildToolResultsSummary(collectedToolResults);
-          const summaryModelSelection = selectSummarizationModel(
-            providerAttempts,
-            attemptIndex,
-            excludedProviders
-          );
-          const {
-            model: summaryModel,
-            provider: summaryProvider,
-            modelId: summaryModelId,
-          } = summaryModelSelection.modelResult;
-          summaryProviderForCooldown = summaryProvider;
-          summaryModelIdForCooldown = summaryModelId;
-          const summaryStartTime = Date.now();
-          const summarySystemContent =
-            '당신은 서버 모니터링 분석 도우미입니다. 아래 도구 실행 결과를 바탕으로 사용자 질문에 한국어로 명확하게 답변하세요. 핵심 데이터를 인용하고 권장 조치를 포함하세요.';
-          const summaryUserContent = `질문: ${query}\n\n도구 실행 결과:\n${toolResultsSummary}\n\n위 결과를 바탕으로 분석 답변을 작성하세요.`;
-
-          if (summaryModelSelection.delegated) {
-            providerAttemptTelemetry.push({
-              provider,
-              modelId,
-              attempt: attemptIndex + 1,
-              durationMs: Date.now() - providerStartTime,
-              error: summarizationReason,
-            });
-            logger.info(
-              `[Stream ${agentName}] Delegating summarization fallback from ${provider}/${modelId} to ${summaryProvider}/${summaryModelId}`
-            );
-          }
-
-          summaryReservation = await reserveStreamQuota(
-            summaryProvider,
-            summaryModelId,
-            estimateAgentStreamQuotaTokens(
-              [summarySystemContent, summaryUserContent],
-              SUMMARY_MAX_OUTPUT_TOKENS
-            )
-          );
-          if (summaryReservation && !summaryReservation.reserved) {
-            throw new Error(
-              `QUOTA_ADMISSION:${summaryReservation.reason ?? 'unknown'}`
-            );
-          }
-
-          const summaryResult = await generateText({
-            model: summaryModel,
-            messages: [
-              {
-                role: 'system',
-                content: summarySystemContent,
-              },
-              {
-                role: 'user',
-                content: summaryUserContent,
-              },
-            ],
-            temperature: 0.4,
-            maxOutputTokens: SUMMARY_MAX_OUTPUT_TOKENS,
-            maxRetries: 0,
-            timeout: { totalMs: 10_000 },
-          });
-          await reconcileSummaryQuotaOnce(
-            summaryResult.usage?.totalTokens ??
-              summaryReservation?.estimatedTokens ??
-              0
-          );
-
-          const summaryText = sanitizeChineseCharacters(summaryResult.text?.trim() || '');
-          if (summaryText) {
-            responseProvider = summaryProvider;
-            responseModelId = summaryModelId;
-            responseAttemptNumber = summaryModelSelection.attemptIndex + 1;
-            responseProviderStartTime = summaryStartTime;
-            responseUsage = summaryResult.usage;
-            textEmitted = true;
-            textDelivered = true;
-            fullResponseText = shouldRepairResponse
-              ? `${fullResponseText.trim()}\n\n${summaryText}`.trim()
-              : summaryText;
-            markFirstChunk('summarization_fallback');
-            yield {
-              type: 'text_delta',
-              data: shouldRepairResponse ? `\n\n${summaryText}` : summaryText,
-            };
-            logger.info(`[Stream ${agentName}] Summarization fallback succeeded (${summaryText.length} chars)`);
-          }
-        } catch (summaryError) {
-          const summaryErrorMessage =
-            summaryError instanceof Error
-              ? summaryError.message
-              : String(summaryError);
-          await reconcileSummaryQuotaOnce(0);
-          if (summaryProviderForCooldown && summaryModelIdForCooldown) {
-            await markStreamProviderCooldown(
-              summaryProviderForCooldown,
-              summaryModelIdForCooldown,
-              summaryErrorMessage
-            );
-          }
-          logger.warn(
-            `[Stream ${agentName}] Summarization fallback failed:`,
-            summaryErrorMessage
+        if (summaryResult) {
+          const { summaryText } = summaryResult;
+          responseProvider = summaryResult.responseProvider;
+          responseModelId = summaryResult.responseModelId;
+          responseAttemptNumber = summaryResult.responseAttemptNumber;
+          responseProviderStartTime = summaryResult.responseProviderStartTime;
+          responseUsage = summaryResult.responseUsage;
+          textEmitted = true;
+          textDelivered = true;
+          fullResponseText = shouldRepairResponse
+            ? `${fullResponseText.trim()}\n\n${summaryText}`.trim()
+            : summaryText;
+          markFirstChunk('summarization_fallback');
+          yield {
+            type: 'text_delta',
+            data: shouldRepairResponse ? `\n\n${summaryText}` : summaryText,
+          };
+          logger.info(
+            `[Stream ${agentName}] Summarization fallback succeeded (${summaryText.length} chars)`
           );
         }
       }

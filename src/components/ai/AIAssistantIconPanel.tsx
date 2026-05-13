@@ -2,12 +2,12 @@
  * 🤖 AI 어시스턴트 기능 아이콘 패널 v3.1
  *
  * 사이드바 오른쪽에 세로로 배치되는 AI 기능 아이콘들
- * - AI Chat: 자연어로 시스템 질의 및 대화 (NLQ Agent + Advisor Agent)
+ * - AI Chat: 자연어로 시스템 질의 및 대화 (Metrics Query Agent + Advisor Agent)
  * - 자동 장애 보고서: AI 기반 장애 분석 보고서 생성 (Reporter Agent)
  * - 이상감지/추세: 경량 이상 신호와 추세 분석
  *
  * v3.1 변경사항 (2026-01-15):
- * - 문서 정리: Advisor Agent는 NLQ의 하위 기능 (Orchestrator 자동 라우팅)
+ * - 문서 정리: Advisor Agent는 Metrics Query Agent와 별도 역할 (Orchestrator 자동 라우팅)
  *
  * v3.0 변경사항 (2025-12-23):
  * - AI 상태관리 탭 제거 (Coming Soon 상태로 미구현)

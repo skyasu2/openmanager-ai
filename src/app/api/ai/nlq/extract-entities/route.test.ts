@@ -114,7 +114,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     });
     expect(mockGenerateText).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: { modelId: 'llama-4-scout-17b-8e-instruct' },
+        model: { modelId: 'meta-llama/llama-4-scout-17b-16e-instruct' },
         prompt: 'api-was-dc1-01 CPU 어때?',
         temperature: 0,
         maxOutputTokens: 160,
@@ -152,7 +152,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
 
     const response = await POST(
       buildRequest({
-        query: '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?',
+        query: '최근 하루 load 피크 시간과 대응 방법 알려줘',
       })
     );
 
@@ -174,8 +174,74 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     });
     expect(mockGenerateText).toHaveBeenCalledWith(
       expect.objectContaining({
+        prompt: '최근 하루 load 피크 시간과 대응 방법 알려줘',
         maxOutputTokens: 160,
         output: expect.objectContaining({ kind: 'object-output' }),
+      })
+    );
+  });
+
+  it('short-circuits high-confidence metric_peak queries locally without invoking Groq', async () => {
+    const response = await POST(
+      buildRequest({
+        query: '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?',
+      })
+    );
+
+    await expect(response.json()).resolves.toEqual({
+      timeRange: '24h',
+      confidence: 94,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'metric_peak',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load1',
+        timeWindow: '24h',
+        aggregation: 'peak',
+        topN: 3,
+        ambiguity: 'low',
+        confidence: 94,
+      },
+    });
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
+  it('keeps composite metric_peak advice queries on the Groq fallback route', async () => {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
+        confidence: 89,
+        intentFrame: {
+          domain: 'monitoring',
+          intent: 'metric_peak',
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'load1',
+          timeWindow: '24h',
+          aggregation: 'peak',
+          topN: 3,
+          ambiguity: 'medium',
+          confidence: 89,
+        },
+      },
+    });
+
+    const response = await POST(
+      buildRequest({
+        query: '최근 하루 load 피크 시간과 대응 방법 알려줘',
+      })
+    );
+
+    await expect(response.json()).resolves.toMatchObject({
+      confidence: 89,
+      intentFrame: {
+        intent: 'metric_peak',
+        ambiguity: 'medium',
+      },
+    });
+    expect(mockGenerateText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: '최근 하루 load 피크 시간과 대응 방법 알려줘',
       })
     );
   });

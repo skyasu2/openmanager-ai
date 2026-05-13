@@ -118,7 +118,7 @@ export const DEFAULT_MESSAGE_BY_STAGE: Record<string, string> = {
   analyzing: '쿼리 분석 중...',
   processing: 'AI 에이전트 처리 중...',
   supervisor: 'Supervisor 분석 중...',
-  nlq: 'NLQ Agent가 자연어 쿼리 처리 중...',
+  nlq: 'Metrics Query Agent가 서버 메트릭을 조회 중...',
   analyst: 'Analyst Agent가 패턴 분석 중...',
   reporter: 'Reporter Agent가 보고서 생성 중...',
   finalizing: '응답 완료 처리 중...',

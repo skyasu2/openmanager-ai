@@ -14,13 +14,13 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     from: 'Orchestrator',
-    to: 'NLQ Agent',
+    to: 'Metrics Query Agent',
   },
 };
 
 export const WithReason: Story = {
   args: {
-    from: 'NLQ Agent',
+    from: 'Metrics Query Agent',
     to: 'Analyst Agent',
     reason: '서버 메트릭 패턴 분석 필요',
   },

@@ -41,9 +41,15 @@ const COMPLEXITY_INDICATORS = [
   /장애.*원인.*조치|원인.*조치/,
 ];
 
+// Worst-case LLM calls per Reporter request:
+//   1x Orchestrator routing when confidence < forcedRoutingConfidence
+//   1x decomposeTask when isComplexQuery returns true
+//   5x Reporter maxSteps
+//   0x Evaluator/Optimizer because those stages are deterministic
+// Total worst-case: 7 LLM calls
 function isComplexQuery(query: string): boolean {
   const matchCount = COMPLEXITY_INDICATORS.filter(pattern => pattern.test(query)).length;
-  return matchCount >= 2 || (matchCount >= 1 && query.length >= 20) || query.length > 100;
+  return (matchCount >= 2 && query.length >= 40) || query.length > 120;
 }
 
 async function executeSubtaskWithTimeout(
@@ -130,7 +136,7 @@ export async function decomposeTask(query: string): Promise<TaskDecomposition | 
     const decomposePrompt = `다음 복합 질문을 서브태스크로 분해하세요.
 
 ## 사용 가능한 에이전트
-- NLQ Agent: 서버 상태 조회, 메트릭 필터링/집계
+- Metrics Query Agent: 서버 상태 조회, 메트릭 필터링/집계
 - Analyst Agent: 이상 탐지, 트렌드 예측, 근본 원인 분석
 - Reporter Agent: 장애 보고서, 인시던트 타임라인
 - Advisor Agent: 해결 방법, CLI 명령어, 과거 사례

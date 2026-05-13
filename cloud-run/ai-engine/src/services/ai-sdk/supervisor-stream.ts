@@ -31,10 +31,10 @@ import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 function shouldUseDeterministicDomainEvidenceAnswer(
   domainEvidence: DomainEvidenceResult | undefined
 ): boolean {
-  return (
-    domainEvidence?.metadata?.responsePolicy ===
-    'deterministic_read_only_advice'
-  );
+  return [
+    'deterministic_answer',
+    'deterministic_read_only_advice',
+  ].includes(String(domainEvidence?.metadata?.responsePolicy ?? ''));
 }
 
 export async function* executeSupervisorStream(
@@ -136,6 +136,8 @@ export async function* executeSupervisorStream(
           domainEvidence: {
             id: domainEvidence.id,
             responsePolicy: domainEvidence.metadata?.responsePolicy,
+            capabilityId: domainEvidence.metadata?.capabilityId,
+            intent: domainEvidence.metadata?.intent,
           },
           ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
             ? { semanticQueryTrace }

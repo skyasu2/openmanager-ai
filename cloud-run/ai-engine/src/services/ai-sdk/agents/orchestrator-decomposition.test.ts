@@ -104,7 +104,7 @@ vi.mock('ai', () => ({
     options?.output
       ? {
           output: {
-            selectedAgent: 'NLQ Agent',
+            selectedAgent: 'Metrics Query Agent',
             confidence: 0.86,
             reasoning: 'Mock reasoning',
           },
@@ -132,6 +132,8 @@ vi.mock('ai', () => ({
   stepCountIs: vi.fn(() => () => false),
   hasToolCall: vi.fn(() => () => false),
 }));
+
+import { generateText } from 'ai';
 
 vi.mock('../../../tools-ai-sdk', () => {
   const tools = {
@@ -210,7 +212,7 @@ describe('unifyResults', () => {
     const mod = await import('./orchestrator-decomposition');
 
     const result = mod.unifyResults([
-      { agent: 'NLQ Agent', response: 'Server status OK' },
+      { agent: 'Metrics Query Agent', response: 'Server status OK' },
     ]);
 
     expect(result).toBe('Server status OK');
@@ -220,12 +222,12 @@ describe('unifyResults', () => {
     const mod = await import('./orchestrator-decomposition');
 
     const result = mod.unifyResults([
-      { agent: 'NLQ Agent', response: 'Status data' },
+      { agent: 'Metrics Query Agent', response: 'Status data' },
       { agent: 'Analyst Agent', response: 'Analysis result' },
     ]);
 
     expect(result).toContain('# 종합 분석 결과');
-    expect(result).toContain('## NLQ 분석');
+    expect(result).toContain('## Metrics Query 분석');
     expect(result).toContain('Status data');
     expect(result).toContain('## Analyst 분석');
     expect(result).toContain('Analysis result');
@@ -249,6 +251,17 @@ describe('decomposeTask', () => {
 
     const result = await mod.decomposeTask('서버 상태');
     expect(result).toBeNull();
+  });
+
+  it('does not call the decomposition LLM for short single-signal operations queries', async () => {
+    const mod = await import('./orchestrator-decomposition');
+
+    const result = await mod.decomposeTask(
+      '서버 상태를 분석하고 해결 방법 알려줘'
+    );
+
+    expect(result).toBeNull();
+    expect(generateText).not.toHaveBeenCalled();
   });
 });
 

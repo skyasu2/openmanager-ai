@@ -58,7 +58,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
       nodes: [
         {
           id: 'nlq',
-          label: 'NLQ Agent',
+          label: 'Metrics Query Agent',
           sublabel: 'Cerebras llama3.1-8b',
           type: 'secondary',
           icon: '🔍',

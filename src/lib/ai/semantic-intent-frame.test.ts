@@ -22,6 +22,18 @@ const validPeakFrame: SemanticIntentFrame = {
   confidence: 91,
 };
 
+const validServerHealthFrame: SemanticIntentFrame = {
+  domain: 'monitoring',
+  intent: 'server_health',
+  scope: 'whole_fleet',
+  targets: [],
+  metric: 'unknown',
+  timeWindow: 'current',
+  aggregation: 'summary',
+  ambiguity: 'low',
+  confidence: 88,
+};
+
 describe('semantic intent frame mapping', () => {
   it('uses the Phase 1 confidence threshold as the forwarding cutoff', () => {
     expect(ENTITY_CONFIDENCE_THRESHOLD).toBe(80);
@@ -41,6 +53,24 @@ describe('semantic intent frame mapping', () => {
         topN: 5,
         ambiguity: 'low',
         confidence: 0.91,
+      },
+      reasonCodes: [],
+    });
+  });
+
+  it('maps a root monitoring server health frame into the Cloud Run domain frame contract', () => {
+    expect(toDomainIntentFrame(validServerHealthFrame)).toEqual({
+      intentFrame: {
+        domainId: 'openmanager-monitoring',
+        intent: 'server_health',
+        capabilityId: 'monitoring.server_health',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'unknown',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.88,
       },
       reasonCodes: [],
     });

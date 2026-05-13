@@ -23,12 +23,13 @@ import {
 
 describe('parseHandoffMarker', () => {
   it('should parse standard handoff marker', () => {
-    const text = '🔄 **Orchestrator** → **NLQ Agent**: 서버 상태 조회';
+    const text =
+      '🔄 **Orchestrator** → **Metrics Query Agent**: 서버 상태 조회';
     const result = parseHandoffMarker(text);
 
     expect(result).toEqual({
       from: 'Orchestrator',
-      to: 'NLQ Agent',
+      to: 'Metrics Query Agent',
       reason: '서버 상태 조회',
     });
   });
@@ -56,25 +57,26 @@ describe('parseHandoffMarker', () => {
   });
 
   it('should parse handoff marker with OpenManager Orchestrator', () => {
-    const text = '🔄 **OpenManager Orchestrator** → **NLQ Agent**: CPU 분석';
+    const text =
+      '🔄 **OpenManager Orchestrator** → **Metrics Query Agent**: CPU 분석';
     const result = parseHandoffMarker(text);
 
     expect(result).toEqual({
       from: 'OpenManager Orchestrator',
-      to: 'NLQ Agent',
+      to: 'Metrics Query Agent',
       reason: 'CPU 분석',
     });
   });
 
   it('should return null for invalid marker (missing emoji)', () => {
-    const text = '**Orchestrator** → **NLQ Agent**';
+    const text = '**Orchestrator** → **Metrics Query Agent**';
     const result = parseHandoffMarker(text);
 
     expect(result).toBeNull();
   });
 
   it('should return null for invalid marker (missing asterisks)', () => {
-    const text = '🔄 Orchestrator → NLQ Agent';
+    const text = '🔄 Orchestrator → Metrics Query Agent';
     const result = parseHandoffMarker(text);
 
     expect(result).toBeNull();
@@ -111,7 +113,7 @@ describe('parseHandoffMarker', () => {
 
 describe('containsHandoffMarker', () => {
   it('should return true for valid handoff marker', () => {
-    const text = '🔄 **Orchestrator** → **NLQ Agent**: 서버 조회';
+    const text = '🔄 **Orchestrator** → **Metrics Query Agent**: 서버 조회';
     expect(containsHandoffMarker(text)).toBe(true);
   });
 
@@ -126,7 +128,7 @@ describe('containsHandoffMarker', () => {
   });
 
   it('should return false for partial marker (missing arrow)', () => {
-    const text = '🔄 **Orchestrator** **NLQ Agent**';
+    const text = '🔄 **Orchestrator** **Metrics Query Agent**';
     expect(containsHandoffMarker(text)).toBe(false);
   });
 
@@ -136,7 +138,7 @@ describe('containsHandoffMarker', () => {
 
   it('should return true for marker embedded in text', () => {
     const text =
-      '시작합니다.\n\n🔄 **Orchestrator** → **NLQ Agent**\n\n분석 중...';
+      '시작합니다.\n\n🔄 **Orchestrator** → **Metrics Query Agent**\n\n분석 중...';
     expect(containsHandoffMarker(text)).toBe(true);
   });
 });
@@ -148,10 +150,19 @@ describe('containsHandoffMarker', () => {
 describe('AgentHandoffBadge', () => {
   describe('Default Mode', () => {
     it('should render from and to agent names', () => {
-      render(<AgentHandoffBadge from="Orchestrator" to="NLQ Agent" />);
+      render(
+        <AgentHandoffBadge from="Orchestrator" to="Metrics Query Agent" />
+      );
 
       expect(screen.getByText('Orchestrator')).toBeInTheDocument();
-      expect(screen.getByText('NLQ Agent')).toBeInTheDocument();
+      expect(screen.getByText('Metrics Query Agent')).toBeInTheDocument();
+    });
+
+    it('should render legacy NLQ Agent as Metrics Query Agent', () => {
+      render(<AgentHandoffBadge from="Orchestrator" to="NLQ Agent" />);
+
+      expect(screen.getByText('Metrics Query Agent')).toBeInTheDocument();
+      expect(screen.queryByText('NLQ Agent')).not.toBeInTheDocument();
     });
 
     it('should render reason when provided', () => {
@@ -168,7 +179,7 @@ describe('AgentHandoffBadge', () => {
 
     it('should not render reason colon when reason is not provided', () => {
       const { container } = render(
-        <AgentHandoffBadge from="Orchestrator" to="NLQ Agent" />
+        <AgentHandoffBadge from="Orchestrator" to="Metrics Query Agent" />
       );
 
       // Should not have the colon separator
@@ -179,7 +190,7 @@ describe('AgentHandoffBadge', () => {
       const agents = [
         'Orchestrator',
         'OpenManager Orchestrator',
-        'NLQ Agent',
+        'Metrics Query Agent',
         'Analyst Agent',
         'Reporter Agent',
         'Advisor Agent',
@@ -205,16 +216,24 @@ describe('AgentHandoffBadge', () => {
   describe('Compact Mode', () => {
     it('should render in compact mode', () => {
       render(
-        <AgentHandoffBadge from="Orchestrator" to="NLQ Agent" compact={true} />
+        <AgentHandoffBadge
+          from="Orchestrator"
+          to="Metrics Query Agent"
+          compact={true}
+        />
       );
 
       // In compact mode, only 'to' agent name is shown as text
-      expect(screen.getByText('NLQ Agent')).toBeInTheDocument();
+      expect(screen.getByText('Metrics Query Agent')).toBeInTheDocument();
     });
 
     it('should have smaller styling in compact mode', () => {
       const { container } = render(
-        <AgentHandoffBadge from="Orchestrator" to="NLQ Agent" compact={true} />
+        <AgentHandoffBadge
+          from="Orchestrator"
+          to="Metrics Query Agent"
+          compact={true}
+        />
       );
 
       // Compact mode uses inline-flex span
@@ -230,7 +249,7 @@ describe('AgentHandoffBadge', () => {
 
     it('should render semantic HTML structure', () => {
       const { container } = render(
-        <AgentHandoffBadge from="Orchestrator" to="NLQ Agent" />
+        <AgentHandoffBadge from="Orchestrator" to="Metrics Query Agent" />
       );
 
       // Default mode uses div container
@@ -262,8 +281,8 @@ describe('Integration: Parse and Render', () => {
 
   it('should handle multiple handoffs in sequence', () => {
     const handoffs = [
-      '🔄 **Orchestrator** → **NLQ Agent**: 서버 조회',
-      '🔄 **NLQ Agent** → **Analyst Agent**: 이상 탐지',
+      '🔄 **Orchestrator** → **Metrics Query Agent**: 서버 조회',
+      '🔄 **Metrics Query Agent** → **Analyst Agent**: 이상 탐지',
       '🔄 **Analyst Agent** → **Reporter Agent**: 보고서 생성',
     ];
 

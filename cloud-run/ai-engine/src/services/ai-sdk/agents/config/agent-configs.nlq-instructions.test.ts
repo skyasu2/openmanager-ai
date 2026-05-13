@@ -89,13 +89,13 @@ vi.mock('../../../../lib/config-parser', () => ({
 
 import { getAgentConfig, getAgentInstructions } from './agent-configs';
 
-describe('agent-configs NLQ instruction layering', () => {
+describe('agent-configs Metrics Query instruction layering', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('resolves NLQ instructions dynamically from the user query', () => {
-    const nlqConfig = getAgentConfig('NLQ Agent');
+  it('resolves Metrics Query instructions dynamically from the user query', () => {
+    const nlqConfig = getAgentConfig('Metrics Query Agent');
 
     expect(nlqConfig.getInstructions).toBeTypeOf('function');
     expect(getAgentInstructions(nlqConfig, 'CPU가 가장 높은 서버')).toBe(
@@ -104,7 +104,11 @@ describe('agent-configs NLQ instruction layering', () => {
     expect(mockGetNlqInstructions).toHaveBeenCalledWith('CPU가 가장 높은 서버');
   });
 
-  it('keeps static instructions for non-NLQ agents', () => {
+  it('resolves legacy NLQ Agent config key as Metrics Query', () => {
+    expect(getAgentConfig('NLQ Agent')?.name).toBe('Metrics Query Agent');
+  });
+
+  it('keeps static instructions for non-Metrics Query agents', () => {
     const advisorConfig = getAgentConfig('Advisor Agent');
 
     expect(advisorConfig.getInstructions).toBeUndefined();

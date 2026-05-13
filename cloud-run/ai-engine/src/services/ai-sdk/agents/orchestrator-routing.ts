@@ -9,6 +9,7 @@
 import { generateText, hasToolCall, stepCountIs } from 'ai';
 import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
+import { isMetricsQueryRuntimeName } from '../../../core/assistant-runtime/agent-name-compat';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import {
@@ -102,7 +103,7 @@ function getAgentInstructions(config: AgentConfig, query: string): string {
 function getForcedRoutingCapabilityRequirements(
   agentName: string
 ): ModelCapabilityRequirements {
-  if (agentName === 'NLQ Agent') {
+  if (isMetricsQueryRuntimeName(agentName)) {
     return { requireToolCalling: true, minContextTokens: 16_000 };
   }
 

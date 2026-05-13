@@ -43,8 +43,8 @@ describe('orchestrator execution Langfuse metadata', () => {
     const response: MultiAgentResponse = {
       success: true,
       response: 'fallback response',
-      handoffs: [{ from: 'Orchestrator', to: 'NLQ Agent', reason: 'Routing' }],
-      finalAgent: 'NLQ Agent',
+      handoffs: [{ from: 'Orchestrator', to: 'Metrics Query Agent', reason: 'Routing' }],
+      finalAgent: 'Metrics Query Agent',
       toolsCalled: ['getServerMetrics'],
       usage: { promptTokens: 10, completionTokens: 5, totalTokens: 15 },
       metadata: {

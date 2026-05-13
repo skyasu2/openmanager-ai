@@ -37,10 +37,10 @@ Product positioning:
 
 ### AI Engine Components
 - Supervisor: mode resolver for deterministic/single/multi execution (`single` gated, `auto` complexity-based, multi-agent reserved for escalation)
-- Agents (실행): NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
+- Agents (실행): Metrics Query, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
 - Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
 - Providers:
-  - Group A tool-calling path (Supervisor/NLQ/Orchestrator): Groq → Cerebras → Mistral
+  - Group A tool-calling path (Supervisor/Metrics Query/Orchestrator): Groq → Cerebras → Mistral
   - Group B tool-calling path (Analyst/Reporter/Advisor/Verifier): Cerebras → Groq → Mistral
   - Structured routing path: Groq → Cerebras → Mistral
   - Vision: Gemini Flash-Lite → OpenRouter

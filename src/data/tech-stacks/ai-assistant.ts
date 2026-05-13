@@ -23,7 +23,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       'LPU(Language Processing Unit) 기반 초고속 추론 인프라. GPU 대비 일관된 응답 속도와 낮은 지연시간으로 500 Tokens/s 속도 제공',
     implementation:
-      '→ NLQ + Analyst + Tool-calling 1순위 모델. 고도의 도구 실행력으로 실시간 메트릭 조회 및 이상 분석 전담',
+      '→ Metrics Query + Analyst + Tool-calling 1순위 모델. 고도의 도구 실행력으로 실시간 메트릭 조회 및 이상 분석 전담',
     version: 'Llama 4 Scout (17B)',
     status: 'active',
     icon: '⚡',
@@ -168,7 +168,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       'Serverless Redis 서비스. Edge에서 동작하는 초저지연 캐싱과 Rate Limiting 제공',
     implementation:
-      '→ AI 응답 캐싱(3시간 TTL), API Rate Limiting, 세션 저장에 사용. 무료 티어 10K req/day',
+      '→ AI 응답 캐싱(3시간 TTL), API Rate Limiting, 세션 저장에 사용. 무료 티어 500K commands/month',
     version: '@upstash/redis v1.36',
     status: 'active',
     icon: '⚡',

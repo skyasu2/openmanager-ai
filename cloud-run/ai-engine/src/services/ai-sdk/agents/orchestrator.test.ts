@@ -122,7 +122,7 @@ vi.mock('ai', () => ({
     options?.output
       ? {
           output: {
-            selectedAgent: 'NLQ Agent',
+            selectedAgent: 'Metrics Query Agent',
             confidence: 0.86,
             reasoning: 'Mock reasoning for agent selection',
           },
@@ -228,8 +228,8 @@ describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 90000 }, () =
     it('should have all required agent configs defined', async () => {
       const { AGENT_CONFIGS } = await import('./config');
 
-      expect(AGENT_CONFIGS['NLQ Agent']).toBeDefined();
-      expect(AGENT_CONFIGS['NLQ Agent'].name).toBe('NLQ Agent');
+      expect(AGENT_CONFIGS['Metrics Query Agent']).toBeDefined();
+      expect(AGENT_CONFIGS['Metrics Query Agent'].name).toBe('Metrics Query Agent');
 
       expect(AGENT_CONFIGS['Analyst Agent']).toBeDefined();
       expect(AGENT_CONFIGS['Analyst Agent'].name).toBe('Analyst Agent');
@@ -244,7 +244,7 @@ describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 90000 }, () =
     it('should have getAgentConfig function working', async () => {
       const { getAgentConfig } = await import('./config');
 
-      const nlqConfig = getAgentConfig('NLQ Agent');
+      const nlqConfig = getAgentConfig('Metrics Query Agent');
       expect(nlqConfig).toBeDefined();
       expect(nlqConfig?.instructions).toBeDefined();
       expect(nlqConfig?.tools).toBeDefined();
@@ -377,10 +377,10 @@ describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 90000 }, () =
 });
 
 describe('Agent Model Selection (AI SDK v6)', () => {
-  it('NLQ agent config should have getModel function', async () => {
+  it('Metrics Query agent config should have getModel function', async () => {
     const { AGENT_CONFIGS } = await import('./config');
-    expect(AGENT_CONFIGS['NLQ Agent'].getModel).toBeDefined();
-    expect(typeof AGENT_CONFIGS['NLQ Agent'].getModel).toBe('function');
+    expect(AGENT_CONFIGS['Metrics Query Agent'].getModel).toBeDefined();
+    expect(typeof AGENT_CONFIGS['Metrics Query Agent'].getModel).toBe('function');
   });
 
   it('Analyst agent config should have getModel function', async () => {
@@ -401,16 +401,16 @@ describe('Agent Model Selection (AI SDK v6)', () => {
   it('isAgentAvailable should return true when model is available', async () => {
     const { isAgentAvailable } = await import('./config');
     // With mocked providers, agents should be available
-    expect(isAgentAvailable('NLQ Agent')).toBe(true);
+    expect(isAgentAvailable('Metrics Query Agent')).toBe(true);
     expect(isAgentAvailable('Analyst Agent')).toBe(true);
   });
 });
 
 describe('Agent Tools Configuration (AI SDK v6)', () => {
-  it('NLQ agent should have server metric tools', async () => {
+  it('Metrics Query agent should have server metric tools', async () => {
     const { AGENT_CONFIGS } = await import('./config');
-    expect(AGENT_CONFIGS['NLQ Agent'].tools).toBeDefined();
-    expect(Object.keys(AGENT_CONFIGS['NLQ Agent'].tools).length).toBeGreaterThan(0);
+    expect(AGENT_CONFIGS['Metrics Query Agent'].tools).toBeDefined();
+    expect(Object.keys(AGENT_CONFIGS['Metrics Query Agent'].tools).length).toBeGreaterThan(0);
   });
 
   it('Analyst agent should have analysis tools', async () => {
@@ -432,29 +432,29 @@ describe('Agent Tools Configuration (AI SDK v6)', () => {
   });
 });
 
-describe('Agent Pattern Matching (AI SDK v6)', () => {
-  it('NLQ agent should have matchPatterns for server queries', async () => {
+describe('Agent Pattern Metadata (AI SDK v6)', () => {
+  it('Metrics Query agent should expose metadata matchPatterns for server queries', async () => {
     const { AGENT_CONFIGS } = await import('./config');
-    expect(AGENT_CONFIGS['NLQ Agent'].matchPatterns).toBeDefined();
-    expect(AGENT_CONFIGS['NLQ Agent'].matchPatterns.length).toBeGreaterThan(0);
-    expect(AGENT_CONFIGS['NLQ Agent'].matchPatterns).toContain('서버');
+    expect(AGENT_CONFIGS['Metrics Query Agent'].matchPatterns).toBeDefined();
+    expect(AGENT_CONFIGS['Metrics Query Agent'].matchPatterns.length).toBeGreaterThan(0);
+    expect(AGENT_CONFIGS['Metrics Query Agent'].matchPatterns).toContain('서버');
   });
 
-  it('Analyst agent should have matchPatterns for analysis', async () => {
+  it('Analyst agent should expose metadata matchPatterns for analysis', async () => {
     const { AGENT_CONFIGS } = await import('./config');
     expect(AGENT_CONFIGS['Analyst Agent'].matchPatterns).toBeDefined();
     expect(AGENT_CONFIGS['Analyst Agent'].matchPatterns).toContain('이상');
     expect(AGENT_CONFIGS['Analyst Agent'].matchPatterns).toContain('예측');
   });
 
-  it('Reporter agent should have matchPatterns for reports', async () => {
+  it('Reporter agent should expose metadata matchPatterns for reports', async () => {
     const { AGENT_CONFIGS } = await import('./config');
     expect(AGENT_CONFIGS['Reporter Agent'].matchPatterns).toBeDefined();
     expect(AGENT_CONFIGS['Reporter Agent'].matchPatterns).toContain('보고서');
     expect(AGENT_CONFIGS['Reporter Agent'].matchPatterns).toContain('장애');
   });
 
-  it('Advisor agent should have matchPatterns for troubleshooting', async () => {
+  it('Advisor agent should expose metadata matchPatterns for troubleshooting', async () => {
     const { AGENT_CONFIGS } = await import('./config');
     expect(AGENT_CONFIGS['Advisor Agent'].matchPatterns).toBeDefined();
     expect(AGENT_CONFIGS['Advisor Agent'].matchPatterns).toContain('해결');
@@ -556,12 +556,12 @@ describe('executeMultiAgentStream', () => {
 // ============================================================================
 
 describe('preFilterQuery', () => {
-  it('should suggest NLQ Agent for server queries', async () => {
+  it('should suggest Metrics Query Agent for server queries', async () => {
     const { preFilterQuery } = await import('./orchestrator');
 
     const result = preFilterQuery('web-server-01 CPU 상태 알려줘');
 
-    expect(result.suggestedAgent).toBe('NLQ Agent');
+    expect(result.suggestedAgent).toBe('Metrics Query Agent');
     expect(result.confidence).toBeGreaterThanOrEqual(0.5);
   });
 
@@ -611,7 +611,7 @@ describe('Agent Config Exports', () => {
   it('should expose config entries for each public agent type', async () => {
     const { getAgentConfig } = await import('./config');
 
-    expect(getAgentConfig('NLQ Agent')).toBeDefined();
+    expect(getAgentConfig('Metrics Query Agent')).toBeDefined();
     expect(getAgentConfig('Analyst Agent')).toBeDefined();
     expect(getAgentConfig('Reporter Agent')).toBeDefined();
     expect(getAgentConfig('Advisor Agent')).toBeDefined();
@@ -637,7 +637,7 @@ describe('Vision Agent Config Integration', () => {
     const { AGENT_CONFIGS } = await import('./config');
 
     expect(Object.keys(AGENT_CONFIGS)).toEqual([
-      'NLQ Agent',
+      'Metrics Query Agent',
       'Analyst Agent',
       'Reporter Agent',
       'Advisor Agent',

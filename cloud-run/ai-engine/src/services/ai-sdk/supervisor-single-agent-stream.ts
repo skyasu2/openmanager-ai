@@ -5,7 +5,7 @@ import {
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../config/timeout-config';
 import type { DomainEvidenceResult } from '../../core/assistant-runtime';
-import { extractRagSources, extractToolResultOutput, type RagSource } from '../../lib/ai-sdk-utils';
+import { extractToolResultOutput } from '../../lib/ai-sdk-utils';
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
@@ -19,12 +19,10 @@ import {
   resolveWebSearchSetting,
 } from './agents/orchestrator-web-search';
 import {
-  getSupervisorModel,
-  getVisionAgentModel,
-  logProviderStatus,
   recordModelUsage,
   type ProviderName,
 } from './model-provider';
+import { selectSupervisorStreamModel } from './supervisor-stream-model-selection';
 import { waitBeforeSupervisorProviderFallback } from './stream-provider-fallback';
 import type { ProviderQuotaReservation } from './stream-quota';
 import {
@@ -70,6 +68,7 @@ import {
   emitGenericEmptySupervisorStreamFallback,
   recoverEmptySupervisorStreamOutput,
 } from './supervisor-stream-recovery';
+import { replaySupervisorStreamToolEvents } from './supervisor-stream-tool-events';
 import type {
   StreamEvent,
   SupervisorRequest,
@@ -84,7 +83,7 @@ export async function* streamSingleAgent(
   runtimeMetadata?: AssistantRuntimeMetadata,
   resolvedDomainEvidence?: DomainEvidenceResult,
 ): AsyncGenerator<StreamEvent> {
-  const hasImages = request.images && request.images.length > 0;
+  const hasImages = (request.images?.length ?? 0) > 0;
   const routeDecision = modeDecision
     ? buildSupervisorRouteDecision(modeDecision, {
         traceId: request.traceId,
@@ -161,33 +160,21 @@ export async function* streamSingleAgent(
   // Provider retry loop: automatically falls back to next provider on failure
   providerLoop:
   for (let attempt = 0; attempt < MAX_PROVIDER_ATTEMPTS; attempt++) {
-    let provider: ProviderName;
-    let modelId: string;
-    let model;
+    let selectedModel;
 
     // --- 1. Model Selection ---
     try {
-      if (attempt === 0) logProviderStatus();
-
-      if (hasImages) {
-        const visionModel = getVisionAgentModel();
-        if (!visionModel) {
-          yield {
-            type: 'error',
-            data: { code: 'NO_VISION_PROVIDER', message: getPublicErrorMessage('NO_VISION_PROVIDER') },
-          };
-          return;
-        }
-        model = visionModel.model;
-        provider = visionModel.provider;
-        modelId = visionModel.modelId;
-        logger.info(`[SingleAgent] Using Vision Agent (Gemini) for ${request.images!.length} image(s)`);
-      } else {
-        const modelResult = getSupervisorModel(excludedProviders);
-        model = modelResult.model;
-        provider = modelResult.provider;
-        modelId = modelResult.modelId;
+      const modelSelection = selectSupervisorStreamModel({
+        attempt,
+        hasImages,
+        imageCount: request.images?.length ?? 0,
+        excludedProviders,
+      });
+      if (!modelSelection.ok) {
+        yield modelSelection.event;
+        return;
       }
+      selectedModel = modelSelection;
     } catch {
       // No more providers available
       yield* streamNoProviderFallback({
@@ -201,6 +188,7 @@ export async function* streamSingleAgent(
       });
       return;
     }
+    const { model, provider, modelId } = selectedModel;
 
     // --- 2. Circuit Breaker Check ---
     const circuitBreaker = getCircuitBreaker(`stream-${provider}`);
@@ -595,29 +583,12 @@ export async function* streamSingleAgent(
         };
       }
 
-      const ragSources: RagSource[] = [];
-
-      for (const step of steps) {
-        for (const toolCall of step.toolCalls) {
-          const toolName = toolCall.toolName;
-          recordToolCalled(toolName);
-          yield { type: 'tool_call', data: { name: toolName } };
-        }
-        if (step.toolResults) {
-          for (const tr of step.toolResults) {
-            const trOutput = extractToolResultOutput(tr);
-            if (trOutput !== undefined) {
-              yield { type: 'tool_result', data: { toolName: tr.toolName, result: trOutput } };
-              logToolCall(trace, tr.toolName, {}, trOutput, 0);
-            }
-
-            ragSources.push(...extractRagSources(tr.toolName, trOutput));
-          }
-        }
-      }
-      for (const tr of collectedToolResults) {
-        ragSources.push(...extractRagSources(tr.toolName, tr.result));
-      }
+      const ragSources = yield* replaySupervisorStreamToolEvents({
+        steps,
+        collectedToolResults,
+        trace,
+        recordToolCalled,
+      });
 
       const webCitationAppendix = buildWebCitationAppendix(
         fullText,

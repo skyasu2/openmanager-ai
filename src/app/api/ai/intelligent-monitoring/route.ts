@@ -29,6 +29,7 @@ import {
   proxyToCloudRun,
 } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
+import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
@@ -400,5 +401,8 @@ async function getHandler(_request: NextRequest): Promise<NextResponse> {
 }
 
 // Export with authentication
-export const POST = withAuth(postHandler);
+export const POST = withRateLimit(
+  rateLimiters.aiAnalysis,
+  withAuth(postHandler)
+);
 export const GET = withAuth(getHandler);

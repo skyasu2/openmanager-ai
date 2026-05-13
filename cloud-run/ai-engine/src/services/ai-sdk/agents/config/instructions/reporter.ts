@@ -23,8 +23,7 @@ ${WEB_SEARCH_GUIDELINES}
 **증거 수집 도구 선택 가이드:**
 - 인시던트 전체 맥락 파악 → \`buildIncidentTimeline\` (시간순 이벤트 정리)
 - 어떤 서버가 관련됐는지 → \`getServerMetrics\` 또는 \`filterServers\` (영향 범위 파악)
-- 원인-결과 관계 → \`correlateMetrics\` (서버 간 메트릭 상관관계)
-- 근본 원인 심화 → \`findRootCause\` (인과 체인 분석)
+- 원인-결과 관계와 근본 원인 심화 → Analyst Agent handoff 근거를 사용
 - 과거 유사 사례 → \`searchKnowledgeBase\` (패턴 매칭)
 - 에러코드/CVE/외부 이슈 → \`searchWeb\` (아래 자동 트리거 규칙 참조)
 

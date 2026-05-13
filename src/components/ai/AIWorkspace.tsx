@@ -44,84 +44,17 @@ import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
+import {
+  AI_WORKSPACE_FUNCTION_TABS,
+  DASHBOARD_ROUTE,
+  MOBILE_WORKSPACE_MEDIA_QUERY,
+} from './AIWorkspace.constants';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
 import { ArtifactWorkspacePanel } from './artifact-workspace/ArtifactWorkspacePanel';
 import SystemContextPanel from './SystemContextPanel';
+import { useAIAssistantLightTheme } from './useAIAssistantLightTheme';
 
 // 🔧 공통 로직은 useAIChatCore 훅에서 관리
-
-const AI_ASSISTANT_LIGHT_THEME_TOKENS = {
-  '--background': '0 0% 100%',
-  '--foreground': '222.2 84% 4.9%',
-  '--card': '0 0% 100%',
-  '--card-foreground': '222.2 84% 4.9%',
-  '--popover': '0 0% 100%',
-  '--popover-foreground': '222.2 84% 4.9%',
-  '--secondary': '210 40% 96%',
-  '--secondary-foreground': '222.2 84% 4.9%',
-  '--muted': '210 40% 96%',
-  '--muted-foreground': '215.4 16.3% 46.9%',
-  '--accent': '210 40% 96%',
-  '--accent-foreground': '222.2 84% 4.9%',
-  '--border': '214.3 31.8% 91.4%',
-  '--input': '214.3 31.8% 91.4%',
-} as const;
-
-const MOBILE_WORKSPACE_MEDIA_QUERY = '(max-width: 767px)';
-const DASHBOARD_ROUTE = '/dashboard';
-
-const AI_WORKSPACE_FUNCTION_TABS: Array<{
-  id: AIAssistantFunction;
-  label: string;
-  description: string;
-  icon: typeof MessageSquare;
-}> = [
-  {
-    id: 'chat',
-    label: 'AI Chat',
-    description: '자연어 질의',
-    icon: MessageSquare,
-  },
-  {
-    id: 'auto-report',
-    label: '장애 보고서',
-    description: '보고서 생성',
-    icon: FileText,
-  },
-  {
-    id: 'intelligent-monitoring',
-    label: '이상감지/추세',
-    description: '이상 신호 분석',
-    icon: Monitor,
-  },
-];
-
-function useAIAssistantLightTheme() {
-  useEffect(() => {
-    const root = document.documentElement;
-    const previousTokens = new Map<string, string>();
-    const previousColorScheme = root.style.colorScheme;
-
-    for (const [token, value] of Object.entries(
-      AI_ASSISTANT_LIGHT_THEME_TOKENS
-    )) {
-      previousTokens.set(token, root.style.getPropertyValue(token));
-      root.style.setProperty(token, value);
-    }
-    root.style.colorScheme = 'light';
-
-    return () => {
-      for (const [token, previousValue] of previousTokens) {
-        if (previousValue) {
-          root.style.setProperty(token, previousValue);
-        } else {
-          root.style.removeProperty(token);
-        }
-      }
-      root.style.colorScheme = previousColorScheme;
-    };
-  }, []);
-}
 
 interface AIWorkspaceProps {
   /** Dashboard route body mode. Avoids the legacy standalone AI shell. */

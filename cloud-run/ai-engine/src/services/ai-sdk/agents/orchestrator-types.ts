@@ -33,11 +33,14 @@ export const ORCHESTRATOR_CONFIG = {
   /**
    * Minimum confidence required to bypass LLM routing and force a specific agent.
    * Slightly tuned to increase single-shot routing for clear infra queries
-   * and reduce LLM latency where signal is unambiguous.
+   * and reduce LLM latency where signal is unambiguous. Pre-filter results should
+   * be either >= this value or below fallbackRoutingConfidence to avoid a gray band.
    */
   forcedRoutingConfidence: 0.85,
   /**
    * Minimum confidence to use pre-filter suggested agent when LLM routing is inconclusive.
+   * Values between fallbackRoutingConfidence and forcedRoutingConfidence should not
+   * be emitted by deterministic pre-filter branches.
    */
   fallbackRoutingConfidence: 0.65,
 };
@@ -169,7 +172,7 @@ export function buildRoutingPrompt(query: string): string {
   return `사용자 질문을 분석하고 적절한 에이전트를 선택하세요.
 
 ## 사용 가능한 에이전트
-- NLQ Agent: 서버 상태 조회, CPU/메모리/디스크 메트릭, 필터링, 요약
+- Metrics Query Agent: 서버 상태 조회, CPU/메모리/디스크 메트릭, 필터링, 요약
 - Analyst Agent: 이상 탐지, 트렌드 예측, 패턴 분석, 근본 원인 분석
 - Reporter Agent: 장애 보고서 생성, 인시던트 타임라인
 - Advisor Agent: 문제 해결 방법, CLI 명령어 추천, 과거 사례 검색
@@ -216,12 +219,12 @@ export const ORCHESTRATOR_INSTRUCTIONS = `당신은 **서버 모니터링 플랫
 ### 핸드오프 대상 (전문 에이전트 위임)
 다음 키워드가 포함된 **서버/모니터링 관련** 질문만 핸드오프:
 
-#### NLQ Agent - 서버 데이터 질의
+#### Metrics Query Agent - 서버 데이터 질의
 **키워드**: 서버, 상태, CPU, 메모리, 디스크, 목록, 조회, 몇 대, 어떤 서버, 평균, 최대, 최소, 지난, 시간
-- "서버 상태 알려줘" → NLQ Agent
-- "CPU 높은 서버" → NLQ Agent
-- "지난 6시간 CPU 평균" → NLQ Agent (시간 범위 집계)
-- "전체 서버 메모리 최대값" → NLQ Agent
+- "서버 상태 알려줘" → Metrics Query Agent
+- "CPU 높은 서버" → Metrics Query Agent
+- "지난 6시간 CPU 평균" → Metrics Query Agent (시간 범위 집계)
+- "전체 서버 메모리 최대값" → Metrics Query Agent
 
 #### Analyst Agent - 이상 탐지/분석
 **키워드**: 이상, 분석, 예측, 트렌드, 패턴, 원인, 왜 (서버/시스템 관련)
@@ -243,7 +246,7 @@ export const ORCHESTRATOR_INSTRUCTIONS = `당신은 **서버 모니터링 플랫
    - 없음 → 직접 답변
    - 있음 → 2번으로
 2. 어떤 전문 에이전트가 적합한가?
-   - 데이터 조회/요약 → NLQ Agent (요약 포함)
+   - 데이터 조회/요약 → Metrics Query Agent (요약 포함)
    - 이상/분석 → Analyst Agent
    - 보고서 → Reporter Agent
    - 해결법 → Advisor Agent
@@ -251,7 +254,7 @@ export const ORCHESTRATOR_INSTRUCTIONS = `당신은 **서버 모니터링 플랫
 ## 중요 규칙
 1. **일반 대화는 빠르게 직접 답변** (핸드오프 금지)
 2. **서버 관련 질문만 핸드오프**
-3. 불명확하지만 서버 관련인 것 같으면 → NLQ Agent
+3. 불명확하지만 서버 관련인 것 같으면 → Metrics Query Agent
 4. 핸드오프 시 reason 명시
 5. **한국어로 응답 / Respond in Korean** (한자 절대 금지 / No Chinese characters, 러시아어/독일어/일본어/베트남어 등 다른 언어 금지, 기술용어는 영어 허용)
 `;

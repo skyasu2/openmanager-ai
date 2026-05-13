@@ -94,14 +94,14 @@ export const nextJsApiHandlers = [
         type: 'handoff',
         data: {
           from: 'OpenManager Orchestrator',
-          to: 'NLQ Agent',
+          to: 'Metrics Query Agent',
           reason: '서버 메트릭 조회',
         },
       },
       // 4. Agent status: processing
       {
         type: 'agent_status',
-        data: { agent: 'NLQ Agent', status: 'processing' },
+        data: { agent: 'Metrics Query Agent', status: 'processing' },
       },
       // 5. Tool call event
       {
@@ -137,7 +137,7 @@ export const nextJsApiHandlers = [
         type: 'done',
         data: {
           success: true,
-          finalAgent: 'NLQ Agent',
+          finalAgent: 'Metrics Query Agent',
           toolsCalled: ['getServerMetrics'],
           usage: { promptTokens: 150, completionTokens: 80 },
           metadata: { durationMs: 1200, provider: 'cerebras' },

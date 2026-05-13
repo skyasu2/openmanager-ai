@@ -13,6 +13,7 @@ export {
   getAgentConfig,
   getAgentInstructions,
   isAgentName,
+  normalizeAgentName,
   isAgentAvailable,
   getAvailableAgents,
   type AgentConfig,
@@ -44,3 +45,15 @@ export {
   REPORTER_INSTRUCTIONS,
   ADVISOR_INSTRUCTIONS,
 } from './instructions';
+
+export {
+  MONITORING_INTENT_TOOL_POLICIES,
+  getMonitoringIntentOwnerAgent,
+  getMonitoringIntentTools,
+  getUncoveredMonitoringIntentTools,
+  resolveMonitoringToolPolicy,
+  type MonitoringToolChoice,
+  type MonitoringToolIntent,
+  type MonitoringToolPolicy,
+  type ResolvedMonitoringToolPolicy,
+} from './monitoring-tool-policy';

@@ -134,7 +134,7 @@ const result = await executeWithCircuitBreakerAndFallback(
 Cloud Run AI Engine은 LLM 호출 시 **자동 프로바이더 전환**을 수행합니다.
 
 ```
-Group A 요청(Supervisor/NLQ)
+Group A 요청(Supervisor/Metrics Query)
   → Groq (llama-4-scout)
      → Cerebras (llama3.1-8b)
        → Mistral (mistral-small-latest)
@@ -147,7 +147,7 @@ Group B 요청(Analyst/Reporter/Advisor/Verifier)
 
 | 프로바이더 | 모델 | 역할 | 특징 |
 |-----------|------|------|------|
-| **Groq** | llama-4-scout | Group A primary | Supervisor/NLQ 중심 텍스트 경로 |
+| **Groq** | llama-4-scout | Group A primary | Supervisor/Metrics Query 중심 텍스트 경로 |
 | **Cerebras** | llama3.1-8b | Short-context fallback / Group B first candidate when context permits | 8K context 제약으로 long-context 경로는 Groq로 전환 |
 | **Mistral** | mistral-small-latest | Tertiary | 무료 티어 친화적 최후 폴백 |
 

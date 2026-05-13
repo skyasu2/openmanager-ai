@@ -9,6 +9,10 @@
  */
 
 import { z } from 'zod';
+import {
+  METRICS_QUERY_AGENT_NAME,
+  normalizeAgentRuntimeName,
+} from '../../../core/assistant-runtime/agent-name-compat';
 
 // ============================================================================
 // Agent Routing Schema (Priority 1)
@@ -18,15 +22,33 @@ import { z } from 'zod';
  * Available agent names as a const array for type safety
  * @updated 2026-01-27 - Added Vision Agent
  */
-export const AGENT_NAMES = ['NLQ Agent', 'Analyst Agent', 'Reporter Agent', 'Advisor Agent', 'Vision Agent'] as const;
+export const AGENT_NAMES = [
+  METRICS_QUERY_AGENT_NAME,
+  'Analyst Agent',
+  'Reporter Agent',
+  'Advisor Agent',
+  'Vision Agent',
+] as const;
 export type AgentName = (typeof AGENT_NAMES)[number];
+
+const agentNameSchema = z.preprocess(
+  (value) =>
+    typeof value === 'string' ? normalizeAgentRuntimeName(value) : value,
+  z.enum(AGENT_NAMES)
+);
+
+const routingAgentNameSchema = z.preprocess(
+  (value) =>
+    typeof value === 'string' ? normalizeAgentRuntimeName(value) : value,
+  z.union([z.enum(AGENT_NAMES), z.literal('NONE')])
+);
 
 /**
  * Routing decision schema for orchestrator
  * Used with Output.object for type-safe agent selection
  */
 export const routingSchema = z.object({
-  selectedAgent: z.enum(['NLQ Agent', 'Analyst Agent', 'Reporter Agent', 'Advisor Agent', 'Vision Agent', 'NONE']),
+  selectedAgent: routingAgentNameSchema,
   confidence: z.number().min(0).max(1).describe('Routing confidence score (0-1)'),
   reasoning: z.string().describe('Brief explanation for the routing decision'),
 });
@@ -43,7 +65,7 @@ export type RoutingDecision = z.infer<typeof routingSchema>;
  */
 export const subtaskSchema = z.object({
   task: z.string().describe('Specific subtask description'),
-  agent: z.enum(['NLQ Agent', 'Analyst Agent', 'Reporter Agent', 'Advisor Agent', 'Vision Agent']),
+  agent: agentNameSchema,
   priority: z.number().min(1).max(5).optional().describe('Priority (1=highest)'),
 });
 
