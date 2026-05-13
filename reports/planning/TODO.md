@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`AI artifact surface unification 완료`)
+**Last Updated**: 2026-05-13 KST (`Server monitoring artifact surface 진행`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 진행 중인 작업 없음. |
+| Server monitoring artifact surface | High | In Progress (Codex) | 단일 서버 이상감지/추세 분석을 기능 탭 direct fetch에서 artifact execution + replay surface로 통합. 상세: [server-monitoring-artifact-surface-plan.md](server-monitoring-artifact-surface-plan.md) |
 
 ---
 
