@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | 현재 진행 중인 작업 없음. |
+| AI artifact surface unification | P1 | In Progress | Chat 자연어 artifact와 사이드바 기능 탭 실행 경로 통합. 상세: [ai-artifact-surface-unification-plan.md](ai-artifact-surface-unification-plan.md) |
 
 ---
 
