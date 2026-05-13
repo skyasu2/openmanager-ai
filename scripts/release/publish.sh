@@ -174,6 +174,7 @@ echo "✅ ${TAG} 태그 생성 완료"
 
 # ── 2. Consistency check ──────────────────────────────────
 echo "🔍 릴리스 일관성 점검..."
+npm run docs:status:check
 node scripts/release/check-release-consistency.js
 
 # ── 3. Push commit + tag to canonical GitLab ──────────────

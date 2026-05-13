@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-13
 > Tags: ai-engine, routing, cleanup, test, docs-automation
@@ -189,15 +189,20 @@ services/ai-sdk/agents/orchestrator-routing.ts
 `scripts/release/publish.sh` 마지막에 `npm run docs:status:update` 자동 실행 — 릴리스마다 status.md가 자동 갱신됨.
 
 **작업 절차**:
-- [ ] `docs/status.md`에 `<!-- AUTO:version-header -->` / `<!-- AUTO:releases -->` 마커 삽입
-- [ ] `scripts/docs/update-status.ts` 스크립트 작성
+- [x] `docs/status.md`에 `<!-- AUTO:version-header -->` / `<!-- AUTO:releases -->` 마커 삽입
+- [x] `scripts/docs/update-status.ts` 스크립트 작성
   - `package.json` → 버전 추출
   - `CHANGELOG.md` → 최근 5개 릴리스 파싱 (버전, 날짜, 주요 변경 요약)
   - 마커 사이 내용 교체
   - frontmatter `Last reviewed` + `스냅샷 기준일` 줄 업데이트
-- [ ] `package.json`에 `docs:status:update` 스크립트 등록
-- [ ] `scripts/release/publish.sh`에 `npm run docs:status:update` 연동
-- [ ] dry-run 실행 확인 후 `--write` 실행해 결과 검증
+- [x] `package.json`에 `docs:status:update` 스크립트 등록
+- [x] release commit 생성 경로에 status update 연동
+- [x] dry-run 실행 확인 후 `--write` 실행해 결과 검증
+
+**구현 메모 (2026-05-13)**:
+- `scripts/release/version-and-tag.mjs`가 `package.json`/`CHANGELOG.md` 갱신 후 `docs/status.md`를 같은 릴리스 커밋에 포함하도록 `update-status.ts --write`를 실행한다.
+- `scripts/release/publish.sh`는 push 전 `docs:status:check`를 실행해 릴리스 산출물 drift를 차단한다.
+- `publish.sh` 끝에서 write를 실행하면 이미 생성된 release commit/tag 밖에 `docs/status.md` 변경이 남으므로, 최종 구현은 release commit 생성기 안에서 write하고 publish 단계에서는 check하는 형태로 조정했다.
 
 **검증 기준**:
 - `npm run docs:status:update` 실행 결과 status.md가 package.json 버전과 일치

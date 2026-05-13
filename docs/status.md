@@ -4,11 +4,13 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-09
+> Last reviewed: 2026-05-13
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**상태 스냅샷 기준일**: 2026-05-09 | **현재 버전 스냅샷**: v8.11.113+
+<!-- AUTO:version-header -->
+**상태 스냅샷 기준일**: 2026-05-13 | **현재 버전 스냅샷**: v8.11.141
+<!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
 
@@ -52,24 +54,13 @@
 
 ## 최근 주요 릴리스 스냅샷
 
-- **v8.11.113+** (2026-05-08)
-  - AI feedback 제거 후 production closure 완료, Developer Panel 진단 컨텍스트 노출 구현, Storybook CI guardrail 적용
-  - NivoTimeSeriesChart UX 수정은 구현/테스트/targeted Playwright 시각 QA까지 완료. `storage-nfs-dc1-01` DISK hover tooltip과 active alert 서버의 anomaly rect 표시를 `QA-20260508-0424`에서 확인
-  - WSL2 `/mnt/d` 로컬 dev 차단 원인을 `Turbopack cross-filesystem symlink 제약` + `webpack client build의 node:* dynamic import 처리`로 분리하고, webpack fallback 경로를 문서화
-- **v8.11.97** (2026-05-05)
-  - broad QA remediation 진행 중, AI 응답/metric drift/formatting follow-up 보정 근거가 `reports/qa`에 누적됨
-  - 설계/운영 문서 구조를 `architecture`, `design`, `operations`, `adr`, `reference` 기준으로 재정렬
-- **v8.11.88~v8.11.96** (2026-05-03~2026-05-04)
-  - AI streaming UI, planner shadow, `MonitoringFactPack`, deterministic recovery/fallback 품질 보강
-- **v8.11.9** (2026-04-10)
-  - 툴링 정비, artifact 정책 강화, QA 인프라 정리
-  - 완성도 재평가: `97.5%`
-- **v8.11.0** (2026-04-07)
-  - release/tag 정리, node suite 최적화, 공개 snapshot 동기화
-- **v8.10.10** (2026-04-06)
-  - targeted production smoke QA pass, release evidence 경로 강화
-- **v8.9.2** (2026-03-17)
-  - observability tracing 강화, trace/status 안정화
+<!-- AUTO:releases -->
+- **v8.11.141** (2026-05-13) — Code Refactoring: ai-engine: split line-guard hotspots; Bug Fixes: harden AI response quality regressions; Tests: spec: add AI response quality regression specs
+- **v8.11.140** (2026-05-13) — Bug Fixes: ai: skip clarification for follow-up server filters
+- **v8.11.139** (2026-05-12) — Features: context: add structured findings path with legacy regex fallback; Features: routing: add query routing trace skeleton; Tests: spec: add structured findings context tests
+- **v8.11.138** (2026-05-12) — Bug Fixes: ai-engine: keep peak advice read-only; Tests: spec: add composite peak advice regression; Tests: qa: record semantic trace job path retest
+- **v8.11.137** (2026-05-12) — Bug Fixes: ai: preserve semantic trace for job QA labels; Tests: qa: record v8.11.136 natural language api qa
+<!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
 

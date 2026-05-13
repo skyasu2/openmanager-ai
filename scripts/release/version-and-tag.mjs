@@ -303,6 +303,19 @@ function updatePackageFiles(version) {
   return changed;
 }
 
+function updateStatusSnapshot() {
+  execFileSync(
+    'node',
+    [
+      '--disable-warning=MODULE_TYPELESS_PACKAGE_JSON',
+      'node_modules/ts-node/dist/bin.js',
+      'scripts/docs/update-status.ts',
+      '--write',
+    ],
+    { cwd: root, stdio: 'inherit' }
+  );
+}
+
 function printDryRun({ currentVersion, newVersion, releaseAs, previousTag, section }) {
   console.log('Release dry-run');
   console.log(`current: ${currentVersion}`);
@@ -350,6 +363,8 @@ function main() {
   const changed = updatePackageFiles(newVersion);
   writeText('CHANGELOG.md', updateChangelog(newVersion, section));
   changed.push('CHANGELOG.md');
+  updateStatusSnapshot();
+  changed.push('docs/status.md');
 
   git(['add', ...changed], { stdio: 'inherit' });
   git(['commit', '-m', `chore(release): ${newVersion}`], { stdio: 'inherit' });

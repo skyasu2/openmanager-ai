@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`AI 아키텍처 클린업 P1~P4 진행`)
+**Last Updated**: 2026-05-13 KST (`AI 아키텍처 클린업 P1~P5 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 아키텍처 클린업 + status.md 자동화 (P1~P5) | High | In Progress (Codex) | [ai-architecture-cleanup-plan.md](ai-architecture-cleanup-plan.md) — P1~P4 완료, P5 status.md 동적 갱신 자동화 대기 |
+| _None_ | - | - | 현재 진행 중인 작업 없음. |
 
 ---
 
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI architecture cleanup + status automation~~ | — | **완료** — P1~P4에서 query routing signal SSOT 정렬, artifact workspace corrupt storage regression coverage, supervisor routing re-export 제거, guest disclosure intent 주석화를 완료. P5에서 `docs/status.md` 자동 갱신 마커와 `scripts/docs/update-status.ts`, `docs:status:update/check`, release commit 연동 및 publish drift check를 추가. 검증: status dry-run/write/check, historical docs lint, Biome targeted check, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-architecture-cleanup-plan.md](archive/ai-architecture-cleanup-plan.md) |
 | ~~GitLab pipeline resource diagnostics~~ | — | **완료** — v8.11.141 tag pipeline을 재분석해 `deploy` job이 `resource_group=production`에서 `waiting_for_resource`이고 후속 jobs는 stage-blocked `created` 상태임을 확인. `gitlab:pipeline:inspect`를 추가해 pipeline/jobs/resource queue/diagnosis를 한 번에 출력하도록 보강. 검증: pipeline inspect smoke, fake SHA no-pipeline path, docs checks, `git diff --check`. |
 | ~~CI wait progress and QA evidence audit refresh~~ | — | **완료** — `runner-health-check.sh`가 로컬 runner/Docker 확인만 보장한다는 한계를 명시하고 출력에 `scope=local`을 추가. `gitlab:pipeline:head -- --wait`가 pipeline 생성 대기 중에도 `waiting_for_pipeline_creation` 진행 줄을 출력하도록 보강하고 GitLab API curl timeout을 추가. QA evidence On Hold 수치를 2026-05-13 감사 결과로 갱신. 검증: shell syntax, runner health check, pipeline wait smoke, `npm run qa:evidence:audit`, `git diff --check`. |
 | ~~CI/QA operational triage cleanup~~ | — | **완료** — v8.11.141 배포 후 남은 문제를 런타임/CI/QA evidence로 분리 진단. GitLab tag pipeline `created` 정체 시 `gitlab:pipeline:head -- --wait`가 기존 pipeline을 `not_created`로 오판하지 않도록 timeout 보고를 수정했고, `QA-20260511-0479` historical no-durable-evidence 상태를 `artifactDebt`로 분리해 recent counted run artifact warning을 해소. 검증: `bash -n scripts/gitlab/check-head-pipeline.sh`, targeted GitLab pipeline wait smoke, `npm run qa:evidence:audit`. |
