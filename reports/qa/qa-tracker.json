@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-13T02:09:08.202Z"
+    "updatedAt": "2026-05-13T02:51:02.949Z"
   },
   "sequence": {
-    "nextRunNumber": 492
+    "nextRunNumber": 493
   },
   "summary": {
-    "totalRecordedRuns": 489,
-    "totalRuns": 391,
+    "totalRecordedRuns": 490,
+    "totalRuns": 392,
     "excludedRuns": 98,
-    "totalChecks": 3471,
-    "totalPassed": 3337,
+    "totalChecks": 3485,
+    "totalPassed": 3351,
     "totalFailed": 124,
     "completionRate": 100,
     "completedItems": 555,
@@ -21,10 +21,10 @@
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260513-0491",
-    "lastRecordedAt": "2026-05-13T02:09:08.202Z",
-    "latestRecordedRunId": "QA-20260513-0491",
-    "latestRecordedAt": "2026-05-13T02:09:08.202Z"
+    "lastRunId": "QA-20260513-0492",
+    "lastRecordedAt": "2026-05-13T02:51:02.949Z",
+    "latestRecordedRunId": "QA-20260513-0492",
+    "latestRecordedAt": "2026-05-13T02:51:02.949Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -53741,6 +53741,203 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260513-0492",
+      "recordedAt": "2026-05-13T02:51:02.949Z",
+      "recordedAtKst": "2026-05-13 11:51:02 KST",
+      "title": "Vercel Playwright QA - v8.11.142 Frontend Non-AI Status and Design",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260513-0492.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5Rf1dHnkD7CvvYJ8NfjPWX6GLo5e",
+        "deploymentUrl": "https://openmanager-fvyo3962b-skyasus-projects.vercel.app",
+        "commitSha": "c1ff8ca54237541d0a3d51316756ae6ddef9ecbe"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "Landing page render and v8.11.142 footer badge",
+        "System start CTA /system-boot to /dashboard flow",
+        "Dashboard overview status summary and resource overview",
+        "Dashboard status filter for warning servers",
+        "Server list compact view and all-server expansion",
+        "Server detail direct route from resource warning",
+        "Server detail tabs: summary, performance analysis, logs and network",
+        "Alerts page active alert and history",
+        "Logs page count, filters, and realtime anchor",
+        "Topology page 18 nodes / 24 edges diagram and filters",
+        "Login page OAuth/email/guest/privacy UI",
+        "Privacy page render and 404 custom page render",
+        "Production frontend visual/layout smoke screenshots"
+      ],
+      "skippedSurfaces": [
+        "AI Assistant sidebar open/send",
+        "/dashboard/ai-assistant fullscreen workspace",
+        "Conversational AI standard five-question QA",
+        "Analyst Agent advanced analysis",
+        "Reporter Agent report generation",
+        "AI streaming/job/SSE path",
+        "Mobile viewport matrix"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux",
+          "domainName": "Frontend UI/UX Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Landing, login, dashboard, server detail, alerts, logs, topology, and 404 surfaces rendered without visible blocking layout or interaction regressions in desktop Playwright MCP smoke.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard status summary, warning filter, server detail metrics, alerts, logs, and topology surfaces showed consistent monitoring state for the v8.11.142 production deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP exercised representative non-AI production frontend flows and captured durable screenshots plus console warning evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel production remained on v8.11.142 during the run and usage check showed billed=0.0000 USD.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI Assistant, analyst, reporter, and streaming paths were intentionally excluded by request.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-13T11:44:49+09:00",
+          "summary": "Vercel usage checked after Playwright MCP frontend QA; current billing period effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing page",
+          "path": "reports/qa/evidence/qa-20260513-v811142-frontend-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard overview",
+          "path": "reports/qa/evidence/qa-20260513-v811142-dashboard-overview.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Servers page",
+          "path": "reports/qa/evidence/qa-20260513-v811142-servers-page.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Server detail",
+          "path": "reports/qa/evidence/qa-20260513-v811142-server-detail.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Alerts page",
+          "path": "reports/qa/evidence/qa-20260513-v811142-alerts-page.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Logs page",
+          "path": "reports/qa/evidence/qa-20260513-v811142-logs-page.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Topology page",
+          "path": "reports/qa/evidence/qa-20260513-v811142-topology-page.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Frontend non-AI Playwright QA summary",
+          "path": "reports/qa/evidence/qa-20260513-v811142-frontend-non-ai-playwright-summary.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Console warning log",
+          "path": "reports/qa/evidence/qa-20260513-v811142-console-warnings.log"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Servers page all expanded",
+          "path": "reports/qa/evidence/qa-20260513-v811142-servers-all-expanded.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Server performance tab",
+          "path": "reports/qa/evidence/qa-20260513-v811142-server-performance-tab.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Server logs and network tab",
+          "path": "reports/qa/evidence/qa-20260513-v811142-server-log-network-tab.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Login page",
+          "path": "reports/qa/evidence/qa-20260513-v811142-login-page.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.142 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2520832116"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -53749,16 +53946,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 243,
-      "appropriateCount": 208,
+      "seenCount": 244,
+      "appropriateCount": 209,
       "partialCount": 35,
       "inappropriateCount": 0,
       "improvementNeededCount": 44,
-      "lastRunId": "QA-20260513-0491",
-      "lastSeenAt": "2026-05-13T02:09:08.202Z",
-      "lastFit": "partially-appropriate",
+      "lastRunId": "QA-20260513-0492",
+      "lastSeenAt": "2026-05-13T02:51:02.949Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "This run verified deployment/version propagation and AI Engine health, but did not rerun the conversational five-question AI pack because no new runtime AI behavior was added in the release commit itself.",
+      "lastRationale": "AI Assistant, analyst, reporter, and streaming paths were intentionally excluded by request.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -53766,16 +53963,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 119,
-      "appropriateCount": 89,
+      "seenCount": 120,
+      "appropriateCount": 90,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260513-0491",
-      "lastSeenAt": "2026-05-13T02:09:08.202Z",
+      "lastRunId": "QA-20260513-0492",
+      "lastSeenAt": "2026-05-13T02:51:02.949Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run verified Cloud Run health, revision traffic, unauthenticated monitoring boundary, and free-tier runtime limits.",
+      "lastRationale": "Dashboard status summary, warning filter, server detail metrics, alerts, logs, and topology surfaces showed consistent monitoring state for the v8.11.142 production deployment.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -53800,16 +53997,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 173,
-      "appropriateCount": 155,
+      "seenCount": 174,
+      "appropriateCount": 156,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260513-0491",
-      "lastSeenAt": "2026-05-13T02:09:08.202Z",
+      "lastRunId": "QA-20260513-0492",
+      "lastSeenAt": "2026-05-13T02:51:02.949Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The tag pipeline initially waited for runner assignment, Vercel manual fallback closed frontend drift, and the GitLab pipeline subsequently completed deploy/deploy_ai_engine/smoke successfully.",
+      "lastRationale": "Vercel production remained on v8.11.142 during the run and usage check showed billed=0.0000 USD.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -53817,16 +54014,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 210,
-      "appropriateCount": 192,
+      "seenCount": 211,
+      "appropriateCount": 193,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260513-0491",
-      "lastSeenAt": "2026-05-13T02:09:08.202Z",
+      "lastRunId": "QA-20260513-0492",
+      "lastSeenAt": "2026-05-13T02:51:02.949Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Focused release-facing smoke covered the deployment surfaces that were drifted: Frontend version, health, Cloud Run version, revision traffic, auth boundary, and usage guard.",
+      "lastRationale": "Playwright MCP exercised representative non-AI production frontend flows and captured durable screenshots plus console warning evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -53950,19 +54147,19 @@
     },
     "frontend-ux": {
       "domainId": "frontend-ux",
-      "domainName": "Frontend UX Engineer",
+      "domainName": "Frontend UI/UX Engineer",
       "firstSeenRunId": "QA-20260507-0419",
       "firstSeenAt": "2026-05-07T01:09:27.132Z",
-      "seenCount": 2,
-      "appropriateCount": 2,
+      "seenCount": 3,
+      "appropriateCount": 3,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260507-0420",
-      "lastSeenAt": "2026-05-07T03:06:42.069Z",
+      "lastRunId": "QA-20260513-0492",
+      "lastSeenAt": "2026-05-13T02:51:02.949Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI Assistant no longer exposes feedback actions while preserving the expected copy and regenerate controls.",
+      "lastRationale": "Landing, login, dashboard, server detail, alerts, logs, topology, and 404 surfaces rendered without visible blocking layout or interaction regressions in desktop Playwright MCP smoke.",
       "lastNextAction": ""
     },
     "frontend-platform": {

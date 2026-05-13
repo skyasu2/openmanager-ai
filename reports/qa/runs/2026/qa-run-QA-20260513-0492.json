@@ -1,0 +1,195 @@
+{
+  "runId": "QA-20260513-0492",
+  "recordedAt": "2026-05-13T02:51:02.949Z",
+  "recordedAtKst": "2026-05-13 11:51:02 KST",
+  "runTitle": "Vercel Playwright QA - v8.11.142 Frontend Non-AI Status and Design",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5Rf1dHnkD7CvvYJ8NfjPWX6GLo5e",
+    "deploymentUrl": "https://openmanager-fvyo3962b-skyasus-projects.vercel.app",
+    "commitSha": "c1ff8ca54237541d0a3d51316756ae6ddef9ecbe"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "Landing page render and v8.11.142 footer badge",
+    "System start CTA /system-boot to /dashboard flow",
+    "Dashboard overview status summary and resource overview",
+    "Dashboard status filter for warning servers",
+    "Server list compact view and all-server expansion",
+    "Server detail direct route from resource warning",
+    "Server detail tabs: summary, performance analysis, logs and network",
+    "Alerts page active alert and history",
+    "Logs page count, filters, and realtime anchor",
+    "Topology page 18 nodes / 24 edges diagram and filters",
+    "Login page OAuth/email/guest/privacy UI",
+    "Privacy page render and 404 custom page render",
+    "Production frontend visual/layout smoke screenshots"
+  ],
+  "skippedSurfaces": [
+    "AI Assistant sidebar open/send",
+    "/dashboard/ai-assistant fullscreen workspace",
+    "Conversational AI standard five-question QA",
+    "Analyst Agent advanced analysis",
+    "Reporter Agent report generation",
+    "AI streaming/job/SSE path",
+    "Mobile viewport matrix"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux",
+      "domainName": "Frontend UI/UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Landing, login, dashboard, server detail, alerts, logs, topology, and 404 surfaces rendered without visible blocking layout or interaction regressions in desktop Playwright MCP smoke.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard status summary, warning filter, server detail metrics, alerts, logs, and topology surfaces showed consistent monitoring state for the v8.11.142 production deployment.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP exercised representative non-AI production frontend flows and captured durable screenshots plus console warning evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production remained on v8.11.142 during the run and usage check showed billed=0.0000 USD.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Assistant, analyst, reporter, and streaming paths were intentionally excluded by request.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-13T11:44:49+09:00",
+      "summary": "Vercel usage checked after Playwright MCP frontend QA; current billing period effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing page",
+      "path": "reports/qa/evidence/qa-20260513-v811142-frontend-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard overview",
+      "path": "reports/qa/evidence/qa-20260513-v811142-dashboard-overview.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Servers page",
+      "path": "reports/qa/evidence/qa-20260513-v811142-servers-page.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server detail",
+      "path": "reports/qa/evidence/qa-20260513-v811142-server-detail.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Alerts page",
+      "path": "reports/qa/evidence/qa-20260513-v811142-alerts-page.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Logs page",
+      "path": "reports/qa/evidence/qa-20260513-v811142-logs-page.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Topology page",
+      "path": "reports/qa/evidence/qa-20260513-v811142-topology-page.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Frontend non-AI Playwright QA summary",
+      "path": "reports/qa/evidence/qa-20260513-v811142-frontend-non-ai-playwright-summary.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Console warning log",
+      "path": "reports/qa/evidence/qa-20260513-v811142-console-warnings.log"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Servers page all expanded",
+      "path": "reports/qa/evidence/qa-20260513-v811142-servers-all-expanded.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server performance tab",
+      "path": "reports/qa/evidence/qa-20260513-v811142-server-performance-tab.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server logs and network tab",
+      "path": "reports/qa/evidence/qa-20260513-v811142-server-log-network-tab.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Login page",
+      "path": "reports/qa/evidence/qa-20260513-v811142-login-page.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "AI Assistant functionality was intentionally excluded: no sidebar open/send, no /dashboard/ai-assistant, no analyst/reporter, no live LLM calls.",
+    "A non-blocking Next static CSS preload warning was observed on /privacy and the custom 404 route; no product-visible failure was observed.",
+    "The expected 404 resource console entry was observed only for the deliberate /not-found-smoke-qa route."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.142 pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2520832116"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

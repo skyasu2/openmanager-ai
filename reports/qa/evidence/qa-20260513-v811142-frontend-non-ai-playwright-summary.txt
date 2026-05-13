@@ -1,0 +1,44 @@
+QA-20260513 v8.11.142 frontend non-AI Playwright MCP QA summary
+
+Target:
+- https://openmanager-ai.vercel.app
+- version: 8.11.142
+- commit: c1ff8ca54237541d0a3d51316756ae6ddef9ecbe
+
+Scope:
+- Included: landing, login, privacy, 404, system boot, dashboard overview, status filters, server list, server detail tabs, alerts, logs, topology, visual/layout smoke.
+- Excluded by request: AI Assistant sidebar, /dashboard/ai-assistant, conversational AI, analyst, reporter, streaming/job paths.
+
+Observed pass checks:
+- Landing rendered with v8.11.142 footer badge and visible primary CTA.
+- System start CTA navigated through /system-boot and redirected to /dashboard.
+- Dashboard overview rendered status summary: 18 total, 17 online, 1 warning, 0 risk, 0 offline.
+- Dashboard resource overview rendered CPU/Memory/Disk gauges and Top 5 resource warnings.
+- Warning status filter selected the warning cohort and showed api-was-dc1-01 as CPU warning.
+- Server detail route /dashboard/servers/api-was-dc1-01 rendered directly from the resource warning path.
+- Server detail tabs switched among 종합 상황, 성능 분석, 로그 & 네트워크.
+- Alerts page rendered active alert and alert history for api-was-dc1-01.
+- Logs page rendered 9174 log count, level filters, and realtime anchor.
+- Topology page rendered 18 nodes / 24 edges with type filters and minimap.
+- Servers page rendered 12/18 initial cards and expanded to all 18.
+- Login page rendered OAuth, email, guest, privacy link, and v8.11.142 footer.
+- Privacy page rendered policy content and back link.
+- 404 route rendered the custom not-found page.
+
+Observed non-blocking console signals:
+- A Next static CSS preload warning appeared on /privacy and /not-found-smoke-qa.
+- The /not-found-smoke-qa navigation produced an expected 404 resource console entry while rendering the custom 404 page.
+
+Evidence screenshots/logs:
+- qa-20260513-v811142-frontend-landing.png
+- qa-20260513-v811142-dashboard-overview.png
+- qa-20260513-v811142-servers-page.png
+- qa-20260513-v811142-servers-all-expanded.png
+- qa-20260513-v811142-server-detail.png
+- qa-20260513-v811142-server-performance-tab.png
+- qa-20260513-v811142-server-log-network-tab.png
+- qa-20260513-v811142-alerts-page.png
+- qa-20260513-v811142-logs-page.png
+- qa-20260513-v811142-topology-page.png
+- qa-20260513-v811142-login-page.png
+- qa-20260513-v811142-console-warnings.log
