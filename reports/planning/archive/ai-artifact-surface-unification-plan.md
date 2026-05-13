@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-05-13
 
 # AI Artifact Surface Unification Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-13
-- TODO.md 연결: Active Tasks > AI artifact surface unification
+- TODO.md 연결: Backlog (완료 이력) > AI artifact surface unification
 
 ## 목표
 
@@ -61,21 +61,21 @@ Natural language query / Function tab click
 
 ### 테스트 시나리오
 
-- [ ] `executeChatArtifact('incident-report')`가 기존 incident generator를 호출한다.
-- [ ] `executeChatArtifact('monitoring-analysis')`가 기존 monitoring generator를 호출한다.
-- [ ] `saveArtifactExecutionReplayPack`이 artifact envelope를 local-session replay pack으로 저장한다.
-- [ ] 장애보고서 탭은 직접 fetch 대신 artifact execution helper를 사용하고, 생성된 report를 기존 UI에 표시한다.
-- [ ] 전체 시스템 이상감지/추세 탭은 직접 batch fetch 대신 artifact execution helper를 사용하고, 생성된 analysis를 기존 UI에 표시한다.
-- [ ] 단일 서버 분석은 기존 direct endpoint 요청 계약을 유지한다.
+- [x] `executeChatArtifact('incident-report')`가 기존 incident generator를 호출한다.
+- [x] `executeChatArtifact('monitoring-analysis')`가 기존 monitoring generator를 호출한다.
+- [x] `saveArtifactExecutionReplayPack`이 artifact envelope를 local-session replay pack으로 저장한다.
+- [x] 장애보고서 탭은 직접 fetch 대신 artifact execution helper를 사용하고, 생성된 report를 기존 UI에 표시한다.
+- [x] 전체 시스템 이상감지/추세 탭은 직접 batch fetch 대신 artifact execution helper를 사용하고, 생성된 analysis를 기존 UI에 표시한다.
+- [x] 단일 서버 분석은 기존 direct endpoint 요청 계약을 유지한다.
 
 ## Task 목록
 
-- [ ] Task 0 — failing tests 추가 및 커밋
-- [ ] Task 1 — artifact execution helper 구현
-- [ ] Task 2 — Chat 경로와 기능 탭을 helper로 연결
-- [ ] Task 3 — 기능 탭 artifact replay pack 저장 연결
-- [ ] Task 4 — targeted/type/lint/test 검증
-- [ ] Task 5 — 계획서 완료 처리 및 archive 이동
+- [x] Task 0 — failing tests 추가 및 커밋
+- [x] Task 1 — artifact execution helper 구현
+- [x] Task 2 — Chat 경로와 기능 탭을 helper로 연결
+- [x] Task 3 — 기능 탭 artifact replay pack 저장 연결
+- [x] Task 4 — targeted/type/lint/test 검증
+- [x] Task 5 — 계획서 완료 처리 및 archive 이동
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -87,9 +87,11 @@ Natural language query / Function tab click
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `npm run type-check` 통과
-- [ ] `npm run lint` 통과
-- [ ] `npm run test:quick` 통과
-- [ ] `git diff --check` 통과
-- [ ] 기능 탭에서 생성한 장애보고서/추세분석 결과가 artifact replay store에 저장됨
+- [x] 테스트 시나리오 전체 통과
+- [x] `npm run type-check` 통과
+- [x] `npm run lint` 통과
+- [x] `npm run test:quick` 통과
+- [x] `npm run test:contract` 통과
+- [x] `npm run line-guard` 통과
+- [x] `git diff --check` 통과
+- [x] 기능 탭에서 생성한 장애보고서/추세분석 결과가 artifact replay store에 저장됨

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-13 KST (`AI 아키텍처 클린업 P1~P5 완료`)
+**Last Updated**: 2026-05-13 KST (`AI artifact surface unification 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI artifact surface unification | P1 | In Progress | Chat 자연어 artifact와 사이드바 기능 탭 실행 경로 통합. 상세: [ai-artifact-surface-unification-plan.md](ai-artifact-surface-unification-plan.md) |
+| _None_ | - | - | 현재 진행 중인 작업 없음. |
 
 ---
 
@@ -36,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI artifact surface unification~~ | — | **완료** — Chat 자연어 artifact 실행 경로와 장애보고서/전체 시스템 이상감지 기능 탭 실행 경로를 `artifact-execution` helper로 통합. 기능 탭 생성 결과를 `ArtifactEnvelope` 기반 local-session replay pack으로 저장하고, 장애보고서 직접 API 변환 중복을 제거. 검증: targeted Vitest 3 files / 15 tests, `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `npm run line-guard`, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-artifact-surface-unification-plan.md](archive/ai-artifact-surface-unification-plan.md) |
 | ~~AI architecture cleanup + status automation~~ | — | **완료** — P1~P4에서 query routing signal SSOT 정렬, artifact workspace corrupt storage regression coverage, supervisor routing re-export 제거, guest disclosure intent 주석화를 완료. P5에서 `docs/status.md` 자동 갱신 마커와 `scripts/docs/update-status.ts`, `docs:status:update/check`, release commit 연동 및 publish drift check를 추가. 검증: status dry-run/write/check, historical docs lint, Biome targeted check, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-architecture-cleanup-plan.md](archive/ai-architecture-cleanup-plan.md) |
 | ~~GitLab pipeline resource diagnostics~~ | — | **완료** — v8.11.141 tag pipeline을 재분석해 `deploy` job이 `resource_group=production`에서 `waiting_for_resource`이고 후속 jobs는 stage-blocked `created` 상태임을 확인. `gitlab:pipeline:inspect`를 추가해 pipeline/jobs/resource queue/diagnosis를 한 번에 출력하도록 보강. 검증: pipeline inspect smoke, fake SHA no-pipeline path, docs checks, `git diff --check`. |
 | ~~CI wait progress and QA evidence audit refresh~~ | — | **완료** — `runner-health-check.sh`가 로컬 runner/Docker 확인만 보장한다는 한계를 명시하고 출력에 `scope=local`을 추가. `gitlab:pipeline:head -- --wait`가 pipeline 생성 대기 중에도 `waiting_for_pipeline_creation` 진행 줄을 출력하도록 보강하고 GitLab API curl timeout을 추가. QA evidence On Hold 수치를 2026-05-13 감사 결과로 갱신. 검증: shell syntax, runner health check, pipeline wait smoke, `npm run qa:evidence:audit`, `git diff --check`. |
