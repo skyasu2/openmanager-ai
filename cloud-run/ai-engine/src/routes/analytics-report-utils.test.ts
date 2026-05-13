@@ -15,7 +15,69 @@ vi.mock('../lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
-import { extractToolBasedData, parseAgentJsonResponse } from './analytics-report-utils';
+import {
+  extractToolBasedData,
+  IncidentReportOutputSchema,
+  parseAgentJsonResponse,
+} from './analytics-report-utils';
+
+describe('IncidentReportOutputSchema', () => {
+  const strictStructuredOutput = {
+    title: 'Redis 메모리 경고',
+    severity: 'warning',
+    description: 'cache-redis-dc1-01 메모리 사용률이 84%입니다.',
+    affected_servers: ['cache-redis-dc1-01'],
+    affectedServers: [
+      {
+        id: 'cache-redis-dc1-01',
+        name: 'cache-redis-dc1-01',
+        severity: 'warning',
+        metric: null,
+        value: null,
+      },
+    ],
+    root_cause: '메모리 사용량 상승',
+    recommendations: [
+      {
+        action: '상위 메모리 프로세스 확인',
+        priority: 'high',
+        expected_impact: 'OOM 위험 감소',
+      },
+    ],
+    pattern: 'memory threshold warning',
+    postmortem: {
+      timeline: [],
+      hypotheses: ['캐시 키 증가 또는 eviction 지연 가능성'],
+      prevention: ['메모리 알림 임계값과 eviction 정책을 재검토합니다.'],
+    },
+  };
+
+  it('OpenAI-compatible structured output에서 nested 필드를 명시적으로 요구한다', () => {
+    expect(
+      IncidentReportOutputSchema.safeParse(strictStructuredOutput).success
+    ).toBe(true);
+
+    expect(
+      IncidentReportOutputSchema.safeParse({
+        ...strictStructuredOutput,
+        postmortem: { timeline: [] },
+      }).success
+    ).toBe(false);
+
+    expect(
+      IncidentReportOutputSchema.safeParse({
+        ...strictStructuredOutput,
+        affectedServers: [
+          {
+            id: 'cache-redis-dc1-01',
+            name: 'cache-redis-dc1-01',
+            severity: 'warning',
+          },
+        ],
+      }).success
+    ).toBe(false);
+  });
+});
 
 describe('extractToolBasedData', () => {
   it('이상 징후가 없을 때 정상 상태를 반환한다', () => {
@@ -187,8 +249,20 @@ describe('parseAgentJsonResponse', () => {
     title: '기본 제목',
     severity: 'info',
     affected_servers: ['server-01'],
+    affectedServers: [
+      {
+        id: 'server-01',
+        name: 'server-01',
+        severity: 'info',
+      },
+    ],
     recommendations: [{ action: '모니터링', priority: 'low', expected_impact: '없음' }],
     pattern: '기본 패턴',
+    postmortem: {
+      timeline: [],
+      hypotheses: ['추가 분석 필요'],
+      prevention: ['모니터링을 유지합니다.'],
+    },
   };
 
   it('유효한 JSON을 파싱한다', () => {

@@ -53,22 +53,21 @@ const SeveritySchema = z.enum([
 
 export const IncidentReportOutputSchema = z
   .object({
-    title: z.string().optional(),
-    severity: SeveritySchema.optional(),
-    description: z.string().optional(),
-    affected_servers: z.array(z.string()).optional(),
+    title: z.string(),
+    severity: SeveritySchema,
+    description: z.string(),
+    affected_servers: z.array(z.string()),
     affectedServers: z
       .array(
         z.object({
           id: z.string(),
           name: z.string(),
           severity: z.string(),
-          metric: z.string().optional(),
-          value: z.number().optional(),
+          metric: z.string().nullable(),
+          value: z.number().nullable(),
         })
-      )
-      .optional(),
-    root_cause: z.string().optional(),
+      ),
+    root_cause: z.string(),
     recommendations: z
       .array(
         z.object({
@@ -76,16 +75,13 @@ export const IncidentReportOutputSchema = z
           priority: z.string(),
           expected_impact: z.string(),
         })
-      )
-      .optional(),
-    pattern: z.string().optional(),
-    postmortem: z
-      .object({
-        timeline: z.array(z.string()).optional(),
-        hypotheses: z.array(z.string()).optional(),
-        prevention: z.array(z.string()).optional(),
-      })
-      .optional(),
+      ),
+    pattern: z.string(),
+    postmortem: z.object({
+      timeline: z.array(z.string()),
+      hypotheses: z.array(z.string()),
+      prevention: z.array(z.string()),
+    }),
   })
   .passthrough();
 
@@ -116,6 +112,23 @@ export interface NormalizedIncidentReportOutput {
   }>;
   pattern: string;
   postmortem: ToolBasedData['postmortem'];
+}
+
+function normalizeAffectedServers(
+  value: Partial<IncidentReportOutput>['affectedServers'],
+  fallback: ToolBasedData['affectedServers']
+): ToolBasedData['affectedServers'] {
+  if (!Array.isArray(value)) return fallback;
+
+  return value
+    .filter((server) => server.id && server.name && server.severity)
+    .map((server) => ({
+      id: server.id,
+      name: server.name,
+      severity: server.severity,
+      ...(typeof server.metric === 'string' ? { metric: server.metric } : {}),
+      ...(typeof server.value === 'number' ? { value: server.value } : {}),
+    }));
 }
 
 /**
@@ -310,9 +323,10 @@ export function normalizeAgentIncidentReportOutput(
     affected_servers: Array.isArray(output.affected_servers)
       ? output.affected_servers
       : fallback.affected_servers,
-    affectedServers: Array.isArray(output.affectedServers)
-      ? output.affectedServers
-      : fallback.affectedServers,
+    affectedServers: normalizeAffectedServers(
+      output.affectedServers,
+      fallback.affectedServers
+    ),
     root_cause: output.root_cause || '',
     recommendations: Array.isArray(output.recommendations)
       ? output.recommendations

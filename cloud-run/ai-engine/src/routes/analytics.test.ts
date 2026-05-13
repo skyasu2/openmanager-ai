@@ -528,7 +528,8 @@ describe('Analytics Routes', () => {
         expect.objectContaining({ serverId: 'api-was-dc1-01' })
       );
       const generateTextInput = vi.mocked(generateText).mock.calls[0]?.[0];
-      const prompt = generateTextInput?.messages?.[1]?.content;
+      const prompt = generateTextInput?.messages?.[0]?.content;
+      expect(generateTextInput?.system).toBeTypeOf('string');
       expect(generateTextInput?.output).toMatchObject({
         name: 'incident_report',
         schema: expect.any(Object),

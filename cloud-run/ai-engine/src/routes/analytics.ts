@@ -524,10 +524,8 @@ ${buildMonitoringEvidenceContext(monitoringGrounding)}
     try {
       const result = await generateText({
         model: reporterModelResult.model,
-        messages: [
-          { role: 'system', content: reporterConfig.instructions },
-          { role: 'user', content: prompt },
-        ],
+        system: reporterConfig.instructions,
+        messages: [{ role: 'user', content: prompt }],
         output: Output.object({
           schema: IncidentReportOutputSchema,
           name: 'incident_report',
