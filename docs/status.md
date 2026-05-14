@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-13
+> Last reviewed: 2026-05-14
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-13 | **현재 버전 스냅샷**: v8.11.145
+**상태 스냅샷 기준일**: 2026-05-14 | **현재 버전 스냅샷**: v8.11.146
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.146** (2026-05-14) — Features: ai-engine: implement cerebras graceful exit; Tests: spec: cerebras graceful exit add failing tests before implementation; Tests: ai: harden summary fallback mock for ci
 - **v8.11.145** (2026-05-13) — Bug Fixes: ai: complete server monitoring artifact typing; Bug Fixes: ai: harden artifact surface replay persistence; Features: ai: unify selected server monitoring artifacts
 - **v8.11.144** (2026-05-13) — Tests: qa: record v8.11.143 AI assistant regression; Tests: qa: record v8.11.143 score deduction closure; Bug Fixes: ai-engine: restore incident report structured output
 - **v8.11.143** (2026-05-13) — Bug Fixes: frontend: reduce score deduction follow-up gaps; Tests: qa: record v8.11.142 frontend playwright qa; Tests: qa: record v8.11.142 production deploy smoke
 - **v8.11.142** (2026-05-13) — Features: docs: automate status snapshot updates; Code Refactoring: ai-engine: use canonical routing signal imports; Code Refactoring: ai: remove supervisor routing re-export
-- **v8.11.141** (2026-05-13) — Code Refactoring: ai-engine: split line-guard hotspots; Bug Fixes: harden AI response quality regressions; Tests: spec: add AI response quality regression specs
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
