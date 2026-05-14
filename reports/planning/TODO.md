@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (`artifact G1 서버 alias 정합성 개선`)
+**Last Updated**: 2026-05-15 KST (`follow-up-improvements-plan.md 작성 — G2/G4/line-guard 계획서 승격`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,10 +21,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: artifact G2 — guidance intent 인라인 CTA 버튼 | Low | `guidance` 응답이 텍스트만 반환해 사용자가 다시 타이핑해야 함. guidance 메시지 렌더러에 "바로 장애 보고서 생성하기" 같은 quick-action 버튼을 추가하면 클릭 한 번으로 artifact 실행 가능. 상세: [docs/design/06-artifact-system.md](../../docs/design/06-artifact-system.md) G2 |
-| P3: artifact G4 — incident-report/monitoring-analysis 생성 진행 피드백 | Low | Cloud Run 호출 3~10초 동안 스피너만 표시. "분석 중…" → "보고서 작성 중…" 단계 메시지를 채팅 버블에 삽입하면 체감 대기시간 개선. SSE 또는 낙관적 메시지 삽입으로 구현. 상세: [docs/design/06-artifact-system.md](../../docs/design/06-artifact-system.md) G4 |
-| P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 최근 20커밋 평가에서 `0ca8d9b88`이 134파일 단일 커밋으로 리뷰/cherry-pick 가능성이 낮다는 점을 확인. 이미 검증 완료된 로컬 커밋은 전달 마감 우선으로 유지하되, 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 가능한 한 2~3개 논리 커밋으로 분리하는 기준을 작업 계획/커밋 단계에 반영. |
-| P3: 커밋 후 line-guard warning buffer polish | Low | 커밋 완료 후 별도 작은 리팩터 묶음으로 진행. 현재 fail-threshold는 0건이며 warning만 41건. 상위 후보: `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts` 744줄, `src/components/dashboard/log-explorer/LogExplorerModal.tsx` 728줄, `src/components/ai/AIWorkspace.tsx` 710줄, `src/app/api/ai/supervisor/stream/v2/route.ts` 708줄, `src/components/dashboard/alert-history/AlertHistoryModal.tsx` 708줄. |
+| P3: artifact G2/G4 + line-guard polish | Low | 계획서 승격 완료 → [follow-up-improvements-plan.md](follow-up-improvements-plan.md). G2: guidance CTA 버튼 (1~2h), G4: 생성 단계 메시지 타이머 (1~1.5h), line-guard: 상위 7개 파일 650줄 미만 분리 (2~3h). 총 예상 6~8h. |
+| P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
 
 ---
 
@@ -103,6 +101,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-15) — Claude
+- [x] 계획서 정리 및 잔여 백로그 계획서 승격
+  - `artifact-ux-improvement-plan.md` → archive 이동 (T1~T8 모두 완료)
+  - `ai-status-diagnostic-command-plan.md` → archive 이동 (Task 0~5 모두 완료)
+  - Backlog G2/G4/line-guard를 [follow-up-improvements-plan.md](follow-up-improvements-plan.md)으로 승격 (Status: Approved)
+  - v8.11.150 기준 잔여 개선 분석 완료 — 블로킹 이슈 없음, Active Tasks 없음
 
 ### Completed (2026-05-09 #322) — Codex
 - [x] Dashboard 서버 카드 & 상세 페이지 UX 개선
