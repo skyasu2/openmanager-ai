@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-14 10:59:31 KST
+> Generated at: 2026-05-14 13:14:42 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 496 |
-| Total Runs (Counted) | 396 |
+| Total Recorded Runs | 497 |
+| Total Runs (Counted) | 397 |
 | Non-counted Runs | 100 |
-| Total Checks | 3511 |
-| Passed | 3374 |
+| Total Checks | 3521 |
+| Passed | 3384 |
 | Failed | 127 |
-| Completed Items | 558 |
-| Pending Items | 2 |
+| Completed Items | 560 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 3 |
-| Completion Rate | 99.64% |
-| Last Counted Run | QA-20260514-0498 (2026-05-14T01:59:28.858Z) |
-| Latest Recorded Run | QA-20260514-0498 (2026-05-14T01:59:28.858Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260514-0499 (2026-05-14T04:14:42.357Z) |
+| Latest Recorded Run | QA-20260514-0499 (2026-05-14T04:14:42.357Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,25 +34,25 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260514-0498 (2026-05-14T01:59:28.858Z)
+Latest run: QA-20260514-0499 (2026-05-14T04:14:42.357Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Add failing regressions for server-specific detail routing and action-needed conclusion consistency, then rerun the five-question production QA. |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Ensure aliases such as web-server-01 resolve to the matching web-nginx server record or return an explicit clarification instead of whole-fleet summary. |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | yes | Promote Q2 and Q4 behavior into local AI Engine/root regression tests before the next patch release. |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after v8.11.146 Playwright MCP release QA; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308. |
+| vercel | cli | checked | normal | Vercel usage checked after v8.11.147 Playwright MCP release QA; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-13T01:59:28.858Z -> 2026-05-14T01:59:28.858Z (24h)
+- Window: 2026-05-13T04:14:42.357Z -> 2026-05-14T04:14:42.357Z (24h)
 - Runs with observations: 4 recorded / 3 counted
 - Samples: 16
 
@@ -64,7 +64,7 @@ Latest run: QA-20260514-0498 (2026-05-14T01:59:28.858Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-13T01:59:28.858Z -> 2026-05-14T01:59:28.858Z (24h)
+- Window: 2026-05-13T04:14:42.357Z -> 2026-05-14T04:14:42.357Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,45 +78,34 @@ Latest run: QA-20260514-0498 (2026-05-14T01:59:28.858Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: api-version-v8.11.146 / SHA 3cc313e1
+- Deployment: api-version-v8.11.147 / SHA e506aeb6
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: GitLab v8.11.146 production tag pipeline, Vercel production /api/version and /api/health, Guest session landing and /dashboard flow, Dashboard overview OTel status and resource summary, AI Assistant sidebar open with AI engine Ready, Conversational AI standard five-question QA, Focused rerun for Q2 server-specific detail failure, AI UI network statuses for supervisor stream, async jobs, and SSE stream
+- Covered Surfaces: GitLab v8.11.147 production tag pipeline, GitLab main validation pipeline for AI Engine regression fix, Vercel production /api/version and /api/health, Guest session landing and /dashboard flow, Dashboard overview OTel status and resource summary, AI Assistant sidebar open with AI engine Ready, Conversational AI standard five-question QA, Q2 server alias detail closure for web-server-01 to web-nginx-dc1-01, Q4 action-needed contradiction closure, AI UI network statuses for wake-up, soft health, supervisor stream, NLQ extraction, and async jobs
 - Skipped Surfaces: Reporter Agent generation, Analyst advanced full analysis, Mobile viewport matrix, OAuth provider completion, Cloud Run admin /monitoring and /monitoring/traces, Full broad route pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.146 production pipeline | [GitLab v8.11.146 production pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2523965014) | - |
+| general | GitLab main validation pipeline | [GitLab main validation pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524165320) | - |
+| general | GitLab v8.11.147 production pipeline | [GitLab v8.11.147 production pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524168807) | - |
 | general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI sidebar focused rerun final state | `reports/qa/evidence/qa-20260514-v811146-ai-sidebar-rerun.png` | - |
-| playwright-report | AI five-question release QA summary | `reports/qa/evidence/qa-20260514-v811146-ai-five-question-summary.md` | - |
-| playwright-network | AI five-question network and timing log | `reports/qa/evidence/qa-20260514-v811146-ai-five-question-network.txt` | - |
-| playwright-network | Captured API network request list | `reports/qa/evidence/qa-20260514-v811146-network.json` | - |
-| playwright-report | AI sidebar snapshot before focused rerun | `reports/qa/evidence/qa-20260514-v811146-playwright-snapshot-before-rerun.md` | - |
-| playwright-report | Q2 focused rerun snapshot | `reports/qa/evidence/qa-20260514-v811146-q2-rerun-snapshot.md` | - |
-| playwright-console | Q2 focused rerun chat log | `reports/qa/evidence/qa-20260514-v811146-q2-rerun-log.txt` | - |
-| playwright-report | Q2 and Q4 focused rerun snapshot | `reports/qa/evidence/qa-20260514-v811146-q2-q4-rerun-snapshot.md` | - |
-| playwright-console | Q2 and Q4 focused rerun chat log | `reports/qa/evidence/qa-20260514-v811146-q2-q4-rerun-log.txt` | - |
+| playwright-report | AI five-question dialog transcript | `reports/qa/evidence/qa-20260514-v811147-ai-five-question-dialog.txt` | - |
+| playwright-network | AI five-question network status log | `reports/qa/evidence/qa-20260514-v811147-ai-five-question-network.txt` | - |
+| playwright-screenshot | AI sidebar five-question final state | `reports/qa/evidence/qa-20260514-v811147-ai-five-question-sidebar.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260514-0498)
-  next: Add failing regressions for server-specific detail routing and action-needed conclusion consistency, then rerun the five-question production QA.
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260514-0498)
-  next: Ensure aliases such as web-server-01 resolve to the matching web-nginx server record or return an explicit clarification instead of whole-fleet summary.
-- test-automation: Test Automation Architect (last QA-20260514-0498)
-  next: Promote Q2 and Q4 behavior into local AI Engine/root regression tests before the next patch release.
+- None
 
 ## Pending Improvements
 
-- [P1] ai-assistant-action-needed-contradiction-v811146: Action-needed answer must not contradict its immediate-action conclusion (seen 1회, last QA-20260514-0498)
-- [P1] ai-assistant-web-server-detail-v811146: Standard conversational Q2 should answer web-server-01 detail instead of whole-fleet summary (seen 1회, last QA-20260514-0498)
+- None
 
 ## Deferred Improvements
 
@@ -211,6 +200,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-artifact-short-keyword-pair-v81182: Representative short artifact keywords route correctly in production (completed 1회, last QA-20260502-0392)
 - ai-artifact-workspace-ui-wiring-v811108: AI artifact workspace UI wiring and compare UX production verification (completed 1회, last QA-20260506-0414)
 - ai-assistant-24h-peak-load-empty-response-v811124: Production AI Assistant 24시간 피크 부하 질의가 phrasing-sensitive routing/evidence drift를 보임 (completed 2회, last QA-20260512-0480)
+- ai-assistant-action-needed-contradiction-v811146: Action-needed answer must not contradict its immediate-action conclusion (completed 1회, last QA-20260514-0499)
 - ai-assistant-action-needed-over-clarification-v811132: Whole-fleet action-needed question should not require a server name before answering (completed 1회, last QA-20260512-0488)
 - ai-assistant-composite-load-advice-mutating-command-v811132: Composite peak-load advice answer must not emit unsupported mutating package-install commands (completed 1회, last QA-20260512-0488)
 - ai-assistant-domain-capability-resolver-phase2: AI Engine domain capability resolver Phase 2 release (completed 1회, last QA-20260511-0479)
@@ -230,6 +220,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-static-health-label: Static AI Engine Active label removed (completed 1회, last QA-20260503-0396)
 - ai-assistant-ux-polish-p1-p2: AI Assistant typography scale, touch target, light surface, System Context status, and provider routing polish (completed 1회, last QA-20260429-0360)
 - ai-assistant-vercel-production-core-pass: AI Assistant production browser smoke passes (completed 1회, last QA-20260428-0357)
+- ai-assistant-web-server-detail-v811146: Standard conversational Q2 should answer web-server-01 detail instead of whole-fleet summary (completed 1회, last QA-20260514-0499)
 - ai-assistant-whole-fleet-load1-empty-summary-v811132: Whole-fleet load1 spike phrasing should route to metric_peak evidence instead of empty-summary fallback (completed 1회, last QA-20260512-0488)
 - ai-cerebras-single-attempt-check: Cerebras Qwen executes once per UI question without fallback (completed 1회, last QA-20260430-0376)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
@@ -757,6 +748,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260514-0499 | 2026-05-14T04:14:42.357Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.147 AI Five-Question Closure | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260514-0498 | 2026-05-14T01:59:28.858Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.146 AI Five-Question Release Check | 10 | 0 | 2 | 0 | 0 | 3 |
 | QA-20260514-0497 | 2026-05-14T01:14:09.559Z | targeted | no | no | Vercel Playwright MCP QA - v8.11.145 AI Five-Question Deployment Gap Check | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0496 | 2026-05-13T05:24:07.631Z | targeted | yes | yes | Production QA - v8.11.144 AI Assistant 3-Feature Closure | 3 | 1 | 0 | 0 | 0 | 0 |
@@ -776,4 +768,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260512-0482 | 2026-05-11T23:30:16.424Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query closure on v8.11.129 | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0481 | 2026-05-11T17:04:04.232Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query phrasing probe on v8.11.128 | 4 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260512-0480 | 2026-05-11T16:49:15.653Z | targeted | yes | yes | Vercel Playwright QA - AI peak-load regression recheck on v8.11.128 | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260511-0479 | 2026-05-11T14:39:01.439Z | targeted | yes | yes | GitLab Release QA - v8.11.128 Domain Capability Resolver | 6 | 1 | 0 | 0 | 0 | 0 |

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-14T01:59:28.858Z"
+    "updatedAt": "2026-05-14T04:14:42.357Z"
   },
   "sequence": {
-    "nextRunNumber": 499
+    "nextRunNumber": 500
   },
   "summary": {
-    "totalRecordedRuns": 496,
-    "totalRuns": 396,
+    "totalRecordedRuns": 497,
+    "totalRuns": 397,
     "excludedRuns": 100,
-    "totalChecks": 3511,
-    "totalPassed": 3374,
+    "totalChecks": 3521,
+    "totalPassed": 3384,
     "totalFailed": 127,
-    "completionRate": 99.64,
-    "completedItems": 558,
-    "pendingItems": 2,
+    "completionRate": 100,
+    "completedItems": 560,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260514-0498",
-    "lastRecordedAt": "2026-05-14T01:59:28.858Z",
-    "latestRecordedRunId": "QA-20260514-0498",
-    "latestRecordedAt": "2026-05-14T01:59:28.858Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260514-0499",
+    "lastRecordedAt": "2026-05-14T04:14:42.357Z",
+    "latestRecordedRunId": "QA-20260514-0499",
+    "latestRecordedAt": "2026-05-14T04:14:42.357Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13678,49 +13678,49 @@
       "id": "ai-assistant-web-server-detail-v811146",
       "title": "Standard conversational Q2 should answer web-server-01 detail instead of whole-fleet summary",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260514-0498",
       "firstSeenAt": "2026-05-14T01:59:28.858Z",
-      "lastSeenRunId": "QA-20260514-0498",
-      "lastSeenAt": "2026-05-14T01:59:28.858Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260514-0499",
+      "lastSeenAt": "2026-05-14T04:14:42.357Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
-      "owner": "",
-      "lastEvidence": "",
-      "lastNote": "Production v8.11.146 Playwright MCP prompt 'web-server-01 상태를 자세히 알려줘' returned a whole-fleet summary; focused rerun reproduced the failure with monitoring-server-health metadata.",
+      "owner": "codex",
+      "lastEvidence": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-dialog.txt",
+      "lastNote": "Production v8.11.147 answered the server detail prompt with alias resolution web-server-01 -> web-nginx-dc1-01 and concrete status, resource, load, and response-time metrics.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-14T01:59:28.858Z"
+      "lastStatusChangeAt": "2026-05-14T04:14:42.357Z"
     },
     "ai-assistant-action-needed-contradiction-v811146": {
       "id": "ai-assistant-action-needed-contradiction-v811146",
       "title": "Action-needed answer must not contradict its immediate-action conclusion",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260514-0498",
       "firstSeenAt": "2026-05-14T01:59:28.858Z",
-      "lastSeenRunId": "QA-20260514-0498",
-      "lastSeenAt": "2026-05-14T01:59:28.858Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260514-0499",
+      "lastSeenAt": "2026-05-14T04:14:42.357Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
-      "owner": "",
-      "lastEvidence": "",
-      "lastNote": "Initial five-question sequence identified api-was-dc1-01 as immediate-action and api-was-dc1-02 as caution, then contradicted that by saying no immediate action was required.",
+      "owner": "codex",
+      "lastEvidence": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-dialog.txt",
+      "lastNote": "Production v8.11.147 answered that no immediate-action server exists and separately listed cache-redis-dc1-01 as a caution-only observation target, with no contradiction.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-14T01:59:28.858Z"
+      "lastStatusChangeAt": "2026-05-14T04:14:42.357Z"
     }
   },
   "runs": [
@@ -55028,6 +55028,154 @@
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260514-0499",
+      "recordedAt": "2026-05-14T04:14:42.357Z",
+      "recordedAtKst": "2026-05-14 13:14:42 KST",
+      "title": "Vercel Playwright MCP QA - v8.11.147 AI Five-Question Closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260514-0499.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "api-version-v8.11.147",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "e506aeb61eca0318c72f738fa939c915dd995f79"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.11.147 production tag pipeline",
+        "GitLab main validation pipeline for AI Engine regression fix",
+        "Vercel production /api/version and /api/health",
+        "Guest session landing and /dashboard flow",
+        "Dashboard overview OTel status and resource summary",
+        "AI Assistant sidebar open with AI engine Ready",
+        "Conversational AI standard five-question QA",
+        "Q2 server alias detail closure for web-server-01 to web-nginx-dc1-01",
+        "Q4 action-needed contradiction closure",
+        "AI UI network statuses for wake-up, soft health, supervisor stream, NLQ extraction, and async jobs"
+      ],
+      "skippedSurfaces": [
+        "Reporter Agent generation",
+        "Analyst advanced full analysis",
+        "Mobile viewport matrix",
+        "OAuth provider completion",
+        "Cloud Run admin /monitoring and /monitoring/traces",
+        "Full broad route pack"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The standard five-question conversational AI QA passed 5/5 after the v8.11.147 regression fix, including the Q2 and Q4 P1 closure prompts.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The AI answer resolved web-server-01 to web-nginx-dc1-01, stayed aligned with dashboard fleet totals, and grounded the warning state in cache-redis-dc1-01 memory metrics.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "No unsafe mutation, prompt leakage, provider scaffold leakage, or unsupported command emission was observed in the tested AI path.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The v8.11.147 GitLab production tag pipeline succeeded, Vercel production served the expected version and commit, and /api/health reported healthy dependencies.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The Q2 alias-detail and Q4 action-needed behaviors were promoted into deterministic local regression tests before the production closure QA.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-14T13:12:44+09:00",
+          "summary": "Vercel usage checked after v8.11.147 Playwright MCP release QA; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "AI five-question dialog transcript",
+          "path": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-dialog.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI five-question network status log",
+          "path": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-network.txt"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI sidebar five-question final state",
+          "path": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-sidebar.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validation pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524165320"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.11.147 production pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524168807"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -55036,50 +55184,50 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 248,
-      "appropriateCount": 212,
+      "seenCount": 249,
+      "appropriateCount": 213,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 46,
-      "lastRunId": "QA-20260514-0498",
-      "lastSeenAt": "2026-05-14T01:59:28.858Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The standard five-question QA found two answer-quality failures: Q2 returned whole-fleet summary for a server detail prompt, and Q4 produced a contradictory action-needed conclusion.",
-      "lastNextAction": "Add failing regressions for server-specific detail routing and action-needed conclusion consistency, then rerun the five-question production QA."
+      "lastRunId": "QA-20260514-0499",
+      "lastSeenAt": "2026-05-14T04:14:42.357Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The standard five-question conversational AI QA passed 5/5 after the v8.11.147 regression fix, including the Q2 and Q4 P1 closure prompts.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 123,
-      "appropriateCount": 92,
+      "seenCount": 124,
+      "appropriateCount": 93,
       "partialCount": 31,
       "inappropriateCount": 0,
       "improvementNeededCount": 32,
-      "lastRunId": "QA-20260514-0498",
-      "lastSeenAt": "2026-05-14T01:59:28.858Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Fleet status, 24h peak load, and network filtering stayed grounded, but server-specific detail did not bind to the requested server evidence.",
-      "lastNextAction": "Ensure aliases such as web-server-01 resolve to the matching web-nginx server record or return an explicit clarification instead of whole-fleet summary."
+      "lastRunId": "QA-20260514-0499",
+      "lastSeenAt": "2026-05-14T04:14:42.357Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The AI answer resolved web-server-01 to web-nginx-dc1-01, stayed aligned with dashboard fleet totals, and grounded the warning state in cache-redis-dc1-01 memory metrics.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 73,
-      "appropriateCount": 55,
+      "seenCount": 74,
+      "appropriateCount": 56,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260514-0498",
-      "lastSeenAt": "2026-05-14T01:59:28.858Z",
+      "lastRunId": "QA-20260514-0499",
+      "lastSeenAt": "2026-05-14T04:14:42.357Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "No mutating unsafe command, prompt leakage, or provider scaffold leakage was observed in this run.",
+      "lastRationale": "No unsafe mutation, prompt leakage, provider scaffold leakage, or unsupported command emission was observed in the tested AI path.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -55087,16 +55235,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 178,
-      "appropriateCount": 160,
+      "seenCount": 179,
+      "appropriateCount": 161,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260514-0498",
-      "lastSeenAt": "2026-05-14T01:59:28.858Z",
+      "lastRunId": "QA-20260514-0499",
+      "lastSeenAt": "2026-05-14T04:14:42.357Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The v8.11.146 GitLab tag pipeline completed successfully and Vercel production served the expected version and commit.",
+      "lastRationale": "The v8.11.147 GitLab production tag pipeline succeeded, Vercel production served the expected version and commit, and /api/health reported healthy dependencies.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -55104,17 +55252,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 215,
-      "appropriateCount": 197,
+      "seenCount": 216,
+      "appropriateCount": 198,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260514-0498",
-      "lastSeenAt": "2026-05-14T01:59:28.858Z",
+      "lastRunId": "QA-20260514-0499",
+      "lastSeenAt": "2026-05-14T04:14:42.357Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Playwright MCP produced durable screenshot, network, snapshot, and rerun log evidence; the failed prompts now need deterministic regression coverage.",
-      "lastNextAction": "Promote Q2 and Q4 behavior into local AI Engine/root regression tests before the next patch release."
+      "lastImprovementNeeded": false,
+      "lastRationale": "The Q2 alias-detail and Q4 action-needed behaviors were promoted into deterministic local regression tests before the production closure QA.",
+      "lastNextAction": ""
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

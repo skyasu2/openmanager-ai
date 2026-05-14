@@ -1,0 +1,177 @@
+{
+  "runId": "QA-20260514-0499",
+  "recordedAt": "2026-05-14T04:14:42.357Z",
+  "recordedAtKst": "2026-05-14 13:14:42 KST",
+  "runTitle": "Vercel Playwright MCP QA - v8.11.147 AI Five-Question Closure",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "api-version-v8.11.147",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "e506aeb61eca0318c72f738fa939c915dd995f79"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "GitLab v8.11.147 production tag pipeline",
+    "GitLab main validation pipeline for AI Engine regression fix",
+    "Vercel production /api/version and /api/health",
+    "Guest session landing and /dashboard flow",
+    "Dashboard overview OTel status and resource summary",
+    "AI Assistant sidebar open with AI engine Ready",
+    "Conversational AI standard five-question QA",
+    "Q2 server alias detail closure for web-server-01 to web-nginx-dc1-01",
+    "Q4 action-needed contradiction closure",
+    "AI UI network statuses for wake-up, soft health, supervisor stream, NLQ extraction, and async jobs"
+  ],
+  "skippedSurfaces": [
+    "Reporter Agent generation",
+    "Analyst advanced full analysis",
+    "Mobile viewport matrix",
+    "OAuth provider completion",
+    "Cloud Run admin /monitoring and /monitoring/traces",
+    "Full broad route pack"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The standard five-question conversational AI QA passed 5/5 after the v8.11.147 regression fix, including the Q2 and Q4 P1 closure prompts.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The AI answer resolved web-server-01 to web-nginx-dc1-01, stayed aligned with dashboard fleet totals, and grounded the warning state in cache-redis-dc1-01 memory metrics.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "No unsafe mutation, prompt leakage, provider scaffold leakage, or unsupported command emission was observed in the tested AI path.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The v8.11.147 GitLab production tag pipeline succeeded, Vercel production served the expected version and commit, and /api/health reported healthy dependencies.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The Q2 alias-detail and Q4 action-needed behaviors were promoted into deterministic local regression tests before the production closure QA.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-14T13:12:44+09:00",
+      "summary": "Vercel usage checked after v8.11.147 Playwright MCP release QA; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "AI five-question dialog transcript",
+      "path": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-dialog.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "AI five-question network status log",
+      "path": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-network.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar five-question final state",
+      "path": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-sidebar.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-web-server-detail-v811146",
+      "title": "Standard conversational Q2 should answer web-server-01 detail instead of whole-fleet summary",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-dialog.txt",
+      "note": "Production v8.11.147 answered the server detail prompt with alias resolution web-server-01 -> web-nginx-dc1-01 and concrete status, resource, load, and response-time metrics.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-action-needed-contradiction-v811146",
+      "title": "Action-needed answer must not contradict its immediate-action conclusion",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260514-v811147-ai-five-question-dialog.txt",
+      "note": "Production v8.11.147 answered that no immediate-action server exists and separately listed cache-redis-dc1-01 as a caution-only observation target, with no contradiction.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release gate decision: go for the tested AI conversational scope.",
+    "Local gates passed before release: AI Engine type-check/test, root type-check/lint/test:quick/test:contract, line-guard, and git diff --check.",
+    "GitLab main validation pipeline 2524165320 succeeded for implementation commit 2962692dd.",
+    "GitLab production tag pipeline 2524168807 succeeded for v8.11.147.",
+    "Vercel production /api/version returned v8.11.147 with commit e506aeb61eca0318c72f738fa939c915dd995f79; /api/health returned healthy.",
+    "The five-question QA passed: fleet summary, server alias detail, 24h peak-load time, action-needed conclusion, and network issue filter.",
+    "The run did not capture numeric AI latency samples; UI response labels were observed as fast/normal and network status was HTTP 200/201."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main validation pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524165320"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.11.147 production pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524168807"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
