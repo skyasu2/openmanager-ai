@@ -16,6 +16,7 @@ import {
   getCerebrasRuntimeModelIds,
   getCerebrasRuntimeModelPolicies,
   getDeprecatedProviderModelPolicyFindings,
+  isCerebrasExpiredByDate,
 } from './provider-model-policy';
 
 type ReasoningCapabilityStatusOptions = {
@@ -166,6 +167,12 @@ describe('provider model policy SSOT', () => {
         replacement: 'groq:meta-llama/llama-4-scout-17b-16e-instruct',
       },
     ]);
+  });
+
+  it('exposes the Cerebras runtime expiry date helper for request-time provider gating', () => {
+    expect(isCerebrasExpiredByDate(new Date('2026-05-27T00:00:00Z'))).toBe(false);
+    expect(isCerebrasExpiredByDate(new Date('2026-05-27T23:59:59Z'))).toBe(false);
+    expect(isCerebrasExpiredByDate(new Date('2026-05-28T00:00:00Z'))).toBe(true);
   });
 
   it('does not recommend another same-date blocked Cerebras runtime model', () => {

@@ -13,6 +13,7 @@ const {
   mockMarkProviderQuotaCooldown,
   mockReconcileProviderQuotaReservation,
   mockReserveProviderQuota,
+  mockIsCerebrasExpiredByDate,
 } = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
   mockCheckProviderStatus: vi.fn(() => ({
@@ -41,6 +42,7 @@ const {
         status: {},
       })
   ),
+  mockIsCerebrasExpiredByDate: vi.fn(() => false),
 }));
 
 vi.mock('ai', () => ({
@@ -76,8 +78,18 @@ vi.mock('./quota-tracker', () => ({
   reserveProviderQuota: mockReserveProviderQuota,
 }));
 
+vi.mock('../ai-sdk/provider-model-policy', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../ai-sdk/provider-model-policy')>();
+  return {
+    ...actual,
+    isCerebrasExpiredByDate: mockIsCerebrasExpiredByDate,
+  };
+});
+
 import {
   __resetRetryBudgetForTests,
+  FALLBACK_ERROR_CODES,
   generateTextWithRetry,
 } from './retry-with-fallback';
 
@@ -97,6 +109,7 @@ describe('generateTextWithRetry', () => {
     mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
     mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
     mockGetCerebrasFallbackModelIds.mockReturnValue([]);
+    mockIsCerebrasExpiredByDate.mockReturnValue(false);
     mockMarkProviderQuotaCooldown.mockResolvedValue(undefined);
     mockReconcileProviderQuotaReservation.mockResolvedValue(undefined);
     mockReserveProviderQuota.mockImplementation(
@@ -172,6 +185,71 @@ describe('generateTextWithRetry', () => {
       'llama3.1-8b',
     ]);
     expect(mockGetGroqModel).not.toHaveBeenCalled();
+  });
+
+  it('skips Cerebras before the SDK call after the runtime deprecation date', async () => {
+    mockIsCerebrasExpiredByDate.mockReturnValue(true);
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'ok from groq',
+      steps: [],
+      usage: { inputTokens: 8, outputTokens: 4, totalTokens: 12 },
+    });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: '현재 상태 요약' }],
+      },
+      ['cerebras', 'groq'],
+      { maxRetries: 0, timeoutMs: 3000 }
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('groq');
+    expect(result.usedFallback).toBe(true);
+    expect(mockGetCerebrasModel).not.toHaveBeenCalled();
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+    expect(mockGenerateText.mock.calls[0]?.[0]).toMatchObject({
+      model: { provider: 'groq' },
+    });
+    expect(result.attempts).toMatchObject([
+      {
+        provider: 'cerebras',
+        modelId: 'llama3.1-8b',
+        error: 'CEREBRAS_DEPRECATED:2026-05-27',
+      },
+      {
+        provider: 'groq',
+        modelId: 'groq-model',
+      },
+    ]);
+  });
+
+  it('keeps Cerebras in the provider loop before the runtime deprecation date', async () => {
+    mockIsCerebrasExpiredByDate.mockReturnValue(false);
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'ok from cerebras',
+      steps: [],
+      usage: { inputTokens: 8, outputTokens: 4, totalTokens: 12 },
+    });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: '현재 상태 요약' }],
+      },
+      ['cerebras', 'groq'],
+      { maxRetries: 0, timeoutMs: 3000 }
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('cerebras');
+    expect(mockGetCerebrasModel).toHaveBeenCalledWith('llama3.1-8b');
+    expect(mockGetGroqModel).not.toHaveBeenCalled();
+    expect(result.attempts).toMatchObject([
+      {
+        provider: 'cerebras',
+        modelId: 'llama3.1-8b',
+      },
+    ]);
   });
 
   it('skips short-context Cerebras fallback for long prompt contexts', async () => {
@@ -327,6 +405,12 @@ describe('generateTextWithRetry', () => {
     expect(mockReconcileProviderQuotaReservation).toHaveBeenCalledWith(
       expect.objectContaining({ provider: 'cerebras' }),
       0
+    );
+  });
+
+  it('treats provider 404 and 410 responses as fallback-triggering statuses', () => {
+    expect(FALLBACK_ERROR_CODES).toEqual(
+      expect.arrayContaining([404, 410, 429, 502, 503, 504])
     );
   });
 
