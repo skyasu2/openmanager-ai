@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-15 | **현재 버전 스냅샷**: v8.11.152
+**상태 스냅샷 기준일**: 2026-05-15 | **현재 버전 스냅샷**: v8.11.153
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.153** (2026-05-15) — Bug Fixes: ai: render guidance CTA in sidebar; Tests: spec: add sidebar guidance CTA regression
 - **v8.11.152** (2026-05-15) — Bug Fixes: ai: preserve guidance CTA metadata; Tests: spec: preserve guidance CTA metadata
 - **v8.11.151** (2026-05-15) — Code Refactoring: split line-guard follow-up targets; Features: ai: show artifact progress steps; Features: ai: add artifact guidance CTA
 - **v8.11.150** (2026-05-14) — Features: ai: complete artifact UX enhancements
 - **v8.11.149** (2026-05-14) — Features: ai-engine: include diagnostics in fleet command summaries; Tests: spec: add fleet summary diagnostic command regression
-- **v8.11.148** (2026-05-14) — Features: ai-engine: add read-only status diagnostics; Tests: spec: add status diagnostic command regressions
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
