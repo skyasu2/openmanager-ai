@@ -4,6 +4,8 @@ import {
   type MetricsToolPayload,
   type ServerSnapshot,
 } from './orchestrator-summary-payload';
+import { getReadOnlyDiagnosticCommands } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
+import type { DiagnosticMetric } from '../../../tools-ai-sdk/reporter-tools/knowledge-types';
 
 function roundPercent(value: number | null): string {
   return value === null ? 'N/A' : `${Math.round(value)}%`;
@@ -12,10 +14,13 @@ function roundPercent(value: number | null): string {
 function toAlertSnapshot(server: ServerSnapshot): AlertServerSnapshot {
   return {
     id: server.id,
+    name: server.name,
+    type: server.type,
     status: server.status,
     cpu: server.cpu,
     memory: server.memory,
     disk: server.disk,
+    network: server.network,
   };
 }
 
@@ -80,6 +85,89 @@ function buildActionPoolForServer(server: AlertServerSnapshot): string[] {
     `${server.id}: 헬스체크, 최근 배포 이력, 애플리케이션 로그를 확인하세요.`,
     `${server.id}: 알림 발생 시각 전후의 트래픽과 배치 작업을 비교하세요.`,
   ];
+}
+
+function getDiagnosticMetricForServer(server: AlertServerSnapshot): {
+  metric: DiagnosticMetric;
+  label: string;
+} {
+  const network = toNumber(server.network);
+  const maxCoreMetric = Math.max(
+    toNumber(server.cpu) ?? 0,
+    toNumber(server.memory) ?? 0,
+    toNumber(server.disk) ?? 0
+  );
+  if (network !== null && network >= 80 && network > maxCoreMetric) {
+    return { metric: 'status', label: '상태' };
+  }
+
+  const dominantMetric = getDominantMetric(server);
+  if (dominantMetric.metricLabel === 'CPU') {
+    return { metric: 'cpu', label: 'CPU' };
+  }
+  if (dominantMetric.metricLabel === '메모리') {
+    return { metric: 'memory', label: '메모리' };
+  }
+  if (dominantMetric.metricLabel === '디스크') {
+    return { metric: 'disk', label: '디스크' };
+  }
+  return { metric: 'status', label: '상태' };
+}
+
+function inferServerService(server: AlertServerSnapshot): string | undefined {
+  const value = `${server.id} ${server.name ?? ''} ${server.type ?? ''}`.toLowerCase();
+  if (/redis|cache/.test(value)) return 'redis';
+  if (/mysql|db/.test(value)) return 'mysql';
+  if (/nginx|web/.test(value)) return 'nginx';
+  if (/haproxy|lb/.test(value)) return 'haproxy';
+  if (/nfs|storage/.test(value)) return 'nfs';
+  return undefined;
+}
+
+function shouldIncludeDiagnosticsForServerDetail(
+  query: string,
+  server: AlertServerSnapshot
+): boolean {
+  return (
+    ['warning', 'critical', 'offline'].includes(server.status) ||
+    /상세|자세|확인|진단|명령어|command|check|diagnos/i.test(query)
+  );
+}
+
+function buildDiagnosticCommandBlock(
+  server: AlertServerSnapshot
+): string[] {
+  const diagnosticMetric = getDiagnosticMetricForServer(server);
+  const commands = getReadOnlyDiagnosticCommands({
+    metric: diagnosticMetric.metric,
+    service: inferServerService(server),
+    limit: 3,
+    maxRisk: 'medium',
+  });
+
+  if (commands.length === 0) return [];
+
+  return [
+    `# ${server.id} ${diagnosticMetric.label}`,
+    ...commands.map((command) => command.command),
+  ];
+}
+
+function appendDiagnosticCommandSection(
+  lines: string[],
+  servers: AlertServerSnapshot[]
+): void {
+  const blocks = servers
+    .map(buildDiagnosticCommandBlock)
+    .filter((block) => block.length > 0);
+  if (blocks.length === 0) return;
+
+  lines.push('', '🔎 **진단 명령어 (읽기 전용)**', '```bash');
+  blocks.forEach((block, index) => {
+    if (index > 0) lines.push('');
+    lines.push(...block);
+  });
+  lines.push('```');
 }
 
 function getAttentionServer(payload: MetricsToolPayload): AlertServerSnapshot | null {
@@ -249,6 +337,7 @@ export function buildRequestedServerStatusAnswer(
   if (requestedServers.length === 0) return null;
 
   const lines = ['📊 **요청 서버 상세**'];
+  const diagnosticServers: AlertServerSnapshot[] = [];
   for (const { server, requestedAlias } of requestedServers) {
     const alertServer = toAlertSnapshot(server);
     const extraMetrics = [
@@ -265,7 +354,13 @@ export function buildRequestedServerStatusAnswer(
       ...(extraMetrics.length > 0 ? [`• 확장 지표: ${extraMetrics.join(', ')}`] : []),
       `• 판단: ${buildServerStatusJudgement(alertServer)}`
     );
+
+    if (shouldIncludeDiagnosticsForServerDetail(query, alertServer)) {
+      diagnosticServers.push(alertServer);
+    }
   }
+
+  appendDiagnosticCommandSection(lines, diagnosticServers);
 
   return lines.join('\n');
 }
@@ -337,6 +432,8 @@ export function buildActionNeededAnswer(
   actionFocus.slice(0, 2).forEach((server, index) => {
     lines.push(`${index + 1}. ${buildActionPoolForServer(server)[0]}`);
   });
+
+  appendDiagnosticCommandSection(lines, actionFocus.slice(0, 2));
 
   return lines.join('\n');
 }

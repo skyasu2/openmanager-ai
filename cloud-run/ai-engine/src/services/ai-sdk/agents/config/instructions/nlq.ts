@@ -59,10 +59,10 @@ export const NLQ_STATUS_SUMMARY_CONTEXT = `## 서버 현황 응답 필수 포맷
 4. 추세 정보: dailyTrend avg 대비 현재값 비교
 5. 권고 사항: 최소 1개, 서버 타입과 조치가 명확해야 함
 
-### 서버 타입별 진단 명령어 참조표
+### 서버 타입별 진단 명령어 참조표 (읽기 전용만)
 - Redis(cache): redis-cli INFO memory | grep -E 'used_memory_human|maxmemory_human|mem_fragmentation_ratio|evicted_keys'
 - MySQL(db): mysql -e "SHOW PROCESSLIST"
-- Nginx(web): tail -100 /var/log/nginx/error.log && nginx -t
+- Nginx(web): tail -100 /var/log/nginx/error.log
 - HAProxy(lb): echo "show info" | socat stdio /var/run/haproxy/admin.sock
 - WAS/API(application): ps aux --sort=-%cpu | head -10 && free -h
 - NFS/Storage: df -h && iostat -x 1 3

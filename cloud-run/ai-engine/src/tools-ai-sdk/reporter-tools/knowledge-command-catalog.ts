@@ -1,3 +1,8 @@
+import {
+  enrichCommandRecommendation,
+  getReadOnlyDiagnosticCommandsFromCatalog,
+  type ReadOnlyDiagnosticCommandOptions,
+} from './knowledge-command-diagnostics';
 import type { CommandRecommendation } from './knowledge-types';
 
 const COMMAND_RECOMMENDATIONS: CommandRecommendation[] = [
@@ -53,6 +58,11 @@ const COMMAND_RECOMMENDATIONS: CommandRecommendation[] = [
     description: '특정 Redis key의 메모리 사용량 확인',
   },
   {
+    keywords: ['redis', 'memory', '메모리', 'info'],
+    command: 'redis-cli INFO memory',
+    description: 'Redis 메모리 사용량, fragmentation, maxmemory 설정 확인',
+  },
+  {
     keywords: ['메모리', 'memory', '사용량', '압박'],
     command: 'free -h',
     description: '호스트 메모리 사용량과 swap 상태 확인',
@@ -103,6 +113,16 @@ const COMMAND_RECOMMENDATIONS: CommandRecommendation[] = [
     description: '캐시 정리',
   },
   {
+    keywords: ['상태', 'service', 'systemctl', '헬스체크', 'health'],
+    command: 'systemctl status <service> --no-pager',
+    description: '서비스 상태와 최근 실패 원인 확인',
+  },
+  {
+    keywords: ['로그', 'journalctl', 'service', '에러', '상태'],
+    command: 'journalctl -u <service> -n 100 --no-pager',
+    description: '서비스별 최근 systemd 로그 100줄 확인',
+  },
+  {
     keywords: ['cpu', '프로세서', '부하'],
     command: 'top -o cpu',
     description: 'CPU 사용량 상위 프로세스 조회',
@@ -147,6 +167,21 @@ const COMMAND_RECOMMENDATIONS: CommandRecommendation[] = [
     command: 'netstat -an',
     description: '네트워크 연결 상태 조회',
   },
+  {
+    keywords: ['네트워크', 'network', '연결', 'socket'],
+    command: 'ss -s',
+    description: '소켓 상태 요약 확인',
+  },
+  {
+    keywords: ['네트워크', 'network', '연결', 'socket'],
+    command: 'ss -tuna | head -50',
+    description: 'TCP/UDP 연결 샘플 확인',
+  },
+  {
+    keywords: ['네트워크', 'network', '인터페이스', 'interface'],
+    command: 'ip -s link',
+    description: '네트워크 인터페이스별 패킷/에러 카운터 확인',
+  },
 ];
 
 const SERVICE_COMMAND_PATTERN =
@@ -189,6 +224,20 @@ const MEMORY_INSPECTION_COMMANDS = [
   'ps aux --sort=-%mem | head -10',
   'vmstat 1 5',
 ] as const;
+
+export function getReadOnlyDiagnosticCommands({
+  metric,
+  service,
+  limit,
+  maxRisk,
+}: ReadOnlyDiagnosticCommandOptions): CommandRecommendation[] {
+  return getReadOnlyDiagnosticCommandsFromCatalog(COMMAND_RECOMMENDATIONS, {
+    metric,
+    service,
+    limit,
+    maxRisk,
+  });
+}
 
 export function isServiceCommandGuidanceQuery(query: string): boolean {
   if (EXPLICIT_PEAK_TIME_EVIDENCE_PATTERN.test(query)) {
@@ -329,15 +378,23 @@ export function buildServiceCommandGuidanceAnswer(query: string): string | null 
 
   const recommendations = getCommandRecommendations(
     extractCommandKeywordsFromQuery(query)
-  ).slice(0, 4);
+  )
+    .map(enrichCommandRecommendation)
+    .slice(0, 6);
 
   if (recommendations.length === 0) return null;
 
+  const readOnlyRecommendations = recommendations.filter(
+    (recommendation) => recommendation.safety === 'read-only'
+  );
+  const approvalRecommendations = recommendations.filter(
+    (recommendation) => recommendation.safety !== 'read-only'
+  );
   const lines = [
     '바로 확인할 명령어는 아래 순서로 실행하면 됩니다.',
     '아래는 읽기 전용 진단을 우선한 순서입니다. 재시작, 삭제, sysctl 변경 같은 조치는 결과 확인 후 승인된 절차로만 진행하세요.',
   ];
-  recommendations.forEach((recommendation, index) => {
+  readOnlyRecommendations.slice(0, 4).forEach((recommendation, index) => {
     lines.push(
       '',
       `${index + 1}. ${recommendation.description}`,
@@ -346,6 +403,19 @@ export function buildServiceCommandGuidanceAnswer(query: string): string | null 
       '```'
     );
   });
+
+  if (approvalRecommendations.length > 0) {
+    lines.push('', '승인 후 검토할 조치 후보입니다. 결과 확인과 변경 승인 없이 실행하지 마세요.');
+    approvalRecommendations.slice(0, 2).forEach((recommendation) => {
+      lines.push(
+        '',
+        `- ${recommendation.description}`,
+        '```bash',
+        recommendation.command,
+        '```'
+      );
+    });
+  }
   lines.push('', '운영 환경의 socket path, export, 로그 경로가 다르면 실제 설정값으로 바꿔 실행하세요.');
 
   return lines.join('\n');

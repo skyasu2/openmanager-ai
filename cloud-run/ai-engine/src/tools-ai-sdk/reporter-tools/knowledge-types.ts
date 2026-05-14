@@ -23,10 +23,19 @@ export interface RAGResultItem {
   url?: string;
 }
 
+export type CommandSafety = 'read-only' | 'requires-approval' | 'mutating';
+export type OperationalRisk = 'low' | 'medium' | 'high';
+export type DiagnosticMetric = 'cpu' | 'memory' | 'disk' | 'network' | 'status';
+
 export interface CommandRecommendation {
   command: string;
   description: string;
   keywords: string[];
+  safety?: CommandSafety;
+  operationalRisk?: OperationalRisk;
+  category?: string;
+  metric?: DiagnosticMetric;
+  service?: string;
 }
 
 export type ToolSeverityFilter =

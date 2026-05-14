@@ -25,10 +25,13 @@ export interface ServerSnapshot {
 
 export interface AlertServerSnapshot {
   id: string;
+  name?: string;
+  type?: string;
   status: string;
   cpu?: number;
   memory?: number;
   disk?: number;
+  network?: number;
   cpuTrend?: string;
   memoryTrend?: string;
   diskTrend?: string;
