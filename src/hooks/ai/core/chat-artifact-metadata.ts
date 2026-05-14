@@ -96,6 +96,41 @@ export function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
   }
 }
 
+export type ArtifactStepMessage = {
+  delayMs: number;
+  text: string;
+};
+
+export function getArtifactStepMessages(
+  kind: ChatArtifact['kind']
+): ArtifactStepMessage[] {
+  const loadingStep: ArtifactStepMessage = {
+    delayMs: 0,
+    text: getArtifactLoadingText(kind),
+  };
+  const finalStep: ArtifactStepMessage = {
+    delayMs: 9000,
+    text: '거의 완료됐습니다...',
+  };
+  const steps: ArtifactStepMessage[] = [
+    loadingStep,
+    { delayMs: 3000, text: '데이터를 수집하고 있습니다...' },
+    { delayMs: 6000, text: '분석 결과를 정리하고 있습니다...' },
+    finalStep,
+  ];
+
+  if (kind === 'incident-report') {
+    return [
+      loadingStep,
+      { delayMs: 3000, text: '장애 데이터를 수집하고 있습니다...' },
+      { delayMs: 6000, text: '보고서를 작성하고 있습니다...' },
+      finalStep,
+    ];
+  }
+
+  return steps;
+}
+
 export function getArtifactSuccessText(artifact: ChatArtifact): string {
   if (artifact.kind === 'incident-report') {
     return [

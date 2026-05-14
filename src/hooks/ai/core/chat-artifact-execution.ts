@@ -21,6 +21,7 @@ import {
   createTextMessage,
   getArtifactErrorText,
   getArtifactLoadingText,
+  getArtifactStepMessages,
   getArtifactSuccessText,
 } from './chat-artifact-metadata';
 
@@ -72,6 +73,29 @@ export function startChatArtifactGeneration({
   });
   const fallbackArtifactMessages = [...messages, userMessage];
   const abortController = new AbortController();
+  const stepTimers = getArtifactStepMessages(artifactKind)
+    .slice(1)
+    .map((step) =>
+      setTimeout(() => {
+        if (artifactRequestIdRef.current !== token) {
+          return;
+        }
+
+        const stepMessage = createTextMessage({
+          id: pendingAssistantMessage.id,
+          role: 'assistant',
+          text: step.text,
+        });
+        setMessages(
+          replacePendingArtifactMessage({
+            currentMessages: messagesRef.current,
+            pendingMessageId: pendingAssistantMessage.id,
+            fallbackArtifactMessages,
+            nextAssistantMessage: stepMessage,
+          })
+        );
+      }, step.delayMs)
+    );
 
   setMessages([...fallbackArtifactMessages, pendingAssistantMessage]);
   artifactRequestIdRef.current = token;
@@ -142,6 +166,7 @@ export function startChatArtifactGeneration({
       );
       setError(errorText);
     } finally {
+      stepTimers.forEach(clearTimeout);
       if (artifactRequestIdRef.current === token) {
         artifactRequestIdRef.current = null;
         artifactAbortControllerRef.current = null;
