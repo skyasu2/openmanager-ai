@@ -354,4 +354,39 @@ describe('AIWorkspaceMessage detail affordance', () => {
     expect(screen.queryByText(/<script>/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/javascript:/i)).not.toBeInTheDocument();
   });
+
+  it('renders guidance CTA metadata as an actionable artifact button', () => {
+    const onArtifactGuidanceCta = vi.fn();
+    const message: EnhancedChatMessage = {
+      id: 'assistant-guidance-cta',
+      role: 'assistant',
+      content:
+        '이상감지/추세 기능은 사용자가 명시적으로 요청할 때만 실행합니다.',
+      timestamp: new Date('2026-05-15T01:00:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        type: 'guidance',
+        guidanceCta: {
+          target: 'monitoring-analysis',
+          label: '바로 이상감지/추세 분석 실행하기',
+        },
+      },
+    };
+
+    render(
+      <AIWorkspaceMessage
+        message={message}
+        isLastMessage={true}
+        onArtifactGuidanceCta={onArtifactGuidanceCta}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: '바로 이상감지/추세 분석 실행하기',
+      })
+    );
+
+    expect(onArtifactGuidanceCta).toHaveBeenCalledWith('monitoring-analysis');
+  });
 });
