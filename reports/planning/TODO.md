@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-14 KST (`Cerebras graceful exit 계획서 작성`)
+**Last Updated**: 2026-05-14 KST (`Cerebras graceful exit main validate 완료`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Cerebras `llama3.1-8b` Graceful Exit | **P2 (마감 2026-05-27)** | In Progress | 폐기일 전까지 사용, 이후 자동 Groq 전환 — [계획서](cerebras-deprecation-graceful-exit-plan.md) |
+| _None_ | - | - | 현재 진행 중인 작업 없음. |
 
 ---
 
@@ -30,7 +30,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: Metrics Query Agent Cerebras-first 전환 | Medium | provider-gated | **Cerebras graceful exit 완료 후 재평가.** 현재 qwen-3-235b 429 red → entitlement 미확인. graceful exit 배포 후 Cerebras가 Groq-fallback으로 전환된 시점에서 Metrics Query 단독 Groq-first 정책 유지 여부 결정. 상세: [archive/ai-assistant-agent-runtime-improvements-plan.md](archive/ai-assistant-agent-runtime-improvements-plan.md) Task 9 |
+| P2: Metrics Query Agent Cerebras-first 전환 | Medium | provider-gated | **Cerebras graceful exit main validate 완료 후에도 production tag 배포 전까지 보류 유지.** 현재 qwen-3-235b 429 red → entitlement 미확인. production 배포 후 Cerebras가 Groq-fallback으로 전환된 시점에서 Metrics Query 단독 Groq-first 정책 유지 여부 결정. 상세: [archive/ai-assistant-agent-runtime-improvements-plan.md](archive/ai-assistant-agent-runtime-improvements-plan.md) Task 9 |
 | P2: Local Docker/WSL storage hygiene | Medium | tracking-only | 주기 점검 기준 추가. 비파괴 감사는 `npm run storage:audit` / 상세 Docker 확인은 `npm run storage:audit -- --docker-verbose`. 2026-05-08 감사: `/mnt/d` 4%, WSL `/` 8%, `/mnt/c` 66% 사용. Docker images 10.11GiB, build cache 0B, volumes 309.3MiB이며 대부분 실행 중인 Supabase/GitHub MCP 컨테이너에 연결됨. 즉시 삭제보다 Supabase 중지 후 prune 여부 판단. WSL 상위 정리 후보는 `.npm` 9.7GiB, `.gemini/backups` 2.7GiB, `.codex/sessions` 2.6GiB, `.npm/_npx` 2.5GiB, `.cache/uv` 2.4GiB, browser cache 각 1.2GiB, `tmp/root-artifacts` 641MiB. 삭제 전 QA evidence는 `npm run qa:evidence:audit` 확인. |
 | P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-13 `npm run qa:evidence:audit` 재확인: missing durable artifact paths `0`, orphan durable evidence `19개`, recent counted runs without artifacts `0`, acknowledged artifact debt run `1개(QA-20260511-0479)`, `reports/qa=101.45MiB`, `reports/qa/evidence=94.75MiB`, archive candidates `7개/2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건. orphan evidence는 삭제 전 각 run/repro 참조 가치 확인이 필요하며, referenced legacy evidence 36.40MiB는 policy-protected proof 가능성이 높아 explicit cleanup batch 없이는 보존. 새 evidence 누적 시점에만 재평가. |
 
@@ -38,6 +38,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~Cerebras `llama3.1-8b` Graceful Exit~~ | — | **완료** — 공식 deprecation 기준으로 2026-05-27 이후 `llama3.1-8b` 요청을 provider loop 진입 전 Groq로 사전 전환하도록 구현했다. `FALLBACK_ERROR_CODES`에 404/410을 추가하고, `isCerebrasExpiredByDate()` 계약/회귀 테스트를 추가했다. 검증: AI Engine targeted tests, AI Engine `type-check`, AI Engine full test 122 files / 1196 tests, root `type-check`, `lint`, `test:contract`, `line-guard`, docs checks, `git diff --check`. GitLab main pipeline `2523895744` success: `https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2523895744`. 상세: [archive/cerebras-deprecation-graceful-exit-plan.md](archive/cerebras-deprecation-graceful-exit-plan.md) |
 | ~~AI Assistant 안정화 커밋 전달 마감~~ | — | **완료** — `0ca8d9b88 refactor(ai): clarify assistant agent runtime roles`를 GitLab main에 전달. 심층 평가 후 follow-up으로 fallback/summary/theme hook 직접 테스트(`52067050d`), component dependency map 갱신(`4b52e30f7`), CI no-provider 환경 logger mock 보강(`957a84659`)을 추가했다. `memory/ops-knowledge.md`는 활성 문서 참조 보존 대상으로 포함. GitLab pipeline `2523752216` success: `https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2523752216`. |
 | ~~AI Assistant 변경분 커밋 전 안정화~~ | — | **완료** — 추가 line-guard polish보다 커밋 우선으로 판단하고, AI Assistant 역할/라우팅/문서/라인가드 완충 리팩터 변경분을 단일 안정화 묶음으로 정리했다. 최종 게이트: root `test:quick`, `type-check`, `lint`, `test:contract`, `line-guard`, AI Engine `type-check`, `test`, `docs:budget`, `docs:ai-consistency`, `git diff --check` 통과. `memory/ops-knowledge.md`는 로컬 메모라 커밋 대상에서 제외. |
 | ~~AI Assistant 설계 개선 (agent role/tool/runtime routing cleanup)~~ | — | **완료** — Cloud Run `NLQ Agent` 사용자 노출명을 `Metrics Query Agent`로 정렬하고 legacy alias 호환을 유지했다. Metrics Query/Reporter/Advisor 역할별 tool allowlist를 재조정하고, Cerebras 2026-05-27 contingency, Vercel preprocessing runtime gate, Orchestrator confidence/decomposition gate, monitoring tool policy 일원화, Domain Evidence 승격, `matchPatterns` metadata-only 정리, root `metric_peak` local-first entity extraction을 완료했다. Metrics Query Cerebras-first 전환은 provider 조건 미충족으로 On Hold 추적. 검증: AI Engine/root targeted Vitest, AI Engine full test, root `type-check`, `test:quick`, `test:contract`, `lint:changed`, `docs:budget`, `docs:ai-consistency`, `git diff --check`. 상세 계획서 archive 이동: [archive/ai-assistant-agent-runtime-improvements-plan.md](archive/ai-assistant-agent-runtime-improvements-plan.md) |

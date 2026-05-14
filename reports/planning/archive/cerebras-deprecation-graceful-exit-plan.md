@@ -1,5 +1,5 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-14
 > Tags: ai-engine,cerebras,provider,fallback,deprecation
@@ -116,15 +116,23 @@ T6: Cerebras returns 410 → same as T5
   npm run type-check && npm run lint
   ```
 
-- [ ] **T7**: GitLab 배포 + pipeline 확인
+- [x] **T7**: GitLab 배포 + pipeline 확인
   ```bash
   git push gitlab main
   npm run gitlab:pipeline:head -- --wait
   ```
   - main push는 validate pipeline만 실행한다.
   - production 배포가 필요하면 별도 semver tag pipeline에서 `deploy_ai_engine`을 확인한다.
+  - GitLab main pipeline `2523895744`: success
 
-- [ ] **T8**: TODO.md Active 항목 완료 처리 및 On Hold 항목 재평가 메모 갱신
+- [x] **T8**: TODO.md Active 항목 완료 처리 및 On Hold 항목 재평가 메모 갱신
+
+## 완료 결과
+
+- Failing test 커밋: `aba1f39d0`
+- 구현 커밋: `a512fb6a4`
+- main validate pipeline: `2523895744` success
+- production 배포: 미수행. 필요 시 별도 semver tag pipeline으로 진행.
 
 ---
 
