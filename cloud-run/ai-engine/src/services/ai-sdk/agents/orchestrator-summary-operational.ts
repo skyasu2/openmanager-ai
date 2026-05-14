@@ -5,6 +5,8 @@ import {
   type MetricsToolPayload,
   type ServerSnapshot,
 } from './orchestrator-summary-payload';
+import { getReadOnlyDiagnosticCommands } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
+import type { DiagnosticMetric } from '../../../tools-ai-sdk/reporter-tools/knowledge-types';
 
 export function isStatusAlertOperationalQuery(query: string): boolean {
   const mentionsAlertStatus =
@@ -90,10 +92,13 @@ function deriveAlertServers(payload: MetricsToolPayload): AlertServerSnapshot[] 
     )
     .map((server) => ({
       id: server.id,
+      name: server.name,
+      type: server.type,
       status: server.status,
       cpu: server.cpu,
       memory: server.memory,
       disk: server.disk,
+      network: server.network,
       dailyAvg: {
         cpu: toNumber(server.dailyTrend?.cpu?.avg ?? null) ?? undefined,
         memory: toNumber(server.dailyTrend?.memory?.avg ?? null) ?? undefined,
@@ -105,10 +110,13 @@ function deriveAlertServers(payload: MetricsToolPayload): AlertServerSnapshot[] 
 function toAlertSnapshot(server: ServerSnapshot): AlertServerSnapshot {
   return {
     id: server.id,
+    name: server.name,
+    type: server.type,
     status: server.status,
     cpu: server.cpu,
     memory: server.memory,
     disk: server.disk,
+    network: server.network,
     dailyAvg: {
       cpu: toNumber(server.dailyTrend?.cpu?.avg ?? null) ?? undefined,
       memory: toNumber(server.dailyTrend?.memory?.avg ?? null) ?? undefined,
@@ -556,6 +564,83 @@ function shouldIncludeAttentionServer(query: string): boolean {
   return /(가장|최우선|주의).*(서버|1대)|주의할\s*서버/i.test(query);
 }
 
+function shouldIncludeDiagnosticCommands(query: string): boolean {
+  return /명령어|command|cli|shell|쉘|터미널|진단|점검\s*명령|확인(?:할|용)?\s*명령/i.test(
+    query
+  );
+}
+
+function getDiagnosticMetricForServer(server: AlertServerSnapshot): {
+  metric: DiagnosticMetric;
+  label: string;
+} {
+  const network = toNumber(server.network);
+  const maxCoreMetric = Math.max(
+    toNumber(server.cpu) ?? 0,
+    toNumber(server.memory) ?? 0,
+    toNumber(server.disk) ?? 0
+  );
+  if (network !== null && network >= 80 && network > maxCoreMetric) {
+    return { metric: 'status', label: '상태' };
+  }
+
+  const dominantMetric = getDominantMetric(server);
+  if (dominantMetric.metricKey === 'cpu') {
+    return { metric: 'cpu', label: 'CPU' };
+  }
+  if (dominantMetric.metricKey === 'memory') {
+    return { metric: 'memory', label: '메모리' };
+  }
+  if (dominantMetric.metricKey === 'disk') {
+    return { metric: 'disk', label: '디스크' };
+  }
+  return { metric: 'status', label: '상태' };
+}
+
+function inferServerService(server: AlertServerSnapshot): string | undefined {
+  const value = `${server.id} ${server.name ?? ''} ${server.type ?? ''}`.toLowerCase();
+  if (/redis|cache/.test(value)) return 'redis';
+  if (/mysql|db/.test(value)) return 'mysql';
+  if (/nginx|web/.test(value)) return 'nginx';
+  if (/haproxy|lb/.test(value)) return 'haproxy';
+  if (/nfs|storage/.test(value)) return 'nfs';
+  return undefined;
+}
+
+function buildDiagnosticCommandBlock(server: AlertServerSnapshot): string[] {
+  const diagnosticMetric = getDiagnosticMetricForServer(server);
+  const commands = getReadOnlyDiagnosticCommands({
+    metric: diagnosticMetric.metric,
+    service: inferServerService(server),
+    limit: 3,
+    maxRisk: 'medium',
+  });
+
+  if (commands.length === 0) return [];
+
+  return [
+    `# ${server.id} ${diagnosticMetric.label}`,
+    ...commands.map((command) => command.command),
+  ];
+}
+
+function appendDiagnosticCommandSection(
+  lines: string[],
+  servers: AlertServerSnapshot[]
+): void {
+  const blocks = servers
+    .map(buildDiagnosticCommandBlock)
+    .filter((block) => block.length > 0);
+  if (blocks.length === 0) return;
+
+  lines.push('', '🔎 **진단 명령어 (읽기 전용)**', '```bash');
+  blocks.forEach((block, index) => {
+    if (index > 0) lines.push('');
+    lines.push(...block);
+  });
+  lines.push('```');
+}
+
 export function buildSummaryFromPayloadForQuery(
   query: string,
   payload: MetricsToolPayload
@@ -642,6 +727,17 @@ export function buildSummaryFromPayloadForQuery(
 
   lines.push('', '📈 **추세**', buildTrendSummary(alertServers), '', '💡 **권고**');
   lines.push(buildRecommendation(alertServers, payload, query));
+
+  if (shouldIncludeDiagnosticCommands(query)) {
+    const attentionServer = getAttentionServer(payload);
+    const diagnosticServers =
+      activeAlerts.length > 0
+        ? activeAlerts.slice(0, 2)
+        : attentionServer
+          ? [attentionServer]
+          : [];
+    appendDiagnosticCommandSection(lines, diagnosticServers);
+  }
 
   return lines.join('\n');
 }
