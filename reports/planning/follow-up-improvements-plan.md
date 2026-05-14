@@ -217,9 +217,9 @@ T-LG-3: 기존 단위 테스트 변경 없이 통과
 
 구현 전 실패 테스트 커밋 (`test(spec):`)
 
-- [ ] `chat-artifact-metadata.test.ts`: `createArtifactGuidanceMessages()` 반환 metadata에 `guidanceCta` 없음을 검증 → 실패
-- [ ] `chat-artifact-metadata.test.ts`: `getArtifactStepMessages()` 없어서 import 실패 → 실패
-- [ ] line-guard: 현재 warn 7개 파일 존재 확인 스냅샷
+- [x] `chat-artifact-metadata.test.ts`: `createArtifactGuidanceMessages()` 반환 metadata에 `guidanceCta` 없음을 검증 → 실패
+- [x] `chat-artifact-metadata.test.ts`: `getArtifactStepMessages()` 없어서 import 실패 → 실패
+- [x] line-guard: 현재 warn 7개 파일 존재 확인 스냅샷
 
 ```bash
 커밋 메시지: test(spec): add failing tests for G2/G4/line-guard before implementation
@@ -234,9 +234,9 @@ T-LG-3: 기존 단위 테스트 변경 없이 통과
 - `src/lib/ai/chat-artifacts/chat-artifact-intent.ts` — `createArtifactGuidanceMessage()` 는 그대로 유지
 
 완료 기준:
-- [ ] `createArtifactGuidanceMessages()` 반환 assistantMessage.metadata에 `guidanceCta` 포함
-- [ ] `GuidanceCta` 타입 export
-- [ ] T-G2-5 테스트 통과
+- [x] `createArtifactGuidanceMessages()` 반환 assistantMessage.metadata에 `guidanceCta` 포함
+- [x] `GuidanceCta` 타입 export
+- [x] T-G2-5 테스트 통과
 
 ---
 
@@ -247,9 +247,9 @@ T-LG-3: 기존 단위 테스트 변경 없이 통과
 - `src/components/ai/AIWorkspaceMessage.tsx` 또는 chat bubble 컴포넌트 — metadata.guidanceCta 감지 후 버튼 렌더링
 
 완료 기준:
-- [ ] guidance 메시지에만 버튼 표시 (일반 메시지에는 미노출)
-- [ ] 버튼 클릭 시 `onForceArtifactIntent` 호출 → artifact 실행 시작
-- [ ] T-G2-1 ~ T-G2-4 테스트 통과 (Vitest/Playwright)
+- [x] guidance 메시지에만 버튼 표시 (일반 메시지에는 미노출)
+- [x] 버튼 클릭 시 `onForceArtifactIntent` 호출 → artifact 실행 시작
+- [x] T-G2-1 ~ T-G2-4 테스트 통과 (Vitest)
 
 ---
 
@@ -260,9 +260,9 @@ T-LG-3: 기존 단위 테스트 변경 없이 통과
 - `src/hooks/ai/core/chat-artifact-execution.ts` — `startChatArtifactGeneration` 내 step timer 추가/해제
 
 완료 기준:
-- [ ] 3초 후 step 메시지로 업데이트
-- [ ] 완료/에러/취소 시 타이머 정리
-- [ ] T-G4-1 ~ T-G4-5 테스트 통과
+- [x] 3초 후 step 메시지로 업데이트
+- [x] 완료/에러/취소 시 타이머 정리
+- [x] T-G4-1 ~ T-G4-5 테스트 통과
 
 ---
 
@@ -272,32 +272,32 @@ T-LG-3: 기존 단위 테스트 변경 없이 통과
 
 | 원본 파일 | 분리 대상 파일 |
 |-----------|----------------|
-| `cloud-run/…/routes/analytics.ts` | `analytics-chart.ts` 또는 `analytics-export.ts` |
-| `cloud-run/…/retry-with-fallback.ts` | `retry-budget.ts` |
+| `cloud-run/…/routes/analytics.ts` | `analytics-capacity-alerts.ts`, `analytics-reporter-grounding.ts`, `analytics-route-utils.ts` |
+| `cloud-run/…/retry-with-fallback.ts` | `retry-with-fallback-utils.ts`, `retry-provider-chain.ts` |
 | `cloud-run/…/orchestrator-summary-operational.ts` | `orchestrator-summary-operational-actions.ts` |
-| `LogExplorerModal.tsx` | `LogExplorerFilters.tsx`, `LogExplorerTable.tsx` |
-| `AIWorkspace.tsx` | `AIWorkspaceHeader.tsx` |
+| `LogExplorerModal.tsx` | `LogExplorerFilterBar.tsx`, `LogExplorerModal.helpers.tsx` |
+| `AIWorkspace.tsx` | `AIWorkspaceEmbeddedLayout.tsx`, `AIWorkspaceFullscreenHeader.tsx`, `AIWorkspaceNavigationSidebar.tsx` |
 | `stream/v2/route.ts` | `stream-response-builder.ts` |
-| `AlertHistoryModal.tsx` | `AlertHistoryTable.tsx` |
+| `AlertHistoryModal.tsx` | `AlertHistoryFilterBar.tsx`, `AlertHistoryStatsFooter.tsx`, `AlertHistoryModal.helpers.ts` |
 
 완료 기준:
-- [ ] `npm run line-guard` — 7개 파일 모두 650줄 미만
-- [ ] `npm run type-check` 통과
-- [ ] `npm run test:quick` 통과
-- [ ] 기존 export re-export로 외부 import 계약 유지
+- [x] `npm run line-guard` — 7개 파일 모두 650줄 미만
+- [x] `npm run type-check` 통과
+- [x] `npm run test:quick` 통과
+- [x] 기존 export re-export로 외부 import 계약 유지
 
 ---
 
 ### Task 5 — 통합 검증 및 배포 `P3`
 
 완료 기준:
-- [ ] `npm run type-check` 통과
-- [ ] `npm run lint` 통과
-- [ ] `npm run test:quick` 통과
-- [ ] `npm run test:contract` 통과
-- [ ] `npm run line-guard` — warn 42개 → 35개 이하
-- [ ] `npm run docs:budget` 통과
-- [ ] `git diff --check` 통과
+- [x] `npm run type-check` 통과
+- [x] `npm run lint` 통과
+- [x] `npm run test:quick` 통과
+- [x] `npm run test:contract` 통과
+- [x] `npm run line-guard` — warn 42개 → 35개 이하
+- [x] `npm run docs:budget` 통과
+- [x] `git diff --check` 통과
 - [ ] GitLab main pipeline success
 - [ ] (선택) Vercel Playwright MCP QA — guidance CTA 버튼 클릭 흐름 확인
 

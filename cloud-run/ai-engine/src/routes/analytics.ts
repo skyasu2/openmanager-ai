@@ -25,9 +25,6 @@ import {
   normalizeQueryAsOf,
   runWithQueryAsOf,
 } from '../data/query-as-of-context';
-import { getTrendPredictor } from '../lib/ai/monitoring/TrendPredictor';
-import { MAX_PREDICTION_HORIZON } from '../lib/ai/monitoring/TrendPredictor.types';
-import { STATUS_THRESHOLDS } from '../config/status-thresholds';
 import { getAgentConfig } from '../services/ai-sdk/agents/config';
 import { AgentFactory } from '../services/ai-sdk/agents/agent-factory';
 import {
@@ -36,20 +33,25 @@ import {
   normalizeAgentIncidentReportOutput,
   type IncidentReportOutput,
 } from './analytics-report-utils';
+import { buildMonitoringCapacityAlerts } from './analytics-capacity-alerts';
 import {
   createMonitoringDataSource,
-  type MonitoringCapacityAlert,
-  type MonitoringDataSource,
-  type MonitoringEvidenceRef,
-  type MonitoringFactMetric,
-  type MonitoringIncidentTimeline,
   type MonitoringSnapshot,
-  type MonitoringSourceMode,
 } from '../services/monitoring/monitoring-data-source';
 import {
   handleMonitoringApiError,
   type MonitoringApiErrorContext,
 } from './analytics-monitoring-error';
+import {
+  buildAnalyzeBatchSummary,
+  buildDeterministicAnalyzeServerInsights,
+  isRecord,
+  readMonitoringSourceMode,
+} from './analytics-route-utils';
+import {
+  buildMonitoringEvidenceContext,
+  collectReporterMonitoringGrounding,
+} from './analytics-reporter-grounding';
 // incident-rag-injector imports removed - endpoints deprecated
 
 export const analyticsRouter = new Hono();
@@ -77,267 +79,6 @@ function isRecoverableReporterError(error: unknown): boolean {
   ].some((keyword) => message.includes(keyword));
 }
 
-interface AnalyzeServerInsights {
-  summary: string;
-  recommendations: string[];
-  confidence: number;
-}
-
-interface AnalyzeServerToolResults {
-  anomalyDetection?: unknown;
-  trendPrediction?: unknown;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
-function readBoolean(value: unknown): boolean {
-  return value === true;
-}
-
-function readNumber(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) ? value : null;
-}
-
-function readMonitoringSourceMode(value: unknown): MonitoringSourceMode | undefined {
-  return value === 'replay-json' || value === 'live-otel' ? value : undefined;
-}
-
-function buildAnalyzeBatchSummary(snapshot: MonitoringSnapshot): string {
-  const affectedServerCount = new Set(
-    snapshot.riskSignals.map((signal) => signal.serverId)
-  ).size;
-  const criticalCount = snapshot.riskSignals.filter(
-    (signal) => signal.severity === 'critical'
-  ).length;
-  const warningCount = snapshot.riskSignals.filter(
-    (signal) => signal.severity === 'warning'
-  ).length;
-
-  if (snapshot.riskSignals.length === 0) {
-    return `${snapshot.topology.totalServers}대 서버가 정상 범위입니다. 현재 즉시 조치가 필요한 risk signal은 없습니다.`;
-  }
-
-  return `${affectedServerCount}대 서버에서 ${snapshot.riskSignals.length}개 risk signal이 감지되었습니다. critical ${criticalCount}개, warning ${warningCount}개입니다.`;
-}
-
-const CAPACITY_ALERT_METRICS: MonitoringFactMetric[] = [
-  'cpu',
-  'memory',
-  'disk',
-  'network',
-];
-const CAPACITY_ALERT_LIMIT = 5;
-
-function msToMinutes(value: number | null): number | null {
-  return value === null ? null : Math.max(0, Math.round(value / 60000));
-}
-
-function sanitizeCapacityMessage(value: string): string {
-  return value.replace(/[🚨⚠️✅]/gu, '').replace(/\s+/g, ' ').trim();
-}
-
-function rankCapacityAlert(alert: MonitoringCapacityAlert): number {
-  const severityScore = alert.severity === 'critical' ? 0 : 1;
-  const eta =
-    alert.timeToCriticalMinutes ??
-    alert.timeToWarningMinutes ??
-    Number.MAX_SAFE_INTEGER;
-
-  return severityScore * 1_000_000 + eta;
-}
-
-function buildCapacityEvidenceRef(
-  alert: MonitoringCapacityAlert,
-  snapshot: MonitoringSnapshot
-): MonitoringEvidenceRef {
-  return {
-    id: alert.evidenceRefId,
-    kind: 'prediction',
-    serverId: alert.serverId,
-    metric: alert.metric,
-    timeRange: {
-      from: snapshot.slot.startTime,
-      to: snapshot.slot.endTime,
-    },
-    summary: `${alert.serverName} ${alert.metric} capacity forecast: ${alert.humanReadable}`,
-    value: Math.round(alert.predictedValue * 10) / 10,
-    threshold: alert.willBreachCritical
-      ? alert.criticalThreshold
-      : alert.warningThreshold,
-    severity: alert.severity,
-  };
-}
-
-async function buildMonitoringCapacityAlerts({
-  source,
-  snapshot,
-  queryAsOf,
-}: {
-  source: MonitoringDataSource;
-  snapshot: MonitoringSnapshot;
-  queryAsOf: ReturnType<typeof normalizeQueryAsOf>;
-}): Promise<{
-  alerts: MonitoringCapacityAlert[];
-  evidenceRefs: MonitoringEvidenceRef[];
-}> {
-  const predictor = getTrendPredictor();
-  const alerts: MonitoringCapacityAlert[] = [];
-
-  for (const server of snapshot.servers) {
-    for (const metric of CAPACITY_ALERT_METRICS) {
-      try {
-        const series = await source.getMetricSeries({
-          serverId: server.id,
-          metric,
-          points: 12,
-          queryAsOf,
-        });
-        const points = series.points
-          .map((point) => ({
-            timestamp: new Date(point.timestamp).getTime(),
-            value: point.value,
-          }))
-          .filter((point) => Number.isFinite(point.timestamp));
-
-        if (points.length < 2) {
-          continue;
-        }
-
-        const prediction = predictor.predictEnhanced(
-          points,
-          metric,
-          MAX_PREDICTION_HORIZON
-        );
-        const breach = prediction.thresholdBreach;
-        if (!breach.willBreachWarning && !breach.willBreachCritical) {
-          continue;
-        }
-
-        const thresholds = STATUS_THRESHOLDS[metric];
-        const severity =
-          prediction.currentStatus === 'critical' || breach.willBreachCritical
-            ? 'critical'
-            : 'warning';
-        const id = `capacity-${server.id}-${metric}`;
-        alerts.push({
-          id,
-          serverId: server.id,
-          serverName: server.name,
-          serverType: server.type,
-          metric,
-          currentValue: Math.round(prediction.details.currentValue * 10) / 10,
-          predictedValue: Math.round(prediction.prediction * 10) / 10,
-          warningThreshold: thresholds.warning,
-          criticalThreshold: thresholds.critical,
-          willBreachWarning: breach.willBreachWarning,
-          timeToWarningMinutes: msToMinutes(breach.timeToWarning),
-          willBreachCritical: breach.willBreachCritical,
-          timeToCriticalMinutes: msToMinutes(breach.timeToCritical),
-          severity,
-          humanReadable: sanitizeCapacityMessage(breach.humanReadable),
-          evidenceRefId: `evidence-${id}`,
-        });
-      } catch (error) {
-        logger.warn(
-          { err: error, serverId: server.id, metric },
-          '[Monitoring Analyze Batch] Capacity alert series unavailable'
-        );
-      }
-    }
-  }
-
-  const rankedAlerts = alerts
-    .sort((left, right) => {
-      const rankDelta = rankCapacityAlert(left) - rankCapacityAlert(right);
-      return rankDelta !== 0
-        ? rankDelta
-        : right.currentValue - left.currentValue;
-    })
-    .slice(0, CAPACITY_ALERT_LIMIT);
-
-  return {
-    alerts: rankedAlerts,
-    evidenceRefs: rankedAlerts.map((alert) =>
-      buildCapacityEvidenceRef(alert, snapshot)
-    ),
-  };
-}
-
-interface ReporterMonitoringGrounding {
-  sourceMode?: MonitoringSourceMode;
-  queryAsOf?: string;
-  evidenceRefs: MonitoringEvidenceRef[];
-  timeline: MonitoringIncidentTimeline | null;
-}
-
-function mergeEvidenceRefs(
-  evidenceRefs: MonitoringEvidenceRef[]
-): MonitoringEvidenceRef[] {
-  const refsById = new Map<string, MonitoringEvidenceRef>();
-  for (const evidenceRef of evidenceRefs) {
-    if (!refsById.has(evidenceRef.id)) {
-      refsById.set(evidenceRef.id, evidenceRef);
-    }
-  }
-  return Array.from(refsById.values()).slice(0, 40);
-}
-
-async function collectReporterMonitoringGrounding(input: {
-  sourceMode: unknown;
-  queryAsOf: unknown;
-  serverId?: string;
-}): Promise<ReporterMonitoringGrounding> {
-  try {
-    const source = createMonitoringDataSource({
-      mode: readMonitoringSourceMode(input.sourceMode),
-    });
-    const queryAsOf = normalizeQueryAsOf(input.queryAsOf);
-    const [snapshot, timeline] = await Promise.all([
-      source.getSnapshot({ queryAsOf }),
-      source.buildIncidentTimeline({
-        queryAsOf,
-        serverId: input.serverId,
-        limit: 20,
-      }),
-    ]);
-
-    return {
-      sourceMode: snapshot.sourceMode,
-      queryAsOf: snapshot.queryAsOf,
-      evidenceRefs: mergeEvidenceRefs([
-        ...snapshot.evidenceRefs,
-        ...timeline.evidenceRefs,
-      ]),
-      timeline,
-    };
-  } catch (error) {
-    logger.warn(
-      { err: error },
-      '[Incident Report] Monitoring grounding unavailable, continuing with legacy tools'
-    );
-    return {
-      evidenceRefs: [],
-      timeline: null,
-    };
-  }
-}
-
-function buildMonitoringEvidenceContext(
-  grounding: ReporterMonitoringGrounding
-): string {
-  if (grounding.evidenceRefs.length === 0) {
-    return '';
-  }
-
-  return `
-- Monitoring sourceMode: ${grounding.sourceMode ?? 'unknown'}
-- Monitoring queryAsOf: ${grounding.queryAsOf ?? 'unknown'}
-- Monitoring evidenceRefs: ${JSON.stringify(grounding.evidenceRefs.slice(0, 8)).slice(0, 900)}
-- Monitoring timeline: ${JSON.stringify(grounding.timeline?.events.slice(0, 8) ?? []).slice(0, 500)}`;
-}
-
 async function readRequestBody(c: Context): Promise<Record<string, unknown>> {
   try {
     const body = await c.req.json();
@@ -345,53 +86,6 @@ async function readRequestBody(c: Context): Promise<Record<string, unknown>> {
   } catch {
     return {};
   }
-}
-
-function buildDeterministicAnalyzeServerInsights(
-  results: AnalyzeServerToolResults
-): AnalyzeServerInsights {
-  const anomalyData = isRecord(results.anomalyDetection)
-    ? results.anomalyDetection
-    : {};
-  const trendData = isRecord(results.trendPrediction)
-    ? results.trendPrediction
-    : {};
-  const trendSummary = isRecord(trendData.summary) ? trendData.summary : {};
-
-  const hasAnomalies = readBoolean(anomalyData.hasAnomalies);
-  const anomalyCount = readNumber(anomalyData.anomalyCount) ?? 0;
-  const hasRisingTrends = readBoolean(trendSummary.hasRisingTrends);
-
-  if (hasAnomalies) {
-    return {
-      summary: `이상 탐지에서 ${anomalyCount}개 항목이 감지되었습니다. 관련 서버의 CPU, Memory, Disk 지표를 우선 확인하세요.`,
-      recommendations: [
-        '이상 감지된 메트릭의 최근 10분 변화와 직전 배포/배치 작업을 대조하세요.',
-        '영향 서버의 상위 프로세스와 연결 수를 확인하고 필요 시 트래픽 분산을 적용하세요.',
-      ],
-      confidence: 0.88,
-    };
-  }
-
-  if (hasRisingTrends) {
-    return {
-      summary: '현재 이상 탐지는 정상이지만 일부 지표에 상승 추세가 있습니다. 임계값 도달 가능성을 계속 관찰하세요.',
-      recommendations: [
-        '상승 추세가 있는 메트릭의 다음 1시간 예측값과 임계값까지의 여유를 확인하세요.',
-        '동일 추세가 10분 이상 유지되면 관련 서버의 예약 작업과 트래픽 증가 요인을 점검하세요.',
-      ],
-      confidence: 0.84,
-    };
-  }
-
-  return {
-    summary: '이상 탐지와 추세 예측 모두 안정적입니다. 현재는 즉시 조치가 필요한 서버가 없습니다.',
-    recommendations: [
-      '현재 모니터링 주기를 유지하세요.',
-      '리소스 사용률 상위 서버는 정기 점검 대상으로만 추적하세요.',
-    ],
-    confidence: 0.9,
-  };
 }
 
 /**

@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, FileSearch, RotateCcw } from 'lucide-react';
+import { FileSearch } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
   useCallback,
@@ -11,11 +11,7 @@ import {
   useTransition,
 } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import {
-  type GlobalLogEntry,
-  type GlobalLogFilter,
-  useGlobalLogs,
-} from '@/hooks/dashboard/useGlobalLogs';
+import { useGlobalLogs } from '@/hooks/dashboard/useGlobalLogs';
 import { useScrollSentinel } from '@/hooks/dashboard/useScrollSentinel';
 import { cn } from '@/lib/utils';
 import {
@@ -23,104 +19,15 @@ import {
   formatRotatingTimestamp,
   formatRotatingTimestampRange,
 } from '@/utils/dashboard/rotating-timestamp';
-import { FilterChip } from '../shared/FilterChip';
-import { StatCell } from '../shared/StatCell';
+import { LogExplorerFilterBar } from './LogExplorerFilterBar';
+import {
+  groupConsecutiveLogs,
+  INITIAL_DISPLAY,
+  LOAD_MORE_COUNT,
+  LogAlertButton,
+  levelStyles,
+} from './LogExplorerModal.helpers';
 import type { LogExplorerModalProps } from './log-explorer.types';
-
-const levelStyles: Record<
-  Exclude<GlobalLogFilter['level'], undefined>,
-  { badge: string; text: string; border: string }
-> = {
-  info: {
-    badge: 'bg-green-500 text-white',
-    text: 'text-green-700',
-    border: 'border-l-green-500',
-  },
-  warn: {
-    badge: 'bg-yellow-500 text-white',
-    text: 'text-amber-700',
-    border: 'border-l-yellow-500',
-  },
-  error: {
-    badge: 'bg-red-500 text-white',
-    text: 'text-red-700',
-    border: 'border-l-red-500',
-  },
-};
-
-const INITIAL_DISPLAY = 50;
-const LOAD_MORE_COUNT = 50;
-
-type LogGroup = {
-  key: string;
-  logs: GlobalLogEntry[];
-  patternKey: string;
-  representative: GlobalLogEntry;
-};
-
-const normalizeLogPattern = (message: string): string =>
-  message
-    .toLowerCase()
-    .replace(/\b[0-9a-f]{8,}\b/g, '<hex>')
-    .replace(/\b\d{1,3}(?:\.\d{1,3}){3}\b/g, '<ip>')
-    .replace(/\b\d+(?:\.\d+)?(?:ms|s|%|mb|gb|kb|b)?\b/g, '<num>')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const getPatternKey = (log: GlobalLogEntry): string =>
-  [log.serverId, log.level, log.source, normalizeLogPattern(log.message)].join(
-    '|'
-  );
-
-const getLogKey = (log: GlobalLogEntry, index: number): string =>
-  `${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${index}`;
-
-const groupConsecutiveLogs = (logs: GlobalLogEntry[]): LogGroup[] => {
-  const groups: LogGroup[] = [];
-
-  logs.forEach((log, index) => {
-    const patternKey = getPatternKey(log);
-    const previousGroup = groups.at(-1);
-
-    if (previousGroup?.patternKey === patternKey) {
-      previousGroup.logs.push(log);
-      return;
-    }
-
-    groups.push({
-      key: getLogKey(log, index),
-      logs: [log],
-      patternKey,
-      representative: log,
-    });
-  });
-
-  return groups;
-};
-
-function LogAlertButton({
-  serverId,
-  onOpenAlertHistory,
-}: {
-  serverId: string;
-  onOpenAlertHistory: (serverId: string) => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={(event) => {
-        event.stopPropagation();
-        onOpenAlertHistory(serverId);
-      }}
-      aria-label={`${serverId} 알림 이력 보기`}
-      title="알림 이력"
-      className="inline-flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 transition-colors hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
-    >
-      <Bell size={11} />
-      알림
-    </button>
-  );
-}
 
 export function LogExplorerPanel({
   active = true,
@@ -317,7 +224,6 @@ export function LogExplorerPanel({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      {/* Header */}
       <div className="border-b border-gray-100 px-4 pb-4 pt-5 sm:px-6 sm:pt-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
@@ -333,159 +239,24 @@ export function LogExplorerPanel({
         </div>
       </div>
 
-      {/* Search & Filter Bar */}
-      <div className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-4 py-3 backdrop-blur-sm sm:px-6">
-        <div
-          data-testid="log-stats-bar"
-          className="mb-3 grid grid-cols-2 gap-2 rounded-lg bg-gray-50/90 p-2 sm:grid-cols-4"
-        >
-          <StatCell
-            label="전체"
-            value={stats.total}
-            color="text-gray-800"
-            active={level === 'all'}
-            ariaLabel="전체 로그 보기"
-            onClick={() => handleLevelStatClick('all')}
-            testId="log-stat-all"
-          />
-          <StatCell
-            label="정보"
-            value={stats.info}
-            color="text-green-600"
-            active={level === 'info'}
-            ariaLabel="정보 로그 필터"
-            onClick={() => handleLevelStatClick('info')}
-            testId="log-stat-info"
-          />
-          <StatCell
-            label="경고"
-            value={stats.warn}
-            color="text-yellow-600"
-            active={level === 'warn'}
-            ariaLabel="경고 로그 필터"
-            onClick={() => handleLevelStatClick('warn')}
-            testId="log-stat-warn"
-          />
-          <StatCell
-            label="오류"
-            value={stats.error}
-            color="text-red-600"
-            active={level === 'error'}
-            ariaLabel="오류 로그 필터"
-            onClick={() => handleLevelStatClick('error')}
-            testId="log-stat-error"
-          />
-        </div>
-
-        {/* Keyword search */}
-        <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
-          <input
-            id="log-explorer-search"
-            name="log-explorer-search"
-            type="text"
-            value={keyword}
-            onChange={(e) => handleKeywordChange(e.target.value)}
-            placeholder="로그 검색"
-            aria-label="로그 키워드 검색"
-            className="touch-text-safe-xs w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none sm:w-52 sm:py-1.5"
-          />
-
-          <div className="hidden h-4 w-px bg-gray-200 sm:block" />
-
-          {/* Level chips */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-medium text-gray-500">레벨:</span>
-            {(['all', 'info', 'warn', 'error'] as const).map((l) => (
-              <FilterChip
-                key={l}
-                label={
-                  l === 'all'
-                    ? '전체'
-                    : l === 'info'
-                      ? '정보'
-                      : l === 'warn'
-                        ? '경고'
-                        : '오류'
-                }
-                active={level === l}
-                onClick={() => handleFilterChange(() => setLevel(l))}
-                variant={l}
-              />
-            ))}
-          </div>
-
-          <div className="hidden h-4 w-px bg-gray-200 sm:block" />
-
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:min-w-0 sm:flex-wrap sm:items-center">
-            {/* Source dropdown */}
-            <select
-              id="log-explorer-source-filter"
-              name="log-explorer-source-filter"
-              value={source}
-              onChange={(e) =>
-                handleFilterChange(() => setSource(e.target.value))
-              }
-              aria-label="소스 필터"
-              className="touch-text-safe-xs w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
-            >
-              <option value="">전체 소스</option>
-              {sources.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-
-            {/* Server dropdown */}
-            <select
-              id="log-explorer-server-filter"
-              name="log-explorer-server-filter"
-              value={serverId}
-              onChange={(e) =>
-                handleFilterChange(() => setServerId(e.target.value))
-              }
-              aria-label="서버 필터"
-              className="touch-text-safe-xs w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
-            >
-              <option value="">전체 서버</option>
-              {serverIds.map((id) => (
-                <option key={id} value={id}>
-                  {id}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            type="button"
-            onClick={resetFilters}
-            disabled={!hasActiveFilters}
-            className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-45 sm:ml-auto sm:py-1.5"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            초기화
-          </button>
-        </div>
-
-        <div
-          data-testid="log-explorer-filter-summary"
-          className="mt-2 flex min-h-5 flex-wrap items-center gap-1.5 text-[11px] text-gray-500"
-        >
-          <span className="font-medium text-gray-600">활성 필터:</span>
-          {hasActiveFilters ? (
-            activeFilterLabels.map((label) => (
-              <span
-                key={label}
-                className="max-w-full break-words rounded-full bg-gray-100 px-2 py-0.5 text-gray-700"
-              >
-                {label}
-              </span>
-            ))
-          ) : (
-            <span>없음</span>
-          )}
-        </div>
-      </div>
+      <LogExplorerFilterBar
+        stats={stats}
+        level={level}
+        source={source}
+        serverId={serverId}
+        keyword={keyword}
+        sources={sources}
+        serverIds={serverIds}
+        activeFilterLabels={activeFilterLabels}
+        hasActiveFilters={hasActiveFilters}
+        onLevelStatClick={handleLevelStatClick}
+        onKeywordChange={handleKeywordChange}
+        onFilterChange={handleFilterChange}
+        onSetLevel={setLevel}
+        onSetSource={setSource}
+        onSetServerId={setServerId}
+        onResetFilters={resetFilters}
+      />
       <div className="border-b border-gray-100 bg-gray-50/80 px-4 py-2.5 sm:px-6">
         <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-600">
           <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 font-semibold text-blue-700">
