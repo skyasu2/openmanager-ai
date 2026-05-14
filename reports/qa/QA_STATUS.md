@@ -91,6 +91,7 @@ Latest run: QA-20260514-0497 (2026-05-14T01:14:09.559Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
+| playwright-screenshot | AI five-question sidebar final state | `reports/qa/evidence/qa-20260514-v811145-ai-five-question-sidebar.png` | - |
 | playwright-report | AI five-question QA summary | `reports/qa/evidence/qa-20260514-v811145-ai-five-question-summary.md` | - |
 | playwright-network | AI five-question network and timing log | `reports/qa/evidence/qa-20260514-v811145-ai-five-question-network.txt` | - |
 

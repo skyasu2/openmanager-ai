@@ -104,6 +104,11 @@
   ],
   "artifacts": [
     {
+      "type": "playwright-screenshot",
+      "label": "AI five-question sidebar final state",
+      "path": "reports/qa/evidence/qa-20260514-v811145-ai-five-question-sidebar.png"
+    },
+    {
       "type": "playwright-report",
       "label": "AI five-question QA summary",
       "path": "reports/qa/evidence/qa-20260514-v811145-ai-five-question-summary.md"

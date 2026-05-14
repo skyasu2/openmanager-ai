@@ -38,6 +38,7 @@ Result: this QA verifies current Vercel production AI-path regression behavior a
 - Known landing pre-auth `/api/system` 401 console resource error was observed once and matches the existing WONT-FIX tracker item `landing-console-api-system-unauthorized`.
 - Authenticated dashboard `/api/system` checks later returned 200.
 - AI calls completed through UI path with 200/201 statuses. See `qa-20260514-v811145-ai-five-question-network.txt`.
+- Final Playwright MCP sidebar screenshot: `qa-20260514-v811145-ai-five-question-sidebar.png`.
 
 ## Operator Judgment
 
