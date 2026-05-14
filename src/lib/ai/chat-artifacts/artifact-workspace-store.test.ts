@@ -304,6 +304,13 @@ describe('artifact workspace store', () => {
       missingCount: 0,
       addedCount: 0,
       changedCount: 0,
+      items: [
+        {
+          id: expect.stringContaining('server-snapshot'),
+          label: 'server-snapshot (2026-05-06 10:00 KST)',
+          status: 'matched',
+        },
+      ],
     });
     expect(createArtifactReplayPackComparisonSummary(expected, actual)).toEqual(
       {
@@ -312,6 +319,13 @@ describe('artifact workspace store', () => {
         missingCount: 0,
         addedCount: 0,
         changedCount: 1,
+        items: [
+          {
+            id: expect.stringContaining('server-snapshot'),
+            label: 'server-snapshot (2026-05-06 10:00 KST)',
+            status: 'changed',
+          },
+        ],
       }
     );
   });

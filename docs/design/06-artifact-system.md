@@ -153,7 +153,7 @@ ArtifactRendererHost         ← metadata unknown 입력, 멀티 entry 지원
 
 ## 알려진 설계 갭 (백로그)
 
-아래 항목은 추가 인프라 없이 구현 가능하며, 우선순위가 생기면 TODO.md Backlog에서 승격합니다.
+아래 미완료 항목은 추가 인프라 없이 구현 가능하며, 우선순위가 생기면 TODO.md Backlog에서 승격합니다.
 
 ### G1: server-monitoring-analysis 채팅 경로 누락
 
@@ -177,12 +177,14 @@ ArtifactRendererHost         ← metadata unknown 입력, 멀티 entry 지원
 - **현상**: Cloud Run 호출이 3~10초 걸리는데 UI에 스피너만 표시됩니다. 일반 채팅의 스트리밍 응답과 비교해 UX 낙차가 큽니다.
 - **해결 방향**: 생성 시작 → "분석 중…" → "보고서 작성 중…" → 완료 순서의 단계 메시지를 채팅 버블에 표시합니다. SSE 또는 낙관적 메시지 삽입으로 구현합니다.
 
-### G5: workspace 비교 패널이 ID 배열만 표시
-
-- **현상**: `ArtifactWorkspacePanel`의 비교 결과가 `matched: ["id1", ...]` 형태의 원시 배열입니다.
-- **해결 방향**: ID를 artifact kind와 `generatedAt` 타임스탬프로 변환해 `incident-report (2026-05-14 10:23) — matched` 형태로 표시합니다.
-
 ---
+
+## 해결된 설계 갭
+
+### G5: workspace 비교 패널 세부 라벨
+
+- **완료**: 2026-05-15
+- **해결**: `ArtifactWorkspacePanel` 비교 결과가 count만 보여주던 상태에서 artifact kind와 `generatedAt` 기반 KST 시각, 비교 상태를 함께 표시하도록 개선했습니다.
 
 ## 구현 금지 사항
 

@@ -1,6 +1,12 @@
 /** @vitest-environment jsdom */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ArtifactWorkspacePanel } from '@/components/ai/artifact-workspace/ArtifactWorkspacePanel';
 import {
@@ -199,5 +205,10 @@ describe('ArtifactWorkspacePanel', () => {
     expect(screen.getByText('matched 0')).toBeInTheDocument();
     expect(screen.getByText('missing 0')).toBeInTheDocument();
     expect(screen.getByText('added 0')).toBeInTheDocument();
+    const details = screen.getByLabelText('replay pack 비교 상세');
+    expect(
+      within(details).getByText('server-snapshot (2026-05-06 10:00 KST)')
+    ).toBeInTheDocument();
+    expect(within(details).getByText('changed')).toBeInTheDocument();
   });
 });
