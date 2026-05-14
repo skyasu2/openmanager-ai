@@ -126,6 +126,47 @@ describe('SidebarMessage detail expand', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('renders guidance CTA metadata as an actionable artifact button', () => {
+    const onArtifactGuidanceCta = vi.fn();
+    const SidebarMessageWithCta = MessageComponent as unknown as (
+      props: Parameters<typeof MessageComponent>[0] & {
+        onArtifactGuidanceCta?: (
+          target: 'incident-report' | 'monitoring-analysis'
+        ) => void;
+      }
+    ) => JSX.Element;
+
+    render(
+      <SidebarMessageWithCta
+        message={{
+          id: 'assistant-guidance-sidebar',
+          role: 'assistant',
+          content:
+            '이상감지/추세 기능은 사용자가 명시적으로 요청할 때만 실행합니다.',
+          timestamp: new Date('2026-05-15T01:00:00.000Z'),
+          isStreaming: false,
+          metadata: {
+            type: 'guidance',
+            guidanceCta: {
+              target: 'monitoring-analysis',
+              label: '바로 이상감지/추세 분석 실행하기',
+            },
+          },
+        }}
+        isLastMessage={true}
+        onArtifactGuidanceCta={onArtifactGuidanceCta}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: '바로 이상감지/추세 분석 실행하기',
+      })
+    );
+
+    expect(onArtifactGuidanceCta).toHaveBeenCalledWith('monitoring-analysis');
+  });
+
   it('renders the real analysis basis tabs for assistant messages with analysis metadata', () => {
     render(
       <MessageComponent
