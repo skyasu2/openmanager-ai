@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: How-to
 > Last reviewed: 2026-05-14
 > Tags: ai-engine,cerebras,provider,fallback,deprecation
@@ -81,37 +81,37 @@ T6: Cerebras returns 410 → same as T5
 
 ## Tasks
 
-- [ ] **T0**: SDD gate — failing test 커밋 선행
+- [x] **T0**: SDD gate — failing test 커밋 선행
   - `test(spec): cerebras graceful exit add failing tests before implementation`
   - T1~T6 테스트 시나리오를 failing 상태로 커밋
 
-- [ ] **T1**: `FALLBACK_ERROR_CODES`에 404, 410 추가
+- [x] **T1**: `FALLBACK_ERROR_CODES`에 404, 410 추가
   - 파일: `retry-with-fallback.ts:113`
   - 사유: deprecation 이후 fast-fallback 경로로 유도 (지연 동일하나 로그 명확화)
 
-- [ ] **T2**: `isCerebrasExpiredByDate()` 구현
+- [x] **T2**: `isCerebrasExpiredByDate()` 구현
   - 파일: `provider-model-policy.ts`
   - `CEREBRAS_LLAMA_DEPRECATION_DATE` 상수 활용
   - export하여 테스트 가능하게
 
-- [ ] **T3**: RetryWithFallback provider loop에 사전 제외 로직 추가
+- [x] **T3**: RetryWithFallback provider loop에 사전 제외 로직 추가
   - 파일: `retry-with-fallback.ts` provider 순회 loop 진입 직전
   - `if (provider === 'cerebras' && isCerebrasExpiredByDate()) { excludedProviders.push(provider); continue; }`
   - 로그: `[RetryWithFallback] cerebras skipped: past deprecation date 2026-05-27`
 
-- [ ] **T4**: AI Engine type-check + targeted test 통과 확인
+- [x] **T4**: AI Engine type-check + targeted test 통과 확인
   ```bash
   cd cloud-run/ai-engine && npm run type-check
   npx vitest run src/services/resilience/retry-with-fallback.test.ts
   npx vitest run src/services/ai-sdk/provider-model-policy.test.ts
   ```
 
-- [ ] **T5**: AI Engine full test suite 통과 확인
+- [x] **T5**: AI Engine full test suite 통과 확인
   ```bash
   cd cloud-run/ai-engine && npm run test
   ```
 
-- [ ] **T6**: root lint + type-check (변경 없어도 드래그 방지)
+- [x] **T6**: root lint + type-check (변경 없어도 드래그 방지)
   ```bash
   npm run type-check && npm run lint
   ```

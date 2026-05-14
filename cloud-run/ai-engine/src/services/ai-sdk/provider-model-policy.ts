@@ -290,6 +290,13 @@ function isPastPolicyBlockDate(policy: ProviderModelPolicy, asOf: Date): boolean
   return asOf >= startOfNextDayUtc;
 }
 
+export function isCerebrasExpiredByDate(asOf: Date = new Date()): boolean {
+  return isPastPolicyBlockDate(
+    getCerebrasModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID),
+    asOf
+  );
+}
+
 export function getDeprecatedProviderModelPolicyFindings(
   policies: ProviderModelPolicy[] = getCerebrasRuntimeModelPolicies(),
   asOf: Date = new Date()

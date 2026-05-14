@@ -29,6 +29,10 @@ import {
   type ModelCapabilityRequirements,
   type TextProviderName,
 } from '../ai-sdk/provider-capabilities';
+import {
+  CEREBRAS_LLAMA_DEPRECATION_DATE,
+  isCerebrasExpiredByDate,
+} from '../ai-sdk/provider-model-policy';
 import { getCircuitBreaker } from './circuit-breaker';
 import {
   __resetProviderRetryBudgetForTests,
@@ -111,6 +115,8 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
  * Error codes that trigger fallback to next provider
  */
 const FALLBACK_ERROR_CODES = [
+  404,  // Model not found / deprecated
+  410,  // Gone / retired endpoint or model
   429,  // Rate limit
   503,  // Service unavailable
   502,  // Bad gateway
@@ -429,6 +435,21 @@ export async function generateTextWithRetry(
     const modelIds =
       options.providerModelIds?.[provider]?.filter(Boolean) ??
       providerConfig.modelIds();
+
+    if (provider === 'cerebras' && isCerebrasExpiredByDate()) {
+      attempts.push({
+        provider,
+        modelId: modelIds[0] ?? getCerebrasModelId(),
+        attempt: 1,
+        error: `CEREBRAS_DEPRECATED:${CEREBRAS_LLAMA_DEPRECATION_DATE}`,
+        durationMs: 0,
+      });
+      logger.warn(
+        `[RetryWithFallback] Skipping cerebras: past deprecation date ${CEREBRAS_LLAMA_DEPRECATION_DATE}`
+      );
+      excludedProviders.push(provider);
+      continue;
+    }
 
     for (let modelIndex = 0; modelIndex < modelIds.length; modelIndex++) {
       const modelId = modelIds[modelIndex];

@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Cerebras `llama3.1-8b` Graceful Exit | **P2 (마감 2026-05-27)** | Approved | 폐기일 전까지 사용, 이후 자동 Groq 전환 — [계획서](cerebras-deprecation-graceful-exit-plan.md) |
+| Cerebras `llama3.1-8b` Graceful Exit | **P2 (마감 2026-05-27)** | In Progress | 폐기일 전까지 사용, 이후 자동 Groq 전환 — [계획서](cerebras-deprecation-graceful-exit-plan.md) |
 
 ---
 
