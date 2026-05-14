@@ -18,6 +18,7 @@ const {
   mockCreateFallbackResponse,
   mockIsCloudRunEnabled,
   mockProxyToCloudRun,
+  mockGetOTelHourlyData,
   mockDebugInfo,
   mockDebugError,
   capturedLimiters,
@@ -34,6 +35,7 @@ const {
   mockCreateFallbackResponse: vi.fn(),
   mockIsCloudRunEnabled: vi.fn(),
   mockProxyToCloudRun: vi.fn(),
+  mockGetOTelHourlyData: vi.fn(),
   mockDebugInfo: vi.fn(),
   mockDebugError: vi.fn(),
   capturedLimiters: [] as Array<{ config?: { maxRequests?: number } }>,
@@ -86,6 +88,10 @@ vi.mock('@/lib/ai-proxy/proxy', () => ({
   proxyToCloudRun: mockProxyToCloudRun,
 }));
 
+vi.mock('@/data/otel-data', () => ({
+  getOTelHourlyData: mockGetOTelHourlyData,
+}));
+
 vi.mock('@/types/type-utils', () => ({
   getErrorMessage: (error: unknown) =>
     error instanceof Error ? error.message : String(error),
@@ -131,6 +137,7 @@ describe('/api/ai/incident-report POST', () => {
       return Math.max(minTimeout, Math.min(maxTimeout, timeout));
     });
     mockIsCloudRunEnabled.mockReturnValue(true);
+    mockGetOTelHourlyData.mockResolvedValue(null);
 
     mockProxyToCloudRun.mockResolvedValue({
       success: true,
@@ -139,6 +146,7 @@ describe('/api/ai/incident-report POST', () => {
         title: 'CPU 과부하 감지',
         severity: 'high',
         created_at: '2026-02-18T02:30:00.000Z',
+        affected_servers: ['cache-redis-dc1-01'],
       },
     });
 
@@ -198,6 +206,87 @@ describe('/api/ai/incident-report POST', () => {
         enableRAG: true,
         action: 'generate',
       }),
+    });
+  });
+
+  it('queryAsOf 슬롯이 있으면 OTel 로그 패턴과 가용성 영향을 성공 보고서에 보강한다', async () => {
+    mockGetOTelHourlyData.mockResolvedValue({
+      schemaVersion: '1.0.0',
+      generatedAt: '2026-05-14T00:00:00.000Z',
+      hour: 7,
+      scope: {
+        name: 'openmanager-ai-otel-pipeline',
+        version: '1.0.0',
+      },
+      slots: [
+        {
+          startTimeUnixNano: 1770994800000000000,
+          endTimeUnixNano: 1770995400000000000,
+          metrics: [
+            {
+              name: 'system.memory.utilization',
+              unit: '1',
+              type: 'gauge',
+              dataPoints: [
+                {
+                  asDouble: 0.83,
+                  attributes: {
+                    'host.name': 'cache-redis-dc1-01.openmanager.kr',
+                  },
+                },
+              ],
+            },
+          ],
+          logs: [
+            {
+              timeUnixNano: 1770994800000000000,
+              severityNumber: 13,
+              severityText: 'WARN',
+              body: 'redis-server[6161]: memory usage 83% of maxmemory limit',
+              attributes: { 'log.source': 'redis' },
+              resource: 'cache-redis-dc1-01',
+            },
+            {
+              timeUnixNano: 1770995400000000000,
+              severityNumber: 13,
+              severityText: 'WARN',
+              body: 'redis-server[6167]: memory usage 84% of maxmemory limit',
+              attributes: { 'log.source': 'redis' },
+              resource: 'cache-redis-dc1-01',
+            },
+          ],
+        },
+      ],
+    });
+
+    const response = await POST(
+      createPostRequest({
+        action: 'generate',
+        metrics: [],
+        queryAsOf: {
+          source: 'vercel-static-otel',
+          datasetVersion: '24h-rotating-v1.0.0',
+          dataSlot: {
+            slotIndex: 42,
+            minuteOfDay: 420,
+            timeLabel: '07:00 KST',
+          },
+        },
+      })
+    );
+    const data = await response.json();
+
+    expect(data.report?.log_patterns).toEqual([
+      expect.objectContaining({
+        severity: 'WARNING',
+        count: 2,
+        serverId: 'cache-redis-dc1-01',
+      }),
+    ]);
+    expect(data.report?.system_summary).toMatchObject({
+      uptimePercent: 0,
+      affectedDurationMinutes: 10,
+      dataSlotLabel: '07:00 KST',
     });
   });
 

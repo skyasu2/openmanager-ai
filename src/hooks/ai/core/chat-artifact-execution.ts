@@ -200,6 +200,16 @@ async function generateChatArtifact({
         queryAsOfDataSlot,
         signal,
       });
+    case 'server-monitoring-analysis':
+      return executeChatArtifact({
+        kind: 'server-monitoring-analysis',
+        query,
+        sessionId,
+        serverId: artifactIntent.serverId,
+        serverName: artifactIntent.serverName ?? artifactIntent.serverId,
+        queryAsOfDataSlot,
+        signal,
+      });
   }
 }
 

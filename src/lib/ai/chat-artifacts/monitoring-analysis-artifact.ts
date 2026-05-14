@@ -7,11 +7,13 @@ import type {
   MonitoringBatchEvidenceRef,
   ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
+import type { OTelResourceCatalog } from '@/types/otel-metrics';
 import {
   type ArtifactEvidence,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
   type MonitoringAnalysisArtifact,
+  type MonitoringRoleGroupSummary,
   type ServerMonitoringAnalysisArtifact,
   type ServerMonitoringArtifactRequest,
 } from './types';
@@ -43,6 +45,25 @@ const MonitoringBatchRiskSignalSchema = z
     evidenceRefId: z.string(),
   })
   .passthrough();
+
+const MonitoringBatchCapacityAlertSchema = z.object({
+  id: z.string(),
+  serverId: z.string(),
+  serverName: z.string(),
+  serverType: z.string(),
+  metric: z.enum(['cpu', 'memory', 'disk', 'network']),
+  currentValue: z.number(),
+  predictedValue: z.number(),
+  warningThreshold: z.number(),
+  criticalThreshold: z.number(),
+  willBreachWarning: z.boolean(),
+  timeToWarningMinutes: z.number().nullable(),
+  willBreachCritical: z.boolean(),
+  timeToCriticalMinutes: z.number().nullable(),
+  severity: z.enum(['warning', 'critical']),
+  humanReadable: z.string(),
+  evidenceRefId: z.string(),
+});
 
 const MonitoringBatchEvidenceRefBaseSchema = z.object({
   id: z.string(),
@@ -156,13 +177,24 @@ const MonitoringBatchAnalysisResponseSchema = z
   })
   .passthrough()
   .transform((analysis): MonitoringBatchAnalysisResponse => {
-    const { factPack: rawFactPack, ...rest } = analysis as typeof analysis & {
+    const {
+      capacityAlerts: rawCapacityAlerts,
+      factPack: rawFactPack,
+      ...rest
+    } = analysis as typeof analysis & {
+      capacityAlerts?: unknown;
       factPack?: unknown;
     };
+    const parsedCapacityAlerts = z
+      .array(MonitoringBatchCapacityAlertSchema)
+      .safeParse(rawCapacityAlerts);
     const parsedFactPack = MonitoringBatchFactPackSchema.safeParse(rawFactPack);
 
     return {
       ...rest,
+      ...(parsedCapacityAlerts.success
+        ? { capacityAlerts: parsedCapacityAlerts.data }
+        : {}),
       ...(parsedFactPack.success ? { factPack: parsedFactPack.data } : {}),
     } as MonitoringBatchAnalysisResponse;
   });
@@ -202,7 +234,13 @@ export function summarizeMonitoringAnalysis(
   analysis: MonitoringBatchAnalysisResponse
 ): Omit<
   MonitoringAnalysisArtifact,
-  'kind' | 'generatedAt' | 'analysis' | 'source' | 'queryAsOfDataSlot'
+  | 'kind'
+  | 'generatedAt'
+  | 'analysis'
+  | 'capacityAlerts'
+  | 'roleGroupSummary'
+  | 'source'
+  | 'queryAsOfDataSlot'
 > {
   const warningServers =
     analysis.factPack?.summary.warning ??
@@ -229,6 +267,113 @@ export function summarizeMonitoringAnalysis(
     warningServers,
     criticalServers,
   };
+}
+
+const ROLE_DISPLAY_ORDER = [
+  'web',
+  'application',
+  'database',
+  'cache',
+  'storage',
+  'loadbalancer',
+  'monitoring',
+  'batch',
+  'worker',
+  'unknown',
+] as const;
+
+const ROLE_ALIASES: Record<string, string> = {
+  api: 'application',
+  app: 'application',
+  apps: 'application',
+  was: 'application',
+  db: 'database',
+  mysql: 'database',
+  postgres: 'database',
+  postgresql: 'database',
+  redis: 'cache',
+  memcached: 'cache',
+  lb: 'loadbalancer',
+  load_balancer: 'loadbalancer',
+};
+
+function normalizeServerRole(value: string | undefined): string {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) return 'unknown';
+  return ROLE_ALIASES[normalized] ?? normalized;
+}
+
+function readCatalogServerRole(
+  catalog: OTelResourceCatalog | null | undefined,
+  serverId: string
+): string | undefined {
+  return catalog?.resources?.[serverId]?.['server.role'];
+}
+
+function roleSortIndex(role: string): number {
+  const index = ROLE_DISPLAY_ORDER.indexOf(
+    role as (typeof ROLE_DISPLAY_ORDER)[number]
+  );
+  return index === -1 ? ROLE_DISPLAY_ORDER.length : index;
+}
+
+function safeMetricValue(value: number): number {
+  return Number.isFinite(value) ? value : 0;
+}
+
+export function buildMonitoringRoleGroupSummary(
+  analysis: MonitoringBatchAnalysisResponse,
+  catalog?: OTelResourceCatalog | null
+): MonitoringRoleGroupSummary[] {
+  const groups = new Map<
+    string,
+    {
+      count: number;
+      warningCount: number;
+      criticalCount: number;
+      cpuTotal: number;
+      memoryTotal: number;
+      diskTotal: number;
+    }
+  >();
+
+  for (const server of analysis.servers) {
+    const role = normalizeServerRole(
+      readCatalogServerRole(catalog, server.id) ?? server.type
+    );
+    const group = groups.get(role) ?? {
+      count: 0,
+      warningCount: 0,
+      criticalCount: 0,
+      cpuTotal: 0,
+      memoryTotal: 0,
+      diskTotal: 0,
+    };
+
+    group.count += 1;
+    group.warningCount += server.status === 'warning' ? 1 : 0;
+    group.criticalCount +=
+      server.status === 'critical' || server.status === 'offline' ? 1 : 0;
+    group.cpuTotal += safeMetricValue(server.cpu);
+    group.memoryTotal += safeMetricValue(server.memory);
+    group.diskTotal += safeMetricValue(server.disk);
+    groups.set(role, group);
+  }
+
+  return Array.from(groups.entries())
+    .sort(([roleA], [roleB]) => {
+      const orderDiff = roleSortIndex(roleA) - roleSortIndex(roleB);
+      return orderDiff !== 0 ? orderDiff : roleA.localeCompare(roleB);
+    })
+    .map(([role, group]) => ({
+      role,
+      count: group.count,
+      warningCount: group.warningCount,
+      criticalCount: group.criticalCount,
+      avgCpu: Math.round(group.cpuTotal / group.count),
+      avgMemory: Math.round(group.memoryTotal / group.count),
+      avgDisk: Math.round(group.diskTotal / group.count),
+    }));
 }
 
 function mapMonitoringFactPackEvidence(
@@ -396,6 +541,8 @@ export async function generateMonitoringAnalysisArtifact({
   }
 
   const summary = summarizeMonitoringAnalysis(analysis);
+  const roleGroupSummary = buildMonitoringRoleGroupSummary(analysis);
+  const capacityAlerts = analysis.capacityAlerts ?? [];
   const evidence = mapMonitoringFactPackEvidence(
     analysis.factPack?.evidenceRefs
   );
@@ -406,6 +553,8 @@ export async function generateMonitoringAnalysisArtifact({
       generatedAt: new Date().toISOString(),
       ...summary,
       analysis,
+      ...(capacityAlerts.length > 0 ? { capacityAlerts } : {}),
+      ...(roleGroupSummary.length > 0 ? { roleGroupSummary } : {}),
       source:
         analysis._source ||
         (typeof data._source === 'string' ? data._source : undefined),

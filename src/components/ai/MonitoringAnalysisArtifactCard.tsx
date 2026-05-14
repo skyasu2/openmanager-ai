@@ -3,8 +3,13 @@
 import { Activity, Download, ExternalLink, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
+import {
+  createArtifactExecutionWorkspaceId,
+  saveArtifactExecutionReplayPack,
+} from '@/lib/ai/chat-artifacts/artifact-execution';
 import type { MonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
 import type {
+  MonitoringBatchCapacityAlert,
   MonitoringBatchEvidenceRef,
   MonitoringBatchFactSignal,
   MonitoringBatchRiskSignal,
@@ -34,9 +39,43 @@ function downloadBlob({
   URL.revokeObjectURL(url);
 }
 
-function buildAnalysisMarkdown(artifact: MonitoringAnalysisArtifact): string {
+function buildRoleGroupMarkdown(artifact: MonitoringAnalysisArtifact): string {
+  const roleGroups = artifact.roleGroupSummary ?? [];
+  if (roleGroups.length === 0) {
+    return '';
+  }
+
+  return roleGroups
+    .map(
+      (group) =>
+        `- ${group.role}: ${group.count}대, CPU ${group.avgCpu}%, MEM ${group.avgMemory}%, DISK ${group.avgDisk}%, 주의 ${group.warningCount}대, 위험 ${group.criticalCount}대`
+    )
+    .join('\n');
+}
+
+function buildCapacityAlertsMarkdown(
+  artifact: MonitoringAnalysisArtifact
+): string {
+  const alerts = readCapacityAlerts(artifact);
+  if (alerts.length === 0) {
+    return '';
+  }
+
+  return alerts
+    .map(
+      (alert) =>
+        `- ${alert.serverName || alert.serverId}: ${alert.metric.toUpperCase()} 현재 ${Math.round(alert.currentValue)}%, 예측 ${Math.round(alert.predictedValue)}% · ${alert.humanReadable}`
+    )
+    .join('\n');
+}
+
+export function buildAnalysisMarkdown(
+  artifact: MonitoringAnalysisArtifact
+): string {
   const riskSignals = readDisplaySignals(artifact);
   const timeLabel = readTimeLabel(artifact);
+  const roleGroupLines = buildRoleGroupMarkdown(artifact);
+  const capacityAlertLines = buildCapacityAlertsMarkdown(artifact);
   const warningLines =
     riskSignals.length > 0
       ? riskSignals
@@ -61,6 +100,10 @@ function buildAnalysisMarkdown(artifact: MonitoringAnalysisArtifact): string {
     '',
     artifact.summary,
     '',
+    ...(roleGroupLines ? ['## 역할별 현황', '', roleGroupLines, ''] : []),
+    ...(capacityAlertLines
+      ? ['## 용량 소진 예측', '', capacityAlertLines, '']
+      : []),
     '## 위험 신호',
     '',
     warningLines,
@@ -95,6 +138,12 @@ function signalClass(severity: 'warning' | 'critical'): string {
     : 'bg-amber-50 text-amber-700';
 }
 
+function capacityAlertClass(severity: 'warning' | 'critical'): string {
+  return severity === 'critical'
+    ? 'border-red-100 bg-red-50 text-red-800'
+    : 'border-amber-100 bg-amber-50 text-amber-800';
+}
+
 function readRiskSignals(
   artifact: MonitoringAnalysisArtifact
 ): MonitoringBatchRiskSignal[] {
@@ -116,6 +165,18 @@ function readDisplaySignals(
 ): MonitoringDisplaySignal[] {
   const factSignals = readFactSignals(artifact);
   return factSignals.length > 0 ? factSignals : readRiskSignals(artifact);
+}
+
+function readCapacityAlerts(
+  artifact: MonitoringAnalysisArtifact
+): MonitoringBatchCapacityAlert[] {
+  if (Array.isArray(artifact.capacityAlerts)) {
+    return artifact.capacityAlerts;
+  }
+
+  return Array.isArray(artifact.analysis.capacityAlerts)
+    ? artifact.analysis.capacityAlerts
+    : [];
 }
 
 function readEvidenceRefs(
@@ -148,6 +209,32 @@ function formatMonitoringSourceLabel(sourceMode: string): string {
   return 'Monitoring snapshot';
 }
 
+function formatCapacityEta(minutes: number | null): string {
+  if (minutes === null) {
+    return '예측 없음';
+  }
+  if (minutes <= 0) {
+    return '현재';
+  }
+  if (minutes < 60) {
+    return `${minutes}분`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return remainingMinutes > 0
+    ? `${hours}시간 ${remainingMinutes}분`
+    : `${hours}시간`;
+}
+
+function formatCapacityTarget(alert: MonitoringBatchCapacityAlert): string {
+  if (alert.timeToCriticalMinutes !== null) {
+    return `위험 도달 ${formatCapacityEta(alert.timeToCriticalMinutes)}`;
+  }
+
+  return `주의 도달 ${formatCapacityEta(alert.timeToWarningMinutes)}`;
+}
+
 export function MonitoringAnalysisArtifactCard({
   artifact,
 }: {
@@ -155,10 +242,26 @@ export function MonitoringAnalysisArtifactCard({
 }) {
   const { openFullscreen } = useAIEntryController();
   const riskSignals = readDisplaySignals(artifact).slice(0, 3);
+  const capacityAlerts = readCapacityAlerts(artifact).slice(0, 3);
   const evidenceRefs = readEvidenceRefs(artifact).slice(0, 3);
+  const roleGroups = artifact.roleGroupSummary?.slice(0, 6) ?? [];
   const timeLabel = readTimeLabel(artifact);
   const sourceMode = artifact.analysis.sourceMode ?? 'unknown';
   const isStale = artifact.analysis.dataFreshness?.stale === true;
+  const openInMonitoringTab = () => {
+    const saveResult = saveArtifactExecutionReplayPack({
+      artifact,
+      workspaceId: createArtifactExecutionWorkspaceId(artifact, 'chat-card'),
+    });
+
+    openFullscreen({
+      selectedFunction: 'intelligent-monitoring',
+      queryAsOfDataSlot: artifact.queryAsOfDataSlot,
+      ...(saveResult.saved && {
+        artifactWorkspaceId: saveResult.replayPack.workspaceId,
+      }),
+    });
+  };
 
   return (
     <section className="mt-3 rounded-lg border border-cyan-200 bg-white p-3 shadow-xs">
@@ -202,6 +305,75 @@ export function MonitoringAnalysisArtifactCard({
               </p>
             </div>
           </div>
+
+          {roleGroups.length > 0 && (
+            <div className="mt-3 border-t border-cyan-100 pt-3">
+              <p className="text-xs font-semibold text-slate-700">
+                역할별 현황
+              </p>
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {roleGroups.map((group) => (
+                  <div
+                    key={group.role}
+                    className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate text-xs font-semibold text-slate-800">
+                        {group.role}
+                      </p>
+                      <p className="shrink-0 text-xs font-medium text-slate-600">
+                        {group.count}대
+                      </p>
+                    </div>
+                    <p className="mt-1 text-[11px] leading-4 text-slate-600">
+                      CPU {group.avgCpu}% · MEM {group.avgMemory}% · DISK{' '}
+                      {group.avgDisk}%
+                    </p>
+                    {(group.warningCount > 0 || group.criticalCount > 0) && (
+                      <p className="mt-1 text-[11px] leading-4 text-amber-700">
+                        주의 {group.warningCount}대 · 위험 {group.criticalCount}
+                        대
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {capacityAlerts.length > 0 && (
+            <div className="mt-3 border-t border-cyan-100 pt-3">
+              <p className="text-xs font-semibold text-slate-700">
+                용량 소진 예측
+              </p>
+              <div className="mt-2 space-y-2">
+                {capacityAlerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className={`rounded-md border px-2.5 py-2 ${capacityAlertClass(alert.severity)}`}
+                  >
+                    <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                      <Link
+                        href={`/dashboard/servers/${encodeURIComponent(alert.serverId)}`}
+                        className="font-semibold underline decoration-slate-300 underline-offset-2 hover:text-cyan-700"
+                      >
+                        {alert.serverName || alert.serverId}
+                      </Link>
+                      <span className="rounded-md bg-white/70 px-2 py-1 font-medium">
+                        {alert.metric.toUpperCase()}{' '}
+                        {Math.round(alert.currentValue)}%
+                      </span>
+                      <span>{formatCapacityTarget(alert)}</span>
+                    </div>
+                    <p className="mt-1 text-[11px] leading-4">
+                      예측 {Math.round(alert.predictedValue)}% ·{' '}
+                      {alert.humanReadable}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -269,12 +441,7 @@ export function MonitoringAnalysisArtifactCard({
         </button>
         <button
           type="button"
-          onClick={() =>
-            openFullscreen({
-              selectedFunction: 'intelligent-monitoring',
-              queryAsOfDataSlot: artifact.queryAsOfDataSlot,
-            })
-          }
+          onClick={openInMonitoringTab}
           className="inline-flex h-8 items-center gap-1.5 rounded-md bg-cyan-700 px-2.5 text-xs font-medium text-white transition-colors hover:bg-cyan-800"
         >
           <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />

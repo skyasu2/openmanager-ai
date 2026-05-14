@@ -25,6 +25,26 @@ describe('generateIncidentReportArtifact', () => {
           severity: 'critical',
           created_at: '2026-05-03T00:00:00.000Z',
           affected_servers: ['api-was-dc1-01'],
+          system_summary: {
+            total_servers: 18,
+            healthy_servers: 17,
+            warning_servers: 1,
+            critical_servers: 0,
+            uptimePercent: 97.9,
+            affectedDurationMinutes: 30,
+            dataSlotLabel: '07:00 KST',
+          },
+          log_patterns: [
+            {
+              message:
+                'redis-server[pid]: memory usage <pct>% of maxmemory limit',
+              count: 23,
+              severity: 'WARNING',
+              serverId: 'cache-redis-dc1-01',
+              firstSeen: '2026-05-03T00:00:00.000Z',
+              lastSeen: '2026-05-03T00:30:00.000Z',
+            },
+          ],
           root_cause_analysis: {
             primary_cause: 'API 서버 CPU가 임계치를 초과했습니다.',
           },
@@ -49,6 +69,18 @@ describe('generateIncidentReportArtifact', () => {
         id: 'incident-artifact-1',
         title: 'API CPU 포화',
         severity: 'critical',
+        systemSummary: {
+          uptimePercent: 97.9,
+          affectedDurationMinutes: 30,
+          dataSlotLabel: '07:00 KST',
+        },
+        logPatterns: [
+          {
+            count: 23,
+            severity: 'WARNING',
+            serverId: 'cache-redis-dc1-01',
+          },
+        ],
       },
     });
   });

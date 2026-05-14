@@ -104,7 +104,18 @@ export interface IncidentReport {
     healthyServers: number;
     warningServers: number;
     criticalServers: number;
+    uptimePercent?: number;
+    affectedDurationMinutes?: number;
+    dataSlotLabel?: string;
   };
+  logPatterns?: Array<{
+    message: string;
+    count: number;
+    severity: 'ERROR' | 'WARNING' | 'INFO';
+    serverId: string;
+    firstSeen: string;
+    lastSeen: string;
+  }>;
   anomalies?: Array<{
     server_id: string;
     server_name: string;

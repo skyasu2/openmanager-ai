@@ -1,3 +1,4 @@
+import { generateTraceId } from '@/config/ai-proxy/tracing';
 import type { ApiServerMetrics } from '@/services/metrics/MetricsProvider';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import { generateServerLogs } from '@/services/server-data/server-data-logs';
@@ -429,6 +430,7 @@ export async function generateOpsProcedureArtifact({
       sourceMode: 'otel-static',
       dataSlot:
         queryAsOfDataSlot?.timeLabel ?? readTimeLabel(summary.minuteOfDay),
+      traceId: generateTraceId(),
       evidence,
     }
   );
@@ -459,9 +461,22 @@ export function patchOpsProcedureArtifactFromQuery(
       `임계치를 ${previousThreshold}%에서 ${nextThreshold}%로 수정했습니다.`,
     ],
   }));
+  const nextTraceId = generateTraceId();
+  const parentEvidence: ArtifactEvidence[] = artifact.traceId
+    ? [
+        {
+          id: `ops-procedure-parent-${artifact.traceId.slice(0, 12)}`,
+          kind: 'report',
+          summary: `이전 운영 절차 trace ${artifact.traceId}를 기준으로 임계치를 ${previousThreshold}%에서 ${nextThreshold}%로 수정했습니다.`,
+          severity: 'info',
+        },
+      ]
+    : [];
+  const evidence = [...artifact.evidence, ...parentEvidence];
   const updated: OpsProcedureArtifact = {
     ...artifact,
     generatedAt: new Date().toISOString(),
+    traceId: nextTraceId,
     title: artifact.title.replace(
       new RegExp(`${previousThreshold}%`, 'g'),
       `${nextThreshold}%`
@@ -474,6 +489,7 @@ export function patchOpsProcedureArtifactFromQuery(
       ...artifact.inputs,
       threshold: nextThreshold,
     },
+    evidence,
     codeBlocks,
     validation: validateOpsProcedureArtifact({ codeBlocks }),
   };
@@ -481,7 +497,8 @@ export function patchOpsProcedureArtifactFromQuery(
   return attachArtifactEnvelopeMetadata(updated, {
     sourceMode: updated.sourceMode ?? 'otel-static',
     dataSlot: updated.dataSlot,
-    evidence: updated.evidence,
+    traceId: nextTraceId,
+    evidence,
   });
 }
 

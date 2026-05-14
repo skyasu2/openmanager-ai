@@ -174,6 +174,25 @@ export interface MonitoringBatchRiskSignal {
   evidenceRefId: string;
 }
 
+export interface MonitoringBatchCapacityAlert {
+  id: string;
+  serverId: string;
+  serverName: string;
+  serverType: string;
+  metric: 'cpu' | 'memory' | 'disk' | 'network';
+  currentValue: number;
+  predictedValue: number;
+  warningThreshold: number;
+  criticalThreshold: number;
+  willBreachWarning: boolean;
+  timeToWarningMinutes: number | null;
+  willBreachCritical: boolean;
+  timeToCriticalMinutes: number | null;
+  severity: 'warning' | 'critical';
+  humanReadable: string;
+  evidenceRefId: string;
+}
+
 export interface MonitoringBatchEvidenceRef {
   id: string;
   kind: 'metric' | 'log' | 'topology' | 'rule' | 'prediction';
@@ -248,6 +267,7 @@ export interface MonitoringBatchAnalysisResponse {
   summary: string;
   servers: MonitoringBatchServer[];
   riskSignals: MonitoringBatchRiskSignal[];
+  capacityAlerts?: MonitoringBatchCapacityAlert[];
   evidenceRefs: MonitoringBatchEvidenceRef[];
   factPack?: MonitoringBatchFactPack;
   dataFreshness: {

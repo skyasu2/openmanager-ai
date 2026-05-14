@@ -12,12 +12,14 @@
 
 import { AlertCircle, FileText, RefreshCw, X } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   createArtifactExecutionWorkspaceId,
   executeChatArtifact,
   saveArtifactExecutionReplayPack,
 } from '@/lib/ai/chat-artifacts/artifact-execution';
+import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-workspace-store';
+import type { IncidentReportArtifact } from '@/lib/ai/chat-artifacts/types';
 import { logger } from '@/lib/logging';
 import type { JobDataSlot } from '@/types/ai-jobs';
 
@@ -30,6 +32,7 @@ import type { IncidentReport } from './types';
 let reportsCache: IncidentReport[] = [];
 
 interface AutoReportPageProps {
+  artifactWorkspaceId?: string;
   queryAsOfDataSlot?: JobDataSlot;
 }
 
@@ -70,6 +73,7 @@ const REPORT_QUICK_STARTS: ReportQuickStart[] = [
 ];
 
 export default function AutoReportPage({
+  artifactWorkspaceId,
   queryAsOfDataSlot,
 }: AutoReportPageProps = {}) {
   // Reports state — initialized from module-level cache
@@ -91,6 +95,28 @@ export default function AutoReportPage({
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [downloadMenuId, setDownloadMenuId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!artifactWorkspaceId) return;
+
+    const replayPack =
+      createArtifactWorkspaceStore().readReplayPack(artifactWorkspaceId);
+    const artifact = replayPack?.entries.find(
+      (entry) => entry.schema.artifactKind === 'incident-report'
+    )?.payload as IncidentReportArtifact | undefined;
+    if (!artifact) return;
+
+    setReports((prev) => [
+      {
+        ...artifact.report,
+        timestamp:
+          artifact.report.timestamp instanceof Date
+            ? artifact.report.timestamp
+            : new Date(artifact.report.timestamp),
+      },
+      ...prev.filter((report) => report.id !== artifact.report.id),
+    ]);
+  }, [artifactWorkspaceId, setReports]);
 
   // Generate new report
   const handleGenerateReport = useCallback(

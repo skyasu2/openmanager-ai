@@ -134,6 +134,8 @@ export function AnalysisBasisProcessPanel({
           <div className="space-y-2">
             {toolResultSummaries.map((toolResult, index) => {
               const toolPresentation = getToolPresentation(toolResult.toolName);
+              const displayLabel =
+                toolResult.label?.trim() || toolPresentation.label;
               const failureReason = classifyFailureReason(
                 toolResult.summary,
                 toolResult.preview
@@ -149,7 +151,7 @@ export function AnalysisBasisProcessPanel({
                       className="text-xs font-medium text-slate-700"
                       title={toolPresentation.description ?? undefined}
                     >
-                      {toolPresentation.label}
+                      {displayLabel}
                     </span>
                     <span className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500">
                       {toolResult.status === 'failed' ? '실패' : '완료'}

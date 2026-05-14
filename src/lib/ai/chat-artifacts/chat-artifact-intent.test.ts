@@ -62,6 +62,30 @@ describe('classifyChatArtifactIntent', () => {
     );
   });
 
+  it('routes explicit server-id anomaly requests to server-monitoring-analysis artifacts', () => {
+    expect(
+      classifyChatArtifactIntent('api-was-dc1-01 이상감지 분석해줘')
+    ).toMatchObject({
+      kind: 'server-monitoring-analysis',
+      serverId: 'api-was-dc1-01',
+      serverName: 'api-was-dc1-01',
+      reason: 'server_monitoring_action_pattern',
+    });
+    expect(
+      classifyChatArtifactIntent('db-mysql-dc1-primary 추세 분석')
+    ).toMatchObject({
+      kind: 'server-monitoring-analysis',
+      serverId: 'db-mysql-dc1-primary',
+      reason: 'server_monitoring_action_pattern',
+    });
+    expect(
+      classifyChatArtifactIntent('api-was-dc1-01 이상감지 기능 설명해줘')
+    ).toMatchObject({
+      kind: 'guidance',
+      target: 'monitoring-analysis',
+    });
+  });
+
   it('keeps ambiguous feature questions as local guidance without API execution', () => {
     expect(
       classifyChatArtifactIntent('장애 보고는 어떻게 하면 돼?')
@@ -234,6 +258,9 @@ describe('classifyChatArtifactIntent', () => {
       shouldUseLLMChatArtifactIntent(
         '이상감지 결과를 보고서용 문장으로 다시 작성해줘'
       )
+    ).toBe(false);
+    expect(
+      shouldUseLLMChatArtifactIntent('api-was-dc1-01 이상감지 분석해줘')
     ).toBe(false);
     expect(shouldUseLLMChatArtifactIntent('장애 리포트 만들어줘')).toBe(true);
     expect(shouldUseLLMChatArtifactIntent('트렌드 분석 좀 해줘')).toBe(true);

@@ -152,4 +152,31 @@ describe('ops procedure artifact generator', () => {
     expect(JSON.stringify(patched.codeBlocks)).toContain('90');
     expect(JSON.stringify(patched.codeBlocks)).not.toContain('THRESHOLD=80');
   });
+
+  it('keeps patched ops procedure artifacts versioned without mutating the previous artifact', async () => {
+    const artifact = await generateOpsProcedureArtifact({
+      query: 'CPU 80% 이상 서버 슬랙 알림 bash 스크립트 짜줘',
+    });
+
+    const patched = patchOpsProcedureArtifactFromQuery(
+      artifact,
+      '이 스크립트에서 임계치를 90%로 바꿔줘'
+    );
+
+    expect(artifact.traceId).toMatch(/^[0-9a-f]{32}$/);
+    expect(patched.traceId).toMatch(/^[0-9a-f]{32}$/);
+    expect(patched.traceId).not.toBe(artifact.traceId);
+    expect(artifact.inputs.threshold).toBe(80);
+    expect(JSON.stringify(artifact.codeBlocks)).toContain('THRESHOLD=80');
+    expect(patched.evidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.stringContaining('ops-procedure-parent-'),
+          kind: 'report',
+          severity: 'info',
+          summary: expect.stringContaining(String(artifact.traceId)),
+        }),
+      ])
+    );
+  });
 });

@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { downloadReport } from '@/components/ai/pages/auto-report/formatters';
 import type { IncidentReport } from '@/components/ai/pages/auto-report/types';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
+import {
+  createArtifactExecutionWorkspaceId,
+  saveArtifactExecutionReplayPack,
+} from '@/lib/ai/chat-artifacts/artifact-execution';
 import type { IncidentReportArtifact } from '@/lib/ai/chat-artifacts/types';
 
 function normalizeReportForDownload(report: IncidentReport): IncidentReport {
@@ -34,6 +38,24 @@ function formatMetricValue(value: number): string {
   return Number.isFinite(value) ? `${Math.round(value)}%` : '-';
 }
 
+function formatUptimeImpact(
+  systemSummary: IncidentReport['systemSummary']
+): string | null {
+  if (!systemSummary) return null;
+
+  const parts = [
+    typeof systemSummary.uptimePercent === 'number'
+      ? `가용률 ${systemSummary.uptimePercent}%`
+      : null,
+    typeof systemSummary.affectedDurationMinutes === 'number'
+      ? `경고 지속 ${systemSummary.affectedDurationMinutes}분`
+      : null,
+    systemSummary.dataSlotLabel ? `기준 ${systemSummary.dataSlotLabel}` : null,
+  ].filter((part): part is string => part !== null);
+
+  return parts.length > 0 ? parts.join(' | ') : null;
+}
+
 export function IncidentReportArtifactCard({
   artifact,
 }: {
@@ -45,11 +67,28 @@ export function IncidentReportArtifactCard({
   const recommendations = report.recommendations?.slice(0, 2) ?? [];
   const anomalies = report.anomalies?.slice(0, 2) ?? [];
   const timeline = report.timeline?.slice(0, 2) ?? [];
+  const logPatterns = report.logPatterns?.slice(0, 3) ?? [];
+  const uptimeImpact = formatUptimeImpact(report.systemSummary);
   const hasDetails =
     affectedServers.length > 0 ||
     recommendations.length > 0 ||
     anomalies.length > 0 ||
-    timeline.length > 0;
+    timeline.length > 0 ||
+    logPatterns.length > 0;
+  const openInReportTab = () => {
+    const saveResult = saveArtifactExecutionReplayPack({
+      artifact,
+      workspaceId: createArtifactExecutionWorkspaceId(artifact, 'chat-card'),
+    });
+
+    openFullscreen({
+      selectedFunction: 'auto-report',
+      queryAsOfDataSlot: artifact.queryAsOfDataSlot,
+      ...(saveResult.saved && {
+        artifactWorkspaceId: saveResult.replayPack.workspaceId,
+      }),
+    });
+  };
 
   return (
     <section className="mt-3 rounded-lg border border-amber-200 bg-white p-3 shadow-xs">
@@ -78,6 +117,11 @@ export function IncidentReportArtifactCard({
               <span>기준 {artifact.queryAsOfDataSlot.timeLabel}</span>
             )}
           </div>
+          {uptimeImpact && (
+            <p className="mt-1 text-[11px] leading-4 text-amber-700">
+              {uptimeImpact}
+            </p>
+          )}
         </div>
       </div>
 
@@ -137,6 +181,44 @@ export function IncidentReportArtifactCard({
             </div>
           )}
 
+          {logPatterns.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-slate-700">
+                반복 로그 패턴
+              </p>
+              <div className="mt-1.5 space-y-1.5">
+                {logPatterns.map((pattern) => (
+                  <div
+                    key={`${pattern.serverId}-${pattern.severity}-${pattern.message}`}
+                    className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1.5 text-xs leading-5 text-slate-600"
+                  >
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span
+                        className={
+                          pattern.severity === 'ERROR'
+                            ? 'font-semibold text-red-700'
+                            : 'font-semibold text-amber-700'
+                        }
+                      >
+                        {pattern.severity}
+                      </span>
+                      <span>{pattern.count}건</span>
+                      <Link
+                        href={`/dashboard/servers/${encodeURIComponent(pattern.serverId)}`}
+                        className="font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:text-amber-700"
+                      >
+                        {pattern.serverId}
+                      </Link>
+                    </div>
+                    <p className="mt-0.5 line-clamp-2 text-slate-500">
+                      {pattern.message}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {timeline.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-slate-700">타임라인</p>
@@ -173,12 +255,7 @@ export function IncidentReportArtifactCard({
         </button>
         <button
           type="button"
-          onClick={() =>
-            openFullscreen({
-              selectedFunction: 'auto-report',
-              queryAsOfDataSlot: artifact.queryAsOfDataSlot,
-            })
-          }
+          onClick={openInReportTab}
           className="inline-flex h-8 items-center gap-1.5 rounded-md bg-amber-600 px-2.5 text-xs font-medium text-white transition-colors hover:bg-amber-700"
         >
           <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />

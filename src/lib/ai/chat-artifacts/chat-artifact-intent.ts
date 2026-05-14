@@ -8,6 +8,12 @@ type ChatArtifactIntentWithoutVersion =
   | { kind: 'none' }
   | { kind: 'incident-report'; reason: ChatArtifactIntentReason }
   | { kind: 'monitoring-analysis'; reason: ChatArtifactIntentReason }
+  | {
+      kind: 'server-monitoring-analysis';
+      serverId: string;
+      serverName?: string;
+      reason: ChatArtifactIntentReason;
+    }
   | { kind: 'server-snapshot'; reason: ChatArtifactIntentReason }
   | {
       kind: 'ops-procedure';
@@ -32,6 +38,7 @@ export type ChatArtifactIntentReason =
   | 'monitoring_implicit_artifact_keyword'
   | 'ops_procedure_action_pattern'
   | 'ops_procedure_followup_edit_pattern'
+  | 'server_monitoring_action_pattern'
   | 'server_snapshot_action_pattern'
   | 'server_snapshot_implicit_artifact_keyword'
   | 'llm_artifact_classification'
@@ -57,6 +64,8 @@ const MONITORING_ACTION_PATTERN =
   /(분석\s*(해|해줘|해주세요|해줄래|좀|부탁|요청)|분석해|실행|돌려|요약\s*(해|해줘|해주세요|해줄래|부탁|요청)|요약해|확인\s*(해|해줘|해주세요|해줄래|부탁|요청)|확인해|생성(?!\s*(방법|법|기능|설명|안내))|만들|다운로드(?!\s*(방법|법|기능|설명|안내))|예측\s*(해|해줘|해주세요|해줄래|부탁|요청)|예측해|forecast|analy[sz]e|run)/i;
 const MONITORING_ARTIFACT_PATTERN =
   /(이상\s*감지|이상감지|이상\s*탐지|추세\s*(분석|리포트|보고서)|트렌드\s*(분석|리포트|보고서)|리스크\s*(추세|분석)|장애\s*(예측|예상)|예측\s*(분석|리포트|보고서)|anomaly\s*detection|forecast|trend\s*(analysis|report)?)/i;
+const SERVER_MONITORING_ID_PATTERN =
+  /\b((?:api|web|db|cache|storage|lb|monitoring|batch|worker)-[a-z0-9]+(?:-[a-z0-9]+)*)\b/i;
 const SERVER_SNAPSHOT_SUBJECT_PATTERN =
   /(서버\s*상태|인프라\s*상태|전체\s*인프라|운영\s*(현황|상태)|server\s*status|server\s*snapshot|infrastructure\s*status|operational\s*status)/i;
 const SERVER_SNAPSHOT_ARTIFACT_PATTERN =
@@ -124,6 +133,17 @@ function isOpsProcedureRequest(query: string): boolean {
   );
 }
 
+function readServerMonitoringServerId(query: string): string | undefined {
+  return query.match(SERVER_MONITORING_ID_PATTERN)?.[1]?.toLowerCase();
+}
+
+function isServerMonitoringArtifactRequest(query: string): boolean {
+  return (
+    MONITORING_ACTION_PATTERN.test(query) ||
+    (MONITORING_ARTIFACT_PATTERN.test(query) && isImplicitKeywordRequest(query))
+  );
+}
+
 export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   const normalized = query.trim();
   if (!normalized) return withRuleVersion({ kind: 'none' });
@@ -170,6 +190,28 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
       return withRuleVersion({
         kind: 'server-snapshot',
         reason: 'server_snapshot_implicit_artifact_keyword',
+      });
+    }
+  }
+
+  const serverMonitoringServerId = readServerMonitoringServerId(normalized);
+  if (serverMonitoringServerId && MONITORING_PATTERN.test(normalized)) {
+    if (
+      ARTIFACT_GUIDANCE_PRIORITY_PATTERN.test(normalized) ||
+      ARTIFACT_GUIDANCE_PATTERN.test(normalized)
+    ) {
+      return withRuleVersion({
+        kind: 'guidance',
+        target: 'monitoring-analysis',
+        reason: 'monitoring_guidance_pattern',
+      });
+    }
+    if (!isNegated && isServerMonitoringArtifactRequest(normalized)) {
+      return withRuleVersion({
+        kind: 'server-monitoring-analysis',
+        serverId: serverMonitoringServerId,
+        serverName: serverMonitoringServerId,
+        reason: 'server_monitoring_action_pattern',
       });
     }
   }
@@ -248,7 +290,9 @@ export function shouldUseLLMChatArtifactIntent(query: string): boolean {
   if (isFormattingOnlyRequest(normalized)) return false;
   if (
     OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN.test(normalized) ||
-    isOpsProcedureRequest(normalized)
+    isOpsProcedureRequest(normalized) ||
+    (readServerMonitoringServerId(normalized) &&
+      MONITORING_PATTERN.test(normalized))
   ) {
     return false;
   }

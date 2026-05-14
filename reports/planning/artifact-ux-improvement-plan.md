@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Draft
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-14
 
@@ -8,6 +8,16 @@
 **작성 배경**: v8.11.147 QA 이후 Playwright MCP 실점검에서 식별된 두 가지 개선 축.
 - **UX 개선** (T1~T4): 기존 아티팩트 렌더링·진입 경로 버그 수정
 - **페이로드 강화** (T5~T8): 기존 두 아티팩트에 새 데이터 섹션 추가 (새 아티팩트 타입 0개, 새 API 엔드포인트 0개)
+
+**진행 상태**: 2026-05-14 T1~T8 전체 완료. 사용자 노출 버그/아티팩트 재사용/ops-procedure 패치 추적성/server-monitoring intent 경로, 이상감지/추세 payload 강화, 장애 보고서 payload 강화를 모두 반영했다.
+
+**Phase 1 결과**: T1~T2 완료. 분석 근거/디버그 UI에서 artifact generator 내부 함수명은 숨기고 사용자용 레이블을 표시한다. 채팅 artifact 카드의 탭 이동 버튼은 session replay pack을 저장하고, 대상 탭은 `artifactWorkspaceId`로 기존 결과를 복원해 불필요한 재분석을 피한다.
+
+**Phase 2 결과**: T5~T6 완료. Cloud Run batch 분석 응답에 `capacityAlerts[]`를 추가하고, `MonitoringAnalysisArtifact`에 선택적 `capacityAlerts[]`/`roleGroupSummary[]`를 포함해 카드와 Markdown 다운로드에 표시한다.
+
+**Phase 4 부분 결과**: T3~T4 완료. ops-procedure follow-up patch는 이전 아티팩트를 수정하지 않고 새 traceId를 부여하며, 이전 trace를 `report` evidence로 남겨 버전 추적성을 유지한다. 서버 ID가 명시된 이상감지/추세 요청은 `server-monitoring-analysis` intent로 분기해 기존 단일 서버 artifact generator를 호출한다.
+
+**Phase 3 결과**: T7~T8 완료. incident-report API 성공 응답은 `queryAsOf` OTel 슬롯 기준 반복 WARN/ERROR 로그 패턴과 가용성 영향을 보강하고, artifact normalize/card/download formatter가 선택 필드를 graceful하게 표시한다.
 
 ---
 
@@ -23,19 +33,25 @@
 
 ### 변경 불가 영역
 - `ArtifactEnvelope` 타입 구조 (`types.ts`) — 계약 버전 유지
-- `classifyChatArtifactIntent` 규칙 패턴 — 별도 intent 개선 작업으로 처리
+- `classifyChatArtifactIntent` 일반 규칙 패턴 — Task 4에서 서버 ID가 명시된 `server-monitoring-analysis` narrow pattern만 허용하고, broad artifact intent 확장은 별도 intent 개선 작업으로 처리
+
+### 착수 순서
+- Phase 1: T1 내부 도구명 UI 노출 제거, T2 채팅→탭 딥링크 아티팩트 전달
+- Phase 2: T5~T6 이상감지/추세 payload 강화
+- Phase 3: T7~T8 장애 보고서 payload 강화
+- Phase 4: T3 ops-procedure 불변성, T4 server-monitoring-analysis intent 경로
 
 ### 완료 기준 — UX 개선
-- [ ] UI에서 내부 함수명이 노출되지 않음
-- [ ] 채팅에서 생성한 아티팩트를 탭에서 바로 확인 가능
-- [ ] ops-procedure 수정 시 이전 아티팩트가 보존됨
-- [ ] server-monitoring-analysis가 intent 경로로도 트리거 가능
+- [x] UI에서 내부 함수명이 노출되지 않음
+- [x] 채팅에서 생성한 아티팩트를 탭에서 바로 확인 가능
+- [x] ops-procedure 수정 시 이전 아티팩트가 보존됨
+- [x] server-monitoring-analysis가 intent 경로로도 트리거 가능
 
 ### 완료 기준 — 페이로드 강화
-- [ ] 이상감지/추세 카드에 용량 소진 예측(시간) 표시
-- [ ] 이상감지/추세 카드에 역할별(web/db/cache) 그룹 요약 표시
-- [ ] 장애 보고서 카드에 반복 로그 패턴 집계 표시
-- [ ] 장애 보고서 카드에 경고 지속 시간(분) 표시
+- [x] 이상감지/추세 카드에 용량 소진 예측(시간) 표시
+- [x] 이상감지/추세 카드에 역할별(web/db/cache) 그룹 요약 표시
+- [x] 장애 보고서 카드에 반복 로그 패턴 집계 표시
+- [x] 장애 보고서 카드에 경고 지속 시간(분) 표시
 
 ---
 
@@ -80,9 +96,9 @@ const ARTIFACT_TOOL_LABELS: Record<ChatArtifact['kind'], string> = {
 };
 ```
 
-- [ ] `chat-artifact-metadata.ts` 도구명 레이블 상수화
-- [ ] 기존 레이블 노출 경로 확인 (SidebarMessage, AIWorkspaceMessage)
-- [ ] 스냅샷 테스트 업데이트
+- [x] artifact generator 도구명 레이블을 사용자용 한글 레이블로 정렬
+- [x] 기존 레이블 노출 경로 확인 (AnalysisBasisBadge/SidebarMessage/AIWorkspaceMessage)
+- [x] 회귀 테스트 업데이트
 
 ---
 
@@ -109,11 +125,11 @@ useEffect(() => {
 }, []);
 ```
 
-- [ ] `MonitoringAnalysisArtifactCard` — 탭 이동 전 store 저장 로직 추가
-- [ ] `IncidentReportArtifactCard` — 동일 패턴 적용
-- [ ] `IntelligentMonitoringPage` — store에서 최신 ReplayPack 읽기
-- [ ] `AutoReportPage` — 동일 패턴 적용
-- [ ] 저장 TTL: 세션 단위 (탭 닫으면 소멸, 현행 `local-session-first` 정책 유지)
+- [x] `MonitoringAnalysisArtifactCard` — 탭 이동 전 store 저장 로직 추가
+- [x] `IncidentReportArtifactCard` — 동일 패턴 적용
+- [x] `IntelligentMonitoringPage` — `artifactWorkspaceId`로 ReplayPack 읽기
+- [x] `AutoReportPage` — 동일 패턴 적용
+- [x] 저장 TTL: 세션 단위 (탭 닫으면 소멸, 현행 `local-session-first` 정책 유지)
 
 ---
 
@@ -136,9 +152,9 @@ return attachArtifactEnvelopeMetadata(patched, {
 });
 ```
 
-- [ ] `patchOpsProcedureArtifactFromQuery` 반환값에 새 traceId 부여
-- [ ] 이전 아티팩트 메시지가 채팅 히스토리에 유지되는지 테스트 확인
-- [ ] `ops-procedure-artifact.test.ts` 회귀 시나리오 추가
+- [x] `patchOpsProcedureArtifactFromQuery` 반환값에 새 traceId 부여
+- [x] 이전 아티팩트를 직접 mutate하지 않고 parent trace evidence를 남기는지 테스트 확인
+- [x] `ops-procedure-artifact.test.ts` 회귀 시나리오 추가
 
 ---
 
@@ -160,10 +176,10 @@ case 'server-monitoring-analysis':
   return generateServerMonitoringArtifact({ ... });
 ```
 
-- [ ] `chat-artifact-intent.ts` — 서버 ID 포함 이상감지 패턴 추가
-- [ ] `chat-artifact-execution.ts` switch 케이스 추가
-- [ ] intent 테스트 케이스 추가 (`chat-artifact-intent.test.ts`)
-- [ ] 서버 ID 파싱 엣지케이스 테스트
+- [x] `chat-artifact-intent.ts` — 서버 ID 포함 이상감지 패턴 추가
+- [x] `chat-artifact-execution.ts` switch 케이스 추가
+- [x] intent 테스트 케이스 추가 (`chat-artifact-intent.test.ts`)
+- [x] 서버 ID 파싱 엣지케이스 테스트
 
 ---
 
@@ -209,11 +225,11 @@ cache-redis-dc1-01  MEM 83%  →  약 56시간 후 100%  🔴
 db-mysql-dc1-backup  DISK 71%  →  약 193시간 후 100%  🟡
 ```
 
-- [ ] Cloud Run batch 분석에 capacityAlerts 집계 로직 추가
-- [ ] `MonitoringBatchAnalysisResponse` 타입 확장
-- [ ] `monitoring-analysis-artifact.ts` artifact 빌드 시 포함
-- [ ] `MonitoringAnalysisArtifactCard` 용량 예측 섹션 추가
-- [ ] MD 다운로드 포맷에 용량 예측 섹션 포함
+- [x] Cloud Run batch 분석에 capacityAlerts 집계 로직 추가
+- [x] `MonitoringBatchAnalysisResponse` 타입 확장
+- [x] `monitoring-analysis-artifact.ts` artifact 빌드 시 포함
+- [x] `MonitoringAnalysisArtifactCard` 용량 예측 섹션 추가
+- [x] MD 다운로드 포맷에 용량 예측 섹션 포함
 
 ---
 
@@ -248,10 +264,10 @@ cache     3대  CPU 12%  MEM 74%  DISK 22%  ⚠️ 경고 1
 web       3대  CPU 15%  MEM 38%  DISK 28%  ✅ 정상
 ```
 
-- [ ] `monitoring-analysis-artifact.ts`에서 resource-catalog 로드 및 그룹화 계산
-- [ ] `MonitoringAnalysisArtifact` 타입에 `roleGroupSummary` 선택 필드 추가
-- [ ] `MonitoringAnalysisArtifactCard` 역할별 요약 섹션 추가
-- [ ] MD 다운로드 포맷에 역할별 요약 포함
+- [x] `monitoring-analysis-artifact.ts`에서 서버 역할 정규화 및 그룹화 계산
+- [x] `MonitoringAnalysisArtifact` 타입에 `roleGroupSummary` 선택 필드 추가
+- [x] `MonitoringAnalysisArtifactCard` 역할별 요약 섹션 추가
+- [x] MD 다운로드 포맷에 역할별 요약 포함
 
 ---
 
@@ -286,11 +302,11 @@ ERROR  23건  cache-redis-dc1-01  "redis slowlog threshold exceeded"
 WARN   18건  cache-redis-dc1-01  "memory usage 83% of maxmemory limit"
 ```
 
-- [ ] incident-report API에서 OTel 로그 ERROR/WARN 집계 추가 (상위 5건)
-- [ ] `IncidentReport` 타입에 `logPatterns` 선택 필드 추가
-- [ ] `incident-report-artifact.ts` normalizeIncidentReport에서 logPatterns 파싱
-- [ ] `IncidentReportArtifactCard` 로그 패턴 섹션 추가
-- [ ] MD 다운로드 포맷에 로그 패턴 섹션 포함
+- [x] incident-report API에서 OTel 로그 ERROR/WARN 집계 추가 (상위 5건)
+- [x] `IncidentReport` 타입에 `logPatterns` 선택 필드 추가
+- [x] `incident-report-artifact.ts` normalizeIncidentReport에서 logPatterns 파싱
+- [x] `IncidentReportArtifactCard` 로그 패턴 섹션 추가
+- [x] MD 다운로드 포맷에 로그 패턴 섹션 포함
 
 ---
 
@@ -323,10 +339,10 @@ systemSummary?: {
 가용률 97.9%  |  경고 지속 30분  |  기준 14:20 KST
 ```
 
-- [ ] `normalizeSystemSummary`에서 OTel 슬롯 상태 집계 로직 추가
-- [ ] `systemSummary` 타입 확장 (기존 필드 유지, 선택적 추가)
-- [ ] `IncidentReportArtifactCard` 헤더에 가용성 영향 표시
-- [ ] 슬롯 데이터 없을 때 graceful 생략 처리
+- [x] incident-report API에서 OTel 슬롯 상태 집계 로직 추가
+- [x] `systemSummary` 타입 확장 (기존 필드 유지, 선택적 추가)
+- [x] `IncidentReportArtifactCard` 헤더에 가용성 영향 표시
+- [x] 슬롯 데이터 없을 때 graceful 생략 처리
 
 ---
 

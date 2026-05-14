@@ -148,6 +148,25 @@ export interface MonitoringRiskSignal {
   evidenceRefId: string;
 }
 
+export interface MonitoringCapacityAlert {
+  id: string;
+  serverId: string;
+  serverName: string;
+  serverType: string;
+  metric: MonitoringFactMetric;
+  currentValue: number;
+  predictedValue: number;
+  warningThreshold: number;
+  criticalThreshold: number;
+  willBreachWarning: boolean;
+  timeToWarningMinutes: number | null;
+  willBreachCritical: boolean;
+  timeToCriticalMinutes: number | null;
+  severity: MonitoringFactSeverity;
+  humanReadable: string;
+  evidenceRefId: string;
+}
+
 export interface MonitoringSnapshot {
   sourceMode: MonitoringSourceMode;
   queryAsOf: string;

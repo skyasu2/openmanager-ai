@@ -2,9 +2,13 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
-import { MONITORING_ARTIFACT_DOMAIN_ID } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  type ArtifactReplayPack,
+  MONITORING_ARTIFACT_DOMAIN_ID,
+} from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
+import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-workspace-store';
 import type {
   MonitoringAnalysisArtifact,
   ServerMonitoringAnalysisArtifact,
@@ -16,12 +20,17 @@ import {
 } from '@/lib/ai/chat-artifacts/types';
 import { ArtifactRendererHost } from './domain-renderers/ArtifactRendererHost';
 import { IncidentReportArtifactCard } from './IncidentReportArtifactCard';
-import { MonitoringAnalysisArtifactCard } from './MonitoringAnalysisArtifactCard';
+import {
+  buildAnalysisMarkdown,
+  MonitoringAnalysisArtifactCard,
+} from './MonitoringAnalysisArtifactCard';
 import { ServerSnapshotArtifactCard } from './ServerSnapshotArtifactCard';
+
+const mockOpenFullscreen = vi.fn();
 
 vi.mock('@/hooks/ai/useAIEntryController', () => ({
   useAIEntryController: () => ({
-    openFullscreen: vi.fn(),
+    openFullscreen: mockOpenFullscreen,
   }),
 }));
 
@@ -103,7 +112,20 @@ const serverMonitoringArtifact: ServerMonitoringAnalysisArtifact = {
   sourceMode: 'tool-result',
 };
 
+function readStoredArtifactKinds(): Array<
+  ArtifactReplayPack['entries'][number]['schema']['artifactKind']
+> {
+  return createArtifactWorkspaceStore()
+    .listReplayPacks()
+    .flatMap((pack) => pack.entries.map((entry) => entry.schema.artifactKind));
+}
+
 describe('AI artifact cards', () => {
+  beforeEach(() => {
+    mockOpenFullscreen.mockClear();
+    window.sessionStorage.clear();
+  });
+
   it('renders ops procedure artifact cards through the domain renderer host', () => {
     const envelope = createArtifactEnvelope(opsProcedureArtifact, {
       domainId: MONITORING_ARTIFACT_DOMAIN_ID,
@@ -190,6 +212,37 @@ describe('AI artifact cards', () => {
     ).toBeEnabled();
   });
 
+  it('persists incident report artifacts before opening the report tab', () => {
+    render(
+      <IncidentReportArtifactCard
+        artifact={{
+          kind: 'incident-report',
+          generatedAt: '2026-05-02T00:00:00.000Z',
+          report: {
+            id: 'incident-artifact-1',
+            title: 'DB 메모리 경고',
+            severity: 'warning',
+            timestamp: new Date('2026-05-02T00:00:00.000Z'),
+            affectedServers: ['db-mysql-dc1-primary'],
+            description: '메모리 사용률이 높습니다.',
+            status: 'active',
+          },
+        }}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /장애 보고서 작성에서 보기/i })
+    );
+
+    expect(mockOpenFullscreen).toHaveBeenCalledWith(
+      expect.objectContaining({
+        selectedFunction: 'auto-report',
+      })
+    );
+    expect(readStoredArtifactKinds()).toContain('incident-report');
+  });
+
   it('renders incident report artifact detail payload without another API call', () => {
     render(
       <IncidentReportArtifactCard
@@ -204,6 +257,26 @@ describe('AI artifact cards', () => {
             affectedServers: ['api-was-dc1-01'],
             description: 'API 서버 CPU가 임계치를 초과했습니다.',
             status: 'active',
+            systemSummary: {
+              totalServers: 18,
+              healthyServers: 17,
+              warningServers: 1,
+              criticalServers: 0,
+              uptimePercent: 97.9,
+              affectedDurationMinutes: 30,
+              dataSlotLabel: '07:00 KST',
+            },
+            logPatterns: [
+              {
+                message:
+                  'redis-server[pid]: memory usage <pct>% of maxmemory limit',
+                count: 23,
+                severity: 'WARNING',
+                serverId: 'cache-redis-dc1-01',
+                firstSeen: '2026-05-02T00:00:00.000Z',
+                lastSeen: '2026-05-02T00:30:00.000Z',
+              },
+            ],
             recommendations: [
               {
                 action: 'API worker 수를 임시 증설',
@@ -235,6 +308,15 @@ describe('AI artifact cards', () => {
     expect(
       screen.getByRole('link', { name: /api-was-dc1-01/i })
     ).toHaveAttribute('href', '/dashboard/servers/api-was-dc1-01');
+    expect(
+      screen.getByText('가용률 97.9% | 경고 지속 30분 | 기준 07:00 KST')
+    ).toBeInTheDocument();
+    expect(screen.getByText('반복 로그 패턴')).toBeInTheDocument();
+    expect(screen.getByText('WARNING')).toBeInTheDocument();
+    expect(screen.getByText('23건')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /cache-redis-dc1-01/i })
+    ).toHaveAttribute('href', '/dashboard/servers/cache-redis-dc1-01');
     expect(screen.getByText('API worker 수를 임시 증설')).toBeInTheDocument();
     expect(screen.getByText(/cpu 94%/i)).toBeInTheDocument();
     expect(screen.getByText('CPU 임계치 초과')).toBeInTheDocument();
@@ -292,6 +374,206 @@ describe('AI artifact cards', () => {
     expect(
       screen.getByRole('button', { name: /이상감지\/추세에서 보기/i })
     ).toBeEnabled();
+  });
+
+  it('renders monitoring role group summary and includes it in markdown exports', () => {
+    const artifact: MonitoringAnalysisArtifact = {
+      kind: 'monitoring-analysis',
+      generatedAt: '2026-05-02T00:01:00.000Z',
+      title: '전체 서버 이상감지/추세 분석',
+      summary: '역할별 리소스 분포를 확인했습니다.',
+      serverCount: 5,
+      riskSignalCount: 1,
+      warningServers: 1,
+      criticalServers: 0,
+      roleGroupSummary: [
+        {
+          role: 'database',
+          count: 3,
+          warningCount: 0,
+          criticalCount: 0,
+          avgCpu: 41,
+          avgMemory: 63,
+          avgDisk: 61,
+        },
+        {
+          role: 'cache',
+          count: 2,
+          warningCount: 1,
+          criticalCount: 0,
+          avgCpu: 28,
+          avgMemory: 83,
+          avgDisk: 44,
+        },
+      ],
+      analysis: {
+        success: true,
+        sourceMode: 'replay-json',
+        queryAsOf: '2026-05-02T00:00:00.000Z',
+        slot: {
+          slotIndex: 143,
+          hour: 23,
+          slotInHour: 5,
+          minuteOfDay: 1430,
+          timeLabel: '23:50 KST',
+          startTime: '2026-05-02T00:00:00.000Z',
+          endTime: '2026-05-02T00:10:00.000Z',
+        },
+        summary: '역할별 리소스 분포를 확인했습니다.',
+        servers: [],
+        riskSignals: [],
+        evidenceRefs: [],
+        dataFreshness: {
+          generatedAt: null,
+          sourceUpdatedAt: null,
+          stale: false,
+        },
+      },
+    };
+
+    render(<MonitoringAnalysisArtifactCard artifact={artifact} />);
+
+    expect(screen.getByText('역할별 현황')).toBeInTheDocument();
+    expect(screen.getByText('database')).toBeInTheDocument();
+    expect(screen.getByText('cache')).toBeInTheDocument();
+    expect(
+      screen.getByText('CPU 41% · MEM 63% · DISK 61%')
+    ).toBeInTheDocument();
+    expect(screen.getAllByText('주의 1대 · 위험 0대')).toHaveLength(2);
+
+    const markdown = buildAnalysisMarkdown(artifact);
+    expect(markdown).toContain('## 역할별 현황');
+    expect(markdown).toContain(
+      '- database: 3대, CPU 41%, MEM 63%, DISK 61%, 주의 0대, 위험 0대'
+    );
+    expect(markdown).toContain(
+      '- cache: 2대, CPU 28%, MEM 83%, DISK 44%, 주의 1대, 위험 0대'
+    );
+  });
+
+  it('renders monitoring capacity alerts and includes them in markdown exports', () => {
+    const artifact: MonitoringAnalysisArtifact = {
+      kind: 'monitoring-analysis',
+      generatedAt: '2026-05-02T00:01:00.000Z',
+      title: '전체 서버 이상감지/추세 분석',
+      summary: '용량 소진 예측을 확인했습니다.',
+      serverCount: 18,
+      riskSignalCount: 1,
+      warningServers: 1,
+      criticalServers: 0,
+      analysis: {
+        success: true,
+        sourceMode: 'replay-json',
+        queryAsOf: '2026-05-02T00:00:00.000Z',
+        slot: {
+          slotIndex: 143,
+          hour: 23,
+          slotInHour: 5,
+          minuteOfDay: 1430,
+          timeLabel: '23:50 KST',
+          startTime: '2026-05-02T00:00:00.000Z',
+          endTime: '2026-05-02T00:10:00.000Z',
+        },
+        summary: '용량 소진 예측을 확인했습니다.',
+        servers: [],
+        riskSignals: [],
+        capacityAlerts: [
+          {
+            id: 'capacity-cache-memory',
+            serverId: 'cache-redis-dc1-01',
+            serverName: 'cache-redis-dc1-01',
+            serverType: 'cache',
+            metric: 'memory',
+            currentValue: 83,
+            predictedValue: 91,
+            warningThreshold: 80,
+            criticalThreshold: 90,
+            willBreachWarning: true,
+            timeToWarningMinutes: 0,
+            willBreachCritical: true,
+            timeToCriticalMinutes: 42,
+            severity: 'critical',
+            humanReadable: '현재 경고 상태 → 42분 후 심각 상태 예상',
+            evidenceRefId: 'evidence-capacity-cache-memory',
+          },
+        ],
+        evidenceRefs: [],
+        dataFreshness: {
+          generatedAt: null,
+          sourceUpdatedAt: null,
+          stale: false,
+        },
+      },
+    };
+
+    render(<MonitoringAnalysisArtifactCard artifact={artifact} />);
+
+    expect(screen.getByText('용량 소진 예측')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /cache-redis-dc1-01/i })
+    ).toHaveAttribute('href', '/dashboard/servers/cache-redis-dc1-01');
+    expect(screen.getByText('MEMORY 83%')).toBeInTheDocument();
+    expect(screen.getByText('위험 도달 42분')).toBeInTheDocument();
+    expect(
+      screen.getByText('예측 91% · 현재 경고 상태 → 42분 후 심각 상태 예상')
+    ).toBeInTheDocument();
+
+    const markdown = buildAnalysisMarkdown(artifact);
+    expect(markdown).toContain('## 용량 소진 예측');
+    expect(markdown).toContain(
+      '- cache-redis-dc1-01: MEMORY 현재 83%, 예측 91% · 현재 경고 상태 → 42분 후 심각 상태 예상'
+    );
+  });
+
+  it('persists monitoring analysis artifacts before opening the monitoring tab', () => {
+    render(
+      <MonitoringAnalysisArtifactCard
+        artifact={{
+          kind: 'monitoring-analysis',
+          generatedAt: '2026-05-02T00:01:00.000Z',
+          title: '전체 서버 이상감지/추세 분석',
+          summary: '18개 서버 분석 완료, 주의 1대',
+          serverCount: 18,
+          riskSignalCount: 1,
+          warningServers: 1,
+          criticalServers: 0,
+          analysis: {
+            success: true,
+            sourceMode: 'replay-json',
+            queryAsOf: '2026-05-02T00:00:00.000Z',
+            slot: {
+              slotIndex: 143,
+              hour: 23,
+              slotInHour: 5,
+              minuteOfDay: 1430,
+              timeLabel: '23:50 KST',
+              startTime: '2026-05-02T00:00:00.000Z',
+              endTime: '2026-05-02T00:10:00.000Z',
+            },
+            summary: '18개 서버 분석 완료',
+            servers: [],
+            riskSignals: [],
+            evidenceRefs: [],
+            dataFreshness: {
+              generatedAt: null,
+              sourceUpdatedAt: null,
+              stale: false,
+            },
+          },
+        }}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /이상감지\/추세에서 보기/i })
+    );
+
+    expect(mockOpenFullscreen).toHaveBeenCalledWith(
+      expect.objectContaining({
+        selectedFunction: 'intelligent-monitoring',
+      })
+    );
+    expect(readStoredArtifactKinds()).toContain('monitoring-analysis');
   });
 
   it('renders monitoring analysis risk and evidence payload without another API call', () => {

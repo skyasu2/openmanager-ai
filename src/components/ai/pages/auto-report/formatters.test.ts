@@ -52,4 +52,38 @@ describe('auto-report formatters', () => {
 
     expect(filename).toBe('incident-20260420-012345.md');
   });
+
+  it('마크다운 다운로드 내용에 반복 로그 패턴과 가용성 영향을 포함한다', () => {
+    const markdown = formatReportAsMarkdown(
+      createReport({
+        systemSummary: {
+          totalServers: 18,
+          healthyServers: 17,
+          warningServers: 1,
+          criticalServers: 0,
+          uptimePercent: 97.9,
+          affectedDurationMinutes: 30,
+          dataSlotLabel: '07:00 KST',
+        },
+        logPatterns: [
+          {
+            message:
+              'redis-server[pid]: memory usage <pct>% of maxmemory limit',
+            count: 23,
+            severity: 'WARNING',
+            serverId: 'cache-redis-dc1-01',
+            firstSeen: '2026-04-20T01:00:00.000Z',
+            lastSeen: '2026-04-20T01:30:00.000Z',
+          },
+        ],
+      })
+    );
+
+    expect(markdown).toContain('가용률 97.9%');
+    expect(markdown).toContain('경고 지속 30분');
+    expect(markdown).toContain('## 반복 로그 패턴');
+    expect(markdown).toContain(
+      '| WARNING | 23건 | cache-redis-dc1-01 | redis-server[pid]: memory usage <pct>% of maxmemory limit |'
+    );
+  });
 });

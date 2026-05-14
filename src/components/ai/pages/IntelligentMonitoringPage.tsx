@@ -21,7 +21,11 @@ import {
   executeChatArtifact,
   saveArtifactExecutionReplayPack,
 } from '@/lib/ai/chat-artifacts/artifact-execution';
-import type { ServerMonitoringCurrentMetrics } from '@/lib/ai/chat-artifacts/types';
+import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-workspace-store';
+import type {
+  MonitoringAnalysisArtifact,
+  ServerMonitoringCurrentMetrics,
+} from '@/lib/ai/chat-artifacts/types';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AnalysisResponse,
@@ -36,6 +40,7 @@ import type {
 import type { EnhancedServerMetrics } from '@/types/server';
 
 interface IntelligentMonitoringPageProps {
+  artifactWorkspaceId?: string;
   queryAsOfDataSlot?: JobDataSlot;
   autoAnalyzeOnVisible?: boolean;
 }
@@ -189,6 +194,7 @@ function createServerMonitoringCurrentMetrics(
 }
 
 export default function IntelligentMonitoringPage({
+  artifactWorkspaceId,
   queryAsOfDataSlot,
   autoAnalyzeOnVisible = false,
 }: IntelligentMonitoringPageProps = {}) {
@@ -206,6 +212,23 @@ export default function IntelligentMonitoringPage({
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const hasAutoAnalyzedRef = useRef(false);
+
+  useEffect(() => {
+    if (!artifactWorkspaceId) return;
+
+    const replayPack =
+      createArtifactWorkspaceStore().readReplayPack(artifactWorkspaceId);
+    const artifact = replayPack?.entries.find(
+      (entry) => entry.schema.artifactKind === 'monitoring-analysis'
+    )?.payload as MonitoringAnalysisArtifact | undefined;
+    if (!artifact) return;
+
+    hasAutoAnalyzedRef.current = true;
+    setError(null);
+    setIsAnalyzing(false);
+    setProgress({ current: 0, total: 0 });
+    setResult(adaptMonitoringBatchResponse(artifact.analysis));
+  }, [artifactWorkspaceId]);
 
   // 🔧 P3: useCallback으로 핸들러 메모이제이션
   const handleServerChange = useCallback(

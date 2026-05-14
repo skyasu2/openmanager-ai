@@ -3,6 +3,7 @@ import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   CloudRunAnalysisResponse,
   MonitoringBatchAnalysisResponse,
+  MonitoringBatchCapacityAlert,
   ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
 
@@ -71,8 +72,20 @@ export interface MonitoringAnalysisArtifact extends ArtifactContractMetadata {
   warningServers: number;
   criticalServers: number;
   analysis: MonitoringBatchAnalysisResponse;
+  capacityAlerts?: MonitoringBatchCapacityAlert[];
+  roleGroupSummary?: MonitoringRoleGroupSummary[];
   source?: string;
   queryAsOfDataSlot?: JobDataSlot;
+}
+
+export interface MonitoringRoleGroupSummary {
+  role: string;
+  count: number;
+  warningCount: number;
+  criticalCount: number;
+  avgCpu: number;
+  avgMemory: number;
+  avgDisk: number;
 }
 
 export interface ServerMonitoringCurrentMetrics {

@@ -160,6 +160,34 @@ describe('AnalysisBasisBadge', () => {
     ).toBeInTheDocument();
   });
 
+  it('keeps internal artifact tool names out of expanded user-facing details', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: '서버 실시간 데이터 분석',
+        }}
+        toolResultSummaries={[
+          {
+            toolName: 'generateMonitoringAnalysisArtifact',
+            label: '이상감지/추세 분석',
+            summary: '18개 서버 분석과 위험 신호 1건을 정리했습니다.',
+            status: 'completed',
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getAllByText('이상감지/추세 분석').length).toBeGreaterThan(0);
+    expect(
+      screen.queryByText('generateMonitoringAnalysisArtifact')
+    ).not.toBeInTheDocument();
+  });
+
   it('shows selected analysis mode in collapsed summary and expanded details', () => {
     render(
       <AnalysisBasisBadge

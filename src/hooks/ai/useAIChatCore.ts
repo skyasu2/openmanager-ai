@@ -527,6 +527,7 @@ export function useAIChatCore(
       if (
         artifactIntent.kind === 'incident-report' ||
         artifactIntent.kind === 'monitoring-analysis' ||
+        artifactIntent.kind === 'server-monitoring-analysis' ||
         artifactIntent.kind === 'server-snapshot' ||
         artifactIntent.kind === 'ops-procedure'
       ) {

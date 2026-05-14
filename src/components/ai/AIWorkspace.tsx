@@ -109,6 +109,9 @@ export default function AIWorkspace({
   const [workspaceQueryAsOfDataSlot, setWorkspaceQueryAsOfDataSlot] = useState(
     pendingEntryState?.queryAsOfDataSlot ?? queryAsOfDataSlot
   );
+  const [workspaceArtifactId, setWorkspaceArtifactId] = useState(
+    pendingEntryState?.artifactWorkspaceId
+  );
 
   useEffect(() => {
     if (pendingEntryState?.queryAsOfDataSlot) {
@@ -119,6 +122,7 @@ export default function AIWorkspace({
 
   const handleFunctionSelect = useCallback(
     (func: AIAssistantFunction) => {
+      setWorkspaceArtifactId(undefined);
       setSelectedFunction(func);
     },
     [setSelectedFunction]
@@ -284,6 +288,7 @@ export default function AIWorkspace({
     }
 
     setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot ?? queryAsOfDataSlot);
+    setWorkspaceArtifactId(entry.artifactWorkspaceId);
 
     if (entry.draft) {
       setInput(entry.draft);
@@ -379,6 +384,7 @@ export default function AIWorkspace({
       <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
         <div className="h-full p-0">
           <AIContentArea
+            artifactWorkspaceId={workspaceArtifactId}
             selectedFunction={selectedFunction}
             queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
           />

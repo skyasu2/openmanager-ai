@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { OTelResourceCatalog } from '@/types/otel-metrics';
 import {
+  buildMonitoringRoleGroupSummary,
   generateMonitoringAnalysisArtifact,
   generateServerMonitoringArtifact,
   parseMonitoringBatchAnalysisResponse,
@@ -80,6 +82,27 @@ const validFactPack = {
     },
   ],
 };
+
+const validCapacityAlerts = [
+  {
+    id: 'capacity-cache-memory',
+    serverId: 'cache-redis-dc1-01',
+    serverName: 'cache-redis-dc1-01',
+    serverType: 'cache',
+    metric: 'memory',
+    currentValue: 83,
+    predictedValue: 91,
+    warningThreshold: 80,
+    criticalThreshold: 90,
+    willBreachWarning: true,
+    timeToWarningMinutes: 0,
+    willBreachCritical: true,
+    timeToCriticalMinutes: 42,
+    severity: 'critical',
+    humanReadable: '현재 경고 상태 → 42분 후 심각 상태 예상',
+    evidenceRefId: 'evidence-capacity-cache-memory',
+  },
+] as const;
 
 const validServerAnalysisResponse = {
   success: true,
@@ -163,6 +186,38 @@ describe('parseMonitoringBatchAnalysisResponse', () => {
         }),
       ],
     });
+  });
+
+  it('preserves valid capacity alerts and strips unknown alert fields', () => {
+    const parsed = parseMonitoringBatchAnalysisResponse({
+      ...validBatchResponse,
+      capacityAlerts: [
+        {
+          ...validCapacityAlerts[0],
+          rawToolJson: '{"token":"should-not-survive"}',
+        },
+      ],
+    });
+
+    expect(parsed?.capacityAlerts).toEqual(validCapacityAlerts);
+    expect(JSON.stringify(parsed?.capacityAlerts)).not.toContain(
+      'should-not-survive'
+    );
+  });
+
+  it('drops malformed capacity alerts without rejecting the batch response', () => {
+    const parsed = parseMonitoringBatchAnalysisResponse({
+      ...validBatchResponse,
+      capacityAlerts: [
+        {
+          ...validCapacityAlerts[0],
+          severity: 'info',
+        },
+      ],
+    });
+
+    expect(parsed).not.toBeNull();
+    expect(parsed?.capacityAlerts).toBeUndefined();
   });
 
   it('strips unknown fields from validated MonitoringFactPack payloads', () => {
@@ -253,6 +308,103 @@ describe('parseMonitoringBatchAnalysisResponse', () => {
   });
 });
 
+describe('buildMonitoringRoleGroupSummary', () => {
+  it('groups monitoring servers by normalized resource role with rounded averages', () => {
+    const parsed = parseMonitoringBatchAnalysisResponse({
+      ...validBatchResponse,
+      servers: [
+        {
+          id: 'api-was-dc1-01',
+          name: 'api-was-dc1-01',
+          type: 'api',
+          status: 'warning',
+          cpu: 80,
+          memory: 70,
+          disk: 60,
+          network: 40,
+        },
+        {
+          id: 'api-was-dc1-02',
+          name: 'api-was-dc1-02',
+          type: 'api',
+          status: 'online',
+          cpu: 60,
+          memory: 50,
+          disk: 40,
+          network: 30,
+        },
+        {
+          id: 'db-mysql-dc1-primary',
+          name: 'db-mysql-dc1-primary',
+          type: 'db',
+          status: 'critical',
+          cpu: 50,
+          memory: 90,
+          disk: 80,
+          network: 20,
+        },
+        {
+          id: 'cache-redis-dc1-01',
+          name: 'cache-redis-dc1-01',
+          type: 'redis',
+          status: 'offline',
+          cpu: 20,
+          memory: 83,
+          disk: 40,
+          network: 10,
+        },
+      ],
+    });
+
+    expect(parsed).not.toBeNull();
+    expect(
+      buildMonitoringRoleGroupSummary(parsed!, {
+        schemaVersion: '2026-05-03-v1',
+        generatedAt: '2026-05-02T00:00:00.000Z',
+        resources: {
+          'api-was-dc1-01': {
+            'server.role': 'application',
+          },
+          'api-was-dc1-02': {
+            'server.role': 'application',
+          },
+          'db-mysql-dc1-primary': {
+            'server.role': 'database',
+          },
+        },
+      } as unknown as OTelResourceCatalog)
+    ).toEqual([
+      {
+        role: 'application',
+        count: 2,
+        warningCount: 1,
+        criticalCount: 0,
+        avgCpu: 70,
+        avgMemory: 60,
+        avgDisk: 50,
+      },
+      {
+        role: 'database',
+        count: 1,
+        warningCount: 0,
+        criticalCount: 1,
+        avgCpu: 50,
+        avgMemory: 90,
+        avgDisk: 80,
+      },
+      {
+        role: 'cache',
+        count: 1,
+        warningCount: 0,
+        criticalCount: 1,
+        avgCpu: 20,
+        avgMemory: 83,
+        avgDisk: 40,
+      },
+    ]);
+  });
+});
+
 describe('generateMonitoringAnalysisArtifact', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
@@ -325,6 +477,81 @@ describe('generateMonitoringAnalysisArtifact', () => {
           'FactPack 기준 api-was-dc1-01 CPU가 critical 임계치를 초과했습니다.',
       }),
     ]);
+  });
+
+  it('attaches role group summary to monitoring analysis artifacts', async () => {
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: {
+          ...validBatchResponse,
+          servers: [
+            {
+              id: 'api-was-dc1-01',
+              name: 'api-was-dc1-01',
+              type: 'api',
+              status: 'warning',
+              cpu: 82,
+              memory: 70,
+              disk: 52,
+              network: 35,
+            },
+            {
+              id: 'db-mysql-dc1-primary',
+              name: 'db-mysql-dc1-primary',
+              type: 'database',
+              status: 'online',
+              cpu: 41,
+              memory: 63,
+              disk: 61,
+              network: 20,
+            },
+          ],
+        },
+      }),
+    } as Response);
+
+    const artifact = await generateMonitoringAnalysisArtifact({
+      query: '역할별 서버 현황',
+      sessionId: 'session-test',
+    });
+
+    expect(artifact.roleGroupSummary).toEqual([
+      expect.objectContaining({
+        role: 'application',
+        count: 1,
+        warningCount: 1,
+        avgCpu: 82,
+      }),
+      expect.objectContaining({
+        role: 'database',
+        count: 1,
+        criticalCount: 0,
+        avgMemory: 63,
+      }),
+    ]);
+  });
+
+  it('attaches capacity alerts to monitoring analysis artifacts', async () => {
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: {
+          ...validBatchResponse,
+          capacityAlerts: validCapacityAlerts,
+        },
+      }),
+    } as Response);
+
+    const artifact = await generateMonitoringAnalysisArtifact({
+      query: '용량 소진 예측',
+      sessionId: 'session-test',
+    });
+
+    expect(artifact.capacityAlerts).toEqual(validCapacityAlerts);
+    expect(artifact.analysis.capacityAlerts).toEqual(validCapacityAlerts);
   });
 });
 

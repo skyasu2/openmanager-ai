@@ -4,6 +4,9 @@
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createArtifactReplayPack } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
+import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-workspace-store';
+import { createArtifactEnvelope } from '@/lib/ai/chat-artifacts/types';
 import IntelligentMonitoringPage from './IntelligentMonitoringPage';
 
 const mockFetch = vi.fn();
@@ -222,6 +225,7 @@ vi.mock('@/lib/logging', () => ({
 describe('IntelligentMonitoringPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.sessionStorage.clear();
     vi.stubGlobal('fetch', mockFetch);
     mockExecuteChatArtifact.mockResolvedValue(monitoringArtifact);
     mockSaveArtifactExecutionReplayPack.mockReturnValue({ saved: true });
@@ -237,6 +241,32 @@ describe('IntelligentMonitoringPage', () => {
         },
       ],
     });
+  });
+
+  it('restores a chat-created monitoring artifact without auto-running analysis', async () => {
+    const workspaceId = 'chat-card:monitoring-analysis:restore-test';
+    const replayPack = createArtifactReplayPack({
+      workspaceId,
+      createdAt: monitoringArtifact.generatedAt,
+      envelopes: [
+        createArtifactEnvelope(monitoringArtifact, {
+          sourceMode: 'tool-result',
+        }),
+      ],
+    });
+    createArtifactWorkspaceStore().saveReplayPack(replayPack);
+
+    render(
+      <IntelligentMonitoringPage
+        artifactWorkspaceId={workspaceId}
+        autoAnalyzeOnVisible
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('has-result')).toBeInTheDocument();
+    });
+    expect(mockExecuteChatArtifact).not.toHaveBeenCalled();
   });
 
   it('서버 목록이 비어도 legacy fallback 서버 옵션을 노출하지 않는다', () => {

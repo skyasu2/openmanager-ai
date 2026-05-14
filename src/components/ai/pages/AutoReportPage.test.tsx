@@ -4,6 +4,9 @@
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createArtifactReplayPack } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
+import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-workspace-store';
+import { createArtifactEnvelope } from '@/lib/ai/chat-artifacts/types';
 import AutoReportPage from './auto-report/AutoReportPage';
 
 const mockFetch = vi.fn();
@@ -113,6 +116,7 @@ vi.mock('@/components/ai/pages/auto-report/ReportCard', () => ({
 describe('AutoReportPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.sessionStorage.clear();
     vi.stubGlobal('fetch', mockFetch);
     mockExecuteChatArtifact.mockResolvedValue(reportArtifact);
     mockSaveArtifactExecutionReplayPack.mockReturnValue({ saved: true });
@@ -157,6 +161,27 @@ describe('AutoReportPage', () => {
       })
     );
     expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('restores a chat-created incident artifact without generating a new report', () => {
+    const workspaceId = 'chat-card:incident-report:restore-test';
+    const replayPack = createArtifactReplayPack({
+      workspaceId,
+      createdAt: reportArtifact.generatedAt,
+      envelopes: [
+        createArtifactEnvelope(reportArtifact, {
+          sourceMode: 'tool-result',
+        }),
+      ],
+    });
+    createArtifactWorkspaceStore().saveReplayPack(replayPack);
+
+    render(<AutoReportPage artifactWorkspaceId={workspaceId} />);
+
+    expect(
+      screen.getByRole('heading', { name: 'API 서버 CPU 사용률 급증' })
+    ).toBeInTheDocument();
+    expect(mockExecuteChatArtifact).not.toHaveBeenCalled();
   });
 
   it('keeps generated reports visible after the page remounts', async () => {

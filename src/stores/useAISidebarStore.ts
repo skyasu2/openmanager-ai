@@ -184,6 +184,7 @@ export interface PendingAIEntryState {
   selectedFunction?: AIEntryFunction;
   analysisMode?: AnalysisMode;
   queryAsOfDataSlot?: JobDataSlot;
+  artifactWorkspaceId?: string;
   target?: AIEntryTarget;
 }
 

@@ -12,6 +12,7 @@ import {
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
+import { enrichIncidentReportPayload } from './enrichment';
 import { executeGenerateRetry } from './retry-handler';
 import {
   getFallbackMessage,
@@ -223,12 +224,17 @@ export async function handleValidatedIncidentReportRequest(
         throw new Error(cloudRunResult.error ?? 'Cloud Run request failed');
       }
 
-      return {
-        success: true,
-        report: {
+      const report = await enrichIncidentReportPayload(
+        {
           ...cloudRunResult.data,
           _source: 'Cloud Run AI Engine',
         },
+        body.queryAsOf
+      );
+
+      return {
+        success: true,
+        report,
       };
     };
 

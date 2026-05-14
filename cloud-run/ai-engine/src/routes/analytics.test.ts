@@ -98,11 +98,36 @@ const { mockMonitoringSource, MockMonitoringDataSourceError } = vi.hoisted(() =>
     },
   };
 
+  const buildMetricPoints = (metric: string) => {
+    const values =
+      metric === 'cpu'
+        ? [70, 72, 74, 76, 78, 80, 82, 84, 85, 86, 87, 87.3]
+        : Array.from({ length: 12 }, () =>
+            metric === 'memory' ? 72.4 : metric === 'disk' ? 61.1 : 18.2
+          );
+
+    return values.map((value, index) => ({
+      timestamp: new Date(
+        Date.UTC(2026, 3, 29, 22, 10 + index * 10, 0, 0)
+      ).toISOString(),
+      value,
+      slotIndex: 31 + index,
+    }));
+  };
+
   return {
     mockMonitoringSource: {
       getSnapshot: vi.fn(async () => snapshot),
       rankRiskSignals: vi.fn(async () => snapshot.riskSignals),
-      getMetricSeries: vi.fn(),
+      getMetricSeries: vi.fn(
+        async ({ serverId, metric }: { serverId: string; metric: string }) => ({
+          sourceMode: 'replay-json',
+          serverId,
+          metric,
+          points: buildMetricPoints(metric),
+          evidenceRefs: [],
+        })
+      ),
       getRelatedLogs: vi.fn(),
       buildIncidentTimeline: vi.fn(async () => ({
         sourceMode: 'replay-json',
@@ -326,7 +351,24 @@ describe('Analytics Routes', () => {
       expect(json.summary).toContain('1대');
       expect(json.servers).toHaveLength(1);
       expect(json.riskSignals).toHaveLength(1);
-      expect(json.evidenceRefs).toHaveLength(1);
+      expect(json.capacityAlerts).toHaveLength(1);
+      expect(json.capacityAlerts[0]).toMatchObject({
+        serverId: 'api-was-dc1-01',
+        metric: 'cpu',
+        severity: 'critical',
+        willBreachCritical: true,
+      });
+      expect(json.capacityAlerts[0].timeToCriticalMinutes).toBeGreaterThan(0);
+      expect(json.evidenceRefs).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: 'evidence-capacity-api-was-dc1-01-cpu',
+            kind: 'prediction',
+            serverId: 'api-was-dc1-01',
+            metric: 'cpu',
+          }),
+        ])
+      );
       expect(generateText).not.toHaveBeenCalled();
     });
 

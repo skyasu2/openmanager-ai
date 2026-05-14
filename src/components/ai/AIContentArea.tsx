@@ -32,11 +32,13 @@ const LoadingSpinner = () => (
 interface AIContentAreaProps {
   selectedFunction: AIAssistantFunction;
   queryAsOfDataSlot?: JobDataSlot;
+  artifactWorkspaceId?: string;
 }
 
 export default function AIContentArea({
   selectedFunction,
   queryAsOfDataSlot,
+  artifactWorkspaceId,
 }: AIContentAreaProps) {
   const [mountedTabs, setMountedTabs] = useState<Set<string>>(() => {
     if (selectedFunction === 'chat') {
@@ -68,7 +70,10 @@ export default function AIContentArea({
         >
           <div className="h-full" data-testid="auto-report-page">
             <Suspense fallback={<LoadingSpinner />}>
-              <AutoReportPage queryAsOfDataSlot={queryAsOfDataSlot} />
+              <AutoReportPage
+                artifactWorkspaceId={artifactWorkspaceId}
+                queryAsOfDataSlot={queryAsOfDataSlot}
+              />
             </Suspense>
           </div>
         </Activity>
@@ -82,6 +87,7 @@ export default function AIContentArea({
           <div className="h-full" data-testid="intelligent-monitoring-page">
             <Suspense fallback={<LoadingSpinner />}>
               <IntelligentMonitoringPage
+                artifactWorkspaceId={artifactWorkspaceId}
                 autoAnalyzeOnVisible={
                   selectedFunction === 'intelligent-monitoring'
                 }
