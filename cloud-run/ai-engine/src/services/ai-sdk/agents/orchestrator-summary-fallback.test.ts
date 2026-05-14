@@ -990,6 +990,35 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('api-was-dc1-01');
   });
 
+  it('adds read-only diagnostics for requested warning server detail', () => {
+    const summary = buildDeterministicSummaryFromCurrentState(
+      'cache-redis-dc1-01 서버 상태를 자세히 알려줘',
+      'Metrics Query Agent',
+      {
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            name: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'warning',
+            cpu: 44,
+            memory: 83,
+            disk: 42,
+            network: 18,
+          },
+        ],
+      }
+    );
+
+    expect(summary).toContain('🔎 **진단 명령어 (읽기 전용)**');
+    expect(summary).toContain('# cache-redis-dc1-01 메모리');
+    expect(summary).toContain('free -h');
+    expect(summary).toContain('ps aux --sort=-%mem | head -10');
+    expect(summary).toContain('vmstat 1 5');
+    expect(summary).not.toContain('clear cache');
+    expect(summary).not.toContain('service restart');
+  });
+
   it('answers action-needed questions without contradicting the immediate-action conclusion', () => {
     const summary = buildDeterministicSummaryFromCurrentState(
       '지금 당장 조치가 필요한 서버가 있어?',
@@ -1029,6 +1058,70 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).toContain('주의 관찰 대상은 1대입니다');
     expect(summary).toContain('api-was-dc1-02');
     expect(summary).not.toMatch(/즉시 조치[^\n]+없(?:습니다|음)/);
+  });
+
+  it('adds read-only diagnostics to action-needed answers without mutating commands', () => {
+    const summary = buildDeterministicSummaryFromCurrentState(
+      '지금 조치 필요한 서버와 각 서버에서 볼 진단 명령어 알려줘',
+      'Metrics Query Agent',
+      {
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            status: 'warning',
+            cpu: 48,
+            memory: 83,
+            disk: 41,
+            network: 19,
+          },
+          {
+            id: 'db-mysql-dc1-primary',
+            status: 'warning',
+            cpu: 43,
+            memory: 61,
+            disk: 86,
+            network: 21,
+          },
+        ],
+      }
+    );
+
+    expect(summary).toContain('🔎 **진단 명령어 (읽기 전용)**');
+    expect(summary).toContain('# cache-redis-dc1-01 메모리');
+    expect(summary).toContain('free -h');
+    expect(summary).toContain('ps aux --sort=-%mem | head -10');
+    expect(summary).toContain('# db-mysql-dc1-primary 디스크');
+    expect(summary).toContain('df -h');
+    expect(summary).not.toContain('journalctl --vacuum-time=7d');
+    expect(summary).not.toContain('apt-get clean');
+    expect(summary).not.toContain('clear cache');
+    expect(summary).not.toContain('service restart');
+  });
+
+  it('falls back to generic diagnostics when only network is high', () => {
+    const summary = buildDeterministicSummaryFromCurrentState(
+      'network-edge-dc1-01 서버 상태를 자세히 알려줘',
+      'Metrics Query Agent',
+      {
+        servers: [
+          {
+            id: 'network-edge-dc1-01',
+            name: 'network-edge-dc1-01',
+            type: 'network',
+            status: 'warning',
+            cpu: 34,
+            memory: 45,
+            disk: 39,
+            network: 92,
+          },
+        ],
+      }
+    );
+
+    expect(summary).toContain('# network-edge-dc1-01 상태');
+    expect(summary).toContain('systemctl status <service> --no-pager');
+    expect(summary).toContain('journalctl -u <service> -n 100 --no-pager');
+    expect(summary).not.toContain('ss -s');
   });
 
   it('does not label snapshot-only threshold values as rising trend evidence', () => {

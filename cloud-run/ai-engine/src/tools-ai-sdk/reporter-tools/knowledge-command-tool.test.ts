@@ -3,6 +3,7 @@ import { recommendCommands } from './knowledge-command-tool';
 import {
   buildServiceCommandGuidanceAnswer,
   getCommandRecommendations,
+  getReadOnlyDiagnosticCommands,
 } from './knowledge-command-catalog';
 
 async function executeRecommendCommands(keywords: string[]) {
@@ -141,5 +142,35 @@ describe('recommendCommands', () => {
     );
 
     expect(answer).toBeNull();
+  });
+
+  it('returns only read-only low-risk diagnostics for default memory status answers', () => {
+    const diagnostics = getReadOnlyDiagnosticCommands({
+      metric: 'memory',
+      limit: 3,
+    });
+    const commands = diagnostics.map((item) => item.command);
+
+    expect(commands).toEqual([
+      'free -h',
+      'ps aux --sort=-%mem | head -10',
+      'vmstat 1 5',
+    ]);
+    expect(diagnostics.every((item) => item.safety === 'read-only')).toBe(true);
+    expect(commands).not.toContain('clear cache');
+    expect(commands).not.toContain('service restart <service_name>');
+  });
+
+  it('keeps mutating cleanup commands out of read-only disk diagnostics', () => {
+    const commands = getReadOnlyDiagnosticCommands({
+      metric: 'disk',
+      limit: 4,
+    }).map((item) => item.command);
+
+    expect(commands).toContain('df -h');
+    expect(commands).toContain('du -xhd1 / 2>/dev/null | sort -hr | head -20');
+    expect(commands).toContain('df -ih');
+    expect(commands).not.toContain('journalctl --vacuum-time=7d');
+    expect(commands).not.toContain('apt-get clean');
   });
 });
