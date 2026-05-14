@@ -1,0 +1,52 @@
+Playwright MCP network evidence for v8.11.145 Vercel AI five-question QA
+Time: 2026-05-14 10:05-10:11 KST
+Target: https://openmanager-ai.vercel.app
+
+Version:
+GET /api/version
+version=8.11.145
+commitSha=f8588b97fbcd7d21bc94d90a75b817c73f960046
+releaseTag=v8.11.145
+pipelineUrl=https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521541297
+
+Health:
+GET /api/health
+success=true
+database=connected latency=7
+cache=connected latency=5
+ai=connected latency=5
+
+AI request statuses from browser_network_requests(filter="/api/ai/"):
+[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+
+Resource timing entries:
+/api/ai/wake-up fetch durationMs=6257 transferSize=328
+/api/ai/supervisor/stream/v2 fetch durationMs=4087 transferSize=11898
+/api/ai/supervisor/stream/v2 fetch durationMs=1607 transferSize=43258
+/api/ai/nlq/extract-entities fetch durationMs=1149 transferSize=322
+/api/ai/jobs fetch durationMs=1229 transferSize=1065
+/api/ai/jobs/e71fe112-7ed1-4ae8-ad5f-d63f10c0ce2c/stream other durationMs=2111 transferSize=3576
+/api/ai/supervisor/stream/v2 fetch durationMs=1733 transferSize=40301
+/api/ai/nlq/extract-entities fetch durationMs=578 transferSize=322
+/api/ai/jobs fetch durationMs=743 transferSize=1070
+/api/ai/jobs/397a6608-2a25-4be0-b11a-5f53202ac7ff/stream other durationMs=2552 transferSize=3252
+
+System route notes:
+[HEAD] /api/system => [401] pre-auth landing probe, known WONT-FIX console resource error
+[HEAD] /api/system => [200] after guest auth
+[GET] /api/system => [200] after guest auth
+[POST] /api/system => [200] after guest auth
+[GET] /api/health?service=ai&soft=true => [200]
+
+Usage check:
+npm run check:usage:vercel
+effective=8.0858 USD
+billed=0.0000 USD
+chargeCount=7308

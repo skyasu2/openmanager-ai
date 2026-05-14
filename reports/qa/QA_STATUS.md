@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-13 14:24:10 KST
+> Generated at: 2026-05-14 10:14:12 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 494 |
+| Total Recorded Runs | 495 |
 | Total Runs (Counted) | 395 |
-| Non-counted Runs | 99 |
+| Non-counted Runs | 100 |
 | Total Checks | 3501 |
 | Passed | 3366 |
 | Failed | 125 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260513-0496 (2026-05-13T05:24:07.631Z) |
-| Latest Recorded Run | QA-20260513-0496 (2026-05-13T05:24:07.631Z) |
+| Latest Recorded Run | QA-20260514-0497 (2026-05-14T01:14:09.559Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,79 +34,65 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260513-0496 (2026-05-13T05:24:07.631Z)
+Latest run: QA-20260514-0497 (2026-05-14T01:14:09.559Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after production closure QA: effective=7.3966 USD, billed=0.0000 USD, chargeCount=6699. |
+| vercel | cli | checked | normal | Vercel usage checked after Playwright MCP AI five-question QA; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-12T05:24:07.631Z -> 2026-05-13T05:24:07.631Z (24h)
-- Runs with observations: 6 recorded / 6 counted
-- Samples: 16
+- Window: 2026-05-13T01:14:09.559Z -> 2026-05-14T01:14:09.559Z (24h)
+- Runs with observations: 3 recorded / 2 counted
+- Samples: 11
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 1 | 15964ms | 15964ms | - | - | 15964ms | 15964ms | QA-20260512-0485 |
-| Supervisor | vercel-bff-cloud-run | 5 | 4519ms | 12587ms | - | - | 4519ms | 12587ms | QA-20260512-0486 |
-| Supervisor | cloud-run | 2 | 3484ms | 3486ms | - | - | - | - | QA-20260513-0496 |
-| Supervisor | groq | 2 | 1736ms | 2569ms | - | - | 1736ms | 2569ms | QA-20260512-0488 |
+| Supervisor | cloud-run | 7 | 3004ms | 4087ms | - | - | - | - | QA-20260514-0497 |
 | Reporter Agent | cloud-run | 2 | 2047ms | 2373ms | - | - | - | - | QA-20260513-0496 |
 | Analyst / Monitoring Analysis | cloud-run | 2 | 1093ms | 1116ms | - | - | - | - | QA-20260513-0496 |
-| Cloud Run AI | groq | 1 | 1074ms | 1074ms | - | - | 1074ms | 1074ms | QA-20260512-0487 |
-| Supervisor | deterministic | 1 | 552ms | 552ms | - | - | 552ms | 552ms | QA-20260512-0488 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-12T05:24:07.631Z -> 2026-05-13T05:24:07.631Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 9
-- Drift rate: 11.11%
+- Window: 2026-05-13T01:14:09.559Z -> 2026-05-14T01:14:09.559Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
+- Drift rate: 0%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream | multi-agent | 1 | 0% | 15964ms | 15964ms | QA-20260512-0485 |
-| /api/ai/supervisor/stream/v2 | multi-agent | 4 | 0% | 4888ms | 12587ms | QA-20260512-0486 |
-| /api/ai/supervisor/stream/v2 | single-agent | 2 | 0% | 451ms | 902ms | QA-20260512-0488 |
-| /api/ai/supervisor/stream/v2 | deterministic | 1 | 0% | 552ms | 552ms | QA-20260512-0488 |
-| /api/ai/jobs/[id]/stream | single-agent | 1 | 100% | 1ms | 1ms | QA-20260512-0487 |
+| - | - | 0 | 0% | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_HYnFzNmCeri7QZiyxGSebLcycmvX / SHA fb61ce00
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: AI Assistant AI Chat, AI Assistant Auto Incident Report, AI Assistant Anomaly/Trend
-- Skipped Surfaces: mobile viewport matrix, OAuth provider completion, broad dashboard route pack
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: api-version-v8.11.145 / SHA f8588b97
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: Vercel production /api/version and /api/health, Guest login and /system-boot to /dashboard flow, Dashboard overview OTel status and resource summary, AI Assistant sidebar open with AI engine Ready, Conversational AI standard five-question QA, AI UI network statuses for supervisor stream, async jobs, and SSE stream
+- Skipped Surfaces: Cerebras graceful-exit production behavior because Vercel still serves f8588b97 instead of a512fb6a4 or later, Semver tag deployment was not performed in this QA run, Reporter Agent generation, Analyst advanced full analysis, Mobile viewport matrix, OAuth provider completion, Cloud Run admin /monitoring and /monitoring/traces
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.144 pipeline | [GitLab v8.11.144 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521174683) | - |
+| general | GitLab graceful-exit main validate pipeline | [GitLab graceful-exit main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2523895744) | - |
+| general | GitLab v8.11.145 production pipeline | [GitLab v8.11.145 production pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521541297) | - |
 | general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI Chat closure pass | `reports/qa/evidence/qa-20260513-v811144-ai-chat-closure.png` | - |
-| playwright-screenshot | Reporter closure pass | `reports/qa/evidence/qa-20260513-v811144-ai-reporter-closure.png` | - |
-| playwright-screenshot | Anomaly trend closure pass | `reports/qa/evidence/qa-20260513-v811144-ai-anomaly-trend-closure.png` | - |
-| playwright-report | AI Assistant 3-feature closure summary | `reports/qa/evidence/qa-20260513-v811144-ai-assistant-3features-closure-summary.md` | - |
+| playwright-report | AI five-question QA summary | `reports/qa/evidence/qa-20260514-v811145-ai-five-question-summary.md` | - |
+| playwright-network | AI five-question network and timing log | `reports/qa/evidence/qa-20260514-v811145-ai-five-question-network.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -755,6 +741,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260514-0497 | 2026-05-14T01:14:09.559Z | targeted | no | no | Vercel Playwright MCP QA - v8.11.145 AI Five-Question Deployment Gap Check | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0496 | 2026-05-13T05:24:07.631Z | targeted | yes | yes | Production QA - v8.11.144 AI Assistant 3-Feature Closure | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0495 | 2026-05-13T05:02:59.311Z | targeted | yes | yes | Production QA - v8.11.143 AI Assistant 3-Feature Check | 3 | 1 | 1 | 0 | 0 | 3 |
 | QA-20260513-0494 | 2026-05-13T04:07:53.842Z | targeted | yes | yes | Production QA - v8.11.143 Score Deduction Closure | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -774,4 +761,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260512-0480 | 2026-05-11T16:49:15.653Z | targeted | yes | yes | Vercel Playwright QA - AI peak-load regression recheck on v8.11.128 | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0479 | 2026-05-11T14:39:01.439Z | targeted | yes | yes | GitLab Release QA - v8.11.128 Domain Capability Resolver | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0478 | 2026-05-11T12:56:25.517Z | targeted | yes | yes | Vercel Playwright QA - AI Peak Load Semantic Intent Closure | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260511-0477 | 2026-05-11T09:35:30.250Z | targeted | no | no | Vercel Playwright MCP Targeted AI QA - 24h peak-load phrasing variants | 3 | 0 | 1 | 0 | 0 | 1 |
