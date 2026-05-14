@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-14 KST (`Cerebras graceful exit main validate 완료`)
+**Last Updated**: 2026-05-14 KST (`v8.11.146 production AI QA 잔여 작업 기록`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,6 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| P1: v8.11.146 AI five-question QA 잔여 회귀 수정 | High | Vercel production Playwright MCP 표준 5문항 QA에서 `web-server-01 상태를 자세히 알려줘`가 서버 상세 대신 전체 서버 요약으로 회귀했고, `지금 당장 조치가 필요한 서버가 있어?`는 즉시 조치 대상 결론이 자기모순을 보임. QA tracker에는 blocking pending으로 기록하고, 단일 응답 품질 버그 범위에서 failing regression test 후 수정. |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 최근 20커밋 평가에서 `0ca8d9b88`이 134파일 단일 커밋으로 리뷰/cherry-pick 가능성이 낮다는 점을 확인. 이미 검증 완료된 로컬 커밋은 전달 마감 우선으로 유지하되, 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 가능한 한 2~3개 논리 커밋으로 분리하는 기준을 작업 계획/커밋 단계에 반영. |
 | P3: 커밋 후 line-guard warning buffer polish | Low | 커밋 완료 후 별도 작은 리팩터 묶음으로 진행. 현재 fail-threshold는 0건이며 warning만 41건. 상위 후보: `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts` 744줄, `src/components/dashboard/log-explorer/LogExplorerModal.tsx` 728줄, `src/components/ai/AIWorkspace.tsx` 710줄, `src/app/api/ai/supervisor/stream/v2/route.ts` 708줄, `src/components/dashboard/alert-history/AlertHistoryModal.tsx` 708줄. |
 

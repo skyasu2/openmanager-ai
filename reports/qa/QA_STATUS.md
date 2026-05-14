@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-14 10:14:12 KST
+> Generated at: 2026-05-14 10:59:31 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 495 |
-| Total Runs (Counted) | 395 |
+| Total Recorded Runs | 496 |
+| Total Runs (Counted) | 396 |
 | Non-counted Runs | 100 |
-| Total Checks | 3501 |
-| Passed | 3366 |
-| Failed | 125 |
+| Total Checks | 3511 |
+| Passed | 3374 |
+| Failed | 127 |
 | Completed Items | 558 |
-| Pending Items | 0 |
+| Pending Items | 2 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260513-0496 (2026-05-13T05:24:07.631Z) |
-| Latest Recorded Run | QA-20260514-0497 (2026-05-14T01:14:09.559Z) |
+| Expert Open Gaps | 3 |
+| Completion Rate | 99.64% |
+| Last Counted Run | QA-20260514-0498 (2026-05-14T01:59:28.858Z) |
+| Latest Recorded Run | QA-20260514-0498 (2026-05-14T01:59:28.858Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,33 +34,37 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260514-0497 (2026-05-14T01:14:09.559Z)
+Latest run: QA-20260514-0498 (2026-05-14T01:59:28.858Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Add failing regressions for server-specific detail routing and action-needed conclusion consistency, then rerun the five-question production QA. |
+| IT Monitoring & Observability SME | partially-appropriate | yes | Ensure aliases such as web-server-01 resolve to the matching web-nginx server record or return an explicit clarification instead of whole-fleet summary. |
+| AI Security & Reliability Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | yes | Promote Q2 and Q4 behavior into local AI Engine/root regression tests before the next patch release. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after Playwright MCP AI five-question QA; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308. |
+| vercel | cli | checked | normal | Vercel usage checked after v8.11.146 Playwright MCP release QA; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-13T01:14:09.559Z -> 2026-05-14T01:14:09.559Z (24h)
-- Runs with observations: 3 recorded / 2 counted
-- Samples: 11
+- Window: 2026-05-13T01:59:28.858Z -> 2026-05-14T01:59:28.858Z (24h)
+- Runs with observations: 4 recorded / 3 counted
+- Samples: 16
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run | 7 | 3004ms | 4087ms | - | - | - | - | QA-20260514-0497 |
+| Supervisor | cloud-run | 12 | 2770ms | 4087ms | - | - | - | - | QA-20260514-0498 |
 | Reporter Agent | cloud-run | 2 | 2047ms | 2373ms | - | - | - | - | QA-20260513-0496 |
 | Analyst / Monitoring Analysis | cloud-run | 2 | 1093ms | 1116ms | - | - | - | - | QA-20260513-0496 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-13T01:14:09.559Z -> 2026-05-14T01:14:09.559Z (24h)
+- Window: 2026-05-13T01:59:28.858Z -> 2026-05-14T01:59:28.858Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -72,36 +76,47 @@ Latest run: QA-20260514-0497 (2026-05-14T01:14:09.559Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: api-version-v8.11.145 / SHA f8588b97
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: api-version-v8.11.146 / SHA 3cc313e1
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Vercel production /api/version and /api/health, Guest login and /system-boot to /dashboard flow, Dashboard overview OTel status and resource summary, AI Assistant sidebar open with AI engine Ready, Conversational AI standard five-question QA, AI UI network statuses for supervisor stream, async jobs, and SSE stream
-- Skipped Surfaces: Cerebras graceful-exit production behavior because Vercel still serves f8588b97 instead of a512fb6a4 or later, Semver tag deployment was not performed in this QA run, Reporter Agent generation, Analyst advanced full analysis, Mobile viewport matrix, OAuth provider completion, Cloud Run admin /monitoring and /monitoring/traces
+- Covered Surfaces: GitLab v8.11.146 production tag pipeline, Vercel production /api/version and /api/health, Guest session landing and /dashboard flow, Dashboard overview OTel status and resource summary, AI Assistant sidebar open with AI engine Ready, Conversational AI standard five-question QA, Focused rerun for Q2 server-specific detail failure, AI UI network statuses for supervisor stream, async jobs, and SSE stream
+- Skipped Surfaces: Reporter Agent generation, Analyst advanced full analysis, Mobile viewport matrix, OAuth provider completion, Cloud Run admin /monitoring and /monitoring/traces, Full broad route pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab graceful-exit main validate pipeline | [GitLab graceful-exit main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2523895744) | - |
-| general | GitLab v8.11.145 production pipeline | [GitLab v8.11.145 production pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2521541297) | - |
+| general | GitLab v8.11.146 production pipeline | [GitLab v8.11.146 production pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2523965014) | - |
 | general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI five-question sidebar final state | `reports/qa/evidence/qa-20260514-v811145-ai-five-question-sidebar.png` | - |
-| playwright-report | AI five-question QA summary | `reports/qa/evidence/qa-20260514-v811145-ai-five-question-summary.md` | - |
-| playwright-network | AI five-question network and timing log | `reports/qa/evidence/qa-20260514-v811145-ai-five-question-network.txt` | - |
+| playwright-screenshot | AI sidebar focused rerun final state | `reports/qa/evidence/qa-20260514-v811146-ai-sidebar-rerun.png` | - |
+| playwright-report | AI five-question release QA summary | `reports/qa/evidence/qa-20260514-v811146-ai-five-question-summary.md` | - |
+| playwright-network | AI five-question network and timing log | `reports/qa/evidence/qa-20260514-v811146-ai-five-question-network.txt` | - |
+| playwright-network | Captured API network request list | `reports/qa/evidence/qa-20260514-v811146-network.json` | - |
+| playwright-report | AI sidebar snapshot before focused rerun | `reports/qa/evidence/qa-20260514-v811146-playwright-snapshot-before-rerun.md` | - |
+| playwright-report | Q2 focused rerun snapshot | `reports/qa/evidence/qa-20260514-v811146-q2-rerun-snapshot.md` | - |
+| playwright-console | Q2 focused rerun chat log | `reports/qa/evidence/qa-20260514-v811146-q2-rerun-log.txt` | - |
+| playwright-report | Q2 and Q4 focused rerun snapshot | `reports/qa/evidence/qa-20260514-v811146-q2-q4-rerun-snapshot.md` | - |
+| playwright-console | Q2 and Q4 focused rerun chat log | `reports/qa/evidence/qa-20260514-v811146-q2-q4-rerun-log.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260514-0498)
+  next: Add failing regressions for server-specific detail routing and action-needed conclusion consistency, then rerun the five-question production QA.
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260514-0498)
+  next: Ensure aliases such as web-server-01 resolve to the matching web-nginx server record or return an explicit clarification instead of whole-fleet summary.
+- test-automation: Test Automation Architect (last QA-20260514-0498)
+  next: Promote Q2 and Q4 behavior into local AI Engine/root regression tests before the next patch release.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-assistant-action-needed-contradiction-v811146: Action-needed answer must not contradict its immediate-action conclusion (seen 1회, last QA-20260514-0498)
+- [P1] ai-assistant-web-server-detail-v811146: Standard conversational Q2 should answer web-server-01 detail instead of whole-fleet summary (seen 1회, last QA-20260514-0498)
 
 ## Deferred Improvements
 
@@ -742,6 +757,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260514-0498 | 2026-05-14T01:59:28.858Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.146 AI Five-Question Release Check | 10 | 0 | 2 | 0 | 0 | 3 |
 | QA-20260514-0497 | 2026-05-14T01:14:09.559Z | targeted | no | no | Vercel Playwright MCP QA - v8.11.145 AI Five-Question Deployment Gap Check | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0496 | 2026-05-13T05:24:07.631Z | targeted | yes | yes | Production QA - v8.11.144 AI Assistant 3-Feature Closure | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0495 | 2026-05-13T05:02:59.311Z | targeted | yes | yes | Production QA - v8.11.143 AI Assistant 3-Feature Check | 3 | 1 | 1 | 0 | 0 | 3 |
@@ -761,4 +777,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260512-0481 | 2026-05-11T17:04:04.232Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query phrasing probe on v8.11.128 | 4 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260512-0480 | 2026-05-11T16:49:15.653Z | targeted | yes | yes | Vercel Playwright QA - AI peak-load regression recheck on v8.11.128 | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260511-0479 | 2026-05-11T14:39:01.439Z | targeted | yes | yes | GitLab Release QA - v8.11.128 Domain Capability Resolver | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260511-0478 | 2026-05-11T12:56:25.517Z | targeted | yes | yes | Vercel Playwright QA - AI Peak Load Semantic Intent Closure | 4 | 1 | 0 | 0 | 0 | 0 |

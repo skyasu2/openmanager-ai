@@ -1,0 +1,411 @@
+- generic [ref=e1]:
+  - alert [ref=e2]: Dashboard | OpenManager AI
+  - main "대시보드" [ref=e130]:
+    - complementary [ref=e131]:
+      - navigation "대시보드 내비게이션" [ref=e132]:
+        - link "개요" [ref=e133] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e135]
+          - generic: 개요
+        - link "서버" [ref=e141] [cursor=pointer]:
+          - /url: /dashboard/servers
+          - img [ref=e143]
+          - generic: 서버
+        - link "알림" [ref=e147] [cursor=pointer]:
+          - /url: /dashboard/alerts
+          - img [ref=e149]
+          - generic: 알림
+        - link "로그" [ref=e153] [cursor=pointer]:
+          - /url: /dashboard/logs
+          - img [ref=e155]
+          - generic: 로그
+        - link "토폴로지" [ref=e161] [cursor=pointer]:
+          - /url: /dashboard/topology
+          - img [ref=e163]
+          - generic: 토폴로지
+    - generic [ref=e169]:
+      - generic [ref=e171]:
+        - link "OpenManager AI" [ref=e173] [cursor=pointer]:
+          - /url: /
+          - heading "OpenManager AI" [level=1] [ref=e177]
+        - generic [ref=e178]:
+          - generic [ref=e180]:
+            - img [ref=e181]
+            - generic [ref=e184]: 2026.05.14 10:54:15
+            - generic [ref=e185]: (목)
+          - 'timer "세션 정상: 22:17" [ref=e2297]':
+            - generic [ref=e187]: 세션 정상
+            - img [ref=e188]
+            - generic [ref=e191]: 22:17
+            - generic [ref=e192]: 남음
+        - generic [ref=e193]:
+          - button "AI 어시스턴트 닫기" [pressed] [ref=e1072] [cursor=pointer]:
+            - generic [ref=e198]:
+              - img [ref=e200]
+              - generic [ref=e203]: AI 어시스턴트
+          - button "GU 게스트 사용자 게스트 로그인" [ref=e206] [cursor=pointer]:
+            - generic [ref=e208]: GU
+            - generic [ref=e210]:
+              - generic [ref=e211]:
+                - text: 게스트 사용자
+                - img [ref=e213]
+              - generic [ref=e217]: 게스트 로그인
+            - img [ref=e218]
+      - main [ref=e221]:
+        - generic [ref=e222]:
+          - generic [ref=e223]:
+            - generic [ref=e224]:
+              - generic [ref=e226]:
+                - generic [ref=e227]:
+                  - img [ref=e228]
+                  - generic [ref=e231]: 전체
+                - generic [ref=e233]: "18"
+                - paragraph [ref=e234]: OpenTelemetry snapshot · 10:40 KST (slot 64/143)
+                - paragraph [ref=e235]: Telemetry catalog v1.0.0 · updated 2026-02-15 03:56Z
+              - img [ref=e237]
+            - generic [ref=e239]:
+              - button "온라인 16대 필터" [ref=e240] [cursor=pointer]:
+                - generic [ref=e242]:
+                  - generic [ref=e243]:
+                    - img [ref=e244]
+                    - text: 온라인
+                  - generic [ref=e247]: "16"
+              - button "경고 1대 필터" [ref=e248] [cursor=pointer]:
+                - generic [ref=e251]:
+                  - generic [ref=e252]:
+                    - img [ref=e253]
+                    - text: 경고
+                  - generic [ref=e255]: "1"
+              - button "위험 1대 필터" [ref=e256] [cursor=pointer]:
+                - generic [ref=e260]:
+                  - generic [ref=e261]:
+                    - img [ref=e262]
+                    - text: 위험
+                  - generic [ref=e264]: "1"
+              - button "오프라인 0대 필터" [ref=e265] [cursor=pointer]:
+                - generic [ref=e267]:
+                  - generic [ref=e268]:
+                    - img [ref=e269]
+                    - text: 오프라인
+                  - generic [ref=e273]: "0"
+            - generic [ref=e277]:
+              - generic [ref=e278]:
+                - img [ref=e280]
+                - generic [ref=e283]:
+                  - generic [ref=e284]: 상태
+                  - generic [ref=e285]: 문제 발생
+                - group "상태 헤더 도구" [ref=e286]:
+                  - generic [ref=e287]: 상태 헤더 도구
+                  - button "알림 보기" [ref=e288] [cursor=pointer]:
+                    - img [ref=e289]
+                    - generic [ref=e291]: 알림
+                    - generic [ref=e292]: "3"
+                  - button "로그 검색 보기" [ref=e293] [cursor=pointer]:
+                    - img [ref=e294]
+                    - generic [ref=e299]: 로그
+              - generic [ref=e300]:
+                - generic [ref=e301]:
+                  - generic [ref=e302]: "1"
+                  - generic [ref=e303]: 위험
+                - generic [ref=e305]:
+                  - generic [ref=e306]: "1"
+                  - generic [ref=e307]: 경고
+                - generic [ref=e309]:
+                  - generic [ref=e310]: "0"
+                  - generic [ref=e311]: 오프라인
+          - generic [ref=e313]:
+            - generic [ref=e314]:
+              - paragraph [ref=e315]: 시스템 리소스
+              - generic [ref=e316]:
+                - generic [ref=e317]:
+                  - generic [ref=e318]:
+                    - img [ref=e319]
+                    - generic [ref=e323]: 40%
+                  - generic [ref=e324]: CPU
+                - generic [ref=e325]:
+                  - generic [ref=e326]:
+                    - img [ref=e327]
+                    - generic [ref=e331]: 51%
+                  - generic [ref=e332]: Memory
+                - generic [ref=e333]:
+                  - generic [ref=e334]:
+                    - img [ref=e335]
+                    - generic [ref=e339]: 36%
+                  - generic [ref=e340]: Disk
+            - generic [ref=e341]:
+              - paragraph [ref=e342]: 리소스 경고 (Top 5)
+              - generic [ref=e343]:
+                - button "api-was-dc1-01 CPU 93%" [ref=e344] [cursor=pointer]:
+                  - generic "api-was-dc1-01" [ref=e345]
+                  - generic [ref=e346]: CPU 93%
+                - button "api-was-dc1-02 CPU 89%" [ref=e347] [cursor=pointer]:
+                  - generic "api-was-dc1-02" [ref=e348]
+                  - generic [ref=e349]: CPU 89%
+                - button "db-mysql-dc1-primary MEM 79%" [ref=e350] [cursor=pointer]:
+                  - generic "db-mysql-dc1-primary" [ref=e351]
+                  - generic [ref=e352]: MEM 79%
+                - button "db-mysql-dc1-backup DISK 69%" [ref=e353] [cursor=pointer]:
+                  - generic "db-mysql-dc1-backup" [ref=e354]
+                  - generic [ref=e355]: DISK 69%
+                - button "db-mysql-dc1-replica MEM 58%" [ref=e356] [cursor=pointer]:
+                  - generic "db-mysql-dc1-replica" [ref=e357]
+                  - generic [ref=e358]: MEM 58%
+          - generic [ref=e361]:
+            - generic [ref=e362]:
+              - group "서버 보기 방식" [ref=e363]:
+                - generic [ref=e364]: 서버 보기 방식
+                - button "촘촘히 보기" [pressed] [ref=e365] [cursor=pointer]:
+                  - img [ref=e366]
+                  - generic [ref=e367]: 촘촘히
+                - button "넓게 보기" [ref=e368] [cursor=pointer]:
+                  - img [ref=e369]
+                  - generic [ref=e374]: 넓게
+              - generic [ref=e375]:
+                - generic [ref=e376]:
+                  - img [ref=e377]
+                  - text: 정렬
+                - combobox "서버 정렬" [ref=e380] [cursor=pointer]:
+                  - option "상태" [selected]
+                  - option "CPU"
+                  - option "MEM"
+                  - option "이름"
+            - generic [ref=e381]:
+              - paragraph [ref=e382]:
+                - text: 상위 알림 서버 8개 표시
+                - generic [ref=e383]: (전체 18대)
+              - generic [ref=e384]: 위험도 우선
+            - generic [ref=e385]:
+              - generic [ref=e386]:
+                - generic [ref=e392]:
+                  - button "api-was-dc1-01 서버 Ubuntu DC1-AZ1" [ref=e1537] [cursor=pointer]:
+                    - img [ref=e396]
+                    - generic [ref=e399]
+                  - generic [ref=e412]:
+                    - button "api-was-dc1-01 로그 보기" [ref=e413] [cursor=pointer]
+                    - button "상세 정보 펼치기" [ref=e417] [cursor=pointer]
+                - generic [ref=e420]:
+                  - generic [ref=e421]:
+                    - generic [ref=e424]: Live Metrics
+                    - 'generic "서버 상태: 위험" [ref=e426]': 위험
+                  - generic [ref=e427]:
+                    - generic [ref=e428]
+                    - generic [ref=e437]
+                    - generic [ref=e446]
+                  - generic [ref=e455]:
+                    - generic [ref=e456]
+                    - generic [ref=e464]
+              - generic [ref=e472]:
+                - generic [ref=e478]:
+                  - button "api-was-dc1-02 서버 Ubuntu DC1-AZ2" [ref=e1539] [cursor=pointer]:
+                    - img [ref=e482]
+                    - generic [ref=e485]
+                  - generic [ref=e498]:
+                    - button "api-was-dc1-02 로그 보기" [ref=e499] [cursor=pointer]
+                    - button "상세 정보 펼치기" [ref=e503] [cursor=pointer]
+                - generic [ref=e506]:
+                  - generic [ref=e507]:
+                    - generic [ref=e510]: Live Metrics
+                    - 'generic "서버 상태: 주의" [ref=e512]': 주의
+                  - generic [ref=e513]:
+                    - generic [ref=e514]
+                    - generic [ref=e523]
+                    - generic [ref=e532]
+                  - generic [ref=e541]:
+                    - generic [ref=e542]
+                    - generic [ref=e550]
+              - generic [ref=e1541]:
+                - generic [ref=e1545]:
+                  - button "web-nginx-dc1-01 웹서버 Ubuntu DC1-AZ1" [ref=e1546] [cursor=pointer]:
+                    - img [ref=e1549]
+                    - generic [ref=e1552]
+                  - generic [ref=e1565]:
+                    - button "web-nginx-dc1-01 로그 보기" [ref=e1566] [cursor=pointer]
+                    - button "상세 정보 펼치기" [ref=e1570] [cursor=pointer]
+                - generic [ref=e1573]:
+                  - generic [ref=e1574]:
+                    - generic [ref=e1577]: Live Metrics
+                    - 'generic "서버 상태: 정상" [ref=e1579]': 정상
+                  - generic [ref=e1580]:
+                    - generic [ref=e1581]
+                    - generic [ref=e1590]
+                    - generic [ref=e1599]
+                  - generic [ref=e1608]:
+                    - generic [ref=e1609]
+                    - generic [ref=e1617]
+              - generic [ref=e1625]:
+                - generic [ref=e1629]:
+                  - button "web-nginx-dc1-02 웹서버 Ubuntu DC1-AZ2" [ref=e1630] [cursor=pointer]:
+                    - img [ref=e1633]
+                    - generic [ref=e1636]
+                  - generic [ref=e1649]:
+                    - button "web-nginx-dc1-02 로그 보기" [ref=e1650] [cursor=pointer]
+                    - button "상세 정보 펼치기" [ref=e1654] [cursor=pointer]
+                - generic [ref=e1657]:
+                  - generic [ref=e1658]:
+                    - generic [ref=e1661]: Live Metrics
+                    - 'generic "서버 상태: 정상" [ref=e1663]': 정상
+                  - generic [ref=e1664]:
+                    - generic [ref=e1665]
+                    - generic [ref=e1674]
+                    - generic [ref=e1683]
+                  - generic [ref=e1692]:
+                    - generic [ref=e1693]
+                    - generic [ref=e1701]
+              - generic [ref=e1709]:
+                - generic [ref=e1713]:
+                  - button "web-nginx-dc1-03 웹서버 Ubuntu DC1-AZ3" [ref=e1714] [cursor=pointer]:
+                    - img [ref=e1717]
+                    - generic [ref=e1720]
+                  - generic [ref=e1733]:
+                    - button "web-nginx-dc1-03 로그 보기" [ref=e1734] [cursor=pointer]
+                    - button "상세 정보 펼치기" [ref=e1738] [cursor=pointer]
+                - generic [ref=e1741]:
+                  - generic [ref=e1742]:
+                    - generic [ref=e1745]: Live Metrics
+                    - 'generic "서버 상태: 정상" [ref=e1747]': 정상
+                  - generic [ref=e1748]:
+                    - generic [ref=e1749]
+                    - generic [ref=e1758]
+                    - generic [ref=e1767]
+                  - generic [ref=e1776]:
+                    - generic [ref=e1777]
+                    - generic [ref=e1785]
+              - generic [ref=e558]:
+                - generic [ref=e562]:
+                  - button "api-was-dc1-03 서버 Ubuntu DC1-AZ3" [ref=e1793] [cursor=pointer]:
+                    - img [ref=e566]
+                    - generic [ref=e569]
+                  - generic [ref=e582]:
+                    - button "api-was-dc1-03 로그 보기" [ref=e583] [cursor=pointer]
+                    - button "상세 정보 펼치기" [ref=e587] [cursor=pointer]
+                - generic [ref=e590]:
+                  - generic [ref=e591]:
+                    - generic [ref=e594]: Live Metrics
+                    - 'generic "서버 상태: 정상" [ref=e596]': 정상
+                  - generic [ref=e597]:
+                    - generic [ref=e598]
+                    - generic [ref=e607]
+                    - generic [ref=e616]
+                  - generic [ref=e625]:
+                    - generic [ref=e626]
+                    - generic [ref=e634]
+              - generic [ref=e642]:
+                - generic [ref=e646]:
+                  - button "cache-redis-dc1-01 캐시 Ubuntu DC1-AZ1" [ref=e1795] [cursor=pointer]:
+                    - img [ref=e650]
+                    - generic [ref=e653]
+                  - generic [ref=e666]:
+                    - button "cache-redis-dc1-01 로그 보기" [ref=e667] [cursor=pointer]
+                    - button "상세 정보 펼치기" [ref=e671] [cursor=pointer]
+                - generic [ref=e674]:
+                  - generic [ref=e675]:
+                    - generic [ref=e678]: Live Metrics
+                    - 'generic "서버 상태: 정상" [ref=e680]': 정상
+                  - generic [ref=e681]:
+                    - generic [ref=e682]
+                    - generic [ref=e691]
+                    - generic [ref=e700]
+                  - generic [ref=e709]:
+                    - generic [ref=e710]
+                    - generic [ref=e718]
+              - generic [ref=e726]:
+                - generic [ref=e730]:
+                  - button "cache-redis-dc1-02 캐시 Ubuntu DC1-AZ2" [ref=e1797] [cursor=pointer]:
+                    - img [ref=e734]
+                    - generic [ref=e737]
+                  - generic [ref=e750]:
+                    - button "cache-redis-dc1-02 로그 보기" [ref=e751] [cursor=pointer]
+                    - button "상세 정보 펼치기" [ref=e755] [cursor=pointer]
+                - generic [ref=e758]:
+                  - generic [ref=e759]:
+                    - generic [ref=e762]: Live Metrics
+                    - 'generic "서버 상태: 정상" [ref=e764]': 정상
+                  - generic [ref=e765]:
+                    - generic [ref=e766]
+                    - generic [ref=e775]
+                    - generic [ref=e784]
+                  - generic [ref=e793]:
+                    - generic [ref=e794]
+                    - generic [ref=e802]
+            - generic [ref=e1063]:
+              - generic [ref=e1064]: 상위 알림 서버 8개 표시
+              - button "더 보기 (10대 남음)" [ref=e1066] [cursor=pointer]:
+                - img [ref=e1067]
+                - text: 더 보기
+                - generic [ref=e1069]: (10대 남음)
+      - dialog "AI 어시스턴트" [ref=e1073]:
+        - separator "사이드바 너비 조절" [ref=e1074]:
+          - img [ref=e1076]
+        - generic [ref=e1083]:
+          - generic [ref=e1084]:
+            - generic [ref=e1085]:
+              - img [ref=e1087]
+              - generic [ref=e1095]:
+                - heading "AI 어시스턴트" [level=2] [ref=e1096]:
+                  - generic [ref=e1098]: AI 어시스턴트
+                - paragraph [ref=e1099]: 서버 상태·로그·메트릭을 자연어로 질의
+            - 'button "AI 엔진 상태: Ready" [ref=e1101] [cursor=pointer]':
+              - img [ref=e2155]
+            - button "전체화면으로 보기" [ref=e1105] [cursor=pointer]:
+              - img [ref=e1106]
+              - generic [ref=e1111]: 전체화면
+            - button "새 대화 시작" [ref=e1112] [cursor=pointer]:
+              - img [ref=e1113]
+            - button "AI 어시스턴트 사이드바 닫기" [ref=e1114] [cursor=pointer]:
+              - img [ref=e1115]
+          - generic [ref=e1121]:
+            - generic [ref=e1124]:
+              - img [ref=e1126]
+              - generic [ref=e1129]:
+                - heading "AI Chat" [level=3] [ref=e1130]
+                - paragraph [ref=e1131]: AI 기반 대화형 인터페이스
+            - log "AI 대화 메시지" [ref=e2211]:
+              - generic [ref=e1133]:
+                - generic [ref=e2213]:
+                  - img [ref=e2215]
+                  - generic [ref=e2218]:
+                    - generic [ref=e2220]: web-server-01 상태를 자세히 알려줘
+                    - paragraph [ref=e2222]: 10:54:02 AM
+                    - button "메시지 복사" [ref=e2225] [cursor=pointer]
+                - generic [ref=e2231]:
+                  - img [ref=e2233]
+                  - generic [ref=e2236]:
+                    - generic [ref=e2241]
+                    - generic [ref=e2260]
+                    - generic [ref=e2263]
+                    - generic [ref=e2270]
+                    - generic [ref=e2283]
+            - generic [ref=e1178]:
+              - form "AI 질문 전송" [ref=e1179]:
+                - button "도구 메뉴 열기" [ref=e1181] [cursor=pointer]:
+                  - img [ref=e1182]
+                - textbox "AI 질문 입력" [active] [ref=e1183]:
+                  - /placeholder: 서버 운영 질문을 입력하세요
+                - button "메시지 전송" [disabled] [ref=e2153]:
+                  - img [ref=e1186]
+              - generic [ref=e1189]:
+                - generic [ref=e1190]:
+                  - generic [ref=e1191]: 대화 2/50
+                  - generic [ref=e1192]: 서버 운영 중심
+                - generic [ref=e1193]: Enter로 전송, Shift+Enter로 줄바꿈
+        - generic [ref=e1195]:
+          - paragraph [ref=e1197]: AI 기능
+          - generic [ref=e1198]:
+            - button "AI Chat" [pressed] [ref=e1199] [cursor=pointer]:
+              - img [ref=e1200]
+              - generic:
+                - generic: AI Chat
+                - generic: 서버 질의, 트러블슈팅, 명령어 추천
+            - button "자동장애 보고서" [ref=e1203] [cursor=pointer]:
+              - img [ref=e1204]
+              - generic:
+                - generic: 자동장애 보고서
+                - generic: Reporter Agent 장애 분석 보고서 생성
+            - button "이상감지/추세" [ref=e1207] [cursor=pointer]:
+              - img [ref=e1208]
+              - generic:
+                - generic: 이상감지/추세
+                - generic: 경량 이상 신호와 리스크 추세 분석
+          - button "전체 화면으로 열기" [ref=e1211] [cursor=pointer]:
+            - img [ref=e1212]
+            - generic: 전체 화면으로 보기

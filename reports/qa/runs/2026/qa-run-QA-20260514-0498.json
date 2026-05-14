@@ -1,0 +1,244 @@
+{
+  "runId": "QA-20260514-0498",
+  "recordedAt": "2026-05-14T01:59:28.858Z",
+  "recordedAtKst": "2026-05-14 10:59:28 KST",
+  "runTitle": "Vercel Playwright MCP QA - v8.11.146 AI Five-Question Release Check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "api-version-v8.11.146",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "3cc313e108acdc6f57ebda15537fb1fc5a78bc62"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "GitLab v8.11.146 production tag pipeline",
+    "Vercel production /api/version and /api/health",
+    "Guest session landing and /dashboard flow",
+    "Dashboard overview OTel status and resource summary",
+    "AI Assistant sidebar open with AI engine Ready",
+    "Conversational AI standard five-question QA",
+    "Focused rerun for Q2 server-specific detail failure",
+    "AI UI network statuses for supervisor stream, async jobs, and SSE stream"
+  ],
+  "skippedSurfaces": [
+    "Reporter Agent generation",
+    "Analyst advanced full analysis",
+    "Mobile viewport matrix",
+    "OAuth provider completion",
+    "Cloud Run admin /monitoring and /monitoring/traces",
+    "Full broad route pack"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 8,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Conversational AI Q1 fleet status summary",
+      "agent": "Supervisor",
+      "provider": "cloud-run",
+      "model": "runtime-selected",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API",
+      "latencyMs": 1779
+    },
+    {
+      "surface": "Conversational AI Q2 web-server detail",
+      "agent": "Supervisor",
+      "provider": "cloud-run",
+      "model": "runtime-selected",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API and focused rerun log",
+      "latencyMs": 862
+    },
+    {
+      "surface": "Conversational AI Q3 24h peak-load time",
+      "agent": "Supervisor",
+      "provider": "cloud-run",
+      "model": "runtime-selected",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API job dispatch + SSE",
+      "latencyMs": 3048
+    },
+    {
+      "surface": "Conversational AI Q4 action-needed servers",
+      "agent": "Supervisor",
+      "provider": "cloud-run",
+      "model": "runtime-selected",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API",
+      "latencyMs": 3270
+    },
+    {
+      "surface": "Conversational AI Q5 network issue filter",
+      "agent": "Supervisor",
+      "provider": "cloud-run",
+      "model": "runtime-selected",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API job dispatch + SSE",
+      "latencyMs": 3248
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The standard five-question QA found two answer-quality failures: Q2 returned whole-fleet summary for a server detail prompt, and Q4 produced a contradictory action-needed conclusion.",
+      "nextAction": "Add failing regressions for server-specific detail routing and action-needed conclusion consistency, then rerun the five-question production QA."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Fleet status, 24h peak load, and network filtering stayed grounded, but server-specific detail did not bind to the requested server evidence.",
+      "nextAction": "Ensure aliases such as web-server-01 resolve to the matching web-nginx server record or return an explicit clarification instead of whole-fleet summary."
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "No mutating unsafe command, prompt leakage, or provider scaffold leakage was observed in this run.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The v8.11.146 GitLab tag pipeline completed successfully and Vercel production served the expected version and commit.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Playwright MCP produced durable screenshot, network, snapshot, and rerun log evidence; the failed prompts now need deterministic regression coverage.",
+      "nextAction": "Promote Q2 and Q4 behavior into local AI Engine/root regression tests before the next patch release."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-14T10:55:29+09:00",
+      "summary": "Vercel usage checked after v8.11.146 Playwright MCP release QA; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar focused rerun final state",
+      "path": "reports/qa/evidence/qa-20260514-v811146-ai-sidebar-rerun.png"
+    },
+    {
+      "type": "playwright-report",
+      "label": "AI five-question release QA summary",
+      "path": "reports/qa/evidence/qa-20260514-v811146-ai-five-question-summary.md"
+    },
+    {
+      "type": "playwright-network",
+      "label": "AI five-question network and timing log",
+      "path": "reports/qa/evidence/qa-20260514-v811146-ai-five-question-network.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Captured API network request list",
+      "path": "reports/qa/evidence/qa-20260514-v811146-network.json"
+    },
+    {
+      "type": "playwright-report",
+      "label": "AI sidebar snapshot before focused rerun",
+      "path": "reports/qa/evidence/qa-20260514-v811146-playwright-snapshot-before-rerun.md"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Q2 focused rerun snapshot",
+      "path": "reports/qa/evidence/qa-20260514-v811146-q2-rerun-snapshot.md"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Q2 focused rerun chat log",
+      "path": "reports/qa/evidence/qa-20260514-v811146-q2-rerun-log.txt"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Q2 and Q4 focused rerun snapshot",
+      "path": "reports/qa/evidence/qa-20260514-v811146-q2-q4-rerun-snapshot.md"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Q2 and Q4 focused rerun chat log",
+      "path": "reports/qa/evidence/qa-20260514-v811146-q2-q4-rerun-log.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-assistant-web-server-detail-v811146",
+      "title": "Standard conversational Q2 should answer web-server-01 detail instead of whole-fleet summary",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production v8.11.146 Playwright MCP prompt 'web-server-01 상태를 자세히 알려줘' returned a whole-fleet summary; focused rerun reproduced the failure with monitoring-server-health metadata.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-action-needed-contradiction-v811146",
+      "title": "Action-needed answer must not contradict its immediate-action conclusion",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Initial five-question sequence identified api-was-dc1-01 as immediate-action and api-was-dc1-02 as caution, then contradicted that by saying no immediate action was required.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release deployment itself is healthy: GitLab tag pipeline 2523965014 succeeded and Vercel production served v8.11.146.",
+    "Release-facing QA decision is no-go for AI conversational quality because checks.failed=2.",
+    "Q2 failure reproduced in a fresh conversation; Q4 focused rerun was context-sensitive after Q2 and is recorded only as supporting evidence.",
+    "Two initial soft AI health GET requests were aborted during page transition and later recovered to HTTP 200.",
+    "Vercel usage check passed with effective=8.0858 USD and billed=0.0000 USD."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.146 production pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2523965014"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

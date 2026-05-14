@@ -1,0 +1,62 @@
+# v8.11.146 AI Five-Question Network and Timing Evidence
+
+## Network Statuses
+
+- `[POST] /api/ai/wake-up => 200`
+- `[POST] /api/ai/supervisor/stream/v2 => 200`
+- `[POST] /api/ai/nlq/extract-entities => 200`
+- `[POST] /api/ai/jobs => 201`
+- `/api/ai/jobs/[id]/stream` SSE completed for async job responses
+
+Captured request list:
+
+```text
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [FAILED] net::ERR_ABORTED
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [FAILED] net::ERR_ABORTED
+[HEAD] https://openmanager-ai.vercel.app/api/system => [200]
+[GET] https://openmanager-ai.vercel.app/api/system => [200]
+[HEAD] https://openmanager-ai.vercel.app/api/system => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200]
+[POST] https://openmanager-ai.vercel.app/api/system => [200]
+[GET] https://openmanager-ai.vercel.app/api/system => [200]
+[GET] https://openmanager-ai.vercel.app/api/monitoring/report => [200]
+[GET] https://openmanager-ai.vercel.app/api/system => [200]
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [200]
+[GET] https://openmanager-ai.vercel.app/api/database => [200]
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+[GET] https://openmanager-ai.vercel.app/api/monitoring/report => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+```
+
+The two aborted soft health checks occurred during page transition and recovered to later 200 responses.
+
+## Resource Timing Samples
+
+- `/api/ai/wake-up`: 927 ms
+- `/api/ai/supervisor/stream/v2`: 1779 ms
+- `/api/ai/supervisor/stream/v2`: 862 ms
+- `/api/ai/nlq/extract-entities`: 1060 ms
+- `/api/ai/jobs`: 1133 ms
+- `/api/ai/jobs/1b5b.../stream`: 1915 ms
+- `/api/ai/supervisor/stream/v2`: 3270 ms
+- `/api/ai/nlq/extract-entities`: 810 ms
+- `/api/ai/jobs`: 706 ms
+- `/api/ai/jobs/b331.../stream`: 2542 ms
+
+## Usage Check
+
+`npm run check:usage:vercel` passed.
+
+- Current billing period: 2026-05-01T07:00:00.000Z to 2026-05-14T01:55:29.483Z
+- Effective: 8.0858 USD
+- Billed: 0.0000 USD
+- Charge count: 7308
