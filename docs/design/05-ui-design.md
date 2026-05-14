@@ -95,6 +95,7 @@ flowchart TB
 
 ## 상세 문서
 
+- [Artifact System Design](06-artifact-system.md)
 - [Folder Structure](../reference/architecture/folder-structure.md)
 - [Component Dependency Map](../reference/architecture/system/component-dependency-map.md)
 - [System Architecture](../reference/architecture/system/system-architecture-current.md)
