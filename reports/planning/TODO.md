@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (`follow-up-improvements-plan.md 작성 — G2/G4/line-guard 계획서 승격`)
+**Last Updated**: 2026-05-15 KST (`follow-up-improvements-plan.md 완료 — v8.11.153 QA closure`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -21,7 +21,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: artifact G2/G4 + line-guard polish | Low | 계획서 승격 완료 → [follow-up-improvements-plan.md](follow-up-improvements-plan.md). G2: guidance CTA 버튼 (1~2h), G4: 생성 단계 메시지 타이머 (1~1.5h), line-guard: 상위 7개 파일 650줄 미만 분리 (2~3h). 총 예상 6~8h. |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
 
 ---
@@ -101,6 +100,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-15) — Codex
+- [x] Follow-up Improvements G2/G4/line-guard closure
+  - [archive/follow-up-improvements-plan.md](archive/follow-up-improvements-plan.md) T0~T5 완료 및 archive 이동
+  - G2: guidance CTA metadata 보존 + 실제 AI sidebar 렌더러 CTA 버튼/클릭 실행 경로 보정
+  - G4: `startChatArtifactGeneration` 단계 메시지 타이머 계약과 회귀 테스트 반영
+  - line-guard: 상위 7개 target 파일을 650줄 미만으로 분리하고 component map 갱신
+  - release: `v8.11.153`, GitLab tag pipeline `2525981912` success
+  - QA: Vercel Playwright MCP targeted run [QA-20260515-0503](../qa/runs/2026/qa-run-QA-20260515-0503.json) PASS, pending 0, expert open gap 0
 
 ### Completed (2026-05-15) — Claude
 - [x] 계획서 정리 및 잔여 백로그 계획서 승격

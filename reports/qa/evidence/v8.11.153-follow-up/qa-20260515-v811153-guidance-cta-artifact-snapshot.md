@@ -1,0 +1,202 @@
+- generic [ref=e1]:
+  - alert [ref=e2]
+  - main "대시보드" [ref=e3]:
+    - complementary [ref=e4]:
+      - navigation "대시보드 내비게이션" [ref=e5]:
+        - link "개요" [ref=e6] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e8]
+          - generic: 개요
+        - link "서버" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard/servers
+          - img [ref=e16]
+          - generic: 서버
+        - link "알림" [ref=e20] [cursor=pointer]:
+          - /url: /dashboard/alerts
+          - img [ref=e22]
+          - generic: 알림
+        - link "로그" [ref=e26] [cursor=pointer]:
+          - /url: /dashboard/logs
+          - img [ref=e28]
+          - generic: 로그
+        - link "토폴로지" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard/topology
+          - img [ref=e36]
+          - generic: 토폴로지
+    - generic [ref=e42]:
+      - generic [ref=e44]:
+        - link "OpenManager AI" [ref=e46] [cursor=pointer]:
+          - /url: /
+          - heading "OpenManager AI" [level=1] [ref=e50]
+        - generic [ref=e51]:
+          - generic [ref=e53]:
+            - img [ref=e54]
+            - generic [ref=e57]: 2026.05.15 03:47:33
+            - generic [ref=e58]: (금)
+          - 'timer "세션 정상: 27:22" [ref=e1449]':
+            - generic [ref=e60]: 세션 정상
+            - img [ref=e61]
+            - generic [ref=e64]: 27:22
+            - generic [ref=e65]: 남음
+        - generic [ref=e66]:
+          - button "AI 어시스턴트 닫기" [pressed] [ref=e968] [cursor=pointer]:
+            - generic [ref=e71]:
+              - img [ref=e73]
+              - generic [ref=e76]: AI 어시스턴트
+          - button "GU 게스트 사용자 게스트 로그인" [ref=e102] [cursor=pointer]:
+            - generic [ref=e104]: GU
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - text: 게스트 사용자
+                - img [ref=e109]
+              - generic [ref=e113]: 게스트 로그인
+            - img [ref=e114]
+      - main [ref=e116]:
+        - generic [ref=e117]:
+          - generic [ref=e118]:
+            - generic [ref=e119]:
+              - generic [ref=e121]:
+                - generic [ref=e122]
+                - generic [ref=e128]: "18"
+                - paragraph [ref=e129]: OpenTelemetry snapshot · 03:40 KST (slot 22/143)
+                - paragraph [ref=e130]: Telemetry catalog v1.0.0 · updated 2026-02-15 03:56Z
+              - img [ref=e132]
+            - generic [ref=e134]:
+              - button "온라인 15대 필터" [ref=e135] [cursor=pointer]:
+                - generic [ref=e137]
+              - button "경고 1대 필터" [ref=e143] [cursor=pointer]:
+                - generic [ref=e146]
+              - button "위험 2대 필터" [ref=e151] [cursor=pointer]:
+                - generic [ref=e155]
+              - button "오프라인 0대 필터" [ref=e160] [cursor=pointer]:
+                - generic [ref=e162]
+            - generic [ref=e172]:
+              - generic [ref=e173]:
+                - img [ref=e175]
+                - generic [ref=e178]
+                - group "상태 헤더 도구" [ref=e181]
+              - generic [ref=e195]:
+                - generic [ref=e196]
+                - generic [ref=e200]
+                - generic [ref=e204]
+          - generic [ref=e208]:
+            - generic [ref=e209]:
+              - paragraph [ref=e210]: 시스템 리소스
+              - generic [ref=e211]:
+                - generic [ref=e212]
+                - generic [ref=e220]
+                - generic [ref=e228]
+            - generic [ref=e236]:
+              - paragraph [ref=e237]: 리소스 경고 (Top 5)
+              - generic [ref=e238]:
+                - button "storage-nfs-dc1-01 DISK 95%" [ref=e239] [cursor=pointer]
+                - button "db-mysql-dc1-primary MEM 90%" [ref=e242] [cursor=pointer]
+                - button "api-was-dc1-01 CPU 84%" [ref=e245] [cursor=pointer]
+                - button "db-mysql-dc1-backup DISK 72%" [ref=e248] [cursor=pointer]
+                - button "api-was-dc1-02 MEM 56%" [ref=e251] [cursor=pointer]
+          - generic [ref=e256]:
+            - generic [ref=e257]:
+              - group "서버 보기 방식" [ref=e258]:
+                - generic [ref=e259]: 서버 보기 방식
+                - button "촘촘히 보기" [pressed] [ref=e260] [cursor=pointer]
+                - button "넓게 보기" [ref=e263] [cursor=pointer]
+              - generic [ref=e270]:
+                - generic [ref=e271]
+                - combobox "서버 정렬" [ref=e275] [cursor=pointer]
+            - generic [ref=e276]:
+              - paragraph [ref=e277]:
+                - text: 상위 알림 서버 8개 표시
+                - generic [ref=e278]: (전체 18대)
+              - generic [ref=e279]: 위험도 우선
+            - generic [ref=e280]:
+              - generic [ref=e281]:
+                - generic [ref=e287]
+                - generic [ref=e316]
+              - generic [ref=e368]:
+                - generic [ref=e374]
+                - generic [ref=e401]
+              - generic [ref=e453]:
+                - generic [ref=e459]
+                - generic [ref=e487]
+              - generic [ref=e539]:
+                - generic [ref=e543]
+                - generic [ref=e571]
+              - generic [ref=e623]:
+                - generic [ref=e627]
+                - generic [ref=e655]
+              - generic [ref=e707]:
+                - generic [ref=e711]
+                - generic [ref=e739]
+              - generic [ref=e791]:
+                - generic [ref=e795]
+                - generic [ref=e823]
+              - generic [ref=e875]:
+                - generic [ref=e879]
+                - generic [ref=e908]
+            - generic [ref=e960]:
+              - generic [ref=e961]: 상위 알림 서버 8개 표시
+              - button "더 보기 (10대 남음)" [ref=e963] [cursor=pointer]:
+                - img [ref=e964]
+                - text: 더 보기
+                - generic [ref=e966]: (10대 남음)
+      - dialog "AI 어시스턴트" [ref=e969]:
+        - separator "사이드바 너비 조절" [ref=e970]:
+          - img [ref=e972]
+        - generic [ref=e979]:
+          - generic [ref=e980]:
+            - generic [ref=e981]:
+              - img [ref=e983]
+              - generic [ref=e991]:
+                - heading "AI 어시스턴트" [level=2] [ref=e992]
+                - paragraph [ref=e995]: 서버 상태·로그·메트릭을 자연어로 질의
+            - 'button "AI 엔진 상태: Ready" [ref=e997] [cursor=pointer]':
+              - img [ref=e998]
+            - button "전체화면으로 보기" [ref=e1001] [cursor=pointer]:
+              - img [ref=e1002]
+              - generic [ref=e1007]: 전체화면
+            - button "새 대화 시작" [ref=e1008] [cursor=pointer]:
+              - img [ref=e1009]
+            - button "AI 어시스턴트 사이드바 닫기" [ref=e1010] [cursor=pointer]:
+              - img [ref=e1011]
+          - generic [ref=e1017]:
+            - generic [ref=e1020]:
+              - img [ref=e1022]
+              - generic [ref=e1025]:
+                - heading "AI Chat" [level=3] [ref=e1026]
+                - paragraph [ref=e1027]: AI 기반 대화형 인터페이스
+            - log "AI 대화 메시지" [ref=e1186]:
+              - generic [ref=e1029]:
+                - generic [ref=e1188]
+                - generic [ref=e1206]
+                - generic [ref=e1263]
+                - generic [ref=e1281]
+            - generic [ref=e1100]:
+              - form "AI 질문 전송" [ref=e1101]:
+                - button "도구 메뉴 열기" [ref=e1103] [cursor=pointer]
+                - textbox "AI 질문 입력" [active] [ref=e1105]:
+                  - /placeholder: 서버 운영 질문을 입력하세요
+                - button "메시지 전송" [disabled] [ref=e1107]
+              - generic [ref=e1111]:
+                - generic [ref=e1112]
+                - generic [ref=e1115]: Enter로 전송, Shift+Enter로 줄바꿈
+        - generic [ref=e1117]:
+          - paragraph [ref=e1119]: AI 기능
+          - generic [ref=e1120]:
+            - button "AI Chat" [pressed] [ref=e1121] [cursor=pointer]:
+              - img [ref=e1122]
+              - generic:
+                - generic: AI Chat
+                - generic: 서버 질의, 트러블슈팅, 명령어 추천
+            - button "자동장애 보고서" [ref=e1125] [cursor=pointer]:
+              - img [ref=e1126]
+              - generic:
+                - generic: 자동장애 보고서
+                - generic: Reporter Agent 장애 분석 보고서 생성
+            - button "이상감지/추세" [ref=e1129] [cursor=pointer]:
+              - img [ref=e1130]
+              - generic:
+                - generic: 이상감지/추세
+                - generic: 경량 이상 신호와 리스크 추세 분석
+          - button "전체 화면으로 열기" [ref=e1133] [cursor=pointer]:
+            - img [ref=e1134]
+            - generic: 전체 화면으로 보기

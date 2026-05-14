@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-15
 
@@ -7,6 +7,8 @@
 
 **작성 배경**: v8.11.150 Artifact UX 개선(G1/G5) 완료 후 남아있는 Backlog P3 항목들을 계획서로 승격.
 TODO.md Backlog 기반 — 신규 기능 0개, 신규 API 엔드포인트 0개.
+
+**완료 요약**: T0~T5 완료. v8.11.151에서 line-guard/G2/G4 기본 구현을 배포했고, Vercel Playwright MCP QA에서 실제 사이드바 CTA 렌더러 누락을 발견해 v8.11.152(metadata 보존), v8.11.153(sidebar renderer)로 후속 보정했다. v8.11.153 tag pipeline `2525981912` success 및 QA `QA-20260515-0503` PASS로 closure.
 
 ---
 
@@ -298,8 +300,8 @@ T-LG-3: 기존 단위 테스트 변경 없이 통과
 - [x] `npm run line-guard` — warn 42개 → 35개 이하
 - [x] `npm run docs:budget` 통과
 - [x] `git diff --check` 통과
-- [ ] GitLab main pipeline success
-- [ ] (선택) Vercel Playwright MCP QA — guidance CTA 버튼 클릭 흐름 확인
+- [x] GitLab tag pipeline success — `v8.11.153` pipeline `2525981912`
+- [x] Vercel Playwright MCP QA — guidance CTA 버튼 클릭 흐름 확인 (`QA-20260515-0503`)
 
 ---
 

@@ -1,0 +1,209 @@
+{
+  "runId": "QA-20260515-0503",
+  "recordedAt": "2026-05-14T18:50:43.003Z",
+  "recordedAtKst": "2026-05-15 03:50:43 KST",
+  "runTitle": "Vercel Playwright MCP QA - v8.11.153 Follow-up Improvements",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FevgRrWncFxW4MUSg1yAGhdsUieQ",
+    "deploymentUrl": "https://openmanager-joik5j0ko-skyasus-projects.vercel.app",
+    "commitSha": "f65632b9442e241465a2eece47d5722a19c80603"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version returned 8.11.153 with releaseTag v8.11.153",
+    "Vercel production /api/health?service=ai&soft=true returned healthy Cloud Run backend",
+    "Dashboard loaded in guest session with 18 servers and AI sidebar available",
+    "AI sidebar engine state showed Ready",
+    "AI Chat guidance prompt '이상감지 기능 사용법' returned guidance text instead of executing the artifact immediately",
+    "AI sidebar rendered guidance CTA button '바로 이상감지/추세 분석 실행하기'",
+    "Guidance CTA click submitted direct artifact request '전체 서버 이상감지 돌려줘'",
+    "Monitoring analysis artifact completed in the sidebar with 18 analyzed servers and 5 risk signals",
+    "Artifact card rendered MD download, JSON download, and '이상감지/추세에서 보기' actions",
+    "Current console error capture after the verified flow reported 0 errors and 0 warnings",
+    "Relevant API network calls completed with 200 responses",
+    "GitLab v8.11.153 tag pipeline deploy, deploy_ai_engine, frontend smoke, and AI Engine smoke jobs succeeded"
+  ],
+  "skippedSurfaces": [
+    "incident-report guidance CTA live click path: same renderer path covered by unit regression, omitted to avoid repeated live AI cost",
+    "standard five-question conversational AI pack: unchanged routing/data grounding since v8.11.147 QA, targeted run only",
+    "mobile viewport: no responsive layout change in this fix",
+    "OAuth provider login flows: guest session used for production QA",
+    "Cloud Run admin observability endpoints: not part of this guidance CTA regression",
+    "intermediate artifact timer message in production: artifact completed too quickly to observe; timer contract covered by local tests"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP verified the actual production sidebar renderer and CTA-to-artifact flow that unit tests alone missed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline 2525981912 succeeded across deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke jobs; Vercel production alias is Ready.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Guidance response now stays non-executing until user clicks the CTA, then executes the intended monitoring-analysis artifact with grounded OTel data.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The completed artifact exposed the expected 18-server OpenTelemetry snapshot, 5 risk signals, role summaries, capacity alerts, and risk evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-15T03:47:45+09:00",
+      "summary": "Vercel usage checked after v8.11.153 production QA; effective 8.7576 USD, billed 0.0000 USD, chargeCount 7917.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Guidance CTA to monitoring artifact completion",
+      "path": "reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-guidance-cta-artifact.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Current console error capture",
+      "path": "reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-console-errors-current.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Relevant API network capture",
+      "path": "reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-network.txt"
+    },
+    {
+      "type": "playwright-report",
+      "label": "AI sidebar dialog text evidence",
+      "path": "reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-dialog-text.txt"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Accessibility snapshot for verified dashboard/sidebar state",
+      "path": "reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-guidance-cta-artifact-snapshot.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "follow-up-g2-guidance-cta-sidebar",
+      "title": "Guidance messages render actionable CTA buttons in the production AI sidebar",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP verified guidance CTA visibility and click-through to monitoring-analysis artifact on v8.11.153.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "follow-up-g2-guidance-metadata-preservation",
+      "title": "Guidance CTA metadata survives message transformation",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Regression tests and production sidebar QA verified guidanceCta metadata reaches the renderer.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "follow-up-g4-artifact-progress-contract",
+      "title": "Chat artifact generation exposes staged progress message contract",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Local contract/unit tests verified staged timer behavior; production artifact completed before an intermediate timer step was observable.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "follow-up-line-guard-top7",
+      "title": "Top 7 line-guard follow-up targets split below 650 lines",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Line-guard split work completed before v8.11.151 and remained covered by root/AI Engine validation gates.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release decision: go for the tested targeted follow-up scope.",
+    "v8.11.151 initial production QA found the sidebar CTA renderer gap; v8.11.152 fixed metadata preservation; v8.11.153 fixed the actual sidebar renderer and passed the targeted production rerun.",
+    "Production CTA click completed quickly, so the intermediate G4 timer copy was not visible in live QA; this is non-blocking because the timer contract was covered locally and final artifact completion was verified.",
+    "Version evidence: /api/version returned 8.11.153, commit f65632b9442e241465a2eece47d5722a19c80603, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525981912."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.153 tag pipeline 2525981912",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525981912"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production alias",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_FevgRrWncFxW4MUSg1yAGhdsUieQ",
+      "url": "https://openmanager-joik5j0ko-skyasus-projects.vercel.app/"
+    }
+  ]
+}
