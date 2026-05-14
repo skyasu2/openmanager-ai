@@ -1,0 +1,15 @@
+[GET] https://openmanager-ai.vercel.app/api/version => [200]
+[GET] https://openmanager-ai.vercel.app/api/health => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200] duration=2784ms
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [200]
+[POST] https://openmanager-ai.vercel.app/api/system => [200]
+[GET] https://openmanager-ai.vercel.app/api/system => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200] duration=606ms
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200] duration=214ms
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200] duration=324ms
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201] duration=513ms
+[GET] https://openmanager-ai.vercel.app/api/ai/jobs/4a9abdfe-f3dc-40ad-8636-073574197c1e/stream => [200] duration=2416ms initiator=other
+[POST] https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities => [200] duration=507ms
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201] duration=478ms
+[GET] https://openmanager-ai.vercel.app/api/ai/jobs/200e201a-f3d3-45cd-8df8-19e0cbae4285/stream => [200] duration=2585ms initiator=other
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200] duration=452ms
