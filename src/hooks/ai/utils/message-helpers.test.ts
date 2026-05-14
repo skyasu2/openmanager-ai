@@ -122,6 +122,13 @@ function createMessage(params: {
       preview?: string;
       status: 'completed' | 'failed';
     }>;
+    type?: 'guidance';
+    artifactIntentReason?: string;
+    artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
+    guidanceCta?: {
+      target: 'incident-report' | 'monitoring-analysis';
+      label: string;
+    };
   };
   parts?: unknown[];
 }): UIMessage {
@@ -627,6 +634,45 @@ describe('transformMessages', () => {
     expect(details).not.toContain('_dataSlot');
     expect(details).not.toContain('_dataSource');
     expect(details).not.toContain('YYYYMMDD_HHMM');
+  });
+
+  it('preserves guidance CTA metadata for assistant messages', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: '이상감지 기능 사용법',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '이상감지/추세 기능은 사용자가 명시적으로 요청할 때만 실행합니다.',
+          metadata: {
+            type: 'guidance',
+            artifactIntentReason: 'monitoring_guidance_pattern',
+            artifactIntentTarget: 'monitoring-analysis',
+            guidanceCta: {
+              target: 'monitoring-analysis',
+              label: '바로 이상감지/추세 분석 실행하기',
+            },
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+
+    expect(assistant?.metadata).toMatchObject({
+      type: 'guidance',
+      artifactIntentReason: 'monitoring_guidance_pattern',
+      artifactIntentTarget: 'monitoring-analysis',
+      guidanceCta: {
+        target: 'monitoring-analysis',
+        label: '바로 이상감지/추세 분석 실행하기',
+      },
+    });
   });
 
   it('hydrates parity metadata from deferred stream state even when UIMessage parts are plain text only', () => {
