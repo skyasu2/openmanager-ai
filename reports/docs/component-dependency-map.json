@@ -6,17 +6,17 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
-    "sharedComponentNodes": 135,
+    "sharedComponentNodes": 142,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 142
+    "totalComponentNodes": 149
   },
   "metrics": {
-    "componentSourceLines": 29161,
-    "componentNodes": 135,
-    "componentEdges": 130,
-    "graphDensity": 0.007186,
+    "componentSourceLines": 29345,
+    "componentNodes": 142,
+    "componentEdges": 142,
+    "graphDensity": 0.007092,
     "aliasEdges": 38,
-    "relativeEdges": 92,
+    "relativeEdges": 104,
     "isolatedComponents": 22,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
@@ -24,7 +24,7 @@
   "topInDegree": [
     {
       "component": "ai/AIAssistantIconPanel",
-      "inDegree": 4
+      "inDegree": 7
     },
     {
       "component": "ai/analysis/constants",
@@ -63,18 +63,18 @@
       "inDegree": 2
     },
     {
-      "component": "ai/IncidentReportArtifactCard",
+      "component": "ai/artifact-workspace/ArtifactWorkspacePanel",
       "inDegree": 2
     },
     {
-      "component": "ai/MessageActions",
+      "component": "ai/IncidentReportArtifactCard",
       "inDegree": 2
     }
   ],
   "topOutDegree": [
     {
       "component": "ai/AIWorkspace",
-      "outDegree": 11
+      "outDegree": 10
     },
     {
       "component": "ai-sidebar/EnhancedAIChat",
@@ -125,12 +125,12 @@
     {
       "fromDomain": "ai",
       "toDomain": "ai",
-      "count": 33
+      "count": 41
     },
     {
       "fromDomain": "dashboard",
       "toDomain": "dashboard",
-      "count": 28
+      "count": 32
     },
     {
       "fromDomain": "ai-sidebar",

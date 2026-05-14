@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 135 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 142 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 142 |
+| Total TSX component inventory | 149 |
 
 ## App Route-Local Component Distribution
 
@@ -51,12 +51,12 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29161 |
-| Component nodes | 135 |
-| Component edges | 130 |
-| Graph density | 0.72% |
+| Component source lines | 29345 |
+| Component nodes | 142 |
+| Component edges | 142 |
+| Graph density | 0.71% |
 | Alias edges (`@/components/*`) | 38 |
-| Relative edges (`./`, `../`) | 92 |
+| Relative edges (`./`, `../`) | 104 |
 | Isolated components | 22 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
@@ -65,11 +65,11 @@ Route-local component files:
 
 ```mermaid
 flowchart LR
-  d0["ai (39)"]
+  d0["ai (42)"]
   d1["ai-sidebar (16)"]
   d2["auth (1)"]
   d3["charts (2)"]
-  d4["dashboard (30)"]
+  d4["dashboard (34)"]
   d5["emergency (1)"]
   d6["error (3)"]
   d7["home (2)"]
@@ -78,8 +78,8 @@ flowchart LR
   d10["system (2)"]
   d11["ui (9)"]
   d12["unified-profile (3)"]
-  d0 -->|33| d0
-  d4 -->|28| d4
+  d0 -->|41| d0
+  d4 -->|32| d4
   d1 -->|14| d1
   d1 -->|12| d0
   d9 -->|10| d9
@@ -106,8 +106,8 @@ flowchart LR
 
 | Domain | Node Count |
 | --- | --- |
-| ai | 39 |
-| dashboard | 30 |
+| ai | 42 |
+| dashboard | 34 |
 | shared | 23 |
 | ai-sidebar | 16 |
 | ui | 9 |
@@ -124,8 +124,8 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
-| ai | ai | 33 |
-| dashboard | dashboard | 28 |
+| ai | ai | 41 |
+| dashboard | dashboard | 32 |
 | ai-sidebar | ai-sidebar | 14 |
 | ai-sidebar | ai | 12 |
 | shared | shared | 10 |
@@ -151,7 +151,7 @@ flowchart LR
 
 | Component | In-Degree |
 | --- | --- |
-| ai/AIAssistantIconPanel | 4 |
+| ai/AIAssistantIconPanel | 7 |
 | ai/analysis/constants | 4 |
 | ui/dialog | 4 |
 | dashboard/EnhancedServerModal.components | 3 |
@@ -161,14 +161,14 @@ flowchart LR
 | ai/AgentHandoffBadge | 2 |
 | ai/AIContentArea | 2 |
 | ai/AnalysisBasisBadge | 2 |
+| ai/artifact-workspace/ArtifactWorkspacePanel | 2 |
 | ai/IncidentReportArtifactCard | 2 |
-| ai/MessageActions | 2 |
 
 ## Top Component Hubs by Out-Degree (Top 12)
 
 | Component | Out-Degree |
 | --- | --- |
-| ai/AIWorkspace | 11 |
+| ai/AIWorkspace | 10 |
 | ai-sidebar/EnhancedAIChat | 9 |
 | ai-sidebar/AISidebarV4 | 8 |
 | ai-sidebar/SidebarMessage | 7 |
@@ -189,7 +189,7 @@ flowchart LR
 
 ```text
 [Top Outgoing Dependency Samples]
-ai/AIWorkspace -> ai-sidebar/CloudRunStatusIndicator, ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader
+ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, ai/AIAssistantIconPanel, ai/AIContentArea, ai/AIWorkspaceEmbeddedLayout, ai/AIWorkspaceFullscreenHeader
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/DeveloperPanel, ai-sidebar/EnhancedAIChat
 ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard, ai/WebSourceCards
