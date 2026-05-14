@@ -22,7 +22,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 최근 20커밋 평가에서 `0ca8d9b88`이 134파일 단일 커밋으로 리뷰/cherry-pick 가능성이 낮다는 점을 확인. 이미 검증 완료된 로컬 커밋은 전달 마감 우선으로 유지하되, 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 가능한 한 2~3개 논리 커밋으로 분리하는 기준을 작업 계획/커밋 단계에 반영. |
-| P3: 커밋 후 line-guard warning buffer polish | Low | 커밋 완료 후 별도 작은 리팩터 묶음으로 진행. 현재 fail-threshold는 0건이며 warning만 41건. 상위 후보: `src/components/dashboard/log-explorer/LogExplorerModal.tsx` 728줄, `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts` 723줄, `src/components/ai/AIWorkspace.tsx` 710줄, `src/app/api/ai/supervisor/stream/v2/route.ts` 708줄, `src/components/dashboard/alert-history/AlertHistoryModal.tsx` 708줄. |
+| P3: 커밋 후 line-guard warning buffer polish | Low | 커밋 완료 후 별도 작은 리팩터 묶음으로 진행. 현재 fail-threshold는 0건이며 warning만 41건. 상위 후보: `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts` 744줄, `src/components/dashboard/log-explorer/LogExplorerModal.tsx` 728줄, `src/components/ai/AIWorkspace.tsx` 710줄, `src/app/api/ai/supervisor/stream/v2/route.ts` 708줄, `src/components/dashboard/alert-history/AlertHistoryModal.tsx` 708줄. |
 
 ---
 
