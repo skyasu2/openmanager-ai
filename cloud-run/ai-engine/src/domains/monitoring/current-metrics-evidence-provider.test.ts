@@ -108,4 +108,40 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('전체');
     expect(evidence?.prompt).toContain('현재 서버 상태');
   });
+
+  it('resolves server alias detail prompts without falling back to whole-fleet summaries', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+      createEvidenceRequest('web-server-01 상태를 자세히 알려줘')
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+      },
+    });
+    expect(evidence?.fallback).toContain('web-nginx-dc1-01');
+    expect(evidence?.fallback).toContain('요청 별칭: web-server-01');
+    expect(evidence?.fallback).not.toContain('서버 현황 요약');
+  });
+
+  it('resolves action-needed prompts with a single deterministic conclusion', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+      createEvidenceRequest('지금 당장 조치가 필요한 서버가 있어?')
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+      },
+    });
+    expect(evidence?.fallback).toContain('즉시 조치');
+    expect(evidence?.fallback).toContain('조치 대상');
+    expect(evidence?.fallback).not.toMatch(/즉시 조치[^\n]+없(?:습니다|음)/);
+  });
 });

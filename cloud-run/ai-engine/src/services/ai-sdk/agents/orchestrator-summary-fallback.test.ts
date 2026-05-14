@@ -949,6 +949,88 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).toContain('💡 **권고**');
   });
 
+  it('answers requested web-server alias detail from current state instead of fleet summary', () => {
+    const summary = buildDeterministicSummaryFromCurrentState(
+      'web-server-01 상태를 자세히 알려줘',
+      'Metrics Query Agent',
+      {
+        servers: [
+          {
+            id: 'web-nginx-dc1-01',
+            name: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 41,
+            memory: 52,
+            disk: 31,
+            network: 12,
+            load1: 1.4,
+            responseTimeMs: 42,
+          },
+          {
+            id: 'api-was-dc1-01',
+            name: 'api-was-dc1-01',
+            type: 'application',
+            status: 'critical',
+            cpu: 93,
+            memory: 62,
+            disk: 41,
+            network: 33,
+          },
+        ],
+      }
+    );
+
+    expect(summary).toContain('web-nginx-dc1-01');
+    expect(summary).toContain('요청 별칭: web-server-01');
+    expect(summary).toContain('상태 online');
+    expect(summary).toContain('CPU 41%');
+    expect(summary).toContain('네트워크 12%');
+    expect(summary).not.toContain('📊 **서버 현황 요약**');
+    expect(summary).not.toContain('api-was-dc1-01');
+  });
+
+  it('answers action-needed questions without contradicting the immediate-action conclusion', () => {
+    const summary = buildDeterministicSummaryFromCurrentState(
+      '지금 당장 조치가 필요한 서버가 있어?',
+      'Metrics Query Agent',
+      {
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            status: 'critical',
+            cpu: 93,
+            memory: 66,
+            disk: 44,
+            network: 28,
+          },
+          {
+            id: 'api-was-dc1-02',
+            status: 'warning',
+            cpu: 89,
+            memory: 62,
+            disk: 41,
+            network: 25,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            status: 'online',
+            cpu: 41,
+            memory: 52,
+            disk: 31,
+            network: 12,
+          },
+        ],
+      }
+    );
+
+    expect(summary).toContain('즉시 조치 대상은 1대입니다');
+    expect(summary).toContain('api-was-dc1-01');
+    expect(summary).toContain('주의 관찰 대상은 1대입니다');
+    expect(summary).toContain('api-was-dc1-02');
+    expect(summary).not.toMatch(/즉시 조치[^\n]+없(?:습니다|음)/);
+  });
+
   it('does not label snapshot-only threshold values as rising trend evidence', () => {
     const summary = buildDeterministicSummaryFromCurrentState(
       '현재 모든 서버의 상태를 요약해줘',
