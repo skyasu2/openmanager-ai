@@ -1,5 +1,5 @@
 import type { UIMessage } from '@ai-sdk/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { executeChatArtifact } from '@/lib/ai/chat-artifacts/artifact-execution';
 import { ARTIFACT_INTENT_RULE_VERSION } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import { startChatArtifactGeneration } from './chat-artifact-execution';
@@ -22,6 +22,10 @@ const mockExecuteChatArtifact = vi.mocked(executeChatArtifact);
 describe('startChatArtifactGeneration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('executes server-monitoring-analysis intents with the parsed server id', async () => {
@@ -96,5 +100,56 @@ describe('startChatArtifactGeneration', () => {
     expect(messages.at(-1)?.metadata).toMatchObject({
       serverMonitoringAnalysisArtifact: artifact,
     });
+  });
+
+  it('updates the pending assistant message with delayed artifact progress steps', async () => {
+    vi.useFakeTimers();
+    mockExecuteChatArtifact.mockReturnValue(new Promise(() => undefined));
+
+    let messages: UIMessage[] = [];
+    const messagesRef = { current: messages };
+    const setMessages = vi.fn((nextMessages: UIMessage[]) => {
+      messages = nextMessages;
+      messagesRef.current = nextMessages;
+    });
+    const setError = vi.fn();
+    const setArtifactIsLoading = vi.fn();
+    const artifactRequestIdRef = { current: null };
+    const artifactAbortControllerRef = { current: null };
+    const artifactInFlightRef = { current: false };
+
+    startChatArtifactGeneration({
+      artifactIntent: {
+        kind: 'monitoring-analysis',
+        reason: 'monitoring_action_pattern',
+        ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
+      },
+      query: '전체 서버 이상감지 돌려줘',
+      sessionId: 'session-test',
+      messages,
+      messagesRef,
+      setMessages,
+      setError,
+      setArtifactIsLoading,
+      artifactRequestIdRef,
+      artifactAbortControllerRef,
+      artifactInFlightRef,
+    });
+
+    expect(messages.at(-1)?.parts).toEqual([
+      {
+        type: 'text',
+        text: '이상감지/추세 분석을 실행하고 있습니다.',
+      },
+    ]);
+
+    await vi.advanceTimersByTimeAsync(3000);
+
+    expect(messages.at(-1)?.parts).toEqual([
+      {
+        type: 'text',
+        text: '데이터를 수집하고 있습니다...',
+      },
+    ]);
   });
 });
