@@ -1098,6 +1098,58 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('service restart');
   });
 
+  it('adds read-only diagnostics when fleet status summary explicitly asks for commands', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '현재 상태 정상인지 요약해줘. 확인할 명령어도 같이 알려줘',
+      'Metrics Query Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              {
+                id: 'cache-redis-dc1-01',
+                status: 'warning',
+                cpu: 24,
+                memory: 83,
+                disk: 24,
+                network: 37,
+              },
+              {
+                id: 'api-was-dc1-01',
+                status: 'online',
+                cpu: 39,
+                memory: 55,
+                disk: 31,
+                network: 22,
+              },
+            ],
+            alertServers: [
+              {
+                id: 'cache-redis-dc1-01',
+                status: 'warning',
+                cpu: 24,
+                memory: 83,
+                disk: 24,
+                network: 37,
+              },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('📊 **서버 현황 요약**');
+    expect(summary).toContain('🔎 **진단 명령어 (읽기 전용)**');
+    expect(summary).toContain('# cache-redis-dc1-01 메모리');
+    expect(summary).toContain('free -h');
+    expect(summary).toContain('ps aux --sort=-%mem | head -10');
+    expect(summary).toContain('vmstat 1 5');
+    expect(summary).not.toContain('journalctl --vacuum-time=7d');
+    expect(summary).not.toContain('apt-get clean');
+    expect(summary).not.toContain('service restart');
+  });
+
   it('falls back to generic diagnostics when only network is high', () => {
     const summary = buildDeterministicSummaryFromCurrentState(
       'network-edge-dc1-01 서버 상태를 자세히 알려줘',
