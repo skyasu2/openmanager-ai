@@ -1,11 +1,11 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-14
 
 # AI Status Diagnostic Command Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-14
 - TODO.md 연결: Active Tasks > AI 상태 답변 진단 명령어 보강
 - 구현 착수 조건: 계약 섹션 리뷰 완료. 네트워크 metric은 현재 dominant metric에는 포함하지 않고 generic health/log 진단 fallback으로 고정한다.
@@ -194,8 +194,9 @@ vmstat 1 5
   - 완료 기준: 기존 command recommendation 회귀를 유지하면서 mutating 명령이 기본 상태 답변으로 새지 않고, prompt command table과 catalog의 금지 패턴이 충돌하지 않는다.
 - [x] Task 4 — local validation
   - 완료 기준: AI Engine targeted tests, AI Engine type-check/test, root contract smoke 통과.
-- [ ] Task 5 — 배포 및 Vercel Playwright MCP QA
+- [x] Task 5 — 배포 및 Vercel Playwright MCP QA
   - 완료 기준: production에서 표준 AI QA 5문항 + 진단 명령어 추가 질의가 PASS로 기록된다.
+  - 완료 근거: v8.11.149 GitLab tag pipeline `2524461816` success, Vercel production Playwright MCP QA `QA-20260514-0501` 10/10 PASS.
 
 ## 검증 계획
 

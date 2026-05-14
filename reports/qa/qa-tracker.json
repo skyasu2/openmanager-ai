@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-14T05:01:29.591Z"
+    "updatedAt": "2026-05-14T07:04:04.756Z"
   },
   "sequence": {
-    "nextRunNumber": 501
+    "nextRunNumber": 502
   },
   "summary": {
-    "totalRecordedRuns": 498,
-    "totalRuns": 397,
+    "totalRecordedRuns": 499,
+    "totalRuns": 398,
     "excludedRuns": 101,
-    "totalChecks": 3521,
-    "totalPassed": 3384,
+    "totalChecks": 3531,
+    "totalPassed": 3394,
     "totalFailed": 127,
     "completionRate": 100,
-    "completedItems": 560,
+    "completedItems": 564,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260514-0499",
-    "lastRecordedAt": "2026-05-14T04:14:42.357Z",
-    "latestRecordedRunId": "QA-20260514-0500",
-    "latestRecordedAt": "2026-05-14T05:01:29.591Z"
+    "lastRunId": "QA-20260514-0501",
+    "lastRecordedAt": "2026-05-14T07:04:04.756Z",
+    "latestRecordedRunId": "QA-20260514-0501",
+    "latestRecordedAt": "2026-05-14T07:04:04.756Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13721,6 +13721,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-14T04:14:42.357Z"
+    },
+    "ai-status-diagnostic-commands": {
+      "id": "ai-status-diagnostic-commands",
+      "title": "AI status answers include read-only diagnostic commands when commands are requested",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0501",
+      "firstSeenAt": "2026-05-14T07:04:04.756Z",
+      "lastSeenRunId": "QA-20260514-0501",
+      "lastSeenAt": "2026-05-14T07:04:04.756Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "v8.11.149 Playwright MCP production QA",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T07:04:04.756Z"
+    },
+    "ai-engine-type-check": {
+      "id": "ai-engine-type-check",
+      "title": "cloud-run/ai-engine npm run type-check",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0501",
+      "firstSeenAt": "2026-05-14T07:04:04.756Z",
+      "lastSeenRunId": "QA-20260514-0501",
+      "lastSeenAt": "2026-05-14T07:04:04.756Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "passed before v8.11.149 release",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T07:04:04.756Z"
+    },
+    "ai-engine-full-test": {
+      "id": "ai-engine-full-test",
+      "title": "cloud-run/ai-engine npm run test",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0501",
+      "firstSeenAt": "2026-05-14T07:04:04.756Z",
+      "lastSeenRunId": "QA-20260514-0501",
+      "lastSeenAt": "2026-05-14T07:04:04.756Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "122 files, 1208 tests passed",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T07:04:04.756Z"
+    },
+    "root-contract-test": {
+      "id": "root-contract-test",
+      "title": "npm run test:contract",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0501",
+      "firstSeenAt": "2026-05-14T07:04:04.756Z",
+      "lastSeenRunId": "QA-20260514-0501",
+      "lastSeenAt": "2026-05-14T07:04:04.756Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "3 files, 24 tests passed",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T07:04:04.756Z"
     }
   },
   "runs": [
@@ -55301,6 +55397,121 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260514-0501",
+      "recordedAt": "2026-05-14T07:04:04.756Z",
+      "recordedAtKst": "2026-05-14 16:04:04 KST",
+      "title": "Vercel Playwright QA - v8.11.149 AI Diagnostic Commands",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260514-0501.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_6eMg5S8jKXBzenVMrSor73QktzfE",
+        "deploymentUrl": "https://openmanager-2693eifkm-skyasus-projects.vercel.app",
+        "commitSha": "487a8376802b61374d4c00a58eba97abaf4df8db"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/api/version",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat deterministic monitoring summaries",
+        "AI diagnostic command recommendations"
+      ],
+      "skippedSurfaces": [
+        "automatic incident report tab",
+        "anomaly/trend tab",
+        "visual analysis upload"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI summary, ranking, server detail, action-needed, and command-request paths were validated on Vercel production with Playwright MCP.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline succeeded and both Vercel frontend and Cloud Run AI Engine deployments completed before QA.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Checked diagnostic recommendations are read-only and exclude restart, cache clear, package cleanup, journal vacuum, rm, and kill commands.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-14T16:00:14+09:00",
+          "summary": "Vercel usage checked after v8.11.149 production QA; effective 8.7525 USD, billed 0.0000 USD, chargeCount 7917.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI diagnostic commands result screenshot",
+          "path": "reports/qa/evidence/v8.11.149-ai-diagnostic-commands/qa-20260514-v811149-diagnostic-commands.png"
+        },
+        {
+          "type": "playwright-report",
+          "label": "AI diagnostic commands QA evidence summary",
+          "path": "reports/qa/evidence/v8.11.149-ai-diagnostic-commands/qa-20260514-v811149-diagnostic-commands.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2524461816",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524461816"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_6eMg5S8jKXBzenVMrSor73QktzfE",
+          "url": "https://openmanager-2693eifkm-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -55309,16 +55520,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 250,
-      "appropriateCount": 214,
+      "seenCount": 251,
+      "appropriateCount": 215,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 46,
-      "lastRunId": "QA-20260514-0500",
-      "lastSeenAt": "2026-05-14T05:01:29.591Z",
+      "lastRunId": "QA-20260514-0501",
+      "lastSeenAt": "2026-05-14T07:04:04.756Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The user-requested Vercel Playwright MCP rerun kept the five-question AI surface green, including the previous Q2 and Q4 regressions.",
+      "lastRationale": "AI summary, ranking, server detail, action-needed, and command-request paths were validated on Vercel production with Playwright MCP.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -55343,16 +55554,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 74,
-      "appropriateCount": 56,
+      "seenCount": 75,
+      "appropriateCount": 57,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260514-0499",
-      "lastSeenAt": "2026-05-14T04:14:42.357Z",
+      "lastRunId": "QA-20260514-0501",
+      "lastSeenAt": "2026-05-14T07:04:04.756Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "No unsafe mutation, prompt leakage, provider scaffold leakage, or unsupported command emission was observed in the tested AI path.",
+      "lastRationale": "Checked diagnostic recommendations are read-only and exclude restart, cache clear, package cleanup, journal vacuum, rm, and kill commands.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -55360,16 +55571,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 180,
-      "appropriateCount": 162,
+      "seenCount": 181,
+      "appropriateCount": 163,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260514-0500",
-      "lastSeenAt": "2026-05-14T05:01:29.591Z",
+      "lastRunId": "QA-20260514-0501",
+      "lastSeenAt": "2026-05-14T07:04:04.756Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production version and health endpoints returned 200 on v8.11.147, and AI network calls completed with 200/201 statuses.",
+      "lastRationale": "GitLab tag pipeline succeeded and both Vercel frontend and Cloud Run AI Engine deployments completed before QA.",
       "lastNextAction": ""
     },
     "test-automation": {

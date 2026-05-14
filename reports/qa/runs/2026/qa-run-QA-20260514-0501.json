@@ -1,0 +1,167 @@
+{
+  "runId": "QA-20260514-0501",
+  "recordedAt": "2026-05-14T07:04:04.756Z",
+  "recordedAtKst": "2026-05-14 16:04:04 KST",
+  "runTitle": "Vercel Playwright QA - v8.11.149 AI Diagnostic Commands",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_6eMg5S8jKXBzenVMrSor73QktzfE",
+    "deploymentUrl": "https://openmanager-2693eifkm-skyasus-projects.vercel.app",
+    "commitSha": "487a8376802b61374d4c00a58eba97abaf4df8db"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/api/version",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat deterministic monitoring summaries",
+    "AI diagnostic command recommendations"
+  ],
+  "skippedSurfaces": [
+    "automatic incident report tab",
+    "anomaly/trend tab",
+    "visual analysis upload"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI summary, ranking, server detail, action-needed, and command-request paths were validated on Vercel production with Playwright MCP.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline succeeded and both Vercel frontend and Cloud Run AI Engine deployments completed before QA.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Checked diagnostic recommendations are read-only and exclude restart, cache clear, package cleanup, journal vacuum, rm, and kill commands.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-14T16:00:14+09:00",
+      "summary": "Vercel usage checked after v8.11.149 production QA; effective 8.7525 USD, billed 0.0000 USD, chargeCount 7917.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI diagnostic commands result screenshot",
+      "path": "reports/qa/evidence/v8.11.149-ai-diagnostic-commands/qa-20260514-v811149-diagnostic-commands.png"
+    },
+    {
+      "type": "playwright-report",
+      "label": "AI diagnostic commands QA evidence summary",
+      "path": "reports/qa/evidence/v8.11.149-ai-diagnostic-commands/qa-20260514-v811149-diagnostic-commands.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-status-diagnostic-commands",
+      "title": "AI status answers include read-only diagnostic commands when commands are requested",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.149 Playwright MCP production QA",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-engine-type-check",
+      "title": "cloud-run/ai-engine npm run type-check",
+      "priority": "P2",
+      "evidence": "passed before v8.11.149 release",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-engine-full-test",
+      "title": "cloud-run/ai-engine npm run test",
+      "priority": "P2",
+      "evidence": "122 files, 1208 tests passed",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "root-contract-test",
+      "title": "npm run test:contract",
+      "priority": "P2",
+      "evidence": "3 files, 24 tests passed",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified v8.11.149 via /api/version before AI QA.",
+    "Fleet summary with explicit command request now includes read-only diagnostics.",
+    "Observed command block: free -h; ps aux --sort=-%mem | head -10; vmstat 1 5.",
+    "The earlier v8.11.148 QA gap was that fleet summary + command request omitted diagnostics; this run confirms the fix."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2524461816",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524461816"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_6eMg5S8jKXBzenVMrSor73QktzfE",
+      "url": "https://openmanager-2693eifkm-skyasus-projects.vercel.app/"
+    }
+  ]
+}

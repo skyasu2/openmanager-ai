@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-14 14:01:30 KST
+> Generated at: 2026-05-14 16:04:07 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 498 |
-| Total Runs (Counted) | 397 |
+| Total Recorded Runs | 499 |
+| Total Runs (Counted) | 398 |
 | Non-counted Runs | 101 |
-| Total Checks | 3521 |
-| Passed | 3384 |
+| Total Checks | 3531 |
+| Passed | 3394 |
 | Failed | 127 |
-| Completed Items | 560 |
+| Completed Items | 564 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260514-0499 (2026-05-14T04:14:42.357Z) |
-| Latest Recorded Run | QA-20260514-0500 (2026-05-14T05:01:29.591Z) |
+| Last Counted Run | QA-20260514-0501 (2026-05-14T07:04:04.756Z) |
+| Latest Recorded Run | QA-20260514-0501 (2026-05-14T07:04:04.756Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,35 +34,33 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260514-0500 (2026-05-14T05:01:29.591Z)
+Latest run: QA-20260514-0501 (2026-05-14T07:04:04.756Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after user-requested Playwright MCP verification rerun; current billing period effective=8.0858 USD, billed=0.0000 USD, chargeCount=7308. |
+| vercel | cli | checked | normal | Vercel usage checked after v8.11.149 production QA; effective 8.7525 USD, billed 0.0000 USD, chargeCount 7917. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-13T05:01:29.591Z -> 2026-05-14T05:01:29.591Z (24h)
-- Runs with observations: 4 recorded / 3 counted
-- Samples: 16
+- Window: 2026-05-13T07:04:04.756Z -> 2026-05-14T07:04:04.756Z (24h)
+- Runs with observations: 2 recorded / 1 counted
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run | 12 | 2770ms | 4087ms | - | - | - | - | QA-20260514-0498 |
-| Reporter Agent | cloud-run | 2 | 2047ms | 2373ms | - | - | - | - | QA-20260513-0496 |
-| Analyst / Monitoring Analysis | cloud-run | 2 | 1093ms | 1116ms | - | - | - | - | QA-20260513-0496 |
+| Supervisor | cloud-run | 10 | 2627ms | 4087ms | - | - | - | - | QA-20260514-0498 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-13T05:01:29.591Z -> 2026-05-14T05:01:29.591Z (24h)
+- Window: 2026-05-13T07:04:04.756Z -> 2026-05-14T07:04:04.756Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,27 +72,26 @@ Latest run: QA-20260514-0500 (2026-05-14T05:01:29.591Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: api-version-v8.11.147 / SHA e506aeb6
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_6eMg5S8jKXBzenVMrSor73QktzfE / SHA 487a8376
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Vercel production /api/version and /api/health, Landing system-start button to /dashboard, Dashboard OTel overview and resource summary, AI Assistant sidebar UI input path, Conversational AI standard five-question rerun, Q2 server alias detail for web-server-01 to web-nginx-dc1-01, Q4 action-needed no-contradiction closure, AI UI network statuses for wake-up, health, supervisor stream, async jobs, and SSE streams
-- Skipped Surfaces: Reporter Agent generation, Analyst advanced full analysis, Mobile viewport matrix, OAuth provider completion, Cloud Run admin /monitoring and /monitoring/traces, Full broad route pack
+- Covered Surfaces: /, /api/version, /dashboard, AI sidebar, AI chat deterministic monitoring summaries, AI diagnostic command recommendations
+- Skipped Surfaces: automatic incident report tab, anomaly/trend tab, visual analysis upload
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.147 production pipeline | [GitLab v8.11.147 production pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524168807) | - |
-| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
+| general | GitLab pipeline 2524461816 | [GitLab pipeline 2524461816](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524461816) | - |
+| vercel-deployment | Vercel production deployment dpl_6eMg5S8jKXBzenVMrSor73QktzfE | [Vercel production deployment dpl_6eMg5S8jKXBzenVMrSor73QktzfE](https://openmanager-2693eifkm-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | AI five-question verification rerun summary | `reports/qa/evidence/qa-20260514-v811147-ai-five-question-rerun-summary.md` | - |
-| playwright-network | AI five-question verification rerun network log | `reports/qa/evidence/qa-20260514-v811147-ai-five-question-rerun-network.txt` | - |
-| playwright-screenshot | AI sidebar five-question verification rerun final state | `reports/qa/evidence/qa-20260514-v811147-ai-five-question-rerun-final-sidebar.png` | - |
+| playwright-screenshot | AI diagnostic commands result screenshot | `reports/qa/evidence/v8.11.149-ai-diagnostic-commands/qa-20260514-v811149-diagnostic-commands.png` | - |
+| playwright-report | AI diagnostic commands QA evidence summary | `reports/qa/evidence/v8.11.149-ai-diagnostic-commands/qa-20260514-v811149-diagnostic-commands.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -247,12 +244,14 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-disk-threshold-answer-accuracy-drift: AI async job answer preserves DISK threshold and dashboard metric values (completed 2회, last QA-20260429-0368)
 - ai-domain-boundary-phase2-analysis-mode: AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking) (completed 1회, last QA-20260416-0297)
 - ai-engine-cloud-run-v81188-health: Cloud Run ai-engine v8.11.88 health and free-tier runtime limits verified (completed 1회, last QA-20260503-0399)
+- ai-engine-full-test: cloud-run/ai-engine npm run test (completed 1회, last QA-20260514-0501)
 - ai-engine-langfuse-dynamic-import-kept: Keep Langfuse dependency because it is dynamically loaded at runtime (completed 1회, last QA-20260510-0445)
 - ai-engine-pino-v10-alignment: Align AI Engine pino to v10 (completed 1회, last QA-20260511-0473)
 - ai-engine-precomputed-state-data-source-v811110: AI Engine precomputed-state data source decoupling verified in production (completed 1회, last QA-20260507-0418)
 - ai-engine-response-quality-regression-v811141-deploy: Deploy AI Engine response quality regression fixes to Cloud Run (completed 1회, last QA-20260513-0490)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-engine-supervisor-runtime-host-wiring-v811107: Production supervisor stream and single-agent runtime host wiring verified (completed 1회, last QA-20260506-0413)
+- ai-engine-type-check: cloud-run/ai-engine npm run type-check (completed 1회, last QA-20260514-0501)
 - ai-engine-unused-direct-dependency-cleanup: Remove unused AI Engine direct dependencies (completed 1회, last QA-20260510-0445)
 - ai-explicit-server-id-clarification-skip: Skip NLQ clarification when a concrete server ID is present (completed 1회, last QA-20260510-0456)
 - ai-explicit-server-summary-backfill: Explicit server action summary keeps named TOP2 servers and backfills partial tool payloads (completed 1회, last QA-20260430-0376)
@@ -345,6 +344,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-sidebar-tools-menu: AI 도구 메뉴 (completed 1회, last QA-20260317-0114)
 - ai-starter-summary-parity-guard: AI starter/direct dashboard count parity E2E guard (completed 1회, last QA-20260424-0344)
 - ai-starter-summary-parity-guard-final-hardening: AI parity guard dynamic total and label-boundary hardening (completed 1회, last QA-20260424-0345)
+- ai-status-diagnostic-commands: AI status answers include read-only diagnostic commands when commands are requested (completed 1회, last QA-20260514-0501)
 - ai-stream-fallback-evidence-metadata: AI stream fallback metadata is preserved (completed 1회, last QA-20260503-0396)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-streaming-ui-s1-fullscreen-direct-stream-v81188: Fullscreen AI workspace production stream path verified (completed 1회, last QA-20260503-0400)
@@ -626,6 +626,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - root-auth-session-lazy-imports: Defer auth/session/store heavy imports on the root path (completed 2회, last QA-20260422-0329)
 - root-client-provider-prune: Remove unused root AccessibilityProvider wrapper (completed 1회, last QA-20260422-0326)
 - root-client-runtime-split: Non-critical root client runtime modules split behind dynamic wrapper (completed 1회, last QA-20260419-0314)
+- root-contract-test: npm run test:contract (completed 1회, last QA-20260514-0501)
 - root-dev-instrumentation-noop: Skip dev env import in instrumentation register() (completed 1회, last QA-20260422-0326)
 - root-global-effects-prune: Trim root global-effects.css and inline unused design-system helpers (completed 1회, last QA-20260422-0327)
 - root-layout-font-preload-cleanup: Suppress repeated root font preload warnings on dashboard and fullscreen AI routes (completed 1회, last QA-20260417-0300)
@@ -745,6 +746,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260514-0501 | 2026-05-14T07:04:04.756Z | targeted | yes | yes | Vercel Playwright QA - v8.11.149 AI Diagnostic Commands | 10 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260514-0500 | 2026-05-14T05:01:29.591Z | targeted | no | no | Vercel Playwright MCP Verification Rerun - v8.11.147 AI Five-Question | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260514-0499 | 2026-05-14T04:14:42.357Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.147 AI Five-Question Closure | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260514-0498 | 2026-05-14T01:59:28.858Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.146 AI Five-Question Release Check | 10 | 0 | 2 | 0 | 0 | 3 |
@@ -764,4 +766,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260512-0484 | 2026-05-12T03:58:50.223Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.132 | 8 | 2 | 3 | 0 | 0 | 3 |
 | QA-20260512-0483 | 2026-05-12T02:07:18.555Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.131 | 8 | 1 | 2 | 0 | 0 | 2 |
 | QA-20260512-0482 | 2026-05-11T23:30:16.424Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query closure on v8.11.129 | 2 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260512-0481 | 2026-05-11T17:04:04.232Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query phrasing probe on v8.11.128 | 4 | 0 | 1 | 0 | 0 | 1 |
