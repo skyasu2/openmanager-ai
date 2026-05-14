@@ -28,6 +28,7 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   capabilityId: string;
   sourceIntent: string;
   answerQuery: string;
+  targets?: string[];
   metric?: SupportedMetric;
   rankCount?: number;
   rankOrder?: QueryRankOrder;
@@ -39,6 +40,10 @@ const SERVER_HEALTH_PATTERN =
   /(?:서버|인프라|시스템|fleet|server|infra|system).{0,20}(상태|현황|요약|health|summary|status)|(?:상태|현황|요약|health|summary|status).{0,20}(서버|인프라|시스템|fleet|server|infra|system)/i;
 const SERVER_HEALTH_EXCLUSION_PATTERN =
   /왜|원인|해결|방법|명령어|command|script|예측|트렌드|보고서|리포트|장애\s*보고서/i;
+const SERVER_DETAIL_PATTERN =
+  /\b[a-z0-9]+(?:-[a-z0-9]+){1,}\b.{0,24}(상태|현황|자세|상세|health|status|detail|어때|알려)/i;
+const ACTION_NEEDED_PATTERN =
+  /(?:지금|현재|당장|즉시).{0,24}(?:조치|대응).{0,24}(?:필요|해야|대상|있)|(?:조치|대응).{0,12}(?:필요한|필요|대상).{0,12}서버|immediate\s+action|action\s+needed/i;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -81,6 +86,14 @@ function normalizeRankOrder(
     : 'desc';
 }
 
+function normalizeTargets(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((target): target is string => typeof target === 'string')
+    .map((target) => target.trim())
+    .filter((target) => target.length > 0);
+}
+
 function isMetricRankingFrame(frame: DomainIntentFrame): boolean {
   return (
     frame.intent === 'metric_ranking' ||
@@ -102,11 +115,21 @@ function parseCurrentMetricsFrame(
     (capabilityId === undefined ||
       capabilityId === MONITORING_SERVER_HEALTH_CAPABILITY_ID)
   ) {
+    const targets = normalizeTargets(frame.targets);
+    const shouldUseRawMessage =
+      ACTION_NEEDED_PATTERN.test(request.message) ||
+      SERVER_DETAIL_PATTERN.test(request.message);
     return {
       intent: 'server_health',
       capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
       sourceIntent: frame.intent,
-      answerQuery: '현재 모든 서버 상태 요약해줘',
+      answerQuery:
+        targets.length > 0
+          ? `${targets[0]} 상태를 자세히 알려줘`
+          : shouldUseRawMessage
+            ? request.message
+          : '현재 모든 서버 상태 요약해줘',
+      ...(targets.length > 0 && { targets }),
     };
   }
 
@@ -169,6 +192,15 @@ function parseCurrentMetricsMessage(
       intent: 'server_health',
       capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
       sourceIntent: classification.intent,
+      answerQuery: message,
+    };
+  }
+
+  if (ACTION_NEEDED_PATTERN.test(message)) {
+    return {
+      intent: 'server_health',
+      capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+      sourceIntent: 'action-needed',
       answerQuery: message,
     };
   }
@@ -260,6 +292,7 @@ async function resolveCurrentMetricsEvidence(
       ...(readSnapshotTimeLabel(snapshot) && {
         timeLabel: readSnapshotTimeLabel(snapshot),
       }),
+      ...(parsed.targets && { targets: parsed.targets }),
       ...(parsed.metric && { metric: parsed.metric }),
       ...(parsed.rankCount && { rankCount: parsed.rankCount }),
       ...(parsed.rankOrder && { rankOrder: parsed.rankOrder }),

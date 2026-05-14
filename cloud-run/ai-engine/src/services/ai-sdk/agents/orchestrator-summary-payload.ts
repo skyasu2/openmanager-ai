@@ -6,11 +6,16 @@ export interface CollectedToolResult {
 export interface ServerSnapshot {
   id: string;
   name?: string;
+  type?: string;
   status: string;
   cpu?: number;
   memory?: number;
   disk?: number;
   network?: number;
+  load1?: number;
+  load5?: number;
+  responseTimeMs?: number;
+  cpuCores?: number;
   dailyTrend?: {
     cpu?: { avg?: number };
     memory?: { avg?: number };
@@ -84,6 +89,7 @@ function toAdvancedServerSnapshot(value: unknown): ServerSnapshot | null {
   return {
     id: value.id,
     name: typeof value.name === 'string' ? value.name : undefined,
+    type: typeof value.type === 'string' ? value.type : undefined,
     status: typeof value.status === 'string' ? value.status : 'online',
     cpu: toNumber(value.metrics.cpu) ?? undefined,
     memory: toNumber(value.metrics.memory) ?? undefined,
@@ -231,11 +237,17 @@ export function buildSummaryPayloadFromCurrentState(
   const servers: ServerSnapshot[] = state.servers.map((server) => {
     return {
       id: server.id,
+      name: server.name,
+      type: server.type,
       status: server.status,
       cpu: server.cpu,
       memory: server.memory,
       disk: server.disk,
       network: server.network,
+      load1: server.load1,
+      load5: server.load5,
+      responseTimeMs: server.responseTimeMs,
+      cpuCores: server.cpuCores,
     };
   });
 

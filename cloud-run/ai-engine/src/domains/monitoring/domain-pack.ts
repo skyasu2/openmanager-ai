@@ -257,8 +257,11 @@ export const monitoringIntentParser: DomainIntentParser = {
       domainId: MONITORING_DOMAIN_ID,
       intent: currentMetricsFrame.intent,
       capabilityId: currentMetricsFrame.capabilityId,
-      scope: 'whole_fleet',
-      targets: [],
+      scope:
+        currentMetricsFrame.targets && currentMetricsFrame.targets.length > 0
+          ? 'entity'
+          : 'whole_fleet',
+      targets: currentMetricsFrame.targets ?? [],
       ...(currentMetricsFrame.metric && { metric: currentMetricsFrame.metric }),
       timeWindow: 'current',
       aggregation:

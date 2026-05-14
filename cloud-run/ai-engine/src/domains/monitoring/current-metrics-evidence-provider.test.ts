@@ -11,13 +11,22 @@ import {
 } from './current-metrics-evidence-provider';
 import { monitoringDomainDataSource } from './domain-pack';
 
-function createEvidenceRequest(message: string) {
+function createEvidenceRequest(message: string, data?: unknown) {
   return {
     requestId: 'current-metrics-evidence-test',
     domainId: MONITORING_DOMAIN_ID,
     message,
     messages: [{ role: 'user' as const, content: message }],
-    dataSource: monitoringDomainDataSource,
+    dataSource: data
+      ? {
+          async snapshot() {
+            return {
+              timestamp: '2026-05-14T12:00:00+09:00',
+              data,
+            };
+          },
+        }
+      : monitoringDomainDataSource,
   };
 }
 
@@ -127,9 +136,39 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('서버 현황 요약');
   });
 
+  it('preserves raw server detail intent when metadata frame is whole-fleet server health', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve({
+      ...createEvidenceRequest('web-server-01 상태를 자세히 알려줘', {
+        servers: [
+          { id: 'web-nginx-dc1-01', status: 'online', cpu: 41, memory: 52, disk: 31 },
+          { id: 'api-was-dc1-01', status: 'critical', cpu: 93, memory: 66, disk: 44 },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.9,
+      },
+    });
+
+    expect(evidence?.fallback).toContain('web-nginx-dc1-01');
+    expect(evidence?.fallback).not.toContain('서버 현황 요약');
+  });
+
   it('resolves action-needed prompts with a single deterministic conclusion', async () => {
     const evidence = await monitoringServerHealthEvidenceProvider.resolve(
-      createEvidenceRequest('지금 당장 조치가 필요한 서버가 있어?')
+      createEvidenceRequest('지금 당장 조치가 필요한 서버가 있어?', {
+        servers: [
+          { id: 'api-was-dc1-01', status: 'critical', cpu: 93, memory: 66, disk: 44 },
+          { id: 'api-was-dc1-02', status: 'warning', cpu: 89, memory: 62, disk: 41 },
+          { id: 'web-nginx-dc1-01', status: 'online', cpu: 41, memory: 52, disk: 31 },
+        ],
+      })
     );
 
     expect(evidence).toMatchObject({
@@ -141,7 +180,33 @@ describe('current metrics domain evidence providers', () => {
       },
     });
     expect(evidence?.fallback).toContain('즉시 조치');
-    expect(evidence?.fallback).toContain('조치 대상');
+    expect(evidence?.fallback).toContain('즉시 조치 대상은 1대입니다');
+    expect(evidence?.fallback).toContain('주의 관찰 대상은 1대입니다');
     expect(evidence?.fallback).not.toMatch(/즉시 조치[^\n]+없(?:습니다|음)/);
+  });
+
+  it('preserves raw action-needed intent when metadata frame is whole-fleet server health', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve({
+      ...createEvidenceRequest('지금 당장 조치가 필요한 서버가 있어?', {
+        servers: [
+          { id: 'api-was-dc1-01', status: 'critical', cpu: 93, memory: 66, disk: 44 },
+          { id: 'api-was-dc1-02', status: 'warning', cpu: 89, memory: 62, disk: 41 },
+          { id: 'web-nginx-dc1-01', status: 'online', cpu: 41, memory: 52, disk: 31 },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.9,
+      },
+    });
+
+    expect(evidence?.fallback).toContain('즉시 조치 대상은 1대입니다');
+    expect(evidence?.fallback).not.toContain('서버 현황 요약');
   });
 });

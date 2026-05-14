@@ -9,6 +9,10 @@ import {
   isMetricThresholdPredictionQuery,
 } from './orchestrator-summary-metric';
 import {
+  buildActionNeededAnswer,
+  buildRequestedServerStatusAnswer,
+} from './orchestrator-summary-current-status';
+import {
   buildExplicitServerOperationalAnswer,
   buildHaproxyDistributionAnswer,
   buildSummaryFromPayloadForQuery,
@@ -78,6 +82,20 @@ function buildDeterministicAnswerFromPayload(
   const haproxyDistributionAnswer = buildHaproxyDistributionAnswer(query, payload);
   if (haproxyDistributionAnswer) {
     return haproxyDistributionAnswer;
+  }
+
+  const requestedServerStatusAnswer = buildRequestedServerStatusAnswer(
+    query,
+    payload,
+    lookupPayload
+  );
+  if (requestedServerStatusAnswer) {
+    return requestedServerStatusAnswer;
+  }
+
+  const actionNeededAnswer = buildActionNeededAnswer(query, payload);
+  if (actionNeededAnswer) {
+    return actionNeededAnswer;
   }
 
   const classification = classifyQueryIntent(query);
