@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-14 16:04:07 KST
+> Generated at: 2026-05-14 22:48:58 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 499 |
-| Total Runs (Counted) | 398 |
+| Total Recorded Runs | 500 |
+| Total Runs (Counted) | 399 |
 | Non-counted Runs | 101 |
-| Total Checks | 3531 |
-| Passed | 3394 |
+| Total Checks | 3543 |
+| Passed | 3406 |
 | Failed | 127 |
-| Completed Items | 564 |
+| Completed Items | 569 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260514-0501 (2026-05-14T07:04:04.756Z) |
-| Latest Recorded Run | QA-20260514-0501 (2026-05-14T07:04:04.756Z) |
+| Last Counted Run | QA-20260514-0502 (2026-05-14T13:48:56.400Z) |
+| Latest Recorded Run | QA-20260514-0502 (2026-05-14T13:48:56.400Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260514-0501 (2026-05-14T07:04:04.756Z)
+Latest run: QA-20260514-0502 (2026-05-14T13:48:56.400Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after v8.11.149 production QA; effective 8.7525 USD, billed 0.0000 USD, chargeCount 7917. |
+| vercel | cli | checked | normal | Vercel usage checked after v8.11.150 production deploy; effective 8.7569 USD, billed 0.0000 USD, chargeCount 7917. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-13T07:04:04.756Z -> 2026-05-14T07:04:04.756Z (24h)
+- Window: 2026-05-13T13:48:56.400Z -> 2026-05-14T13:48:56.400Z (24h)
 - Runs with observations: 2 recorded / 1 counted
 - Samples: 10
 
@@ -60,7 +61,7 @@ Latest run: QA-20260514-0501 (2026-05-14T07:04:04.756Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-13T07:04:04.756Z -> 2026-05-14T07:04:04.756Z (24h)
+- Window: 2026-05-13T13:48:56.400Z -> 2026-05-14T13:48:56.400Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,24 +75,26 @@ Latest run: QA-20260514-0501 (2026-05-14T07:04:04.756Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_6eMg5S8jKXBzenVMrSor73QktzfE / SHA 487a8376
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: /, /api/version, /dashboard, AI sidebar, AI chat deterministic monitoring summaries, AI diagnostic command recommendations
-- Skipped Surfaces: automatic incident report tab, anomaly/trend tab, visual analysis upload
+- Deployment: dpl_9fAnj423friUqtdvbvfm1SSCsSk8 / SHA 1d2db8d2
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: landing version badge v8.11.150, system start to /dashboard, dashboard 18 servers / 17 online / 1 warning, AI sidebar open, AI Chat monitoring-analysis artifact, monitoring capacityAlerts section, monitoring roleGroupSummary section, chat artifact handoff to /dashboard/ai-assistant, AI Chat incident-report artifact, incident repeated log patterns section, incident availability impact line, /api/version and /api/health production checks, browser console warning/error cleanliness
+- Skipped Surfaces: visual analysis upload, OAuth provider login flows, modal-detail-pack, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline 2524461816 | [GitLab pipeline 2524461816](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2524461816) | - |
-| vercel-deployment | Vercel production deployment dpl_6eMg5S8jKXBzenVMrSor73QktzfE | [Vercel production deployment dpl_6eMg5S8jKXBzenVMrSor73QktzfE](https://openmanager-2693eifkm-skyasus-projects.vercel.app/) | - |
+| general | GitLab main pipeline 2525292911 | [GitLab main pipeline 2525292911](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525292911) | - |
+| general | GitLab release pipeline 2525292938 | [GitLab release pipeline 2525292938](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525292938) | - |
+| vercel-deployment | Vercel production deployment dpl_9fAnj423friUqtdvbvfm1SSCsSk8 | [Vercel production deployment dpl_9fAnj423friUqtdvbvfm1SSCsSk8](https://openmanager-btkz7rl00-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI diagnostic commands result screenshot | `reports/qa/evidence/v8.11.149-ai-diagnostic-commands/qa-20260514-v811149-diagnostic-commands.png` | - |
-| playwright-report | AI diagnostic commands QA evidence summary | `reports/qa/evidence/v8.11.149-ai-diagnostic-commands/qa-20260514-v811149-diagnostic-commands.md` | - |
+| playwright-screenshot | Monitoring capacity alerts section | `reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-monitoring-capacity-section.png` | - |
+| playwright-screenshot | Incident repeated log patterns section | `reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-incident-log-patterns.png` | - |
+| playwright-screenshot | Monitoring artifact card smoke | `reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-monitoring-capacity-card.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -389,6 +392,11 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - api-metrics-route-status-label-contract: Preserve status label for openmanager_server_status (completed 1회, last QA-20260511-0472)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - approval-history-runtime-smoke: approvalStore pending/decision/history/stats runtime path verified (completed 1회, last QA-20260411-0270)
+- artifact-ux-capacity-alerts: Monitoring artifact capacityAlerts section (completed 1회, last QA-20260514-0502)
+- artifact-ux-incident-availability-impact: Incident report availability impact line (completed 1회, last QA-20260514-0502)
+- artifact-ux-incident-log-patterns: Incident report repeated log patterns (completed 1회, last QA-20260514-0502)
+- artifact-ux-replay-deeplink: Chat artifact handoff to fullscreen AI assistant (completed 1회, last QA-20260514-0502)
+- artifact-ux-role-group-summary: Monitoring artifact roleGroupSummary section (completed 1회, last QA-20260514-0502)
 - assistant-plan-result-facade-m2: AssistantPlan and AssistantResult facade metadata released (completed 1회, last QA-20260503-0397)
 - assistant-route-decision-metadata-m1: RouteDecision metadata contract released (completed 1회, last QA-20260503-0397)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
@@ -746,6 +754,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260514-0502 | 2026-05-14T13:48:56.400Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.150 Artifact UX Closure | 12 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260514-0501 | 2026-05-14T07:04:04.756Z | targeted | yes | yes | Vercel Playwright QA - v8.11.149 AI Diagnostic Commands | 10 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260514-0500 | 2026-05-14T05:01:29.591Z | targeted | no | no | Vercel Playwright MCP Verification Rerun - v8.11.147 AI Five-Question | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260514-0499 | 2026-05-14T04:14:42.357Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.147 AI Five-Question Closure | 10 | 2 | 0 | 0 | 0 | 0 |
@@ -765,4 +774,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260512-0485 | 2026-05-12T07:52:35.206Z | targeted | yes | yes | Vercel API QA - v8.11.135 Multi-Agent Semantic Trace | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0484 | 2026-05-12T03:58:50.223Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.132 | 8 | 2 | 3 | 0 | 0 | 3 |
 | QA-20260512-0483 | 2026-05-12T02:07:18.555Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.131 | 8 | 1 | 2 | 0 | 0 | 2 |
-| QA-20260512-0482 | 2026-05-11T23:30:16.424Z | targeted | yes | yes | Vercel Playwright QA - AI fragile load-query closure on v8.11.129 | 2 | 1 | 0 | 0 | 0 | 0 |

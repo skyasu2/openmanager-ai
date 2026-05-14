@@ -1,0 +1,212 @@
+{
+  "runId": "QA-20260514-0502",
+  "recordedAt": "2026-05-14T13:48:56.400Z",
+  "recordedAtKst": "2026-05-14 22:48:56 KST",
+  "runTitle": "Vercel Playwright MCP QA - v8.11.150 Artifact UX Closure",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_9fAnj423friUqtdvbvfm1SSCsSk8",
+    "deploymentUrl": "https://openmanager-btkz7rl00-skyasus-projects.vercel.app",
+    "commitSha": "1d2db8d245b72c6e92286ddc56a5176eb664d43f"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "landing version badge v8.11.150",
+    "system start to /dashboard",
+    "dashboard 18 servers / 17 online / 1 warning",
+    "AI sidebar open",
+    "AI Chat monitoring-analysis artifact",
+    "monitoring capacityAlerts section",
+    "monitoring roleGroupSummary section",
+    "chat artifact handoff to /dashboard/ai-assistant",
+    "AI Chat incident-report artifact",
+    "incident repeated log patterns section",
+    "incident availability impact line",
+    "/api/version and /api/health production checks",
+    "browser console warning/error cleanliness"
+  ],
+  "skippedSurfaces": [
+    "visual analysis upload",
+    "OAuth provider login flows",
+    "modal-detail-pack",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI artifact generation paths were exercised in production through the chat UI and verified for structured monitoring and incident-report sections.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Monitoring artifact surfaced capacity forecasts, role grouping, warning risk signal evidence, and dashboard data slot consistency.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab main validate and v8.11.150 tag deploy pipeline completed successfully before production QA.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Targeted Playwright MCP checks covered the changed artifact UX surfaces with durable screenshots.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-14T22:39:23+09:00",
+      "summary": "Vercel usage checked after v8.11.150 production deploy; effective 8.7569 USD, billed 0.0000 USD, chargeCount 7917.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Monitoring capacity alerts section",
+      "path": "reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-monitoring-capacity-section.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Incident repeated log patterns section",
+      "path": "reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-incident-log-patterns.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Monitoring artifact card smoke",
+      "path": "reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-monitoring-capacity-card.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "artifact-ux-capacity-alerts",
+      "title": "Monitoring artifact capacityAlerts section",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production chat artifact showed capacity forecast rows with critical ETA.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "artifact-ux-role-group-summary",
+      "title": "Monitoring artifact roleGroupSummary section",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production chat artifact showed web/application/database/cache/storage/loadbalancer grouped summaries.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "artifact-ux-replay-deeplink",
+      "title": "Chat artifact handoff to fullscreen AI assistant",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Monitoring artifact handoff opened /dashboard/ai-assistant with the existing analysis context.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "artifact-ux-incident-log-patterns",
+      "title": "Incident report repeated log patterns",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production incident report artifact showed repeated WARNING log patterns with counts and server links.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "artifact-ux-incident-availability-impact",
+      "title": "Incident report availability impact line",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production incident report artifact showed availability and warning-duration impact line.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "GitLab main pipeline 2525292911 success; tag pipeline 2525292938 success for v8.11.150 deploy/smoke.",
+    "Vercel deployment dpl_9fAnj423friUqtdvbvfm1SSCsSk8 READY and /api/version returned 8.11.150 with releaseTag v8.11.150.",
+    "Monitoring artifact showed capacity alerts for lb-haproxy-dc1-03 NETWORK, cache-redis-dc1-03 MEMORY, and db-mysql-dc1-primary DISK.",
+    "Incident artifact showed repeated WARNING log patterns and availability impact line.",
+    "Browser console messages at warning level and above: 0."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main pipeline 2525292911",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525292911"
+    },
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2525292938",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525292938"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_9fAnj423friUqtdvbvfm1SSCsSk8",
+      "url": "https://openmanager-btkz7rl00-skyasus-projects.vercel.app/"
+    }
+  ]
+}

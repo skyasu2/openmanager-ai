@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-14T07:04:04.756Z"
+    "updatedAt": "2026-05-14T13:48:56.400Z"
   },
   "sequence": {
-    "nextRunNumber": 502
+    "nextRunNumber": 503
   },
   "summary": {
-    "totalRecordedRuns": 499,
-    "totalRuns": 398,
+    "totalRecordedRuns": 500,
+    "totalRuns": 399,
     "excludedRuns": 101,
-    "totalChecks": 3531,
-    "totalPassed": 3394,
+    "totalChecks": 3543,
+    "totalPassed": 3406,
     "totalFailed": 127,
     "completionRate": 100,
-    "completedItems": 564,
+    "completedItems": 569,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260514-0501",
-    "lastRecordedAt": "2026-05-14T07:04:04.756Z",
-    "latestRecordedRunId": "QA-20260514-0501",
-    "latestRecordedAt": "2026-05-14T07:04:04.756Z"
+    "lastRunId": "QA-20260514-0502",
+    "lastRecordedAt": "2026-05-14T13:48:56.400Z",
+    "latestRecordedRunId": "QA-20260514-0502",
+    "latestRecordedAt": "2026-05-14T13:48:56.400Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13817,6 +13817,126 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-14T07:04:04.756Z"
+    },
+    "artifact-ux-capacity-alerts": {
+      "id": "artifact-ux-capacity-alerts",
+      "title": "Monitoring artifact capacityAlerts section",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0502",
+      "firstSeenAt": "2026-05-14T13:48:56.400Z",
+      "lastSeenRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production chat artifact showed capacity forecast rows with critical ETA.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T13:48:56.400Z"
+    },
+    "artifact-ux-role-group-summary": {
+      "id": "artifact-ux-role-group-summary",
+      "title": "Monitoring artifact roleGroupSummary section",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0502",
+      "firstSeenAt": "2026-05-14T13:48:56.400Z",
+      "lastSeenRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production chat artifact showed web/application/database/cache/storage/loadbalancer grouped summaries.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T13:48:56.400Z"
+    },
+    "artifact-ux-replay-deeplink": {
+      "id": "artifact-ux-replay-deeplink",
+      "title": "Chat artifact handoff to fullscreen AI assistant",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0502",
+      "firstSeenAt": "2026-05-14T13:48:56.400Z",
+      "lastSeenRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Monitoring artifact handoff opened /dashboard/ai-assistant with the existing analysis context.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T13:48:56.400Z"
+    },
+    "artifact-ux-incident-log-patterns": {
+      "id": "artifact-ux-incident-log-patterns",
+      "title": "Incident report repeated log patterns",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0502",
+      "firstSeenAt": "2026-05-14T13:48:56.400Z",
+      "lastSeenRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production incident report artifact showed repeated WARNING log patterns with counts and server links.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T13:48:56.400Z"
+    },
+    "artifact-ux-incident-availability-impact": {
+      "id": "artifact-ux-incident-availability-impact",
+      "title": "Incident report availability impact line",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260514-0502",
+      "firstSeenAt": "2026-05-14T13:48:56.400Z",
+      "lastSeenRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production incident report artifact showed availability and warning-duration impact line.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-14T13:48:56.400Z"
     }
   },
   "runs": [
@@ -55512,6 +55632,148 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260514-0502",
+      "recordedAt": "2026-05-14T13:48:56.400Z",
+      "recordedAtKst": "2026-05-14 22:48:56 KST",
+      "title": "Vercel Playwright MCP QA - v8.11.150 Artifact UX Closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260514-0502.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_9fAnj423friUqtdvbvfm1SSCsSk8",
+        "deploymentUrl": "https://openmanager-btkz7rl00-skyasus-projects.vercel.app",
+        "commitSha": "1d2db8d245b72c6e92286ddc56a5176eb664d43f"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "landing version badge v8.11.150",
+        "system start to /dashboard",
+        "dashboard 18 servers / 17 online / 1 warning",
+        "AI sidebar open",
+        "AI Chat monitoring-analysis artifact",
+        "monitoring capacityAlerts section",
+        "monitoring roleGroupSummary section",
+        "chat artifact handoff to /dashboard/ai-assistant",
+        "AI Chat incident-report artifact",
+        "incident repeated log patterns section",
+        "incident availability impact line",
+        "/api/version and /api/health production checks",
+        "browser console warning/error cleanliness"
+      ],
+      "skippedSurfaces": [
+        "visual analysis upload",
+        "OAuth provider login flows",
+        "modal-detail-pack",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI artifact generation paths were exercised in production through the chat UI and verified for structured monitoring and incident-report sections.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Monitoring artifact surfaced capacity forecasts, role grouping, warning risk signal evidence, and dashboard data slot consistency.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main validate and v8.11.150 tag deploy pipeline completed successfully before production QA.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted Playwright MCP checks covered the changed artifact UX surfaces with durable screenshots.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-14T22:39:23+09:00",
+          "summary": "Vercel usage checked after v8.11.150 production deploy; effective 8.7569 USD, billed 0.0000 USD, chargeCount 7917.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Monitoring capacity alerts section",
+          "path": "reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-monitoring-capacity-section.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Incident repeated log patterns section",
+          "path": "reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-incident-log-patterns.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Monitoring artifact card smoke",
+          "path": "reports/qa/evidence/v8.11.150-artifact-ux/qa-20260514-v811150-monitoring-capacity-card.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main pipeline 2525292911",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525292911"
+        },
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2525292938",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525292938"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_9fAnj423friUqtdvbvfm1SSCsSk8",
+          "url": "https://openmanager-btkz7rl00-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 5,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -55520,16 +55782,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 251,
-      "appropriateCount": 215,
+      "seenCount": 252,
+      "appropriateCount": 216,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 46,
-      "lastRunId": "QA-20260514-0501",
-      "lastSeenAt": "2026-05-14T07:04:04.756Z",
+      "lastRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI summary, ranking, server detail, action-needed, and command-request paths were validated on Vercel production with Playwright MCP.",
+      "lastRationale": "AI artifact generation paths were exercised in production through the chat UI and verified for structured monitoring and incident-report sections.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -55537,16 +55799,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 125,
-      "appropriateCount": 94,
+      "seenCount": 126,
+      "appropriateCount": 95,
       "partialCount": 31,
       "inappropriateCount": 0,
       "improvementNeededCount": 32,
-      "lastRunId": "QA-20260514-0500",
-      "lastSeenAt": "2026-05-14T05:01:29.591Z",
+      "lastRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard totals and AI answers remained grounded in the same monitoring snapshot and server evidence.",
+      "lastRationale": "Monitoring artifact surfaced capacity forecasts, role grouping, warning risk signal evidence, and dashboard data slot consistency.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -55571,16 +55833,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 181,
-      "appropriateCount": 163,
+      "seenCount": 182,
+      "appropriateCount": 164,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260514-0501",
-      "lastSeenAt": "2026-05-14T07:04:04.756Z",
+      "lastRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline succeeded and both Vercel frontend and Cloud Run AI Engine deployments completed before QA.",
+      "lastRationale": "GitLab main validate and v8.11.150 tag deploy pipeline completed successfully before production QA.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -55588,16 +55850,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 216,
-      "appropriateCount": 198,
+      "seenCount": 217,
+      "appropriateCount": 199,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260514-0499",
-      "lastSeenAt": "2026-05-14T04:14:42.357Z",
+      "lastRunId": "QA-20260514-0502",
+      "lastSeenAt": "2026-05-14T13:48:56.400Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The Q2 alias-detail and Q4 action-needed behaviors were promoted into deterministic local regression tests before the production closure QA.",
+      "lastRationale": "Targeted Playwright MCP checks covered the changed artifact UX surfaces with durable screenshots.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
