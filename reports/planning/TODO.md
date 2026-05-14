@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-14 KST (`아티팩트 UX 개선 T1~T8 완료`)
+**Last Updated**: 2026-05-15 KST (`잔여 작업/QA evidence audit 재점검`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -36,7 +36,7 @@
 |------|----------|--------|-------|
 | P2: Metrics Query Agent Cerebras-first 전환 | Medium | provider-gated | **Cerebras graceful exit main validate 완료 후에도 production tag 배포 전까지 보류 유지.** 현재 qwen-3-235b 429 red → entitlement 미확인. production 배포 후 Cerebras가 Groq-fallback으로 전환된 시점에서 Metrics Query 단독 Groq-first 정책 유지 여부 결정. 상세: [archive/ai-assistant-agent-runtime-improvements-plan.md](archive/ai-assistant-agent-runtime-improvements-plan.md) Task 9 |
 | P2: Local Docker/WSL storage hygiene | Medium | tracking-only | 주기 점검 기준 추가. 비파괴 감사는 `npm run storage:audit` / 상세 Docker 확인은 `npm run storage:audit -- --docker-verbose`. 2026-05-08 감사: `/mnt/d` 4%, WSL `/` 8%, `/mnt/c` 66% 사용. Docker images 10.11GiB, build cache 0B, volumes 309.3MiB이며 대부분 실행 중인 Supabase/GitHub MCP 컨테이너에 연결됨. 즉시 삭제보다 Supabase 중지 후 prune 여부 판단. WSL 상위 정리 후보는 `.npm` 9.7GiB, `.gemini/backups` 2.7GiB, `.codex/sessions` 2.6GiB, `.npm/_npx` 2.5GiB, `.cache/uv` 2.4GiB, browser cache 각 1.2GiB, `tmp/root-artifacts` 641MiB. 삭제 전 QA evidence는 `npm run qa:evidence:audit` 확인. |
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-13 `npm run qa:evidence:audit` 재확인: missing durable artifact paths `0`, orphan durable evidence `19개`, recent counted runs without artifacts `0`, acknowledged artifact debt run `1개(QA-20260511-0479)`, `reports/qa=101.45MiB`, `reports/qa/evidence=94.75MiB`, archive candidates `7개/2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건. orphan evidence는 삭제 전 각 run/repro 참조 가치 확인이 필요하며, referenced legacy evidence 36.40MiB는 policy-protected proof 가능성이 높아 explicit cleanup batch 없이는 보존. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-15 `npm run qa:evidence:audit` 재확인: missing durable artifact paths `0`, orphan durable evidence `19개`, recent counted runs without artifacts `0`, recent acknowledged artifact debt runs `0`, `reports/qa=111.18MiB`, `reports/qa/evidence=104.32MiB`, referenced legacy evidence `125개/36.40MiB`, archive candidates `7개/2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건. orphan evidence는 삭제 전 각 run/repro 참조 가치 확인이 필요하며, referenced legacy evidence는 policy-protected proof 가능성이 높아 explicit cleanup batch 없이는 보존. 새 evidence 누적 또는 별도 cleanup batch 승인 시 재평가. |
 
 ## Backlog (완료 이력)
 
