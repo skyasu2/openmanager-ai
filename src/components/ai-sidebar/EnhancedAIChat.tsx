@@ -45,6 +45,9 @@ interface EnhancedAIChatProps {
   MessageComponent: React.ComponentType<{
     message: EnhancedChatMessage;
     onRegenerateResponse?: (messageId: string) => void;
+    onArtifactGuidanceCta?: (
+      target: 'incident-report' | 'monitoring-analysis'
+    ) => void;
     isLastMessage?: boolean;
   }>;
   inputValue: string;
@@ -54,6 +57,9 @@ interface EnhancedAIChatProps {
   isGenerating: boolean;
   streamStatus?: AIStreamStatus;
   regenerateResponse: (messageId: string) => void;
+  onArtifactGuidanceCta?: (
+    target: 'incident-report' | 'monitoring-analysis'
+  ) => void;
   sessionState?: SessionState;
   onNewSession?: () => void;
   onStopGeneration?: () => void;
@@ -104,6 +110,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   isGenerating,
   streamStatus,
   regenerateResponse,
+  onArtifactGuidanceCta,
   sessionState,
   onNewSession,
   onStopGeneration,
@@ -233,6 +240,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           MessageComponent={MessageComponent}
           isGenerating={isGenerating}
           regenerateResponse={regenerateResponse}
+          onArtifactGuidanceCta={onArtifactGuidanceCta}
           setInputValue={setInputValue}
           onStarterPromptSubmit={onStarterPromptSubmit}
         />

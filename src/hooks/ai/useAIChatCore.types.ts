@@ -64,6 +64,10 @@ export interface UseAIChatCoreReturn {
     attachments?: FileAttachment[],
     overrideText?: string
   ) => void;
+  /** guidance CTA를 artifact 생성으로 직접 실행 */
+  handleArtifactGuidanceCta: (
+    target: 'incident-report' | 'monitoring-analysis'
+  ) => void;
 
   // 명확화 기능
   clarification: ClarificationRequest | null;

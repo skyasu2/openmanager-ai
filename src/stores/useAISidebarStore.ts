@@ -141,6 +141,13 @@ export interface ChatMessage {
     artifactIntentReason?: ChatArtifactIntentReason;
     /** guidance 응답일 때 대상 아티팩트 */
     artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
+    /** metadata message type marker for guidance-only responses */
+    type?: 'guidance';
+    /** guidance 응답을 즉시 artifact 실행으로 전환하는 CTA */
+    guidanceCta?: {
+      target: 'incident-report' | 'monitoring-analysis';
+      label: string;
+    };
     /** 채팅에서 생성한 사용자 다운로드 가능 장애 보고서 */
     incidentReportArtifact?: IncidentReportArtifact;
     /** 채팅에서 생성한 사용자 다운로드 가능 이상감지/추세 분석 */

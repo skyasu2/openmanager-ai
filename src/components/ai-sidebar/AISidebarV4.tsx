@@ -143,6 +143,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     cancel,
     // 통합 입력 핸들러
     handleSendInput,
+    handleArtifactGuidanceCta,
     // 명확화 기능
     clarification,
     selectClarification,
@@ -323,6 +324,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               isGenerating={isLoading}
               streamStatus={streamStatus}
               regenerateResponse={regenerateLastResponse}
+              onArtifactGuidanceCta={handleArtifactGuidanceCta}
               onStopGeneration={stop}
               jobProgress={hybridState.progress}
               jobId={hybridState.jobId}

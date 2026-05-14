@@ -18,10 +18,16 @@ interface ChatMessageListProps {
   MessageComponent: React.ComponentType<{
     message: EnhancedChatMessage;
     onRegenerateResponse?: (messageId: string) => void;
+    onArtifactGuidanceCta?: (
+      target: 'incident-report' | 'monitoring-analysis'
+    ) => void;
     isLastMessage?: boolean;
   }>;
   isGenerating: boolean;
   regenerateResponse: (messageId: string) => void;
+  onArtifactGuidanceCta?: (
+    target: 'incident-report' | 'monitoring-analysis'
+  ) => void;
   setInputValue: (value: string) => void;
   onStarterPromptSubmit?: (prompt: string) => void;
 }
@@ -35,6 +41,7 @@ export const ChatMessageList = memo(function ChatMessageList({
   MessageComponent,
   isGenerating,
   regenerateResponse,
+  onArtifactGuidanceCta,
   setInputValue,
   onStarterPromptSubmit,
 }: ChatMessageListProps) {
@@ -93,6 +100,7 @@ export const ChatMessageList = memo(function ChatMessageList({
               key={message.id}
               message={message}
               onRegenerateResponse={regenerateResponse}
+              onArtifactGuidanceCta={onArtifactGuidanceCta}
               isLastMessage={isLastMessage}
             />
           );

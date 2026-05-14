@@ -29,6 +29,8 @@ import {
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import {
+  ARTIFACT_INTENT_RULE_VERSION,
+  type ChatArtifactIntent,
   classifyChatArtifactIntent,
   fetchLLMChatArtifactIntent,
   shouldUseLLMChatArtifactIntent,
@@ -38,7 +40,10 @@ import { logger } from '@/lib/logging';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import { startChatArtifactGeneration } from './core/chat-artifact-execution';
-import { createArtifactGuidanceMessages } from './core/chat-artifact-metadata';
+import {
+  createArtifactGuidanceMessages,
+  type GuidanceCtaTarget,
+} from './core/chat-artifact-metadata';
 import {
   createDebugRoutingMessages,
   createQAAssistantMessages,
@@ -67,6 +72,35 @@ export { convertThinkingStepsToUI };
 
 export interface UseAIChatCoreOptions extends UseAIChatCoreOptionsBase {}
 export interface UseAIChatCoreReturn extends UseAIChatCoreReturnBase {}
+
+type ForcedGuidanceArtifactIntent = Extract<
+  ChatArtifactIntent,
+  { kind: 'incident-report' | 'monitoring-analysis' }
+>;
+
+function createForcedGuidanceArtifactIntent(
+  target: GuidanceCtaTarget
+): ForcedGuidanceArtifactIntent {
+  if (target === 'incident-report') {
+    return {
+      kind: 'incident-report',
+      reason: 'incident_report_action_pattern',
+      ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
+    };
+  }
+
+  return {
+    kind: 'monitoring-analysis',
+    reason: 'monitoring_action_pattern',
+    ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
+  };
+}
+
+function createForcedGuidanceArtifactQuery(target: GuidanceCtaTarget): string {
+  return target === 'incident-report'
+    ? '장애 보고서 작성해줘'
+    : '전체 서버 이상감지 돌려줘';
+}
 
 // ============================================================================
 // Hook
@@ -410,6 +444,62 @@ export function useAIChatCore(
     [selectClarification]
   );
 
+  const handleArtifactGuidanceCta = useCallback(
+    (target: GuidanceCtaTarget) => {
+      if (!disableSessionLimit && sessionState.isLimitReached) {
+        logger.warn(
+          `⚠️ [Session] Limit reached (${sessionState.count} messages)`
+        );
+        return;
+      }
+
+      if (hybridIsLoading) {
+        setError('AI 응답이 진행 중입니다. 완료 후 실행해주세요.');
+        return;
+      }
+
+      if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
+        setError(
+          '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
+        );
+        return;
+      }
+
+      const forcedQuery = createForcedGuidanceArtifactQuery(target);
+      const forcedIntent = createForcedGuidanceArtifactIntent(target);
+
+      setError(null);
+      setStreamRagSources([]);
+      lastQueryRef.current = forcedQuery;
+      lastAttachmentsRef.current = null;
+      pendingQueryRef.current = '';
+      setInput('');
+
+      startChatArtifactGeneration({
+        artifactIntent: forcedIntent,
+        query: forcedQuery,
+        sessionId,
+        queryAsOfDataSlot,
+        messages: messagesRef.current,
+        messagesRef,
+        setMessages,
+        setError,
+        setArtifactIsLoading,
+        artifactRequestIdRef,
+        artifactAbortControllerRef,
+        artifactInFlightRef,
+      });
+    },
+    [
+      disableSessionLimit,
+      sessionState,
+      hybridIsLoading,
+      sessionId,
+      queryAsOfDataSlot,
+      setMessages,
+    ]
+  );
+
   // ============================================================================
   // Input Handler
   // ============================================================================
@@ -617,6 +707,7 @@ export function useAIChatCore(
     stop: stopGeneration,
     cancel,
     handleSendInput,
+    handleArtifactGuidanceCta,
     clarification: hybridState.clarification ?? null,
     selectClarification: wrappedSelectClarification,
     submitCustomClarification,

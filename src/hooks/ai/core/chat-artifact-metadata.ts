@@ -15,6 +15,19 @@ import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderer
 import { buildRouteDecision } from '@/lib/ai/route-decision';
 import type { JobDataSlot } from '@/types/ai-jobs';
 
+export type GuidanceCtaTarget = 'incident-report' | 'monitoring-analysis';
+
+export type GuidanceCta = {
+  target: GuidanceCtaTarget;
+  label: string;
+};
+
+export function getGuidanceCtaLabel(target: GuidanceCtaTarget): string {
+  return target === 'incident-report'
+    ? '바로 장애 보고서 생성하기'
+    : '바로 이상감지/추세 분석 실행하기';
+}
+
 export function createTextMessage({
   id,
   role,
@@ -56,8 +69,13 @@ export function createArtifactGuidanceMessages({
       role: 'assistant',
       text: createArtifactGuidanceMessage(target),
       metadata: {
+        type: 'guidance',
         artifactIntentReason: reason,
         artifactIntentTarget: target,
+        guidanceCta: {
+          target,
+          label: getGuidanceCtaLabel(target),
+        },
       },
     }),
   ];
