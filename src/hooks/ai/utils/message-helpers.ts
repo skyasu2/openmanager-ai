@@ -277,6 +277,9 @@ export function transformUIMessageToEnhanced(
   const hasArtifactIntentMetadata = Boolean(
     metadata?.artifactIntentReason || metadata?.artifactIntentTarget
   );
+  const hasGuidanceMetadata = Boolean(
+    metadata?.type === 'guidance' || metadata?.guidanceCta
+  );
   const handoffHistory = metadata?.handoffHistory;
   const hasProviderTelemetry =
     Boolean(metadata?.provider) ||
@@ -390,6 +393,7 @@ export function transformUIMessageToEnhanced(
       assistantResult ||
       semanticQueryTrace ||
       assistantResponseView ||
+      hasGuidanceMetadata ||
       hasChatArtifact ||
       hasArtifactIntentMetadata ||
       handoffHistory ||
@@ -435,6 +439,12 @@ export function transformUIMessageToEnhanced(
             }),
             ...(assistantResponseView && {
               assistantResponseView,
+            }),
+            ...(metadata?.type === 'guidance' && {
+              type: metadata.type,
+            }),
+            ...(metadata?.guidanceCta && {
+              guidanceCta: metadata.guidanceCta,
             }),
             ...(metadata?.artifactIntentReason && {
               artifactIntentReason: metadata.artifactIntentReason,

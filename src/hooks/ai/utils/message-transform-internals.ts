@@ -61,6 +61,11 @@ export type MessageMetadata = {
   assistantResult?: AssistantResult;
   semanticQueryTrace?: SemanticQueryTrace;
   assistantResponseView?: StructuredAssistantResponse;
+  type?: 'guidance';
+  guidanceCta?: {
+    target: 'incident-report' | 'monitoring-analysis';
+    label: string;
+  };
   artifactIntentReason?: ChatArtifactIntentReason;
   artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
   incidentReportArtifact?: IncidentReportArtifact;
