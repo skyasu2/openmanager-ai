@@ -27,22 +27,6 @@
         "gemini": ".agents/skills/cloud-run/SKILL.md"
       }
     },
-    "code-review": {
-      "purpose": "Review OpenManager changes with severity-first findings and evidence-backed go/no-go judgment.",
-      "invariants": [
-        "Findings come before summary.",
-        "Adapt output mode to the user intent: formal gate reviews stay severity-first; pragmatic/plain reviews can lead with concise engineering judgment while still surfacing blockers.",
-        "Use correctness, readability, complexity, design, performance, security, and test quality perspectives when relevant.",
-        "Evaluate test quality against the project testing methodology: risk/Pareto focus, pesticide-paradox avoidance, contract fidelity, mock integrity, and cost guardrails.",
-        "Do not claim safety without command evidence or an explicit testing gap.",
-        "Security and Correctness findings are auto-escalated one level due to vibe coding (AI-generated code only)."
-      ],
-      "adapters": {
-        "codex": ".agents/skills/code-review/SKILL.md",
-        "claude": ".claude/skills/code-review/SKILL.md",
-        "gemini": ".agents/skills/code-review/SKILL.md"
-      }
-    },
     "doc-management": {
       "purpose": "Control documentation sprawl with budget, metadata, duplicate, stale-doc, and AI operating-doc drift checks.",
       "invariants": [

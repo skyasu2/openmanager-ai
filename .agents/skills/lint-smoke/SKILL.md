@@ -24,30 +24,28 @@ Run quick validation in a fixed order and report pass/fail with next actions.
 - If the change can alter runtime contracts (API/auth/env/proxy/deploy-facing behavior),
   include `npm run test:contract`.
 
-2. Run core checks.
+1. Run core checks.
 - `npm run test:quick`
 - `npm run type-check`
 - `npm run lint`
 - Add `npm run test:contract` when the scope includes server/API/auth/env contract risk.
 - If the required confidence would need Large/live tests, report that as a separate opt-in QA need instead of folding it into smoke validation.
 
-3. If `cloud-run/ai-engine` files changed, run additional checks there.
+1. If `cloud-run/ai-engine` files changed, run additional checks there.
 - `cd cloud-run/ai-engine && npm run type-check`
 - `cd cloud-run/ai-engine && npm run test`
 
-4. Summarize clearly.
+1. Summarize clearly.
 - Passed commands
 - Failed commands with exact error message (first 5 lines)
 - Concrete follow-up command (one actionable next step per failure)
 - If contract checks were intentionally skipped, say why.
 
-5. If the user requested a review, hand off to review workflow.
+1. If the user requested a review, analyze the diff directly for findings.
 - Lint smoke is evidence collection, not a substitute for code review.
-- Use `$code-review` to produce 7-perspective severity-ranked findings.
 
 ## Related skills
 
-- `$code-review` - 7-perspective severity-first review
 - `$git-workflow` - commit/push after checks pass
 - `$qa-ops` - final QA on Vercel/local with cumulative tracker
 

@@ -31,7 +31,6 @@
 | `clean_gone` | v1.1.0 | 원격에서 삭제된 로컬 `[gone]` 브랜치 정리 |
 | `cloud-run` | v1.0.0 | Cloud Run 배포 + GCP 비용 점검 |
 | `lint-smoke` | v1.5.0 | Lint + 테스트 스모크 체크 |
-| `code-review` | v1.0.0 | 6관점 심각도 우선 코드 리뷰 |
 | `doc-management` | v1.3.0 | 문서 현황 점검, 예산 관리 |
 | `qa-ops` | v1.2.0 | Vercel + Playwright MCP 최종 QA 및 `reports/qa` 누적 기록 |
 | `state-triage` | v1.0.0 | 최근 QA/런타임 증거 기반 원인 분류 및 다음 액션 결정 |

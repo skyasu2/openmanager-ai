@@ -79,7 +79,7 @@ subagents:
   #         ui-ux-specialist, documentation-manager
 
 # 대체 방안:
-#   - 코드 리뷰: ai-code-review 스킬 + 외부 CLI (codex, gemini)
+#   - 코드 리뷰: 각 AI가 diff 직접 검토 + lint-smoke 스킬
 #   - 보안 감사: security-audit-workflow 스킬
 #   - 테스트: lint-smoke 스킬 + playwright MCP
 #   - 문서화: Claude Code 직접 수행

@@ -57,7 +57,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
   - auth/session/env wiring
   - QA/deploy scripts or config that affect runtime routing
 - Run targeted checks for changed areas when needed.
-- If user asked for "review", run `$code-review` first and resolve/acknowledge findings before commit.
+- If user asked for "review", analyze the diff directly and resolve/acknowledge findings before commit.
 
 1. Create conventional commit.
 - Format: `<type>(scope): <summary>`
@@ -86,7 +86,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - If code changed, run `npm run test:quick` or targeted checks.
 - Add `npm run test:contract` when API, auth, env, proxy, or deploy-facing behavior changed.
 - Prefer local Docker CI when changes are broad or deployment-sensitive: `npm run ci:local:docker`
-- For high-risk changes or explicit review requests, run `$code-review` and include key findings/residual risks in PR body.
+- For high-risk changes or explicit review requests, include key findings/residual risks in PR body.
 
 1. Push safely.
 - Single-maintainer default canonical flow: `git push gitlab main`

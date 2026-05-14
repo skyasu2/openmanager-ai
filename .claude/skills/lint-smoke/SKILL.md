@@ -34,27 +34,26 @@ disable-model-invocation: true
 - `git diff --name-only HEAD~1` (최근 변경 파일 목록)
 - 코드 변경이 없고 문서만 변경이면 경량 체크만 수행
 
-2. 루트 스모크 체크 실행.
+1. 루트 스모크 체크 실행.
 - `npm run test:quick` — Vitest 빠른 suite
 - `npm run type-check` — TypeScript strict
 - `npm run lint` — Biome
 - Large/live 테스트가 필요한 신뢰도는 smoke에 섞지 말고 별도 opt-in QA 필요로 보고
 
-3. QA 스크립트 변경 시 node suite 추가 실행.
+1. QA 스크립트 변경 시 node suite 추가 실행.
 - 대상: `scripts/qa/**`, `tests/unit/qa/**` 변경 시
 - `npm run test:node` — node 전용 suite (build-validation-evidence 등)
 
-4. `cloud-run/ai-engine` 변경 시 추가 체크.
+1. `cloud-run/ai-engine` 변경 시 추가 체크.
 - `cd cloud-run/ai-engine && npm run type-check`
 - `cd cloud-run/ai-engine && npm run test`
 
-5. 결과 보고.
+1. 결과 보고.
 - 성공/실패 명령 분리
 - 실패 시 다음 조치 명령을 한 줄로 제시
 
-6. 리뷰 요청이 있으면 `code-review` 스킬로 연결.
+1. 리뷰 요청이 있으면 변경 diff 기반으로 직접 분석.
 - 스모크 체크는 결함 분석이 아님
-- 리뷰 요청 시 `code-review` 스킬로 위임 (7관점 심각도 우선 분석)
 
 ## Output Format
 
@@ -70,7 +69,6 @@ Lint Smoke Summary
 
 ## Related Skills
 
-- `code-review` - 7관점 심각도 우선 코드 리뷰 (리뷰 요청 시 스모크 후 연계)
 - `git-workflow` - 스모크 통과 후 커밋/푸시
 - `qa-ops` - Vercel/local 최종 QA + `reports/qa` 누적 기록
 

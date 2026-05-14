@@ -24,7 +24,7 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
   - `summary.lastRunId`: latest run that counts toward aggregate totals
   - `summary.latestRecordedRunId`: latest recorded run, including propagation/meta checks
 
-2. Classify the failure before proposing fixes.
+1. Classify the failure before proposing fixes.
 - `availability`: health check fail, 5xx, auth break, env drift, deploy failure
 - `logic-or-quality`: network `200` but wrong text, fallback message, wrong UI state
 - `data-or-ssot`: dashboard and AI disagree, OTel dataset mismatch
@@ -34,7 +34,7 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - `observability-gap`: behavior works but automation or accessibility cannot observe it well
 - `qa-metadata`: tracker/public snapshot/proof/summary semantics drift even though the app itself works
 
-3. Map the symptom to the smallest code path that can explain it.
+1. Map the symptom to the smallest code path that can explain it.
 - First map it to the user-facing product surface:
   - landing / main / login / system-boot
   - dashboard / modal / profile menu
@@ -48,19 +48,19 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - env/deploy scripts for preview vs production drift
 - Prefer reading the exact route, agent, tool, or config file that matches the failing request instead of scanning the whole repo.
 
-4. Decide whether the problem is infra or code.
+1. Decide whether the problem is infra or code.
 - If `HTTP 200` and only content/UX is wrong, treat it as code or prompt-path quality, not infra sizing.
 - If Reporter/Analyst pass but Chat fails, treat it as route or agent-specific logic.
 - If preview fails and production passes, inspect env sync and deploy drift before changing product code.
 
-5. Check free-tier fit before suggesting a fix.
+1. Check free-tier fit before suggesting a fix.
 - Re-check `docs/guides/ai/ai-standards.md`.
 - Re-check `cloud-run/ai-engine/deploy.sh` and `cloud-run/ai-engine/cloudbuild.yaml` for guardrails.
 - Prefer routing, fallback, caching, prompt, contract-test, and deterministic-summary fixes.
 - Do not propose `--machine-type`, `>1 vCPU`, `>512Mi`, build machine upgrades, or always-on runtime as the first fix.
 - Treat “optimization” as code or cache improvement unless the user explicitly asks for cost tradeoffs.
 
-6. Choose the next action explicitly.
+1. Choose the next action explicitly.
 - `code-fix`: root cause is in logic, routing, fallback, or UI state
 - `config-fix`: env drift or secret mismatch
 - `deploy-and-qa`: code already fixed locally and only verification remains
@@ -69,10 +69,9 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - `wont-fix`: non-blocking issue that falls under portfolio or QA policy
 - `broader-qa`: only when there is not enough evidence to localize the issue
 
-7. Pair with the right follow-on skill.
+1. Pair with the right follow-on skill.
 - Use `$qa-ops` when broad or release QA still needs to run.
 - Use `$qa-ops` after `qa-checklist-fix` so the new surface coverage is exercised immediately.
-- Use `$code-review` when the user wants risk analysis or review on the proposed fix.
 - Use `$cloud-run` when the next step involves Cloud Run deploy, cost check, or GCP verification.
 - Use `$env-sync` when preview and production differ, health checks fail after deploy, or missing runtime secrets are the likely cause.
 

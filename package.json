@@ -171,7 +171,7 @@
     "renovate:config:check": "bash scripts/renovate/check-config.sh",
     "renovate:dry-run": "bash scripts/renovate/run-self-hosted.sh --dry-run",
     "renovate:run": "bash scripts/renovate/run-self-hosted.sh",
-    "review:show": "npm run lint && npm run type-check && echo '✅ All checks pass. Use /review in Claude Code for full analysis.'",
+    "review:show": "npm run lint && npm run type-check && echo '✅ All checks pass. Use plain review judgment for full analysis.'",
     "review:status": "ps aux | grep '[p]ost-commit-background.sh' > /dev/null && echo '🔄 AI Review is running...' || echo '✅ AI Review is NOT running.'",
     "root:artifacts:audit": "node scripts/dev/root-artifact-cleanup.js",
     "root:artifacts:audit:strict": "node scripts/dev/root-artifact-cleanup.js --strict",

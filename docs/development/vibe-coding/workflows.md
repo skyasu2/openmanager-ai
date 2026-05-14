@@ -136,7 +136,7 @@ Done ✅
 ```
 Day 1:
   - 요구사항 정리
-  - 아키텍처 설계 (Codex/Gemini 교차 검토 또는 state-triage/code-review)
+  - 아키텍처 설계 (Codex/Gemini 교차 검토 또는 state-triage)
   - 기본 구조 커밋
 
 Day 2-3:
