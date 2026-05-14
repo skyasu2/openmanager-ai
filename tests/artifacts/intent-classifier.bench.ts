@@ -43,6 +43,9 @@ describe('Artifact Intent Classifier Benchmark', () => {
       evaluation.metrics['monitoring-analysis'].precision
     ).toBeGreaterThanOrEqual(EXECUTION_PRECISION_THRESHOLD);
     expect(
+      evaluation.metrics['server-monitoring-analysis'].precision ?? 0
+    ).toBeGreaterThanOrEqual(EXECUTION_PRECISION_THRESHOLD);
+    expect(
       evaluation.metrics['server-snapshot'].precision ?? 0
     ).toBeGreaterThanOrEqual(EXECUTION_PRECISION_THRESHOLD);
   });

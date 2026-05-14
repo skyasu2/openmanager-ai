@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-14
+> Last reviewed: 2026-05-15
 > Canonical: docs/design/06-artifact-system.md
 > Tags: design,ai,artifact,chat,workspace
 
@@ -36,7 +36,7 @@ ArtifactWorkspacePanel (export / import / replay 비교)
 |------|--------|-----------|
 | `incident-report` | 채팅 intent: `장애 보고서 작성해줘` | Cloud Run Reporter Agent (LLM) |
 | `monitoring-analysis` | 채팅 intent: `이상감지 돌려줘` | Cloud Run Analyst Agent (LLM) |
-| `server-monitoring-analysis` | 서버 상세 탭 "분석" 버튼 (**채팅 불가**) | Cloud Run `/analyze/server` (LLM) |
+| `server-monitoring-analysis` | 서버 상세 탭 "분석" 버튼, 채팅 intent: `web-server-01 이상감지 분석해줘` | Cloud Run `/analyze/server` (LLM) |
 | `server-snapshot` | 채팅 intent: `서버 상태 스냅샷` | **결정론적** — metricsProvider 직접 집계 |
 | `ops-procedure` | 채팅 intent: `bash 스크립트 짜줘`, `runbook 작성` | **결정론적** — metricsProvider + 템플릿 빌더 |
 
@@ -48,7 +48,7 @@ ArtifactWorkspacePanel (export / import / replay 비교)
 Cloud Run LLM 의존 (3종)
 ├── incident-report        채팅 → /api/ai/incident-report → Reporter Agent
 ├── monitoring-analysis    채팅 → /api/ai/intelligent-monitoring → Analyst Agent
-└── server-monitoring-analysis  탭 버튼 → Cloud Run /analyze/server (채팅 경로 없음)
+└── server-monitoring-analysis  탭 버튼 또는 채팅 serverId/alias intent → Cloud Run /analyze/server
 
 결정론적 (2종, LLM 없음, < 200ms)
 ├── server-snapshot        채팅 → metricsProvider.getAllServerMetrics() 직접 집계
@@ -65,7 +65,7 @@ Cloud Run LLM 의존 (3종)
 
 두 단계로 처리합니다.
 
-1. **결정론적 regex** (`classifyChatArtifactIntent`): 부정 패턴 → formatting-only 패턴 → ops-procedure 패턴 → server-snapshot → incident-report → monitoring-analysis 순으로 우선순위 평가
+1. **결정론적 regex** (`classifyChatArtifactIntent`): 부정 패턴 → formatting-only 패턴 → ops-procedure 패턴 → server-snapshot → server-monitoring-analysis → incident-report → monitoring-analysis 순으로 우선순위 평가
 2. **LLM fallback** (`fetchLLMChatArtifactIntent`): regex가 `none`을 반환하고 `shouldUseLLMChatArtifactIntent`가 true일 때 `/api/ai/artifact-intent`를 호출
 
 `guidance` kind는 artifact를 즉시 실행하지 않고, 올바른 실행 방법을 안내하는 텍스트를 반환하는 인텐트입니다.
@@ -77,6 +77,7 @@ type ChatArtifactIntent =
   | { kind: 'none' }
   | { kind: 'incident-report'; reason: ... }
   | { kind: 'monitoring-analysis'; reason: ... }
+  | { kind: 'server-monitoring-analysis'; serverId: string; serverName?: string; reason: ... }
   | { kind: 'server-snapshot'; reason: ... }
   | { kind: 'ops-procedure'; procedureType: 'runbook' | 'alert-rule' | 'script'; reason: ... }
   | { kind: 'guidance'; target: 'incident-report' | 'monitoring-analysis'; reason: ... }
@@ -155,12 +156,6 @@ ArtifactRendererHost         ← metadata unknown 입력, 멀티 entry 지원
 
 아래 미완료 항목은 추가 인프라 없이 구현 가능하며, 우선순위가 생기면 TODO.md Backlog에서 승격합니다.
 
-### G1: server-monitoring-analysis 채팅 경로 누락
-
-- **현상**: `chat-artifact-intent.ts`의 출력 타입에 `server-monitoring-analysis`가 없습니다. "web-server-01 분석해줘"를 채팅에서 입력해도 서버 분석 아티팩트가 트리거되지 않습니다.
-- **원인**: 서버 분석에는 `serverId`·`serverName`·`currentMetrics` context가 필요해 chat path에서 자연스럽게 연결되지 않습니다.
-- **해결 방향**: 채팅에서 서버명이 감지되면 context를 가져와 `executeChatArtifact('server-monitoring-analysis', ...)` 경로를 활성화합니다. 선택 서버가 없으면 안내 메시지를 표시합니다.
-
 ### G2: guidance intent → 인라인 CTA 버튼 없음
 
 - **현상**: intent가 `guidance`로 분류되면 "직접 요청해 주세요" 텍스트만 반환합니다. 사용자가 의도를 명확히 했음에도 한 번 더 타이핑해야 합니다.
@@ -180,6 +175,11 @@ ArtifactRendererHost         ← metadata unknown 입력, 멀티 entry 지원
 ---
 
 ## 해결된 설계 갭
+
+### G1: server-monitoring-analysis 채팅 경로
+
+- **완료**: 2026-05-15
+- **해결**: `chat-artifact-intent.ts`가 명시적 서버 ID 또는 운영자 친화 alias(`web-server-01` 등)를 감지하면 `server-monitoring-analysis` intent를 반환합니다. `server-registry.ts`의 alias resolver가 alias를 canonical serverId(`web-nginx-dc1-01` 등)로 정규화하므로 채팅 경로와 서버 상세 탭 경로가 같은 `executeChatArtifact('server-monitoring-analysis', ...)` 실행 계약을 사용합니다.
 
 ### G5: workspace 비교 패널 세부 라벨
 

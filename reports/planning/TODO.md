@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (`artifact G5 비교 결과 라벨 개선`)
+**Last Updated**: 2026-05-15 KST (`artifact G1 서버 alias 정합성 개선`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,7 +23,6 @@
 |------|----------|-------|
 | P3: artifact G2 — guidance intent 인라인 CTA 버튼 | Low | `guidance` 응답이 텍스트만 반환해 사용자가 다시 타이핑해야 함. guidance 메시지 렌더러에 "바로 장애 보고서 생성하기" 같은 quick-action 버튼을 추가하면 클릭 한 번으로 artifact 실행 가능. 상세: [docs/design/06-artifact-system.md](../../docs/design/06-artifact-system.md) G2 |
 | P3: artifact G4 — incident-report/monitoring-analysis 생성 진행 피드백 | Low | Cloud Run 호출 3~10초 동안 스피너만 표시. "분석 중…" → "보고서 작성 중…" 단계 메시지를 채팅 버블에 삽입하면 체감 대기시간 개선. SSE 또는 낙관적 메시지 삽입으로 구현. 상세: [docs/design/06-artifact-system.md](../../docs/design/06-artifact-system.md) G4 |
-| P3: artifact G1 — server-monitoring-analysis 채팅 경로 추가 | Low | "web-server-01 분석해줘" 채팅 입력이 서버 분석 아티팩트를 트리거하지 않음. serverId·currentMetrics context 해결이 전제 조건. 선택 서버가 없으면 안내 메시지 표시. 상세: [docs/design/06-artifact-system.md](../../docs/design/06-artifact-system.md) G1 |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 최근 20커밋 평가에서 `0ca8d9b88`이 134파일 단일 커밋으로 리뷰/cherry-pick 가능성이 낮다는 점을 확인. 이미 검증 완료된 로컬 커밋은 전달 마감 우선으로 유지하되, 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 가능한 한 2~3개 논리 커밋으로 분리하는 기준을 작업 계획/커밋 단계에 반영. |
 | P3: 커밋 후 line-guard warning buffer polish | Low | 커밋 완료 후 별도 작은 리팩터 묶음으로 진행. 현재 fail-threshold는 0건이며 warning만 41건. 상위 후보: `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts` 744줄, `src/components/dashboard/log-explorer/LogExplorerModal.tsx` 728줄, `src/components/ai/AIWorkspace.tsx` 710줄, `src/app/api/ai/supervisor/stream/v2/route.ts` 708줄, `src/components/dashboard/alert-history/AlertHistoryModal.tsx` 708줄. |
 
@@ -41,6 +40,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~artifact G1 — server-monitoring-analysis 채팅 경로 정합성~~ | — | **완료** — `server-registry.ts`에 운영자 친화 alias resolver를 추가하고 `chat-artifact-intent.ts`가 `web-server-01` 같은 입력을 canonical serverId(`web-nginx-dc1-01`)로 정규화해 `server-monitoring-analysis` 아티팩트를 실행하도록 정렬했다. 레지스트리/intent 회귀 테스트와 설계 문서의 stale "채팅 불가" 설명을 갱신했다. |
 | ~~artifact G5 — workspace 비교 결과 사람이 읽기 좋게 표시~~ | — | **완료** — `ArtifactWorkspacePanel` 비교 결과에 count만 표시하던 상태에서 artifact kind + `generatedAt` KST 시각 + 상태(`matched/missing/added/changed`) 상세 라벨을 추가했다. 기존 replay pack 비교 count 계약은 유지했고, store/UI 회귀 테스트를 보강했다. |
 | ~~Artifact UX 개선 Phase 2+~~ | — | **완료** — [artifact-ux-improvement-plan.md](artifact-ux-improvement-plan.md) T1~T8 전체 완료. Cloud Run batch `capacityAlerts[]`, monitoring `roleGroupSummary[]`, incident 반복 로그/가용성 영향, 채팅→탭 replay, ops-procedure trace 불변성, server-monitoring-analysis intent 경로를 반영했다. 검증: AI Engine targeted/full tests, root targeted tests, `type-check`, `lint`, `test:quick`, `test:contract` 통과. |
 | ~~v8.11.146 AI five-question QA 잔여 회귀 수정~~ | — | **완료** — failing regression test 커밋 `1085b66e5` 후 구현 커밋 `2962692dd`로 `web-server-01` 별칭을 `web-nginx-dc1-01` 상세로 해석하고, action-needed 답변의 즉시 조치/주의 관찰 결론을 분리했다. `v8.11.147` tag pipeline `2524168807` success 배포 후 Vercel production Playwright MCP 표준 5문항 QA `QA-20260514-0499`에서 10/10 PASS, pending 0, expert open gap 0으로 closure. |

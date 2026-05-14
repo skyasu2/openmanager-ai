@@ -20,6 +20,7 @@ const LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD = 0.9;
 const LOCAL_CLASSIFIER_MIN_KIND_SUPPORT = {
   'incident-report': 18,
   'monitoring-analysis': 18,
+  'server-monitoring-analysis': 4,
   'server-snapshot': 12,
   guidance: 30,
   none: 43,
@@ -96,6 +97,9 @@ describe('Artifact Intent Local Classifier Evaluation', () => {
     ).toBeGreaterThanOrEqual(LOCAL_CLASSIFIER_PRECISION_THRESHOLD);
     expect(
       evaluation.metrics['monitoring-analysis'].precision
+    ).toBeGreaterThanOrEqual(LOCAL_CLASSIFIER_PRECISION_THRESHOLD);
+    expect(
+      evaluation.metrics['server-monitoring-analysis'].precision ?? 0
     ).toBeGreaterThanOrEqual(LOCAL_CLASSIFIER_PRECISION_THRESHOLD);
     expect(
       evaluation.metrics['server-snapshot'].precision ?? 0

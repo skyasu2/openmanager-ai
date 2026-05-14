@@ -43,19 +43,67 @@ export const SERVER_REGISTRY = [
 
 export type RegisteredServerId = (typeof SERVER_REGISTRY)[number]['serverId'];
 
+const SERVER_ID_ALIASES = {
+  'web-server-01': 'web-nginx-dc1-01',
+  'web-server-02': 'web-nginx-dc1-02',
+  'web-server-03': 'web-nginx-dc1-03',
+  'api-server-01': 'api-was-dc1-01',
+  'api-server-02': 'api-was-dc1-02',
+  'api-server-03': 'api-was-dc1-03',
+  'db-server-01': 'db-mysql-dc1-primary',
+  'db-server-02': 'db-mysql-dc1-replica',
+  'db-server-03': 'db-mysql-dc1-backup',
+  'cache-server-01': 'cache-redis-dc1-01',
+  'cache-server-02': 'cache-redis-dc1-02',
+  'cache-server-03': 'cache-redis-dc1-03',
+  'storage-server-01': 'storage-nfs-dc1-01',
+  'storage-server-02': 'storage-nfs-dc1-02',
+  'storage-server-03': 'storage-s3gw-dc1-01',
+  'lb-server-01': 'lb-haproxy-dc1-01',
+  'lb-server-02': 'lb-haproxy-dc1-02',
+  'lb-server-03': 'lb-haproxy-dc1-03',
+} as const satisfies Record<string, RegisteredServerId>;
+
 // O(1) lookup map, built once at module load
 const registryMap = new Map<string, string>(
   SERVER_REGISTRY.map((entry) => [entry.serverId, entry.ip])
 );
+const registryIdSet = new Set<string>(
+  SERVER_REGISTRY.map((entry) => entry.serverId)
+);
+const serverAliasMap = new Map<string, RegisteredServerId>(
+  Object.entries(SERVER_ID_ALIASES)
+);
+
+function normalizeServerReference(value: string): string {
+  return value.trim().toLowerCase();
+}
 
 /**
  * Look up a server's IP address from the registry.
  * Returns undefined if the server is not registered (no fabrication).
  */
 export function getServerIP(serverId: string): string | undefined {
-  return registryMap.get(serverId);
+  const registeredServerId = resolveRegisteredServerId(serverId);
+  if (!registeredServerId) return undefined;
+
+  return registryMap.get(registeredServerId);
 }
 
 export function getRegisteredServerIds(): RegisteredServerId[] {
   return SERVER_REGISTRY.map((entry) => entry.serverId);
+}
+
+export function getRegisteredServerAliases(): string[] {
+  return Object.keys(SERVER_ID_ALIASES);
+}
+
+export function resolveRegisteredServerId(
+  value: string
+): RegisteredServerId | undefined {
+  const normalized = normalizeServerReference(value);
+  if (registryIdSet.has(normalized)) {
+    return normalized as RegisteredServerId;
+  }
+  return serverAliasMap.get(normalized);
 }

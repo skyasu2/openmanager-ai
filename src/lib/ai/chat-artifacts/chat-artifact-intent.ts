@@ -1,4 +1,6 @@
-export const ARTIFACT_INTENT_RULE_VERSION = '2026-05-04-v1';
+import { resolveRegisteredServerId } from '@/config/server-registry';
+
+export const ARTIFACT_INTENT_RULE_VERSION = '2026-05-15-v1';
 
 type ChatArtifactIntentVersion = {
   ruleVersion: typeof ARTIFACT_INTENT_RULE_VERSION;
@@ -134,7 +136,12 @@ function isOpsProcedureRequest(query: string): boolean {
 }
 
 function readServerMonitoringServerId(query: string): string | undefined {
-  return query.match(SERVER_MONITORING_ID_PATTERN)?.[1]?.toLowerCase();
+  const rawServerReference = query
+    .match(SERVER_MONITORING_ID_PATTERN)?.[1]
+    ?.toLowerCase();
+  if (!rawServerReference) return undefined;
+
+  return resolveRegisteredServerId(rawServerReference) ?? rawServerReference;
 }
 
 function isServerMonitoringArtifactRequest(query: string): boolean {

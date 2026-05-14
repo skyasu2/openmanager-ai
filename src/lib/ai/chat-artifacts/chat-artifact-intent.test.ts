@@ -79,6 +79,14 @@ describe('classifyChatArtifactIntent', () => {
       reason: 'server_monitoring_action_pattern',
     });
     expect(
+      classifyChatArtifactIntent('web-server-01 이상감지 분석해줘')
+    ).toMatchObject({
+      kind: 'server-monitoring-analysis',
+      serverId: 'web-nginx-dc1-01',
+      serverName: 'web-nginx-dc1-01',
+      reason: 'server_monitoring_action_pattern',
+    });
+    expect(
       classifyChatArtifactIntent('api-was-dc1-01 이상감지 기능 설명해줘')
     ).toMatchObject({
       kind: 'guidance',
@@ -261,6 +269,9 @@ describe('classifyChatArtifactIntent', () => {
     ).toBe(false);
     expect(
       shouldUseLLMChatArtifactIntent('api-was-dc1-01 이상감지 분석해줘')
+    ).toBe(false);
+    expect(
+      shouldUseLLMChatArtifactIntent('web-server-01 이상감지 분석해줘')
     ).toBe(false);
     expect(shouldUseLLMChatArtifactIntent('장애 리포트 만들어줘')).toBe(true);
     expect(shouldUseLLMChatArtifactIntent('트렌드 분석 좀 해줘')).toBe(true);

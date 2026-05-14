@@ -16,6 +16,7 @@ export type ArtifactIntentCorpusCategory =
 export type ArtifactIntentExpectedKind =
   | 'incident-report'
   | 'monitoring-analysis'
+  | 'server-monitoring-analysis'
   | 'server-snapshot'
   | 'guidance'
   | 'none';
@@ -29,7 +30,7 @@ export interface ArtifactIntentCorpusCase {
 }
 
 export const artifactIntentCorpus = {
-  version: '2026-05-04-v1',
+  version: '2026-05-15-v1',
   cases: [
     {
       id: 'ir-001',
@@ -282,6 +283,34 @@ export const artifactIntentCorpus = {
       expected: 'monitoring-analysis',
       category: 'mixed-language',
       note: '영어 trend report download',
+    },
+    {
+      id: 'sma-001',
+      query: 'api-was-dc1-01 이상감지 분석해줘',
+      expected: 'server-monitoring-analysis',
+      category: 'explicit-action',
+      note: 'canonical serverId 기반 단일 서버 이상감지 분석',
+    },
+    {
+      id: 'sma-002',
+      query: 'web-server-01 이상감지 분석해줘',
+      expected: 'server-monitoring-analysis',
+      category: 'explicit-action',
+      note: '운영자 친화 서버 alias 기반 단일 서버 이상감지 분석',
+    },
+    {
+      id: 'sma-003',
+      query: 'db-mysql-dc1-primary 추세 분석',
+      expected: 'server-monitoring-analysis',
+      category: 'implicit-artifact',
+      note: 'canonical serverId 기반 단일 서버 추세 분석',
+    },
+    {
+      id: 'sma-004',
+      query: 'API-SERVER-03 forecast run',
+      expected: 'server-monitoring-analysis',
+      category: 'mixed-language',
+      note: '대문자 서버 alias + 영어 forecast 실행 요청',
     },
     {
       id: 'ss-001',

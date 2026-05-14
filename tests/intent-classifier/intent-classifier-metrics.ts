@@ -9,6 +9,7 @@ import { artifactIntentCorpusCategories } from '../fixtures/artifacts/intent-cor
 export const ARTIFACT_INTENT_EVALUATION_KINDS = [
   'incident-report',
   'monitoring-analysis',
+  'server-monitoring-analysis',
   'server-snapshot',
   'guidance',
   'none',
@@ -69,6 +70,7 @@ function createZeroCounts(): Record<ArtifactIntentEvaluationKind, number> {
   return {
     'incident-report': 0,
     'monitoring-analysis': 0,
+    'server-monitoring-analysis': 0,
     'server-snapshot': 0,
     guidance: 0,
     none: 0,
@@ -79,6 +81,7 @@ export function createEmptyConfusionMatrix(): ArtifactIntentConfusionMatrix {
   return {
     'incident-report': createZeroCounts(),
     'monitoring-analysis': createZeroCounts(),
+    'server-monitoring-analysis': createZeroCounts(),
     'server-snapshot': createZeroCounts(),
     guidance: createZeroCounts(),
     none: createZeroCounts(),
