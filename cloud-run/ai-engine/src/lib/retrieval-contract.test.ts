@@ -20,7 +20,6 @@ describe('retrieval contract', () => {
       'off',
       'lite',
       'text-only',
-      'cosine-neighbor',
     ] as const satisfies readonly RetrievalMode[];
 
     expect(RETRIEVAL_MODES).toEqual(modes);

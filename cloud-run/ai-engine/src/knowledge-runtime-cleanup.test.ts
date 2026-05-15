@@ -46,16 +46,11 @@ describe('knowledge retrieval runtime cleanup', () => {
     );
   });
 
-  it('keeps removed graph runtime compatibility isolated at boundaries', () => {
-    const allowedUseGraphRagRuntimeFiles = new Set([
-      'lib/legacy-contracts.ts',
-      'tools-ai-sdk/reporter-tools/knowledge-search-tool.ts',
-    ]);
+  it('does not keep removed GraphRAG input compatibility in active runtime', () => {
     const runtimeOffenders = listSourceFiles(srcRoot)
       .filter((path) => !path.endsWith('.test.ts'))
       .filter((path) => readFileSync(path, 'utf-8').includes('useGraphRAG'))
-      .map(toSrcRelativePath)
-      .filter((path) => !allowedUseGraphRagRuntimeFiles.has(path));
+      .map(toSrcRelativePath);
 
     expect(runtimeOffenders).toEqual([]);
   });

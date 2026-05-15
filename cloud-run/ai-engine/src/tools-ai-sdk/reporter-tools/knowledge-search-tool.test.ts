@@ -45,7 +45,7 @@ describe('searchKnowledgeBase', () => {
     resetKnowledgeSearchCacheForTest();
   });
 
-  it('coerces string boolean flags in tool-call payloads', () => {
+  it('does not expose removed GraphRAG compatibility input in tool-call schema', () => {
     const inputSchema = (
       searchKnowledgeBase as unknown as {
         inputSchema: { parse: (input: unknown) => Record<string, unknown> };
@@ -55,13 +55,11 @@ describe('searchKnowledgeBase', () => {
     const parsed = inputSchema.parse({
       query: '현재 인프라 아키텍처 요약',
       useGraphRAG: 'true',
-      fastMode: 'true',
-      includeWebSearch: 'false',
     });
 
-    expect(parsed.useGraphRAG).toBe(true);
-    expect(parsed.fastMode).toBe(true);
-    expect(parsed.includeWebSearch).toBe(false);
+    expect(parsed).toEqual({
+      query: '현재 인프라 아키텍처 요약',
+    });
   });
 
   it('returns graceful fallback when Supabase client is unavailable', async () => {

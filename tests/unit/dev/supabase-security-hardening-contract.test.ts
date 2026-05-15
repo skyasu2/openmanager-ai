@@ -41,6 +41,13 @@ const LOW_VALUE_INDEX_CLEANUP_MIGRATION = fileURLToPath(
   )
 );
 
+const LEGACY_GRAPHRAG_INVENTORY_CLEANUP_MIGRATION = fileURLToPath(
+  new URL(
+    '../../../supabase/migrations/20260515000000_drop_legacy_graphrag_inventory.sql',
+    import.meta.url
+  )
+);
+
 const SERVICE_ONLY_FUNCTIONS = [
   'public.search_knowledge_text(text,integer,text)',
   'public.search_knowledge_base(extensions.vector,double precision,integer,text,text)',
@@ -109,6 +116,11 @@ function readCommandVectorBackfillMigration(): string {
 function readLowValueIndexCleanupMigration(): string {
   expect(existsSync(LOW_VALUE_INDEX_CLEANUP_MIGRATION)).toBe(true);
   return readFileSync(LOW_VALUE_INDEX_CLEANUP_MIGRATION, 'utf8');
+}
+
+function readLegacyGraphRagInventoryCleanupMigration(): string {
+  expect(existsSync(LEGACY_GRAPHRAG_INVENTORY_CLEANUP_MIGRATION)).toBe(true);
+  return readFileSync(LEGACY_GRAPHRAG_INVENTORY_CLEANUP_MIGRATION, 'utf8');
 }
 
 function compactSql(sql: string): string {
@@ -248,6 +260,27 @@ describe('Supabase security hardening migration contract', () => {
     expect(sql).not.toMatch(/\bdrop column\b/);
     expect(sql).not.toMatch(/\bembedding\b\s*,/);
     expect(sql).not.toMatch(/cv\.embedding/);
+  });
+
+  it('defines dependency-safe legacy GraphRAG inventory cleanup while preserving KRL search', () => {
+    const sql = compactSql(readLegacyGraphRagInventoryCleanupMigration());
+
+    expect(sql).toContain("to_regprocedure('public.search_knowledge_text");
+    expect(sql).toContain("to_regclass('public.knowledge_relationships')");
+    expect(sql).toContain("to_regclass('public.command_vectors')");
+    expect(sql).toContain(
+      'drop table if exists public.knowledge_relationships'
+    );
+    expect(sql).toContain('drop table if exists public.command_vectors');
+    expect(sql).toContain(
+      'alter table public.knowledge_base drop column if exists embedding'
+    );
+    expect(sql).not.toMatch(/\bcascade\b/);
+    expect(sql).not.toMatch(/drop function[^;]*search_knowledge_text/);
+    expect(sql).not.toMatch(
+      /drop function[^;]*generate_knowledge_search_vector/
+    );
+    expect(sql).not.toMatch(/drop function[^;]*update_knowledge_search_vector/);
   });
 
   it('drops only low-value unused operational indexes while preserving FK/RLS support indexes', () => {

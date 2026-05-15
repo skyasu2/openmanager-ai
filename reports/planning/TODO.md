@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (`follow-up-improvements-plan.md 완료 — v8.11.153 QA closure`)
+**Last Updated**: 2026-05-15 KST (`query-pipeline-improvement-plan.md 정정 — GraphRAG 완전 제거 및 KRL 고도화 계획`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 활성 작업 없음. |
+| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T0 failing specs 추가 및 의도된 실패 확인 완료. 다음 단계는 T1 `useGraphRAG` tool contract 제거. T5 destructive DB migration은 별도 승인 전 착수 금지. |
 
 ---
 
@@ -21,6 +21,9 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| P1: Knowledge Retrieval Lite 무료 티어 고도화 | High | KRL cache TTL/size/telemetry 개선, internal RAG와 web search 분리 유지. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T4 |
+| P1: Supabase legacy GraphRAG inventory 제거 | High | `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` drop migration. destructive DB 변경이므로 precheck 후 명시 승인 필요. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T5 |
+| P2: RAG 계약/문서 표현 정리 | Medium | 신규 응답을 `EvidenceCard[]` + `RetrievalMetadata` 중심으로 정렬하고 active docs/UI copy에서 GraphRAG 현재 기능 표현 제거. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T2/T6 |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
 
 ---

@@ -6,12 +6,10 @@ import {
 } from './legacy-contracts';
 
 describe('legacy compatibility contracts', () => {
-  it('keeps useGraphRAG as input compatibility only', () => {
-    expect(LEGACY_CONTRACTS.searchKnowledgeBaseUseGraphRAG).toMatchObject({
-      status: 'compat-only',
-      inputName: 'useGraphRAG',
-      replacement: 'Knowledge Retrieval Lite',
-    });
+  it('does not keep the removed useGraphRAG compatibility contract in the active registry', () => {
+    expect(Object.values(LEGACY_CONTRACTS).map((contract) => contract.id)).not.toContain(
+      'searchKnowledgeBase.useGraphRAG'
+    );
   });
 
   it('reports expired legacy contracts from a controlled date', () => {
@@ -22,6 +20,6 @@ describe('legacy compatibility contracts', () => {
       getExpiredLegacyContracts(new Date('2026-06-01T00:00:00Z')).map(
         (contract) => contract.id
       )
-    ).toEqual(['searchKnowledgeBase.useGraphRAG']);
+    ).toEqual([]);
   });
 });
