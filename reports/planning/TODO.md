@@ -21,7 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P2: Supabase legacy GraphRAG inventory 제거 | Medium | `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` drop migration. destructive DB 변경이므로 precheck 후 **명시 승인 필요**. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T5 |
+| P2: Supabase legacy GraphRAG inventory 제거 | Medium | read-only precheck 완료, `vector_documents_stats` 의존성 반영 migration 초안 준비. `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` 제거는 destructive DB 변경이므로 적용 전 **명시 승인 필요**. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T5 |
 | P2: T2 UI 수동 확인 + T7 QA closure | Medium | AnalysisBasisMetadata·SidebarMessage evidenceCards 렌더링 확인 + Vercel Playwright MCP QA 기록. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T2/T7 |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
 

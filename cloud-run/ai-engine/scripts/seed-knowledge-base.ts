@@ -9,7 +9,8 @@
  *
  * knowledge_base 테이블에 운영 지식 문서를 추가합니다.
  * 입력 파일을 주면 해당 배치를 검증하거나, title 기준으로 insert/upsert 할 수 있습니다.
- * 입력 배치에 relationships가 있으면 knowledge_relationships까지 같이 동기화합니다.
+ * legacy knowledge_relationships 테이블이 남아 있고 입력 배치에 relationships가 있으면
+ * 관계도 같이 동기화합니다.
  * Knowledge Retrieval Lite request path는 search_knowledge_text BM25 RPC를 사용하므로
  * 이 스크립트는 embedding helper를 호출하지 않습니다.
  */
@@ -834,14 +835,41 @@ function buildWritePayload(doc: KBDocument) {
   return baseDoc;
 }
 
+function countRelationships(documents: KBDocument[]): number {
+  return documents.reduce((total, doc) => total + (doc.relationships?.length ?? 0), 0);
+}
+
+function isMissingRelationError(error: { code?: string; message?: string }): boolean {
+  const message = String(error.message ?? '').toLowerCase();
+  return error.code === '42P01' || message.includes('knowledge_relationships');
+}
+
 async function syncDocumentRelationships(
   supabase: SupabaseClient,
   documents: KBDocument[],
   documentIds: Map<string, string>
 ): Promise<{ inserted: number; updated: number; skipped: number; failed: number }> {
   const relationshipDocs = documents.filter((doc) => (doc.relationships?.length ?? 0) > 0);
+  const relationshipCount = countRelationships(relationshipDocs);
   if (relationshipDocs.length === 0) {
     return { inserted: 0, updated: 0, skipped: 0, failed: 0 };
+  }
+
+  const { error: relationshipTableError } = await supabase
+    .from('knowledge_relationships')
+    .select('id', { count: 'exact', head: true })
+    .limit(1);
+
+  if (relationshipTableError) {
+    if (isMissingRelationError(relationshipTableError)) {
+      console.warn(
+        `  ⚠️ legacy knowledge_relationships 테이블 없음: 관계 ${relationshipCount}건 동기화 스킵`
+      );
+      return { inserted: 0, updated: 0, skipped: relationshipCount, failed: 0 };
+    }
+
+    console.warn('  ⚠️ 관계 테이블 확인 실패:', relationshipTableError.message);
+    return { inserted: 0, updated: 0, skipped: 0, failed: relationshipCount };
   }
 
   const allTitles = new Set<string>();

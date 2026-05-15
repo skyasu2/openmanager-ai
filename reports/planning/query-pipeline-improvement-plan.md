@@ -126,7 +126,7 @@ Frontend / BFF
 | `RetrievalMode` | `off`, `lite`, `text-only`, `cosine-neighbor` | `off`, `lite` 우선. `text-only` 유지 필요성은 사용처 확인 후 결정. `cosine-neighbor` 제거 |
 | `enableRAG` | API/BFF request flag | 이름은 호환상 유지. UI 문구는 "지식 검색" 또는 "근거 검색"으로 정리 가능 |
 | Supabase KRL | `search_knowledge_text` | 유지. `knowledge_base.search_vector` trigger helper 유지 |
-| Supabase legacy inventory | `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` | 운영 DB precheck 후 drop migration |
+| Supabase legacy inventory | `vector_documents_stats`, `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` | 운영 DB precheck 후 drop migration |
 | Evidence source UI | `analysisBasis`, `retrieval`, `semanticQueryTrace`, `toolResultSummaries`가 분산 표시 | OTel/domain evidence/KB/web/tool 근거를 operator가 구분할 수 있도록 표시. 신규 계약은 기존 metadata를 읽는 read-only UI 확장으로 제한 |
 | KRL category smoke | 일반 RAG smoke 중심 | `architecture`, `command`, `incident` category별 대표 질의가 기대 category 결과를 반환하는 smoke를 추가. live smoke는 수동/릴리즈 gate로만 실행 |
 
@@ -139,6 +139,7 @@ Precheck:
 ```sql
 SELECT to_regclass('public.knowledge_relationships') AS knowledge_relationships;
 SELECT to_regclass('public.command_vectors') AS command_vectors;
+SELECT to_regclass('public.vector_documents_stats') AS vector_documents_stats;
 SELECT COUNT(*) FROM public.knowledge_base WHERE source = 'command_vectors_migration';
 SELECT to_regprocedure('public.search_knowledge_text(text,integer,text)') AS search_knowledge_text;
 ```
@@ -146,6 +147,7 @@ SELECT to_regprocedure('public.search_knowledge_text(text,integer,text)') AS sea
 Migration 방향:
 
 ```sql
+DROP VIEW IF EXISTS public.vector_documents_stats;
 DROP TABLE IF EXISTS public.knowledge_relationships;
 DROP TABLE IF EXISTS public.command_vectors;
 ALTER TABLE public.knowledge_base DROP COLUMN IF EXISTS embedding;
@@ -315,6 +317,7 @@ test(spec): add graphrag removal and krl cleanup specs
 완료 기준:
 
 - 운영 DB read-only precheck 결과 기록
+- `vector_documents_stats` drop
 - `knowledge_relationships` drop
 - `command_vectors` drop
 - `knowledge_base.embedding` drop
@@ -332,6 +335,11 @@ test(spec): add graphrag removal and krl cleanup specs
   FROM pg_proc WHERE proname = 'search_knowledge_text';
   ```
   확인 후 precheck SQL의 `to_regprocedure('public.search_knowledge_text(text,integer,text)')` 를 실제 시그니처로 교체
+
+진행 기록:
+
+- 2026-05-15 Codex: Supabase MCP read-only precheck 완료. 실제 함수 시그니처는 `search_knowledge_text(text,integer,text)`, `generate_knowledge_search_vector(text,text,text[])`, `update_knowledge_search_vector()`로 계획서와 일치한다. 운영 DB에는 `knowledge_base=60`, `knowledge_base.embedding non-null=52`, `command_vectors=26`, `command_vectors.embedding non-null=26`, `knowledge_relationships=170`, `vector_documents_stats` view가 남아 있다. `command_vectors` 누락 backfill은 `0`건으로 제거 조건은 충족되지만, `vector_documents_stats` view가 `command_vectors`에 의존하므로 migration은 view를 먼저 제거해야 한다.
+- 2026-05-15 Codex: `supabase/migrations/20260515000000_drop_legacy_graphrag_inventory.sql` 초안을 추가했다. 실제 production 적용은 destructive DB 변경이므로 사용자 명시 승인 전까지 보류한다.
 
 ### Task 6 - 문서/데이터 표현 정리
 

@@ -268,6 +268,7 @@ describe('Supabase security hardening migration contract', () => {
     expect(sql).toContain("to_regprocedure('public.search_knowledge_text");
     expect(sql).toContain("to_regclass('public.knowledge_relationships')");
     expect(sql).toContain("to_regclass('public.command_vectors')");
+    expect(sql).toContain('drop view if exists public.vector_documents_stats');
     expect(sql).toContain(
       'drop table if exists public.knowledge_relationships'
     );
@@ -276,6 +277,8 @@ describe('Supabase security hardening migration contract', () => {
       'alter table public.knowledge_base drop column if exists embedding'
     );
     expect(sql).not.toMatch(/\bcascade\b/);
+    expect(sql).not.toMatch(/\btruncate\b/);
+    expect(sql).not.toMatch(/\bdelete from\b/);
     expect(sql).not.toMatch(/drop function[^;]*search_knowledge_text/);
     expect(sql).not.toMatch(
       /drop function[^;]*generate_knowledge_search_vector/
