@@ -8,7 +8,7 @@
 
 - 상태: Completed
 - 작성일: 2026-05-15
-- TODO.md 연결: Active Tasks > P1: GraphRAG 완전 제거 SDD
+- TODO.md 연결: Backlog 완료 이력
 
 ## 목표
 

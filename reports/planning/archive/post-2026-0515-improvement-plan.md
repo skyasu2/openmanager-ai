@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-15
 > Tags: refactor,useAIChatCore,message-helpers,orchestrator-routing,production-qa,debt
 
 # 2026-05-15 커밋 이후 추가 개선 계획
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-15
-- TODO.md 연결: Active Tasks → P2 항목들
+- TODO.md 연결: Backlog 완료 이력
 
 ## 배경
 
@@ -250,3 +250,4 @@ Task 4 (orchestrator)    → Codex 위임, Task 2/3 완료 후 또는 독립 수
 ---
 
 _작성: 2026-05-15 KST (오늘 커밋 리뷰 기반)_
+_완료: 2026-05-15 KST (Task 1~4 전체 완료 및 검증 기록 반영)_
