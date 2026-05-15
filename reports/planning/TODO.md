@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 현재 진행 중인 작업 없음 | — | Idle | GraphRAG 완전 제거 SDD는 `QA-20260515-0506`으로 Vercel production QA까지 완료. 다음 후보는 Backlog의 기술 부채 해소 리팩터. |
+| 서버 카드 Peek UX 개선 | Medium | In Progress (Codex) | 초기 1.5행 + 페이드 오버레이로 "더 있음" 암시. 상세: [dashboard-server-card-peek-plan.md](dashboard-server-card-peek-plan.md) |
 
 ---
 
