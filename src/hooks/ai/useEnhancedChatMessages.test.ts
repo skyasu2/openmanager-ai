@@ -66,7 +66,6 @@ describe('useEnhancedChatMessages', () => {
             sourceType: 'knowledge_base',
           },
         ],
-        ragEnabled: true,
       })
     );
 
@@ -95,10 +94,7 @@ describe('useEnhancedChatMessages', () => {
     const messages = [createMessage('assistant-1', 'assistant', '응답')];
 
     const { rerender } = renderHook(
-      (props: {
-        ragEnabled: boolean;
-        currentMode?: 'streaming' | 'job-queue';
-      }) =>
+      (props: { currentMode?: 'streaming' | 'job-queue' }) =>
         useEnhancedChatMessages({
           messages,
           isLoading: false,
@@ -107,11 +103,9 @@ describe('useEnhancedChatMessages', () => {
           deferredAssistantMetadataByMessageId: {},
           deferredToolResultsByMessageId: {},
           streamRagSources: undefined,
-          ragEnabled: props.ragEnabled,
         }),
       {
         initialProps: {
-          ragEnabled: false,
           currentMode: 'streaming' as const,
         },
       }
@@ -120,7 +114,6 @@ describe('useEnhancedChatMessages', () => {
     expect(mocks.transformUIMessageToEnhanced).toHaveBeenCalledTimes(1);
 
     rerender({
-      ragEnabled: true,
       currentMode: 'job-queue' as const,
     });
 
@@ -143,7 +136,6 @@ describe('useEnhancedChatMessages', () => {
           deferredAssistantMetadataByMessageId: {},
           deferredToolResultsByMessageId: {},
           streamRagSources: undefined,
-          ragEnabled: true,
         }),
       {
         initialProps: {

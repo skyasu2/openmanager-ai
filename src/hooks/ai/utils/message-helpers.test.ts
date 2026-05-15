@@ -18,6 +18,16 @@ function createMessage(params: {
   metadata?: {
     traceId?: string;
     ragSources?: RagSource[];
+    evidenceCards?: Array<{
+      id: string;
+      title: string;
+      summary: string;
+      sourceType: 'knowledge' | 'incident' | 'runbook' | 'web';
+      score: number;
+      category?: string;
+      reason?: string;
+      url?: string;
+    }>;
     retrieval?: {
       retrievalEnabled: boolean;
       retrievalUsed: boolean;
@@ -115,6 +125,15 @@ function createMessage(params: {
         | 'incident-report'
         | 'monitoring-analysis';
     };
+    semanticQueryTrace?: {
+      originalQuery: string;
+      selectedDomain?: string;
+      selectedCapability?: string;
+      selectedEvidenceProvider?: string;
+      evidenceAvailable: boolean;
+      clarificationRequired: boolean;
+      reasonCodes: string[];
+    };
     toolResultSummaries?: Array<{
       toolName: string;
       label: string;
@@ -172,6 +191,13 @@ describe('transformMessages', () => {
       '지식 근거 검색'
     );
     expect(assistant?.metadata?.analysisBasis?.ragUsed).toBe(true);
+    expect(assistant?.metadata?.analysisBasis?.sourceGroups).toEqual([
+      {
+        type: 'knowledge-base',
+        label: 'knowledge-base',
+        count: 1,
+      },
+    ]);
   });
 
   it('preserves routeDecision metadata for assistant messages', () => {
@@ -236,6 +262,68 @@ describe('transformMessages', () => {
     expect(assistant?.metadata?.analysisBasis?.dataSource).toBe(
       '모니터링 피크 지표 근거'
     );
+    expect(assistant?.metadata?.analysisBasis?.sourceGroups).toEqual([
+      {
+        type: 'monitoring-data',
+        label: 'monitoring-data',
+        count: 1,
+        detail: 'monitoring-peak-metric',
+      },
+    ]);
+  });
+
+  it('groups knowledge, web, and operational tool result sources separately', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: '서버 토폴로지와 최신 문서 같이 봐줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '내부 지식과 외부 문서를 함께 확인했습니다.',
+          metadata: {
+            evidenceCards: [
+              {
+                id: 'kb-1',
+                title: '서버 토폴로지',
+                summary: '계층별 서버 역할',
+                sourceType: 'knowledge',
+                score: 0.91,
+                category: 'architecture',
+              },
+              {
+                id: 'web-1',
+                title: 'Vendor docs',
+                summary: '외부 문서',
+                sourceType: 'web',
+                score: 1,
+                url: 'https://example.com/docs',
+              },
+            ],
+            toolResultSummaries: [
+              {
+                toolName: 'getServerMetrics',
+                label: '서버 메트릭 조회',
+                summary: '18개 서버 메트릭을 확인했습니다.',
+                status: 'completed',
+              },
+            ],
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+
+    expect(assistant?.metadata?.analysisBasis?.sourceGroups).toEqual([
+      { type: 'knowledge-base', label: 'knowledge-base', count: 1 },
+      { type: 'web-search', label: 'web-search', count: 1 },
+      { type: 'tool-result', label: 'tool-result', count: 1 },
+    ]);
   });
 
   it('preserves AssistantPlan and AssistantResult facade metadata for assistant messages', () => {

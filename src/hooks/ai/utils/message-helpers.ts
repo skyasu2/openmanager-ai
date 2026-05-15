@@ -29,6 +29,7 @@ import {
 } from '@/lib/ai/utils/tool-presentation';
 import type {
   AnalysisBasis,
+  AnalysisBasisSourceGroup,
   EnhancedChatMessage,
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
@@ -87,6 +88,83 @@ function findEvidenceCardsFromToolParts(
     );
   }
   return evidenceCards;
+}
+
+const SOURCE_TOOL_NAMES = new Set([
+  'finalAnswer',
+  'searchKnowledgeBase',
+  'searchWeb',
+]);
+
+function buildAnalysisSourceGroups(params: {
+  semanticQueryTrace?: SemanticQueryTrace;
+  hasServerAnalysisEvidence: boolean;
+  knowledgeEvidenceCount: number;
+  legacyKnowledgeSourceCount: number;
+  webEvidenceCount: number;
+  legacyWebSourceCount: number;
+  retrievalEvidenceCount: number;
+  retrievalIndicatesKnowledgeUse: boolean;
+  retrievalIndicatesWebUse: boolean;
+  toolResultSummaries: ToolResultSummary[];
+  completedToolNames: string[];
+}): AnalysisBasisSourceGroup[] {
+  const groups: AnalysisBasisSourceGroup[] = [];
+
+  const addGroup = (
+    type: AnalysisBasisSourceGroup['type'],
+    label: string,
+    count: number,
+    detail?: string
+  ) => {
+    if (count <= 0) return;
+    groups.push({
+      type,
+      label,
+      count,
+      ...(detail ? { detail } : {}),
+    });
+  };
+
+  const semanticProvider = params.semanticQueryTrace?.selectedEvidenceProvider;
+  const hasDomainEvidence =
+    params.semanticQueryTrace?.evidenceAvailable === true ||
+    Boolean(semanticProvider);
+  addGroup(
+    'monitoring-data',
+    'monitoring-data',
+    hasDomainEvidence || params.hasServerAnalysisEvidence ? 1 : 0,
+    semanticProvider ??
+      (params.hasServerAnalysisEvidence ? 'server metrics' : undefined)
+  );
+
+  const knowledgeCount =
+    params.knowledgeEvidenceCount ||
+    params.legacyKnowledgeSourceCount ||
+    (params.retrievalIndicatesKnowledgeUse ? params.retrievalEvidenceCount : 0);
+  addGroup('knowledge-base', 'knowledge-base', knowledgeCount);
+
+  const webCount =
+    params.webEvidenceCount ||
+    params.legacyWebSourceCount ||
+    (params.retrievalIndicatesWebUse
+      ? Math.max(1, params.retrievalEvidenceCount)
+      : 0);
+  addGroup('web-search', 'web-search', webCount);
+
+  const summarizedToolCount = params.toolResultSummaries.filter(
+    (summary) => !SOURCE_TOOL_NAMES.has(summary.toolName)
+  ).length;
+  const completedToolCount = params.completedToolNames.filter(
+    (toolName) => !SOURCE_TOOL_NAMES.has(toolName)
+  ).length;
+  addGroup(
+    'tool-result',
+    'tool-result',
+    summarizedToolCount || completedToolCount
+  );
+
+  return groups;
 }
 
 function getSemanticEvidenceDataSource(
@@ -353,10 +431,12 @@ export function transformUIMessageToEnhanced(
     const hasRag = ragSources && ragSources.length > 0;
 
     const webSources = ragSources?.filter((s) => s.sourceType === 'web') ?? [];
-    const hasWebSearch = webEvidenceCount > 0 || webSources.length > 0;
+    const legacyKnowledgeSourceCount =
+      ragSources?.filter((s) => s.sourceType !== 'web').length ?? 0;
+    const legacyWebSourceCount = webSources.length;
+    const hasWebSearch = webEvidenceCount > 0 || legacyWebSourceCount > 0;
     const hasKnowledgeSearch = Boolean(
-      knowledgeEvidenceCount > 0 ||
-        ragSources?.some((s) => s.sourceType !== 'web')
+      knowledgeEvidenceCount > 0 || legacyKnowledgeSourceCount > 0
     );
     const retrieval =
       normalizeRetrievalMetadata(metadata?.retrieval) ??
@@ -380,8 +460,22 @@ export function transformUIMessageToEnhanced(
         analysisMode: metadata?.analysisMode,
       });
     const retrievalIndicatesKnowledgeUse = Boolean(retrieval?.retrievalUsed);
+    const retrievalIndicatesWebUse = Boolean(retrieval?.webUsed);
     const semanticEvidenceDataSource =
       getSemanticEvidenceDataSource(semanticQueryTrace);
+    const sourceGroups = buildAnalysisSourceGroups({
+      semanticQueryTrace,
+      hasServerAnalysisEvidence,
+      knowledgeEvidenceCount,
+      legacyKnowledgeSourceCount,
+      webEvidenceCount,
+      legacyWebSourceCount,
+      retrievalEvidenceCount: retrieval?.evidenceCount ?? 0,
+      retrievalIndicatesKnowledgeUse,
+      retrievalIndicatesWebUse,
+      toolResultSummaries,
+      completedToolNames,
+    });
 
     // dataSource 결정: 실제 도구 호출 기반 + 토글 상태 반영
     let dataSource: string;
@@ -415,6 +509,7 @@ export function transformUIMessageToEnhanced(
       ragSources: hasRag ? ragSources : undefined,
       ...(retrieval && { retrieval }),
       featureStatus,
+      sourceGroups: sourceGroups.length > 0 ? sourceGroups : undefined,
       analysisMode: metadata?.analysisMode,
     };
   }

@@ -377,17 +377,6 @@ describe('useAISidebarStore', () => {
 
       expect(result.current.webSearchEnabled).toBe(false);
     });
-
-    it('ragEnabled를 함수형 업데이트로 토글할 수 있어야 함', () => {
-      const { result } = renderHook(() => useAISidebarStore());
-
-      act(() => {
-        result.current.setRagEnabled((prev) => !prev);
-        result.current.setRagEnabled((prev) => !prev);
-      });
-
-      expect(result.current.ragEnabled).toBe(false);
-    });
   });
 
   describe('reset', () => {

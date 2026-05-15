@@ -52,8 +52,6 @@ function setupSidebarMock() {
     setOpen: fn(),
     webSearchEnabled: false,
     setWebSearchEnabled: fn(),
-    ragEnabled: false,
-    setRagEnabled: fn(),
     sidebarWidth: 420,
     setSidebarWidth: fn(),
     restoreBannerDismissed: true,

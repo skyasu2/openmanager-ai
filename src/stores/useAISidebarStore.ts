@@ -77,8 +77,23 @@ export interface AnalysisBasis {
   retrieval?: RetrievalMetadata;
   /** UI-facing status split: enabled vs used vs suppressed vs unavailable */
   featureStatus?: AnalysisFeatureStatus;
+  /** Operator-facing grouping of evidence/source origins */
+  sourceGroups?: AnalysisBasisSourceGroup[];
   /** 사용자가 선택한 분석 강도 모드 */
   analysisMode?: AnalysisMode;
+}
+
+export type AnalysisBasisSourceGroupType =
+  | 'monitoring-data'
+  | 'knowledge-base'
+  | 'web-search'
+  | 'tool-result';
+
+export interface AnalysisBasisSourceGroup {
+  type: AnalysisBasisSourceGroupType;
+  label: string;
+  count: number;
+  detail?: string;
 }
 
 export interface ToolResultSummary {
@@ -307,9 +322,6 @@ interface AISidebarState {
   // 웹 검색 source mode. false=Auto, true=On.
   webSearchEnabled: boolean;
 
-  // Internal RAG override. Product UI no longer exposes this; false means Auto.
-  ragEnabled: boolean;
-
   // 분석 강도 모드
   analysisMode: AnalysisMode;
 
@@ -330,7 +342,6 @@ interface AISidebarState {
   setWebSearchEnabled: (
     enabled: boolean | ((prev: boolean) => boolean)
   ) => void;
-  setRagEnabled: (enabled: boolean | ((prev: boolean) => boolean)) => void;
   setAnalysisMode: (mode: AnalysisMode) => void;
   dismissRestoreBanner: () => void;
   setActiveTab: (
@@ -366,7 +377,6 @@ export const useAISidebarStore = create<AISidebarState>()(
         pendingPrefillMessage: null,
         pendingEntryState: null,
         webSearchEnabled: false,
-        ragEnabled: false,
         analysisMode: 'auto',
         restoreBannerDismissed: false,
         messages: [],
@@ -448,14 +458,6 @@ export const useAISidebarStore = create<AISidebarState>()(
                 : enabled,
           })),
 
-        setRagEnabled: (enabled) =>
-          set((state) => ({
-            ragEnabled:
-              typeof enabled === 'function'
-                ? enabled(state.ragEnabled)
-                : enabled,
-          })),
-
         setAnalysisMode: (mode) => set({ analysisMode: mode }),
 
         dismissRestoreBanner: () => set({ restoreBannerDismissed: true }),
@@ -496,7 +498,6 @@ export const useAISidebarStore = create<AISidebarState>()(
             pendingPrefillMessage: null,
             pendingEntryState: null,
             webSearchEnabled: false,
-            ragEnabled: false,
             analysisMode: 'auto',
             restoreBannerDismissed: false,
             messages: [],
@@ -529,7 +530,6 @@ export const useAISidebarStore = create<AISidebarState>()(
           // Hydration 후 초기 상태 정규화
           if (state) {
             state.isOpen = false; // 초기에는 항상 닫힌 상태로 시작
-            state.ragEnabled = false; // stale hidden UI override 방지: Auto mode
           }
         },
       }

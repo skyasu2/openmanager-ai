@@ -17,6 +17,13 @@ interface AnalysisBasisMetadataProps {
   meaningfulTools?: string[];
 }
 
+const SOURCE_GROUP_CLASS_NAMES = {
+  'monitoring-data': 'bg-emerald-50 text-emerald-700',
+  'knowledge-base': 'bg-purple-50 text-purple-700',
+  'web-search': 'bg-sky-50 text-sky-700',
+  'tool-result': 'bg-slate-100 text-slate-700',
+} as const;
+
 export function AnalysisBasisMetadata({
   basis,
   meaningfulTools,
@@ -51,7 +58,6 @@ export function AnalysisBasisMetadata({
     basis.featureStatus ??
     buildAnalysisFeatureStatus({
       retrieval: basis.retrieval,
-      ragEnabled: Boolean(basis.ragUsed),
       hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
       hasWebEvidence,
       analysisMode: basis.analysisMode,
@@ -93,6 +99,26 @@ export function AnalysisBasisMetadata({
         <span className={getEngineColor(basis.engine)}>{basis.engine}</span>
         {featureBadges.map(renderFeatureBadge)}
       </div>
+
+      {basis.sourceGroups && basis.sourceGroups.length > 0 && (
+        <div className="flex items-start gap-2">
+          <Database className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400" />
+          <span className="shrink-0 text-gray-500">근거 출처:</span>
+          <div className="flex flex-wrap gap-1">
+            {basis.sourceGroups.map((group) => (
+              <span
+                key={group.type}
+                className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+                  SOURCE_GROUP_CLASS_NAMES[group.type]
+                }`}
+                title={group.detail}
+              >
+                {group.label} {group.count}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {meaningfulTools && meaningfulTools.length > 0 && (
         <div className="flex items-start gap-2">

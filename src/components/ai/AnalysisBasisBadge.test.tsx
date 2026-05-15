@@ -104,6 +104,53 @@ describe('AnalysisBasisBadge', () => {
     expect(screen.queryByText('지식 검색 사용됨')).not.toBeInTheDocument();
   });
 
+  it('renders operator-facing source groups when provided', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          dataSource: '복합 근거 분석',
+          engine: 'Streaming AI',
+          sourceGroups: [
+            {
+              type: 'monitoring-data',
+              label: 'monitoring-data',
+              count: 1,
+              detail: 'monitoring-peak-metric',
+            },
+            {
+              type: 'knowledge-base',
+              label: 'knowledge-base',
+              count: 2,
+            },
+            {
+              type: 'web-search',
+              label: 'web-search',
+              count: 1,
+            },
+            {
+              type: 'tool-result',
+              label: 'tool-result',
+              count: 3,
+            },
+          ],
+        }}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('근거 출처:')).toBeInTheDocument();
+    expect(screen.getByText('monitoring-data 1')).toHaveAttribute(
+      'title',
+      'monitoring-peak-metric'
+    );
+    expect(screen.getByText('knowledge-base 2')).toBeInTheDocument();
+    expect(screen.getByText('web-search 1')).toBeInTheDocument();
+    expect(screen.getByText('tool-result 3')).toBeInTheDocument();
+  });
+
   it('renders a concise collapsed summary before expansion', () => {
     render(
       <AnalysisBasisBadge

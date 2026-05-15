@@ -231,8 +231,6 @@ describe('AIWorkspace', () => {
       addMessage: vi.fn(),
       webSearchEnabled: false,
       setWebSearchEnabled: vi.fn(),
-      ragEnabled: false,
-      setRagEnabled: vi.fn(),
       analysisMode: 'auto',
       setAnalysisMode: vi.fn(),
     };

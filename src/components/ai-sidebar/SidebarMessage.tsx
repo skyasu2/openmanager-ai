@@ -85,7 +85,6 @@ export const MessageComponent = memo<{
       (analysisBasis
         ? buildAnalysisFeatureStatus({
             retrieval: analysisBasis.retrieval,
-            ragEnabled: Boolean(analysisBasis.ragUsed),
             hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
             hasWebEvidence,
             analysisMode: analysisBasis.analysisMode,

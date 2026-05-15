@@ -111,6 +111,36 @@ const checks = [
       p_filter_category: 'command',
     },
   },
+  {
+    label: 'search_knowledge_text:category-architecture',
+    minRows: 1,
+    expectedCategory: 'architecture',
+    args: {
+      p_query_text: '서버 토폴로지 구조가 어떻게 되나요?',
+      p_max_results: 3,
+      p_filter_category: 'architecture',
+    },
+  },
+  {
+    label: 'search_knowledge_text:category-command',
+    minRows: 1,
+    expectedCategory: 'command',
+    args: {
+      p_query_text: 'CPU 진단 명령어 알려줘',
+      p_max_results: 3,
+      p_filter_category: 'command',
+    },
+  },
+  {
+    label: 'search_knowledge_text:category-incident',
+    minRows: 1,
+    expectedCategory: 'incident',
+    args: {
+      p_query_text: 'DB 연결 장애 어떻게 대응하나요?',
+      p_max_results: 3,
+      p_filter_category: 'incident',
+    },
+  },
 ];
 
 let failures = 0;
@@ -119,6 +149,7 @@ for (const {
   label,
   args,
   minRows,
+  expectedCategory,
   expectedTopTitleIncludesAny,
   forbiddenTopTitleIncludesAny,
 } of checks) {
@@ -138,6 +169,15 @@ for (const {
   }
 
   const topTitle = String(data[0]?.title ?? '');
+  const topCategory = String(data[0]?.category ?? '');
+  if (expectedCategory && topCategory !== expectedCategory) {
+    failures += 1;
+    console.log(
+      `[FAIL] ${label}: topCategory="${topCategory}", expected="${expectedCategory}"`
+    );
+    continue;
+  }
+
   if (
     Array.isArray(expectedTopTitleIncludesAny) &&
     !expectedTopTitleIncludesAny.some((expected) => topTitle.includes(expected))

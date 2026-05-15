@@ -65,7 +65,6 @@ vi.mock('@/stores/useAISidebarStore', () => ({
   useAISidebarStore: (
     selector: (state: {
       webSearchEnabled: boolean;
-      ragEnabled: boolean;
       messages: unknown[];
       sessionId: string;
       syncChatSnapshot: typeof mocks.syncChatSnapshot;
@@ -73,7 +72,6 @@ vi.mock('@/stores/useAISidebarStore', () => ({
   ) =>
     selector({
       webSearchEnabled: false,
-      ragEnabled: false,
       messages: [],
       sessionId: 'session-test',
       syncChatSnapshot: mocks.syncChatSnapshot,
