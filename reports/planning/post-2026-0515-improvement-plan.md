@@ -150,11 +150,23 @@ src/hooks/ai/utils/evidence-source-helpers.ts  (신규)
 
 #### 완료 기준
 
-- [ ] `evidence-source-helpers.ts` 신규 파일 생성
-- [ ] `message-helpers.ts` ≤ 450줄
-- [ ] `test(spec):` 선행 커밋 (source group 빌드 로직 유닛 테스트 추가)
-- [ ] `AnalysisBasisMetadata.test.tsx` 기존 테스트 회귀 없음
-- [ ] `type-check` + `test:quick` 통과
+- [x] `evidence-source-helpers.ts` 신규 파일 생성
+- [x] `message-helpers.ts` ≤ 450줄
+- [x] `test(spec):` 선행 커밋 (source group 빌드 로직 유닛 테스트 추가)
+- [x] AnalysisBasis 관련 기존 테스트 회귀 없음 (`AnalysisBasisBadge.test.tsx`; `AnalysisBasisMetadata.test.tsx` 파일은 현재 없음)
+- [x] `type-check` + `test:quick` 통과
+
+#### 진행 기록
+
+- 2026-05-15 Codex: SDD 선행 커밋 `test(spec): add evidence source helper unit tests`로 `evidence-source-helpers` API 계약과 source group/retrieval/evidence card 추출 회귀 테스트를 먼저 추가했다. 신규 helper 부재로 의도된 실패를 확인한 뒤 구현에 착수.
+- 2026-05-15 Codex: `src/hooks/ai/utils/evidence-source-helpers.ts`를 추가해 knowledge search tool output의 retrieval/evidence card 추출, source group 구성, semantic evidence data source 라벨, assistant `analysisBasis` 조립을 분리했다. `message-helpers.ts`는 629줄에서 382줄로 축소되어 목표 기준(≤450)을 충족.
+- 검증:
+  - `npx vitest run --config config/testing/vitest.config.dom.ts src/hooks/ai/utils/evidence-source-helpers.test.ts src/hooks/ai/utils/message-helpers.test.ts src/components/ai-sidebar/SidebarMessage.rag-badge.test.tsx --silent=false` → 3 files / 38 tests passed
+  - `npx vitest run --config config/testing/vitest.config.dom.ts src/components/ai/AnalysisBasisBadge.test.tsx src/hooks/ai/utils/evidence-source-helpers.test.ts src/hooks/ai/utils/message-helpers.test.ts src/components/ai-sidebar/SidebarMessage.rag-badge.test.tsx --silent=false` → 4 files / 63 tests passed
+  - `npm run type-check` → passed
+  - `npm run lint` → passed (`reports/qa/qa-tracker.json` size info only)
+  - `npm run test:quick` → passed
+  - `npm run line-guard` → no fail-threshold violations, `message-helpers.ts=382`
 
 ---
 

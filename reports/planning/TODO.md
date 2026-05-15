@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (서버 카드 Peek UX 개선 완료, `dashboard-server-card-peek-plan.md` archive 이동)
+**Last Updated**: 2026-05-15 KST (`post-2026-0515-improvement-plan.md` T3 message-helpers 분리 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 현재 진행 중인 작업 없음 | — | Idle | 서버 카드 Peek UX 개선은 SDD 선행 테스트 후 구현 완료. 다음 후보는 Backlog의 기술 부채 해소 리팩터 T3 `message-helpers.ts` 분리. |
+| 현재 진행 중인 작업 없음 | — | Idle | T3 `message-helpers.ts` 분리 완료. 다음 후보는 Backlog의 기술 부채 해소 리팩터 T4 `orchestrator-routing.ts` 모듈 경계 정리. |
 
 ---
 
@@ -21,7 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P2: 기술 부채 해소 리팩터 (message-helpers / orchestrator-routing) | Medium | T2 `useAIChatCore.ts` 분할 완료. 남은 경고 구간은 `message-helpers.ts` 629줄, `orchestrator-routing.ts` 706줄. 상세: [post-2026-0515-improvement-plan.md](post-2026-0515-improvement-plan.md) T3~T4 |
+| P2: 기술 부채 해소 리팩터 (orchestrator-routing) | Medium | T2 `useAIChatCore.ts`, T3 `message-helpers.ts` 분할 완료. 남은 계획 항목은 `orchestrator-routing.ts` 706줄 정리. 상세: [post-2026-0515-improvement-plan.md](post-2026-0515-improvement-plan.md) T4 |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
 
 ---
@@ -38,6 +38,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~message-helpers evidence/source helper 분리~~ | — | **완료** — `src/hooks/ai/utils/evidence-source-helpers.ts`로 knowledge search tool output retrieval/evidence card 추출, source group 구성, semantic evidence data source 라벨, assistant `analysisBasis` 조립을 이동했다. `message-helpers.ts`는 629줄 → 382줄로 축소되어 계획 기준(≤450)을 충족. SDD 선행 커밋 `test(spec): add evidence source helper unit tests` 후 구현. 검증: targeted Vitest 4 files / 63 tests, `type-check`, `lint`, `test:quick`, `line-guard` 통과. 상세: [post-2026-0515-improvement-plan.md](post-2026-0515-improvement-plan.md) T3 |
 | ~~서버 카드 Peek UX 개선~~ | — | **완료** — `ServerDashboard.tsx` 서버 카드 그리드에 초기 상태 전용 1.5행 `max-height`와 하단 fade overlay를 추가했다. 기존 `initialVisibleRows`/페이지네이션 호출부는 유지하고, 더 보기/접기/뷰 모드/모바일/숨길 서버 없음 회귀 테스트를 보강했다. 검증: targeted Vitest 1 file / 12 tests, `type-check`, `lint`, `test:quick`, `line-guard`, docs checks, `git diff --check` 통과. 상세 계획서 archive 이동: [archive/dashboard-server-card-peek-plan.md](archive/dashboard-server-card-peek-plan.md) |
 | ~~useAIChatCore guidance CTA helper 분리~~ | — | **완료** — `src/hooks/ai/core/chat-artifact-guidance.ts`로 guidance CTA target→artifact intent/query 매핑, CTA 실행 차단, guidance/direct artifact request 분기를 이동했다. `useAIChatCore.ts`는 724줄 → 597줄로 축소되어 계획 기준(≤600)을 충족. SDD 선행 커밋 `test(spec): add guidance CTA isolation regression` 후 구현. 검증: targeted Vitest `2 files / 18 tests` PASS. 상세: [post-2026-0515-improvement-plan.md](post-2026-0515-improvement-plan.md) T2 |
 | ~~GraphRAG 완전 제거 SDD / KRL production closure~~ | — | **완료** — active runtime의 GraphRAG/useGraphRAG/graph traversal/vector 검색 표면을 제거하고 KRL(`search_knowledge_text` + EvidenceCard/RetrievalMetadata)을 canonical 경로로 정리했다. Supabase legacy inventory 제거(T5)는 `QA-20260515-0505`, Vercel production T7은 `QA-20260515-0506`에서 17/17 PASS, pending 0, expert open gap 0으로 기록. release `v8.11.154`, tag pipeline `2527097775` success, main validate pipeline `2527097782` success. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) |
