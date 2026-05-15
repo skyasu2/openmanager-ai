@@ -175,6 +175,7 @@ export async function GET(
                 toolsCalled: result.toolsCalled,
                 toolResults: result.toolResults,
                 ragSources: result.ragSources,
+                evidenceCards: result.evidenceCards,
                 metadata: sanitizeJobMetadataForClient(result.metadata),
                 processingTimeMs: result.processingTimeMs,
                 timestamp: result.completedAt,

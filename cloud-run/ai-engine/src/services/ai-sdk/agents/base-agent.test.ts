@@ -317,7 +317,7 @@ describe('BaseAgent', { timeout: 60000 }, () => {
 
       expect(result.success).toBe(true);
       expect(result.toolsCalled).toContain('searchKnowledgeBase');
-      expect(result.ragSources).toHaveLength(1);
+      expect(result.ragSources).toBeUndefined();
       expect(result.evidenceCards?.[0]).toMatchObject({
         id: 'kb-redis-connection',
         sourceType: 'runbook',

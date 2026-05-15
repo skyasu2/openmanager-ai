@@ -75,6 +75,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !analysisBasis?.featureStatus &&
         !analysisBasis?.analysisMode &&
         !analysisBasis?.toolsCalled &&
+        !analysisBasis?.evidenceCards &&
         !analysisBasis?.ragSources &&
         !routeDecision &&
         !assistantPlan &&
@@ -112,6 +113,9 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(analysisBasis?.toolsCalled && {
           toolsCalled: analysisBasis.toolsCalled,
+        }),
+        ...(analysisBasis?.evidenceCards && {
+          evidenceCards: analysisBasis.evidenceCards,
         }),
         ...(analysisBasis?.ragSources && {
           ragSources: analysisBasis.ragSources,

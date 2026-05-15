@@ -181,6 +181,19 @@ vi.mock('../../lib/ai-sdk-utils', () => ({
     return output;
   }),
   extractRagSources: mockExtractRagSources,
+  extractEvidenceCards: vi.fn((toolName: string, output: unknown) =>
+    mockExtractRagSources(toolName, output).map((source, index) => ({
+      id: `mock-${toolName}-${index}`,
+      title: source.title,
+      summary: source.title,
+      sourceType: source.sourceType === 'web' ? 'web' : 'knowledge',
+      score: source.similarity,
+      ...(source.category && { category: source.category }),
+      ...(source.url && { url: source.url }),
+    }))
+  ),
+  extractRetrievalMetadata: vi.fn(() => undefined),
+  mergeRetrievalMetadata: vi.fn((current: unknown, next: unknown) => next ?? current),
 }));
 
 vi.mock('../../lib/error-handler', () => ({

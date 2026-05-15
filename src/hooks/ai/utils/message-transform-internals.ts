@@ -25,6 +25,7 @@ import type {
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
+  EvidenceCard,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
@@ -40,6 +41,7 @@ export type RagSource = {
 export type MessageMetadata = {
   traceId?: string;
   ragSources?: RagSource[];
+  evidenceCards?: EvidenceCard[];
   retrieval?: RetrievalMetadata;
   featureStatus?: AnalysisFeatureStatus;
   enableRAG?: boolean;

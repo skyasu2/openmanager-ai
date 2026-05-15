@@ -71,12 +71,13 @@ export const MessageComponent = memo<{
     }, [message.content, message.metadata, message.isStreaming, message.role]);
     const analysisBasis = message.metadata?.analysisBasis ?? null;
     const analysisSources = analysisBasis?.ragSources ?? [];
-    const hasRagEvidence = analysisSources.some(
-      (source) => source.sourceType !== 'web'
-    );
-    const hasWebEvidence = analysisSources.some(
-      (source) => source.sourceType === 'web'
-    );
+    const analysisEvidenceCards = analysisBasis?.evidenceCards ?? [];
+    const hasRagEvidence =
+      analysisSources.some((source) => source.sourceType !== 'web') ||
+      analysisEvidenceCards.some((card) => card.sourceType !== 'web');
+    const hasWebEvidence =
+      analysisSources.some((source) => source.sourceType === 'web') ||
+      analysisEvidenceCards.some((card) => card.sourceType === 'web');
     const hasLegacyRagEvidence =
       Boolean(analysisBasis?.ragUsed) && !hasRagEvidence && !hasWebEvidence;
     const featureStatus =
@@ -294,10 +295,25 @@ export const MessageComponent = memo<{
                   </div>
                   {/* 웹 출처 카드 + 분석 근거 뱃지 */}
                   <WebSourceCards
-                    sources={(analysisBasis.ragSources ?? []).filter(
-                      (s): s is typeof s & { url: string } =>
-                        s.sourceType === 'web' && !!s.url
-                    )}
+                    sources={
+                      analysisEvidenceCards.length > 0
+                        ? analysisEvidenceCards
+                            .filter(
+                              (card): card is typeof card & { url: string } =>
+                                card.sourceType === 'web' && !!card.url
+                            )
+                            .map((card) => ({
+                              title: card.title,
+                              similarity: card.score,
+                              sourceType: card.sourceType,
+                              category: card.category,
+                              url: card.url,
+                            }))
+                        : (analysisBasis.ragSources ?? []).filter(
+                            (s): s is typeof s & { url: string } =>
+                              s.sourceType === 'web' && !!s.url
+                          )
+                    }
                   />
                   <AnalysisBasisBadge
                     basis={analysisBasis}

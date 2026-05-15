@@ -43,7 +43,10 @@ import type {
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
-import type { RetrievalMetadata } from '@/types/ai/retrieval-status';
+import type {
+  EvidenceCard,
+  RetrievalMetadata,
+} from '@/types/ai/retrieval-status';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
@@ -90,6 +93,7 @@ export interface AsyncQueryResult {
     sourceType: string;
     category?: string;
   }>;
+  evidenceCards?: EvidenceCard[];
   retrieval?: RetrievalMetadata;
   processingTimeMs?: number;
   latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';

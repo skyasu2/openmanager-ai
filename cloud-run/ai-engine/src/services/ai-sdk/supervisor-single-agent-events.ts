@@ -1,4 +1,8 @@
 import { getPublicErrorMessage } from '../../lib/error-handler';
+import type {
+  EvidenceCard,
+  RetrievalMetadata,
+} from '../../lib/retrieval-contract';
 import type { AssistantRuntimeMetadata } from './monitoring-runtime-host';
 import {
   buildDegradedMetadata,
@@ -230,6 +234,8 @@ export function buildSingleAgentDoneEvent({
   attempt,
   capturedError,
   ragSources,
+  evidenceCards,
+  retrieval,
   semanticQueryTrace,
 }: SingleAgentResponseContext & {
   provider: string;
@@ -243,6 +249,8 @@ export function buildSingleAgentDoneEvent({
   attempt: number;
   capturedError: Error | null;
   ragSources: unknown[];
+  evidenceCards: EvidenceCard[];
+  retrieval?: RetrievalMetadata;
   semanticQueryTrace?: unknown;
 }): StreamEvent {
   return {
@@ -275,6 +283,8 @@ export function buildSingleAgentDoneEvent({
           }),
         }),
         ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
+        ...(retrieval && { retrieval }),
+        ...(evidenceCards.length > 0 && { evidenceCards }),
         ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
           ? { semanticQueryTrace }
           : {}),
@@ -282,6 +292,7 @@ export function buildSingleAgentDoneEvent({
         ...(attempt > 0 && { providerRetries: attempt }),
       },
       ...(ragSources.length > 0 && { ragSources }),
+      ...(evidenceCards.length > 0 && { evidenceCards }),
       ...(capturedError && {
         warning: {
           code: 'STREAM_ERROR_OCCURRED',

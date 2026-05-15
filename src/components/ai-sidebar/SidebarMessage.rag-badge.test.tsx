@@ -90,7 +90,7 @@ describe('SidebarMessage RAG badge smoke integration', () => {
       ragSources
     );
     expect(assistantMessage?.metadata?.analysisBasis?.dataSource).toContain(
-      'RAG 지식베이스 검색'
+      '지식 근거 검색'
     );
 
     render(
@@ -98,10 +98,10 @@ describe('SidebarMessage RAG badge smoke integration', () => {
     );
 
     const badge = screen.getByTestId('analysis-basis-badge');
-    expect(badge).toHaveTextContent('RAG 지식베이스 검색 (1건)');
-    expect(badge).toHaveTextContent('RAG');
-    expect(screen.getByText('RAG 사용됨')).toBeInTheDocument();
-    expect(screen.queryByText('RAG 허용')).not.toBeInTheDocument();
+    expect(badge).toHaveTextContent('지식 근거 검색 (1건)');
+    expect(badge).toHaveTextContent('지식');
+    expect(screen.getByText('지식 검색 사용됨')).toBeInTheDocument();
+    expect(screen.queryByText('지식 검색 허용')).not.toBeInTheDocument();
   });
 
   it('labels web source usage as used, not merely enabled', () => {
@@ -145,7 +145,7 @@ describe('SidebarMessage RAG badge smoke integration', () => {
       timestamp: new Date('2026-04-25T00:00:00.000Z'),
       metadata: {
         analysisBasis: {
-          dataSource: '일반 대화 응답 (RAG 활성)',
+          dataSource: '일반 대화 응답 (지식 검색 활성)',
           engine: 'Streaming AI',
           ragUsed: false,
           analysisMode: 'thinking',
@@ -162,10 +162,10 @@ describe('SidebarMessage RAG badge smoke integration', () => {
       <MessageComponent message={assistantMessage} isLastMessage={true} />
     );
 
-    expect(screen.getByText('RAG 생략됨')).toBeInTheDocument();
+    expect(screen.getByText('지식 검색 생략됨')).toBeInTheDocument();
     expect(screen.getByText('Web 허용')).toBeInTheDocument();
     expect(screen.getByText('심층 분석 요청됨')).toBeInTheDocument();
-    expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
+    expect(screen.queryByText('지식 검색 사용됨')).not.toBeInTheDocument();
     expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
   });
 

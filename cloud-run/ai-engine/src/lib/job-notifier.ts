@@ -11,7 +11,10 @@
 
 import { getRedisClient, redisGet, redisSet, redisDel } from './redis-client';
 import { logger } from './logger';
-import type { RetrievalMetadata } from './retrieval-contract';
+import type {
+  EvidenceCard,
+  RetrievalMetadata,
+} from './retrieval-contract';
 
 // ============================================================================
 // Types
@@ -40,6 +43,7 @@ export interface JobResult {
     sourceType: string;
     category?: string;
   }>;
+  evidenceCards?: EvidenceCard[];
   metadata?: {
     analysisMode?: 'auto' | 'thinking';
     enableRAG?: boolean;
@@ -163,6 +167,7 @@ export async function storeJobResult(
       sourceType: string;
       category?: string;
     }>;
+    evidenceCards?: EvidenceCard[];
     startedAt?: string;
     // AI SDK metadata
     toolsCalled?: string[];
@@ -186,6 +191,7 @@ export async function storeJobResult(
     toolsCalled: options?.toolsCalled,
     toolResults: options?.toolResults,
     ragSources: options?.ragSources,
+    evidenceCards: options?.evidenceCards,
     metadata: mergeJobMetadata(existingJob, options?.metadata),
     startedAt,
     completedAt,

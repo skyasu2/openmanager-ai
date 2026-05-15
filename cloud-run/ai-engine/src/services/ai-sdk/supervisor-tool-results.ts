@@ -11,7 +11,7 @@ const TOOL_LABELS: Record<string, string> = {
   detectAnomaliesAllServers: '전체 서버 이상 탐지',
   predictTrends: '단기 위험 추세 계산',
   analyzePattern: '패턴 분석',
-  searchKnowledgeBase: 'RAG 지식베이스 검색',
+  searchKnowledgeBase: '지식 근거 검색',
   recommendCommands: 'CLI 명령어 추천',
   searchWeb: '웹 검색',
   finalAnswer: '최종 응답',

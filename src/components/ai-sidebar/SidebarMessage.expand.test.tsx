@@ -187,7 +187,7 @@ describe('SidebarMessage detail expand', () => {
             toolResultSummaries: [
               {
                 toolName: 'searchKnowledgeBase',
-                label: 'RAG 지식베이스 검색',
+                label: '지식 근거 검색',
                 summary: '2개 결과를 반환했습니다.',
                 status: 'completed',
               },

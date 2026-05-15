@@ -42,8 +42,8 @@ Frontend / BFF
 
 | 표면 | 현재 상태 | 처리 방향 |
 |------|-----------|-----------|
-| `searchKnowledgeBase.useGraphRAG` | compat-only 입력. 실행 로직에서는 무시 | 제거 |
-| `legacy-contracts.ts`의 `searchKnowledgeBaseUseGraphRAG` | 제거 예정 계약 | 제거 |
+| `searchKnowledgeBase.useGraphRAG` | 제거 완료. active schema/registry에 없음 | 완료 |
+| `legacy-contracts.ts`의 `searchKnowledgeBaseUseGraphRAG` | 제거 완료 | 완료 |
 | `RAGResultItem.sourceType`의 `vector`/`graph` | 과거 결과 타입 호환 | 제거 |
 | `RetrievalMode: 'cosine-neighbor'` | vector-era 모드 호환 | 제거 검토 후 제거 |
 | `ragSources` | legacy response bridge | 신규 응답에서는 제거하고 `evidenceCards` 중심으로 전환 |
@@ -117,7 +117,7 @@ Frontend / BFF
 
 | 함수/API | 현재 입력/출력 | 변경 후 계약 |
 |----------|----------------|---------------|
-| `searchKnowledgeBase` | `query`, `category`, `severity`, `useGraphRAG`, `fastMode`, `includeWebSearch` | `query`, `category`, `severity`만 canonical. `fastMode/includeWebSearch` 제거 여부는 별도 호환성 검토 후 결정 |
+| `searchKnowledgeBase` | `query`, `category`, `severity`, `fastMode`, `includeWebSearch` | `query`, `category`, `severity`만 canonical. `useGraphRAG`는 제거 완료. `fastMode/includeWebSearch` 제거 여부는 별도 호환성 검토 후 결정 |
 | `searchKnowledgeBase` result | `results`, `evidenceCards`, `retrieval`, `ragSources` 파생 가능 | `evidenceCards` + `retrieval`을 canonical로 유지. `results`는 tool 내부 호환 결과만 유지하거나 축소 |
 | `RAGResultItem.sourceType` | `vector`, `graph`, `web`, `fallback`, `knowledge`, `incident`, `runbook` | `knowledge`, `incident`, `runbook`, `web`, `fallback`만 허용. `vector/graph` 제거 |
 | `RetrievalMode` | `off`, `lite`, `text-only`, `cosine-neighbor` | `off`, `lite` 우선. `text-only` 유지 필요성은 사용처 확인 후 결정. `cosine-neighbor` 제거 |
@@ -156,17 +156,17 @@ SELECT to_regclass('public.command_vectors') IS NULL AS command_vectors_removed;
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] `searchKnowledgeBase` schema가 `useGraphRAG`를 노출하지 않는다.
-- [ ] active runtime source에서 `useGraphRAG` 허용 경계가 0건이다.
-- [ ] active runtime source에서 graph traversal / GraphRAG endpoint import가 0건이다.
-- [ ] `RAGResultItem.sourceType`에 `vector`/`graph`가 없다.
-- [ ] `RetrievalMode`에 `cosine-neighbor`가 없다.
-- [ ] KRL은 `search_knowledge_text`만 호출한다.
-- [ ] `includeWebSearch`가 KRL 내부 web fallback으로 이어지지 않는다.
-- [ ] Tavily web search는 `searchWeb` 계층에서만 실행된다.
+- [x] `searchKnowledgeBase` schema가 `useGraphRAG`를 노출하지 않는다.
+- [x] active runtime source에서 `useGraphRAG` 허용 경계가 0건이다.
+- [x] active runtime source에서 graph traversal / GraphRAG endpoint import가 0건이다.
+- [x] `RAGResultItem.sourceType`에 `vector`/`graph`가 없다.
+- [x] `RetrievalMode`에 `cosine-neighbor`가 없다.
+- [x] KRL은 `search_knowledge_text`만 호출한다.
+- [x] `includeWebSearch`가 KRL 내부 web fallback으로 이어지지 않는다.
+- [x] Tavily web search는 `searchWeb` 계층에서만 실행된다.
 - [ ] Supabase migration에 `CASCADE`가 없고 `search_knowledge_text` 보존 check가 있다.
-- [ ] frontend analysis basis는 `evidenceCards/retrieval` 중심으로 동작한다.
-- [ ] 기존 저장된 chat history가 깨지는 경우 fallback parser가 최소한으로 방어한다.
+- [x] frontend analysis basis는 `evidenceCards/retrieval` 중심으로 동작한다.
+- [x] 기존 저장된 chat history가 깨지는 경우 fallback parser가 최소한으로 방어한다.
 
 ## Task 목록
 
@@ -215,23 +215,26 @@ test(spec): add graphrag removal and krl cleanup specs
 
 - [x] `RAGResultItem.sourceType`에서 `vector`/`graph` 제거
 - [x] `RetrievalMode`에서 `cosine-neighbor` 제거
-- [ ] backend 신규 응답은 `evidenceCards` + `retrieval` 중심으로 정렬
-- [ ] `ragSources`는 신규 응답 생성 경로에서 제거하거나 deprecated boundary로 격리
+- [x] backend 신규 응답은 `evidenceCards` + `retrieval` 중심으로 정렬
+- [x] `ragSources`는 신규 응답 생성 경로에서 제거하거나 deprecated boundary로 격리
   - 주의: `ragSources` 사용처 74곳 — UI 렌더링 파일 포함
     - `AnalysisBasisMetadata.tsx` (lines 24-122): RAG 소스 목록 렌더링
     - `SidebarMessage.tsx` (lines 73, 297): 사이드바 소스 표시
     - `useAIChatCore.ts` (lines 149, 296): 스트리밍 데이터 수신
     - `stream-helpers.ts` (line 39): async job API 전달
   - 신규 UI는 `evidenceCards` 기반으로 렌더링하되, `ragSources ?? []` fallback을 한시 유지
-- [ ] frontend metadata parser는 old localStorage/history를 최소 방어하되 신규 UI 표기는 `evidenceCards/retrieval` 기준 사용
+- [x] frontend metadata parser는 old localStorage/history를 최소 방어하되 신규 UI 표기는 `evidenceCards/retrieval` 기준 사용
 - [ ] UI 회귀 확인: `AnalysisBasisMetadata`, `SidebarMessage`에서 RAG 근거 표시가 evidenceCards 기반으로 정상 동작하는지 수동 확인 필수
 
 진행 기록:
 
 - 2026-05-15 Codex: T2 타입 표면 1차 정리 완료. Backend/frontend `RetrievalMode`에서 `cosine-neighbor`를 제거하고, `RAGResultItem.sourceType`에서 `vector|graph`를 제거했다. legacy fixture는 현재 KRL source type(`knowledge|incident|runbook|web`) 기준으로 정렬했다.
+- 2026-05-15 Codex: T2 evidence boundary 2차 정리 완료. Streaming done event, async job result, root SSE parser, message transform, `AnalysisBasisMetadata`, `SidebarMessage`가 `evidenceCards` + `retrieval`을 우선 사용하도록 정렬했다. `ragSources`는 web-source card 및 old localStorage/history fallback boundary로만 유지한다. UI copy는 사용자 노출 "RAG" 표현을 "지식 검색/지식 근거"로 교체했다. 브라우저 수동 확인은 T7 QA에서 수행한다.
 - 검증:
   - `cd cloud-run/ai-engine && npx vitest run src/lib/retrieval-contract.test.ts src/tools-ai-sdk/reporter-tools/knowledge-types.test.ts src/lib/ai-sdk-utils.test.ts src/services/ai-sdk/agents/orchestrator-routing-direct-knowledge.test.ts --silent=false` → 3 files / 17 tests passed (`orchestrator-routing-direct-knowledge.test.ts`는 매칭 파일 없음으로 제외)
   - `npx vitest run --config config/testing/vitest.config.dom.ts src/hooks/ai/utils/message-helpers.test.ts src/hooks/ai/utils/chat-history-storage.test.ts src/hooks/ai/core/useChatHistory.test.ts --silent=false` → 3 files / 49 tests passed
+  - `cd cloud-run/ai-engine && npx vitest run src/lib/ai-sdk-utils.test.ts src/services/ai-sdk/supervisor-multi-fallback.test.ts src/services/ai-sdk/agents/base-agent.test.ts src/services/ai-sdk/agents/orchestrator.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts --silent=false` → 5 files / 95 tests passed
+  - `npx vitest run --config config/testing/vitest.config.dom.ts src/hooks/ai/utils/message-helpers.test.ts src/hooks/ai/utils/stream-data-handler.test.ts src/hooks/ai/utils/chat-history-storage.test.ts src/hooks/ai/core/useChatHistory.test.ts src/hooks/ai/core/asyncQuerySSE.test.ts src/components/ai/AnalysisBasisBadge.test.tsx src/components/ai-sidebar/SidebarMessage.rag-badge.test.tsx --silent=false` → 7 files / 120 tests passed
   - `cd cloud-run/ai-engine && npm run type-check` → passed
   - `npm run type-check` → passed
   - 전체 T0 targeted 묶음 재실행 기준 잔여 실패는 T3/T5 계약으로 축소됨.
@@ -302,22 +305,41 @@ test(spec): add graphrag removal and krl cleanup specs
 
 완료 기준:
 
-- active docs/data에서 GraphRAG를 현재 기능처럼 표현하지 않음
-- `rag-knowledge-engine.md`를 KRL canonical 문서로 갱신
-- `query-pipeline-improvement-plan.md`에서 GraphRAG 재도입/Adaptive RAG 전제 제거 유지
-- historical archive/migration ledger는 과거 기록으로 보존
-- `docs:budget`, `docs:ai-consistency`, `git diff --check` 통과
+- [x] active docs/data에서 GraphRAG를 현재 기능처럼 표현하지 않음
+- [x] `rag-knowledge-engine.md`를 KRL canonical 문서로 갱신
+- [x] `query-pipeline-improvement-plan.md`에서 GraphRAG 재도입/Adaptive RAG 전제 제거 유지
+- [x] historical archive/migration ledger는 과거 기록으로 보존
+- [x] `docs:budget`, `docs:ai-consistency`, `git diff --check` 통과
+
+진행 기록:
+
+- 2026-05-15 Codex: `rag-knowledge-engine.md`, `ai-engine-architecture.md`, `database.md`에서 `useGraphRAG`를 현재 호환 기능처럼 설명하던 내용을 제거하고, `ragSources`를 legacy response/history bridge로 축소해 설명했다. 사용자 노출 UI copy는 "RAG" 대신 "지식 검색/지식 근거" 기준으로 정렬했다.
+- 검증:
+  - `npm run docs:budget` → PASS
+  - `npm run docs:ai-consistency` → PASS
 
 ### Task 7 - 통합 검증 및 QA
 
 완료 기준:
 
-- AI Engine targeted tests 통과
-- AI Engine `type-check` 통과
-- root `type-check`, `lint`, `test:quick`, `test:contract` 통과
-- Supabase RAG smoke 통과
-- 배포가 포함되면 GitLab pipeline 확인
-- Vercel production + Playwright MCP conversational QA 기록
+- [x] AI Engine targeted tests 통과
+- [x] AI Engine `type-check` 통과
+- [x] root `type-check`, `lint`, `test:quick`, `test:contract` 통과
+- [ ] Supabase RAG smoke 통과
+- [ ] 배포가 포함되면 GitLab pipeline 확인
+- [ ] Vercel production + Playwright MCP conversational QA 기록
+
+진행 기록:
+
+- 2026-05-15 Codex: T2/T6 로컬 deterministic gate 완료. Supabase RAG smoke와 Vercel/Playwright QA는 T5 승인 또는 배포가 포함될 때 실행한다.
+- 검증:
+  - AI Engine targeted Vitest 5 files / 95 tests passed
+  - frontend/root targeted Vitest 7 files / 120 tests passed
+  - `cd cloud-run/ai-engine && npm run type-check` → passed
+  - `npm run type-check` → passed
+  - `npm run lint` → passed (`reports/qa/qa-tracker.json` size info only)
+  - `npm run test:quick` → passed
+  - `npm run test:contract` → 3 files / 24 tests passed
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -343,12 +365,12 @@ test(spec): add graphrag removal and krl cleanup specs
 
 ## 완료 기준
 
-- [ ] active runtime에 GraphRAG/useGraphRAG/graph traversal 경로가 없다.
-- [ ] active response contract는 `EvidenceCard[]` + `RetrievalMetadata` 중심이다.
-- [ ] KRL request path는 `search_knowledge_text`만 사용한다.
-- [ ] Tavily web search는 독립 tool로만 동작한다.
+- [x] active runtime에 GraphRAG/useGraphRAG/graph traversal 경로가 없다.
+- [x] active response contract는 `EvidenceCard[]` + `RetrievalMetadata` 중심이다.
+- [x] KRL request path는 `search_knowledge_text`만 사용한다.
+- [x] Tavily web search는 독립 tool로만 동작한다.
 - [ ] legacy graph/vector DB inventory가 승인된 migration으로 제거된다.
-- [ ] 문서와 UI copy가 GraphRAG를 현재 기능처럼 표현하지 않는다.
+- [x] 문서와 UI copy가 GraphRAG를 현재 기능처럼 표현하지 않는다.
 - [ ] 로컬 검증, Supabase smoke, Vercel Playwright MCP QA가 기록된다.
 
 ## 실행 순서 제안

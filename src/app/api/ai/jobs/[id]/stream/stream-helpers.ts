@@ -8,6 +8,7 @@ import {
   getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
 import { getRedisTimeoutMs } from '@/config/redis-timeouts';
+import type { EvidenceCard } from '@/types/ai/retrieval-status';
 import type { RedisJobProgress } from '@/types/ai-jobs';
 import type { ClientJobMetadata } from '../../job-metadata';
 
@@ -42,6 +43,7 @@ export interface JobResult {
     sourceType: string;
     category?: string;
   }>;
+  evidenceCards?: EvidenceCard[];
   metadata?: ClientJobMetadata;
   startedAt: string;
   completedAt?: string;

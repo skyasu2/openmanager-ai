@@ -1,6 +1,8 @@
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
+  EvidenceCard,
+  EvidenceSourceType,
   FeatureExecutionState,
   RetrievalMetadata,
   RetrievalMode,
@@ -15,6 +17,13 @@ const SUPPRESSED_REASONS = new Set<RetrievalSuppressedReason>([
   'no_results',
   'budget_guard',
   'unavailable',
+]);
+
+const EVIDENCE_SOURCE_TYPES = new Set<EvidenceSourceType>([
+  'knowledge',
+  'incident',
+  'runbook',
+  'web',
 ]);
 
 type FeatureName = keyof AnalysisFeatureStatus;
@@ -46,6 +55,26 @@ function normalizeSuppressedReason(
     : undefined;
 }
 
+function normalizeEvidenceSourceType(
+  value: unknown
+): EvidenceSourceType | undefined {
+  return typeof value === 'string' &&
+    EVIDENCE_SOURCE_TYPES.has(value as EvidenceSourceType)
+    ? (value as EvidenceSourceType)
+    : undefined;
+}
+
+function normalizeOptionalString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+function normalizeFiniteScore(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined;
+  return Math.min(1, Math.max(0, value));
+}
+
 export function normalizeRetrievalMetadata(
   value: unknown
 ): RetrievalMetadata | undefined {
@@ -74,6 +103,41 @@ export function normalizeRetrievalMetadata(
     evidenceCount: Math.max(0, Math.floor(value.evidenceCount)),
     webUsed: value.webUsed,
   };
+}
+
+export function normalizeEvidenceCards(value: unknown): EvidenceCard[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((entry): EvidenceCard | null => {
+      if (!isRecord(entry)) return null;
+
+      const id = normalizeOptionalString(entry.id);
+      const title = normalizeOptionalString(entry.title);
+      const summary = normalizeOptionalString(entry.summary);
+      const sourceType = normalizeEvidenceSourceType(entry.sourceType);
+      const score = normalizeFiniteScore(entry.score);
+
+      if (!id || !title || !summary || !sourceType || score === undefined) {
+        return null;
+      }
+
+      const category = normalizeOptionalString(entry.category);
+      const reason = normalizeOptionalString(entry.reason);
+      const url = normalizeOptionalString(entry.url);
+
+      return {
+        id,
+        title,
+        summary,
+        sourceType,
+        score,
+        ...(category && { category }),
+        ...(reason && { reason }),
+        ...(url && { url }),
+      };
+    })
+    .filter((entry): entry is EvidenceCard => entry !== null);
 }
 
 function statusFromSuppressedReason(
@@ -142,11 +206,11 @@ const FEATURE_STATUS_LABELS: Record<
   Record<FeatureExecutionState['status'], string>
 > = {
   rag: {
-    disabled: 'RAG 꺼짐',
-    enabled: 'RAG 허용',
-    used: 'RAG 사용됨',
-    suppressed: 'RAG 생략됨',
-    unavailable: 'RAG 사용 불가',
+    disabled: '지식 검색 꺼짐',
+    enabled: '지식 검색 허용',
+    used: '지식 검색 사용됨',
+    suppressed: '지식 검색 생략됨',
+    unavailable: '지식 검색 사용 불가',
   },
   web: {
     disabled: 'Web 꺼짐',

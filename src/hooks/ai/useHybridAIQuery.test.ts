@@ -249,7 +249,7 @@ describe('mergeFinishedAssistantIntoMessages', () => {
         toolResultSummaries: [
           {
             toolName: 'searchKnowledgeBase',
-            label: 'RAG 지식베이스 검색',
+            label: '지식 근거 검색',
             status: 'completed',
             summary: '2건의 문서를 참조했습니다.',
           },

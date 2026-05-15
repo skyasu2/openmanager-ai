@@ -1,4 +1,7 @@
-import type { RetrievalMetadata } from '../lib/retrieval-contract';
+import type {
+  EvidenceCard,
+  RetrievalMetadata,
+} from '../lib/retrieval-contract';
 import { getPublicErrorResponse } from '../lib/error-handler';
 import { logger } from '../lib/logger';
 import {
@@ -106,6 +109,7 @@ export async function processJobSynchronously({
       sourceType: string;
       category?: string;
     }> = [];
+    let evidenceCards: EvidenceCard[] = [];
     let finalAgent: string | undefined;
     let traceId: string | undefined;
     let retrieval: RetrievalMetadata | undefined;
@@ -272,6 +276,9 @@ export async function processJobSynchronously({
         if (Array.isArray(doneData.ragSources)) {
           ragSources = doneData.ragSources as typeof ragSources;
         }
+        if (Array.isArray(doneData.evidenceCards)) {
+          evidenceCards = doneData.evidenceCards as EvidenceCard[];
+        }
 
         traceId = getStringValue(metadata.traceId) ?? traceId;
         retrieval = parseRetrievalMetadata(metadata.retrieval) ?? retrieval;
@@ -325,6 +332,7 @@ export async function processJobSynchronously({
       toolResults,
       toolsCalled,
       ragSources,
+      evidenceCards,
       metadata: {
         ...(analysisMode && { analysisMode }),
         ...(typeof enableRAG === 'boolean' && { enableRAG }),

@@ -4,11 +4,11 @@
 > Owner: platform-data
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-10
+> Last reviewed: 2026-05-15
 > Canonical: docs/reference/architecture/infrastructure/database.md
 > Tags: database,supabase,schema,infrastructure
 >
-> **프로젝트 버전**: v8.11.120 | **Updated**: 2026-05-10
+> **프로젝트 버전**: v8.11.120 | **Updated**: 2026-05-15
 
 ## 현재 역할
 
@@ -17,7 +17,7 @@ Supabase는 인증, RAG/KB, audit 같은 영속 데이터의 기준입니다. Da
 | 영역 | 현재 기준 |
 |---|---|
 | Auth/session | Supabase Auth + 자체 guest session |
-| RAG/KB | `knowledge_base` + `search_knowledge_text` Knowledge Retrieval Lite. `command_vectors`/`knowledge_relationships`는 legacy service-role inventory |
+| RAG/KB | `knowledge_base` + `search_knowledge_text` Knowledge Retrieval Lite. `command_vectors`/`knowledge_relationships`/`knowledge_base.embedding`은 request path 밖 legacy inventory이며 destructive removal은 승인 대기 |
 | Audit/security logs | `security_audit_logs` 계열 |
 | Monitoring runtime | `public/data/otel-data` → `MetricsProvider`/AI Engine precomputed state |
 | AI jobs/cache | Redis/Cloud Tasks, Supabase가 job store 아님 |
@@ -199,7 +199,7 @@ FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 - post-check: legacy RPC 6개 `to_regprocedure(...)=false`, `search_knowledge_text=true`
 - live smoke: `npm run supabase:rag:smoke` rows `3/3`
 
-테이블 삭제는 별도 데이터 migration으로 분리합니다. 2026-05-10 운영 DB 실측 기준 `knowledge_base=53`, `command_vectors=26`, `knowledge_relationships=170` 행이 있어, 테이블/컬럼 삭제는 현재 코드 cleanup 범위를 넘습니다. 같은 날 `pg_depend` read-only 조회 기준 제거 대상 legacy RPC 6개에 매달린 dependent object는 0건이었습니다.
+테이블/컬럼 삭제는 별도 destructive migration(T5)으로 분리합니다. 2026-05-10 운영 DB 실측 기준 `knowledge_base=53`, `command_vectors=26`, `knowledge_relationships=170` 행이 있었고, `command_vectors`에만 남은 text는 `20260510032441`로 `knowledge_base`에 backfill됐습니다. `command_vectors`, `knowledge_relationships`, `knowledge_base.embedding` 제거는 운영 DB read-only precheck와 사용자 명시 승인 전에는 적용하지 않습니다. 같은 날 `pg_depend` read-only 조회 기준 제거 대상 legacy RPC 6개에 매달린 dependent object는 0건이었습니다.
 
 ### Remaining legacy vector/graph helper cleanup (2026-05-10)
 

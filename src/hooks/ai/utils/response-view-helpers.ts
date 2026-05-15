@@ -1,7 +1,13 @@
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
-import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
-import type { RetrievalMetadata } from '@/types/ai/retrieval-status';
+import {
+  normalizeEvidenceCards,
+  normalizeRetrievalMetadata,
+} from '@/lib/ai/utils/retrieval-status';
+import type {
+  EvidenceCard,
+  RetrievalMetadata,
+} from '@/types/ai/retrieval-status';
 import type { StreamRagSource } from '../types/stream-rag.types';
 
 export type ResponseSourceData = {
@@ -13,6 +19,7 @@ export type ResponseSourceData = {
   shouldCollapse?: unknown;
   assistantResponseView?: unknown;
   ragSources?: unknown;
+  evidenceCards?: unknown;
   traceId?: unknown;
   metadata?: unknown;
   /** 실제 호출된 도구 이름 목록 (Cloud Run done 이벤트에서 전달) */
@@ -185,4 +192,20 @@ export function extractRetrievalMetadataFromDoneData(
   return normalizeRetrievalMetadata(
     getNestedMetadataValue(doneData, 'retrieval')
   );
+}
+
+export function extractEvidenceCardsFromDoneData(
+  doneData: ResponseSourceData | undefined
+): EvidenceCard[] | undefined {
+  if (!doneData) return undefined;
+
+  const direct = normalizeEvidenceCards(
+    (doneData as Record<string, unknown>).evidenceCards
+  );
+  if (direct.length > 0) return direct;
+
+  const nested = normalizeEvidenceCards(
+    getNestedMetadataValue(doneData, 'evidenceCards')
+  );
+  return nested.length > 0 ? nested : undefined;
 }

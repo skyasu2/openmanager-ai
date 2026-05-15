@@ -43,8 +43,8 @@ function unwrapToolOutputEnvelope(output: unknown): unknown {
 export type RagSource = LegacyRagSource;
 
 /**
- * toolResult에서 RAG sources를 추출하는 유틸리티.
- * searchKnowledgeBase, searchWeb 결과를 통합 처리.
+ * toolResult에서 legacy source boundary를 추출하는 유틸리티.
+ * searchKnowledgeBase는 EvidenceCard가 canonical이므로 ragSources를 만들지 않는다.
  */
 export function extractRagSources(
   toolName: string,
@@ -53,20 +53,6 @@ export function extractRagSources(
   if (toolOutput === null || toolOutput === undefined || typeof toolOutput !== 'object') return [];
 
   const output = toolOutput as Record<string, unknown>;
-
-  if (toolName === 'searchKnowledgeBase') {
-    const similarCases = (output.similarCases ?? output.results) as
-      | Array<Record<string, unknown>>
-      | undefined;
-    if (!Array.isArray(similarCases)) return [];
-
-    return similarCases.map((doc) => ({
-      title: String(doc.title ?? doc.name ?? 'Unknown'),
-      similarity: Number(doc.similarity ?? doc.score ?? 0),
-      sourceType: String(doc.sourceType ?? doc.type ?? 'knowledge'),
-      category: doc.category ? String(doc.category) : undefined,
-    }));
-  }
 
   if (toolName === 'searchWeb') {
     const webResults = output.results as
@@ -93,6 +79,12 @@ export function extractEvidenceCards(
   const directCards = readDirectEvidenceCards(toolOutput);
   if (directCards.length > 0) {
     return directCards;
+  }
+
+  if (toolName === 'searchKnowledgeBase') {
+    return legacyRagSourcesToEvidenceCards(
+      readKnowledgeResultsAsLegacySources(toolOutput)
+    );
   }
 
   return legacyRagSourcesToEvidenceCards(
@@ -185,6 +177,26 @@ function readDirectEvidenceCards(toolOutput: unknown): EvidenceCard[] {
       };
     })
     .filter((card): card is EvidenceCard => card !== null);
+}
+
+function readKnowledgeResultsAsLegacySources(toolOutput: unknown): LegacyRagSource[] {
+  if (toolOutput === null || toolOutput === undefined || typeof toolOutput !== 'object') {
+    return [];
+  }
+
+  const output = toolOutput as Record<string, unknown>;
+  const similarCases = (output.similarCases ?? output.results) as
+    | Array<Record<string, unknown>>
+    | undefined;
+  if (!Array.isArray(similarCases)) return [];
+
+  return similarCases.map((doc) => ({
+    title: String(doc.title ?? doc.name ?? 'Unknown'),
+    similarity: Number(doc.similarity ?? doc.score ?? 0),
+    sourceType: String(doc.sourceType ?? doc.type ?? 'knowledge'),
+    category: doc.category ? String(doc.category) : undefined,
+    url: doc.url ? String(doc.url) : undefined,
+  }));
 }
 
 function readString(value: unknown): string | undefined {

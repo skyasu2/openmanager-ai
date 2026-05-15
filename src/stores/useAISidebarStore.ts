@@ -29,6 +29,7 @@ import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
+  EvidenceCard,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
 import type { JobDataSlot } from '@/types/ai-jobs';
@@ -62,7 +63,7 @@ export interface AnalysisBasis {
   timeRange?: string;
   /** 실제 호출된 도구 이름 목록 */
   toolsCalled?: string[];
-  /** RAG 검색 출처 목록 */
+  /** Legacy retrieval source list for old chat history and web-source cards */
   ragSources?: Array<{
     title: string;
     similarity: number;
@@ -70,6 +71,8 @@ export interface AnalysisBasis {
     category?: string;
     url?: string;
   }>;
+  /** Canonical retrieval evidence for new AI Engine responses */
+  evidenceCards?: EvidenceCard[];
   /** Retrieval execution contract from Cloud Run AI Engine */
   retrieval?: RetrievalMetadata;
   /** UI-facing status split: enabled vs used vs suppressed vs unavailable */

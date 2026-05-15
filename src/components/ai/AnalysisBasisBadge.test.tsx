@@ -33,7 +33,7 @@ describe('AnalysisBasisBadge', () => {
   });
 
   const basis: AnalysisBasis = {
-    dataSource: 'RAG 지식베이스 검색 (2건)',
+    dataSource: '지식 근거 검색 (2건)',
     engine: 'Cloud Run AI',
     ragUsed: true,
     ragSources: [
@@ -56,15 +56,15 @@ describe('AnalysisBasisBadge', () => {
     render(<AnalysisBasisBadge basis={basis} />);
 
     expect(screen.getByText('분석 근거')).toBeInTheDocument();
-    expect(screen.queryByText('RAG 참조 문서')).not.toBeInTheDocument();
+    expect(screen.queryByText('참조 근거')).not.toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    expect(screen.getByText('RAG 참조 문서')).toBeInTheDocument();
+    expect(screen.getByText('참조 근거')).toBeInTheDocument();
     expect(screen.getByText('Cloud Run AI')).toBeInTheDocument();
-    expect(screen.getByText('RAG 사용됨')).toBeInTheDocument();
+    expect(screen.getByText('지식 검색 사용됨')).toBeInTheDocument();
     expect(screen.getByText('Web 사용됨')).toBeInTheDocument();
     expect(screen.getByText('Redis OOM incident')).toBeInTheDocument();
     expect(screen.getByText('91%')).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe('AnalysisBasisBadge', () => {
     );
 
     expect(screen.getByText('Web 사용됨')).toBeInTheDocument();
-    expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
+    expect(screen.queryByText('지식 검색 사용됨')).not.toBeInTheDocument();
   });
 
   it('renders a concise collapsed summary before expansion', () => {
@@ -145,7 +145,7 @@ describe('AnalysisBasisBadge', () => {
         toolResultSummaries={[
           {
             toolName: 'searchKnowledgeBase',
-            label: 'RAG 지식베이스 검색',
+            label: '지식 근거 검색',
             summary: '2개 결과를 반환했습니다.',
             status: 'completed',
           },
@@ -218,7 +218,7 @@ describe('AnalysisBasisBadge', () => {
     render(
       <AnalysisBasisBadge
         basis={{
-          dataSource: '일반 대화 응답 (RAG 활성)',
+          dataSource: '일반 대화 응답 (지식 검색 활성)',
           engine: 'Streaming AI',
           ragUsed: false,
           analysisMode: 'thinking',
@@ -243,10 +243,10 @@ describe('AnalysisBasisBadge', () => {
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    expect(screen.getByText('RAG 생략됨')).toBeInTheDocument();
+    expect(screen.getByText('지식 검색 생략됨')).toBeInTheDocument();
     expect(screen.getByText('Web 허용')).toBeInTheDocument();
     expect(screen.getByText('심층 분석 요청됨')).toBeInTheDocument();
-    expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
+    expect(screen.queryByText('지식 검색 사용됨')).not.toBeInTheDocument();
     expect(
       screen.queryByText('provider-native reasoning')
     ).not.toBeInTheDocument();
@@ -369,7 +369,7 @@ describe('AnalysisBasisBadge', () => {
         toolResultSummaries={[
           {
             toolName: 'searchKnowledgeBase',
-            label: 'RAG 지식베이스 검색',
+            label: '지식 근거 검색',
             summary: '2개 결과를 반환했습니다.',
             preview: '{"results":[{"title":"Redis OOM incident"}]}',
             status: 'completed',
@@ -569,7 +569,7 @@ describe('AnalysisBasisBadge', () => {
         toolResultSummaries={[
           {
             toolName: 'searchKnowledgeBase',
-            label: 'RAG 지식베이스 검색',
+            label: '지식 근거 검색',
             summary: '2개 결과를 반환했습니다.',
             status: 'completed',
           },
@@ -622,7 +622,7 @@ describe('AnalysisBasisBadge', () => {
         toolResultSummaries={[
           {
             toolName: 'searchKnowledgeBase',
-            label: 'RAG 지식베이스 검색',
+            label: '지식 근거 검색',
             summary: '2개 결과를 반환했습니다.',
             preview: '{"results":[{"title":"Redis OOM incident"}]}',
             status: 'completed',
@@ -743,7 +743,7 @@ describe('AnalysisBasisBadge', () => {
         toolResultSummaries={[
           {
             toolName: 'searchKnowledgeBase',
-            label: 'RAG 지식베이스 검색',
+            label: '지식 근거 검색',
             summary: '2개 결과를 반환했습니다.',
             status: 'completed',
           },

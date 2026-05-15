@@ -270,7 +270,9 @@ supervisorRouter.post('/', async (c: Context) => {
     let sanitizedResponse = filterMaliciousOutput(sanitizeChineseCharacters(result.response));
 
     // Append web search sources as citations if LLM omitted them
-    const webSources = result.ragSources?.filter((s) => s.sourceType === 'web' && s.url);
+    const webSources =
+      result.evidenceCards?.filter((s) => s.sourceType === 'web' && s.url) ??
+      result.ragSources?.filter((s) => s.sourceType === 'web' && s.url);
     if (webSources?.length && !sanitizedResponse.includes('](http')) {
       const citations = webSources
         .slice(0, 5)

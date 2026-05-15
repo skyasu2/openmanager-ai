@@ -1117,7 +1117,7 @@ cloud-run/ai-engine/src/
 ├── lib/
 │   ├── knowledge-retrieval-lite.ts    # active 내부 지식 검색 (BM25 + metadata boost)
 │   ├── retrieval-contract.ts          # EvidenceCard/RetrievalMetadata SSOT
-│   ├── legacy-contracts.ts            # legacy useGraphRAG 입력 호환 경계
+│   ├── legacy-contracts.ts            # legacy ragSources response/history bridge
 │   ├── rag-doc-policy.ts              # knowledge_base corpus 길이/카테고리 정책
 │   └── rag-merge-planner.ts           # knowledge_base 중복 문서 merge 계획
 └── data/
@@ -1447,7 +1447,7 @@ POST /api/ai/jobs
 
 - **[System Architecture](../system/system-architecture-current.md)** - 배포/데이터 흐름 포함 전체 구조
 - **[Monitoring & ML Engine](./monitoring-ml.md)** - 이상탐지, 트렌드 예측
-- **[RAG & Knowledge Engine](./rag-knowledge-engine.md)** - 검색 및 지식 그래프
+- **[Knowledge Retrieval Lite](./rag-knowledge-engine.md)** - 내부 지식 검색 및 evidence 계약
 - **[Resilience Architecture](../infrastructure/resilience.md)** - CB 상태 전이, 쿼타 임계값
 - **[Data Architecture](../data/data-architecture.md)** - 서버 데이터 아키텍처
 > 참고: `/api/ai/supervisor`는 여전히 legacy JSON/text proxy로 남아 있으며, local dev fallback과 cache/plain callers가 사용합니다. 현재 기본 AI 채팅 경로는 `/api/ai/supervisor/stream/v2`입니다.

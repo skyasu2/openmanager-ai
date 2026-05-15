@@ -169,7 +169,7 @@ describe('transformMessages', () => {
     expect(assistant?.metadata?.analysisBasis?.engine).toBe('Cloud Run AI');
     expect(assistant?.metadata?.analysisBasis?.ragSources).toEqual(ragSources);
     expect(assistant?.metadata?.analysisBasis?.dataSource).toContain(
-      'RAG 지식베이스 검색'
+      '지식 근거 검색'
     );
     expect(assistant?.metadata?.analysisBasis?.ragUsed).toBe(true);
   });

@@ -16,6 +16,19 @@ export interface RetrievalMetadata {
   webUsed: boolean;
 }
 
+export type EvidenceSourceType = 'knowledge' | 'incident' | 'runbook' | 'web';
+
+export interface EvidenceCard {
+  id: string;
+  title: string;
+  summary: string;
+  sourceType: EvidenceSourceType;
+  score: number;
+  category?: string;
+  reason?: string;
+  url?: string;
+}
+
 export type FeatureExecutionStatus =
   | 'disabled'
   | 'enabled'

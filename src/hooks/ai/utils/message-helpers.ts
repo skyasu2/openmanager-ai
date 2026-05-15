@@ -20,6 +20,7 @@ import {
 } from '@/lib/ai/utils/message-normalizer';
 import {
   buildAnalysisFeatureStatus,
+  normalizeEvidenceCards,
   normalizeRetrievalMetadata,
 } from '@/lib/ai/utils/retrieval-status';
 import {
@@ -31,6 +32,7 @@ import type {
   EnhancedChatMessage,
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
+import type { EvidenceCard } from '@/types/ai/retrieval-status';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import type {
   DeferredToolResult,
@@ -68,6 +70,23 @@ function findRetrievalMetadataFromToolParts(toolParts: ToolPartWithCallId[]) {
     if (retrieval) return retrieval;
   }
   return undefined;
+}
+
+function findEvidenceCardsFromToolParts(
+  toolParts: ToolPartWithCallId[]
+): EvidenceCard[] {
+  const evidenceCards: EvidenceCard[] = [];
+  for (const toolPart of toolParts) {
+    if (toolPart.type !== 'tool-searchKnowledgeBase') continue;
+    const output = extractToolOutput(toolPart);
+    if (!output || typeof output !== 'object') continue;
+    evidenceCards.push(
+      ...normalizeEvidenceCards(
+        (output as Record<string, unknown>).evidenceCards
+      )
+    );
+  }
+  return evidenceCards;
 }
 
 function getSemanticEvidenceDataSource(
@@ -311,15 +330,33 @@ export function transformUIMessageToEnhanced(
       isServerAnalysisToolName
     );
 
-    // RAG 출처 추출 (job-queue: metadata, streaming: streamRagSources fallback)
+    // Retrieval evidence extraction: EvidenceCard is canonical; ragSources is
+    // retained only as a legacy boundary for old history and web-source cards.
+    const metadataEvidenceCards = normalizeEvidenceCards(
+      metadata?.evidenceCards
+    );
+    const evidenceCards =
+      metadataEvidenceCards.length > 0
+        ? metadataEvidenceCards
+        : findEvidenceCardsFromToolParts(toolParts);
+    const hasEvidenceCards = evidenceCards.length > 0;
+    const knowledgeEvidenceCount = evidenceCards.filter(
+      (card) => card.sourceType !== 'web'
+    ).length;
+    const webEvidenceCount = evidenceCards.filter(
+      (card) => card.sourceType === 'web'
+    ).length;
+
+    // Legacy RAG source extraction (job-queue: metadata, streaming fallback)
     const ragSources =
       metadata?.ragSources ?? (isLastMessage ? streamRagSources : undefined);
     const hasRag = ragSources && ragSources.length > 0;
 
     const webSources = ragSources?.filter((s) => s.sourceType === 'web') ?? [];
-    const hasWebSearch = webSources.length > 0;
+    const hasWebSearch = webEvidenceCount > 0 || webSources.length > 0;
     const hasKnowledgeSearch = Boolean(
-      ragSources?.some((s) => s.sourceType !== 'web')
+      knowledgeEvidenceCount > 0 ||
+        ragSources?.some((s) => s.sourceType !== 'web')
     );
     const retrieval =
       normalizeRetrievalMetadata(metadata?.retrieval) ??
@@ -348,18 +385,22 @@ export function transformUIMessageToEnhanced(
 
     // dataSource 결정: 실제 도구 호출 기반 + 토글 상태 반영
     let dataSource: string;
-    if (hasWebSearch) {
+    if (webEvidenceCount > 0) {
+      dataSource = `웹 검색 (${webEvidenceCount}건)`;
+    } else if (hasWebSearch) {
       dataSource = `웹 검색 (${webSources.length}건)`;
+    } else if (knowledgeEvidenceCount > 0) {
+      dataSource = `지식 근거 검색 (${knowledgeEvidenceCount}건)`;
     } else if (hasRag) {
-      dataSource = `RAG 지식베이스 검색 (${ragSources.length}건)`;
+      dataSource = `지식 근거 검색 (${ragSources.length}건)`;
     } else if (retrievalIndicatesKnowledgeUse) {
-      dataSource = `RAG 지식베이스 검색 (${retrieval?.evidenceCount ?? 0}건)`;
+      dataSource = `지식 근거 검색 (${retrieval?.evidenceCount ?? 0}건)`;
     } else if (semanticEvidenceDataSource) {
       dataSource = semanticEvidenceDataSource;
     } else if (hasServerAnalysisEvidence) {
       dataSource = '서버 실시간 데이터 분석';
     } else if (effectiveRagEnabled) {
-      dataSource = '일반 대화 응답 (RAG 활성)';
+      dataSource = '일반 대화 응답 (지식 검색 활성)';
     } else {
       dataSource = '일반 대화 응답';
     }
@@ -370,6 +411,7 @@ export function transformUIMessageToEnhanced(
       ragUsed: hasKnowledgeSearch || retrievalIndicatesKnowledgeUse,
       toolsCalled: calledToolNames.length > 0 ? calledToolNames : undefined,
       timeRange: hasServerAnalysisEvidence ? '최근 1시간' : undefined,
+      evidenceCards: hasEvidenceCards ? evidenceCards : undefined,
       ragSources: hasRag ? ragSources : undefined,
       ...(retrieval && { retrieval }),
       featureStatus,

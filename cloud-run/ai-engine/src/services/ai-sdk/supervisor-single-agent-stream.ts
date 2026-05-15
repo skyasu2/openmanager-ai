@@ -583,7 +583,7 @@ export async function* streamSingleAgent(
         };
       }
 
-      const ragSources = yield* replaySupervisorStreamToolEvents({
+      const streamToolEvidence = yield* replaySupervisorStreamToolEvents({
         steps,
         collectedToolResults,
         trace,
@@ -592,7 +592,7 @@ export async function* streamSingleAgent(
 
       const webCitationAppendix = buildWebCitationAppendix(
         fullText,
-        ragSources
+        streamToolEvidence.ragSources
       );
       if (webCitationAppendix.length > 0) {
         fullText += webCitationAppendix;
@@ -653,7 +653,9 @@ export async function* streamSingleAgent(
         totalTokensUsed,
         attempt,
         capturedError,
-        ragSources,
+        ragSources: streamToolEvidence.ragSources,
+        evidenceCards: streamToolEvidence.evidenceCards,
+        retrieval: streamToolEvidence.retrieval,
         semanticQueryTrace: domainEvidence?.metadata?.semanticQueryTrace,
       });
       return;

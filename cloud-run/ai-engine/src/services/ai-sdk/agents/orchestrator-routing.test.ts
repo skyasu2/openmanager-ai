@@ -975,7 +975,7 @@ describe('executeForcedRouting', () => {
 
     expect(result?.success).toBe(true);
     expect(result?.toolsCalled).toContain('searchKnowledgeBase');
-    expect(result?.ragSources).toHaveLength(1);
+    expect(result?.ragSources).toBeUndefined();
     expect(result?.evidenceCards).toHaveLength(1);
     expect(result?.metadata.retrieval).toEqual(
       expect.objectContaining({
@@ -1038,14 +1038,6 @@ describe('executeWithAgentFactory', () => {
         success: true,
         text: 'Redis 연결 실패는 cache 계층 로그와 런북을 함께 확인해야 합니다.',
         toolsCalled: ['searchKnowledgeBase'],
-        ragSources: [
-          {
-            title: 'Redis connection timeout runbook',
-            similarity: 0.88,
-            sourceType: 'runbook',
-            category: 'troubleshooting',
-          },
-        ],
         evidenceCards: [
           {
             id: 'kb-redis-connection',
@@ -1091,7 +1083,7 @@ describe('executeWithAgentFactory', () => {
 
     expect(result?.success).toBe(true);
     expect(result?.toolsCalled).toEqual(['searchKnowledgeBase']);
-    expect(result?.ragSources).toHaveLength(1);
+    expect(result?.ragSources).toBeUndefined();
     expect(result?.evidenceCards).toHaveLength(1);
     expect(result?.metadata.retrieval).toEqual(
       expect.objectContaining({

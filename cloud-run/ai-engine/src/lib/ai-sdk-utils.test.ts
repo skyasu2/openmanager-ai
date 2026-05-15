@@ -43,7 +43,7 @@ describe('extractToolResultOutput', () => {
 });
 
 describe('extractRagSources', () => {
-  it('maps searchKnowledgeBase similarCases to ragSources', () => {
+  it('does not create legacy ragSources for searchKnowledgeBase output', () => {
     const output = {
       similarCases: [
         {
@@ -62,35 +62,24 @@ describe('extractRagSources', () => {
 
     const result = extractRagSources('searchKnowledgeBase', output);
 
-    expect(result).toEqual([
-      {
-        title: 'Redis OOM incident',
-        similarity: 0.92,
-        sourceType: 'knowledge-base',
-        category: 'incident',
-      },
-      {
-        title: 'CPU throttle runbook',
-        similarity: 0.78,
-        sourceType: 'runbook',
-        category: undefined,
-      },
-    ]);
+    expect(result).toEqual([]);
   });
 
-  it('supports legacy results field for searchKnowledgeBase', () => {
+  it('maps legacy searchKnowledgeBase results into EvidenceCard fallback', () => {
     const output = {
       results: [{ title: 'Legacy KB', score: 0.65, type: 'knowledge' }],
     };
 
-    const result = extractRagSources('searchKnowledgeBase', output);
+    const result = extractEvidenceCards('searchKnowledgeBase', output);
 
     expect(result).toEqual([
       {
+        id: 'legacy-rag-0-legacy-kb',
         title: 'Legacy KB',
-        similarity: 0.65,
+        summary: 'Legacy KB',
         sourceType: 'knowledge',
-        category: undefined,
+        score: 0.65,
+        reason: 'legacy-rag-source:knowledge',
       },
     ]);
   });

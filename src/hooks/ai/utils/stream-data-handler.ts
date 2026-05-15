@@ -22,6 +22,7 @@ import type { StreamRagSource } from '../types/stream-rag.types';
 import {
   buildStructuredResponseView,
   extractAnalysisModeFromDoneData,
+  extractEvidenceCardsFromDoneData,
   extractLatencyTierFromDoneData,
   extractModeSelectionSourceFromDoneData,
   extractProcessingTimeFromDoneData,
@@ -417,6 +418,7 @@ export function handleStreamDataPart(
     const modeSelectionSource =
       extractModeSelectionSourceFromDoneData(doneData);
     const retrieval = extractRetrievalMetadataFromDoneData(doneData);
+    const evidenceCards = extractEvidenceCardsFromDoneData(doneData);
     const usedFallback = extractUsedFallbackFromDoneData(doneData);
     const fallbackReason = extractFallbackReasonFromDoneData(doneData);
     const routeDecision = extractRouteDecisionFromDoneData(doneData);
@@ -434,6 +436,7 @@ export function handleStreamDataPart(
       ...(modeSelectionSource && { modeSelectionSource }),
       ...(toolsCalled.length > 0 && { toolsCalled }),
       ...(analysisMode && { analysisMode }),
+      ...(evidenceCards && { evidenceCards }),
       ...(retrieval && { retrieval }),
       ...(typeof usedFallback === 'boolean' && { usedFallback }),
       ...(fallbackReason && { fallbackReason }),
@@ -454,6 +457,7 @@ export function handleStreamDataPart(
       traceId ||
       toolsCalled.length > 0 ||
       analysisMode ||
+      evidenceCards ||
       retrieval ||
       typeof usedFallback === 'boolean' ||
       fallbackReason ||

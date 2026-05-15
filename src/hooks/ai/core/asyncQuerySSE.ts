@@ -11,7 +11,10 @@ import {
 } from '@/lib/ai/error-details';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
-import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
+import {
+  normalizeEvidenceCards,
+  normalizeRetrievalMetadata,
+} from '@/lib/ai/utils/retrieval-status';
 import { logger } from '@/lib/logging';
 import { calculateBackoff } from '@/lib/utils/retry';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
@@ -212,6 +215,7 @@ export function connectAsyncQuerySSE(
       const semanticQueryTrace = normalizeSemanticQueryTrace(
         metadata.semanticQueryTrace
       );
+      const evidenceCards = normalizeEvidenceCards(resultData.evidenceCards);
 
       onResult({
         success: true,
@@ -222,6 +226,7 @@ export function connectAsyncQuerySSE(
           : undefined,
         toolResults: resultData.toolResults,
         ragSources: resultData.ragSources,
+        ...(evidenceCards.length > 0 && { evidenceCards }),
         processingTimeMs: resultData.processingTimeMs,
         latencyTier:
           metadata.latencyTier === 'fast' ||

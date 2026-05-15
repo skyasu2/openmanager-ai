@@ -329,7 +329,7 @@ describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 90000 }, () =
       }
     });
 
-    it('should propagate ragSources from tool results', async () => {
+    it('should propagate evidenceCards from knowledge tool results', async () => {
       const { executeMultiAgent } = await import('./orchestrator');
       const { generateText } = await import('ai');
 
@@ -367,10 +367,11 @@ describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 90000 }, () =
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.ragSources).toBeDefined();
-        expect(result.ragSources).toHaveLength(1);
-        expect(result.ragSources?.[0]?.title).toBe('Redis OOM incident');
-        expect(result.ragSources?.[0]?.similarity).toBe(0.91);
+        expect(result.ragSources).toBeUndefined();
+        expect(result.evidenceCards).toBeDefined();
+        expect(result.evidenceCards).toHaveLength(1);
+        expect(result.evidenceCards?.[0]?.title).toBe('Redis OOM incident');
+        expect(result.evidenceCards?.[0]?.score).toBe(0.91);
       }
     });
   });

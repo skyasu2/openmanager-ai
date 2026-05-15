@@ -156,6 +156,7 @@ export function buildAssistantMessageFromAsyncResult(
     typeof result.ttfbMs === 'number';
   const metadata =
     result.ragSources ||
+    (result.evidenceCards && result.evidenceCards.length > 0) ||
     result.traceId ||
     typeof result.processingTimeMs === 'number' ||
     Boolean(result.latencyTier) ||
@@ -173,6 +174,10 @@ export function buildAssistantMessageFromAsyncResult(
     hasProviderTelemetry
       ? {
           ...(result.ragSources && { ragSources: result.ragSources }),
+          ...(result.evidenceCards &&
+            result.evidenceCards.length > 0 && {
+              evidenceCards: result.evidenceCards,
+            }),
           ...(result.retrieval && { retrieval: result.retrieval }),
           ...(result.traceId && { traceId: result.traceId }),
           ...(typeof result.processingTimeMs === 'number' && {

@@ -366,7 +366,7 @@ describe('ChatInputArea popover', () => {
 
     expect(screen.getByText('Web On')).toBeInTheDocument();
     expect(screen.queryByText('RAG On')).not.toBeInTheDocument();
-    expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
+    expect(screen.queryByText('지식 검색 사용됨')).not.toBeInTheDocument();
     expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
   });
 

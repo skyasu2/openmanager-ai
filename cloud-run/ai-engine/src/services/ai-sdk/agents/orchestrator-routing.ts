@@ -297,13 +297,6 @@ export async function executeForcedRouting(
           return {
             success: true,
             response,
-            ragSources: directEvidence.map((item) => ({
-              title: item.title,
-              similarity: item.similarity,
-              sourceType: item.sourceType,
-              category: item.category,
-              url: item.url,
-            })),
             evidenceCards: directEvidenceCards,
             handoffs: [{
               from: 'Orchestrator',
@@ -499,14 +492,18 @@ export async function executeForcedRouting(
             }
             retrievalMetadata = asRetrievalMetadata(kbResult.retrieval) ?? retrievalMetadata;
             const similarCases = (kbResult.similarCases ?? kbResult.results) as Array<Record<string, unknown>> | undefined;
-            if (Array.isArray(similarCases)) {
-              for (const doc of similarCases) {
-                pushRagSource({
+            if (evidenceCards.length === 0 && Array.isArray(similarCases)) {
+              const legacyEvidenceCards = legacyRagSourcesToEvidenceCards(
+                similarCases.map((doc) => ({
                   title: String(doc.title ?? doc.name ?? 'Unknown'),
                   similarity: Number(doc.similarity ?? doc.score ?? 0),
                   sourceType: String(doc.sourceType ?? doc.type ?? 'knowledge'),
                   category: doc.category ? String(doc.category) : undefined,
-                });
+                  url: doc.url ? String(doc.url) : undefined,
+                }))
+              );
+              for (const card of legacyEvidenceCards) {
+                pushEvidenceCard(card);
               }
             }
           }
@@ -516,12 +513,24 @@ export async function executeForcedRouting(
             const webResults = webResult.results as Array<Record<string, unknown>> | undefined;
             if (Array.isArray(webResults)) {
               for (const doc of webResults) {
+                const title = String(doc.title ?? 'Web Result');
+                const score = Number(doc.score ?? 0);
+                const url = doc.url ? String(doc.url) : undefined;
                 pushRagSource({
-                  title: String(doc.title ?? 'Web Result'),
-                  similarity: Number(doc.score ?? 0),
+                  title,
+                  similarity: score,
                   sourceType: 'web',
                   category: 'web-search',
-                  url: doc.url ? String(doc.url) : undefined,
+                  url,
+                });
+                pushEvidenceCard({
+                  id: `web-${evidenceCards.length}-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64) || 'source'}`,
+                  title,
+                  summary: title,
+                  sourceType: 'web',
+                  score: Number.isFinite(score) ? Math.min(1, Math.max(0, score)) : 0,
+                  category: 'web-search',
+                  ...(url && { url }),
                 });
               }
             }
@@ -626,9 +635,7 @@ export async function executeForcedRouting(
     const resolvedEvidenceCards =
       evidenceCards.length > 0
         ? evidenceCards
-        : knowledgeRetrievalAttempted && ragSources.length > 0
-          ? legacyRagSourcesToEvidenceCards(ragSources.slice(0, evidenceBudget))
-          : [];
+        : [];
     const resolvedRetrievalMetadata = knowledgeRetrievalAttempted
       ? createRetrievalMetadata({
           retrievalEnabled: true,
