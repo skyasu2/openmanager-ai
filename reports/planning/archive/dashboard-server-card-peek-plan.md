@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-15
 > Tags: dashboard, ux, server-card, progressive-disclosure
@@ -96,12 +96,12 @@ After:
 
 ## 테스트 시나리오
 
-- [ ] 초기 렌더: 1.5행 분량만 보이고 나머지는 페이드로 가려짐
-- [ ] "더 보기" 클릭: 카드 그리드가 부드럽게 확장되고 페이드 사라짐
-- [ ] "접기" 클릭: 다시 1.5행으로 수축, 페이드 복원
-- [ ] 뷰 모드 전환(촘촘히/넓게): peek 높이가 올바르게 재계산됨
-- [ ] 서버가 initialVisibleRows 이하일 때: peek 오버레이 미표시 (더 볼 것 없음)
-- [ ] 모바일(1열): 카드 높이 기반 peek 높이 정상 동작
+- [x] 초기 렌더: 1.5행 분량만 보이고 나머지는 페이드로 가려짐
+- [x] "더 보기" 클릭: 카드 그리드가 부드럽게 확장되고 페이드 사라짐
+- [x] "접기" 클릭: 다시 1.5행으로 수축, 페이드 복원
+- [x] 뷰 모드 전환(촘촘히/넓게): peek 높이가 올바르게 재계산됨
+- [x] 서버가 initialVisibleRows 이하일 때: peek 오버레이 미표시 (더 볼 것 없음)
+- [x] 모바일(1열): 카드 높이 기반 peek 높이 정상 동작
 
 ## SDD 게이트
 
@@ -112,6 +112,17 @@ After:
 ## 진행 기록
 
 - 2026-05-15 Codex: TODO Active Task와 계획서 메타데이터를 확인했고, 본문 SDD 상태 표기를 `Approved`로 정정했다. 신규 UI 동작이므로 failing test 선행 커밋 후 구현한다.
+- 2026-05-15 Codex: SDD 선행 커밋 `test(spec): server card peek UX add failing tests`로 peek wrapper/fade/전환/모바일 계약을 추가했고, 구현 전 targeted Vitest 실패를 확인했다.
+- 2026-05-15 Codex: `ServerDashboard.tsx`에 초기 상태 전용 peek wrapper를 추가했다. 기존 표시/페이지네이션/호출부 props는 유지하고, `visibleRows === initialVisibleRows`인 더보기 가능 상태에서만 1.5행 `max-height`와 하단 fade overlay를 적용한다. 구현 후 단일 완료 계획서로 archive 이동.
+- 검증:
+  - `npx vitest run --config config/testing/vitest.config.dom.ts src/components/dashboard/ServerDashboard.test.tsx --silent=false` → 1 file / 12 tests passed
+  - `npm run type-check` → passed
+  - `npm run lint` → passed (`reports/qa/qa-tracker.json` size info only)
+  - `npm run test:quick` → passed
+  - `npm run line-guard` → no fail-threshold violations
+  - `npm run docs:budget` → passed
+  - `npm run docs:ai-consistency` → passed
+  - `git diff --check` → passed
 
 ## 보류 항목 (이번 범위 외)
 

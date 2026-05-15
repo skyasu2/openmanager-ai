@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (`post-2026-0515-improvement-plan.md` T2 useAIChatCore 분할 완료)
+**Last Updated**: 2026-05-15 KST (서버 카드 Peek UX 개선 완료, `dashboard-server-card-peek-plan.md` archive 이동)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 서버 카드 Peek UX 개선 | Medium | In Progress (Codex) | 초기 1.5행 + 페이드 오버레이로 "더 있음" 암시. 상세: [dashboard-server-card-peek-plan.md](dashboard-server-card-peek-plan.md) |
+| 현재 진행 중인 작업 없음 | — | Idle | 서버 카드 Peek UX 개선은 SDD 선행 테스트 후 구현 완료. 다음 후보는 Backlog의 기술 부채 해소 리팩터 T3 `message-helpers.ts` 분리. |
 
 ---
 
@@ -38,6 +38,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~서버 카드 Peek UX 개선~~ | — | **완료** — `ServerDashboard.tsx` 서버 카드 그리드에 초기 상태 전용 1.5행 `max-height`와 하단 fade overlay를 추가했다. 기존 `initialVisibleRows`/페이지네이션 호출부는 유지하고, 더 보기/접기/뷰 모드/모바일/숨길 서버 없음 회귀 테스트를 보강했다. 검증: targeted Vitest 1 file / 12 tests, `type-check`, `lint`, `test:quick`, `line-guard`, docs checks, `git diff --check` 통과. 상세 계획서 archive 이동: [archive/dashboard-server-card-peek-plan.md](archive/dashboard-server-card-peek-plan.md) |
 | ~~useAIChatCore guidance CTA helper 분리~~ | — | **완료** — `src/hooks/ai/core/chat-artifact-guidance.ts`로 guidance CTA target→artifact intent/query 매핑, CTA 실행 차단, guidance/direct artifact request 분기를 이동했다. `useAIChatCore.ts`는 724줄 → 597줄로 축소되어 계획 기준(≤600)을 충족. SDD 선행 커밋 `test(spec): add guidance CTA isolation regression` 후 구현. 검증: targeted Vitest `2 files / 18 tests` PASS. 상세: [post-2026-0515-improvement-plan.md](post-2026-0515-improvement-plan.md) T2 |
 | ~~GraphRAG 완전 제거 SDD / KRL production closure~~ | — | **완료** — active runtime의 GraphRAG/useGraphRAG/graph traversal/vector 검색 표면을 제거하고 KRL(`search_knowledge_text` + EvidenceCard/RetrievalMetadata)을 canonical 경로로 정리했다. Supabase legacy inventory 제거(T5)는 `QA-20260515-0505`, Vercel production T7은 `QA-20260515-0506`에서 17/17 PASS, pending 0, expert open gap 0으로 기록. release `v8.11.154`, tag pipeline `2527097775` success, main validate pipeline `2527097782` success. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) |
 | ~~Supabase legacy GraphRAG inventory 제거~~ | — | **완료** — 사용자 승인 후 production Supabase `drop_legacy_graphrag_inventory` migration 적용. `vector_documents_stats`, `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` 제거, `search_knowledge_text`/`search_vector` 보존 확인. `npm run supabase:rag:smoke` 16/16 PASS, `cloud-run/ai-engine` `rag:analyze` governance 12/12 PASS. QA: [QA-20260515-0505](../qa/runs/2026/qa-run-QA-20260515-0505.json). 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T5 |

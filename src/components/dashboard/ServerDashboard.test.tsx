@@ -234,6 +234,12 @@ describe('ServerDashboard', () => {
     expect(
       screen.getByTestId('server-dashboard-peek-fade')
     ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '넓게 보기' }));
+
+    expect(screen.getByTestId('server-dashboard-peek-container')).toHaveStyle({
+      maxHeight: '249px',
+    });
   });
 
   it('더 보기와 접기 전환에 맞춰 서버 카드 peek 페이드를 숨기고 복원한다', () => {
@@ -300,6 +306,33 @@ describe('ServerDashboard', () => {
     expect(
       screen.queryByTestId('server-dashboard-peek-fade')
     ).not.toBeInTheDocument();
+  });
+
+  it('모바일 1열에서도 서버 카드 peek 높이와 페이드 힌트를 유지한다', () => {
+    setViewportWidth(375);
+
+    render(
+      <ServerDashboard
+        servers={Array.from({ length: 3 }, (_, index) =>
+          createServer(`server-${index + 1}`, `API Server ${index + 1}`)
+        )}
+        totalServers={3}
+        currentPage={1}
+        totalPages={1}
+        pageSize={3}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        initialVisibleRows={2}
+      />
+    );
+
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(2);
+    expect(screen.getByTestId('server-dashboard-peek-container')).toHaveStyle({
+      maxHeight: '237px',
+    });
+    expect(
+      screen.getByTestId('server-dashboard-peek-fade')
+    ).toBeInTheDocument();
   });
 
   it('서버 탭 더 보기는 페이지 크기를 늘려 다음 줄을 같은 화면에 붙인다', () => {

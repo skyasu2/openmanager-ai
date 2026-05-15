@@ -29,6 +29,8 @@ type ServerViewMode = 'list' | 'grid';
 type ServerSortKey = 'status' | 'cpu' | 'memory' | 'name';
 
 const DEFAULT_VISIBLE_ROWS = 3;
+const COMPACT_SERVER_CARD_MIN_HEIGHT_PX = 150;
+const SERVER_CARD_PEEK_ROW_RATIO = 1.5;
 
 const SORT_OPTIONS: Array<{ value: ServerSortKey; label: string }> = [
   { value: 'status', label: '상태' },
@@ -80,6 +82,24 @@ function getServerCardColumns(viewMode: ServerViewMode, width: number): number {
   if (width < 1024) return 2;
   if (width < 1280) return 3;
   return 4;
+}
+
+function getServerCardGapPx(viewMode: ServerViewMode, width: number): number {
+  if (viewMode === 'grid') {
+    return width >= 640 ? 24 : 16;
+  }
+
+  return 12;
+}
+
+function getServerCardPeekMaxHeightPx(
+  viewMode: ServerViewMode,
+  width: number
+): number {
+  return Math.round(
+    COMPACT_SERVER_CARD_MIN_HEIGHT_PX * SERVER_CARD_PEEK_ROW_RATIO +
+      getServerCardGapPx(viewMode, width)
+  );
 }
 
 /**
@@ -316,6 +336,15 @@ export default function ServerDashboard({
   );
   const showCollapseButton = visibleRows > initialVisibleRows;
   const isOverviewSurface = surface === 'overview';
+  const visibleServerRows = Math.ceil(displayedServers.length / cardsPerRow);
+  const showServerGridPeek =
+    canShowMoreServers &&
+    visibleRows === initialVisibleRows &&
+    visibleServerRows > 1;
+  const serverGridPeekMaxHeight = `${getServerCardPeekMaxHeightPx(
+    viewMode,
+    viewportWidth
+  )}px`;
   const nextVisibleServerLimit = (visibleRows + rowStep) * cardsPerRow;
   const nextLoadedVisibleCount = Math.min(
     nextVisibleServerLimit,
@@ -332,6 +361,15 @@ export default function ServerDashboard({
       : paginationInfo.pageSize < paginationInfo.totalServers
         ? nextPagedServerCount >= paginationInfo.totalServers
         : false);
+  const showMoreServersButtonText =
+    isOverviewSurface || !willShowAllServersOnNextClick
+      ? '더 보기'
+      : '모든 서버 보기';
+  const showMoreServersButtonAriaLabel = `${
+    showMoreServersButtonText === '모든 서버 보기'
+      ? `더 보기 - ${showMoreServersButtonText}`
+      : showMoreServersButtonText
+  }${hiddenServerCount > 0 ? ` (${hiddenServerCount}대 남음)` : ''}`;
 
   const handleShowMoreServers = useCallback(() => {
     const nextRows = visibleRows + rowStep;
@@ -484,37 +522,54 @@ export default function ServerDashboard({
 
             {sortedServers.length > 0 ? (
               <div
-                data-testid={
-                  viewMode === 'grid'
-                    ? 'server-dashboard-grid'
-                    : 'server-dashboard-list'
-                }
-                className={
-                  viewMode === 'grid'
-                    ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 3xl:grid-cols-4'
-                    : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                data-testid="server-dashboard-peek-container"
+                className="relative transition-[max-height] duration-300 ease-out"
+                style={
+                  showServerGridPeek
+                    ? { maxHeight: serverGridPeekMaxHeight, overflow: 'hidden' }
+                    : undefined
                 }
               >
-                {displayedServers.map((server, index) => {
-                  const serverId = server.id || `server-${index}`;
+                <div
+                  data-testid={
+                    viewMode === 'grid'
+                      ? 'server-dashboard-grid'
+                      : 'server-dashboard-list'
+                  }
+                  className={
+                    viewMode === 'grid'
+                      ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 3xl:grid-cols-4'
+                      : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                  }
+                >
+                  {displayedServers.map((server, index) => {
+                    const serverId = server.id || `server-${index}`;
 
-                  return (
-                    <ServerCardErrorBoundary
-                      key={`boundary-${serverId}`}
-                      serverId={serverId}
-                    >
-                      <ImprovedServerCard
-                        key={serverId}
-                        server={server}
-                        variant="compact"
-                        showRealTimeUpdates={true}
-                        index={index}
-                        onClick={handleServerSelect}
-                        onOpenLogs={handleOpenLogs}
-                      />
-                    </ServerCardErrorBoundary>
-                  );
-                })}
+                    return (
+                      <ServerCardErrorBoundary
+                        key={`boundary-${serverId}`}
+                        serverId={serverId}
+                      >
+                        <ImprovedServerCard
+                          key={serverId}
+                          server={server}
+                          variant="compact"
+                          showRealTimeUpdates={true}
+                          index={index}
+                          onClick={handleServerSelect}
+                          onOpenLogs={handleOpenLogs}
+                        />
+                      </ServerCardErrorBoundary>
+                    );
+                  })}
+                </div>
+                {showServerGridPeek && (
+                  <div
+                    aria-hidden="true"
+                    data-testid="server-dashboard-peek-fade"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white via-white/85 to-transparent"
+                  />
+                )}
               </div>
             ) : (
               <div className="flex h-64 items-center justify-center">
@@ -566,13 +621,12 @@ export default function ServerDashboard({
                   {canShowMoreServers && (
                     <button
                       type="button"
+                      aria-label={showMoreServersButtonAriaLabel}
                       onClick={handleShowMoreServers}
                       className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:flex-none"
                     >
                       <ChevronDown className="h-4 w-4" />
-                      {isOverviewSurface || !willShowAllServersOnNextClick
-                        ? '더 보기'
-                        : '모든 서버 보기'}
+                      {showMoreServersButtonText}
                       {hiddenServerCount > 0 && (
                         <span className="text-blue-100">
                           ({hiddenServerCount}대 남음)
