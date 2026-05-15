@@ -1,12 +1,12 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-15
 > Tags: rag,graphrag,knowledge-retrieval-lite,free-tier,ai-engine,supabase
 
 # GraphRAG Removal and Knowledge Retrieval Lite Improvement Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-15
 - TODO.md 연결: Active Tasks > P1: GraphRAG 완전 제거 SDD
 
@@ -188,11 +188,9 @@ SELECT to_regclass('public.command_vectors') IS NULL AS command_vectors_removed;
   T10 근거 출처 가시성 + category smoke hardening
   T11 한국어 운영 표현 fallback + golden smoke hardening
   T5  destructive DB inventory removal
-
-승인/환경 의존
   T7  Vercel Playwright MCP production QA
 
-현재 비착수 후보
+별도 plan 후보
   live-otel adapter
   long-term memory
 ```
@@ -204,6 +202,7 @@ SELECT to_regclass('public.command_vectors') IS NULL AS command_vectors_removed;
 - T5는 schema hygiene 성격의 destructive 변경이라 사용자 승인 후 진행했고, 2026-05-15에 완료했다.
 - T10은 확인된 live category corpus를 고정하는 후속 작업이며, 2026-05-15에 완료했다.
 - T11은 새 검색 인프라 없이 현재 corpus에 맞춘 alias/fallback 품질 gate를 보강하는 follow-up이며, 2026-05-15에 완료했다.
+- T7은 `v8.11.154` 배포 후 Vercel production Playwright MCP QA `QA-20260515-0506`으로 완료했다.
 - `live-otel adapter`와 `long-term memory`는 비용, 보안, retention 계약이 부족해 이 계획의 구현 Task로 승격하지 않는다.
 
 ### Task 0 - SDD failing tests 커밋
@@ -372,8 +371,8 @@ test(spec): add graphrag removal and krl cleanup specs
 - [x] Supabase RAG smoke 통과
 - [x] Local Playwright MCP evidenceCards UI 회귀 QA 기록
 - [x] Supabase legacy graph/vector inventory 제거 후 live smoke/governance QA 기록
-- [ ] 배포가 포함되면 GitLab pipeline 확인
-- [ ] Vercel production + Playwright MCP conversational QA 기록
+- [x] 배포가 포함되면 GitLab pipeline 확인
+- [x] Vercel production + Playwright MCP conversational QA 기록
 
 진행 기록:
 
@@ -381,6 +380,7 @@ test(spec): add graphrag removal and krl cleanup specs
 - 2026-05-15 Codex: KRL alias/golden smoke 강화 후 `npm run supabase:rag:smoke` 통과. Supabase live RPC는 확인됐고, Vercel/Playwright QA 기록은 T5 적용 또는 배포가 포함될 때 진행한다.
 - 2026-05-15 Codex: T2 UI 회귀 범위는 local Playwright MCP QA `QA-20260515-0504`로 기록했다. Production conversational QA는 배포/T5 적용이 포함될 때 T7로 별도 수행한다.
 - 2026-05-15 Codex: T5 Supabase migration 범위는 live QA `QA-20260515-0505`로 기록했다. Vercel production QA는 push/deploy 후 T7에서 수행한다.
+- 2026-05-15 Codex: `v8.11.154` release/tag 배포 후 GitLab tag pipeline `2527097775` success, main validate pipeline `2527097782` success, Vercel deployment `dpl_F8HDfrdVpxRCPUR113N32LBubvs8` ready를 확인했다. Landing AI Assistant card modal의 KRL/Postgres FTS/search_knowledge_text copy, `/dashboard/ai-assistant` 표준 5문항 대화 QA, console/network evidence를 Vercel production Playwright MCP로 검증하고 `QA-20260515-0506`에 17/17 PASS, pending 0, expert open gap 0으로 기록했다.
 - 검증:
   - AI Engine targeted Vitest 5 files / 95 tests passed
   - frontend/root targeted Vitest 7 files / 120 tests passed
@@ -430,7 +430,7 @@ test(spec): add graphrag removal and krl cleanup specs
 - [x] 근거 출처가 OTel/domain evidence/KB/web/tool 중 무엇인지 operator-facing UI와 metadata에서 구분 가능하다.
 - [x] KRL category smoke가 `architecture`, `command`, `incident` 대표 질의를 검증한다.
 - [x] 로컬 검증과 Supabase smoke가 기록된다.
-- [ ] Vercel Playwright MCP QA가 기록된다.
+- [x] Vercel Playwright MCP QA가 기록된다.
 
 ### Task 8 - ragEnabled store 잔재 제거
 

@@ -1,0 +1,8 @@
+Browser console collection
+
+Target: https://openmanager-ai.vercel.app/dashboard/ai-assistant
+Collected via: next-devtools browser_eval console_messages
+
+Total messages: 0
+Errors: 0
+Warnings: 0

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-15 15:50:53 KST
+> Generated at: 2026-05-15 16:20:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 503 |
-| Total Runs (Counted) | 402 |
+| Total Recorded Runs | 504 |
+| Total Runs (Counted) | 403 |
 | Non-counted Runs | 101 |
-| Total Checks | 3589 |
-| Passed | 3452 |
+| Total Checks | 3606 |
+| Passed | 3469 |
 | Failed | 127 |
-| Completed Items | 575 |
+| Completed Items | 577 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260515-0505 (2026-05-15T06:50:53.160Z) |
-| Latest Recorded Run | QA-20260515-0505 (2026-05-15T06:50:53.160Z) |
+| Last Counted Run | QA-20260515-0506 (2026-05-15T07:20:51.624Z) |
+| Latest Recorded Run | QA-20260515-0506 (2026-05-15T07:20:51.624Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260515-0505 (2026-05-15T06:50:53.160Z)
+Latest run: QA-20260515-0506 (2026-05-15T07:20:51.624Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed after production QA; effective=9.4267 USD, billed=0.0000 USD, chargeCount=8526. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-14T06:50:53.160Z -> 2026-05-15T06:50:53.160Z (24h)
+- Window: 2026-05-14T07:20:51.624Z -> 2026-05-15T07:20:51.624Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -58,7 +61,7 @@ Latest run: QA-20260515-0505 (2026-05-15T06:50:53.160Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-14T06:50:53.160Z -> 2026-05-15T06:50:53.160Z (24h)
+- Window: 2026-05-14T07:20:51.624Z -> 2026-05-15T07:20:51.624Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -70,24 +73,29 @@ Latest run: QA-20260515-0505 (2026-05-15T06:50:53.160Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA 9b9ce776
-- Coverage Packs: ai-core
-- Covered Surfaces: production Supabase migration drop_legacy_graphrag_inventory, Knowledge Retrieval Lite search_knowledge_text RPC, KRL live golden smoke 16 checks, KRL corpus governance analysis
-- Skipped Surfaces: Vercel production conversational AI QA: deferred to T7 after push/deploy, Frontend browser production QA: no frontend deployment has happened yet, mobile viewport: not relevant to DB schema migration
+- Deployment: dpl_F8HDfrdVpxRCPUR113N32LBubvs8 / SHA a962a6a7
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: Vercel production /, /login, /api/version post-deploy smoke, Landing page AI Assistant card modal KRL/Postgres FTS copy, /dashboard/ai-assistant production AI workspace, Standard five-question conversational AI QA, Browser console and AI request resource summary
+- Skipped Surfaces: Broad dashboard route pack outside AI Assistant was not repeated in this targeted T7 closure run, Mobile viewport was not repeated because the change scope is AI/KRL copy and runtime QA, OAuth/provider login flows were not repeated; guest session path was sufficient for AI Assistant QA
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab main validate pipeline 2527097782 | [GitLab main validate pipeline 2527097782](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2527097782) | - |
+| general | GitLab v8.11.154 tag pipeline 2527097775 | [GitLab v8.11.154 tag pipeline 2527097775](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2527097775) | - |
+| vercel-deployment | Vercel production deployment dpl_F8HDfrdVpxRCPUR113N32LBubvs8 | [Vercel production deployment dpl_F8HDfrdVpxRCPUR113N32LBubvs8](https://openmanager-1duiyrv9m-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | KRL DB migration postcheck, live smoke, and governance summary | `reports/qa/evidence/krl-db-migration/qa-20260515-krl-db-migration-smoke.txt` | - |
+| playwright-screenshot | AI Assistant production conversation screenshot | `reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-conversation.png` | - |
+| playwright-report | AI Assistant T7 dialog and deployment summary | `reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-dialog-summary.txt` | - |
+| playwright-console | AI Assistant production console messages | `reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-console.txt` | - |
+| playwright-network | AI Assistant production network summary | `reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-network.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -599,8 +607,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
 - qa-final-report-historical-positioning: v8.7.1 최종 QA 리포트의 historical 성격 명시 (completed 1회, last QA-20260309-0067)
+- query-pipeline-graphrag-removal-sdd: GraphRAG removal and KRL production closure (completed 1회, last QA-20260515-0506)
 - query-pipeline-t2-evidencecards-ui-regression: T2 evidenceCards UI browser regression (completed 1회, last QA-20260515-0504)
 - query-pipeline-t5-drop-legacy-graphrag-inventory: T5 Supabase legacy GraphRAG inventory removal (completed 1회, last QA-20260515-0505)
+- query-pipeline-t7-v811154-production-qa: T7 Vercel production AI/KRL QA closure (completed 1회, last QA-20260515-0506)
 - query-provider-devtools-hydration-fix: React Query Devtools hydration mismatch removal (completed 1회, last QA-20260420-0316)
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
 - rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
@@ -753,6 +763,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260515-0506 | 2026-05-15T07:20:51.624Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.154 KRL Closure | 17 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260515-0505 | 2026-05-15T06:50:53.160Z | targeted | no | yes | Supabase Live QA - KRL Legacy GraphRAG Inventory Removal | 29 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260515-0504 | 2026-05-15T06:36:37.546Z | targeted | no | yes | Local Playwright QA - KRL EvidenceCards Source Rendering | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260515-0503 | 2026-05-14T18:50:43.003Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.153 Follow-up Improvements | 12 | 4 | 0 | 0 | 0 | 0 |
@@ -772,4 +783,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260513-0489 | 2026-05-12T15:34:19.485Z | targeted | yes | yes | v8.11.140 AI Routing Follow-up Clarification Production QA | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0488 | 2026-05-12T12:51:00.717Z | targeted | yes | yes | Vercel Production QA - v8.11.138 Peak Advice P1 Closure | 16 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260512-0487 | 2026-05-12T10:53:59.087Z | targeted | yes | yes | Vercel Playwright QA - v8.11.137 Semantic Trace Job Path | 8 | 1 | 0 | 0 | 1 | 1 |
-| QA-20260512-0486 | 2026-05-12T09:02:46.154Z | targeted | yes | yes | Vercel API QA - v8.11.136 Natural-Language Semantic Peak Coverage | 14 | 1 | 0 | 0 | 0 | 0 |

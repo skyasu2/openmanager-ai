@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-15T06:50:53.160Z"
+    "updatedAt": "2026-05-15T07:20:51.624Z"
   },
   "sequence": {
-    "nextRunNumber": 506
+    "nextRunNumber": 507
   },
   "summary": {
-    "totalRecordedRuns": 503,
-    "totalRuns": 402,
+    "totalRecordedRuns": 504,
+    "totalRuns": 403,
     "excludedRuns": 101,
-    "totalChecks": 3589,
-    "totalPassed": 3452,
+    "totalChecks": 3606,
+    "totalPassed": 3469,
     "totalFailed": 127,
     "completionRate": 100,
-    "completedItems": 575,
+    "completedItems": 577,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260515-0505",
-    "lastRecordedAt": "2026-05-15T06:50:53.160Z",
-    "latestRecordedRunId": "QA-20260515-0505",
-    "latestRecordedAt": "2026-05-15T06:50:53.160Z"
+    "lastRunId": "QA-20260515-0506",
+    "lastRecordedAt": "2026-05-15T07:20:51.624Z",
+    "latestRecordedRunId": "QA-20260515-0506",
+    "latestRecordedAt": "2026-05-15T07:20:51.624Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14081,6 +14081,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-15T06:50:53.160Z"
+    },
+    "query-pipeline-t7-v811154-production-qa": {
+      "id": "query-pipeline-t7-v811154-production-qa",
+      "title": "T7 Vercel production AI/KRL QA closure",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260515-0506",
+      "firstSeenAt": "2026-05-15T07:20:51.624Z",
+      "lastSeenRunId": "QA-20260515-0506",
+      "lastSeenAt": "2026-05-15T07:20:51.624Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "v8.11.154 production deployment verified by post-deploy smoke, landing AI Assistant KRL copy, and five-question AI Assistant QA. Console errors/warnings were 0.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-15T07:20:51.624Z"
+    },
+    "query-pipeline-graphrag-removal-sdd": {
+      "id": "query-pipeline-graphrag-removal-sdd",
+      "title": "GraphRAG removal and KRL production closure",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260515-0506",
+      "firstSeenAt": "2026-05-15T07:20:51.624Z",
+      "lastSeenRunId": "QA-20260515-0506",
+      "lastSeenAt": "2026-05-15T07:20:51.624Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "T1-T6/T8-T11 plus T5 live Supabase cleanup and T7 Vercel production QA are complete.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-15T07:20:51.624Z"
     }
   },
   "runs": [
@@ -56195,6 +56243,144 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260515-0506",
+      "recordedAt": "2026-05-15T07:20:51.624Z",
+      "recordedAtKst": "2026-05-15 16:20:51 KST",
+      "title": "Vercel Playwright MCP QA - v8.11.154 KRL Closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260515-0506.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run + Supabase Postgres",
+        "branch": "main",
+        "deploymentId": "dpl_F8HDfrdVpxRCPUR113N32LBubvs8",
+        "deploymentUrl": "https://openmanager-1duiyrv9m-skyasus-projects.vercel.app",
+        "commitSha": "a962a6a7bd40abab57ade77e7204219c4559798a"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /, /login, /api/version post-deploy smoke",
+        "Landing page AI Assistant card modal KRL/Postgres FTS copy",
+        "/dashboard/ai-assistant production AI workspace",
+        "Standard five-question conversational AI QA",
+        "Browser console and AI request resource summary"
+      ],
+      "skippedSurfaces": [
+        "Broad dashboard route pack outside AI Assistant was not repeated in this targeted T7 closure run",
+        "Mobile viewport was not repeated because the change scope is AI/KRL copy and runtime QA",
+        "OAuth/provider login flows were not repeated; guest session path was sufficient for AI Assistant QA"
+      ],
+      "checks": {
+        "total": 17,
+        "passed": 17,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Standard five-question conversational AI QA covered fleet summary, server alias detail, 24h peak analysis, immediate action, and network filtering.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP verified rendered production behavior, screenshot evidence, console state, and browser resource calls.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag deploy pipeline and main validate pipeline both completed successfully, and production post-deploy smoke passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Answers preserved concrete monitoring values and correctly reported no network servers over the threshold in the final filter query.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-15T16:17:26+09:00",
+          "summary": "Current billing period reviewed after production QA; effective=9.4267 USD, billed=0.0000 USD, chargeCount=8526.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Assistant production conversation screenshot",
+          "path": "reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-conversation.png"
+        },
+        {
+          "type": "playwright-report",
+          "label": "AI Assistant T7 dialog and deployment summary",
+          "path": "reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-dialog-summary.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "AI Assistant production console messages",
+          "path": "reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-console.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI Assistant production network summary",
+          "path": "reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-network.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline 2527097782",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2527097782"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.11.154 tag pipeline 2527097775",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2527097775"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_F8HDfrdVpxRCPUR113N32LBubvs8",
+          "url": "https://openmanager-1duiyrv9m-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -56203,16 +56389,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 253,
-      "appropriateCount": 217,
+      "seenCount": 254,
+      "appropriateCount": 218,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 46,
-      "lastRunId": "QA-20260515-0503",
-      "lastSeenAt": "2026-05-14T18:50:43.003Z",
+      "lastRunId": "QA-20260515-0506",
+      "lastSeenAt": "2026-05-15T07:20:51.624Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Guidance response now stays non-executing until user clicks the CTA, then executes the intended monitoring-analysis artifact with grounded OTel data.",
+      "lastRationale": "Standard five-question conversational AI QA covered fleet summary, server alias detail, 24h peak analysis, immediate action, and network filtering.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -56254,16 +56440,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 183,
-      "appropriateCount": 165,
+      "seenCount": 184,
+      "appropriateCount": 166,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260515-0503",
-      "lastSeenAt": "2026-05-14T18:50:43.003Z",
+      "lastRunId": "QA-20260515-0506",
+      "lastSeenAt": "2026-05-15T07:20:51.624Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2525981912 succeeded across deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke jobs; Vercel production alias is Ready.",
+      "lastRationale": "GitLab tag deploy pipeline and main validate pipeline both completed successfully, and production post-deploy smoke passed.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -56271,16 +56457,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 218,
-      "appropriateCount": 200,
+      "seenCount": 219,
+      "appropriateCount": 201,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260515-0503",
-      "lastSeenAt": "2026-05-14T18:50:43.003Z",
+      "lastRunId": "QA-20260515-0506",
+      "lastSeenAt": "2026-05-15T07:20:51.624Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP verified the actual production sidebar renderer and CTA-to-artifact flow that unit tests alone missed.",
+      "lastRationale": "Playwright MCP verified rendered production behavior, screenshot evidence, console state, and browser resource calls.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -56288,16 +56474,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 65,
-      "appropriateCount": 44,
+      "seenCount": 66,
+      "appropriateCount": 45,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260512-0485",
-      "lastSeenAt": "2026-05-12T07:52:35.206Z",
+      "lastRunId": "QA-20260515-0506",
+      "lastSeenAt": "2026-05-15T07:20:51.624Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The monitoring.metric_peak semantic frame selected monitoring-peak-metric evidence and preserved semanticQueryTrace in the emitted metadata.",
+      "lastRationale": "Answers preserved concrete monitoring values and correctly reported no network servers over the threshold in the final filter query.",
       "lastNextAction": ""
     },
     "infra-reliability": {
