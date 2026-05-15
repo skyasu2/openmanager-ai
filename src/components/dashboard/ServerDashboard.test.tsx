@@ -209,6 +209,99 @@ describe('ServerDashboard', () => {
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(4);
   });
 
+  it('초기 더보기 가능 상태에서는 서버 그리드를 1.5행 높이로 클리핑하고 페이드 힌트를 표시한다', () => {
+    setViewportWidth(1280);
+
+    render(
+      <ServerDashboard
+        servers={Array.from({ length: 9 }, (_, index) =>
+          createServer(`server-${index + 1}`, `API Server ${index + 1}`)
+        )}
+        totalServers={9}
+        currentPage={1}
+        totalPages={1}
+        pageSize={9}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        initialVisibleRows={2}
+      />
+    );
+
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(8);
+    expect(screen.getByTestId('server-dashboard-peek-container')).toHaveStyle({
+      maxHeight: '237px',
+    });
+    expect(
+      screen.getByTestId('server-dashboard-peek-fade')
+    ).toBeInTheDocument();
+  });
+
+  it('더 보기와 접기 전환에 맞춰 서버 카드 peek 페이드를 숨기고 복원한다', () => {
+    setViewportWidth(1280);
+
+    render(
+      <ServerDashboard
+        servers={Array.from({ length: 9 }, (_, index) =>
+          createServer(`server-${index + 1}`, `API Server ${index + 1}`)
+        )}
+        totalServers={9}
+        currentPage={1}
+        totalPages={1}
+        pageSize={9}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        initialVisibleRows={2}
+      />
+    );
+
+    expect(
+      screen.getByTestId('server-dashboard-peek-fade')
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /더 보기/ }));
+
+    expect(
+      screen.queryByTestId('server-dashboard-peek-fade')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('server-dashboard-peek-container')
+    ).not.toHaveStyle({
+      maxHeight: '237px',
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '접기' }));
+
+    expect(
+      screen.getByTestId('server-dashboard-peek-fade')
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('server-dashboard-peek-container')).toHaveStyle({
+      maxHeight: '237px',
+    });
+  });
+
+  it('숨길 서버가 없으면 서버 카드 peek 오버레이를 표시하지 않는다', () => {
+    setViewportWidth(1280);
+
+    render(
+      <ServerDashboard
+        servers={Array.from({ length: 4 }, (_, index) =>
+          createServer(`server-${index + 1}`, `API Server ${index + 1}`)
+        )}
+        totalServers={4}
+        currentPage={1}
+        totalPages={1}
+        pageSize={4}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        initialVisibleRows={2}
+      />
+    );
+
+    expect(
+      screen.queryByTestId('server-dashboard-peek-fade')
+    ).not.toBeInTheDocument();
+  });
+
   it('서버 탭 더 보기는 페이지 크기를 늘려 다음 줄을 같은 화면에 붙인다', () => {
     setViewportWidth(1280);
     const onPageSizeChange = vi.fn();
