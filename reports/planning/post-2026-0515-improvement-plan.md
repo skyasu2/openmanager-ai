@@ -92,10 +92,21 @@ src/hooks/ai/core/chat-artifact-guidance.ts   (신규)
 
 #### 완료 기준
 
-- [ ] `useAIChatCore.ts` ≤ 600줄
-- [ ] `chat-artifact-guidance.ts` 신규 파일에 factory + handler 로직 이동
-- [ ] `test(spec):` 선행 커밋 (guidance CTA 동작 회귀 테스트 추가)
-- [ ] `type-check` + `test:quick` 통과
+- [x] `useAIChatCore.ts` ≤ 600줄
+- [x] `chat-artifact-guidance.ts` 신규 파일에 factory + handler 로직 이동
+- [x] `test(spec):` 선행 커밋 (guidance CTA 동작 회귀 테스트 추가)
+- [x] `type-check` + `test:quick` 통과
+
+#### 진행 기록
+
+- 2026-05-15 Codex: SDD 선행 커밋 `test(spec): add guidance CTA isolation regression`으로 `chat-artifact-guidance` helper API와 CTA 실행/차단 계약을 먼저 추가했다. 신규 helper 부재로 의도된 실패를 확인한 뒤 구현에 착수.
+- 2026-05-15 Codex: `src/hooks/ai/core/chat-artifact-guidance.ts`를 추가해 guidance CTA target→forced artifact intent/query 매핑, CTA 실행 차단, guidance/direct artifact request 분기를 이동했다. `useAIChatCore.ts`는 724줄에서 597줄로 축소되어 목표 기준(≤600)을 충족.
+- 검증:
+  - `npx vitest run --config config/testing/vitest.config.dom.ts src/hooks/ai/core/chat-artifact-guidance.test.ts src/hooks/ai/useAIChatCore.test.ts --silent=false` → 2 files / 18 tests passed
+  - `npm run type-check` → passed
+  - `npm run lint` → passed (`reports/qa/qa-tracker.json` size info only)
+  - `npm run test:quick` → passed
+  - `npm run line-guard` → no fail-threshold violations, `useAIChatCore.ts=597`
 
 ---
 

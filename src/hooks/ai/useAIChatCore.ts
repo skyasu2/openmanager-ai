@@ -1,17 +1,6 @@
 'use client';
 
-/**
- * 🤖 useAIChatCore - AI 채팅 공통 로직 훅
- *
- * AISidebarV4와 AIWorkspace에서 공유하는 핵심 로직:
- * - Hybrid AI Query (Streaming + Job Queue)
- * - 세션 제한
- * - 메시지 변환
- * - 파일 첨부 재시도 지원
- *
- * @note 유틸리티는 utils/ 폴더로 분리됨
- * @updated 2026-01-28 - 재시도 시 파일 첨부 보존 (lastAttachmentsRef)
- */
+// Shared AI chat core for AISidebarV4 and AIWorkspace.
 
 import type { UIMessage } from '@ai-sdk/react';
 import {
@@ -28,22 +17,15 @@ import {
   type HandoffEventData,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
-import {
-  ARTIFACT_INTENT_RULE_VERSION,
-  type ChatArtifactIntent,
-  classifyChatArtifactIntent,
-  fetchLLMChatArtifactIntent,
-  shouldUseLLMChatArtifactIntent,
-} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { logger } from '@/lib/logging';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import { startChatArtifactGeneration } from './core/chat-artifact-execution';
 import {
-  createArtifactGuidanceMessages,
-  type GuidanceCtaTarget,
-} from './core/chat-artifact-metadata';
+  runArtifactGuidanceCta,
+  tryHandleChatArtifactRequest,
+} from './core/chat-artifact-guidance';
+import type { GuidanceCtaTarget } from './core/chat-artifact-metadata';
 import {
   createDebugRoutingMessages,
   createQAAssistantMessages,
@@ -72,35 +54,6 @@ export { convertThinkingStepsToUI };
 
 export interface UseAIChatCoreOptions extends UseAIChatCoreOptionsBase {}
 export interface UseAIChatCoreReturn extends UseAIChatCoreReturnBase {}
-
-type ForcedGuidanceArtifactIntent = Extract<
-  ChatArtifactIntent,
-  { kind: 'incident-report' | 'monitoring-analysis' }
->;
-
-function createForcedGuidanceArtifactIntent(
-  target: GuidanceCtaTarget
-): ForcedGuidanceArtifactIntent {
-  if (target === 'incident-report') {
-    return {
-      kind: 'incident-report',
-      reason: 'incident_report_action_pattern',
-      ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
-    };
-  }
-
-  return {
-    kind: 'monitoring-analysis',
-    reason: 'monitoring_action_pattern',
-    ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
-  };
-}
-
-function createForcedGuidanceArtifactQuery(target: GuidanceCtaTarget): string {
-  return target === 'incident-report'
-    ? '장애 보고서 작성해줘'
-    : '전체 서버 이상감지 돌려줘';
-}
 
 // ============================================================================
 // Hook
@@ -161,6 +114,21 @@ export function useAIChatCore(
   const artifactInFlightRef = useRef(false);
   const artifactRequestIdRef = useRef<string | null>(null);
   const artifactAbortControllerRef = useRef<AbortController | null>(null);
+  const resetOutgoingRequestState = useCallback(
+    (
+      query: string,
+      attachments: FileAttachment[] | null = null,
+      pendingQuery = ''
+    ) => {
+      setError(null);
+      setStreamRagSources([]);
+      lastQueryRef.current = query;
+      lastAttachmentsRef.current = attachments;
+      pendingQueryRef.current = pendingQuery;
+      setInput('');
+    },
+    []
+  );
 
   // 🧩 Composed Hooks
   const { sessionId, refreshSessionId, setSessionId } =
@@ -443,41 +411,18 @@ export function useAIChatCore(
 
   const handleArtifactGuidanceCta = useCallback(
     (target: GuidanceCtaTarget) => {
-      if (!disableSessionLimit && sessionState.isLimitReached) {
-        logger.warn(
-          `⚠️ [Session] Limit reached (${sessionState.count} messages)`
-        );
-        return;
-      }
-
-      if (hybridIsLoading) {
-        setError('AI 응답이 진행 중입니다. 완료 후 실행해주세요.');
-        return;
-      }
-
-      if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
-        setError(
-          '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
-        );
-        return;
-      }
-
-      const forcedQuery = createForcedGuidanceArtifactQuery(target);
-      const forcedIntent = createForcedGuidanceArtifactIntent(target);
-
-      setError(null);
-      setStreamRagSources([]);
-      lastQueryRef.current = forcedQuery;
-      lastAttachmentsRef.current = null;
-      pendingQueryRef.current = '';
-      setInput('');
-
-      startChatArtifactGeneration({
-        artifactIntent: forcedIntent,
-        query: forcedQuery,
+      runArtifactGuidanceCta({
+        target,
+        disableSessionLimit,
+        sessionLimitReached: sessionState.isLimitReached,
+        sessionMessageCount: sessionState.count,
+        hybridIsLoading,
+        resetRequestState: resetOutgoingRequestState,
+        onSessionLimitReached: (messageCount) => {
+          logger.warn(`⚠️ [Session] Limit reached (${messageCount} messages)`);
+        },
         sessionId,
         queryAsOfDataSlot,
-        messages: messagesRef.current,
         messagesRef,
         setMessages,
         setError,
@@ -485,12 +430,15 @@ export function useAIChatCore(
         artifactRequestIdRef,
         artifactAbortControllerRef,
         artifactInFlightRef,
+        artifactIntentInFlightRef,
       });
     },
     [
       disableSessionLimit,
-      sessionState,
+      sessionState.isLimitReached,
+      sessionState.count,
       hybridIsLoading,
+      resetOutgoingRequestState,
       sessionId,
       queryAsOfDataSlot,
       setMessages,
@@ -535,12 +483,7 @@ export function useAIChatCore(
       }
 
       if (isQAThinkingVisualizerPrompt(effectiveText)) {
-        setError(null);
-        setStreamRagSources([]);
-        lastQueryRef.current = effectiveText;
-        lastAttachmentsRef.current = attachments || null;
-        pendingQueryRef.current = '';
-        setInput('');
+        resetOutgoingRequestState(effectiveText, attachments || null);
         const [qaUserMessage, qaAssistantMessage] =
           createQAAssistantMessages(effectiveText);
         setMessages([...messages, qaUserMessage, qaAssistantMessage]);
@@ -548,12 +491,7 @@ export function useAIChatCore(
       }
 
       if (isDebugRoutingPrompt(effectiveText)) {
-        setError(null);
-        setStreamRagSources([]);
-        lastQueryRef.current = effectiveText;
-        lastAttachmentsRef.current = attachments || null;
-        pendingQueryRef.current = '';
-        setInput('');
+        resetOutgoingRequestState(effectiveText, attachments || null);
         const [dbgUserMsg, dbgAssistantMsg] = createDebugRoutingMessages(
           effectiveText,
           analysisMode
@@ -562,93 +500,31 @@ export function useAIChatCore(
         return;
       }
 
-      const regexIntent = classifyChatArtifactIntent(effectiveText);
-      let artifactIntent = regexIntent;
-      if (
-        regexIntent.kind === 'none' &&
-        shouldUseLLMChatArtifactIntent(effectiveText)
-      ) {
-        const intentAbortController = new AbortController();
-        artifactIntentInFlightRef.current = true;
-        artifactAbortControllerRef.current = intentAbortController;
-        try {
-          artifactIntent = await fetchLLMChatArtifactIntent(
-            effectiveText,
-            intentAbortController.signal
-          );
-        } finally {
-          artifactIntentInFlightRef.current = false;
-          if (artifactAbortControllerRef.current === intentAbortController) {
-            artifactAbortControllerRef.current = null;
-          }
-        }
-
-        // fetchLLMChatArtifactIntent intentionally degrades failures to none.
-        // On an explicit abort, stop here so cancellation does not fall through
-        // into the normal Supervisor chat path.
-        if (intentAbortController.signal.aborted) {
-          return;
-        }
-      }
-      if (artifactIntent.kind === 'guidance') {
-        setError(null);
-        setStreamRagSources([]);
-        lastQueryRef.current = effectiveText;
-        lastAttachmentsRef.current = attachments || null;
-        pendingQueryRef.current = '';
-        setInput('');
-        const [guidanceUserMessage, guidanceAssistantMessage] =
-          createArtifactGuidanceMessages({
-            query: effectiveText,
-            target: artifactIntent.target,
-            reason: artifactIntent.reason,
-          });
-        setMessages([
-          ...messages,
-          guidanceUserMessage,
-          guidanceAssistantMessage,
-        ]);
+      const artifactHandled = await tryHandleChatArtifactRequest({
+        query: effectiveText,
+        attachments,
+        messages,
+        resetRequestState: resetOutgoingRequestState,
+        artifactIntentInFlightRef,
+        sessionId,
+        queryAsOfDataSlot,
+        messagesRef,
+        setMessages,
+        setError,
+        setArtifactIsLoading,
+        artifactRequestIdRef,
+        artifactAbortControllerRef,
+        artifactInFlightRef,
+      });
+      if (artifactHandled) {
         return;
       }
 
-      if (
-        artifactIntent.kind === 'incident-report' ||
-        artifactIntent.kind === 'monitoring-analysis' ||
-        artifactIntent.kind === 'server-monitoring-analysis' ||
-        artifactIntent.kind === 'server-snapshot' ||
-        artifactIntent.kind === 'ops-procedure'
-      ) {
-        setError(null);
-        setStreamRagSources([]);
-        lastQueryRef.current = effectiveText;
-        lastAttachmentsRef.current = attachments || null;
-        pendingQueryRef.current = '';
-        setInput('');
-
-        startChatArtifactGeneration({
-          artifactIntent,
-          query: effectiveText,
-          sessionId,
-          queryAsOfDataSlot,
-          messages,
-          messagesRef,
-          setMessages,
-          setError,
-          setArtifactIsLoading,
-          artifactRequestIdRef,
-          artifactAbortControllerRef,
-          artifactInFlightRef,
-        });
-        return;
-      }
-
-      setError(null);
-      setStreamRagSources([]);
-      lastQueryRef.current = effectiveText;
-      lastAttachmentsRef.current = attachments || null;
-      pendingQueryRef.current = effectiveText;
-      setInput('');
-
+      resetOutgoingRequestState(
+        effectiveText,
+        attachments || null,
+        effectiveText
+      );
       // 🎯 파일 첨부와 함께 전송
       sendQuery(effectiveText, attachments);
     },
@@ -664,6 +540,7 @@ export function useAIChatCore(
       analysisMode,
       sessionId,
       queryAsOfDataSlot,
+      resetOutgoingRequestState,
     ]
   );
 
