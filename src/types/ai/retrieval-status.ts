@@ -1,4 +1,4 @@
-export type RetrievalMode = 'off' | 'lite' | 'text-only' | 'cosine-neighbor';
+export type RetrievalMode = 'off' | 'lite' | 'text-only';
 
 export type RetrievalSuppressedReason =
   | 'disabled'

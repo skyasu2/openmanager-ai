@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T0 failing specs 커밋 후 T1 `useGraphRAG` tool contract 제거 완료. 다음 단계는 T2 retrieval result contract 정리. T5 destructive DB migration은 별도 승인 전 착수 금지. |
+| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1 완료, T2 타입 표면(`cosine-neighbor`, `vector|graph`) 제거 완료. 다음 단계는 T3 web search 분리 또는 T2 `ragSources` boundary 정리. T5 destructive DB migration은 별도 승인 전 착수 금지. |
 
 ---
 

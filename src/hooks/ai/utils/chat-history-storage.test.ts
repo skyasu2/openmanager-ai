@@ -164,7 +164,7 @@ describe('chat-history-storage', () => {
                 {
                   title: 'runbook',
                   similarity: 0.91,
-                  sourceType: 'graph',
+                  sourceType: 'incident',
                   category: 'incident',
                 },
               ],
@@ -188,7 +188,7 @@ describe('chat-history-storage', () => {
           {
             title: 'runbook',
             similarity: 0.91,
-            sourceType: 'graph',
+            sourceType: 'incident',
             category: 'incident',
           },
         ],

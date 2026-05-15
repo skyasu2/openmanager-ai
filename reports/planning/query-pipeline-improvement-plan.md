@@ -213,18 +213,28 @@ test(spec): add graphrag removal and krl cleanup specs
 
 완료 기준:
 
-- `RAGResultItem.sourceType`에서 `vector`/`graph` 제거
-- `RetrievalMode`에서 `cosine-neighbor` 제거
-- backend 신규 응답은 `evidenceCards` + `retrieval` 중심으로 정렬
-- `ragSources`는 신규 응답 생성 경로에서 제거하거나 deprecated boundary로 격리
+- [x] `RAGResultItem.sourceType`에서 `vector`/`graph` 제거
+- [x] `RetrievalMode`에서 `cosine-neighbor` 제거
+- [ ] backend 신규 응답은 `evidenceCards` + `retrieval` 중심으로 정렬
+- [ ] `ragSources`는 신규 응답 생성 경로에서 제거하거나 deprecated boundary로 격리
   - 주의: `ragSources` 사용처 74곳 — UI 렌더링 파일 포함
     - `AnalysisBasisMetadata.tsx` (lines 24-122): RAG 소스 목록 렌더링
     - `SidebarMessage.tsx` (lines 73, 297): 사이드바 소스 표시
     - `useAIChatCore.ts` (lines 149, 296): 스트리밍 데이터 수신
     - `stream-helpers.ts` (line 39): async job API 전달
   - 신규 UI는 `evidenceCards` 기반으로 렌더링하되, `ragSources ?? []` fallback을 한시 유지
-- frontend metadata parser는 old localStorage/history를 최소 방어하되 신규 UI 표기는 `evidenceCards/retrieval` 기준 사용
-- UI 회귀 확인: `AnalysisBasisMetadata`, `SidebarMessage`에서 RAG 근거 표시가 evidenceCards 기반으로 정상 동작하는지 수동 확인 필수
+- [ ] frontend metadata parser는 old localStorage/history를 최소 방어하되 신규 UI 표기는 `evidenceCards/retrieval` 기준 사용
+- [ ] UI 회귀 확인: `AnalysisBasisMetadata`, `SidebarMessage`에서 RAG 근거 표시가 evidenceCards 기반으로 정상 동작하는지 수동 확인 필수
+
+진행 기록:
+
+- 2026-05-15 Codex: T2 타입 표면 1차 정리 완료. Backend/frontend `RetrievalMode`에서 `cosine-neighbor`를 제거하고, `RAGResultItem.sourceType`에서 `vector|graph`를 제거했다. legacy fixture는 현재 KRL source type(`knowledge|incident|runbook|web`) 기준으로 정렬했다.
+- 검증:
+  - `cd cloud-run/ai-engine && npx vitest run src/lib/retrieval-contract.test.ts src/tools-ai-sdk/reporter-tools/knowledge-types.test.ts src/lib/ai-sdk-utils.test.ts src/services/ai-sdk/agents/orchestrator-routing-direct-knowledge.test.ts --silent=false` → 3 files / 17 tests passed (`orchestrator-routing-direct-knowledge.test.ts`는 매칭 파일 없음으로 제외)
+  - `npx vitest run --config config/testing/vitest.config.dom.ts src/hooks/ai/utils/message-helpers.test.ts src/hooks/ai/utils/chat-history-storage.test.ts src/hooks/ai/core/useChatHistory.test.ts --silent=false` → 3 files / 49 tests passed
+  - `cd cloud-run/ai-engine && npm run type-check` → passed
+  - `npm run type-check` → passed
+  - 전체 T0 targeted 묶음 재실행 기준 잔여 실패는 T3/T5 계약으로 축소됨.
 
 ### Task 3 - Tavily web search와 RAG 계층 분리
 

@@ -7,12 +7,7 @@ import type {
   RetrievalSuppressedReason,
 } from '@/types/ai/retrieval-status';
 
-const RETRIEVAL_MODES = new Set<RetrievalMode>([
-  'off',
-  'lite',
-  'text-only',
-  'cosine-neighbor',
-]);
+const RETRIEVAL_MODES = new Set<RetrievalMode>(['off', 'lite', 'text-only']);
 
 const SUPPRESSED_REASONS = new Set<RetrievalSuppressedReason>([
   'disabled',

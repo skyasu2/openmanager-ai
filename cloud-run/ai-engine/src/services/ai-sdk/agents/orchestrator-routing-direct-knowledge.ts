@@ -105,8 +105,7 @@ export function asRetrievalMetadata(
     retrievalMode:
       value.retrievalMode === 'off' ||
       value.retrievalMode === 'lite' ||
-      value.retrievalMode === 'text-only' ||
-      value.retrievalMode === 'cosine-neighbor'
+      value.retrievalMode === 'text-only'
         ? value.retrievalMode
         : 'lite',
     evidenceCount: toNumber(value.evidenceCount) ?? 0,

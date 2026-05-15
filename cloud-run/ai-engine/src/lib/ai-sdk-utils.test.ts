@@ -55,7 +55,7 @@ describe('extractRagSources', () => {
         {
           name: 'CPU throttle runbook',
           score: '0.78',
-          type: 'graph',
+          type: 'runbook',
         },
       ],
     };
@@ -72,7 +72,7 @@ describe('extractRagSources', () => {
       {
         title: 'CPU throttle runbook',
         similarity: 0.78,
-        sourceType: 'graph',
+        sourceType: 'runbook',
         category: undefined,
       },
     ]);
@@ -80,7 +80,7 @@ describe('extractRagSources', () => {
 
   it('supports legacy results field for searchKnowledgeBase', () => {
     const output = {
-      results: [{ title: 'Legacy KB', score: 0.65, type: 'vector' }],
+      results: [{ title: 'Legacy KB', score: 0.65, type: 'knowledge' }],
     };
 
     const result = extractRagSources('searchKnowledgeBase', output);
@@ -89,7 +89,7 @@ describe('extractRagSources', () => {
       {
         title: 'Legacy KB',
         similarity: 0.65,
-        sourceType: 'vector',
+        sourceType: 'knowledge',
         category: undefined,
       },
     ]);
@@ -131,7 +131,7 @@ describe('extractRagSources', () => {
         {
           title: 'CPU throttle runbook',
           score: 0.78,
-          type: 'graph',
+          type: 'runbook',
           category: 'runbook',
         },
       ],
@@ -145,7 +145,7 @@ describe('extractRagSources', () => {
         sourceType: 'runbook',
         score: 0.78,
         category: 'runbook',
-        reason: 'legacy-rag-source:graph',
+        reason: 'legacy-rag-source:runbook',
       },
     ]);
   });

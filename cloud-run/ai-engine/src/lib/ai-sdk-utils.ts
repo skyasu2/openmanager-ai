@@ -63,7 +63,7 @@ export function extractRagSources(
     return similarCases.map((doc) => ({
       title: String(doc.title ?? doc.name ?? 'Unknown'),
       similarity: Number(doc.similarity ?? doc.score ?? 0),
-      sourceType: String(doc.sourceType ?? doc.type ?? 'vector'),
+      sourceType: String(doc.sourceType ?? doc.type ?? 'knowledge'),
       category: doc.category ? String(doc.category) : undefined,
     }));
   }

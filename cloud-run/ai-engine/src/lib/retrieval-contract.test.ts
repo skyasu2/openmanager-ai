@@ -74,7 +74,7 @@ describe('retrieval contract', () => {
       {
         title: 'Redis OOM incident',
         similarity: 0.91,
-        sourceType: 'vector',
+        sourceType: 'incident',
         category: 'incident',
       },
       {
@@ -94,7 +94,7 @@ describe('retrieval contract', () => {
         sourceType: 'incident',
         score: 0.91,
         category: 'incident',
-        reason: 'legacy-rag-source:vector',
+        reason: 'legacy-rag-source:incident',
       },
       {
         id: 'legacy-rag-1-vendor-rate-limit-update',
@@ -121,7 +121,7 @@ describe('retrieval contract', () => {
       {
         title: 'Redis OOM incident',
         similarity: 0.91,
-        sourceType: 'vector',
+        sourceType: 'incident',
         category: 'incident',
       },
     ]);
@@ -135,7 +135,7 @@ describe('retrieval contract', () => {
         {
           title: 'Redis OOM incident',
           similarity: 0.91,
-          sourceType: 'vector',
+          sourceType: 'incident',
           category: 'incident',
         },
       ],

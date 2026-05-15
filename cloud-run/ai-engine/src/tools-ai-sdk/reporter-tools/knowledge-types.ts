@@ -12,8 +12,6 @@ export interface RAGResultItem {
   category: string;
   similarity: number;
   sourceType:
-    | 'vector'
-    | 'graph'
     | 'web'
     | 'fallback'
     | 'knowledge'

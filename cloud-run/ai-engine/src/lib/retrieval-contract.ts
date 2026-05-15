@@ -2,7 +2,6 @@ export const RETRIEVAL_MODES = [
   'off',
   'lite',
   'text-only',
-  'cosine-neighbor',
 ] as const;
 
 export type RetrievalMode = (typeof RETRIEVAL_MODES)[number];

@@ -21,7 +21,7 @@ function createMessage(params: {
     retrieval?: {
       retrievalEnabled: boolean;
       retrievalUsed: boolean;
-      retrievalMode: 'off' | 'lite' | 'text-only' | 'cosine-neighbor';
+      retrievalMode: 'off' | 'lite' | 'text-only';
       suppressedReason?:
         | 'disabled'
         | 'not_needed'
@@ -146,7 +146,7 @@ describe('transformMessages', () => {
       {
         title: 'incident memory pressure',
         similarity: 0.91,
-        sourceType: 'vector',
+        sourceType: 'incident',
         category: 'incident',
       },
     ];

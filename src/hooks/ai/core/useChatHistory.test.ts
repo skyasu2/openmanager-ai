@@ -46,7 +46,7 @@ describe('useChatHistory', () => {
                 {
                   title: 'incident note',
                   similarity: 0.94,
-                  sourceType: 'graph',
+                  sourceType: 'incident',
                   category: 'incident',
                 },
               ],
@@ -96,7 +96,7 @@ describe('useChatHistory', () => {
           {
             title: 'incident note',
             similarity: 0.94,
-            sourceType: 'graph',
+            sourceType: 'incident',
             category: 'incident',
           },
         ],
@@ -342,7 +342,7 @@ describe('useChatHistory', () => {
                   {
                     title: 'live source',
                     similarity: 0.97,
-                    sourceType: 'graph',
+                    sourceType: 'incident',
                     category: 'incident',
                   },
                 ],
@@ -378,7 +378,7 @@ describe('useChatHistory', () => {
           {
             title: 'live source',
             similarity: 0.97,
-            sourceType: 'graph',
+            sourceType: 'incident',
             category: 'incident',
           },
         ],
