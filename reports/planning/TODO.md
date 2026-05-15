@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (`query-pipeline-improvement-plan.md T2 evidence boundary 및 문서 표현 정리`)
+**Last Updated**: 2026-05-15 KST (`query-pipeline-improvement-plan.md T10 완료 — 근거 출처 UI 및 KRL category smoke`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1~T4 완료, T2 evidenceCards/retrieval boundary 코드 정리 완료. 남은 작업은 T2 브라우저 UI 회귀 확인, T5 승인 필요 DB migration, T7 통합 검증/QA. |
+| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1~T4/T6/T8/T9/T10 완료, T2 evidenceCards/retrieval boundary 코드 정리 완료. 남은 작업은 T2 브라우저 UI 회귀 확인, T5 승인 필요 DB migration, T7 통합 검증/QA. |
 
 ---
 
@@ -21,8 +21,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P1: Supabase legacy GraphRAG inventory 제거 | High | `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` drop migration. destructive DB 변경이므로 precheck 후 명시 승인 필요. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T5 |
-| P2: RAG 계약/문서 표현 정리 | Medium | 코드/문서 1차 정리 완료. 남은 범위는 브라우저 UI 회귀 확인과 T7 통합 검증. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T2/T6/T7 |
+| P2: Supabase legacy GraphRAG inventory 제거 | Medium | `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` drop migration. destructive DB 변경이므로 precheck 후 **명시 승인 필요**. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T5 |
+| P2: T2 UI 수동 확인 + T7 QA closure | Medium | AnalysisBasisMetadata·SidebarMessage evidenceCards 렌더링 확인 + Vercel Playwright MCP QA 기록. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T2/T7 |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
 
 ---
@@ -39,6 +39,9 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI 근거 출처 가시성 + KRL category smoke~~ | — | **완료** — analysis basis metadata에 `monitoring-data`, `knowledge-base`, `web-search`, `tool-result` source grouping을 추가하고 `semanticQueryTrace.selectedEvidenceProvider`를 domain evidence detail로 표시한다. `supabase:rag:smoke`에 `architecture`, `command`, `incident` category 대표 질의를 추가해 live smoke PASS 확인. 검증: targeted DOM tests 3 files / 59 tests, `npm run type-check`, `npm run test:quick`, `npm run lint`, docs checks, `git diff --check` 통과. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T10 |
+| ~~지식 베이스 항목 강화 live inventory 확인~~ | — | **완료** — live `npm run rag:analyze` 기준 KB는 총 60건으로 governance 전부 PASS이며 `architecture=5`, `command=25`, `incident=9`, `best_practice=9`, `security=1`로 목표 범위를 충족한다. seed 10건 추가 시 hard max 64 초과가 확인되어 같은 turn에서 관계 참조 0건 확인 후 롤백(`deleted=10`, total=60)했다. 추가 seed 작업은 불필요하며 category smoke는 T10에서 진행. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T9 |
+| ~~ragEnabled store 잔재 제거~~ | — | **완료** — client store의 `ragEnabled/setRagEnabled` dead state를 제거하고, `useAIChatCore`가 더 이상 RAG override를 supervisor 경로로 전달하지 않도록 정리했다. 관련 sidebar/workspace mock과 metadata fallback도 정렬했다. 검증: targeted Vitest 7 files / 85 tests, `npm run type-check`, `npm run test:quick`, `git diff --check` 통과. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T8 |
 | ~~artifact G1 — server-monitoring-analysis 채팅 경로 정합성~~ | — | **완료** — `server-registry.ts`에 운영자 친화 alias resolver를 추가하고 `chat-artifact-intent.ts`가 `web-server-01` 같은 입력을 canonical serverId(`web-nginx-dc1-01`)로 정규화해 `server-monitoring-analysis` 아티팩트를 실행하도록 정렬했다. 레지스트리/intent 회귀 테스트와 설계 문서의 stale "채팅 불가" 설명을 갱신했다. |
 | ~~artifact G5 — workspace 비교 결과 사람이 읽기 좋게 표시~~ | — | **완료** — `ArtifactWorkspacePanel` 비교 결과에 count만 표시하던 상태에서 artifact kind + `generatedAt` KST 시각 + 상태(`matched/missing/added/changed`) 상세 라벨을 추가했다. 기존 replay pack 비교 count 계약은 유지했고, store/UI 회귀 테스트를 보강했다. |
 | ~~Artifact UX 개선 Phase 2+~~ | — | **완료** — [artifact-ux-improvement-plan.md](artifact-ux-improvement-plan.md) T1~T8 전체 완료. Cloud Run batch `capacityAlerts[]`, monitoring `roleGroupSummary[]`, incident 반복 로그/가용성 영향, 채팅→탭 replay, ops-procedure trace 불변성, server-monitoring-analysis intent 경로를 반영했다. 검증: AI Engine targeted/full tests, root targeted tests, `type-check`, `lint`, `test:quick`, `test:contract` 통과. |

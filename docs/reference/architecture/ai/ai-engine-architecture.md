@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-13
+> Last reviewed: 2026-05-15
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
-> **v8.11.144** | Updated 2026-05-13
+> **v8.11.153** | Updated 2026-05-15
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -37,6 +37,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **deterministi
 |---|---|---|
 | AI 요청이 어떤 route로 흐르는가 | §3 System Architecture, §5 Request Flow | [frontend-backend-comparison.md](./frontend-backend-comparison.md), [../../../architecture/02-runtime-architecture.md](../../../architecture/02-runtime-architecture.md) |
 | single/multi/job/facade 판단은 어디서 하는가 | §2.6 Free Tier 소비, §6 Supervisor/Orchestrator | [../../../design/01-ai-agent-design.md](../../../design/01-ai-agent-design.md) |
+| LLM 외부 지식과 데이터 출처는 어디서 들어오는가 | §External Knowledge and Data Source Map, §8 Data Pipeline | [./rag-knowledge-engine.md](./rag-knowledge-engine.md), [../data/otel-data-architecture.md](../data/otel-data-architecture.md) |
 | provider fallback이나 reasoning capability를 바꿔도 되는가 | §7 Provider Strategy, §8 Model Policy | [../../../guides/ai/ai-standards.md](../../../guides/ai/ai-standards.md) |
 | dashboard/AI 데이터 정합성 기준은 무엇인가 | §9 Data Flow, §10 MonitoringFactPack/RAG | [../data/otel-data-architecture.md](../data/otel-data-architecture.md), [./rag-knowledge-engine.md](./rag-knowledge-engine.md) |
 | 무료 티어, 장애 격리, 장시간 실행 제약은 무엇인가 | §2.4 BFF 적용, §2.6 Free Tier 소비, §11 Operations | [../../../operations/README.md](../../../operations/README.md), [../infrastructure/free-tier-optimization.md](../infrastructure/free-tier-optimization.md) |
@@ -59,6 +60,86 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **deterministi
 
 > **[비용 분리 원칙]**: `Free Tier` 원칙은 **프로덕션 인프라/API 비용**에만 적용됩니다.
 > 개발 환경 (Claude Code 등 AI 코딩 에이전트)에서는 품질 확보를 위해 유료 토큰을 사용합니다.
+
+## External Knowledge and Data Source Map
+
+현재 AI Assistant는 LLM 자체 지식만으로 답하지 않습니다. LLM은 최종 합성과 표현을 담당하고, 운영 사실, 내부 지식, 최신 외부 정보, 세션 컨텍스트는 아래 경로로 별도 주입합니다.
+
+```text
+User query
+  |
+  v
+Next.js BFF / frontend guards
+  |-- local rules
+  |     |-- artifact intent regex
+  |     |-- query complexity and job routing
+  |     |-- off-domain / prompt-injection guard
+  |     `-- source options: web search On, knowledge retrieval mostly Auto
+  |
+  |-- small classifier LLMs
+  |     |-- /api/ai/artifact-intent       -> Mistral ministral-3b-latest
+  |     `-- /api/ai/nlq/extract-entities -> Groq llama-4-scout
+  |
+  v
+Cloud Run AI Engine
+  |-- monitoring facts
+  |     |-- public/data/otel-data/hourly/*.json
+  |     |-- precomputed-state.ts
+  |     `-- monitoring fact pack / deterministic evidence providers
+  |
+  |-- internal knowledge
+  |     `-- Supabase knowledge_base + search_knowledge_text
+  |         -> Knowledge Retrieval Lite
+  |         -> EvidenceCard[] + RetrievalMetadata
+  |
+  |-- external live knowledge
+  |     `-- searchWeb -> Tavily, quota gate, cache, explicit tool boundary
+  |
+  |-- tools
+  |     |-- metrics / logs / anomaly / RCA / timeline
+  |     |-- command recommendation
+  |     |-- math and capacity projection
+  |     `-- vision tools -> Gemini / OpenRouter
+  |
+  |-- short-lived context
+  |     `-- Redis context store, in-memory fallback, TTL-bound handoff findings
+  |
+  v
+LLM path
+  |-- Groq / Cerebras / Mistral text agents
+  |-- Gemini / OpenRouter vision
+  `-- final answer with evidence metadata
+```
+
+### Current Utilization Inventory
+
+| Source or mechanism | Current use | Runtime owner | User-facing evidence |
+|---|---|---|---|
+| Synthetic OTel data | Dashboard and AI monitoring facts: current state, metric rankings, anomaly detection, incident timelines, artifact generation | `src/data/otel-data/index.ts`, `cloud-run/ai-engine/src/data/precomputed-state.ts`, monitoring tools | Analysis basis, artifacts, deterministic summaries |
+| Monitoring domain evidence | `metric_peak`, current metric ranking, server health queries can become deterministic evidence before the LLM path | `cloud-run/ai-engine/src/domains/monitoring/*-evidence-provider.ts` | `semanticQueryTrace`, route metadata, deterministic answer |
+| Knowledge Retrieval Lite | Internal runbooks, incident history, topology and operational documents | `knowledge_base`, `search_knowledge_text`, `knowledge-retrieval-lite.ts`, `searchKnowledgeBase` | `EvidenceCard[]`, `RetrievalMetadata`; `ragSources` only as legacy bridge |
+| External web search | Latest external docs, security issues, release/version checks, web-only troubleshooting | `searchWeb`, Tavily client, quota tracker | Web source cards, tool summaries |
+| Agent tool registry | Controlled access to metrics, logs, RCA, math, commands, vision and final answer tools | `agent-runtime-policy.ts`, `tools-ai-sdk/index.ts` | Tool result summaries and handoff badges |
+| Session context | Handoff history and structured findings within a session | Redis context store with in-memory fallback | Context summary inside subsequent agent runs |
+| Classifier LLMs | Lightweight routing and semantic frame extraction, not final answer generation | `/api/ai/artifact-intent`, `/api/ai/nlq/extract-entities` | Route decision, semantic query trace |
+| Provider policy | Text/vision model selection, fallback, quota and circuit breaker behavior | model provider and resilience modules | Provider/model metadata, fallback reason |
+
+### Improvement Candidates
+
+These are architectural gaps or cleanup opportunities identified from the current implementation. They are not all immediate code blockers.
+
+| Priority | Improvement | Why it matters | Current tracking |
+|---|---|---|---|
+| High | Remove leftover client `ragEnabled` state | Product UI no longer exposes a RAG toggle, so the client flag can mislead future routing work. Server-side Auto retrieval remains the intended boundary. | `query-pipeline-improvement-plan.md` T8 |
+| High | Strengthen `knowledge_base` category coverage | Architecture and command categories are weak or empty relative to the questions the assistant is expected to answer. This reduces the practical value of Knowledge Retrieval Lite. | `query-pipeline-improvement-plan.md` T9 |
+| Medium | Finish EvidenceCard browser regression QA | The backend/frontend contract now prefers `EvidenceCard[]`, but UI rendering still needs manual production-style confirmation. | T2 UI check and T7 QA closure |
+| Medium | Drop legacy GraphRAG DB inventory after approval | `command_vectors`, `knowledge_relationships`, and `knowledge_base.embedding` are outside the request path. Removing them reduces schema ambiguity, but it is destructive and needs explicit approval. | T5 |
+| Medium | Add category-level KRL smoke checks after corpus expansion | Current smoke covers retrieval health, but category-specific tests would catch a future empty `architecture` or `command` corpus earlier. | Candidate follow-up after T9 |
+| Medium | Make source usage easier to inspect in UI | `retrieval`, `semanticQueryTrace`, and tool summaries exist, but operator-facing grouping can still be improved for "which source answered this?" debugging. | Candidate UI polish |
+| Future | Implement a real `live-otel` adapter only behind source mode and cost gates | `live-otel` is intentionally disabled; replay JSON is the production baseline. A live adapter would be useful only with explicit cost, timeout and fallback contracts. | Not active |
+| Future | Define long-term memory separately from session context | The current context store is TTL-bound session memory. Persistent operational memory would need retention, privacy, provenance and deletion rules. | Not active |
+
+Near-term priority is T8, T9, then the destructive T5 only after read-only precheck and user approval. T7 closes the work with UI/QA evidence once the relevant runtime or schema changes are complete.
 
 ## 2. Architectural Philosophy & Framework Context (2026)
 
