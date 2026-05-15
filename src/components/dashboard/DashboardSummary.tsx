@@ -143,7 +143,7 @@ function StatusCard({
         !onFilterChange &&
           'disabled:cursor-default disabled:hover:scale-100 disabled:hover:shadow-none',
         activeFilter === status &&
-          `ring-2 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`,
+          `ring-1 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`,
         className
       )}
     >
@@ -160,12 +160,12 @@ function StatusCard({
         </>
       )}
       <div className="relative z-10 flex flex-col">
-        <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600/80">
+        <span className="flex items-center gap-1.5 text-xs font-medium text-gray-600/80">
           {icon} {label}
         </span>
         <span
           className={cn(
-            'mt-2 text-2xl font-bold tracking-tight',
+            'mt-2 text-2xl font-semibold tracking-tight',
             countColorClass && count > 0 ? countColorClass : 'text-gray-800'
           )}
         >
@@ -178,7 +178,7 @@ function StatusCard({
 
 function StatusHeaderActionGroup({ children }: { children: React.ReactNode }) {
   return (
-    <fieldset className="ml-0 inline-flex flex-wrap items-stretch overflow-hidden rounded-xl border border-white/80 bg-white/90 shadow-xs ring-1 ring-slate-200/70 backdrop-blur-sm divide-x divide-slate-200/80 sm:ml-1 sm:flex-nowrap">
+    <fieldset className="ml-0 inline-flex flex-wrap items-stretch overflow-hidden rounded-xl border border-white/80 bg-white/90 shadow-xs ring-1 ring-slate-200/70 backdrop-blur-sm divide-x divide-slate-200/60 sm:ml-1 sm:flex-nowrap">
       <legend className="sr-only">상태 헤더 도구</legend>
       {children}
     </fieldset>
@@ -209,7 +209,7 @@ function StatusHeaderActionButton({
       aria-label={ariaLabel}
       title={title}
       className={cn(
-        'relative flex h-12 min-w-12 items-center justify-center gap-1.5 bg-transparent px-2.5 text-xs font-semibold text-gray-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-300/70 sm:px-3 cursor-pointer',
+        'relative flex h-12 min-w-12 items-center justify-center gap-1.5 bg-transparent px-2.5 text-xs font-medium text-gray-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-300/70 sm:px-3 cursor-pointer',
         accentClassName
       )}
     >
@@ -271,7 +271,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
               </span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-gray-800 leading-none tracking-tight">
+              <span className="text-3xl font-semibold text-gray-800 leading-none tracking-tight">
                 {safeStats.total}
               </span>
             </div>
@@ -373,11 +373,11 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                 )}
               </div>
               <div className="whitespace-nowrap">
-                <div className="text-2xs font-bold uppercase tracking-wider text-gray-400 leading-tight">
+                <div className="text-2xs font-medium uppercase tracking-wider text-gray-400 leading-tight">
                   상태
                 </div>
                 <div
-                  className={`text-sm font-bold leading-snug ${systemHealthGradient.text}`}
+                  className={`text-sm font-medium leading-snug ${systemHealthGradient.text}`}
                 >
                   {safeStats.critical > 0 || safeStats.offline > 0
                     ? '문제 발생'
@@ -399,7 +399,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     label="알림"
                     badge={
                       activeAlertsCount > 0 ? (
-                        <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white leading-none">
+                        <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white leading-none">
                           {activeAlertsCount}
                         </span>
                       ) : undefined
@@ -423,33 +423,33 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             <div className="flex flex-1 shrink-0 flex-wrap items-center justify-end gap-3 text-center pr-1 sm:gap-4 sm:pr-4">
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
+                  className={`text-3xl font-semibold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
                 >
                   {safeStats.critical}
                 </div>
-                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-xs font-medium uppercase text-gray-500 tracking-wide">
                   위험
                 </div>
               </div>
-              <div className="h-10 w-px bg-gray-200" />
+              <div className="h-10 w-px bg-gray-100" />
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
+                  className={`text-3xl font-semibold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
                 >
                   {safeStats.warning}
                 </div>
-                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-xs font-medium uppercase text-gray-500 tracking-wide">
                   경고
                 </div>
               </div>
-              <div className="h-10 w-px bg-gray-200" />
+              <div className="h-10 w-px bg-gray-100" />
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.offline > 0 ? 'text-slate-600' : 'text-gray-400'}`}
+                  className={`text-3xl font-semibold leading-none tabular-nums ${safeStats.offline > 0 ? 'text-slate-600' : 'text-gray-400'}`}
                 >
                   {safeStats.offline}
                 </div>
-                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-xs font-medium uppercase text-gray-500 tracking-wide">
                   오프라인
                 </div>
               </div>

@@ -376,15 +376,15 @@ describe('ImprovedServerCard - User Event 테스트', () => {
 
       expect(screen.getByText('74.0%')).toHaveClass(
         'text-amber-700',
-        'font-semibold'
+        'font-medium'
       );
       expect(screen.getByText('86.0%')).toHaveClass(
         'text-red-700',
-        'font-bold'
+        'font-semibold'
       );
       expect(screen.getByText('91.0%')).toHaveClass(
         'text-red-700',
-        'font-bold'
+        'font-semibold'
       );
     });
   });

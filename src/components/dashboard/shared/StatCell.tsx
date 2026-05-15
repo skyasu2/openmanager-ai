@@ -23,7 +23,9 @@ export function StatCell({
 }: StatCellProps) {
   const content = (
     <>
-      <div className={cn('text-base font-bold sm:text-lg', color)}>{value}</div>
+      <div className={cn('text-base font-semibold sm:text-lg', color)}>
+        {value}
+      </div>
       <div className="text-[10px] font-medium text-gray-400 uppercase">
         {label}
       </div>

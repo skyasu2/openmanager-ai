@@ -67,4 +67,12 @@ describe('OpenManagerLogo', () => {
     expect(title).toHaveClass('text-base');
     expect(title).toHaveClass('sm:text-xl');
   });
+
+  it('제목 두께를 semibold로 낮출 수 있어야 한다', () => {
+    render(<OpenManagerLogo variant="light" titleWeight="semibold" />);
+
+    const title = screen.getByRole('heading', { name: /OpenManager AI/ });
+    expect(title).toHaveClass('font-semibold');
+    expect(title).not.toHaveClass('font-bold');
+  });
 });

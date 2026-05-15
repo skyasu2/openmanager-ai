@@ -24,7 +24,7 @@ function DashboardNavLinks({
         ? 'justify-center gap-0 px-0 group-hover/sidebar:justify-start group-hover/sidebar:gap-3 group-hover/sidebar:px-3'
         : 'gap-3 px-3',
       active
-        ? 'bg-blue-50 font-semibold text-blue-700 ring-1 ring-blue-100'
+        ? 'bg-blue-50 font-medium text-blue-700 ring-1 ring-blue-100'
         : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'
     );
 
@@ -39,7 +39,7 @@ function DashboardNavLinks({
         <span
           aria-hidden="true"
           className={cn(
-            'absolute top-2 bottom-2 left-0 w-0.5 rounded-r-full bg-blue-600 transition-opacity',
+            'absolute top-2 bottom-2 left-0 w-px rounded-r-full bg-blue-600 transition-opacity',
             active ? 'opacity-100' : 'opacity-0'
           )}
         />
@@ -219,7 +219,9 @@ export function DashboardNavigation({
           >
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-sm font-bold text-slate-900">OpenManager</p>
+                <p className="text-sm font-medium text-slate-900">
+                  OpenManager
+                </p>
                 <p className="text-xs text-slate-500">대시보드</p>
               </div>
               <button

@@ -164,7 +164,7 @@ export default memo(function DashboardContent({
       <div className="min-h-screen bg-linear-to-br from-purple-50 to-blue-50 p-6">
         <div className="mx-auto max-w-7xl">
           <div className="rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-2xl font-bold text-gray-900">
+            <h2 className="mb-4 text-2xl font-semibold text-gray-900">
               🔄 서버 생성 중...
             </h2>
             <p className="text-gray-600">

@@ -167,7 +167,7 @@ function MiniGauge({
   color: string;
 }) {
   const size = 72;
-  const strokeWidth = 5;
+  const strokeWidth = 4;
   const radius = (size - strokeWidth * 2) / 2;
   const circumference = 2 * Math.PI * radius;
   const percentage = Math.max(0, Math.min(100, value));
@@ -204,7 +204,7 @@ function MiniGauge({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-bold text-gray-900">{value}%</span>
+          <span className="text-sm font-semibold text-gray-900">{value}%</span>
         </div>
       </div>
       <span className="mt-1.5 text-xs text-slate-500">{label}</span>

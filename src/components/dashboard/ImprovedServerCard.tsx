@@ -308,8 +308,8 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         {showRealTimeUpdates && (
           <div className="absolute right-3 top-3 z-10">
             <span
-              className={`block h-2.5 w-2.5 rounded-full ring-2 ring-white/80 shadow-lg ${shouldAnimateStatusSignal ? 'animate-pulse' : ''} ${statusTheme.text.replace('text-', 'bg-')}`}
-              style={{ boxShadow: `0 0 8px ${currentGradient.glow}` }}
+              className={`block h-2.5 w-2.5 rounded-full ring-1 ring-white/80 shadow-md ${shouldAnimateStatusSignal ? 'animate-pulse' : ''} ${statusTheme.text.replace('text-', 'bg-')}`}
+              style={{ boxShadow: `0 0 6px ${currentGradient.glow}` }}
             />
           </div>
         )}
@@ -323,7 +323,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           >
             {/* 🎨 아이콘 박스 - 그라데이션 스타일 (랜딩 카드 참조) */}
             <div
-              className={`relative rounded-xl p-2 shadow-lg backdrop-blur-sm transition-transform duration-200 bg-linear-to-br ${currentGradient.gradient} ${needsAttention ? 'group-hover:scale-105' : ''}`}
+              className={`relative rounded-xl p-2 shadow-md backdrop-blur-sm transition-transform duration-200 bg-linear-to-br ${currentGradient.gradient} ${needsAttention ? 'group-hover:scale-105' : ''}`}
               style={{
                 boxShadow: `0 4px 15px ${currentGradient.glow}`,
               }}
@@ -333,7 +333,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             <div className="min-w-0 flex-1">
               <div className="mb-0.5 flex items-center gap-1.5">
                 <h2
-                  className="truncate text-sm font-semibold text-gray-900"
+                  className="truncate text-sm font-medium text-gray-900"
                   title={safeServer.name}
                 >
                   {safeServer.name}
@@ -408,7 +408,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
               <div
                 className={`h-1.5 w-1.5 rounded-full bg-linear-to-r ${currentGradient.gradient}`}
               />
-              <span className="text-2xs font-semibold uppercase tracking-wider text-gray-400">
+              <span className="text-2xs font-medium uppercase tracking-wider text-gray-400">
                 Live Metrics
               </span>
             </div>
@@ -465,7 +465,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           <div
             className={`space-y-2 overflow-hidden transition-all duration-500 ${showTertiaryInfo ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
           >
-            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-gray-200">
+            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-gray-100">
               <DetailRow
                 icon={<Globe className="h-3 w-3" />}
                 label="OS"

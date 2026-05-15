@@ -151,7 +151,12 @@ const DashboardHeader = memo(function DashboardHeader({
       <div className="flex min-w-0 items-center justify-between gap-3 py-4 pr-4 pl-16 sm:gap-4 sm:pr-6 lg:px-6">
         {/* 왼쪽: 브랜드 로고 */}
         <div className="flex min-w-0 flex-1 basis-0 items-center gap-4 overflow-hidden">
-          <OpenManagerLogo variant="light" compactOnMobile href="/" />
+          <OpenManagerLogo
+            variant="light"
+            compactOnMobile
+            href="/"
+            titleWeight="semibold"
+          />
         </div>
 
         {/* 중앙: 실시간 정보 + 세션 카운트다운 */}

@@ -645,7 +645,7 @@ export default function ServerDashboard({
       {/* 🚀 개발 환경 전용: 성능 통계 표시 (좌측 하단 - AI 어시스턴트와 겹침 방지) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="fixed bottom-4 left-4 z-40 max-w-xs rounded-lg border border-gray-300 bg-white/90 p-3 text-xs shadow-lg backdrop-blur-sm">
-          <div className="mb-2 font-semibold text-gray-800">📊 성능 통계</div>
+          <div className="mb-2 font-medium text-gray-800">📊 성능 통계</div>
           <div className="space-y-1 text-gray-600">
             <div>렌더링: {performanceStats.getRenderCount()}회</div>
             <div>

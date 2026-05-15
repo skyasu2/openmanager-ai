@@ -35,7 +35,7 @@ export const ServerModalHeader = memo(function ServerModalHeader({
         <div className="min-w-0 flex-1">
           <h2
             id="modal-title"
-            className="text-lg font-bold sm:text-2xl text-gray-900"
+            className="text-lg font-semibold sm:text-2xl text-gray-900"
           >
             <span className="truncate">{server.name}</span>
           </h2>
