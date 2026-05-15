@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-15T06:36:37.546Z"
+    "updatedAt": "2026-05-15T06:50:53.160Z"
   },
   "sequence": {
-    "nextRunNumber": 505
+    "nextRunNumber": 506
   },
   "summary": {
-    "totalRecordedRuns": 502,
-    "totalRuns": 401,
+    "totalRecordedRuns": 503,
+    "totalRuns": 402,
     "excludedRuns": 101,
-    "totalChecks": 3560,
-    "totalPassed": 3423,
+    "totalChecks": 3589,
+    "totalPassed": 3452,
     "totalFailed": 127,
     "completionRate": 100,
-    "completedItems": 574,
+    "completedItems": 575,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260515-0504",
-    "lastRecordedAt": "2026-05-15T06:36:37.546Z",
-    "latestRecordedRunId": "QA-20260515-0504",
-    "latestRecordedAt": "2026-05-15T06:36:37.546Z"
+    "lastRunId": "QA-20260515-0505",
+    "lastRecordedAt": "2026-05-15T06:50:53.160Z",
+    "latestRecordedRunId": "QA-20260515-0505",
+    "latestRecordedAt": "2026-05-15T06:50:53.160Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14057,6 +14057,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-15T06:36:37.546Z"
+    },
+    "query-pipeline-t5-drop-legacy-graphrag-inventory": {
+      "id": "query-pipeline-t5-drop-legacy-graphrag-inventory",
+      "title": "T5 Supabase legacy GraphRAG inventory removal",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260515-0505",
+      "firstSeenAt": "2026-05-15T06:50:53.160Z",
+      "lastSeenRunId": "QA-20260515-0505",
+      "lastSeenAt": "2026-05-15T06:50:53.160Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production Supabase migration removed vector_documents_stats, knowledge_relationships, command_vectors, and knowledge_base.embedding while preserving search_knowledge_text and search_vector. Live KRL smoke and governance checks passed.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-15T06:50:53.160Z"
     }
   },
   "runs": [
@@ -56103,6 +56127,65 @@
           "type": "playwright-console",
           "label": "Local dev console capture for valid evidenceCards render",
           "path": "reports/qa/evidence/krl-evidencecards-local/qa-20260515-krl-evidencecards-console.log"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260515-0505",
+      "recordedAt": "2026-05-15T06:50:53.160Z",
+      "recordedAtKst": "2026-05-15 15:50:53 KST",
+      "title": "Supabase Live QA - KRL Legacy GraphRAG Inventory Removal",
+      "owner": "codex",
+      "source": "supabase-mcp+live-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260515-0505.json",
+      "environment": {
+        "target": "supabase-production",
+        "url": "https://vnswjnltnhpsueosfhmw.supabase.co",
+        "frontend": "not-applicable",
+        "backend": "Supabase Postgres",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "9b9ce7767d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "production Supabase migration drop_legacy_graphrag_inventory",
+        "Knowledge Retrieval Lite search_knowledge_text RPC",
+        "KRL live golden smoke 16 checks",
+        "KRL corpus governance analysis"
+      ],
+      "skippedSurfaces": [
+        "Vercel production conversational AI QA: deferred to T7 after push/deploy",
+        "Frontend browser production QA: no frontend deployment has happened yet",
+        "mobile viewport: not relevant to DB schema migration"
+      ],
+      "checks": {
+        "total": 29,
+        "passed": 29,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "KRL DB migration postcheck, live smoke, and governance summary",
+          "path": "reports/qa/evidence/krl-db-migration/qa-20260515-krl-db-migration-smoke.txt"
         }
       ],
       "links": [],

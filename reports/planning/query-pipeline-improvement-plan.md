@@ -187,10 +187,10 @@ SELECT to_regclass('public.command_vectors') IS NULL AS command_vectors_removed;
   T9  live knowledge_base inventory 확인 및 추가 불필요 판정
   T10 근거 출처 가시성 + category smoke hardening
   T11 한국어 운영 표현 fallback + golden smoke hardening
+  T5  destructive DB inventory removal
 
 승인/환경 의존
-  T5  destructive DB inventory removal
-  T7  Supabase smoke + Vercel Playwright MCP QA
+  T7  Vercel Playwright MCP production QA
 
 현재 비착수 후보
   live-otel adapter
@@ -201,7 +201,7 @@ SELECT to_regclass('public.command_vectors') IS NULL AS command_vectors_removed;
 
 - T8은 기능 변경보다 혼선 제거가 목적이라 먼저 수행했고, 2026-05-15에 완료했다.
 - T9는 live `rag:analyze` 기준 이미 목표 범위를 만족해 추가 seed 없이 닫았다.
-- T5는 schema hygiene 성격이지만 destructive 변경이라 승인 없이는 진행하지 않는다.
+- T5는 schema hygiene 성격의 destructive 변경이라 사용자 승인 후 진행했고, 2026-05-15에 완료했다.
 - T10은 확인된 live category corpus를 고정하는 후속 작업이며, 2026-05-15에 완료했다.
 - T11은 새 검색 인프라 없이 현재 corpus에 맞춘 alias/fallback 품질 gate를 보강하는 follow-up이며, 2026-05-15에 완료했다.
 - `live-otel adapter`와 `long-term memory`는 비용, 보안, retention 계약이 부족해 이 계획의 구현 Task로 승격하지 않는다.
@@ -343,6 +343,7 @@ test(spec): add graphrag removal and krl cleanup specs
 
 - 2026-05-15 Codex: Supabase MCP read-only precheck 완료. 실제 함수 시그니처는 `search_knowledge_text(text,integer,text)`, `generate_knowledge_search_vector(text,text,text[])`, `update_knowledge_search_vector()`로 계획서와 일치한다. 운영 DB에는 `knowledge_base=60`, `knowledge_base.embedding non-null=52`, `command_vectors=26`, `command_vectors.embedding non-null=26`, `knowledge_relationships=170`, `vector_documents_stats` view가 남아 있다. `command_vectors` 누락 backfill은 `0`건으로 제거 조건은 충족되지만, `vector_documents_stats` view가 `command_vectors`에 의존하므로 migration은 view를 먼저 제거해야 한다.
 - 2026-05-15 Codex: `supabase/migrations/20260515000000_drop_legacy_graphrag_inventory.sql` 초안을 추가했다. 실제 production 적용은 destructive DB 변경이므로 사용자 명시 승인 전까지 보류한다.
+- 2026-05-15 Codex: 사용자 승인 후 Supabase MCP `apply_migration`으로 production migration `drop_legacy_graphrag_inventory` 적용 완료(`20260515064903`). Postcheck에서 `knowledge_relationships`, `command_vectors`, `vector_documents_stats`, `knowledge_base.embedding` 제거 확인, `search_knowledge_text`, `generate_knowledge_search_vector`, `update_knowledge_search_vector`, `knowledge_base.search_vector` 보존 확인, `knowledge_base=60` 유지. `npm run supabase:rag:smoke` 16/16 PASS, `cd cloud-run/ai-engine && npm run rag:analyze` governance 12/12 PASS. QA 기록: `QA-20260515-0505`.
 
 ### Task 6 - 문서/데이터 표현 정리
 
@@ -370,6 +371,7 @@ test(spec): add graphrag removal and krl cleanup specs
 - [x] root `type-check`, `lint`, `test:quick`, `test:contract` 통과
 - [x] Supabase RAG smoke 통과
 - [x] Local Playwright MCP evidenceCards UI 회귀 QA 기록
+- [x] Supabase legacy graph/vector inventory 제거 후 live smoke/governance QA 기록
 - [ ] 배포가 포함되면 GitLab pipeline 확인
 - [ ] Vercel production + Playwright MCP conversational QA 기록
 
@@ -378,6 +380,7 @@ test(spec): add graphrag removal and krl cleanup specs
 - 2026-05-15 Codex: T2/T6 로컬 deterministic gate 완료. Supabase RAG smoke와 Vercel/Playwright QA는 T5 승인 또는 배포가 포함될 때 실행한다.
 - 2026-05-15 Codex: KRL alias/golden smoke 강화 후 `npm run supabase:rag:smoke` 통과. Supabase live RPC는 확인됐고, Vercel/Playwright QA 기록은 T5 적용 또는 배포가 포함될 때 진행한다.
 - 2026-05-15 Codex: T2 UI 회귀 범위는 local Playwright MCP QA `QA-20260515-0504`로 기록했다. Production conversational QA는 배포/T5 적용이 포함될 때 T7로 별도 수행한다.
+- 2026-05-15 Codex: T5 Supabase migration 범위는 live QA `QA-20260515-0505`로 기록했다. Vercel production QA는 push/deploy 후 T7에서 수행한다.
 - 검증:
   - AI Engine targeted Vitest 5 files / 95 tests passed
   - frontend/root targeted Vitest 7 files / 120 tests passed
@@ -420,7 +423,7 @@ test(spec): add graphrag removal and krl cleanup specs
 - [x] active response contract는 `EvidenceCard[]` + `RetrievalMetadata` 중심이다.
 - [x] KRL request path는 `search_knowledge_text`만 사용한다.
 - [x] Tavily web search는 독립 tool로만 동작한다.
-- [ ] legacy graph/vector DB inventory가 승인된 migration으로 제거된다.
+- [x] legacy graph/vector DB inventory가 승인된 migration으로 제거된다.
 - [x] 문서와 UI copy가 GraphRAG를 현재 기능처럼 표현하지 않는다.
 - [x] `ragEnabled` store 잔재가 제거되어 dead state가 남아 있지 않다.
 - [x] 지식 베이스에 `architecture`·`command` 카테고리 항목이 각 3개 이상 존재한다.
@@ -601,15 +604,14 @@ live 항목 분포 (`cd cloud-run/ai-engine && npm run rag:analyze`, 2026-05-15)
 ## 실행 순서 제안
 
 ```text
-완료됨: T0 → T1 → T2(코드+UI QA) → T3 → T4 → T6 → T8 → T9(live inventory) → T10 → T11
+완료됨: T0 → T1 → T2(코드+UI QA) → T3 → T4 → T5 → T6 → T8 → T9(live inventory) → T10 → T11
 
 현재 대기:
-  T5 → 사용자 DB migration 승인 후 적용
   T7 → T5 완료 또는 배포 후 production/Vercel QA 기록
 
 신규: 없음
 ```
 
-**착수 권장 순서**: T5(승인 후) → T7(QA)
+**착수 권장 순서**: push/deploy → T7(QA)
 
-T5는 destructive DB 변경이므로 T1-T4가 완료되고 운영 DB precheck가 끝난 뒤 별도 승인으로 진행한다.
+T5 destructive DB 변경은 사용자 승인 후 완료됐으며, 남은 검증은 배포된 frontend/Cloud Run 표면에서 production QA로 닫는다.

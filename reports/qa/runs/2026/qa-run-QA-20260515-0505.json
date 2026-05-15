@@ -1,0 +1,75 @@
+{
+  "runId": "QA-20260515-0505",
+  "recordedAt": "2026-05-15T06:50:53.160Z",
+  "recordedAtKst": "2026-05-15 15:50:53 KST",
+  "runTitle": "Supabase Live QA - KRL Legacy GraphRAG Inventory Removal",
+  "owner": "codex",
+  "source": "supabase-mcp+live-smoke",
+  "environment": {
+    "target": "supabase-production",
+    "url": "https://vnswjnltnhpsueosfhmw.supabase.co",
+    "frontend": "not-applicable",
+    "backend": "Supabase Postgres",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "9b9ce7767d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "production Supabase migration drop_legacy_graphrag_inventory",
+    "Knowledge Retrieval Lite search_knowledge_text RPC",
+    "KRL live golden smoke 16 checks",
+    "KRL corpus governance analysis"
+  ],
+  "skippedSurfaces": [
+    "Vercel production conversational AI QA: deferred to T7 after push/deploy",
+    "Frontend browser production QA: no frontend deployment has happened yet",
+    "mobile viewport: not relevant to DB schema migration"
+  ],
+  "checks": {
+    "total": 29,
+    "passed": 29,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "KRL DB migration postcheck, live smoke, and governance summary",
+      "path": "reports/qa/evidence/krl-db-migration/qa-20260515-krl-db-migration-smoke.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "query-pipeline-t5-drop-legacy-graphrag-inventory",
+      "title": "T5 Supabase legacy GraphRAG inventory removal",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production Supabase migration removed vector_documents_stats, knowledge_relationships, command_vectors, and knowledge_base.embedding while preserving search_knowledge_text and search_vector. Live KRL smoke and governance checks passed.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "User approved proceeding with the destructive T5 migration in the 2026-05-15 conversation.",
+    "Precheck confirmed command_vectors_missing_backfill=0 before migration.",
+    "Postcheck confirmed removed legacy graph/vector inventory and preserved KRL RPC/search_vector path.",
+    "npm run supabase:rag:smoke passed 16/16 checks.",
+    "cd cloud-run/ai-engine && npm run rag:analyze passed 12/12 governance checks."
+  ],
+  "links": []
+}
