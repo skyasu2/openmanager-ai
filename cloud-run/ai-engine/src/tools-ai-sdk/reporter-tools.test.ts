@@ -11,7 +11,7 @@
  *
  * @version 2.0.0
  * @created 2026-01-04
- * @updated 2026-02-18 — Mock tavily-hybrid-rag (SSOT) instead of @tavily/core
+ * @updated 2026-05-15 — Mock tavily-web-search-client (SSOT) instead of @tavily/core
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
@@ -25,8 +25,8 @@ const { mockExecuteSearch, mockIsTavilyAvailable } = vi.hoisted(() => ({
   mockIsTavilyAvailable: vi.fn(),
 }));
 
-// Mock the SSOT module (tavily-hybrid-rag) that web-search.ts imports from
-vi.mock('../lib/tavily-hybrid-rag', () => ({
+// Mock the SSOT module that web-search.ts imports from.
+vi.mock('../lib/tavily-web-search-client', () => ({
   executeTavilySearchWithFailover: mockExecuteSearch,
   isTavilyAvailable: mockIsTavilyAvailable,
 }));

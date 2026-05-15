@@ -3,13 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const {
   mockGetSupabaseClient,
   mockRetrieveKnowledgeEvidence,
-  mockEnhanceWithWebSearch,
-  mockIsTavilyAvailable,
 } = vi.hoisted(() => ({
   mockGetSupabaseClient: vi.fn(),
   mockRetrieveKnowledgeEvidence: vi.fn(),
-  mockEnhanceWithWebSearch: vi.fn(),
-  mockIsTavilyAvailable: vi.fn(() => true),
 }));
 
 vi.mock('./knowledge-client', () => ({
@@ -18,11 +14,6 @@ vi.mock('./knowledge-client', () => ({
 
 vi.mock('../../lib/knowledge-retrieval-lite', () => ({
   retrieveKnowledgeEvidence: mockRetrieveKnowledgeEvidence,
-}));
-
-vi.mock('../../lib/tavily-hybrid-rag', () => ({
-  enhanceWithWebSearch: mockEnhanceWithWebSearch,
-  isTavilyAvailable: mockIsTavilyAvailable,
 }));
 
 vi.mock('../../lib/logger', () => ({
@@ -158,7 +149,6 @@ describe('searchKnowledgeBase', () => {
       },
       { client: {} }
     );
-    expect(mockEnhanceWithWebSearch).not.toHaveBeenCalled();
   });
 
   it('keeps evidenceCards aligned with rebalance-filtered results', async () => {

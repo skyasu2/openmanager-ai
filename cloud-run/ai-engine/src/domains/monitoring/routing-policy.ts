@@ -11,7 +11,7 @@ import type {
 } from '../../services/ai-sdk/supervisor-types';
 import { getMonitoringResourceCatalog } from './resource-catalog';
 import { createMonitoringSystemPrompt } from './supervisor-prompt';
-import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
+import { isTavilyAvailable } from '../../lib/tavily-web-search-client';
 import { logger } from '../../lib/logger';
 import { classifyQueryIntent } from '../../services/ai-sdk/agents/orchestrator-query-intent';
 import {

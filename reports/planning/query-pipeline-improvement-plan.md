@@ -240,11 +240,20 @@ test(spec): add graphrag removal and krl cleanup specs
 
 완료 기준:
 
-- `tavily-hybrid-rag.ts` 이름/타입을 web search 전용으로 정리
-- `HybridRAGDocument`, `HybridRAGOptions`, `enhanceWithWebSearch`, `shouldTriggerWebSearch` 제거
-- `knowledge-search-tool.test.ts:24`의 `enhanceWithWebSearch: mockEnhanceWithWebSearch` mock import 제거 (T3 범위에 포함)
-- `searchWeb`와 routing policy는 web search client만 import
-- KRL이 Tavily fallback을 호출할 수 있는 경로가 0건임을 테스트로 보장
+- [x] `tavily-hybrid-rag.ts` 이름/타입을 web search 전용으로 정리
+- [x] `HybridRAGDocument`, `HybridRAGOptions`, `enhanceWithWebSearch`, `shouldTriggerWebSearch` 제거
+- [x] `knowledge-search-tool.test.ts:24`의 `enhanceWithWebSearch: mockEnhanceWithWebSearch` mock import 제거 (T3 범위에 포함)
+- [x] `searchWeb`와 routing policy는 web search client만 import
+- [x] KRL이 Tavily fallback을 호출할 수 있는 경로가 0건임을 테스트로 보장
+
+진행 기록:
+
+- 2026-05-15 Codex: `tavily-hybrid-rag.ts`를 `tavily-web-search-client.ts`로 전환하고 HybridRAG fallback API를 제거했다. `searchWeb`, routing policy, supervisor web-search availability imports/tests는 새 web-search client 경계만 참조한다.
+- 검증:
+  - `cd cloud-run/ai-engine && npx vitest run src/lib/tavily-web-search-client.contract.test.ts src/tools-ai-sdk/reporter-tools.test.ts src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts src/domains/monitoring/routing-policy.test.ts src/services/ai-sdk/supervisor-multi-fallback.test.ts src/services/ai-sdk/supervisor-domain-wiring.contract.test.ts --silent=false` → 6 files / 118 tests passed
+  - `cd cloud-run/ai-engine && npm run type-check` → passed
+  - T0 AI Engine targeted 묶음 → 6 files / 23 tests passed
+  - root DB migration contract test는 T5 대기 실패 1건만 유지.
 
 ### Task 4 - KRL 무료 티어 고도화
 

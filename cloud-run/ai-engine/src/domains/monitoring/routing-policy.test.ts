@@ -8,7 +8,7 @@ import {
 } from './routing-policy';
 
 // Mock Tavily availability for deterministic tests
-vi.mock('../../lib/tavily-hybrid-rag', () => ({
+vi.mock('../../lib/tavily-web-search-client', () => ({
   isTavilyAvailable: vi.fn(() => true),
 }));
 

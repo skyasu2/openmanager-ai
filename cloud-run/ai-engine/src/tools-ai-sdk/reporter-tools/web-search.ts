@@ -2,7 +2,7 @@
  * Reporter Tools - Web Search (Tavily)
  *
  * AI SDK tool wrapper for Tavily web search.
- * Core search logic is in lib/tavily-hybrid-rag.ts (SSOT).
+ * Core search logic is in lib/tavily-web-search-client.ts (SSOT).
  * This file adds caching, quota management, and tool schema.
  *
  * @version 2.0.0
@@ -17,7 +17,7 @@ import {
   executeTavilySearchWithFailover,
   isTavilyAvailable,
   type WebSearchResult,
-} from '../../lib/tavily-hybrid-rag';
+} from '../../lib/tavily-web-search-client';
 
 // ============================================================================
 // Cache

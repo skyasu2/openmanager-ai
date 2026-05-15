@@ -27,7 +27,7 @@ import {
   resolveWebSearchSetting,
   filterToolsByWebSearch,
 } from './agents/orchestrator-web-search';
-import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
+import { isTavilyAvailable } from '../../lib/tavily-web-search-client';
 import {
   createSupervisorTrace,
   logGeneration,

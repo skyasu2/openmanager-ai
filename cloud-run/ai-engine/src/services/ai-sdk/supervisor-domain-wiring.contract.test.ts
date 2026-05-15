@@ -132,7 +132,7 @@ vi.mock('./agents/orchestrator-web-search', () => ({
   resolveWebSearchSetting: vi.fn(() => false),
 }));
 
-vi.mock('../../lib/tavily-hybrid-rag', () => ({
+vi.mock('../../lib/tavily-web-search-client', () => ({
   isTavilyAvailable: vi.fn(() => true),
 }));
 

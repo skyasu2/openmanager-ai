@@ -7,7 +7,7 @@ import { TIMEOUT_CONFIG } from '../../config/timeout-config';
 import type { DomainEvidenceResult } from '../../core/assistant-runtime';
 import { extractToolResultOutput } from '../../lib/ai-sdk-utils';
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
-import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
+import { isTavilyAvailable } from '../../lib/tavily-web-search-client';
 import { logger } from '../../lib/logger';
 import { createSupervisorTrace, finalizeTrace, logGeneration, logToolCall } from '../observability/langfuse';
 import { CircuitOpenError, getCircuitBreaker } from '../resilience/circuit-breaker';
