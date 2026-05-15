@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1~T3 완료, T2 타입 표면(`cosine-neighbor`, `vector|graph`) 제거 완료. 남은 작업은 T2 `ragSources` boundary, T4 KRL cache, T5 승인 필요 DB migration, T6 docs. |
+| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1~T4 완료, T2 타입 표면(`cosine-neighbor`, `vector|graph`) 제거 완료. 남은 작업은 T2 `ragSources` boundary, T5 승인 필요 DB migration, T6 docs. |
 
 ---
 

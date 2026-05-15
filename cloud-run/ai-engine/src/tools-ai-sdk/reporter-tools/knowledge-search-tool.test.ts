@@ -33,6 +33,7 @@ import { logger } from '../../lib/logger';
 describe('searchKnowledgeBase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     resetKnowledgeSearchCacheForTest();
   });
 
@@ -309,6 +310,92 @@ describe('searchKnowledgeBase', () => {
     expect(mockRetrieveKnowledgeEvidence).toHaveBeenCalledTimes(1);
   });
 
+  it('keeps architecture/doc lookups cached beyond the legacy 30 second TTL', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-15T00:00:00.000Z'));
+
+    mockGetSupabaseClient.mockResolvedValue({} as never);
+    mockRetrieveKnowledgeEvidence.mockResolvedValue({
+      success: true,
+      _source: 'Knowledge Retrieval Lite',
+      totalFound: 1,
+      metadata: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+        webUsed: false,
+      },
+      evidenceCards: [
+        {
+          id: 'kb-architecture',
+          title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+          summary: 'APP, DB, CACHE 트래픽 구조 설명',
+          score: 0.91,
+          sourceType: 'knowledge',
+          category: 'architecture',
+        },
+      ],
+    });
+
+    const first = await searchKnowledgeBase.execute({
+      query: '현재 인프라 토폴로지 알려줘',
+      category: 'architecture',
+    });
+
+    vi.advanceTimersByTime(31_000);
+
+    const second = await searchKnowledgeBase.execute({
+      query: '현재 인프라 토폴로지 알려줘',
+      category: 'architecture',
+    });
+
+    expect(second).toEqual(first);
+    expect(mockRetrieveKnowledgeEvidence).toHaveBeenCalledTimes(1);
+  });
+
+  it('evicts the oldest KRL cache entries when the max size is reached', async () => {
+    mockGetSupabaseClient.mockResolvedValue({} as never);
+    mockRetrieveKnowledgeEvidence.mockImplementation(
+      async ({ query }: { query: string }) => ({
+        success: true,
+        _source: 'Knowledge Retrieval Lite',
+        totalFound: 1,
+        metadata: {
+          retrievalEnabled: true,
+          retrievalUsed: true,
+          retrievalMode: 'lite',
+          evidenceCount: 1,
+          webUsed: false,
+        },
+        evidenceCards: [
+          {
+            id: `kb-${query}`,
+            title: `Runbook ${query}`,
+            summary: `Runbook summary ${query}`,
+            score: 0.7,
+            sourceType: 'runbook',
+            category: 'troubleshooting',
+          },
+        ],
+      })
+    );
+
+    for (let index = 0; index < 101; index += 1) {
+      await searchKnowledgeBase.execute({
+        query: `redis runbook ${index}`,
+        category: 'troubleshooting',
+      });
+    }
+
+    await searchKnowledgeBase.execute({
+      query: 'redis runbook 0',
+      category: 'troubleshooting',
+    });
+
+    expect(mockRetrieveKnowledgeEvidence).toHaveBeenCalledTimes(102);
+  });
+
   it('emits sampled structured telemetry for production Knowledge Retrieval Lite usage', async () => {
     const previousNodeEnv = process.env.NODE_ENV;
     const previousSampleRate =
@@ -364,6 +451,8 @@ describe('searchKnowledgeBase', () => {
         retrievalMode: 'lite',
         evidenceCount: 2,
         webUsed: false,
+        cacheKeyCategory: 'operational',
+        cacheTtlMs: 15 * 60 * 1000,
       }),
       '[Reporter Tools] Knowledge Retrieval Lite telemetry'
     );

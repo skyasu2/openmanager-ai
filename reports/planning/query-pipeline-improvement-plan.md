@@ -259,14 +259,21 @@ test(spec): add graphrag removal and krl cleanup specs
 
 완료 기준:
 
-- KRL cache TTL을 단일 30초에서 유형별 TTL로 변경
+- [x] KRL cache TTL을 단일 30초에서 유형별 TTL로 변경
   - 실시간/상태성 질의: 5분
   - incident/runbook/command 질의: 15분
   - architecture/docs 질의: 60분
-- cache max size와 eviction 정책 추가
-- telemetry에 `cacheTtlMs`, `cacheKeyCategory`, `cacheHit` 기록
-- Supabase RPC 호출 횟수 감소를 unit test로 검증
-- web search 자동 감지는 KRL과 독립적으로 유지하고, 명시적 external/latest 신호 없이 내부 운영 질의에 Tavily가 켜지지 않도록 회귀 테스트 보강
+- [x] cache max size와 eviction 정책 추가
+- [x] telemetry에 `cacheTtlMs`, `cacheKeyCategory`, `cacheHit` 기록
+- [x] Supabase RPC 호출 횟수 감소를 unit test로 검증
+- [x] web search 자동 감지는 KRL과 독립적으로 유지하고, 명시적 external/latest 신호 없이 내부 운영 질의에 Tavily가 켜지지 않도록 회귀 테스트 보강
+
+진행 기록:
+
+- 2026-05-15 Codex: KRL cache를 `realtime` 5분, `operational` 15분, `docs` 60분 TTL로 분리하고, max size 100 / oldest eviction 20 정책을 추가했다. telemetry payload에 `cacheKeyCategory`, `cacheTtlMs`, `cacheHit`를 포함했다.
+- 검증:
+  - `cd cloud-run/ai-engine && npx vitest run src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts --silent=false` → 1 file / 9 tests passed
+  - `cd cloud-run/ai-engine && npm run type-check` → passed
 
 ### Task 5 - Supabase legacy GraphRAG inventory 제거 migration
 

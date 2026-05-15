@@ -16,9 +16,15 @@ import { getSupabaseClient } from './knowledge-client';
 import { rebalanceRagResultsForMonitoring } from './knowledge-helpers';
 import type { RAGResultItem, ToolSeverityFilter } from './knowledge-types';
 
-const KNOWLEDGE_SEARCH_CACHE_TTL_MS = 30_000;
 const DEFAULT_PRODUCTION_RETRIEVAL_TELEMETRY_SAMPLE_RATE = 0.1;
 const DEFAULT_KNOWLEDGE_RETRIEVAL_LIMIT = 5;
+const KNOWLEDGE_SEARCH_CACHE_MAX_SIZE = 100;
+const KNOWLEDGE_SEARCH_CACHE_EVICT_COUNT = 20;
+const KNOWLEDGE_SEARCH_CACHE_TTLS_MS = {
+  realtime: 5 * 60 * 1000,
+  operational: 15 * 60 * 1000,
+  docs: 60 * 60 * 1000,
+} as const;
 
 type KnowledgeSearchRuntimeInput = {
   query: string;
@@ -50,9 +56,24 @@ type KnowledgeSearchResult = {
   webSearchTriggered?: boolean;
 };
 
+type KnowledgeSearchCacheCategory =
+  | 'realtime'
+  | 'operational'
+  | 'docs';
+
+type KnowledgeSearchCachePolicy = {
+  cacheKeyCategory: KnowledgeSearchCacheCategory;
+  ttlMs: number;
+};
+
 const knowledgeSearchCache = new Map<
   string,
-  { expiresAt: number; promise: Promise<KnowledgeSearchResult> }
+  {
+    expiresAt: number;
+    promise: Promise<KnowledgeSearchResult>;
+    cacheKeyCategory: KnowledgeSearchCacheCategory;
+    ttlMs: number;
+  }
 >();
 
 function normalizeSearchQuery(query: string): string {
@@ -94,7 +115,7 @@ function emitKnowledgeRetrievalTelemetry(
     'query' | 'category' | 'fastMode' | 'includeWebSearch'
   >,
   result: KnowledgeSearchResult,
-  options: { cacheHit: boolean }
+  options: KnowledgeSearchCachePolicy & { cacheHit: boolean }
 ): void {
   if (!shouldEmitKnowledgeRetrievalTelemetry()) {
     return;
@@ -108,6 +129,8 @@ function emitKnowledgeRetrievalTelemetry(
     fastMode: input.fastMode ?? true,
     includeWebSearch: input.includeWebSearch ?? false,
     cacheHit: options.cacheHit,
+    cacheKeyCategory: options.cacheKeyCategory,
+    cacheTtlMs: options.ttlMs,
     success: result.success,
     source: result._source,
     totalFound: result.totalFound,
@@ -125,6 +148,40 @@ function emitKnowledgeRetrievalTelemetry(
   logger.info(payload, '[Reporter Tools] Knowledge Retrieval Lite telemetry');
 }
 
+function resolveKnowledgeSearchCachePolicy(
+  input: Pick<KnowledgeSearchRuntimeInput, 'query' | 'category'>
+): KnowledgeSearchCachePolicy {
+  const normalizedQuery = normalizeSearchQuery(input.query);
+
+  if (
+    /\b(now|current|status|state|metric|metrics|load|cpu|memory|disk|latency)\b|현재|실시간|상태|메트릭|부하|지연|장애\s*상태/i.test(
+      normalizedQuery
+    )
+  ) {
+    return {
+      cacheKeyCategory: 'realtime',
+      ttlMs: KNOWLEDGE_SEARCH_CACHE_TTLS_MS.realtime,
+    };
+  }
+
+  if (
+    input.category === 'architecture' ||
+    /\b(architecture|topology|docs?|document|path|ssot)\b|아키텍처|토폴로지|문서|경로/i.test(
+      normalizedQuery
+    )
+  ) {
+    return {
+      cacheKeyCategory: 'docs',
+      ttlMs: KNOWLEDGE_SEARCH_CACHE_TTLS_MS.docs,
+    };
+  }
+
+  return {
+    cacheKeyCategory: 'operational',
+    ttlMs: KNOWLEDGE_SEARCH_CACHE_TTLS_MS.operational,
+  };
+}
+
 function buildKnowledgeSearchCacheKey(
   input: Pick<KnowledgeSearchRuntimeInput, 'query' | 'category' | 'severity'>
 ): string {
@@ -135,9 +192,11 @@ function buildKnowledgeSearchCacheKey(
   });
 }
 
-function getCachedKnowledgeSearch(
-  key: string
-): Promise<KnowledgeSearchResult> | null {
+function getCachedKnowledgeSearch(key: string): {
+  promise: Promise<KnowledgeSearchResult>;
+  cacheKeyCategory: KnowledgeSearchCacheCategory;
+  ttlMs: number;
+} | null {
   const cached = knowledgeSearchCache.get(key);
   if (!cached) return null;
 
@@ -146,17 +205,46 @@ function getCachedKnowledgeSearch(
     return null;
   }
 
-  return cached.promise;
+  return cached;
 }
 
 function setCachedKnowledgeSearch(
   key: string,
-  promise: Promise<KnowledgeSearchResult>
+  promise: Promise<KnowledgeSearchResult>,
+  policy: KnowledgeSearchCachePolicy
 ): void {
+  evictExpiredKnowledgeSearchCacheEntries();
+
+  if (
+    !knowledgeSearchCache.has(key) &&
+    knowledgeSearchCache.size >= KNOWLEDGE_SEARCH_CACHE_MAX_SIZE
+  ) {
+    for (const cacheKey of knowledgeSearchCache.keys()) {
+      knowledgeSearchCache.delete(cacheKey);
+      if (
+        knowledgeSearchCache.size <=
+        KNOWLEDGE_SEARCH_CACHE_MAX_SIZE - KNOWLEDGE_SEARCH_CACHE_EVICT_COUNT
+      ) {
+        break;
+      }
+    }
+  }
+
   knowledgeSearchCache.set(key, {
-    expiresAt: Date.now() + KNOWLEDGE_SEARCH_CACHE_TTL_MS,
+    expiresAt: Date.now() + policy.ttlMs,
     promise,
+    cacheKeyCategory: policy.cacheKeyCategory,
+    ttlMs: policy.ttlMs,
   });
+}
+
+function evictExpiredKnowledgeSearchCacheEntries(): void {
+  const now = Date.now();
+  for (const [key, entry] of knowledgeSearchCache) {
+    if (entry.expiresAt <= now) {
+      knowledgeSearchCache.delete(key);
+    }
+  }
 }
 
 export function resetKnowledgeSearchCacheForTest(): void {
@@ -294,6 +382,10 @@ export const searchKnowledgeBase = tool({
     fastMode = true,
     includeWebSearch = false,
   }: KnowledgeSearchToolInput) => {
+    const cachePolicy = resolveKnowledgeSearchCachePolicy({
+      query,
+      category,
+    });
     const cacheKey = buildKnowledgeSearchCacheKey({
       query,
       category,
@@ -305,11 +397,15 @@ export const searchKnowledgeBase = tool({
       logger.info(
         `[Reporter Tools] Knowledge Retrieval Lite cache hit: ${normalizeSearchQuery(query)}`
       );
-      return cached.then((result) => {
+      return cached.promise.then((result) => {
         emitKnowledgeRetrievalTelemetry(
           { query, category, fastMode, includeWebSearch },
           result,
-          { cacheHit: true }
+          {
+            cacheHit: true,
+            cacheKeyCategory: cached.cacheKeyCategory,
+            ttlMs: cached.ttlMs,
+          }
         );
         return result;
       });
@@ -363,7 +459,7 @@ export const searchKnowledgeBase = tool({
           emitKnowledgeRetrievalTelemetry(
             { query, category, fastMode, includeWebSearch },
             response,
-            { cacheHit: false }
+            { cacheHit: false, ...cachePolicy }
           );
           return response;
         }
@@ -399,7 +495,7 @@ export const searchKnowledgeBase = tool({
         emitKnowledgeRetrievalTelemetry(
           { query, category, fastMode, includeWebSearch },
           response,
-          { cacheHit: false }
+          { cacheHit: false, ...cachePolicy }
         );
         return response;
       } catch (error) {
@@ -428,13 +524,13 @@ export const searchKnowledgeBase = tool({
         emitKnowledgeRetrievalTelemetry(
           { query, category, fastMode, includeWebSearch },
           response,
-          { cacheHit: false }
+          { cacheHit: false, ...cachePolicy }
         );
         return response;
       }
     })();
 
-    setCachedKnowledgeSearch(cacheKey, executionPromise);
+    setCachedKnowledgeSearch(cacheKey, executionPromise, cachePolicy);
     return executionPromise;
   },
 });
