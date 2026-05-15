@@ -6,6 +6,7 @@
   ],
   "exactFiles": [
     "src/app/main/components/SystemStartSection.test.tsx",
+    "src/app/dashboard/DashboardClientRuntime.test.tsx",
     "src/app/dashboard/DashboardInteractiveShell.test.tsx",
     "src/app/dashboard/dashboard-route-contract.test.ts",
     "src/app/validation/page.test.tsx",

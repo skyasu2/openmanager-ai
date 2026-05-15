@@ -8,7 +8,7 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
@@ -70,6 +70,7 @@ function DashboardPageContent({
 
   const router = useRouter();
   const permissions = useUserPermissions();
+  const hasRedirectedForAccessRef = useRef(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -101,17 +102,23 @@ function DashboardPageContent({
 
     if (
       !canAccess &&
-      (permissions.userType === 'guest' || permissions.userType === 'github')
+      (permissions.userType === 'guest' ||
+        permissions.userType === 'github' ||
+        permissions.userType === 'anonymous')
     ) {
       setAuthLoading(false);
-      toast.error(
-        `접근 권한 없음\n대시보드 접근 권한이 없습니다. ${LOGIN_POLICY_COPY.adminPinAuthText} 또는 ${LOGIN_POLICY_COPY.authPrompt}`
-      );
-      router.push('/');
+      if (!hasRedirectedForAccessRef.current) {
+        hasRedirectedForAccessRef.current = true;
+        toast.error(
+          `접근 권한 없음\n대시보드 접근 권한이 없습니다. ${LOGIN_POLICY_COPY.adminPinAuthText} 또는 ${LOGIN_POLICY_COPY.authPrompt}`
+        );
+        router.push('/');
+      }
       return;
     }
 
     if (canAccess) {
+      hasRedirectedForAccessRef.current = false;
       setAuthLoading(false);
     }
   }, [isMounted, permissions, router, testModeDetected]);
