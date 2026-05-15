@@ -57,8 +57,11 @@ describe('searchKnowledgeBase', () => {
       useGraphRAG: 'true',
     });
 
-    expect(parsed).toEqual({
+    expect(parsed).not.toHaveProperty('useGraphRAG');
+    expect(parsed).toMatchObject({
       query: '현재 인프라 아키텍처 요약',
+      fastMode: true,
+      includeWebSearch: false,
     });
   });
 
@@ -123,7 +126,6 @@ describe('searchKnowledgeBase', () => {
     const result = await searchKnowledgeBase.execute({
       query: 'Redis OOM 원인 분석',
       category: 'incident',
-      useGraphRAG: true,
       includeWebSearch: true,
     });
 

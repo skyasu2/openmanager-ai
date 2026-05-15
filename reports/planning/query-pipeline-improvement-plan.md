@@ -195,11 +195,19 @@ test(spec): add graphrag removal and krl cleanup specs
 
 완료 기준:
 
-- `searchKnowledgeBase.useGraphRAG` schema 제거
-- `legacy-contracts.ts`에서 `searchKnowledgeBaseUseGraphRAG` 제거
-- `legacy-contracts.test.ts`의 `'keeps useGraphRAG as input compatibility only'` 테스트 삭제 (제거 완료 검증으로 교체)
-- cleanup guard가 `useGraphRAG` active runtime 0건을 강제
-- 관련 테스트의 `useGraphRAG: true` 호환 케이스 삭제
+- [x] `searchKnowledgeBase.useGraphRAG` schema 제거
+- [x] `legacy-contracts.ts`에서 `searchKnowledgeBaseUseGraphRAG` 제거
+- [x] `legacy-contracts.test.ts`의 `'keeps useGraphRAG as input compatibility only'` 테스트 삭제 (제거 완료 검증으로 교체)
+- [x] cleanup guard가 `useGraphRAG` active runtime 0건을 강제
+- [x] 관련 테스트의 `useGraphRAG: true` 호환 케이스 삭제
+
+진행 기록:
+
+- 2026-05-15 Codex: T1 범위 구현 완료. `searchKnowledgeBase`는 더 이상 `useGraphRAG`를 schema/type/execute 입력으로 받지 않고, legacy registry에서 `searchKnowledgeBase.useGraphRAG` 계약을 제거했다.
+- 검증:
+  - `cd cloud-run/ai-engine && npx vitest run src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts src/lib/legacy-contracts.test.ts src/knowledge-runtime-cleanup.test.ts --silent=false` → 3 files / 14 tests passed
+  - `cd cloud-run/ai-engine && npm run type-check` → passed
+  - 전체 T0 targeted 묶음 재실행 기준 잔여 실패는 T2/T3/T5 계약으로 축소됨.
 
 ### Task 2 - Retrieval result contract 정리
 

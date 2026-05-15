@@ -5,7 +5,6 @@ import {
   retrieveKnowledgeEvidence,
   type KnowledgeRetrievalLiteResult,
 } from '../../lib/knowledge-retrieval-lite';
-import { LEGACY_CONTRACTS } from '../../lib/legacy-contracts';
 import { logger } from '../../lib/logger';
 import {
   createRetrievalMetadata,
@@ -36,9 +35,7 @@ type KnowledgeSearchRuntimeInput = {
   includeWebSearch?: boolean;
 };
 
-type KnowledgeSearchToolInput = KnowledgeSearchRuntimeInput & {
-  useGraphRAG?: boolean;
-};
+type KnowledgeSearchToolInput = KnowledgeSearchRuntimeInput;
 
 type KnowledgeSearchResult = {
   success: boolean;
@@ -277,10 +274,6 @@ export const searchKnowledgeBase = tool({
       .enum(['low', 'medium', 'high', 'critical', 'info', 'warning'])
       .optional()
       .describe('심각도 필터'),
-    useGraphRAG: booleanToolFlagSchema
-      .optional()
-      .default(false)
-      .describe(LEGACY_CONTRACTS.searchKnowledgeBaseUseGraphRAG.description),
     fastMode: booleanToolFlagSchema
       .optional()
       .default(true)

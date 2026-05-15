@@ -12,16 +12,6 @@ export interface LegacyContract {
 }
 
 export const LEGACY_CONTRACTS = {
-  searchKnowledgeBaseUseGraphRAG: {
-    id: 'searchKnowledgeBase.useGraphRAG',
-    status: 'compat-only',
-    owner: 'ai-retrieval',
-    replacement: 'Knowledge Retrieval Lite',
-    removeAfter: '2026-05-31',
-    description:
-      'Deprecated compatibility flag. Lite retrieval ignores graph traversal.',
-    inputName: 'useGraphRAG',
-  },
   legacyRagSources: {
     id: 'legacy-rag-sources',
     status: 'migration-bridge',
