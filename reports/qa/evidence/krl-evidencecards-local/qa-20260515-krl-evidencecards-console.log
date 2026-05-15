@@ -1,0 +1,19 @@
+[    1354ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    1459ms] [LOG] [HMR] connected @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    1521ms] [INFO] 🔐 Supabase Browser Client 초기화 (PKCE + Cookie) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    1562ms] [INFO] 🔐 Auth state changed: Not authenticated @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    1986ms] [INFO] 🔍 시스템 비활성 모니터링 시작 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2172ms] [INFO] 🎯 대시보드 초기화 - Supabase hourly_server_states 테이블 사용 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2176ms] [INFO] 🚀 시스템이 종료된 상태입니다. 자동으로 시작합니다. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2177ms] [INFO] 🚀 [System] 시스템 시작 완료 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2178ms] [INFO] 🤖 [AI] AI 에이전트는 항상 활성화 상태 유지 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2179ms] [INFO] 💤 시스템 부트스트랩 대기 중 - 시스템 시작 후 실행됩니다 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2185ms] [INFO] 💤 시스템 부트스트랩 대기 중 - 시스템 시작 후 실행됩니다 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2664ms] [INFO] 🚀 클라이언트 사이드 메트릭 데이터 로드 완료 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2772ms] [INFO] 🚀 Server Stats Worker initialized successfully @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2947ms] [INFO] 🔐 게스트 세션 확인 {userId: 5a08f47a-bded-4323-b986-d6a71a8b5c5a} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    2948ms] [INFO] 👤 사용자 정보 로드 (AuthStateManager 통합): {user: Object, type: guest, isAuthenticated: true, sessionStatus: unauthenticated} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    3996ms] [INFO] 🔧 AI Proxy config loaded (tier: free) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    4017ms] [INFO] 📂 [ChatHistory] Restored 2 messages @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    7193ms] [INFO] 🚀 시스템 부트스트랩 시작... (시스템 활성화 상태, 1회만 실행) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27
+[    7193ms] [INFO] 📦 부트스트랩 캐시 사용 (세션 동안 유효) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/shared/forward-logs-shared.js:27

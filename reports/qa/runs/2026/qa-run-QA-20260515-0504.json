@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260515-0504",
+  "recordedAt": "2026-05-15T06:36:37.546Z",
+  "recordedAtKst": "2026-05-15 15:36:37 KST",
+  "runTitle": "Local Playwright QA - KRL EvidenceCards Source Rendering",
+  "owner": "codex",
+  "source": "playwright-mcp+local-dev",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000/dashboard/ai-assistant",
+    "frontend": "Next.js dev server",
+    "backend": "fixture/localStorage",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "4ffa6e04122d3e8549a3d04d5ce262745d79e48d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant local-dev fullscreen AI workspace",
+    "stored AI conversation restore banner",
+    "AnalysisBasisMetadata expanded source grouping",
+    "EvidenceCard[] reference evidence list"
+  ],
+  "skippedSurfaces": [
+    "Vercel production conversational AI QA: deferred to T7 after deploy or T5 approval",
+    "Supabase destructive migration: T5 requires explicit user approval",
+    "live LLM call: not needed for UI regression; localStorage fixture used to avoid cost",
+    "mobile viewport: no responsive layout change in this T2 check"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Expanded AnalysisBasisMetadata showing knowledge-base/tool-result source groups",
+      "path": "reports/qa/evidence/krl-evidencecards-local/qa-20260515-krl-evidencecards-expanded-local.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Local dev console capture for valid evidenceCards render",
+      "path": "reports/qa/evidence/krl-evidencecards-local/qa-20260515-krl-evidencecards-console.log"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "query-pipeline-t2-evidencecards-ui-regression",
+      "title": "T2 evidenceCards UI browser regression",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Local Playwright MCP restored a stored AI conversation with two EvidenceCard records and verified knowledge-base/tool-result grouping plus reference evidence titles.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Injected valid StoredMessageMetadata fixture with two EvidenceCard records to avoid live LLM cost.",
+    "PASS: knowledge-base 2 and tool-result 1 source groups rendered.",
+    "PASS: Evidence titles rendered with runbook/incident badges and scores.",
+    "PASS: no AI service error overlay after valid featureStatus shape."
+  ],
+  "links": []
+}

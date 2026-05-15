@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (`query-pipeline-improvement-plan.md T11 완료 — KRL 한국어 운영 표현 fallback 및 golden smoke 강화`)
+**Last Updated**: 2026-05-15 KST (`query-pipeline-improvement-plan.md T2 UI 회귀 QA 기록 — QA-20260515-0504`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1~T4/T6/T8/T9/T10/T11 완료, T2 evidenceCards/retrieval boundary 코드 정리 완료. Supabase live smoke 통과. 남은 작업은 T2 브라우저 UI 회귀 확인, T5 승인 필요 DB migration, T7 Vercel QA 기록. |
+| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1~T4/T6/T8/T9/T10/T11 완료, T2 evidenceCards/retrieval boundary 코드 정리 및 local Playwright UI 회귀 QA `QA-20260515-0504` 완료. Supabase live smoke 통과. 남은 작업은 T5 승인 필요 DB migration, T7 Vercel production QA 기록. |
 
 ---
 
@@ -22,7 +22,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P2: Supabase legacy GraphRAG inventory 제거 | Medium | read-only precheck 완료, `vector_documents_stats` 의존성 반영 migration 초안 준비. `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` 제거는 destructive DB 변경이므로 적용 전 **명시 승인 필요**. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T5 |
-| P2: T2 UI 수동 확인 + T7 QA closure | Medium | AnalysisBasisMetadata·SidebarMessage evidenceCards 렌더링 확인 + Vercel Playwright MCP QA 기록. Supabase live smoke는 T11에서 통과. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T2/T7/T11 |
+| P2: T7 production QA closure | Medium | T2 local Playwright evidenceCards UI 회귀 확인은 `QA-20260515-0504`로 완료. 남은 범위는 T5 적용 또는 배포가 포함될 때 Vercel Playwright MCP QA 기록. Supabase live smoke는 T11에서 통과. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T2/T7/T11 |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
 
 ---

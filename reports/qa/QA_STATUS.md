@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-15 03:50:45 KST
+> Generated at: 2026-05-15 15:36:39 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 501 |
-| Total Runs (Counted) | 400 |
+| Total Recorded Runs | 502 |
+| Total Runs (Counted) | 401 |
 | Non-counted Runs | 101 |
-| Total Checks | 3555 |
-| Passed | 3418 |
+| Total Checks | 3560 |
+| Passed | 3423 |
 | Failed | 127 |
-| Completed Items | 573 |
+| Completed Items | 574 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 23 |
 | Expert Domains Tracked | 14 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260515-0503 (2026-05-14T18:50:43.003Z) |
-| Latest Recorded Run | QA-20260515-0503 (2026-05-14T18:50:43.003Z) |
+| Last Counted Run | QA-20260515-0504 (2026-05-15T06:36:37.546Z) |
+| Latest Recorded Run | QA-20260515-0504 (2026-05-15T06:36:37.546Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,34 +34,31 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260515-0503 (2026-05-14T18:50:43.003Z)
+Latest run: QA-20260515-0504 (2026-05-15T06:36:37.546Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after v8.11.153 production QA; effective 8.7576 USD, billed 0.0000 USD, chargeCount 7917. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-13T18:50:43.003Z -> 2026-05-14T18:50:43.003Z (24h)
-- Runs with observations: 2 recorded / 1 counted
-- Samples: 10
+- Window: 2026-05-14T06:36:37.546Z -> 2026-05-15T06:36:37.546Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run | 10 | 2627ms | 4087ms | - | - | - | - | QA-20260514-0498 |
+| - | - | 0 | - | - | - | - | - | - | - |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-13T18:50:43.003Z -> 2026-05-14T18:50:43.003Z (24h)
+- Window: 2026-05-14T06:36:37.546Z -> 2026-05-15T06:36:37.546Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,30 +70,25 @@ Latest run: QA-20260515-0503 (2026-05-14T18:50:43.003Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_FevgRrWncFxW4MUSg1yAGhdsUieQ / SHA f65632b9
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production /api/version returned 8.11.153 with releaseTag v8.11.153, Vercel production /api/health?service=ai&soft=true returned healthy Cloud Run backend, Dashboard loaded in guest session with 18 servers and AI sidebar available, AI sidebar engine state showed Ready, AI Chat guidance prompt '이상감지 기능 사용법' returned guidance text instead of executing the artifact immediately, AI sidebar rendered guidance CTA button '바로 이상감지/추세 분석 실행하기', Guidance CTA click submitted direct artifact request '전체 서버 이상감지 돌려줘', Monitoring analysis artifact completed in the sidebar with 18 analyzed servers and 5 risk signals, Artifact card rendered MD download, JSON download, and '이상감지/추세에서 보기' actions, Current console error capture after the verified flow reported 0 errors and 0 warnings, Relevant API network calls completed with 200 responses, GitLab v8.11.153 tag pipeline deploy, deploy_ai_engine, frontend smoke, and AI Engine smoke jobs succeeded
-- Skipped Surfaces: incident-report guidance CTA live click path: same renderer path covered by unit regression, omitted to avoid repeated live AI cost, standard five-question conversational AI pack: unchanged routing/data grounding since v8.11.147 QA, targeted run only, mobile viewport: no responsive layout change in this fix, OAuth provider login flows: guest session used for production QA, Cloud Run admin observability endpoints: not part of this guidance CTA regression, intermediate artifact timer message in production: artifact completed too quickly to observe; timer contract covered by local tests
+- Deployment: SHA 4ffa6e04
+- Coverage Packs: ai-core
+- Covered Surfaces: /dashboard/ai-assistant local-dev fullscreen AI workspace, stored AI conversation restore banner, AnalysisBasisMetadata expanded source grouping, EvidenceCard[] reference evidence list
+- Skipped Surfaces: Vercel production conversational AI QA: deferred to T7 after deploy or T5 approval, Supabase destructive migration: T5 requires explicit user approval, live LLM call: not needed for UI regression; localStorage fixture used to avoid cost, mobile viewport: no responsive layout change in this T2 check
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.153 tag pipeline 2525981912 | [GitLab v8.11.153 tag pipeline 2525981912](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2525981912) | - |
-| general | Vercel production alias | [Vercel production alias](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment dpl_FevgRrWncFxW4MUSg1yAGhdsUieQ | [Vercel production deployment dpl_FevgRrWncFxW4MUSg1yAGhdsUieQ](https://openmanager-joik5j0ko-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Guidance CTA to monitoring artifact completion | `reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-guidance-cta-artifact.png` | - |
-| playwright-console | Current console error capture | `reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-console-errors-current.txt` | - |
-| playwright-network | Relevant API network capture | `reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-network.txt` | - |
-| playwright-report | AI sidebar dialog text evidence | `reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-dialog-text.txt` | - |
-| playwright-report | Accessibility snapshot for verified dashboard/sidebar state | `reports/qa/evidence/v8.11.153-follow-up/qa-20260515-v811153-guidance-cta-artifact-snapshot.md` | - |
+| playwright-screenshot | Expanded AnalysisBasisMetadata showing knowledge-base/tool-result source groups | `reports/qa/evidence/krl-evidencecards-local/qa-20260515-krl-evidencecards-expanded-local.png` | - |
+| playwright-console | Local dev console capture for valid evidenceCards render | `reports/qa/evidence/krl-evidencecards-local/qa-20260515-krl-evidencecards-console.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -608,6 +600,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
 - qa-final-report-historical-positioning: v8.7.1 최종 QA 리포트의 historical 성격 명시 (completed 1회, last QA-20260309-0067)
+- query-pipeline-t2-evidencecards-ui-regression: T2 evidenceCards UI browser regression (completed 1회, last QA-20260515-0504)
 - query-provider-devtools-hydration-fix: React Query Devtools hydration mismatch removal (completed 1회, last QA-20260420-0316)
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
 - rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
@@ -760,6 +753,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260515-0504 | 2026-05-15T06:36:37.546Z | targeted | no | yes | Local Playwright QA - KRL EvidenceCards Source Rendering | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260515-0503 | 2026-05-14T18:50:43.003Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.153 Follow-up Improvements | 12 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260514-0502 | 2026-05-14T13:48:56.400Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.150 Artifact UX Closure | 12 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260514-0501 | 2026-05-14T07:04:04.756Z | targeted | yes | yes | Vercel Playwright QA - v8.11.149 AI Diagnostic Commands | 10 | 4 | 0 | 0 | 0 | 0 |
@@ -779,4 +773,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260512-0487 | 2026-05-12T10:53:59.087Z | targeted | yes | yes | Vercel Playwright QA - v8.11.137 Semantic Trace Job Path | 8 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260512-0486 | 2026-05-12T09:02:46.154Z | targeted | yes | yes | Vercel API QA - v8.11.136 Natural-Language Semantic Peak Coverage | 14 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0485 | 2026-05-12T07:52:35.206Z | targeted | yes | yes | Vercel API QA - v8.11.135 Multi-Agent Semantic Trace | 9 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260512-0484 | 2026-05-12T03:58:50.223Z | targeted | yes | yes | Vercel Playwright QA - AI semantic routing regression check on v8.11.132 | 8 | 2 | 3 | 0 | 0 | 3 |

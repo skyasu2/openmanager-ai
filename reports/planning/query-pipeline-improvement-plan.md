@@ -260,12 +260,13 @@ test(spec): add graphrag removal and krl cleanup specs
     - `stream-helpers.ts` (line 39): async job API 전달
   - 신규 UI는 `evidenceCards` 기반으로 렌더링하되, `ragSources ?? []` fallback을 한시 유지
 - [x] frontend metadata parser는 old localStorage/history를 최소 방어하되 신규 UI 표기는 `evidenceCards/retrieval` 기준 사용
-- [ ] UI 회귀 확인: `AnalysisBasisMetadata`, `SidebarMessage`에서 RAG 근거 표시가 evidenceCards 기반으로 정상 동작하는지 수동 확인 필수
+- [x] UI 회귀 확인: `AnalysisBasisMetadata`, `SidebarMessage`에서 RAG 근거 표시가 evidenceCards 기반으로 정상 동작하는지 수동 확인
 
 진행 기록:
 
 - 2026-05-15 Codex: T2 타입 표면 1차 정리 완료. Backend/frontend `RetrievalMode`에서 `cosine-neighbor`를 제거하고, `RAGResultItem.sourceType`에서 `vector|graph`를 제거했다. legacy fixture는 현재 KRL source type(`knowledge|incident|runbook|web`) 기준으로 정렬했다.
-- 2026-05-15 Codex: T2 evidence boundary 2차 정리 완료. Streaming done event, async job result, root SSE parser, message transform, `AnalysisBasisMetadata`, `SidebarMessage`가 `evidenceCards` + `retrieval`을 우선 사용하도록 정렬했다. `ragSources`는 web-source card 및 old localStorage/history fallback boundary로만 유지한다. UI copy는 사용자 노출 "RAG" 표현을 "지식 검색/지식 근거"로 교체했다. 브라우저 수동 확인은 T7 QA에서 수행한다.
+- 2026-05-15 Codex: T2 evidence boundary 2차 정리 완료. Streaming done event, async job result, root SSE parser, message transform, `AnalysisBasisMetadata`, `SidebarMessage`가 `evidenceCards` + `retrieval`을 우선 사용하도록 정렬했다. `ragSources`는 web-source card 및 old localStorage/history fallback boundary로만 유지한다. UI copy는 사용자 노출 "RAG" 표현을 "지식 검색/지식 근거"로 교체했다.
+- 2026-05-15 Codex: local Playwright MCP로 `/dashboard/ai-assistant` 저장 대화 복원 후 `EvidenceCard[]` 2건 fixture를 검증했다. `knowledge-base 2`, `tool-result 1` source grouping, runbook/incident 근거 제목과 score badge가 렌더링됐고 valid `featureStatus` shape 기준 error overlay는 없었다. QA 기록: `QA-20260515-0504`.
 - 검증:
   - `cd cloud-run/ai-engine && npx vitest run src/lib/retrieval-contract.test.ts src/tools-ai-sdk/reporter-tools/knowledge-types.test.ts src/lib/ai-sdk-utils.test.ts src/services/ai-sdk/agents/orchestrator-routing-direct-knowledge.test.ts --silent=false` → 3 files / 17 tests passed (`orchestrator-routing-direct-knowledge.test.ts`는 매칭 파일 없음으로 제외)
   - `npx vitest run --config config/testing/vitest.config.dom.ts src/hooks/ai/utils/message-helpers.test.ts src/hooks/ai/utils/chat-history-storage.test.ts src/hooks/ai/core/useChatHistory.test.ts --silent=false` → 3 files / 49 tests passed
@@ -368,6 +369,7 @@ test(spec): add graphrag removal and krl cleanup specs
 - [x] AI Engine `type-check` 통과
 - [x] root `type-check`, `lint`, `test:quick`, `test:contract` 통과
 - [x] Supabase RAG smoke 통과
+- [x] Local Playwright MCP evidenceCards UI 회귀 QA 기록
 - [ ] 배포가 포함되면 GitLab pipeline 확인
 - [ ] Vercel production + Playwright MCP conversational QA 기록
 
@@ -375,6 +377,7 @@ test(spec): add graphrag removal and krl cleanup specs
 
 - 2026-05-15 Codex: T2/T6 로컬 deterministic gate 완료. Supabase RAG smoke와 Vercel/Playwright QA는 T5 승인 또는 배포가 포함될 때 실행한다.
 - 2026-05-15 Codex: KRL alias/golden smoke 강화 후 `npm run supabase:rag:smoke` 통과. Supabase live RPC는 확인됐고, Vercel/Playwright QA 기록은 T5 적용 또는 배포가 포함될 때 진행한다.
+- 2026-05-15 Codex: T2 UI 회귀 범위는 local Playwright MCP QA `QA-20260515-0504`로 기록했다. Production conversational QA는 배포/T5 적용이 포함될 때 T7로 별도 수행한다.
 - 검증:
   - AI Engine targeted Vitest 5 files / 95 tests passed
   - frontend/root targeted Vitest 7 files / 120 tests passed
@@ -598,12 +601,11 @@ live 항목 분포 (`cd cloud-run/ai-engine && npm run rag:analyze`, 2026-05-15)
 ## 실행 순서 제안
 
 ```text
-완료됨: T0 → T1 → T2(코드) → T3 → T4 → T6 → T8 → T9(live inventory) → T10 → T11
+완료됨: T0 → T1 → T2(코드+UI QA) → T3 → T4 → T6 → T8 → T9(live inventory) → T10 → T11
 
 현재 대기:
-  T2 미완료 → UI 수동 확인 (evidenceCards 렌더링)
-  T5          → 사용자 DB migration 승인 후 적용
-  T7          → T5 완료 또는 배포 후 QA 기록
+  T5 → 사용자 DB migration 승인 후 적용
+  T7 → T5 완료 또는 배포 후 production/Vercel QA 기록
 
 신규: 없음
 ```

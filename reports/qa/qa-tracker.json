@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-14T18:50:43.003Z"
+    "updatedAt": "2026-05-15T06:36:37.546Z"
   },
   "sequence": {
-    "nextRunNumber": 504
+    "nextRunNumber": 505
   },
   "summary": {
-    "totalRecordedRuns": 501,
-    "totalRuns": 400,
+    "totalRecordedRuns": 502,
+    "totalRuns": 401,
     "excludedRuns": 101,
-    "totalChecks": 3555,
-    "totalPassed": 3418,
+    "totalChecks": 3560,
+    "totalPassed": 3423,
     "totalFailed": 127,
     "completionRate": 100,
-    "completedItems": 573,
+    "completedItems": 574,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 23,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260515-0503",
-    "lastRecordedAt": "2026-05-14T18:50:43.003Z",
-    "latestRecordedRunId": "QA-20260515-0503",
-    "latestRecordedAt": "2026-05-14T18:50:43.003Z"
+    "lastRunId": "QA-20260515-0504",
+    "lastRecordedAt": "2026-05-15T06:36:37.546Z",
+    "latestRecordedRunId": "QA-20260515-0504",
+    "latestRecordedAt": "2026-05-15T06:36:37.546Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14033,6 +14033,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-14T18:50:43.003Z"
+    },
+    "query-pipeline-t2-evidencecards-ui-regression": {
+      "id": "query-pipeline-t2-evidencecards-ui-regression",
+      "title": "T2 evidenceCards UI browser regression",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260515-0504",
+      "firstSeenAt": "2026-05-15T06:36:37.546Z",
+      "lastSeenRunId": "QA-20260515-0504",
+      "lastSeenAt": "2026-05-15T06:36:37.546Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Local Playwright MCP restored a stored AI conversation with two EvidenceCard records and verified knowledge-base/tool-result grouping plus reference evidence titles.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-15T06:36:37.546Z"
     }
   },
   "runs": [
@@ -56020,6 +56044,71 @@
       "expertCount": 4,
       "expertNeedsImprovementCount": 0,
       "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260515-0504",
+      "recordedAt": "2026-05-15T06:36:37.546Z",
+      "recordedAtKst": "2026-05-15 15:36:37 KST",
+      "title": "Local Playwright QA - KRL EvidenceCards Source Rendering",
+      "owner": "codex",
+      "source": "playwright-mcp+local-dev",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260515-0504.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000/dashboard/ai-assistant",
+        "frontend": "Next.js dev server",
+        "backend": "fixture/localStorage",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "4ffa6e04122d3e8549a3d04d5ce262745d79e48d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant local-dev fullscreen AI workspace",
+        "stored AI conversation restore banner",
+        "AnalysisBasisMetadata expanded source grouping",
+        "EvidenceCard[] reference evidence list"
+      ],
+      "skippedSurfaces": [
+        "Vercel production conversational AI QA: deferred to T7 after deploy or T5 approval",
+        "Supabase destructive migration: T5 requires explicit user approval",
+        "live LLM call: not needed for UI regression; localStorage fixture used to avoid cost",
+        "mobile viewport: no responsive layout change in this T2 check"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Expanded AnalysisBasisMetadata showing knowledge-base/tool-result source groups",
+          "path": "reports/qa/evidence/krl-evidencecards-local/qa-20260515-krl-evidencecards-expanded-local.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Local dev console capture for valid evidenceCards render",
+          "path": "reports/qa/evidence/krl-evidencecards-local/qa-20260515-krl-evidencecards-console.log"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
