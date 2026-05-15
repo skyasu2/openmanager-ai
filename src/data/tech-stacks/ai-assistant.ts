@@ -37,7 +37,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '프랑스 AI 스타트업의 효율적인 오픈웨이트 LLM. 무료 티어 보호를 위해 Large 대신 Small 계열을 text fallback 기본값으로 사용',
     implementation:
-      '→ Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback. RAG runtime과 임베딩 경로에서는 제외',
+      '→ Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback. 내부 지식 검색 runtime과 임베딩 경로에서는 제외',
     version: 'mistral-small-latest',
     status: 'active',
     icon: '🛡️',
@@ -74,19 +74,19 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     tags: ['AI SDK', 'Streaming', 'Tool Calling', 'Decision Layer'],
     type: 'opensource',
   },
-  // ========== Database & RAG ==========
+  // ========== Database & Internal Knowledge ==========
   {
     name: 'Supabase Postgres',
     category: 'database',
     importance: 'high',
     description:
-      'PostgreSQL full-text search 기반 운영 지식 저장소. 과거 vector 컬럼은 호환 데이터로 남지만 runtime 검색 경로에서는 사용하지 않음',
+      'PostgreSQL Full Text Search 기반 운영 지식 검색 인덱스. 원본 지식은 repo 문서/seed JSON에 두고 Supabase는 재생성 가능한 serving index로 사용',
     implementation:
-      '과거 장애 사례 및 해결 방법 저장. Advisor Agent가 searchKnowledgeBase 도구로 유사 사례 검색',
-    version: 'PostgreSQL 15 + BM25 RPC',
+      '운영 runbook, 장애 사례, 토폴로지 문서를 knowledge_base에 materialize하고 search_knowledge_text RPC로 검색',
+    version: 'PostgreSQL 17 + FTS RPC',
     status: 'active',
     icon: '🐘',
-    tags: ['BM25', 'RAG', 'Metadata Boost'],
+    tags: ['Postgres FTS', 'Internal Knowledge', 'Metadata Boost'],
     type: 'commercial',
   },
   {
@@ -94,9 +94,9 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'high',
     description:
-      'BM25 텍스트 매칭과 metadata boost를 결합한 경량 지식 검색 계층. 외부 프레임워크 없이 직접 구성',
+      'PostgreSQL Full Text Search와 metadata boost를 결합한 경량 지식 검색 계층. 외부 검색 SaaS나 graph runtime 없이 직접 구성',
     implementation:
-      'Supabase search_knowledge_text RPC + 메타데이터 부스트로 검색 흐름을 구성. Reporter Agent의 searchKnowledgeBase 도구로 연결',
+      'Supabase search_knowledge_text RPC + 메타데이터 부스트로 검색 흐름을 구성. Reporter/Advisor Agent의 searchKnowledgeBase 도구로 연결',
     version: 'In-house',
     status: 'active',
     icon: '🔍',

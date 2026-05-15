@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { AI_ASSISTANT_ARCHITECTURE } from './architecture-diagrams/ai-assistant';
 import { CLOUD_PLATFORM_ARCHITECTURE } from './architecture-diagrams/cloud-platform';
 import { FEATURE_CARDS_DATA } from './feature-cards.data';
+import { AI_ASSISTANT_TECH_STACK } from './tech-stacks/ai-assistant';
 import { CLOUD_PLATFORM_TECH_STACK } from './tech-stacks/cloud-platform';
 import { TECH_STACK_ITEMS } from './tech-stacks/tech-stack';
 import { VIBE_CODING_DATA } from './tech-stacks/vibe-coding';
@@ -27,10 +28,13 @@ describe('feature card public data', () => {
     expect(copy).toContain('자연어 질의, 장애 보고서');
     expect(copy).toContain('무료 티어 친화 실행 경계');
     expect(copy).toContain('다운로드 가능한 장애/이상감지 아티팩트');
-    expect(copy).toContain('BM25 RPC + metadata boost');
+    expect(copy).toContain('PostgreSQL Full Text Search');
+    expect(copy).toContain('search_knowledge_text RPC');
+    expect(copy).toContain('Supabase는 검색 인덱스로 사용');
     expect(copy).toContain('GitLab CI semver tag pipeline');
     expect(copy).toContain('request-driven');
     expect(copy).toContain('Cloud Build가 만들고 로컬 Docker는 사전 검증');
+    expect(copy).not.toContain('RAG');
     expect(copy).not.toContain('Knowledge Retrieval Lite (BM25 + pgVector)');
     expect(copy).not.toContain('Supabase pgVector');
     expect(copy).not.toContain('Tavily 하이브리드');
@@ -43,12 +47,14 @@ describe('feature card public data', () => {
   it('aligns supporting modal and diagram data with runtime wording', () => {
     const copy = stringify({
       aiAssistantDiagram: AI_ASSISTANT_ARCHITECTURE,
+      aiAssistantTech: AI_ASSISTANT_TECH_STACK,
       cloudPlatformDiagram: CLOUD_PLATFORM_ARCHITECTURE,
       cloudPlatformTech: CLOUD_PLATFORM_TECH_STACK,
       vibeCodingData: VIBE_CODING_DATA,
     });
 
     expect(copy).toContain('BM25 RPC + metadata boost');
+    expect(copy).toContain('Postgres FTS');
     expect(copy).toContain('GitLab CI deploy gate');
     expect(copy).toContain('Request-driven AI job dispatch');
     expect(copy).not.toContain('BM25 + pgVector');

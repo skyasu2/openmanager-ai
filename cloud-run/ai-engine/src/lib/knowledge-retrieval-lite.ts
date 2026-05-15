@@ -80,7 +80,9 @@ const DOMAIN_QUERY_FALLBACKS = [
     ],
   },
   {
-    domainSignals: [/postgres|postgresql|database|\bdb\b|디비|데이터베이스/i],
+    domainSignals: [
+      /postgres|postgresql|mysql|mariadb|database|\bdb\b|디비|데이터베이스/i,
+    ],
     symptomSignals: [/connection|pool|timeout|접속|연결|타임아웃|실패/i],
     candidates: [
       'database connection',
@@ -106,12 +108,20 @@ const DOMAIN_QUERY_FALLBACKS = [
     ],
   },
   {
-    domainSignals: [/cpu|processor|프로세스|부하|load/i],
-    symptomSignals: [/high|spike|높|과부하|지연/i],
-    candidates: ['cpu', 'cpu high load', 'cpu spike', '프로세스 부하'],
+    domainSignals: [/cpu|processor|프로세서|프로세스|부하|load/i],
+    symptomSignals: [/high|spike|usage|사용|사용률|높|급증|과부하|지연/i],
+    candidates: [
+      'cpu',
+      'cpu high load',
+      'cpu spike',
+      '프로세서 사용률',
+      '프로세스 부하',
+    ],
   },
   {
-    domainSignals: [/topology|토폴로지|architecture|아키텍처|의존성|dependency/i],
+    domainSignals: [
+      /topology|토폴로지|architecture|아키텍처|구성도|구조|의존성|dependency/i,
+    ],
     symptomSignals: [/path|경로|구성|배치|dependency|의존|스냅샷|snapshot/i],
     candidates: ['topology', '토폴로지', 'server topology', '인프라 토폴로지'],
   },

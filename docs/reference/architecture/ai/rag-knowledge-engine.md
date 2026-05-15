@@ -10,7 +10,7 @@
 >
 > **v1.11.0** | Updated 2026-05-15
 >
-> 검색 증강 생성(RAG) 및 내부 지식 검색 아키텍처 상세 문서입니다.
+> 내부 지식 검색 및 근거 주입 아키텍처 상세 문서입니다.
 
 **관련 문서**: [AI Engine Architecture](./ai-engine-architecture.md)
 
@@ -18,13 +18,61 @@
 
 ## Overview
 
-OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Knowledge Retrieval Lite** 기반입니다. 목적은 운영 매뉴얼, 사용 가이드, 서버 역할/토폴로지, 장애 이력, 장애 대응 절차를 LLM 컨텍스트에 주입하는 것입니다.
+OpenManager AI의 내부 지식 검색은 **Knowledge Retrieval Lite** 기반입니다. 목적은 운영 매뉴얼, 사용 가이드, 서버 역할/토폴로지, 장애 이력, 장애 대응 절차를 LLM 컨텍스트에 주입하는 것입니다.
 
-현재 런타임은 무료 티어와 Cloud Run request path 제약을 우선합니다. 따라서 RAG 내부에서 외부 embedding, graph expansion, query-expansion LLM, reranking LLM, 자동 web-search fallback을 호출하지 않습니다. 외부 웹 검색은 별도 `searchWeb` 도구와 quota 정책으로 분리합니다.
+현재 런타임은 무료 티어와 Cloud Run request path 제약을 우선합니다. 따라서 내부 지식 검색 단계에서 외부 embedding, graph expansion, query-expansion LLM, reranking LLM, 자동 web-search fallback을 호출하지 않습니다. 외부 웹 검색은 별도 `searchWeb` 도구와 quota 정책으로 분리합니다.
 
 즉, retrieval 단계는 deterministic search/metadata boost이고, LLM은 최종 agent 답변 생성 단계에서 `EvidenceCard[]`를 참고할 때만 사용됩니다.
 
-## RAG Corpus Governance (2026-02-23)
+## Storage And Serving Decision
+
+현재 규모에서는 Supabase PostgreSQL Full Text Search를 검색 serving index로 유지합니다. 원본 지식은 repo 문서와 seed JSON에 남기고, Supabase `knowledge_base`는 재생성 가능한 materialized index로 취급합니다.
+
+```text
+Source of truth
+  repo docs / seed JSON
+        |
+        v
+Search serving index
+  Supabase knowledge_base
+  + search_vector
+  + search_knowledge_text RPC
+        |
+        v
+AI runtime
+  Knowledge Retrieval Lite
+  + EvidenceCard[]
+```
+
+| 선택지 | 현재 판단 | 이유 |
+|---|---|---|
+| Supabase Postgres FTS | 유지 | 60건 규모의 운영 지식에는 충분하고, 추가 검색 SaaS/embedding 비용 없이 deterministic smoke가 가능 |
+| Google Cloud Vertex AI Search | 보류 | PDF/DOCX/웹 대량 ingest, IAM 연동, managed indexing이 필요할 때 검토할 상위 옵션 |
+| Google Cloud Storage | 보조 후보 | 원본 파일 보관에는 적합하지만 검색 인덱스 자체는 아님 |
+| Vercel Blob / Edge Config | 비주력 | 파일·작은 설정 보관에는 적합하지만 운영 지식 검색 DB로는 맞지 않음 |
+
+이 구조는 Supabase 의존을 검색 인덱스 계층으로 제한합니다. Supabase를 바꾸더라도 repo 원본에서 새 인덱스를 재생성할 수 있어 벤더 락인 위험을 낮춥니다.
+
+## Retrieval Quality Gate
+
+KRL 품질 관리는 새 검색 인프라를 붙이는 대신 현재 corpus와 운영 질문에 맞춘 deterministic fallback과 live golden smoke로 제한합니다.
+
+```text
+operator wording
+  프로세서 사용률 / mysql 접속 실패 / 서버 토폴로지 구성도
+        |
+        v
+KRL query fallback
+  cpu / database connection / topology
+        |
+        v
+Supabase smoke
+  expected top title/category checks
+```
+
+현재 `npm run supabase:rag:smoke`는 row count만 보지 않고 CPU, 디스크, Redis, topology, OTel SSOT, Nginx 502, command backfill, category filter, MySQL connection alias의 기대 제목/카테고리를 확인합니다. 이 gate는 CI 기본 경로가 아니라 수동/릴리즈 gate로 실행하며, 운영 DB 상태가 바뀌면 기대값을 corpus 변경과 함께 갱신합니다.
+
+## Internal Knowledge Corpus Governance (2026-02-23)
 
 `knowledge_base` 운영 품질을 유지하기 위한 문서 수/길이 제약입니다. 기준은 `cloud-run/ai-engine/src/lib/rag-doc-policy.ts`를 SSOT로 사용합니다.
 
@@ -84,8 +132,8 @@ OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Knowledge R
 
 | 기술 | 역할 | 구현체 |
 |------|------|--------|
-| **Retrieval Policy** | RAG on/off, feature 상태, suppressed reason 결정 | `retrieval-contract.ts`, supervisor/orchestrator routing |
-| **BM25 Text Search** | 내부 지식 키워드 검색. exact/full query를 우선하고 결과가 좁으면 token-prefix OR recall fallback + token-overlap ranking 사용 | Supabase RPC `search_knowledge_text` |
+| **Retrieval Policy** | 지식 검색 실행 여부, feature 상태, suppressed reason 결정 | `retrieval-contract.ts`, supervisor/orchestrator routing |
+| **Postgres Full Text Search** | 내부 지식 키워드 검색. exact/full query를 우선하고 결과가 좁으면 token-prefix OR recall fallback + token-overlap ranking 사용 | Supabase RPC `search_knowledge_text` |
 | **Metadata Boost** | 서버 역할, AZ, severity, category, tag 기반 재정렬 | `knowledge-retrieval-lite.ts` |
 | **EvidenceCard** | frontend/backend 공통 evidence 계약 | `retrieval-contract.ts` |
 | **Legacy Boundary** | `ragSources` response bridge. 신규 계약은 `EvidenceCard[]` + `RetrievalMetadata` | `legacy-contracts.ts`, frontend history parser |
@@ -116,7 +164,7 @@ User Query
      ▼
 ┌────────────────────┐
 │ Retrieval policy   │
-│ enableRAG / tool   │
+│ server policy/tool │
 │ budget / category  │
 └─────────┬──────────┘
           │ retrieval on
@@ -143,7 +191,7 @@ User Query
 
 ### Data Flow
 
-1. **Retrieval Decision**: `enableRAG`, active tool allowlist, query intent, feature budget으로 retrieval 실행 여부를 결정
+1. **Retrieval Decision**: server-side Auto policy, active tool allowlist, query intent, feature budget으로 retrieval 실행 여부를 결정
 2. **Text Retrieval**: `search_knowledge_text` RPC로 내부 지식 문서 검색
 3. **Metadata Boost**: category/tag/server role/severity/runbook metadata로 evidence 순서 보정
 4. **Evidence Contract**: `EvidenceCard[]`와 `RetrievalMetadata`를 backend response와 frontend state에 보존
@@ -219,7 +267,7 @@ if (enableRAG && activeTools.includes('searchKnowledgeBase')) {
 }
 ```
 
-에이전트는 `agent-runtime-policy.ts`의 tool allowlist와 evidence budget을 따릅니다. Vision path는 RAG와 결합하지 않고 Gemini/OpenRouter path를 유지합니다.
+에이전트는 `agent-runtime-policy.ts`의 tool allowlist와 evidence budget을 따릅니다. Vision path는 내부 지식 검색과 결합하지 않고 Gemini/OpenRouter path를 유지합니다.
 
 ---
 

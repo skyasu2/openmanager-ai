@@ -171,11 +171,11 @@ SELECT to_regclass('public.command_vectors') IS NULL AS command_vectors_removed;
 - [x] KRL은 `search_knowledge_text`만 호출한다.
 - [x] `includeWebSearch`가 KRL 내부 web fallback으로 이어지지 않는다.
 - [x] Tavily web search는 `searchWeb` 계층에서만 실행된다.
-- [ ] Supabase migration에 `CASCADE`가 없고 `search_knowledge_text` 보존 check가 있다.
+- [x] Supabase migration 초안에 `CASCADE`가 없고 `search_knowledge_text` 보존 check가 있다. 실제 적용은 T5 승인 후 진행한다.
 - [x] frontend analysis basis는 `evidenceCards/retrieval` 중심으로 동작한다.
 - [x] 기존 저장된 chat history가 깨지는 경우 fallback parser가 최소한으로 방어한다.
-- [ ] operator-facing UI에서 OTel/domain evidence/KB/web/tool 출처가 구분 가능하다.
-- [ ] category별 KRL smoke가 `architecture`, `command`, `incident` 대표 질의를 검증한다.
+- [x] operator-facing UI에서 OTel/domain evidence/KB/web/tool 출처가 구분 가능하다.
+- [x] category별 KRL smoke가 `architecture`, `command`, `incident` 대표 질의를 검증한다.
 
 ## Task 목록
 
@@ -186,6 +186,7 @@ SELECT to_regclass('public.command_vectors') IS NULL AS command_vectors_removed;
   T8  ragEnabled client dead state 제거
   T9  live knowledge_base inventory 확인 및 추가 불필요 판정
   T10 근거 출처 가시성 + category smoke hardening
+  T11 한국어 운영 표현 fallback + golden smoke hardening
 
 승인/환경 의존
   T5  destructive DB inventory removal
@@ -202,6 +203,7 @@ SELECT to_regclass('public.command_vectors') IS NULL AS command_vectors_removed;
 - T9는 live `rag:analyze` 기준 이미 목표 범위를 만족해 추가 seed 없이 닫았다.
 - T5는 schema hygiene 성격이지만 destructive 변경이라 승인 없이는 진행하지 않는다.
 - T10은 확인된 live category corpus를 고정하는 후속 작업이며, 2026-05-15에 완료했다.
+- T11은 새 검색 인프라 없이 현재 corpus에 맞춘 alias/fallback 품질 gate를 보강하는 follow-up이며, 2026-05-15에 완료했다.
 - `live-otel adapter`와 `long-term memory`는 비용, 보안, retention 계약이 부족해 이 계획의 구현 Task로 승격하지 않는다.
 
 ### Task 0 - SDD failing tests 커밋
@@ -365,13 +367,14 @@ test(spec): add graphrag removal and krl cleanup specs
 - [x] AI Engine targeted tests 통과
 - [x] AI Engine `type-check` 통과
 - [x] root `type-check`, `lint`, `test:quick`, `test:contract` 통과
-- [ ] Supabase RAG smoke 통과
+- [x] Supabase RAG smoke 통과
 - [ ] 배포가 포함되면 GitLab pipeline 확인
 - [ ] Vercel production + Playwright MCP conversational QA 기록
 
 진행 기록:
 
 - 2026-05-15 Codex: T2/T6 로컬 deterministic gate 완료. Supabase RAG smoke와 Vercel/Playwright QA는 T5 승인 또는 배포가 포함될 때 실행한다.
+- 2026-05-15 Codex: KRL alias/golden smoke 강화 후 `npm run supabase:rag:smoke` 통과. Supabase live RPC는 확인됐고, Vercel/Playwright QA 기록은 T5 적용 또는 배포가 포함될 때 진행한다.
 - 검증:
   - AI Engine targeted Vitest 5 files / 95 tests passed
   - frontend/root targeted Vitest 7 files / 120 tests passed
@@ -420,7 +423,8 @@ test(spec): add graphrag removal and krl cleanup specs
 - [x] 지식 베이스에 `architecture`·`command` 카테고리 항목이 각 3개 이상 존재한다.
 - [x] 근거 출처가 OTel/domain evidence/KB/web/tool 중 무엇인지 operator-facing UI와 metadata에서 구분 가능하다.
 - [x] KRL category smoke가 `architecture`, `command`, `incident` 대표 질의를 검증한다.
-- [ ] 로컬 검증, Supabase smoke, Vercel Playwright MCP QA가 기록된다.
+- [x] 로컬 검증과 Supabase smoke가 기록된다.
+- [ ] Vercel Playwright MCP QA가 기록된다.
 
 ### Task 8 - ragEnabled store 잔재 제거
 
@@ -562,10 +566,39 @@ live 항목 분포 (`cd cloud-run/ai-engine && npm run rag:analyze`, 2026-05-15)
 
 ---
 
+### Task 11 - KRL 한국어 운영 표현 fallback 및 golden smoke 강화
+
+**배경**: 현재 corpus는 60건 규모로 충분하며, 별도 검색 SaaS나 embedding 재도입은 무료 티어/운영 복잡도 대비 이득이 작다. 대신 실제 운영자가 자주 쓰는 표현(`프로세서 사용률`, `mysql 접속 실패`, `서버 토폴로지 구성도`)이 KRL fallback과 live smoke에서 고정되도록 보강한다.
+
+완료 기준:
+
+- [x] KRL deterministic fallback이 `프로세서` 표현을 CPU 후보로 정규화한다.
+- [x] KRL deterministic fallback이 `mysql`/`mariadb` 접속 실패를 database connection 후보로 정규화한다.
+- [x] KRL deterministic fallback이 `구성도`/`구조` 표현을 topology 후보로 정규화한다.
+- [x] `supabase:rag:smoke`가 row count 외에 기대 top title/category를 검증한다.
+- [x] live smoke에 CPU processor alias, MySQL connection alias, Korean topology diagram, OTel SSOT path를 추가한다.
+- [x] 새 vector/graph/managed search 인프라를 추가하지 않는다.
+
+진행 기록:
+
+- 2026-05-15 Codex: `knowledge-retrieval-lite.ts`의 fallback signal을 한국어 운영 표현 기준으로 확장했다. 변경은 KRL 후보 생성에만 한정했고 Supabase schema/RPC 변경은 하지 않았다.
+- 2026-05-15 Codex: `scripts/test/supabase-rag-rpc-smoke.mjs`를 golden smoke로 강화해 기대 제목/카테고리와 금지 precision marker를 함께 확인하도록 정리했다.
+- 검증:
+  - `cd cloud-run/ai-engine && npx vitest run src/lib/knowledge-retrieval-lite.test.ts --silent=false` → 1 file / 11 tests passed
+  - `node --check scripts/test/supabase-rag-rpc-smoke.mjs` → passed
+  - `npm run supabase:rag:smoke` → 16 checks PASS (`cpu-processor-alias`, `mysql-connection-alias`, `korean-topology-diagram`, `otel-ssot-path` 포함)
+
+리스크:
+
+- live smoke는 운영 DB corpus와 연결되므로 기본 CI gate에 넣지 않는다.
+- 기대 제목은 corpus 변경과 함께 갱신해야 하며, 단순 ranking 변동이 제품 결함인지 corpus 변경인지 확인 후 조정한다.
+
+---
+
 ## 실행 순서 제안
 
 ```text
-완료됨: T0 → T1 → T2(코드) → T3 → T4 → T6 → T8 → T9(live inventory) → T10
+완료됨: T0 → T1 → T2(코드) → T3 → T4 → T6 → T8 → T9(live inventory) → T10 → T11
 
 현재 대기:
   T2 미완료 → UI 수동 확인 (evidenceCards 렌더링)

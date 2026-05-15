@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (`query-pipeline-improvement-plan.md T10 완료 — 근거 출처 UI 및 KRL category smoke`)
+**Last Updated**: 2026-05-15 KST (`query-pipeline-improvement-plan.md T11 완료 — KRL 한국어 운영 표현 fallback 및 golden smoke 강화`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1~T4/T6/T8/T9/T10 완료, T2 evidenceCards/retrieval boundary 코드 정리 완료. 남은 작업은 T2 브라우저 UI 회귀 확인, T5 승인 필요 DB migration, T7 통합 검증/QA. |
+| P1: GraphRAG 완전 제거 SDD | High | In Progress (Codex) | T1~T4/T6/T8/T9/T10/T11 완료, T2 evidenceCards/retrieval boundary 코드 정리 완료. Supabase live smoke 통과. 남은 작업은 T2 브라우저 UI 회귀 확인, T5 승인 필요 DB migration, T7 Vercel QA 기록. |
 
 ---
 
@@ -22,7 +22,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P2: Supabase legacy GraphRAG inventory 제거 | Medium | read-only precheck 완료, `vector_documents_stats` 의존성 반영 migration 초안 준비. `knowledge_relationships`, `command_vectors`, `knowledge_base.embedding` 제거는 destructive DB 변경이므로 적용 전 **명시 승인 필요**. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T5 |
-| P2: T2 UI 수동 확인 + T7 QA closure | Medium | AnalysisBasisMetadata·SidebarMessage evidenceCards 렌더링 확인 + Vercel Playwright MCP QA 기록. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T2/T7 |
+| P2: T2 UI 수동 확인 + T7 QA closure | Medium | AnalysisBasisMetadata·SidebarMessage evidenceCards 렌더링 확인 + Vercel Playwright MCP QA 기록. Supabase live smoke는 T11에서 통과. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T2/T7/T11 |
 | P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
 
 ---
@@ -39,6 +39,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~KRL 한국어 운영 표현 fallback + golden smoke 강화~~ | — | **완료** — `프로세서 사용률`, `mysql 접속 실패`, `서버 토폴로지 구성도` 같은 운영 표현을 KRL deterministic fallback에 반영하고, `supabase:rag:smoke`가 row count 외 기대 top title/category를 확인하도록 강화했다. Live smoke 16 checks PASS. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T11 |
 | ~~AI 근거 출처 가시성 + KRL category smoke~~ | — | **완료** — analysis basis metadata에 `monitoring-data`, `knowledge-base`, `web-search`, `tool-result` source grouping을 추가하고 `semanticQueryTrace.selectedEvidenceProvider`를 domain evidence detail로 표시한다. `supabase:rag:smoke`에 `architecture`, `command`, `incident` category 대표 질의를 추가해 live smoke PASS 확인. 검증: targeted DOM tests 3 files / 59 tests, `npm run type-check`, `npm run test:quick`, `npm run lint`, docs checks, `git diff --check` 통과. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T10 |
 | ~~지식 베이스 항목 강화 live inventory 확인~~ | — | **완료** — live `npm run rag:analyze` 기준 KB는 총 60건으로 governance 전부 PASS이며 `architecture=5`, `command=25`, `incident=9`, `best_practice=9`, `security=1`로 목표 범위를 충족한다. seed 10건 추가 시 hard max 64 초과가 확인되어 같은 turn에서 관계 참조 0건 확인 후 롤백(`deleted=10`, total=60)했다. 추가 seed 작업은 불필요하며 category smoke는 T10에서 진행. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T9 |
 | ~~ragEnabled store 잔재 제거~~ | — | **완료** — client store의 `ragEnabled/setRagEnabled` dead state를 제거하고, `useAIChatCore`가 더 이상 RAG override를 supervisor 경로로 전달하지 않도록 정리했다. 관련 sidebar/workspace mock과 metadata fallback도 정렬했다. 검증: targeted Vitest 7 files / 85 tests, `npm run type-check`, `npm run test:quick`, `git diff --check` 통과. 상세: [query-pipeline-improvement-plan.md](query-pipeline-improvement-plan.md) T8 |

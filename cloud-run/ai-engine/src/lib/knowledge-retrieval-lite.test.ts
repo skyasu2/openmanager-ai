@@ -299,6 +299,118 @@ describe('retrieveKnowledgeEvidence', () => {
     expect(result.evidenceCards[0]?.reason).toContain('query-fallback:cpu');
   });
 
+  it('falls back from Korean processor wording to CPU search candidates', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 'kb-cpu-spike',
+            title: 'CPU 사용률 급증 원인 분석 및 대응 가이드',
+            content: 'CPU high utilization diagnosis and mitigation guide',
+            category: 'troubleshooting',
+            tags: ['cpu', 'performance'],
+            text_rank: 0.58,
+            metadata: { docType: 'runbook' },
+          },
+        ],
+        error: null,
+      });
+
+    const result = await retrieveKnowledgeEvidence(
+      { query: '프로세서 사용률 급증 원인 알려줘', limit: 3 },
+      { client: createClient(rpc) }
+    );
+
+    expect(rpc).toHaveBeenNthCalledWith(2, 'search_knowledge_text', {
+      p_query_text: 'cpu',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(result.evidenceCards[0]).toMatchObject({
+      id: 'kb-cpu-spike',
+      title: 'CPU 사용률 급증 원인 분석 및 대응 가이드',
+    });
+    expect(result.evidenceCards[0]?.reason).toContain('query-fallback:cpu');
+  });
+
+  it('falls back from MySQL connection wording to database candidates', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 'kb-db-connection',
+            title: '데이터베이스 연결 실패 해결',
+            content: 'Database connection failure response guide',
+            category: 'troubleshooting',
+            tags: ['database', 'connection'],
+            text_rank: 0.52,
+            metadata: { docType: 'runbook' },
+          },
+        ],
+        error: null,
+      });
+
+    const result = await retrieveKnowledgeEvidence(
+      { query: 'mysql 접속 실패 대응 방법', limit: 3 },
+      { client: createClient(rpc) }
+    );
+
+    expect(rpc).toHaveBeenNthCalledWith(2, 'search_knowledge_text', {
+      p_query_text: 'database connection',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(result.evidenceCards[0]).toMatchObject({
+      id: 'kb-db-connection',
+      title: '데이터베이스 연결 실패 해결',
+    });
+    expect(result.evidenceCards[0]?.reason).toContain(
+      'query-fallback:database connection'
+    );
+  });
+
+  it('falls back from Korean diagram wording to topology candidates', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 'kb-topology',
+            title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+            content: 'OpenManager server role and traffic topology snapshot',
+            category: 'architecture',
+            tags: ['topology', 'architecture'],
+            text_rank: 0.57,
+            metadata: { docType: 'architecture' },
+          },
+        ],
+        error: null,
+      });
+
+    const result = await retrieveKnowledgeEvidence(
+      { query: '서비스 구성도 보여줘', limit: 3 },
+      { client: createClient(rpc) }
+    );
+
+    expect(rpc).toHaveBeenNthCalledWith(2, 'search_knowledge_text', {
+      p_query_text: 'topology',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(result.evidenceCards[0]).toMatchObject({
+      id: 'kb-topology',
+      title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+    });
+    expect(result.evidenceCards[0]?.reason).toContain(
+      'query-fallback:topology'
+    );
+  });
+
   it('falls back to disk cleanup evidence for capacity action queries', async () => {
     const rpc = vi
       .fn()

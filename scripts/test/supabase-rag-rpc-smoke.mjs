@@ -28,6 +28,7 @@ const checks = [
   {
     label: 'search_knowledge_text:cpu',
     minRows: 1,
+    expectedTopTitleIncludesAny: ['CPU'],
     args: {
       p_query_text: 'cpu',
       p_max_results: 3,
@@ -35,8 +36,19 @@ const checks = [
     },
   },
   {
+    label: 'search_knowledge_text:cpu-processor-alias',
+    minRows: 1,
+    expectedTopTitleIncludesAny: ['CPU 사용률 급증', 'CPU 사용량 급증'],
+    args: {
+      p_query_text: '프로세서 사용률 급증',
+      p_max_results: 3,
+      p_filter_category: null,
+    },
+  },
+  {
     label: 'search_knowledge_text:cpu-high-load',
     minRows: 1,
+    expectedTopTitleIncludesAny: ['CPU 사용률 급증', 'CPU 사용량 급증'],
     args: {
       p_query_text: 'cpu high load',
       p_max_results: 3,
@@ -46,6 +58,7 @@ const checks = [
   {
     label: 'search_knowledge_text:disk-cleanup',
     minRows: 1,
+    expectedTopTitleIncludesAny: ['디스크'],
     args: {
       p_query_text: 'disk space cleanup',
       p_max_results: 3,
@@ -55,6 +68,7 @@ const checks = [
   {
     label: 'search_knowledge_text:redis-memory',
     minRows: 1,
+    expectedAnyTitleIncludesAny: ['Redis', 'Cache 서버'],
     args: {
       p_query_text: 'redis memory',
       p_max_results: 3,
@@ -64,10 +78,33 @@ const checks = [
   {
     label: 'search_knowledge_text:topology',
     minRows: 1,
+    expectedTopTitleIncludesAny: ['토폴로지'],
     args: {
       p_query_text: 'server topology dependency',
       p_max_results: 3,
       p_filter_category: null,
+    },
+  },
+  {
+    label: 'search_knowledge_text:korean-topology-diagram',
+    minRows: 1,
+    expectedCategory: 'architecture',
+    expectedTopTitleIncludesAny: ['토폴로지'],
+    args: {
+      p_query_text: '서버 토폴로지 구성도',
+      p_max_results: 3,
+      p_filter_category: 'architecture',
+    },
+  },
+  {
+    label: 'search_knowledge_text:otel-ssot-path',
+    minRows: 1,
+    expectedCategory: 'architecture',
+    expectedTopTitleIncludesAny: ['OpenManager OTel 데이터 SSOT 경로'],
+    args: {
+      p_query_text: 'OTel 데이터 SSOT 경로',
+      p_max_results: 3,
+      p_filter_category: 'architecture',
     },
   },
   {
@@ -141,6 +178,20 @@ const checks = [
       p_filter_category: 'incident',
     },
   },
+  {
+    label: 'search_knowledge_text:mysql-connection-alias',
+    minRows: 1,
+    expectedTopCategoryIn: ['incident', 'troubleshooting'],
+    expectedAnyTitleIncludesAny: [
+      'Database 서버',
+      '데이터베이스 연결 실패',
+    ],
+    args: {
+      p_query_text: 'mysql 접속 실패',
+      p_max_results: 3,
+      p_filter_category: 'incident',
+    },
+  },
 ];
 
 let failures = 0;
@@ -150,7 +201,9 @@ for (const {
   args,
   minRows,
   expectedCategory,
+  expectedTopCategoryIn,
   expectedTopTitleIncludesAny,
+  expectedAnyTitleIncludesAny,
   forbiddenTopTitleIncludesAny,
 } of checks) {
   const { data, error } = await supabase.rpc('search_knowledge_text', args);
@@ -179,12 +232,38 @@ for (const {
   }
 
   if (
+    Array.isArray(expectedTopCategoryIn) &&
+    !expectedTopCategoryIn.includes(topCategory)
+  ) {
+    failures += 1;
+    console.log(
+      `[FAIL] ${label}: topCategory="${topCategory}", expected one of ${expectedTopCategoryIn.join(', ')}`
+    );
+    continue;
+  }
+
+  if (
     Array.isArray(expectedTopTitleIncludesAny) &&
     !expectedTopTitleIncludesAny.some((expected) => topTitle.includes(expected))
   ) {
     failures += 1;
     console.log(
       `[FAIL] ${label}: topTitle="${topTitle}", expected one of ${expectedTopTitleIncludesAny.join(', ')}`
+    );
+    continue;
+  }
+
+  if (
+    Array.isArray(expectedAnyTitleIncludesAny) &&
+    !data.some((row) =>
+      expectedAnyTitleIncludesAny.some((expected) =>
+        String(row?.title ?? '').includes(expected)
+      )
+    )
+  ) {
+    failures += 1;
+    console.log(
+      `[FAIL] ${label}: titles=${formatTitles(data)}, expected any of ${expectedAnyTitleIncludesAny.join(', ')}`
     );
     continue;
   }
@@ -200,9 +279,18 @@ for (const {
     continue;
   }
 
-  console.log(`[PASS] ${label}: rows=${rowCount}, top="${topTitle}"`);
+  console.log(
+    `[PASS] ${label}: rows=${rowCount}, top="${topTitle}", category="${topCategory}"`
+  );
 }
 
 if (failures > 0) {
   process.exit(1);
+}
+
+function formatTitles(rows) {
+  if (!Array.isArray(rows)) return '[]';
+  return `[${rows
+    .map((row) => JSON.stringify(String(row?.title ?? '')))
+    .join(', ')}]`;
 }

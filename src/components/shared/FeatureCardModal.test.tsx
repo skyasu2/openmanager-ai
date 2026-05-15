@@ -23,9 +23,14 @@ vi.mock('next/dynamic', () => ({
 }));
 
 const vibeCard = FEATURE_CARDS_DATA.find((card) => card.id === 'vibe-coding');
+const aiCard = FEATURE_CARDS_DATA.find((card) => card.id === 'ai-assistant');
 
 if (!vibeCard) {
   throw new Error('vibe-coding feature card not found');
+}
+
+if (!aiCard) {
+  throw new Error('ai-assistant feature card not found');
 }
 
 describe('FeatureCardModal', () => {
@@ -47,6 +52,18 @@ describe('FeatureCardModal', () => {
     );
 
     return { onClose };
+  };
+
+  const renderAiModal = () => {
+    render(
+      <FeatureCardModal
+        selectedCard={aiCard}
+        onClose={vi.fn()}
+        renderTextWithAIGradient={(text) => text}
+        modalRef={createRef<HTMLDivElement>()}
+        isVisible
+      />
+    );
   };
 
   it('바이브 탭 전환 시 헤더와 본문이 함께 바뀐다', () => {
@@ -78,5 +95,18 @@ describe('FeatureCardModal', () => {
     fireEvent.keyDown(window, { key: 'Escape' });
 
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('AI 어시스턴트 모달에 내부 지식 검색 구조를 설명한다', () => {
+    renderAiModal();
+
+    expect(screen.getByText('내부 지식 검색')).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/Supabase Postgres Full Text Search/).length
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/repo 문서\/seed JSON을 원본 지식/)
+    ).toBeInTheDocument();
+    expect(screen.queryByText('RAG')).not.toBeInTheDocument();
   });
 });

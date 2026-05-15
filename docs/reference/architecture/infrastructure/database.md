@@ -12,18 +12,36 @@
 
 ## 현재 역할
 
-Supabase는 인증, RAG/KB, audit 같은 영속 데이터의 기준입니다. Dashboard/AI monitoring runtime의 서버 메트릭 SSOT는 Supabase가 아니라 `public/data/otel-data` synthetic OTel dataset입니다.
+Supabase는 인증, 내부 지식 검색 인덱스, audit 같은 영속 데이터의 기준입니다. Dashboard/AI monitoring runtime의 서버 메트릭 SSOT는 Supabase가 아니라 `public/data/otel-data` synthetic OTel dataset입니다.
 
 | 영역 | 현재 기준 |
 |---|---|
 | Auth/session | Supabase Auth + 자체 guest session |
-| RAG/KB | `knowledge_base` + `search_knowledge_text` Knowledge Retrieval Lite. `command_vectors`/`knowledge_relationships`/`knowledge_base.embedding`은 request path 밖 legacy inventory이며 destructive removal은 승인 대기 |
+| Internal knowledge/KB | `knowledge_base` + `search_knowledge_text` Knowledge Retrieval Lite. 원본 지식은 repo 문서/seed JSON, Supabase는 PostgreSQL Full Text Search serving index. `command_vectors`/`knowledge_relationships`/`knowledge_base.embedding`은 request path 밖 legacy inventory이며 destructive removal은 승인 대기 |
 | Audit/security logs | `security_audit_logs` 계열 |
 | Monitoring runtime | `public/data/otel-data` → `MetricsProvider`/AI Engine precomputed state |
 | AI jobs/cache | Redis/Cloud Tasks, Supabase가 job store 아님 |
 | Schema source | `supabase/migrations/**` |
 
 AI나 dashboard 메트릭 구현을 바꿀 때는 이 문서보다 [OTel Data Architecture](../data/otel-data-architecture.md)를 먼저 확인합니다. Supabase schema/RLS/extension 변경이면 이 문서를 기준으로 봅니다.
+
+## 내부 지식 저장 방식
+
+현재 내부 지식 검색은 별도 검색 SaaS나 vector DB가 아니라 PostgreSQL 내장 Full Text Search를 사용합니다. `knowledge_base.search_vector`와 `search_knowledge_text` RPC가 검색 인덱스 역할을 하고, AI Engine의 Knowledge Retrieval Lite가 category/tag metadata boost와 `EvidenceCard[]` 변환을 담당합니다.
+
+```text
+repo docs / seed JSON
+  -> seed/backfill script
+  -> Supabase knowledge_base.search_vector
+  -> search_knowledge_text RPC
+  -> AI Engine Knowledge Retrieval Lite
+```
+
+판단 기준:
+- 현재 corpus 60건 규모에서는 Postgres Full Text Search가 비용과 운영 복잡도 대비 충분합니다.
+- Supabase는 검색 serving index로 두고, 지식 원본은 repo에 남겨 재생성 가능성을 확보합니다.
+- Google Vertex AI Search는 대량 파일 ingest, 문서 권한, managed indexing이 필요한 단계에서 재검토합니다.
+- Vercel Blob/Edge Config는 파일·설정 저장에는 적합하지만 내부 지식 검색 DB로 사용하지 않습니다.
 
 ## Supabase PostgreSQL 스키마
 
@@ -108,10 +126,10 @@ FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 
 ### 현재 상태
 - 운영 Supabase에는 `vector`와 `pg_trgm` extension이 아직 `public` 스키마에 설치되어 있습니다.
-- Supabase advisor 기준으로는 경고 대상이지만, 현재 레포의 RAG 마이그레이션과 함수 정의는 이 배치를 전제로 작성되어 있습니다.
+- Supabase advisor 기준으로는 경고 대상이지만, 현재 레포의 legacy vector/text search 마이그레이션과 함수 정의는 이 배치를 전제로 작성되어 있습니다.
 
 ### 지금 바로 옮기지 않는 이유
-- `SECURITY DEFINER` RAG 함수는 `search_path = public, pg_temp`로 고정되어 있습니다.
+- legacy `SECURITY DEFINER` 검색 함수는 `search_path = public, pg_temp`로 고정되어 있습니다.
 - 일부 함수는 `similarity()`를 비정규화 이름으로 호출합니다.
 - 벡터 타입과 operator class도 `vector(...)`, `vector_cosine_ops`, `gin_trgm_ops`처럼 비정규화 이름을 직접 사용합니다.
 - 현재 레포에는 `create extension vector with schema extensions`를 정식 bootstrap migration으로 선언한 이력이 없습니다.
@@ -135,7 +153,7 @@ FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 3. `vector_cosine_ops`, `gin_trgm_ops`, `similarity()` 같은 extension 심볼의 스키마 qualification 전략을 정합니다.
 4. `SECURITY DEFINER` 함수의 고정 `search_path`와 extension 함수 호출이 충돌하지 않도록 함수 본문을 정리합니다.
 5. fresh reset 또는 disposable branch DB에서 bootstrap이 끝까지 성공하는지 검증합니다.
-6. 운영 DB 적용 전, advisor 경고 소거와 RAG RPC 동작을 둘 다 확인합니다.
+6. 운영 DB 적용 전, advisor 경고 소거와 `search_knowledge_text` RPC 동작을 둘 다 확인합니다.
 
 ### 실제 파일 인벤토리
 
@@ -176,7 +194,7 @@ FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 
 ### Legacy vector/graph RPC cleanup (2026-05-10)
 
-운영 DB read-only inventory 결과, 현재 런타임에서 사용하지 않는 legacy RAG RPC가 아직 public schema에 남아 있습니다.
+운영 DB read-only inventory 결과, 현재 런타임에서 사용하지 않는 legacy vector/graph search RPC가 아직 public schema에 남아 있습니다.
 
 | 객체 | 운영 DB 상태 | 현재 판단 |
 |------|-------------|-----------|
@@ -275,7 +293,7 @@ from (values
 -- 적용 후: legacy 6개는 false, search_knowledge_text만 true여야 함
 ```
 
-적용 후에는 `npm run supabase:rag:smoke`로 `search_knowledge_text` 경로를 다시 확인합니다.
+적용 후에는 `npm run supabase:rag:smoke`로 `search_knowledge_text` 경로를 다시 확인합니다. 현재 smoke는 단순 row count가 아니라 CPU/프로세서, MySQL 접속 실패, topology 구성도, OTel SSOT, Nginx 502, command backfill, category filter의 기대 제목/카테고리를 함께 검증합니다.
 
 ### Low-value operational index cleanup (2026-05-10)
 

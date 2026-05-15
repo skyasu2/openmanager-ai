@@ -4,7 +4,15 @@
  * @updated 2026-05-05 - AI assistant taxonomy synced with deterministic-first runtime
  */
 
-import { Bot, Database, Sparkles, Zap } from 'lucide-react';
+import {
+  Activity,
+  BookOpen,
+  Bot,
+  Database,
+  Search,
+  Sparkles,
+  Zap,
+} from 'lucide-react';
 import type { FeatureCard } from '@/types/feature-card.types';
 
 export const FEATURE_CARDS_DATA: FeatureCard[] = [
@@ -16,7 +24,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
-      overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 운영 의사결정 AI 어시스턴트입니다. 핵심 수치와 판정은 deterministic fact layer가 책임지고, LLM은 tool-calling과 설명·보고서·조치안 생성을 맡습니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)를 fallback으로 사용하며, RCA/report/advisor/vision처럼 복잡한 요청만 5개 라우팅 에이전트로 escalation합니다. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측), Knowledge Retrieval Lite(BM25 RPC + metadata boost), 요청 기반 웹 검색을 분리해 무료 티어 사용량을 예측 가능하게 유지합니다.`,
+      overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 운영 의사결정 AI 어시스턴트입니다. 핵심 수치와 판정은 deterministic fact layer가 책임지고, LLM은 tool-calling과 설명·보고서·조치안 생성을 맡습니다. 내부 지식은 Supabase Postgres Full Text Search를 감싼 search_knowledge_text RPC로 검색하고, 원본 지식은 repo 문서와 seed JSON에 남겨 재생성 가능한 인덱스로 관리합니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)를 fallback으로 사용하며, RCA/report/advisor/vision처럼 복잡한 요청만 5개 라우팅 에이전트로 escalation합니다. 경량 커스텀 TypeScript ML, Knowledge Retrieval Lite(Postgres FTS + metadata boost), 요청 기반 웹 검색을 분리해 무료 티어 사용량을 예측 가능하게 유지합니다.`,
       features: [
         '🧠 Cerebras Inference: 초고속 추론 인프라 (llama3.1-8b) — 짧은 컨텍스트 fallback 및 structured route 보조',
         '⚡ Groq Cloud: LPU 기반 초고속 추론 (meta-llama/llama-4-scout-17b-16e-instruct) — Supervisor / Metrics Query / Tool-calling 핵심 모델',
@@ -25,8 +33,8 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '▲ Vercel AI SDK 6.0: streamText, generateText + Output.object 중심 API — tool-calling LLM과 structured output 기반 스트리밍 응답',
         '🤖 Conditional Agent Escalation: 단순 조회는 deterministic/single path에 남기고 복잡 RCA/report/advisor/vision 요청만 전문 에이전트로 승격',
         '🧪 Custom Monitoring ML: SimpleAnomalyDetector + TrendPredictor.enhanced — 저지연·설명가능성 중심의 운영형 이상 탐지/예측',
-        '🔍 Knowledge Retrieval Lite: BM25 RPC + metadata boost 기반 경량 지식 검색 — 외부 프레임워크 없이 직접 구성한 운영 지식 검색',
-        '🐘 Supabase Postgres: 운영 지식과 사례 저장 — search_knowledge_text RPC와 RLS로 데이터 계층 단순화',
+        '🔍 Knowledge Retrieval Lite: PostgreSQL Full Text Search + metadata boost 기반 경량 지식 검색 — 외부 검색 SaaS 없이 직접 구성한 운영 지식 검색',
+        '🐘 Supabase Postgres: 운영 지식 검색용 인덱스 — search_knowledge_text RPC와 RLS로 데이터 계층 단순화',
         '📊 Langfuse: AI 호출 추적 및 품질 모니터링 — resolvedMode, provider fallback, handoff 횟수 기반 지표 분석',
         '⚡ Upstash Redis: 응답 캐싱 및 Rate Limiting — LLM 반복 호출 비용 절감 및 쿼터 관리',
         '☁️ GCP Cloud Run: Node.js 24 + Hono 서버리스 컨테이너 — Vercel 컴퓨팅 부하 분산 및 AI 백엔드 전담, Scale-to-Zero 하이브리드 운영',
@@ -38,14 +46,52 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Gemini 2.5 Flash-Lite (Vision)',
         'Vercel AI SDK 6.0',
         'Tool-calling LLM + Decision Layer',
-        'Knowledge Retrieval Lite (BM25 + metadata boost)',
+        'Knowledge Retrieval Lite (Postgres FTS + metadata boost)',
         'Custom Monitoring ML (TypeScript)',
-        'Supabase Postgres (Text RPC)',
+        'Supabase Postgres (Full Text Search RPC)',
         'Langfuse (Observability)',
         'Upstash Redis',
         'GCP Cloud Run + Hono',
       ],
     },
+    subSections: [
+      {
+        title: '운영 사실 우선',
+        description:
+          '18대 서버의 24시간 OTel 데이터를 먼저 조회하고, LLM은 수치와 판정이 나온 뒤 설명과 조치안을 합성합니다.',
+        icon: Activity,
+        gradient: 'from-sky-500 to-cyan-500',
+        features: [
+          'Synthetic OTel dataset과 precomputed state를 fact layer로 사용',
+          'metric ranking, anomaly, artifact는 deterministic 경로 우선',
+          '근거는 analysis basis와 artifact metadata로 추적',
+        ],
+      },
+      {
+        title: '내부 지식 검색',
+        description:
+          '운영 runbook, 장애 이력, 토폴로지는 Supabase Postgres Full Text Search 기반 Knowledge Retrieval Lite로 검색합니다.',
+        icon: BookOpen,
+        gradient: 'from-emerald-500 to-teal-500',
+        features: [
+          'repo 문서/seed JSON을 원본 지식으로 두고 Supabase는 검색 인덱스로 사용',
+          'search_knowledge_text RPC + category/tag metadata boost',
+          'embedding, graph traversal, 별도 검색 SaaS 없이 무료 티어 친화 운영',
+        ],
+      },
+      {
+        title: '출처 분리',
+        description:
+          '내부 지식, 웹 검색, 도구 결과, 세션 컨텍스트를 섞지 않고 EvidenceCard와 source group으로 구분합니다.',
+        icon: Search,
+        gradient: 'from-violet-500 to-fuchsia-500',
+        features: [
+          '내부 지식은 knowledge-base, 최신 외부 정보는 web-search로 표시',
+          'monitoring-data와 tool-result를 별도 출처로 노출',
+          'legacy 응답 표면은 신규 UI에서 EvidenceCard 중심으로 축소',
+        ],
+      },
+    ],
 
     requiresAI: true,
     isAICard: true,
