@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (완료 planning 문서 archive 정리)
+**Last Updated**: 2026-05-15 KST (대형 리팩터 커밋 분할 기준 보강 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 현재 진행 중인 작업 없음 | — | Idle | 완료된 `post-2026-0515-improvement-plan.md`, `query-pipeline-improvement-plan.md` archive 정리 완료. 남은 항목은 코드 변경 없는 프로세스 개선(P3) 또는 On Hold 추적 항목뿐임. |
+| 현재 진행 중인 작업 없음 | — | Idle | 완료된 planning 문서 archive 정리와 대형 리팩터 커밋 분할 기준 보강 완료. 남은 항목은 On Hold 추적 항목뿐임. |
 
 ---
 
@@ -21,7 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: 대형 리팩터 커밋 분할 기준 보강 | Low | 다음 대형 리팩터부터 파일 분리, 역할/계약 변경, 문서 갱신을 2~3개 논리 커밋으로 분리하는 기준을 작업 계획 단계에 반영. 코드 변경 없음 — 프로세스 규칙 개선. |
+| 현재 백로그 없음 | — | 신규 작업은 작업 시작 전 `reports/planning/README.md` 기준에 따라 TODO 또는 plan 파일로 등록. |
 
 ---
 
@@ -37,6 +37,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~대형 리팩터 커밋 분할 기준 보강~~ | — | **완료** — `reports/planning/README.md`에 대형 리팩터의 `test(spec):` / 구현 / docs·QA 커밋 분리 기준과 분할 필요·불필요 조건을 추가했다. 코드 변경 없는 프로세스 규칙 개선으로 처리. |
 | ~~orchestrator-routing 모듈 경계 정리~~ | — | **완료** — `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-prompt-helpers.ts`로 prompt/capability helper를 분리하고, deterministic forced knowledge path와 empty tool-result summarization fallback도 각각 전용 모듈로 이동했다. `orchestrator-routing.ts`는 706줄 → 459줄로 축소되어 계획 기준(≤500)을 충족. SDD 선행 커밋 `test(spec): add orchestrator prompt builder tests` 후 구현. 검증: targeted Vitest 2 files / 23 tests, AI Engine `type-check`, AI Engine full test 125 files / 1218 tests, `line-guard` 통과. 상세: [archive/post-2026-0515-improvement-plan.md](archive/post-2026-0515-improvement-plan.md) T4 |
 | ~~message-helpers evidence/source helper 분리~~ | — | **완료** — `src/hooks/ai/utils/evidence-source-helpers.ts`로 knowledge search tool output retrieval/evidence card 추출, source group 구성, semantic evidence data source 라벨, assistant `analysisBasis` 조립을 이동했다. `message-helpers.ts`는 629줄 → 382줄로 축소되어 계획 기준(≤450)을 충족. SDD 선행 커밋 `test(spec): add evidence source helper unit tests` 후 구현. 검증: targeted Vitest 4 files / 63 tests, `type-check`, `lint`, `test:quick`, `line-guard` 통과. 상세: [archive/post-2026-0515-improvement-plan.md](archive/post-2026-0515-improvement-plan.md) T3 |
 | ~~서버 카드 Peek UX 개선~~ | — | **완료** — `ServerDashboard.tsx` 서버 카드 그리드에 초기 상태 전용 1.5행 `max-height`와 하단 fade overlay를 추가했다. 기존 `initialVisibleRows`/페이지네이션 호출부는 유지하고, 더 보기/접기/뷰 모드/모바일/숨길 서버 없음 회귀 테스트를 보강했다. 검증: targeted Vitest 1 file / 12 tests, `type-check`, `lint`, `test:quick`, `line-guard`, docs checks, `git diff --check` 통과. 상세 계획서 archive 이동: [archive/dashboard-server-card-peek-plan.md](archive/dashboard-server-card-peek-plan.md) |
