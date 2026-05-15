@@ -185,8 +185,10 @@ src/hooks/ai/utils/evidence-source-helpers.ts  (신규)
 | 섹션 | 책임 | 비고 |
 |------|------|------|
 | `getAgentConfig`, `getAgentProviderOrder`, `getAgentMaxSteps` | agent config 조회 | 이미 일부 위임됨 |
-| `buildContextAwarePrompt`, `getAgentInstructions` | 프롬프트 빌더 | ✅ 분리 후보 |
-| `getForcedRoutingCapabilityRequirements` | forced routing 판단 | ✅ 분리 후보 |
+| `buildContextAwarePrompt`, `getAgentInstructions` | 프롬프트 빌더 | ✅ 분리 완료 |
+| `getForcedRoutingCapabilityRequirements` | forced routing 판단 | ✅ 분리 완료 |
+| deterministic forced knowledge path | direct KB/topology 응답 조립 | ✅ 분리 완료 |
+| empty tool-result summarization fallback | 도구 결과 요약 fallback | ✅ 분리 완료 |
 | `executeForcedRouting` | forced routing 실행 (~120줄) | 분리 검토 |
 | `ORCHESTRATOR_PROVIDER_ORDER` | 상수 | 유지 |
 
@@ -200,9 +202,22 @@ src/hooks/ai/utils/evidence-source-helpers.ts  (신규)
 
 #### 완료 기준
 
-- [ ] `orchestrator-prompt-helpers.ts` 신규 파일에 `buildContextAwarePrompt`, `getAgentInstructions` 이동
-- [ ] AI Engine `type-check` + targeted tests 통과
-- [ ] `orchestrator-routing.ts` ≤ 500줄
+- [x] `orchestrator-prompt-helpers.ts` 신규 파일에 `buildContextAwarePrompt`, `getAgentInstructions`, `getForcedRoutingCapabilityRequirements` 이동
+- [x] `orchestrator-forced-knowledge-path.ts`에 direct KB/topology deterministic forced path 이동
+- [x] `orchestrator-summarization-fallback.ts`에 empty tool-result summarization fallback 이동
+- [x] AI Engine `type-check` + targeted tests 통과
+- [x] AI Engine full test 통과
+- [x] `orchestrator-routing.ts` ≤ 500줄
+
+#### 진행 기록
+
+- 2026-05-15 Codex: SDD 선행 커밋 `test(spec): add orchestrator prompt builder tests`로 prompt/capability helper 계약을 먼저 추가했다. 신규 helper 부재로 의도된 실패를 확인한 뒤 구현에 착수.
+- 2026-05-15 Codex: `orchestrator-prompt-helpers.ts`, `orchestrator-forced-knowledge-path.ts`, `orchestrator-summarization-fallback.ts`를 추가해 prompt/capability 판단, direct KB/topology deterministic forced path, empty tool-result summarization fallback을 분리했다. `orchestrator-routing.ts`는 706줄에서 459줄로 축소되어 목표 기준(≤500)을 충족.
+- 검증:
+  - `npx vitest run src/services/ai-sdk/agents/orchestrator-prompt-helpers.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts --silent=false` → 2 files / 23 tests passed
+  - `cd cloud-run/ai-engine && npm run type-check` → passed
+  - `cd cloud-run/ai-engine && npm run test` → 125 files / 1218 tests passed
+  - `npm run line-guard` → no fail-threshold violations, `orchestrator-routing.ts=459`
 
 ---
 

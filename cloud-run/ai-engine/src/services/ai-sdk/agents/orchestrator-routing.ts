@@ -9,12 +9,10 @@
 import { generateText, hasToolCall, stepCountIs } from 'ai';
 import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
-import { isMetricsQueryRuntimeName } from '../../../core/assistant-runtime/agent-name-compat';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import {
   AGENT_NAMES,
-  MISTRAL_FIRST_PROVIDER_ORDER,
   getAgentEvidenceBudget,
   getAgentMaxSteps as getRuntimeAgentMaxSteps,
   getAgentConfig as getNamedAgentConfig,
@@ -35,7 +33,6 @@ import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 import { evaluateAgentResponseQuality } from './response-quality';
 import { FORCE_KB_QUERY_PATTERN } from '../routing/query-routing-signals';
-import type { ModelCapabilityRequirements } from '../provider-capabilities';
 import {
   buildDeterministicSummaryFallback,
   buildDeterministicSummaryFromCurrentState,
@@ -47,25 +44,22 @@ import {
   type EvidenceCard,
   type RetrievalMetadata,
 } from '../../../lib/retrieval-contract';
-import { buildKnowledgeBaseGroundedAnswer } from '../supervisor-stream-citations';
 import type { InternalDisclosureMode } from '../internal-disclosure-policy';
 import {
   createAgentDataSourceContext,
   resolveDomainSnapshot,
 } from './domain-data-source';
 import {
-  asDirectKnowledgeSearchResult,
   asEvidenceCard,
   asRetrievalMetadata,
-  buildGroundedNoEvidenceResponse,
-  buildTopologyDirectKnowledgeResponse,
-  resolveDirectKnowledgeEvidenceCards,
-  shouldUseGroundedKnowledgeAnswer,
 } from './orchestrator-routing-direct-knowledge';
+import { executeForcedKnowledgePath } from './orchestrator-forced-knowledge-path';
 import {
-  buildStructuredTopologyBoundaryResponse,
-  isStructuredTopologyBoundaryQuery,
-} from './orchestrator-routing-topology';
+  buildContextAwarePrompt,
+  getAgentInstructions,
+  getForcedRoutingCapabilityRequirements,
+} from './orchestrator-prompt-helpers';
+import { summarizeToolResultsIfEmpty } from './orchestrator-summarization-fallback';
 import {
   resolveFallbackReason,
   toProviderAttemptTelemetry,
@@ -83,40 +77,6 @@ export {
 
 export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] =
   getOrchestratorProviderOrder();
-
-const SUMMARIZATION_FALLBACK_TIMEOUT_MS = 10_000;
-const SUMMARIZATION_FALLBACK_MAX_OUTPUT_TOKENS = 768;
-const SUMMARIZATION_FALLBACK_TOOL_RESULT_CHARS = 1_000;
-
-function buildContextAwarePrompt(query: string, contextSummary?: string | null): string {
-  if (!contextSummary) {
-    return query;
-  }
-
-  return `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}`;
-}
-
-function getAgentInstructions(config: AgentConfig, query: string): string {
-  return config.getInstructions?.(query) ?? config.instructions;
-}
-
-function getForcedRoutingCapabilityRequirements(
-  agentName: string
-): ModelCapabilityRequirements {
-  if (isMetricsQueryRuntimeName(agentName)) {
-    return { requireToolCalling: true, minContextTokens: 16_000 };
-  }
-
-  if (
-    agentName === 'Analyst Agent' ||
-    agentName === 'Reporter Agent' ||
-    agentName === 'Advisor Agent'
-  ) {
-    return { requireToolCalling: true, minContextTokens: 32_000 };
-  }
-
-  return { requireToolCalling: true };
-}
 
 export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses Output.object structured generation (requires json_schema support).
@@ -218,179 +178,22 @@ export async function executeForcedRouting(
     isForceKnowledgeBaseQuery &&
     'searchKnowledgeBase' in filteredTools;
 
-  if (
-    suggestedAgentName === 'Advisor Agent' &&
-    isForceKnowledgeBaseQuery &&
-    isStructuredTopologyBoundaryQuery(query)
-  ) {
-    const structuredTopologyResponse = buildStructuredTopologyBoundaryResponse(
-      query,
-      startTime,
-      suggestedAgentName,
-      ragEnabled,
-      await getSnapshotData()
-    );
-    if (structuredTopologyResponse) {
-      logger.info(
-        '[Forced Routing] Structured topology boundary path succeeded without RAG document lookup'
-      );
-      return structuredTopologyResponse;
-    }
+  const forcedKnowledgePathResult = await executeForcedKnowledgePath({
+    query,
+    startTime,
+    suggestedAgentName,
+    ragEnabled,
+    isForceKnowledgeBaseQuery,
+    forceKnowledgeBaseTool,
+    filteredTools: filteredTools as Record<string, unknown>,
+    evidenceBudget,
+    getSnapshotData,
+    internalDisclosureMode,
+  });
+  if (forcedKnowledgePathResult) {
+    return forcedKnowledgePathResult;
   }
 
-  // Topology/architecture queries can bypass LLM generation by using
-  // direct KB retrieval + deterministic synthesis.
-  if (forceKnowledgeBaseTool) {
-    const directSearchTool = (filteredTools as Record<string, unknown>)
-      .searchKnowledgeBase as { execute?: (input: Record<string, unknown>) => Promise<unknown> };
-
-    if (typeof directSearchTool?.execute === 'function') {
-      try {
-        const directSearchResult = await directSearchTool.execute({
-          query,
-          category: 'architecture',
-          fastMode: true,
-          includeWebSearch: false,
-        });
-        const parsedDirectResult = asDirectKnowledgeSearchResult(directSearchResult);
-
-        if (parsedDirectResult && parsedDirectResult.results.length > 0) {
-          const directEvidence = parsedDirectResult.results.slice(
-            0,
-            evidenceBudget
-          );
-          const directEvidenceCards = resolveDirectKnowledgeEvidenceCards({
-            parsedDirectResult,
-            directEvidence,
-            evidenceBudget,
-          });
-          const directRetrieval = createRetrievalMetadata({
-            retrievalEnabled: true,
-            retrievalUsed: directEvidenceCards.length > 0,
-            retrievalMode: parsedDirectResult.retrieval?.retrievalMode ?? 'lite',
-            evidenceCount: directEvidenceCards.length,
-            webUsed: directEvidence.some((item) => item.sourceType === 'web'),
-            suppressedReason:
-              directEvidenceCards.length > 0
-                ? undefined
-                : parsedDirectResult.retrieval?.suppressedReason ?? 'no_results',
-          });
-          const durationMs = Date.now() - startTime;
-          const directToolResult = {
-            toolName: 'searchKnowledgeBase',
-            result: directSearchResult,
-          };
-          const response = sanitizeChineseCharacters(
-            shouldUseGroundedKnowledgeAnswer(query)
-              ? buildKnowledgeBaseGroundedAnswer(query, [directToolResult], {
-                  internalDisclosureMode,
-                }) ??
-                  buildTopologyDirectKnowledgeResponse(query, directEvidence)
-              : buildTopologyDirectKnowledgeResponse(query, directEvidence)
-          );
-          const quality = evaluateAgentResponseQuality('Advisor Agent', response, { durationMs });
-
-          logger.info(
-            `[Forced Routing] Topology direct KB path succeeded in ${durationMs}ms (${directEvidence.length} docs)`
-          );
-
-          return {
-            success: true,
-            response,
-            evidenceCards: directEvidenceCards,
-            handoffs: [{
-              from: 'Orchestrator',
-              to: suggestedAgentName,
-              reason: 'Forced routing (topology direct KB path)',
-            }],
-            finalAgent: suggestedAgentName,
-            toolsCalled: ['searchKnowledgeBase', 'finalAnswer'],
-            usage: {
-              promptTokens: 0,
-              completionTokens: 0,
-              totalTokens: 0,
-            },
-            metadata: {
-              provider: 'deterministic',
-              modelId: 'knowledge-search-direct',
-              totalRounds: 1,
-              handoffCount: 1,
-              durationMs,
-              responseChars: quality.responseChars,
-              formatCompliance: quality.formatCompliance,
-              qualityFlags: quality.qualityFlags,
-              latencyTier: quality.latencyTier,
-              retrieval: directRetrieval,
-            },
-          };
-        }
-
-        if (
-          parsedDirectResult &&
-          parsedDirectResult.results.length === 0 &&
-          shouldUseGroundedKnowledgeAnswer(query)
-        ) {
-          const durationMs = Date.now() - startTime;
-          const response = sanitizeChineseCharacters(
-            buildGroundedNoEvidenceResponse({
-              query,
-              directSearchResult,
-              internalDisclosureMode,
-            })
-          );
-          const directRetrieval = createRetrievalMetadata({
-            retrievalEnabled: true,
-            retrievalUsed: false,
-            retrievalMode:
-              parsedDirectResult.retrieval?.retrievalMode ?? 'lite',
-            evidenceCount: 0,
-            webUsed: false,
-            suppressedReason:
-              parsedDirectResult.retrieval?.suppressedReason ?? 'no_results',
-          });
-          const quality = evaluateAgentResponseQuality('Advisor Agent', response, { durationMs });
-
-          logger.info(
-            `[Forced Routing] Direct KB path returned no evidence in ${durationMs}ms; suppressed path inference`
-          );
-
-          return {
-            success: true,
-            response,
-            handoffs: [{
-              from: 'Orchestrator',
-              to: suggestedAgentName,
-              reason: 'Forced routing (knowledge direct no-evidence path)',
-            }],
-            finalAgent: suggestedAgentName,
-            toolsCalled: ['searchKnowledgeBase'],
-            usage: {
-              promptTokens: 0,
-              completionTokens: 0,
-              totalTokens: 0,
-            },
-            metadata: {
-              provider: 'deterministic',
-              modelId: 'knowledge-search-direct',
-              totalRounds: 1,
-              handoffCount: 1,
-              durationMs,
-              responseChars: quality.responseChars,
-              formatCompliance: quality.formatCompliance,
-              qualityFlags: quality.qualityFlags,
-              latencyTier: quality.latencyTier,
-              retrieval: directRetrieval,
-            },
-          };
-        }
-      } catch (error) {
-        logger.warn(
-          '[Forced Routing] Topology direct KB path failed, falling back to LLM routing:',
-          error instanceof Error ? error.message : String(error)
-        );
-      }
-    }
-  }
   const attachmentHint =
     images?.length || files?.length
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
@@ -568,63 +371,13 @@ export async function executeForcedRouting(
       }
     }
 
-    // Summarization Fallback: if model called tools but produced no text,
-    // re-run generateText without tools to summarize tool results.
-    if ((!response || response.trim().length === 0) && toolsCalled.length > 0) {
-      logger.warn(
-        `[Forced Routing] ${suggestedAgentName}: Empty response with ${toolsCalled.length} tool calls — summarization fallback`
-      );
-
-      try {
-        const uniqueResults = new Map<string, unknown>();
-        for (const step of result.steps) {
-          if (step.toolResults) {
-            for (const tr of step.toolResults) {
-              const trOutput = extractToolResultOutput(tr);
-              if (!uniqueResults.has(tr.toolName)) {
-                uniqueResults.set(tr.toolName, trOutput);
-              }
-            }
-          }
-        }
-
-        const toolResultsSummary = Array.from(uniqueResults.entries())
-          .map(
-            ([name, r]) =>
-              `[${name}]: ${JSON.stringify(r).slice(0, SUMMARIZATION_FALLBACK_TOOL_RESULT_CHARS)}`
-          )
-          .join('\n\n');
-
-        const summaryResult = await generateTextWithRetry(
-          {
-            messages: [
-              {
-                role: 'system',
-                content: '당신은 서버 모니터링 분석 도우미입니다. 아래 도구 실행 결과를 바탕으로 사용자 질문에 한국어로 명확하게 답변하세요. 핵심 데이터를 인용하고 권장 조치를 포함하세요.',
-              },
-              {
-                role: 'user',
-                content: `질문: ${query}\n\n도구 실행 결과:\n${toolResultsSummary}\n\n위 결과를 바탕으로 분석 답변을 작성하세요.`,
-              },
-            ],
-            temperature: 0.4,
-            maxOutputTokens: SUMMARIZATION_FALLBACK_MAX_OUTPUT_TOKENS,
-          },
-          [...MISTRAL_FIRST_PROVIDER_ORDER],
-          { timeoutMs: SUMMARIZATION_FALLBACK_TIMEOUT_MS }
-        );
-
-        if (summaryResult.success && summaryResult.result?.text) {
-          response = summaryResult.result.text;
-          logger.info(`[Forced Routing] Summarization fallback succeeded (${response.length} chars)`);
-        }
-      } catch (summaryError) {
-        logger.warn(
-          `[Forced Routing] Summarization fallback failed:`,
-          summaryError instanceof Error ? summaryError.message : String(summaryError)
-        );
-      }
-    }
+    response = await summarizeToolResultsIfEmpty({
+      query,
+      suggestedAgentName,
+      response,
+      toolsCalled,
+      resultSteps: result.steps,
+    });
 
     const sanitizedResponse = sanitizeChineseCharacters(response);
     const quality = evaluateAgentResponseQuality(
