@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-17
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-16 | **현재 버전 스냅샷**: v8.11.160
+**상태 스냅샷 기준일**: 2026-05-17 | **현재 버전 스냅샷**: v8.11.161
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.161** (2026-05-17) — Bug Fixes: dashboard: simplify server card interaction; Code Refactoring: ai: change warning style to GPT/Gemini-style bottom append
 - **v8.11.160** (2026-05-16) — Features: ai: delegate guard warnings to llm; Bug Fixes: deploy: sync provider runtime env defaults
 - **v8.11.159** (2026-05-16) — Features: ai: rotate text providers with attribution
 - **v8.11.158** (2026-05-16) — Bug Fixes: ai: make nlq schema provider compatible
 - **v8.11.157** (2026-05-16) — Features: ai-engine: harden multi-agent evidence paths; Features: ai: propagate semantic intent routing metadata; Features: ai-engine: remove orchestrator llm routing path
-- **v8.11.156** (2026-05-15) — Bug Fixes: dashboard: redirect anonymous access checks
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
