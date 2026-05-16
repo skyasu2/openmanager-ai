@@ -28,11 +28,11 @@ const FeatureCardItem = memo(
     onCardClick: (cardId: string) => void;
     isAIDisabled: boolean;
   }) => {
-    // 카드 타입별 스타일 헬퍼 - 성능 최적화 (shadow 제거, ring만 유지)
+    // 카드 타입별 스타일 헬퍼
     const getCardStyles = useCallback((card: FeatureCard) => {
       return {
         title: 'text-white/95 group-hover:text-white',
-        description: 'text-white/[0.76] group-hover:text-white/90',
+        description: 'text-white/85 group-hover:text-white/95',
         hoverRing: card.isAICard
           ? 'group-hover:ring-pink-400/40'
           : card.isVibeCard
@@ -72,7 +72,7 @@ const FeatureCardItem = memo(
         onClick={() => onCardClick(card.id)}
       >
         <div
-          className={`relative flex h-full min-h-[13rem] overflow-hidden rounded-lg border border-white/20 bg-white/[0.09] p-4 transition-all duration-200 ease-out hover:bg-white/[0.14] group-hover:-translate-y-0.5 group-active:translate-y-0 motion-reduce:transform-none sm:min-h-[14.5rem] md:min-h-[17rem] lg:min-h-[15.5rem] ${
+          className={`relative flex h-full min-h-[13rem] overflow-hidden rounded-lg border border-white/20 bg-white/[0.09] p-4 shadow-lg shadow-black/20 transition-all duration-200 ease-out hover:bg-white/[0.14] hover:shadow-xl hover:shadow-black/30 group-hover:-translate-y-0.5 group-active:translate-y-0 motion-reduce:transform-none sm:min-h-[14.5rem] md:min-h-[17rem] lg:min-h-[15.5rem] ${
             card.isSpecial
               ? 'border-amber-500/30 bg-linear-to-br from-amber-500/10 to-orange-500/10'
               : ''
@@ -139,7 +139,7 @@ const FeatureCardItem = memo(
 
             <ArrowRight
               aria-hidden="true"
-              className="mt-auto h-4 w-4 self-end text-white/45 transition-transform group-hover:translate-x-0.5 group-hover:text-white/75 motion-reduce:transform-none"
+              className="mt-auto h-4 w-4 self-end text-white/60 transition-transform group-hover:translate-x-0.5 group-hover:text-white/90 motion-reduce:transform-none"
             />
           </div>
 

@@ -21,7 +21,7 @@ export default function AuthError({
       data-testid="auth-error-boundary"
       role="alert"
     >
-      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/15 text-amber-300">
+      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/15 text-red-300">
         <AlertTriangle className="h-7 w-7" aria-hidden="true" />
       </div>
       <h1 className="text-2xl font-semibold">인증 오류가 발생했습니다</h1>

@@ -20,28 +20,27 @@ export function LoginPrompt({ isMounted, guestModeMessage }: LoginPromptProps) {
 
   return (
     <div className="text-center">
-      <div className="mb-4 rounded-xl border border-blue-400/30 bg-blue-500/10 p-4 sm:p-6">
+      <div className="mb-4 rounded-xl border border-blue-400/40 bg-blue-500/15 p-4 shadow-lg shadow-blue-900/20 backdrop-blur-sm sm:p-6">
         {isMounted && (
-          <User
-            aria-hidden="true"
-            className="mx-auto mb-3 h-12 w-12 text-blue-400"
-          />
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/20 ring-1 ring-blue-400/30">
+            <User aria-hidden="true" className="h-7 w-7 text-blue-300" />
+          </div>
         )}
         <h3 className="mb-2 text-lg font-semibold text-white">
           로그인 또는 게스트 테스트가 필요합니다
         </h3>
-        <p className="mb-4 text-sm text-blue-100">
+        <p className="mb-5 text-sm text-blue-100/90">
           {LOGIN_POLICY_COPY.landingCapabilities}
         </p>
         <button
           type="button"
           onClick={() => router.push('/login')}
-          className="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+          className="inline-flex h-11 items-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-blue-700 px-6 font-semibold text-white shadow-lg shadow-blue-900/40 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-900/50"
         >
           로그인 페이지로 이동
         </button>
       </div>
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-slate-400">
         {guestModeMessage || '게스트 로그인은 테스트/체험 용도로만 제공됩니다.'}
       </p>
     </div>

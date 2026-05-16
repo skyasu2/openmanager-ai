@@ -187,10 +187,10 @@ export function VibeCiCdSection({
   return (
     <div className="space-y-6">
       <section className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-transparent px-5 py-6">
-        <p className="text-center text-[10px] font-bold tracking-widest text-white/25">
+        <p className="text-center text-[10px] font-bold tracking-widest text-white/55">
           내가 구성한 GitLab CI/CD
         </p>
-        <p className="mt-3 text-center text-[11px] text-white/35">
+        <p className="mt-3 text-center text-[11px] text-white/65">
           로컬 훅 뒤에 GitLab CI를 validate와 deploy로 나누고, 마지막에는 Vercel
           prebuilt 배포로 production을 갱신하는 흐름입니다.
         </p>
@@ -242,7 +242,7 @@ export function VibeCiCdSection({
                       {card.detail.map((line) => (
                         <span
                           key={line}
-                          className="text-center text-[9px] leading-tight text-white/35"
+                          className="text-center text-[9px] leading-tight text-white/60"
                         >
                           {line}
                         </span>
@@ -291,7 +291,7 @@ export function VibeCiCdSection({
                   {index < PIPELINE_CARDS.length - 1 && (
                     <div className="mt-16 hidden shrink-0 items-center px-0.5 sm:flex">
                       <ArrowRight
-                        className="h-3 w-3 text-white/15"
+                        className="h-3 w-3 text-white/45"
                         aria-hidden="true"
                       />
                     </div>
@@ -309,7 +309,7 @@ export function VibeCiCdSection({
             <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/10 text-rose-400">
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
             </div>
-            <p className="text-[11px] font-medium text-white/40">
+            <p className="text-[11px] font-medium text-white/70">
               validate와 deploy를 분리하고, production 배포는 한 번에 하나씩만
               실행하도록 구성했습니다.
             </p>
@@ -323,14 +323,14 @@ export function VibeCiCdSection({
           <p className="text-[11px] font-bold text-amber-300/80">
             왜 이렇게 나눴나
           </p>
-          <p className="mt-1 text-[11px] leading-relaxed text-white/40">
+          <p className="mt-1 text-[11px] leading-relaxed text-white/70">
             validate는 내 PC의{' '}
-            <code className="text-cyan-300/70">wsl2-docker</code> self-hosted
+            <code className="text-cyan-300/90">wsl2-docker</code> self-hosted
             runner에서 실행해 GitLab minutes를 거의 쓰지 않게 했고, deploy는
             shared runner에서 prebuilt 결과만 올려 배포 시간을 짧게
             유지했습니다.
           </p>
-          <p className="mt-2 text-[10px] leading-relaxed text-white/25">
+          <p className="mt-2 text-[10px] leading-relaxed text-white/55">
             제약: self-hosted runner가 꺼져 있으면 validate는 shared runner로
             자동 전환되지 않고 pending 상태로 대기합니다.
           </p>
