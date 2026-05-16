@@ -1,7 +1,9 @@
 /**
- * Orchestrator Decomposition Logic
+ * Legacy Orchestrator Decomposition Logic
  *
- * Task decomposition and parallel execution.
+ * Task decomposition and parallel execution helpers. The default multi-agent
+ * request path no longer calls these LLM decomposition helpers; direct routing
+ * selects one specialist agent to stay within free-tier quotas.
  *
  * @version 4.0.0
  */
@@ -41,11 +43,8 @@ const COMPLEXITY_INDICATORS = [
   /장애.*원인.*조치|원인.*조치/,
 ];
 
-// Q1 quota budget:
-//   - High-confidence specialist signals bypass decomposition entirely.
-//   - Decomposition is only useful when this heuristic sees a composite query.
-//   - Single-subtask decomposition results fall back to the suggested agent
-//     before spending an extra Orchestrator routing LLM call.
+// Legacy guard for direct callers of decomposeTask(). The default request path
+// avoids this LLM call entirely.
 function isComplexQuery(query: string): boolean {
   const matchCount = COMPLEXITY_INDICATORS.filter(pattern => pattern.test(query)).length;
   return (matchCount >= 2 && query.length >= 40) || query.length > 120;

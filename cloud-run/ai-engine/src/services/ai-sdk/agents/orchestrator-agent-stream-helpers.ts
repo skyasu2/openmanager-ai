@@ -13,7 +13,7 @@ import {
 } from './config/agent-model-selectors';
 import type { AgentLoopTelemetry } from './config/agent-loop-settings';
 import { saveAgentFindingsToContext } from './orchestrator-context';
-import { streamTextInChunks } from './orchestrator-decomposition';
+import { streamTextInChunks } from './orchestrator-decomposition-output';
 import { executeReporterWithPipeline } from './orchestrator-routing';
 import type { ProviderAttemptTelemetry } from './orchestrator-types';
 import { evaluateAgentResponseQuality } from './response-quality';

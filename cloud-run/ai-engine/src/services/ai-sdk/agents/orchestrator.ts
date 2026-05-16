@@ -1,17 +1,17 @@
 /**
- * Multi-Agent Orchestrator
+ * Multi-Agent Direct Router
  *
- * Routes user queries to specialized agents using pattern matching.
+ * Routes user queries to specialized agents using deterministic pre-filter signals.
  * Uses AI SDK v6 native generateText/streamText with stopWhen conditions.
  *
  * Architecture:
- * Orchestrator (Rule-based + LLM fallback) → Metrics Query/Analyst/Reporter/Advisor/Vision
+ * Direct Router → Metrics Query/Analyst/Reporter/Advisor/Vision
  *
  * Split into:
- * - orchestrator-types.ts: Types, config, system prompt
+ * - orchestrator-types.ts: Types and config
  * - orchestrator-web-search.ts: Web search auto-detection
  * - orchestrator-context.ts: Context store integration, pre-filter
- * - orchestrator-execution.ts: Model selection, routing, execution
+ * - orchestrator-execution.ts: Direct specialist routing and execution
  *
  * @version 4.0.0 - Integrated BaseAgent/AgentFactory pattern
  * @updated 2026-01-30 - Split into 5 files for maintainability

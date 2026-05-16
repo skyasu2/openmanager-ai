@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (NLQ/Provider quota 계획서 승인 계약 보강)
+**Last Updated**: 2026-05-16 KST (Orchestrator LLM 제거 Q2 구현)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,7 +23,7 @@
 | 로그인 페이지 개선 (8건) | Medium | Approved | L1: 게스트 에러 이중 표시 버그. L2: OAuth 취소 버튼 UX. L3~L5: 타입 중복(훅 포함)·스타일 props·이메일 초기화 리팩터. L6~L8: 상수·error.tsx·주석 정비. 상세: [login-page-improvement-plan.md](login-page-improvement-plan.md) |
 | Dashboard 핵심 컴포넌트 개선 (7건) | Medium | Approved | D1: withCurrentMetricPoint 3곳 중복 제거. D2: 탭 레이블/콘텐츠 불일치 수정. D3: activeTab dead state 제거. D4: 이중 memo() 제거. D5: deprecated addListener 제거. D6~D7: statusGradients 주석·이모지 aria 정리. 상세: [dashboard-improvement-plan.md](dashboard-improvement-plan.md) |
 | AI 사이드바 & 워크스페이스 개선 (5건) | Medium | In Progress (Codex) | S1 완료: Escape 전파 차단 보강. S2 완료: `downloadBlobContent` 추출(`src/lib/ai/chat-artifacts/download-utils.ts` 신규, 5중 복제 해소). S3 완료: 닫힌 sidebar `aria-hidden` 보강. S4 완료: sidebar 내부 `EnhancedAIChat` 헤더 중복 제거. **잔여: S5 fileErrors key 정리** — `ChatInputArea.tsx:192` `key={idx}` 패턴이 여전히 남아 있음. `key=${idx}-${err.message}` 또는 content 기반 stable key로 교체. 상세: [ai-sidebar-workspace-improvement-plan.md](ai-sidebar-workspace-improvement-plan.md) |
-| **Provider Quota 재배치 / Orchestrator 제거 (Q2)** | **High** | **In Progress (Codex)** | **Q0/Q1 완료**: `gpt-oss-120b` 정책 보정, Orchestrator Groq-last, high-confidence forced routing 선행 정렬 완료. **Q2 착수**: Cloud Run multi-agent request path에서 Orchestrator LLM routing과 `decomposeTask()` decomposition LLM을 제거하고 deterministic direct specialist routing으로 전환. **2026-05-26 tracking**: `DEFAULT_CEREBRAS_MODEL`→`CEREBRAS_GPT_OSS_MODEL_ID` 전환 여부 재확인. 상세: [provider-quota-rebalance-plan.md](provider-quota-rebalance-plan.md) |
+| **Provider Quota 재배치 / Orchestrator 제거 (Q2)** | **High** | **Completed (tracking)** | **Q0/Q1/Q2 완료**: `gpt-oss-120b` 정책 보정, Orchestrator Groq-last, high-confidence forced routing 선행 정렬, Cloud Run multi-agent request path의 Orchestrator LLM routing/`decomposeTask()` 제거 완료. 기본 경로는 deterministic direct specialist routing으로 전환했다. **잔여 tracking**: 2026-05-26 `DEFAULT_CEREBRAS_MODEL`→`CEREBRAS_GPT_OSS_MODEL_ID` 전환 여부 재확인. 후속: Q3/NLQ N1 intentFrame trust. 상세: [provider-quota-rebalance-plan.md](provider-quota-rebalance-plan.md) |
 
 ---
 
@@ -135,6 +135,13 @@
   - **상태 업데이트**: Vercel AI SDK Conformance T0~T4 + 3차 검토 완료로 `Completed` 처리. optional O1~O4 Backlog 이관.
 
 ### Completed (2026-05-16) — Codex
+- [x] Orchestrator LLM 제거 / Direct specialist routing
+  - Cloud Run multi-agent request path에서 Orchestrator LLM routing 호출과 `decomposeTask()` decomposition LLM 호출을 제거했다.
+  - `preFilterResult.suggestedAgent`가 있으면 confidence와 무관하게 전문 agent를 직접 실행하고, suggested agent가 없으면 `Metrics Query Agent` deterministic fallback으로 처리한다.
+  - Vision Agent unavailable 시 Analyst fallback은 유지했다.
+  - `routingDecisionTrace.agentDecision.source`에 `deterministic_fallback`을 추가해 direct fallback 경로를 관측 가능하게 했다.
+  - 검증: targeted direct routing 1 file / 14 tests PASS, agent stream 1 file / 17 tests PASS, AI Engine `type-check`, AI Engine full 127 files / 1249 tests PASS, root `test:contract` 3 files / 24 tests PASS, docs checks/git diff check PASS.
+
 - [x] Agent provider quota rebalance
   - 커밋: `01bc1eac8 refactor(ai-engine): rebalance provider mesh policy`
   - Analyst/Verifier long-context 경로에서 Cerebras phantom primary를 제거하고 Mistral-first로 전환했다.

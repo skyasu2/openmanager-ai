@@ -59,7 +59,7 @@ export const CLOUD_RUN_CONSTRAINTS = {
  * Architecture:
  *   Single non-stream: Supervisor (50s) → Agent (45s) → Tool (25s)
  *   Single stream: Supervisor (120s hardStreaming) → Agent (45s) → Tool (25s)
- *   Multi-agent: Orchestrator (90s) → Agent (45s) → Subtask (35s) → Tool (25s)
+ *   Multi-agent: Direct Router (90s) → Agent (45s) → Tool (25s)
  *
  * Each layer has progressively shorter timeouts to allow:
  * - Parent to handle child timeouts gracefully
@@ -86,17 +86,16 @@ export const TIMEOUT_CONFIG = {
   },
 
   /**
-   * Orchestrator level
+   * Direct router level
    * - Routes to agents
-   * - Task decomposition
-   * - Parallel execution coordination
+   * - Legacy decomposition helpers are not on the default request path
    */
   orchestrator: {
     /** Hard timeout for entire orchestration (sequential multi-agent allowed) */
     hard: 90_000,
     /** Warning threshold for slow operations */
     warning: 60_000,
-    /** Soft timeout for LLM routing decisions */
+    /** Legacy soft timeout for callers that still invoke decomposition/routing helpers */
     routingDecision: 10_000,
   },
 
@@ -115,8 +114,8 @@ export const TIMEOUT_CONFIG = {
   },
 
   /**
-   * Subtask level (for parallel execution)
-   * - Individual subtasks in Orchestrator-Worker pattern
+   * Legacy subtask level (for direct callers of decomposition helpers)
+   * - Individual subtasks in the retired Orchestrator-Worker request path
    * - Shorter timeout to prevent one subtask blocking others
    */
   subtask: {

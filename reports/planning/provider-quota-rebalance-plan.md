@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (Q2 Orchestrator LLM removal approved)
+> Last reviewed: 2026-05-16 (Q2 Orchestrator LLM removal implemented)
 > Tags: ai,provider,quota,nlq,free-tier,groq,cerebras,architecture
 
 ---
@@ -199,7 +199,7 @@ cd cloud-run/ai-engine && npm run test
 
 ### Q2. Orchestrator LLM 제거 / Direct specialist routing
 
-**Status**: Approved
+**Status**: 완료 (2026-05-16)
 
 **목표**
 - Cloud Run multi-agent request path에서 Orchestrator LLM routing 호출을 제거한다.
@@ -210,7 +210,8 @@ cd cloud-run/ai-engine && npm run test
 **수정 파일**
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution-stream.ts`
-- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution-helpers.ts` 또는 신규 helper
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-direct-routing.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/routing/routing-decision-trace.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts`
 
 **계약**
@@ -232,18 +233,46 @@ cd cloud-run/ai-engine && npm run test
 | `orchestrator-execution.timeout.test.ts` | direct routing done metadata의 `routingDecisionTrace.agentDecision.source`는 `deterministic_fallback` 또는 `pre_filter`로 남고 `llm_routing`이 아님 |
 
 **범위 제외**
-- 파일명/모듈명에서 `orchestrator-*`를 전부 제거하는 대형 rename은 이번 범위에서 제외한다. request path에서 LLM Orchestrator를 제거한 뒤, 모듈명 정리는 별도 low-risk cleanup으로 분리한다.
+- 파일명/모듈명에서 `orchestrator-*`를 전부 제거하는 대형 rename은 이번 범위에서 제외한다. request path에서 LLM Orchestrator를 제거했으며, 모듈명 정리는 별도 low-risk cleanup으로 분리한다.
+- legacy `orchestrator-decomposition.ts` helper와 `llm_routing` trace enum은 기존 테스트/호환성을 위해 남겼다. 기본 multi-agent request path에서는 import/call하지 않는다.
 - NLQ `intentFrame.executionMode` 신뢰 연결은 Q3/N1에서 처리한다.
+
+**완료 기록**
+- non-stream/stream multi-agent 경로에서 `generateStructuredOutputWithFallback()` 기반 Orchestrator routing 호출을 제거했다.
+- 기본 request path에서 `decomposeTask()` LLM decomposition 호출을 제거했다.
+- `resolveDirectRoutingTarget()` 신규 helper로 `preFilterResult.suggestedAgent`가 있으면 confidence와 무관하게 해당 specialist를 직접 실행한다.
+- suggested agent가 없으면 `Metrics Query Agent`로 deterministic fallback한다.
+- `routingDecisionTrace.agentDecision.source`에 `deterministic_fallback`을 추가해 LLM routing 없이 fallback된 경로를 구분한다.
+- Vision Agent unavailable fallback은 기존 Analyst fallback 동작을 유지한다.
 
 **검증 게이트**
 ```bash
 cd cloud-run/ai-engine && npx vitest run \
-  src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts \
-  src/services/ai-sdk/agents/orchestrator-routing.test.ts
+  src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts
 cd cloud-run/ai-engine && npm run type-check
 cd cloud-run/ai-engine && npm run test
 npm run test:contract
 git diff --check
+```
+
+**검증 결과 (2026-05-16)**
+```bash
+cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts
+# 1 file / 14 tests PASS
+cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts
+# 1 file / 17 tests PASS
+cd cloud-run/ai-engine && npm run type-check
+# PASS
+cd cloud-run/ai-engine && npm run test
+# 127 files / 1249 tests PASS
+npm run test:contract
+# 3 files / 24 tests PASS
+npm run docs:budget
+# PASS, active docs 75 / 90
+npm run docs:ai-consistency
+# PASS
+git diff --check
+# PASS
 ```
 
 ---
@@ -269,7 +298,7 @@ N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ
 |------|:--------:|:-------:|:--------:|
 | Q0: gpt-oss-120b 정책 수정 | ❌ (데이터 수정) | 완료 | 30분 |
 | Q1: Orchestrator provider order + decomposition budget | ✅ (계약 변경) | 완료 | 1.5시간 |
-| Q2: Orchestrator LLM 제거 / Direct specialist routing | ✅ (계약 변경) | P1 | 1.5시간 |
+| Q2: Orchestrator LLM 제거 / Direct specialist routing | ✅ (계약 변경) | 완료 | 1.5시간 |
 | Q3: intentFrame trust | ✅ (NLQ Plan 연계) | P1 (NLQ Draft→Approved 후) | 별도 |
 | P2: enrichment multi-path | ❌ (저영향) | P2 관찰 후 판단 | - |
 
@@ -287,7 +316,7 @@ N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ
 | Response enrichment (single-agent) | 2026-05-16 추가 완료 | ✅ 변경 불필요 |
 | Provider fallback chain 순서 | Analyst/Reporter/Advisor 최적화 완료 | ✅ 변경 불필요 |
 | **Cerebras gpt-oss-120b 정책** | 코드가 현실과 불일치 | 🔴 **즉시 수정** |
-| **Orchestrator Groq 낭비** | Groq RPD 1개/요청 불필요 소모 | 🟡 **P1 수정** |
+| **Orchestrator Groq 낭비** | Groq RPD 1개/요청 불필요 소모 | ✅ **Q2 완료** |
 | **NLQ intentFrame 무시** | Groq NLQ 결과를 Cloud Run이 무시 | 🟡 **P1 NLQ Plan 연계** |
 | Enrichment multi-path | Reporter에 Evaluator/Optimizer 있어 저영향 | 🟢 관찰만 |
 

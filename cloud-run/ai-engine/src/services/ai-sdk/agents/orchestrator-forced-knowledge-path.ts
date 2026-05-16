@@ -182,7 +182,7 @@ export async function executeForcedKnowledgePath(params: {
     }
   } catch (error) {
     logger.warn(
-      '[Forced Routing] Topology direct KB path failed, falling back to LLM routing:',
+      '[Forced Routing] Topology direct KB path failed, falling back to agent routing:',
       error instanceof Error ? error.message : String(error)
     );
   }

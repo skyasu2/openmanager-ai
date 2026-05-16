@@ -137,9 +137,8 @@ vi.mock('../../observability/langfuse', () => ({
 
 import { executeMultiAgent } from './orchestrator-execution';
 import { executeMultiAgentStream } from './orchestrator-execution';
-import { getAgentFromRouting } from './schemas';
 
-describe('executeMultiAgent timeout contract', () => {
+describe('executeMultiAgent direct routing contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockExecuteVisionOrFallback.mockReset();
@@ -159,13 +158,10 @@ describe('executeMultiAgent timeout contract', () => {
     );
   });
 
-  it('falls back to the suggested agent when non-stream routing times out', async () => {
-    mockGenerateObjectWithFallback.mockRejectedValueOnce(
-      new Error('Routing decision timeout after 10000ms')
-    );
+  it('direct-routes the suggested agent without non-stream Orchestrator LLM routing', async () => {
     mockExecuteForcedRouting.mockResolvedValueOnce({
       success: true,
-      response: 'Reporter fallback response',
+      response: 'Reporter direct response',
       handoffs: [],
       finalAgent: 'Reporter Agent',
       toolsCalled: [],
@@ -188,7 +184,7 @@ describe('executeMultiAgent timeout contract', () => {
       sessionId: 'timeout-contract-test',
     });
 
-    expect(mockGenerateObjectWithFallback).toHaveBeenCalledOnce();
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
     expect(mockExecuteForcedRouting).toHaveBeenCalledWith(
       '서버 상태 분석 그리고 보고서 만들어줘',
       'Reporter Agent',
@@ -205,18 +201,18 @@ describe('executeMultiAgent timeout contract', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.finalAgent).toBe('Reporter Agent');
-      expect(result.response).toBe('Reporter fallback response');
+      expect(result.response).toBe('Reporter direct response');
       expect(result.handoffs).toEqual([
         {
-          from: 'Orchestrator',
+          from: 'Direct Router',
           to: 'Reporter Agent',
-          reason: 'Fallback routing (routing timeout)',
+          reason: 'Direct routing (pre-filter specialist)',
         },
       ]);
     }
   });
 
-  it('uses vision fallback helper when timeout fallback target is Vision Agent', async () => {
+  it('uses vision fallback helper for direct Vision Agent routing', async () => {
     const contextModule = await import('./orchestrator-context');
     vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
       shouldHandoff: true,
@@ -224,9 +220,6 @@ describe('executeMultiAgent timeout contract', () => {
       confidence: 0.7,
     });
 
-    mockGenerateObjectWithFallback.mockRejectedValueOnce(
-      new Error('Routing decision timeout after 10000ms')
-    );
     mockExecuteVisionOrFallback.mockResolvedValueOnce({
       success: true,
       response: 'Analyst fallback response',
@@ -258,7 +251,7 @@ describe('executeMultiAgent timeout contract', () => {
       ],
     });
 
-    expect(mockGenerateObjectWithFallback).toHaveBeenCalledOnce();
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
     expect(mockExecuteVisionOrFallback).toHaveBeenCalledOnce();
     expect(mockExecuteForcedRouting).not.toHaveBeenCalled();
     expect(result.success).toBe(true);
@@ -266,9 +259,9 @@ describe('executeMultiAgent timeout contract', () => {
       expect(result.finalAgent).toBe('Analyst Agent');
       expect(result.handoffs).toEqual([
         {
-          from: 'Orchestrator',
+          from: 'Direct Router',
           to: 'Analyst Agent',
-          reason: 'Fallback routing (routing timeout)',
+          reason: 'Direct routing (pre-filter specialist)',
         },
       ]);
     }
@@ -323,7 +316,7 @@ describe('executeMultiAgent timeout contract', () => {
     );
   });
 
-  it('routes Vision timeout-stream fallback to Analyst Agent when vision provider is unavailable', async () => {
+  it('routes low-confidence Vision direct stream fallback to Analyst Agent when vision provider is unavailable', async () => {
     const contextModule = await import('./orchestrator-context');
     const routingModule = await import('./orchestrator-routing');
 
@@ -332,10 +325,6 @@ describe('executeMultiAgent timeout contract', () => {
       suggestedAgent: 'Vision Agent',
       confidence: 0.7,
     });
-
-    mockGenerateObjectWithFallback.mockRejectedValueOnce(
-      new Error('Routing decision timeout after 10000ms')
-    );
 
     vi.mocked(routingModule.getAgentConfig).mockImplementation((agentName: string) => {
       if (agentName === 'Vision Agent') {
@@ -346,20 +335,20 @@ describe('executeMultiAgent timeout contract', () => {
 
     const events: Array<{ type: string; data: unknown }> = [];
     for await (const event of executeMultiAgentStream({
-      messages: [{ role: 'user', content: '라우팅 타임아웃 시 Vision fallback 확인' }],
-      sessionId: 'stream-vision-timeout-fallback-test',
+      messages: [{ role: 'user', content: '저신뢰 Vision direct fallback 확인' }],
+      sessionId: 'stream-vision-direct-fallback-test',
       images: [{ data: 'base64', mimeType: 'image/png' }],
     })) {
       events.push(event);
     }
 
-    expect(mockGenerateObjectWithFallback).toHaveBeenCalledTimes(1);
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
     expect(mockExecuteAgentStream).toHaveBeenCalledTimes(1);
     expect(mockExecuteAgentStream).toHaveBeenCalledWith(
-      '라우팅 타임아웃 시 Vision fallback 확인',
+      '저신뢰 Vision direct fallback 확인',
       'Analyst Agent',
       expect.any(Number),
-      'stream-vision-timeout-fallback-test',
+      'stream-vision-direct-fallback-test',
       true,
       true,
       [{ data: 'base64', mimeType: 'image/png' }],
@@ -374,7 +363,7 @@ describe('executeMultiAgent timeout contract', () => {
       .filter((event) => event.type === 'agent_status')
       .map((event) => (event.data as { message?: string }).message ?? '');
 
-    expect(statusMessages.some((message) => message.includes('라우팅 타임아웃'))).toBe(true);
+    expect(statusMessages.some((message) => message.includes('라우팅 타임아웃'))).toBe(false);
     expect(statusMessages.some((message) => message.includes('Vision Agent 사용 불가'))).toBe(true);
   });
 
@@ -414,30 +403,17 @@ describe('executeMultiAgent timeout contract', () => {
     });
   });
 
-  it('adds routingDecisionTrace to LLM-routed stream done metadata', async () => {
+  it('adds deterministic fallback routingDecisionTrace to stream done metadata', async () => {
     const contextModule = await import('./orchestrator-context');
     vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
       shouldHandoff: true,
       confidence: 0.5,
     });
-    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Analyst Agent');
-    mockGenerateObjectWithFallback.mockResolvedValueOnce({
-      object: {
-        selectedAgent: 'ANALYST',
-        confidence: 0.72,
-        reasoning: 'Need anomaly analysis',
-      },
-      usage: {
-        inputTokens: 12,
-        outputTokens: 8,
-        totalTokens: 20,
-      },
-    });
 
     const events: Array<{ type: string; data: unknown }> = [];
     for await (const event of executeMultiAgentStream({
       messages: [{ role: 'user', content: '왜 느려졌는지 분석해줘' }],
-      sessionId: 'stream-routing-trace-llm-source',
+      sessionId: 'stream-routing-trace-deterministic-fallback',
     })) {
       events.push(event);
     }
@@ -457,10 +433,10 @@ describe('executeMultiAgent timeout contract', () => {
     };
 
     expect(doneData.metadata?.routingDecisionTrace?.agentDecision).toMatchObject({
-      source: 'llm_routing',
-      selectedAgent: 'Analyst Agent',
-      confidence: 0.72,
-      reasonCodes: ['agent_source_llm_routing'],
+      source: 'deterministic_fallback',
+      selectedAgent: 'Metrics Query Agent',
+      confidence: 0.5,
+      reasonCodes: ['agent_source_deterministic_fallback'],
     });
   });
 
@@ -569,35 +545,13 @@ describe('executeMultiAgent timeout contract', () => {
     expect(mockExecuteAgentStream).toHaveBeenCalledOnce();
   });
 
-  it('uses fallback suggested agent before LLM routing when decomposition is not composite', async () => {
+  it('uses low-confidence suggested agent directly without decomposition or LLM routing', async () => {
     const contextModule = await import('./orchestrator-context');
     const decompositionModule = await import('./orchestrator-decomposition');
     vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Reporter Agent',
       confidence: 0.68,
-    });
-    vi.mocked(decompositionModule.decomposeTask).mockResolvedValueOnce({
-      subtasks: [
-        {
-          task: '보고서 작성',
-          agent: 'Reporter Agent',
-        },
-      ],
-      requiresSequential: false,
-    });
-    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Reporter Agent');
-    mockGenerateObjectWithFallback.mockResolvedValueOnce({
-      object: {
-        selectedAgent: 'REPORTER',
-        confidence: 0.72,
-        reasoning: 'Need report',
-      },
-      usage: {
-        inputTokens: 12,
-        outputTokens: 8,
-        totalTokens: 20,
-      },
     });
     mockExecuteForcedRouting.mockResolvedValueOnce({
       success: true,
@@ -630,6 +584,7 @@ describe('executeMultiAgent timeout contract', () => {
     });
 
     expect(result.success).toBe(true);
+    expect(decompositionModule.decomposeTask).not.toHaveBeenCalled();
     expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
     expect(mockExecuteForcedRouting).toHaveBeenCalledWith(
       '서버 상태 분석 결과를 보고서로 정리해줘',
@@ -653,19 +608,6 @@ describe('executeMultiAgent timeout contract', () => {
       shouldHandoff: true,
       suggestedAgent: 'Reporter Agent',
       confidence: 0.68,
-    });
-    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Reporter Agent');
-    mockGenerateObjectWithFallback.mockResolvedValueOnce({
-      object: {
-        selectedAgent: 'REPORTER',
-        confidence: 0.72,
-        reasoning: 'Need report',
-      },
-      usage: {
-        inputTokens: 12,
-        outputTokens: 8,
-        totalTokens: 20,
-      },
     });
     mockExecuteForcedRouting.mockResolvedValueOnce({
       success: true,
@@ -730,19 +672,6 @@ describe('executeMultiAgent timeout contract', () => {
       suggestedAgent: 'Advisor Agent',
       confidence: 0.68,
     });
-    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Advisor Agent');
-    mockGenerateObjectWithFallback.mockResolvedValueOnce({
-      object: {
-        selectedAgent: 'ADVISOR',
-        confidence: 0.72,
-        reasoning: 'Need guidance',
-      },
-      usage: {
-        inputTokens: 12,
-        outputTokens: 8,
-        totalTokens: 20,
-      },
-    });
 
     const events: Array<{ type: string; data: unknown }> = [];
     for await (const event of executeMultiAgentStream({
@@ -777,19 +706,6 @@ describe('executeMultiAgent timeout contract', () => {
     vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
       shouldHandoff: true,
       confidence: 0.5,
-    });
-    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Analyst Agent');
-    mockGenerateObjectWithFallback.mockResolvedValueOnce({
-      object: {
-        selectedAgent: 'ANALYST',
-        confidence: 0.72,
-        reasoning: 'Need analysis',
-      },
-      usage: {
-        inputTokens: 12,
-        outputTokens: 8,
-        totalTokens: 20,
-      },
     });
     mockExecuteForcedRouting.mockResolvedValueOnce({
       success: true,
@@ -841,30 +757,17 @@ describe('executeMultiAgent timeout contract', () => {
     }
   });
 
-  it('records LLM routing source when pre-filter is not decisive', async () => {
+  it('records deterministic fallback source when pre-filter is not decisive', async () => {
     const contextModule = await import('./orchestrator-context');
     vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
       shouldHandoff: true,
       confidence: 0.5,
     });
-    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Analyst Agent');
-    mockGenerateObjectWithFallback.mockResolvedValueOnce({
-      object: {
-        selectedAgent: 'ANALYST',
-        confidence: 0.72,
-        reasoning: 'Need anomaly analysis',
-      },
-      usage: {
-        inputTokens: 12,
-        outputTokens: 8,
-        totalTokens: 20,
-      },
-    });
     mockExecuteForcedRouting.mockResolvedValueOnce({
       success: true,
-      response: 'Analyst routed response',
+      response: 'Metrics fallback response',
       handoffs: [],
-      finalAgent: 'Analyst Agent',
+      finalAgent: 'Metrics Query Agent',
       toolsCalled: [],
       usage: {
         promptTokens: 10,
@@ -882,17 +785,30 @@ describe('executeMultiAgent timeout contract', () => {
 
     const result = await executeMultiAgent({
       messages: [{ role: 'user', content: '왜 느려졌는지 분석해줘' }],
-      sessionId: 'routing-trace-llm-source',
+      sessionId: 'routing-trace-deterministic-fallback',
     });
 
-    expect(mockGenerateObjectWithFallback).toHaveBeenCalledOnce();
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
+    expect(mockExecuteForcedRouting).toHaveBeenCalledWith(
+      '왜 느려졌는지 분석해줘',
+      'Metrics Query Agent',
+      expect.any(Number),
+      true,
+      true,
+      undefined,
+      undefined,
+      null,
+      undefined,
+      undefined,
+      undefined
+    );
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.metadata.routingDecisionTrace?.agentDecision).toMatchObject({
-        source: 'llm_routing',
-        selectedAgent: 'Analyst Agent',
-        confidence: 0.72,
-        reasonCodes: ['agent_source_llm_routing'],
+        source: 'deterministic_fallback',
+        selectedAgent: 'Metrics Query Agent',
+        confidence: 0.5,
+        reasonCodes: ['agent_source_deterministic_fallback'],
       });
     }
   });

@@ -2,7 +2,11 @@ import type { QueryRoutingSignals } from './query-routing-signals';
 
 export const ROUTING_DECISION_TRACE_VERSION = '2026-05-12-v1' as const;
 
-type AgentRoutingSource = 'pre_filter' | 'llm_routing' | 'fallback';
+type AgentRoutingSource =
+  | 'pre_filter'
+  | 'llm_routing'
+  | 'fallback'
+  | 'deterministic_fallback';
 
 interface PreFilterResultLike {
   shouldHandoff: boolean;
@@ -36,7 +40,7 @@ export interface RoutingDecisionTrace {
     reasonCodes: string[];
   };
   agentDecision?: {
-    source: 'pre_filter' | 'llm_routing' | 'fallback';
+    source: AgentRoutingSource;
     selectedAgent?: string;
     confidence?: number;
     reasonCodes: string[];
@@ -162,6 +166,8 @@ function createAgentDecision(
       ? 'agent_source_pre_filter'
       : source === 'llm_routing'
         ? 'agent_source_llm_routing'
+        : source === 'deterministic_fallback'
+          ? 'agent_source_deterministic_fallback'
         : input.selectedAgent
           ? 'agent_source_fallback_suggested'
           : 'agent_source_fallback_default_nlq';
@@ -192,6 +198,12 @@ export function createAgentDecisionFromFallback(
   input: AgentDecisionInput
 ): NonNullable<RoutingDecisionTrace['agentDecision']> {
   return createAgentDecision('fallback', input);
+}
+
+export function createAgentDecisionFromDeterministicFallback(
+  input: AgentDecisionInput
+): NonNullable<RoutingDecisionTrace['agentDecision']> {
+  return createAgentDecision('deterministic_fallback', input);
 }
 
 export function attachPreFilterDecision(

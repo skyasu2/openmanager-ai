@@ -1,5 +1,5 @@
 /**
- * Orchestrator Types, Configuration, and Pre-filter Logic
+ * Direct multi-agent router types, configuration, and pre-filter contracts.
  *
  * @version 4.0.0
  */
@@ -32,18 +32,9 @@ export const ORCHESTRATOR_CONFIG = {
   hardTimeout: TIMEOUT_CONFIG.orchestrator.hard,
   /** Warning threshold (ms) - from TIMEOUT_CONFIG.orchestrator */
   warnThreshold: TIMEOUT_CONFIG.orchestrator.warning,
-  /**
-   * Minimum confidence required to bypass LLM routing and force a specific agent.
-   * Slightly tuned to increase single-shot routing for clear infra queries
-   * and reduce LLM latency where signal is unambiguous. Pre-filter results should
-   * be either >= this value or below fallbackRoutingConfidence to avoid a gray band.
-   */
+  /** Legacy confidence threshold kept for compatibility with older tests/config consumers. */
   forcedRoutingConfidence: 0.85,
-  /**
-   * Minimum confidence to use pre-filter suggested agent when LLM routing is inconclusive.
-   * Values between fallbackRoutingConfidence and forcedRoutingConfidence should not
-   * be emitted by deterministic pre-filter branches.
-   */
+  /** Legacy fallback threshold kept for compatibility with older tests/config consumers. */
   fallbackRoutingConfidence: 0.65,
 };
 

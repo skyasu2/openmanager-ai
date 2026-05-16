@@ -368,7 +368,7 @@ function buildFirstOnCallChecklistAnswer(query: string): string | null {
 }
 
 /**
- * Fast pre-filter before LLM routing
+ * Fast pre-filter before direct specialist routing
  * Handles simple queries without LLM call
  */
 export interface PreFilterContext {
