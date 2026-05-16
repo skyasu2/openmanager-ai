@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-16T10:45:41.451Z"
+    "updatedAt": "2026-05-16T11:16:06.924Z"
   },
   "sequence": {
-    "nextRunNumber": 509
+    "nextRunNumber": 510
   },
   "summary": {
-    "totalRecordedRuns": 506,
+    "totalRecordedRuns": 507,
     "totalRuns": 403,
-    "excludedRuns": 103,
+    "excludedRuns": 104,
     "totalChecks": 3606,
     "totalPassed": 3469,
     "totalFailed": 127,
     "completionRate": 100,
-    "completedItems": 579,
+    "completedItems": 580,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260515-0506",
     "lastRecordedAt": "2026-05-15T07:20:51.624Z",
-    "latestRecordedRunId": "QA-20260516-0508",
-    "latestRecordedAt": "2026-05-16T10:45:41.451Z"
+    "latestRecordedRunId": "QA-20260516-0509",
+    "latestRecordedAt": "2026-05-16T11:16:06.924Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14201,6 +14201,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-16T10:31:04.202Z"
+    },
+    "v811158-production-deploy": {
+      "id": "v811158-production-deploy",
+      "title": "Deploy NLQ schema provider compatibility fix to production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260516-0509",
+      "firstSeenAt": "2026-05-16T11:16:06.924Z",
+      "lastSeenRunId": "QA-20260516-0509",
+      "lastSeenAt": "2026-05-16T11:16:06.924Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "GitLab pipeline 2529915217 success; production smoke /, /login, /api/version passed for version 8.11.158 and commit d798c358e5aac3f72c5ec0f78a8d64e1e5e6d2af.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-16T11:16:06.924Z"
     }
   },
   "runs": [
@@ -56680,6 +56704,88 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260516-0509",
+      "recordedAt": "2026-05-16T11:16:06.924Z",
+      "recordedAtKst": "2026-05-16 20:16:06 KST",
+      "title": "v8.11.158 Production Deploy Smoke",
+      "owner": "codex",
+      "source": "gitlab-ci-production-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260516-0509.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "d798c358e5aac3f72c5ec0f78a8d64e1e5e6d2af"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag deploy pipeline v8.11.158",
+        "Vercel production /",
+        "Vercel production /login",
+        "Vercel production /api/version",
+        "Cloud Run AI Engine post-deploy smoke"
+      ],
+      "skippedSurfaces": [
+        "Authenticated AI chat browser flow was not repeated in this deploy smoke",
+        "NLQ provider comparison was already recorded in QA-20260516-0508"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2529915217 completed successfully, including frontend deploy, AI Engine deploy, and both post-deploy smoke jobs.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production deploy contains the NLQ schema compatibility fix verified by QA-20260516-0508; production version and commit smoke passed after deployment.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.158 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2529915217"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -56688,16 +56794,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 256,
-      "appropriateCount": 219,
+      "seenCount": 257,
+      "appropriateCount": 220,
       "partialCount": 37,
       "inappropriateCount": 0,
       "improvementNeededCount": 47,
-      "lastRunId": "QA-20260516-0508",
-      "lastSeenAt": "2026-05-16T10:45:41.451Z",
+      "lastRunId": "QA-20260516-0509",
+      "lastSeenAt": "2026-05-16T11:16:06.924Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Provider-compatible required nullable schema restored Groq structured-output compatibility to 4/4 on the targeted smoke corpus.",
+      "lastRationale": "The production deploy contains the NLQ schema compatibility fix verified by QA-20260516-0508; production version and commit smoke passed after deployment.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -56739,16 +56845,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 184,
-      "appropriateCount": 166,
+      "seenCount": 185,
+      "appropriateCount": 167,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260515-0506",
-      "lastSeenAt": "2026-05-15T07:20:51.624Z",
+      "lastRunId": "QA-20260516-0509",
+      "lastSeenAt": "2026-05-16T11:16:06.924Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag deploy pipeline and main validate pipeline both completed successfully, and production post-deploy smoke passed.",
+      "lastRationale": "GitLab tag pipeline 2529915217 completed successfully, including frontend deploy, AI Engine deploy, and both post-deploy smoke jobs.",
       "lastNextAction": ""
     },
     "test-automation": {

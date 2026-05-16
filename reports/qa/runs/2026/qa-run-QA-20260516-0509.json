@@ -1,0 +1,95 @@
+{
+  "runId": "QA-20260516-0509",
+  "recordedAt": "2026-05-16T11:16:06.924Z",
+  "recordedAtKst": "2026-05-16 20:16:06 KST",
+  "runTitle": "v8.11.158 Production Deploy Smoke",
+  "owner": "codex",
+  "source": "gitlab-ci-production-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "d798c358e5aac3f72c5ec0f78a8d64e1e5e6d2af"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "ai-core"],
+  "coveredSurfaces": [
+    "GitLab tag deploy pipeline v8.11.158",
+    "Vercel production /",
+    "Vercel production /login",
+    "Vercel production /api/version",
+    "Cloud Run AI Engine post-deploy smoke"
+  ],
+  "skippedSurfaces": [
+    "Authenticated AI chat browser flow was not repeated in this deploy smoke",
+    "NLQ provider comparison was already recorded in QA-20260516-0508"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline 2529915217 completed successfully, including frontend deploy, AI Engine deploy, and both post-deploy smoke jobs.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production deploy contains the NLQ schema compatibility fix verified by QA-20260516-0508; production version and commit smoke passed after deployment.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "v811158-production-deploy",
+      "title": "Deploy NLQ schema provider compatibility fix to production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "GitLab pipeline 2529915217 success; production smoke /, /login, /api/version passed for version 8.11.158 and commit d798c358e5aac3f72c5ec0f78a8d64e1e5e6d2af.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "GitLab tag pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2529915217",
+    "Jobs succeeded: deploy, deploy_ai_engine, post_deploy_smoke, post_deploy_ai_engine_smoke.",
+    "Local post-deploy smoke command passed on attempt 1/13 with expected version 8.11.158 and expected commit d798c358e5aac3f72c5ec0f78a8d64e1e5e6d2af."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.158 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2529915217"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

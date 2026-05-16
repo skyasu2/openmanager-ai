@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-16 19:45:41 KST
+> Generated at: 2026-05-16 20:16:07 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 506 |
+| Total Recorded Runs | 507 |
 | Total Runs (Counted) | 403 |
-| Non-counted Runs | 103 |
+| Non-counted Runs | 104 |
 | Total Checks | 3606 |
 | Passed | 3469 |
 | Failed | 127 |
-| Completed Items | 579 |
+| Completed Items | 580 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260515-0506 (2026-05-15T07:20:51.624Z) |
-| Latest Recorded Run | QA-20260516-0508 (2026-05-16T10:45:41.451Z) |
+| Latest Recorded Run | QA-20260516-0509 (2026-05-16T11:16:06.924Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,10 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260516-0508 (2026-05-16T10:45:41.451Z)
+Latest run: QA-20260516-0509 (2026-05-16T11:16:06.924Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| DevOps / SRE Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
@@ -48,7 +49,7 @@ Latest run: QA-20260516-0508 (2026-05-16T10:45:41.451Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-15T10:45:41.451Z -> 2026-05-16T10:45:41.451Z (24h)
+- Window: 2026-05-15T11:16:06.924Z -> 2026-05-16T11:16:06.924Z (24h)
 - Runs with observations: 2 recorded / 0 counted
 - Samples: 7
 
@@ -61,7 +62,7 @@ Latest run: QA-20260516-0508 (2026-05-16T10:45:41.451Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-15T10:45:41.451Z -> 2026-05-16T10:45:41.451Z (24h)
+- Window: 2026-05-15T11:16:06.924Z -> 2026-05-16T11:16:06.924Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,22 +76,23 @@ Latest run: QA-20260516-0508 (2026-05-16T10:45:41.451Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA c376c7f7
-- Coverage Packs: ai-core
-- Covered Surfaces: NLQ route structured-output schema contract, Entity extractor normalizer nullable provider payload handling, Groq llama-4-scout direct provider smoke after schema fix, Mistral ministral-3b comparison smoke after schema fix
-- Skipped Surfaces: Production Vercel route was not redeployed in this verification run, Authenticated browser conversational QA was not repeated; this was a schema/provider compatibility fix
+- Deployment: SHA d798c358
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: GitLab tag deploy pipeline v8.11.158, Vercel production /, Vercel production /login, Vercel production /api/version, Cloud Run AI Engine post-deploy smoke
+- Skipped Surfaces: Authenticated AI chat browser flow was not repeated in this deploy smoke, NLQ provider comparison was already recorded in QA-20260516-0508
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab v8.11.158 tag pipeline | [GitLab v8.11.158 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2529915217) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | NLQ schema fix provider smoke | `reports/qa/evidence/qa-20260516-v811157-nlq-schema-fix-provider-smoke.json` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -693,6 +695,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - v811119-production-release-smoke: v8.11.119 production release smoke passed (completed 1회, last QA-20260509-0437)
 - v811120-production-release-smoke: v8.11.120 production release smoke passed (completed 1회, last QA-20260510-0438)
 - v811122-explicit-server-id-production-regression: Explicit server ID questions no longer trigger broad server clarification (completed 1회, last QA-20260510-0458)
+- v811158-production-deploy: Deploy NLQ schema provider compatibility fix to production (completed 1회, last QA-20260516-0509)
 - v81195-dashboard-core-routes-playwright-recheck: Dashboard core routes and AI assistant tabs render in Vercel production (completed 1회, last QA-20260504-0404)
 - v81195-vercel-playwright-ai-routing-recheck: AI ranking and formatting rewrite production routes remain stable on v8.11.95 (completed 1회, last QA-20260504-0404)
 - validation-evidence-summary-clarity: Validation evidence summary 카피와 정보 우선순위 정리 (completed 1회, last QA-20260324-0171)
@@ -762,6 +765,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260516-0509 | 2026-05-16T11:16:06.924Z | targeted | no | no | v8.11.158 Production Deploy Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260516-0508 | 2026-05-16T10:45:41.451Z | targeted | no | no | NLQ EntitySchema Provider Compatibility Fix Verification - v8.11.157 | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260516-0507 | 2026-05-16T10:31:04.202Z | targeted | no | no | NLQ Provider Live Comparison Smoke - v8.11.157 | 11 | 1 | 1 | 0 | 1 | 1 |
 | QA-20260515-0506 | 2026-05-15T07:20:51.624Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.154 KRL Closure | 17 | 2 | 0 | 0 | 0 | 0 |
@@ -781,4 +785,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260513-0492 | 2026-05-13T02:51:02.949Z | targeted | yes | yes | Vercel Playwright QA - v8.11.142 Frontend Non-AI Status and Design | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0491 | 2026-05-13T02:09:08.202Z | targeted | yes | yes | Production Deploy QA - v8.11.142 Frontend and AI Engine Alignment | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0490 | 2026-05-12T17:54:33.608Z | targeted | yes | yes | Cloud Run Direct QA - v8.11.141 AI Response Quality Regression | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260513-0489 | 2026-05-12T15:34:19.485Z | targeted | yes | yes | v8.11.140 AI Routing Follow-up Clarification Production QA | 9 | 1 | 0 | 0 | 0 | 0 |
