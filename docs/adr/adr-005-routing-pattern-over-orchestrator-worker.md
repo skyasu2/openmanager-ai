@@ -1,11 +1,11 @@
 > Owner: platform-architecture
-> Status: Proposed
+> Status: Accepted
 > Doc type: Decision
 > Last reviewed: 2026-05-16
 > Canonical: docs/adr/adr-005-routing-pattern-over-orchestrator-worker.md
 > Tags: adr,ai,routing,multi-agent,orchestrator,free-tier,nlq
 
-# ADR-005: Routing Pattern 전환 검토 (Orchestrator-Worker 축소 후보)
+# ADR-005: Routing Pattern 전환 (Orchestrator LLM 제거)
 
 ## 상태 판정
 
@@ -43,7 +43,7 @@ Free Tier 제약에서 가장 큰 병목은 Groq RPD다. Front NLQ LLM 결과를
 
 반대로 앞단을 자체 ML 수준 heuristic으로 키우는 것도 부적합하다. 한국어/영어 운영 질의, 오타, 문맥 생략, 복합 질문을 규칙만으로 처리하면 Vercel/Cloud Run CPU 사용량과 유지보수 부담이 커지고, 특정 테스트만 통과하는 fragile classifier가 되기 쉽다.
 
-## 제안 결정
+## 결정
 
 단계적으로 아래 방향을 검증한다.
 
@@ -51,7 +51,7 @@ Free Tier 제약에서 가장 큰 병목은 Groq RPD다. Front NLQ LLM 결과를
 |------|------|------|
 | N1 | Approved/In Progress | Front NLQ LLM이 만든 `intentFrame.executionMode`를 Cloud Run `selectExecutionMode()`의 primary signal로 사용한다 |
 | Q1 | Approved | Orchestrator provider order를 Groq-last로 재배치하고, forced routing 전 불필요한 decomposition/routing 이중 LLM 호출을 줄인다 |
-| Direct routing | Proposed | Orchestrator LLM 제거 후 Routing + Tool-Loop Agent 구조로 전환할지 별도 SDD로 검증한다 |
+| Q2 Direct routing | Accepted/Approved | Orchestrator LLM routing과 LLM decomposition을 request path에서 제거하고 deterministic specialist routing으로 전환한다 |
 
 [AI SDK Workflow Patterns](https://ai-sdk.dev/docs/agents/workflows)는 `Routing`과 `Orchestrator-Worker`를 별도 workflow pattern으로 설명한다. [Agents Overview](https://ai-sdk.dev/docs/agents/overview)는 LLM tool loop에는 `ToolLoopAgent`, 예측 가능한 제어 흐름에는 structured workflow를 사용하라고 설명한다.
 

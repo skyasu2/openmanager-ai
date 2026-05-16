@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (Q1 Orchestrator Groq-last + decomposition budget 구현 완료)
+> Last reviewed: 2026-05-16 (Q2 Orchestrator LLM removal approved)
 > Tags: ai,provider,quota,nlq,free-tier,groq,cerebras,architecture
 
 ---
@@ -197,7 +197,58 @@ cd cloud-run/ai-engine && npm run test
 
 ---
 
-### Q2. intentFrame trust (NLQ → Cloud Run 신뢰 연결)
+### Q2. Orchestrator LLM 제거 / Direct specialist routing
+
+**Status**: Approved
+
+**목표**
+- Cloud Run multi-agent request path에서 Orchestrator LLM routing 호출을 제거한다.
+- `decomposeTask()` LLM 기반 decomposition도 기본 request path에서 제거한다.
+- deterministic pre-filter / routing signal 기반으로 전문 agent를 직접 선택한다.
+- Metrics Query / Analyst / Reporter / Advisor / Vision specialist agent tool-loop는 유지한다.
+
+**수정 파일**
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution-stream.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution-helpers.ts` 또는 신규 helper
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts`
+
+**계약**
+| 입력 상태 | 기대 동작 |
+|-----------|-----------|
+| `preFilterResult.suggestedAgent` 존재 | 해당 specialist로 직접 실행한다. confidence가 낮아도 LLM routing으로 재심사하지 않는다 |
+| suggested agent 없음 + infra query | `Metrics Query Agent`로 직접 fallback한다 |
+| direct response 가능 | 기존 fast path 유지 |
+| Vision Agent model unavailable | 기존처럼 Analyst Agent fallback 유지 |
+| complex/composite query | Orchestrator decomposition LLM을 호출하지 않는다. pre-filter가 고른 대표 specialist가 실행하고, 후속 N1/N3에서 frame/log metadata로 보강한다 |
+| 실행 실패 | LLM routing fallback 없이 기존 error path로 종료한다 |
+
+**선행 failing test assertion**
+| 테스트 파일 | 기대 assertion |
+|-------------|----------------|
+| `orchestrator-execution.timeout.test.ts` | non-stream low-confidence suggested agent도 `generateStructuredOutputWithFallback`/`decomposeTask` 없이 direct specialist 실행 |
+| `orchestrator-execution.timeout.test.ts` | stream low-confidence suggested agent도 Orchestrator LLM/decomposition 없이 `executeAgentStream` 실행 |
+| `orchestrator-execution.timeout.test.ts` | suggested agent 없음이면 `Metrics Query Agent` deterministic fallback으로 실행 |
+| `orchestrator-execution.timeout.test.ts` | direct routing done metadata의 `routingDecisionTrace.agentDecision.source`는 `deterministic_fallback` 또는 `pre_filter`로 남고 `llm_routing`이 아님 |
+
+**범위 제외**
+- 파일명/모듈명에서 `orchestrator-*`를 전부 제거하는 대형 rename은 이번 범위에서 제외한다. request path에서 LLM Orchestrator를 제거한 뒤, 모듈명 정리는 별도 low-risk cleanup으로 분리한다.
+- NLQ `intentFrame.executionMode` 신뢰 연결은 Q3/N1에서 처리한다.
+
+**검증 게이트**
+```bash
+cd cloud-run/ai-engine && npx vitest run \
+  src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts \
+  src/services/ai-sdk/agents/orchestrator-routing.test.ts
+cd cloud-run/ai-engine && npm run type-check
+cd cloud-run/ai-engine && npm run test
+npm run test:contract
+git diff --check
+```
+
+---
+
+### Q3. intentFrame trust (NLQ → Cloud Run 신뢰 연결)
 
 **이 항목은 NLQ Pre-processing Redesign Plan의 N1과 동일 루트임. 해당 계획의 Draft→Approved 전환 조건 충족 시 함께 구현.**
 
@@ -218,7 +269,8 @@ N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ
 |------|:--------:|:-------:|:--------:|
 | Q0: gpt-oss-120b 정책 수정 | ❌ (데이터 수정) | 완료 | 30분 |
 | Q1: Orchestrator provider order + decomposition budget | ✅ (계약 변경) | 완료 | 1.5시간 |
-| Q2: intentFrame trust | ✅ (NLQ Plan 연계) | P1 (NLQ Draft→Approved 후) | 별도 |
+| Q2: Orchestrator LLM 제거 / Direct specialist routing | ✅ (계약 변경) | P1 | 1.5시간 |
+| Q3: intentFrame trust | ✅ (NLQ Plan 연계) | P1 (NLQ Draft→Approved 후) | 별도 |
 | P2: enrichment multi-path | ❌ (저영향) | P2 관찰 후 판단 | - |
 
 ---

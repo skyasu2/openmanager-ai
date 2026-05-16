@@ -25,9 +25,9 @@ ADR은 “왜 그렇게 결정했는가”를 남기는 문서입니다.
 | [ADR-002](./adr-002-server-card-rendering-strategy.md) | Server Card Rendering Strategy |
 | [ADR-003](./adr-003-promql-vs-js-array-filtering.md) | PromQL vs JS Array Filtering |
 | [ADR-004](./adr-004-vercel-ai-sdk-over-langchain.md) | Vercel AI SDK over LangChain |
-| [ADR-005](./adr-005-routing-pattern-over-orchestrator-worker.md) | Routing Pattern 전환 검토 (Orchestrator-Worker 축소 후보, 2026-05-16) |
+| [ADR-005](./adr-005-routing-pattern-over-orchestrator-worker.md) | Routing Pattern 전환 (Orchestrator LLM 제거, 2026-05-16) |
 
-> ADR-005는 `Status: Proposed`이며 현재 구현 기준이 아니라 전환 후보의 범위와 검증 조건을 고정하는 문서입니다.
+> ADR-005는 `Status: Accepted`이며 Q2 구현으로 Cloud Run request path에서 Orchestrator LLM을 제거하는 결정을 고정합니다.
 
 ## 새 ADR 작성 기준
 
