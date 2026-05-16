@@ -51,7 +51,8 @@ export default function UnifiedProfileHeader({
     startSystem: startRemoteSystem,
     stopSystem: stopRemoteSystem,
   } = useSystemStatus({
-    enabled: !isAuthResolving && status === 'authenticated',
+    enabled:
+      !isAuthResolving && (status === 'authenticated' || userType === 'guest'),
   });
   // Zustand selector 패턴 사용 - 불필요한 리렌더 방지
   const isLocalSystemStarted = useUnifiedAdminStore(

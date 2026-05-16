@@ -144,6 +144,26 @@ describe('UnifiedProfileHeader', () => {
     expect(mocks.useSystemStatus).toHaveBeenCalledWith({ enabled: false });
   });
 
+  it('게스트 세션은 로그인 상태와 별개로 /api/system 구독을 활성화한다', () => {
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: {
+        id: 'guest-1',
+        name: '게스트 사용자',
+        email: 'guest@test.local',
+      },
+      userType: 'guest',
+      status: 'unauthenticated',
+      isLoading: false,
+      handleLogout: vi.fn(),
+      navigateToLogin: vi.fn(),
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+
+    expect(mocks.useSystemStatus).toHaveBeenCalledWith({ enabled: true });
+  });
+
   it('비인증 모바일 헤더에서 로그인 버튼을 compact icon button으로 렌더링한다', () => {
     mocks.useProfileAuth.mockReturnValue({
       userInfo: null,
