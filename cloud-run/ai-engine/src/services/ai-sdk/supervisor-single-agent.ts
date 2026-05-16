@@ -81,6 +81,10 @@ import {
 import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
 import type { CollectedToolResult } from './agents/orchestrator-summary-payload';
 import { buildNoProviderFallbackResponse } from './supervisor-no-provider-fallback';
+import {
+  appendSupervisorContextPrompt,
+  buildSupervisorLogContextPrompt,
+} from './supervisor-log-context';
 import { buildToolResultSummary } from './supervisor-tool-results';
 import { enrichResponseWithToolResults } from './supervisor-response-enrichment';
 
@@ -232,6 +236,8 @@ async function executeMultiAgentMode(
       images: request.images,
       files: request.files,
       dataSource: request.runtimeHost?.domain.dataSource,
+      metadata: request.metadata,
+      domainEvidencePrompt: buildSupervisorLogContextPrompt(request.metadata),
     };
 
     const result = await executeMultiAgent(multiAgentRequest);
@@ -500,9 +506,12 @@ async function executeSupervisorAttempt(
       if (!runtimeHost) {
         throw new Error('Supervisor runtime host is required for single-agent execution');
       }
-      const systemPrompt = runtimeHost.createSystemPrompt({
-        deviceType: request.deviceType,
-      });
+      const systemPrompt = appendSupervisorContextPrompt(
+        runtimeHost.createSystemPrompt({
+          deviceType: request.deviceType,
+        }),
+        buildSupervisorLogContextPrompt(request.metadata)
+      )!;
       const prepareStep = runtimeHost.createPrepareStep(queryText, {
         enableWebSearch: webSearchEnabled,
         enableRAG: ragEnabled,

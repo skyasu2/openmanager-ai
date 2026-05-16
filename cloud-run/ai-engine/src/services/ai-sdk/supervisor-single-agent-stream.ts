@@ -43,6 +43,10 @@ import { buildWebCitationAppendix } from './supervisor-stream-citations';
 import { resolveDomainEvidenceForStream } from './supervisor-domain-evidence';
 import { shouldRefuseInternalImplementationPathRequest } from './internal-disclosure-policy';
 import {
+  appendSupervisorContextPrompt,
+  buildSupervisorLogContextPrompt,
+} from './supervisor-log-context';
+import {
   buildCircuitOpenErrorEvent,
   buildHardTimeoutErrorEvent,
   buildPublicErrorEvent,
@@ -128,7 +132,14 @@ export async function* streamSingleAgent(
       domain: runtimeHost.domain,
     }));
   const systemPrompt = runtimeHost.createSystemPrompt({ deviceType: request.deviceType });
-  const modelMessages = buildSupervisorStreamMessages(request, systemPrompt, domainEvidence?.prompt);
+  const modelMessages = buildSupervisorStreamMessages(
+    request,
+    systemPrompt,
+    appendSupervisorContextPrompt(
+      domainEvidence?.prompt,
+      buildSupervisorLogContextPrompt(request.metadata)
+    )
+  );
 
   let webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
   if (webSearchEnabled && !isTavilyAvailable()) {

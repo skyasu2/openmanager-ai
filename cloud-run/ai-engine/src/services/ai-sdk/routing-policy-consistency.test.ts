@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import type { DomainIntentFrame } from '../../core/assistant-runtime';
 
 vi.mock('./agents/context-store', () => ({
   appendAffectedServers: vi.fn(),
@@ -15,6 +16,18 @@ vi.mock('./agents/vision-agent', () => ({
 
 import { preFilterQuery } from './agents/orchestrator-context';
 import { selectExecutionMode } from '../../domains/monitoring/routing-policy';
+
+const summaryIntentFrame: DomainIntentFrame = {
+  domainId: 'openmanager-monitoring',
+  intent: 'server_health',
+  capabilityId: 'monitoring.server_health',
+  scope: 'whole_fleet',
+  targets: [],
+  aggregation: 'summary',
+  ambiguity: 'low',
+  executionMode: 'multi',
+  confidence: 0.91,
+};
 
 describe('routing policy consistency', () => {
   it('keeps greetings on the cheapest path', () => {
@@ -34,8 +47,11 @@ describe('routing policy consistency', () => {
     expect(preFilter.confidence).toBe(0.86);
   });
 
-  it('keeps summary/report/advisor requests aligned on multi-agent specialist routing', () => {
-    expect(selectExecutionMode('서버 상태 요약해줘')).toBe('multi');
+  it('uses NLQ frames for ambiguous summaries and keeps report/advisor regex fallbacks', () => {
+    expect(selectExecutionMode('서버 상태 요약해줘')).toBe('single');
+    expect(
+      selectExecutionMode('서버 상태 요약해줘', undefined, summaryIntentFrame)
+    ).toBe('multi');
     expect(preFilterQuery('서버 상태 요약해줘')).toMatchObject({
       shouldHandoff: true,
       suggestedAgent: 'Metrics Query Agent',

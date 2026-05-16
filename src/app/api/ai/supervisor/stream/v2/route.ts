@@ -40,7 +40,7 @@ import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
 } from '../../request-utils';
-import { requestSchemaLoose } from '../../schemas';
+import { requestSchema } from '../../schemas';
 import { resolveScopedSessionIds } from '../../session-owner';
 import {
   createStreamErrorResponse,
@@ -91,7 +91,7 @@ export const POST = withRateLimit(
   withAuth(async (req: NextRequest) => {
     try {
       const body = await req.json();
-      const parseResult = requestSchemaLoose.safeParse(body);
+      const parseResult = requestSchema.safeParse(body);
 
       if (!parseResult.success) {
         logger.warn(

@@ -32,6 +32,10 @@ import {
   createDirectAgentDecision,
   resolveDirectRoutingTarget,
 } from './orchestrator-direct-routing';
+import {
+  normalizeSupervisorInputType,
+  normalizeSupervisorIntentFrame,
+} from '../supervisor-semantic-metadata';
 
 export async function* executeMultiAgentStream(
   request: MultiAgentRequest
@@ -96,7 +100,10 @@ export async function* executeMultiAgentStream(
     return;
   }
 
-  const directTarget = resolveDirectRoutingTarget(preFilterResult);
+  const directTarget = resolveDirectRoutingTarget(preFilterResult, {
+    intentFrame: normalizeSupervisorIntentFrame(request.metadata?.intentFrame),
+    inputType: normalizeSupervisorInputType(request.metadata?.inputType),
+  });
   logger.info(
     `[Stream Direct Routing] ${directTarget.agentName} selected (source=${directTarget.source}, confidence=${directTarget.confidence})`
   );

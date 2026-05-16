@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import type { DomainIntentFrame } from '../../core/assistant-runtime';
 import {
   createSystemPrompt,
   createPrepareStep,
@@ -12,6 +13,26 @@ import {
 vi.mock('../../lib/tavily-web-search-client', () => ({
   isTavilyAvailable: vi.fn(() => true),
 }));
+
+function buildIntentFrame(
+  executionMode: DomainIntentFrame['executionMode'],
+  confidence = 0.91
+): DomainIntentFrame {
+  return {
+    domainId: 'openmanager-monitoring',
+    intent: executionMode === 'multi' ? 'server_health' : 'metric_current',
+    capabilityId:
+      executionMode === 'multi'
+        ? 'monitoring.server_health'
+        : 'monitoring.metric_ranking',
+    scope: 'whole_fleet',
+    targets: [],
+    aggregation: 'summary',
+    ambiguity: 'low',
+    executionMode,
+    confidence,
+  };
+}
 
 describe('createSystemPrompt', () => {
   it('should include answer quality rules for exact counts and free-tier aligned recommendations', () => {
@@ -57,6 +78,55 @@ describe('createSystemPrompt', () => {
 // ============================================================================
 
 describe('selectExecutionMode', () => {
+  describe('intentFrame trust path', () => {
+    it('trusts high-confidence NLQ executionMode before regex fallback', () => {
+      expect(
+        selectExecutionMode('CPU 알려줘', undefined, buildIntentFrame('multi'))
+      ).toBe('multi');
+      expect(
+        selectExecutionMode(
+          '장애 보고서 만들어줘',
+          undefined,
+          buildIntentFrame('single')
+        )
+      ).toBe('single');
+    });
+
+    it('falls back when executionMode is unknown or confidence is low', () => {
+      expect(
+        selectExecutionMode(
+          '장애 보고서 만들어줘',
+          undefined,
+          buildIntentFrame('unknown')
+        )
+      ).toBe('multi');
+      expect(
+        selectExecutionMode(
+          'CPU 알려줘',
+          undefined,
+          buildIntentFrame('multi', 0.79)
+        )
+      ).toBe('single');
+    });
+
+    it('accepts legacy 0-100 confidence frames from older callers', () => {
+      expect(
+        selectExecutionMode('CPU 알려줘', undefined, buildIntentFrame('multi', 91))
+      ).toBe('multi');
+    });
+
+    it('forces log paste input to multi before intentFrame and regex fallback', () => {
+      expect(
+        selectExecutionMode(
+          'CPU 알려줘',
+          undefined,
+          buildIntentFrame('single', 0.99),
+          'log_paste'
+        )
+      ).toBe('multi');
+    });
+  });
+
   describe('multi-agent mode', () => {
     it('should select multi for report/incident requests', () => {
       expect(selectExecutionMode('보고서 작성해줘')).toBe('multi');
@@ -65,10 +135,17 @@ describe('selectExecutionMode', () => {
       expect(selectExecutionMode('일일 리포트 생성')).toBe('multi');
     });
 
-    it('should select multi for RCA requests', () => {
-      expect(selectExecutionMode('원인 분석해줘')).toBe('multi');
-      expect(selectExecutionMode('근본 원인 찾아줘')).toBe('multi');
-      expect(selectExecutionMode('root cause analysis')).toBe('multi');
+    it('should use intentFrame for RCA requests instead of broad regex', () => {
+      expect(selectExecutionMode('원인 분석해줘')).toBe('single');
+      expect(
+        selectExecutionMode(
+          '원인 분석해줘',
+          undefined,
+          buildIntentFrame('multi')
+        )
+      ).toBe('multi');
+      expect(selectExecutionMode('근본 원인 찾아줘')).toBe('single');
+      expect(selectExecutionMode('root cause analysis')).toBe('single');
     });
 
     it('should select multi for resolution/advisory requests', () => {
@@ -79,17 +156,31 @@ describe('selectExecutionMode', () => {
       expect(selectExecutionMode('troubleshoot the problem')).toBe('multi');
     });
 
-    it('should select multi for capacity planning', () => {
-      expect(selectExecutionMode('용량 계획 세워줘')).toBe('multi');
-      expect(selectExecutionMode('언제 부족해질까')).toBe('multi');
-      expect(selectExecutionMode('증설 필요한지 알려줘')).toBe('multi');
+    it('should use intentFrame for capacity planning beyond advisor fallback', () => {
+      expect(selectExecutionMode('용량 계획 세워줘')).toBe('single');
+      expect(
+        selectExecutionMode(
+          '용량 계획 세워줘',
+          undefined,
+          buildIntentFrame('multi')
+        )
+      ).toBe('multi');
+      expect(selectExecutionMode('언제 부족해질까')).toBe('single');
+      expect(selectExecutionMode('증설 필요한지 알려줘')).toBe('single');
     });
 
-    it('should select multi for server summary requests', () => {
-      expect(selectExecutionMode('서버 상태 요약해줘')).toBe('multi');
-      expect(selectExecutionMode('인프라 현황 간단히 알려줘')).toBe('multi');
-      expect(selectExecutionMode('server status summary')).toBe('multi');
-      expect(selectExecutionMode('monitoring overview')).toBe('multi');
+    it('should use intentFrame for server summary requests instead of typo regex', () => {
+      expect(selectExecutionMode('서버 상태 요약해줘')).toBe('single');
+      expect(
+        selectExecutionMode(
+          '서버 상태 요약해줘',
+          undefined,
+          buildIntentFrame('multi')
+        )
+      ).toBe('multi');
+      expect(selectExecutionMode('인프라 현황 간단히 알려줘')).toBe('single');
+      expect(selectExecutionMode('server status summary')).toBe('single');
+      expect(selectExecutionMode('monitoring overview')).toBe('single');
     });
 
     it('should force multi for topology/architecture KB queries', () => {
@@ -99,27 +190,48 @@ describe('selectExecutionMode', () => {
       ).toBe('multi');
     });
 
-    it('should select multi for analysis with infra context', () => {
-      expect(selectExecutionMode('서버 왜 느려졌어?')).toBe('multi');
-      expect(selectExecutionMode('CPU 왜 높아?')).toBe('multi');
-      expect(selectExecutionMode('why is the server slow')).toBe('multi');
-      expect(selectExecutionMode('메모리 예측 분석해줘')).toBe('multi');
+    it('should use thinking mode or intentFrame for analysis with infra context', () => {
+      expect(selectExecutionMode('서버 왜 느려졌어?')).toBe('single');
+      expect(selectExecutionMode('서버 왜 느려졌어?', 'thinking')).toBe('multi');
+      expect(
+        selectExecutionMode(
+          'CPU 왜 높아?',
+          undefined,
+          buildIntentFrame('multi')
+        )
+      ).toBe('multi');
+      expect(selectExecutionMode('why is the server slow')).toBe('single');
+      expect(selectExecutionMode('메모리 예측 분석해줘')).toBe('single');
     });
 
-    it('should select multi for composite infra requests', () => {
-      expect(selectExecutionMode('서버 상태와 원인 분석을 같이 해줘')).toBe('multi');
+    it('should keep only explicit advisor composite requests in regex fallback', () => {
+      expect(selectExecutionMode('서버 상태와 원인 분석을 같이 해줘')).toBe('single');
       expect(selectExecutionMode('CPU 추이 비교하고 해결 방법도 알려줘')).toBe('multi');
-      expect(selectExecutionMode('server status and root cause analysis together')).toBe('multi');
+      expect(selectExecutionMode('server status and root cause analysis together')).toBe('single');
     });
 
-    it('should handle typos in Korean', () => {
-      expect(selectExecutionMode('서벼 요약')).toBe('multi');
-      expect(selectExecutionMode('요먁 해줘 서버')).toBe('multi');
+    it('should leave typo-heavy summaries to the NLQ frame path', () => {
+      expect(selectExecutionMode('서벼 요약')).toBe('single');
+      expect(
+        selectExecutionMode(
+          '서벼 요약',
+          undefined,
+          buildIntentFrame('multi')
+        )
+      ).toBe('multi');
+      expect(selectExecutionMode('요먁 해줘 서버')).toBe('single');
     });
 
-    it('should handle typos in English', () => {
-      expect(selectExecutionMode('servr status summary')).toBe('multi');
-      expect(selectExecutionMode('trubleshoot the issue')).toBe('multi');
+    it('should leave English typo variants to the NLQ frame path', () => {
+      expect(selectExecutionMode('servr status summary')).toBe('single');
+      expect(
+        selectExecutionMode(
+          'trubleshoot the issue',
+          undefined,
+          buildIntentFrame('multi')
+        )
+      ).toBe('multi');
+      expect(selectExecutionMode('trubleshoot the issue')).toBe('single');
     });
   });
 

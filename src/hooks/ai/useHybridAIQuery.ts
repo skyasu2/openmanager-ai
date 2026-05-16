@@ -79,7 +79,10 @@ import {
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
-import { buildSemanticIntentRequestMetadata } from '@/lib/ai/semantic-intent-frame';
+import {
+  buildSemanticIntentRequestMetadata,
+  type SemanticPreprocessingMetadata,
+} from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
@@ -355,6 +358,9 @@ export function useHybridAIQuery(
   const semanticIntentFrameRef = useRef<SemanticIntentFrame | undefined>(
     undefined
   );
+  const semanticPreprocessingRef = useRef<
+    SemanticPreprocessingMetadata | undefined
+  >(undefined);
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
@@ -424,6 +430,7 @@ export function useHybridAIQuery(
         localRouteDecisionRef: currentRouteDecisionRef,
         currentQueryRef,
         semanticIntentFrameRef,
+        semanticPreprocessingRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
@@ -461,6 +468,7 @@ export function useHybridAIQuery(
           const semanticIntentPayload = buildSemanticIntentRequestMetadata({
             frame: semanticIntentFrameRef.current,
             originalQuery: query,
+            preprocessing: semanticPreprocessingRef.current,
           });
           const jobQueueOptions = {
             ...(analysisModeRef.current && {
@@ -603,6 +611,7 @@ export function useHybridAIQuery(
       pendingAttachments: pendingAttachmentsRef,
       rateLimitBlock: rateLimitBlockRef,
       semanticIntentFrame: semanticIntentFrameRef,
+      semanticPreprocessing: semanticPreprocessingRef,
     },
     analysisMode,
     ragEnabled,

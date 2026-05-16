@@ -50,7 +50,30 @@ describe('resolveSupervisorMode', () => {
     expect(
       resolveSupervisorMode({
         mode: 'auto',
+        messages: [{ role: 'user', content: '장애 보고서 생성해줘' }],
+      }),
+    ).toBe('multi');
+  });
+
+  it('uses forwarded NLQ intentFrame executionMode for auto routing', () => {
+    delete process.env.ALLOW_DEGRADED_SINGLE;
+    expect(
+      resolveSupervisorMode({
+        mode: 'auto',
         messages: [{ role: 'user', content: '서버 상태 요약해줘' }],
+        metadata: {
+          intentFrame: {
+            domainId: 'openmanager-monitoring',
+            intent: 'server_health',
+            capabilityId: 'monitoring.server_health',
+            scope: 'whole_fleet',
+            targets: [],
+            aggregation: 'summary',
+            ambiguity: 'low',
+            executionMode: 'multi',
+            confidence: 0.91,
+          },
+        },
       }),
     ).toBe('multi');
   });

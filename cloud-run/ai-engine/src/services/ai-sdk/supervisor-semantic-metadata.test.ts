@@ -14,6 +14,7 @@ const validIntentFrame = {
   timeWindow: '24h',
   aggregation: 'peak',
   ambiguity: 'low',
+  executionMode: 'single',
   confidence: 0.91,
 };
 
@@ -53,6 +54,46 @@ describe('normalizeSupervisorSemanticMetadata', () => {
       })
     ).toEqual({
       reasonCodes: ['semantic_frame_invalid'],
+    });
+  });
+
+  it('ignores invalid executionMode values without dropping the frame', () => {
+    const { executionMode: _executionMode, ...frameWithoutExecutionMode } =
+      validIntentFrame;
+
+    expect(
+      normalizeSupervisorSemanticMetadata({
+        metadata: {
+          intentFrame: {
+            ...validIntentFrame,
+            executionMode: 'orchestrator',
+          },
+        },
+      })
+    ).toEqual({
+      metadata: {
+        intentFrame: frameWithoutExecutionMode,
+      },
+      reasonCodes: [],
+    });
+  });
+
+  it('keeps bounded inputType and logExtract metadata', () => {
+    expect(
+      normalizeSupervisorSemanticMetadata({
+        metadata: {
+          intentFrame: validIntentFrame,
+          inputType: 'log_paste',
+          logExtract: 'ERROR api-was-dc1-01 timeout',
+        },
+      })
+    ).toEqual({
+      metadata: {
+        intentFrame: validIntentFrame,
+        inputType: 'log_paste',
+        logExtract: 'ERROR api-was-dc1-01 timeout',
+      },
+      reasonCodes: [],
     });
   });
 });

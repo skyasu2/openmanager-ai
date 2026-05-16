@@ -106,6 +106,15 @@ function isAnalysisMode(value: unknown): value is AnalysisMode {
   return value === 'auto' || value === 'thinking';
 }
 
+function isSupervisorInputType(value: unknown): value is string {
+  return (
+    value === 'natural_query' ||
+    value === 'log_paste' ||
+    value === 'mixed' ||
+    value === 'oversized'
+  );
+}
+
 function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
   const analysisMode = metadata?.analysisMode;
   const enableRAG = metadata?.enableRAG;
@@ -118,6 +127,13 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
       ? { intentFrame: metadata.intentFrame }
       : {}),
     ...(semanticQueryTrace && { semanticQueryTrace }),
+    ...(isSupervisorInputType(metadata?.inputType) && {
+      inputType: metadata.inputType,
+    }),
+    ...(typeof metadata?.logExtract === 'string' &&
+    metadata.logExtract.trim().length > 0
+      ? { logExtract: metadata.logExtract.trim().slice(0, 8_000) }
+      : {}),
   };
 
   return {

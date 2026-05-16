@@ -6,6 +6,10 @@
 
 import type { ToolName } from '../../tools-ai-sdk';
 import type {
+  AssistantInputType,
+  DomainIntentFrame,
+} from '../../core/assistant-runtime';
+import type {
   AnalysisMode,
   SupervisorMode,
 } from '../../services/ai-sdk/supervisor-types';
@@ -20,7 +24,6 @@ import {
 } from '../../services/ai-sdk/agents/config/monitoring-tool-policy';
 import {
   ADVISOR_QUERY_PATTERN,
-  COMPOSITE_QUERY_PATTERNS,
   FORCE_KB_QUERY_PATTERN,
   INFRA_CONTEXT_PATTERN,
   REPORTER_QUERY_PATTERN,
@@ -47,9 +50,29 @@ export const RETRY_CONFIG = {
 // Mode Selection Logic
 // ============================================================================
 
+const INTENT_FRAME_EXECUTION_MODE_CONFIDENCE = 0.8;
+
+function normalizeIntentFrameConfidence(confidence: number): number {
+  if (!Number.isFinite(confidence)) return 0;
+  return confidence > 1 ? confidence / 100 : confidence;
+}
+
+function resolveIntentFrameExecutionMode(
+  intentFrame?: DomainIntentFrame
+): Exclude<SupervisorMode, 'auto'> | undefined {
+  if (!intentFrame || intentFrame.executionMode === 'unknown') return undefined;
+
+  const confidence = normalizeIntentFrameConfidence(intentFrame.confidence);
+  if (confidence < INTENT_FRAME_EXECUTION_MODE_CONFIDENCE) return undefined;
+
+  return intentFrame.executionMode;
+}
+
 export function selectExecutionMode(
   query: string,
-  analysisMode?: AnalysisMode
+  analysisMode?: AnalysisMode,
+  intentFrame?: DomainIntentFrame,
+  inputType?: AssistantInputType
 ): SupervisorMode {
   void createRoutingDecisionTrace(
     extractQueryRoutingSignals(query, { analysisMode })
@@ -58,8 +81,17 @@ export function selectExecutionMode(
   const q = query.toLowerCase();
   const hasInfraContext = INFRA_CONTEXT_PATTERN.test(q);
 
+  if (inputType === 'log_paste') {
+    return 'multi';
+  }
+
   if (isFormattingOnlyReportRequest(q)) {
     return 'single';
+  }
+
+  const frameMode = resolveIntentFrameExecutionMode(intentFrame);
+  if (frameMode) {
+    return frameMode;
   }
 
   if (analysisMode === 'thinking' && hasInfraContext) {
@@ -70,65 +102,13 @@ export function selectExecutionMode(
     return 'multi';
   }
 
-  const multiAgentPatterns = [
+  const fallbackMultiPatterns = [
     REPORTER_QUERY_PATTERN,
-    /report|장애.*보고|일일.*리포트/i,
-    /분석.*원인|원인.*분석|근본.*원인|rca|root.*cause/i,
     ADVISOR_QUERY_PATTERN,
-    /스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북/i,
-    /유사.*장애|대응.*방안/i,
-    /how.*to.*(fix|resolve|solve)|troubleshoot|trubleshoot/i,
-    /용량.*계획|capacity|언제.*부족|얼마나.*남|증설.*필요/i,
-    /(서버|서벼|썹|상태|현황|모니터링|인프라).*(요약|요먁|간단히|핵심|tl;?dr)/i,
-    /(요약|요먁|간단히|핵심|tl;?dr).*(서버|서벼|썹|상태|현황|알려|해줘)/i,
-    /(server|servr|sever|status|monitoring).*(summary|sumary|summry|summarize|brief|overview)/i,
-    /(summary|sumary|summry|summarize|overview).*(server|servr|sever|status|all)/i,
-    /전체.*(서버|서벼|썹).*분석|모든.*(서버|서벼|썹).*상태|(서버|서벼|썹).*전반|종합.*분석/i,
-    /all.*(server|servr|sever)s?.*status|overall.*status|system.*overview/i,
   ];
 
-  const contextGatedPatterns = [
-    /왜.*(느려|높아|이상|스파이크|지연|오류|급증)/i,
-    /why.*(high|slow|spik|error|increas|drop|fail)/i,
-    /what.*caused|reason.*for/i,
-    /예측|트렌드|추세|추이|변화.*패턴|임계치.*전|넘기\s*전|미리.*알|고갈/i,
-    /predict|forecast|trend.*analysis/i,
-    /어제.*대비|지난.*주.*대비|전월.*대비|작년.*비교/i,
-    /compared.*to.*(yesterday|last|previous)/i,
-    /상관관계|연관.*분석|correlat|같이.*올라|함께.*증가/i,
-    /이상.*원인|비정상.*이유|스파이크.*원인|급증.*이유/i,
-    /이상\s*(탐지|감지|확인|점검|있어|있나)|비정상|고장난|느린|안\s*되는/i,
-    /(명령어|cli|커맨드|command|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북).*(추천|알려|확인|점검|작성|생성|만들)|(추천|알려|작성|생성|만들).*(명령어|cli|커맨드|command|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북)|순서|재마운트|해야/i,
-  ];
-
-  const compositeConnectors = [
-    COMPOSITE_QUERY_PATTERNS[0],
-    COMPOSITE_QUERY_PATTERNS[1],
-  ];
-
-  const compositeIntentPatterns = [
-    /상태.*원인|원인.*상태/i,
-    COMPOSITE_QUERY_PATTERNS[2],
-    /요약.*보고서|보고서.*요약|분석.*보고서|보고서.*분석/i,
-  ];
-
-  for (const pattern of multiAgentPatterns) {
+  for (const pattern of fallbackMultiPatterns) {
     if (pattern.test(q)) {
-      return 'multi';
-    }
-  }
-
-  if (hasInfraContext) {
-    for (const pattern of contextGatedPatterns) {
-      if (pattern.test(q)) {
-        return 'multi';
-      }
-    }
-
-    const connectorHits = compositeConnectors.filter((pattern) => pattern.test(q)).length;
-    const intentHits = compositeIntentPatterns.filter((pattern) => pattern.test(q)).length;
-
-    if (intentHits >= 1 || connectorHits >= 2 || (connectorHits >= 1 && q.length >= 50)) {
       return 'multi';
     }
   }

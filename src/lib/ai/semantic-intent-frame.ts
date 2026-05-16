@@ -2,6 +2,7 @@ import {
   ENTITY_CONFIDENCE_THRESHOLD,
   type SemanticIntentFrame,
 } from './entity-extractor';
+import type { InputType } from './query-guard';
 
 export type SemanticFrameReasonCode =
   | 'semantic_frame_low_confidence'
@@ -20,6 +21,7 @@ export interface DomainIntentFramePayload {
   aggregation?: string;
   topN?: number;
   ambiguity: 'low' | 'medium' | 'high';
+  executionMode?: 'single' | 'multi' | 'unknown';
   confidence: number;
 }
 
@@ -40,9 +42,17 @@ export interface SemanticIntentFrameMapping {
 
 export interface SemanticIntentRequestMetadata {
   metadata?: {
-    intentFrame: DomainIntentFramePayload;
+    intentFrame?: DomainIntentFramePayload;
+    inputType?: InputType;
+    logExtract?: string;
   };
   semanticQueryTrace?: SemanticQueryTrace;
+}
+
+export interface SemanticPreprocessingMetadata {
+  inputType?: InputType;
+  logExtract?: string;
+  truncated?: boolean;
 }
 
 const DOMAIN_ID_BY_SEMANTIC_DOMAIN = {
@@ -51,7 +61,13 @@ const DOMAIN_ID_BY_SEMANTIC_DOMAIN = {
 
 const CAPABILITY_ID_BY_SEMANTIC_INTENT = {
   metric_peak: 'monitoring.metric_peak',
+  metric_current: 'monitoring.metric_current',
+  metric_trend: 'monitoring.metric_trend',
   server_health: 'monitoring.server_health',
+  root_cause: 'monitoring.root_cause',
+  incident_report: 'monitoring.incident_report',
+  ops_advice: 'monitoring.ops_advice',
+  log_analysis: 'monitoring.log_analysis',
 } as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -82,6 +98,28 @@ function mapSemanticScope(
 function normalizeConfidence(confidence: number): number {
   const normalized = Math.max(0, Math.min(100, confidence)) / 100;
   return Math.round(normalized * 100) / 100;
+}
+
+function normalizePreprocessingMetadata(
+  value: SemanticPreprocessingMetadata | undefined | null
+): Pick<SemanticPreprocessingMetadata, 'inputType' | 'logExtract'> | undefined {
+  if (!value?.inputType) return undefined;
+
+  const metadata: Pick<
+    SemanticPreprocessingMetadata,
+    'inputType' | 'logExtract'
+  > = {
+    inputType: value.inputType,
+  };
+  const logExtract = value.logExtract?.trim();
+  if (
+    logExtract &&
+    (value.inputType === 'log_paste' || value.inputType === 'mixed')
+  ) {
+    metadata.logExtract = logExtract.slice(0, 8_000);
+  }
+
+  return metadata;
 }
 
 export function toDomainIntentFrame(
@@ -125,6 +163,7 @@ export function toDomainIntentFrame(
       aggregation: frame.aggregation,
       ...(typeof frame.topN === 'number' && { topN: frame.topN }),
       ambiguity: frame.ambiguity,
+      executionMode: frame.executionMode,
       confidence: normalizeConfidence(frame.confidence),
     },
     reasonCodes: [],
@@ -134,10 +173,16 @@ export function toDomainIntentFrame(
 export function buildSemanticIntentRequestMetadata(params: {
   frame: SemanticIntentFrame | undefined | null;
   originalQuery: string | null | undefined;
+  preprocessing?: SemanticPreprocessingMetadata | undefined | null;
 }): SemanticIntentRequestMetadata {
   const mapping = toDomainIntentFrame(params.frame);
+  const preprocessing = normalizePreprocessingMetadata(params.preprocessing);
+  const reasonCodes = [
+    ...mapping.reasonCodes,
+    ...(params.preprocessing?.truncated ? ['query_guard_truncated'] : []),
+  ];
 
-  if (!params.frame && mapping.reasonCodes.length === 0) {
+  if (!params.frame && reasonCodes.length === 0 && !preprocessing) {
     return {};
   }
 
@@ -149,15 +194,16 @@ export function buildSemanticIntentRequestMetadata(params: {
     }),
     evidenceAvailable: false,
     clarificationRequired: false,
-    reasonCodes: mapping.reasonCodes,
+    reasonCodes,
+  };
+
+  const metadata = {
+    ...(mapping.intentFrame && { intentFrame: mapping.intentFrame }),
+    ...(preprocessing && preprocessing),
   };
 
   return {
-    ...(mapping.intentFrame && {
-      metadata: {
-        intentFrame: mapping.intentFrame,
-      },
-    }),
+    ...(Object.keys(metadata).length > 0 && { metadata }),
     semanticQueryTrace: trace,
   };
 }

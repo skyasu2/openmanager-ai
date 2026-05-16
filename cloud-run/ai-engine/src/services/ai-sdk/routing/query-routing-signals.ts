@@ -34,7 +34,7 @@ export function isFormattingOnlyReportRequest(query: string): boolean {
 }
 
 export const ADVISOR_QUERY_PATTERN =
-  /해결|방법|명령어|가이드|어떻게|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|troubleshoot|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
+  /해결|방법|명령어|가이드|어떻게|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|how\s+to\s+(fix|resolve|solve)|troubleshoot|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
 
 export const FORCE_KB_QUERY_PATTERN =
   /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)|ssot|single\s*source\s*of\s*truth|pre-generated|(?:프로젝트|저장소|repo|repository|코드|문서|내부).*(?:파일|경로|위치|path|문서)|(?:otel|데이터).*(?:파일|경로|위치|path|ssot)/i;
@@ -311,55 +311,12 @@ function deriveModeHint(
   if (analysisMode === 'thinking' && hasInfraContext) return 'multi';
   if (FORCE_KB_QUERY_PATTERN.test(q)) return 'multi';
 
-  const multiAgentPatterns = [
+  const fallbackMultiPatterns = [
     REPORTER_QUERY_PATTERN,
-    /report|장애.*보고|일일.*리포트/i,
-    /분석.*원인|원인.*분석|근본.*원인|rca|root.*cause/i,
     ADVISOR_QUERY_PATTERN,
-    /스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북/i,
-    /유사.*장애|대응.*방안/i,
-    /how.*to.*(fix|resolve|solve)|troubleshoot|trubleshoot/i,
-    /용량.*계획|capacity|언제.*부족|얼마나.*남|증설.*필요/i,
-    /(서버|서벼|썹|상태|현황|모니터링|인프라).*(요약|요먁|간단히|핵심|tl;?dr)/i,
-    /(요약|요먁|간단히|핵심|tl;?dr).*(서버|서벼|썹|상태|현황|알려|해줘)/i,
-    /(server|servr|sever|status|monitoring).*(summary|sumary|summry|summarize|brief|overview)/i,
-    /(summary|sumary|summry|summarize|overview).*(server|servr|sever|status|all)/i,
-    /전체.*(서버|서벼|썹).*분석|모든.*(서버|서벼|썹).*상태|(서버|서벼|썹).*전반|종합.*분석/i,
-    /all.*(server|servr|sever)s?.*status|overall.*status|system.*overview/i,
   ];
 
-  if (multiAgentPatterns.some((pattern) => pattern.test(q))) return 'multi';
-  if (!hasInfraContext) return 'single';
-
-  const contextGatedPatterns = [
-    /왜.*(느려|높아|이상|스파이크|지연|오류|급증)/i,
-    /why.*(high|slow|spik|error|increas|drop|fail)/i,
-    /what.*caused|reason.*for/i,
-    /예측|트렌드|추세|추이|변화.*패턴|임계치.*전|넘기\s*전|미리.*알|고갈/i,
-    /predict|forecast|trend.*analysis/i,
-    /어제.*대비|지난.*주.*대비|전월.*대비|작년.*비교/i,
-    /compared.*to.*(yesterday|last|previous)/i,
-    /상관관계|연관.*분석|correlat|같이.*올라|함께.*증가/i,
-    /이상.*원인|비정상.*이유|스파이크.*원인|급증.*이유/i,
-    /이상\s*(탐지|감지|확인|점검|있어|있나)|비정상|고장난|느린|안\s*되는/i,
-    /(명령어|cli|커맨드|command|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북).*(추천|알려|확인|점검|작성|생성|만들)|(추천|알려|작성|생성|만들).*(명령어|cli|커맨드|command|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북)|순서|재마운트|해야/i,
-  ];
-
-  if (contextGatedPatterns.some((pattern) => pattern.test(q))) return 'multi';
-
-  const compositeConnectors = [
-    COMPOSITE_QUERY_PATTERNS[0],
-    COMPOSITE_QUERY_PATTERNS[1],
-  ];
-  const compositeIntentPatterns = [
-    /상태.*원인|원인.*상태/i,
-    COMPOSITE_QUERY_PATTERNS[2],
-    /요약.*보고서|보고서.*요약|분석.*보고서|보고서.*분석/i,
-  ];
-  const connectorHits = compositeConnectors.filter((pattern) => pattern.test(q)).length;
-  const intentHits = compositeIntentPatterns.filter((pattern) => pattern.test(q)).length;
-
-  return intentHits >= 1 || connectorHits >= 2 || (connectorHits >= 1 && q.length >= 50)
+  return fallbackMultiPatterns.some((pattern) => pattern.test(q))
     ? 'multi'
     : 'single';
 }
@@ -371,12 +328,9 @@ function buildModeReasonCodes(
   if (isFormattingOnlyReportRequest(query)) return ['mode_single_formatting_only'];
   if (modeHint === 'single') return ['mode_single_default'];
   if (REPORTER_QUERY_PATTERN.test(query)) return ['mode_multi_report_request'];
-  if (/rca|root.*cause|근본|원인|왜/i.test(query)) return ['mode_multi_rca'];
-  if (ADVISOR_QUERY_PATTERN.test(query) && INFRA_CONTEXT_PATTERN.test(query)) {
-    return ['mode_multi_advisor_with_infra'];
-  }
-  if (hasCompositeSignal(query)) return ['mode_multi_composite'];
-  return ['mode_multi_composite'];
+  if (ADVISOR_QUERY_PATTERN.test(query)) return ['mode_multi_advisor'];
+  if (FORCE_KB_QUERY_PATTERN.test(query)) return ['mode_multi_knowledge'];
+  return ['mode_multi_analysis_mode'];
 }
 
 function buildPreFilterSignal(

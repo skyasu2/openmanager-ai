@@ -5,6 +5,7 @@ import type {
   DomainEvidenceRequest,
   DomainEvidenceResult,
   DomainIntentAmbiguity,
+  DomainIntentExecutionMode,
   DomainIntentFrame,
   DomainIntentScope,
 } from '../../core/assistant-runtime';
@@ -49,6 +50,12 @@ function isDomainIntentAmbiguity(
   return ['low', 'medium', 'high'].includes(value);
 }
 
+function isDomainIntentExecutionMode(
+  value: string
+): value is DomainIntentExecutionMode {
+  return ['single', 'multi', 'unknown'].includes(value);
+}
+
 function readIntentFrame(value: unknown): DomainIntentFrame | undefined {
   if (!isRecord(value)) return undefined;
 
@@ -63,6 +70,11 @@ function readIntentFrame(value: unknown): DomainIntentFrame | undefined {
   const timeWindow = readString(value.timeWindow);
   const aggregation = readString(value.aggregation);
   const topN = readFiniteNumber(value.topN);
+  const executionMode = readString(value.executionMode);
+  const normalizedExecutionMode =
+    executionMode && isDomainIntentExecutionMode(executionMode)
+      ? executionMode
+      : undefined;
 
   if (
     !domainId ||
@@ -89,6 +101,9 @@ function readIntentFrame(value: unknown): DomainIntentFrame | undefined {
     ...(timeWindow && { timeWindow }),
     ...(aggregation && { aggregation }),
     ...(topN !== undefined && { topN }),
+    ...(normalizedExecutionMode && {
+      executionMode: normalizedExecutionMode,
+    }),
     ...(isRecord(value.slots) && { slots: value.slots }),
   };
 }

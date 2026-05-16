@@ -17,12 +17,12 @@ import { GROQ_TEXT_MODEL_ID } from '@/config/ai-providers';
 import {
   EXTRACTED_METRICS,
   EXTRACTED_TIME_RANGES,
-  extractLocalSemanticEntities,
   KNOWN_ENTITY_SERVER_IDS,
   normalizeExtractedEntities,
   SEMANTIC_AGGREGATIONS,
   SEMANTIC_AMBIGUITIES,
   SEMANTIC_DOMAINS,
+  SEMANTIC_EXECUTION_MODES,
   SEMANTIC_INTENTS,
   SEMANTIC_METRICS,
   SEMANTIC_SCOPES,
@@ -53,6 +53,7 @@ const SemanticIntentFrameSchema = z.object({
   aggregation: z.enum(SEMANTIC_AGGREGATIONS),
   topN: z.number().int().positive().max(20).nullable().optional(),
   ambiguity: z.enum(SEMANTIC_AMBIGUITIES),
+  executionMode: z.enum(SEMANTIC_EXECUTION_MODES),
   confidence: z.number().min(0).max(100),
 });
 
@@ -95,11 +96,6 @@ async function postHandler(request: NextRequest) {
       ? buildLogSummaryPrompt(guard.logExtract ?? '', guard.sanitizedQuery)
       : guard.sanitizedQuery;
 
-  const localEntities = extractLocalSemanticEntities(guard.sanitizedQuery);
-  if (localEntities) {
-    return NextResponse.json(localEntities);
-  }
-
   try {
     const { output } = await generateText({
       model: groq(GROQ_TEXT_MODEL_ID),
@@ -115,12 +111,25 @@ async function postHandler(request: NextRequest) {
       }),
     });
 
-    return NextResponse.json(normalizeExtractedEntities(output));
+    return NextResponse.json({
+      ...normalizeExtractedEntities(output),
+      inputType: guard.inputType,
+      ...(guard.logExtract && { logExtract: guard.logExtract }),
+      ...(guard.truncated && { truncated: true }),
+    });
   } catch (error) {
     logger.warn('[AI NLQ] entity extraction provider fallback', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return NextResponse.json({ confidence: 0 }, { status: 200 });
+    return NextResponse.json(
+      {
+        confidence: 0,
+        inputType: guard.inputType,
+        ...(guard.logExtract && { logExtract: guard.logExtract }),
+        ...(guard.truncated && { truncated: true }),
+      },
+      { status: 200 }
+    );
   }
 }
 

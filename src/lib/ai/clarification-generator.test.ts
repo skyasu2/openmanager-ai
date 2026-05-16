@@ -228,6 +228,7 @@ describe('generateClarification', () => {
               aggregation: 'peak',
               topN: 3,
               ambiguity: 'low',
+              executionMode: 'single',
               confidence: 91,
             },
           }
@@ -270,6 +271,7 @@ describe('generateClarification', () => {
             timeWindow: 'unknown',
             aggregation: 'summary',
             ambiguity: 'high',
+            executionMode: 'unknown',
             confidence: 88,
           },
         }

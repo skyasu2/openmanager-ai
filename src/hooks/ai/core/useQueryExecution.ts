@@ -11,7 +11,10 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
-import type { SemanticIntentFrame } from '@/lib/ai/entity-extractor';
+import type {
+  ExtractedEntities,
+  SemanticIntentFrame,
+} from '@/lib/ai/entity-extractor';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { getOffDomainGuardrail } from '@/lib/ai/off-domain-guard';
 import { classifyQuery } from '@/lib/ai/query-classifier';
@@ -19,6 +22,7 @@ import type { RouteDecision } from '@/lib/ai/route-decision';
 import {
   buildSemanticIntentRequestMetadata,
   type DomainIntentFramePayload,
+  type SemanticPreprocessingMetadata,
   type SemanticQueryTrace,
 } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
@@ -62,6 +66,8 @@ interface AsyncJobRequestOptions {
   queryAsOfDataSlot?: JobDataSlot;
   intentFrame?: DomainIntentFramePayload;
   semanticQueryTrace?: SemanticQueryTrace;
+  inputType?: SemanticPreprocessingMetadata['inputType'];
+  logExtract?: string;
 }
 
 type SendMessageLike = (message: {
@@ -117,6 +123,9 @@ export interface QueryExecutionDeps {
     rateLimitBlock: MutableRefObject<ActiveRateLimitBlock | null>;
     semanticIntentFrame?: MutableRefObject<
       SemanticIntentFrame | undefined | null
+    >;
+    semanticPreprocessing?: MutableRefObject<
+      SemanticPreprocessingMetadata | undefined | null
     >;
   };
   analysisMode?: AnalysisMode;
@@ -389,6 +398,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           }),
           ...buildJobSemanticOptions({
             frame: refs.semanticIntentFrame?.current,
+            preprocessing: refs.semanticPreprocessing?.current,
             originalQuery: trimmedQuery,
           }),
         };
@@ -448,6 +458,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           const nextMessages = [...sanitizedMessages, requestUserMessage];
           const semanticIntentPayload = buildSemanticIntentRequestMetadata({
             frame: refs.semanticIntentFrame?.current,
+            preprocessing: refs.semanticPreprocessing?.current,
             originalQuery: trimmedQuery,
           });
 
@@ -589,6 +600,9 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       if (refs.semanticIntentFrame) {
         refs.semanticIntentFrame.current = undefined;
       }
+      if (refs.semanticPreprocessing) {
+        refs.semanticPreprocessing.current = undefined;
+      }
 
       // 초기화
       setState((prev) => ({ ...prev, error: null, errorDetails: null }));
@@ -640,6 +654,10 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
 
           if (refs.semanticIntentFrame) {
             refs.semanticIntentFrame.current = entities.intentFrame;
+          }
+          if (refs.semanticPreprocessing) {
+            refs.semanticPreprocessing.current =
+              toSemanticPreprocessingMetadata(entities);
           }
 
           if (process.env.NODE_ENV === 'development') {
@@ -693,10 +711,15 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
 
 function buildJobSemanticOptions(params: {
   frame: SemanticIntentFrame | undefined | null;
+  preprocessing?: SemanticPreprocessingMetadata | undefined | null;
   originalQuery: string;
-}): Pick<AsyncJobRequestOptions, 'intentFrame' | 'semanticQueryTrace'> {
+}): Pick<
+  AsyncJobRequestOptions,
+  'intentFrame' | 'semanticQueryTrace' | 'inputType' | 'logExtract'
+> {
   const semanticIntentPayload = buildSemanticIntentRequestMetadata({
     frame: params.frame,
+    preprocessing: params.preprocessing,
     originalQuery: params.originalQuery,
   });
 
@@ -707,5 +730,23 @@ function buildJobSemanticOptions(params: {
     ...(semanticIntentPayload.semanticQueryTrace && {
       semanticQueryTrace: semanticIntentPayload.semanticQueryTrace,
     }),
+    ...(semanticIntentPayload.metadata?.inputType && {
+      inputType: semanticIntentPayload.metadata.inputType,
+    }),
+    ...(semanticIntentPayload.metadata?.logExtract && {
+      logExtract: semanticIntentPayload.metadata.logExtract,
+    }),
+  };
+}
+
+function toSemanticPreprocessingMetadata(
+  entities: Pick<ExtractedEntities, 'inputType' | 'logExtract' | 'truncated'>
+): SemanticPreprocessingMetadata | undefined {
+  if (!entities.inputType) return undefined;
+
+  return {
+    inputType: entities.inputType,
+    ...(entities.logExtract && { logExtract: entities.logExtract }),
+    ...(entities.truncated && { truncated: true }),
   };
 }

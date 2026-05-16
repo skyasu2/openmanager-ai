@@ -48,6 +48,10 @@ import {
   createDirectAgentDecision,
   resolveDirectRoutingTarget,
 } from './orchestrator-direct-routing';
+import {
+  normalizeSupervisorInputType,
+  normalizeSupervisorIntentFrame,
+} from '../supervisor-semantic-metadata';
 
 export { getRecentHandoffs };
 export { executeMultiAgentStream } from './orchestrator-execution-stream';
@@ -128,7 +132,10 @@ export async function executeMultiAgent(
     return finalizeMultiAgentResponse(trace, response);
   }
 
-  const directTarget = resolveDirectRoutingTarget(preFilterResult);
+  const directTarget = resolveDirectRoutingTarget(preFilterResult, {
+    intentFrame: normalizeSupervisorIntentFrame(request.metadata?.intentFrame),
+    inputType: normalizeSupervisorInputType(request.metadata?.inputType),
+  });
   logger.info(
     `[Direct Routing] ${directTarget.agentName} selected (source=${directTarget.source}, confidence=${directTarget.confidence})`
   );
@@ -137,19 +144,34 @@ export async function executeMultiAgent(
     const agentResult =
       directTarget.agentName === 'Vision Agent'
         ? await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files, request.dataSource, request.domainId, request.internalDisclosureMode)
-        : await executeForcedRouting(
-            query,
-            directTarget.agentName,
-            startTime,
-            webSearchEnabled,
-            ragEnabled,
-            request.images,
-            request.files,
-            contextSummary,
-            request.dataSource,
-            request.domainId,
-            request.internalDisclosureMode
-          );
+        : request.domainEvidencePrompt
+          ? await executeForcedRouting(
+              query,
+              directTarget.agentName,
+              startTime,
+              webSearchEnabled,
+              ragEnabled,
+              request.images,
+              request.files,
+              contextSummary,
+              request.dataSource,
+              request.domainId,
+              request.internalDisclosureMode,
+              request.domainEvidencePrompt
+            )
+          : await executeForcedRouting(
+              query,
+              directTarget.agentName,
+              startTime,
+              webSearchEnabled,
+              ragEnabled,
+              request.images,
+              request.files,
+              contextSummary,
+              request.dataSource,
+              request.domainId,
+              request.internalDisclosureMode
+            );
 
     if (!agentResult) {
       return finalizeMultiAgentError(

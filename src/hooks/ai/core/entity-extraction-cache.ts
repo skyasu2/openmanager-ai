@@ -8,8 +8,14 @@ const SEMANTIC_METRIC_PATTERN =
   /부하|로드|\bload(?:1|5)?\b|cpu|씨피유|메모리|\bmem(?:ory)?\b|디스크|\bdisk\b|네트워크|\bnet(?:work)?\b|힘들|버거|느린|느려|느리|부담|응답.*느|과부하|리소스|자원/i;
 const SEMANTIC_PEAK_PATTERN = /피크|peak|max|최고|최대|높/i;
 const SEMANTIC_TIME_WINDOW_PATTERN = /24\s*시간|\b24h\b|최근|지난|last\s*24/i;
+const LOG_LINE_HINT_PATTERN =
+  /\b(ERROR|WARN|WARNING|FATAL|CRITICAL)\b|Exception:|Traceback \(|^\s+at\s+[\w.$<>]+/im;
 
 export function shouldExtractSemanticIntentFrame(query: string): boolean {
+  if (LOG_LINE_HINT_PATTERN.test(query) && query.split(/\r?\n/).length >= 3) {
+    return true;
+  }
+
   return (
     SEMANTIC_METRIC_PATTERN.test(query) ||
     (SEMANTIC_PEAK_PATTERN.test(query) &&

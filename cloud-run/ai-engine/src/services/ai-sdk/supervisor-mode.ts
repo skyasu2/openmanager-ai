@@ -18,6 +18,10 @@ import type {
 } from './supervisor-types';
 import { selectExecutionMode } from '../../domains/monitoring/routing-policy';
 import { isFormattingOnlyReportRequest } from './routing/query-routing-signals';
+import {
+  normalizeSupervisorInputType,
+  normalizeSupervisorIntentFrame,
+} from './supervisor-semantic-metadata';
 
 export type ResolvedSupervisorMode = Exclude<SupervisorMode, 'auto'>;
 export type SupervisorAssistantExecutionMode =
@@ -170,7 +174,7 @@ export interface SupervisorAssistantResult {
 export function resolveSupervisorModeDecision(
   request: Pick<
     SupervisorRequest,
-    'mode' | 'messages' | 'analysisMode' | 'runtimeHost'
+    'mode' | 'messages' | 'analysisMode' | 'runtimeHost' | 'metadata'
   >,
 ): ResolvedSupervisorModeDecision {
   const requestedMode = request.mode || 'auto';
@@ -218,12 +222,21 @@ export function resolveSupervisorModeDecision(
     };
   }
 
+  const intentFrame = normalizeSupervisorIntentFrame(
+    request.metadata?.intentFrame
+  );
+  const inputType = normalizeSupervisorInputType(request.metadata?.inputType);
   const baselineMode =
-    selectExecutionMode(lastUserMessage.content) === 'multi'
+    selectExecutionMode(lastUserMessage.content, undefined, intentFrame, inputType) === 'multi'
       ? 'multi'
       : 'single';
   const resolvedMode =
-    selectExecutionMode(lastUserMessage.content, request.analysisMode) ===
+    selectExecutionMode(
+      lastUserMessage.content,
+      request.analysisMode,
+      intentFrame,
+      inputType
+    ) ===
     'multi'
       ? 'multi'
       : 'single';
@@ -246,7 +259,7 @@ export function resolveSupervisorModeDecision(
 export function resolveSupervisorMode(
   request: Pick<
     SupervisorRequest,
-    'mode' | 'messages' | 'analysisMode' | 'runtimeHost'
+    'mode' | 'messages' | 'analysisMode' | 'runtimeHost' | 'metadata'
   >,
 ): ResolvedSupervisorMode {
   return resolveSupervisorModeDecision(request).resolvedMode;
@@ -408,9 +421,14 @@ function buildShadowCandidate(
     | 'runtimeHost'
     | 'sessionId'
     | 'traceId'
+    | 'metadata'
   >
 ): SupervisorPlannerShadowCandidate {
   const query = getLastUserMessageContent(request);
+  const intentFrame = normalizeSupervisorIntentFrame(
+    request.metadata?.intentFrame
+  );
+  const inputType = normalizeSupervisorInputType(request.metadata?.inputType);
 
   const buildCandidate = (
     executionPath: SupervisorRouteDecisionExecutionPath,
@@ -468,8 +486,8 @@ function buildShadowCandidate(
   if (
     request.analysisMode === 'thinking' &&
     query.length > 0 &&
-    selectExecutionMode(query, 'thinking') === 'multi' &&
-    selectExecutionMode(query) !== 'multi'
+    selectExecutionMode(query, 'thinking', intentFrame, inputType) === 'multi' &&
+    selectExecutionMode(query, undefined, intentFrame, inputType) !== 'multi'
   ) {
     return buildCandidate('stream', 'multi-agent', ['analysis_mode_thinking'], [
       'analysis_mode_thinking',
@@ -574,6 +592,7 @@ export function buildSupervisorPlannerShadow({
     | 'runtimeHost'
     | 'sessionId'
     | 'traceId'
+    | 'metadata'
   >;
   routeDecision: SupervisorRouteDecision;
   localRouteDecision?: SupervisorLocalRouteDecision;

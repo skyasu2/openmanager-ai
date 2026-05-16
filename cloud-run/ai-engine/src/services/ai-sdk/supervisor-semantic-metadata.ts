@@ -1,5 +1,7 @@
 import type {
+  AssistantInputType,
   DomainIntentAmbiguity,
+  DomainIntentExecutionMode,
   DomainIntentFrame,
   DomainIntentScope,
 } from '../../core/assistant-runtime';
@@ -56,6 +58,30 @@ function isDomainIntentAmbiguity(
   return ['low', 'medium', 'high'].includes(value);
 }
 
+function isDomainIntentExecutionMode(
+  value: string
+): value is DomainIntentExecutionMode {
+  return ['single', 'multi', 'unknown'].includes(value);
+}
+
+export function normalizeSupervisorInputType(
+  value: unknown
+): AssistantInputType | undefined {
+  return value === 'natural_query' ||
+    value === 'log_paste' ||
+    value === 'mixed' ||
+    value === 'oversized'
+    ? value
+    : undefined;
+}
+
+function normalizeLogExtract(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed.slice(0, 8_000);
+}
+
 export function normalizeSupervisorIntentFrame(
   value: unknown
 ): DomainIntentFrame | undefined {
@@ -72,6 +98,11 @@ export function normalizeSupervisorIntentFrame(
   const timeWindow = readString(value.timeWindow);
   const aggregation = readString(value.aggregation);
   const topN = readFiniteNumber(value.topN);
+  const executionMode = readString(value.executionMode);
+  const normalizedExecutionMode =
+    executionMode && isDomainIntentExecutionMode(executionMode)
+      ? executionMode
+      : undefined;
 
   if (
     !domainId ||
@@ -98,6 +129,9 @@ export function normalizeSupervisorIntentFrame(
     ...(timeWindow && { timeWindow }),
     ...(aggregation && { aggregation }),
     ...(topN !== undefined && { topN }),
+    ...(normalizedExecutionMode && {
+      executionMode: normalizedExecutionMode,
+    }),
     ...(isRecord(value.slots) && { slots: value.slots }),
   };
 }
@@ -134,13 +168,23 @@ export function normalizeSupervisorSemanticMetadata(params: {
     ? params.metadata
     : undefined;
   const rawIntentFrame = inputMetadata?.intentFrame;
+  const inputType = normalizeSupervisorInputType(inputMetadata?.inputType);
+  const logExtract = normalizeLogExtract(inputMetadata?.logExtract);
   const trace = normalizeSemanticQueryTrace(
     params.semanticQueryTrace ?? inputMetadata?.semanticQueryTrace
   );
 
   if (rawIntentFrame === undefined) {
-    return trace
-      ? { metadata: { semanticQueryTrace: trace }, reasonCodes: [] }
+    const metadata = {
+      ...(trace && { semanticQueryTrace: trace }),
+      ...(inputType && { inputType }),
+      ...(logExtract &&
+      (inputType === 'log_paste' || inputType === 'mixed')
+        ? { logExtract }
+        : {}),
+    };
+    return Object.keys(metadata).length > 0
+      ? { metadata, reasonCodes: [] }
       : { reasonCodes: [] };
   }
 
@@ -153,6 +197,11 @@ export function normalizeSupervisorSemanticMetadata(params: {
     metadata: {
       ...inputMetadata,
       intentFrame,
+      ...(inputType && { inputType }),
+      ...(logExtract &&
+      (inputType === 'log_paste' || inputType === 'mixed')
+        ? { logExtract }
+        : {}),
       ...(trace && { semanticQueryTrace: trace }),
     },
     reasonCodes: [],

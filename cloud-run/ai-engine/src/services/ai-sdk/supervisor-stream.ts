@@ -25,6 +25,10 @@ import {
   shouldRefuseInternalImplementationPathRequest,
 } from './internal-disclosure-policy';
 import { buildServiceCommandGuidanceAnswer } from '../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
+import {
+  appendSupervisorContextPrompt,
+  buildSupervisorLogContextPrompt,
+} from './supervisor-log-context';
 import { streamSingleAgent } from './supervisor-single-agent-stream';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 
@@ -197,7 +201,11 @@ export async function* executeSupervisorStream(
         images: request.images,
         files: request.files,
         dataSource: runtimeContext.host.domain.dataSource,
-        domainEvidencePrompt: domainEvidence?.prompt,
+        metadata: request.metadata,
+        domainEvidencePrompt: appendSupervisorContextPrompt(
+          domainEvidence?.prompt,
+          buildSupervisorLogContextPrompt(request.metadata)
+        ),
       })) {
         if (event.type === 'error') {
           const errorData = event.data as { code?: string };

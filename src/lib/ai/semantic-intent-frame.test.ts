@@ -19,6 +19,7 @@ const validPeakFrame: SemanticIntentFrame = {
   aggregation: 'peak',
   topN: 5,
   ambiguity: 'low',
+  executionMode: 'single',
   confidence: 91,
 };
 
@@ -31,6 +32,7 @@ const validServerHealthFrame: SemanticIntentFrame = {
   timeWindow: 'current',
   aggregation: 'summary',
   ambiguity: 'low',
+  executionMode: 'single',
   confidence: 88,
 };
 
@@ -52,6 +54,7 @@ describe('semantic intent frame mapping', () => {
         aggregation: 'peak',
         topN: 5,
         ambiguity: 'low',
+        executionMode: 'single',
         confidence: 0.91,
       },
       reasonCodes: [],
@@ -70,8 +73,37 @@ describe('semantic intent frame mapping', () => {
         timeWindow: 'current',
         aggregation: 'summary',
         ambiguity: 'low',
+        executionMode: 'single',
         confidence: 0.88,
       },
+      reasonCodes: [],
+    });
+  });
+
+  it.each([
+    ['metric_current', 'monitoring.metric_current'],
+    ['metric_trend', 'monitoring.metric_trend'],
+    ['root_cause', 'monitoring.root_cause'],
+    ['incident_report', 'monitoring.incident_report'],
+    ['ops_advice', 'monitoring.ops_advice'],
+    ['log_analysis', 'monitoring.log_analysis'],
+  ] as const)('maps %s frames into Cloud Run capabilities for routing reuse', (intent, capabilityId) => {
+    expect(
+      toDomainIntentFrame({
+        ...validPeakFrame,
+        intent,
+        metric: intent === 'ops_advice' ? 'unknown' : validPeakFrame.metric,
+        aggregation:
+          intent === 'ops_advice' ? 'summary' : validPeakFrame.aggregation,
+        executionMode:
+          intent === 'metric_current' ? 'single' : validPeakFrame.executionMode,
+      })
+    ).toEqual({
+      intentFrame: expect.objectContaining({
+        intent,
+        capabilityId,
+        confidence: 0.91,
+      }),
       reasonCodes: [],
     });
   });
@@ -99,6 +131,7 @@ describe('semantic intent frame mapping', () => {
       intentFrame: expect.objectContaining({
         domainId: 'openmanager-monitoring',
         capabilityId: 'monitoring.metric_peak',
+        executionMode: 'single',
       }),
     });
     expect(validPayload.semanticQueryTrace).toMatchObject({
@@ -118,6 +151,31 @@ describe('semantic intent frame mapping', () => {
     expect(droppedPayload.semanticQueryTrace).toMatchObject({
       reasonCodes: ['semantic_frame_low_confidence'],
       evidenceAvailable: false,
+    });
+  });
+
+  it('forwards bounded preprocessing metadata even without a valid intent frame', () => {
+    expect(
+      buildSemanticIntentRequestMetadata({
+        frame: undefined,
+        originalQuery: 'ERROR 로그 분석해줘',
+        preprocessing: {
+          inputType: 'log_paste',
+          logExtract: 'ERROR api-was-dc1-01 timeout',
+          truncated: true,
+        },
+      })
+    ).toEqual({
+      metadata: {
+        inputType: 'log_paste',
+        logExtract: 'ERROR api-was-dc1-01 timeout',
+      },
+      semanticQueryTrace: {
+        originalQuery: 'ERROR 로그 분석해줘',
+        evidenceAvailable: false,
+        clarificationRequired: false,
+        reasonCodes: ['query_guard_truncated'],
+      },
     });
   });
 

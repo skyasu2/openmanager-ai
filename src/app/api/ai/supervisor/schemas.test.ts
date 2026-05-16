@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 
 // 🎯 Fix: Import actual schema to prevent drift between test and production
-import { filePartSchema, requestSchema, requestSchemaLoose } from './schemas';
+import { filePartSchema, requestSchema } from './schemas';
 
 describe('filePartSchema validation', () => {
   describe('빈 문자열 검증', () => {
@@ -142,19 +142,19 @@ describe('filePartSchema validation', () => {
 });
 
 /**
- * requestSchemaLoose Tests (V2 Proxy)
+ * requestSchema Tests (V2 Proxy)
  *
- * V2 프록시 모드에서 사용하는 느슨한 스키마 검증 테스트
- * Cloud Run에서 최종 검증이 이루어지므로 Vercel 단에서는 최소 검증만 수행
+ * V2 프록시 모드는 legacy JSON route와 같은 BFF boundary schema를 사용한다.
+ * Cloud Run에서 domain-specific 검증이 이어지므로 Vercel 단에서는 transport 계약을 검증한다.
  */
-describe('requestSchemaLoose (V2 Proxy)', () => {
+describe('requestSchema (V2 Proxy)', () => {
   describe('유효한 요청', () => {
     it('should accept minimal message structure', () => {
       const input = {
         messages: [{ role: 'user', content: 'test' }],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
 
@@ -168,7 +168,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         ],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
 
@@ -182,7 +182,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         ],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
 
@@ -192,7 +192,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         sessionId: 'session-123',
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
 
@@ -202,7 +202,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         enableRAG: true,
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
       expect(result.data?.enableRAG).toBe(true);
     });
@@ -213,9 +213,39 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         analysisMode: 'thinking',
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
       expect(result.data?.analysisMode).toBe('thinking');
+    });
+
+    it('should accept bounded inputType and logExtract metadata', () => {
+      const input = {
+        messages: [{ role: 'user', content: 'ERROR 로그 분석해줘' }],
+        metadata: {
+          inputType: 'log_paste',
+          logExtract: 'ERROR api-was-dc1-01 timeout',
+        },
+      };
+
+      const result = requestSchema.safeParse(input);
+
+      expect(result.success).toBe(true);
+      expect(result.data?.metadata).toMatchObject({
+        inputType: 'log_paste',
+        logExtract: 'ERROR api-was-dc1-01 timeout',
+      });
+    });
+
+    it('should reject oversized logExtract metadata', () => {
+      const input = {
+        messages: [{ role: 'user', content: 'ERROR 로그 분석해줘' }],
+        metadata: {
+          inputType: 'log_paste',
+          logExtract: 'x'.repeat(8001),
+        },
+      };
+
+      expect(requestSchema.safeParse(input).success).toBe(false);
     });
 
     it('should accept semantic intent metadata for Cloud Run forwarding', () => {
@@ -232,6 +262,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
             timeWindow: '24h',
             aggregation: 'peak',
             ambiguity: 'low',
+            executionMode: 'single',
             confidence: 0.91,
           },
         },
@@ -241,7 +272,6 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         },
       };
 
-      expect(requestSchemaLoose.safeParse(input).success).toBe(true);
       expect(requestSchema.safeParse(input).success).toBe(true);
     });
 
@@ -256,7 +286,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         ],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
 
@@ -271,7 +301,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         ],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
   });
@@ -280,7 +310,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
     it('should reject empty messages array', () => {
       const input = { messages: [] };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(false);
     });
 
@@ -289,7 +319,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         messages: Array(51).fill({ role: 'user', content: 'x' }),
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(false);
     });
 
@@ -298,7 +328,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         messages: [{ content: 'test' }],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(false);
     });
 
@@ -307,14 +337,14 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         messages: [{ role: 'invalid-role', content: 'test' }],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(false);
     });
 
     it('should reject missing messages field', () => {
       const input = { sessionId: 'session-123' };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(false);
     });
 
@@ -323,7 +353,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         messages: [{ role: 'user' }],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(false);
     });
 
@@ -343,7 +373,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         ],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(false);
     });
   });
@@ -354,7 +384,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         messages: Array(50).fill({ role: 'user', content: 'x' }),
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
 
@@ -366,7 +396,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
           messages: [{ role, content: 'test' }],
         };
 
-        const result = requestSchemaLoose.safeParse(input);
+        const result = requestSchema.safeParse(input);
         expect(result.success).toBe(true);
       }
     });
@@ -387,7 +417,7 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
         ],
       };
 
-      const result = requestSchemaLoose.safeParse(input);
+      const result = requestSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
   });

@@ -433,6 +433,7 @@ describe('useQueryExecution', () => {
         aggregation: 'peak',
         topN: 3,
         ambiguity: 'low',
+        executionMode: 'single',
         confidence: 95,
       },
     });
@@ -450,6 +451,30 @@ describe('useQueryExecution', () => {
 
     expect(mockExtractEntities).toHaveBeenCalledTimes(1);
     expect(deps.sendMessage).toHaveBeenCalledTimes(2);
+  });
+
+  it('stores NLQ preprocessing metadata for the next supervisor request body', async () => {
+    process.env.NODE_ENV = 'production';
+    mockExtractEntities.mockResolvedValue({
+      confidence: 90,
+      inputType: 'log_paste',
+      logExtract: 'ERROR api-was-dc1-01 timeout',
+    });
+    const deps = createDeps();
+    deps.refs.semanticPreprocessing = { current: undefined };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery(
+        '2026-05-16T10:00:00 ERROR api-was-dc1-01 timeout\n'.repeat(5)
+      );
+    });
+
+    expect(deps.refs.semanticPreprocessing.current).toEqual({
+      inputType: 'log_paste',
+      logExtract: 'ERROR api-was-dc1-01 timeout',
+    });
   });
 
   it.each([

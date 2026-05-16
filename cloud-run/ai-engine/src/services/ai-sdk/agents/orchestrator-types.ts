@@ -76,6 +76,8 @@ export interface MultiAgentRequest {
    */
   files?: FileAttachment[];
   dataSource?: DomainDataSource;
+  /** Structured semantic parser metadata forwarded by the trusted supervisor. */
+  metadata?: Record<string, unknown>;
   /** Deterministic domain evidence prompt resolved before agent routing. */
   domainEvidencePrompt?: string;
 }

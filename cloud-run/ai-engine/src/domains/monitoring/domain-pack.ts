@@ -29,6 +29,10 @@ import {
 import { createMonitoringSystemPrompt } from './supervisor-prompt';
 import { MONITORING_AGENT_TOOL_REGISTRY } from './tool-registry';
 import { selectExecutionMode } from './routing-policy';
+import {
+  normalizeSupervisorInputType,
+  normalizeSupervisorIntentFrame,
+} from '../../services/ai-sdk/supervisor-semantic-metadata';
 import { monitoringAgentRoleRegistry } from './agent-roles';
 import {
   monitoringMetricRankingEvidenceProvider,
@@ -97,7 +101,12 @@ function createRouteCandidate(
     };
   }
 
-  const mode = selectExecutionMode(context.message);
+  const mode = selectExecutionMode(
+    context.message,
+    undefined,
+    normalizeSupervisorIntentFrame(context.metadata?.intentFrame),
+    normalizeSupervisorInputType(context.metadata?.inputType)
+  );
   return {
     kind: 'chat',
     executionPath: 'stream',

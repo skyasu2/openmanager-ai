@@ -7,7 +7,10 @@ import {
 import { BREAKPOINTS } from '@/config/constants';
 import type { SemanticIntentFrame } from '@/lib/ai/entity-extractor';
 import type { RouteDecision } from '@/lib/ai/route-decision';
-import { buildSemanticIntentRequestMetadata } from '@/lib/ai/semantic-intent-frame';
+import {
+  buildSemanticIntentRequestMetadata,
+  type SemanticPreprocessingMetadata,
+} from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
@@ -31,6 +34,9 @@ interface CreateHybridChatTransportParams {
   semanticIntentFrameRef?: MutableRefObject<
     SemanticIntentFrame | undefined | null
   >;
+  semanticPreprocessingRef?: MutableRefObject<
+    SemanticPreprocessingMetadata | undefined | null
+  >;
 }
 
 export function createHybridChatTransport(
@@ -47,6 +53,7 @@ export function createHybridChatTransport(
     localRouteDecisionRef,
     currentQueryRef,
     semanticIntentFrameRef,
+    semanticPreprocessingRef,
   } = params;
 
   return new DefaultChatTransport({
@@ -70,6 +77,7 @@ export function createHybridChatTransport(
       const semanticIntentPayload = buildSemanticIntentRequestMetadata({
         frame: semanticIntentFrameRef?.current,
         originalQuery: currentQueryRef?.current,
+        preprocessing: semanticPreprocessingRef?.current,
       });
 
       return {

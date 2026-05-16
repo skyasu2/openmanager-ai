@@ -4,6 +4,8 @@ export const ROUTING_DECISION_TRACE_VERSION = '2026-05-12-v1' as const;
 
 type AgentRoutingSource =
   | 'pre_filter'
+  | 'semantic_frame'
+  | 'input_type'
   | 'llm_routing'
   | 'fallback'
   | 'deterministic_fallback';
@@ -164,6 +166,10 @@ function createAgentDecision(
   const reasonCode =
     source === 'pre_filter'
       ? 'agent_source_pre_filter'
+      : source === 'semantic_frame'
+        ? 'agent_source_semantic_frame'
+        : source === 'input_type'
+          ? 'agent_source_input_type'
       : source === 'llm_routing'
         ? 'agent_source_llm_routing'
         : source === 'deterministic_fallback'
@@ -186,6 +192,18 @@ export function createAgentDecisionFromPreFilter(
   input: AgentDecisionInput
 ): NonNullable<RoutingDecisionTrace['agentDecision']> {
   return createAgentDecision('pre_filter', input);
+}
+
+export function createAgentDecisionFromSemanticFrame(
+  input: AgentDecisionInput
+): NonNullable<RoutingDecisionTrace['agentDecision']> {
+  return createAgentDecision('semantic_frame', input);
+}
+
+export function createAgentDecisionFromInputType(
+  input: AgentDecisionInput
+): NonNullable<RoutingDecisionTrace['agentDecision']> {
+  return createAgentDecision('input_type', input);
 }
 
 export function createAgentDecisionFromLlmRouting(

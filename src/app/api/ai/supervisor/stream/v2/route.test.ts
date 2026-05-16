@@ -640,6 +640,7 @@ describe('Supervisor Stream V2 Route', () => {
           timeWindow: '24h',
           aggregation: 'peak',
           ambiguity: 'low',
+          executionMode: 'single',
           confidence: 0.91,
         },
       };

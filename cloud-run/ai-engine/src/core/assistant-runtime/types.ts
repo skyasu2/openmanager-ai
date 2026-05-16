@@ -149,6 +149,14 @@ export type DomainIntentScope = 'whole_fleet' | 'entity' | 'group' | 'unknown';
 
 export type DomainIntentAmbiguity = 'low' | 'medium' | 'high';
 
+export type DomainIntentExecutionMode = 'single' | 'multi' | 'unknown';
+
+export type AssistantInputType =
+  | 'natural_query'
+  | 'log_paste'
+  | 'mixed'
+  | 'oversized';
+
 export interface DomainIntentFrame {
   domainId: string;
   intent: string;
@@ -160,6 +168,7 @@ export interface DomainIntentFrame {
   aggregation?: string;
   topN?: number;
   ambiguity: DomainIntentAmbiguity;
+  executionMode?: DomainIntentExecutionMode;
   confidence: number;
   slots?: Record<string, unknown>;
 }

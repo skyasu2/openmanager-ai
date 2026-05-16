@@ -38,6 +38,7 @@ import {
 import type { RouteDecision } from '@/lib/ai/route-decision';
 import type {
   DomainIntentFramePayload,
+  SemanticPreprocessingMetadata,
   SemanticQueryTrace,
 } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
@@ -159,6 +160,8 @@ export interface AsyncQueryRequestOptions {
   queryAsOfDataSlot?: JobDataSlot;
   intentFrame?: DomainIntentFramePayload;
   semanticQueryTrace?: SemanticQueryTrace;
+  inputType?: SemanticPreprocessingMetadata['inputType'];
+  logExtract?: string;
 }
 
 // ============================================================================
@@ -346,6 +349,12 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
                       }),
                       ...(requestOptions?.semanticQueryTrace && {
                         semanticQueryTrace: requestOptions.semanticQueryTrace,
+                      }),
+                      ...(requestOptions?.inputType && {
+                        inputType: requestOptions.inputType,
+                      }),
+                      ...(requestOptions?.logExtract && {
+                        logExtract: requestOptions.logExtract,
                       }),
                     },
                   },

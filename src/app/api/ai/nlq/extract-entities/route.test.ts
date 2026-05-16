@@ -111,6 +111,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
       metric: 'cpu',
       timeRange: '1h',
       confidence: 93,
+      inputType: 'natural_query',
     });
     expect(mockGenerateText).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -144,6 +145,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
           aggregation: 'peak',
           topN: 3,
           ambiguity: 'low',
+          executionMode: 'multi',
           confidence: 91,
           provider: 'monitoringPeakMetricEvidenceProvider',
         },
@@ -159,6 +161,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     await expect(response.json()).resolves.toEqual({
       timeRange: '24h',
       confidence: 91,
+      inputType: 'natural_query',
       intentFrame: {
         domain: 'monitoring',
         intent: 'metric_peak',
@@ -169,6 +172,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
         aggregation: 'peak',
         topN: 3,
         ambiguity: 'low',
+        executionMode: 'multi',
         confidence: 91,
       },
     });
@@ -181,7 +185,27 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     );
   });
 
-  it('short-circuits high-confidence metric_peak queries locally without invoking Groq', async () => {
+  it('routes high-confidence metric_peak queries through Groq instead of local regex shortcuts', async () => {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
+        timeRange: '24h',
+        confidence: 94,
+        intentFrame: {
+          domain: 'monitoring',
+          intent: 'metric_peak',
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'load1',
+          timeWindow: '24h',
+          aggregation: 'peak',
+          topN: 3,
+          ambiguity: 'low',
+          executionMode: 'single',
+          confidence: 94,
+        },
+      },
+    });
+
     const response = await POST(
       buildRequest({
         query: '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?',
@@ -191,6 +215,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     await expect(response.json()).resolves.toEqual({
       timeRange: '24h',
       confidence: 94,
+      inputType: 'natural_query',
       intentFrame: {
         domain: 'monitoring',
         intent: 'metric_peak',
@@ -201,10 +226,15 @@ describe('POST /api/ai/nlq/extract-entities', () => {
         aggregation: 'peak',
         topN: 3,
         ambiguity: 'low',
+        executionMode: 'single',
         confidence: 94,
       },
     });
-    expect(mockGenerateText).not.toHaveBeenCalled();
+    expect(mockGenerateText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: '24h 기준 load1 peak가 언제였고 어떤 서버가 가장 영향을 줬어?',
+      })
+    );
   });
 
   it('keeps composite metric_peak advice queries on the Groq fallback route', async () => {
@@ -221,6 +251,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
           aggregation: 'peak',
           topN: 3,
           ambiguity: 'medium',
+          executionMode: 'multi',
           confidence: 89,
         },
       },
@@ -237,6 +268,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
       intentFrame: {
         intent: 'metric_peak',
         ambiguity: 'medium',
+        executionMode: 'multi',
       },
     });
     expect(mockGenerateText).toHaveBeenCalledWith(
@@ -324,6 +356,9 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     );
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ confidence: 0 });
+    await expect(response.json()).resolves.toEqual({
+      confidence: 0,
+      inputType: 'natural_query',
+    });
   });
 });

@@ -79,6 +79,7 @@ describe('createHybridChatTransport', () => {
       aggregation: 'peak',
       topN: 3,
       ambiguity: 'low',
+      executionMode: 'single',
       confidence: 91,
     };
 
@@ -131,6 +132,7 @@ describe('createHybridChatTransport', () => {
         timeWindow: '24h',
         aggregation: 'peak',
         ambiguity: 'low',
+        executionMode: 'single',
         confidence: 79,
       }),
     });
@@ -143,6 +145,33 @@ describe('createHybridChatTransport', () => {
     expect(body.metadata).toBeUndefined();
     expect(body.semanticQueryTrace).toMatchObject({
       reasonCodes: ['semantic_frame_low_confidence'],
+    });
+  });
+
+  it('forwards NLQ preprocessing metadata through the streaming transport body', () => {
+    createHybridChatTransport({
+      apiEndpoint: '/api/ai/supervisor/stream/v2',
+      traceIdRef: ref('trace-log-preprocess'),
+      traceIdHeader: 'X-Trace-Id',
+      webSearchEnabledRef: ref(undefined),
+      ragEnabledRef: ref(undefined),
+      analysisModeRef: ref('auto'),
+      currentQueryRef: ref('ERROR 로그 분석해줘'),
+      semanticPreprocessingRef: ref({
+        inputType: 'log_paste',
+        logExtract: 'ERROR api-was-dc1-01 timeout',
+      }),
+    });
+
+    const transportConfig = mockDefaultChatTransport.mock.calls.at(-1)?.[0] as {
+      body: () => Record<string, unknown>;
+    };
+
+    expect(transportConfig.body()).toMatchObject({
+      metadata: {
+        inputType: 'log_paste',
+        logExtract: 'ERROR api-was-dc1-01 timeout',
+      },
     });
   });
 });
