@@ -1,7 +1,7 @@
 # AI 사이드바 & 워크스페이스 개선 계획서
 
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-16
 > Tags: refactor,ai-sidebar,accessibility,duplication,ux-bug
@@ -293,16 +293,19 @@ AISidebarV4
 
 ### 작업 범위
 
-- [ ] **S5-1**: `key={idx}` → `key={`${idx}-${err.message}`}` 복합 키로 교체
+- [x] **S5-1**: `key={idx}` → `key={`${idx}-${err.message}`}` 복합 키로 교체
 
 **예상 영향 파일:**
 - `src/components/ai-sidebar/ChatInputArea.tsx`
+
+**검증 결과 (2026-05-16):**
+- `npx vitest run --config config/testing/vitest.config.dom.ts src/components/ai-sidebar/ChatInputArea.test.tsx` — 1 file / 15 tests PASS
 
 ---
 
 ## SDD 게이트
 
-2026-05-16 Codex 검토로 S1~S4 slice를 승인하고 구현했다. S5는 같은 계획서 안의 잔여 pending task로 유지한다.
+2026-05-16 Codex 검토로 S1~S5 전체를 완료했다. 모든 항목은 "단일 버그 수정·소규모 리팩터링" 범주로 처리했다.
 
 모든 항목은 "단일 버그 수정·소규모 리팩터링" 범주 — `test(spec):` 선행 커밋 없이 fix/refactor + test 동시 커밋 허용.
 
@@ -329,4 +332,4 @@ S4 (double header) → 완료
 S5 (fileErrors key) → 독립, 최후 처리
 ```
 
-S1 → S2 → S3 → S4 완료. 다음 작업은 S5.
+S1 → S2 → S3 → S4 → S5 완료.

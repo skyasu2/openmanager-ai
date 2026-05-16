@@ -23,7 +23,7 @@
 | Guest region block | `src/lib/auth/guest-region-policy.ts` |
 | Login audit | `src/lib/auth/login-audit.ts`, `security_audit_logs` |
 | API auth guard | `src/lib/auth/api-auth.ts` |
-| Security headers/CSP | `next.config.mjs`, `src/lib/security/csp-utils.ts` |
+| Security headers/CSP | `next.config.mjs` |
 | Supabase public surface hardening | `supabase/migrations/20260428101907_harden_supabase_rag_public_surface.sql` |
 
 ## Zero Trust + Defense in Depth
@@ -115,7 +115,7 @@ const validateInput = (schema: z.ZodSchema) => {
 
 ### 보안 헤더
 
-실제 header 구성은 `next.config.mjs`와 `src/lib/security/csp-utils.ts`가 기준입니다. 아래 예시는 필수 방어 계층을 설명하기 위한 축약형입니다.
+실제 header 구성은 `next.config.mjs`가 기준입니다. 아래 예시는 필수 방어 계층을 설명하기 위한 축약형입니다.
 ```typescript
 const securityHeaders = {
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',

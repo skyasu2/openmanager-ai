@@ -492,7 +492,7 @@ TF.js는 Vercel 서버리스 환경에서 번들 크기 문제로 실패, Transf
 
 ## Recommended Next Steps
 
-1. Dead code cleanup: `src/lib/config/env-validation.ts`, `src/lib/api/development-only.ts`, `src/lib/security/csp-utils.ts`, `src/hooks/ui/useTypewriter.ts` + 각 테스트 파일 삭제. (계획서: `reports/planning/dead-code-cleanup-plan.md`)
+1. Dead code cleanup: completed on 2026-05-16. Deprecated utility files and matching tests were removed, with production startup `TEST_API_KEY` validation inlined in `instrumentation.ts`. (계획서: `reports/planning/dead-code-cleanup-plan.md`)
 2. Artifact history view: Supabase `artifacts` 테이블 설계 후 P2 재개.
 3. Line-guard와 module-boundary cleanup을 AI Engine과 frontend chat 코드에 지속.
 4. High-frequency patch series는 릴리스 노트 그룹핑으로 가독성 개선 검토.

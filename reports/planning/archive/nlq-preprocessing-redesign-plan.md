@@ -1,7 +1,7 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (Vercel→Cloud Run 라우팅 전환 범위 보정)
+> Last reviewed: 2026-05-16 (N0-N4 implemented; provider live comparison deferred to QA)
 > Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture,stream-filter,best-practice-gap,redis,ai-sdk-routing
 
 # NLQ Pre-processing Redesign Plan
@@ -237,7 +237,7 @@ Client는 `blocked: true`를 받으면 clarification을 열지 않고 전송을 
 
 ## Vercel → Cloud Run 아키텍처 컨텍스트
 
-### 전체 요청 흐름 (N0~N4 완료 기준)
+### 전체 요청 흐름 (N0/N1/N2/N4 완료, N3 예정 기준)
 
 ```
 Browser
@@ -254,10 +254,10 @@ Vercel BFF (Node.js)
 Cloud Run AI Engine
   ├─ Upstash Redis — provider quota 원자적 예약 (Lua EVAL)
   ├─ [N1] selectExecutionMode() — intentFrame.confidence >= 0.8이면 우선
-  ├─ [N3] inputType='log_paste' → multi 강제 + logExtract 컨텍스트 주입
+  ├─ [N3] inputType='log_paste' → multi 강제 + logExtract 컨텍스트 주입 예정
   └─ 현재 multi-agent runtime 유지
-       ├─ Q1: Orchestrator Groq-last + 호출 예산 축소
-       └─ 후보: ADR-005 직접 routing 전환은 별도 SDD 필요
+       ├─ Q1/Q2: Orchestrator LLM request path 제거, deterministic direct routing 적용
+       └─ 남은 후보: orchestrator-* 파일명/legacy helper 정리는 별도 cleanup
         ↓
 Vercel BFF (stream/v2)
   └─ [N4] StreamOutputFilter (pipeThrough) → Browser SSE
@@ -273,22 +273,22 @@ Vercel BFF (stream/v2)
 |------|--------------------------|----------------|
 | Front intent/entity LLM | N1-0 provider fit check 후 `intentFrame` 계약 유지 | Groq 외 provider 전환 여부 |
 | Cloud Run mode selection | N1에서 `intentFrame.confidence >= 0.8` 신뢰 | specialist 직접 dispatch까지 확대할지 |
-| Orchestrator 비용 절감 | Provider Quota Plan Q1에서 Groq-last + LLM call budget 적용 | Orchestrator LLM 완전 제거 |
-| Agent 실행 구조 | 기존 Metrics Query / Analyst / Reporter / Advisor 유지 | Routing + Tool-Loop Agent 전면 전환 |
+| Orchestrator 비용 절감 | Provider Quota Plan Q1/Q2에서 기본 request path의 Orchestrator LLM 호출 제거 | legacy helper/file rename cleanup |
+| Agent 실행 구조 | Metrics Query / Analyst / Reporter / Advisor specialist 직접 routing 유지 | specialist dispatch 품질 corpus 확대 |
 
 QueryGuard(N2)는 routing classifier가 아니다. 공격 패턴, 길이, `log_paste` 같은 입력 형태만 얕게 분류한다. 한국어/영어 자연어 intent, 오타, 문맥 생략은 Front NLQ LLM이 처리하고, Cloud Run은 confidence와 schema를 검증해 신뢰 여부를 결정한다.
 
 ### ADR-005 범위 정정
 
-`ADR-005`는 "Orchestrator LLM 제거"를 현재 구현으로 선언하지 않는다. 현재 코드에는 `decomposeTask()`와 Orchestrator LLM routing이 남아 있고, N1의 직접 목표도 `selectExecutionMode()`의 intentFrame 신뢰다.
+`ADR-005`와 Provider Quota Plan Q2 기준으로 기본 request path의 Orchestrator LLM routing/decomposition 호출은 제거됐다. 다만 `orchestrator-*` 파일명과 legacy helper/test fixture는 호환·회귀 검증을 위해 일부 남아 있다. N1의 직접 목표는 이 상태에서 `selectExecutionMode()`가 Front NLQ `intentFrame.executionMode`를 신뢰하게 만드는 것이다.
 
 따라서 단계는 아래처럼 분리한다.
 
 | 단계 | 상태 | 목적 |
 |------|------|------|
-| N1 | Approved/In Progress | Front NLQ LLM 결과를 Cloud Run mode selection에 반영 |
-| Q1 | Approved | Orchestrator provider order를 Groq-last로 바꾸고 불필요한 decomposition/routing 이중 호출을 줄임 |
-| ADR-005 직접 routing 전환 | Proposed | Orchestrator LLM 제거와 specialist 직접 dispatch의 비용/품질/회귀 위험을 별도 SDD로 검증 |
+| Q1/Q2 | Completed | Orchestrator LLM routing/decomposition을 기본 request path에서 제거하고 specialist direct routing 적용 |
+| N1 | Implemented, validation in progress | Front NLQ LLM 결과를 Cloud Run mode selection에 반영 |
+| N3 | Approved | `inputType/logExtract`를 Cloud Run 계약에 추가하고 log paste를 multi 분석 경로로 연결 |
 
 이 분리는 사용자가 지적한 제약과도 일치한다. 앞단을 ML 수준 heuristic으로 키우는 것은 Vercel/Cloud Run 사용량과 유지보수성을 동시에 악화시키고, 반대로 단순 regex만으로는 한국어/영어 표현 변형을 감당하기 어렵다. 이 계획은 그 중간 지점인 "얕은 deterministic guard + 작은 front LLM + Cloud Run confidence gate"를 채택한다.
 
@@ -435,13 +435,13 @@ export function selectExecutionMode(
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-wiring.ts`
 
 **태스크**:
-- [ ] **N1-0**: NLQ provider fit check — Groq/Mistral/Cerebras/Z.AI 후보를 동일 fixture로 비교하고 N1 baseline provider 확정
-- [ ] **N1-1**: `SemanticIntentFrame`에 `executionMode` 슬롯 추가 + Zod schema 갱신
-- [ ] **N1-2**: `DomainIntentFramePayload`/Cloud Run `DomainIntentFrame`에 `executionMode` optional 추가
-- [ ] **N1-3**: SYSTEM_PROMPT에 `executionMode` 판단 지침 추가
-- [ ] **N1-4**: `extractLocalSemanticEntities()` + LOCAL_* 상수 5개 제거
-- [ ] **N1-5**: `selectExecutionMode()` — frame primary + regex 4개 fallback
-- [ ] **N1-6**: `multiAgentPatterns[]` / `contextGatedPatterns[]` 배열 제거
+- [x] **N1-0**: NLQ provider fit check — 로컬/CI에서는 외부 LLM 호출 금지 원칙에 따라 live 비교 미실행. 현재 구현은 기존 Groq baseline을 유지하고 provider 이름이 아닌 `intentFrame` 계약만 downstream에 노출한다. Groq/Mistral/Cerebras/Z.AI live 비교는 QA/수동 smoke로 이관.
+- [x] **N1-1**: `SemanticIntentFrame`에 `executionMode` 슬롯 추가 + Zod schema 갱신
+- [x] **N1-2**: `DomainIntentFramePayload`/Cloud Run `DomainIntentFrame`에 `executionMode` optional 추가
+- [x] **N1-3**: SYSTEM_PROMPT에 `executionMode` 판단 지침 추가
+- [x] **N1-4**: `extractLocalSemanticEntities()` + LOCAL_* 상수 5개 제거
+- [x] **N1-5**: `selectExecutionMode()` — frame primary + regex 4개 fallback
+- [x] **N1-6**: `multiAgentPatterns[]` / `contextGatedPatterns[]` 배열 제거
 
 ---
 
@@ -599,23 +599,25 @@ inputType === 'oversized':
 
 업계 권고(2025): 주입은 외부 문서·도구 응답을 통해서도 들어오므로 AI 서버 내부에서도 런타임 감지 필수.
 
-```typescript
-// cloud-run/ai-engine/src/services/ai-sdk/supervisor-request-guard.ts (신규)
-// Vercel BFF에서 탐지한 riskLevel을 metadata로 받아서
-// high/medium이면 Cloud Run 측에서도 추가 차단 또는 경고 로깅
-```
+Cloud Run route의 기존 `guardInput()` 방어 레이어를 유지하고, `logExtract`는 `supervisor-log-context.ts`에서 **untrusted operational evidence**로만 주입한다. 로그 내부의 지시문·시크릿 요청·역할 변경 문구를 실행 지시로 따르지 않도록 system context에 명시한다.
 
 **영향 파일**:
 - `src/lib/ai/semantic-intent-frame.ts`
 - `src/app/api/ai/supervisor/schemas.ts` (inputType 필드 추가)
 - `cloud-run/ai-engine/src/domains/monitoring/routing-policy.ts`
-- `cloud-run/ai-engine/src/services/ai-sdk/supervisor-request-guard.ts` (신규)
+- `cloud-run/ai-engine/src/services/ai-sdk/supervisor-log-context.ts` (신규)
 
 **태스크**:
-- [ ] **N3-1**: BFF → Cloud Run 요청 schema에 `inputType` / `logExtract` 추가
-- [ ] **N3-2**: Cloud Run `selectExecutionMode()` — `inputType === 'log_paste'` 시 multi 강제
-- [ ] **N3-3**: Cloud Run supervisor prompt에 `logExtract` 컨텍스트 주입 로직
-- [ ] **N3-4**: Cloud Run `supervisor-request-guard.ts` — defense-in-depth injection 탐지
+- [x] **N3-1**: BFF → Cloud Run 요청 schema에 `inputType` / `logExtract` 추가
+- [x] **N3-2**: Cloud Run `selectExecutionMode()` — `inputType === 'log_paste'` 시 multi 강제
+- [x] **N3-3**: Cloud Run supervisor prompt에 `logExtract` 컨텍스트 주입 로직
+- [x] **N3-4**: Cloud Run defense-in-depth — 기존 `guardInput()` 유지 + `logExtract` untrusted context 주입
+
+**완료 기록 (2026-05-16)**:
+- `ExtractedEntities` → `SemanticPreprocessingMetadata` → transport/job metadata → Cloud Run normalize 경로로 `inputType`/`logExtract`를 연결했다.
+- `log_paste`는 `intentFrame.executionMode='single'`이어도 Cloud Run mode selection에서 `multi`로 강제한다.
+- `logExtract`는 single/multi/stream 경로의 system context appendix로 주입하되, untrusted evidence로 표시해 로그 내부 지시문을 따르지 않도록 했다.
+- 검증: Root targeted 4 files / 73 tests PASS, AI Engine targeted 3 files / 79 tests PASS, Root/AI Engine type-check PASS.
 
 ---
 

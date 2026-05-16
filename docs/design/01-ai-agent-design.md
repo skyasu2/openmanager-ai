@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-16
 > Canonical: docs/design/01-ai-agent-design.md
 > Tags: design,ai,agent,supervisor
 
@@ -18,8 +18,9 @@
 
 | 단위 | 책임 |
 |---|---|
-| Supervisor | 요청 수신, mode 결정, single/multi path 선택, stream metadata 보존 |
-| Orchestrator | intent routing, pre-filter, specialist handoff, deterministic summary fallback |
+| NLQ Pipeline (BFF 전처리) | ChatInputArea UX guard → QueryGuard(공격/로그/장문) → Groq NLQ LLM → `SemanticIntentFrame` + `executionMode` 슬롯 → streaming output filter |
+| Supervisor | 요청 수신, `intentFrame` 신뢰 경로 기반 mode 결정, single/multi path 선택, stream metadata 보존 |
+| Direct Router (`orchestrator-*` legacy module names) | `preFilterQuery()` 기반 fast path, specialist 직접 routing, deterministic fallback |
 | Metrics Query Agent | 서버 메트릭 조회, 필터링, 수식/통계 계산, 용량 추정 |
 | Analyst Agent | anomaly, RCA, trend, monitoring snapshot 분석 |
 | Reporter Agent | incident/report artifact 생성과 deterministic Eval/Opt pipeline |
@@ -30,13 +31,14 @@
 ## 설계 원칙
 
 - simple metric lookup, server snapshot, formatting-only rewrite는 가능한 deterministic path에 남깁니다.
-- multi-agent escalation은 RCA, report, advisor, vision처럼 실제 전문 agent가 필요한 경우로 제한합니다.
+- multi-agent escalation은 RCA, report, advisor, vision처럼 실제 전문 Tool-loop agent가 필요한 경우로 제한합니다.
+- 내부 문서에서 `multi-agent`는 중앙 LLM supervisor가 동적 handoff를 결정한다는 뜻이 아니라 **routing-based multi-agent workflow**를 뜻합니다.
 - provider selection은 agent 내부 임의 호출이 아니라 runtime policy와 capability gate를 통과해야 합니다.
 - `plannerShadow`는 authority가 아니라 관측/비교 metadata입니다.
 
 ## 하면 안 되는 것
 
-- Supervisor/Orchestrator/Agent마다 서로 다른 provider policy를 하드코딩하지 않습니다.
+- Supervisor/Direct Router/Agent마다 서로 다른 provider policy를 하드코딩하지 않습니다.
 - formatting-only rewrite를 Reporter pipeline으로 승격하지 않습니다.
 - Evaluator/Optimizer를 별도 LLM agent처럼 문서화하지 않습니다.
 - production 기본 경로에 신규 LLM 호출을 추가할 때 quota/latency/fallback 검토를 생략하지 않습니다.

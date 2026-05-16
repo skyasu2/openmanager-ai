@@ -1,7 +1,7 @@
 # Frontend UI 개선 계획서
 
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-16
 > Tags: frontend,ui,bug-fix,modal,landing,accessibility
@@ -84,7 +84,7 @@ style={{ left: `${progress}%`, transform: 'translateX(-50%)' }}
 
 ### 작업 범위
 
-- [ ] **P1-1**: `BootProgressBar.tsx` 포인터 `style`에 `transform: 'translateX(-50%)'` 추가
+- [x] **P1-1**: `BootProgressBar.tsx` 포인터 위치 보정
 
 **영향 파일:**
 - `src/app/system-boot/components/BootProgressBar.tsx`
@@ -112,8 +112,8 @@ import { LogIn } from 'lucide-react';
 
 ### 작업 범위
 
-- [ ] **P1-2-a**: `Github` import → `LogIn` import 교체
-- [ ] **P1-2-b**: JSX `<Github>` → `<LogIn>` 교체
+- [x] **P1-2-a**: `Github` import → `LogIn` import 교체
+- [x] **P1-2-b**: JSX `<Github>` → `<LogIn>` 교체
 
 **영향 파일:**
 - `src/components/dashboard/AILoginRequiredModal.tsx`
@@ -164,10 +164,10 @@ return (
 
 ### 작업 범위
 
-- [ ] **P2-1-a**: `DiagramErrorBoundary` import 추가
-- [ ] **P2-1-b**: `renderModalSafely` 함수 제거, `mainContent` 변수 제거
-- [ ] **P2-1-c**: `ReactFlowDiagram`을 `<DiagramErrorBoundary>`로 직접 감싸기
-- [ ] **P2-1-d**: `FeatureCardModal`이 다이어그램 모드일 때 에러 표시 확인
+- [x] **P2-1-a**: `DiagramErrorBoundary` import 추가
+- [x] **P2-1-b**: `renderModalSafely` 함수 제거
+- [x] **P2-1-c**: `ReactFlowDiagram`을 `<DiagramErrorBoundary>`로 직접 감싸기
+- [x] **P2-1-d**: `FeatureCardModal` 회귀 테스트 확인
 
 **영향 파일:**
 - `src/components/shared/FeatureCardModal.tsx`
@@ -196,9 +196,9 @@ return (
 
 ### 작업 범위
 
-- [ ] **P2-2-a**: `global-effects.css`의 `.wave-particles` 섹션에 `@keyframes wave-float` 정의 추가 (20s, `rotate`)
-- [ ] **P2-2-b**: `SystemBootClient.tsx`의 `<style jsx>` 블록 제거 (또는 `wave-float` 부분만 제거)
-- [ ] **P2-2-c**: 부트 페이지 wave 효과 시각 확인
+- [x] **P2-2-a**: `global-effects.css`의 `.wave-particles` 섹션에 `@keyframes wave-float` 정의 추가 (20s, `rotate`)
+- [x] **P2-2-b**: `SystemBootClient.tsx`의 `<style jsx>` 블록 제거
+- [x] **P2-2-c**: 코드/타입/린트 게이트 확인
 
 **범위 제한:**
 - `wave-drift` vs `wave-float` 통일 금지 (의도적으로 다른 효과)
@@ -230,8 +230,8 @@ return (
 
 ### 작업 범위
 
-- [ ] **P3-1-a**: `TopologyModal` 레이아웃 재배치: 닫기 버튼을 `TopologyView` 헤더 라인에 통합
-- [ ] **P3-1-b**: absolute 위치 제거, flex 정렬로 교체
+- [x] **P3-1-a**: `TopologyModal` 레이아웃 재배치: 닫기 버튼을 `TopologyView` 헤더 라인에 통합
+- [x] **P3-1-b**: absolute 위치 제거, flex 정렬로 교체
 
 **영향 파일:**
 - `src/components/dashboard/TopologyModal.tsx`
@@ -261,8 +261,8 @@ export const AI_PROVIDER_DISPLAY = 'Provider Mesh AI';
 
 ### 작업 범위
 
-- [ ] **P3-2-a**: 상수 정의 (기존 상수 파일 확인 후 적절한 위치에 추가)
-- [ ] **P3-2-b**: `LandingPageRuntime.tsx` 하드코딩 교체
+- [x] **P3-2-a**: `src/config/app-meta.ts`에 footer 표시 상수 추가
+- [x] **P3-2-b**: `LandingPageRuntime.tsx` 하드코딩 교체
 
 **영향 파일:**
 - `src/app/LandingPageRuntime.tsx`
@@ -285,6 +285,12 @@ P2-2 완료 후 추가:
 npm run dev:network
 # http://localhost:3000/system-boot 접속 → wave 배경 표시 여부 확인
 ```
+
+### 완료 검증
+
+- `npx vitest run --config config/testing/vitest.config.dom.ts src/components/shared/FeatureCardModal.test.tsx src/components/dashboard/TopologyModal.test.tsx` PASS
+- `npm run type-check` PASS
+- `npm run lint` PASS (기존 `reports/qa/qa-tracker.json` size info only)
 
 ---
 

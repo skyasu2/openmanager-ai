@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-10
+> Last reviewed: 2026-05-16
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
@@ -16,7 +16,7 @@
 
 OpenManager AI is a human-in-the-loop server monitoring AI assistant built with:
 - Frontend: Next.js 16, React 19, TypeScript 5.9
-- AI Engine: Vercel AI SDK 6 family, deterministic/single-first advisory runtime with conditional multi-agent escalation
+- AI Engine: Vercel AI SDK 6 family, deterministic/single-first advisory runtime with conditional routing-based multi-agent workflow
 - Database: Supabase (PostgreSQL + Auth/RLS); Knowledge Retrieval Lite uses BM25 RPC + metadata boost
 - Deployment: Vercel (Frontend) + Cloud Run (AI Engine)
 
@@ -36,15 +36,26 @@ Product positioning:
 ```
 
 ### AI Engine Components
-- Supervisor: mode resolver for deterministic/single/multi execution (`single` gated, `auto` complexity-based, multi-agent reserved for escalation)
-- Agents (실행): Metrics Query, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
-- Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
+
+**NLQ 전처리 파이프라인** (Vercel BFF, 2026-05-16 완료 현황):
+- `ChatInputArea` UX guard: maxLength=10,000 / warning=8,000자 (N0 ✅)
+- `QueryGuard` (`/api/ai/nlq/extract-entities`): 공격 패턴 차단, log_paste 감지, oversized truncate (N2 ✅)
+- Groq NLQ LLM → `SemanticIntentFrame` + `executionMode` 슬롯 (N1 ✅)
+- streaming output filter (`/api/ai/supervisor/stream/v2`): XSS/시스템프롬프트 유출 차단 (N4 ✅)
+- 잔여: `inputType/logExtract` → Cloud Run multi 분석 경로 연결 (N3 ⬜)
+
+**Cloud Run AI Engine**:
+- Supervisor: `intentFrame.executionMode` primary 신뢰(confidence ≥ 0.8) + regex 4개 fallback 기반 mode 결정. `single` gated, `auto` complexity-based, multi-agent는 specialist escalation 시에만.
+- Direct Router: `preFilterQuery()`/`resolveDirectRoutingTarget()` 기반 specialist dispatch. 기본 path에서 Orchestrator LLM routing/decomposition은 호출하지 않음.
+- Agents (실행): Metrics Query, Analyst, Reporter, Advisor, Vision
+- Reporter quality stages: Evaluator, Optimizer (별도 LLM agent가 아닌 deterministic pipeline 단계)
 - Providers:
-  - Supervisor / Metrics Query / Orchestrator path: Groq → Z.AI → Mistral → Cerebras
-  - Analyst / Verifier path: Mistral → Groq → Z.AI → Cerebras
-  - Reporter path: Z.AI → Mistral → Groq → Cerebras
-  - Advisor path: Mistral → Z.AI → Groq → Cerebras
+  - Supervisor / Metrics Query path: Groq → Z.AI → Mistral → Cerebras*
+  - Analyst / Verifier path: Mistral → Groq → Z.AI → Cerebras*
+  - Reporter path: Z.AI → Mistral → Groq → Cerebras*
+  - Advisor path: Mistral → Z.AI → Groq → Cerebras*
   - Vision path: Gemini Flash-Lite → OpenRouter → Z.AI
+  - *Cerebras `llama3.1-8b`: 2026-05-27 cutoff, `isCerebrasExpiredByDate()` graceful exit 구현 완료
 - Tools: 30 specialized tools (Metrics 6, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4, Math 3)
 - Observability: Langfuse mode audit (`requestedMode`, `resolvedMode`, `modeSelectionSource`) + `handoffCount`
 

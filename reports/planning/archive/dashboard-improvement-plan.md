@@ -1,7 +1,7 @@
 # Dashboard 핵심 컴포넌트 개선 계획서
 
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-16
 > Tags: refactor,dashboard,accessibility,dead-code,duplication
@@ -76,10 +76,10 @@ export function withCurrentMetricPoint(
 
 ### 작업 범위
 
-- [ ] **D1-1**: `src/components/dashboard/dashboard-metric-points.ts` 신규 생성, `withCurrentMetricPoint(values, currentValue, options?)` export
-- [ ] **D1-2**: `ImprovedServerCard.tsx` 내 로컬 정의 제거, shared helper import
-- [ ] **D1-3**: `ServerDetailView.tsx` 내 로컬 정의 제거, shared helper import
-- [ ] **D1-4**: `EnhancedServerModal.metrics.helpers.ts` 내 helper 정의 제거, shared helper import로 교체
+- [x] **D1-1**: `src/components/dashboard/dashboard-metric-points.ts` 신규 생성, `withCurrentMetricPoint(values, currentValue, options?)` export
+- [x] **D1-2**: `ImprovedServerCard.tsx` 내 로컬 정의 제거, shared helper import
+- [x] **D1-3**: `ServerDetailView.tsx` 내 로컬 정의 제거, shared helper import
+- [x] **D1-4**: `EnhancedServerModal.metrics.helpers.ts` 내 helper 정의 제거, shared helper import로 교체
 
 **예상 영향 파일:**
 - `src/components/dashboard/dashboard-metric-points.ts` (신규)
@@ -113,9 +113,9 @@ const tabs: TabInfo[] = [
 
 ### 작업 범위
 
-- [ ] **D2-1**: `ServerDetailView.tsx`의 `tabs` 배열에 `{ id: 'processes', label: '프로세스' }` 항목 추가
-- [ ] **D2-2**: `renderTabContent`에서 `processes` 케이스 분기 — `ProcessesTab` 이동
-- [ ] **D2-3**: 기존 `metrics` 탭 패널에서 `ProcessesTab` 제거 (이미 별도 탭으로 이동됨)
+- [x] **D2-1**: `ServerDetailView.tsx`의 `tabs` 배열에 `{ id: 'processes', label: '프로세스' }` 항목 추가
+- [x] **D2-2**: `renderTabContent`에서 `processes` 케이스 분기 — `ProcessesTab` 이동
+- [x] **D2-3**: 기존 `metrics` 탭 패널에서 `ProcessesTab` 제거 (이미 별도 탭으로 이동됨)
 
 **범위 제한:**
 - `network` 탭 분리는 이번 범위에서 제외 (로그와 네트워크는 연관성이 높아 현 UX 유지 판단)
@@ -144,8 +144,8 @@ const [activeTab] = useState<DashboardTab>('servers'); // setter 없음
 
 ### 작업 범위
 
-- [ ] **D3-1**: `useState<DashboardTab>('servers')` → `const activeTab = 'servers'` (상수로 교체)
-- [ ] **D3-2**: 또는 조건식 자체 제거 — `{activeTab === 'servers' && (...)}`를 `<>...</>` 또는 직접 렌더로 정리
+- [x] **D3-1**: `useState<DashboardTab>('servers')` → `const activeTab = 'servers'` (상수로 교체)
+- [x] **D3-2**: 또는 조건식 자체 제거 — `{activeTab === 'servers' && (...)}`를 `<>...</>` 또는 직접 렌더로 정리
 
 **예상 영향 파일:**
 - `src/components/dashboard/ServerDashboard.tsx`
@@ -178,8 +178,8 @@ const ImprovedServerCard = memo(function ImprovedServerCard({ serverId, ... }) {
 
 ### 작업 범위
 
-- [ ] **D4-1**: 외부 `ImprovedServerCard`의 `memo()` 래핑 제거 — 일반 함수 컴포넌트로 변경
-- [ ] **D4-2**: `displayName` 설정이 있다면 유지
+- [x] **D4-1**: 외부 `ImprovedServerCard`의 `memo()` 래핑 제거 — 일반 함수 컴포넌트로 변경
+- [x] **D4-2**: `displayName` 설정이 있다면 유지
 
 **예상 영향 파일:**
 - `src/components/dashboard/ImprovedServerCard.tsx`
@@ -210,9 +210,9 @@ return () => {
 
 ### 작업 범위
 
-- [ ] **D5-1**: `if (typeof mediaQuery.addEventListener === 'function')` 조건 제거
-- [ ] **D5-2**: `mediaQuery.addEventListener` / `removeEventListener` 직접 사용
-- [ ] **D5-3**: deprecated `addListener` / `removeListener` 블록 삭제
+- [x] **D5-1**: `if (typeof mediaQuery.addEventListener === 'function')` 조건 제거
+- [x] **D5-2**: `mediaQuery.addEventListener` / `removeEventListener` 직접 사용
+- [x] **D5-3**: deprecated `addListener` / `removeListener` 블록 삭제
 
 **예상 영향 파일:**
 - `src/components/dashboard/DashboardHeader.tsx`
@@ -243,7 +243,7 @@ const statusGradients = {
 
 ### 작업 범위
 
-- [ ] **D6-1**: `DashboardSummary.tsx:51`과 `ImprovedServerCard.tsx:52`의 `statusGradients` 선언 바로 위에 `// TODO: dashboard-status-tokens — 향후 공유 디자인 토큰으로 통합 예정` 주석 추가
+- [x] **D6-1**: `DashboardSummary.tsx:51`과 `ImprovedServerCard.tsx:52`의 `statusGradients` 선언 바로 위에 `// TODO: dashboard-status-tokens — 향후 공유 디자인 토큰으로 통합 예정` 주석 추가
 
 **예상 영향 파일:**
 - `src/components/dashboard/DashboardSummary.tsx`
@@ -266,7 +266,7 @@ const statusGradients = {
 
 ### 작업 범위
 
-- [ ] **D7-1**: 이모지를 별도 `<span aria-hidden="true">` 요소로 분리
+- [x] **D7-1**: 이모지를 별도 `<span aria-hidden="true">` 요소로 분리
   ```tsx
   // Before
   '✅ 실행중'
@@ -274,7 +274,7 @@ const statusGradients = {
   // After
   <><span aria-hidden="true">✅ </span>실행중</>
   ```
-- [ ] **D7-2**: `key={idx}`, `key={index}` 패턴 중 안정적 고유 식별자로 대체 가능한 케이스 수정 (stable list에만 적용)
+- [x] **D7-2**: `key={idx}`, `key={index}` 패턴 중 안정적 고유 식별자로 대체 가능한 케이스 수정 (stable list에만 적용)
 
 **예상 영향 파일:**
 - `src/components/dashboard/EnhancedServerModal.OverviewTab.tsx`
@@ -312,6 +312,12 @@ npm run lint
 npm run test:quick
 npm run line-guard   # 800줄 초과 파일 확인
 ```
+
+### 완료 검증
+
+- `npx vitest run --config config/testing/vitest.config.dom.ts src/components/dashboard/EnhancedServerModal.metrics.helpers.test.ts src/components/dashboard/ServerDetailView.test.tsx src/components/dashboard/ServerDashboard.test.tsx src/components/dashboard/ImprovedServerCard.test.tsx src/components/dashboard/DashboardHeader.test.tsx src/components/dashboard/DashboardSummary.test.tsx` PASS
+- `npm run type-check` PASS
+- `npm run lint` PASS (기존 `reports/qa/qa-tracker.json` size info only)
 
 ---
 

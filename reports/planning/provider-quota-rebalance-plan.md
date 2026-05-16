@@ -1,9 +1,9 @@
 # Provider Quota Rebalance & NLQ Pipeline Improvement Plan
 
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (Q2 Orchestrator LLM removal implemented)
+> Last reviewed: 2026-05-16 (Q0~Q2 완료, Q3=NLQ N1 연계 대기)
 > Tags: ai,provider,quota,nlq,free-tier,groq,cerebras,architecture
 
 ---
@@ -235,7 +235,7 @@ cd cloud-run/ai-engine && npm run test
 **범위 제외**
 - 파일명/모듈명에서 `orchestrator-*`를 전부 제거하는 대형 rename은 이번 범위에서 제외한다. request path에서 LLM Orchestrator를 제거했으며, 모듈명 정리는 별도 low-risk cleanup으로 분리한다.
 - legacy `orchestrator-decomposition.ts` helper와 `llm_routing` trace enum은 기존 테스트/호환성을 위해 남겼다. 기본 multi-agent request path에서는 import/call하지 않는다.
-- NLQ `intentFrame.executionMode` 신뢰 연결은 Q3/N1에서 처리한다.
+- NLQ `intentFrame.executionMode` 신뢰 연결은 NLQ Redesign N1에서 구현했으며, live provider 비교(N1-0)는 외부 호출이라 별도 수동 smoke로 남긴다.
 
 **완료 기록**
 - non-stream/stream multi-agent 경로에서 `generateStructuredOutputWithFallback()` 기반 Orchestrator routing 호출을 제거했다.

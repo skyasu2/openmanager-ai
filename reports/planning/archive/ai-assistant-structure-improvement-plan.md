@@ -1,9 +1,9 @@
 # AI 어시스턴트 구조 개선 계획서
 
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-16 (T1/T3 completed, archive-ready)
 > Tags: refactor,ai-assistant,circuit-breaker,routing,hooks
 
 ---
@@ -20,9 +20,9 @@
 
 | # | 항목 | 근거 | 우선순위 |
 |---|------|------|---------|
-| T1 | Circuit Breaker Redis 미연결 | Redis 초기화 코드 존재하나 `AIServiceCircuitBreaker.execute()`가 인스턴스 변수만 사용, 분산 상태 읽기 미구현 | High |
+| T1 | Circuit Breaker Redis 미연결 | Redis 초기화 코드 존재하나 `AIServiceCircuitBreaker.execute()`가 인스턴스 변수만 사용, 분산 상태 읽기 미구현 | 완료 |
 | T2 | ~~`routing-policy.ts` 인라인 regex 배열~~ | `nlq-preprocessing-redesign-plan.md` N1-6에서 배열 자체를 제거하는 방식으로 흡수 | 이관 |
-| T3 | `useAIChatCore` artifact 상태 혼재 | 601줄, artifact ref 5개 + artifact 상태 2개가 세션/스트림 상태와 혼재 | Medium |
+| T3 | `useAIChatCore` artifact 상태 혼재 | artifact ref 5개 + loading 상태가 세션/스트림 상태와 혼재 | 완료 |
 
 ### ❌ 재검토 후 문제 아님으로 판정된 항목
 
@@ -59,9 +59,9 @@
 
 ### 테스트 시나리오
 
-- [ ] T1: circuit breaker fallback 동작과 기존 `circuit-breaker.test.ts`가 Redis 미설정/설정 상태 모두에서 기존 결과를 유지한다.
-- [ ] T3: 새 세션 시작 시 artifact in-flight/ref/loading 상태가 한 번에 초기화된다.
-- [ ] T3: artifact guidance/direct request 흐름의 로딩 상태와 abort controller 동작이 기존 UI 테스트에서 회귀하지 않는다.
+- [x] T1: circuit breaker fallback 동작과 기존 `circuit-breaker.test.ts`가 Redis 미설정/설정 상태 모두에서 기존 결과를 유지한다.
+- [x] T3: 새 세션 시작 시 artifact in-flight/ref/loading 상태가 한 번에 초기화된다.
+- [x] T3: artifact guidance/direct request 흐름의 로딩 상태와 abort controller 동작이 기존 UI 테스트에서 회귀하지 않는다.
 
 ---
 
@@ -101,10 +101,13 @@ Vercel 서버리스 환경에서 CB가 실제로 OPEN 전환되는 경우는 Clo
 
 ### 작업 범위
 
-- [ ] **T1-1**: `executeWithCircuitBreakerAndFallback`에서 `ensureRedisStateStore()` 호출 제거
-- [ ] **T1-2**: `circuit-breaker.ts` 및 `state-store.ts` 주석을 "in-memory only, 인스턴스 간 공유 없음" 으로 명확화
-- [ ] **T1-3**: `RedisCircuitBreakerStore`와 `initializeRedisCircuitBreaker`는 **삭제하지 않음** — 향후 연결 시점의 연결점으로 보존하되, 현재 미사용임을 `@internal` JSDoc으로 표기
-- [ ] **T1-4**: 기존 CB 테스트 (`circuit-breaker.test.ts`) 검증 통과 확인
+- [x] **T1-1**: `executeWithCircuitBreakerAndFallback`에서 `ensureRedisStateStore()` 호출 제거
+- [x] **T1-2**: `circuit-breaker.ts` 및 `state-store.ts` 주석을 "in-memory only, 인스턴스 간 공유 없음" 으로 명확화
+- [x] **T1-3**: `RedisCircuitBreakerStore`와 `initializeRedisCircuitBreaker`는 **삭제하지 않음** — 향후 연결 시점의 연결점으로 보존하되, 현재 미사용임을 `@internal` JSDoc으로 표기
+- [x] **T1-4**: 기존 CB 테스트 (`circuit-breaker.test.ts`) 검증 통과 확인
+
+**검증 결과 (2026-05-16):**
+- `npx vitest run src/lib/ai/circuit-breaker.test.ts src/lib/redis/circuit-breaker-store.test.ts` — 2 files / 33 tests PASS
 
 **예상 영향 파일:**
 - `src/lib/ai/circuit-breaker.ts`
@@ -144,12 +147,16 @@ artifact 관련 ref 5개 + state 1개가 훅 내에 산재하며, `handleNewSess
 
 ### 작업 범위
 
-- [ ] **T3-1**: `useArtifactManager` 훅 생성 (`src/hooks/ai/core/useArtifactManager.ts`)
+- [x] **T3-1**: `useArtifactManager` 훅 생성 (`src/hooks/ai/core/useArtifactManager.ts`)
   - 관리 대상: `artifactIsLoading`, `artifactIntentInFlightRef`, `artifactInFlightRef`, `artifactRequestIdRef`, `artifactAbortControllerRef`
   - 반환: `{ isLoading, reset, refs }` 형태
-- [ ] **T3-2**: `useAIChatCore`에서 artifact 상태 제거, `useArtifactManager` 사용으로 교체
-- [ ] **T3-3**: `handleNewSession`의 artifact 수동 리셋을 `artifactManager.reset()` 단일 호출로 교체
-- [ ] **T3-4**: 기존 `useAIChatCore.test.ts` 검증 통과 확인
+- [x] **T3-2**: `useAIChatCore`에서 artifact 상태 제거, `useArtifactManager` 사용으로 교체
+- [x] **T3-3**: `handleNewSession`의 artifact 수동 리셋을 `artifactManager.reset()` 단일 호출로 교체
+- [x] **T3-4**: 기존 `useAIChatCore.test.ts` 검증 통과 확인
+
+**검증 결과 (2026-05-16):**
+- Failing spec 확인: `npx vitest run --config config/testing/vitest.config.dom.ts src/hooks/ai/core/useArtifactManager.test.ts` — `useArtifactManager` 미존재로 실패
+- 구현 후 회귀: `npx vitest run --config config/testing/vitest.config.dom.ts src/hooks/ai/core/useArtifactManager.test.ts src/hooks/ai/useAIChatCore.test.ts` — 2 files / 17 tests PASS
 
 **범위 제한:**
 - `handleSendInput` 내 artifact 분기 로직 이동 금지 (범위 과대, 별도 작업)

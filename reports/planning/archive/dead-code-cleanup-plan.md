@@ -1,7 +1,7 @@
 # Dead Code & Legacy Export Cleanup Plan
 
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-16
 > Tags: refactor,dead-code,cleanup
@@ -51,13 +51,23 @@
 
 ## Task 목록
 
-- [ ] **T1** A1 제거: `src/lib/config/env-validation.ts` + `env-validation.test.ts` 삭제
-- [ ] **T2** A2 제거: `src/lib/api/development-only.ts` + `development-only.test.ts` 삭제
-- [ ] **T3** A3 제거: `src/lib/security/csp-utils.ts` + `csp-utils.test.ts` 삭제
-- [ ] **T4** A4 제거: `src/hooks/ui/useTypewriter.ts` + `useTypewriter.test.ts` 삭제
-- [ ] **T5** B1 제거: `createNlqAgent()` 함수 본체 + `agents/index.ts` + `ai-sdk/index.ts` 재수출 제거
-- [ ] **T6** B2 제거: `ExecutableSurfaceArtifact` 타입 export 제거 (내부 타입으로 전환 또는 삭제)
-- [ ] **T7** 검증: `npm run validate:all` + `npm run knip:ci` 통과 확인
+- [x] **T1** A1 제거: `src/lib/config/env-validation.ts` + `env-validation.test.ts` 삭제
+  - `instrumentation.ts` production 경로 import가 확인되어 `TEST_API_KEY` 최소 길이 검증은 inline으로 보존했다.
+- [x] **T2** A2 제거: `src/lib/api/development-only.ts` + `development-only.test.ts` 삭제
+- [x] **T3** A3 제거: `src/lib/security/csp-utils.ts` + `csp-utils.test.ts` 삭제
+  - 보안 architecture 문서의 CSP 기준 파일은 `next.config.mjs`로 갱신했다.
+- [x] **T4** A4 제거: `src/hooks/ui/useTypewriter.ts` + `useTypewriter.test.ts` 삭제
+- [x] **T5** B1 제거: `createNlqAgent()` 함수 본체 + `agents/index.ts` + `ai-sdk/index.ts` 재수출 제거
+- [x] **T6** B2 제거: `ExecutableSurfaceArtifact` 타입 export 제거
+- [x] **T7** 검증: 타입/테스트/Knip 게이트 통과 확인
+
+### 완료 검증
+
+- `npm run type-check` PASS
+- `npm run test:quick` PASS
+- `cd cloud-run/ai-engine && npm run type-check` PASS
+- `cd cloud-run/ai-engine && npm run test` PASS
+- `npm run knip:ci` PASS (compact reporter 출력 없음)
 
 ---
 
