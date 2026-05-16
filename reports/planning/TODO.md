@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (Agent provider quota rebalance 완료)
+**Last Updated**: 2026-05-16 KST (계획서 구조 재검토 반영)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -126,11 +126,13 @@
 
 ### Completed (2026-05-16) — Codex
 - [x] Agent provider quota rebalance
+  - 커밋: `01bc1eac8 refactor(ai-engine): rebalance provider mesh policy`
   - Analyst/Verifier long-context 경로에서 Cerebras phantom primary를 제거하고 Mistral-first로 전환했다.
   - Reporter는 Z.AI-first를 유지하되 `maxSteps`를 5 → 4로 낮춰 conservative 5 RPM guard 병목을 줄였다.
   - Advisor는 Mistral-first 3-step 경로로 보수화하고, Cerebras `llama3.1-8b`는 2026-05-27 종료 전까지 short-context last fallback으로만 유지한다.
   - Metrics Query Cerebras-first 전환 검토는 8K context/deprecation/quota 조건 때문에 종료하고 Groq-first를 유지한다.
-  - 검증: AI Engine targeted provider/runtime policy tests 6 files / 61 tests PASS.
+  - 구조 재검토: Evaluator/Optimizer 패턴은 deterministic 품질 기준이 명확하므로 유지하되, Reporter optimizer의 "백틱=실행 가능" 휴리스틱은 command-like 패턴만 인정하도록 축소했다.
+  - 검증: targeted provider/runtime tests 6 files / 61 tests PASS, incident/reporter targeted 2 files / 41 tests PASS, AI Engine full test 127 files / 1243 tests PASS, docs checks/git diff check PASS.
 
 ### Completed (2026-05-16) — Codex
 - [x] Vercel AI SDK stable package alignment

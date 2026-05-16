@@ -185,7 +185,7 @@ npm run test:contract       # AI 계약 테스트
 npm run line-guard          # 800줄 초과 파일 확인
 ```
 
-Cloud Run 변경(T2)은 추가로:
+현재 활성 범위(T1/T3)는 Root App 변경이다. 이 계획서에서 이관된 T2/NLQ 작업으로 Cloud Run routing policy를 다시 건드리는 경우에만 추가로 실행한다:
 ```bash
 cd cloud-run/ai-engine && npm run type-check && npm run test
 ```
