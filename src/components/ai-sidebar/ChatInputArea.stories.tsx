@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { createRef } from 'react';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { ChatInputArea } from './ChatInputArea';
 
 const textareaRef = createRef<HTMLTextAreaElement>();
@@ -58,6 +58,16 @@ export const Empty: Story = {};
 
 export const WithText: Story = {
   args: { inputValue: '서버 상태를 확인해 주세요' },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('sends a non-empty operations query', async () => {
+      await userEvent.click(
+        canvas.getByRole('button', { name: '메시지 전송' })
+      );
+      await expect(args.onSendWithAttachments).toHaveBeenCalled();
+    });
+  },
 };
 
 export const Generating: Story = {
@@ -96,5 +106,23 @@ export const WebSearchEnabled: Story = {
   args: {
     inputValue: 'Next.js 16 새 기능',
     webSearchEnabled: true,
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('opens tools and switches web search back to auto', async () => {
+      await userEvent.click(
+        canvas.getByRole('button', { name: '도구 메뉴 열기' })
+      );
+
+      const toolsDialog = canvas.getByRole('dialog', {
+        name: '도구 및 옵션',
+      });
+      const tools = within(toolsDialog);
+
+      await expect(tools.getByText('Web 검색 (외부 웹)')).toBeInTheDocument();
+      await userEvent.click(tools.getByRole('button', { name: 'Auto' }));
+      await expect(args.onToggleWebSearch).toHaveBeenCalled();
+    });
   },
 };

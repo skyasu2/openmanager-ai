@@ -1,6 +1,20 @@
 import { defineConfig } from 'vitest/config';
 import { testAliases } from './shared-aliases';
 
+const quickNodeTestPatterns = [
+  // Keep this suite node-only. Broader directory globs pull DOM/integration tests
+  // into test:quick and make the smoke gate slower and less deterministic.
+  'src/utils/*-functions.test.ts',
+  'src/lib/utils/*.test.ts',
+  'src/validators/**/*Schema.test.ts',
+  'src/lib/ai/utils/{context-compressor,query-complexity}.test.ts',
+  'src/app/api/ai/supervisor/{cache-utils,security}.test.ts',
+  'src/services/monitoring/HealthCalculator.test.ts',
+  'tests/artifacts/**/*.bench.ts',
+  'tests/intent-classifier/**/*.eval.test.ts',
+  'tests/unit/dev/{vercel-font-source-guard,periodic-jobs-contract,component-map-verify-script,api-endpoints-doc-contract}.test.ts',
+];
+
 /**
  * 🚀 최소 테스트 설정
  * 빠른 회귀 확인용 핵심 유틸/보안/스키마 테스트만 실행
@@ -9,29 +23,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node', // DOM 불필요 - 순수 함수만
-    include: [
-      // Co-located 순수 함수 테스트만 포함 (jsdom 불필요)
-      'src/utils/type-guards.test.ts',
-      'src/utils/utils-functions.test.ts',
-      'src/lib/utils/time.test.ts',
-      // Phase 1 추가: validators + AI utils
-      'src/validators/paginationQuerySchema.test.ts',
-      'src/lib/ai/utils/context-compressor.test.ts',
-      'src/lib/ai/utils/query-complexity.test.ts',
-      // Phase 2 추가: AI supervisor utils
-      'src/app/api/ai/supervisor/cache-utils.test.ts',
-      'src/app/api/ai/supervisor/security.test.ts',
-      'tests/artifacts/intent-classifier.bench.ts',
-      'tests/intent-classifier/intent-classifier.eval.test.ts',
-      // Phase 3 추가: monitoring
-      'src/services/monitoring/HealthCalculator.test.ts',
-      // Deployment drift guards
-      'tests/unit/dev/vercel-font-source-guard.test.ts',
-      'tests/unit/dev/periodic-jobs-contract.test.ts',
-      'tests/unit/dev/component-map-verify-script.test.ts',
-      'tests/unit/dev/api-endpoints-doc-contract.test.ts',
-      // 참고: integration 테스트는 별도 config에서 실행
-    ],
+    include: quickNodeTestPatterns,
     exclude: [
       'node_modules/**',
       'dist/**',

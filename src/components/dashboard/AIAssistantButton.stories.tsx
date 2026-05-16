@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { AIAssistantButton } from './AIAssistantButton';
 
 const meta = {
@@ -23,7 +23,26 @@ export const Open: Story = {
 };
 
 export const EnabledClosed: Story = {
+  tags: ['interaction-test'],
   args: { isOpen: false, isEnabled: true, onClick: fn() },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step(
+      'enabled button exposes the open action and calls handler',
+      async () => {
+        const button = canvas.getByRole('button', {
+          name: 'AI 어시스턴트 열기',
+        });
+
+        await waitFor(() =>
+          expect(button).toHaveAttribute('aria-pressed', 'false')
+        );
+        await userEvent.click(button);
+        await expect(args.onClick).toHaveBeenCalled();
+      }
+    );
+  },
 };
 
 export const AllStates: Story = {

@@ -10,9 +10,16 @@ const isStorybookVitest =
   process.env.VITEST === 'true' || process.env.VITEST_STORYBOOK === 'true';
 const storybookDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(storybookDir, '..');
+const vitestStoryGlobs =
+  process.env.OPENMANAGER_STORYBOOK_VITEST_STORIES?.split(',')
+    .map((storyGlob) => storyGlob.trim())
+    .filter(Boolean);
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.stories.@(ts|tsx)'],
+  stories:
+    isStorybookVitest && vitestStoryGlobs && vitestStoryGlobs.length > 0
+      ? vitestStoryGlobs
+      : ['../src/**/*.stories.@(ts|tsx)'],
   framework: '@storybook/nextjs-vite',
   addons: [
     ...(isStorybookVitest ? [] : ['@storybook/addon-mcp']),

@@ -82,6 +82,16 @@
   - package-lock.json
   - .gitlab-ci.yml
 
+.bundle_budget_paths: &bundle_budget_paths
+  - src/**/*
+  - public/**/*
+  - config/performance/bundlemon.config.cjs
+  - package.json
+  - package-lock.json
+  - next.config.mjs
+  - tsconfig.json
+  - .gitlab-ci.yml
+
 .ai_sdk_registry_paths: &ai_sdk_registry_paths
   - package.json
   - package-lock.json
@@ -204,6 +214,22 @@ stages:
       when: on_success
     - if: '$CI_COMMIT_BRANCH'
       changes: *storybook_validate_paths
+      when: on_success
+    - when: never
+
+.bundle_budget_changes: &bundle_budget_changes
+  rules:
+    # QA 기록 커밋은 번들 예산 관측을 생략한다.
+    - if: '$CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: *bundle_budget_paths
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes: *bundle_budget_paths
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH'
+      changes: *bundle_budget_paths
       when: on_success
     - when: never
 
@@ -354,6 +380,21 @@ validate_storybook_smoke:
     - npm run storybook:smoke
     - echo "✅ Storybook smoke 통과"
   timeout: 8 minutes
+  interruptible: true
+
+validate_bundle_budget:
+  stage: validate
+  tags:
+    - wsl2-docker
+  <<: [*npm_cache, *bundle_budget_changes]
+  allow_failure: true
+  before_script:
+    - npm ci --prefer-offline --cache .npm --no-audit
+  script:
+    - echo "▶ Bundle size budget 관측 (warn-first, non-blocking)..."
+    - npm run bundle:budget
+    - echo "✅ Bundle size budget 관측 완료"
+  timeout: 15 minutes
   interruptible: true
 
 # ─── deploy job ────────────────────────────────────────────────────────────────

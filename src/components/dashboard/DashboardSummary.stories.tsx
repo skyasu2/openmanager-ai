@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { DashboardSummary } from './DashboardSummary';
 import type { DashboardStats } from './types/dashboard.types';
 
@@ -61,10 +61,34 @@ export const AllOnline: Story = {
 };
 
 export const MixedStatus: Story = {
+  tags: ['interaction-test'],
   args: {
     stats: mixedStats,
     activeFilter: null,
     activeAlertsCount: 4,
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('status filter cards are actionable', async () => {
+      const warningFilter = canvas.getByRole('button', {
+        name: '경고 3대 필터',
+      });
+
+      await expect(warningFilter).toHaveAttribute('aria-pressed', 'false');
+      await userEvent.click(warningFilter);
+      await expect(args.onFilterChange).toHaveBeenCalledWith('warning');
+    });
+
+    await step('header action buttons call their handlers', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: '알림 보기' }));
+      await expect(args.onOpenAlertHistory).toHaveBeenCalled();
+
+      await userEvent.click(
+        canvas.getByRole('button', { name: '로그 검색 보기' })
+      );
+      await expect(args.onOpenLogExplorer).toHaveBeenCalled();
+    });
   },
 };
 

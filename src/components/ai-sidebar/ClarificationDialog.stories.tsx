@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { ClarificationDialog } from './ClarificationDialog';
 
 const meta = {
@@ -18,6 +18,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  tags: ['interaction-test'],
   args: {
     clarification: {
       originalQuery: '서버 상태 알려줘',
@@ -54,9 +55,26 @@ export const Default: Story = {
     onSkip: fn(),
     onDismiss: fn(),
   },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('selects a suggested clarification option', async () => {
+      await expect(canvas.getByRole('dialog')).toBeInTheDocument();
+      await userEvent.click(
+        canvas.getByRole('button', { name: /전체 서버 요약/ })
+      );
+      await expect(args.onSelectOption).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'opt-1',
+          suggestedQuery: '전체 서버 상태 요약해줘',
+        })
+      );
+    });
+  },
 };
 
 export const WithCustomInput: Story = {
+  tags: ['interaction-test'],
   args: {
     clarification: {
       originalQuery: 'CPU 높은 서버',
@@ -93,5 +111,22 @@ export const WithCustomInput: Story = {
     onSubmitCustom: fn(),
     onSkip: fn(),
     onDismiss: fn(),
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('submits custom clarification text', async () => {
+      await userEvent.click(
+        canvas.getByRole('button', { name: '직접 입력하기' })
+      );
+      await userEvent.type(
+        canvas.getByPlaceholderText('추가 정보를 입력하세요...'),
+        '최근 15분 기준으로 확인'
+      );
+      await userEvent.click(canvas.getByRole('button', { name: '확인' }));
+      await expect(args.onSubmitCustom).toHaveBeenCalledWith(
+        '최근 15분 기준으로 확인'
+      );
+    });
   },
 };

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn, mocked } from 'storybook/test';
+import { expect, fn, mocked, userEvent, within } from 'storybook/test';
 import { useServerMetrics } from '../../hooks/useServerMetrics';
 import type { Server } from '../../types/server';
 import ImprovedServerCard from './ImprovedServerCard';
@@ -91,7 +91,31 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Online: Story = {
+  tags: ['interaction-test'],
   args: { server: onlineServer },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('main card button opens server details', async () => {
+      await userEvent.click(
+        canvas.getByRole('button', { name: /web-nginx-dc1-01/ })
+      );
+      await expect(args.onClick).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'web-nginx-dc1-01' })
+      );
+    });
+
+    await step('progressive disclosure expands tertiary details', async () => {
+      const toggle = canvas.getByRole('button', {
+        name: '상세 정보 펼치기',
+      });
+
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await userEvent.click(toggle);
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      await expect(canvas.getByText('Uptime')).toBeInTheDocument();
+    });
+  },
 };
 
 export const Warning: Story = {
