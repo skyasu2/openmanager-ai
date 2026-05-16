@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (NLQ provider smoke follow-up)
+**Last Updated**: 2026-05-16 KST (NLQ EntitySchema provider compatibility fix)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,6 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| NLQ EntitySchema provider compatibility fix | High | Ready | `QA-20260516-0507` provider smoke에서 current `/api/ai/nlq/extract-entities` schema의 optional fields가 Groq/OpenAI-compatible structured output과 충돌하는 것을 확인. Strict required nullable schema에서는 Groq가 3/4까지 회복했고 Mistral `ministral-3b-latest`는 4/4 유지. provider 전환 전 schema 계약 수정과 targeted rerun 필요. |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 잔여 구현 없음. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -37,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~NLQ EntitySchema provider compatibility fix~~ | — | **완료** — `/api/ai/nlq/extract-entities` structured-output schema를 required nullable 계약으로 정렬하고 top-level `metric/timeRange` provider drift를 normalizer 경계에서 흡수하도록 완충했다. `QA-20260516-0508`에서 Groq `llama-4-scout` 4/4 schema_valid·intent_accuracy·executionMode_accuracy 회복, Mistral `ministral-3b`는 4/4 schema_valid·intent_accuracy 및 3/4 executionMode_accuracy로 비교 기록. |
 | ~~NLQ front provider live 비교 QA~~ | — | **완료** — `QA-20260516-0507`에서 Groq/Mistral/Cerebras/Z.AI 후보를 provider당 4 fixture로 수동 smoke. Current schema 기준 Mistral `ministral-3b-latest`만 4/4 통과, strict required nullable schema 기준 Groq 3/4·Mistral `ministral-3b-latest` 4/4. 결론: production provider 전환보다 `NLQ EntitySchema provider compatibility fix`가 선행. |
 | ~~대형 리팩터 커밋 분할 기준 보강~~ | — | **완료** — `reports/planning/README.md`에 대형 리팩터의 `test(spec):` / 구현 / docs·QA 커밋 분리 기준과 분할 필요·불필요 조건을 추가했다. 코드 변경 없는 프로세스 규칙 개선으로 처리. |
 | ~~orchestrator-routing 모듈 경계 정리~~ | — | **완료** — `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-prompt-helpers.ts`로 prompt/capability helper를 분리하고, deterministic forced knowledge path와 empty tool-result summarization fallback도 각각 전용 모듈로 이동했다. `orchestrator-routing.ts`는 706줄 → 459줄로 축소되어 계획 기준(≤500)을 충족. SDD 선행 커밋 `test(spec): add orchestrator prompt builder tests` 후 구현. 검증: targeted Vitest 2 files / 23 tests, AI Engine `type-check`, AI Engine full test 125 files / 1218 tests, `line-guard` 통과. 상세: [archive/post-2026-0515-improvement-plan.md](archive/post-2026-0515-improvement-plan.md) T4 |

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-16T10:31:04.202Z"
+    "updatedAt": "2026-05-16T10:45:41.451Z"
   },
   "sequence": {
-    "nextRunNumber": 508
+    "nextRunNumber": 509
   },
   "summary": {
-    "totalRecordedRuns": 505,
+    "totalRecordedRuns": 506,
     "totalRuns": 403,
-    "excludedRuns": 102,
+    "excludedRuns": 103,
     "totalChecks": 3606,
     "totalPassed": 3469,
     "totalFailed": 127,
-    "completionRate": 99.83,
-    "completedItems": 578,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 579,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 1,
+    "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260515-0506",
     "lastRecordedAt": "2026-05-15T07:20:51.624Z",
-    "latestRecordedRunId": "QA-20260516-0507",
-    "latestRecordedAt": "2026-05-16T10:31:04.202Z"
+    "latestRecordedRunId": "QA-20260516-0508",
+    "latestRecordedAt": "2026-05-16T10:45:41.451Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14156,15 +14156,15 @@
     },
     "nlq-entity-schema-provider-compatibility-v811157": {
       "id": "nlq-entity-schema-provider-compatibility-v811157",
-      "title": "NLQ EntitySchema must use provider-compatible required nullable fields before Groq/OpenAI-compatible structured output can be trusted",
-      "priority": "P1",
-      "status": "pending",
+      "title": "NLQ EntitySchema provider-compatible required nullable fields",
+      "priority": "P2",
+      "status": "completed",
       "firstSeenRunId": "QA-20260516-0507",
       "firstSeenAt": "2026-05-16T10:31:04.202Z",
-      "lastSeenRunId": "QA-20260516-0507",
-      "lastSeenAt": "2026-05-16T10:31:04.202Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260516-0508",
+      "lastSeenAt": "2026-05-16T10:45:41.451Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
@@ -14172,11 +14172,11 @@
       "owner": "",
       "lastEvidence": "",
       "lastNote": "Current route schema with optional top-level fields caused Groq structured output schema rejection in direct provider smoke. Strict required nullable schema recovered Groq to 3/4, while Mistral ministral-3b remained 4/4.",
-      "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlocking": false,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-16T10:31:04.202Z"
+      "lastStatusChangeAt": "2026-05-16T10:45:41.451Z"
     },
     "nlq-provider-ministral3b-candidate-v811157": {
       "id": "nlq-provider-ministral3b-candidate-v811157",
@@ -56594,6 +56594,92 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260516-0508",
+      "recordedAt": "2026-05-16T10:45:41.451Z",
+      "recordedAtKst": "2026-05-16 19:45:41 KST",
+      "title": "NLQ EntitySchema Provider Compatibility Fix Verification - v8.11.157",
+      "owner": "codex",
+      "source": "manual-provider-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260516-0508.json",
+      "environment": {
+        "target": "local-provider-smoke",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "c376c7f7a5cebd4a5452a3abf55f6d45cee17884"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "NLQ route structured-output schema contract",
+        "Entity extractor normalizer nullable provider payload handling",
+        "Groq llama-4-scout direct provider smoke after schema fix",
+        "Mistral ministral-3b comparison smoke after schema fix"
+      ],
+      "skippedSurfaces": [
+        "Production Vercel route was not redeployed in this verification run",
+        "Authenticated browser conversational QA was not repeated; this was a schema/provider compatibility fix"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "NLQ provider smoke after schema fix",
+          "agent": "Front NLQ semantic parser",
+          "provider": "groq",
+          "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "route": "direct provider API",
+          "source": "qa-20260516-v811157-nlq-schema-fix-provider-smoke.json",
+          "latencyMs": 589
+        },
+        {
+          "surface": "NLQ provider smoke after schema fix",
+          "agent": "Front NLQ semantic parser",
+          "provider": "mistral",
+          "model": "ministral-3b-latest",
+          "route": "direct provider API",
+          "source": "qa-20260516-v811157-nlq-schema-fix-provider-smoke.json",
+          "latencyMs": 815
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Provider-compatible required nullable schema restored Groq structured-output compatibility to 4/4 on the targeted smoke corpus.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "NLQ schema fix provider smoke",
+          "path": "reports/qa/evidence/qa-20260516-v811157-nlq-schema-fix-provider-smoke.json"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -56602,17 +56688,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 255,
-      "appropriateCount": 218,
+      "seenCount": 256,
+      "appropriateCount": 219,
       "partialCount": 37,
       "inappropriateCount": 0,
       "improvementNeededCount": 47,
-      "lastRunId": "QA-20260516-0507",
-      "lastSeenAt": "2026-05-16T10:31:04.202Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Mistral ministral-3b passed the NLQ schema/intent/executionMode corpus, but current Groq production schema compatibility failed under direct provider smoke.",
-      "lastNextAction": "Fix NLQ EntitySchema structured-output compatibility first, then rerun a smaller Groq vs ministral-3b smoke before switching the production default."
+      "lastRunId": "QA-20260516-0508",
+      "lastSeenAt": "2026-05-16T10:45:41.451Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Provider-compatible required nullable schema restored Groq structured-output compatibility to 4/4 on the targeted smoke corpus.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

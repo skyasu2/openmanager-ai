@@ -1,0 +1,100 @@
+{
+  "runId": "QA-20260516-0508",
+  "recordedAt": "2026-05-16T10:45:41.451Z",
+  "recordedAtKst": "2026-05-16 19:45:41 KST",
+  "runTitle": "NLQ EntitySchema Provider Compatibility Fix Verification - v8.11.157",
+  "owner": "codex",
+  "source": "manual-provider-smoke",
+  "environment": {
+    "target": "local-provider-smoke",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "c376c7f7a5cebd4a5452a3abf55f6d45cee17884"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "NLQ route structured-output schema contract",
+    "Entity extractor normalizer nullable provider payload handling",
+    "Groq llama-4-scout direct provider smoke after schema fix",
+    "Mistral ministral-3b comparison smoke after schema fix"
+  ],
+  "skippedSurfaces": [
+    "Production Vercel route was not redeployed in this verification run",
+    "Authenticated browser conversational QA was not repeated; this was a schema/provider compatibility fix"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "NLQ provider smoke after schema fix",
+      "agent": "Front NLQ semantic parser",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "direct provider API",
+      "source": "qa-20260516-v811157-nlq-schema-fix-provider-smoke.json",
+      "latencyMs": 589
+    },
+    {
+      "surface": "NLQ provider smoke after schema fix",
+      "agent": "Front NLQ semantic parser",
+      "provider": "mistral",
+      "model": "ministral-3b-latest",
+      "route": "direct provider API",
+      "source": "qa-20260516-v811157-nlq-schema-fix-provider-smoke.json",
+      "latencyMs": 815
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Provider-compatible required nullable schema restored Groq structured-output compatibility to 4/4 on the targeted smoke corpus.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "NLQ schema fix provider smoke",
+      "path": "reports/qa/evidence/qa-20260516-v811157-nlq-schema-fix-provider-smoke.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "nlq-entity-schema-provider-compatibility-v811157",
+      "title": "NLQ EntitySchema provider-compatible required nullable fields",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local targeted tests: src/app/api/ai/nlq/extract-entities/route.test.ts and src/lib/ai/entity-extractor.test.ts passed 22/22.",
+    "Root contract, type-check, lint, and test:quick passed before recording this run.",
+    "Provider smoke after schema fix: Groq 4/4 schema_valid, 4/4 intent_accuracy, 4/4 executionMode_accuracy; Mistral ministral-3b 4/4 schema_valid, 4/4 intent_accuracy, 3/4 executionMode_accuracy."
+  ],
+  "links": []
+}
