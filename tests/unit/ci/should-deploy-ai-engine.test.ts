@@ -55,6 +55,35 @@ function commitChange(cwd: string, relativePath: string) {
   return runGit(cwd, ['rev-parse', 'HEAD']);
 }
 
+function commitVersionOnlyAiEngineChange(cwd: string) {
+  writeFile(
+    cwd,
+    'cloud-run/ai-engine/package.json',
+    '{\n  "name": "ai-engine",\n  "version": "1.0.0"\n}\n'
+  );
+  writeFile(
+    cwd,
+    'cloud-run/ai-engine/package-lock.json',
+    '{\n  "name": "ai-engine",\n  "version": "1.0.0",\n  "packages": {\n    "": {\n      "version": "1.0.0"\n    }\n  }\n}\n'
+  );
+  runGit(cwd, ['add', '.']);
+  runGit(cwd, ['commit', '-m', 'seed ai engine package metadata']);
+
+  writeFile(
+    cwd,
+    'cloud-run/ai-engine/package.json',
+    '{\n  "name": "ai-engine",\n  "version": "1.0.1"\n}\n'
+  );
+  writeFile(
+    cwd,
+    'cloud-run/ai-engine/package-lock.json',
+    '{\n  "name": "ai-engine",\n  "version": "1.0.1",\n  "packages": {\n    "": {\n      "version": "1.0.1"\n    }\n  }\n}\n'
+  );
+  runGit(cwd, ['add', '.']);
+  runGit(cwd, ['commit', '-m', 'bump ai engine package metadata only']);
+  return runGit(cwd, ['rev-parse', 'HEAD']);
+}
+
 function runGuard(cwd: string, base: string, head: string) {
   return spawnSync('bash', [SCRIPT_PATH, '--base', base, '--head', head], {
     cwd,
@@ -87,5 +116,36 @@ describe('should-deploy-ai-engine.sh', () => {
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('decision=deploy');
+  });
+
+  it('skips Cloud Run deploy for ai-engine package version-only release metadata', () => {
+    const { dir } = createRepo();
+    commitVersionOnlyAiEngineChange(dir);
+    const base = runGit(dir, ['rev-parse', 'HEAD^']);
+    const head = runGit(dir, ['rev-parse', 'HEAD']);
+
+    const result = runGuard(dir, base, head);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('decision=skip');
+    expect(result.stdout).toContain('reason=ai_engine_version_metadata_only');
+  });
+
+  it('deploys Cloud Run when ai-engine package metadata changes beyond version fields', () => {
+    const { dir, base } = createRepo();
+    writeFile(
+      dir,
+      'cloud-run/ai-engine/package.json',
+      '{\n  "name": "ai-engine",\n  "version": "1.0.0",\n  "dependencies": {}\n}\n'
+    );
+    runGit(dir, ['add', '.']);
+    runGit(dir, ['commit', '-m', 'change ai engine package metadata']);
+    const head = runGit(dir, ['rev-parse', 'HEAD']);
+
+    const result = runGuard(dir, base, head);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('decision=deploy');
+    expect(result.stdout).toContain('reason=ai_engine_metadata_content_change');
   });
 });

@@ -109,6 +109,44 @@ matches_ai_engine_path() {
   esac
 }
 
+is_ai_engine_version_metadata_path() {
+  case "$1" in
+    cloud-run/ai-engine/package.json|cloud-run/ai-engine/package-lock.json)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+is_version_only_metadata_diff() {
+  local file="$1"
+  local diff_lines
+
+  diff_lines="$(git diff --unified=0 "$base_ref" "$HEAD_REF" -- "$file" || true)"
+  if [ -z "$diff_lines" ]; then
+    return 0
+  fi
+
+  while IFS= read -r line; do
+    case "$line" in
+      "+++"*|"---"*|"@@"*)
+        continue
+        ;;
+      "+"*|"-"*)
+        if ! printf '%s\n' "$line" | grep -Eq '^[+-][[:space:]]*"version":[[:space:]]*"[^"]+"[,]?$'; then
+          return 1
+        fi
+        ;;
+    esac
+  done <<EOF
+$diff_lines
+EOF
+
+  return 0
+}
+
 base_ref="$(resolve_base_ref || true)"
 
 if [ -z "$base_ref" ]; then
@@ -132,13 +170,40 @@ if [ -z "$changed_files" ]; then
   exit 0
 fi
 
+ai_engine_changed_files=""
+has_ai_engine_change=false
+has_ai_engine_non_version_change=false
+
 while IFS= read -r changed_file; do
   if matches_ai_engine_path "$changed_file"; then
-    echo "decision=deploy reason=ai_engine_change file=${changed_file} base=${base_ref} head=${HEAD_REF}"
-    exit 0
+    has_ai_engine_change=true
+    ai_engine_changed_files="${ai_engine_changed_files}${changed_file} "
+    if ! is_ai_engine_version_metadata_path "$changed_file"; then
+      has_ai_engine_non_version_change=true
+      break
+    fi
   fi
 done <<EOF
 $changed_files
 EOF
+
+if [ "$has_ai_engine_non_version_change" = "true" ]; then
+  echo "decision=deploy reason=ai_engine_change file=${changed_file} base=${base_ref} head=${HEAD_REF}"
+  exit 0
+fi
+
+if [ "$has_ai_engine_change" = "true" ]; then
+  while IFS= read -r changed_file; do
+    if matches_ai_engine_path "$changed_file" && ! is_version_only_metadata_diff "$changed_file"; then
+      echo "decision=deploy reason=ai_engine_metadata_content_change file=${changed_file} base=${base_ref} head=${HEAD_REF}"
+      exit 0
+    fi
+  done <<EOF
+$changed_files
+EOF
+
+  echo "decision=skip reason=ai_engine_version_metadata_only files=\"${ai_engine_changed_files% }\" base=${base_ref} head=${HEAD_REF}"
+  exit 0
+fi
 
 echo "decision=skip reason=no_ai_engine_changes base=${base_ref} head=${HEAD_REF}"
