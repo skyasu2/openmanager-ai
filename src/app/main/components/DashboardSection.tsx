@@ -34,6 +34,12 @@ export function DashboardSection({
                 <span className="text-lg">대시보드 열기</span>
               </button>
 
+              {/* 손가락 포인터 */}
+              <div className="flex flex-col items-center gap-1">
+                <span className="finger-pointer-dashboard">👆</span>
+                <span className="text-xs text-white/60">클릭하세요</span>
+              </div>
+
               {onStopSystem && (
                 <button
                   type="button"

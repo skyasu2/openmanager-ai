@@ -116,12 +116,12 @@ function Home() {
             <span className="text-white">OpenManager</span>{' '}
             <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
           </h1>
-          <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/85 md:text-lg">
-            <span className="block font-medium text-white/90">
+          <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/90 md:text-lg">
+            <span className="block font-medium text-white">
               운영 데이터를 질문, 분석, 조치안으로 바로 연결하는 모니터링
               워크플로
             </span>
-            <span className="mt-2 block text-sm text-white/60">
+            <span className="mt-2 block text-sm text-white/75">
               그래프를 해석하는 대신 지금 무슨 일이 벌어지는지 바로 묻고 답을
               받을 수 있습니다
             </span>
@@ -146,7 +146,10 @@ function Home() {
           )}
         </div>
 
-        <section className="mb-12" aria-label="주요 기능 소개">
+        <section
+          className="mb-12 rounded-[2rem] border border-white/10 bg-black/15 px-4 py-6 shadow-[0_24px_80px_rgba(15,23,42,0.28)] backdrop-blur-sm sm:px-6"
+          aria-label="주요 기능 소개"
+        >
           <FeatureCardsGrid />
         </section>
 

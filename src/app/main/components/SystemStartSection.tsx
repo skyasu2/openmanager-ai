@@ -69,6 +69,13 @@ export function SystemStartSection({
             </span>
           )}
         </div>
+
+        {/* 손가락 포인터 */}
+        {!systemStartCountdown && (
+          <div className="flex justify-center">
+            <span className="finger-pointer-primary">👆</span>
+          </div>
+        )}
       </div>
 
       {/* AI 어시스턴트 안내 */}
