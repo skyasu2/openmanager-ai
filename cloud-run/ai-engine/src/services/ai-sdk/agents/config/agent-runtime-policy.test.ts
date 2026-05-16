@@ -274,10 +274,10 @@ describe('agent runtime policy SSOT', () => {
 
   it('exposes stable helpers for orchestrator routing and evidence limits', () => {
     expect(getOrchestratorProviderOrder()).toEqual([
-      'groq',
-      'zai',
-      'mistral',
       'cerebras',
+      'mistral',
+      'zai',
+      'groq',
     ]);
     expect(MISTRAL_FIRST_PROVIDER_ORDER).toEqual([
       'mistral',

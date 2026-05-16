@@ -507,6 +507,145 @@ describe('executeMultiAgent timeout contract', () => {
     }
   });
 
+  it('runs high-confidence non-stream forced routing before task decomposition', async () => {
+    const contextModule = await import('./orchestrator-context');
+    const decompositionModule = await import('./orchestrator-decomposition');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Reporter Agent',
+      confidence: 0.9,
+    });
+    mockExecuteForcedRouting.mockResolvedValueOnce({
+      success: true,
+      response: 'Reporter forced response',
+      handoffs: [],
+      finalAgent: 'Reporter Agent',
+      toolsCalled: [],
+      usage: {
+        promptTokens: 10,
+        completionTokens: 5,
+        totalTokens: 15,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-reporter',
+        totalRounds: 1,
+        handoffCount: 0,
+        durationMs: 25,
+      },
+    });
+
+    const result = await executeMultiAgent({
+      messages: [{ role: 'user', content: '장애 보고서 작성해줘' }],
+      sessionId: 'forced-routing-before-decomposition',
+    });
+
+    expect(result.success).toBe(true);
+    expect(decompositionModule.decomposeTask).not.toHaveBeenCalled();
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
+    expect(mockExecuteForcedRouting).toHaveBeenCalledOnce();
+  });
+
+  it('runs high-confidence stream forced routing before task decomposition', async () => {
+    const contextModule = await import('./orchestrator-context');
+    const decompositionModule = await import('./orchestrator-decomposition');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Reporter Agent',
+      confidence: 0.9,
+    });
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeMultiAgentStream({
+      messages: [{ role: 'user', content: '장애 보고서 작성해줘' }],
+      sessionId: 'stream-forced-routing-before-decomposition',
+    })) {
+      events.push(event);
+    }
+
+    expect(events.some((event) => event.type === 'done')).toBe(true);
+    expect(decompositionModule.decomposeTask).not.toHaveBeenCalled();
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
+    expect(mockExecuteAgentStream).toHaveBeenCalledOnce();
+  });
+
+  it('uses fallback suggested agent before LLM routing when decomposition is not composite', async () => {
+    const contextModule = await import('./orchestrator-context');
+    const decompositionModule = await import('./orchestrator-decomposition');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Reporter Agent',
+      confidence: 0.68,
+    });
+    vi.mocked(decompositionModule.decomposeTask).mockResolvedValueOnce({
+      subtasks: [
+        {
+          task: '보고서 작성',
+          agent: 'Reporter Agent',
+        },
+      ],
+      requiresSequential: false,
+    });
+    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Reporter Agent');
+    mockGenerateObjectWithFallback.mockResolvedValueOnce({
+      object: {
+        selectedAgent: 'REPORTER',
+        confidence: 0.72,
+        reasoning: 'Need report',
+      },
+      usage: {
+        inputTokens: 12,
+        outputTokens: 8,
+        totalTokens: 20,
+      },
+    });
+    mockExecuteForcedRouting.mockResolvedValueOnce({
+      success: true,
+      response: 'Reporter fallback response',
+      handoffs: [],
+      finalAgent: 'Reporter Agent',
+      toolsCalled: [],
+      usage: {
+        promptTokens: 10,
+        completionTokens: 5,
+        totalTokens: 15,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-reporter',
+        totalRounds: 1,
+        handoffCount: 0,
+        durationMs: 25,
+      },
+    });
+
+    const result = await executeMultiAgent({
+      messages: [
+        {
+          role: 'user',
+          content: '서버 상태 분석 결과를 보고서로 정리해줘',
+        },
+      ],
+      sessionId: 'single-subtask-fallback-before-llm',
+    });
+
+    expect(result.success).toBe(true);
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
+    expect(mockExecuteForcedRouting).toHaveBeenCalledWith(
+      '서버 상태 분석 결과를 보고서로 정리해줘',
+      'Reporter Agent',
+      expect.any(Number),
+      true,
+      true,
+      undefined,
+      undefined,
+      null,
+      undefined,
+      undefined,
+      undefined
+    );
+  });
+
   it('records LLM routing source when pre-filter is not decisive', async () => {
     const contextModule = await import('./orchestrator-context');
     vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
