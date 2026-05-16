@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-08
+> Last reviewed: 2026-05-16
 > Canonical: docs/reference/architecture/README.md
 > Tags: architecture,diagram,ssot,as-built
 
@@ -38,7 +38,8 @@ OpenManager의 설계도는 초기 upfront design 산출물이 아니라, 실제
 |---|---|---|---|---|
 | 시스템 전체 | [system/system-architecture-current.md](./system/system-architecture-current.md) | Active Canonical | 현재 route/component 수치 반영 대상 | Next.js route, Cloud Run route, 인프라 의존성 변경 |
 | 폴더/코드 책임 | [folder-structure.md](./folder-structure.md) | Active Canonical | 코드 구조 요약 | 주요 디렉터리, route surface, Cloud Run mount 변경 |
-| AI Runtime | [ai/ai-engine-architecture.md](./ai/ai-engine-architecture.md) | Active Canonical | Supervisor, Orchestrator, provider gate 기준 | AI route, planner, provider, tool/result schema 변경 |
+| AI Runtime | [ai/ai-engine-architecture.md](./ai/ai-engine-architecture.md) | Active Canonical | Supervisor, Direct Router, provider gate 기준 | AI route, planner, provider, tool/result schema 변경 |
+| AI Request Guard | [ai/request-guard-policy.md](./ai/request-guard-policy.md) | Active Reference | prompt injection/off-domain 차단·경고·위임 기준 | request guard, prompt guard, off-domain 정책 변경 |
 | Frontend/Backend AI 경계 | [ai/frontend-backend-comparison.md](./ai/frontend-backend-comparison.md) | Active Reference | BFF와 Cloud Run 책임 분리 | stream/job/facade route 또는 UI transport 변경 |
 | OTel/Data 토폴로지 | [data/otel-data-architecture.md](./data/otel-data-architecture.md) | Active Canonical | 18대 synthetic topology 기준 | 서버 인벤토리, OTel schema, data loader 변경 |
 | 데이터 접근 배경 | [data/data-architecture.md](./data/data-architecture.md) | Active Supporting | zero-internal-traffic 배경 설명 | OTel canonical과 충돌하면 보조 문서로 보정 |
@@ -51,7 +52,7 @@ OpenManager의 설계도는 초기 upfront design 산출물이 아니라, 실제
 | 영역 | 포함 문서 | 이 영역에서 답해야 하는 질문 |
 |---|---|---|
 | 전체 시스템 | [system/system-architecture-current.md](./system/system-architecture-current.md), [folder-structure.md](./folder-structure.md) | 사용자는 어디로 들어오고, Vercel/Cloud Run/Supabase/Redis/Cloud Tasks는 어떻게 나뉘는가 |
-| AI Runtime | [ai/ai-engine-architecture.md](./ai/ai-engine-architecture.md), [ai/frontend-backend-comparison.md](./ai/frontend-backend-comparison.md) | stream/job/facade route, Supervisor/Orchestrator/Agents, provider gate, deterministic fallback이 어떻게 연결되는가. 초기 설계 비교 기록은 [archived 문서](../../archived/ai-assistant-initial-design-comparison.md)에서만 historical evidence로 확인한다. |
+| AI Runtime | [ai/ai-engine-architecture.md](./ai/ai-engine-architecture.md), [ai/frontend-backend-comparison.md](./ai/frontend-backend-comparison.md), [ai/request-guard-policy.md](./ai/request-guard-policy.md) | stream/job/facade route, Supervisor/Direct Router/Agents, request guard, provider gate, deterministic fallback이 어떻게 연결되는가. 초기 설계 비교 기록은 [archived 문서](../../archived/ai-assistant-initial-design-comparison.md)에서만 historical evidence로 확인한다. |
 | 데이터/모니터링 | [data/otel-data-architecture.md](./data/otel-data-architecture.md), [data/data-architecture.md](./data/data-architecture.md), [ai/rag-knowledge-engine.md](./ai/rag-knowledge-engine.md) | 18대 synthetic OTel 데이터와 Knowledge Retrieval Lite가 Dashboard/AI에 어떻게 공급되는가 |
 | 인프라/제약 | [infrastructure/free-tier-optimization.md](./infrastructure/free-tier-optimization.md), [infrastructure/resilience.md](./infrastructure/resilience.md), [infrastructure/security.md](./infrastructure/security.md) | 무료 티어, fallback, circuit breaker, 보안 경계가 무엇을 제한하는가 |
 | API/계약 | [../api/endpoints.md](../api/endpoints.md), [../api/contracts.md](../api/contracts.md) | route가 실제로 존재하는가, 요청/응답 계약이 무엇인가 |
@@ -104,7 +105,7 @@ OpenManager의 설계도는 초기 upfront design 산출물이 아니라, 실제
 | 변경 유형 | 함께 확인할 파일 |
 |---|---|
 | `src/app/api/**/route.ts(x)` 추가/삭제 | `system-architecture-current.md`, `folder-structure.md`, 필요 시 `docs/reference/api/endpoints.md` |
-| AI stream/job/facade route 변경 | `ai-engine-architecture.md`, `frontend-backend-comparison.md`, `src/data/architecture-diagrams/ai-assistant.ts` |
+| AI stream/job/facade route 변경 | `ai-engine-architecture.md`, `frontend-backend-comparison.md`, `request-guard-policy.md`, `src/data/architecture-diagrams/ai-assistant.ts` |
 | planner, provider, tool/result schema 변경 | `ai-engine-architecture.md`, `../../design/01-ai-agent-design.md`; 장기 방향 재평가 시 archived `ai-assistant-initial-design-comparison.md`는 historical evidence로만 확인 |
 | OTel 서버 인벤토리/메트릭 schema 변경 | `otel-data-architecture.md`, `src/data/architecture-diagrams/infrastructure-topology.ts` |
 | 컴포넌트 graph 갱신 | `npm run docs:components:map` 후 `npm run docs:components:verify` |

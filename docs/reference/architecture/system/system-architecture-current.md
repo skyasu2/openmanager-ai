@@ -12,14 +12,14 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.11.156+ 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
+**OpenManager AI v8.11.159+ 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
 
 | 항목 | 수치 |
 |------|------|
 | React/TSX surface | 359 tracked `.tsx` files under `src/` |
 | Custom Hooks | ~35+ |
 | API Routes | 33 (`src/app/api/**/route.ts`, `route.tsx` 포함) |
-| AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
+| AI 실행 컴포넌트 | 6 runtime roles (Direct Router + 5 specialist agents; Evaluator/Optimizer는 Reporter 내부 deterministic pipeline stage) |
 | Zustand Stores | 2 |
 | 모니터링 서버 | 18 (role별 3대, AZ별 6대 synthetic topology) |
 | 데이터 소스 | `public/data/otel-data` 비동기 로딩 우선 + Cloud Run 호환 폴백 (`otel-processed`) |
@@ -45,8 +45,8 @@ graph TB
 
     subgraph CloudRun["Cloud Run (AI Engine)"]
         Hono["Hono Server"]
-        Supervisor["Supervisor<br/>(Dual-Mode)"]
-        Agents["7 Agents + Orchestrator<br/>(Metrics Query, Analyst, Reporter,<br/>Advisor, Vision, Evaluator, Optimizer)"]
+        Supervisor["Supervisor<br/>(Mode decision + guard warnings)"]
+        Agents["Direct Router + 5 Specialist Agents<br/>(Metrics Query, Analyst, Reporter,<br/>Advisor, Vision)"]
         PreComp["Precomputed State<br/>(Tiered Data)"]
     end
 
@@ -103,8 +103,8 @@ graph TB
 ┌──────────────────────────────────────────────────────────────────────┐
 │  Cloud Run (AI Engine, Node.js 24 + Hono)                            │
 │  ┌──────────────┐  ┌───────────────────┐  ┌───────────────────────┐ │
-│  │ Supervisor    │  │ 7 Agents + Orch.  │  │ Circuit Breaker       │ │
-│  │ (Dual-Mode)   │  │ Metrics/Analyst    │  │ Quota Tracker         │ │
+│  │ Supervisor    │  │ Direct Router +    │  │ Circuit Breaker       │ │
+│  │ (Dual-Mode)   │  │ 5 Specialist Agents│  │ Quota Tracker         │ │
 │  └──────────────┘  └───────────────────┘  └───────────────────────┘ │
 └──────────────────────────────────┬───────────────────────────────────┘
                                    │
@@ -121,7 +121,7 @@ graph TB
                                    │ Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-05-07): `src/app/api/**/route.ts(x)`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs).
+> Source of truth (2026-05-16): `src/app/api/**/route.ts(x)`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs).
 
 ---
 
@@ -160,7 +160,7 @@ graph TB
 4. useHybridAIQuery() 기본 경로 → POST /api/ai/supervisor/stream/v2
 5. /api/ai/supervisor/stream/v2/route.ts:
    a. Auth 검증 (NextAuth session)
-   b. Prompt injection guard
+   b. Prompt injection guard: high 차단, medium/low sanitize + warning
    c. normalized message + semantic metadata 보존
    d. Proxy → Cloud Run UIMessageStream v2 (X-API-Key header)
 6. Cloud Run:
@@ -338,18 +338,18 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 
 ## 5. AI Engine Summary
 
-### Agent Architecture (7 Agents + Orchestrator)
+### Agent Architecture (Direct Router + 5 Specialist Agents)
 
-| Agent | Provider (Primary) | Role | 라우팅 |
+| Runtime role | Provider selection | Role | 라우팅 |
 |-------|-------------------|------|--------|
-| **Orchestrator** | Groq primary (fallback: Z.AI → Mistral → Cerebras short-context) | Intent 분류, Agent 핸드오프 | 진입점 |
-| **Metrics Query** | Groq primary (fallback: Z.AI → Mistral → Cerebras short-context) | 서버 메트릭 조회 (단순+복합) | 외부 |
-| **Analyst** | Mistral primary (fallback: Groq → Z.AI → Cerebras short-context) | 이상 감지, 추세 예측 | 외부 |
-| **Reporter** | Z.AI primary (fallback: Mistral → Groq → Cerebras short-context) | 장애 보고서, 타임라인 | 외부 |
-| **Advisor** | Mistral primary (fallback: Z.AI → Groq → Cerebras short-context) | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
-| **Vision** | Gemini 2.5 Flash-Lite (fallback: OpenRouter vision → Z.AI Vision) | 스크린샷/로그 분석, 웹 검색 | 외부 |
-| **Evaluator** | Deterministic quality gate | 보고서 품질 평가 (내부) | 내부 |
-| **Optimizer** | Deterministic rewrite stage | 보고서 품질 개선 (내부) | 내부 |
+| **Direct Router** | LLM 호출 없음 | `preFilterQuery()` / `resolveDirectRoutingTarget()` 기반 specialist 선택 | 진입점 |
+| **Metrics Query** | Round-Robin text mesh, min context 16K | 서버 메트릭 조회, ranking, deterministic evidence 보강 | 외부 |
+| **Analyst** | Round-Robin text mesh, min context 32K | 이상 감지, RCA, 추세·로그 분석 | 외부 |
+| **Reporter** | Round-Robin text mesh, min context 32K | 장애 보고서, 타임라인, 요약 | 외부 |
+| **Advisor** | Round-Robin text mesh, min context 32K | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
+| **Vision** | Gemini 2.5 Flash-Lite → OpenRouter vision → Z.AI Vision | 스크린샷/로그 이미지 분석, 웹 검색 보조 | 외부 |
+
+Evaluator/Optimizer는 Reporter 품질 보정용 deterministic pipeline stage이며 독립 실행 에이전트로 노출하지 않습니다.
 
 **Dual-Mode Strategy**: 단순 질의 → Single-agent (저지연), 복합 질의 → Multi-agent (전문 처리).
 
@@ -387,11 +387,9 @@ CLOSED (정상) ──5회 실패──► OPEN (차단) ──30초──► HA
 ### LLM Provider Fallback Chain
 
 ```
-Structured routing: Groq → Z.AI → Mistral → Cerebras
-Supervisor / Metrics Query / Orchestrator loop: Groq → Z.AI → Mistral → Cerebras
-Analyst / Verifier long-context loop: Mistral → Groq → Z.AI → Cerebras
-Reporter long-context loop: Z.AI → Mistral → Groq → Cerebras
-Advisor guidance loop: Mistral → Z.AI → Groq → Cerebras
+Text specialist agents: Round-Robin + Context Guard (Groq, Mistral, Z.AI, Cerebras)
+Direct Router: deterministic routing, no LLM call
+Structured-output compatibility helper: provider capability gate + fallback
 Vision: Gemini Flash-Lite → OpenRouter → Z.AI Vision
 모두 실패 → Static Fallback Response
 ```
@@ -564,7 +562,8 @@ Reference (checked: 2026-02-20):
 |------|------|
 | AI Chat Hook | `src/hooks/ai/useAIChatCore.ts` |
 | Supervisor (Cloud Run) | `cloud-run/ai-engine/src/services/ai-sdk/supervisor.ts` |
-| Orchestrator | `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator.ts` |
+| Direct Router | `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-direct-routing.ts` |
+| Multi-agent execution facade | `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator.ts` |
 | Agent Factory | `cloud-run/ai-engine/src/services/ai-sdk/agents/agent-factory.ts` |
 | Base Agent | `cloud-run/ai-engine/src/services/ai-sdk/agents/base-agent.ts` |
 

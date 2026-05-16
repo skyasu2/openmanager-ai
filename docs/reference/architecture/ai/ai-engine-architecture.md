@@ -36,7 +36,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **deterministi
 | 질문 | 먼저 볼 곳 | 같이 확인할 문서 |
 |---|---|---|
 | AI 요청이 어떤 route로 흐르는가 | §3 System Architecture, §5 Request Flow | [frontend-backend-comparison.md](./frontend-backend-comparison.md), [../../../architecture/02-runtime-architecture.md](../../../architecture/02-runtime-architecture.md) |
-| single/multi/job/facade 판단은 어디서 하는가 | §2.6 Free Tier 소비, §6 Supervisor/Orchestrator | [../../../design/01-ai-agent-design.md](../../../design/01-ai-agent-design.md) |
+| single/multi/job/facade 판단은 어디서 하는가 | §2.6 Free Tier 소비, §6 Supervisor/Direct Router | [../../../design/01-ai-agent-design.md](../../../design/01-ai-agent-design.md) |
 | LLM 외부 지식과 데이터 출처는 어디서 들어오는가 | §External Knowledge and Data Source Map, §8 Data Pipeline | [./rag-knowledge-engine.md](./rag-knowledge-engine.md), [../data/otel-data-architecture.md](../data/otel-data-architecture.md) |
 | provider fallback이나 reasoning capability를 바꿔도 되는가 | §7 Provider Strategy, §8 Model Policy | [../../../guides/ai/ai-standards.md](../../../guides/ai/ai-standards.md) |
 | dashboard/AI 데이터 정합성 기준은 무엇인가 | §9 Data Flow, §10 MonitoringFactPack/RAG | [../data/otel-data-architecture.md](../data/otel-data-architecture.md), [./rag-knowledge-engine.md](./rag-knowledge-engine.md) |
@@ -241,6 +241,7 @@ flowchart TB
 
     subgraph CR["Cloud Run AI Engine (Hono)"]
         Entry["Supervisor Request"]
+        RequestGuard["Request Guard\nprompt high block\nmedium/low + off-domain warning delegation"]
         Mode{"resolveSupervisorModeDecision()"}
         DomEvidence["Domain Evidence Resolution\nmetadata intentFrame first\ndomain parser fallback\nsupervisor-domain-evidence.ts"]
         Evidence["DomainEvidenceResult\nprompt + fallback + semantic trace\nmonitoring-peak-metric"]
@@ -254,8 +255,9 @@ flowchart TB
         Stream["UIMessageStream\ntext-delta / handoff / data-mode / agent_status"]
         Trace["Langfuse + Pino\nmode audit / handoffCount / scores"]
 
-        Entry --> Mode
-        Entry --> DomEvidence
+        Entry --> RequestGuard
+        RequestGuard --> Mode
+        RequestGuard --> DomEvidence
         DomEvidence -->|provider match| Evidence
         DomEvidence -->|no provider match| Mode
         Evidence -->|responsePolicy short-circuit| Determ
@@ -275,6 +277,37 @@ flowchart TB
     end
 
     Stream --> Vercel --> User
+```
+
+#### Supervisor Stream Request Branching
+
+`/api/ai/supervisor/stream/v2`는 prompt guard와 deterministic short-circuit을 먼저 평가한 뒤, 차단이 아닌 경고성 입력은 LLM 경로로 위임합니다. 이 순서는 비용과 보안을 동시에 지키기 위한 request-path 계약입니다.
+
+```mermaid
+flowchart TB
+    Input["User query"] --> PromptGuard{"prompt guard\nriskLevel"}
+    PromptGuard -->|high| Block["HTTP 400\nSecurity: blocked input"]
+    PromptGuard -->|medium / low| WarnSecurity["sanitize query\nsecurity warning queued"]
+    PromptGuard -->|none| Normalized["normalized query"]
+    WarnSecurity --> Normalized
+
+    Normalized --> InternalPolicy{"internal implementation\npath disclosure?"}
+    InternalPolicy -->|yes| InternalRefusal["deterministic refusal\nusage=0"]
+    InternalPolicy -->|no| Deterministic{"domain evidence\nread-only answer?"}
+
+    Deterministic -->|yes| DeterministicAnswer["deterministic answer\nusage=0"]
+    Deterministic -->|no| ServiceCommand{"service command\ncatalog match?"}
+
+    ServiceCommand -->|yes| ServiceAnswer["deterministic command guidance\nusage=0"]
+    ServiceCommand -->|no| OffDomain{"off-domain\nwithout operational context?"}
+
+    OffDomain -->|yes| WarnOffDomain["off-domain warning queued\nshouldShortCircuit=false"]
+    OffDomain -->|no| LLMPath["normal LLM path"]
+    WarnOffDomain --> LLMPath
+
+    LLMPath --> Mode{"resolved mode"}
+    Mode -->|single| Single["single path\nstreamText + prepareStep"]
+    Mode -->|multi| Multi["Direct Router\nspecialist Tool-loop agent"]
 ```
 
 #### ASCII
@@ -342,9 +375,9 @@ flowchart LR
     CapabilityGate --> Groq["Groq"]
     CapabilityGate --> ZAI["Z.AI"]
     CapabilityGate --> Mistral["Mistral"]
-    CapabilityGate --> Cerebras["Cerebras short-context"]
+    CapabilityGate --> Cerebras["Cerebras\ngpt-oss-120b / 65K"]
 
-    SO -->|yes| Structured["Orchestrator route\nGroq → Z.AI → Mistral → Cerebras"]
+    SO -->|yes| Structured["Structured-output helper\ncapability gate + fallback\ncompatibility path"]
     Need -->|vision| Vision["Gemini Flash-Lite → OpenRouter → Z.AI Vision"]
 ```
 
@@ -643,6 +676,21 @@ All generated artifacts
 #### Module 2. LLM Provider Fallback Chain
 
 Provider chain은 **Round-Robin + Context Guard** 방식으로 운영됩니다. 2026-05-16 기준 text provider 4개 (Groq, Mistral, Z.AI, Cerebras)를 모듈 레벨 커서로 순환하면서, 에이전트가 요구하는 최소 context window를 충족하지 못하는 provider는 뒤로 밀어냅니다. Cerebras `gpt-oss-120b`는 현재 65K context를 제공하므로 모든 에이전트 경로에서 full-rotation 후보입니다.
+
+```mermaid
+flowchart TB
+    AgentCall["Specialist agent call\nminContextWindow"] --> Cursor["Round-Robin cursor\nGroq -> Mistral -> Z.AI -> Cerebras"]
+    Cursor --> Cooldown{"429 cooldown\ngetMemoryCooldown()"}
+    Cooldown -->|yes| Cooled["cooled bucket\ntry last"]
+    Cooldown -->|no| Context{"context >= minContextWindow"}
+    Context -->|yes| Eligible["eligible bucket\ntry first"]
+    Context -->|no| Ineligible["ineligible bucket\ntry after eligible"]
+    Eligible --> Merge["providerOrder = eligible + ineligible + cooled"]
+    Ineligible --> Merge
+    Cooled --> Merge
+    Merge --> CapabilityGate["selectTextModel()\ncapability + key + circuit breaker + quota gate"]
+    CapabilityGate --> Provider["Groq / Mistral / Z.AI / Cerebras"]
+```
 
 ```
 +--------------------------------------------------------------------+
@@ -1050,7 +1098,7 @@ Multi-agent stream done metadata에는 non-stream과 같은 sanitized `routingDe
 - **내부 지식 검색 제어 (`enableRAG`, legacy request flag)**
   - `false`일 때는 `searchKnowledgeBase` 도구를 제외하여 지식기반 조회가 발생하지 않음.
   - 해당 제어값 역시 Cloud Run 요청 체인으로 일관 전달.
-  - 구현: `createPrepareStep(query, { enableRAG })` → 내부 `filterToolsByRAG()`가 `enableRAG=false` 시 `searchKnowledgeBase` 도구를 필터링. Orchestrator의 `filterToolsByRAG()`도 동일 로직 적용.
+  - 구현: `createPrepareStep(query, { enableRAG })`와 Direct Router 실행 경로가 `enableRAG=false` 시 `searchKnowledgeBase` 도구를 필터링.
 - **수학 도구 (항상 활성)**
   - 계산 계열 도구(`evaluateMathExpression`, `computeSeriesStats`, `estimateCapacityProjection`)는 별도 토글 없이 항상 활성.
   - `createPrepareStep`의 intent 분류에 따라 math/prediction 쿼리일 때만 activeTools에 포함되므로, 일반 대화에서는 LLM에 노출되지 않음.
@@ -1077,7 +1125,7 @@ Multi-agent stream done metadata에는 non-stream과 같은 sanitized `routingDe
 │ Timeout 계층                              │
 │  Single non-stream: Supervisor 50s → Agent 45s → Tool 25s │
 │  Single stream: Supervisor 120s → Agent 45s → Tool 25s    │
-│  Multi-agent: Orchestrator 90s → Agent 45s → Tool 25s     │
+│  Multi-agent: Direct Router 90s → Agent 45s → Tool 25s    │
 └──────────────────────────────────────────┘
 ```
 
@@ -1213,14 +1261,14 @@ cloud-run/ai-engine/src/
 ├── routes/                            # API 라우트
 ├── services/
 │   ├── ai-sdk/
-│   │   ├── model-provider.ts          # Provider 선택 (spider-web fallback mesh)
+│   │   ├── model-provider.ts          # Provider 생성/선택 파사드
 │   │   ├── model-provider-core.ts     # Provider 생성 (Groq/Z.AI/Mistral/Cerebras/Gemini/OpenRouter)
 │   │   ├── model-provider-status.ts   # API Key 검증 + 토글 상태
 │   │   ├── supervisor.ts              # Supervisor 공개 API
 │   │   ├── supervisor-stream.ts       # Single-Agent 스트리밍 실행
 │   │   ├── supervisor-routing.ts      # 모드 선택 + 의도 분류
 │   │   └── agents/
-│   │       ├── orchestrator.ts        # Orchestrator 파사드
+│   │       ├── orchestrator.ts        # Multi-agent execution facade
 │   │       ├── orchestrator-execution.ts   # 멀티에이전트 실행
 │   │       ├── orchestrator-routing.ts     # 에이전트 라우팅 + 강제 라우팅
 │   │       ├── orchestrator-decomposition.ts # 태스크 분해
@@ -1230,9 +1278,10 @@ cloud-run/ai-engine/src/
 │   │       ├── agent-factory.ts       # AgentFactory (생성 + 가용성)
 │   │       ├── reporter-pipeline.ts   # Evaluator-Optimizer 파이프라인
 │   │       └── config/
-│   │           ├── agent-runtime-policy.ts   # agent별 provider order/tool allowlist SSOT
+│   │           ├── agent-runtime-policy.ts   # agent별 tool allowlist/context 요구 SSOT
 │   │           ├── agent-configs.ts   # AgentConfig SSOT (5 routing LLM + 2 pipeline internal)
-│   │           └── agent-model-selectors.ts  # 에이전트별 모델 선택
+│   │           ├── agent-model-selectors.ts  # 에이전트별 모델 선택
+│   │           └── round-robin-provider-selector.ts # text provider rotation + context guard
 │   ├── resilience/
 │   │   ├── circuit-breaker.ts         # CB (CLOSED/OPEN/HALF_OPEN)
 │   │   ├── quota-tracker.ts           # 쿼타 추적 + Pre-emptive Fallback
@@ -1258,12 +1307,12 @@ cloud-run/ai-engine/src/
 | 에이전트 | 5개 라우팅 AgentType + Evaluator/Optimizer는 Reporter 파이프라인 내부 도구 |
 | 도구 | 30개 (8개 카테고리) |
 | LLM Provider | 6개 (Groq, Z.AI, Mistral, Cerebras, Gemini, OpenRouter) |
-| Fallback 체인 | 역할별 spider-web text mesh + Vision 3-way fallback |
+| Fallback 체인 | Round-Robin + Context Guard text mesh + Vision 3-way fallback |
 | 데이터 슬롯 | 144개 (24h x 6/hr, 10분 간격) |
 | 모니터링 서버 | 18개 (15대 주 서비스 + 3대 보조 capacity node, 사전 생성 OTel 데이터) |
 | Cold Start | ~2-3초 (lazy loading + deferred init) |
 | TTFB 목표 (Single, Warm) | <2초 |
-| TTFB 목표 (Multi, Warm) | <5초 (Orchestrator 라우팅 포함) |
+| TTFB 목표 (Multi, Warm) | <5초 (Direct Router routing 포함) |
 | TTFB 목표 (Cold Start 포함) | Single <5초 / Multi <8초 |
 | TTFB 계측 범위 | Single: `supervisor-stream.ts` / Multi: `orchestrator-agent-stream.ts` (`ttfbMs`) |
 | 인프라 | Cloud Run 1vCPU / 512Mi (운영 기본값) |
@@ -1574,7 +1623,7 @@ POST /api/ai/jobs
 
 - **Process UI detail 깊이 조정**: 현재 `분석 근거`와 `AI 처리 과정`은 `processingTime`, `resolvedMode`, `latencyTier`, `modeSelectionSource`까지는 노출한다. 다만 provider retry depth, fallback 횟수, handoff depth 같은 운영자 세부 지표는 아직 기본 UI에 직접 노출하지 않는다.
 - **Vision 최신 표본 보강**: 현재 문서의 Vision 응답 속도는 sample `1`건 수준이라 장기 판단 근거로는 약하다.
-- **Supervisor/Orchestrator 타임아웃 정렬 점검**
+- **Supervisor/Direct Router 타임아웃 정렬 점검**
 - **`console.log` → `logger.info` 통일** (`orchestrator-routing.ts`, `reporter-pipeline.ts`)
 - **RAG cosine threshold 0.3 → 0.5 상향**
 - **Handoff Ring Buffer Redis 이관**

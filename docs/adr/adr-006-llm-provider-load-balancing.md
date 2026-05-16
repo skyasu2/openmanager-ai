@@ -71,6 +71,24 @@ selectRoundRobinProviderOrder(minContextWindow):
 **Provider Attribution**:
 `rotationSlot`을 반환해 `ProviderAttributionChip` (UI)에 어떤 provider가 응답했는지 표시.
 
+### Round-Robin 3-버킷 흐름
+
+```mermaid
+flowchart TB
+    Start["selectRoundRobinProviderOrder(minContextWindow)"] --> Cursor["read cursor\nstartSlot = cursor % 4"]
+    Cursor --> Rotate["rotate pool from startSlot\nGroq / Mistral / Z.AI / Cerebras"]
+    Rotate --> Cooldown{"getMemoryCooldown(provider)?"}
+    Cooldown -->|yes| Cooled["cooled bucket\n429 cooldown, try last"]
+    Cooldown -->|no| Context{"context window\n>= minContextWindow?"}
+    Context -->|yes| Eligible["eligible bucket\ntry first"]
+    Context -->|no| Ineligible["ineligible bucket\ntry after eligible"]
+    Eligible --> Merge["merge order:\neligible + ineligible + cooled"]
+    Ineligible --> Merge
+    Cooled --> Merge
+    Merge --> Advance["advance cursor\nnext request starts at next slot"]
+    Advance --> Output["providerOrder + rotationSlot"]
+```
+
 ## Context Window 기준 (2026-05-16)
 
 | Provider | Context | min 16K eligible | min 32K eligible |
