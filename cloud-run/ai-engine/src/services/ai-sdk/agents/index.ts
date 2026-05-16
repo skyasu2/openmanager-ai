@@ -57,10 +57,7 @@ export {
 // ============================================================================
 
 // Metrics Query Agent
-export {
-  createMetricsQueryAgent,
-  createNlqAgent,
-} from './nlq-agent';
+export { createMetricsQueryAgent } from './nlq-agent';
 
 // Analyst Agent
 export {

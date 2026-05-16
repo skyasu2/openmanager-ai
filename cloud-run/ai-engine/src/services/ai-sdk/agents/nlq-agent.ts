@@ -30,11 +30,3 @@ import { AgentFactory, type BaseAgent } from './agent-factory';
 export function createMetricsQueryAgent(): BaseAgent | null {
   return AgentFactory.create('nlq');
 }
-
-/**
- * @deprecated Use createMetricsQueryAgent(). The internal AgentType remains
- * `nlq` as a legacy stable id, but the runtime role is Metrics Query Agent.
- */
-export function createNlqAgent(): BaseAgent | null {
-  return createMetricsQueryAgent();
-}

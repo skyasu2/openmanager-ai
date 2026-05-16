@@ -37,6 +37,7 @@ import {
   executeWithCircuitBreakerAndFallback,
   getAIStatusSummary,
 } from './circuit-breaker';
+import { ensureRedisStateStore } from './circuit-breaker/state-store';
 
 describe('AIServiceCircuitBreaker', () => {
   let breaker: AIServiceCircuitBreaker;
@@ -240,6 +241,19 @@ describe('AIServiceCircuitBreaker', () => {
 describe('executeWithCircuitBreakerAndFallback', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('요청 경로에서 Redis state store를 자동 초기화하지 않는다', async () => {
+    // When
+    const result = await executeWithCircuitBreakerAndFallback(
+      'in-memory-only-test',
+      () => Promise.resolve('primary-data'),
+      () => 'fallback-data'
+    );
+
+    // Then
+    expect(result.source).toBe('primary');
+    expect(ensureRedisStateStore).not.toHaveBeenCalled();
   });
 
   it('primary 성공 시 primary 소스를 반환한다', async () => {

@@ -201,7 +201,10 @@ export const ChatInputArea = memo(function ChatInputArea({
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
                   <div className="space-y-1">
                     {fileErrors.map((err, idx) => (
-                      <p key={idx} className="text-xs text-red-600">
+                      <p
+                        key={`${idx}-${err.message}`}
+                        className="text-xs text-red-600"
+                      >
                         {err.message}
                       </p>
                     ))}

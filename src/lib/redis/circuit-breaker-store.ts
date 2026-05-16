@@ -2,8 +2,9 @@
  * Redis-based Distributed Circuit Breaker State Store
  *
  * @description
- * Upstash Redis를 사용한 분산 Circuit Breaker 상태 관리
- * 서버리스 환경(Vercel)에서 인스턴스 간 상태 공유 지원
+ * Upstash Redis를 사용한 분산 Circuit Breaker 상태 저장소 구현입니다.
+ * 현재 AI circuit breaker request path는 in-memory 상태만 사용하므로,
+ * 이 모듈은 future/internal 연결점으로 보존합니다.
  *
  * Best Practices Applied:
  * - Redis Hash로 상태 저장 (HSET/HGETALL)
@@ -45,6 +46,7 @@ const DEFAULT_STATE: CircuitState = {
 
 /**
  * Redis 기반 분산 Circuit Breaker 상태 저장소
+ * 현재 request path에서는 자동 연결되지 않습니다.
  *
  * @example
  * ```typescript
@@ -54,6 +56,8 @@ const DEFAULT_STATE: CircuitState = {
  * // 앱 초기화 시 Redis 저장소 설정
  * setDistributedStateStore(new RedisCircuitBreakerStore());
  * ```
+ *
+ * @internal
  */
 export class RedisCircuitBreakerStore implements IDistributedStateStore {
   private readonly keyPrefix: string;
@@ -227,6 +231,8 @@ let storeInstance: RedisCircuitBreakerStore | null = null;
 
 /**
  * Redis Circuit Breaker Store 싱글톤 반환
+ *
+ * @internal
  */
 export function getRedisCircuitBreakerStore(): RedisCircuitBreakerStore {
   if (!storeInstance) {
@@ -240,11 +246,11 @@ export function getRedisCircuitBreakerStore(): RedisCircuitBreakerStore {
 // ============================================================================
 
 /**
- * Circuit Breaker에 Redis Store 자동 연결
+ * Circuit Breaker에 Redis Store를 명시적으로 연결합니다.
  *
  * @description
- * Redis가 활성화되어 있으면 자동으로 분산 상태 저장소로 설정
- * Redis가 비활성화되면 기본 InMemoryStateStore 사용 (폴백)
+ * 현재 AI circuit breaker request path에서는 호출하지 않습니다.
+ * 향후 분산 상태 저장소를 실제 상태 전이에 연결할 때 사용할 내부 API입니다.
  *
  * @example
  * ```typescript
@@ -252,6 +258,8 @@ export function getRedisCircuitBreakerStore(): RedisCircuitBreakerStore {
  * import { initializeRedisCircuitBreaker } from '@/lib/redis/circuit-breaker-store';
  * await initializeRedisCircuitBreaker();
  * ```
+ *
+ * @internal
  */
 export async function initializeRedisCircuitBreaker(): Promise<boolean> {
   // 동적 import로 순환 참조 방지

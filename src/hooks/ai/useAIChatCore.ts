@@ -32,6 +32,7 @@ import {
   isDebugRoutingPrompt,
   isQAThinkingVisualizerPrompt,
 } from './core/routing-debug-messages';
+import { useArtifactManager } from './core/useArtifactManager';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
@@ -72,7 +73,15 @@ export function useAIChatCore(
   // 입력 상태
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [artifactIsLoading, setArtifactIsLoading] = useState(false);
+  const artifactManager = useArtifactManager();
+  const {
+    isLoading: artifactIsLoading,
+    setLoading: setArtifactIsLoading,
+    refs: artifactRefs,
+    isBusy: isArtifactBusy,
+    reset: resetArtifactManager,
+    abortActiveRequest: abortArtifactRequest,
+  } = artifactManager;
 
   // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
   const [currentAgentStatus, setCurrentAgentStatus] =
@@ -110,10 +119,6 @@ export function useAIChatCore(
   const lastQueryRef = useRef<string>('');
   const lastAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const pendingQueryRef = useRef<string>('');
-  const artifactIntentInFlightRef = useRef(false);
-  const artifactInFlightRef = useRef(false);
-  const artifactRequestIdRef = useRef<string | null>(null);
-  const artifactAbortControllerRef = useRef<AbortController | null>(null);
   const resetOutgoingRequestState = useCallback(
     (
       query: string,
@@ -329,12 +334,7 @@ export function useAIChatCore(
     setCurrentHandoff(null);
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
-    artifactAbortControllerRef.current?.abort();
-    artifactAbortControllerRef.current = null;
-    artifactRequestIdRef.current = null;
-    artifactIntentInFlightRef.current = false;
-    artifactInFlightRef.current = false;
-    setArtifactIsLoading(false);
+    resetArtifactManager();
     clearHistory();
     clearQueue();
     syncChatSnapshot([], nextSessionId);
@@ -346,6 +346,7 @@ export function useAIChatCore(
     clearQueue,
     syncChatSnapshot,
     updateDeveloperPanelData,
+    resetArtifactManager,
   ]);
 
   const clearError = useCallback(() => {
@@ -427,13 +428,14 @@ export function useAIChatCore(
         setMessages,
         setError,
         setArtifactIsLoading,
-        artifactRequestIdRef,
-        artifactAbortControllerRef,
-        artifactInFlightRef,
-        artifactIntentInFlightRef,
+        artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
+        artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
+        artifactInFlightRef: artifactRefs.artifactInFlightRef,
+        artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
       });
     },
     [
+      artifactRefs,
       disableSessionLimit,
       sessionState.isLimitReached,
       sessionState.count,
@@ -442,6 +444,7 @@ export function useAIChatCore(
       sessionId,
       queryAsOfDataSlot,
       setMessages,
+      setArtifactIsLoading,
     ]
   );
 
@@ -475,7 +478,7 @@ export function useAIChatCore(
         return;
       }
 
-      if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
+      if (isArtifactBusy()) {
         setError(
           '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
         );
@@ -505,16 +508,16 @@ export function useAIChatCore(
         attachments,
         messages,
         resetRequestState: resetOutgoingRequestState,
-        artifactIntentInFlightRef,
+        artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
         sessionId,
         queryAsOfDataSlot,
         messagesRef,
         setMessages,
         setError,
         setArtifactIsLoading,
-        artifactRequestIdRef,
-        artifactAbortControllerRef,
-        artifactInFlightRef,
+        artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
+        artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
+        artifactInFlightRef: artifactRefs.artifactInFlightRef,
       });
       if (artifactHandled) {
         return;
@@ -541,17 +544,20 @@ export function useAIChatCore(
       sessionId,
       queryAsOfDataSlot,
       resetOutgoingRequestState,
+      artifactRefs,
+      isArtifactBusy,
+      setArtifactIsLoading,
     ]
   );
 
   const stopGeneration = useCallback(() => {
-    if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
-      artifactAbortControllerRef.current?.abort();
+    if (isArtifactBusy()) {
+      abortArtifactRequest();
       return;
     }
 
     stop();
-  }, [stop]);
+  }, [abortArtifactRequest, isArtifactBusy, stop]);
 
   // ============================================================================
   // Return

@@ -26,10 +26,6 @@ export type ExecutableSurfaceArtifactKind =
   | 'monitoring-analysis'
   | 'server-monitoring-analysis';
 
-export type ExecutableSurfaceArtifact<
-  TKind extends ExecutableSurfaceArtifactKind = ExecutableSurfaceArtifactKind,
-> = Extract<ChatArtifact, { kind: TKind }>;
-
 type ExecuteChatArtifactRequestByKind = {
   'incident-report': ChatArtifactRequest & { kind: 'incident-report' };
   'monitoring-analysis': ChatArtifactRequest & { kind: 'monitoring-analysis' };
