@@ -20,7 +20,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI SDK conformance optional 잔여 (O1~O3) | Low | O4 mock provider path parity benchmark는 완료. O1 subagent-as-tool PoC, O2 `createAgentUIStreamResponse` 전환, O3 AI SDK DevTools는 Free Tier/복잡도 대비 즉시 ROI 낮아 보류. 상세: [archive/vercel-ai-sdk-multi-agent-conformance-plan.md](archive/vercel-ai-sdk-multi-agent-conformance-plan.md) |
+| AI SDK conformance optional 잔여 (O1~O3) | Low | **구조적 차단**: Vercel(BFF)+Cloud Run(AI Engine) 분리 아키텍처로 인해 AI SDK native 패턴(subagent-as-tool/UI stream/DevTools)이 단일 런타임 전제와 충돌. 아키텍처 통합 없이는 재착수 불필요. 상세 제약 기록: [archive/vercel-ai-sdk-multi-agent-conformance-plan.md](archive/vercel-ai-sdk-multi-agent-conformance-plan.md) O1~O3 섹션 |
 | NLQ front provider live 비교 QA | Low | Groq baseline은 유지. Mistral/Cerebras/Z.AI 후보는 외부 LLM 호출이 필요하므로 QA/수동 smoke에서 `schema_valid`, `intent_accuracy`, `executionMode_accuracy`, latency, rate-limit headroom만 비교. 상세: [archive/nlq-preprocessing-redesign-plan.md](archive/nlq-preprocessing-redesign-plan.md) |
 
 ---
