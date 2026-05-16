@@ -178,11 +178,13 @@ describe('ImprovedServerCard - User Event 테스트', () => {
     serverMetricsMock.metricsHistory = [];
   });
 
-  /** Header button — handles card click and keyboard navigation */
+  /** Card root — handles card click and keyboard navigation */
   const getCardButton = (container: HTMLElement) =>
-    container.querySelector('header > button[type="button"]') as HTMLElement;
+    container.querySelector(
+      '[data-testid="error-boundary"] button[aria-label="Web Server 01 상세 보기"]'
+    ) as HTMLElement;
 
-  /** Container div — handles mouse hover for progressive disclosure */
+  /** Container div — handles mouse hover effects */
   const getCardContainer = (container: HTMLElement) =>
     container.querySelector(
       '[data-testid="error-boundary"] > div'
@@ -267,7 +269,6 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       const { container } = render(
         <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
       );
-      // Native <button> is focusable by default (no explicit tabindex needed)
       const button = getCardButton(container);
       button.focus();
       expect(document.activeElement).toBe(button);
@@ -279,9 +280,6 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       );
       const button = getCardButton(container);
       fireEvent.keyDown(button, { key: 'Enter' });
-      // Native <button> handles Enter via click event in browsers;
-      // in jsdom fireEvent.keyDown does not auto-trigger click, so we
-      // verify the button is present and focusable instead.
       button.click();
       expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
@@ -291,8 +289,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
         <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
       );
       const button = getCardButton(container);
-      // Native <button> handles Space via click event in browsers;
-      // in jsdom fireEvent.keyDown does not auto-trigger click.
+      fireEvent.keyDown(button, { key: ' ' });
       button.click();
       expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
@@ -346,7 +343,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       const card = getCardContainer(container);
       fireEvent.mouseEnter(card);
 
-      expect(screen.getAllByText('Linux')).toHaveLength(2);
+      expect(screen.getAllByText('Linux')).toHaveLength(1);
       expect(screen.queryByText(/^linux$/)).not.toBeInTheDocument();
     });
 
@@ -438,14 +435,15 @@ describe('ImprovedServerCard - User Event 테스트', () => {
   });
 
   describe('접근성', () => {
-    it('카드가 semantic <button> 요소이다', () => {
+    it('카드 전체를 덮는 상세 보기 버튼이 있다', () => {
       const { container } = render(
         <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
       );
       const button = getCardButton(container);
       expect(button).toBeInTheDocument();
       expect(button.tagName).toBe('BUTTON');
-      expect(button.getAttribute('type')).toBe('button');
+      expect(button).toHaveAttribute('type', 'button');
+      expect(button).toHaveAttribute('aria-label', 'Web Server 01 상세 보기');
     });
 
     it('카드 버튼이 키보드 탐색 가능하다', () => {
@@ -453,7 +451,6 @@ describe('ImprovedServerCard - User Event 테스트', () => {
         <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
       );
       const button = getCardButton(container);
-      // Native <button> is focusable without explicit tabindex
       button.focus();
       expect(document.activeElement).toBe(button);
     });
@@ -463,8 +460,8 @@ describe('ImprovedServerCard - User Event 테스트', () => {
         <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
       );
       const button = getCardButton(container);
-      const serverName = within(button).getByText('Web Server 01');
-      expect(serverName).toBeInTheDocument();
+      expect(screen.getByText('Web Server 01')).toBeInTheDocument();
+      expect(button).toHaveAccessibleName('Web Server 01 상세 보기');
     });
 
     it('긴 서버명은 title로 전체 이름을 확인할 수 있다', () => {
@@ -612,8 +609,8 @@ describe('ImprovedServerCard - User Event 테스트', () => {
     });
   });
 
-  describe('Progressive Disclosure', () => {
-    it('enableProgressiveDisclosure가 true일 때 확장 버튼이 있다', () => {
+  describe('상세 정보 접힘 제거', () => {
+    it('enableProgressiveDisclosure가 true여도 확장 버튼을 노출하지 않는다', () => {
       const { container } = render(
         <ImprovedServerCard
           server={mockServer}
@@ -623,7 +620,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       );
       expect(getCardContainer(container)).toBeInTheDocument();
       const toggleButton = container.querySelector('[data-toggle-button]');
-      expect(toggleButton).toBeInTheDocument();
+      expect(toggleButton).not.toBeInTheDocument();
     });
 
     it('enableProgressiveDisclosure가 false일 때 정상 렌더링된다', () => {
@@ -725,7 +722,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(charts[2]).toHaveAttribute('data-points', '30,73.5');
     });
 
-    it('호버만으로 보조 서비스 정보를 노출하지 않고 펼치기 버튼으로만 확장한다', () => {
+    it('호버나 펼치기 버튼 없이 보조 서비스 정보를 노출하지 않는다', () => {
       const { container } = render(
         <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
       );
@@ -734,9 +731,9 @@ describe('ImprovedServerCard - User Event 테스트', () => {
 
       fireEvent.mouseEnter(getCardContainer(container));
       expect(screen.queryByText('Nginx')).not.toBeInTheDocument();
-
-      fireEvent.click(screen.getByRole('button', { name: '상세 정보 펼치기' }));
-      expect(screen.getByText('Nginx')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: '상세 정보 펼치기' })
+      ).not.toBeInTheDocument();
     });
   });
 

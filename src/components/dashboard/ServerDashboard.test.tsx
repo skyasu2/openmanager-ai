@@ -29,8 +29,12 @@ vi.mock('@/components/dashboard/ImprovedServerCard', () => ({
     onOpenLogs?: (server: Server) => void;
   }) => (
     <div data-testid={`server-card-${server.id}`}>
-      <button type="button" onClick={() => onClick?.(server)}>
-        {server.name}
+      <button
+        type="button"
+        aria-label={`${server.name} 상세 보기`}
+        onClick={() => onClick?.(server)}
+      >
+        <span data-server-card-name>{server.name}</span>
       </button>
       <button
         type="button"
@@ -98,7 +102,9 @@ describe('ServerDashboard', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'API Server' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'API Server 상세 보기' })
+    );
 
     expect(routerPush).toHaveBeenCalledWith('/dashboard/servers/server-1');
     expect(
@@ -134,14 +140,11 @@ describe('ServerDashboard', () => {
       'aria-pressed',
       'true'
     );
-    expect(screen.getByTestId('server-dashboard-grid')).toHaveClass(
-      'sm:grid-cols-2'
+    expect(screen.getByTestId('server-dashboard-grid').className).toContain(
+      'sm:grid-cols-[repeat(auto-fill,minmax(320px,320px))]'
     );
-    expect(screen.getByTestId('server-dashboard-grid')).toHaveClass(
-      'xl:grid-cols-3'
-    );
-    expect(screen.getByTestId('server-dashboard-grid')).toHaveClass(
-      '3xl:grid-cols-4'
+    expect(screen.getByTestId('server-dashboard-grid').className).toContain(
+      'justify-center'
     );
   });
 
@@ -203,13 +206,12 @@ describe('ServerDashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: /더 보기/ }));
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(5);
-
-    fireEvent.click(screen.getByRole('button', { name: '접기' }));
-
-    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(4);
+    expect(
+      screen.queryByRole('button', { name: '접기' })
+    ).not.toBeInTheDocument();
   });
 
-  it('초기 더보기 가능 상태에서는 서버 그리드를 1.5행 높이로 클리핑하고 페이드 힌트를 표시한다', () => {
+  it('초기 더보기 가능 상태에서도 서버 그리드를 온전한 행 단위로 표시한다', () => {
     setViewportWidth(1280);
 
     render(
@@ -228,21 +230,22 @@ describe('ServerDashboard', () => {
     );
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(8);
-    expect(screen.getByTestId('server-dashboard-peek-container')).toHaveStyle({
-      maxHeight: '237px',
-    });
     expect(
-      screen.getByTestId('server-dashboard-peek-fade')
-    ).toBeInTheDocument();
+      screen.getByTestId('server-dashboard-peek-container')
+    ).not.toHaveStyle({ overflow: 'hidden' });
+    expect(
+      screen.queryByTestId('server-dashboard-peek-fade')
+    ).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '넓게 보기' }));
 
-    expect(screen.getByTestId('server-dashboard-peek-container')).toHaveStyle({
-      maxHeight: '249px',
-    });
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(6);
+    expect(
+      screen.getByTestId('server-dashboard-peek-container')
+    ).not.toHaveStyle({ overflow: 'hidden' });
   });
 
-  it('더 보기와 접기 전환에 맞춰 서버 카드 peek 페이드를 숨기고 복원한다', () => {
+  it('더 보기는 클리핑/접기 없이 다음 행을 추가한다', () => {
     setViewportWidth(1280);
 
     render(
@@ -261,28 +264,21 @@ describe('ServerDashboard', () => {
     );
 
     expect(
-      screen.getByTestId('server-dashboard-peek-fade')
-    ).toBeInTheDocument();
+      screen.queryByTestId('server-dashboard-peek-fade')
+    ).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /더 보기/ }));
 
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(9);
     expect(
       screen.queryByTestId('server-dashboard-peek-fade')
     ).not.toBeInTheDocument();
     expect(
       screen.getByTestId('server-dashboard-peek-container')
-    ).not.toHaveStyle({
-      maxHeight: '237px',
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: '접기' }));
-
+    ).not.toHaveStyle({ overflow: 'hidden' });
     expect(
-      screen.getByTestId('server-dashboard-peek-fade')
-    ).toBeInTheDocument();
-    expect(screen.getByTestId('server-dashboard-peek-container')).toHaveStyle({
-      maxHeight: '237px',
-    });
+      screen.queryByRole('button', { name: '접기' })
+    ).not.toBeInTheDocument();
   });
 
   it('숨길 서버가 없으면 서버 카드 peek 오버레이를 표시하지 않는다', () => {
@@ -308,7 +304,7 @@ describe('ServerDashboard', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('모바일 1열에서도 서버 카드 peek 높이와 페이드 힌트를 유지한다', () => {
+  it('모바일 1열에서도 서버 카드는 온전한 행 단위로 표시된다', () => {
     setViewportWidth(375);
 
     render(
@@ -327,12 +323,12 @@ describe('ServerDashboard', () => {
     );
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(2);
-    expect(screen.getByTestId('server-dashboard-peek-container')).toHaveStyle({
-      maxHeight: '237px',
-    });
     expect(
-      screen.getByTestId('server-dashboard-peek-fade')
-    ).toBeInTheDocument();
+      screen.getByTestId('server-dashboard-peek-container')
+    ).not.toHaveStyle({ overflow: 'hidden' });
+    expect(
+      screen.queryByTestId('server-dashboard-peek-fade')
+    ).not.toBeInTheDocument();
   });
 
   it('서버 탭 더 보기는 페이지 크기를 늘려 다음 줄을 같은 화면에 붙인다', () => {
@@ -410,7 +406,9 @@ describe('ServerDashboard', () => {
     expect(
       screen
         .getAllByTestId(/^server-card-/)
-        .map((node) => node.querySelector('button')?.textContent)
+        .map(
+          (node) => node.querySelector('[data-server-card-name]')?.textContent
+        )
     ).toEqual(['DB Server', 'Cache Server', 'API Server']);
 
     fireEvent.change(screen.getByLabelText('서버 정렬'), {
@@ -420,7 +418,9 @@ describe('ServerDashboard', () => {
     expect(
       screen
         .getAllByTestId(/^server-card-/)
-        .map((node) => node.querySelector('button')?.textContent)
+        .map(
+          (node) => node.querySelector('[data-server-card-name]')?.textContent
+        )
     ).toEqual(['API Server', 'Cache Server', 'DB Server']);
   });
 

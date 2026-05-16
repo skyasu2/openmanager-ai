@@ -3,7 +3,6 @@
 import {
   ArrowUpDown,
   ChevronDown,
-  ChevronUp,
   LayoutGrid,
   List,
   Loader2,
@@ -28,8 +27,10 @@ type ServerViewMode = 'list' | 'grid';
 type ServerSortKey = 'status' | 'cpu' | 'memory' | 'name';
 
 const DEFAULT_VISIBLE_ROWS = 3;
-const COMPACT_SERVER_CARD_MIN_HEIGHT_PX = 150;
-const SERVER_CARD_PEEK_ROW_RATIO = 1.5;
+const SERVER_CARD_FIXED_WIDTH = {
+  grid: 320,
+  list: 290,
+} as const;
 
 const SORT_OPTIONS: Array<{ value: ServerSortKey; label: string }> = [
   { value: 'status', label: '상태' },
@@ -73,14 +74,12 @@ const compareByStatusPriority = (a: Server, b: Server): number => {
 
 function getServerCardColumns(viewMode: ServerViewMode, width: number): number {
   if (width < 640) return 1;
-  if (viewMode === 'grid') {
-    if (width < 1280) return 2;
-    if (width < 1920) return 3;
-    return 4;
-  }
-  if (width < 1024) return 2;
-  if (width < 1280) return 3;
-  return 4;
+
+  const gap = getServerCardGapPx(viewMode, width);
+  const cardWidth = SERVER_CARD_FIXED_WIDTH[viewMode];
+  const columns = Math.floor((width + gap) / (cardWidth + gap));
+
+  return Math.max(1, Math.min(4, columns));
 }
 
 function getServerCardGapPx(viewMode: ServerViewMode, width: number): number {
@@ -89,16 +88,6 @@ function getServerCardGapPx(viewMode: ServerViewMode, width: number): number {
   }
 
   return 12;
-}
-
-function getServerCardPeekMaxHeightPx(
-  viewMode: ServerViewMode,
-  width: number
-): number {
-  return Math.round(
-    COMPACT_SERVER_CARD_MIN_HEIGHT_PX * SERVER_CARD_PEEK_ROW_RATIO +
-      getServerCardGapPx(viewMode, width)
-  );
 }
 
 /**
@@ -155,7 +144,9 @@ export default function ServerDashboard({
   const [viewMode, setViewMode] = useState<ServerViewMode>('list');
   const [serverSortKey, setServerSortKey] = useState<ServerSortKey>('status');
   const [visibleRows, setVisibleRows] = useState(initialVisibleRows);
-  const [viewportWidth, setViewportWidth] = useState(1280);
+  const [serverGridWidth, setServerGridWidth] = useState(1280);
+  const [serverGridElement, setServerGridElement] =
+    useState<HTMLDivElement | null>(null);
 
   // 🔧 Phase 4: useServerDashboard() 제거 - props로 데이터 받음
 
@@ -182,21 +173,6 @@ export default function ServerDashboard({
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
-
-    const handleResize = () => {
-      setViewportWidth(window.innerWidth);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // 🚀 서버 정렬 최적화: 외부 상수와 최적화된 함수 사용
@@ -267,8 +243,8 @@ export default function ServerDashboard({
   }, [servers, serverSortKey]);
 
   const cardsPerRow = useMemo(
-    () => getServerCardColumns(viewMode, viewportWidth),
-    [viewMode, viewportWidth]
+    () => getServerCardColumns(viewMode, serverGridWidth),
+    [serverGridWidth, viewMode]
   );
 
   const rowStep = Math.max(1, initialVisibleRows);
@@ -282,9 +258,38 @@ export default function ServerDashboard({
     setVisibleRows(initialVisibleRows);
   }, [initialVisibleRows]);
 
-  const handleCollapseServers = useCallback(() => {
-    setVisibleRows(initialVisibleRows);
-  }, [initialVisibleRows]);
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const updateGridWidth = () => {
+      const measuredWidth = serverGridElement?.getBoundingClientRect().width;
+      setServerGridWidth(
+        measuredWidth && measuredWidth > 0 ? measuredWidth : window.innerWidth
+      );
+    };
+
+    updateGridWidth();
+
+    if (!serverGridElement || typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateGridWidth);
+      return () => window.removeEventListener('resize', updateGridWidth);
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const width = entries[0]?.contentRect.width;
+      setServerGridWidth(width && width > 0 ? width : window.innerWidth);
+    });
+
+    resizeObserver.observe(serverGridElement);
+    window.addEventListener('resize', updateGridWidth);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateGridWidth);
+    };
+  }, [serverGridElement]);
 
   // 페이지네이션 정보 계산 (메모이제이션으로 최적화)
   // 🔧 Phase 4: totalServers props 사용 (전체 서버 수)
@@ -332,17 +337,7 @@ export default function ServerDashboard({
     0,
     paginationInfo.totalServers - displayedServers.length
   );
-  const showCollapseButton = visibleRows > initialVisibleRows;
   const isOverviewSurface = surface === 'overview';
-  const visibleServerRows = Math.ceil(displayedServers.length / cardsPerRow);
-  const showServerGridPeek =
-    canShowMoreServers &&
-    visibleRows === initialVisibleRows &&
-    visibleServerRows > 1;
-  const serverGridPeekMaxHeight = `${getServerCardPeekMaxHeightPx(
-    viewMode,
-    viewportWidth
-  )}px`;
   const nextVisibleServerLimit = (visibleRows + rowStep) * cardsPerRow;
   const nextLoadedVisibleCount = Math.min(
     nextVisibleServerLimit,
@@ -516,14 +511,10 @@ export default function ServerDashboard({
           {sortedServers.length > 0 ? (
             <div
               data-testid="server-dashboard-peek-container"
-              className="relative transition-[max-height] duration-300 ease-out"
-              style={
-                showServerGridPeek
-                  ? { maxHeight: serverGridPeekMaxHeight, overflow: 'hidden' }
-                  : undefined
-              }
+              className="relative"
             >
               <div
+                ref={setServerGridElement}
                 data-testid={
                   viewMode === 'grid'
                     ? 'server-dashboard-grid'
@@ -531,8 +522,8 @@ export default function ServerDashboard({
                 }
                 className={
                   viewMode === 'grid'
-                    ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 3xl:grid-cols-4'
-                    : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                    ? 'mx-auto grid max-w-[1352px] grid-cols-1 justify-center gap-4 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(320px,320px))] sm:gap-6'
+                    : 'mx-auto grid max-w-[1196px] grid-cols-1 justify-center gap-3 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(290px,290px))]'
                 }
               >
                 {displayedServers.map((server, index) => {
@@ -556,13 +547,6 @@ export default function ServerDashboard({
                   );
                 })}
               </div>
-              {showServerGridPeek && (
-                <div
-                  aria-hidden="true"
-                  data-testid="server-dashboard-peek-fade"
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white via-white/85 to-transparent"
-                />
-              )}
             </div>
           ) : (
             <div className="flex h-64 items-center justify-center">
@@ -591,7 +575,7 @@ export default function ServerDashboard({
             </div>
           )}
 
-          {(canShowMoreServers || showCollapseButton) && (
+          {canShowMoreServers && (
             <div className="flex flex-col items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm sm:flex-row sm:justify-between">
               <span className="text-slate-600">
                 {isOverviewSurface
@@ -599,32 +583,20 @@ export default function ServerDashboard({
                   : `${displayedServers.length}/${paginationInfo.totalServers}대 서버 표시`}
               </span>
               <div className="flex w-full gap-2 sm:w-auto">
-                {showCollapseButton && (
-                  <button
-                    type="button"
-                    onClick={handleCollapseServers}
-                    className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 sm:flex-none"
-                  >
-                    <ChevronUp className="h-4 w-4" />
-                    접기
-                  </button>
-                )}
-                {canShowMoreServers && (
-                  <button
-                    type="button"
-                    aria-label={showMoreServersButtonAriaLabel}
-                    onClick={handleShowMoreServers}
-                    className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:flex-none"
-                  >
-                    <ChevronDown className="h-4 w-4" />
-                    {showMoreServersButtonText}
-                    {hiddenServerCount > 0 && (
-                      <span className="text-blue-100">
-                        ({hiddenServerCount}대 남음)
-                      </span>
-                    )}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  aria-label={showMoreServersButtonAriaLabel}
+                  onClick={handleShowMoreServers}
+                  className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:flex-none"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                  {showMoreServersButtonText}
+                  {hiddenServerCount > 0 && (
+                    <span className="text-blue-100">
+                      ({hiddenServerCount}대 남음)
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
           )}

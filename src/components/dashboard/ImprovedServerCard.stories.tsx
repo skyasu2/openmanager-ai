@@ -76,7 +76,6 @@ const meta = {
     onClick: fn(),
     variant: 'standard',
     showRealTimeUpdates: true,
-    enableProgressiveDisclosure: true,
   },
   beforeEach() {
     mocked(useServerMetrics).mockReturnValue({
@@ -96,24 +95,15 @@ export const Online: Story = {
   play: async ({ args, canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await step('main card button opens server details', async () => {
+    await step('card opens server details', async () => {
       await userEvent.click(
-        canvas.getByRole('button', { name: /web-nginx-dc1-01/ })
+        canvas.getByRole('button', {
+          name: 'web-nginx-dc1-01 상세 보기',
+        })
       );
       await expect(args.onClick).toHaveBeenCalledWith(
         expect.objectContaining({ id: 'web-nginx-dc1-01' })
       );
-    });
-
-    await step('progressive disclosure expands tertiary details', async () => {
-      const toggle = canvas.getByRole('button', {
-        name: '상세 정보 펼치기',
-      });
-
-      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-      await userEvent.click(toggle);
-      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-      await expect(canvas.getByText('Uptime')).toBeInTheDocument();
     });
   },
 };

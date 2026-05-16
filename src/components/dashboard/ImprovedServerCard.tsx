@@ -1,32 +1,15 @@
-import {
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  FileText,
-  Globe,
-  MapPin,
-} from 'lucide-react';
-import React, {
-  type FC,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { FileText, MapPin } from 'lucide-react';
+import React, { type FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { useSafeServer } from '@/hooks/useSafeServer';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
 import { getServerStatusTheme } from '@/styles/design-constants';
 import type { Server as ServerType } from '@/types/server';
-import { formatUptime } from '@/utils/serverUtils';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
 import { withCurrentMetricPoint } from './dashboard-metric-points';
 import {
   CompactMetricChip,
-  DetailRow,
   MetricItem,
   SecondaryMetrics,
-  ServiceChip,
 } from './ImprovedServerCard.parts';
 
 /**
@@ -34,9 +17,9 @@ import {
  * - 랜딩 페이지 스타일 그라데이션 애니메이션
  * - 상태별 색상: Critical(빨강), Warning(주황), Healthy(녹색)
  * - 호버 스케일 + 글로우 효과
- * - 서버 카드 독자 기능: 실시간 메트릭, Progressive Disclosure
+ * - 서버 카드 독자 기능: 실시간 메트릭, 카드 전체 상세 진입
  * - 카드 크기 50% 축소 (2025-12-13)
- * - HTML 접근성 수정: 중첩 인터랙티브 제거, header button이 카드 클릭 담당 (2026-02-24)
+ * - Dashboard UX: 상세 버튼/펼치기 제거, 카드 전체 클릭으로 상세 이동 (2026-05-16)
  */
 
 export interface ImprovedServerCardProps {
@@ -119,25 +102,16 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     onOpenLogs,
     variant = 'standard',
     showRealTimeUpdates = true,
-    enableProgressiveDisclosure = true,
   }) => {
     // Basic data preparation
-    const {
-      safeServer,
-      serverIcon,
-      serverTypeLabel,
-      osDisplayName,
-      osIcon,
-      osShortName,
-    } = useSafeServer(server);
+    const { safeServer, serverIcon, serverTypeLabel, osIcon, osShortName } =
+      useSafeServer(server);
     // 🎨 White Mode with Glassmorphism + Status Colors
     const statusTheme = getServerStatusTheme(safeServer.status);
 
     const currentGradient =
       statusGradients[safeServer.status] || statusGradients.online;
     const isCompactVariant = variant === 'compact';
-
-    const [showTertiaryInfo, setShowTertiaryInfo] = useState(false);
 
     // 📈 서버 메트릭 히스토리 로드 (OTel TimeSeries)
     const { metricsHistory, loadMetricsHistory } = useServerMetrics();
@@ -181,32 +155,17 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     const variantStyles = useMemo(() => {
       const styles = {
         compact: {
-          container: 'min-h-[150px] p-2.5',
-          maxServices: 2,
-          showDetails: false,
-          showServices: false,
+          container: 'h-[172px] p-2.5',
         },
         detailed: {
-          container: 'min-h-[185px] p-3',
-          maxServices: 4,
-          showDetails: true,
-          showServices: true,
+          container: 'h-[220px] p-3',
         },
         standard: {
-          container: 'min-h-[175px] p-2.5',
-          maxServices: 3,
-          showDetails: true,
-          showServices: true,
+          container: 'h-[205px] p-2.5',
         },
       };
       return styles[variant] || styles.standard;
     }, [variant]);
-
-    // Interactions - Progressive Disclosure Toggle
-    const toggleExpansion = useCallback((e: React.MouseEvent) => {
-      e.stopPropagation();
-      setShowTertiaryInfo((prev) => !prev);
-    }, []);
 
     // 카드 클릭 핸들러
     const handleCardClick = useCallback(
@@ -251,7 +210,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
 
     return (
       <div
-        className={`group relative w-full overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent ${statusTheme.background} ${statusTheme.border} ${currentAccentBorder} ${variantStyles.container} ${currentHoverShadow}`}
+        className={`group relative w-full cursor-pointer overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 backdrop-blur-md text-left bg-transparent ${statusTheme.background} ${statusTheme.border} ${currentAccentBorder} ${variantStyles.container} ${currentHoverShadow}`}
       >
         {/* 🎨 그라데이션 애니메이션 배경 (랜딩 카드 스타일) */}
         <div
@@ -300,14 +259,19 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             />
           </div>
         )}
+
+        <button
+          type="button"
+          aria-label={`${safeServer.name} 상세 보기`}
+          onClick={handleCardClick}
+          className="absolute inset-0 z-20 rounded-2xl border-0 bg-transparent p-0 text-left appearance-none focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        >
+          <span className="sr-only">{safeServer.name} 상세 보기</span>
+        </button>
+
         {/* Header - OS/타입 정보 추가 */}
-        <header className="mb-2 flex items-start justify-between relative z-10">
-          {/* 접근성 수정: 중첩 버튼 문제 해결을 위해 메인 영역을 버튼으로 변경 */}
-          <button
-            type="button"
-            onClick={handleCardClick}
-            className="flex min-w-0 flex-1 items-center gap-2 text-left appearance-none focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg -ml-1 pl-1"
-          >
+        <header className="pointer-events-none relative z-30 mb-2 flex items-start justify-between">
+          <div className="-ml-1 flex min-w-0 flex-1 items-center gap-2 rounded-lg pl-1 text-left">
             {/* 🎨 아이콘 박스 - 그라데이션 스타일 (랜딩 카드 참조) */}
             <div
               className={`relative rounded-xl p-2 shadow-md backdrop-blur-sm transition-transform duration-200 bg-linear-to-br ${currentGradient.gradient} ${needsAttention ? 'group-hover:scale-105' : ''}`}
@@ -354,10 +318,10 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 </span>
               </div>
             </div>
-          </button>
+          </div>
 
-          <div className={actionRailClass}>
-            {onOpenLogs && (
+          {onOpenLogs && (
+            <div className={`pointer-events-auto ${actionRailClass}`}>
               <button
                 type="button"
                 onClick={handleOpenLogs}
@@ -366,26 +330,8 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
               >
                 <FileText className="h-4 w-4" />
               </button>
-            )}
-            {enableProgressiveDisclosure && (
-              <button
-                type="button"
-                data-toggle-button
-                onClick={toggleExpansion}
-                className={`${actionButtonClass} cursor-pointer hover:bg-black/10 hover:text-gray-700`}
-                aria-expanded={showTertiaryInfo}
-                aria-label={
-                  showTertiaryInfo ? '상세 정보 접기' : '상세 정보 펼치기'
-                }
-              >
-                {showTertiaryInfo ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </button>
-            )}
-          </div>
+            </div>
+          )}
         </header>
         {/* Main Content Section */}
         <section className="relative z-10">
@@ -447,45 +393,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           ) : (
             <SecondaryMetrics server={safeServer} compact={isCompactVariant} />
           )}
-
-          {/* Tertiary Details (OS, Uptime) */}
-          <div
-            className={`space-y-2 overflow-hidden transition-all duration-500 ${showTertiaryInfo ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
-          >
-            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-gray-100">
-              <DetailRow
-                icon={<Globe className="h-3 w-3" />}
-                label="OS"
-                value={osDisplayName}
-              />
-              <DetailRow
-                icon={<Clock className="h-3 w-3" />}
-                label="Uptime"
-                value={formatUptime(safeServer.uptime)}
-              />
-            </div>
-          </div>
         </section>
-
-        {/* Services Section */}
-        {variantStyles.showServices &&
-          safeServer.services?.length > 0 &&
-          (showTertiaryInfo || !enableProgressiveDisclosure) && (
-            <div
-              className={`mt-2 flex flex-wrap gap-1.5 transition-all duration-300 relative z-10 ${showTertiaryInfo || !enableProgressiveDisclosure ? 'opacity-100' : 'opacity-0'} ${isCompactVariant ? 'hidden sm:flex' : 'flex'}`}
-            >
-              {safeServer.services
-                .slice(0, variantStyles.maxServices)
-                .map((s, i) => (
-                  <ServiceChip key={i} service={s} />
-                ))}
-              {safeServer.services.length > variantStyles.maxServices && (
-                <span className="px-1.5 py-0.5 text-2xs text-gray-500">
-                  +{safeServer.services.length - variantStyles.maxServices}
-                </span>
-              )}
-            </div>
-          )}
       </div>
     );
   }
