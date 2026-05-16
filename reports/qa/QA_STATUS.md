@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-16 20:16:07 KST
+> Generated at: 2026-05-17 01:03:39 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 507 |
-| Total Runs (Counted) | 403 |
+| Total Recorded Runs | 508 |
+| Total Runs (Counted) | 404 |
 | Non-counted Runs | 104 |
-| Total Checks | 3606 |
-| Passed | 3469 |
-| Failed | 127 |
-| Completed Items | 580 |
-| Pending Items | 0 |
+| Total Checks | 3616 |
+| Passed | 3477 |
+| Failed | 129 |
+| Completed Items | 582 |
+| Pending Items | 2 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260515-0506 (2026-05-15T07:20:51.624Z) |
-| Latest Recorded Run | QA-20260516-0509 (2026-05-16T11:16:06.924Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.66% |
+| Last Counted Run | QA-20260517-0510 (2026-05-16T16:03:37.386Z) |
+| Latest Recorded Run | QA-20260517-0510 (2026-05-16T16:03:37.386Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,22 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260516-0509 (2026-05-16T11:16:06.924Z)
+Latest run: QA-20260517-0510 (2026-05-16T16:03:37.386Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | partially-appropriate | yes | Unify system start/stop state source or explicitly define the UI-only simulation boundary. |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period checked after production QA; no billed usage observed, effective usage about 10.0954 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-15T11:16:06.924Z -> 2026-05-16T11:16:06.924Z (24h)
+- Window: 2026-05-15T16:03:37.386Z -> 2026-05-16T16:03:37.386Z (24h)
 - Runs with observations: 2 recorded / 0 counted
 - Samples: 7
 
@@ -62,7 +62,7 @@ Latest run: QA-20260516-0509 (2026-05-16T11:16:06.924Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-15T11:16:06.924Z -> 2026-05-16T11:16:06.924Z (24h)
+- Window: 2026-05-15T16:03:37.386Z -> 2026-05-16T16:03:37.386Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,33 +74,35 @@ Latest run: QA-20260516-0509 (2026-05-16T11:16:06.924Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA d798c358
-- Coverage Packs: core-routes-smoke, ai-core
-- Covered Surfaces: GitLab tag deploy pipeline v8.11.158, Vercel production /, Vercel production /login, Vercel production /api/version, Cloud Run AI Engine post-deploy smoke
-- Skipped Surfaces: Authenticated AI chat browser flow was not repeated in this deploy smoke, NLQ provider comparison was already recorded in QA-20260516-0508
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_Dc4NxBLzxn5aNi7wSQtw8xWzTWM5 / SHA ee1f1451
+- Coverage Packs: core-routes-smoke, dashboard-core
+- Covered Surfaces: Vercel production /, Vercel production /login guest PIN flow, Vercel production /dashboard server cards, Top-right profile dropdown, Landing and profile system start/stop controls, Vercel production /api/version, Cloud Run AI Engine /health
+- Skipped Surfaces: AI chat conversational QA was not part of this post-deploy UI check, OAuth provider end-to-end login was skipped; guest PIN login was used
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.158 tag pipeline | [GitLab v8.11.158 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2529915217) | - |
+| general | GitLab v8.11.161 tag pipeline | [GitLab v8.11.161 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530237045) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Dashboard server cards after v8.11.161 deploy | `reports/qa/evidence/qa-20260517-v811161-dashboard-cards.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- sre-devops: DevOps / SRE Engineer (last QA-20260517-0510)
+  next: Unify system start/stop state source or explicitly define the UI-only simulation boundary.
 
 ## Pending Improvements
 
-- None
+- [P1] profile-system-stop-state-drift-v811161: Profile dropdown system stop does not visibly clear running/dashboard state (seen 1회, last QA-20260517-0510)
+- [P1] system-start-api-success-false-ui-dashboard-v811161: System start UI proceeds to dashboard even when /api/system start returns success:false (seen 1회, last QA-20260517-0510)
 
 ## Deferred Improvements
 
@@ -469,6 +471,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-page-dev-server-data-import-split: Avoid server-data graph import on dashboard dev path (completed 1회, last QA-20260420-0317)
 - dashboard-render: 대시보드 18서버 17온라인 1경고 (completed 1회, last QA-20260419-0306)
 - dashboard-resources: 시스템 리소스 개요 (completed 1회, last QA-20260317-0114)
+- dashboard-server-card-card-click-v811161: Server cards open detail from card body and hide visible expand/detail affordance (completed 1회, last QA-20260517-0510)
 - dashboard-server-card-density: Desktop server cards use 4-column dense grid at xl width (completed 1회, last QA-20260508-0426)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
@@ -602,6 +605,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - production-console-init-cleanliness: Clear repeated production chunk init console error across core routes (completed 1회, last QA-20260421-0324)
 - production-dashboard-render: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
 - production-smoke-console-401-cleanliness: Production smoke console 401 resource noise 정리 (completed 3회, last QA-20260320-0140)
+- profile-guest-login-state-v811161: Top-right profile dropdown reflects guest authenticated state (completed 1회, last QA-20260517-0510)
 - profile-menu: 프로필 메뉴 접근성 이름에 visible user state 포함 (completed 2회, last QA-20260423-0339)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - qa-0346-core-routes-proof-gap: QA-20260424-0346 core-routes-smoke evidence gap closed with follow-up route/API smoke (completed 1회, last QA-20260424-0347)
@@ -765,6 +769,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260517-0510 | 2026-05-16T16:03:37.386Z | targeted | yes | yes | v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls | 10 | 2 | 2 | 0 | 0 | 1 |
 | QA-20260516-0509 | 2026-05-16T11:16:06.924Z | targeted | no | no | v8.11.158 Production Deploy Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260516-0508 | 2026-05-16T10:45:41.451Z | targeted | no | no | NLQ EntitySchema Provider Compatibility Fix Verification - v8.11.157 | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260516-0507 | 2026-05-16T10:31:04.202Z | targeted | no | no | NLQ Provider Live Comparison Smoke - v8.11.157 | 11 | 1 | 1 | 0 | 1 | 1 |
@@ -784,4 +789,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260513-0493 | 2026-05-13T03:45:28.442Z | targeted | no | no | Diagnostic Follow-up - v8.11.142 Frontend Score Deductions | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0492 | 2026-05-13T02:51:02.949Z | targeted | yes | yes | Vercel Playwright QA - v8.11.142 Frontend Non-AI Status and Design | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0491 | 2026-05-13T02:09:08.202Z | targeted | yes | yes | Production Deploy QA - v8.11.142 Frontend and AI Engine Alignment | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260513-0490 | 2026-05-12T17:54:33.608Z | targeted | yes | yes | Cloud Run Direct QA - v8.11.141 AI Response Quality Regression | 10 | 1 | 0 | 0 | 0 | 0 |

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-16T11:16:06.924Z"
+    "updatedAt": "2026-05-16T16:03:37.386Z"
   },
   "sequence": {
-    "nextRunNumber": 510
+    "nextRunNumber": 511
   },
   "summary": {
-    "totalRecordedRuns": 507,
-    "totalRuns": 403,
+    "totalRecordedRuns": 508,
+    "totalRuns": 404,
     "excludedRuns": 104,
-    "totalChecks": 3606,
-    "totalPassed": 3469,
-    "totalFailed": 127,
-    "completionRate": 100,
-    "completedItems": 580,
-    "pendingItems": 0,
+    "totalChecks": 3616,
+    "totalPassed": 3477,
+    "totalFailed": 129,
+    "completionRate": 99.66,
+    "completedItems": 582,
+    "pendingItems": 2,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260515-0506",
-    "lastRecordedAt": "2026-05-15T07:20:51.624Z",
-    "latestRecordedRunId": "QA-20260516-0509",
-    "latestRecordedAt": "2026-05-16T11:16:06.924Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260517-0510",
+    "lastRecordedAt": "2026-05-16T16:03:37.386Z",
+    "latestRecordedRunId": "QA-20260517-0510",
+    "latestRecordedAt": "2026-05-16T16:03:37.386Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14225,6 +14225,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-16T11:16:06.924Z"
+    },
+    "dashboard-server-card-card-click-v811161": {
+      "id": "dashboard-server-card-card-click-v811161",
+      "title": "Server cards open detail from card body and hide visible expand/detail affordance",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260517-0510",
+      "firstSeenAt": "2026-05-16T16:03:37.386Z",
+      "lastSeenRunId": "QA-20260517-0510",
+      "lastSeenAt": "2026-05-16T16:03:37.386Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production /dashboard showed fixed-width server cards, no visible '상세 정보 펼치기/접기' text, and clicking db-mysql-dc1-primary card opened /dashboard/servers/db-mysql-dc1-primary.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-16T16:03:37.386Z"
+    },
+    "profile-guest-login-state-v811161": {
+      "id": "profile-guest-login-state-v811161",
+      "title": "Top-right profile dropdown reflects guest authenticated state",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260517-0510",
+      "firstSeenAt": "2026-05-16T16:03:37.386Z",
+      "lastSeenRunId": "QA-20260517-0510",
+      "lastSeenAt": "2026-05-16T16:03:37.386Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "After guest PIN login, profile button label changed to 'GU 게스트 사용자 게스트 로그인' and menu exposed session 종료 controls.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-16T16:03:37.386Z"
+    },
+    "system-start-api-success-false-ui-dashboard-v811161": {
+      "id": "system-start-api-success-false-ui-dashboard-v811161",
+      "title": "System start UI proceeds to dashboard even when /api/system start returns success:false",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260517-0510",
+      "firstSeenAt": "2026-05-16T16:03:37.386Z",
+      "lastSeenRunId": "QA-20260517-0510",
+      "lastSeenAt": "2026-05-16T16:03:37.386Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Playwright MCP network request POST /api/system returned HTTP 200 with body {success:false, action:'start', message:'Critical 프로세스 순차 서버 생성 엔진 실패로 시스템 시작 중단'}, while UI still entered /system-boot and /dashboard.",
+      "lastNote": "This is state-contract drift, not a dashboard-card regression.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-16T16:03:37.386Z"
+    },
+    "profile-system-stop-state-drift-v811161": {
+      "id": "profile-system-stop-state-drift-v811161",
+      "title": "Profile dropdown system stop does not visibly clear running/dashboard state",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260517-0510",
+      "firstSeenAt": "2026-05-16T16:03:37.386Z",
+      "lastSeenRunId": "QA-20260517-0510",
+      "lastSeenAt": "2026-05-16T16:03:37.386Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Profile dropdown '시스템 종료' opened the browser confirm dialog, but after accepting the menu still showed '시스템 종료' and /dashboard remained active while direct GET /api/system returned isRunning:false.",
+      "lastNote": "Landing page '시스템 종료하기' did switch the landing CTA back to '시스템 시작', so the drift is specific to unified profile/dashboard state handling.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-16T16:03:37.386Z"
     }
   },
   "runs": [
@@ -56786,6 +56882,107 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260517-0510",
+      "recordedAt": "2026-05-16T16:03:37.386Z",
+      "recordedAtKst": "2026-05-17 01:03:37 KST",
+      "title": "v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260517-0510.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Dc4NxBLzxn5aNi7wSQtw8xWzTWM5",
+        "deploymentUrl": "https://openmanager-f6wh70qkh-skyasus-projects.vercel.app",
+        "commitSha": "ee1f14513f01953eb6c8e18549015e8abdc15aab"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /",
+        "Vercel production /login guest PIN flow",
+        "Vercel production /dashboard server cards",
+        "Top-right profile dropdown",
+        "Landing and profile system start/stop controls",
+        "Vercel production /api/version",
+        "Cloud Run AI Engine /health"
+      ],
+      "skippedSurfaces": [
+        "AI chat conversational QA was not part of this post-deploy UI check",
+        "OAuth provider end-to-end login was skipped; guest PIN login was used"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 8,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "GitLab tag pipeline 2530237045 succeeded and both Vercel and Cloud Run report v8.11.161, but the UI system state can diverge from /api/system state.",
+          "nextAction": "Unify system start/stop state source or explicitly define the UI-only simulation boundary."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The requested Playwright MCP path covered login, profile dropdown, system controls, server card layout, and card click navigation.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-17T01:00:05+09:00",
+          "summary": "Current billing period checked after production QA; no billed usage observed, effective usage about 10.0954 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard server cards after v8.11.161 deploy",
+          "path": "reports/qa/evidence/qa-20260517-v811161-dashboard-cards.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.161 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530237045"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 2,
+      "pendingCount": 2,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -56845,33 +57042,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 185,
+      "seenCount": 186,
       "appropriateCount": 167,
-      "partialCount": 18,
+      "partialCount": 19,
       "inappropriateCount": 0,
-      "improvementNeededCount": 22,
-      "lastRunId": "QA-20260516-0509",
-      "lastSeenAt": "2026-05-16T11:16:06.924Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2529915217 completed successfully, including frontend deploy, AI Engine deploy, and both post-deploy smoke jobs.",
-      "lastNextAction": ""
+      "improvementNeededCount": 23,
+      "lastRunId": "QA-20260517-0510",
+      "lastSeenAt": "2026-05-16T16:03:37.386Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "GitLab tag pipeline 2530237045 succeeded and both Vercel and Cloud Run report v8.11.161, but the UI system state can diverge from /api/system state.",
+      "lastNextAction": "Unify system start/stop state source or explicitly define the UI-only simulation boundary."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 219,
-      "appropriateCount": 201,
+      "seenCount": 220,
+      "appropriateCount": 202,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260515-0506",
-      "lastSeenAt": "2026-05-15T07:20:51.624Z",
+      "lastRunId": "QA-20260517-0510",
+      "lastSeenAt": "2026-05-16T16:03:37.386Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP verified rendered production behavior, screenshot evidence, console state, and browser resource calls.",
+      "lastRationale": "The requested Playwright MCP path covered login, profile dropdown, system controls, server card layout, and card click navigation.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

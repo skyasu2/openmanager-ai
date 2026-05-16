@@ -1,0 +1,155 @@
+{
+  "runId": "QA-20260517-0510",
+  "recordedAt": "2026-05-16T16:03:37.386Z",
+  "recordedAtKst": "2026-05-17 01:03:37 KST",
+  "runTitle": "v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Dc4NxBLzxn5aNi7wSQtw8xWzTWM5",
+    "deploymentUrl": "https://openmanager-f6wh70qkh-skyasus-projects.vercel.app",
+    "commitSha": "ee1f14513f01953eb6c8e18549015e8abdc15aab"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+  "coveredSurfaces": [
+    "Vercel production /",
+    "Vercel production /login guest PIN flow",
+    "Vercel production /dashboard server cards",
+    "Top-right profile dropdown",
+    "Landing and profile system start/stop controls",
+    "Vercel production /api/version",
+    "Cloud Run AI Engine /health"
+  ],
+  "skippedSurfaces": [
+    "AI chat conversational QA was not part of this post-deploy UI check",
+    "OAuth provider end-to-end login was skipped; guest PIN login was used"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 8,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "GitLab tag pipeline 2530237045 succeeded and both Vercel and Cloud Run report v8.11.161, but the UI system state can diverge from /api/system state.",
+      "nextAction": "Unify system start/stop state source or explicitly define the UI-only simulation boundary."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The requested Playwright MCP path covered login, profile dropdown, system controls, server card layout, and card click navigation.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-17T01:00:05+09:00",
+      "summary": "Current billing period checked after production QA; no billed usage observed, effective usage about 10.0954 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard server cards after v8.11.161 deploy",
+      "path": "reports/qa/evidence/qa-20260517-v811161-dashboard-cards.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-server-card-card-click-v811161",
+      "title": "Server cards open detail from card body and hide visible expand/detail affordance",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production /dashboard showed fixed-width server cards, no visible '상세 정보 펼치기/접기' text, and clicking db-mysql-dc1-primary card opened /dashboard/servers/db-mysql-dc1-primary.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "profile-guest-login-state-v811161",
+      "title": "Top-right profile dropdown reflects guest authenticated state",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "After guest PIN login, profile button label changed to 'GU 게스트 사용자 게스트 로그인' and menu exposed session 종료 controls.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "system-start-api-success-false-ui-dashboard-v811161",
+      "title": "System start UI proceeds to dashboard even when /api/system start returns success:false",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP network request POST /api/system returned HTTP 200 with body {success:false, action:'start', message:'Critical 프로세스 순차 서버 생성 엔진 실패로 시스템 시작 중단'}, while UI still entered /system-boot and /dashboard.",
+      "note": "This is state-contract drift, not a dashboard-card regression.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "profile-system-stop-state-drift-v811161",
+      "title": "Profile dropdown system stop does not visibly clear running/dashboard state",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Profile dropdown '시스템 종료' opened the browser confirm dialog, but after accepting the menu still showed '시스템 종료' and /dashboard remained active while direct GET /api/system returned isRunning:false.",
+      "note": "Landing page '시스템 종료하기' did switch the landing CTA back to '시스템 시작', so the drift is specific to unified profile/dashboard state handling.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "GitLab tag pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530237045",
+    "Vercel /api/version reported v8.11.161, commit ee1f14513f01953eb6c8e18549015e8abdc15aab, releaseTag v8.11.161.",
+    "Cloud Run /health reported v8.11.161 and revision ai-engine-00479-xjz with 100% traffic.",
+    "Playwright MCP had to use Chrome DevTools MCP because the Playwright MCP browser profile was locked by an existing session."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.161 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530237045"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
