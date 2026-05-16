@@ -13,6 +13,8 @@ import {
   getCerebrasModelId,
   getGroqModelId,
   getMistralModelId,
+  getZaiModelId,
+  getZaiVisionModelId,
   isCerebrasToolCallingEnabled,
 } from '../lib/config-parser';
 import {
@@ -49,10 +51,15 @@ providersRouter.get('/', (c: Context) => {
         toolCallingEnabled: isCerebrasToolCallingEnabled(),
       },
       groq: {
-        role: 'Primary (Supervisor/Metrics Query) + fallback for Cerebras-first agents',
+        role: 'Text mesh primary for Groq-first paths',
         model: getGroqModelId(),
       },
-      mistral: { role: 'Last-resort text fallback', model: getMistralModelId() },
+      zai: {
+        role: 'Free GLM Flash text fallback + vision fallback',
+        model: getZaiModelId(),
+        visionModel: getZaiVisionModelId(),
+      },
+      mistral: { role: 'Distributed text fallback', model: getMistralModelId() },
     },
   });
 });
@@ -64,7 +71,7 @@ providersRouter.get('/', (c: Context) => {
  */
 providersRouter.post('/:name/toggle', async (c: Context) => {
   const name = c.req.param('name') as ProviderName;
-  const validProviders: ProviderName[] = ['cerebras', 'groq', 'mistral'];
+  const validProviders: ProviderName[] = ['cerebras', 'groq', 'zai', 'mistral'];
 
   if (!validProviders.includes(name)) {
     return handleValidationError(c, `Invalid provider: ${name}. Valid: ${validProviders.join(', ')}`);
@@ -87,7 +94,7 @@ providersRouter.post('/:name/toggle', async (c: Context) => {
  * POST /providers/reset - Reset all providers to enabled
  */
 providersRouter.post('/reset', (c: Context) => {
-  const providers: ProviderName[] = ['cerebras', 'groq', 'mistral'];
+  const providers: ProviderName[] = ['cerebras', 'groq', 'zai', 'mistral'];
 
   for (const provider of providers) {
     toggleProvider(provider, true);

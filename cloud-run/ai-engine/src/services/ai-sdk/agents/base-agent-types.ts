@@ -4,6 +4,7 @@ import type {
   LegacyRagSource,
   RetrievalMetadata,
 } from '../../../lib/retrieval-contract';
+import type { AgentLoopTelemetry } from './config/agent-loop-settings';
 
 export interface ImageAttachment {
   data: string;
@@ -38,6 +39,7 @@ export interface AgentResult {
     finishReason?: string;
     fallbackUsed?: boolean;
     fallbackReason?: string;
+    agentLoop?: AgentLoopTelemetry;
     retrieval?: RetrievalMetadata;
   };
   ragSources?: LegacyRagSource[];

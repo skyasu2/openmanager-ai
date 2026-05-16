@@ -1,6 +1,4 @@
 import {
-  hasToolCall,
-  stepCountIs,
   streamText,
   type UserContent,
 } from 'ai';
@@ -23,8 +21,11 @@ import type { FileAttachment, ImageAttachment } from './base-agent';
 import {
   getAgentConfig,
   getAgentProviderOrder,
-  getAgentMaxSteps,
 } from './orchestrator-routing';
+import {
+  buildAgentLoopSettings,
+  toAgentLoopTelemetry,
+} from './config/agent-loop-settings';
 import {
   buildAgentProviderAttempts,
   buildAgentProviderRetryStatus,
@@ -56,7 +57,6 @@ import {
   resolveDomainSnapshot,
 } from './domain-data-source';
 
-const STREAM_MAX_OUTPUT_TOKENS = 2048;
 const RAW_TOOL_CALL_JSON_FALLBACK_TEXT =
   'AI 엔진이 도구 호출 정보를 응답 본문으로 반환해 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
 
@@ -148,6 +148,7 @@ export async function* executeAgentStream(
     if (excludedProviders.includes(provider)) continue;
     logger.debug(`[Stream ${agentName}] Attempting ${provider}/${modelId}`);
 
+    const loopSettings = buildAgentLoopSettings(agentName, 'agent-stream');
     let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
     filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
     const timeoutSpan = createTimeoutSpan(sessionId, `${agentName}_stream`, ORCHESTRATOR_CONFIG.timeout);
@@ -186,7 +187,7 @@ export async function* executeAgentStream(
         .join('\n\n');
       const estimatedTokens = estimateAgentStreamQuotaTokens(
         [systemContent, userContent as UserContent],
-        STREAM_MAX_OUTPUT_TOKENS
+        loopSettings.maxOutputTokens
       );
       quotaReservation = await reserveStreamQuota(
         provider,
@@ -221,7 +222,6 @@ export async function* executeAgentStream(
         continue providerLoop;
       }
 
-      const agentMaxSteps = getAgentMaxSteps(agentName);
       const streamResult = streamText({
         model,
         messages: [
@@ -229,12 +229,10 @@ export async function* executeAgentStream(
           { role: 'user', content: userContent as UserContent },
         ],
         tools: filteredTools as Parameters<typeof streamText>[0]['tools'],
-        // Keep extra headroom only for multi-tool Analyst/Reporter paths.
-        // Other agents use the tighter default cap to reduce unnecessary loops.
-        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
+        stopWhen: loopSettings.stopWhen,
         temperature: 0.4,
-        maxOutputTokens: 2048,
-        maxRetries: 0,
+        maxOutputTokens: loopSettings.maxOutputTokens,
+        maxRetries: loopSettings.sdkMaxRetries,
         timeout: {
           totalMs: TIMEOUT_CONFIG.agent.hard,
           stepMs: TIMEOUT_CONFIG.subtask.hard,
@@ -613,6 +611,10 @@ export async function* executeAgentStream(
         responseUsage,
         firstChunkMs,
         toolsCalled,
+        agentLoop: toAgentLoopTelemetry(
+          loopSettings,
+          steps?.length ?? 0
+        ),
       });
       return; // Success — exit provider loop
     } catch (error) {
@@ -660,6 +662,7 @@ export async function* executeAgentStream(
           firstChunkMs,
           providerAttemptTelemetry,
           markFirstChunk,
+          agentLoop: toAgentLoopTelemetry(loopSettings, 0),
         });
         return;
       }

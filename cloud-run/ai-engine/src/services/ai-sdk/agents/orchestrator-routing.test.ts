@@ -324,6 +324,16 @@ describe('executeForcedRouting', () => {
     expect(result?.response).toContain('api-01');
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(1);
     expect(mockStepCountIs).toHaveBeenCalledWith(4);
+    expect(mockGenerateTextWithRetry.mock.calls[0]?.[0]).toMatchObject({
+      maxOutputTokens: 2048,
+    });
+    expect(result?.metadata.agentLoop).toEqual({
+      implementation: 'core-generate-text',
+      maxSteps: 4,
+      maxOutputTokens: 2048,
+      sdkMaxRetries: 0,
+      stepsExecuted: 1,
+    });
   });
 
   it('overrides generated summary text with deterministic summary for parity-sensitive prompts', async () => {

@@ -29,6 +29,8 @@ const {
   mockGetCerebrasModel,
   mockGetGroqModel,
   mockGetMistralModel,
+  mockGetZaiModel,
+  mockGetZaiVisionModel,
   mockGetGeminiFlashLiteModel,
   mockGetOpenRouterVisionModel,
   mockGetCerebrasModelId,
@@ -38,6 +40,7 @@ const {
     cerebras: true,
     groq: true,
     mistral: true,
+    zai: true,
     gemini: true,
     openrouter: true,
   })),
@@ -48,6 +51,11 @@ const {
   mockGetGroqModel: vi.fn((modelId: string) => ({ provider: 'groq', modelId })),
   mockGetMistralModel: vi.fn((modelId: string) => ({
     provider: 'mistral',
+    modelId,
+  })),
+  mockGetZaiModel: vi.fn((modelId: string) => ({ provider: 'zai', modelId })),
+  mockGetZaiVisionModel: vi.fn((modelId: string) => ({
+    provider: 'zai',
     modelId,
   })),
   mockGetGeminiFlashLiteModel: vi.fn((modelId: string) => ({
@@ -68,6 +76,8 @@ vi.mock('../model-provider', () => ({
   getCerebrasModel: mockGetCerebrasModel,
   getGroqModel: mockGetGroqModel,
   getMistralModel: mockGetMistralModel,
+  getZaiModel: mockGetZaiModel,
+  getZaiVisionModel: mockGetZaiVisionModel,
   getGeminiFlashLiteModel: mockGetGeminiFlashLiteModel,
   getVisionAgentModel: vi.fn(() => ({
     model: { modelId: 'gemini-2.5-flash-lite' },
@@ -82,6 +92,8 @@ vi.mock('../model-provider-core', () => ({
   getGeminiFlashLiteModel: mockGetGeminiFlashLiteModel,
   getGroqModel: mockGetGroqModel,
   getMistralModel: mockGetMistralModel,
+  getZaiModel: mockGetZaiModel,
+  getZaiVisionModel: mockGetZaiVisionModel,
   getOpenRouterVisionModel: mockGetOpenRouterVisionModel,
 }));
 
@@ -96,6 +108,8 @@ vi.mock('../../../lib/config-parser', async (importOriginal) => {
     getCerebrasModelId: mockGetCerebrasModelId,
     getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
     getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
+    getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
+    getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
     getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
     isCerebrasToolCallingEnabled: vi.fn(() => true),
     isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),

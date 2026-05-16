@@ -18,6 +18,8 @@ vi.mock('../lib/config-parser', () => ({
   getCerebrasFallbackModelIds: vi.fn((): string[] => []),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getMistralModelId: vi.fn(() => 'mistral-small-latest'),
+  getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
+  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   isCerebrasToolCallingEnabled: vi.fn(() => false),
 }));
@@ -27,11 +29,13 @@ vi.mock('../services/ai-sdk/model-provider', () => ({
   getProviderToggleState: vi.fn(() => ({
     cerebras: true,
     groq: true,
+    zai: true,
     mistral: true,
   })),
   checkProviderStatus: vi.fn(() => ({
     cerebras: true,
     groq: true,
+    zai: true,
     mistral: false,
   })),
 }));
@@ -58,18 +62,25 @@ describe('Provider Routes', () => {
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json.success).toBe(true);
-      expect(json.toggle).toEqual({ cerebras: true, groq: true, mistral: true });
+      expect(json.toggle).toEqual({
+        cerebras: true,
+        groq: true,
+        zai: true,
+        mistral: true,
+      });
       expect(json.available).toBeDefined();
       expect(json.info).toBeDefined();
       expect(json.modelDrift).toEqual([]);
-      expect(json.modelMetadata).toHaveLength(5);
+      expect(json.modelMetadata).toHaveLength(7);
       expect(json.info.cerebras.model).toBe('llama3.1-8b');
       expect(json.info.cerebras.toolCallingEnabled).toBe(false);
       expect(json.info.groq.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
       expect(json.info.cerebras.role).toContain('Short-context');
-      expect(json.info.groq.role).toContain('Supervisor');
+      expect(json.info.groq.role).toContain('Groq-first');
       expect(json.info.groq.role).not.toContain('Advisor');
-      expect(json.info.mistral.role).toBe('Last-resort text fallback');
+      expect(json.info.zai.model).toBe('glm-4.5-flash');
+      expect(json.info.zai.visionModel).toBe('glm-4.6v-flash');
+      expect(json.info.mistral.role).toBe('Distributed text fallback');
       expect(json.info.mistral.model).toBe('mistral-small-latest');
       expect(json.info.mistral.role).not.toContain('RAG');
     });
@@ -136,7 +147,7 @@ describe('Provider Routes', () => {
       const json = await res.json();
       expect(json.success).toBe(true);
       expect(json.message).toContain('reset');
-      expect(toggleProvider).toHaveBeenCalledTimes(3);
+      expect(toggleProvider).toHaveBeenCalledTimes(4);
       expect(checkProviderStatus).toHaveBeenCalled();
     });
   });

@@ -5,6 +5,8 @@ const {
   mockGetCerebrasModel,
   mockGetGroqModel,
   mockGetMistralModel,
+  mockGetZaiModel,
+  mockGetZaiVisionModel,
   mockGetGeminiFlashLiteModel,
   mockGetOpenRouterVisionModel,
   mockGetCerebrasModelId,
@@ -17,12 +19,15 @@ const {
     cerebras: true,
     groq: true,
     mistral: true,
+    zai: true,
     gemini: true,
     openrouter: true,
   })),
   mockGetCerebrasModel: vi.fn((modelId: string) => ({ provider: 'cerebras', modelId })),
   mockGetGroqModel: vi.fn((modelId: string) => ({ provider: 'groq', modelId })),
   mockGetMistralModel: vi.fn((modelId: string) => ({ provider: 'mistral', modelId })),
+  mockGetZaiModel: vi.fn((modelId: string) => ({ provider: 'zai', modelId })),
+  mockGetZaiVisionModel: vi.fn((modelId: string) => ({ provider: 'zai', modelId })),
   mockGetGeminiFlashLiteModel: vi.fn((modelId: string) => ({ provider: 'gemini', modelId })),
   mockGetOpenRouterVisionModel: vi.fn((modelId: string) => ({ provider: 'openrouter', modelId })),
   mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
@@ -39,6 +44,8 @@ vi.mock('../../../../lib/config-parser', () => ({
   getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
   getGroqModelId: vi.fn(() => 'groq-model'),
   getMistralModelId: vi.fn(() => 'mistral-small-latest'),
+  getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
+  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getOpenRouterVisionModelId: vi.fn(() => 'openrouter-vision-model'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),
@@ -63,6 +70,8 @@ vi.mock('../../model-provider-core', () => ({
   getGeminiFlashLiteModel: mockGetGeminiFlashLiteModel,
   getGroqModel: mockGetGroqModel,
   getMistralModel: mockGetMistralModel,
+  getZaiModel: mockGetZaiModel,
+  getZaiVisionModel: mockGetZaiVisionModel,
   getOpenRouterVisionModel: mockGetOpenRouterVisionModel,
 }));
 
@@ -85,6 +94,7 @@ describe('selectTextModel capability requirements', () => {
       cerebras: true,
       groq: true,
       mistral: true,
+      zai: true,
       gemini: true,
       openrouter: true,
     });
@@ -116,6 +126,7 @@ describe('selectTextModel capability requirements', () => {
       cerebras: true,
       groq: false,
       mistral: false,
+      zai: false,
       gemini: false,
       openrouter: false,
     });
@@ -168,28 +179,29 @@ describe('selectTextModel capability requirements', () => {
     expect(mockGetGroqModel).toHaveBeenCalledWith('groq-model');
   });
 
-  it('keeps long-context agent groups on Groq when the Cerebras default is 8K', () => {
+  it('distributes long-context agent groups across the text mesh when Cerebras is 8K', () => {
     expect(getNlqModel()?.provider).toBe('groq');
-    expect(getAdvisorModel()?.provider).toBe('groq');
+    expect(getAdvisorModel()?.provider).toBe('mistral');
     expect(getAnalystModel()?.provider).toBe('groq');
-    expect(getReporterModel()?.provider).toBe('groq');
+    expect(getReporterModel()?.provider).toBe('zai');
   });
 
-  it('keeps Metrics Query on models with at least 16K context when Groq is unavailable', () => {
+  it('keeps Metrics Query on Z.AI when Groq is unavailable', () => {
     mockCheckProviderStatus.mockReturnValue({
       cerebras: true,
       groq: false,
       mistral: true,
+      zai: true,
       gemini: true,
       openrouter: true,
     });
 
     const result = getNlqModel();
 
-    expect(result?.provider).toBe('mistral');
+    expect(result?.provider).toBe('zai');
     expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
-    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-small-latest');
+    expect(mockGetZaiModel).toHaveBeenCalledWith('glm-4.5-flash');
   });
 
   it('keeps Analyst, Reporter, and Advisor on models with at least 32K context', () => {
@@ -201,8 +213,8 @@ describe('selectTextModel capability requirements', () => {
 
     expect(results.map((result) => result?.provider)).toEqual([
       'groq',
-      'groq',
-      'groq',
+      'zai',
+      'mistral',
     ]);
     expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
@@ -214,12 +226,13 @@ describe('selectTextModel capability requirements', () => {
       cerebras: false,
       groq: true,
       mistral: true,
+      zai: true,
       gemini: true,
       openrouter: true,
     });
 
     expect(getAnalystModel()?.provider).toBe('groq');
-    expect(getReporterModel()?.provider).toBe('groq');
+    expect(getReporterModel()?.provider).toBe('zai');
   });
 
   it('uses agent-specific circuit breaker keys for the same provider', () => {

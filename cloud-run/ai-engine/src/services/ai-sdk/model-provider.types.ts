@@ -1,9 +1,16 @@
-export type ProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini' | 'openrouter';
+export type ProviderName =
+  | 'cerebras'
+  | 'groq'
+  | 'mistral'
+  | 'zai'
+  | 'gemini'
+  | 'openrouter';
 
 export interface ProviderStatus {
   cerebras: boolean;
   groq: boolean;
   mistral: boolean;
+  zai?: boolean;
   gemini: boolean;
   openrouter: boolean;
 }

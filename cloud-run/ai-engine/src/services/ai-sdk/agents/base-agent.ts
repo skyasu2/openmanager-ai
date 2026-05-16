@@ -2,8 +2,6 @@
 
 import {
   ToolLoopAgent,
-  hasToolCall,
-  stepCountIs,
   type ToolSet,
   type LanguageModel,
 } from 'ai';
@@ -16,6 +14,11 @@ import {
   mergeRetrievalMetadata,
 } from '../../../lib/ai-sdk-utils';
 import type { AgentConfig, ModelResult } from './config';
+import {
+  buildAgentLoopSettings,
+  toAgentLoopTelemetry,
+  type AgentLoopSettings,
+} from './config/agent-loop-settings';
 import { logger } from '../../../lib/logger';
 import { buildUserContent } from './base-agent-multimodal';
 import {
@@ -55,6 +58,7 @@ export abstract class BaseAgent {
   isAvailable(): boolean {
     const config = this.getConfig();
     if (!config) return false;
+    if (config.visibility === 'pipeline-internal') return false;
     return config.getModel() !== null;
   }
 
@@ -68,18 +72,17 @@ export abstract class BaseAgent {
     model: LanguageModel;
     instructions: string;
     tools: ToolSet;
-    maxSteps: number;
     temperature: number;
-    maxOutputTokens: number;
+    loopSettings: AgentLoopSettings;
   }) {
     return new ToolLoopAgent({
       model: params.model,
       instructions: params.instructions,
       tools: params.tools,
-      stopWhen: [hasToolCall('finalAnswer'), stepCountIs(params.maxSteps)],
-      maxRetries: 1,
+      stopWhen: params.loopSettings.stopWhen,
+      maxRetries: params.loopSettings.sdkMaxRetries,
       temperature: params.temperature,
-      maxOutputTokens: params.maxOutputTokens,
+      maxOutputTokens: params.loopSettings.maxOutputTokens,
     });
   }
 
@@ -141,6 +144,10 @@ export abstract class BaseAgent {
 
     const { model, provider, modelId } = modelResult;
     const maxOutputTokens = resolveMaxOutputTokens(opts, provider, agentName);
+    const loopSettings = buildAgentLoopSettings(agentName, 'tool-loop-agent', {
+      maxSteps: options.maxSteps,
+      maxOutputTokens,
+    });
     const filteredTools = filterTools(
       config.tools,
       opts,
@@ -162,9 +169,8 @@ export abstract class BaseAgent {
         model,
         instructions: getAgentInstructions(config, query),
         tools: filteredTools,
-        maxSteps: opts.maxSteps,
         temperature: opts.temperature,
-        maxOutputTokens,
+        loopSettings,
       });
 
       const result = await agent.generate({
@@ -244,6 +250,10 @@ export abstract class BaseAgent {
           formatCompliance: quality.formatCompliance,
           qualityFlags: quality.qualityFlags,
           latencyTier: quality.latencyTier,
+          agentLoop: toAgentLoopTelemetry(
+            loopSettings,
+            result.steps.length
+          ),
           finishReason,
           fallbackUsed,
           fallbackReason,
@@ -298,6 +308,10 @@ export abstract class BaseAgent {
 
     const { model, provider, modelId } = modelResult;
     const maxOutputTokens = resolveMaxOutputTokens(opts, provider, agentName);
+    const loopSettings = buildAgentLoopSettings(agentName, 'tool-loop-agent', {
+      maxSteps: options.maxSteps,
+      maxOutputTokens,
+    });
     const filteredTools = filterTools(config.tools, opts, provider, agentName);
 
     try {
@@ -311,9 +325,8 @@ export abstract class BaseAgent {
         model,
         instructions: getAgentInstructions(config, query),
         tools: filteredTools,
-        maxSteps: opts.maxSteps,
         temperature: opts.temperature,
-        maxOutputTokens,
+        loopSettings,
       });
 
       const streamResult = await agent.stream({
@@ -421,6 +434,10 @@ export abstract class BaseAgent {
             formatCompliance: quality.formatCompliance,
             qualityFlags: quality.qualityFlags,
             latencyTier: quality.latencyTier,
+            agentLoop: toAgentLoopTelemetry(
+              loopSettings,
+              steps?.length ?? 0
+            ),
           },
         },
       };

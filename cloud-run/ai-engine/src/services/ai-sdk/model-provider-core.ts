@@ -15,6 +15,10 @@ import {
   getOpenRouterApiKey,
   getOpenRouterVisionFallbackModelIds,
   getOpenRouterVisionModelId,
+  getZaiApiKey,
+  getZaiBaseUrl,
+  getZaiModelId,
+  getZaiVisionModelId,
 } from '../../lib/config-parser';
 
 // P-1: Lazy singleton — 동일 프로세스 내 provider 재생성 방지
@@ -22,6 +26,7 @@ let _cerebras: ReturnType<typeof createCerebras> | null = null;
 let _groq: ReturnType<typeof createGroq> | null = null;
 let _mistral: ReturnType<typeof createMistral> | null = null;
 let _gemini: ReturnType<typeof createGoogleGenerativeAI> | null = null;
+let _zai: ReturnType<typeof createOpenAI> | null = null;
 
 function getCerebrasProvider() {
   if (_cerebras) return _cerebras;
@@ -53,6 +58,39 @@ function getGeminiProvider() {
   if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
   _gemini = createGoogleGenerativeAI({ apiKey });
   return _gemini;
+}
+
+function patchZaiRequestInit(init?: RequestInit): RequestInit | undefined {
+  if (!init?.body || typeof init.body !== 'string') {
+    return init;
+  }
+
+  try {
+    const parsedBody = JSON.parse(init.body) as Record<string, unknown>;
+    if (!('thinking' in parsedBody)) {
+      parsedBody.thinking = { type: 'disabled' };
+    }
+
+    return {
+      ...init,
+      body: JSON.stringify(parsedBody),
+    };
+  } catch {
+    return init;
+  }
+}
+
+function getZaiProvider() {
+  if (_zai) return _zai;
+  const apiKey = getZaiApiKey();
+  if (!apiKey) throw new Error('ZAI_API_KEY not configured');
+  _zai = createOpenAI({
+    baseURL: getZaiBaseUrl().replace(/\/$/, ''),
+    apiKey,
+    name: 'zai',
+    fetch: async (input, init) => fetch(input, patchZaiRequestInit(init)),
+  });
+  return _zai;
 }
 
 function patchOpenRouterRequestInit(init?: RequestInit): RequestInit | undefined {
@@ -141,6 +179,17 @@ function asLanguageModel(model: unknown): LanguageModel {
   return model as LanguageModel;
 }
 
+function getOpenAICompatibleChatModel(
+  provider: ReturnType<typeof createOpenAI>,
+  modelId: string
+): LanguageModel {
+  const chatFactory =
+    typeof provider.chat === 'function'
+      ? provider.chat.bind(provider)
+      : (provider as unknown as (id: string) => unknown);
+  return asLanguageModel(chatFactory(modelId));
+}
+
 export function getCerebrasModel(
   modelId: string = getCerebrasModelId()
 ): LanguageModel {
@@ -162,6 +211,11 @@ export function getMistralModel(
   return asLanguageModel(mistral(modelId));
 }
 
+export function getZaiModel(modelId: string = getZaiModelId()): LanguageModel {
+  const zai = getZaiProvider();
+  return getOpenAICompatibleChatModel(zai, modelId);
+}
+
 // gemini-2.5-flash-lite: 사고 토큰 없음(thinking=0), RPD 1,000(flash 500의 2배), RPM 15
 // gemini-2.5-flash: 사고 토큰 소비(~24+/req) → max_tokens 낮으면 content 공백 위험
 export function getGeminiFlashLiteModel(
@@ -174,5 +228,11 @@ export function getGeminiFlashLiteModel(
 export function getOpenRouterVisionModel(modelId?: string): LanguageModel {
   const openrouter = getOpenRouterProvider();
   const model = modelId || getOpenRouterVisionModelId();
-  return asLanguageModel(openrouter(model));
+  return getOpenAICompatibleChatModel(openrouter, model);
+}
+
+export function getZaiVisionModel(
+  modelId: string = getZaiVisionModelId()
+): LanguageModel {
+  return getZaiModel(modelId);
 }

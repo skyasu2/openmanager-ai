@@ -42,9 +42,9 @@ describe('provider model metadata', () => {
     expect(metadata.structuredOutputEnabled).toBe(true);
     expect(metadata.smokeStatus).toBe('green');
     expect(metadata.quota).toMatchObject({
-      requestsPerMinute: 30,
-      tokensPerMinute: 60_000,
-      requestsPerDay: 14_400,
+      requestsPerMinute: 5,
+      tokensPerMinute: 30_000,
+      requestsPerDay: 2_400,
       tokensPerDay: 1_000_000,
     });
   });
@@ -82,8 +82,8 @@ describe('provider model metadata', () => {
       enabled: true,
       smokeStatus: 'green',
     });
-    expect(metadata.quota.requestsPerMinute).toBe(30);
-    expect(metadata.quota.tokensPerMinute).toBe(60_000);
+    expect(metadata.quota.requestsPerMinute).toBe(5);
+    expect(metadata.quota.tokensPerMinute).toBe(30_000);
   });
 
   it('marks GPT-OSS as excluded from free-tier runtime candidates', () => {
@@ -106,8 +106,10 @@ describe('provider model metadata', () => {
       'groq',
       'cerebras',
       'mistral',
+      'zai',
       'gemini',
       'openrouter',
+      'zai',
     ]);
     expect(getDeprecatedRuntimeProviderModels(metadata)).toEqual([]);
     expect(metadata.find((entry) => entry.provider === 'groq')).toMatchObject({
@@ -127,6 +129,10 @@ describe('provider model metadata', () => {
     expect(metadata.find((entry) => entry.provider === 'gemini')).toMatchObject({
       modelId: 'gemini-2.5-flash-lite',
       role: 'vision primary',
+    });
+    expect(metadata.find((entry) => entry.modelId === 'glm-4.5-flash')).toMatchObject({
+      provider: 'zai',
+      role: 'free GLM Flash text fallback',
     });
   });
 

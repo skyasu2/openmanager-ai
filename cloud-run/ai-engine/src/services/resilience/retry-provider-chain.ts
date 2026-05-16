@@ -4,6 +4,7 @@ import {
   getCerebrasModelId,
   getGroqModelId,
   getMistralModelId,
+  getZaiModelId,
 } from '../../lib/config-parser';
 import { logger } from '../../lib/logger';
 import {
@@ -11,6 +12,7 @@ import {
   getCerebrasModel,
   getGroqModel,
   getMistralModel,
+  getZaiModel,
   type ProviderName,
 } from '../ai-sdk/model-provider';
 import type { TextProviderName } from '../ai-sdk/provider-capabilities';
@@ -37,6 +39,11 @@ const PROVIDER_CHAIN: ProviderConfig[] = [
     modelIds: () => [getGroqModelId()],
   },
   {
+    name: 'zai',
+    getModel: getZaiModel,
+    modelIds: () => [getZaiModelId()],
+  },
+  {
     name: 'mistral',
     getModel: getMistralModel,
     modelIds: () => [getMistralModelId()],
@@ -47,7 +54,7 @@ const PROVIDER_CHAIN: ProviderConfig[] = [
  * Get available providers based on current status
  */
 export function getAvailableProviders(
-  preferredOrder: ProviderName[] = ['groq', 'cerebras', 'mistral'],
+  preferredOrder: ProviderName[] = ['groq', 'zai', 'mistral', 'cerebras'],
   excludeProviders: ProviderName[] = []
 ): ProviderConfig[] {
   const status = checkProviderStatus();

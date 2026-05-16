@@ -22,7 +22,7 @@ export {
  * ## Secret Consolidation (2025-12-28)
  * Consolidated into 4 grouped secrets for Cloud Run cost optimization:
  * 1. SUPABASE_CONFIG: Database connection
- * 2. AI_PROVIDERS_CONFIG: Groq, Mistral, Cerebras, Tavily
+ * 2. AI_PROVIDERS_CONFIG: Groq, Z.AI, Mistral, Cerebras, Tavily
  * 3. KV_CONFIG: Upstash Redis
  * 4. CLOUD_RUN_API_SECRET: API authentication
  *
@@ -58,6 +58,7 @@ export interface SupabaseConfig {
  */
 export interface AIProvidersConfig {
   groq: string;
+  zai?: string;
   mistral: string;
   cerebras: string;
   tavily: string;
@@ -172,7 +173,7 @@ export function getCloudRunApiSecret(): string | null {
 
 /**
  * Get AI Providers configuration (grouped)
- * Contains Groq, Mistral, Cerebras, Tavily API keys
+ * Contains Groq, Z.AI, Mistral, Cerebras, Tavily API keys
  */
 export function getAIProvidersConfig(): AIProvidersConfig | null {
   if (cachedAIProvidersConfig) return cachedAIProvidersConfig;
@@ -186,13 +187,15 @@ export function getAIProvidersConfig(): AIProvidersConfig | null {
   // Fallback to individual env vars
   if (!cachedAIProvidersConfig) {
     const groq = process.env.GROQ_API_KEY;
+    const zai = process.env.ZAI_API_KEY;
     const mistral = process.env.MISTRAL_API_KEY;
     const cerebras = process.env.CEREBRAS_API_KEY;
     const tavily = process.env.TAVILY_API_KEY;
 
-    if (groq || mistral || cerebras || tavily) {
+    if (groq || zai || mistral || cerebras || tavily) {
       cachedAIProvidersConfig = {
         groq: groq || '',
+        zai: zai || '',
         mistral: mistral || '',
         cerebras: cerebras || '',
         tavily: tavily || '',
@@ -281,6 +284,16 @@ export function getMistralApiKey(): string | null {
 }
 
 /**
+ * Get Z.AI API Key.
+ * Uses AI_PROVIDERS_CONFIG.zai or falls back to individual env var.
+ */
+export function getZaiApiKey(): string | null {
+  const providersConfig = getAIProvidersConfig();
+  if (providersConfig?.zai) return providersConfig.zai;
+  return process.env.ZAI_API_KEY || null;
+}
+
+/**
  * Mistral Configuration for embedding.ts
  * Returns API key in config object format
  */
@@ -309,6 +322,9 @@ export function getCerebrasApiKey(): string | null {
 }
 
 const DEFAULT_GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
+const DEFAULT_ZAI_BASE_URL = 'https://api.z.ai/api/paas/v4';
+const DEFAULT_ZAI_TEXT_MODEL = 'glm-4.5-flash';
+const DEFAULT_ZAI_VISION_MODEL = 'glm-4.6v-flash';
 
 /**
  * Get default Cerebras text model id.
@@ -363,6 +379,27 @@ export function isCerebrasLongContextEnabled(): boolean {
  */
 export function getGroqModelId(): string {
   return process.env.GROQ_MODEL_ID || DEFAULT_GROQ_MODEL;
+}
+
+/**
+ * Get Z.AI OpenAI-compatible base URL.
+ */
+export function getZaiBaseUrl(): string {
+  return process.env.ZAI_BASE_URL || DEFAULT_ZAI_BASE_URL;
+}
+
+/**
+ * Get default Z.AI free text model id.
+ */
+export function getZaiModelId(): string {
+  return process.env.ZAI_DEFAULT_MODEL || DEFAULT_ZAI_TEXT_MODEL;
+}
+
+/**
+ * Get default Z.AI free vision model id.
+ */
+export function getZaiVisionModelId(): string {
+  return process.env.ZAI_VISION_MODEL || DEFAULT_ZAI_VISION_MODEL;
 }
 
 const DEFAULT_MISTRAL_MODEL = 'mistral-small-latest';
@@ -516,6 +553,7 @@ export function getConfigStatus(): {
   upstash: boolean;
   groq: boolean;
   mistral: boolean;
+  zai: boolean;
   cerebras: boolean;
   tavily: boolean;
   tavilyBackup: boolean;
@@ -529,6 +567,7 @@ export function getConfigStatus(): {
     upstash: getUpstashConfig() !== null,
     groq: getGroqApiKey() !== null,
     mistral: getMistralApiKey() !== null,
+    zai: getZaiApiKey() !== null,
     cerebras: getCerebrasApiKey() !== null,
     tavily: getTavilyApiKey() !== null,
     tavilyBackup: getTavilyApiKeyBackup() !== null,

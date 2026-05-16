@@ -142,7 +142,7 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
  */
 export async function generateTextWithRetry(
   options: GenerateTextOptions,
-  preferredOrder: ProviderName[] = ['groq', 'cerebras', 'mistral'],
+  preferredOrder: ProviderName[] = ['groq', 'zai', 'mistral', 'cerebras'],
   config: Partial<RetryConfig> = {}
 ): Promise<RetryResult<Awaited<ReturnType<typeof generateText>>>> {
   const fullConfig = { ...DEFAULT_RETRY_CONFIG, ...config };

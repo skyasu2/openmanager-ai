@@ -22,6 +22,7 @@ export function isQuotaTrackedProvider(
     provider === 'cerebras' ||
     provider === 'groq' ||
     provider === 'mistral' ||
+    provider === 'zai' ||
     provider === 'gemini'
   );
 }

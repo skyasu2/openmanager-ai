@@ -15,6 +15,18 @@ import {
 import { resolveRAGSetting, resolveWebSearchSetting } from './orchestrator-web-search';
 import { preFilterQuery } from './orchestrator-context';
 import { getKSTDateTime } from '../../../lib/time-utils';
+import { extractQueryRoutingSignals } from '../routing/query-routing-signals';
+import {
+  attachAgentDecision,
+  attachPreFilterDecision,
+  createAgentDecisionFromFallback,
+  createAgentDecisionFromLlmRouting,
+  createAgentDecisionFromPreFilter,
+  createPreFilterDecision,
+  createRoutingDecisionTrace,
+  sanitizeRoutingDecisionTrace,
+  type RoutingDecisionTrace,
+} from '../routing/routing-decision-trace';
 import {
   getOrchestratorModel,
   recordHandoff,
@@ -69,6 +81,16 @@ export async function* executeMultiAgentStream(
   const ragEnabled = resolveRAGSetting(request.enableRAG, query);
   logger.debug(`[Stream WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
   logger.debug(`[Stream RAG] Setting resolved: ${ragEnabled} (request: ${request.enableRAG})`);
+  let routingTrace: RoutingDecisionTrace = createRoutingDecisionTrace(
+    extractQueryRoutingSignals(query, {
+      analysisMode: request.analysisMode,
+      hasImageAttachments: !!(request.images && request.images.length > 0),
+      hasFileAttachments: !!(request.files && request.files.length > 0),
+    })
+  );
+  const buildRoutingTraceMetadata = () => ({
+    routingDecisionTrace: sanitizeRoutingDecisionTrace(routingTrace),
+  });
 
   const sessionContext = await getOrCreateSessionContext(request.sessionId, query);
   logger.debug(`[Stream Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
@@ -78,10 +100,19 @@ export async function* executeMultiAgentStream(
     hasImageAttachments: !!(request.images && request.images.length > 0),
     hasFileAttachments: !!(request.files && request.files.length > 0),
   });
+  routingTrace = attachPreFilterDecision(
+    routingTrace,
+    createPreFilterDecision(query, preFilterResult)
+  );
   logger.debug(`[Stream PreFilter] Query: "${query.substring(0, 50)}..." → Suggested: ${preFilterResult.suggestedAgent || 'none'} (confidence: ${preFilterResult.confidence})`);
 
   if (!preFilterResult.shouldHandoff && preFilterResult.directResponse) {
-    yield* streamWithTrace(trace, startTime, streamFastPathResponse(preFilterResult.directResponse, startTime));
+    yield* streamWithTrace(
+      trace,
+      startTime,
+      streamFastPathResponse(preFilterResult.directResponse, startTime),
+      buildRoutingTraceMetadata()
+    );
     return;
   }
 
@@ -106,7 +137,8 @@ export async function* executeMultiAgentStream(
           request.domainId,
           request.internalDisclosureMode,
           request.domainEvidencePrompt
-        )
+        ),
+        buildRoutingTraceMetadata()
       );
     } else {
       yield* streamWithTrace(
@@ -124,7 +156,8 @@ export async function* executeMultiAgentStream(
           request.domainId,
           request.internalDisclosureMode,
           request.domainEvidencePrompt
-        )
+        ),
+        buildRoutingTraceMetadata()
       );
     }
     return;
@@ -152,6 +185,13 @@ export async function* executeMultiAgentStream(
         },
       };
     }
+    routingTrace = attachAgentDecision(
+      routingTrace,
+      createAgentDecisionFromPreFilter({
+        selectedAgent: forcedTarget.targetAgent,
+        confidence: preFilterResult.confidence,
+      })
+    );
 
     yield* streamWithTrace(
       trace,
@@ -169,7 +209,8 @@ export async function* executeMultiAgentStream(
         request.dataSource,
         request.domainId,
         request.domainEvidencePrompt
-      )
+      ),
+      buildRoutingTraceMetadata()
     );
     return;
   }
@@ -252,6 +293,13 @@ export async function* executeMultiAgentStream(
             },
           };
         }
+        routingTrace = attachAgentDecision(
+          routingTrace,
+          createAgentDecisionFromFallback({
+            selectedAgent: timeoutFallbackTarget.targetAgent,
+            confidence: preFilterResult.confidence,
+          })
+        );
         yield* streamWithTrace(
           trace,
           startTime,
@@ -268,7 +316,8 @@ export async function* executeMultiAgentStream(
             request.dataSource,
             request.domainId,
             request.domainEvidencePrompt,
-          )
+          ),
+          buildRoutingTraceMetadata()
         );
         return;
       }
@@ -303,6 +352,13 @@ export async function* executeMultiAgentStream(
           },
         };
       }
+      routingTrace = attachAgentDecision(
+        routingTrace,
+        createAgentDecisionFromLlmRouting({
+          selectedAgent: selectedTarget.targetAgent,
+          confidence: routingDecision.confidence,
+        })
+      );
 
       yield* streamWithTrace(
         trace,
@@ -320,7 +376,8 @@ export async function* executeMultiAgentStream(
           request.dataSource,
           request.domainId,
           request.domainEvidencePrompt
-        )
+        ),
+        buildRoutingTraceMetadata()
       );
       return;
     }
@@ -346,6 +403,13 @@ export async function* executeMultiAgentStream(
           },
         };
       }
+      routingTrace = attachAgentDecision(
+        routingTrace,
+        createAgentDecisionFromFallback({
+          selectedAgent: fallbackTarget.targetAgent,
+          confidence: preFilterResult.confidence,
+        })
+      );
 
       yield* streamWithTrace(
         trace,
@@ -363,7 +427,8 @@ export async function* executeMultiAgentStream(
           request.dataSource,
           request.domainId,
           request.domainEvidencePrompt
-        )
+        ),
+        buildRoutingTraceMetadata()
       );
       return;
     }
@@ -389,7 +454,14 @@ export async function* executeMultiAgentStream(
           promptTokens: routingResult.usage?.inputTokens ?? 0,
           completionTokens: routingResult.usage?.outputTokens ?? 0,
         },
-        metadata: { provider, modelId, handoffCount: 0, durationMs, ...(traceId ? { traceId } : {}) },
+        metadata: {
+          provider,
+          modelId,
+          handoffCount: 0,
+          durationMs,
+          ...(traceId ? { traceId } : {}),
+          ...buildRoutingTraceMetadata(),
+        },
       },
     };
   } catch (error) {

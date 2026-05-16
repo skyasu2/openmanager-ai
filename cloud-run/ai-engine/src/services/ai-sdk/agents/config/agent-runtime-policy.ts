@@ -1,7 +1,7 @@
 import { normalizeAgentRuntimeName } from '../../../../core/assistant-runtime/agent-name-compat';
 
-export type TextRuntimeProvider = 'groq' | 'cerebras' | 'mistral';
-export type NativeRuntimeProvider = 'gemini' | 'openrouter';
+export type TextRuntimeProvider = 'groq' | 'zai' | 'mistral' | 'cerebras';
+export type NativeRuntimeProvider = 'gemini' | 'openrouter' | 'zai';
 
 export type AgentToolName =
   | 'getServerMetrics'
@@ -43,23 +43,39 @@ export interface AgentRuntimePolicy {
   toolAllowlist: readonly AgentToolName[];
 }
 
-export const TEXT_AGENT_PROVIDER_ORDER = ['groq', 'cerebras', 'mistral'] as const;
+export const GROQ_FIRST_PROVIDER_ORDER = [
+  'groq',
+  'zai',
+  'mistral',
+  'cerebras',
+] as const;
 export const CEREBRAS_FIRST_PROVIDER_ORDER = [
   'cerebras',
   'groq',
+  'zai',
   'mistral',
+] as const;
+export const ZAI_FIRST_PROVIDER_ORDER = [
+  'zai',
+  'mistral',
+  'groq',
+  'cerebras',
 ] as const;
 // Mistral-first: simple text generation tasks (no tools needed, short output).
 // Suitable for summarization fallback — saves Groq/Cerebras RPD for agent calls.
 export const MISTRAL_FIRST_PROVIDER_ORDER = [
   'mistral',
+  'zai',
   'groq',
   'cerebras',
 ] as const;
+export const TEXT_AGENT_PROVIDER_ORDER = GROQ_FIRST_PROVIDER_ORDER;
 
 // Free-tier quota budget per provider (sliding window):
-//   Groq:     30 RPM  → threshold 0.85 → ~25 effective calls/min
-//   Cerebras: 30 RPM / 14.4K RPD account limit as of 2026-04-30.
+//   Groq:     30 RPM / 1K RPD / 30K TPM / 500K TPD.
+//   Z.AI:     free Flash models, concurrency/rate limits are account-specific.
+//   Mistral:  workspace-tier dependent; current account smoke: 50 RPM / 50K TPM.
+//   Cerebras: 5 RPM / 2.4K RPD account limit as of 2026-05-16.
 //             llama3.1-8b is scheduled for deprecation on 2026-05-27.
 //
 // maxSteps cap rationale (one LLM call per step):
@@ -129,12 +145,12 @@ export const AGENT_RUNTIME_POLICIES = {
       'finalAnswer',
     ],
   },
-  // Reporter: Cerebras-first (32K context needed). Typical flow:
+  // Reporter: Z.AI-first (32K context needed). Typical flow:
   //   getMetrics → buildTimeline → search evidence → finalAnswer = 3–4 steps.
   // Root-cause analysis tools stay on Analyst; Reporter consumes handoff evidence.
   // 5 steps ceiling matches Analyst for symmetric Cerebras budget usage.
   'Reporter Agent': {
-    providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER,
+    providerOrder: ZAI_FIRST_PROVIDER_ORDER,
     maxSteps: 5,
     evidenceBudget: 4,
     toolAllowlist: [
@@ -147,11 +163,11 @@ export const AGENT_RUNTIME_POLICIES = {
       'finalAnswer',
     ],
   },
-  // Advisor: Cerebras-first. Typical flow: searchKB → recommend → finalAnswer = 3 steps.
+  // Advisor: Mistral-first. Typical flow: searchKB → recommend → finalAnswer = 3 steps.
   // Analysis/RCA tools stay on Analyst; Advisor focuses on KB, logs, and commands.
   // 4 steps is sufficient; saves Cerebras budget vs. the Analyst/Reporter.
   'Advisor Agent': {
-    providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER,
+    providerOrder: MISTRAL_FIRST_PROVIDER_ORDER,
     maxSteps: 4,
     evidenceBudget: 3,
     toolAllowlist: [
@@ -186,7 +202,7 @@ export const AGENT_RUNTIME_POLICIES = {
   },
   'Vision Agent': {
     providerOrder: [],
-    nativeProviderOrder: ['gemini', 'openrouter'],
+    nativeProviderOrder: ['gemini', 'openrouter', 'zai'],
     maxSteps: 2,
     evidenceBudget: 0,
     toolAllowlist: ['analyzeScreenshot', 'finalAnswer'],

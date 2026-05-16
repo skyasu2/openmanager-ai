@@ -78,9 +78,9 @@ describe('provider model policy SSOT', () => {
       structuredOutputEnabled: true,
       contextWindowTokens: 8_192,
       quota: {
-        requestsPerMinute: 30,
-        tokensPerMinute: 60_000,
-        requestsPerDay: 14_400,
+        requestsPerMinute: 5,
+        tokensPerMinute: 30_000,
+        requestsPerDay: 2_400,
         tokensPerDay: 1_000_000,
       },
       deprecationDate: CEREBRAS_LLAMA_DEPRECATION_DATE,
@@ -132,15 +132,16 @@ describe('provider model policy SSOT', () => {
     );
     expect(CEREBRAS_DEPRECATION_CONTINGENCY.fallbackChainAfterDeprecation).toEqual([
       'groq',
+      'zai',
       'mistral',
     ]);
   });
 
   it('exposes quota from the same policy object used by metadata and selectors', () => {
     expect(getCerebrasModelQuota(CEREBRAS_LLAMA_FALLBACK_MODEL_ID)).toEqual({
-      requestsPerMinute: 30,
-      tokensPerMinute: 60_000,
-      requestsPerDay: 14_400,
+      requestsPerMinute: 5,
+      tokensPerMinute: 30_000,
+      requestsPerDay: 2_400,
       tokensPerDay: 1_000_000,
     });
   });

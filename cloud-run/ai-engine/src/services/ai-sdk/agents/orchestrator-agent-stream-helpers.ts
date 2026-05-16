@@ -11,6 +11,7 @@ import {
   type ModelResult,
   type TextProvider,
 } from './config/agent-model-selectors';
+import type { AgentLoopTelemetry } from './config/agent-loop-settings';
 import { saveAgentFindingsToContext } from './orchestrator-context';
 import { streamTextInChunks } from './orchestrator-decomposition';
 import { executeReporterWithPipeline } from './orchestrator-routing';
@@ -36,7 +37,7 @@ type StreamUsage = {
   totalTokens?: number;
 };
 
-const TEXT_PROVIDERS: TextProvider[] = ['cerebras', 'groq', 'mistral'];
+const TEXT_PROVIDERS: TextProvider[] = ['cerebras', 'groq', 'zai', 'mistral'];
 
 export function buildAgentProviderAttempts({
   agentName,
@@ -239,6 +240,7 @@ export async function* emitAgentSuccessDoneEvent({
   responseUsage,
   firstChunkMs,
   toolsCalled,
+  agentLoop,
 }: {
   agentName: string;
   sessionId: string;
@@ -254,6 +256,7 @@ export async function* emitAgentSuccessDoneEvent({
   responseUsage?: StreamUsage;
   firstChunkMs: number | null;
   toolsCalled: string[];
+  agentLoop?: AgentLoopTelemetry;
 }): AsyncGenerator<StreamEvent> {
   providerAttemptTelemetry.push({
     provider: responseProvider,
@@ -305,6 +308,7 @@ export async function* emitAgentSuccessDoneEvent({
         latencyTier: quality.latencyTier,
         ...(firstChunkMs !== null ? { ttfbMs: firstChunkMs } : {}),
         providerAttempts: providerAttemptTelemetry,
+        ...(agentLoop ? { agentLoop } : {}),
         usedFallback,
         ...(providerFallbackReason
           ? { fallbackReason: classifyProviderFallbackReason(providerFallbackReason) }
@@ -325,6 +329,7 @@ export function* emitNoOutputFallbackDoneEvent({
   firstChunkMs,
   providerAttemptTelemetry,
   markFirstChunk,
+  agentLoop,
 }: {
   agentName: string;
   provider: string;
@@ -335,6 +340,7 @@ export function* emitNoOutputFallbackDoneEvent({
   firstChunkMs: number | null;
   providerAttemptTelemetry: ProviderAttemptTelemetry[];
   markFirstChunk: (source: string) => void;
+  agentLoop?: AgentLoopTelemetry;
 }): Generator<StreamEvent> {
   const noOutputFallback = '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.';
   markFirstChunk('no_output_fallback');
@@ -370,6 +376,7 @@ export function* emitNoOutputFallbackDoneEvent({
         latencyTier: quality.latencyTier,
         ttfbMs: fallbackTtfbMs,
         providerAttempts: providerAttemptTelemetry,
+        ...(agentLoop ? { agentLoop } : {}),
         usedFallback: providerAttemptTelemetry.length > 1,
         fallbackReason: 'no_output',
       },

@@ -82,6 +82,9 @@ export function isProviderRateLimitError(error: unknown): boolean {
     details.includes('too_many_requests') ||
     details.includes('queue_exceeded') ||
     details.includes('high traffic') ||
+    details.includes('1302') ||
+    details.includes('1303') ||
+    details.includes('1305') ||
     details.includes('429')
   );
 }

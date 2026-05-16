@@ -76,6 +76,10 @@ vi.mock('../../lib/config-parser', () => ({
   getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   getCerebrasFallbackModelIds: vi.fn((): string[] => []),
   getMistralApiKey: vi.fn(() => 'test-mistral-key'),
+  getZaiApiKey: vi.fn(() => 'test-zai-key'),
+  getZaiBaseUrl: vi.fn(() => 'https://api.z.ai/api/paas/v4'),
+  getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
+  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getGeminiApiKey: vi.fn(() => 'test-gemini-key'),
@@ -97,6 +101,8 @@ import {
   getGroqModel,
   getMistralModel,
   getOpenRouterVisionModel,
+  getZaiModel,
+  getZaiVisionModel,
   getSupervisorModel,
   getVerifierModel,
   getVisionAgentModel,
@@ -110,6 +116,7 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     toggleProvider('cerebras', true);
     toggleProvider('groq', true);
     toggleProvider('mistral', true);
+    toggleProvider('zai', true);
     toggleProvider('gemini', true);
     toggleProvider('openrouter', true);
   });
@@ -119,6 +126,8 @@ describe('model-provider compatibility (SDK upgrades)', () => {
       getCerebrasModel('gpt-oss-120b'),
       getGroqModel('meta-llama/llama-4-scout-17b-16e-instruct'),
       getMistralModel('mistral-large-latest'),
+      getZaiModel('glm-4.5-flash'),
+      getZaiVisionModel('glm-4.6v-flash'),
       getGeminiFlashLiteModel('gemini-2.5-flash-lite'),
       getOpenRouterVisionModel('google/gemma-3-27b-it:free'),
     ];
@@ -154,6 +163,17 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(vision).not.toBeNull();
     expect(vision?.provider).toBe('openrouter');
     expect(vision?.modelId).toBe('google/gemma-3-27b-it:free');
+  });
+
+  it('falls back to Z.AI Vision when Gemini and OpenRouter are disabled', () => {
+    toggleProvider('gemini', false);
+    toggleProvider('openrouter', false);
+    invalidateProviderStatusCache();
+
+    const vision = getVisionAgentModel();
+    expect(vision).not.toBeNull();
+    expect(vision?.provider).toBe('zai');
+    expect(vision?.modelId).toBe('glm-4.6v-flash');
   });
 
   it('configures OpenRouter provider with recommended headers and request patching', () => {
@@ -208,9 +228,41 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     fetchSpy.mockRestore();
   });
 
-  it('returns null when both Vision providers are disabled', () => {
+  it('injects Z.AI thinking disabled for free Flash requests', async () => {
+    getZaiModel('glm-4.5-flash');
+
+    const zaiOptions = vi
+      .mocked(createOpenAI)
+      .mock.calls.find((call) => call[0]?.name === 'zai')?.[0];
+    expect(zaiOptions).toBeDefined();
+    expect(zaiOptions?.fetch).toBeTypeOf('function');
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(null, { status: 204 })
+    );
+
+    await zaiOptions?.fetch?.('https://api.z.ai/api/paas/v4/chat/completions', {
+      method: 'POST',
+      body: JSON.stringify({
+        model: 'glm-4.5-flash',
+        messages: [{ role: 'user', content: 'ping' }],
+      }),
+    });
+
+    const patchedBody = fetchSpy.mock.calls.at(-1)?.[1]?.body;
+    expect(typeof patchedBody).toBe('string');
+    const payload = JSON.parse(patchedBody as string) as {
+      thinking: { type: string };
+    };
+
+    expect(payload.thinking).toEqual({ type: 'disabled' });
+    fetchSpy.mockRestore();
+  });
+
+  it('returns null when all Vision providers are disabled', () => {
     toggleProvider('gemini', false);
     toggleProvider('openrouter', false);
+    toggleProvider('zai', false);
     invalidateProviderStatusCache();
 
     const vision = getVisionAgentModel();

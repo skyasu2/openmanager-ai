@@ -240,6 +240,30 @@ describe('Reporter Pipeline', () => {
       expect(result.metadata.agentsUsed.length).toBeGreaterThan(0);
     });
 
+    it('labels deterministic evaluator and optimizer as Reporter Pipeline stages', async () => {
+      const result = await executeReporterPipelineWithDataSource('파이프라인 단계 명칭 확인', {
+        qualityThreshold: 0.95,
+        maxIterations: 3,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.metadata.agentsUsed).not.toEqual(
+        expect.arrayContaining(['Evaluator Agent', 'Optimizer Agent'])
+      );
+      expect(result.metadata.agentsUsed).toEqual(
+        expect.arrayContaining(['Reporter Pipeline: evaluator stage'])
+      );
+      expect(result.metadata.pipelineStages).toEqual(
+        expect.arrayContaining([
+          {
+            stage: 'evaluator',
+            label: 'Reporter Pipeline: evaluator stage',
+            execution: 'deterministic',
+          },
+        ])
+      );
+    });
+
     it('should respect custom quality threshold', async () => {
       const config: Partial<PipelineConfig> = {
         qualityThreshold: 0.9,

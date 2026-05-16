@@ -18,6 +18,8 @@ import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
 import type { InternalDisclosureMode } from '../internal-disclosure-policy';
 import type { SanitizedRoutingDecisionTrace } from '../routing/routing-decision-trace';
+import type { AgentLoopTelemetry } from './config/agent-loop-settings';
+import type { ReporterPipelineStageTelemetry } from './reporter-pipeline';
 
 // ============================================================================
 // Configuration
@@ -127,8 +129,12 @@ export interface MultiAgentResponse {
     latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
     /** Quality score from Reporter Pipeline (optional, 0-1) */
     qualityScore?: number;
+    /** Internal deterministic Reporter Pipeline stage labels, if Reporter Pipeline handled the request. */
+    pipelineStages?: ReporterPipelineStageTelemetry[];
     /** Provider attempt trail for Langfuse/runtime fallback diagnostics. */
     providerAttempts?: ProviderAttemptTelemetry[];
+    /** AI SDK loop settings used by the final agent path. */
+    agentLoop?: AgentLoopTelemetry;
     /** Stable reason explaining why the selected provider was not the first attempt. */
     fallbackReason?: string;
     /** True when at least one earlier provider attempt failed or was skipped. */

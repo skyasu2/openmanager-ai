@@ -404,7 +404,7 @@ export async function getQuotaStatus(
  * 사용 가능한 최적 Provider 선택 (Pre-emptive Fallback)
  */
 export async function selectAvailableProvider(
-  preferredOrder: LLMProviderName[] = ['groq', 'cerebras', 'mistral']
+  preferredOrder: LLMProviderName[] = ['groq', 'zai', 'mistral', 'cerebras']
 ): Promise<{
   provider: LLMProviderName;
   modelId?: string;
@@ -470,6 +470,7 @@ export async function getQuotaSummary(): Promise<{
   const providers: ProviderName[] = [
     'cerebras',
     'groq',
+    'zai',
     'mistral',
     'gemini',
     'tavily',

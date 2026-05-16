@@ -169,8 +169,8 @@ describe('QuotaTracker — Admission reservation', () => {
 
   it('projected minute request가 threshold에 닿으면 호출 전 차단한다', async () => {
     vi.setSystemTime(new Date('2026-03-14T10:00:00Z'));
-    // llama3.1-8b RPM=30, threshold=85%. 25번째까지 허용되고 26번째 projected call은 차단.
-    for (let i = 0; i < 25; i++) {
+    // llama3.1-8b RPM=5, threshold=85%. 4번째까지 허용되고 5번째 projected call은 차단.
+    for (let i = 0; i < 4; i++) {
       const reservation = await reserveProviderQuota(
         'cerebras',
         100,
@@ -338,8 +338,8 @@ describe('QuotaTracker — Pre-emptive Fallback', () => {
   });
 
   it('minute request 85% 이상일 때 shouldPreemptiveFallback = true', async () => {
-    // mistral requestsPerMinute = 30, 85% = 25.5
-    for (let i = 0; i < 26; i++) {
+    // mistral requestsPerMinute = 50, 85% = 42.5
+    for (let i = 0; i < 43; i++) {
       await recordProviderUsage('mistral', 1);
     }
 
@@ -385,17 +385,17 @@ describe('QuotaTracker — getQuotaStatus', () => {
     const status = await getQuotaStatus('cerebras');
 
     expect(status.quota).toEqual(CEREBRAS_MODEL_QUOTAS['llama3.1-8b']);
-    expect(status.quota.requestsPerMinute).toBe(30);
-    expect(status.quota.tokensPerMinute).toBe(60_000);
-    expect(status.quota.requestsPerDay).toBe(14_400);
+    expect(status.quota.requestsPerMinute).toBe(5);
+    expect(status.quota.tokensPerMinute).toBe(30_000);
+    expect(status.quota.requestsPerDay).toBe(2_400);
   });
 
   it('Cerebras llama3.1-8b fallback quota는 모델별로 분리한다', () => {
     const quota = getQuotaForProvider('cerebras', 'llama3.1-8b');
 
     expect(quota).toEqual(CEREBRAS_MODEL_QUOTAS['llama3.1-8b']);
-    expect(quota.requestsPerMinute).toBe(30);
-    expect(quota.tokensPerMinute).toBe(60_000);
+    expect(quota.requestsPerMinute).toBe(5);
+    expect(quota.tokensPerMinute).toBe(30_000);
   });
 });
 
@@ -579,8 +579,8 @@ describe('QuotaTracker — getQuotaSummary', () => {
   it('초기 상태에서 모두 healthy', async () => {
     const summary = await getQuotaSummary();
 
-    expect(summary.providers).toHaveLength(5);
-    expect(summary.onlineCount).toBe(5);
+    expect(summary.providers).toHaveLength(6);
+    expect(summary.onlineCount).toBe(6);
     expect(summary.warningCount).toBe(0);
     expect(summary.criticalCount).toBe(0);
   });
@@ -612,6 +612,7 @@ describe('QuotaTracker — Constants', () => {
     expect(PROVIDER_QUOTAS.cerebras).toBeDefined();
     expect(PROVIDER_QUOTAS.groq).toBeDefined();
     expect(PROVIDER_QUOTAS.mistral).toBeDefined();
+    expect(PROVIDER_QUOTAS.zai).toBeDefined();
     expect(PROVIDER_QUOTAS.gemini).toBeDefined();
   });
 

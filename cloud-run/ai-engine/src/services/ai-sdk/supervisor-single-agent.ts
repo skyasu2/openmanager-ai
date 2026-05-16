@@ -67,6 +67,8 @@ import {
 import {
   RETRY_CONFIG,
   getIntentCategory,
+  getLLMParamsForIntent,
+  type IntentCategory,
 } from '../../domains/monitoring/routing-policy';
 
 import { evaluateAgentResponseQuality } from './agents/response-quality';
@@ -80,8 +82,25 @@ import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary
 import type { CollectedToolResult } from './agents/orchestrator-summary-payload';
 import { buildNoProviderFallbackResponse } from './supervisor-no-provider-fallback';
 import { buildToolResultSummary } from './supervisor-tool-results';
+import { enrichResponseWithToolResults } from './supervisor-response-enrichment';
 
 export { executeSupervisorStream } from './supervisor-stream';
+
+function getResponseQualityAgentName(intent: IntentCategory): string {
+  switch (intent) {
+    case 'metrics':
+    case 'serverGroup':
+      return 'Metrics Query Agent';
+    case 'anomaly':
+    case 'prediction':
+    case 'rca':
+      return 'Analyst Agent';
+    case 'advisor':
+      return 'Advisor Agent';
+    default:
+      return 'Supervisor';
+  }
+}
 
 // ============================================================================
 // Main Entry Point
@@ -506,14 +525,16 @@ async function executeSupervisorAttempt(
         throw new Error('Supervisor runtime host generate execution adapter is required');
       }
 
+      const llmParams = getLLMParamsForIntent(intentCategory);
+
       const result = await runtimeHost.executeLLMGenerate({
         model,
         messages: modelMessages,
         tools: filteredTools,
         ...(prepareStep && { prepareStep }),
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)],
-        temperature: 0.3,
-        maxOutputTokens: 2048,
+        temperature: llmParams.temperature,
+        maxOutputTokens: llmParams.maxOutputTokens,
         timeout: {
           totalMs: TIMEOUT_CONFIG.supervisor.hard,
           stepMs: TIMEOUT_CONFIG.agent.hard,
@@ -587,25 +608,46 @@ async function executeSupervisorAttempt(
       );
 
       const durationMs = Date.now() - startTime;
-      const quality = evaluateAgentResponseQuality('Supervisor', response, {
+      const qualityAgentName = getResponseQualityAgentName(intentCategory);
+      const quality = evaluateAgentResponseQuality(qualityAgentName, response, {
         durationMs,
       });
+
+      // Post-processing enrichment: fill missing evidence from tool results
+      const enrichment = enrichResponseWithToolResults(
+        response,
+        quality.qualityFlags,
+        collectedToolResults
+      );
+      const finalResponse = enrichment.enrichedResponse;
+      // Re-evaluate quality after enrichment to update flags
+      const finalQuality = enrichment.enrichmentApplied
+        ? evaluateAgentResponseQuality(qualityAgentName, finalResponse, {
+            durationMs,
+          })
+        : quality;
 
       logGeneration(trace, {
         model: modelId,
         provider,
         input: lastUserMessage?.content || '',
-        output: response,
+        output: finalResponse,
         usage: {
           inputTokens: result.usage?.inputTokens ?? 0,
           outputTokens: result.usage?.outputTokens ?? 0,
           totalTokens: result.usage?.totalTokens ?? 0,
         },
         duration: durationMs,
-        metadata: { intent: intentCategory, usedFinalAnswer: !!finalAnswerResult, usedPrepareStep: true },
+        metadata: {
+          intent: intentCategory,
+          qualityAgentName,
+          usedFinalAnswer: !!finalAnswerResult,
+          usedPrepareStep: true,
+          enrichmentApplied: enrichment.enrichmentApplied,
+        },
       });
 
-      finalizeTrace(trace, response, true, {
+      finalizeTrace(trace, finalResponse, true, {
         toolsCalled,
         stepsExecuted: result.steps.length,
         durationMs,
@@ -615,7 +657,7 @@ async function executeSupervisorAttempt(
       });
 
       logger.info(
-        `[Supervisor] Completed in ${durationMs}ms, tools: [${toolsCalled.join(', ')}]${finalAnswerResult ? ' (via finalAnswer)' : ''}, ragSources: ${ragSources.length}`
+        `[Supervisor] Completed in ${durationMs}ms, tools: [${toolsCalled.join(', ')}]${finalAnswerResult ? ' (via finalAnswer)' : ''}${enrichment.enrichmentApplied ? ` (enriched: ${enrichment.enrichmentSections.join(',')})` : ''}, ragSources: ${ragSources.length}`
       );
 
       const totalTokens = result.usage?.totalTokens ?? 0;
@@ -625,7 +667,7 @@ async function executeSupervisorAttempt(
 
       return {
         success: true,
-        response,
+        response: finalResponse,
         toolsCalled,
         toolResults,
         ragSources: ragSources.length > 0 ? ragSources : undefined,
@@ -639,10 +681,11 @@ async function executeSupervisorAttempt(
           modelId,
           stepsExecuted: result.steps.length,
           durationMs,
-          responseChars: quality.responseChars,
-          formatCompliance: quality.formatCompliance,
-          qualityFlags: quality.qualityFlags,
-          latencyTier: quality.latencyTier,
+          responseChars: finalQuality.responseChars,
+          formatCompliance: finalQuality.formatCompliance,
+          qualityFlags: finalQuality.qualityFlags,
+          latencyTier: finalQuality.latencyTier,
+          finalAgent: qualityAgentName,
           traceId: trace.id,
           ...(toolResultSummaries.length > 0 && {
             toolResultSummaries,

@@ -170,6 +170,42 @@ export function getIntentCategory(query: string): IntentCategory {
   return 'general';
 }
 
+// ============================================================================
+// Intent-Specific LLM Parameters
+// ============================================================================
+
+/**
+ * Return intent-specific LLM parameters for improved response quality.
+ *
+ * - Metric queries: low temperature (0.1) for factual accuracy, shorter output
+ * - Analysis/RCA:  moderate temperature (0.3) with longer output for depth
+ * - Reports:       moderate temperature (0.25) with maximum output for completeness
+ * - General:       slightly higher temperature (0.5) for natural conversation
+ */
+export function getLLMParamsForIntent(intent: IntentCategory): {
+  temperature: number;
+  maxOutputTokens: number;
+} {
+  switch (intent) {
+    case 'metrics':
+    case 'serverGroup':
+    case 'logs':
+    case 'math':
+      return { temperature: 0.1, maxOutputTokens: 1536 };
+    case 'anomaly':
+    case 'prediction':
+      return { temperature: 0.3, maxOutputTokens: 2560 };
+    case 'rca':
+      return { temperature: 0.25, maxOutputTokens: 3072 };
+    case 'advisor':
+      return { temperature: 0.3, maxOutputTokens: 2560 };
+    case 'general':
+      return { temperature: 0.5, maxOutputTokens: 2048 };
+    default:
+      return { temperature: 0.3, maxOutputTokens: 2048 };
+  }
+}
+
 const SIMPLE_CONVERSATION_PATTERNS = /^(안녕|감사|고마워|잘했어|hi|hello|thanks|thank you|bye|잘가)[\s!?.]*$/i;
 const CURRENT_METRIC_VALUE_PATTERNS =
   /(사용률|몇\s*%|몇퍼센트|퍼센트|얼마|수치|값|상태|어때|어떻|알려|보여|확인|usage|percent|percentage|status)/i;

@@ -75,7 +75,7 @@ describe('CloudRunGenerateService', () => {
         maxOutputTokens: 512,
         topP: 0.9,
       },
-      ['cerebras', 'groq', 'mistral'],
+      ['mistral', 'zai', 'groq', 'cerebras'],
       {
         maxRetries: 0,
         timeoutMs: 30_000,
@@ -158,7 +158,7 @@ describe('CloudRunGenerateService', () => {
       expect.objectContaining({
         messages: [{ role: 'user', content: 'stream 확인' }],
       }),
-      ['cerebras', 'groq', 'mistral'],
+      ['mistral', 'zai', 'groq', 'cerebras'],
       expect.objectContaining({ maxRetries: 0 })
     );
 

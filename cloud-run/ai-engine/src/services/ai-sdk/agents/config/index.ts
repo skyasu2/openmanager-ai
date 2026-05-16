@@ -18,15 +18,18 @@ export {
   getAvailableAgents,
   type AgentConfig,
   type AgentName,
+  type AgentVisibility,
   type ModelResult,
 } from './agent-configs';
 
 export {
   AGENT_RUNTIME_POLICIES,
   CEREBRAS_FIRST_PROVIDER_ORDER,
+  GROQ_FIRST_PROVIDER_ORDER,
   MISTRAL_FIRST_PROVIDER_ORDER,
   ORCHESTRATOR_RUNTIME_POLICY,
   TEXT_AGENT_PROVIDER_ORDER,
+  ZAI_FIRST_PROVIDER_ORDER,
   getAgentEvidenceBudget,
   getAgentMaxSteps,
   getAgentProviderOrder,
@@ -38,6 +41,16 @@ export {
   type NativeRuntimeProvider,
   type TextRuntimeProvider,
 } from './agent-runtime-policy';
+
+export {
+  buildAgentLoopSettings,
+  buildAgentStopWhen,
+  toAgentLoopTelemetry,
+  type AgentLoopImplementation,
+  type AgentLoopSettings,
+  type AgentLoopSurface,
+  type AgentLoopTelemetry,
+} from './agent-loop-settings';
 
 export {
   NLQ_INSTRUCTIONS,

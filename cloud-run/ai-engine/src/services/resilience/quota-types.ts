@@ -12,13 +12,18 @@ import {
  * CEREBRAS DEPRECATION 2026-05-27
  * After this date llama3.1-8b is expected to be unavailable.
  * Fallback chain degrades to:
- *   Analyst/Reporter/Advisor: Groq (RPD 1K) -> Mistral (RPM 2)
- * Effective single primary: Groq. Mistral RPM 2 cannot absorb bursts.
+ *   Cerebras-first paths: Groq -> Z.AI -> Mistral
+ * Effective primary remains Groq, but Z.AI provides a free Flash buffer.
  * Action: confirm replacement model entitlement before this date.
  */
 
 /** LLM Provider 이름 (모델 선택용) */
-export type LLMProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini';
+export type LLMProviderName =
+  | 'cerebras'
+  | 'groq'
+  | 'mistral'
+  | 'zai'
+  | 'gemini';
 
 /** 전체 Provider 이름 (LLM + 외부 API) */
 export type ProviderName = LLMProviderName | 'tavily';
@@ -102,7 +107,7 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
    * @see https://inference-docs.cerebras.ai/support/rate-limits
    * @updated 2026-04-30
    *
-   * - llama3.1-8b account limit: 1M TPD, 60K TPM, 30 RPM, 14.4K RPD
+   * - llama3.1-8b account limit: 1M TPD, 30K TPM, 5 RPM, 2.4K RPD
    * - Context/capability lives in provider-model-metadata; this tracker only enforces usage quotas.
    */
   cerebras: CEREBRAS_MODEL_QUOTAS[CEREBRAS_LLAMA_FALLBACK_MODEL_ID],
@@ -122,7 +127,19 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   },
   mistral: {
     dailyTokenLimit: 1_000_000,
-    requestsPerMinute: 2,
+    requestsPerMinute: 50,
+    tokensPerMinute: 50_000,
+    requestsPerDay: 500,
+  },
+  /**
+   * Z.AI GLM Flash free models.
+   * Official pricing marks glm-4.5-flash and glm-4.6v-flash as free.
+   * Rate limits are concurrency/account-plan based, so use a conservative
+   * local guard until an authenticated limits endpoint exposes fixed values.
+   */
+  zai: {
+    dailyTokenLimit: 1_000_000,
+    requestsPerMinute: 5,
     tokensPerMinute: 30_000,
     requestsPerDay: 500,
   },

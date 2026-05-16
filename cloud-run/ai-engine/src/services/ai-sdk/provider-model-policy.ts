@@ -13,10 +13,10 @@ export const CEREBRAS_DEPRECATION_REPLACEMENT =
 export const CEREBRAS_DEPRECATION_CONTINGENCY = {
   date: CEREBRAS_LLAMA_DEPRECATION_DATE,
   affectedRuntimeAgents: ['Analyst Agent', 'Reporter Agent', 'Advisor Agent'],
-  fallbackChainAfterDeprecation: ['groq', 'mistral'],
+  fallbackChainAfterDeprecation: ['groq', 'zai', 'mistral'],
   visibleButExcludedModels: [CEREBRAS_ZAI_GLM_MODEL_ID],
   action:
-    'Confirm replacement model entitlement before 2026-05-27; Mistral 2 RPM cannot absorb Cerebras burst fallback.',
+    'Confirm replacement model entitlement before 2026-05-27; Z.AI/Mistral buffer reduces but does not eliminate Groq pressure.',
 } as const;
 
 export type ProviderModelRole = 'primary' | 'fallback' | 'vision' | 'excluded';
@@ -207,9 +207,9 @@ export const CEREBRAS_MODEL_POLICIES = {
     structuredOutputEnabled: true,
     contextWindowTokens: 8_192,
     quota: {
-      requestsPerMinute: 30,
-      tokensPerMinute: 60_000,
-      requestsPerDay: 14_400,
+      requestsPerMinute: 5,
+      tokensPerMinute: 30_000,
+      requestsPerDay: 2_400,
       tokensPerDay: 1_000_000,
     },
     deprecationDate: CEREBRAS_LLAMA_DEPRECATION_DATE,
@@ -217,12 +217,13 @@ export const CEREBRAS_MODEL_POLICIES = {
     smokeStatus: 'green',
     smokeEvidence: [
       '2026-05-13 current account chat completion HTTP 200',
+      '2026-05-16 account response headers: 5 RPM / 150 RPH / 2400 RPD / 30K TPM / 1M TPD',
       '2026-05-13 retained as short-context runtime only; not evidence for Metrics Query 16K primary promotion',
       'tool calling and structured output smoke previously passed',
     ],
     reasoningCapability: NO_PROVIDER_NATIVE_REASONING,
     freeTierLimitSummary:
-      `Free: 30 RPM / 60K TPM / 14.4K RPD / 1M TPD; ~2200 t/s; deprecated ${CEREBRAS_LLAMA_DEPRECATION_DATE}`,
+      `Free account headers: 5 RPM / 30K TPM / 2.4K RPD / 1M TPD; deprecated ${CEREBRAS_LLAMA_DEPRECATION_DATE}`,
     sourceUrls: CEREBRAS_SOURCE_URLS,
     recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
   },

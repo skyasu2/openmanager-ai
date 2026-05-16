@@ -6,7 +6,7 @@
  * @version 4.0.0
  */
 
-import { generateText, hasToolCall, stepCountIs } from 'ai';
+import { generateText } from 'ai';
 import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
@@ -26,6 +26,10 @@ import {
   type ModelResult,
 } from './config/agent-model-selectors';
 import type { ImageAttachment, FileAttachment } from './base-agent';
+import {
+  buildAgentLoopSettings,
+  toAgentLoopTelemetry,
+} from './config/agent-loop-settings';
 
 import type { MultiAgentResponse } from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
@@ -92,7 +96,11 @@ export function getOrchestratorModel(): ModelResult | null {
 // Log available agents from AGENT_CONFIGS
 const availableAgentNames = AGENT_NAMES.filter(name => {
   const config = getNamedAgentConfig(name);
-  return config && config.getModel() !== null;
+  return (
+    config &&
+    config.visibility !== 'pipeline-internal' &&
+    config.getModel() !== null
+  );
 });
 
 if (availableAgentNames.length === 0) {
@@ -206,8 +214,10 @@ export async function executeForcedRouting(
     .filter((part): part is string => Boolean(part))
     .join('\n\n');
 
-  // Per-agent maxSteps: Analyst/Reporter need more steps for multi-tool workflows
-  const agentMaxSteps = getAgentMaxSteps(suggestedAgentName);
+  const loopSettings = buildAgentLoopSettings(
+    suggestedAgentName,
+    'forced-routing'
+  );
 
   try {
     const retryResult = await generateTextWithRetry(
@@ -220,9 +230,9 @@ export async function executeForcedRouting(
         ...(forceKnowledgeBaseTool && {
           toolChoice: { type: 'tool' as const, toolName: 'searchKnowledgeBase' as const },
         }),
-        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
+        stopWhen: loopSettings.stopWhen,
         temperature: 0.4,
-        maxOutputTokens: 2048,
+        maxOutputTokens: loopSettings.maxOutputTokens,
         requiredCapabilities: getForcedRoutingCapabilityRequirements(suggestedAgentName),
       },
       providerOrder,
@@ -443,6 +453,10 @@ export async function executeForcedRouting(
         formatCompliance: quality.formatCompliance,
         qualityFlags: quality.qualityFlags,
         latencyTier: quality.latencyTier,
+        agentLoop: toAgentLoopTelemetry(
+          loopSettings,
+          result.steps.length
+        ),
         providerAttempts,
         usedFallback,
         ...(fallbackReason ? { fallbackReason } : {}),

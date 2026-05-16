@@ -46,12 +46,20 @@ vi.mock('./config', async (importOriginal) => {
     ),
     isAgentAvailable: vi.fn((name: string) => {
       const config = mockedConfigs[name as keyof typeof mockedConfigs];
-      return !!config && config.getModel() !== null;
+      return (
+        !!config &&
+        config.visibility !== 'pipeline-internal' &&
+        config.getModel() !== null
+      );
     }),
     getAvailableAgents: vi.fn(() =>
       Object.keys(mockedConfigs).filter((name) => {
         const config = mockedConfigs[name as keyof typeof mockedConfigs];
-        return !!config && config.getModel() !== null;
+        return (
+          !!config &&
+          config.visibility !== 'pipeline-internal' &&
+          config.getModel() !== null
+        );
       })
     ),
   };
@@ -211,18 +219,16 @@ describe('AgentFactory', { timeout: 15000 }, () => {
       expect(agent!.getName()).toBe('Vision Agent');
     });
 
-    it('should create agent for type "evaluator"', () => {
+    it('should not create pipeline-internal Evaluator Agent publicly', () => {
       const agent = AgentFactory.create('evaluator');
 
-      expect(agent).not.toBeNull();
-      expect(agent!.getName()).toBe('Evaluator Agent');
+      expect(agent).toBeNull();
     });
 
-    it('should create agent for type "optimizer"', () => {
+    it('should not create pipeline-internal Optimizer Agent publicly', () => {
       const agent = AgentFactory.create('optimizer');
 
-      expect(agent).not.toBeNull();
-      expect(agent!.getName()).toBe('Optimizer Agent');
+      expect(agent).toBeNull();
     });
 
     it('should return null for unknown agent type', () => {
@@ -266,6 +272,11 @@ describe('AgentFactory', { timeout: 15000 }, () => {
       expect(agent!.getName()).toBe('Vision Agent');
     });
 
+    it('should not create pipeline-internal agents by config key name', () => {
+      expect(AgentFactory.createByName('Evaluator Agent')).toBeNull();
+      expect(AgentFactory.createByName('Optimizer Agent')).toBeNull();
+    });
+
     it('should return null for unknown config key', () => {
       const agent = AgentFactory.createByName('Unknown Agent');
 
@@ -287,6 +298,11 @@ describe('AgentFactory', { timeout: 15000 }, () => {
 
     it('should return true for Vision Agent when Gemini available', () => {
       expect(AgentFactory.isAvailable('vision')).toBe(true);
+    });
+
+    it('should return false for pipeline-internal agents', () => {
+      expect(AgentFactory.isAvailable('evaluator')).toBe(false);
+      expect(AgentFactory.isAvailable('optimizer')).toBe(false);
     });
 
     // Note: Tests for Gemini unavailability and no providers available
@@ -311,7 +327,7 @@ describe('AgentFactory', { timeout: 15000 }, () => {
       expect(status).toHaveProperty('optimizer');
     });
 
-    it('should return true for all agents when providers available', () => {
+    it('should return true for routable agents and false for pipeline-internal agents', () => {
       const status = AgentFactory.getAvailabilityStatus();
 
       expect(status.nlq).toBe(true);
@@ -319,6 +335,8 @@ describe('AgentFactory', { timeout: 15000 }, () => {
       expect(status.reporter).toBe(true);
       expect(status.advisor).toBe(true);
       expect(status.vision).toBe(true);
+      expect(status.evaluator).toBe(false);
+      expect(status.optimizer).toBe(false);
     });
 
     // Note: Test for Gemini unavailability requires dynamic mock changes.
@@ -337,6 +355,8 @@ describe('AgentFactory', { timeout: 15000 }, () => {
       expect(types).toContain('reporter');
       expect(types).toContain('advisor');
       expect(types).toContain('vision');
+      expect(types).not.toContain('evaluator');
+      expect(types).not.toContain('optimizer');
     });
 
     // Note: Test for unavailable agents requires dynamic mock changes.

@@ -85,7 +85,11 @@ vi.mock('./orchestrator-routing', () => ({
   })),
   getAgentProviderOrder: vi.fn(() => ['cerebras', 'groq']),
   getAgentMaxSteps: vi.fn((agentName: string) =>
-    agentName === 'Analyst Agent' || agentName === 'Reporter Agent' ? 10 : 7
+    agentName === 'Analyst Agent' || agentName === 'Reporter Agent'
+      ? 5
+      : agentName === 'Vision Agent'
+        ? 2
+        : 4
   ),
   executeReporterWithPipeline: (...args: unknown[]) =>
     mockExecuteReporterWithPipeline(...args),
@@ -317,7 +321,32 @@ describe('executeAgentStream', () => {
     expect(
       (doneEvent?.data as { metadata: { ttfbMs?: number } }).metadata.ttfbMs
     ).toBeTypeOf('number');
-    expect(mockStepCountIs).toHaveBeenCalledWith(7);
+    expect(mockStepCountIs).toHaveBeenCalledWith(4);
+    expect(mockStreamText.mock.calls[0]?.[0]).toMatchObject({
+      maxOutputTokens: 2048,
+      maxRetries: 0,
+    });
+    expect(
+      (
+        doneEvent?.data as {
+          metadata: {
+            agentLoop?: {
+              implementation: string;
+              maxSteps: number;
+              maxOutputTokens: number;
+              sdkMaxRetries: number;
+              stepsExecuted: number;
+            };
+          };
+        }
+      ).metadata.agentLoop
+    ).toEqual({
+      implementation: 'core-stream-text',
+      maxSteps: 4,
+      maxOutputTokens: 2048,
+      sdkMaxRetries: 0,
+      stepsExecuted: 1,
+    });
   });
 
   it('exposes provider attempts and fallback reason in stream done metadata', async () => {
@@ -634,7 +663,7 @@ describe('executeAgentStream', () => {
     }
 
     expect(events.some((event) => event.type === 'done')).toBe(true);
-    expect(mockStepCountIs).toHaveBeenCalledWith(10);
+    expect(mockStepCountIs).toHaveBeenCalledWith(5);
   });
 
   it('prefers deterministic summary over streamed model text for parity-sensitive prompts', async () => {

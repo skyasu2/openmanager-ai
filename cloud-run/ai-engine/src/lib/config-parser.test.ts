@@ -346,6 +346,7 @@ describe('Config Parser', () => {
     it('should handle invalid JSON gracefully', () => {
       process.env.AI_PROVIDERS_CONFIG = 'not-valid-json';
       delete process.env.GROQ_API_KEY;
+      delete process.env.ZAI_API_KEY;
       delete process.env.MISTRAL_API_KEY;
       delete process.env.CEREBRAS_API_KEY;
       delete process.env.TAVILY_API_KEY;

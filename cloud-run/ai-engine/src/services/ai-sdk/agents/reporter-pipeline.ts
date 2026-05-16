@@ -48,6 +48,14 @@ export interface PipelineConfig {
   domainId?: string;
 }
 
+export type ReporterPipelineStage = 'reporter' | 'evaluator' | 'optimizer';
+
+export interface ReporterPipelineStageTelemetry {
+  stage: ReporterPipelineStage;
+  label: string;
+  execution: 'deterministic';
+}
+
 export interface PipelineResult {
   success: boolean;
   report: ReportForEvaluation | null;
@@ -59,6 +67,7 @@ export interface PipelineResult {
   metadata: {
     durationMs: number;
     agentsUsed: string[];
+    pipelineStages: ReporterPipelineStageTelemetry[];
     optimizationsApplied: string[];
   };
   error?: string;
@@ -80,6 +89,33 @@ const DEFAULT_CONFIG: PipelineConfig = {
   qualityThreshold: 0.75, // Slightly raised to trigger optimization
   timeout: 40_000, // Increased from 25s for complex report generation (Job Queue has 120s)
 };
+
+const REPORTER_PIPELINE_STAGE_LABELS: Record<ReporterPipelineStage, string> = {
+  reporter: 'Reporter Agent',
+  evaluator: 'Reporter Pipeline: evaluator stage',
+  optimizer: 'Reporter Pipeline: optimizer stage',
+};
+
+function createPipelineStageTelemetry(
+  stage: ReporterPipelineStage
+): ReporterPipelineStageTelemetry {
+  return {
+    stage,
+    label: REPORTER_PIPELINE_STAGE_LABELS[stage],
+    execution: 'deterministic',
+  };
+}
+
+function dedupePipelineStages(
+  stages: ReporterPipelineStageTelemetry[]
+): ReporterPipelineStageTelemetry[] {
+  const seen = new Set<ReporterPipelineStage>();
+  return stages.filter(({ stage }) => {
+    if (seen.has(stage)) return false;
+    seen.add(stage);
+    return true;
+  });
+}
 
 // ============================================================================
 // Pipeline Implementation
@@ -103,6 +139,7 @@ export async function executeReporterPipeline(
   logger.info(`[ReporterPipeline] Config: maxIterations=${finalConfig.maxIterations}, threshold=${finalConfig.qualityThreshold}`);
 
   const agentsUsed: string[] = [];
+  const pipelineStages: ReporterPipelineStageTelemetry[] = [];
   const optimizationsApplied: string[] = [];
 
   try {
@@ -110,7 +147,8 @@ export async function executeReporterPipeline(
     // Stage 1: Generate Initial Report
     // =========================================================================
     logger.info('[Stage 1] Generating initial report...');
-    agentsUsed.push('Reporter Agent');
+    agentsUsed.push(REPORTER_PIPELINE_STAGE_LABELS.reporter);
+    pipelineStages.push(createPipelineStageTelemetry('reporter'));
 
     const dataSourceContext = createAgentDataSourceContext({
       query,
@@ -145,6 +183,7 @@ export async function executeReporterPipeline(
         metadata: {
           durationMs: Date.now() - startTime,
           agentsUsed,
+          pipelineStages,
           optimizationsApplied,
         },
         error: 'Failed to generate initial report',
@@ -169,7 +208,8 @@ export async function executeReporterPipeline(
 
       // Evaluate current report
       logger.info(`[Stage 2] Evaluating report (iteration ${iteration + 1})...`);
-      agentsUsed.push('Evaluator (deterministic)');
+      agentsUsed.push(REPORTER_PIPELINE_STAGE_LABELS.evaluator);
+      pipelineStages.push(createPipelineStageTelemetry('evaluator'));
 
       const evaluation = evaluateReport(currentReport);
       currentScore = evaluation.overallScore;
@@ -185,7 +225,8 @@ export async function executeReporterPipeline(
       // Optimize if not final iteration
       if (iteration < finalConfig.maxIterations - 1) {
         logger.info(`[Stage 3] Optimizing report (iteration ${iteration + 1})...`);
-        agentsUsed.push('Optimizer (deterministic)');
+        agentsUsed.push(REPORTER_PIPELINE_STAGE_LABELS.optimizer);
+        pipelineStages.push(createPipelineStageTelemetry('optimizer'));
 
         const optimized = optimizeReport(
           currentReport,
@@ -214,11 +255,13 @@ export async function executeReporterPipeline(
       quality: {
         initialScore,
         finalScore: currentScore,
-        iterations: agentsUsed.filter(a => a === 'Optimizer (deterministic)').length + 1,
+        iterations:
+          pipelineStages.filter(({ stage }) => stage === 'optimizer').length + 1,
       },
       metadata: {
         durationMs,
         agentsUsed: [...new Set(agentsUsed)],
+        pipelineStages: dedupePipelineStages(pipelineStages),
         optimizationsApplied,
       },
     };
@@ -234,6 +277,7 @@ export async function executeReporterPipeline(
       metadata: {
         durationMs: Date.now() - startTime,
         agentsUsed,
+        pipelineStages,
         optimizationsApplied,
       },
       error: errorMessage,

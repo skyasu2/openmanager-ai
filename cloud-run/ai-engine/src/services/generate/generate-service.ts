@@ -43,7 +43,12 @@ interface GenerateResult {
 class CloudRunGenerateService {
   // Use the verified-access Cerebras default model unless env overrides it.
   private readonly DEFAULT_MODEL = getCerebrasModelId();
-  private readonly PROVIDER_ORDER: ProviderName[] = ['cerebras', 'groq', 'mistral'];
+  private readonly PROVIDER_ORDER: ProviderName[] = [
+    'mistral',
+    'zai',
+    'groq',
+    'cerebras',
+  ];
 
   // 통계
   private stats = {

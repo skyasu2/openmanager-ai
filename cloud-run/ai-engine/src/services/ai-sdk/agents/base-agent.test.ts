@@ -35,6 +35,7 @@ vi.mock('../../../../lib/text-sanitizer', () => ({
 
 vi.mock('../../../lib/config-parser', () => ({
   getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),

@@ -6,6 +6,7 @@ const {
   mockGetCerebrasModel,
   mockGetGroqModel,
   mockGetMistralModel,
+  mockGetZaiModel,
   mockGetCerebrasModelId,
   mockGetCerebrasFallbackModelIds,
   mockIsCerebrasToolCallingEnabled,
@@ -20,12 +21,14 @@ const {
     cerebras: true,
     groq: true,
     mistral: true,
+    zai: true,
     gemini: false,
     openrouter: false,
   })),
   mockGetCerebrasModel: vi.fn(() => ({ provider: 'cerebras' })),
   mockGetGroqModel: vi.fn(() => ({ provider: 'groq' })),
   mockGetMistralModel: vi.fn(() => ({ provider: 'mistral' })),
+  mockGetZaiModel: vi.fn(() => ({ provider: 'zai' })),
   mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   mockGetCerebrasFallbackModelIds: vi.fn((): string[] => []),
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
@@ -53,6 +56,7 @@ vi.mock('../ai-sdk/model-provider', () => ({
   getCerebrasModel: mockGetCerebrasModel,
   getGroqModel: mockGetGroqModel,
   getMistralModel: mockGetMistralModel,
+  getZaiModel: mockGetZaiModel,
   checkProviderStatus: mockCheckProviderStatus,
 }));
 
@@ -61,6 +65,7 @@ vi.mock('../../lib/config-parser', () => ({
   getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
   getGroqModelId: vi.fn(() => 'groq-model'),
   getMistralModelId: vi.fn(() => 'mistral-small-latest'),
+  getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
@@ -102,6 +107,7 @@ describe('generateTextWithRetry', () => {
       cerebras: true,
       groq: true,
       mistral: true,
+      zai: true,
       gemini: false,
       openrouter: false,
     });
@@ -583,7 +589,7 @@ describe('generateTextWithRetry', () => {
     }
   });
 
-  it('falls back to Mistral as last resort after Groq and Cerebras fail', async () => {
+  it('falls back to Mistral after Groq and Z.AI fail in the default mesh', async () => {
     mockGenerateText
       .mockRejectedValueOnce(new Error('rate limit exceeded: 429'))
       .mockRejectedValueOnce(new Error('service unavailable: 503'))
@@ -612,14 +618,69 @@ describe('generateTextWithRetry', () => {
     expect(result.usedFallback).toBe(true);
     expect(result.attempts.map((attempt) => attempt.provider)).toEqual([
       'groq',
-      'cerebras',
+      'zai',
       'mistral',
     ]);
     expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
       'groq-model',
-      'llama3.1-8b',
+      'glm-4.5-flash',
       'mistral-small-latest',
     ]);
     expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-small-latest');
   });
+
+  it.each([
+    {
+      label: 'A-B-C',
+      order: ['groq', 'zai', 'mistral'] as const,
+      expectedModelIds: ['groq-model', 'glm-4.5-flash', 'mistral-small-latest'],
+      recoveredProvider: 'mistral',
+    },
+    {
+      label: 'B-C-A',
+      order: ['zai', 'mistral', 'groq'] as const,
+      expectedModelIds: ['glm-4.5-flash', 'mistral-small-latest', 'groq-model'],
+      recoveredProvider: 'groq',
+    },
+    {
+      label: 'C-A-B',
+      order: ['mistral', 'groq', 'zai'] as const,
+      expectedModelIds: ['mistral-small-latest', 'groq-model', 'glm-4.5-flash'],
+      recoveredProvider: 'zai',
+    },
+  ])(
+    'walks the rotated text-provider mesh $label before recovering',
+    async ({ order, expectedModelIds, recoveredProvider }) => {
+      mockGenerateText
+        .mockRejectedValueOnce(new Error('rate limit exceeded: 429'))
+        .mockRejectedValueOnce(new Error('service unavailable: 503'))
+        .mockResolvedValueOnce({
+          text: `ok from ${recoveredProvider}`,
+          steps: [],
+          usage: { inputTokens: 4, outputTokens: 3, totalTokens: 7 },
+        });
+
+      const result = await generateTextWithRetry(
+        {
+          messages: [{ role: 'user', content: 'rotated fallback mesh smoke' }],
+        },
+        [...order],
+        {
+          maxRetries: 0,
+          fallbackDelayMs: 0,
+          fallbackJitterMs: 0,
+          retryBudgetPerMinute: 10,
+          timeoutMs: 3000,
+        }
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.provider).toBe(recoveredProvider);
+      expect(result.usedFallback).toBe(true);
+      expect(result.attempts.map((attempt) => attempt.provider)).toEqual(order);
+      expect(result.attempts.map((attempt) => attempt.modelId)).toEqual(
+        expectedModelIds
+      );
+    }
+  );
 });

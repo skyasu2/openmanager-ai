@@ -228,6 +228,10 @@ vi.mock('../../domains/monitoring/routing-policy', () => ({
   },
   selectExecutionMode: mockSelectExecutionMode,
   getIntentCategory: vi.fn(() => 'general'),
+  getLLMParamsForIntent: vi.fn(() => ({
+    temperature: 0.3,
+    maxOutputTokens: 2048,
+  })),
   createPrepareStep: vi.fn(() => undefined),
 }));
 

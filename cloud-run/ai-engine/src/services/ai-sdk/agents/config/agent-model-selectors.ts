@@ -5,6 +5,8 @@ import {
   getGroqModelId,
   getMistralModelId,
   getOpenRouterVisionModelId,
+  getZaiModelId,
+  getZaiVisionModelId,
 } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
@@ -20,6 +22,8 @@ import {
   getGroqModel,
   getMistralModel,
   getOpenRouterVisionModel,
+  getZaiModel,
+  getZaiVisionModel,
 } from '../../model-provider-core';
 import { checkProviderStatus } from '../../model-provider-status';
 import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
@@ -37,7 +41,7 @@ export interface ModelResult {
 // Text Provider → Model SSOT
 // ============================================================================
 
-export type TextProvider = 'cerebras' | 'groq' | 'mistral';
+export type TextProvider = 'cerebras' | 'groq' | 'mistral' | 'zai';
 
 const TEXT_PROVIDER_MODELS: Record<TextProvider, {
   factory: (id: string) => LanguageModel;
@@ -65,6 +69,12 @@ const TEXT_PROVIDER_MODELS: Record<TextProvider, {
     factory: getMistralModel,
     modelIds: () => [getMistralModelId()],
     capabilities: (modelId) => getTextProviderCapabilities('mistral', modelId)
+  },
+  // Z.AI GLM Flash - free text fallback. Request body disables thinking in provider core.
+  zai: {
+    factory: getZaiModel,
+    modelIds: () => [getZaiModelId()],
+    capabilities: (modelId) => getTextProviderCapabilities('zai', modelId)
   },
 };
 
@@ -174,7 +184,7 @@ export function selectTextModel(
 // ============================================================================
 
 /**
- * Metrics Query model: Groq(llama-4-scout) → Cerebras(short-context only) → Mistral
+ * Metrics Query model: Groq → Z.AI → Mistral → Cerebras(short-context only)
  */
 export function getNlqModel(): ModelResult | null {
   return selectTextModel(
@@ -190,7 +200,7 @@ export function getNlqModel(): ModelResult | null {
 }
 
 /**
- * Analyst model: Cerebras(short-context only) → Groq(llama-4-scout) → Mistral
+ * Analyst model: Cerebras(short-context only) → Groq → Z.AI → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
   return selectTextModel('Analyst Agent', getAgentProviderOrder('Analyst Agent'), {
@@ -199,7 +209,7 @@ export function getAnalystModel(): ModelResult | null {
 }
 
 /**
- * Reporter model: Cerebras(short-context only) → Groq(llama-4-scout) → Mistral
+ * Reporter model: Z.AI → Mistral → Groq → Cerebras(short-context only)
  */
 export function getReporterModel(): ModelResult | null {
   return selectTextModel('Reporter Agent', getAgentProviderOrder('Reporter Agent'), {
@@ -208,7 +218,7 @@ export function getReporterModel(): ModelResult | null {
 }
 
 /**
- * Advisor model: Cerebras(short-context only) → Groq(llama-4-scout) → Mistral
+ * Advisor model: Mistral → Z.AI → Groq → Cerebras(short-context only)
  */
 export function getAdvisorModel(): ModelResult | null {
   return selectTextModel('Advisor Agent', getAgentProviderOrder('Advisor Agent'), {
@@ -221,7 +231,7 @@ export function getAdvisorModel(): ModelResult | null {
 // ============================================================================
 
 /**
- * Get Vision model: Gemini 2.5 Flash-Lite → OpenRouter Gemma-3-27b (Fallback)
+ * Get Vision model: Gemini 2.5 Flash-Lite → OpenRouter Gemma → Z.AI GLM-4.6V-Flash
  */
 export function getVisionModel(): ModelResult | null {
   const status = checkProviderStatus();
@@ -252,6 +262,21 @@ export function getVisionModel(): ModelResult | null {
       };
     } catch (error) {
       logger.error('[Vision Agent] OpenRouter initialization failed:', error);
+    }
+  }
+
+  if (status.zai) {
+    try {
+      const modelId = getZaiVisionModelId();
+      logger.info(`[Vision Agent] Using Z.AI Vision fallback: ${modelId}`);
+      return {
+        model: getZaiVisionModel(modelId),
+        provider: 'zai',
+        modelId,
+        capabilities: getProviderCapabilities('zai', modelId),
+      };
+    } catch (error) {
+      logger.error('[Vision Agent] Z.AI Vision initialization failed:', error);
     }
   }
 

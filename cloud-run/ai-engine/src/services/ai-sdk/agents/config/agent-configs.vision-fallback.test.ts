@@ -67,6 +67,8 @@ vi.mock('../../../../lib/config-parser', () => ({
   getCerebrasModelId: vi.fn(() => 'cerebras-test-model'),
   getCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
+  getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
+  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getTavilyApiKey: vi.fn(() => null),
   getTavilyApiKeyBackup: vi.fn(() => null),
@@ -87,6 +89,7 @@ vi.mock('../../model-provider-core', () => ({
   getMistralModel: vi.fn(),
   getGeminiFlashLiteModel: vi.fn(),
   getOpenRouterVisionModel: vi.fn(),
+  getZaiVisionModel: vi.fn(),
 }));
 
 import { getAgentConfig } from './agent-configs';
@@ -94,6 +97,7 @@ import { checkProviderStatus } from '../../model-provider-status';
 import {
   getGeminiFlashLiteModel,
   getOpenRouterVisionModel,
+  getZaiVisionModel,
 } from '../../model-provider-core';
 import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
 
@@ -109,6 +113,7 @@ describe('agent-configs vision fallback', () => {
       cerebras: false,
       groq: false,
       mistral: false,
+      zai: true,
       gemini: true,
       openrouter: true,
     });
@@ -129,6 +134,7 @@ describe('agent-configs vision fallback', () => {
       cerebras: false,
       groq: false,
       mistral: false,
+      zai: true,
       gemini: true,
       openrouter: true,
     });
@@ -157,6 +163,7 @@ describe('agent-configs vision fallback', () => {
       cerebras: false,
       groq: false,
       mistral: false,
+      zai: true,
       gemini: false,
       openrouter: true,
     });
@@ -173,18 +180,24 @@ describe('agent-configs vision fallback', () => {
     expect(model?.provider).toBe('openrouter');
   });
 
-  it('returns null when both Gemini and OpenRouter are unavailable', () => {
+  it('falls back to Z.AI Vision when Gemini and OpenRouter are unavailable', () => {
     vi.mocked(checkProviderStatus).mockReturnValue({
       cerebras: true,
       groq: true,
       mistral: true,
+      zai: true,
       gemini: false,
       openrouter: false,
     });
+    vi.mocked(getZaiVisionModel).mockReturnValue(
+      createMockLanguageModel('glm-4.6v-flash') as never
+    );
 
     const model = visionConfig.getModel();
 
-    expect(model).toBeNull();
+    expect(model).not.toBeNull();
+    expect(model?.provider).toBe('zai');
+    expect(model?.modelId).toBe('glm-4.6v-flash');
   });
 
   it('returns null when Gemini unavailable and OpenRouter init throws', () => {
@@ -192,6 +205,7 @@ describe('agent-configs vision fallback', () => {
       cerebras: false,
       groq: false,
       mistral: false,
+      zai: false,
       gemini: false,
       openrouter: true,
     });
@@ -214,6 +228,7 @@ describe('agent-configs vision fallback', () => {
       cerebras: true,
       groq: true,
       mistral: true,
+      zai: false,
       gemini: false,
       openrouter: false,
     });

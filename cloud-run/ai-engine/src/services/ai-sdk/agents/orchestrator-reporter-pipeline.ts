@@ -156,6 +156,7 @@ export async function executeReporterWithPipeline(
         qualityFlags: quality.qualityFlags,
         latencyTier: quality.latencyTier,
         qualityScore: pipelineResult.quality.finalScore,
+        pipelineStages: pipelineResult.metadata.pipelineStages,
       },
     };
   } catch (error) {

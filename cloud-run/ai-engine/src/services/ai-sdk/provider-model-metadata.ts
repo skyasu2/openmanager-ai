@@ -4,6 +4,8 @@ import {
   getGroqModelId,
   getMistralModelId,
   getOpenRouterVisionModelId,
+  getZaiModelId,
+  getZaiVisionModelId,
 } from '../../lib/config-parser';
 import type { ProviderName } from './model-provider.types';
 import {
@@ -142,7 +144,7 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
     ...cerebrasMetadata,
     {
       provider: 'mistral',
-      role: 'last-resort text fallback',
+      role: 'distributed text fallback',
       modelId: getMistralModelId(),
       lifecycle: 'production',
       productionModel: true,
@@ -155,16 +157,48 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
       smokeStatus: 'green',
       smokeEvidence: ['last-resort fallback path configured'],
       quota: {
-        requestsPerMinute: 2,
+        requestsPerMinute: 50,
+        tokensPerMinute: 50_000,
+        requestsPerDay: 500,
+        tokensPerDay: 1_000_000,
+      },
+      freeTierLimitSummary:
+        'workspace-tier dependent; current account smoke observed 50 RPM / 50K TPM',
+      sourceUrls: [
+        'https://docs.mistral.ai/admin/user-management-finops/tier',
+        'https://docs.mistral.ai/models/model-cards/mistral-small-4-0-26-03',
+      ],
+    },
+    {
+      provider: 'zai',
+      role: 'free GLM Flash text fallback',
+      modelId: getZaiModelId(),
+      lifecycle: 'production',
+      productionModel: true,
+      preview: false,
+      deprecated: false,
+      contextWindowTokens: 128000,
+      enabled: true,
+      toolCallingEnabled: true,
+      structuredOutputEnabled: true,
+      blockAfterDeprecation: false,
+      smokeStatus: 'green',
+      smokeEvidence: [
+        '2026-05-16 glm-4.5-flash chat completion HTTP 200',
+        '2026-05-16 glm-4.5-flash tool-call smoke passed with thinking disabled',
+      ],
+      quota: {
+        requestsPerMinute: 5,
         tokensPerMinute: 30_000,
         requestsPerDay: 500,
         tokensPerDay: 1_000_000,
       },
       freeTierLimitSummary:
-        'workspace-tier dependent; default model is mistral-small-latest to preserve free-tier headroom',
+        'glm-4.5-flash is officially free; rate limits are account/concurrency based, so runtime guard is 5 RPM / 500 RPD',
       sourceUrls: [
-        'https://docs.mistral.ai/admin/user-management-finops/tier',
-        'https://docs.mistral.ai/models/model-cards/mistral-small-4-0-26-03',
+        'https://docs.z.ai/guides/overview/pricing',
+        'https://docs.z.ai/api-reference/llm/chat-completion',
+        'https://docs.z.ai/guides/capabilities/struct-output',
       ],
     },
     {
@@ -218,6 +252,34 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
       sourceUrls: [
         'https://openrouter.ai/docs/api/reference/limits',
         'https://openrouter.ai/pricing',
+      ],
+    },
+    {
+      provider: 'zai',
+      role: 'vision fallback',
+      modelId: getZaiVisionModelId(),
+      lifecycle: 'production',
+      productionModel: true,
+      preview: false,
+      deprecated: false,
+      contextWindowTokens: 128000,
+      enabled: true,
+      toolCallingEnabled: true,
+      structuredOutputEnabled: true,
+      blockAfterDeprecation: false,
+      smokeStatus: 'green',
+      smokeEvidence: ['2026-05-16 glm-4.6v-flash chat completion HTTP 200'],
+      quota: {
+        requestsPerMinute: 5,
+        tokensPerMinute: 30_000,
+        requestsPerDay: 500,
+        tokensPerDay: 1_000_000,
+      },
+      freeTierLimitSummary:
+        'glm-4.6v-flash is officially free; runtime guard mirrors Z.AI text fallback',
+      sourceUrls: [
+        'https://docs.z.ai/guides/overview/pricing',
+        'https://docs.z.ai/guides/vlm/glm-4.6v',
       ],
     },
   ];

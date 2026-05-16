@@ -4,6 +4,7 @@ import { BaseAgent, type AgentResult, type AgentRunOptions, type AgentStreamEven
 import {
   AGENT_CONFIGS,
   getAgentConfig,
+  isAgentAvailable,
   normalizeAgentName,
   type AgentConfig,
   type AgentName,
@@ -65,6 +66,16 @@ class ConfigBasedAgent extends BaseAgent {
 
 export class AgentFactory {
   private static createConfigAgent(configKey: AgentName): BaseAgent | null {
+    if (!isAgentAvailable(configKey)) {
+      const config = getAgentConfig(configKey);
+      const reason =
+        config?.visibility === 'pipeline-internal'
+          ? 'pipeline-internal'
+          : 'no model';
+      logger.warn(`[AgentFactory] Agent ${configKey} not available (${reason})`);
+      return null;
+    }
+
     const agent = new ConfigBasedAgent(configKey);
 
     if (!agent.isAvailable()) {
@@ -145,8 +156,7 @@ export class AgentFactory {
 
     for (const type of Object.keys(AGENT_TYPE_TO_CONFIG_KEY) as AgentType[]) {
       const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
-      const config = getAgentConfig(configKey);
-      if (config && config.getModel() !== null) {
+      if (isAgentAvailable(configKey)) {
         available.push(type);
       }
     }
@@ -167,10 +177,7 @@ export class AgentFactory {
 
     for (const type of Object.keys(status) as AgentType[]) {
       const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
-      const config = getAgentConfig(configKey);
-      if (config) {
-        status[type] = config.getModel() !== null;
-      }
+      status[type] = isAgentAvailable(configKey);
     }
 
     return status;
@@ -178,9 +185,7 @@ export class AgentFactory {
 
   static isAvailable(type: AgentType): boolean {
     const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
-    const config = getAgentConfig(configKey);
-    if (!config) return false;
-    return config.getModel() !== null;
+    return isAgentAvailable(configKey);
   }
 }
 

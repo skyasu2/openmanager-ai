@@ -235,7 +235,8 @@ export function finalizeMultiAgentError(
 export async function* streamWithTrace(
   trace: LangfuseTrace,
   startTime: number,
-  stream: AsyncGenerator<StreamEvent>
+  stream: AsyncGenerator<StreamEvent>,
+  metadata?: Record<string, unknown>
 ): AsyncGenerator<StreamEvent> {
   const traceId = getTraceId(trace);
   let fullText = '';
@@ -254,15 +255,17 @@ export async function* streamWithTrace(
           ? doneData.metadata.durationMs
           : elapsedMs(startTime);
       const durationMs = Math.max(0, rawDurationMs);
+      const enrichedMetadata: Record<string, unknown> = {
+        ...(doneData.metadata ?? {}),
+        ...(metadata ?? {}),
+        durationMs,
+        ...(traceId ? { traceId } : {}),
+      };
       const enrichedEvent = {
         ...event,
         data: {
           ...doneData,
-          metadata: {
-            ...(doneData.metadata ?? {}),
-            durationMs,
-            ...(traceId ? { traceId } : {}),
-          },
+          metadata: enrichedMetadata,
         },
       };
 
@@ -272,12 +275,13 @@ export async function* streamWithTrace(
         finalAgent: doneData.finalAgent,
         toolsCalled: doneData.toolsCalled,
         durationMs,
-        provider: doneData.metadata?.provider,
-        modelId: doneData.metadata?.modelId,
-        usedFallback: doneData.metadata?.usedFallback,
-        fallbackReason: doneData.metadata?.fallbackReason,
-        providerAttempts: doneData.metadata?.providerAttempts,
-        ttfbMs: doneData.metadata?.ttfbMs,
+        provider: enrichedMetadata.provider,
+        modelId: enrichedMetadata.modelId,
+        usedFallback: enrichedMetadata.usedFallback,
+        fallbackReason: enrichedMetadata.fallbackReason,
+        providerAttempts: enrichedMetadata.providerAttempts,
+        ttfbMs: enrichedMetadata.ttfbMs,
+        routingDecisionTrace: enrichedMetadata.routingDecisionTrace,
       });
 
       yield enrichedEvent;

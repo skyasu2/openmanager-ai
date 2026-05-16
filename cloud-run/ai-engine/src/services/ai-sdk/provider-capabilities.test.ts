@@ -4,16 +4,19 @@ const {
   mockIsCerebrasToolCallingEnabled,
   mockIsCerebrasLongContextEnabled,
   mockGetCerebrasModelId,
+  mockGetZaiModelId,
   mockIsOpenRouterVisionToolCallingEnabled,
 } = vi.hoisted(() => ({
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
   mockIsCerebrasLongContextEnabled: vi.fn(() => true),
   mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  mockGetZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 
 vi.mock('../../lib/config-parser', () => ({
   getCerebrasModelId: mockGetCerebrasModelId,
+  getZaiModelId: mockGetZaiModelId,
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: mockIsCerebrasLongContextEnabled,
   isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
@@ -28,6 +31,7 @@ describe('provider capabilities', () => {
     mockIsCerebrasToolCallingEnabled.mockReturnValue(true);
     mockIsCerebrasLongContextEnabled.mockReturnValue(true);
     mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
+    mockGetZaiModelId.mockReturnValue('glm-4.5-flash');
     mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
   });
 
@@ -69,5 +73,19 @@ describe('provider capabilities', () => {
 
     expect(capabilities.supportsToolCalling).toBe(false);
     expect(capabilities.supportsVision).toBe(true);
+  });
+
+  it('marks Z.AI Flash as long-context text and Z.AI V as vision-capable', () => {
+    expect(getProviderCapabilities('zai', 'glm-4.5-flash')).toMatchObject({
+      supportsToolCalling: true,
+      supportsStructuredOutput: true,
+      supportsVision: false,
+      supportsLongContext: true,
+      contextWindowTokens: 128_000,
+    });
+    expect(getProviderCapabilities('zai', 'glm-4.6v-flash')).toMatchObject({
+      supportsVision: true,
+      contextWindowTokens: 128_000,
+    });
   });
 });

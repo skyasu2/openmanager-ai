@@ -13,7 +13,7 @@ const {
 }));
 
 vi.mock('./schemas', () => ({
-  routingSchema: {},
+  routingSchema: { parse: vi.fn((value: unknown) => value) },
   getAgentFromRouting: vi.fn(() => null),
 }));
 
@@ -376,6 +376,92 @@ describe('executeMultiAgent timeout contract', () => {
 
     expect(statusMessages.some((message) => message.includes('라우팅 타임아웃'))).toBe(true);
     expect(statusMessages.some((message) => message.includes('Vision Agent 사용 불가'))).toBe(true);
+  });
+
+  it('adds routingDecisionTrace to forced stream done metadata', async () => {
+    const contextModule = await import('./orchestrator-context');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Reporter Agent',
+      confidence: 0.9,
+    });
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeMultiAgentStream({
+      messages: [{ role: 'user', content: '장애 보고서 작성해줘' }],
+      sessionId: 'stream-routing-trace-prefilter-source',
+    })) {
+      events.push(event);
+    }
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    const doneData = doneEvent?.data as {
+      metadata?: {
+        routingDecisionTrace?: {
+          agentDecision?: {
+            source: string;
+            selectedAgent?: string;
+            reasonCodes: string[];
+          };
+        };
+      };
+    };
+
+    expect(doneData.metadata?.routingDecisionTrace?.agentDecision).toMatchObject({
+      source: 'pre_filter',
+      selectedAgent: 'Reporter Agent',
+      reasonCodes: ['agent_source_pre_filter'],
+    });
+  });
+
+  it('adds routingDecisionTrace to LLM-routed stream done metadata', async () => {
+    const contextModule = await import('./orchestrator-context');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      confidence: 0.5,
+    });
+    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Analyst Agent');
+    mockGenerateObjectWithFallback.mockResolvedValueOnce({
+      object: {
+        selectedAgent: 'ANALYST',
+        confidence: 0.72,
+        reasoning: 'Need anomaly analysis',
+      },
+      usage: {
+        inputTokens: 12,
+        outputTokens: 8,
+        totalTokens: 20,
+      },
+    });
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeMultiAgentStream({
+      messages: [{ role: 'user', content: '왜 느려졌는지 분석해줘' }],
+      sessionId: 'stream-routing-trace-llm-source',
+    })) {
+      events.push(event);
+    }
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    const doneData = doneEvent?.data as {
+      metadata?: {
+        routingDecisionTrace?: {
+          agentDecision?: {
+            source: string;
+            selectedAgent?: string;
+            confidence?: number;
+            reasonCodes: string[];
+          };
+        };
+      };
+    };
+
+    expect(doneData.metadata?.routingDecisionTrace?.agentDecision).toMatchObject({
+      source: 'llm_routing',
+      selectedAgent: 'Analyst Agent',
+      confidence: 0.72,
+      reasonCodes: ['agent_source_llm_routing'],
+    });
   });
 
   it('records pre-filter forced routing source without calling LLM routing', async () => {

@@ -248,6 +248,7 @@ const KNOWN_PROVIDERS = [
   'cerebras',
   'groq',
   'mistral',
+  'zai',
   'gemini',
   'tavily',
 ] as const;

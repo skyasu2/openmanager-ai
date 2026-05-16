@@ -3,6 +3,7 @@ import {
   createSystemPrompt,
   createPrepareStep,
   getIntentCategory,
+  getLLMParamsForIntent,
   selectExecutionMode,
   shouldForceWebSearch,
 } from './routing-policy';
@@ -39,6 +40,15 @@ describe('createSystemPrompt', () => {
     expect(prompt).toContain('직전 답변의 사실만 재표현');
     expect(prompt).toContain('정확히 그 개수와 형식');
     expect(prompt).toContain('완결된 한국어 문장');
+  });
+
+  it('should keep few-shot operational commands approval-safe', () => {
+    const prompt = createSystemPrompt('desktop');
+
+    expect(prompt).toContain('내부 판단 절차');
+    expect(prompt).toContain('승인된 운영 절차');
+    expect(prompt).toContain('find /tmp -xdev -type f -mtime +7 -print');
+    expect(prompt).not.toContain('rm -rf');
   });
 });
 
@@ -225,6 +235,30 @@ describe('getIntentCategory', () => {
   it('should prioritize anomaly over metrics', () => {
     // "이상" matches anomaly before "서버" matches metrics
     expect(getIntentCategory('서버 이상 탐지')).toBe('anomaly');
+  });
+});
+
+describe('getLLMParamsForIntent', () => {
+  it('uses deterministic parameters for metric-like lookups', () => {
+    expect(getLLMParamsForIntent('metrics')).toEqual({
+      temperature: 0.1,
+      maxOutputTokens: 1536,
+    });
+    expect(getLLMParamsForIntent('serverGroup')).toEqual({
+      temperature: 0.1,
+      maxOutputTokens: 1536,
+    });
+  });
+
+  it('keeps deeper analysis intents within the existing retry-free token budget', () => {
+    expect(getLLMParamsForIntent('rca')).toEqual({
+      temperature: 0.25,
+      maxOutputTokens: 3072,
+    });
+    expect(getLLMParamsForIntent('general')).toEqual({
+      temperature: 0.5,
+      maxOutputTokens: 2048,
+    });
   });
 });
 

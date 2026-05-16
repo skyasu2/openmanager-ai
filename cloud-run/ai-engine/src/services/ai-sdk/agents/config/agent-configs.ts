@@ -17,6 +17,7 @@ import type { ToolSet } from 'ai';
 
 // Tool type from AI SDK
 type ToolsMap = ToolSet;
+export type AgentVisibility = 'routable' | 'pipeline-internal';
 
 // Instructions
 import {
@@ -70,10 +71,11 @@ export interface AgentConfig {
   getInstructions?: (query: string) => string;
   /** Available tools for the agent */
   tools: ToolsMap;
+  /** Public routing/factory exposure. Pipeline stages are cataloged but not routable. */
+  visibility: AgentVisibility;
   /**
    * Metadata-only catalog hints.
    * Runtime query matching is owned by routing/query-routing-signals.ts.
-   * Empty lists still mark pipeline-internal agents as unavailable for public routing.
    */
   matchPatterns: (string | RegExp)[];
 }
@@ -120,6 +122,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
     instructions: NLQ_INSTRUCTIONS,
     getInstructions: getNlqInstructions,
     tools: buildAgentTools('Metrics Query Agent'),
+    visibility: 'routable',
     matchPatterns: [...getDomainAgentRole('Metrics Query Agent').matchPatterns],
   },
 
@@ -129,6 +132,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
     getModel: getAnalystModel,
     instructions: ANALYST_INSTRUCTIONS,
     tools: buildAgentTools('Analyst Agent'),
+    visibility: 'routable',
     matchPatterns: [...getDomainAgentRole('Analyst Agent').matchPatterns],
   },
 
@@ -138,6 +142,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
     getModel: getReporterModel,
     instructions: REPORTER_INSTRUCTIONS,
     tools: buildAgentTools('Reporter Agent'),
+    visibility: 'routable',
     matchPatterns: [...getDomainAgentRole('Reporter Agent').matchPatterns],
   },
 
@@ -147,6 +152,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
     getModel: getAdvisorModel,
     instructions: ADVISOR_INSTRUCTIONS,
     tools: buildAgentTools('Advisor Agent'),
+    visibility: 'routable',
     matchPatterns: [...getDomainAgentRole('Advisor Agent').matchPatterns],
   },
 
@@ -171,6 +177,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
     getModel: getNlqModel, // Interface 호환용 (실제 LLM 호출 없음)
     instructions: EVALUATOR_AGENT_INSTRUCTIONS,
     tools: buildAgentTools('Evaluator Agent'),
+    visibility: 'pipeline-internal',
     matchPatterns: [...getDomainAgentRole('Evaluator Agent').matchPatterns],
   },
 
@@ -180,6 +187,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
     getModel: getAdvisorModel, // Interface 호환용 (실제 LLM 호출 없음)
     instructions: OPTIMIZER_AGENT_INSTRUCTIONS,
     tools: buildAgentTools('Optimizer Agent'),
+    visibility: 'pipeline-internal',
     matchPatterns: [...getDomainAgentRole('Optimizer Agent').matchPatterns],
   },
 
@@ -193,6 +201,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
     getModel: getVisionModel, // Gemini → OpenRouter fallback
     instructions: VISION_INSTRUCTIONS,
     tools: buildAgentTools('Vision Agent'),
+    visibility: 'routable',
     matchPatterns: [...getDomainAgentRole('Vision Agent').matchPatterns],
   },
 };
@@ -236,14 +245,12 @@ export function getAgentInstructions(
 
 /**
  * Check if agent is available (has valid model and is routable)
- * Agents with empty metadata matchPatterns are internal-only (e.g., Evaluator, Optimizer).
  */
 export function isAgentAvailable(name: AgentName): boolean;
 export function isAgentAvailable(name: string): boolean {
   const config = getAgentConfig(name);
   if (!config) return false;
-  // Internal agents (matchPatterns: []) are not publicly routable.
-  if (config.matchPatterns.length === 0) return false;
+  if (config.visibility === 'pipeline-internal') return false;
   return config.getModel() !== null;
 }
 

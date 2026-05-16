@@ -1,5 +1,6 @@
 import {
   getCerebrasModelId,
+  getZaiModelId,
   isCerebrasLongContextEnabled,
   isCerebrasToolCallingEnabled,
   isOpenRouterVisionToolCallingEnabled,
@@ -7,7 +8,10 @@ import {
 import type { ModelCapabilities, ProviderName } from './model-provider.types';
 import { CEREBRAS_MODEL_POLICIES } from './provider-model-policy';
 
-export type TextProviderName = Extract<ProviderName, 'cerebras' | 'groq' | 'mistral'>;
+export type TextProviderName = Extract<
+  ProviderName,
+  'cerebras' | 'groq' | 'mistral' | 'zai'
+>;
 
 export interface ModelCapabilityRequirements {
   requireToolCalling?: boolean;
@@ -35,6 +39,10 @@ function getCerebrasContextWindowTokens(modelId = getCerebrasModelId()): number 
   return policy && 'contextWindowTokens' in policy
     ? policy.contextWindowTokens
     : 0;
+}
+
+function zaiSupportsVision(modelId = getZaiModelId()): boolean {
+  return /\bglm-\d+(?:\.\d+)?v/i.test(modelId) || modelId.toLowerCase().includes('v-flash');
 }
 
 export function getProviderCapabilities(
@@ -66,6 +74,16 @@ export function getProviderCapabilities(
         supportsLongContext: false,
         contextWindowTokens: 32_000,
       };
+    case 'zai': {
+      const supportsVision = zaiSupportsVision(modelId);
+      return {
+        supportsToolCalling: true,
+        supportsStructuredOutput: true,
+        supportsVision,
+        supportsLongContext: true,
+        contextWindowTokens: 128_000,
+      };
+    }
     case 'gemini':
       return {
         supportsToolCalling: true,
