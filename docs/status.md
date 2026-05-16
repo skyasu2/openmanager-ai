@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-15
+> Last reviewed: 2026-05-16
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-15 | **현재 버전 스냅샷**: v8.11.156
+**상태 스냅샷 기준일**: 2026-05-16 | **현재 버전 스냅샷**: v8.11.157
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.157** (2026-05-16) — Features: ai-engine: harden multi-agent evidence paths; Features: ai: propagate semantic intent routing metadata; Features: ai-engine: remove orchestrator llm routing path
 - **v8.11.156** (2026-05-15) — Bug Fixes: dashboard: redirect anonymous access checks
 - **v8.11.155** (2026-05-15) — Code Refactoring: ai-engine: extract orchestrator routing helpers; Code Refactoring: ai: extract evidence source helpers from message-helpers; Code Refactoring: ai: extract guidance CTA helpers from useAIChatCore
 - **v8.11.154** (2026-05-15) — Tests: qa: verify krl evidence card rendering; Tests: spec: add graphrag removal and krl cleanup specs; Tests: qa: record v8.11.153 follow-up QA
 - **v8.11.153** (2026-05-15) — Bug Fixes: ai: render guidance CTA in sidebar; Tests: spec: add sidebar guidance CTA regression
-- **v8.11.152** (2026-05-15) — Bug Fixes: ai: preserve guidance CTA metadata; Tests: spec: preserve guidance CTA metadata
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
