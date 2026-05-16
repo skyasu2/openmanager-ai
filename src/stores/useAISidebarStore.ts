@@ -38,6 +38,62 @@ import type { JobDataSlot } from '@/types/ai-jobs';
 import type { AIThinkingStep } from '../types/ai-sidebar';
 import { SESSION_LIMITS } from '../types/session';
 
+export const AI_SIDEBAR_WIDTH_LIMITS = {
+  MIN: 440,
+  DEFAULT: 680,
+  MAX: 960,
+} as const;
+
+export const AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT = 20;
+
+export type AISidebarTab =
+  | 'chat'
+  | 'presets'
+  | 'thinking'
+  | 'settings'
+  | 'functions';
+
+const AI_SIDEBAR_TABS = [
+  'chat',
+  'presets',
+  'thinking',
+  'settings',
+  'functions',
+] as const satisfies readonly AISidebarTab[];
+
+const createSessionId = () =>
+  typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+export function normalizeAISidebarWidth(width: unknown): number {
+  if (typeof width !== 'number' || !Number.isFinite(width)) {
+    return AI_SIDEBAR_WIDTH_LIMITS.DEFAULT;
+  }
+
+  return Math.min(
+    AI_SIDEBAR_WIDTH_LIMITS.MAX,
+    Math.max(AI_SIDEBAR_WIDTH_LIMITS.MIN, Math.round(width))
+  );
+}
+
+function normalizeActiveTab(tab: unknown): AISidebarTab {
+  return typeof tab === 'string' &&
+    (AI_SIDEBAR_TABS as readonly string[]).includes(tab)
+    ? (tab as AISidebarTab)
+    : 'chat';
+}
+
+function normalizeAnalysisMode(mode: unknown): AnalysisMode {
+  return mode === 'thinking' ? 'thinking' : 'auto';
+}
+
+function normalizeSessionId(sessionId: unknown): string {
+  return typeof sessionId === 'string' && sessionId.trim().length > 0
+    ? sessionId
+    : createSessionId();
+}
+
 export interface AgentLog {
   id: string;
   timestamp: Date;
@@ -122,7 +178,7 @@ export interface ChatMessage {
   id: string;
   content: string;
   role: 'user' | 'assistant' | 'system' | 'thinking';
-  timestamp: Date;
+  timestamp: Date | string;
   engine?: string;
   metadata?: {
     processingTime?: number;
@@ -211,6 +267,63 @@ export interface PendingAIEntryState {
   queryAsOfDataSlot?: JobDataSlot;
   artifactWorkspaceId?: string;
   target?: AIEntryTarget;
+}
+
+function isPersistableMessage(
+  message: unknown
+): message is EnhancedChatMessage {
+  if (!message || typeof message !== 'object') {
+    return false;
+  }
+
+  const candidate = message as Partial<EnhancedChatMessage>;
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.content === 'string' &&
+    typeof candidate.role === 'string' &&
+    ['user', 'assistant', 'system', 'thinking'].includes(candidate.role) &&
+    (candidate.timestamp instanceof Date ||
+      typeof candidate.timestamp === 'string')
+  );
+}
+
+function normalizeMessageSnapshot(
+  messages: unknown,
+  limit: number = SESSION_LIMITS.MESSAGE_LIMIT
+): EnhancedChatMessage[] {
+  if (!Array.isArray(messages)) {
+    return [];
+  }
+
+  return messages.filter(isPersistableMessage).slice(-limit);
+}
+
+function normalizeRehydratedState(state: AISidebarState): void {
+  const persisted = state as AISidebarState & {
+    activeTab?: unknown;
+    analysisMode?: unknown;
+    isMinimized?: unknown;
+    messages?: unknown;
+    restoreBannerDismissed?: unknown;
+    sessionId?: unknown;
+    sidebarWidth?: unknown;
+    webSearchEnabled?: unknown;
+  };
+
+  state.isOpen = false;
+  state.isMinimized = persisted.isMinimized === true;
+  state.activeTab = normalizeActiveTab(persisted.activeTab);
+  state.sidebarWidth = normalizeAISidebarWidth(persisted.sidebarWidth);
+  state.webSearchEnabled = persisted.webSearchEnabled === true;
+  state.analysisMode = normalizeAnalysisMode(persisted.analysisMode);
+  state.restoreBannerDismissed = persisted.restoreBannerDismissed === true;
+  state.messages = normalizeMessageSnapshot(
+    persisted.messages,
+    AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT
+  );
+  state.sessionId = normalizeSessionId(persisted.sessionId);
+  state.pendingPrefillMessage = null;
+  state.pendingEntryState = null;
 }
 
 // 🔧 타입 정의
@@ -306,7 +419,7 @@ interface AISidebarState {
   // UI 상태
   isOpen: boolean;
   isMinimized: boolean;
-  activeTab: 'chat' | 'presets' | 'thinking' | 'settings' | 'functions';
+  activeTab: AISidebarTab;
   /** 사이드바 너비 (px) - 드래그 리사이즈용 */
   sidebarWidth: number;
   /** 외부 UI 액션에서 주입하는 입력 초안 */
@@ -344,9 +457,7 @@ interface AISidebarState {
   ) => void;
   setAnalysisMode: (mode: AnalysisMode) => void;
   dismissRestoreBanner: () => void;
-  setActiveTab: (
-    tab: 'chat' | 'presets' | 'thinking' | 'settings' | 'functions'
-  ) => void;
+  setActiveTab: (tab: AISidebarTab) => void;
 
   // 채팅 관련 액션들
   addMessage: (message: EnhancedChatMessage) => void;
@@ -373,17 +484,14 @@ export const useAISidebarStore = create<AISidebarState>()(
         isOpen: false,
         isMinimized: false,
         activeTab: 'chat',
-        sidebarWidth: 680, // 기본 너비 680px
+        sidebarWidth: AI_SIDEBAR_WIDTH_LIMITS.DEFAULT,
         pendingPrefillMessage: null,
         pendingEntryState: null,
         webSearchEnabled: false,
         analysisMode: 'auto',
         restoreBannerDismissed: false,
         messages: [],
-        sessionId:
-          typeof crypto !== 'undefined' && crypto.randomUUID
-            ? crypto.randomUUID()
-            : `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        sessionId: createSessionId(),
         // currentEngine 제거 - v4.0: UNIFIED 모드로 자동 선택
 
         // UI 액션들
@@ -448,7 +556,8 @@ export const useAISidebarStore = create<AISidebarState>()(
 
         toggleSidebar: () => set((state) => ({ isOpen: !state.isOpen })),
 
-        setSidebarWidth: (width) => set({ sidebarWidth: width }),
+        setSidebarWidth: (width) =>
+          set({ sidebarWidth: normalizeAISidebarWidth(width) }),
 
         setWebSearchEnabled: (enabled) =>
           set((state) => ({
@@ -467,15 +576,19 @@ export const useAISidebarStore = create<AISidebarState>()(
         // 채팅 관련 액션들
         addMessage: (message) =>
           set((state) => ({
-            messages: [...state.messages, message].slice(
-              -SESSION_LIMITS.MESSAGE_LIMIT
-            ), // SESSION_LIMITS 상수 사용 (50개, 보안 강화)
+            messages: normalizeMessageSnapshot(
+              [...state.messages, message],
+              SESSION_LIMITS.MESSAGE_LIMIT
+            ),
           })),
 
         syncChatSnapshot: (messages, sessionId) =>
           set({
-            messages: messages.slice(-SESSION_LIMITS.MESSAGE_LIMIT),
-            sessionId,
+            messages: normalizeMessageSnapshot(
+              messages,
+              SESSION_LIMITS.MESSAGE_LIMIT
+            ),
+            sessionId: normalizeSessionId(sessionId),
           }),
 
         updateMessage: (messageId, updates) =>
@@ -494,17 +607,14 @@ export const useAISidebarStore = create<AISidebarState>()(
             isOpen: false,
             isMinimized: false,
             activeTab: 'chat',
-            sidebarWidth: 680, // 기본 너비로 리셋
+            sidebarWidth: AI_SIDEBAR_WIDTH_LIMITS.DEFAULT,
             pendingPrefillMessage: null,
             pendingEntryState: null,
             webSearchEnabled: false,
             analysisMode: 'auto',
             restoreBannerDismissed: false,
             messages: [],
-            sessionId:
-              typeof crypto !== 'undefined' && crypto.randomUUID
-                ? crypto.randomUUID()
-                : `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+            sessionId: createSessionId(),
             // currentEngine 제거 - v4.0: UNIFIED 모드로 자동 선택
           }),
       }),
@@ -513,23 +623,24 @@ export const useAISidebarStore = create<AISidebarState>()(
         partialize: (state) => ({
           // 중요한 상태만 영속화
           isMinimized: state.isMinimized,
-          activeTab: state.activeTab,
-          sidebarWidth: state.sidebarWidth, // 사이드바 너비 영속화
+          activeTab: normalizeActiveTab(state.activeTab),
+          sidebarWidth: normalizeAISidebarWidth(state.sidebarWidth),
           webSearchEnabled: state.webSearchEnabled,
-          analysisMode: state.analysisMode,
+          analysisMode: normalizeAnalysisMode(state.analysisMode),
           restoreBannerDismissed: state.restoreBannerDismissed,
-          // 🔥 대화 기록 영속화 (최근 20개만 - localStorage 5MB 초과 방지)
-          messages: state.messages.slice(-20),
+          messages: normalizeMessageSnapshot(
+            state.messages,
+            AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT
+          ),
           // currentEngine 제거 - v4.0: localStorage 마이그레이션으로 자동 정리됨
-          sessionId: state.sessionId,
+          sessionId: normalizeSessionId(state.sessionId),
         }),
         // SSR 안전성을 위한 완전한 hydration 제어
         skipHydration: true,
         // Hydration 불일치 방지를 위한 추가 옵션
         onRehydrateStorage: () => (state) => {
-          // Hydration 후 초기 상태 정규화
           if (state) {
-            state.isOpen = false; // 초기에는 항상 닫힌 상태로 시작
+            normalizeRehydratedState(state);
           }
         },
       }

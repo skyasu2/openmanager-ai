@@ -1,5 +1,6 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
 import {
   ArrowRight,
   Box,
@@ -22,7 +23,7 @@ type FooterBadge = {
 
 type PipelineCard = {
   id: string;
-  icon: typeof MonitorCheck;
+  icon: LucideIcon;
   stage: string;
   detail: [string, string];
   bg: string;
@@ -32,6 +33,12 @@ type PipelineCard = {
   ring: string;
   accent: string;
   footer: FooterBadge;
+};
+
+type ScenarioStep = {
+  id: string;
+  label: string;
+  icon: LucideIcon;
 };
 
 const PIPELINE_CARDS: PipelineCard[] = [
@@ -136,8 +143,13 @@ const SCENARIOS = [
     labelColor: 'text-sky-300',
     border: 'border-sky-500/20',
     bg: 'bg-sky-500/5',
-    steps: ['💻', '📤', '🛡️', '🚀', '🌐'],
-    stepLabels: ['pre-hooks', 'push', '검사', '배포', '완료'],
+    steps: [
+      { id: 'pre-hooks', label: 'pre-hooks', icon: MonitorCheck },
+      { id: 'push', label: 'push', icon: Send },
+      { id: 'validate', label: '검사', icon: ShieldCheck },
+      { id: 'deploy', label: '배포', icon: Rocket },
+      { id: 'done', label: '완료', icon: Globe },
+    ] satisfies ScenarioStep[],
   },
   {
     id: 'big',
@@ -145,8 +157,14 @@ const SCENARIOS = [
     labelColor: 'text-purple-300',
     border: 'border-purple-500/20',
     bg: 'bg-purple-500/5',
-    steps: ['💻', '🐳', '📤', '🛡️', '🚀', '🔍'],
-    stepLabels: ['pre-hooks', 'Docker CI', 'push', '검사', '배포', 'QA'],
+    steps: [
+      { id: 'pre-hooks', label: 'pre-hooks', icon: MonitorCheck },
+      { id: 'docker-ci', label: 'Docker CI', icon: Box },
+      { id: 'push', label: 'push', icon: Send },
+      { id: 'validate', label: '검사', icon: ShieldCheck },
+      { id: 'deploy', label: '배포', icon: Rocket },
+      { id: 'qa', label: 'QA', icon: Globe },
+    ] satisfies ScenarioStep[],
   },
   {
     id: 'docs',
@@ -154,8 +172,10 @@ const SCENARIOS = [
     labelColor: 'text-slate-400',
     border: 'border-slate-500/20',
     bg: 'bg-slate-500/5',
-    steps: ['📤', '⏭️'],
-    stepLabels: ['push', 'CI 스킵'],
+    steps: [
+      { id: 'push', label: 'push', icon: Send },
+      { id: 'ci-skip', label: 'CI 스킵', icon: ArrowRight },
+    ] satisfies ScenarioStep[],
   },
 ] as const;
 
@@ -204,8 +224,9 @@ export function VibeCiCdSection({
                         card.iconText,
                         card.ring
                       )}
+                      aria-hidden="true"
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
 
                     <p
@@ -269,7 +290,10 @@ export function VibeCiCdSection({
 
                   {index < PIPELINE_CARDS.length - 1 && (
                     <div className="mt-16 hidden shrink-0 items-center px-0.5 sm:flex">
-                      <ArrowRight className="h-3 w-3 text-white/15" />
+                      <ArrowRight
+                        className="h-3 w-3 text-white/15"
+                        aria-hidden="true"
+                      />
                     </div>
                   )}
                 </div>
@@ -283,7 +307,7 @@ export function VibeCiCdSection({
         <div className="flex flex-col gap-3 rounded-xl border border-white/5 bg-white/2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/10 text-rose-400">
-              <ShieldCheck className="h-3.5 w-3.5" />
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
             </div>
             <p className="text-[11px] font-medium text-white/40">
               validate와 deploy를 분리하고, production 배포는 한 번에 하나씩만
@@ -337,24 +361,33 @@ export function VibeCiCdSection({
               </span>
 
               <div className="flex flex-wrap items-center gap-1.5">
-                {scenario.steps.map((emoji, index) => (
-                  <span
-                    key={`${scenario.id}-${scenario.stepLabels[index]}`}
-                    className="flex items-center gap-1.5"
-                  >
-                    <span className="flex flex-col items-center">
-                      <span className="text-base leading-none transition-transform motion-safe:group-hover:scale-110 motion-reduce:transform-none motion-reduce:transition-none">
-                        {emoji}
+                {scenario.steps.map((step, index) => {
+                  const StepIcon = step.icon;
+                  return (
+                    <span
+                      key={`${scenario.id}-${step.id}`}
+                      className="flex items-center gap-1.5"
+                    >
+                      <span className="flex flex-col items-center">
+                        <span className="text-base leading-none transition-transform motion-safe:group-hover:scale-110 motion-reduce:transform-none motion-reduce:transition-none">
+                          <StepIcon
+                            className="h-4 w-4 text-white/35"
+                            aria-hidden="true"
+                          />
+                        </span>
+                        <span className="mt-1 text-[8px] font-medium leading-none text-white/20">
+                          {step.label}
+                        </span>
                       </span>
-                      <span className="mt-1 text-[8px] font-medium leading-none text-white/20">
-                        {scenario.stepLabels[index]}
-                      </span>
+                      {index < scenario.steps.length - 1 && (
+                        <ArrowRight
+                          className="h-3 w-3 shrink-0 text-white/10"
+                          aria-hidden="true"
+                        />
+                      )}
                     </span>
-                    {index < scenario.steps.length - 1 && (
-                      <ArrowRight className="h-3 w-3 shrink-0 text-white/10" />
-                    )}
-                  </span>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -362,7 +395,7 @@ export function VibeCiCdSection({
       </details>
 
       <div className="flex items-center gap-3 rounded-xl border border-dashed border-white/10 bg-white/2 px-4 py-3">
-        <Box className="h-4 w-4 shrink-0 text-white/20" />
+        <Box className="h-4 w-4 shrink-0 text-white/20" aria-hidden="true" />
         <p className="text-[10px] leading-relaxed text-white/30">
           <span className="font-bold text-white/50">GitHub Snapshot</span>
           {' · '}선택 사항 · 공개 code-only 스냅샷 · 배포 권위 없음

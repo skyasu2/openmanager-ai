@@ -67,8 +67,6 @@ function Home() {
     isMounted,
     isSystemStarted,
     systemStartCountdown,
-    isSystemStarting,
-    multiUserStatus,
     navigateToDashboard,
     retryAuth,
     shouldShowLoading,
@@ -135,9 +133,6 @@ function Home() {
             <SystemStartSection
               isMounted={isMounted}
               systemStartCountdown={systemStartCountdown}
-              isSystemStarting={isSystemStarting}
-              isSystemStarted={isSystemStarted}
-              isSystemRunning={multiUserStatus?.isRunning || false}
               buttonConfig={buttonConfig}
               statusInfo={statusInfo}
               onSystemToggle={handleSystemToggle}

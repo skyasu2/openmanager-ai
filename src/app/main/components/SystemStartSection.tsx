@@ -17,9 +17,6 @@ const START_EXAMPLES = [
 interface SystemStartSectionProps {
   isMounted: boolean;
   systemStartCountdown: number;
-  isSystemStarting: boolean;
-  isSystemStarted: boolean;
-  isSystemRunning: boolean;
   buttonConfig: ButtonConfig;
   statusInfo: StatusInfo;
   onSystemToggle: () => void;
@@ -28,19 +25,10 @@ interface SystemStartSectionProps {
 export function SystemStartSection({
   isMounted,
   systemStartCountdown,
-  isSystemStarting,
-  isSystemStarted,
-  isSystemRunning,
   buttonConfig,
   statusInfo,
   onSystemToggle,
 }: SystemStartSectionProps) {
-  const showFingerPointer =
-    !systemStartCountdown &&
-    !isSystemStarting &&
-    !isSystemRunning &&
-    !isSystemStarted;
-
   return (
     <div className="mx-auto max-w-2xl text-center">
       <div className="mb-6 flex flex-col items-center space-y-4">
@@ -49,7 +37,7 @@ export function SystemStartSection({
           type="button"
           onClick={onSystemToggle}
           disabled={buttonConfig.disabled}
-          className={`relative overflow-hidden flex h-16 w-full max-w-xs items-center justify-center gap-3 rounded-xl border font-semibold shadow-xl transition-all duration-300 sm:w-64 ${buttonConfig.className}`}
+          className={`relative flex h-16 w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-xl border font-semibold shadow-xl transition-all duration-300 sm:w-64 ${buttonConfig.className}`}
         >
           {/* 카운트다운 오버레이 */}
           {systemStartCountdown > 0 && (
@@ -59,7 +47,11 @@ export function SystemStartSection({
             </div>
           )}
           <div className="relative z-10 flex items-center gap-3">
-            {buttonConfig.icon}
+            {buttonConfig.icon && (
+              <span aria-hidden="true" className="flex shrink-0">
+                {buttonConfig.icon}
+              </span>
+            )}
             <span className="text-lg">{buttonConfig.text}</span>
           </div>
         </button>
@@ -77,13 +69,6 @@ export function SystemStartSection({
             </span>
           )}
         </div>
-
-        {/* 손가락 포인터 */}
-        {showFingerPointer && (
-          <div className="mt-2 flex justify-center">
-            <span className="finger-pointer-primary">👆</span>
-          </div>
-        )}
       </div>
 
       {/* AI 어시스턴트 안내 */}
@@ -91,7 +76,10 @@ export function SystemStartSection({
         <div className="max-w-xl rounded-[1.75rem] border border-white/10 bg-linear-to-br from-slate-900/80 via-slate-900/60 to-cyan-950/35 p-4 shadow-[0_24px_60px_rgba(8,15,30,0.4)] sm:p-5">
           <div className="mb-3 flex items-center justify-center gap-2 text-cyan-100">
             {isMounted && (
-              <MessageSquareQuote className="h-4 w-4 text-cyan-300" />
+              <MessageSquareQuote
+                aria-hidden="true"
+                className="h-4 w-4 text-cyan-300"
+              />
             )}
             <span className="font-semibold">
               시작하면 이런 질문을 바로 할 수 있습니다

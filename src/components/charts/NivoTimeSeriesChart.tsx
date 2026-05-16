@@ -26,6 +26,8 @@ type NivoMetricSeries = {
   data: NivoMetricDatum[];
 };
 
+type TimeRange = NonNullable<TimeSeriesChartProps['timeRange']>;
+
 const THRESHOLD_DEFAULTS: Record<
   TimeSeriesChartProps['metric'],
   { warning: number; critical: number }
@@ -48,6 +50,13 @@ const ANOMALY_COLORS: Record<AnomalyDataPoint['severity'], string> = {
   medium: '#fde68a',
   high: '#fdba74',
   critical: '#fca5a5',
+};
+
+const AXIS_TICK_LIMITS: Record<TimeRange, number> = {
+  '1h': 5,
+  '6h': 7,
+  '24h': 9,
+  '7d': 8,
 };
 
 function formatTime(timestamp: string): string {
@@ -104,6 +113,30 @@ function buildSeries(
   }
 
   return series;
+}
+
+function buildXAxisTickValues(
+  series: NivoMetricSeries[],
+  compact: boolean,
+  timeRange?: TimeRange
+): string[] | undefined {
+  const domain = [
+    ...new Set(series.flatMap((item) => item.data.map((point) => point.x))),
+  ];
+  if (domain.length === 0) return undefined;
+
+  const maxTicks = compact ? 3 : timeRange ? AXIS_TICK_LIMITS[timeRange] : 7;
+  if (domain.length <= maxTicks) return domain;
+
+  const lastIndex = domain.length - 1;
+  const sampled: string[] = [];
+  for (let index = 0; index < maxTicks; index += 1) {
+    const domainIndex = Math.round((index * lastIndex) / (maxTicks - 1));
+    const value = domain[domainIndex];
+    if (value) sampled.push(value);
+  }
+
+  return [...new Set(sampled)];
 }
 
 function buildMarkers(
@@ -308,6 +341,7 @@ function getBoundaryResetKey(props: TimeSeriesChartProps): string {
     props.showPrediction ?? true,
     props.showAnomalies ?? true,
     props.showThresholds ?? true,
+    props.timeRange ?? '',
     props.showBrush ?? false,
     props.data.length,
     props.data[0]?.timestamp ?? '',
@@ -328,6 +362,7 @@ function NivoTimeSeriesChartInner({
   predictions,
   anomalies,
   metric,
+  timeRange,
   thresholds,
   height = 300,
   showPrediction = true,
@@ -343,6 +378,11 @@ function NivoTimeSeriesChartInner({
     [data, predictions, showPrediction]
   );
 
+  const xTickValues = useMemo(
+    () => buildXAxisTickValues(series, compact, timeRange),
+    [compact, series, timeRange]
+  );
+
   const markers = useMemo(
     () => (showThresholds ? buildMarkers(effectiveThresholds, compact) : []),
     [compact, effectiveThresholds, showThresholds]
@@ -353,7 +393,8 @@ function NivoTimeSeriesChartInner({
     [anomalies, showAnomalies]
   );
 
-  if (!data || data.length === 0) {
+  const actualSeries = series.find((item) => item.id === 'actual');
+  if (!data || data.length === 0 || !actualSeries?.data.length) {
     return (
       <div
         className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50"
@@ -386,6 +427,7 @@ function NivoTimeSeriesChartInner({
           tickSize: 0,
           tickPadding: 8,
           tickRotation: 0,
+          tickValues: xTickValues,
           format: (value) => formatTime(String(value)),
         }}
         axisLeft={{

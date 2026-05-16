@@ -5,6 +5,8 @@
     "tests/ai-sidebar/"
   ],
   "exactFiles": [
+    "src/app/main/components/DashboardSection.test.tsx",
+    "src/app/main/components/GuestRestrictionModal.test.tsx",
     "src/app/main/components/SystemStartSection.test.tsx",
     "src/app/dashboard/DashboardClientRuntime.test.tsx",
     "src/app/dashboard/DashboardInteractiveShell.test.tsx",

@@ -22,9 +22,6 @@ describe('SystemStartSection', () => {
       <SystemStartSection
         isMounted
         systemStartCountdown={3}
-        isSystemStarting={false}
-        isSystemStarted={false}
-        isSystemRunning={false}
         buttonConfig={{
           disabled: false,
           className: 'bg-red-500 text-white',

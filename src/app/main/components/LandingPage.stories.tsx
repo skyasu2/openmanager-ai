@@ -33,9 +33,6 @@ export const SystemIdle: Story = {
     <SystemStartSection
       isMounted={true}
       systemStartCountdown={0}
-      isSystemStarting={false}
-      isSystemStarted={false}
-      isSystemRunning={false}
       buttonConfig={{
         text: '시스템 시작',
         icon: <Play className="h-5 w-5" />,
@@ -59,9 +56,6 @@ export const SystemStarting: Story = {
     <SystemStartSection
       isMounted={true}
       systemStartCountdown={3}
-      isSystemStarting={true}
-      isSystemStarted={false}
-      isSystemRunning={false}
       buttonConfig={{
         text: '시작 중... 3',
         icon: <Loader2 className="h-5 w-5 animate-spin" />,

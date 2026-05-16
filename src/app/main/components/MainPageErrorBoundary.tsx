@@ -48,7 +48,10 @@ export class MainPageErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
           <div className="max-w-md rounded-xl border border-red-500/30 bg-red-500/10 p-8 text-center">
-            <AlertTriangle className="mx-auto mb-4 h-16 w-16 text-red-400" />
+            <AlertTriangle
+              aria-hidden="true"
+              className="mx-auto mb-4 h-16 w-16 text-red-400"
+            />
             <h2 className="mb-2 text-xl font-bold text-white">
               {fallbackTitle || '문제가 발생했습니다'}
             </h2>
@@ -71,7 +74,7 @@ export class MainPageErrorBoundary extends Component<Props, State> {
               onClick={this.handleRetry}
               className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700"
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw aria-hidden="true" className="h-4 w-4" />
               다시 시도
             </button>
           </div>

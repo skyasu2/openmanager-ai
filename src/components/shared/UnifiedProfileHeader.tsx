@@ -49,7 +49,7 @@ export default function UnifiedProfileHeader({
   const { status: systemStatus } = useSystemStatus({
     enabled: !isAuthResolving && status === 'authenticated',
   });
-  // 🎯 Zustand selector 패턴 사용 - 불필요한 리렌더 방지
+  // Zustand selector 패턴 사용 - 불필요한 리렌더 방지
   const isSystemStarted = useUnifiedAdminStore(
     (state) => state.isSystemStarted
   );
@@ -59,33 +59,33 @@ export default function UnifiedProfileHeader({
   // 시스템 시작 핸들러
   const handleSystemStart = useCallback(() => {
     try {
-      logger.info('🚀 시스템 시작 요청 (프로필에서)');
+      logger.info('시스템 시작 요청 (프로필에서)');
       startSystem();
-      logger.info('✅ 시스템 시작 성공');
+      logger.info('시스템 시작 성공');
     } catch (error) {
-      logger.error('❌ 시스템 시작 오류:', error);
-      alert('❌ 시스템 시작 중 오류가 발생했습니다.');
+      logger.error('시스템 시작 오류:', error);
+      alert('시스템 시작 중 오류가 발생했습니다.');
     }
   }, [startSystem]);
 
   // 시스템 종료 핸들러 - useUnifiedAdminStore.stopSystem 직접 사용
   const handleSystemStop = useCallback(() => {
     const confirmed = confirm(
-      '⚠️ 시스템을 종료하시겠습니까?\n\n종료 후 메인 페이지에서 다시 시작할 수 있습니다.'
+      '시스템을 종료하시겠습니까?\n\n종료 후 메인 페이지에서 다시 시작할 수 있습니다.'
     );
 
     if (!confirmed) return;
 
     try {
-      logger.info('🛑 시스템 종료 요청 (프로필에서)');
+      logger.info('시스템 종료 요청 (프로필에서)');
 
       // useUnifiedAdminStore.stopSystem() 직접 호출
       stopSystem();
-      logger.info('✅ 시스템 종료 성공 (Unified Store 직접 사용)');
+      logger.info('시스템 종료 성공 (Unified Store 직접 사용)');
       localStorage.removeItem('system_auto_shutdown');
     } catch (error) {
-      logger.error('❌ 시스템 종료 오류:', error);
-      alert('❌ 시스템 종료 중 오류가 발생했습니다.');
+      logger.error('시스템 종료 오류:', error);
+      alert('시스템 종료 중 오류가 발생했습니다.');
     }
   }, [stopSystem]);
 
@@ -260,7 +260,7 @@ export default function UnifiedProfileHeader({
           className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto sm:gap-2 sm:px-4"
           data-testid="login-button"
         >
-          <User className="h-4 w-4" />
+          <User className="h-4 w-4" aria-hidden="true" />
           <span className="hidden sm:inline">로그인</span>
         </button>
       </div>
@@ -280,7 +280,7 @@ export default function UnifiedProfileHeader({
           if (isAuthResolving) {
             return;
           }
-          logger.info('👤 프로필 버튼 클릭됨');
+          logger.info('프로필 버튼 클릭됨');
           toggleMenu();
         }}
         disabled={isAuthResolving}
@@ -302,7 +302,10 @@ export default function UnifiedProfileHeader({
               <div className="h-3 w-20 animate-pulse rounded bg-gray-200" />
               <div className="h-2.5 w-16 animate-pulse rounded bg-gray-100" />
             </div>
-            <ChevronDown className="hidden h-4 w-4 text-gray-300 sm:block" />
+            <ChevronDown
+              className="hidden h-4 w-4 text-gray-300 sm:block"
+              aria-hidden="true"
+            />
           </>
         ) : (
           <>
@@ -329,6 +332,7 @@ export default function UnifiedProfileHeader({
               className={`hidden h-4 w-4 text-gray-400 transition-transform duration-200 sm:block ${
                 menuState.showProfileMenu ? 'rotate-180' : ''
               }`}
+              aria-hidden="true"
             />
           </>
         )}

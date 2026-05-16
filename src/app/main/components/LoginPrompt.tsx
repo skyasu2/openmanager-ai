@@ -21,7 +21,12 @@ export function LoginPrompt({ isMounted, guestModeMessage }: LoginPromptProps) {
   return (
     <div className="text-center">
       <div className="mb-4 rounded-xl border border-blue-400/30 bg-blue-500/10 p-4 sm:p-6">
-        {isMounted && <User className="mx-auto mb-3 h-12 w-12 text-blue-400" />}
+        {isMounted && (
+          <User
+            aria-hidden="true"
+            className="mx-auto mb-3 h-12 w-12 text-blue-400"
+          />
+        )}
         <h3 className="mb-2 text-lg font-semibold text-white">
           로그인 또는 게스트 테스트가 필요합니다
         </h3>

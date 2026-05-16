@@ -20,7 +20,10 @@ import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useResizable } from '@/hooks/ui/useResizable';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { cn } from '@/lib/utils';
-import { useAISidebarStore } from '@/stores/useAISidebarStore';
+import {
+  AI_SIDEBAR_WIDTH_LIMITS,
+  useAISidebarStore,
+} from '@/stores/useAISidebarStore';
 // Types
 import type { AISidebarV3Props } from '@/types/ai-sidebar/ai-sidebar-types';
 import { AISidebarHeader } from './AISidebarHeader';
@@ -35,9 +38,9 @@ import { MessageComponent } from './SidebarMessage';
 // - 메시지 변환
 
 // 📐 리사이즈 상수
-const SIDEBAR_MIN_WIDTH = 440;
-const SIDEBAR_MAX_WIDTH = 960;
-const SIDEBAR_DEFAULT_WIDTH = 680;
+const SIDEBAR_MIN_WIDTH = AI_SIDEBAR_WIDTH_LIMITS.MIN;
+const SIDEBAR_MAX_WIDTH = AI_SIDEBAR_WIDTH_LIMITS.MAX;
+const SIDEBAR_DEFAULT_WIDTH = AI_SIDEBAR_WIDTH_LIMITS.DEFAULT;
 const MOBILE_BREAKPOINT = 768; // md breakpoint
 
 // 🔒 완전 Client-Only AI 사이드바 컴포넌트 (V4 - useAIChatCore 통합)

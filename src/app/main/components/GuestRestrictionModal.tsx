@@ -7,7 +7,7 @@
 
 'use client';
 
-import { AlertTriangle, LogIn } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, LogIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,6 +28,12 @@ interface GuestRestrictionModalProps {
   onClose: () => void;
   reason?: 'login-required' | 'guest-start-blocked';
 }
+
+const AUTHENTICATED_FEATURES = [
+  '실시간 서버 모니터링',
+  'AI 기반 분석 기능',
+  '대시보드 전체 액세스',
+] as const;
 
 export function GuestRestrictionModal({
   open,
@@ -62,7 +68,10 @@ export function GuestRestrictionModal({
       >
         <DialogHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20">
-            <AlertTriangle className="h-6 w-6 text-yellow-500" />
+            <AlertTriangle
+              aria-hidden="true"
+              className="h-6 w-6 text-yellow-500"
+            />
           </div>
           <DialogTitle className="text-xl font-semibold text-white">
             {modalTitle}
@@ -75,18 +84,15 @@ export function GuestRestrictionModal({
         <div className="mt-4 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
           <p className="text-sm leading-relaxed text-slate-400">{infoText}</p>
           <ul className="mt-3 space-y-2 text-sm text-slate-400">
-            <li className="flex items-center gap-2">
-              <span className="text-green-400">✓</span>
-              실시간 서버 모니터링
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-green-400">✓</span>
-              AI 기반 분석 기능
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-green-400">✓</span>
-              대시보드 전체 액세스
-            </li>
+            {AUTHENTICATED_FEATURES.map((feature) => (
+              <li key={feature} className="flex items-center gap-2">
+                <CheckCircle2
+                  aria-hidden="true"
+                  className="h-4 w-4 shrink-0 text-green-400"
+                />
+                {feature}
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -102,7 +108,7 @@ export function GuestRestrictionModal({
             onClick={handleLoginRedirect}
             className="w-full bg-linear-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 sm:w-auto"
           >
-            <LogIn className="mr-2 h-4 w-4" />
+            <LogIn aria-hidden="true" className="mr-2 h-4 w-4" />
             로그인 페이지로 이동
           </Button>
         </DialogFooter>

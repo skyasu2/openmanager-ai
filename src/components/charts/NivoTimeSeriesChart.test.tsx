@@ -20,6 +20,7 @@ vi.mock('@nivo/line', () => ({
     enableSlices,
     useMesh,
     sliceTooltip,
+    axisBottom,
   }: {
     data: Array<{
       id: string;
@@ -35,6 +36,9 @@ vi.mock('@nivo/line', () => ({
     >;
     enableSlices?: string;
     useMesh?: boolean;
+    axisBottom?: {
+      tickValues?: string[];
+    };
     sliceTooltip?: (props: {
       slice: {
         points: Array<{
@@ -67,6 +71,9 @@ vi.mock('@nivo/line', () => ({
         data-layer-count={layers?.length ?? 0}
         data-enable-slices={enableSlices}
         data-use-mesh={String(useMesh ?? false)}
+        data-x-tick-count={axisBottom?.tickValues?.length ?? 0}
+        data-x-first-tick={axisBottom?.tickValues?.[0] ?? ''}
+        data-x-last-tick={axisBottom?.tickValues?.at(-1) ?? ''}
       >
         {data.map((series) => (
           <div
@@ -197,6 +204,39 @@ describe('NivoTimeSeriesChart', () => {
     expect(screen.getByText('45.0%')).toBeInTheDocument();
   });
 
+  it('긴 시계열은 timeRange에 맞춰 x축 tick을 샘플링한다', () => {
+    const denseData = Array.from({ length: 24 }, (_, index) => ({
+      timestamp: new Date(Date.UTC(2026, 4, 7, index, 0, 0)).toISOString(),
+      value: 40 + index,
+    }));
+
+    render(
+      <NivoTimeSeriesChart data={denseData} metric="cpu" timeRange="24h" />
+    );
+
+    const chart = screen.getByTestId('nivo-responsive-line');
+    expect(chart).toHaveAttribute('data-x-tick-count', '9');
+    expect(chart).toHaveAttribute('data-x-first-tick', denseData[0].timestamp);
+    expect(chart).toHaveAttribute(
+      'data-x-last-tick',
+      denseData.at(-1)?.timestamp
+    );
+  });
+
+  it('compact 차트는 x축 tick을 3개 이하로 제한한다', () => {
+    const denseData = Array.from({ length: 12 }, (_, index) => ({
+      timestamp: new Date(Date.UTC(2026, 4, 7, index, 0, 0)).toISOString(),
+      value: 40 + index,
+    }));
+
+    render(<NivoTimeSeriesChart data={denseData} metric="cpu" compact />);
+
+    expect(screen.getByTestId('nivo-responsive-line')).toHaveAttribute(
+      'data-x-tick-count',
+      '3'
+    );
+  });
+
   it('동일한 시작/종료 시각의 이상 구간도 최소 너비로 표시한다', () => {
     render(
       <NivoTimeSeriesChart
@@ -268,6 +308,26 @@ describe('NivoTimeSeriesChart', () => {
 
   it('데이터가 없으면 빈 상태를 렌더링한다', () => {
     render(<NivoTimeSeriesChart data={[]} metric="cpu" />);
+
+    expect(screen.getByText('데이터가 없습니다')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('nivo-responsive-line')
+    ).not.toBeInTheDocument();
+  });
+
+  it('유효한 숫자 포인트가 없으면 빈 상태를 렌더링한다', () => {
+    render(
+      <NivoTimeSeriesChart
+        data={[
+          { timestamp: '2026-05-07T00:00:00.000Z', value: Number.NaN },
+          {
+            timestamp: '2026-05-07T00:05:00.000Z',
+            value: Number.POSITIVE_INFINITY,
+          },
+        ]}
+        metric="cpu"
+      />
+    );
 
     expect(screen.getByText('데이터가 없습니다')).toBeInTheDocument();
     expect(

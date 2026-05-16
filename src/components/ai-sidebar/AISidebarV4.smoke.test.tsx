@@ -63,6 +63,11 @@ vi.mock('@/config/guestMode', () => ({
 }));
 
 vi.mock('@/stores/useAISidebarStore', () => ({
+  AI_SIDEBAR_WIDTH_LIMITS: {
+    MIN: 440,
+    DEFAULT: 680,
+    MAX: 960,
+  },
   useAISidebarStore: vi.fn((selector) => {
     const state = {
       isOpen: true,

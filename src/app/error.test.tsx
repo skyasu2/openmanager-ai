@@ -65,4 +65,26 @@ describe('AppErrorPage', () => {
     );
     expect(reset).toHaveBeenCalledTimes(1);
   });
+
+  it('Tailwind 클래스 기반 에러 화면을 렌더링한다', async () => {
+    const { default: ErrorPage } = await import('./error');
+    process.env.NODE_ENV = 'development';
+
+    let rendered!: ReturnType<typeof render>;
+    await act(async () => {
+      rendered = render(
+        React.createElement(ErrorPage, {
+          error: Object.assign(new Error('styled root crash'), {
+            digest: 'root-style-123',
+          }),
+          reset: vi.fn(),
+        })
+      );
+    });
+
+    const boundary = screen.getByTestId('app-error-boundary');
+    expect(boundary).toHaveClass('min-h-screen');
+    expect(boundary).toHaveClass('bg-slate-950');
+    expect(rendered.container.querySelector('[style]')).toBeNull();
+  });
 });

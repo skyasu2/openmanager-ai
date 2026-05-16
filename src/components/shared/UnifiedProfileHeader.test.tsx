@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import UnifiedProfileHeader from './UnifiedProfileHeader';
 
@@ -110,6 +110,49 @@ describe('UnifiedProfileHeader', () => {
     expect(loginButton).toHaveClass('w-10');
     expect(loginButton).toHaveClass('sm:w-auto');
     expect(screen.getByText('로그인')).toHaveClass('hidden');
+  });
+
+  it('비인증 로그인 버튼 클릭 시 로그인 페이지 이동 핸들러를 호출한다', () => {
+    const navigateToLogin = vi.fn();
+
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: null,
+      userType: 'unknown',
+      status: 'unauthenticated',
+      isLoading: false,
+      handleLogout: vi.fn(),
+      navigateToLogin,
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+
+    fireEvent.click(screen.getByTestId('login-button'));
+
+    expect(navigateToLogin).toHaveBeenCalledTimes(1);
+  });
+
+  it('인증 상태 확인 중에는 프로필 메뉴 토글을 막는다', async () => {
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: null,
+      userType: 'unknown',
+      status: 'loading',
+      isLoading: true,
+      handleLogout: vi.fn(),
+      navigateToLogin: vi.fn(),
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+
+    const trigger = await screen.findByTestId('profile-dropdown-trigger');
+    expect(trigger).toBeDisabled();
+    expect(trigger).toHaveAttribute('aria-busy', 'true');
+
+    fireEvent.click(trigger);
+
+    expect(mocks.toggleMenu).not.toHaveBeenCalled();
+    expect(mocks.useSystemStatus).toHaveBeenCalledWith({ enabled: false });
   });
 
   it('인증 상태에서는 /api/system 구독을 활성화한다', () => {

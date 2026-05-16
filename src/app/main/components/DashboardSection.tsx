@@ -30,8 +30,8 @@ export function DashboardSection({
                 onClick={onNavigateDashboard}
                 className="flex h-16 w-full max-w-xs items-center justify-center gap-2 rounded-xl border border-emerald-500/50 bg-emerald-600 font-semibold text-white shadow-xl transition-all duration-200 hover:bg-emerald-700 sm:w-64"
               >
-                <BarChart3 className="h-5 w-5" />
-                <span className="text-lg">📊 대시보드 열기</span>
+                <BarChart3 aria-hidden="true" className="h-5 w-5" />
+                <span className="text-lg">대시보드 열기</span>
               </button>
 
               {onStopSystem && (
@@ -57,19 +57,6 @@ export function DashboardSection({
                 로그인 후 대시보드에 접근할 수 있습니다
               </p>
             </div>
-          )}
-
-          {canAccessDashboard && (
-            <>
-              <div className="mt-2 flex justify-center">
-                <span className="finger-pointer-dashboard">👆</span>
-              </div>
-              <div className="mt-1 flex justify-center">
-                <span className="text-xs text-white opacity-70">
-                  클릭하세요
-                </span>
-              </div>
-            </>
           )}
         </div>
       </div>

@@ -10,11 +10,26 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { EnhancedChatMessage } from './useAISidebarStore';
-import { useAISidebarStore } from './useAISidebarStore';
+import {
+  AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT,
+  AI_SIDEBAR_WIDTH_LIMITS,
+  useAISidebarStore,
+} from './useAISidebarStore';
+
+const createMockMessage = (
+  id: string,
+  content: string
+): EnhancedChatMessage => ({
+  id,
+  content,
+  role: 'user',
+  timestamp: new Date('2026-05-16T00:00:00.000Z'),
+});
 
 describe('useAISidebarStore', () => {
   // 각 테스트 전 스토어 상태 초기화
   beforeEach(() => {
+    localStorage.clear();
     const { result } = renderHook(() => useAISidebarStore());
     act(() => {
       result.current.reset();
@@ -229,16 +244,6 @@ describe('useAISidebarStore', () => {
   });
 
   describe('메시지 관리', () => {
-    const createMockMessage = (
-      id: string,
-      content: string
-    ): EnhancedChatMessage => ({
-      id,
-      content,
-      role: 'user',
-      timestamp: new Date(),
-    });
-
     it('addMessage로 메시지를 추가할 수 있어야 함', () => {
       const { result } = renderHook(() => useAISidebarStore());
       const message = createMockMessage('msg-1', 'Hello');
@@ -363,6 +368,49 @@ describe('useAISidebarStore', () => {
       });
 
       expect(result.current.sidebarWidth).toBe(800);
+    });
+
+    it('setSidebarWidth는 허용 범위 밖 값을 정규화해야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+
+      act(() => {
+        result.current.setSidebarWidth(100);
+      });
+      expect(result.current.sidebarWidth).toBe(AI_SIDEBAR_WIDTH_LIMITS.MIN);
+
+      act(() => {
+        result.current.setSidebarWidth(9999);
+      });
+      expect(result.current.sidebarWidth).toBe(AI_SIDEBAR_WIDTH_LIMITS.MAX);
+    });
+  });
+
+  describe('persist snapshot', () => {
+    it('localStorage에는 정규화된 너비와 최근 20개 메시지만 저장해야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+
+      act(() => {
+        result.current.setSidebarWidth(9999);
+        for (let i = 0; i < 25; i++) {
+          result.current.addMessage(createMockMessage(`msg-${i}`, `Msg ${i}`));
+        }
+      });
+
+      const rawPersisted = localStorage.getItem('ai-sidebar-storage');
+      expect(rawPersisted).not.toBeNull();
+
+      const persisted = JSON.parse(rawPersisted ?? '{}') as {
+        state?: {
+          messages?: EnhancedChatMessage[];
+          sidebarWidth?: number;
+        };
+      };
+
+      expect(persisted.state?.sidebarWidth).toBe(AI_SIDEBAR_WIDTH_LIMITS.MAX);
+      expect(persisted.state?.messages).toHaveLength(
+        AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT
+      );
+      expect(persisted.state?.messages?.[0]?.id).toBe('msg-5');
     });
   });
 
