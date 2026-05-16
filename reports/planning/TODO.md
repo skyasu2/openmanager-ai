@@ -115,6 +115,12 @@
 
 ## Recent Completed
 
+### Completed (2026-05-16) — Claude (Routing & UX 개선)
+- [x] 오프도메인 전 카테고리(날씨·주식·운세·맛집·캘린더·코딩 등) 차단 제거 → `⚠️` 경고 1줄 prepend 후 LLM 위임 (`off-domain-guard.ts`, `supervisor-stream.ts`, `supervisor-single-agent.ts`)
+- [x] 보안 riskLevel 분화: `high` → HTTP 400 유지, `medium`/`low` → 경고 prepend + sanitize 쿼리로 LLM 계속 진행 (`prompt-guard.ts`, `supervisor.ts`)
+- [x] AI SDK conformance O1~O3 backlog에서 제거 (구조적 차단 — 단일 런타임 전제 충돌, 재착수 불필요)
+- 검증: AI Engine `type-check` PASS, off-domain-guard.test.ts 20개 PASS, prompt-guard.test.ts 31개 PASS, 전체 1327 tests PASS. 커밋: `767acd026`.
+
 ### Completed (2026-05-16) — Codex (AI SDK conformance optional O4)
 - [x] Mock provider 기반 path parity benchmark 보강
   - `ai/test`의 `MockLanguageModelV3`를 사용해 `generateText`/`streamText` 경로가 실제 provider 호출 없이 같은 loop ceiling을 쓰는지 고정했다.
