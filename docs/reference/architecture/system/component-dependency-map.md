@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 142 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 143 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 149 |
+| Total TSX component inventory | 150 |
 
 ## App Route-Local Component Distribution
 
@@ -51,11 +51,11 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29671 |
-| Component nodes | 142 |
-| Component edges | 142 |
-| Graph density | 0.71% |
-| Alias edges (`@/components/*`) | 38 |
+| Component source lines | 29749 |
+| Component nodes | 143 |
+| Component edges | 143 |
+| Graph density | 0.70% |
+| Alias edges (`@/components/*`) | 39 |
 | Relative edges (`./`, `../`) | 104 |
 | Isolated components | 22 |
 | SCC cycle groups | 0 |
@@ -65,7 +65,7 @@ Route-local component files:
 
 ```mermaid
 flowchart LR
-  d0["ai (42)"]
+  d0["ai (43)"]
   d1["ai-sidebar (16)"]
   d2["auth (1)"]
   d3["charts (2)"]
@@ -78,7 +78,7 @@ flowchart LR
   d10["system (2)"]
   d11["ui (9)"]
   d12["unified-profile (3)"]
-  d0 -->|41| d0
+  d0 -->|42| d0
   d4 -->|32| d4
   d1 -->|14| d1
   d1 -->|12| d0
@@ -106,7 +106,7 @@ flowchart LR
 
 | Domain | Node Count |
 | --- | --- |
-| ai | 42 |
+| ai | 43 |
 | dashboard | 34 |
 | shared | 23 |
 | ai-sidebar | 16 |
@@ -124,7 +124,7 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
-| ai | ai | 41 |
+| ai | ai | 42 |
 | dashboard | dashboard | 32 |
 | ai-sidebar | ai-sidebar | 14 |
 | ai-sidebar | ai | 12 |
@@ -172,9 +172,9 @@ flowchart LR
 | ai-sidebar/EnhancedAIChat | 9 |
 | ai-sidebar/AISidebarV4 | 8 |
 | ai-sidebar/SidebarMessage | 7 |
+| ai/AIWorkspaceMessage | 6 |
 | dashboard/DashboardRoutedContent | 6 |
 | dashboard/ServerDetailView | 6 |
-| ai/AIWorkspaceMessage | 5 |
 | ai/domain-renderers/ArtifactRendererHost | 5 |
 | shared/FeatureCardModal | 5 |
 | ai/analysis/ServerResultCard | 4 |
@@ -193,9 +193,9 @@ ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, ai/AIAssista
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/DeveloperPanel, ai-sidebar/EnhancedAIChat
 ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard, ai/WebSourceCards
+ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/analysis-basis/ProviderAttributionChip, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
-ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer
 ai/domain-renderers/ArtifactRendererHost -> ai/IncidentReportArtifactCard, ai/MonitoringAnalysisArtifactCard, ai/OpsProcedureArtifactCard, ai/ServerMonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard
 ```
 

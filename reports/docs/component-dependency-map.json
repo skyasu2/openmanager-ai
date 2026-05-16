@@ -6,16 +6,16 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
-    "sharedComponentNodes": 142,
+    "sharedComponentNodes": 143,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 149
+    "totalComponentNodes": 150
   },
   "metrics": {
-    "componentSourceLines": 29671,
-    "componentNodes": 142,
-    "componentEdges": 142,
-    "graphDensity": 0.007092,
-    "aliasEdges": 38,
+    "componentSourceLines": 29749,
+    "componentNodes": 143,
+    "componentEdges": 143,
+    "graphDensity": 0.007042,
+    "aliasEdges": 39,
     "relativeEdges": 104,
     "isolatedComponents": 22,
     "sccCycleGroups": 0,
@@ -89,16 +89,16 @@
       "outDegree": 7
     },
     {
+      "component": "ai/AIWorkspaceMessage",
+      "outDegree": 6
+    },
+    {
       "component": "dashboard/DashboardRoutedContent",
       "outDegree": 6
     },
     {
       "component": "dashboard/ServerDetailView",
       "outDegree": 6
-    },
-    {
-      "component": "ai/AIWorkspaceMessage",
-      "outDegree": 5
     },
     {
       "component": "ai/domain-renderers/ArtifactRendererHost",
@@ -125,7 +125,7 @@
     {
       "fromDomain": "ai",
       "toDomain": "ai",
-      "count": 41
+      "count": 42
     },
     {
       "fromDomain": "dashboard",
