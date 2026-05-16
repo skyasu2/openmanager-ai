@@ -2,6 +2,7 @@
 
 > Owner: project
 > Status: In Progress
+> Doc type: Plan
 > Last updated: 2026-05-16
 
 ## 배경
@@ -11,6 +12,18 @@
 1. **오프도메인 처리**: 현재 `shouldShortCircuit: true`로 차단 응답을 반환하는데, 날씨·주식·운세처럼 완전히 막을 이유가 없는 질문은 경고만 달고 LLM에 위임하는 것이 사용자 경험에 유리합니다.
 2. **보안 침해 응답 분화**: 현재 `medium` 이상이면 무조건 HTTP 400 차단인데, 명백한 고위험(`high`)과 애매한 저위험(`low`)은 다르게 처리해야 합니다.
 3. **Single mode 비활성 상태 명시**: `ALLOW_DEGRADED_SINGLE` 환경변수로 single 경로를 실질적으로 비활성화한 채 코드에 분기가 남아 있어 혼란 유발.
+
+---
+
+## 현재 진행 상태
+
+- TODO.md 위치: `Active Tasks`
+- 구현 커밋: `767acd026 feat(ai): delegate guard warnings to llm`
+- GitLab pipeline: `2530042325` success
+- 완료된 범위: Phase 1/2 백엔드 계약(T1~T3, T6~T9)
+- 채택한 UI 계약: 별도 metadata/banner가 아니라 assistant 응답 본문/SSE `text_delta` 앞에 경고 문구를 prepend한다.
+- 잔여 범위: T10~T16 아키텍처/정책 문서 갱신, release/tag 배포 판단.
+- `Single path 경량화`는 TODO.md Backlog에 이미 등록되어 T17은 완료로 정리한다.
 
 ---
 
@@ -113,8 +126,8 @@ high 감지
 - [x] T1. `off-domain-guard.ts`: 모든 카테고리 `shouldShortCircuit` 제거, `offDomainWarning: string` 필드 추가 (고정 경고 문구 포함)
 - [x] T2. `supervisor-stream.ts` 스트림 분기 직전: `offDomainWarning` 있으면 `text_delta`로 경고 1줄 먼저 emit, LLM 계속 진행
 - [x] T3. `supervisor-single-agent.ts` 비스트리밍 경로: `offDomainWarning` prepend 후 LLM 결과에 합산 반환
-- [ ] T4. `useAISidebarStore.ts` / `message-transform-internals.ts`: `offDomainWarning` 타입 추가
-- [ ] T5. 프론트엔드 `AIWorkspaceMessage.tsx`: `metadata.offDomainWarning` 있으면 경고 배너 UI 표시 (노란 배경 인라인)
+- [x] T4. frontend metadata 계약 재판정: 현재 구현은 `metadata.offDomainWarning` 전달 대신 응답 본문/SSE `text_delta` prepend를 canonical 계약으로 채택
+- [x] T5. frontend 경고 배너 재판정: 별도 배너 UI는 현재 범위에서 제외하고, 필요 시 후속 UX 옵션으로 분리
 - [x] T6. 테스트: 오프도메인 → 경고 + LLM 응답, 운영 컨텍스트 포함 → 경고 없음 시나리오 (`off-domain-guard.test.ts` 20개)
 
 ### Phase 2 — 보안 riskLevel 분화
@@ -173,14 +186,14 @@ high 감지
 
 ### Phase 4 — 문서화 마무리
 
-- [ ] T17. `TODO.md` 백로그에 "single path 경량화" 항목 추가
+- [x] T17. `TODO.md` 백로그에 "single path 경량화" 항목 추가
 
 ---
 
 ## 실행 순서
 
 ```
-Phase 1 (T1~T6) → Phase 2 (T7~T9) → Phase 3 다이어그램 갱신 (T10~T16) → Phase 4 (T17)
+Phase 1 (T1~T6 완료) → Phase 2 (T7~T9 완료) → Phase 3 다이어그램 갱신 (T10~T16 진행 대상) → Phase 4 (T17 완료)
 ```
 
 ## 우선순위
@@ -194,6 +207,14 @@ Phase 1 (T1~T6) → Phase 2 (T7~T9) → Phase 3 다이어그램 갱신 (T10~T16)
 | T10~T13 (기존 다이어그램 갱신) | 중간 | 다이어그램 4개 | Phase 3 |
 | T14~T16 (신규 다이어그램) | 중간 | 다이어그램 3개 | Phase 3 |
 | T17 (문서 1줄) | 낮음 | — | 마지막 |
+
+---
+
+## 다음 진행 판단
+
+1. T10~T16 문서 갱신을 먼저 완료한다.
+2. 문서 갱신 후 plan `Status`를 `Completed`로 전환하고 archive 이동한다.
+3. AI Engine runtime 변경은 아직 production 이미지에 반영되지 않았으므로, 문서 정리 후 `v8.11.160` release/tag 배포 여부를 결정한다.
 
 ---
 

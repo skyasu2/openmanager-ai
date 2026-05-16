@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (Provider runtime env sync completed)
+**Last Updated**: 2026-05-16 KST (Planning status normalized)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,6 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| Routing & UX 개선 — 오프도메인 경고 위임 + 보안 riskLevel 분화 | Medium | In Progress (tracking) | Phase 1/2 백엔드 계약은 `767acd026`로 구현·push 완료, GitLab pipeline `2530042325` success. 현재 응답 본문 prepend 계약을 채택했으므로 별도 frontend metadata 배너는 후속 UX 옵션으로 재분류. 잔여: T10~T16 아키텍처/정책 문서 갱신, release/tag 배포 판단. 상세: [routing-ux-improvement-plan.md](routing-ux-improvement-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 잔여 구현 없음. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -20,7 +21,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Routing & UX 개선 — 오프도메인 경고 위임 + 보안 riskLevel 분화 | Medium | 오프도메인(날씨·주식·운세) 차단 → 경고 prepend 후 LLM 위임으로 전환. 보안 `medium` 차단 → 경고 포함 정상 응답으로 분화. 계획서: [routing-ux-improvement-plan.md](routing-ux-improvement-plan.md) |
 | Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` 기본값으로 production에서 single mode 실질 비활성. 경량 단순쿼리 경로 설계 시 재검토. |
 | AI SDK conformance optional 잔여 (O1~O3) | Low | **구조적 차단**: Vercel(BFF)+Cloud Run(AI Engine) 분리 아키텍처로 인해 AI SDK native 패턴(subagent-as-tool/UI stream/DevTools)이 단일 런타임 전제와 충돌. 아키텍처 통합 없이는 재착수 불필요. 상세 제약 기록: [archive/vercel-ai-sdk-multi-agent-conformance-plan.md](archive/vercel-ai-sdk-multi-agent-conformance-plan.md) O1~O3 섹션 |
 
@@ -38,7 +38,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| ~~Provider runtime env sync — Z.AI/GLM 활성화 + Cerebras env drift 제거~~ | — | **완료** — Secret Manager `ai-providers-config` version 8에 `zai`를 안전 병합하고 Cloud Run `ai-engine-00476-hz2` revision을 100% traffic으로 적용했다. `/health.config.zai=true`, `CEREBRAS_MODEL_ID=gpt-oss-120b`, `ZAI_DEFAULT_MODEL=glm-4.5-flash` 확인. 재발 방지를 위해 `deploy.sh`/`cloudbuild.yaml` 기본값과 env 문서를 갱신했다. GitLab main pipeline `2530020344` success. 상세: [provider-runtime-env-sync-plan.md](provider-runtime-env-sync-plan.md) |
+| ~~Provider runtime env sync — Z.AI/GLM 활성화 + Cerebras env drift 제거~~ | — | **완료** — Secret Manager `ai-providers-config` version 8에 `zai`를 안전 병합하고 Cloud Run `ai-engine-00476-hz2` revision을 100% traffic으로 적용했다. `/health.config.zai=true`, `CEREBRAS_MODEL_ID=gpt-oss-120b`, `ZAI_DEFAULT_MODEL=glm-4.5-flash` 확인. 재발 방지를 위해 `deploy.sh`/`cloudbuild.yaml` 기본값과 env 문서를 갱신했다. GitLab main pipeline `2530020344` success. 상세: [archive/provider-runtime-env-sync-plan.md](archive/provider-runtime-env-sync-plan.md) |
 | ~~NLQ EntitySchema provider compatibility fix~~ | — | **완료** — `/api/ai/nlq/extract-entities` structured-output schema를 required nullable 계약으로 정렬하고 top-level `metric/timeRange` provider drift를 normalizer 경계에서 흡수하도록 완충했다. `QA-20260516-0508`에서 Groq `llama-4-scout` 4/4 schema_valid·intent_accuracy·executionMode_accuracy 회복, Mistral `ministral-3b`는 4/4 schema_valid·intent_accuracy 및 3/4 executionMode_accuracy로 비교 기록. |
 | ~~NLQ front provider live 비교 QA~~ | — | **완료** — `QA-20260516-0507`에서 Groq/Mistral/Cerebras/Z.AI 후보를 provider당 4 fixture로 수동 smoke. Current schema 기준 Mistral `ministral-3b-latest`만 4/4 통과, strict required nullable schema 기준 Groq 3/4·Mistral `ministral-3b-latest` 4/4. 결론: production provider 전환보다 `NLQ EntitySchema provider compatibility fix`가 선행. |
 | ~~대형 리팩터 커밋 분할 기준 보강~~ | — | **완료** — `reports/planning/README.md`에 대형 리팩터의 `test(spec):` / 구현 / docs·QA 커밋 분리 기준과 분할 필요·불필요 조건을 추가했다. 코드 변경 없는 프로세스 규칙 개선으로 처리. |

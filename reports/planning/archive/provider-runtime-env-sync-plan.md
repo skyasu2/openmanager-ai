@@ -6,7 +6,7 @@
 
 - 상태: Completed
 - 작성일: 2026-05-16
-- TODO.md 연결: Backlog > Provider runtime env sync
+- TODO.md 연결: Backlog 완료 이력 > Provider runtime env sync
 
 ## 목표
 
