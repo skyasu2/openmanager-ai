@@ -5,6 +5,7 @@ const {
   mockStepCountIs,
   mockStreamText,
   mockExecuteReporterWithPipeline,
+  mockEvaluateAgentResponseQuality,
   mockStreamTextInChunks,
   mockMarkProviderQuotaCooldown,
   mockReconcileProviderQuotaReservation,
@@ -14,6 +15,14 @@ const {
   mockStepCountIs: vi.fn(() => () => false),
   mockStreamText: vi.fn(),
   mockExecuteReporterWithPipeline: vi.fn(),
+  mockEvaluateAgentResponseQuality: vi.fn(
+    (_agentName: string, text: string) => ({
+      responseChars: text.length,
+      formatCompliance: true,
+      qualityFlags: [],
+      latencyTier: 'fast',
+    })
+  ),
   mockStreamTextInChunks: vi.fn(),
   mockMarkProviderQuotaCooldown: vi.fn(() => Promise.resolve()),
   mockReconcileProviderQuotaReservation: vi.fn(() => Promise.resolve()),
@@ -115,12 +124,7 @@ vi.mock('./orchestrator-web-search', () => ({
 }));
 
 vi.mock('./response-quality', () => ({
-  evaluateAgentResponseQuality: vi.fn((_agentName: string, text: string) => ({
-    responseChars: text.length,
-    formatCompliance: true,
-    qualityFlags: [],
-    latencyTier: 'fast',
-  })),
+  evaluateAgentResponseQuality: mockEvaluateAgentResponseQuality,
 }));
 
 vi.mock('./orchestrator-decomposition', () => ({
@@ -206,6 +210,14 @@ describe('executeAgentStream', () => {
     vi.clearAllMocks();
     mockStepCountIs.mockClear();
     mockGenerateText.mockResolvedValue({ text: '' });
+    mockEvaluateAgentResponseQuality.mockImplementation(
+      (_agentName: string, text: string) => ({
+        responseChars: text.length,
+        formatCompliance: true,
+        qualityFlags: [],
+        latencyTier: 'fast',
+      })
+    );
     mockMarkProviderQuotaCooldown.mockResolvedValue(undefined);
     mockReconcileProviderQuotaReservation.mockResolvedValue(undefined);
     mockReserveProviderQuota.mockImplementation(
@@ -641,6 +653,66 @@ describe('executeAgentStream', () => {
       { provider: 'cerebras', error: 'LOW_INFORMATION_RESPONSE' },
       { provider: 'groq' },
     ]);
+  });
+
+  it('emits enrichment delta before done when streamed text omits collected metric evidence', async () => {
+    mockEvaluateAgentResponseQuality.mockImplementation(
+      (_agentName: string, text: string) => ({
+        responseChars: text.length,
+        formatCompliance: true,
+        qualityFlags: text.includes('참고 수치')
+          ? []
+          : ['MISSING_METRIC_EVIDENCE', 'MISSING_SERVER_REFERENCE'],
+        latencyTier: 'fast',
+      })
+    );
+    mockStreamText.mockReturnValueOnce(
+      createStreamResult({
+        chunks: ['api-01 CPU 87% 상태를 확인했습니다.'],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'getServerMetrics' }],
+            toolResults: [
+              {
+                toolName: 'getServerMetrics',
+                result: {
+                  servers: [
+                    {
+                      name: 'api-01',
+                      status: 'warning',
+                      cpu: 87,
+                      memory: 62,
+                      disk: 44,
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      })
+    );
+
+    const events = await collectEvents('api-01 상태를 근거와 함께 설명해줘');
+    const textPayload = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(textPayload).toContain('api-01 CPU 87% 상태를 확인했습니다.');
+    expect(textPayload).toContain('📊 **참고 수치**: api-01: CPU 87%');
+    expect(textPayload).toContain('🖥️ **관련 서버**: api-01');
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    const doneData = doneEvent?.data as {
+      metadata: {
+        qualityFlags?: string[];
+        responseChars?: number;
+      };
+    };
+    expect(doneData.metadata.qualityFlags).toEqual([]);
+    expect(doneData.metadata.responseChars).toBe(textPayload.length);
+    expect(mockGenerateText).not.toHaveBeenCalled();
   });
 
   it('keeps expanded stream max steps for Analyst Agent multi-tool workflows', async () => {

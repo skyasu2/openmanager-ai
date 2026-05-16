@@ -615,6 +615,7 @@ export async function* executeAgentStream(
           loopSettings,
           steps?.length ?? 0
         ),
+        collectedToolResults,
       });
       return; // Success — exit provider loop
     } catch (error) {

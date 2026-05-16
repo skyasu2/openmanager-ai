@@ -7,8 +7,20 @@ const { mockStepCountIs } = vi.hoisted(() => ({
   mockStepCountIs: vi.fn(() => () => false),
 }));
 
-const { mockGenerateTextWithRetry, mockSearchKnowledgeBaseExecute } =
+const {
+  mockEvaluateAgentResponseQuality,
+  mockGenerateTextWithRetry,
+  mockSearchKnowledgeBaseExecute,
+} =
   vi.hoisted(() => ({
+    mockEvaluateAgentResponseQuality: vi.fn(
+      (_agentName: string, text: string) => ({
+        responseChars: text.length,
+        formatCompliance: true,
+        qualityFlags: [],
+        latencyTier: 'fast',
+      })
+    ),
     mockGenerateTextWithRetry: vi.fn(),
     mockSearchKnowledgeBaseExecute: vi.fn(),
   }));
@@ -140,12 +152,7 @@ vi.mock('./orchestrator-web-search', () => ({
 }));
 
 vi.mock('./response-quality', () => ({
-  evaluateAgentResponseQuality: vi.fn((_agentName: string, text: string) => ({
-    responseChars: text.length,
-    formatCompliance: true,
-    qualityFlags: [],
-    latencyTier: 'fast',
-  })),
+  evaluateAgentResponseQuality: mockEvaluateAgentResponseQuality,
 }));
 
 vi.mock('../../../lib/logger', () => ({
@@ -251,6 +258,14 @@ describe('executeForcedRouting', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockStepCountIs.mockClear();
+    mockEvaluateAgentResponseQuality.mockImplementation(
+      (_agentName: string, text: string) => ({
+        responseChars: text.length,
+        formatCompliance: true,
+        qualityFlags: [],
+        latencyTier: 'fast',
+      })
+    );
     mockSearchKnowledgeBaseExecute.mockResolvedValue(undefined);
   });
 
@@ -518,6 +533,59 @@ describe('executeForcedRouting', () => {
     expect(mockGenerateTextWithRetry.mock.calls[1]?.[2]).toEqual({
       timeoutMs: 10000,
     });
+  });
+
+  it('enriches forced-routing responses from collected tool results without another LLM call', async () => {
+    mockEvaluateAgentResponseQuality.mockImplementation(
+      (_agentName: string, text: string) => ({
+        responseChars: text.length,
+        formatCompliance: true,
+        qualityFlags: text.includes('참고 수치')
+          ? []
+          : ['MISSING_METRIC_EVIDENCE', 'MISSING_SERVER_REFERENCE'],
+        latencyTier: 'fast',
+      })
+    );
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: 'api-01 상태를 확인했습니다.',
+        steps: [
+          {
+            toolCalls: [{ toolName: 'getServerMetrics' }],
+            toolResults: [
+              {
+                toolName: 'getServerMetrics',
+                result: {
+                  servers: [
+                    {
+                      name: 'api-01',
+                      status: 'warning',
+                      cpu: 87,
+                      memory: 62,
+                      disk: 44,
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      })
+    );
+
+    const result = await executeForcedRouting(
+      'api-01 상태를 근거와 함께 설명해줘',
+      'Metrics Query Agent',
+      Date.now()
+    );
+
+    expect(result?.success).toBe(true);
+    expect(result?.response).toContain('api-01 상태를 확인했습니다.');
+    expect(result?.response).toContain('📊 **참고 수치**: api-01: CPU 87%');
+    expect(result?.response).toContain('🖥️ **관련 서버**: api-01');
+    expect(result?.metadata.qualityFlags).toEqual([]);
+    expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(1);
+    expect(mockEvaluateAgentResponseQuality).toHaveBeenCalledTimes(2);
   });
 
   it('records provider attempts and fallback reason for Langfuse diagnostics', async () => {

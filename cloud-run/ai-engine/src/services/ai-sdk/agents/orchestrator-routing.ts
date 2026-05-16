@@ -68,6 +68,7 @@ import {
   resolveFallbackReason,
   toProviderAttemptTelemetry,
 } from './orchestrator-routing-telemetry';
+import { enrichResponseWithToolResults } from '../supervisor-response-enrichment';
 export { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 export {
@@ -393,6 +394,17 @@ export async function executeForcedRouting(
       sanitizedResponse,
       { durationMs }
     );
+    const enrichment = enrichResponseWithToolResults(
+      sanitizedResponse,
+      quality.qualityFlags,
+      collectedToolResults
+    );
+    const finalResponse = enrichment.enrichedResponse;
+    const finalQuality = enrichment.enrichmentApplied
+      ? evaluateAgentResponseQuality(suggestedAgentName, finalResponse, {
+          durationMs,
+        })
+      : quality;
     const resolvedEvidenceCards =
       evidenceCards.length > 0
         ? evidenceCards
@@ -418,12 +430,12 @@ export async function executeForcedRouting(
     }
 
     logger.info(
-      `[Forced Routing] ${suggestedAgentName} completed in ${durationMs}ms via ${provider}, tools: [${toolsCalled.join(', ')}], ragSources: ${ragSources.length}`
+      `[Forced Routing] ${suggestedAgentName} completed in ${durationMs}ms via ${provider}, tools: [${toolsCalled.join(', ')}]${enrichment.enrichmentApplied ? `, enriched: [${enrichment.enrichmentSections.join(', ')}]` : ''}, ragSources: ${ragSources.length}`
     );
 
     return {
       success: true,
-      response: sanitizedResponse,
+      response: finalResponse,
       ragSources: ragSources.length > 0 ? ragSources : undefined,
       evidenceCards:
         resolvedEvidenceCards.length > 0 ? resolvedEvidenceCards : undefined,
@@ -447,10 +459,10 @@ export async function executeForcedRouting(
         totalRounds: attempts.length,
         handoffCount: 1,
         durationMs,
-        responseChars: quality.responseChars,
-        formatCompliance: quality.formatCompliance,
-        qualityFlags: quality.qualityFlags,
-        latencyTier: quality.latencyTier,
+        responseChars: finalQuality.responseChars,
+        formatCompliance: finalQuality.formatCompliance,
+        qualityFlags: finalQuality.qualityFlags,
+        latencyTier: finalQuality.latencyTier,
         agentLoop: toAgentLoopTelemetry(
           loopSettings,
           result.steps.length

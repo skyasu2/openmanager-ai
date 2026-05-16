@@ -17,6 +17,7 @@ import { streamTextInChunks } from './orchestrator-decomposition-output';
 import { executeReporterWithPipeline } from './orchestrator-routing';
 import type { ProviderAttemptTelemetry } from './orchestrator-types';
 import { evaluateAgentResponseQuality } from './response-quality';
+import { enrichResponseWithToolResults } from '../supervisor-response-enrichment';
 
 const TOOL_GROUNDED_REPAIR_MIN_CHARS = 120;
 const TOOL_RESULT_SUMMARY_MAX_CHARS = 2000;
@@ -241,6 +242,7 @@ export async function* emitAgentSuccessDoneEvent({
   firstChunkMs,
   toolsCalled,
   agentLoop,
+  collectedToolResults,
 }: {
   agentName: string;
   sessionId: string;
@@ -257,6 +259,7 @@ export async function* emitAgentSuccessDoneEvent({
   firstChunkMs: number | null;
   toolsCalled: string[];
   agentLoop?: AgentLoopTelemetry;
+  collectedToolResults?: CollectedToolResult[];
 }): AsyncGenerator<StreamEvent> {
   providerAttemptTelemetry.push({
     provider: responseProvider,
@@ -270,21 +273,43 @@ export async function* emitAgentSuccessDoneEvent({
   const usedFallback = providerAttemptTelemetry.length > 1;
   const providerFallbackReason =
     providerAttemptTelemetry.find((attempt) => attempt.error)?.error;
-  const quality = evaluateAgentResponseQuality(agentName, fullResponseText, {
+  const initialQuality = evaluateAgentResponseQuality(agentName, fullResponseText, {
     durationMs,
     fallbackReason,
   });
+  const enrichment = enrichResponseWithToolResults(
+    fullResponseText,
+    initialQuality.qualityFlags,
+    collectedToolResults ?? []
+  );
+  const finalResponseText = enrichment.enrichedResponse;
+  const quality = enrichment.enrichmentApplied
+    ? evaluateAgentResponseQuality(agentName, finalResponseText, {
+        durationMs,
+        fallbackReason,
+      })
+    : initialQuality;
+
+  if (enrichment.enrichmentApplied) {
+    const enrichmentDelta = finalResponseText.startsWith(fullResponseText)
+      ? finalResponseText.slice(fullResponseText.length)
+      : `\n\n${finalResponseText}`;
+    if (enrichmentDelta.trim()) {
+      yield { type: 'text_delta', data: enrichmentDelta };
+    }
+  }
+
   logger.info(
-    `[Stream ${agentName}] Completed in ${durationMs}ms via ${responseProvider}, tools: [${toolsCalled.join(', ')}]`
+    `[Stream ${agentName}] Completed in ${durationMs}ms via ${responseProvider}, tools: [${toolsCalled.join(', ')}]${enrichment.enrichmentApplied ? `, enriched: [${enrichment.enrichmentSections.join(', ')}]` : ''}`
   );
 
   try {
-    await saveAgentFindingsToContext(sessionId, agentName, fullResponseText);
+    await saveAgentFindingsToContext(sessionId, agentName, finalResponseText);
   } catch {
     // Context saving is best-effort only.
   }
 
-  const followUp = getSuggestedFollowUp(agentName, fullResponseText);
+  const followUp = getSuggestedFollowUp(agentName, finalResponseText);
 
   yield {
     type: 'done',
