@@ -171,11 +171,11 @@ Near-term priority is the destructive T5 only after user approval, followed by T
 > - N0 ✅ 입력 길이 UX guard (maxLength=10,000 / warning=8,000)
 > - N1 ✅ Front NLQ `intentFrame.executionMode`를 Cloud Run `selectExecutionMode()` primary signal로 연결. confidence ≥ 0.8이면 LLM 결과 우선, regex fallback 4개로 축소.
 > - N2 ✅ `QueryGuard` — `/api/ai/nlq/extract-entities` 입력 경계에서 공격 패턴 차단, log_paste 감지, oversized truncate
+> - N3 ✅ `inputType/logExtract` Cloud Run 계약 확정 + log paste → multi 분석 경로 연결
 > - N4 ✅ streaming output filter — `/api/ai/supervisor/stream/v2` 응답에서 XSS 패턴 제거, 시스템 프롬프트 유출 차단
-> - N3 ⬜ 잔여 — `inputType/logExtract` Cloud Run 계약 확정 + log paste → multi 분석 경로 연결
 >
 > 검토 문서: [ADR-005](../../../adr/adr-005-routing-pattern-over-orchestrator-worker.md)
-> 구현 계획: `reports/planning/nlq-preprocessing-redesign-plan.md` N3 (잔여), `reports/planning/provider-quota-rebalance-plan.md` Q3
+> 구현 기록: `reports/planning/archive/nlq-preprocessing-redesign-plan.md` N0~N4, `reports/planning/archive/provider-quota-rebalance-plan.md` Q0~Q3
 
 ### 2.3. OpenAI Swarm / Agents SDK와의 관계
 - OpenAI `swarm` 저장소는 현재 Agents SDK로 대체되었고, production use case는 Agents SDK 사용을 권장합니다.

@@ -259,5 +259,5 @@ QueryGuard + Groq NLQ
   - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-agent-stream.ts`
   - `src/hooks/ai/utils/stream-data-handler.ts`
 - 연관 계획서:
-  - `reports/planning/nlq-preprocessing-redesign-plan.md` (N1 — 전제 조건)
-  - `reports/planning/provider-quota-rebalance-plan.md` (Q3 — 전제 조건)
+  - `reports/planning/archive/nlq-preprocessing-redesign-plan.md` (N1 — 전제 조건)
+  - `reports/planning/archive/provider-quota-rebalance-plan.md` (Q3 — 전제 조건)

@@ -1,9 +1,9 @@
 # Provider Quota Rebalance & NLQ Pipeline Improvement Plan
 
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (Q0~Q2 완료, Q3=NLQ N1 연계 대기)
+> Last reviewed: 2026-05-16 (Q0~Q3 완료, follow-up은 TODO tracking)
 > Tags: ai,provider,quota,nlq,free-tier,groq,cerebras,architecture
 
 ---
@@ -279,16 +279,18 @@ git diff --check
 
 ### Q3. intentFrame trust (NLQ → Cloud Run 신뢰 연결)
 
-**이 항목은 NLQ Pre-processing Redesign Plan의 N1과 동일 루트임. 해당 계획의 Draft→Approved 전환 조건 충족 시 함께 구현.**
+**Status**: 완료 (2026-05-16)
+
+이 항목은 NLQ Pre-processing Redesign Plan의 N1과 동일 루트였으며, N1 구현으로 해소됐다.
 
 **Provider 판단 보정**: Q2의 핵심은 "Groq를 계속 쓴다"가 아니라 "front NLQ LLM이 만든 `intentFrame`을 Cloud Run이 신뢰 가능한 계약으로 받는다"이다. 현재 baseline은 Groq `llama-4-scout`이지만, N1-0에서 Mistral/Cerebras/Z.AI 후보를 동일 fixture로 비교한 뒤 최종 provider를 확정한다.
 
-**예상 효과**: NLQ Groq 호출 결과가 Cloud Run에서 신뢰되면:
-- Groq NLQ 비용 = 유효 사용 (현재는 낭비)
-- selectExecutionMode regex 15개+ 삭제 또는 Cloud Run `DomainIntentFrame.confidence < 0.8` fallback으로만 유지
-- 전체 Groq 예산 효율 향상
+**완료 효과**:
+- Front NLQ `intentFrame.executionMode`가 Cloud Run `selectExecutionMode()` primary signal로 연결됐다.
+- confidence gate를 만족하면 LLM 결과를 우선하고, regex는 fallback 4개로 축소됐다.
+- NLQ 호출 결과가 Cloud Run에서 유효하게 사용되어 Groq Metrics Query RPD 보존 효과가 생겼다.
 
-N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ 비용 절감"에서 "front NLQ LLM 비용 유효화 + Groq Metrics Query RPD 보존"으로 해석한다.
+N1-0 live provider 비교는 외부 LLM 호출이 필요하므로 TODO Backlog의 수동 QA 항목으로 남긴다.
 
 ---
 
@@ -299,7 +301,7 @@ N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ
 | Q0: gpt-oss-120b 정책 수정 | ❌ (데이터 수정) | 완료 | 30분 |
 | Q1: Orchestrator provider order + decomposition budget | ✅ (계약 변경) | 완료 | 1.5시간 |
 | Q2: Orchestrator LLM 제거 / Direct specialist routing | ✅ (계약 변경) | 완료 | 1.5시간 |
-| Q3: intentFrame trust | ✅ (NLQ Plan 연계) | P1 (NLQ Draft→Approved 후) | 별도 |
+| Q3: intentFrame trust | ✅ (NLQ Plan 연계) | 완료 | 1시간 |
 | P2: enrichment multi-path | ❌ (저영향) | P2 관찰 후 판단 | - |
 
 ---
@@ -317,7 +319,7 @@ N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ
 | Provider fallback chain 순서 | Analyst/Reporter/Advisor 최적화 완료 | ✅ 변경 불필요 |
 | **Cerebras gpt-oss-120b 정책** | 코드가 현실과 불일치 | 🔴 **즉시 수정** |
 | **Orchestrator Groq 낭비** | Groq RPD 1개/요청 불필요 소모 | ✅ **Q2 완료** |
-| **NLQ intentFrame 무시** | Groq NLQ 결과를 Cloud Run이 무시 | 🟡 **P1 NLQ Plan 연계** |
+| **NLQ intentFrame 무시** | Groq NLQ 결과를 Cloud Run primary signal로 사용 | ✅ **Q3/NLQ N1 완료** |
 | Enrichment multi-path | Reporter에 Evaluator/Optimizer 있어 저영향 | 🟢 관찰만 |
 
 ---

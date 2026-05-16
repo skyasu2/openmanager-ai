@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (dashboard improvement completed)
+**Last Updated**: 2026-05-16 KST (AI SDK conformance optional O4)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -20,14 +20,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| 프론트엔드 분석 대기 — 메인 페이지 | Medium | `src/app/main/components/` 584줄 계. GuestRestrictionModal(112), SystemStartSection(114), DashboardSection(81) 검토. 로그인 계획서(L1~L2)와 유사 패턴 존재 여부 확인 필요. **Codex 분석 대기** |
-| 프론트엔드 분석 대기 — 차트 컴포넌트 | Medium | `src/components/charts/NivoTimeSeriesChart.tsx` 511줄. Nivo 라이브러리 사용 방식, memo 패턴, 반응형 처리 검토. Dashboard 계획서와 연관 가능. **Codex 분석 대기** |
-| 프론트엔드 분석 대기 — shared 컴포넌트 | Medium | `VibeCiCdSection.tsx`(377줄), `UnifiedProfileHeader.tsx`(353줄) 집중 검토. props drilling, memo 패턴. **Codex 분석 대기** |
-| 프론트엔드 분석 대기 — Zustand 스토어 | Low | `src/stores/useAISidebarStore.ts` 561줄. persist 설정, selector 구독 패턴, 상태 정규화 검토. **Codex 분석 대기** |
-| 프론트엔드 분석 대기 — AI 훅 레이어 | Low | `src/hooks/ai/useHybridAIQuery.ts`(691줄), `useAsyncAIQuery.ts`(583줄). streaming/job-queue 분기, 에러 핸들링 구조. 완료된 artifact state 분리와 별개로 후속 분석 필요. **Codex 분석 대기** |
-| 로그인 전역 `app/error.tsx` Tailwind 전환 검토 | Low | 로그인 계획서 L7과 유사하지만 범위 밖. 전체 앱 error boundary 스타일 정리 필요 여부를 별도 소규모 작업으로 판단. |
-| enrichResponseWithToolResults multi-path 적용 | Low | single-agent path에만 연결. Reporter에 Evaluator/Optimizer(deterministic)가 있어 저영향. 관찰 후 판단. |
-| AI SDK conformance optional 항목 (O1~O4) | Low | O1: subagent-as-tool PoC, O2: `createAgentUIStreamResponse` 전환, O3: AI SDK DevTools, O4: mock path parity benchmark. Free Tier 영향 검증 후 착수. 상세: [archive/vercel-ai-sdk-multi-agent-conformance-plan.md](archive/vercel-ai-sdk-multi-agent-conformance-plan.md) |
+| AI SDK conformance optional 잔여 (O1~O3) | Low | O4 mock provider path parity benchmark는 완료. O1 subagent-as-tool PoC, O2 `createAgentUIStreamResponse` 전환, O3 AI SDK DevTools는 Free Tier/복잡도 대비 즉시 ROI 낮아 보류. 상세: [archive/vercel-ai-sdk-multi-agent-conformance-plan.md](archive/vercel-ai-sdk-multi-agent-conformance-plan.md) |
 | NLQ front provider live 비교 QA | Low | Groq baseline은 유지. Mistral/Cerebras/Z.AI 후보는 외부 LLM 호출이 필요하므로 QA/수동 smoke에서 `schema_valid`, `intent_accuracy`, `executionMode_accuracy`, latency, rate-limit headroom만 비교. 상세: [archive/nlq-preprocessing-redesign-plan.md](archive/nlq-preprocessing-redesign-plan.md) |
 
 ---
@@ -36,6 +29,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| ~~Cerebras 기본 모델 전환 재확인~~ | — | **완료** | `gpt-oss-120b` 전환 완료 (2026-05-16 이전). `llama3.1-8b` 2026-05-27 종료 대응 완료. |
 | P2: Local Docker/WSL storage hygiene | Medium | tracking-only | 주기 점검 기준 추가. 비파괴 감사는 `npm run storage:audit` / 상세 Docker 확인은 `npm run storage:audit -- --docker-verbose`. 2026-05-08 감사: `/mnt/d` 4%, WSL `/` 8%, `/mnt/c` 66% 사용. Docker images 10.11GiB, build cache 0B, volumes 309.3MiB이며 대부분 실행 중인 Supabase/GitHub MCP 컨테이너에 연결됨. 즉시 삭제보다 Supabase 중지 후 prune 여부 판단. WSL 상위 정리 후보는 `.npm` 9.7GiB, `.gemini/backups` 2.7GiB, `.codex/sessions` 2.6GiB, `.npm/_npx` 2.5GiB, `.cache/uv` 2.4GiB, browser cache 각 1.2GiB, `tmp/root-artifacts` 641MiB. 삭제 전 QA evidence는 `npm run qa:evidence:audit` 확인. |
 | P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-15 `npm run qa:evidence:audit` 재확인: missing durable artifact paths `0`, orphan durable evidence `19개`, recent counted runs without artifacts `0`, recent acknowledged artifact debt runs `0`, `reports/qa=111.18MiB`, `reports/qa/evidence=104.32MiB`, referenced legacy evidence `125개/36.40MiB`, archive candidates `7개/2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건. orphan evidence는 삭제 전 각 run/repro 참조 가치 확인이 필요하며, referenced legacy evidence는 policy-protected proof 가능성이 높아 explicit cleanup batch 없이는 보존. 새 evidence 누적 또는 별도 cleanup batch 승인 시 재평가. |
 
@@ -118,6 +112,52 @@
 
 ## Recent Completed
 
+### Completed (2026-05-16) — Codex (AI SDK conformance optional O4)
+- [x] Mock provider 기반 path parity benchmark 보강
+  - `ai/test`의 `MockLanguageModelV3`를 사용해 `generateText`/`streamText` 경로가 실제 provider 호출 없이 같은 loop ceiling을 쓰는지 고정했다.
+  - single metric lookup과 incident report escalation의 route/plan snapshot을 함께 고정해 route selection 회귀를 비용 0원 benchmark로 확인한다.
+  - SDK 내부 retry amplification이 없도록 mock provider `doGenerate`/`doStream` 호출 횟수 1회를 assertion으로 고정했다.
+  - 검증: AI Engine targeted benchmark 3 files / 5 tests PASS, targeted conformance regression 4 files / 55 tests PASS, AI Engine `type-check` PASS.
+
+### Completed (2026-05-16) — Codex (AI Engine enrichment follow-up)
+- [x] `enrichResponseWithToolResults` multi-path 적용
+  - single-agent non-stream에만 있던 tool result 기반 후처리 보강을 Direct Router forced-routing multi-agent non-stream 경로에도 적용했다.
+  - multi-agent streaming은 추가 LLM 호출 없이 `done` 전 보강 `text_delta`를 내보내고, 저장 컨텍스트/quality metadata가 보강 후 본문 기준이 되도록 정렬했다.
+  - 회귀 테스트로 non-stream/stream 양쪽에서 metric evidence와 server reference 보강, quality flag 재평가, 추가 LLM 호출 없음 조건을 고정했다.
+  - 검증: AI Engine targeted tests 3 files / 42 tests PASS.
+
+### Completed (2026-05-16) — Codex (frontend backlog follow-up)
+- [x] 메인 페이지 컴포넌트 분석 및 소규모 UX 정리
+  - `src/app/main/components/`의 `GuestRestrictionModal`, `SystemStartSection`, `DashboardSection`, `LoginPrompt`, `MainPageErrorBoundary`를 검토했다.
+  - 장식용 포인터/중복 클릭 안내와 버튼 이모지 라벨을 제거하고, 아이콘 `aria-hidden` 및 불필요 props 정리를 반영했다.
+  - `DashboardSection`/`GuestRestrictionModal` DOM 회귀 테스트를 추가하고 DOM test manifest에 등록했다.
+  - 검증: targeted DOM tests 3 files / 5 tests PASS, `type-check`/`lint`/`test:quick`/docs checks PASS.
+- [x] 차트 컴포넌트 분석 및 responsive tick 보정
+  - `NivoTimeSeriesChart`의 Nivo layer 구성, memo dependency, dashboard 호출부를 검토했다.
+  - 긴 시계열에서 `timeRange`/compact 기준으로 x축 tick 수를 제한하고, 유효 숫자 포인트가 없는 입력은 빈 상태로 처리하도록 보강했다.
+  - 회귀 테스트를 추가해 24h tick sampling, compact tick limit, invalid numeric input empty state를 고정했다.
+  - 검증: `NivoTimeSeriesChart.test.tsx` 1 file / 11 tests PASS.
+- [x] shared 컴포넌트 분석 및 접근성/표현 정리
+  - `VibeCiCdSection`의 작업 규모별 흐름 표시를 이모지 문자열 배열에서 label+lucide icon 데이터 모델로 바꿔 의미/표현을 분리했다.
+  - `UnifiedProfileHeader`의 장식 아이콘 `aria-hidden`, 인증 확인 중 메뉴 토글 차단, 비인증 로그인 클릭 경로를 정리했다.
+  - 사용자 노출 confirm/alert 문구에서 장식 문자를 제거하고 관련 DOM 회귀 테스트를 보강했다.
+  - 검증: shared targeted DOM tests 2 files / 9 tests PASS, `type-check`/`lint`/`test:quick` PASS.
+- [x] Zustand AI sidebar store 분석 및 persist 정규화
+  - `useAISidebarStore`의 selector 사용처와 `pendingEntryState`/`pendingPrefillMessage` surface handoff 경로를 검토했다.
+  - persisted `sidebarWidth`를 440~960px 범위로 정규화하고, store와 `AISidebarV4`가 같은 width 상수를 공유하도록 정리했다.
+  - localStorage에는 최근 20개 메시지만 저장되도록 helper/test를 명시하고, rehydrate 시 잘못된 tab/mode/session/message snapshot을 방어적으로 정규화한다.
+  - 검증: store/sidebar targeted tests 3 files / 47 tests PASS, `type-check`/`lint`/`test:quick` PASS.
+- [x] AI 훅 레이어 분석 및 async job path 정리
+  - `useHybridAIQuery`/`useAsyncAIQuery`의 streaming ↔ job-queue 분기, SSE cleanup, error/result settlement 경로를 검토했다.
+  - `useAsyncAIQuery`의 job request body 조립을 `buildAsyncQueryJobRequestBody`로 분리해 source toggles, semantic intent, log extract metadata 계약을 테스트로 고정했다.
+  - `sendQuery`와 `retryJob`의 중복 completion handler를 공통화하고, `retryJob` POST에도 `AbortController.signal`을 전달해 cancel/unmount cleanup 경계를 맞췄다.
+  - 검증: async/hybrid targeted tests 3 files / 40 tests PASS, `type-check`/`lint`/`test:quick` PASS.
+- [x] App Router error boundary Tailwind 전환
+  - `app/error.tsx`의 inline style 객체를 Tailwind class 기반 root error UI로 전환하고, reset 버튼에 lucide icon을 추가했다.
+  - 동일 inline style 패턴이 남아 있던 `auth/error.tsx`도 함께 전환해 root/login/auth error boundary 스타일을 정렬했다.
+  - root/auth error boundary 테스트에 inline style 재도입 방지와 복구 액션 회귀를 추가했다.
+  - 검증: targeted error tests 3 files / 7 tests PASS, `type-check`/`lint`/`test:quick` PASS.
+
 ### Completed (2026-05-16) — Codex (dashboard improvement)
 - [x] Dashboard 핵심 컴포넌트 개선 7건 완료
   - `withCurrentMetricPoint`를 `dashboard-metric-points.ts`로 공통화하고 카드/상세/모달 metrics helper 중복을 제거했다.
@@ -197,9 +237,9 @@
   - 상세: [archive/vercel-ai-sdk-multi-agent-conformance-plan.md](archive/vercel-ai-sdk-multi-agent-conformance-plan.md)
 - [x] Provider Quota 재배치 (Q0~Q2) 완료 처리
   - Q0: Cerebras gpt-oss-120b 정책 보정, Q1: Orchestrator Groq-last + decomposition budget, Q2: Orchestrator LLM routing/decomposeTask() 제거 완료.
-  - 기본 경로는 deterministic direct specialist routing으로 전환. Q3/NLQ N1 intentFrame trust는 NLQ Plan N1 완료 시 자동 해소.
-  - **tracking 항목**: 2026-05-26 `DEFAULT_CEREBRAS_MODEL`→`CEREBRAS_GPT_OSS_MODEL_ID` 전환 여부 재확인 필요 (사용자 액션).
-  - 상세: [provider-quota-rebalance-plan.md](provider-quota-rebalance-plan.md)
+  - 기본 경로는 deterministic direct specialist routing으로 전환. Q3/NLQ N1 intentFrame trust도 완료되어 계획서는 archive로 이동했다.
+  - **tracking 항목**: 2026-05-26 `DEFAULT_CEREBRAS_MODEL`→`CEREBRAS_GPT_OSS_MODEL_ID` 전환 여부 재확인은 On Hold tracking으로 분리했다.
+  - 상세: [archive/provider-quota-rebalance-plan.md](archive/provider-quota-rebalance-plan.md)
 
 ### Completed (2026-05-16) — Claude (커밋 분석 및 계획서 업데이트)
 - [x] 오늘 커밋 10개 전수 분석 및 계획서 업데이트

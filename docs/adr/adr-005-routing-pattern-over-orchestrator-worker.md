@@ -16,7 +16,7 @@
 | 항목 | 현재 상태 |
 |------|-----------|
 | Front NLQ `intentFrame` | `DefaultChatTransport.body()`와 job queue options를 통해 supervisor request metadata에 포함됨 |
-| Vercel BFF schema | N3 잔여: `metadata.intentFrame`은 `z.unknown().optional()` pass-through. schema trust 경계 확정 대기 |
+| Vercel BFF schema | N3 완료: `metadata.inputType`/`metadata.logExtract`는 bounded schema로 검증하고, `metadata.intentFrame`은 Cloud Run normalizer가 신뢰 경계를 담당하도록 pass-through |
 | Cloud Run mode selection | N1 완료: `selectExecutionMode()`가 `intentFrame.executionMode`를 confidence ≥ 0.8이면 primary로 신뢰. regex는 4개 fallback으로 축소됨 |
 | Multi-agent runtime | Q2 완료: `preFilterQuery()` 결과를 `resolveDirectRoutingTarget()`으로 직접 specialist agent에 dispatch. `decomposeTask()`와 Orchestrator LLM routing은 기본 request path에서 호출하지 않는다 |
 | Stream output filtering | N4 완료: `StreamOutputFilter`가 XSS/시스템프롬프트 유출 패턴을 `/api/ai/supervisor/stream/v2`에서 차단 |
@@ -95,8 +95,8 @@ Cloud Run AI Engine
 
 ## 구현 참조
 
-- N1 계획: `reports/planning/nlq-preprocessing-redesign-plan.md`
-- Q0~Q3 계획: `reports/planning/provider-quota-rebalance-plan.md`
+- N0~N4 구현 기록: `reports/planning/archive/nlq-preprocessing-redesign-plan.md`
+- Q0~Q3 구현 기록: `reports/planning/archive/provider-quota-rebalance-plan.md`
 - 현재 routing: `cloud-run/ai-engine/src/domains/monitoring/routing-policy.ts`
 - Direct Router: `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-direct-routing.ts`
 - Multi-agent execution entrypoint: `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
