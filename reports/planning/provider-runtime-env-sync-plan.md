@@ -1,10 +1,10 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Last reviewed: 2026-05-16
 
 # Provider Runtime Env Sync Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-16
 - TODO.md 연결: Backlog > Provider runtime env sync
 
@@ -124,7 +124,7 @@ deploy defaults
 - [x] T3. Secret Manager `ai-providers-config` latest를 안전 병합 방식으로 업데이트
 - [x] T4. Cloud Run `ai-engine` 새 revision 생성 또는 GitLab CI deploy로 secret/env 적용
 - [x] T5. `/health`와 provider status smoke로 `zai=true`, Cerebras model drift 해소 확인
-- [ ] T6. TODO.md와 계획서에 검증 결과 기록, 필요 시 archive 이동
+- [x] T6. TODO.md와 계획서에 검증 결과 기록, 필요 시 archive 이동
 
 ## 진행 기록
 
@@ -145,6 +145,13 @@ deploy defaults
   - `ZAI_VISION_MODEL_ID=glm-4.6v-flash`
 - `AI_PROVIDERS_CONFIG`는 `ai-providers-config:latest` secret ref 유지.
 - `/api/ai/providers`는 unauthenticated 호출에서 `success=false`로 응답해 상세 provider model smoke는 health/env 검증으로 대체했다.
+
+### 2026-05-16 — T6 commit/push closure
+
+- 재발 방지 변경 커밋: `f3e4eddf7 fix(deploy): sync provider runtime env defaults`
+- GitLab main pipeline: `2530020344` success
+- Pipeline URL: `https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530020344`
+- 완료 정리 커밋: `docs(planning): close provider runtime env sync`
 
 ## 단계별 커밋/푸시/배포 판단
 

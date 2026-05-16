@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (Provider runtime env sync in progress)
+**Last Updated**: 2026-05-16 KST (Provider runtime env sync completed)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,6 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Provider runtime env sync — Z.AI/GLM 활성화 + Cerebras env drift 제거 | High | In Progress (Codex) | T0~T5 완료: Secret Manager `ai-providers-config` version 8 생성, Cloud Run `ai-engine-00476-hz2` 100% traffic, `/health.config.zai=true`, `CEREBRAS_MODEL_ID=gpt-oss-120b` 확인. 남은 작업은 커밋/푸시 정리. 상세: [provider-runtime-env-sync-plan.md](provider-runtime-env-sync-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 잔여 구현 없음. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -37,6 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~Provider runtime env sync — Z.AI/GLM 활성화 + Cerebras env drift 제거~~ | — | **완료** — Secret Manager `ai-providers-config` version 8에 `zai`를 안전 병합하고 Cloud Run `ai-engine-00476-hz2` revision을 100% traffic으로 적용했다. `/health.config.zai=true`, `CEREBRAS_MODEL_ID=gpt-oss-120b`, `ZAI_DEFAULT_MODEL=glm-4.5-flash` 확인. 재발 방지를 위해 `deploy.sh`/`cloudbuild.yaml` 기본값과 env 문서를 갱신했다. GitLab main pipeline `2530020344` success. 상세: [provider-runtime-env-sync-plan.md](provider-runtime-env-sync-plan.md) |
 | ~~NLQ EntitySchema provider compatibility fix~~ | — | **완료** — `/api/ai/nlq/extract-entities` structured-output schema를 required nullable 계약으로 정렬하고 top-level `metric/timeRange` provider drift를 normalizer 경계에서 흡수하도록 완충했다. `QA-20260516-0508`에서 Groq `llama-4-scout` 4/4 schema_valid·intent_accuracy·executionMode_accuracy 회복, Mistral `ministral-3b`는 4/4 schema_valid·intent_accuracy 및 3/4 executionMode_accuracy로 비교 기록. |
 | ~~NLQ front provider live 비교 QA~~ | — | **완료** — `QA-20260516-0507`에서 Groq/Mistral/Cerebras/Z.AI 후보를 provider당 4 fixture로 수동 smoke. Current schema 기준 Mistral `ministral-3b-latest`만 4/4 통과, strict required nullable schema 기준 Groq 3/4·Mistral `ministral-3b-latest` 4/4. 결론: production provider 전환보다 `NLQ EntitySchema provider compatibility fix`가 선행. |
 | ~~대형 리팩터 커밋 분할 기준 보강~~ | — | **완료** — `reports/planning/README.md`에 대형 리팩터의 `test(spec):` / 구현 / docs·QA 커밋 분리 기준과 분할 필요·불필요 조건을 추가했다. 코드 변경 없는 프로세스 규칙 개선으로 처리. |
