@@ -70,6 +70,12 @@ export const MISTRAL_FIRST_PROVIDER_ORDER = [
   'cerebras',
 ] as const;
 export const TEXT_AGENT_PROVIDER_ORDER = GROQ_FIRST_PROVIDER_ORDER;
+const ORCHESTRATOR_TEXT_PROVIDER_ORDER = [
+  'cerebras',
+  'mistral',
+  'zai',
+  'groq',
+] as const;
 
 // Free-tier quota budget per provider (sliding window):
 //   Groq:     30 RPM / 1K RPD / 30K TPM / 500K TPD.
@@ -94,11 +100,10 @@ const DEFAULT_AGENT_RUNTIME_POLICY: AgentRuntimePolicy = {
   toolAllowlist: [],
 };
 
-// Orchestrator produces a short routing JSON — no need for 32K context.
-// Groq-first distributes quota: Orchestrator(Groq) + Agent(Cerebras) instead of
-// Orchestrator(Cerebras) + Agent(Cerebras), which consumed 2 of 5 Cerebras RPM.
+// Orchestrator produces short routing/decomposition JSON. Keep Groq last so
+// Metrics Query can spend Groq RPD on actual tool-loop work.
 export const ORCHESTRATOR_RUNTIME_POLICY = {
-  providerOrder: TEXT_AGENT_PROVIDER_ORDER,
+  providerOrder: ORCHESTRATOR_TEXT_PROVIDER_ORDER,
 } as const;
 
 export const AGENT_RUNTIME_POLICIES = {

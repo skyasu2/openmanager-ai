@@ -78,10 +78,10 @@ vi.mock('./config', () => ({
           : ['groq', 'zai', 'mistral', 'cerebras']
   ),
   getOrchestratorProviderOrder: vi.fn(() => [
-    'groq',
-    'zai',
-    'mistral',
     'cerebras',
+    'mistral',
+    'zai',
+    'groq',
   ]),
   getAgentConfig: (name: string) =>
     name === 'Metrics Query Agent'
@@ -1042,10 +1042,10 @@ describe('provider order policy', () => {
 
   it('keeps Orchestrator structured-output provider order as documented', () => {
     expect(ORCHESTRATOR_PROVIDER_ORDER).toEqual([
-      'groq',
-      'zai',
-      'mistral',
       'cerebras',
+      'mistral',
+      'zai',
+      'groq',
     ]);
   });
 });

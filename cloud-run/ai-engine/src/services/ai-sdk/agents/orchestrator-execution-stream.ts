@@ -116,6 +116,58 @@ export async function* executeMultiAgentStream(
     return;
   }
 
+  if (
+    preFilterResult.suggestedAgent &&
+    preFilterResult.confidence >= ORCHESTRATOR_CONFIG.forcedRoutingConfidence
+  ) {
+    logger.info(`[Stream] Forced routing to ${preFilterResult.suggestedAgent}`);
+
+    const forcedTarget = resolveVisionFallbackAgent(
+      preFilterResult.suggestedAgent
+    );
+    if (forcedTarget.degradedFromVision) {
+      logger.warn(
+        '[Stream] Vision providers unavailable (Gemini/OpenRouter), falling back to Analyst Agent'
+      );
+      yield {
+        type: 'agent_status',
+        data: {
+          agent: 'Vision Agent',
+          status: 'processing',
+          message: 'Vision Agent 사용 불가, Analyst Agent로 전환 중...',
+        },
+      };
+    }
+    routingTrace = attachAgentDecision(
+      routingTrace,
+      createAgentDecisionFromPreFilter({
+        selectedAgent: forcedTarget.targetAgent,
+        confidence: preFilterResult.confidence,
+      })
+    );
+
+    yield* streamWithTrace(
+      trace,
+      startTime,
+      executeAgentStream(
+        query,
+        forcedTarget.targetAgent,
+        startTime,
+        request.sessionId,
+        webSearchEnabled,
+        ragEnabled,
+        request.images,
+        request.files,
+        contextSummary,
+        request.dataSource,
+        request.domainId,
+        request.domainEvidencePrompt
+      ),
+      buildRoutingTraceMetadata()
+    );
+    return;
+  }
+
   const decomposition = await decomposeTask(query);
 
   if (decomposition && decomposition.subtasks.length > 1) {
@@ -164,10 +216,14 @@ export async function* executeMultiAgentStream(
   }
 
   if (
+    decomposition &&
+    decomposition.subtasks.length < 2 &&
     preFilterResult.suggestedAgent &&
-    preFilterResult.confidence >= ORCHESTRATOR_CONFIG.forcedRoutingConfidence
+    preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence
   ) {
-    logger.info(`[Stream] Forced routing to ${preFilterResult.suggestedAgent}`);
+    logger.info(
+      `[Stream] Decomposition was not composite, fallback routing to ${preFilterResult.suggestedAgent}`
+    );
 
     const forcedTarget = resolveVisionFallbackAgent(
       preFilterResult.suggestedAgent

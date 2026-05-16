@@ -84,9 +84,7 @@ export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] =
 
 export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses Output.object structured generation (requires json_schema support).
-  // Keep Groq first for routing-only structured output to preserve Cerebras RPM
-  // for specialist agents; Cerebras remains fallback and Mistral stays last
-  // because its free RPM is tight.
+  // Keep Groq last so Metrics Query can spend Groq RPD on actual tool-loop work.
   return selectTextModel('Orchestrator', ORCHESTRATOR_PROVIDER_ORDER, {
     cbPrefix: 'orchestrator',
     requiredCapabilities: { requireStructuredOutput: true },

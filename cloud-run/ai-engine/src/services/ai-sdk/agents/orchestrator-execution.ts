@@ -143,60 +143,17 @@ export async function executeMultiAgent(
     return finalizeMultiAgentResponse(trace, response);
   }
 
-  // Task Decomposition
-  const decomposition = await decomposeTask(query);
+  let forcedRoutingAttempted = false;
 
-  if (decomposition && decomposition.subtasks.length > 1) {
-    logger.info(`[Orchestrator] Complex query detected, using Orchestrator-Worker pattern`);
-
-    if (decomposition.requiresSequential) {
-      logger.info('[Orchestrator] Executing subtasks sequentially (dependencies detected)');
-      let lastResult: MultiAgentResponse | null = null;
-
-      for (const subtask of decomposition.subtasks) {
-        lastResult = await executeForcedRouting(
-          subtask.task,
-          subtask.agent,
-          startTime,
-          webSearchEnabled,
-          ragEnabled,
-          request.images,
-          request.files,
-          contextSummary,
-          request.dataSource,
-          request.domainId,
-          request.internalDisclosureMode
-        );
-        if (!lastResult) {
-          logger.warn(`⚠️ [Orchestrator] Sequential subtask failed: ${subtask.agent}`);
-          break;
-        }
-        await saveAgentFindingsToContext(request.sessionId, subtask.agent, lastResult.response);
-      }
-
-      if (lastResult) {
-        return finalizeMultiAgentResponse(trace, lastResult);
-      }
-    } else {
-      const parallelResult = await executeParallelSubtasks(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files, request.dataSource, request.domainId, request.internalDisclosureMode
-      );
-
-      if (parallelResult) {
-        return finalizeMultiAgentResponse(trace, parallelResult);
-      }
-    }
-
-    logger.warn('[Orchestrator] Task decomposition failed, falling back to single-agent routing');
-  }
-
-  // Forced Routing
+  // Forced Routing: trust high-confidence deterministic specialist signals
+  // before spending an Orchestrator decomposition LLM call.
   logger.debug(`[Orchestrator] Forced routing check: suggestedAgent=${preFilterResult.suggestedAgent}, confidence=${preFilterResult.confidence}`);
 
   if (
     preFilterResult.suggestedAgent &&
     preFilterResult.confidence >= ORCHESTRATOR_CONFIG.forcedRoutingConfidence
   ) {
+    forcedRoutingAttempted = true;
     const suggestedAgentName = preFilterResult.suggestedAgent;
     logger.info(`[Orchestrator] Triggering forced routing to ${suggestedAgentName}`);
 
@@ -244,6 +201,123 @@ export async function executeMultiAgent(
     logger.warn('[Orchestrator] Forced routing failed, falling back to LLM routing');
   } else {
     logger.debug(`[Orchestrator] Skipping forced routing (conditions not met)`);
+  }
+
+  // Task Decomposition
+  const decomposition = forcedRoutingAttempted ? null : await decomposeTask(query);
+  if (forcedRoutingAttempted) {
+    logger.debug(
+      '[Orchestrator] Skipping task decomposition after high-confidence forced routing attempt'
+    );
+  }
+
+  if (decomposition && decomposition.subtasks.length > 1) {
+    logger.info(`[Orchestrator] Complex query detected, using Orchestrator-Worker pattern`);
+
+    if (decomposition.requiresSequential) {
+      logger.info('[Orchestrator] Executing subtasks sequentially (dependencies detected)');
+      let lastResult: MultiAgentResponse | null = null;
+
+      for (const subtask of decomposition.subtasks) {
+        lastResult = await executeForcedRouting(
+          subtask.task,
+          subtask.agent,
+          startTime,
+          webSearchEnabled,
+          ragEnabled,
+          request.images,
+          request.files,
+          contextSummary,
+          request.dataSource,
+          request.domainId,
+          request.internalDisclosureMode
+        );
+        if (!lastResult) {
+          logger.warn(`⚠️ [Orchestrator] Sequential subtask failed: ${subtask.agent}`);
+          break;
+        }
+        await saveAgentFindingsToContext(request.sessionId, subtask.agent, lastResult.response);
+      }
+
+      if (lastResult) {
+        return finalizeMultiAgentResponse(trace, lastResult);
+      }
+    } else {
+      const parallelResult = await executeParallelSubtasks(
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files, request.dataSource, request.domainId, request.internalDisclosureMode
+      );
+
+      if (parallelResult) {
+        return finalizeMultiAgentResponse(trace, parallelResult);
+      }
+    }
+
+    logger.warn('[Orchestrator] Task decomposition failed, falling back to single-agent routing');
+  }
+
+  if (
+    !forcedRoutingAttempted &&
+    decomposition &&
+    decomposition.subtasks.length < 2 &&
+    preFilterResult.suggestedAgent &&
+    preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence
+  ) {
+    const suggestedAgentName = preFilterResult.suggestedAgent;
+    logger.debug(
+      `[Orchestrator] Decomposition was not composite, falling back to ${suggestedAgentName} before LLM routing`
+    );
+
+    let fallbackResult: MultiAgentResponse | null = null;
+
+    if (suggestedAgentName === 'Vision Agent') {
+      fallbackResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files, request.dataSource, request.domainId, request.internalDisclosureMode);
+    } else {
+      fallbackResult = await executeForcedRouting(
+        query,
+        suggestedAgentName,
+        startTime,
+        webSearchEnabled,
+        ragEnabled,
+        request.images,
+        request.files,
+        contextSummary,
+        request.dataSource,
+        request.domainId,
+        request.internalDisclosureMode
+      );
+    }
+
+    if (fallbackResult) {
+      const finalAgentName = fallbackResult.finalAgent ?? suggestedAgentName;
+      routingTrace = attachAgentDecision(
+        routingTrace,
+        createAgentDecisionFromFallback({
+          selectedAgent: finalAgentName,
+          confidence: preFilterResult.confidence,
+        })
+      );
+      await saveAgentFindingsToContext(
+        request.sessionId,
+        finalAgentName,
+        fallbackResult.response
+      );
+      return finalizeMultiAgentResponse(
+        trace,
+        attachRoutingDecisionTrace(
+          {
+            ...fallbackResult,
+            handoffs: [
+              {
+                from: 'Orchestrator',
+                to: finalAgentName,
+                reason: 'Fallback routing (decomposition not composite)',
+              },
+            ],
+          },
+          routingTrace
+        )
+      );
+    }
   }
 
   // LLM-based routing

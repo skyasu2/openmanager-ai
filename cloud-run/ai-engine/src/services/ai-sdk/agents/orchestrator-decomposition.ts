@@ -41,12 +41,11 @@ const COMPLEXITY_INDICATORS = [
   /장애.*원인.*조치|원인.*조치/,
 ];
 
-// Worst-case LLM calls per Reporter request:
-//   1x Orchestrator routing when confidence < forcedRoutingConfidence
-//   1x decomposeTask when isComplexQuery returns true
-//   5x Reporter maxSteps
-//   0x Evaluator/Optimizer because those stages are deterministic
-// Total worst-case: 7 LLM calls
+// Q1 quota budget:
+//   - High-confidence specialist signals bypass decomposition entirely.
+//   - Decomposition is only useful when this heuristic sees a composite query.
+//   - Single-subtask decomposition results fall back to the suggested agent
+//     before spending an extra Orchestrator routing LLM call.
 function isComplexQuery(query: string): boolean {
   const matchCount = COMPLEXITY_INDICATORS.filter(pattern => pattern.test(query)).length;
   return (matchCount >= 2 && query.length >= 40) || query.length > 120;

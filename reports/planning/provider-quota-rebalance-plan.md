@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (Q0 gpt-oss-120b 정책 보정 완료)
+> Last reviewed: 2026-05-16 (Q1 Orchestrator Groq-last + decomposition budget 구현 완료)
 > Tags: ai,provider,quota,nlq,free-tier,groq,cerebras,architecture
 
 ---
@@ -144,6 +144,8 @@ cd cloud-run/ai-engine && npm run type-check
 
 ### Q1. Orchestrator Groq-last + decomposition budget (Groq RPD 절감)
 
+**Status**: 완료 (2026-05-16)
+
 **수정 파일**
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
@@ -172,10 +174,16 @@ ORCHESTRATOR_RUNTIME_POLICY.providerOrder = [
 - 절감 효과: complex 요청당 Groq 1~2 RPD 절감. decomposition + routing 이중 소모 경로를 제거하면 1000 RPD / 4 = 최대 250 Metrics-heavy 요청/일 수준까지 회복 가능
 
 **호출 순서 보정**:
-1. `preFilterResult.confidence >= forcedRoutingConfidence`이고 단일 specialist가 명확하면 `decomposeTask()`보다 forced routing을 먼저 실행한다.
-2. `decomposeTask()`는 high-confidence 단일 agent 경로를 제외하고, 실제 multi-agent composite intent에서만 실행한다.
-3. decomposition 결과가 2개 미만이면 LLM routing으로 바로 재시도하지 않고 `preFilterResult.confidence >= fallbackRoutingConfidence` fallback을 먼저 사용한다.
-4. 기본 orchestration LLM call budget은 요청당 1회로 제한하고, decomposition+routing 2회는 명시 multi-intent에서만 허용한다.
+1. `preFilterResult.confidence >= forcedRoutingConfidence`이고 단일 specialist가 명확하면 `decomposeTask()`보다 forced routing을 먼저 실행한다. **완료**
+2. `decomposeTask()`는 high-confidence 단일 agent 경로를 제외하고, 실제 multi-agent composite intent에서만 실행한다. **완료**
+3. decomposition 결과가 2개 미만이면 LLM routing으로 바로 재시도하지 않고 `preFilterResult.confidence >= fallbackRoutingConfidence` fallback을 먼저 사용한다. **완료**
+4. 기본 orchestration LLM call budget은 요청당 1회로 제한하고, decomposition+routing 2회는 명시 multi-intent에서만 허용한다. **완료**
+
+**완료 기록**:
+- `ORCHESTRATOR_RUNTIME_POLICY.providerOrder`를 `cerebras → mistral → zai → groq`로 전환했다. Groq는 Metrics Query Agent tool loop 예산 보존을 위해 last fallback이다.
+- non-stream/stream multi-agent 경로 모두 high-confidence forced routing을 `decomposeTask()`보다 먼저 실행한다.
+- `decomposeTask()`가 단일 subtask만 반환하면 LLM routing으로 재시도하지 않고 `fallbackRoutingConfidence` 이상인 suggested agent를 먼저 실행한다.
+- Orchestrator LLM 완전 제거는 하지 않았다. ADR-005의 Direct routing 전환은 별도 Proposed 작업으로 유지한다.
 
 **검증 게이트**:
 ```bash
@@ -209,7 +217,7 @@ N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ
 | 작업 | SDD 필요 | 우선순위 | 예상 시간 |
 |------|:--------:|:-------:|:--------:|
 | Q0: gpt-oss-120b 정책 수정 | ❌ (데이터 수정) | 완료 | 30분 |
-| Q1: Orchestrator provider order + decomposition budget | ✅ (계약 변경) | P1 | 1.5시간 |
+| Q1: Orchestrator provider order + decomposition budget | ✅ (계약 변경) | 완료 | 1.5시간 |
 | Q2: intentFrame trust | ✅ (NLQ Plan 연계) | P1 (NLQ Draft→Approved 후) | 별도 |
 | P2: enrichment multi-path | ❌ (저영향) | P2 관찰 후 판단 | - |
 
