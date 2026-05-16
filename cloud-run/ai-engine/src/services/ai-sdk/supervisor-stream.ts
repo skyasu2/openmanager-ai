@@ -33,6 +33,18 @@ import { streamSingleAgent } from './supervisor-single-agent-stream';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 import { getOffDomainGuardrail } from '../../lib/off-domain-guard';
 
+async function* appendSuffixBeforeDone(
+  source: AsyncIterable<StreamEvent>,
+  suffix: string
+): AsyncGenerator<StreamEvent> {
+  for await (const event of source) {
+    if (suffix && event.type === 'done') {
+      yield { type: 'text_delta', data: suffix };
+    }
+    yield event;
+  }
+}
+
 function shouldUseDeterministicDomainEvidenceAnswer(
   domainEvidence: DomainEvidenceResult | undefined
 ): boolean {
@@ -184,31 +196,23 @@ export async function* executeSupervisorStream(
     return;
   }
 
-  // Collect warning prefixes to prepend before LLM response
-  const warningPrefixes: string[] = [];
+  // Build warning suffix — appended at the bottom of LLM response (GPT/Gemini style)
+  const warningSuffixParts: string[] = [];
 
-  // Security warning (medium/low risk injection): prepend warning, continue with sanitized query
   if (request.securityWarning) {
-    warningPrefixes.push(request.securityWarning);
-    logger.info({ securityWarning: request.securityWarning }, '[SupervisorStream] prepending security warning');
-  }
-  if (request.offDomainWarning) {
-    warningPrefixes.push(request.offDomainWarning);
+    warningSuffixParts.push(request.securityWarning);
+    logger.info('[SupervisorStream] security warning suffix queued');
   }
 
-  // Off-domain guard: detect and prepend warning, then let LLM handle the query
   const offDomainResult = getOffDomainGuardrail(queryText);
   if (offDomainResult) {
-    warningPrefixes.push(offDomainResult.offDomainWarning);
-    logger.info({ category: offDomainResult.category }, '[SupervisorStream] off-domain detected, prepending warning and delegating to LLM');
+    warningSuffixParts.push(offDomainResult.offDomainWarning);
+    logger.info({ category: offDomainResult.category }, '[SupervisorStream] off-domain detected, delegating to LLM');
   }
 
-  if (warningPrefixes.length > 0) {
-    yield {
-      type: 'text_delta',
-      data: Array.from(new Set(warningPrefixes)).join('\n') + '\n\n',
-    };
-  }
+  const warningSuffix = warningSuffixParts.length > 0
+    ? '\n\n---\n*' + [...new Set(warningSuffixParts)].join(' ') + '*'
+    : '';
 
   if (mode === 'multi') {
     try {
@@ -256,17 +260,9 @@ export async function* executeSupervisorStream(
                 message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.',
               },
             };
-            yield* streamSingleAgent(
-              runtimeRequest,
-              startTime,
-              runtimeTools,
-              {
-                degradedFromMode: 'multi',
-                degradedReason,
-              },
-              modeDecision,
-              runtimeMetadata,
-              domainEvidence
+            yield* appendSuffixBeforeDone(
+              streamSingleAgent(runtimeRequest, startTime, runtimeTools, { degradedFromMode: 'multi', degradedReason }, modeDecision, runtimeMetadata, domainEvidence),
+              warningSuffix
             );
             return;
           }
@@ -277,6 +273,9 @@ export async function* executeSupervisorStream(
         }
 
         if (event.type === 'done') {
+          if (warningSuffix) {
+            yield { type: 'text_delta', data: warningSuffix };
+          }
           const doneData = event.data as Record<string, unknown>;
           const existingMetadata =
             typeof doneData.metadata === 'object' && doneData.metadata !== null
@@ -325,17 +324,9 @@ export async function* executeSupervisorStream(
             message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.' 
           } 
         };
-        yield* streamSingleAgent(
-          runtimeRequest,
-          startTime,
-          runtimeTools,
-          {
-            degradedFromMode: 'multi',
-            degradedReason: 'multi_agent_runtime_error',
-          },
-          modeDecision,
-          runtimeMetadata,
-          domainEvidence
+        yield* appendSuffixBeforeDone(
+          streamSingleAgent(runtimeRequest, startTime, runtimeTools, { degradedFromMode: 'multi', degradedReason: 'multi_agent_runtime_error' }, modeDecision, runtimeMetadata, domainEvidence),
+          warningSuffix
         );
         return;
       }
@@ -352,13 +343,8 @@ export async function* executeSupervisorStream(
     }
   }
 
-  yield* streamSingleAgent(
-    runtimeRequest,
-    startTime,
-    runtimeTools,
-    undefined,
-    modeDecision,
-    runtimeMetadata,
-    domainEvidence
+  yield* appendSuffixBeforeDone(
+    streamSingleAgent(runtimeRequest, startTime, runtimeTools, undefined, modeDecision, runtimeMetadata, domainEvidence),
+    warningSuffix
   );
 }

@@ -12,7 +12,7 @@ export interface OffDomainGuardrailResult {
 }
 
 const OFF_DOMAIN_WARNING =
-  '⚠️ 서버 모니터링 범위를 벗어난 질문입니다. 답변이 정확하지 않을 수 있습니다.';
+  '서버 모니터링 외 질문으로 답변 정확도가 낮을 수 있습니다.';
 
 const OPERATIONAL_CONTEXT_PATTERN =
   /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|운영|점검|명령어|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|promql|otel|runbook|krl|rag/i;

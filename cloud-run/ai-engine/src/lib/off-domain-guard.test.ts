@@ -8,7 +8,7 @@ describe('getOffDomainGuardrail', () => {
     it('날씨 질문 → offDomainWarning 반환, shouldShortCircuit 없음', () => {
       const result = getOffDomainGuardrail('오늘 날씨 어때?');
       expect(result).not.toBeNull();
-      expect(result?.offDomainWarning).toContain('⚠️');
+      expect(result?.offDomainWarning).toBeTruthy();
       expect(result?.category).toBe('live_fact');
       // shouldShortCircuit 필드가 없어야 함
       expect(result).not.toHaveProperty('shouldShortCircuit');
@@ -19,14 +19,14 @@ describe('getOffDomainGuardrail', () => {
     it('주식 가격 질문 → offDomainWarning 반환', () => {
       const result = getOffDomainGuardrail('삼성전자 주가 알려줘');
       expect(result).not.toBeNull();
-      expect(result?.offDomainWarning).toContain('⚠️');
+      expect(result?.offDomainWarning).toBeTruthy();
       expect(result?.category).toBe('live_fact');
     });
 
     it('운세 질문 → offDomainWarning 반환', () => {
       const result = getOffDomainGuardrail('오늘 운세 알려줘');
       expect(result).not.toBeNull();
-      expect(result?.offDomainWarning).toContain('⚠️');
+      expect(result?.offDomainWarning).toBeTruthy();
       expect(result?.category).toBe('personal_general');
     });
 
@@ -105,9 +105,10 @@ describe('getOffDomainGuardrail', () => {
   });
 
   describe('off-domain warning format', () => {
-    it('경고 문구는 ⚠️ 로 시작해야 함', () => {
+    it('경고 문구는 비어있지 않아야 함', () => {
       const result = getOffDomainGuardrail('오늘 날씨 알려줘');
-      expect(result?.offDomainWarning).toMatch(/^⚠️/);
+      expect(result?.offDomainWarning).toBeTruthy();
+      expect(result?.offDomainWarning.length).toBeGreaterThan(0);
     });
 
     it('경고 문구는 "서버 모니터링" 언급 포함', () => {

@@ -433,7 +433,7 @@ describe('supervisor degraded single fallback', () => {
     }
   });
 
-  it('prepends off-domain warning and delegates to LLM for realtime queries', async () => {
+  it('appends off-domain warning after LLM response for realtime queries', async () => {
     mockSelectExecutionMode.mockReturnValue('single');
 
     const result = await executeSupervisor({
@@ -444,8 +444,8 @@ describe('supervisor degraded single fallback', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      // Warning is prepended before the LLM response
-      expect(result.response).toContain('⚠️ 서버 모니터링 범위를 벗어난 질문입니다.');
+      // Warning is appended after the LLM response (GPT/Gemini style)
+      expect(result.response).toContain('서버 모니터링');
       // LLM is called (no longer short-circuited)
       expect(mockGenerateText).toHaveBeenCalled();
     }

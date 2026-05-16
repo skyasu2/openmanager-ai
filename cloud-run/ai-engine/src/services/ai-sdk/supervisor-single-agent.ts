@@ -183,7 +183,7 @@ export async function executeSupervisor(
     'response' in llmResult &&
     typeof llmResult.response === 'string'
   ) {
-    return { ...llmResult, response: `${warningPrefix}\n\n${llmResult.response}` };
+    return { ...llmResult, response: `${llmResult.response}\n\n---\n*${warningPrefix}*` };
   }
 
   return llmResult;

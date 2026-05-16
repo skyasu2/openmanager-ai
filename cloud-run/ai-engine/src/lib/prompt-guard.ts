@@ -241,7 +241,7 @@ export function guardInput(query: string): GuardResult {
     : undefined;
 
   const warningMessage = shouldWarn
-    ? '⚠️ 보안 정책에 위배될 수 있는 표현이 감지되었습니다. 요청이 제한될 수 있습니다.'
+    ? '일부 표현이 보안 정책 검토 대상으로 처리되었습니다.'
     : undefined;
 
   return {
