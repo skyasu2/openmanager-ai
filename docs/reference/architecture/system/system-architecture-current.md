@@ -342,7 +342,7 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 | Agent | Provider (Primary) | Role | 라우팅 |
 |-------|-------------------|------|--------|
 | **Orchestrator** | Groq primary (fallback: Z.AI → Mistral → Cerebras short-context) | Intent 분류, Agent 핸드오프 | 진입점 |
-| **Metrics Query** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 서버 메트릭 조회 (단순+복합) | 외부 |
+| **Metrics Query** | Groq primary (fallback: Z.AI → Mistral → Cerebras short-context) | 서버 메트릭 조회 (단순+복합) | 외부 |
 | **Analyst** | Mistral primary (fallback: Groq → Z.AI → Cerebras short-context) | 이상 감지, 추세 예측 | 외부 |
 | **Reporter** | Z.AI primary (fallback: Mistral → Groq → Cerebras short-context) | 장애 보고서, 타임라인 | 외부 |
 | **Advisor** | Mistral primary (fallback: Z.AI → Groq → Cerebras short-context) | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
@@ -387,8 +387,8 @@ CLOSED (정상) ──5회 실패──► OPEN (차단) ──30초──► HA
 
 ```
 Structured routing: Groq → Z.AI → Mistral → Cerebras
-Group A tool loop (Supervisor/Metrics Query/Orchestrator): Groq → Z.AI → Mistral → Cerebras
-Analyst/Verifier long-context loop: Mistral → Groq → Z.AI → Cerebras
+Supervisor / Metrics Query / Orchestrator loop: Groq → Z.AI → Mistral → Cerebras
+Analyst / Verifier long-context loop: Mistral → Groq → Z.AI → Cerebras
 Reporter long-context loop: Z.AI → Mistral → Groq → Cerebras
 Advisor guidance loop: Mistral → Z.AI → Groq → Cerebras
 Vision: Gemini Flash-Lite → OpenRouter → Z.AI Vision

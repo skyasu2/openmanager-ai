@@ -8,7 +8,7 @@
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
-> **v8.11.122** | Updated 2026-05-10
+> **v8.11.156** | Updated 2026-05-16
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 
@@ -40,10 +40,11 @@ Product positioning:
 - Agents (실행): Metrics Query, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
 - Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
 - Providers:
-  - Group A tool-calling path (Supervisor/Metrics Query/Orchestrator): Groq → Cerebras → Mistral
-  - Group B tool-calling path (Analyst/Reporter/Advisor/Verifier): Cerebras → Groq → Mistral
-  - Structured routing path: Groq → Cerebras → Mistral
-  - Vision: Gemini Flash-Lite → OpenRouter
+  - Supervisor / Metrics Query / Orchestrator path: Groq → Z.AI → Mistral → Cerebras
+  - Analyst / Verifier path: Mistral → Groq → Z.AI → Cerebras
+  - Reporter path: Z.AI → Mistral → Groq → Cerebras
+  - Advisor path: Mistral → Z.AI → Groq → Cerebras
+  - Vision path: Gemini Flash-Lite → OpenRouter → Z.AI
 - Tools: 30 specialized tools (Metrics 6, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4, Math 3)
 - Observability: Langfuse mode audit (`requestedMode`, `resolvedMode`, `modeSelectionSource`) + `handoffCount`
 
@@ -148,7 +149,7 @@ curl $SERVICE_URL/health  # Health check
 - Vision 기본 모델은 `gemini-2.5-flash-lite`
 - Orchestrator는 `generateText + Output.object` 기반 structured routing fallback helper로 라우팅 수행
 - Agent 실행은 `streamText` / `generateTextWithRetry` 기반 tool loop
-- Orchestrator structured routing은 Groq-first로 Cerebras RPM을 보존하며, Cerebras tool loop는 기본 비활성 + capability gate로 선제 skip
+- Orchestrator structured routing은 Groq-first로 Z.AI/Mistral/Cerebras RPM을 보존하며, Cerebras tool loop는 기본 비활성 + 16K/32K 요구 시 capability gate로 선제 skip
 
 Reference (checked: 2026-05-05):
 - https://vercel.com/docs/limits/overview
@@ -157,4 +158,4 @@ Reference (checked: 2026-05-05):
 
 - Canonical repository: GitLab private remote (`gitlab`)
 - Public snapshot: github.com/skyasu2/openmanager-ai
-- Version: 8.11.97
+- Version: 8.11.156
