@@ -181,10 +181,15 @@ export function filterMaliciousOutput(text: string): string {
 
 interface GuardResult {
   sanitizedQuery: string;
+  /** true only for high-risk (jailbreak/bypass/DAN): return HTTP 400 */
   shouldBlock: boolean;
+  /** true for medium/low-risk: prepend warning and continue with sanitized query */
+  shouldWarn: boolean;
   riskLevel: RiskLevel;
   patterns: string[];
   warning?: string;
+  /** User-facing warning message when shouldWarn is true */
+  warningMessage?: string;
 }
 
 export function applySanitizedQueryToMessages<
@@ -218,26 +223,34 @@ export function applySanitizedQueryToMessages<
 export function guardInput(query: string): GuardResult {
   const detection = detectPromptInjection(query);
   const sanitizedQuery = sanitizeForPrompt(query);
-  // medium 이상 차단 (prompt injection 방어 강화)
-  const shouldBlock =
-    detection.riskLevel === 'high' || detection.riskLevel === 'medium';
+  // high (jailbreak/bypass/DAN): block with HTTP 400
+  const shouldBlock = detection.riskLevel === 'high';
+  // medium/low: warn but continue with sanitized query
+  const shouldWarn =
+    detection.riskLevel === 'medium' || detection.riskLevel === 'low';
 
   if (detection.isInjection) {
     logger.warn(
-      { riskLevel: detection.riskLevel, patterns: detection.patterns, shouldBlock },
+      { riskLevel: detection.riskLevel, patterns: detection.patterns, shouldBlock, shouldWarn },
       'PromptGuard: injection detected'
     );
   }
 
   const warning = detection.isInjection
-    ? `보안 경고: Prompt Injection 시도가 감지되어 차단되었습니다 (${detection.patterns.join(', ')}).`
+    ? `보안 경고: Prompt Injection 시도가 감지되어 ${shouldBlock ? '차단' : '경고'}되었습니다 (${detection.patterns.join(', ')}).`
+    : undefined;
+
+  const warningMessage = shouldWarn
+    ? '⚠️ 보안 정책에 위배될 수 있는 표현이 감지되었습니다. 요청이 제한될 수 있습니다.'
     : undefined;
 
   return {
     sanitizedQuery,
     shouldBlock,
+    shouldWarn,
     riskLevel: detection.riskLevel,
     patterns: detection.patterns,
     warning,
+    warningMessage,
   };
 }

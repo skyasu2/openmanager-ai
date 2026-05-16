@@ -7,13 +7,12 @@ export type OffDomainGuardCategory =
 
 export interface OffDomainGuardrailResult {
   category: OffDomainGuardCategory;
-  shouldShortCircuit: true;
-  warning: string;
-  response: string;
+  /** Warning message to prepend before the LLM response. No blocking. */
+  offDomainWarning: string;
 }
 
 const OFF_DOMAIN_WARNING =
-  '서버 운영·모니터링 범위를 벗어난 질문이라 실시간 조회나 외부 실행 없이 제한된 안내만 제공합니다.';
+  '⚠️ 서버 모니터링 범위를 벗어난 질문입니다. 답변이 정확하지 않을 수 있습니다.';
 
 const OPERATIONAL_CONTEXT_PATTERN =
   /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|운영|점검|명령어|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|promql|otel|runbook|krl|rag/i;
@@ -50,40 +49,6 @@ function isGeneralCodingRequest(query: string): boolean {
   );
 }
 
-function buildResponse(category: OffDomainGuardCategory): string {
-  switch (category) {
-    case 'live_fact':
-      return [
-        '실시간 외부 조회 도구가 연결되어 있지 않아 현재 가격, 날씨, 뉴스, 환율 같은 값을 확인할 수 없습니다.',
-        '정확한 현재값은 공식 앱, 거래소, 기상청, 금융 정보 서비스에서 확인해 주세요.',
-        '',
-        'OpenManager 범위 안에서는 서버 CPU, 메모리, 디스크, 알림, 로그, 토폴로지, 장애 징후를 바로 분석할 수 있습니다.',
-      ].join('\n');
-    case 'external_action':
-      return [
-        '캘린더, 예약, 메일, 문자, Slack 같은 외부 시스템을 직접 실행할 수 없습니다.',
-        '대신 사용자가 복사해서 등록하거나 보낼 수 있는 초안만 제공할 수 있습니다.',
-      ].join('\n');
-    case 'local_recommendation':
-      return [
-        '최신 영업 여부, 위치, 대기 시간, 리뷰 데이터를 확인할 수 없습니다.',
-        '장소 추천은 지도/리뷰 서비스에서 현재 정보를 확인해야 합니다.',
-      ].join('\n');
-    case 'personal_general':
-      return [
-        '저는 서버 운영·모니터링 중심 AI라 이 질문은 정확도와 최신성이 제한됩니다.',
-        '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률, 조치 명령어를 근거와 함께 분석할 수 있습니다.',
-      ].join('\n');
-    case 'general_coding':
-      return [
-        'OpenManager는 서버 운영·모니터링 중심 AI입니다.',
-        '일반 알고리즘 풀이, 학습용 코드 완성, 범용 코딩 문제 해결은 지원 범위 밖입니다.',
-        '',
-        '다만 로그 파싱, 모니터링 자동화, 운영 점검 스크립트, PromQL, 장애 대응 runbook처럼 서버 운영과 직접 연결된 코드는 도울 수 있습니다.',
-      ].join('\n');
-  }
-}
-
 export function getOffDomainGuardrail(
   query: string
 ): OffDomainGuardrailResult | null {
@@ -92,53 +57,28 @@ export function getOffDomainGuardrail(
     return null;
   }
 
-  if (EXTERNAL_ACTION_PATTERN.test(trimmedQuery)) {
-    return {
-      category: 'external_action',
-      shouldShortCircuit: true,
-      warning: OFF_DOMAIN_WARNING,
-      response: buildResponse('external_action'),
-    };
-  }
-
   if (hasOperationalContext(trimmedQuery)) {
     return null;
   }
 
+  if (EXTERNAL_ACTION_PATTERN.test(trimmedQuery)) {
+    return { category: 'external_action', offDomainWarning: OFF_DOMAIN_WARNING };
+  }
+
   if (isGeneralCodingRequest(trimmedQuery)) {
-    return {
-      category: 'general_coding',
-      shouldShortCircuit: true,
-      warning: OFF_DOMAIN_WARNING,
-      response: buildResponse('general_coding'),
-    };
+    return { category: 'general_coding', offDomainWarning: OFF_DOMAIN_WARNING };
   }
 
   if (LIVE_FACT_PATTERN.test(trimmedQuery)) {
-    return {
-      category: 'live_fact',
-      shouldShortCircuit: true,
-      warning: OFF_DOMAIN_WARNING,
-      response: buildResponse('live_fact'),
-    };
+    return { category: 'live_fact', offDomainWarning: OFF_DOMAIN_WARNING };
   }
 
   if (LOCAL_RECOMMENDATION_PATTERN.test(trimmedQuery)) {
-    return {
-      category: 'local_recommendation',
-      shouldShortCircuit: true,
-      warning: OFF_DOMAIN_WARNING,
-      response: buildResponse('local_recommendation'),
-    };
+    return { category: 'local_recommendation', offDomainWarning: OFF_DOMAIN_WARNING };
   }
 
   if (PERSONAL_GENERAL_PATTERN.test(trimmedQuery)) {
-    return {
-      category: 'personal_general',
-      shouldShortCircuit: true,
-      warning: OFF_DOMAIN_WARNING,
-      response: buildResponse('personal_general'),
-    };
+    return { category: 'personal_general', offDomainWarning: OFF_DOMAIN_WARNING };
   }
 
   return null;

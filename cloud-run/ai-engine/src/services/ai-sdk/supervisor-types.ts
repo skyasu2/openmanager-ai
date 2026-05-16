@@ -154,6 +154,16 @@ export interface SupervisorRequest {
    * developer/debug callers may set it in local diagnostics.
    */
   internalDisclosureMode?: 'user' | 'developer';
+  /**
+   * Security warning message to prepend to the response (medium/low risk injection).
+   * Set by supervisor.ts when guardInput returns shouldWarn=true.
+   */
+  securityWarning?: string;
+  /**
+   * Off-domain warning message to prepend to the response.
+   * Set when the query is detected as off-domain but allowed through to the LLM.
+   */
+  offDomainWarning?: string;
 }
 
 export interface SupervisorResponse {

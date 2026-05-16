@@ -119,7 +119,7 @@ export async function executeSupervisor(
   const runtimeTools = runtimeContext.host.createToolSet(
     runtimeContext.result.context
   );
-  const runtimeRequest: SupervisorRequest =
+  let runtimeRequest: SupervisorRequest =
     request.runtimeHost === runtimeContext.host
       ? request
       : { ...request, runtimeHost: runtimeContext.host };
@@ -159,54 +159,34 @@ export async function executeSupervisor(
     };
   }
 
+  // Off-domain: prepend warning and continue to LLM (no blocking)
   const offDomainGuardrail = getOffDomainGuardrail(queryText);
   if (offDomainGuardrail) {
-    const durationMs = Date.now() - startTime;
-    const response = sanitizeUserFacingResponse(offDomainGuardrail.response);
-    const quality = evaluateAgentResponseQuality('Supervisor', response, {
-      durationMs,
-    });
+    logger.info({ category: offDomainGuardrail.category }, 'Supervisor: off-domain detected, delegating to LLM with warning');
+  }
+  const warningPrefix = Array.from(
+    new Set(
+      [
+        request.securityWarning,
+        request.offDomainWarning,
+        offDomainGuardrail?.offDomainWarning,
+      ].filter((warning): warning is string => Boolean(warning))
+    )
+  ).join('\n');
 
-    return {
-      success: true,
-      response,
-      toolsCalled: [],
-      toolResults: [],
-      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-      metadata: {
-        provider: 'deterministic',
-        modelId: 'off-domain-guard',
-        stepsExecuted: 0,
-        durationMs,
-        responseChars: quality.responseChars,
-        formatCompliance: quality.formatCompliance,
-        qualityFlags: quality.qualityFlags,
-        latencyTier: quality.latencyTier,
-        mode: mode,
-        ...buildSupervisorModeMetadata(modeDecision),
-        ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
-      },
-    };
+  const llmResult = mode === 'multi'
+    ? await executeMultiAgentMode(runtimeRequest, startTime, modeDecision, runtimeMetadata, runtimeTools)
+    : await executeSingleAgentMode(runtimeRequest, startTime, undefined, modeDecision, runtimeMetadata, runtimeTools);
+
+  if (
+    warningPrefix.length > 0 &&
+    'response' in llmResult &&
+    typeof llmResult.response === 'string'
+  ) {
+    return { ...llmResult, response: `${warningPrefix}\n\n${llmResult.response}` };
   }
 
-  if (mode === 'multi') {
-    return executeMultiAgentMode(
-      runtimeRequest,
-      startTime,
-      modeDecision,
-      runtimeMetadata,
-      runtimeTools
-    );
-  }
-
-  return executeSingleAgentMode(
-    runtimeRequest,
-    startTime,
-    undefined,
-    modeDecision,
-    runtimeMetadata,
-    runtimeTools
-  );
+  return llmResult;
 }
 
 // ============================================================================

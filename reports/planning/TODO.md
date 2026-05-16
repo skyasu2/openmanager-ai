@@ -20,6 +20,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| Routing & UX 개선 — 오프도메인 경고 위임 + 보안 riskLevel 분화 | Medium | 오프도메인(날씨·주식·운세) 차단 → 경고 prepend 후 LLM 위임으로 전환. 보안 `medium` 차단 → 경고 포함 정상 응답으로 분화. 계획서: [routing-ux-improvement-plan.md](routing-ux-improvement-plan.md) |
+| Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` 기본값으로 production에서 single mode 실질 비활성. 경량 단순쿼리 경로 설계 시 재검토. |
 | AI SDK conformance optional 잔여 (O1~O3) | Low | **구조적 차단**: Vercel(BFF)+Cloud Run(AI Engine) 분리 아키텍처로 인해 AI SDK native 패턴(subagent-as-tool/UI stream/DevTools)이 단일 런타임 전제와 충돌. 아키텍처 통합 없이는 재착수 불필요. 상세 제약 기록: [archive/vercel-ai-sdk-multi-agent-conformance-plan.md](archive/vercel-ai-sdk-multi-agent-conformance-plan.md) O1~O3 섹션 |
 
 ---

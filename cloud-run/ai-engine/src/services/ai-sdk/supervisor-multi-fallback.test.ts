@@ -433,7 +433,7 @@ describe('supervisor degraded single fallback', () => {
     }
   });
 
-  it('short-circuits off-domain realtime queries before direct single-agent model routing', async () => {
+  it('prepends off-domain warning and delegates to LLM for realtime queries', async () => {
     mockSelectExecutionMode.mockReturnValue('single');
 
     const result = await executeSupervisor({
@@ -444,12 +444,11 @@ describe('supervisor degraded single fallback', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.response).toContain('실시간 외부 조회 도구가 연결되어 있지 않아');
-      expect(result.metadata.provider).toBe('deterministic');
-      expect(result.metadata.modelId).toBe('off-domain-guard');
-      expect(result.toolsCalled).toEqual([]);
+      // Warning is prepended before the LLM response
+      expect(result.response).toContain('⚠️ 서버 모니터링 범위를 벗어난 질문입니다.');
+      // LLM is called (no longer short-circuited)
+      expect(mockGenerateText).toHaveBeenCalled();
     }
-    expect(mockGenerateText).not.toHaveBeenCalled();
   });
 
   it('falls back to single-agent when multi-agent returns MODEL_UNAVAILABLE and degraded single is allowed', async () => {

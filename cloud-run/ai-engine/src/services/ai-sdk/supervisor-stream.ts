@@ -31,6 +31,7 @@ import {
 } from './supervisor-log-context';
 import { streamSingleAgent } from './supervisor-single-agent-stream';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
+import { getOffDomainGuardrail } from '../../lib/off-domain-guard';
 
 function shouldUseDeterministicDomainEvidenceAnswer(
   domainEvidence: DomainEvidenceResult | undefined
@@ -181,6 +182,32 @@ export async function* executeSupervisorStream(
       },
     };
     return;
+  }
+
+  // Collect warning prefixes to prepend before LLM response
+  const warningPrefixes: string[] = [];
+
+  // Security warning (medium/low risk injection): prepend warning, continue with sanitized query
+  if (request.securityWarning) {
+    warningPrefixes.push(request.securityWarning);
+    logger.info({ securityWarning: request.securityWarning }, '[SupervisorStream] prepending security warning');
+  }
+  if (request.offDomainWarning) {
+    warningPrefixes.push(request.offDomainWarning);
+  }
+
+  // Off-domain guard: detect and prepend warning, then let LLM handle the query
+  const offDomainResult = getOffDomainGuardrail(queryText);
+  if (offDomainResult) {
+    warningPrefixes.push(offDomainResult.offDomainWarning);
+    logger.info({ category: offDomainResult.category }, '[SupervisorStream] off-domain detected, prepending warning and delegating to LLM');
+  }
+
+  if (warningPrefixes.length > 0) {
+    yield {
+      type: 'text_delta',
+      data: Array.from(new Set(warningPrefixes)).join('\n') + '\n\n',
+    };
   }
 
   if (mode === 'multi') {

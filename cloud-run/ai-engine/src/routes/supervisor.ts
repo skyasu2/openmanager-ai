@@ -528,8 +528,11 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
     }
     const guardV2 = guardInput(query);
     if (guardV2.shouldBlock) {
-      logger.warn({ patterns: guardV2.patterns }, 'SupervisorStreamV2: blocked injection attempt');
+      logger.warn({ patterns: guardV2.patterns, riskLevel: guardV2.riskLevel }, 'SupervisorStreamV2: blocked injection attempt (high risk)');
       return handleValidationError(c, 'Security: blocked input');
+    }
+    if (guardV2.shouldWarn) {
+      logger.warn({ patterns: guardV2.patterns, riskLevel: guardV2.riskLevel }, 'SupervisorStreamV2: security warning injected (medium/low risk)');
     }
 
     const sanitizedMessages = applySanitizedQueryToMessages(
@@ -580,6 +583,7 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       localRouteDecision,
       metadata,
       runtimeHost: getDefaultMonitoringAssistantRuntimeHost(),
+      ...(guardV2.shouldWarn && guardV2.warningMessage && { securityWarning: guardV2.warningMessage }),
     });
 
     logger.info('SupervisorStreamV2 response created');
