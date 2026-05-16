@@ -264,6 +264,8 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
                 DEFAULT_ORIGIN=${DEFAULT_ORIGIN},\
                 ALLOWED_ORIGINS=${ALLOWED_ORIGINS},\
                 ALLOW_DEGRADED_SINGLE=true,\
+                CEREBRAS_MODEL_ID=${CEREBRAS_MODEL_ID},\
+                CEREBRAS_FALLBACK_MODEL_IDS=${CEREBRAS_FALLBACK_MODEL_IDS},\
                 CEREBRAS_TOOL_CALLING_ENABLED=true,\
                 CEREBRAS_LONG_CONTEXT_ENABLED=true"
 ```
@@ -273,12 +275,13 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 ```bash
 # AI Providers
 CEREBRAS_API_KEY=csk-xxx  # Orchestrator structured routing / opt-in text fallback
-CEREBRAS_MODEL_ID=llama3.1-8b  # short-context fallback 전용. 2026-05-27 deprecation 전까지 유지
-CEREBRAS_FALLBACK_MODEL_IDS=  # 같은 계정 production 후보 smoke 통과 전까지 비움
+CEREBRAS_MODEL_ID=gpt-oss-120b  # confirmed production Cerebras text model
+CEREBRAS_FALLBACK_MODEL_IDS=  # same-provider fallback은 production smoke 확인 전까지 비움
 CEREBRAS_TOOL_CALLING_ENABLED=true  # tool-calling fallback 활성화
-CEREBRAS_LONG_CONTEXT_ENABLED=true  # llama3.1-8b는 8K. 16K/32K 요구 경로는 capability gate로 Cerebras skip
+CEREBRAS_LONG_CONTEXT_ENABLED=true  # gpt-oss-120b 65K context 기준. 긴 컨텍스트 비상 차단 시 false
 GROQ_API_KEY=gsk_xxx     # Supervisor/Metrics Query/Orchestrator primary
 ZAI_API_KEY=xxx          # Reporter primary + text/vision fallback (Flash 모델)
+ZAI_BASE_URL=https://api.z.ai/api/paas/v4
 ZAI_DEFAULT_MODEL=glm-4.5-flash
 ZAI_VISION_MODEL_ID=glm-4.6v-flash
 MISTRAL_API_KEY=xxx      # Analyst/Advisor primary + distributed text fallback

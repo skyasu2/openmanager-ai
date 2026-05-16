@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (NLQ EntitySchema provider compatibility fix)
+**Last Updated**: 2026-05-16 KST (Provider runtime env sync in progress)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,6 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| Provider runtime env sync — Z.AI/GLM 활성화 + Cerebras env drift 제거 | High | In Progress (Codex) | T0~T5 완료: Secret Manager `ai-providers-config` version 8 생성, Cloud Run `ai-engine-00476-hz2` 100% traffic, `/health.config.zai=true`, `CEREBRAS_MODEL_ID=gpt-oss-120b` 확인. 남은 작업은 커밋/푸시 정리. 상세: [provider-runtime-env-sync-plan.md](provider-runtime-env-sync-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 잔여 구현 없음. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
