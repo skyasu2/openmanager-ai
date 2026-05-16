@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-13
+> Last reviewed: 2026-05-16
 > Canonical: docs/architecture/02-runtime-architecture.md
 > Tags: architecture,ai,runtime,supervisor,provider
 
@@ -75,7 +75,7 @@ flowchart TB
 
     Multi --> Agents["Metrics Query / Analyst / Reporter / Advisor / Vision"]
     Agents --> ProviderGate["Capability + Quota Provider Gate\nprovider-capabilities.ts"]
-    ProviderGate --> LLM["Groq / Cerebras / Mistral / Gemini"]
+    ProviderGate --> LLM["Text: Groq / Z.AI / Mistral / Cerebras\nVision: Gemini / OpenRouter / Z.AI Vision"]
 
     Agents --> Data["OTel + Knowledge Retrieval Lite"]
     Single --> Recovery["Deterministic Recovery\n(formatting guard / ranking fallback)"]
@@ -128,7 +128,9 @@ Cloud Run Supervisor
   -> resolveSupervisorModeDecision()
      +-- single -> streamText + prepareStep
      `-- multi  -> Orchestrator -> Metrics Query / Analyst / Reporter / Advisor / Vision
-  -> provider gate -> Groq / Cerebras / Mistral / Gemini
+  -> provider gate
+     +-- text: Groq / Z.AI / Mistral / Cerebras
+     `-- vision: Gemini / OpenRouter / Z.AI Vision
   -> deterministic recovery -> UIMessageStream -> UI
 ```
 

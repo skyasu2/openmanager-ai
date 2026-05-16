@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-16
 > Canonical: docs/development/README.md
 > Tags: development,setup,index
 
@@ -62,9 +62,9 @@
 ```
 Runtime:      Node.js 24.x (Current)
 Package:      npm 11.10.0
-Framework:    Next.js 16.1.3 (App Router)
-Language:     TypeScript 5.9.3 (strict mode)
-UI:           React 19, Tailwind CSS 4
+Framework:    Next.js 16.1.6 (App Router)
+Language:     TypeScript 6.0.3 (strict mode)
+UI:           React 19.2.6, Tailwind CSS 4
 Database:     Supabase (PostgreSQL + pgVector)
 AI:           Vercel AI SDK 6, deterministic-first tool-calling runtime
 ```

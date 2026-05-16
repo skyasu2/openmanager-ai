@@ -3,7 +3,7 @@
 > Owner: docs-platform
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-05-08
+> Last reviewed: 2026-05-16
 > Canonical: docs/development/documentation-management.md
 > Tags: docs-governance,diataxis,docs-as-code
 
@@ -30,6 +30,7 @@ AI 에이전트가 문서를 사용할 때의 계약은 다음과 같다.
 4. 현재 작업 상태는 `reports/planning/TODO.md`, 검증 근거는 `reports/qa/*`에서 확인한다.
 5. 문서와 코드가 충돌하면 코드를 기준으로 문서를 갱신한다.
 6. 생성 문서(`endpoints.md`, component dependency map, inventory)는 생성 명령으로 갱신하고 손으로 임의 편집하지 않는다.
+7. 문서가 provider, dependency, route, data source, schema, runtime version을 설명하면 관련 코드/lockfile을 최소 1곳 이상 대조한다. 예: provider order는 `agent-runtime-policy.ts`, Vision fallback은 `agent-model-selectors.ts`, package version은 `package.json`/`package-lock.json`, OTel/KRL 경계는 `MetricsProvider.ts`와 `knowledge-retrieval-lite.ts`를 확인한다.
 
 ## Source of Truth
 
@@ -84,6 +85,8 @@ AI 에이전트가 문서를 사용할 때의 계약은 다음과 같다.
 | Dashboard/AI UI 변경 | [UI Design](../design/05-ui-design.md), component dependency map |
 | 배포/CI/remote 변경 | [Deployment Architecture](../architecture/03-deployment-architecture.md), [Operations](../operations/README.md) |
 | 되돌리기 어려운 구조 결정 | [ADR](../adr/README.md) |
+| provider mesh / Vision fallback / model ID 변경 | [AI Engine Architecture](../reference/architecture/ai/ai-engine-architecture.md), [Resilience](../reference/architecture/infrastructure/resilience.md), [Environment Variables](./environment-variables.md) |
+| dependency/runtime version 변경 | [Development README](./README.md), [Quick Start](../QUICK-START.md), 관련 package lockfile |
 
 ## Best-Practice 비교 (웹 기준)
 

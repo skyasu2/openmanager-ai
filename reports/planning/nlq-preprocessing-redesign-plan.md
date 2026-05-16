@@ -447,3 +447,28 @@ cd cloud-run/ai-engine && npm run type-check && npm run test
 | Groq entity extraction → Cloud Run 이전 | Cloud Run min-instances=1 운영 가능해질 때 (월 ~$10 추가 예산 시) |
 | Clarification을 Cloud Run streaming 응답으로 전환 | 위 조건과 동일. UX 변경 수반 |
 | SLM front 패턴 완성 | Cloud Run 첫 번째 노드를 dedicated classifier agent로 분리 |
+
+---
+
+## 2026-05-16 Provider Quota 분석 연계
+
+### Q2(intentFrame trust)와의 연결
+
+`provider-quota-rebalance-plan.md` Q2 항목이 이 계획 N1과 같은 루트 원인임.
+
+- **N1**: Cloud Run `selectExecutionMode()`가 intentFrame을 신뢰하도록 수정 → Groq NLQ 결과 활용
+- **Q2(재배치 플랜)**: intentFrame 신뢰가 되면 Groq NLQ 비용이 유효 사용으로 전환
+
+N1 구현 시 Q2 효과까지 자동으로 포함됨. 별도 작업 불필요.
+
+### Draft 탈출 조건 (최신화)
+
+이 계획이 Draft인 이유: NLQ 보안 guard, Cloud Run 계약, log_paste 처리가 함께 변경되는 광범위 계약 변경.
+
+**보강 필요 항목 현황:**
+- [ ] N1/N2/N3 failing test assertion 명시 (구현 전 spec 필요)
+- [ ] `SemanticIntentFrame.executionMode` 없는 기존 클라이언트 호환 동작 표 고정
+- [ ] `inputType` / `logExtract` 길이·민감정보 제한 확정
+- [ ] QueryGuard `blocked: true` 응답 계약 확정 (UI clarification 오인 방지)
+
+위 4개 항목이 문서화되면 Status → `Approved` 로 변경하고 구현 착수.

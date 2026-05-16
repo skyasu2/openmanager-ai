@@ -12,7 +12,7 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.11.97+ 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
+**OpenManager AI v8.11.156+ 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
 
 | 항목 | 수치 |
 |------|------|
@@ -54,7 +54,7 @@ graph TB
         Supabase["Supabase<br/>(PostgreSQL + Auth/RLS)"]
         Redis["Upstash Redis<br/>(Cache, Stream, Job State)"]
         CloudTasks["Cloud Tasks<br/>(Async Job Dispatch)"]
-        LLM["LLM Providers<br/>(Cerebras, Groq,<br/>Mistral, Gemini, OpenRouter)"]
+        LLM["LLM Providers<br/>(Groq, Z.AI, Mistral,<br/>Cerebras, Gemini, OpenRouter)"]
     end
 
     subgraph Data["Data (Build-Time)"]
@@ -112,8 +112,9 @@ graph TB
           ▼                        ▼                        ▼
    ┌──────────────┐      ┌──────────────┐       ┌──────────────────┐
    │ Supabase     │      │ Upstash Redis│       │ LLM Providers    │
-   │ PostgreSQL   │      │ Cache/Stream │       │ Cerebras/Groq/   │
-   │ + Auth/RLS   │      │ Job State    │       │ Mistral/Gemini   │
+   │ PostgreSQL   │      │ Cache/Stream │       │ Groq/Z.AI/       │
+   │ + Auth/RLS   │      │ Job State    │       │ Mistral/Cerebras │
+   │              │      │              │       │ Gemini/OpenRouter│
    └──────────────┘      └──────────────┘       └──────────────────┘
                                    ▲
                                    │ Cloud Tasks dispatches long jobs to

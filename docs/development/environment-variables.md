@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-16
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -251,7 +251,7 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 | Secret Name | 환경변수 | JSON 내용 |
 |-------------|---------|----------|
 | `supabase-config` | `SUPABASE_CONFIG` | `url`, `anonKey`, `serviceRoleKey` |
-| `ai-providers-config` | `AI_PROVIDERS_CONFIG` | `cerebras`, `groq`, `mistral`, `google`, `openrouter` API 키 |
+| `ai-providers-config` | `AI_PROVIDERS_CONFIG` | `cerebras`, `groq`, `zai`, `mistral`, `google`, `openrouter` API 키 |
 | `kv-config` | `KV_CONFIG` | `upstashRedisRestUrl`, `upstashRedisRestToken` |
 | `cloud-run-api-secret` | `CLOUD_RUN_API_SECRET` | API 인증 키 (단일 문자열) |
 | `langfuse-config` | `LANGFUSE_CONFIG` | `secretKey`, `publicKey`, `baseUrl` |
@@ -273,14 +273,17 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 ```bash
 # AI Providers
 CEREBRAS_API_KEY=csk-xxx  # Orchestrator structured routing / opt-in text fallback
-CEREBRAS_MODEL_ID=llama3.1-8b  # 현재 계정 production Cerebras runtime. 2026-04-30 smoke 통과
+CEREBRAS_MODEL_ID=llama3.1-8b  # short-context fallback 전용. 2026-05-27 deprecation 전까지 유지
 CEREBRAS_FALLBACK_MODEL_IDS=  # 같은 계정 production 후보 smoke 통과 전까지 비움
 CEREBRAS_TOOL_CALLING_ENABLED=true  # tool-calling fallback 활성화
 CEREBRAS_LONG_CONTEXT_ENABLED=true  # llama3.1-8b는 8K. 16K/32K 요구 경로는 capability gate로 Cerebras skip
-GROQ_API_KEY=gsk_xxx     # Supervisor/Metrics Query/Analyst/Reporter 주력
-MISTRAL_API_KEY=xxx      # text last-resort fallback
+GROQ_API_KEY=gsk_xxx     # Supervisor/Metrics Query/Orchestrator primary
+ZAI_API_KEY=xxx          # Reporter primary + text/vision fallback (Flash 모델)
+ZAI_DEFAULT_MODEL=glm-4.5-flash
+ZAI_VISION_MODEL_ID=glm-4.6v-flash
+MISTRAL_API_KEY=xxx      # Analyst/Advisor primary + distributed text fallback
 GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash-lite)
-OPENROUTER_API_KEY=sk-or-v1-xxx # Vision Fallback (gemma-3-4b-it:free)
+OPENROUTER_API_KEY=sk-or-v1-xxx # Vision fallback (gemma free model chain)
 
 # 시크릿 설정 주의사항:
 # 1. API 키 값 양끝에 큰따옴표(")가 포함된 경우 일부 파싱 로직에서 에러(Unauthorized/Leaked)가 발생할 수 있습니다. 

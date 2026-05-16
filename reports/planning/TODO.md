@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (계획서 구조 재검토 반영)
+**Last Updated**: 2026-05-16 KST (오늘 커밋 분석 — 이슈 3건 추가, Conformance 3차 완료 반영)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -16,12 +16,13 @@
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 잔여 구현 없음. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 | 데드 코드 & 레거시 export 정리 (6건) | Medium | Approved | 데드 파일 4개(A1~A4) + deprecated export 2건(B1~B2). 제거 기준과 검증 게이트 확정. 상세: [dead-code-cleanup-plan.md](dead-code-cleanup-plan.md) |
 | AI 어시스턴트 구조 개선 (2건) | Medium | Approved | T1: CB Redis 미연결 명확화, T3: useAIChatCore artifact 상태 분리. (**T2는 NLQ Redesign N1-5로 이관 완료**) 상세: [ai-assistant-structure-improvement-plan.md](ai-assistant-structure-improvement-plan.md) |
-| NLQ Pre-processing Redesign (3건) | High | Draft | N1: LLM-first 라우팅, N2: QueryGuard, N3: 장문·로그 입력 supervisor 계약. 계약/테스트 시나리오 보강 전 구현 금지. 상세: [nlq-preprocessing-redesign-plan.md](nlq-preprocessing-redesign-plan.md) |
-| Vercel AI SDK Multi-Agent Conformance | High | Approved | 현재 부합도 8.6/10. T0~T4 2차 완료: loop settings SSOT, `agentLoop` metadata, stream `routingDecisionTrace`, Reporter pipeline stage naming, Evaluator/Optimizer pipeline-internal public 제외, conformance tests/docs 검증 완료. 잔여는 optional subagent-as-tool PoC와 `createAgentUIStreamResponse` adapter 검토. 상세: [vercel-ai-sdk-multi-agent-conformance-plan.md](vercel-ai-sdk-multi-agent-conformance-plan.md) |
+| NLQ Pre-processing Redesign (3건) | High | Draft | N1: LLM-first 라우팅, N2: QueryGuard, N3: 장문·로그 입력 supervisor 계약. 계약/테스트 시나리오 보강 전 구현 금지. **2026-05-16 연계 분석**: N1 구현 시 Orchestrator Q2(intentFrame trust) 효과까지 자동 포함 → Groq NLQ 1 RPD/요청 낭비 해소. 상세: [nlq-preprocessing-redesign-plan.md](nlq-preprocessing-redesign-plan.md) |
+| Vercel AI SDK Multi-Agent Conformance | High | **Completed** | 부합도 8.6/10. T0~T4 **3차 검토까지 모두 완료**: loop settings SSOT, `agentLoop` metadata, stream `routingDecisionTrace`, Reporter pipeline stage naming, Evaluator/Optimizer internal-only, provider quota rebalance, conformance tests/docs 검증 완료. Optional O1(subagent-as-tool PoC), O2(`createAgentUIStreamResponse` 전환), O3(AI SDK DevTools), O4(mock path parity benchmark)는 Backlog으로 이관. 상세: [vercel-ai-sdk-multi-agent-conformance-plan.md](vercel-ai-sdk-multi-agent-conformance-plan.md) |
 | Frontend UI 개선 (6건) | Medium | Approved | P1: BootProgressBar 포인터 overflow, AILoginRequiredModal Github 아이콘. P2: FeatureCardModal DiagramErrorBoundary 적용, wave-particles CSS 추출. P3: TopologyModal 닫기 버튼 위치, footer 기술 스택 상수화. 상세: [frontend-ui-improvement-plan.md](frontend-ui-improvement-plan.md) |
 | 로그인 페이지 개선 (8건) | Medium | Approved | L1: 게스트 에러 이중 표시 버그. L2: OAuth 취소 버튼 UX. L3~L5: 타입 중복(훅 포함)·스타일 props·이메일 초기화 리팩터. L6~L8: 상수·error.tsx·주석 정비. 상세: [login-page-improvement-plan.md](login-page-improvement-plan.md) |
 | Dashboard 핵심 컴포넌트 개선 (7건) | Medium | Approved | D1: withCurrentMetricPoint 3곳 중복 제거. D2: 탭 레이블/콘텐츠 불일치 수정. D3: activeTab dead state 제거. D4: 이중 memo() 제거. D5: deprecated addListener 제거. D6~D7: statusGradients 주석·이모지 aria 정리. 상세: [dashboard-improvement-plan.md](dashboard-improvement-plan.md) |
-| AI 사이드바 & 워크스페이스 개선 (5건) | Medium | In Progress (Codex) | S1 완료: Escape 전파 차단 보강. S2 완료: downloadBlob 5중 복제를 `downloadBlobContent`로 추출. S3 완료: 닫힌 sidebar `aria-hidden` 보강. S4 완료: sidebar 내부 `EnhancedAIChat` 헤더 중복 제거. 잔여: S5 fileErrors key 정리. 상세: [ai-sidebar-workspace-improvement-plan.md](ai-sidebar-workspace-improvement-plan.md) |
+| AI 사이드바 & 워크스페이스 개선 (5건) | Medium | In Progress (Codex) | S1 완료: Escape 전파 차단 보강. S2 완료: `downloadBlobContent` 추출(`src/lib/ai/chat-artifacts/download-utils.ts` 신규, 5중 복제 해소). S3 완료: 닫힌 sidebar `aria-hidden` 보강. S4 완료: sidebar 내부 `EnhancedAIChat` 헤더 중복 제거. **잔여: S5 fileErrors key 정리** — `ChatInputArea.tsx:192` `key={idx}` 패턴이 여전히 남아 있음. `key=${idx}-${err.message}` 또는 content 기반 stable key로 교체. 상세: [ai-sidebar-workspace-improvement-plan.md](ai-sidebar-workspace-improvement-plan.md) |
+| **Provider Quota 재배치 (Q0/Q1)** | **High** | **Approved** | **Q0 즉시**: `gpt-oss-120b` 정책이 `enabled:false/excluded/red`로 잘못됨 — 2026-05-16 live smoke `5 RPM/150 RPH/2400 RPD/30K TPM` 확인. `provider-model-policy.ts`: role→`fallback`, enabled→`true`, smokeStatus→`green`, quota 업데이트. 주의: reasoning 모델 max_tokens≥100 필요. **Q1 P1**: Orchestrator를 Groq-first→Mistral-first — 단순 routing JSON 분류에 Groq 1 RPD/요청 낭비. 절감 시 complex 요청 166→200+/일. **2026-05-26**: `DEFAULT_CEREBRAS_MODEL`→`CEREBRAS_GPT_OSS_MODEL_ID`. 상세: [provider-quota-rebalance-plan.md](provider-quota-rebalance-plan.md) |
 
 ---
 
@@ -35,6 +36,8 @@
 | 프론트엔드 분석 대기 — Zustand 스토어 | Low | `src/stores/useAISidebarStore.ts` 561줄. persist 설정, selector 구독 패턴, 상태 정규화 검토. **Codex 분석 대기** |
 | 프론트엔드 분석 대기 — AI 훅 레이어 | Low | `src/hooks/ai/useHybridAIQuery.ts`(691줄), `useAsyncAIQuery.ts`(583줄). streaming/job-queue 분기, 에러 핸들링 구조. `ai-assistant-structure-improvement-plan.md` T3와 연관. **Codex 분석 대기** |
 | 로그인 전역 `app/error.tsx` Tailwind 전환 검토 | Low | 로그인 계획서 L7과 유사하지만 범위 밖. 전체 앱 error boundary 스타일 정리 필요 여부를 별도 소규모 작업으로 판단. |
+| enrichResponseWithToolResults multi-path 적용 | Low | single-agent path에만 연결. Reporter에 Evaluator/Optimizer(deterministic)가 있어 저영향. 관찰 후 판단. |
+| AI SDK conformance optional 항목 (O1~O4) | Low | O1: subagent-as-tool PoC, O2: `createAgentUIStreamResponse` 전환, O3: AI SDK DevTools, O4: mock path parity benchmark. Free Tier 영향 검증 후 착수. 상세: [vercel-ai-sdk-multi-agent-conformance-plan.md](vercel-ai-sdk-multi-agent-conformance-plan.md) |
 
 ---
 
@@ -123,6 +126,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-16) — Claude (커밋 분석 및 계획서 업데이트)
+- [x] 오늘 커밋 10개 전수 분석 및 계획서 업데이트
+  - **잘 된 부분**: TypeScript 타입 체크 PASS, AI Engine 127 files / 1243 tests PASS, root 15 files / 209 tests PASS. `supervisor-response-enrichment.ts` enrichment 로직이 `supervisor-single-agent.ts`와 잘 연결됨. `download-utils.ts` 추출로 5중 복제 해소. provider mesh rebalance(Cerebras→fallback, mistral→groq→zai 순서)가 정책 문서와 일치.
+  - **이슈 3건 발견 및 Backlog 추가**: (1) Cerebras 만료 D-11 — `provider-model-policy.ts` `blockAfterDeprecation: true` 기준으로 2026-05-27 이후 자동 차단 예정이나 TODO에 누락. 사용자 액션 필요 항목으로 Backlog 추가. (2) `enrichResponseWithToolResults` single-agent path만 연결 — multi-agent/stream path에 미적용, Backlog 추가. (3) `ChatInputArea.tsx:192` `key={idx}` 패턴 S5 미완성 확인 — 위치와 패턴 명시해 Notes 갱신.
+  - **상태 업데이트**: Vercel AI SDK Conformance T0~T4 + 3차 검토 완료로 `Completed` 처리. optional O1~O4 Backlog 이관.
 
 ### Completed (2026-05-16) — Codex
 - [x] Agent provider quota rebalance

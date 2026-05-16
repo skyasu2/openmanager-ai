@@ -4,11 +4,11 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Tutorial
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-16
 > Canonical: docs/QUICK-START.md
 > Tags: quickstart,onboarding,setup
 >
-> **v8.11.97** | Updated 2026-05-05
+> **v8.11.156** | Updated 2026-05-16
 
 **운영 의사결정 AI 어시스턴트 기반 서버 모니터링 플랫폼** - 5분 만에 시작하기
 

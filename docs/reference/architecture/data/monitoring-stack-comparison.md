@@ -3,11 +3,11 @@
 > Owner: platform-data
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-16
 > Canonical: docs/reference/architecture/data/monitoring-stack-comparison.md
 > Tags: prometheus,grafana,comparison,metrics,data-pipeline
 
-**대상 버전**: OpenManager AI v8.11.97
+**대상 버전**: OpenManager AI v8.11.156
 **목적**: Prometheus/Grafana Cloud 대비 데이터 모델 및 파이프라인 비교
 
 > 현재 데이터 SSOT는 [OTel Data Architecture](./otel-data-architecture.md)입니다. 이 문서는 외부 모니터링 스택 대비 설계 차이를 설명하는 supporting comparison이며, 신규 구현 기준은 OTel/Data 문서와 `public/data/otel-data`를 우선합니다.
@@ -72,7 +72,7 @@ Prometheus 표준: `[namespace]_[subsystem]_[name]_[unit]`
 | 항목 | Grafana Cloud | OpenManager AI |
 |------|--------------|----------------|
 | 메트릭 | Mimir (TSDB) → Object Storage | JSON 파일 (`public/data/otel-data`) |
-| 로그 | Loki (Index+Chunks) | JSON 파일 + Supabase (RAG) |
+| 로그 | Loki (Index+Chunks) | OTel JSON 로그 + Knowledge Retrieval Lite evidence |
 | 트레이스 | Tempo (Object Storage) | 미지원 |
 | 보관 | 13개월 (메트릭), 30일 (로그) | 무제한 (Git) |
 | 비용 | 무료 한도 초과 시 과금 | $0 static data (Git-tracked, GitLab canonical) |
@@ -88,7 +88,7 @@ Prometheus 표준: `[namespace]_[subsystem]_[name]_[unit]`
 
 | 항목 | Grafana Cloud | OpenManager AI |
 |------|--------------|----------------|
-| 대시보드 | Grafana Panel | React 컴포넌트 (Recharts) |
+| 대시보드 | Grafana Panel | React 컴포넌트 (NivoTimeSeriesChart + SvgSparkline) |
 | 알림 | Grafana Alerting (Slack, PagerDuty) | JSON 규칙 (system-rules.json) + UI 모달 |
 | 상태 관리 | 서버 사이드 (Alertmanager) | 클라이언트 사이드 (Zustand) |
 
@@ -135,7 +135,7 @@ public/data/otel-data/ (Runtime SSOT, Git 관리)
     └──→ Cloud Run: precomputed-state (fs.readFileSync)
               │
               ▼
-         React Dashboard (Recharts) + AI Chat (NLQ)
+         React Dashboard (NivoTimeSeriesChart + SvgSparkline) + AI Chat (NLQ)
 ```
 
 ---
@@ -192,4 +192,4 @@ public/data/otel-data/ (Runtime SSOT, Git 관리)
 
 ---
 
-_Last Updated: 2026-05-05_
+_Last Updated: 2026-05-16_
