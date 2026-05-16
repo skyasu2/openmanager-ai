@@ -387,6 +387,38 @@ describe('useQueryExecution', () => {
     expect(clarificationStates).toHaveLength(0);
   });
 
+  it('blocked NLQ guard result stops clarification and supervisor send', async () => {
+    process.env.NODE_ENV = 'production';
+    mockExtractEntities.mockResolvedValue({
+      confidence: 0,
+      blocked: true,
+      blockReason: 'prompt_injection_high',
+      message:
+        '입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다. 다른 표현으로 다시 시도해주세요.',
+    } as any);
+    const deps = createDeps();
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery('서버 상태 확인');
+    });
+
+    expect(deps.sendMessage).not.toHaveBeenCalled();
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+
+    const updater = deps.setState.mock.calls.at(-1)?.[0];
+    expect(typeof updater).toBe('function');
+
+    const nextState = (updater as (prev: HybridQueryState) => HybridQueryState)(
+      createBaseState()
+    );
+    expect(nextState.error).toBe(
+      '입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다. 다른 표현으로 다시 시도해주세요.'
+    );
+    expect(nextState.clarification).toBeNull();
+  });
+
   it('semantic entity extraction 결과를 정규화된 세션 쿼리 기준으로 재사용한다', async () => {
     process.env.NODE_ENV = 'production';
     mockExtractEntities.mockResolvedValue({
