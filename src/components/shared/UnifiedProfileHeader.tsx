@@ -66,7 +66,11 @@ export default function UnifiedProfileHeader({
   const handleSystemStart = useCallback(async () => {
     try {
       logger.info('시스템 시작 요청 (프로필에서)');
-      await startRemoteSystem();
+      const result = await startRemoteSystem();
+      if (!result) {
+        logger.warn('시스템 시작 요청이 실행되지 않아 로컬 상태를 유지합니다.');
+        return;
+      }
       startLocalSystem();
       logger.info('시스템 시작 성공');
     } catch (error) {
@@ -86,7 +90,11 @@ export default function UnifiedProfileHeader({
     try {
       logger.info('시스템 종료 요청 (프로필에서)');
 
-      await stopRemoteSystem();
+      const result = await stopRemoteSystem();
+      if (!result) {
+        logger.warn('시스템 종료 요청이 실행되지 않아 로컬 상태를 유지합니다.');
+        return;
+      }
       stopLocalSystem();
       logger.info('시스템 종료 성공');
       localStorage.removeItem('system_auto_shutdown');

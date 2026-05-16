@@ -79,6 +79,7 @@ type SystemStatusStore = {
   focusHandler: (() => void) | null;
   abortController: AbortController | null;
   inFlightFetch: Promise<void> | null;
+  actionInFlight: boolean;
   lastFetchAt: number;
   lastFocusRefreshAt: number;
 };
@@ -102,6 +103,7 @@ const systemStatusStore: SystemStatusStore = {
   focusHandler: null,
   abortController: null,
   inFlightFetch: null,
+  actionInFlight: false,
   lastFetchAt: 0,
   lastFocusRefreshAt: 0,
 };
@@ -191,6 +193,9 @@ async function performFetch(options: { force?: boolean } = {}) {
       });
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
+        if (!systemStatusStore.actionInFlight) {
+          updateSnapshot({ isLoading: false });
+        }
         return;
       }
 
@@ -324,10 +329,17 @@ export function useSystemStatus(
     async (action: 'start' | 'stop'): Promise<SystemActionResponse | null> => {
       if (!enabled) return null;
 
-      // Guard against concurrent calls (e.g. double-click)
-      if (systemStatusStore.snapshot.isLoading) return null;
+      // Guard against concurrent actions (e.g. double-click) without blocking
+      // user-initiated start/stop behind a background status fetch.
+      if (systemStatusStore.actionInFlight) return null;
+      systemStatusStore.actionInFlight = true;
 
       try {
+        if (systemStatusStore.abortController) {
+          systemStatusStore.abortController.abort();
+          systemStatusStore.abortController = null;
+          systemStatusStore.inFlightFetch = null;
+        }
         updateSnapshot({ error: null, isLoading: true });
 
         const response = await fetch('/api/system', {
@@ -370,6 +382,8 @@ export function useSystemStatus(
           err
         );
         throw err;
+      } finally {
+        systemStatusStore.actionInFlight = false;
       }
     },
     [enabled]

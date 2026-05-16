@@ -233,32 +233,73 @@ describe('useSystemStatus', () => {
       expect(fetchSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('isLoading 중에는 startSystem()이 중복 실행되지 않는다', async () => {
-      let resolve!: (v: Response) => void;
-      fetchSpy.mockImplementation(
-        () =>
-          new Promise<Response>((res) => {
-            resolve = res;
-          })
-      );
+    it('초기 상태 조회가 진행 중이어도 startSystem() 액션은 실행한다', async () => {
+      let getCount = 0;
+      fetchSpy.mockImplementation((_, init) => {
+        const options = init as RequestInit | undefined;
+        if (options?.method === 'POST') {
+          return Promise.resolve(
+            okResponse({ success: true, action: 'start' })
+          );
+        }
+
+        getCount += 1;
+        if (getCount === 1) {
+          const signal = options?.signal as AbortSignal | undefined;
+          return new Promise<Response>((_resolve, reject) => {
+            signal?.addEventListener('abort', () => {
+              reject(new DOMException('Aborted', 'AbortError'));
+            });
+          });
+        }
+
+        return Promise.resolve(okResponse(makeStatus({ isRunning: true })));
+      });
 
       const { result } = renderHook(() => useSystemStatus());
+      expect(result.current.isLoading).toBe(true);
 
-      // 첫 번째 호출(로딩 중) — isLoading=true이므로 startSystem 내부에서 guard
+      await act(async () => {
+        await result.current.startSystem();
+      });
+
+      expect(result.current.status?.isRunning).toBe(true);
+      const postCalls = fetchSpy.mock.calls.filter(
+        ([, opts]) => (opts as RequestInit)?.method === 'POST'
+      );
+      expect(postCalls).toHaveLength(1);
+    });
+
+    it('startSystem() 액션 진행 중에는 중복 POST를 보내지 않는다', async () => {
+      let resolvePost!: (v: Response) => void;
+      fetchSpy
+        .mockResolvedValueOnce(okResponse(makeStatus({ isRunning: false })))
+        .mockImplementationOnce(
+          () =>
+            new Promise<Response>((res) => {
+              resolvePost = res;
+            })
+        )
+        .mockResolvedValueOnce(okResponse(makeStatus({ isRunning: true })));
+
+      const { result } = renderHook(() => useSystemStatus());
+      await waitFor(() => expect(result.current.status?.isRunning).toBe(false));
+
+      let firstAction!: Promise<unknown>;
       act(() => {
+        firstAction = result.current.startSystem();
         void result.current.startSystem();
       });
 
-      // POST가 호출되지 않아야 한다 (isLoading=true guard)
-      const postsBefore = fetchSpy.mock.calls.filter(
-        ([, opts]) => (opts as RequestInit)?.method === 'POST'
-      ).length;
-      expect(postsBefore).toBe(0);
-
-      // cleanup
       await act(async () => {
-        resolve(okResponse(makeStatus()));
+        resolvePost(okResponse({ success: true, action: 'start' }));
+        await firstAction;
       });
+
+      const postCalls = fetchSpy.mock.calls.filter(
+        ([, opts]) => (opts as RequestInit)?.method === 'POST'
+      );
+      expect(postCalls).toHaveLength(1);
     });
   });
 

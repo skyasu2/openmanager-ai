@@ -379,4 +379,89 @@ describe('UnifiedProfileHeader', () => {
     expect(mocks.remoteStopSystem).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(mocks.stopSystem).toHaveBeenCalledTimes(1));
   });
+
+  it('프로필 시스템 종료 원격 요청이 실행되지 않으면 로컬 상태를 변경하지 않는다', async () => {
+    mocks.isSystemStarted = true;
+    mocks.remoteStopSystem.mockResolvedValueOnce(null);
+    mocks.useProfileMenu.mockReturnValue({
+      menuState: { showProfileMenu: true },
+      dropdownRef: { current: null },
+      toggleMenu: mocks.toggleMenu,
+      closeMenu: mocks.closeMenu,
+    });
+    mocks.useSystemStatus.mockReturnValue({
+      status: {
+        isRunning: true,
+        isStarting: false,
+        lastUpdate: '2026-05-17T00:00:00Z',
+        userCount: 1,
+        version: '8.11.164',
+        environment: 'production',
+        uptime: 3600,
+      },
+      isLoading: true,
+      error: null,
+      refresh: vi.fn(),
+      startSystem: mocks.remoteStartSystem,
+      stopSystem: mocks.remoteStopSystem,
+    });
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: {
+        id: 'guest-1',
+        name: '게스트 사용자',
+        email: 'guest@test.local',
+      },
+      userType: 'guest',
+      status: 'authenticated',
+      isLoading: false,
+      handleLogout: vi.fn(),
+      navigateToLogin: vi.fn(),
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+    fireEvent.click(screen.getByTestId('mock-system-stop'));
+
+    expect(mocks.remoteStopSystem).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(mocks.logger.warn).toHaveBeenCalledWith(
+        '시스템 종료 요청이 실행되지 않아 로컬 상태를 유지합니다.'
+      )
+    );
+    expect(mocks.stopSystem).not.toHaveBeenCalled();
+  });
+
+  it('프로필 시스템 시작 원격 요청이 실행되지 않으면 로컬 상태를 변경하지 않는다', async () => {
+    mocks.remoteStartSystem.mockResolvedValueOnce(null);
+    mocks.useProfileMenu.mockReturnValue({
+      menuState: { showProfileMenu: true },
+      dropdownRef: { current: null },
+      toggleMenu: mocks.toggleMenu,
+      closeMenu: mocks.closeMenu,
+    });
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: {
+        id: 'guest-1',
+        name: '게스트 사용자',
+        email: 'guest@test.local',
+      },
+      userType: 'guest',
+      status: 'authenticated',
+      isLoading: false,
+      handleLogout: vi.fn(),
+      navigateToLogin: vi.fn(),
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+    fireEvent.click(screen.getByTestId('mock-system-start'));
+
+    expect(mocks.remoteStartSystem).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(mocks.logger.warn).toHaveBeenCalledWith(
+        '시스템 시작 요청이 실행되지 않아 로컬 상태를 유지합니다.'
+      )
+    );
+    expect(mocks.startSystem).not.toHaveBeenCalled();
+  });
 });
