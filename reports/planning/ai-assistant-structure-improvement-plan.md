@@ -10,7 +10,7 @@
 
 ## 배경 및 분석 범위
 
-2026-05-15 AI 어시스턴트 아키텍처 전체를 전문가 관점에서 평가한 결과, **실현 가능한 개선 3건**과 **오해였던 문제 2건**을 확인했다. 2026-05-16 계획서 재검토에서 T2는 NLQ Pre-processing Redesign N1-5로 이관하고, 이 계획서는 T1/T3 두 건만 구현 대상으로 축소했다.
+2026-05-15 AI 어시스턴트 아키텍처 전체를 전문가 관점에서 평가한 결과, **실현 가능한 개선 3건**과 **오해였던 문제 2건**을 확인했다. 2026-05-16 계획서 재검토에서 T2는 NLQ Pre-processing Redesign N1-6으로 이관하고, 이 계획서는 T1/T3 두 건만 구현 대상으로 축소했다.
 
 ---
 
@@ -21,7 +21,7 @@
 | # | 항목 | 근거 | 우선순위 |
 |---|------|------|---------|
 | T1 | Circuit Breaker Redis 미연결 | Redis 초기화 코드 존재하나 `AIServiceCircuitBreaker.execute()`가 인스턴스 변수만 사용, 분산 상태 읽기 미구현 | High |
-| T2 | ~~`routing-policy.ts` 인라인 regex 배열~~ | `nlq-preprocessing-redesign-plan.md` N1-5에서 배열 자체를 제거하는 방식으로 흡수 | 이관 |
+| T2 | ~~`routing-policy.ts` 인라인 regex 배열~~ | `nlq-preprocessing-redesign-plan.md` N1-6에서 배열 자체를 제거하는 방식으로 흡수 | 이관 |
 | T3 | `useAIChatCore` artifact 상태 혼재 | 601줄, artifact ref 5개 + artifact 상태 2개가 세션/스트림 상태와 혼재 | Medium |
 
 ### ❌ 재검토 후 문제 아님으로 판정된 항목
@@ -112,9 +112,9 @@ Vercel 서버리스 환경에서 CB가 실제로 OPEN 전환되는 경우는 Clo
 
 ---
 
-## T2: ~~`routing-policy.ts` 인라인 regex 배열 상수화~~ → NLQ Redesign N1-5로 흡수
+## T2: ~~`routing-policy.ts` 인라인 regex 배열 상수화~~ → NLQ Redesign N1-6으로 흡수
 
-> **상태**: 이 태스크는 `nlq-preprocessing-redesign-plan.md` N1-5로 흡수됨.
+> **상태**: 이 태스크는 `nlq-preprocessing-redesign-plan.md` N1-6으로 흡수됨.
 > `multiAgentPatterns[]` / `contextGatedPatterns[]` 배열 자체가 N1에서 제거되므로 상수화 불필요.
 > T2 작업은 건너뛰고 T1 → T3 순서로 진행.
 
@@ -199,7 +199,7 @@ T1 (CB 명확화) → 독립 작업, 먼저 처리
 T3 (artifact 분리) → T1과 독립이나 리스크가 높으므로 별도 커밋으로 처리
 ```
 
-T1 → T3 순서로 진행 권장. T2는 NLQ plan N1-5로 이관되었으므로 이 계획서에서 구현하지 않는다.
+T1 → T3 순서로 진행 권장. T2는 NLQ plan N1-6으로 이관되었으므로 이 계획서에서 구현하지 않는다.
 
 ---
 

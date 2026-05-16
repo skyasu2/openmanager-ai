@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-05-16
 > Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture
@@ -32,6 +32,7 @@
 ```
 Browser (Client)
   ├─ off-domain guard     [로컬 regex, ~0ms] ← 기존 유지
+  ├─ [N0] 입력 길이 UX guard (10,000자 hard cap, 8,000자 warning)
   └─ extractEntitiesCached 호출 결정         ← 기존 유지
 
 Vercel BFF (Node.js runtime — Edge 금지)
@@ -41,7 +42,7 @@ Vercel BFF (Node.js runtime — Edge 금지)
   └─ intentFrame → Cloud Run 요청 body 포함
 
 Cloud Run AI Engine
-  ├─ [핵심 수정] selectExecutionMode() → intentFrame primary 신뢰
+  ├─ [핵심 수정] selectExecutionMode() → intentFrame.executionMode primary 신뢰
   ├─ [추가] Prompt injection 탐지 (defense-in-depth, 두 번째 레이어)
   └─ [추가] log_paste inputType → multi 강제 + Analyst 컨텍스트 주입
 ```
@@ -90,6 +91,7 @@ Cloud Run AI Engine
 
 ```
 Browser
+  ├─ [N0] ChatInputArea maxLength=10,000 + warning=8,000
   └─ 기존 동일 (off-domain guard → extractEntitiesCached 호출 결정)
         ↓
 /api/ai/nlq/extract-entities (Vercel BFF)
@@ -103,21 +105,68 @@ Browser
 Vercel BFF → Cloud Run (intentFrame + inputType 전달)
         ↓
 Cloud Run AI Engine
-  ├─ [N1] selectExecutionMode() → intentFrame.confidence >= 80이면 frame 우선
+  ├─ [N1] selectExecutionMode() → DomainIntentFrame.confidence >= 0.8이면 executionMode 우선
   ├─ [N3] inputType === 'log_paste' → multi 강제 + logExtract 컨텍스트 주입
   └─ [보안 강화] prompt injection defense-in-depth (두 번째 레이어 추가)
 ```
 
 ---
 
-## Draft 유지 사유 및 승인 전 보강 필요 항목
+## 승인 계약 (2026-05-16)
 
-이 계획은 Root BFF schema, Cloud Run supervisor metadata, NLQ 보안 guard를 함께 바꾸는 **계약 변경**이다. 구현 착수 전 아래 항목을 보강한 뒤 Status를 `Approved`로 올린다.
+이 계획은 Root BFF schema, Cloud Run supervisor metadata, NLQ 보안 guard를 함께 바꾸는 **계약 변경**이다. 아래 계약을 기준으로 `Status: Approved`로 전환하며, 구현은 SDD 순서로 failing test 커밋을 먼저 만든다.
 
-- [ ] N1/N2/N3별 failing test 파일과 기대 assertion을 명시한다.
-- [ ] `SemanticIntentFrame.executionMode`가 없는 기존 클라이언트/세션과의 호환 동작을 표로 고정한다.
-- [ ] `inputType` / `logExtract`가 client metadata sanitizer와 job queue payload에 노출될 때의 길이/민감정보 제한을 확정한다.
-- [ ] QueryGuard가 `blocked: true`를 반환할 때 UI가 clarification/일반 오류로 오인하지 않는 응답 계약을 확정한다.
+### 선행 failing test assertion
+
+| Task | 테스트 파일 | 기대 assertion |
+|------|-------------|----------------|
+| N0 | `src/components/ai-sidebar/ChatInputArea.test.tsx` | textarea에 `maxLength=10000`이 전달되고 8,000자 이상에서 경고 상태가 표시된다 |
+| N1 | `src/lib/ai/entity-extractor.test.ts` | `SemanticIntentFrame.executionMode`가 `single`/`multi`/`unknown`만 허용되고 normalize 과정에서 보존된다 |
+| N1 | `src/lib/ai/semantic-intent-frame.test.ts` | Root `confidence: 90`이 Cloud Run `confidence: 0.9`로 정규화되고 `executionMode`가 metadata에 포함된다 |
+| N1 | `cloud-run/ai-engine/src/domains/monitoring/routing-policy.test.ts` | `intentFrame.executionMode='single', confidence=0.9`이면 regex상 multi 문구가 있어도 single을 반환한다 |
+| N1 | `cloud-run/ai-engine/src/domains/monitoring/routing-policy.test.ts` | `confidence < 0.8`, `executionMode='unknown'`, frame 없음은 기존 regex fallback을 사용한다 |
+| N2 | `src/lib/ai/query-guard.test.ts` | high-risk injection은 `verdict='block'`, medium-risk는 `sanitize`, log/mixed/oversized는 정해진 길이로 분류된다 |
+| N2 | `src/app/api/ai/nlq/extract-entities/route.test.ts` | blocked query는 `generateText`를 호출하지 않고 `{ blocked: true, confidence: 0 }`을 반환한다 |
+| N3 | `src/app/api/ai/supervisor/schemas.test.ts` | `metadata.inputType`/`metadata.logExtract`가 허용되고 길이 초과 값은 거부 또는 truncate 계약을 따른다 |
+| N3 | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.test.ts` | Cloud Run이 `inputType`, `logExtract`, `intentFrame.executionMode`를 normalize한다 |
+| N3 | `cloud-run/ai-engine/src/domains/monitoring/routing-policy.test.ts` | `inputType='log_paste'`는 `executionMode`/regex보다 우선해 multi를 반환한다 |
+
+### Legacy compatibility
+
+| 입력 상태 | 동작 |
+|-----------|------|
+| `intentFrame` 없음 | 현재 `selectExecutionMode(query, analysisMode)` regex fallback 유지 |
+| `intentFrame.executionMode` 없음 | 기존 클라이언트/세션으로 보고 regex fallback 유지 |
+| `intentFrame.confidence < 0.8` | frame은 evidence hint로만 보존하고 실행 모드는 regex fallback |
+| `intentFrame.executionMode === 'unknown'` | 실행 모드는 regex fallback |
+| invalid frame shape | `semantic_frame_invalid` reason code만 남기고 request는 기존 방식으로 진행 |
+| formatting-only report request | frame이 multi여도 기존 예외처럼 single 유지 |
+
+### 길이와 민감정보 제한
+
+| 필드 | 제한 | 처리 |
+|------|------|------|
+| UI input | 10,000자 hard cap, 8,000자 warning | `ChatInputArea`에서 `maxLength`와 카운터/경고 표시 |
+| `QueryGuard.sanitizedQuery` | 500자 | NLQ LLM prompt 전용. oversized/log 입력은 요약 prompt로 변환 |
+| `QueryGuard.fullQuery` | 10,000자 | supervisor 본문으로 전달. 기존 `sanitizeInput()`과 같은 상한 |
+| `logExtract` | 8,000자 또는 80줄 중 먼저 도달하는 값 | ERROR/WARN/stack 중심으로 추출, 민감정보 마스킹 후 metadata 전달 |
+| `metadata.inputType` | enum only | `natural_query`, `log_paste`, `mixed`, `oversized` 외 값은 drop |
+| 민감정보 | API key/token/password/secret 패턴 | QueryGuard와 supervisor 보안 레이어 양쪽에서 `[REDACTED]` |
+
+### QueryGuard blocked response 계약
+
+`/api/ai/nlq/extract-entities`는 high-risk injection에서 HTTP 200으로 아래 형태를 반환한다. 이는 clarification 실패가 아니라 **사용자 입력 차단**이다.
+
+```json
+{
+  "confidence": 0,
+  "blocked": true,
+  "blockReason": "prompt_injection_high",
+  "message": "입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다. 다른 표현으로 다시 시도해주세요."
+}
+```
+
+Client는 `blocked: true`를 받으면 clarification을 열지 않고 전송을 중단하며 동일 메시지를 표시한다. Supervisor route에도 기존 `securityCheck()`를 유지해 defense-in-depth를 보장한다.
 
 ---
 
@@ -129,6 +178,21 @@ Cloud Run AI Engine
 | Vercel | NLQ route에 로컬 QueryGuard 추가, LLM 호출 수 변경 없음 | ✅ |
 | Cloud Run | selectExecutionMode() 단순화. LLM 추가 호출 없음 | ✅ |
 | Upstash Redis | 변경 없음 | ✅ |
+
+---
+
+## N0: 채팅 입력 길이 UX guard
+
+**변경 범위**
+- `src/components/ai-sidebar/ChatInputArea.tsx`
+- `src/components/ai-sidebar/ChatInputArea.test.tsx`
+
+**태스크**
+- [ ] **N0-1**: `AutoResizeTextarea` 호출에 `maxLength={10000}` 전달
+- [ ] **N0-2**: 8,000자 이상 warning, 10,000자 도달 시 hard cap 안내
+- [ ] **N0-3**: 기존 session counter와 충돌하지 않도록 하단 힌트 우선순위 정리
+
+**판단**: 서버 `MAX_INPUT_LENGTH=10000`과 같은 hard cap을 UI에도 노출해 대형 로그 붙여넣기 실패를 조기에 설명한다. N2/N3의 log handling은 10,000자 이내 입력을 대상으로 한다.
 
 ---
 
@@ -178,13 +242,17 @@ metric_peak 단일 케이스 regex fast-path 5개 패턴 삭제. 항상 Groq LLM
 export function selectExecutionMode(
   query: string,
   analysisMode?: AnalysisMode,
-  intentFrame?: DomainIntentFrame
+  intentFrame?: DomainIntentFrame,
+  inputType?: InputType
 ): SupervisorMode {
+  // 0. 로그 붙여넣기는 기존 regex/LLM frame보다 우선
+  if (inputType === 'log_paste') return 'multi';
+
   // 1. 포맷 재요청 예외 (항상 single)
   if (isFormattingOnlyReportRequest(query)) return 'single';
 
-  // 2. LLM intentFrame primary (confidence 기반)
-  if (intentFrame?.executionMode && intentFrame.confidence >= 80) {
+  // 2. LLM intentFrame primary (Cloud Run frame confidence는 0~1 스케일)
+  if (intentFrame?.executionMode && intentFrame.confidence >= 0.8) {
     return intentFrame.executionMode === 'multi' ? 'multi' : 'single';
   }
 
@@ -203,16 +271,18 @@ export function selectExecutionMode(
 
 **영향 파일**:
 - `src/lib/ai/entity-extractor.ts`
+- `src/lib/ai/semantic-intent-frame.ts`
 - `src/app/api/ai/nlq/extract-entities/route.ts`
 - `cloud-run/ai-engine/src/domains/monitoring/routing-policy.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-wiring.ts`
 
 **태스크**:
 - [ ] **N1-1**: `SemanticIntentFrame`에 `executionMode` 슬롯 추가 + Zod schema 갱신
-- [ ] **N1-2**: SYSTEM_PROMPT에 `executionMode` 판단 지침 추가
-- [ ] **N1-3**: `extractLocalSemanticEntities()` + LOCAL_* 상수 5개 제거
-- [ ] **N1-4**: `selectExecutionMode()` — frame primary + regex 4개 fallback
-- [ ] **N1-5**: `multiAgentPatterns[]` / `contextGatedPatterns[]` 배열 제거
+- [ ] **N1-2**: `DomainIntentFramePayload`/Cloud Run `DomainIntentFrame`에 `executionMode` optional 추가
+- [ ] **N1-3**: SYSTEM_PROMPT에 `executionMode` 판단 지침 추가
+- [ ] **N1-4**: `extractLocalSemanticEntities()` + LOCAL_* 상수 5개 제거
+- [ ] **N1-5**: `selectExecutionMode()` — frame primary + regex 4개 fallback
+- [ ] **N1-6**: `multiAgentPatterns[]` / `contextGatedPatterns[]` 배열 제거
 
 ---
 
@@ -235,9 +305,9 @@ export interface QueryGuardResult {
   verdict: QueryVerdict;
   inputType: InputType;
   sanitizedQuery: string;   // NLQ LLM용 (500자 이하 정제본)
-  fullQuery: string;        // supervisor용 원본 (10,000자 한도)
+  fullQuery: string;        // supervisor용 정제 본문 (10,000자 한도)
   blockReason?: string;
-  logExtract?: string;      // log_paste / mixed일 때 추출된 관련 줄
+  logExtract?: string;      // log_paste / mixed일 때 추출된 관련 줄 (8,000자/80줄)
   truncated: boolean;
 }
 
@@ -259,9 +329,9 @@ Step 2 — 입력 유형 분류 (로컬 heuristic, LLM 미사용)
   natural_query: 그 외
 
 Step 3 — 유형별 처리
-  log_paste  → 마지막 50줄 또는 ERROR/WARN 포함 줄 추출 → logExtract
+  log_paste  → 마지막 80줄 또는 ERROR/WARN 포함 줄 추출 → logExtract
                NLQ용 요약 prompt 생성 ("로그에서 문제 서버/메트릭 추출")
-               fullQuery는 원본 유지 (supervisor용)
+               fullQuery는 10,000자 이내 정제 본문 유지 (supervisor용)
   mixed      → 자연어 부분 분리 → sanitizedQuery
                로그 부분 → logExtract
   oversized  → 500자 truncate → sanitizedQuery
@@ -291,7 +361,12 @@ async function postHandler(request: NextRequest) {
   // 변경: QueryGuard → block 시 즉시 반환 → LLM
   const guard = runQueryGuard(query);
   if (guard.verdict === 'block') {
-    return NextResponse.json({ confidence: 0, blocked: true }, { status: 200 });
+    return NextResponse.json({
+      confidence: 0,
+      blocked: true,
+      blockReason: guard.blockReason,
+      message: BLOCKED_INPUT_MESSAGE,
+    }, { status: 200 });
   }
 
   const queryForLLM =
@@ -338,7 +413,7 @@ async function postHandler(request: NextRequest) {
   metadata: {
     intentFrame: ...,
     inputType: guard.inputType,          // 신규
-    logExtract: guard.logExtract ?? null // 신규 (log_paste/mixed일 때)
+    logExtract: guard.logExtract ?? null // 신규 (log_paste/mixed일 때, 8,000자 상한)
   }
 }
 ```
@@ -348,7 +423,7 @@ async function postHandler(request: NextRequest) {
 ```
 inputType === 'log_paste':
   executionMode → 'multi' 강제
-  logExtract → Analyst Agent 시스템 컨텍스트에 주입
+  logExtract → Analyst Agent 시스템 컨텍스트에 주입 (8,000자/80줄 상한)
   intent 분류: 로그 분석 특화 프롬프트 사용
 
 inputType === 'mixed':
@@ -386,18 +461,19 @@ inputType === 'oversized':
 ## 작업 순서 및 의존성
 
 ```
-N2 (QueryGuard) — 독립, 먼저 처리 (N1과 파일 독립)
-  └→ N1 (LLM-first routing) — N2 완료 후 NLQ route 통합
-       └→ N3 (장문/로그 계약) — N1의 intentFrame 계약 확정 후
+N0 (UI input cap) — 독립, 먼저 처리 가능
+  └→ N2 (QueryGuard) — NLQ route 보안/길이 guard
+       └→ N1 (LLM-first routing) — N2 완료 후 NLQ route 통합
+            └→ N3 (장문/로그 계약) — N1의 intentFrame 계약 확정 후
 ```
 
-**N1이 T2를 흡수**: `ai-assistant-structure-improvement-plan.md` T2는 이 plan N1-5 완료 시 자동 종료.
+**N1이 T2를 흡수**: `ai-assistant-structure-improvement-plan.md` T2는 이 plan N1-6 완료 시 자동 종료.
 
 ---
 
 ## SDD 게이트
 
-Status `Approved` 변경 후 구현 착수.
+현재 Status는 `Approved`다. 구현은 아래 커밋 순서를 지킨다.
 
 커밋 순서:
 ```
@@ -405,6 +481,7 @@ test(spec): [태스크명] add failing tests before implementation
 refactor/feat: [태스크명] implement to pass specs
 ```
 
+N0은 UI guard 소규모 변경이지만 입력 계약을 사용자에게 노출하므로 테스트 선행을 권장한다.
 N2-5(guard 테스트)는 N2-1~N2-4의 선행 failing test 커밋.
 N1은 동작 변경이 있으므로 test(spec): 선행 필수.
 N3은 계약 확장이므로 test(spec): 선행 후 구현.
@@ -461,14 +538,14 @@ cd cloud-run/ai-engine && npm run type-check && npm run test
 
 N1 구현 시 Q2 효과까지 자동으로 포함됨. 별도 작업 불필요.
 
-### Draft 탈출 조건 (최신화)
+### Draft 탈출 조건 closure
 
-이 계획이 Draft인 이유: NLQ 보안 guard, Cloud Run 계약, log_paste 처리가 함께 변경되는 광범위 계약 변경.
+이 계획은 NLQ 보안 guard, Cloud Run 계약, log_paste 처리가 함께 변경되는 광범위 계약 변경이므로 Draft로 유지됐으나, 2026-05-16 아래 항목을 승인 계약으로 고정했다.
 
 **보강 필요 항목 현황:**
-- [ ] N1/N2/N3 failing test assertion 명시 (구현 전 spec 필요)
-- [ ] `SemanticIntentFrame.executionMode` 없는 기존 클라이언트 호환 동작 표 고정
-- [ ] `inputType` / `logExtract` 길이·민감정보 제한 확정
-- [ ] QueryGuard `blocked: true` 응답 계약 확정 (UI clarification 오인 방지)
+- [x] N0/N1/N2/N3 failing test assertion 명시
+- [x] `SemanticIntentFrame.executionMode` 없는 기존 클라이언트 호환 동작 표 고정
+- [x] `inputType` / `logExtract` 길이·민감정보 제한 확정
+- [x] QueryGuard `blocked: true` 응답 계약 확정 (UI clarification 오인 방지)
 
-위 4개 항목이 문서화되면 Status → `Approved` 로 변경하고 구현 착수.
+Status를 `Approved`로 전환했으며, 구현은 SDD 게이트에 따라 failing test 커밋부터 진행한다.

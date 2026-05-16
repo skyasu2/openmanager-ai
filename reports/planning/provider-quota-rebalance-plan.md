@@ -56,17 +56,19 @@
 | 단계 | Groq 호출 수 | 비고 |
 |------|:-----------:|------|
 | NLQ entity extraction (Vercel BFF) | 1 | Cloud Run이 결과 무시 → **순수 낭비** |
-| Orchestrator routing | 1 | 단순 분류 JSON 생성, Groq-first |
+| Orchestrator decomposition | 0~1 | `decomposeTask()`가 forced routing보다 먼저 실행됨. complex 판정 시 Groq-first |
+| Orchestrator routing | 0~1 | decomposition 무효/실패 + forced routing 미충족 시 추가 Groq-first |
 | Metrics Query Agent (max 4 steps) | 0~4 | Groq-first, 실제 필요 |
-| **합계** | **2~6** | complex 요청 1회 |
+| **합계** | **2~7** | Metrics Query complex 최악 경로. 일반 forced/decomposition 성공 경로는 2~6 |
 
-**1000 RPD / 6 = 약 166 complex 요청/일** → 실사용에서 쉽게 소진
+**1000 RPD / 7 = 약 142 complex 요청/일** → 실사용에서 쉽게 소진
 
-**근본 원인**: 두 가지 낭비가 겹침
+**근본 원인**: 세 가지 낭비가 겹침
 1. **NLQ entity extraction 낭비**: `/api/ai/nlq/extract-entities`에서 Groq 1 RPD 소비 → Cloud Run `selectExecutionMode()`가 regex로 재분류해 intentFrame 무시
-2. **Orchestrator Groq-first 낭비**: Orchestrator는 짧은 routing JSON 생성인데 Groq-first → Mistral/Z.AI로 충분
+2. **Decomposition 선행 낭비**: high-confidence `preFilterQuery()`가 있어도 `decomposeTask()`가 먼저 실행되어 Orchestrator LLM 1회를 소모할 수 있음
+3. **Orchestrator Groq-first 낭비**: Orchestrator는 짧은 routing/decomposition JSON 생성인데 Groq-first → Cerebras/Mistral/Z.AI로 충분
 
-**개선 목표**: complex 요청당 Groq 소모 2~6 → **0~4**로 절감 (최대 ~2.5배 효율)
+**개선 목표**: complex 요청당 Groq 소모 2~7 → **0~4**로 절감. Groq는 Metrics Query Agent의 실제 tool loop에 집중시킨다.
 
 ---
 
@@ -132,27 +134,48 @@ cd cloud-run/ai-engine && npm run type-check
 
 ---
 
-### Q1. Orchestrator → Mistral/Z.AI-first 전환 (Groq RPD 절감)
+### Q1. Orchestrator Groq-last + decomposition budget (Groq RPD 절감)
 
-**수정 파일**: `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-routing.ts`
+**수정 파일**
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution-stream.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-decomposition.ts`
 
 ```typescript
 // 변경 전
-const ORCHESTRATOR_PROVIDER_ORDER = GROQ_FIRST_PROVIDER_ORDER; // ['groq','zai','mistral','cerebras']
+ORCHESTRATOR_RUNTIME_POLICY.providerOrder = ['groq', 'zai', 'mistral', 'cerebras'];
 
 // 변경 후
-const ORCHESTRATOR_PROVIDER_ORDER = MISTRAL_FIRST_PROVIDER_ORDER; // ['mistral','zai','groq','cerebras']
+ORCHESTRATOR_RUNTIME_POLICY.providerOrder = [
+  'cerebras', // gpt-oss-120b structured JSON smoke 통과 후 primary
+  'mistral',
+  'zai',
+  'groq',    // Metrics Query 예산 보존을 위해 last fallback
+];
 ```
 
 **근거**:
 - Orchestrator는 짧은 routing JSON 1개를 생성하는 단순 분류 작업
-- Mistral: 50 RPM / 50K TPM → Orchestrator용으로 충분하고 여유 있음
+- Cerebras `gpt-oss-120b`: 2026-05-16 live smoke 기준 사용 가능. 5 RPM이므로 burst primary 병목은 circuit breaker/fallback으로 흡수
+- Mistral: 50 RPM / 50K TPM → Cerebras burst fallback으로 적합
+- Z.AI: Reporter primary 예산을 보존하기 위해 Mistral 뒤에 둔다
 - Groq는 Metrics Query Agent의 precision math/tool-calling에만 집중
-- 절감 효과: complex 요청당 Groq 1 RPD 절감 → 1000 RPD / 5 = 200 complex 요청/일
+- 절감 효과: complex 요청당 Groq 1~2 RPD 절감. decomposition + routing 이중 소모 경로를 제거하면 1000 RPD / 4 = 최대 250 Metrics-heavy 요청/일 수준까지 회복 가능
+
+**호출 순서 보정**:
+1. `preFilterResult.confidence >= forcedRoutingConfidence`이고 단일 specialist가 명확하면 `decomposeTask()`보다 forced routing을 먼저 실행한다.
+2. `decomposeTask()`는 high-confidence 단일 agent 경로를 제외하고, 실제 multi-agent composite intent에서만 실행한다.
+3. decomposition 결과가 2개 미만이면 LLM routing으로 바로 재시도하지 않고 `preFilterResult.confidence >= fallbackRoutingConfidence` fallback을 먼저 사용한다.
+4. 기본 orchestration LLM call budget은 요청당 1회로 제한하고, decomposition+routing 2회는 명시 multi-intent에서만 허용한다.
 
 **검증 게이트**:
 ```bash
-cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-routing.test.ts
+cd cloud-run/ai-engine && npx vitest run \
+  src/services/ai-sdk/agents/config/agent-runtime-policy.test.ts \
+  src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts \
+  src/services/ai-sdk/agents/orchestrator-decomposition.test.ts \
+  src/services/ai-sdk/agents/orchestrator-routing.test.ts
 cd cloud-run/ai-engine && npm run test
 ```
 
@@ -164,7 +187,7 @@ cd cloud-run/ai-engine && npm run test
 
 **예상 효과**: NLQ Groq 호출 결과가 Cloud Run에서 신뢰되면:
 - Groq NLQ 비용 = 유효 사용 (현재는 낭비)
-- selectExecutionMode regex 15개+ 삭제 또는 confidence < 80 fallback으로만 유지
+- selectExecutionMode regex 15개+ 삭제 또는 Cloud Run `DomainIntentFrame.confidence < 0.8` fallback으로만 유지
 - 전체 Groq 예산 효율 향상
 
 ---
@@ -174,7 +197,7 @@ cd cloud-run/ai-engine && npm run test
 | 작업 | SDD 필요 | 우선순위 | 예상 시간 |
 |------|:--------:|:-------:|:--------:|
 | Q0: gpt-oss-120b 정책 수정 | ❌ (데이터 수정) | P0 즉시 | 30분 |
-| Q1: Orchestrator provider order | ✅ (계약 변경) | P1 | 1시간 |
+| Q1: Orchestrator provider order + decomposition budget | ✅ (계약 변경) | P1 | 1.5시간 |
 | Q2: intentFrame trust | ✅ (NLQ Plan 연계) | P1 (NLQ Draft→Approved 후) | 별도 |
 | P2: enrichment multi-path | ❌ (저영향) | P2 관찰 후 판단 | - |
 
