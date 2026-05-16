@@ -36,7 +36,7 @@ Browser (Client)
   └─ extractEntitiesCached 호출 결정         ← 기존 유지
 
 Vercel BFF (Node.js runtime — Edge 금지)
-  ├─ [신규] QueryGuard    [기계적 필터: 길이·XSS·공격패턴·입력유형 분류]
+  ├─ [N2] QueryGuard      [얕은 기계적 필터: 길이·공격패턴·로그 형태 감지]
   ├─ Groq entity extraction LLM              ← 기존 위치 유지
   ├─ Clarification 판단                     ← 기존 위치 유지 (Cloud Run 호출 전)
   └─ intentFrame → Cloud Run 요청 body 포함
@@ -50,6 +50,24 @@ Cloud Run AI Engine
 > **Edge Runtime 금지**: NLQ 목적에 Edge runtime은 사용 불가.
 > Node.js 서브셋이라 AI SDK 내부 의존성·네이티브 모듈 동작 안 함.
 > NLQ route와 supervisor stream v2 모두 Node.js runtime(기본값) 유지.
+
+### Deterministic/LLM 균형 원칙
+
+이 계획의 목적은 앞단에 ML 수준의 분류기를 직접 구현하는 것이 아니다. 한국어/영어 운영 표현, 오타, 문맥 생략, 복합 질문의 경우의 수를 Vercel 또는 Cloud Run 앞단 heuristic으로 커버하려 하면 규칙 폭증과 사용량 증가가 동시에 발생한다.
+
+따라서 아래 경계를 유지한다.
+
+| 레이어 | 허용 역할 | 금지 역할 |
+|--------|-----------|-----------|
+| Client / Vercel deterministic | 길이 제한, 명백한 prompt injection 차단, 민감정보 마스킹, 로그 형태 감지, cache/in-flight 제어 | intent/agent 선택을 정교한 regex/ML-like 규칙으로 대체 |
+| Vercel Groq NLQ LLM | 한국어/영어 자연어 intent/entity 추출, 오타·표현 변형 흡수, `executionMode` 초안 생성 | 보안 차단의 단일 근거 |
+| Cloud Run AI Engine | intentFrame 신뢰도 검증, agent 실행, tool/data grounding, defense-in-depth | Groq intentFrame을 15개+ regex로 다시 덮어쓰기 |
+
+**불변조건**:
+- QueryGuard는 semantic routing을 판단하지 않는다. `log_paste`/`mixed`/`oversized`처럼 입력 형태만 얕게 분류한다.
+- 오타·동의어·한국어/영어 표현 확장은 regex 추가가 아니라 N1의 LLM intentFrame 신뢰로 해결한다.
+- 보안은 deterministic guard와 supervisor/Cloud Run defense-in-depth로 분리하되, 일반 질의 대응력은 LLM에 맡긴다.
+- 무료 티어 제약상 Vercel/Cloud Run 앞단에 CPU-heavy preprocessing, 자체 ML 모델, 대형 룰 엔진을 추가하지 않는다.
 
 ---
 
@@ -309,6 +327,8 @@ export function selectExecutionMode(
 - **NLQ 레이어 최전선**: Groq LLM 호출 전에 차단 → 토큰 낭비 방지
 - **기존 security.ts 재사용**: `detectPromptInjection()` import 재활용. 중복 구현 금지
 - **Vercel Node.js runtime 전용**: Edge runtime 불가 (Node.js 패키지 의존)
+- **semantic 판단 금지**: QueryGuard는 intent/entity/agent routing을 판단하지 않는다. 언어·오타·표현 변형은 Groq NLQ LLM과 N1 `executionMode` 계약이 처리한다.
+- **룰 폭증 금지**: 한국어/영어 표현을 맞추기 위한 대규모 regex 확장은 금지한다. 규칙은 보안 패턴, 길이, 로그 형태처럼 안정적인 표면에만 둔다.
 
 ### 신규 모듈: `src/lib/ai/query-guard.ts`
 
