@@ -1,7 +1,7 @@
 /**
  * Message Normalizer Tests
  *
- * @description AI SDK v5 UIMessage와 레거시 메시지 형식 처리 테스트
+ * @description AI SDK v6 UIMessage와 레거시 메시지 형식 처리 테스트
  */
 
 import type { UIMessage } from '@ai-sdk/react';
@@ -16,6 +16,17 @@ import {
   normalizeMessagesForCloudRun,
   RAW_TOOL_CALL_SUPPRESSED_MESSAGE,
 } from './message-normalizer';
+
+type ContractUIMessage = UIMessage<
+  { traceId?: string },
+  { routingDecisionTrace: { selectedMode: 'single' | 'multi' } },
+  {
+    getServerMetrics: {
+      input: { serverId: string };
+      output: { cpu: number };
+    };
+  }
+>;
 
 describe('message-normalizer', () => {
   describe('extractTextFromUIMessage', () => {
@@ -68,10 +79,43 @@ describe('message-normalizer', () => {
 
       expect(extractTextFromUIMessage(message)).toBe('Caption');
     });
+
+    it('AI SDK v6 UIMessage에서 텍스트 파트만 추출한다', () => {
+      const message: ContractUIMessage = {
+        id: 'ai-sdk-v6',
+        role: 'assistant',
+        metadata: { traceId: 'trace-1' },
+        parts: [
+          { type: 'reasoning', text: 'internal reasoning', state: 'done' },
+          { type: 'text', text: 'CPU', state: 'streaming' },
+          {
+            type: 'data-routingDecisionTrace',
+            id: 'route-1',
+            data: { selectedMode: 'single' },
+          },
+          {
+            type: 'tool-getServerMetrics',
+            toolCallId: 'tool-1',
+            state: 'output-available',
+            input: { serverId: 'web-nginx-dc1-01' },
+            output: { cpu: 91 },
+          },
+          {
+            type: 'source-url',
+            sourceId: 'kb-1',
+            url: 'https://example.com/runbook',
+            title: 'Runbook',
+          },
+          { type: 'text', text: ' high', state: 'done' },
+        ],
+      };
+
+      expect(extractTextFromUIMessage(message)).toBe('CPU high');
+    });
   });
 
   describe('extractTextFromHybridMessage', () => {
-    it('AI SDK v5 parts 형식에서 텍스트를 추출한다', () => {
+    it('AI SDK parts 형식에서 텍스트를 추출한다', () => {
       const message: HybridMessage = {
         role: 'user',
         parts: [{ type: 'text', text: 'Hello from parts' }],
@@ -271,6 +315,60 @@ describe('message-normalizer', () => {
 
       expect(result[0].content).toBe(longText);
       expect(result[0].content.length).toBe(10000);
+    });
+
+    it('AI SDK v6 FileUIPart와 UI 전용 파트를 Cloud Run 형식으로 정규화한다', () => {
+      const parts = [
+        { type: 'text', text: '로그 파일 확인' },
+        {
+          type: 'file',
+          url: 'data:text/plain;base64,bG9n',
+          mediaType: 'text/plain',
+          filename: 'error.log',
+        },
+        {
+          type: 'file',
+          url: 'data:image/png;base64,Y2hhcnQ=',
+          mediaType: 'image/png',
+          filename: 'chart.png',
+        },
+        {
+          type: 'data-routingDecisionTrace',
+          id: 'route-1',
+          data: { selectedMode: 'single' },
+        },
+        {
+          type: 'source-url',
+          sourceId: 'kb-1',
+          url: 'https://example.com/runbook',
+          title: 'Runbook',
+        },
+      ] as unknown as HybridMessage['parts'];
+
+      const messages: HybridMessage[] = [{ role: 'user', parts }];
+
+      const result = normalizeMessagesForCloudRun(messages);
+
+      expect(result).toEqual([
+        {
+          role: 'user',
+          content: '로그 파일 확인',
+          images: [
+            {
+              data: 'data:image/png;base64,Y2hhcnQ=',
+              mimeType: 'image/png',
+              name: 'chart.png',
+            },
+          ],
+          files: [
+            {
+              data: 'data:text/plain;base64,bG9n',
+              mimeType: 'text/plain',
+              name: 'error.log',
+            },
+          ],
+        },
+      ]);
     });
   });
 
