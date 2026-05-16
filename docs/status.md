@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-16 | **현재 버전 스냅샷**: v8.11.158
+**상태 스냅샷 기준일**: 2026-05-16 | **현재 버전 스냅샷**: v8.11.159
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.159** (2026-05-16) — Features: ai: rotate text providers with attribution
 - **v8.11.158** (2026-05-16) — Bug Fixes: ai: make nlq schema provider compatible
 - **v8.11.157** (2026-05-16) — Features: ai-engine: harden multi-agent evidence paths; Features: ai: propagate semantic intent routing metadata; Features: ai-engine: remove orchestrator llm routing path
 - **v8.11.156** (2026-05-15) — Bug Fixes: dashboard: redirect anonymous access checks
 - **v8.11.155** (2026-05-15) — Code Refactoring: ai-engine: extract orchestrator routing helpers; Code Refactoring: ai: extract evidence source helpers from message-helpers; Code Refactoring: ai: extract guidance CTA helpers from useAIChatCore
-- **v8.11.154** (2026-05-15) — Tests: qa: verify krl evidence card rendering; Tests: spec: add graphrag removal and krl cleanup specs; Tests: qa: record v8.11.153 follow-up QA
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
