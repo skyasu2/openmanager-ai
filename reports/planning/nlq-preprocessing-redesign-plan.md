@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (provider 판단 게이트 + artifact front LLM inventory 반영)
+> Last reviewed: 2026-05-16 (N4 streaming output filter 구현 반영)
 > Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture,stream-filter,best-practice-gap
 
 # NLQ Pre-processing Redesign Plan
@@ -589,10 +589,16 @@ return new Response(filteredStream, { headers: ... });
 - `src/app/api/ai/supervisor/stream/v2/route.ts` (filter 적용)
 
 **태스크**:
-- [ ] **N4-1**: `stream-output-filter.ts` 신규 — `createOutputFilterStream()` TransformStream
-- [ ] **N4-2**: SSE 청크 파싱 — content 부분 추출 + 프리픽스 보존 로직
-- [ ] **N4-3**: `stream/v2/route.ts` — pass-through path와 resumable path 양쪽에 filter 적용
-- [ ] **N4-4**: `stream-output-filter.test.ts` — XSS/악성/정상/SSE 프리픽스 케이스
+- [x] **N4-1**: `stream-output-filter.ts` 신규 — `createOutputFilterStream()` TransformStream
+- [x] **N4-2**: SSE 청크 파싱 — content 부분 추출 + 프리픽스 보존 로직
+- [x] **N4-3**: `stream/v2/route.ts` — pass-through path와 resumable path 양쪽에 filter 적용
+- [x] **N4-4**: `stream-output-filter.test.ts` — XSS/악성/정상/SSE 프리픽스 케이스
+
+**완료 기록 (2026-05-16)**:
+- 선행 커밋: `test(spec): add streaming output filter regression`
+- 구현: JSON data part의 string leaf만 필터링해 UIMessageStream JSON shape를 유지한다.
+- pass-through와 Upstash resumable stream 양쪽에서 `createOutputFilterStream()`을 적용한다.
+- 검증: targeted stream tests 39/39, `type-check`, `lint`, `test:quick`, `test:contract`, docs checks, `git diff --check`
 
 ---
 
@@ -604,7 +610,7 @@ N0 (UI input cap) — 독립, 먼저 처리 가능
   │    └→ N1 (LLM-first routing) — N2 완료 후 NLQ route 통합
   │         └→ N3 (장문/로그 계약) — N1의 intentFrame 계약 확정 후
   │              └→ [N1/N3 완료 시] schemas.ts z.unknown() → 타입 확정 (P6 해소)
-  └→ N4 (스트리밍 출력 필터) — N2와 파일/계약 독립, 병렬 착수 가능
+  └→ N4 (스트리밍 출력 필터) — 완료
 ```
 
 **N1이 T2를 흡수**: `ai-assistant-structure-improvement-plan.md` T2는 이 plan N1-6 완료 시 자동 종료.

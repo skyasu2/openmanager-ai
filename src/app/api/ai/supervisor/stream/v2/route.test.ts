@@ -71,9 +71,13 @@ vi.mock('@/lib/ai/utils/message-normalizer', () => ({
   normalizeMessagesForCloudRun: mockNormalizeMessagesForCloudRun,
 }));
 
-vi.mock('../../security', () => ({
-  securityCheck: mockSecurityCheck,
-}));
+vi.mock('../../security', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../security')>();
+  return {
+    ...actual,
+    securityCheck: mockSecurityCheck,
+  };
+});
 
 vi.mock('@/config/ai-proxy.config', () => ({
   getMaxTimeout: mockGetMaxTimeout,
@@ -435,6 +439,34 @@ describe('Supervisor Stream V2 Route', () => {
       expect(mockCreateNewResumableStream).not.toHaveBeenCalled();
     });
 
+    it('pass-through Cloud Run stream 출력은 클라이언트 반환 전에 필터링해야 함', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(createSseStream('data: <script>alert(1)</script>\n\n'), {
+          status: 200,
+          headers: { 'Content-Type': 'text/event-stream' },
+        })
+      );
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      await expect(response.text()).resolves.toBe('data: [removed]\n\n');
+    });
+
     it('AI_RESUMABLE_STREAMS_ENABLED=true면 resumable 응답을 반환해야 함', async () => {
       process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       mockFetch.mockResolvedValueOnce(
@@ -478,6 +510,42 @@ describe('Supervisor Stream V2 Route', () => {
         expect.any(String)
       );
       expect(mockCreateNewResumableStream).toHaveBeenCalledTimes(1);
+    });
+
+    it('resumable Cloud Run stream도 저장 전에 필터링해야 함', async () => {
+      process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
+      mockFetch.mockResolvedValueOnce(
+        new Response(createSseStream('data: <script>alert(1)</script>\n\n'), {
+          status: 200,
+          headers: { 'Content-Type': 'text/event-stream' },
+        })
+      );
+      mockCreateNewResumableStream.mockImplementationOnce(
+        async (
+          _streamId: string,
+          makeStream: () => ReadableStream<Uint8Array>
+        ) => makeStream()
+      );
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(mockCreateNewResumableStream).toHaveBeenCalledTimes(1);
+      await expect(response.text()).resolves.toBe('data: [removed]\n\n');
     });
 
     it('유효하지 않은 X-Device-Type은 desktop으로 정규화해야 함', async () => {

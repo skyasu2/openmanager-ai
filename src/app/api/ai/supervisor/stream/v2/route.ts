@@ -48,6 +48,7 @@ import {
   NORMALIZED_MESSAGES_SCHEMA,
   trimMessagesForContext,
 } from './route-utils';
+import { createOutputFilterStream } from './stream-output-filter';
 import {
   AI_FIRST_QUERY_HEADER,
   AI_WARMUP_STARTED_AT_HEADER,
@@ -436,11 +437,14 @@ export const POST = withRateLimit(
               })
             )
           : cloudRunResponse.body;
+        const filteredStreamBody = streamBody.pipeThrough(
+          createOutputFilterStream()
+        );
 
         if (!resumableStreamsEnabled) {
           logger.info(`✅ [SupervisorStreamV2] Stream started (pass-through)`);
 
-          return new Response(streamBody, {
+          return new Response(filteredStreamBody, {
             headers: createSupervisorStreamHeaders({
               sessionId,
               streamId,
@@ -455,7 +459,7 @@ export const POST = withRateLimit(
         const resumableContext = createUpstashResumableContext();
         const resumableStream = await resumableContext.createNewResumableStream(
           streamId,
-          () => streamBody
+          () => filteredStreamBody
         );
 
         logger.info(`✅ [SupervisorStreamV2] Stream started (resumable)`);
