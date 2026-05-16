@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: Plan
 > Last reviewed: 2026-05-16 (베스트 프랙티스 갭 분석 반영 — N4 추가, P5~P8 진단 추가)
 > Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture,stream-filter,best-practice-gap
@@ -203,9 +203,9 @@ Client는 `blocked: true`를 받으면 clarification을 열지 않고 전송을 
 - `src/components/ai-sidebar/ChatInputArea.test.tsx`
 
 **태스크**
-- [ ] **N0-1**: `AutoResizeTextarea` 호출에 `maxLength={10000}` 전달
-- [ ] **N0-2**: 8,000자 이상 warning, 10,000자 도달 시 hard cap 안내
-- [ ] **N0-3**: 기존 session counter와 충돌하지 않도록 하단 힌트 우선순위 정리
+- [x] **N0-1**: `AutoResizeTextarea` 호출에 `maxLength={10000}` 전달
+- [x] **N0-2**: 8,000자 이상 warning, 10,000자 도달 시 hard cap 안내
+- [x] **N0-3**: 기존 session counter와 충돌하지 않도록 하단 힌트 우선순위 정리
 
 **판단**: 서버 `MAX_INPUT_LENGTH=10000`과 같은 hard cap을 UI에도 노출해 대형 로그 붙여넣기 실패를 조기에 설명한다. N2/N3의 log handling은 10,000자 이내 입력을 대상으로 한다.
 

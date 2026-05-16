@@ -33,6 +33,14 @@ import {
 } from '@/types/ai/analysis-mode';
 import { SESSION_LIMITS, type SessionState } from '@/types/session';
 
+const CHAT_INPUT_MAX_LENGTH = 10_000;
+const CHAT_INPUT_WARNING_LENGTH = 8_000;
+const CHAT_INPUT_COUNT_FORMATTER = new Intl.NumberFormat('en-US');
+
+function formatChatInputCount(value: number): string {
+  return CHAT_INPUT_COUNT_FORMATTER.format(value);
+}
+
 interface ChatInputAreaProps {
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
@@ -109,6 +117,10 @@ export const ChatInputArea = memo(function ChatInputArea({
   const sessionCount = sessionState?.count ?? 0;
   const showSessionWarning =
     Boolean(sessionState?.isWarning) && !sessionState?.isLimitReached;
+  const inputLength = inputValue.length;
+  const showInputLengthWarning = inputLength >= CHAT_INPUT_WARNING_LENGTH;
+  const isInputAtHardCap = inputLength >= CHAT_INPUT_MAX_LENGTH;
+  const inputLengthLabel = `입력 ${formatChatInputCount(inputLength)}/${formatChatInputCount(CHAT_INPUT_MAX_LENGTH)}자`;
 
   // 외부 클릭 시 popover 닫기
   useEffect(() => {
@@ -439,6 +451,7 @@ export const ChatInputArea = memo(function ChatInputArea({
               minHeight={48}
               maxHeight={200}
               maxHeightVh={30}
+              maxLength={CHAT_INPUT_MAX_LENGTH}
               id="ai-chat-input"
               name="ai-chat-input"
               aria-label="AI 질문 입력"
@@ -494,8 +507,8 @@ export const ChatInputArea = memo(function ChatInputArea({
           />
 
           {/* 하단 힌트 */}
-          <div className="mt-2 flex items-center justify-between text-xs text-gray-400">
-            <div className="flex items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-400">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               {sessionState && (
                 <span
                   className={
@@ -516,9 +529,28 @@ export const ChatInputArea = memo(function ChatInputArea({
                   대화 {sessionCount}/{SESSION_LIMITS.MESSAGE_LIMIT}
                 </span>
               )}
+              {showInputLengthWarning && (
+                <span
+                  className={`font-medium ${
+                    isInputAtHardCap ? 'text-red-700' : 'text-amber-700'
+                  }`}
+                  title={
+                    isInputAtHardCap
+                      ? '입력 길이 한도 도달'
+                      : '긴 입력은 답변 품질과 처리 시간에 영향을 줄 수 있습니다'
+                  }
+                >
+                  {inputLengthLabel}
+                </span>
+              )}
               {showSessionWarning && (
                 <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
                   곧 한도 도달
+                </span>
+              )}
+              {isInputAtHardCap && (
+                <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 font-medium text-red-700">
+                  최대 입력 길이에 도달했습니다
                 </span>
               )}
               {attachments.length > 0 && (
@@ -528,7 +560,7 @@ export const ChatInputArea = memo(function ChatInputArea({
               )}
               <span>서버 운영 중심</span>
             </div>
-            <span>Enter로 전송, Shift+Enter로 줄바꿈</span>
+            <span className="shrink-0">Enter로 전송, Shift+Enter로 줄바꿈</span>
           </div>
         </div>
       </div>
