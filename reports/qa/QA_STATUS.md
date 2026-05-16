@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-15 16:20:53 KST
+> Generated at: 2026-05-16 19:31:04 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 504 |
+| Total Recorded Runs | 505 |
 | Total Runs (Counted) | 403 |
-| Non-counted Runs | 101 |
+| Non-counted Runs | 102 |
 | Total Checks | 3606 |
 | Passed | 3469 |
 | Failed | 127 |
-| Completed Items | 577 |
-| Pending Items | 0 |
+| Completed Items | 578 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 23 |
+| Wont-Fix Items | 24 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.83% |
 | Last Counted Run | QA-20260515-0506 (2026-05-15T07:20:51.624Z) |
-| Latest Recorded Run | QA-20260515-0506 (2026-05-15T07:20:51.624Z) |
+| Latest Recorded Run | QA-20260516-0507 (2026-05-16T10:31:04.202Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,34 +34,34 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260515-0506 (2026-05-15T07:20:51.624Z)
+Latest run: QA-20260516-0507 (2026-05-16T10:31:04.202Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Fix NLQ EntitySchema structured-output compatibility first, then rerun a smaller Groq vs ministral-3b smoke before switching the production default. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after production QA; effective=9.4267 USD, billed=0.0000 USD, chargeCount=8526. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.157 deploy and provider smoke; effective=10.0954 USD, billed=0.0000 USD, chargeCount=9135. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-14T07:20:51.624Z -> 2026-05-15T07:20:51.624Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
+- Window: 2026-05-15T10:31:04.202Z -> 2026-05-16T10:31:04.202Z (24h)
+- Runs with observations: 1 recorded / 0 counted
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| - | - | 0 | - | - | - | - | - | - | - |
+| Front NLQ semantic parser | zai | 1 | 3758ms | 3758ms | - | - | - | - | QA-20260516-0507 |
+| Front NLQ semantic parser | groq | 1 | 1359ms | 1359ms | - | - | - | - | QA-20260516-0507 |
+| Front NLQ semantic parser | mistral | 2 | 970ms | 1054ms | - | - | - | - | QA-20260516-0507 |
+| Front NLQ semantic parser | cerebras | 1 | 771ms | 771ms | - | - | - | - | QA-20260516-0507 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-14T07:20:51.624Z -> 2026-05-15T07:20:51.624Z (24h)
+- Window: 2026-05-15T10:31:04.202Z -> 2026-05-16T10:31:04.202Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,37 +73,35 @@ Latest run: QA-20260515-0506 (2026-05-15T07:20:51.624Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_F8HDfrdVpxRCPUR113N32LBubvs8 / SHA a962a6a7
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production /, /login, /api/version post-deploy smoke, Landing page AI Assistant card modal KRL/Postgres FTS copy, /dashboard/ai-assistant production AI workspace, Standard five-question conversational AI QA, Browser console and AI request resource summary
-- Skipped Surfaces: Broad dashboard route pack outside AI Assistant was not repeated in this targeted T7 closure run, Mobile viewport was not repeated because the change scope is AI/KRL copy and runtime QA, OAuth/provider login flows were not repeated; guest session path was sufficient for AI Assistant QA
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: v8.11.157 / SHA db1d7841
+- Coverage Packs: ai-core
+- Covered Surfaces: Vercel production /api/version reports v8.11.157, NLQ provider structured-output contract smoke, Groq llama-4-scout current schema compatibility, Mistral ministral-3b / mistral-small NLQ intent extraction candidates, Cerebras gpt-oss-120b and Z.AI glm-4.5-flash NLQ structured-output candidates
+- Skipped Surfaces: Authenticated browser UI conversation was not repeated; this was a provider-only low-priority smoke, Provider quota dashboard APIs were not queried; smoke used low call counts and observed no 429 responses
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main validate pipeline 2527097782 | [GitLab main validate pipeline 2527097782](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2527097782) | - |
-| general | GitLab v8.11.154 tag pipeline 2527097775 | [GitLab v8.11.154 tag pipeline 2527097775](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2527097775) | - |
-| vercel-deployment | Vercel production deployment dpl_F8HDfrdVpxRCPUR113N32LBubvs8 | [Vercel production deployment dpl_F8HDfrdVpxRCPUR113N32LBubvs8](https://openmanager-1duiyrv9m-skyasus-projects.vercel.app/) | - |
+| general | GitLab v8.11.157 deploy pipeline 2529885487 | [GitLab v8.11.157 deploy pipeline 2529885487](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2529885487) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI Assistant production conversation screenshot | `reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-conversation.png` | - |
-| playwright-report | AI Assistant T7 dialog and deployment summary | `reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-dialog-summary.txt` | - |
-| playwright-console | AI Assistant production console messages | `reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-console.txt` | - |
-| playwright-network | AI Assistant production network summary | `reports/qa/evidence/v8.11.154-krl-closure/qa-20260515-v811154-ai-assistant-network.txt` | - |
+| playwright-network | NLQ provider smoke - current route schema | `reports/qa/evidence/qa-20260516-v811157-nlq-provider-smoke.json` | - |
+| playwright-network | NLQ provider smoke - required topN schema | `reports/qa/evidence/qa-20260516-v811157-nlq-provider-smoke-required-topn.json` | - |
+| playwright-network | NLQ provider smoke - strict required nullable schema | `reports/qa/evidence/qa-20260516-v811157-nlq-provider-smoke-strict-required.json` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260516-0507)
+  next: Fix NLQ EntitySchema structured-output compatibility first, then rerun a smaller Groq vs ministral-3b smoke before switching the production default.
 
 ## Pending Improvements
 
-- None
+- [P1] nlq-entity-schema-provider-compatibility-v811157: NLQ EntitySchema must use provider-compatible required nullable fields before Groq/OpenAI-compatible structured output can be trusted (seen 1회, last QA-20260516-0507)
 
 ## Deferred Improvements
 
@@ -111,7 +109,7 @@ Latest run: QA-20260515-0506 (2026-05-15T07:20:51.624Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 15
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 16
 
 ### Platform Constraint
 
@@ -175,6 +173,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] landing-tech-stack-version-copy-drift: 기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리 (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] mobile-header-density: Review dashboard mobile header density around AI CTA and profile cluster (seen 1회, last QA-20260418-0303)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] nlq-provider-ministral3b-candidate-v811157: Evaluate Mistral ministral-3b as front NLQ primary or fallback after schema compatibility fix (seen 1회, last QA-20260516-0507)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -577,6 +577,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - next-dev-allowed-origins-loopback-parity: 127.0.0.1 dev-origin parity for OAuth smoke (completed 1회, last QA-20260412-0273)
 - nivo-active-anomaly-highlight-visual-qa: Nivo active anomaly highlight rect is visible for active alert data (completed 1회, last QA-20260508-0424)
 - nivo-storage-tooltip-visual-qa: Nivo slice tooltip is visible on storage-nfs-dc1-01 DISK hover (completed 1회, last QA-20260508-0424)
+- nlq-provider-live-smoke-v811157: Run low-priority NLQ provider comparison smoke after v8.11.157 deployment (completed 1회, last QA-20260516-0507)
 - off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (completed 1회, last QA-20260421-0324)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
@@ -763,6 +764,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260516-0507 | 2026-05-16T10:31:04.202Z | targeted | no | no | NLQ Provider Live Comparison Smoke - v8.11.157 | 11 | 1 | 1 | 0 | 1 | 1 |
 | QA-20260515-0506 | 2026-05-15T07:20:51.624Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.154 KRL Closure | 17 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260515-0505 | 2026-05-15T06:50:53.160Z | targeted | no | yes | Supabase Live QA - KRL Legacy GraphRAG Inventory Removal | 29 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260515-0504 | 2026-05-15T06:36:37.546Z | targeted | no | yes | Local Playwright QA - KRL EvidenceCards Source Rendering | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -782,4 +784,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260513-0490 | 2026-05-12T17:54:33.608Z | targeted | yes | yes | Cloud Run Direct QA - v8.11.141 AI Response Quality Regression | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0489 | 2026-05-12T15:34:19.485Z | targeted | yes | yes | v8.11.140 AI Routing Follow-up Clarification Production QA | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260512-0488 | 2026-05-12T12:51:00.717Z | targeted | yes | yes | Vercel Production QA - v8.11.138 Peak Advice P1 Closure | 16 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260512-0487 | 2026-05-12T10:53:59.087Z | targeted | yes | yes | Vercel Playwright QA - v8.11.137 Semantic Trace Job Path | 8 | 1 | 0 | 0 | 1 | 1 |

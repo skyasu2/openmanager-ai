@@ -1,0 +1,474 @@
+{
+  "recordedAt": "2026-05-16T10:28:06.672Z",
+  "startedAt": "2026-05-16T10:27:18.214Z",
+  "target": "live-provider-api",
+  "corpusSize": 4,
+  "totalCalls": 20,
+  "results": [
+    {
+      "id": "groq-llama-4-scout",
+      "provider": "groq",
+      "modelId": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "staticQuota": "30 RPM / 1K RPD / 30K TPM (repo-documented baseline)",
+      "calls": 4,
+      "no429": true,
+      "schemaValid": "0/4",
+      "intentAccuracy": "0/4",
+      "executionModeAccuracy": "0/4",
+      "p95LatencyMs": 311,
+      "checks": [
+        {
+          "fixtureId": "ko-24h-load-peak",
+          "query": "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?",
+          "schemaValid": false,
+          "latencyMs": 311,
+          "error": "invalid JSON schema for response_format: 'nlq_entities': /required: `required` is required to be supplied and to be an array including every key in properties. The following properties must be listed in `required`: intentFrame, metric, server, timeRange",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "ko-rca-remediation",
+          "query": "api-was-dc1-01 CPU가 왜 높은지 원인 후보와 조치 순서를 알려줘",
+          "schemaValid": false,
+          "latencyMs": 262,
+          "error": "invalid JSON schema for response_format: 'nlq_entities': /required: `required` is required to be supplied and to be an array including every key in properties. The following properties must be listed in `required`: intentFrame, metric, server, timeRange",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "en-incident-report",
+          "query": "Create an incident report for disk warnings across the fleet in the last 24h",
+          "schemaValid": false,
+          "latencyMs": 186,
+          "error": "invalid JSON schema for response_format: 'nlq_entities': /required: `required` is required to be supplied and to be an array including every key in properties. The following properties must be listed in `required`: intentFrame, metric, server, timeRange",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "ko-off-domain",
+          "query": "오늘 점심 메뉴 추천해줘",
+          "schemaValid": false,
+          "latencyMs": 128,
+          "error": "invalid JSON schema for response_format: 'nlq_entities': /required: `required` is required to be supplied and to be an array including every key in properties. The following properties must be listed in `required`: intentFrame, metric, server, timeRange",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        }
+      ]
+    },
+    {
+      "id": "mistral-ministral-3b",
+      "provider": "mistral",
+      "modelId": "ministral-3b-latest",
+      "staticQuota": "account-specific; no 429 in smoke",
+      "calls": 4,
+      "no429": true,
+      "schemaValid": "4/4",
+      "intentAccuracy": "4/4",
+      "executionModeAccuracy": "4/4",
+      "p95LatencyMs": 821,
+      "checks": [
+        {
+          "fixtureId": "ko-24h-load-peak",
+          "query": "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?",
+          "schemaValid": true,
+          "latencyMs": 821,
+          "output": {
+            "server": null,
+            "metric": "network",
+            "timeRange": null,
+            "intentFrame": {
+              "domain": "monitoring",
+              "intent": "metric_peak",
+              "scope": "whole_fleet",
+              "targets": [],
+              "metric": "load1",
+              "timeWindow": "24h",
+              "aggregation": "peak",
+              "topN": null,
+              "ambiguity": "medium",
+              "executionMode": "single",
+              "confidence": 95
+            },
+            "confidence": 95
+          },
+          "checks": {
+            "domain": true,
+            "intent": true,
+            "executionMode": true,
+            "scope": true,
+            "metric": true,
+            "timeWindow": true,
+            "server": true
+          },
+          "intentAccuracy": true,
+          "executionModeAccuracy": true
+        },
+        {
+          "fixtureId": "ko-rca-remediation",
+          "query": "api-was-dc1-01 CPU가 왜 높은지 원인 후보와 조치 순서를 알려줘",
+          "schemaValid": true,
+          "latencyMs": 794,
+          "output": {
+            "server": "api-was-dc1-01",
+            "metric": "cpu",
+            "intentFrame": {
+              "domain": "monitoring",
+              "intent": "root_cause",
+              "scope": "server",
+              "targets": ["api-was-dc1-01"],
+              "metric": "cpu",
+              "timeWindow": "24h",
+              "aggregation": "summary",
+              "topN": null,
+              "ambiguity": "medium",
+              "executionMode": "multi",
+              "confidence": 95
+            },
+            "confidence": 95
+          },
+          "checks": {
+            "domain": true,
+            "intent": true,
+            "executionMode": true,
+            "scope": true,
+            "metric": true,
+            "timeWindow": true,
+            "server": true
+          },
+          "intentAccuracy": true,
+          "executionModeAccuracy": true
+        },
+        {
+          "fixtureId": "en-incident-report",
+          "query": "Create an incident report for disk warnings across the fleet in the last 24h",
+          "schemaValid": true,
+          "latencyMs": 730,
+          "output": {
+            "server": null,
+            "metric": null,
+            "timeRange": null,
+            "intentFrame": {
+              "domain": "monitoring",
+              "intent": "incident_report",
+              "scope": "whole_fleet",
+              "targets": [],
+              "metric": "disk",
+              "timeWindow": "24h",
+              "aggregation": "summary",
+              "topN": null,
+              "ambiguity": "medium",
+              "executionMode": "multi",
+              "confidence": 95
+            },
+            "confidence": 95
+          },
+          "checks": {
+            "domain": true,
+            "intent": true,
+            "executionMode": true,
+            "scope": true,
+            "metric": true,
+            "timeWindow": true,
+            "server": true
+          },
+          "intentAccuracy": true,
+          "executionModeAccuracy": true
+        },
+        {
+          "fixtureId": "ko-off-domain",
+          "query": "오늘 점심 메뉴 추천해줘",
+          "schemaValid": true,
+          "latencyMs": 737,
+          "output": {
+            "server": null,
+            "metric": null,
+            "timeRange": null,
+            "intentFrame": {
+              "domain": "unknown",
+              "intent": "unknown",
+              "scope": "unknown",
+              "targets": [],
+              "metric": "unknown",
+              "timeWindow": "unknown",
+              "aggregation": "unknown",
+              "topN": null,
+              "ambiguity": "high",
+              "executionMode": "unknown",
+              "confidence": 0
+            },
+            "confidence": 0
+          },
+          "checks": {
+            "domain": true,
+            "intent": true,
+            "executionMode": true,
+            "scope": true,
+            "metric": true,
+            "timeWindow": true,
+            "server": true
+          },
+          "intentAccuracy": true,
+          "executionModeAccuracy": true
+        }
+      ]
+    },
+    {
+      "id": "mistral-small",
+      "provider": "mistral",
+      "modelId": "mistral-small-latest",
+      "staticQuota": "account-specific; no 429 in smoke",
+      "calls": 4,
+      "no429": true,
+      "schemaValid": "4/4",
+      "intentAccuracy": "3/4",
+      "executionModeAccuracy": "3/4",
+      "p95LatencyMs": 3727,
+      "checks": [
+        {
+          "fixtureId": "ko-24h-load-peak",
+          "query": "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?",
+          "schemaValid": true,
+          "latencyMs": 939,
+          "output": {
+            "server": null,
+            "metric": "cpu",
+            "timeRange": "24h",
+            "intentFrame": {
+              "domain": "monitoring",
+              "intent": "metric_peak",
+              "scope": "whole_fleet",
+              "targets": ["whole_fleet"],
+              "metric": "load1",
+              "timeWindow": "24h",
+              "aggregation": "peak",
+              "topN": null,
+              "ambiguity": "low",
+              "executionMode": "single",
+              "confidence": 95
+            },
+            "confidence": 95
+          },
+          "checks": {
+            "domain": true,
+            "intent": true,
+            "executionMode": true,
+            "scope": true,
+            "metric": true,
+            "timeWindow": true,
+            "server": true
+          },
+          "intentAccuracy": true,
+          "executionModeAccuracy": true
+        },
+        {
+          "fixtureId": "ko-rca-remediation",
+          "query": "api-was-dc1-01 CPU가 왜 높은지 원인 후보와 조치 순서를 알려줘",
+          "schemaValid": true,
+          "latencyMs": 961,
+          "output": {
+            "server": "api-was-dc1-01",
+            "metric": "cpu",
+            "timeRange": null,
+            "intentFrame": {
+              "domain": "monitoring",
+              "intent": "root_cause",
+              "scope": "server",
+              "targets": ["api-was-dc1-01"],
+              "metric": "cpu",
+              "timeWindow": "unknown",
+              "aggregation": "unknown",
+              "topN": null,
+              "ambiguity": "medium",
+              "executionMode": "multi",
+              "confidence": 95
+            },
+            "confidence": 95
+          },
+          "checks": {
+            "domain": true,
+            "intent": true,
+            "executionMode": true,
+            "scope": true,
+            "metric": true,
+            "timeWindow": true,
+            "server": true
+          },
+          "intentAccuracy": true,
+          "executionModeAccuracy": true
+        },
+        {
+          "fixtureId": "en-incident-report",
+          "query": "Create an incident report for disk warnings across the fleet in the last 24h",
+          "schemaValid": true,
+          "latencyMs": 3727,
+          "output": {
+            "server": null,
+            "metric": "disk",
+            "timeRange": "24h",
+            "intentFrame": {
+              "domain": "monitoring",
+              "intent": "incident_report",
+              "scope": "whole_fleet",
+              "targets": ["whole_fleet"],
+              "metric": "disk",
+              "timeWindow": "24h",
+              "aggregation": "summary",
+              "topN": null,
+              "ambiguity": "low",
+              "executionMode": "multi",
+              "confidence": 95
+            },
+            "confidence": 95
+          },
+          "checks": {
+            "domain": true,
+            "intent": true,
+            "executionMode": true,
+            "scope": true,
+            "metric": true,
+            "timeWindow": true,
+            "server": true
+          },
+          "intentAccuracy": true,
+          "executionModeAccuracy": true
+        },
+        {
+          "fixtureId": "ko-off-domain",
+          "query": "오늘 점심 메뉴 추천해줘",
+          "schemaValid": true,
+          "latencyMs": 573,
+          "output": {
+            "server": null,
+            "metric": null,
+            "timeRange": null,
+            "intentFrame": null,
+            "confidence": 0
+          },
+          "checks": {
+            "domain": false,
+            "intent": false,
+            "executionMode": false,
+            "scope": false,
+            "metric": false,
+            "timeWindow": true,
+            "server": true
+          },
+          "intentAccuracy": false,
+          "executionModeAccuracy": false
+        }
+      ]
+    },
+    {
+      "id": "cerebras-gpt-oss-120b",
+      "provider": "cerebras",
+      "modelId": "gpt-oss-120b",
+      "staticQuota": "5 RPM / 2.4K RPD / 30K TPM (repo policy)",
+      "calls": 4,
+      "no429": true,
+      "schemaValid": "0/4",
+      "intentAccuracy": "0/4",
+      "executionModeAccuracy": "0/4",
+      "p95LatencyMs": 1253,
+      "checks": [
+        {
+          "fixtureId": "ko-24h-load-peak",
+          "query": "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?",
+          "schemaValid": false,
+          "latencyMs": 1253,
+          "error": "No output generated.",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "ko-rca-remediation",
+          "query": "api-was-dc1-01 CPU가 왜 높은지 원인 후보와 조치 순서를 알려줘",
+          "schemaValid": false,
+          "latencyMs": 363,
+          "error": "No output generated.",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "en-incident-report",
+          "query": "Create an incident report for disk warnings across the fleet in the last 24h",
+          "schemaValid": false,
+          "latencyMs": 486,
+          "error": "No output generated.",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "ko-off-domain",
+          "query": "오늘 점심 메뉴 추천해줘",
+          "schemaValid": false,
+          "latencyMs": 374,
+          "error": "No output generated.",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        }
+      ]
+    },
+    {
+      "id": "zai-glm-4.5-flash",
+      "provider": "zai",
+      "modelId": "glm-4.5-flash",
+      "staticQuota": "account-specific; no 429 in smoke",
+      "calls": 4,
+      "no429": true,
+      "schemaValid": "0/4",
+      "intentAccuracy": "0/4",
+      "executionModeAccuracy": "0/4",
+      "p95LatencyMs": 11751,
+      "checks": [
+        {
+          "fixtureId": "ko-24h-load-peak",
+          "query": "지난 24시간 중 가장 부하가 높았던 시간대는 언제야?",
+          "schemaValid": false,
+          "latencyMs": 3105,
+          "error": "No object generated: could not parse the response.",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "ko-rca-remediation",
+          "query": "api-was-dc1-01 CPU가 왜 높은지 원인 후보와 조치 순서를 알려줘",
+          "schemaValid": false,
+          "latencyMs": 3322,
+          "error": "No object generated: could not parse the response.",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "en-incident-report",
+          "query": "Create an incident report for disk warnings across the fleet in the last 24h",
+          "schemaValid": false,
+          "latencyMs": 2631,
+          "error": "No object generated: could not parse the response.",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        },
+        {
+          "fixtureId": "ko-off-domain",
+          "query": "오늘 점심 메뉴 추천해줘",
+          "schemaValid": false,
+          "latencyMs": 11751,
+          "error": "No object generated: could not parse the response.",
+          "intentAccuracy": false,
+          "executionModeAccuracy": false,
+          "checks": {}
+        }
+      ]
+    }
+  ]
+}

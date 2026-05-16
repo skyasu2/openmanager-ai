@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (AI SDK conformance optional O4)
+**Last Updated**: 2026-05-16 KST (NLQ provider smoke follow-up)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,6 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| NLQ EntitySchema provider compatibility fix | High | Ready | `QA-20260516-0507` provider smoke에서 current `/api/ai/nlq/extract-entities` schema의 optional fields가 Groq/OpenAI-compatible structured output과 충돌하는 것을 확인. Strict required nullable schema에서는 Groq가 3/4까지 회복했고 Mistral `ministral-3b-latest`는 4/4 유지. provider 전환 전 schema 계약 수정과 targeted rerun 필요. |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 잔여 구현 없음. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -21,7 +22,6 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | AI SDK conformance optional 잔여 (O1~O3) | Low | **구조적 차단**: Vercel(BFF)+Cloud Run(AI Engine) 분리 아키텍처로 인해 AI SDK native 패턴(subagent-as-tool/UI stream/DevTools)이 단일 런타임 전제와 충돌. 아키텍처 통합 없이는 재착수 불필요. 상세 제약 기록: [archive/vercel-ai-sdk-multi-agent-conformance-plan.md](archive/vercel-ai-sdk-multi-agent-conformance-plan.md) O1~O3 섹션 |
-| NLQ front provider live 비교 QA | Low | Groq baseline은 유지. Mistral/Cerebras/Z.AI 후보는 외부 LLM 호출이 필요하므로 QA/수동 smoke에서 `schema_valid`, `intent_accuracy`, `executionMode_accuracy`, latency, rate-limit headroom만 비교. 상세: [archive/nlq-preprocessing-redesign-plan.md](archive/nlq-preprocessing-redesign-plan.md) |
 
 ---
 
@@ -37,6 +37,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~NLQ front provider live 비교 QA~~ | — | **완료** — `QA-20260516-0507`에서 Groq/Mistral/Cerebras/Z.AI 후보를 provider당 4 fixture로 수동 smoke. Current schema 기준 Mistral `ministral-3b-latest`만 4/4 통과, strict required nullable schema 기준 Groq 3/4·Mistral `ministral-3b-latest` 4/4. 결론: production provider 전환보다 `NLQ EntitySchema provider compatibility fix`가 선행. |
 | ~~대형 리팩터 커밋 분할 기준 보강~~ | — | **완료** — `reports/planning/README.md`에 대형 리팩터의 `test(spec):` / 구현 / docs·QA 커밋 분리 기준과 분할 필요·불필요 조건을 추가했다. 코드 변경 없는 프로세스 규칙 개선으로 처리. |
 | ~~orchestrator-routing 모듈 경계 정리~~ | — | **완료** — `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-prompt-helpers.ts`로 prompt/capability helper를 분리하고, deterministic forced knowledge path와 empty tool-result summarization fallback도 각각 전용 모듈로 이동했다. `orchestrator-routing.ts`는 706줄 → 459줄로 축소되어 계획 기준(≤500)을 충족. SDD 선행 커밋 `test(spec): add orchestrator prompt builder tests` 후 구현. 검증: targeted Vitest 2 files / 23 tests, AI Engine `type-check`, AI Engine full test 125 files / 1218 tests, `line-guard` 통과. 상세: [archive/post-2026-0515-improvement-plan.md](archive/post-2026-0515-improvement-plan.md) T4 |
 | ~~message-helpers evidence/source helper 분리~~ | — | **완료** — `src/hooks/ai/utils/evidence-source-helpers.ts`로 knowledge search tool output retrieval/evidence card 추출, source group 구성, semantic evidence data source 라벨, assistant `analysisBasis` 조립을 이동했다. `message-helpers.ts`는 629줄 → 382줄로 축소되어 계획 기준(≤450)을 충족. SDD 선행 커밋 `test(spec): add evidence source helper unit tests` 후 구현. 검증: targeted Vitest 4 files / 63 tests, `type-check`, `lint`, `test:quick`, `line-guard` 통과. 상세: [archive/post-2026-0515-improvement-plan.md](archive/post-2026-0515-improvement-plan.md) T3 |
