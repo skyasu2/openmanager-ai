@@ -349,6 +349,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               estimatedWaitSeconds={estimatedWaitSeconds}
               queuedQueries={queuedQueries}
               removeQueuedQuery={removeQueuedQuery}
+              showInternalHeader={false}
             />
           </Activity>
           {/* Reporter/Analyst - Activity API로 상태 유지 */}
@@ -382,6 +383,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         role="dialog"
         aria-labelledby="ai-sidebar-v4-title"
         aria-modal={isOpen || undefined}
+        aria-hidden={!isOpen}
         className={cn(
           'gpu-sidebar-slide-in fixed z-50 flex bg-white shadow-2xl',
           isMobile

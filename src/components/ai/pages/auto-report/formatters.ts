@@ -7,6 +7,7 @@
  */
 
 import { APP_VERSION } from '@/config/app-meta';
+import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
 import {
   buildDetectionSection,
   buildDetectionSectionText,
@@ -377,13 +378,9 @@ export function downloadReport(
       : formatReportAsText(report);
   const mimeType = format === 'md' ? 'text/markdown' : 'text/plain';
 
-  const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = buildReportDownloadFilename(report, format);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  downloadBlobContent(
+    content,
+    buildReportDownloadFilename(report, format),
+    mimeType
+  );
 }

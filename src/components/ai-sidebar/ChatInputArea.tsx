@@ -127,6 +127,7 @@ export const ChatInputArea = memo(function ChatInputArea({
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
         e.preventDefault();
         closePopover(true);
       }

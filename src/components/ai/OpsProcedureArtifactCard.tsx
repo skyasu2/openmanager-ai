@@ -1,23 +1,12 @@
 'use client';
 
 import { Download, FileText } from 'lucide-react';
+import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
 import {
   buildOpsProcedureJson,
   buildOpsProcedureMarkdown,
 } from '@/lib/ai/chat-artifacts/ops-procedure-artifact';
 import type { OpsProcedureArtifact } from '@/lib/ai/chat-artifacts/types';
-
-function downloadBlob(content: string, filename: string, type: string): void {
-  const blob = new Blob([content], { type: `${type};charset=utf-8` });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
 
 function downloadProcedure(
   artifact: OpsProcedureArtifact,
@@ -25,7 +14,7 @@ function downloadProcedure(
 ): void {
   const stamp = artifact.generatedAt.replace(/[:.]/g, '-');
   if (format === 'json') {
-    downloadBlob(
+    downloadBlobContent(
       buildOpsProcedureJson(artifact),
       `ops-procedure-${stamp}.json`,
       'application/json'
@@ -33,7 +22,7 @@ function downloadProcedure(
     return;
   }
 
-  downloadBlob(
+  downloadBlobContent(
     buildOpsProcedureMarkdown(artifact),
     `ops-procedure-${stamp}.md`,
     'text/markdown'

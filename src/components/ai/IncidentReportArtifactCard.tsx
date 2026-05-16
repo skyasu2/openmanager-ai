@@ -1,6 +1,16 @@
 'use client';
 
-import { AlertTriangle, Download, ExternalLink, FileText } from 'lucide-react';
+import {
+  AlertTriangle,
+  Clock,
+  Download,
+  ExternalLink,
+  FileText,
+  HelpCircle,
+  MapPin,
+  Settings,
+  User,
+} from 'lucide-react';
 import Link from 'next/link';
 import { downloadReport } from '@/components/ai/pages/auto-report/formatters';
 import type { IncidentReport } from '@/components/ai/pages/auto-report/types';
@@ -36,6 +46,78 @@ function severityClass(severity: IncidentReport['severity']): string {
 
 function formatMetricValue(value: number): string {
   return Number.isFinite(value) ? `${Math.round(value)}%` : '-';
+}
+
+function formatTimestamp(ts: Date | string): string {
+  const d = ts instanceof Date ? ts : new Date(ts);
+  if (Number.isNaN(d.getTime())) return '-';
+  return d.toLocaleString('ko-KR', {
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+const SIX_W_CONFIG = [
+  { key: 'who', label: '누가', Icon: User },
+  { key: 'what', label: '무엇을', Icon: FileText },
+  { key: 'when', label: '언제', Icon: Clock },
+  { key: 'where', label: '어디서', Icon: MapPin },
+  { key: 'why', label: '왜', Icon: HelpCircle },
+  { key: 'how', label: '어떻게', Icon: Settings },
+] as const;
+
+function SixWGrid({ report }: { report: IncidentReport }) {
+  const who =
+    report.affectedServers.length > 0
+      ? `${report.affectedServers[0]}${report.affectedServers.length > 1 ? ` 외 ${report.affectedServers.length - 1}대` : ''}`
+      : '시스템';
+  const what = report.title;
+  const when = formatTimestamp(report.timestamp);
+  const where =
+    report.affectedServers.length > 0
+      ? report.affectedServers.slice(0, 2).join(', ')
+      : '전체 시스템';
+  const why =
+    report.pattern ??
+    (report.description.length > 60
+      ? `${report.description.slice(0, 60)}…`
+      : report.description);
+  const how =
+    report.recommendations != null && report.recommendations.length > 0
+      ? (report.recommendations[0]?.action ?? '보고서에서 확인')
+      : '보고서에서 확인';
+
+  const values: Record<(typeof SIX_W_CONFIG)[number]['key'], string> = {
+    who,
+    what,
+    when,
+    where,
+    why,
+    how,
+  };
+
+  return (
+    <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-md border border-amber-100 bg-amber-50/40 p-2.5">
+      {SIX_W_CONFIG.map(({ key, label, Icon }) => (
+        <div key={key} className="flex items-start gap-1.5 min-w-0">
+          <Icon
+            className="mt-0.5 h-3 w-3 shrink-0 text-amber-600"
+            aria-hidden="true"
+          />
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-600">
+              {label}
+            </p>
+            <p className="truncate text-[11px] leading-4 text-slate-700">
+              {values[key]}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function formatUptimeImpact(
@@ -123,6 +205,10 @@ export function IncidentReportArtifactCard({
             </p>
           )}
         </div>
+      </div>
+
+      <div className="mt-3">
+        <SixWGrid report={report} />
       </div>
 
       {hasDetails && (

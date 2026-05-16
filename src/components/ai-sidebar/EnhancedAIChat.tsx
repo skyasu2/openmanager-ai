@@ -92,6 +92,7 @@ interface EnhancedAIChatProps {
     attachments?: FileAttachment[];
   }>;
   removeQueuedQuery?: (index: number) => void;
+  showInternalHeader?: boolean;
 }
 
 /**
@@ -137,6 +138,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   estimatedWaitSeconds,
   queuedQueries,
   removeQueuedQuery,
+  showInternalHeader = true,
 }: EnhancedAIChatProps) {
   const {
     scrollContainerRef,
@@ -207,19 +209,23 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   return (
     <div className="flex h-full min-h-0 flex-col bg-linear-to-br from-slate-50 to-blue-50">
       {/* 헤더 */}
-      <div className="border-b border-gray-200 bg-white/80 p-4 backdrop-blur-sm">
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-purple-500 to-blue-600">
-              <Bot className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-gray-800">AI Chat</h3>
-              <p className="text-xs text-gray-600">AI 기반 대화형 인터페이스</p>
+      {showInternalHeader && (
+        <div className="border-b border-gray-200 bg-white/80 p-4 backdrop-blur-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-purple-500 to-blue-600">
+                <Bot className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-800">AI Chat</h3>
+                <p className="text-xs text-gray-600">
+                  AI 기반 대화형 인터페이스
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* 메시지 영역 */}
       {!hasRestored && hasPersistedHistory && allMessages.length > 0 ? (

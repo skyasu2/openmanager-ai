@@ -12,7 +12,9 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { server } from '@/__mocks__/msw/server';
 
 // Mock dependencies
 vi.mock('@ai-sdk/react', () => ({
@@ -39,7 +41,7 @@ vi.mock('@/lib/ai/query-classifier', () => ({
 
 vi.mock('@/lib/ai/clarification-generator', () => ({
   generateClarification: vi.fn(),
-  applyClarification: vi.fn((option) => option.query),
+  applyClarification: vi.fn((option) => option.suggestedQuery),
   applyCustomClarification: vi.fn(
     (original, custom) => `${original} - ${custom}`
   ),
@@ -66,6 +68,7 @@ vi.mock('@/hooks/ai/useAsyncAIQuery', () => ({
   })),
 }));
 
+import { clearEntityExtractionCacheForTesting } from '@/hooks/ai/core/useQueryExecution';
 import { useHybridAIQuery } from '@/hooks/ai/useHybridAIQuery';
 // Import after mocks
 import type { ClarificationRequest } from '@/lib/ai/clarification-generator';
@@ -74,6 +77,12 @@ import { generateClarification } from '@/lib/ai/clarification-generator';
 describe('Clarification Functions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearEntityExtractionCacheForTesting();
+    server.use(
+      http.post(/\/api\/ai\/nlq\/extract-entities$/, () =>
+        HttpResponse.json({ confidence: 0 }, { status: 200 })
+      )
+    );
     vi.mocked(generateClarification).mockReturnValue(null);
   });
 
@@ -84,8 +93,18 @@ describe('Clarification Functions', () => {
         originalQuery: '서버 상태',
         reason: '어떤 서버를 확인하시겠습니까?',
         options: [
-          { label: '모든 서버', query: '모든 서버 상태 확인' },
-          { label: 'Web 서버', query: 'Web 서버 상태 확인' },
+          {
+            id: 'all-servers',
+            text: '모든 서버',
+            suggestedQuery: '모든 서버 상태 확인',
+            category: 'scope',
+          },
+          {
+            id: 'web-servers',
+            text: 'Web 서버',
+            suggestedQuery: 'Web 서버 상태 확인',
+            category: 'scope',
+          },
         ],
       };
 
@@ -116,7 +135,14 @@ describe('Clarification Functions', () => {
       const mockClarification: ClarificationRequest = {
         originalQuery: '테스트 쿼리',
         reason: '명확화 필요',
-        options: [{ label: '옵션1', query: '명확화된 쿼리' }],
+        options: [
+          {
+            id: 'option-1',
+            text: '옵션1',
+            suggestedQuery: '명확화된 쿼리',
+            category: 'specificity',
+          },
+        ],
       };
 
       vi.mocked(generateClarification).mockReturnValue(mockClarification);
@@ -148,7 +174,14 @@ describe('Clarification Functions', () => {
       const mockClarification: ClarificationRequest = {
         originalQuery: '분석해줘',
         reason: '무엇을 분석할까요?',
-        options: [{ label: '서버 로그', query: '서버 로그 분석' }],
+        options: [
+          {
+            id: 'server-logs',
+            text: '서버 로그',
+            suggestedQuery: '서버 로그 분석',
+            category: 'specificity',
+          },
+        ],
       };
 
       vi.mocked(generateClarification).mockReturnValue(mockClarification);
@@ -187,12 +220,17 @@ describe('Clarification Functions', () => {
       const mockClarification: ClarificationRequest = {
         originalQuery: '서버 CPU 상태',
         reason: '어떤 서버를 확인하시겠습니까?',
-        options: [{ label: 'Web 서버', query: 'Web 서버 CPU 상태' }],
+        options: [
+          {
+            id: 'web-server',
+            text: 'Web 서버',
+            suggestedQuery: 'Web 서버 CPU 상태',
+            category: 'scope',
+          },
+        ],
       };
 
-      vi.mocked(generateClarification)
-        .mockReturnValueOnce(mockClarification)
-        .mockReturnValueOnce(null); // skipClarification 후 재호출 시 null
+      vi.mocked(generateClarification).mockReturnValue(mockClarification);
 
       const { result } = renderHook(() => useHybridAIQuery());
 
@@ -237,14 +275,22 @@ describe('Clarification Functions', () => {
         originalQuery: '서버 상태',
         reason: '어떤 서버를 확인하시겠습니까?',
         options: [
-          { label: '모든 서버', query: '모든 서버 상태 확인' },
-          { label: 'Web 서버', query: 'Web 서버 상태 확인' },
+          {
+            id: 'all-servers',
+            text: '모든 서버',
+            suggestedQuery: '모든 서버 상태 확인',
+            category: 'scope',
+          },
+          {
+            id: 'web-servers',
+            text: 'Web 서버',
+            suggestedQuery: 'Web 서버 상태 확인',
+            category: 'scope',
+          },
         ],
       };
 
-      vi.mocked(generateClarification)
-        .mockReturnValueOnce(mockClarification)
-        .mockReturnValueOnce(null);
+      vi.mocked(generateClarification).mockReturnValue(mockClarification);
 
       const { result } = renderHook(() => useHybridAIQuery());
 
@@ -270,12 +316,17 @@ describe('Clarification Functions', () => {
       const mockClarification: ClarificationRequest = {
         originalQuery: '서버 분석',
         reason: '어떤 분석이 필요하신가요?',
-        options: [{ label: '성능 분석', query: '서버 성능 분석' }],
+        options: [
+          {
+            id: 'performance-analysis',
+            text: '성능 분석',
+            suggestedQuery: '서버 성능 분석',
+            category: 'specificity',
+          },
+        ],
       };
 
-      vi.mocked(generateClarification)
-        .mockReturnValueOnce(mockClarification)
-        .mockReturnValueOnce(null);
+      vi.mocked(generateClarification).mockReturnValue(mockClarification);
 
       const { result } = renderHook(() => useHybridAIQuery());
 

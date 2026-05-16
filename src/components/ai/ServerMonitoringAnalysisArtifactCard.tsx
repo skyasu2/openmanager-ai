@@ -2,19 +2,8 @@
 
 import { Activity, Download, FileText } from 'lucide-react';
 import Link from 'next/link';
+import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
 import type { ServerMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
-
-function downloadBlob(content: string, filename: string, type: string): void {
-  const blob = new Blob([content], { type: `${type};charset=utf-8` });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
 
 function statusClass(
   status: ServerMonitoringAnalysisArtifact['overallStatus']
@@ -65,7 +54,7 @@ function downloadAnalysis(
 ): void {
   const stamp = artifact.generatedAt.replace(/[:.]/g, '-');
   if (format === 'json') {
-    downloadBlob(
+    downloadBlobContent(
       JSON.stringify(artifact.analysis, null, 2),
       `server-monitoring-analysis-${stamp}.json`,
       'application/json'
@@ -73,7 +62,7 @@ function downloadAnalysis(
     return;
   }
 
-  downloadBlob(
+  downloadBlobContent(
     buildServerMonitoringMarkdown(artifact),
     `server-monitoring-analysis-${stamp}.md`,
     'text/markdown'

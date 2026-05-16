@@ -134,6 +134,24 @@ describe('ChatInputArea popover', () => {
     expect(toggle).toHaveFocus();
   });
 
+  it('keeps Escape inside the tool popover from reaching later document handlers', () => {
+    renderComponent();
+
+    const toggle = screen.getByRole('button', { name: '도구 메뉴 열기' });
+    fireEvent.click(toggle);
+
+    const documentEscapeHandler = vi.fn();
+    document.addEventListener('keydown', documentEscapeHandler);
+
+    try {
+      fireEvent.keyDown(document, { key: 'Escape' });
+    } finally {
+      document.removeEventListener('keydown', documentEscapeHandler);
+    }
+
+    expect(documentEscapeHandler).not.toHaveBeenCalled();
+  });
+
   it('keeps input action buttons at 44px on mobile and compact on desktop', () => {
     renderComponent();
 

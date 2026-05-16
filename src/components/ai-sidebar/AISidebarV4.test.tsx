@@ -16,6 +16,9 @@ import AISidebarV4 from '@/components/ai-sidebar/AISidebarV4';
 const mockSetInput = vi.fn();
 const mockConsumePendingPrefillMessage = vi.fn();
 const mockOpenFullscreen = vi.fn();
+const mockEnhancedAIChat = vi.fn(() => (
+  <div data-testid="enhanced-ai-chat">AI Chat</div>
+));
 let mockPendingPrefillMessage: string | null = null;
 
 // Mock useAIChatCore
@@ -106,7 +109,7 @@ vi.mock('@/components/ai-sidebar/AISidebarHeader', () => ({
 }));
 
 vi.mock('@/components/ai-sidebar/EnhancedAIChat', () => ({
-  EnhancedAIChat: () => <div data-testid="enhanced-ai-chat">AI Chat</div>,
+  EnhancedAIChat: (props: Record<string, unknown>) => mockEnhancedAIChat(props),
 }));
 
 vi.mock('@/components/ai/AIContentArea', () => ({
@@ -268,6 +271,24 @@ describe('AISidebarV4', () => {
     expect(defaultProps.onClose).not.toHaveBeenCalled();
   });
 
+  it('hides the offscreen sidebar from assistive technology when closed', () => {
+    render(<AISidebarV4 {...defaultProps} isOpen={false} />);
+
+    expect(screen.getByTestId('ai-sidebar')).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    );
+  });
+
+  it('exposes the sidebar dialog to assistive technology when open', () => {
+    render(<AISidebarV4 {...defaultProps} />);
+
+    expect(screen.getByTestId('ai-sidebar')).toHaveAttribute(
+      'aria-hidden',
+      'false'
+    );
+  });
+
   it('renders chat view by default', () => {
     render(
       <AISidebarV4
@@ -280,6 +301,14 @@ describe('AISidebarV4', () => {
       />
     );
     expect(screen.getByTestId('enhanced-ai-chat')).toBeInTheDocument();
+  });
+
+  it('hides the nested chat header inside the sidebar surface', () => {
+    render(<AISidebarV4 {...defaultProps} />);
+
+    expect(mockEnhancedAIChat).toHaveBeenCalledWith(
+      expect.objectContaining({ showInternalHeader: false })
+    );
   });
 
   it('consumes pending prefill message when sidebar opens', async () => {

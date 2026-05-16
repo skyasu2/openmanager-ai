@@ -7,6 +7,7 @@ import {
   createArtifactExecutionWorkspaceId,
   saveArtifactExecutionReplayPack,
 } from '@/lib/ai/chat-artifacts/artifact-execution';
+import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
 import type { MonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
 import type {
   MonitoringBatchCapacityAlert,
@@ -18,26 +19,6 @@ import type {
 type MonitoringDisplaySignal =
   | MonitoringBatchRiskSignal
   | MonitoringBatchFactSignal;
-
-function downloadBlob({
-  content,
-  filename,
-  type,
-}: {
-  content: string;
-  filename: string;
-  type: string;
-}): void {
-  const blob = new Blob([content], { type: `${type};charset=utf-8` });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
 
 function buildRoleGroupMarkdown(artifact: MonitoringAnalysisArtifact): string {
   const roleGroups = artifact.roleGroupSummary ?? [];
@@ -117,19 +98,19 @@ function downloadAnalysis(
 ): void {
   const stamp = artifact.generatedAt.replace(/[:.]/g, '-');
   if (format === 'json') {
-    downloadBlob({
-      content: JSON.stringify(artifact.analysis, null, 2),
-      filename: `monitoring-analysis-${stamp}.json`,
-      type: 'application/json',
-    });
+    downloadBlobContent(
+      JSON.stringify(artifact.analysis, null, 2),
+      `monitoring-analysis-${stamp}.json`,
+      'application/json'
+    );
     return;
   }
 
-  downloadBlob({
-    content: buildAnalysisMarkdown(artifact),
-    filename: `monitoring-analysis-${stamp}.md`,
-    type: 'text/markdown',
-  });
+  downloadBlobContent(
+    buildAnalysisMarkdown(artifact),
+    `monitoring-analysis-${stamp}.md`,
+    'text/markdown'
+  );
 }
 
 function signalClass(severity: 'warning' | 'critical'): string {
