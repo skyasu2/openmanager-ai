@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 
 const { mockCreateGroq, mockGenerateText, mockOutputObject } = vi.hoisted(
   () => ({
@@ -127,6 +128,61 @@ describe('POST /api/ai/nlq/extract-entities', () => {
         name: 'nlq_entities',
       })
     );
+  });
+
+  it('uses provider-compatible required nullable structured output schema', async () => {
+    const response = await POST(
+      buildRequest({
+        query: '지난 24시간 중 가장 부하가 높았던 시간대는 언제야?',
+      })
+    );
+
+    expect(response.status).toBe(200);
+    const config = mockOutputObject.mock.calls[0]?.[0] as
+      | { schema?: z.ZodType }
+      | undefined;
+    expect(config?.schema).toBeDefined();
+    expect(
+      config?.schema?.safeParse({
+        server: null,
+        metric: 'load1',
+        timeRange: 'current',
+        intentFrame: null,
+        confidence: 90,
+      }).success
+    ).toBe(true);
+
+    const jsonSchema = z.toJSONSchema(config!.schema!) as {
+      required?: string[];
+      properties?: Record<string, unknown>;
+    };
+    expect(jsonSchema.required).toEqual([
+      'server',
+      'metric',
+      'timeRange',
+      'intentFrame',
+      'confidence',
+    ]);
+
+    const intentFrameSchema = jsonSchema.properties?.intentFrame as {
+      anyOf?: Array<{ type?: string; required?: string[] }>;
+    };
+    const intentFrameObject = intentFrameSchema.anyOf?.find(
+      (entry) => entry.type === 'object'
+    );
+    expect(intentFrameObject?.required).toEqual([
+      'domain',
+      'intent',
+      'scope',
+      'targets',
+      'metric',
+      'timeWindow',
+      'aggregation',
+      'topN',
+      'ambiguity',
+      'executionMode',
+      'confidence',
+    ]);
   });
 
   it('returns a semantic intent frame without exposing provider implementation names', async () => {

@@ -15,8 +15,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { GROQ_TEXT_MODEL_ID } from '@/config/ai-providers';
 import {
-  EXTRACTED_METRICS,
-  EXTRACTED_TIME_RANGES,
   KNOWN_ENTITY_SERVER_IDS,
   normalizeExtractedEntities,
   SEMANTIC_AGGREGATIONS,
@@ -51,17 +49,23 @@ const SemanticIntentFrameSchema = z.object({
   metric: z.enum(SEMANTIC_METRICS),
   timeWindow: z.enum(SEMANTIC_TIME_WINDOWS),
   aggregation: z.enum(SEMANTIC_AGGREGATIONS),
-  topN: z.number().int().positive().max(20).nullable().optional(),
+  topN: z.number().int().positive().max(20).nullable(),
   ambiguity: z.enum(SEMANTIC_AMBIGUITIES),
   executionMode: z.enum(SEMANTIC_EXECUTION_MODES),
   confidence: z.number().min(0).max(100),
 });
 
+// OpenAI-compatible structured-output providers require every object property
+// to be listed in JSON Schema `required`. Nullable fields keep the legacy
+// response contract while avoiding provider-side schema rejection. The
+// top-level metric/timeRange schema is intentionally tolerant because the
+// normalizer still preserves only the legacy ExtractedMetric/ExtractedTimeRange
+// slots; load/current variants live in intentFrame.
 const EntitySchema = z.object({
-  server: z.enum(KNOWN_ENTITY_SERVER_IDS).nullable().optional(),
-  metric: z.enum(EXTRACTED_METRICS).nullable().optional(),
-  timeRange: z.enum(EXTRACTED_TIME_RANGES).nullable().optional(),
-  intentFrame: SemanticIntentFrameSchema.nullable().optional(),
+  server: z.enum(KNOWN_ENTITY_SERVER_IDS).nullable(),
+  metric: z.enum(SEMANTIC_METRICS).nullable(),
+  timeRange: z.enum(SEMANTIC_TIME_WINDOWS).nullable(),
+  intentFrame: SemanticIntentFrameSchema.nullable(),
   confidence: z.number().min(0).max(100),
 });
 

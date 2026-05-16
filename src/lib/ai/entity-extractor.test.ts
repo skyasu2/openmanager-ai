@@ -114,6 +114,18 @@ describe('normalizeExtractedEntities', () => {
     ).toEqual({ confidence: 90 });
   });
 
+  it('tolerates provider-compatible nullable payloads while preserving legacy top-level slots', () => {
+    expect(
+      normalizeExtractedEntities({
+        server: null,
+        metric: 'load1',
+        timeRange: 'current',
+        intentFrame: null,
+        confidence: 88,
+      })
+    ).toEqual({ confidence: 88 });
+  });
+
   it('drops invalid semantic intent frame enum values', () => {
     expect(
       normalizeExtractedEntities({
