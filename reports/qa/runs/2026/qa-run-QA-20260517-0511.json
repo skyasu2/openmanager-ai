@@ -1,0 +1,134 @@
+{
+  "runId": "QA-20260517-0511",
+  "recordedAt": "2026-05-16T18:51:23.923Z",
+  "recordedAtKst": "2026-05-17 03:51:23 KST",
+  "runTitle": "v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract",
+  "owner": "codex",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5",
+    "deploymentUrl": "https://openmanager-7mtg9iwhp-skyasus-projects.vercel.app",
+    "commitSha": "798de818384c6d183b351df2b82c6e84ce9840be"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+  "coveredSurfaces": [
+    "Vercel production / version badge v8.11.165",
+    "Vercel production /login guest PIN flow",
+    "Top-right profile dropdown system status label",
+    "Profile system stop action -> POST /api/system {action: stop}",
+    "Profile system start action -> POST /api/system {action: start}",
+    "Vercel production /api/system serverless Redis-backed running state"
+  ],
+  "skippedSurfaces": [
+    "AI chat conversational QA was not part of this UI state-contract check",
+    "OAuth provider end-to-end login was skipped; guest PIN login was used",
+    "Dashboard server card detail flow was not retested in this targeted rerun",
+    "Cloud Run admin observability endpoints were not part of this Vercel UI rerun"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The GitLab tag pipeline 2530528415 deployed v8.11.165 successfully, Vercel production reports the matching version/deployment, and the system start/stop state now uses the remote /api/system action result before local UI state changes.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The targeted rerun covered the previously failing state-contract paths with browser UI interaction plus network and API-state evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-17T03:49:45+09:00",
+      "summary": "Current billing period checked after production QA; effective usage about 10.0954 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.165 system state toggle final running state",
+      "path": "reports/qa/evidence/qa-20260517-v811165-system-state-toggle.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "system-start-api-success-false-ui-dashboard-v811161",
+      "title": "System start UI proceeds to dashboard even when /api/system start returns success:false",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "On v8.11.165, profile menu start sent POST /api/system with body {\"action\":\"start\"}; the response was HTTP 200 {success:true, action:\"start\"}, subsequent GET /api/system returned isRunning:true, and the UI returned to the active dashboard/open/stop state.",
+      "note": "The start action is no longer skipped by a background status fetch loading state.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "profile-system-stop-state-drift-v811161",
+      "title": "Profile dropdown system stop does not visibly clear running/dashboard state",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "On v8.11.165, profile menu stop sent POST /api/system with body {\"action\":\"stop\"}; the response was HTTP 200 {success:true, action:\"stop\"}, subsequent GET /api/system returned isRunning:false, and the UI changed to the system-start state.",
+      "note": "The profile header no longer changes local state unless the remote system action actually returns a payload.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "GitLab tag pipeline 2530528415 succeeded for v8.11.165.",
+    "Vercel deployment dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5 is READY for commit 798de818384c6d183b351df2b82c6e84ce9840be.",
+    "Playwright MCP browser profile was locked earlier, so Chrome DevTools MCP was used for this release-facing targeted rerun.",
+    "Network evidence: request 82 POST /api/system {action: stop} returned success:true; request 85 POST /api/system {action: start} returned success:true."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.165 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment v8.11.165",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/EG1U8xTdXAvgrhLTLnW5NQmoznt5"
+    }
+  ]
+}

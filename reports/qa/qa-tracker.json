@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-16T16:03:37.386Z"
+    "updatedAt": "2026-05-16T18:51:23.923Z"
   },
   "sequence": {
-    "nextRunNumber": 511
+    "nextRunNumber": 512
   },
   "summary": {
-    "totalRecordedRuns": 508,
-    "totalRuns": 404,
+    "totalRecordedRuns": 509,
+    "totalRuns": 405,
     "excludedRuns": 104,
-    "totalChecks": 3616,
-    "totalPassed": 3477,
+    "totalChecks": 3626,
+    "totalPassed": 3487,
     "totalFailed": 129,
-    "completionRate": 99.66,
-    "completedItems": 582,
-    "pendingItems": 2,
+    "completionRate": 100,
+    "completedItems": 584,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260517-0510",
-    "lastRecordedAt": "2026-05-16T16:03:37.386Z",
-    "latestRecordedRunId": "QA-20260517-0510",
-    "latestRecordedAt": "2026-05-16T16:03:37.386Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260517-0511",
+    "lastRecordedAt": "2026-05-16T18:51:23.923Z",
+    "latestRecordedRunId": "QA-20260517-0511",
+    "latestRecordedAt": "2026-05-16T18:51:23.923Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14278,49 +14278,49 @@
       "id": "system-start-api-success-false-ui-dashboard-v811161",
       "title": "System start UI proceeds to dashboard even when /api/system start returns success:false",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260517-0510",
       "firstSeenAt": "2026-05-16T16:03:37.386Z",
-      "lastSeenRunId": "QA-20260517-0510",
-      "lastSeenAt": "2026-05-16T16:03:37.386Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260517-0511",
+      "lastSeenAt": "2026-05-16T18:51:23.923Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Playwright MCP network request POST /api/system returned HTTP 200 with body {success:false, action:'start', message:'Critical 프로세스 순차 서버 생성 엔진 실패로 시스템 시작 중단'}, while UI still entered /system-boot and /dashboard.",
-      "lastNote": "This is state-contract drift, not a dashboard-card regression.",
+      "lastEvidence": "On v8.11.165, profile menu start sent POST /api/system with body {\"action\":\"start\"}; the response was HTTP 200 {success:true, action:\"start\"}, subsequent GET /api/system returned isRunning:true, and the UI returned to the active dashboard/open/stop state.",
+      "lastNote": "The start action is no longer skipped by a background status fetch loading state.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-16T16:03:37.386Z"
+      "lastStatusChangeAt": "2026-05-16T18:51:23.923Z"
     },
     "profile-system-stop-state-drift-v811161": {
       "id": "profile-system-stop-state-drift-v811161",
       "title": "Profile dropdown system stop does not visibly clear running/dashboard state",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260517-0510",
       "firstSeenAt": "2026-05-16T16:03:37.386Z",
-      "lastSeenRunId": "QA-20260517-0510",
-      "lastSeenAt": "2026-05-16T16:03:37.386Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260517-0511",
+      "lastSeenAt": "2026-05-16T18:51:23.923Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Profile dropdown '시스템 종료' opened the browser confirm dialog, but after accepting the menu still showed '시스템 종료' and /dashboard remained active while direct GET /api/system returned isRunning:false.",
-      "lastNote": "Landing page '시스템 종료하기' did switch the landing CTA back to '시스템 시작', so the drift is specific to unified profile/dashboard state handling.",
+      "lastEvidence": "On v8.11.165, profile menu stop sent POST /api/system with body {\"action\":\"stop\"}; the response was HTTP 200 {success:true, action:\"stop\"}, subsequent GET /api/system returned isRunning:false, and the UI changed to the system-start state.",
+      "lastNote": "The profile header no longer changes local state unless the remote system action actually returns a payload.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-16T16:03:37.386Z"
+      "lastStatusChangeAt": "2026-05-16T18:51:23.923Z"
     }
   },
   "runs": [
@@ -56983,6 +56983,113 @@
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260517-0511",
+      "recordedAt": "2026-05-16T18:51:23.923Z",
+      "recordedAtKst": "2026-05-17 03:51:23 KST",
+      "title": "v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract",
+      "owner": "codex",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260517-0511.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5",
+        "deploymentUrl": "https://openmanager-7mtg9iwhp-skyasus-projects.vercel.app",
+        "commitSha": "798de818384c6d183b351df2b82c6e84ce9840be"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production / version badge v8.11.165",
+        "Vercel production /login guest PIN flow",
+        "Top-right profile dropdown system status label",
+        "Profile system stop action -> POST /api/system {action: stop}",
+        "Profile system start action -> POST /api/system {action: start}",
+        "Vercel production /api/system serverless Redis-backed running state"
+      ],
+      "skippedSurfaces": [
+        "AI chat conversational QA was not part of this UI state-contract check",
+        "OAuth provider end-to-end login was skipped; guest PIN login was used",
+        "Dashboard server card detail flow was not retested in this targeted rerun",
+        "Cloud Run admin observability endpoints were not part of this Vercel UI rerun"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The GitLab tag pipeline 2530528415 deployed v8.11.165 successfully, Vercel production reports the matching version/deployment, and the system start/stop state now uses the remote /api/system action result before local UI state changes.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The targeted rerun covered the previously failing state-contract paths with browser UI interaction plus network and API-state evidence.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-17T03:49:45+09:00",
+          "summary": "Current billing period checked after production QA; effective usage about 10.0954 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.165 system state toggle final running state",
+          "path": "reports/qa/evidence/qa-20260517-v811165-system-state-toggle.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.165 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.165",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EG1U8xTdXAvgrhLTLnW5NQmoznt5"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -57042,33 +57149,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 186,
-      "appropriateCount": 167,
+      "seenCount": 187,
+      "appropriateCount": 168,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260517-0510",
-      "lastSeenAt": "2026-05-16T16:03:37.386Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "GitLab tag pipeline 2530237045 succeeded and both Vercel and Cloud Run report v8.11.161, but the UI system state can diverge from /api/system state.",
-      "lastNextAction": "Unify system start/stop state source or explicitly define the UI-only simulation boundary."
+      "lastRunId": "QA-20260517-0511",
+      "lastSeenAt": "2026-05-16T18:51:23.923Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The GitLab tag pipeline 2530528415 deployed v8.11.165 successfully, Vercel production reports the matching version/deployment, and the system start/stop state now uses the remote /api/system action result before local UI state changes.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 220,
-      "appropriateCount": 202,
+      "seenCount": 221,
+      "appropriateCount": 203,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260517-0510",
-      "lastSeenAt": "2026-05-16T16:03:37.386Z",
+      "lastRunId": "QA-20260517-0511",
+      "lastSeenAt": "2026-05-16T18:51:23.923Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The requested Playwright MCP path covered login, profile dropdown, system controls, server card layout, and card click navigation.",
+      "lastRationale": "The targeted rerun covered the previously failing state-contract paths with browser UI interaction plus network and API-state evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

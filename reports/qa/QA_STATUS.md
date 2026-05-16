@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-17 01:03:39 KST
+> Generated at: 2026-05-17 03:51:24 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 508 |
-| Total Runs (Counted) | 404 |
+| Total Recorded Runs | 509 |
+| Total Runs (Counted) | 405 |
 | Non-counted Runs | 104 |
-| Total Checks | 3616 |
-| Passed | 3477 |
+| Total Checks | 3626 |
+| Passed | 3487 |
 | Failed | 129 |
-| Completed Items | 582 |
-| Pending Items | 2 |
+| Completed Items | 584 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.66% |
-| Last Counted Run | QA-20260517-0510 (2026-05-16T16:03:37.386Z) |
-| Latest Recorded Run | QA-20260517-0510 (2026-05-16T16:03:37.386Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260517-0511 (2026-05-16T18:51:23.923Z) |
+| Latest Recorded Run | QA-20260517-0511 (2026-05-16T18:51:23.923Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,22 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260517-0510 (2026-05-16T16:03:37.386Z)
+Latest run: QA-20260517-0511 (2026-05-16T18:51:23.923Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | partially-appropriate | yes | Unify system start/stop state source or explicitly define the UI-only simulation boundary. |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after production QA; no billed usage observed, effective usage about 10.0954 USD, billed 0.0000 USD. |
+| vercel | cli | checked | normal | Current billing period checked after production QA; effective usage about 10.0954 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-15T16:03:37.386Z -> 2026-05-16T16:03:37.386Z (24h)
+- Window: 2026-05-15T18:51:23.923Z -> 2026-05-16T18:51:23.923Z (24h)
 - Runs with observations: 2 recorded / 0 counted
 - Samples: 7
 
@@ -62,7 +62,7 @@ Latest run: QA-20260517-0510 (2026-05-16T16:03:37.386Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-15T16:03:37.386Z -> 2026-05-16T16:03:37.386Z (24h)
+- Window: 2026-05-15T18:51:23.923Z -> 2026-05-16T18:51:23.923Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -76,33 +76,32 @@ Latest run: QA-20260517-0510 (2026-05-16T16:03:37.386Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_Dc4NxBLzxn5aNi7wSQtw8xWzTWM5 / SHA ee1f1451
+- Deployment: dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5 / SHA 798de818
 - Coverage Packs: core-routes-smoke, dashboard-core
-- Covered Surfaces: Vercel production /, Vercel production /login guest PIN flow, Vercel production /dashboard server cards, Top-right profile dropdown, Landing and profile system start/stop controls, Vercel production /api/version, Cloud Run AI Engine /health
-- Skipped Surfaces: AI chat conversational QA was not part of this post-deploy UI check, OAuth provider end-to-end login was skipped; guest PIN login was used
+- Covered Surfaces: Vercel production / version badge v8.11.165, Vercel production /login guest PIN flow, Top-right profile dropdown system status label, Profile system stop action -> POST /api/system {action: stop}, Profile system start action -> POST /api/system {action: start}, Vercel production /api/system serverless Redis-backed running state
+- Skipped Surfaces: AI chat conversational QA was not part of this UI state-contract check, OAuth provider end-to-end login was skipped; guest PIN login was used, Dashboard server card detail flow was not retested in this targeted rerun, Cloud Run admin observability endpoints were not part of this Vercel UI rerun
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.161 tag pipeline | [GitLab v8.11.161 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530237045) | - |
+| general | GitLab v8.11.165 tag pipeline | [GitLab v8.11.165 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment v8.11.165 | [Vercel production deployment v8.11.165](https://vercel.com/skyasus-projects/openmanager-ai/EG1U8xTdXAvgrhLTLnW5NQmoznt5) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard server cards after v8.11.161 deploy | `reports/qa/evidence/qa-20260517-v811161-dashboard-cards.png` | - |
+| playwright-screenshot | v8.11.165 system state toggle final running state | `reports/qa/evidence/qa-20260517-v811165-system-state-toggle.png` | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260517-0510)
-  next: Unify system start/stop state source or explicitly define the UI-only simulation boundary.
+- None
 
 ## Pending Improvements
 
-- [P1] profile-system-stop-state-drift-v811161: Profile dropdown system stop does not visibly clear running/dashboard state (seen 1회, last QA-20260517-0510)
-- [P1] system-start-api-success-false-ui-dashboard-v811161: System start UI proceeds to dashboard even when /api/system start returns success:false (seen 1회, last QA-20260517-0510)
+- None
 
 ## Deferred Improvements
 
@@ -607,6 +606,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - production-smoke-console-401-cleanliness: Production smoke console 401 resource noise 정리 (completed 3회, last QA-20260320-0140)
 - profile-guest-login-state-v811161: Top-right profile dropdown reflects guest authenticated state (completed 1회, last QA-20260517-0510)
 - profile-menu: 프로필 메뉴 접근성 이름에 visible user state 포함 (completed 2회, last QA-20260423-0339)
+- profile-system-stop-state-drift-v811161: Profile dropdown system stop does not visibly clear running/dashboard state (completed 1회, last QA-20260517-0511)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - qa-0346-core-routes-proof-gap: QA-20260424-0346 core-routes-smoke evidence gap closed with follow-up route/API smoke (completed 1회, last QA-20260424-0347)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
@@ -684,6 +684,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
 - system-boot-sequence: 시스템 부트 시퀀스 완료 (completed 1회, last QA-20260419-0306)
 - system-boot-vercel-auth-expectation-alignment: Production system-boot Playwright auth 기대값 정렬 (completed 1회, last QA-20260320-0138)
+- system-start-api-success-false-ui-dashboard-v811161: System start UI proceeds to dashboard even when /api/system start returns success:false (completed 1회, last QA-20260517-0511)
 - system-start-auth-modal-guard-stability: 시스템 시작 로그인 모달 노출 경로 검증 보강 (completed 2회, last QA-20260302-0038)
 - system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
@@ -769,6 +770,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260517-0511 | 2026-05-16T18:51:23.923Z | targeted | yes | yes | v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260517-0510 | 2026-05-16T16:03:37.386Z | targeted | yes | yes | v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls | 10 | 2 | 2 | 0 | 0 | 1 |
 | QA-20260516-0509 | 2026-05-16T11:16:06.924Z | targeted | no | no | v8.11.158 Production Deploy Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260516-0508 | 2026-05-16T10:45:41.451Z | targeted | no | no | NLQ EntitySchema Provider Compatibility Fix Verification - v8.11.157 | 7 | 1 | 0 | 0 | 0 | 0 |
@@ -788,4 +790,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260513-0494 | 2026-05-13T04:07:53.842Z | targeted | yes | yes | Production QA - v8.11.143 Score Deduction Closure | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0493 | 2026-05-13T03:45:28.442Z | targeted | no | no | Diagnostic Follow-up - v8.11.142 Frontend Score Deductions | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0492 | 2026-05-13T02:51:02.949Z | targeted | yes | yes | Vercel Playwright QA - v8.11.142 Frontend Non-AI Status and Design | 14 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260513-0491 | 2026-05-13T02:09:08.202Z | targeted | yes | yes | Production Deploy QA - v8.11.142 Frontend and AI Engine Alignment | 10 | 1 | 0 | 0 | 0 | 0 |
