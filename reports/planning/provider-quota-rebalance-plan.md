@@ -185,10 +185,14 @@ cd cloud-run/ai-engine && npm run test
 
 **이 항목은 NLQ Pre-processing Redesign Plan의 N1과 동일 루트임. 해당 계획의 Draft→Approved 전환 조건 충족 시 함께 구현.**
 
+**Provider 판단 보정**: Q2의 핵심은 "Groq를 계속 쓴다"가 아니라 "front NLQ LLM이 만든 `intentFrame`을 Cloud Run이 신뢰 가능한 계약으로 받는다"이다. 현재 baseline은 Groq `llama-4-scout`이지만, N1-0에서 Mistral/Cerebras/Z.AI 후보를 동일 fixture로 비교한 뒤 최종 provider를 확정한다.
+
 **예상 효과**: NLQ Groq 호출 결과가 Cloud Run에서 신뢰되면:
 - Groq NLQ 비용 = 유효 사용 (현재는 낭비)
 - selectExecutionMode regex 15개+ 삭제 또는 Cloud Run `DomainIntentFrame.confidence < 0.8` fallback으로만 유지
 - 전체 Groq 예산 효율 향상
+
+N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ 비용 절감"에서 "front NLQ LLM 비용 유효화 + Groq Metrics Query RPD 보존"으로 해석한다.
 
 ---
 

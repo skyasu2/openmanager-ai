@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (베스트 프랙티스 갭 분석 반영 — N4 추가, P5~P8 진단 추가)
+> Last reviewed: 2026-05-16 (provider 판단 게이트 + artifact front LLM inventory 반영)
 > Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture,stream-filter,best-practice-gap
 
 # NLQ Pre-processing Redesign Plan
@@ -68,6 +68,39 @@ Cloud Run AI Engine
 - 오타·동의어·한국어/영어 표현 확장은 regex 추가가 아니라 N1의 LLM intentFrame 신뢰로 해결한다.
 - 보안은 deterministic guard와 supervisor/Cloud Run defense-in-depth로 분리하되, 일반 질의 대응력은 LLM에 맡긴다.
 - 무료 티어 제약상 Vercel/Cloud Run 앞단에 CPU-heavy preprocessing, 자체 ML 모델, 대형 룰 엔진을 추가하지 않는다.
+
+### Front LLM provider 판단 게이트
+
+`/api/ai/nlq/extract-entities`의 현재 baseline은 Groq `meta-llama/llama-4-scout-17b-16e-instruct`다. 다만 N1은 "Groq 고정" 작업이 아니라 "front intent/entity LLM 결과를 Cloud Run이 신뢰하도록 만드는 계약 변경" 작업이다. provider 선택은 N1 구현 직전 N1-0에서 별도로 검증한다.
+
+| 후보 | 현재 근거 | 리스크 | N1 판단 |
+|------|-----------|--------|---------|
+| Groq `llama-4-scout` | 기존 route/test가 이미 이 모델 기준. 공개 free limit도 30 RPM / 1K RPD / 30K TPM으로 명시되어 있고, 짧은 structured NLQ에 적합 | 1K RPD가 Metrics Query Agent와 공유되므로 낭비에 취약 | **현재 default 유지**. 단, N1에서 intentFrame을 실제 사용해야 비용이 정당화됨 |
+| Mistral `ministral-3b` / `mistral-small` | artifact intent classifier가 이미 Mistral 소형 모델을 사용. Mistral free tier는 workspace별 exact limit 확인 필요 | NLQ 한국어/영어 schema accuracy와 latency가 아직 이 route에서 검증되지 않음. production artifact classifier는 scale plan confirmation gate가 있음 | **평가 후보**. 품질이 동등하면 Groq RPD 보존용 대체 가능 |
+| Cerebras `gpt-oss-120b` | 2026-05-16 live smoke로 사용 가능 확인. repo 기준 보수 quota는 5 RPM / 2,400 RPD / 30K TPM | reasoning 모델 특성상 max token guard 필요. burst front classifier primary로는 5 RPM 병목 가능. public limit은 high-demand 상황에서 조정될 수 있음 | **front primary 보류**. Orchestrator/structured fallback 쪽이 우선 |
+| Z.AI / GLM 계열 | 짧은 응답 latency 장점 후보 | 계정 quota, structured output, 한국어/영어 NLQ fixture 검증 부족 | **기본값 아님**. live smoke 후 보조 후보 |
+
+**N1 provider decision rule**:
+- CI/로컬 deterministic test에서는 live LLM 호출을 금지하고 fixture 기반 schema/normalizer 계약만 검증한다.
+- 수동 live smoke에서 한국어/영어 metric, server, RCA, report-shaped, artifact-shaped negative corpus를 각 provider에 동일 입력으로 평가한다.
+- 측정값은 `schema_valid`, `intent_accuracy`, `executionMode_accuracy`, `p95 latency`, `rate-limit headroom`, `production env gate`로 제한한다.
+- N1-0에서 Groq 외 provider가 선택되더라도 Cloud Run 계약명은 `intentFrame`으로 유지한다. downstream은 provider 이름이 아니라 frame confidence와 schema만 신뢰한다.
+
+### Artifact front LLM inventory
+
+artifact 생성을 위한 전단 LLM 의도 분석은 이미 NLQ와 별도 경로로 존재한다.
+
+```
+useAIChatCore submit
+  └─ tryHandleChatArtifactRequest()
+       ├─ classifyChatArtifactIntent()             [local regex]
+       └─ /api/ai/artifact-intent                  [Mistral ministral-3b-latest]
+            └─ incident-report / monitoring-analysis / none
+```
+
+이 경로는 일반 Supervisor `sendQuery()`보다 먼저 실행되며, artifact/guidance로 판별되면 Cloud Run Supervisor를 호출하지 않는다. 현재 LLM 보강 범위는 `incident-report`와 `monitoring-analysis`뿐이고, production에서는 `MISTRAL_SCALE_PLAN_CONFIRMED=true` 없이는 `none`으로 fallback한다.
+
+따라서 N1은 artifact classifier를 새로 만들거나 Groq NLQ 경로와 합치지 않는다. N1의 범위는 metric/server/RCA 계열 NLQ `intentFrame.executionMode` 신뢰 연결이며, artifact intent provider 변경은 별도 artifact 계획에서 다룬다.
 
 ---
 
@@ -310,6 +343,7 @@ export function selectExecutionMode(
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-wiring.ts`
 
 **태스크**:
+- [ ] **N1-0**: NLQ provider fit check — Groq/Mistral/Cerebras/Z.AI 후보를 동일 fixture로 비교하고 N1 baseline provider 확정
 - [ ] **N1-1**: `SemanticIntentFrame`에 `executionMode` 슬롯 추가 + Zod schema 갱신
 - [ ] **N1-2**: `DomainIntentFramePayload`/Cloud Run `DomainIntentFrame`에 `executionMode` optional 추가
 - [ ] **N1-3**: SYSTEM_PROMPT에 `executionMode` 판단 지침 추가
