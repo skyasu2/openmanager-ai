@@ -4,12 +4,12 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-10
+> Last reviewed: 2026-05-16
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
-**분석 일시**: 2026-05-05 (AI assistant taxonomy and runtime positioning refresh)
-**버전**: v8.11.97
+**분석 일시**: 2026-05-16 (AI provider mesh alignment)
+**버전**: v8.11.156+
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)
 
 **문서 관계**: 이 문서는 Vercel frontend와 Cloud Run AI Engine의 책임 경계, 파일 매핑, 완성도 비교를 다룹니다. Cloud Run 내부 provider, tool, fallback, FactPack, endpoint 상세 기준은 [AI Engine Architecture](./ai-engine-architecture.md)를 우선합니다.
@@ -36,7 +36,7 @@ graph LR
         Supervisor["Supervisor (듀얼모드)"]
         Orchestrator["Orchestrator (모듈 분할)"]
         Agents["7 Execution Agents<br/>(Metrics Query/Analyst/Reporter/<br/>Advisor/Vision/Evaluator/Optimizer)"]
-        Provider["Quad-Provider LLM"]
+        Provider["Provider Mesh LLM"]
         PreComp["Pre-computed 144슬롯"]
         Dispatch["/api/jobs/dispatch"]
         Process["/api/jobs/process"]
@@ -65,7 +65,7 @@ graph LR
          - AISidebarV4                          - Supervisor (듀얼모드)
          - useAIChatCore                        - Orchestrator (모듈 분할)
          - Hybrid Query Router                  - 7 Execution Agents
-         - Security (52패턴 방어)               - Quad-Provider LLM
+         - Security (52패턴 방어)               - Provider Mesh LLM
          - Resumable Stream                     - Pre-computed 144슬롯
 
 부가 경로: `/api/ai/supervisor`는 legacy JSON/text proxy이며 cache/plain callers와 local dev fallback을 담당합니다.
@@ -221,7 +221,7 @@ graph LR
 | `supervisor.ts` + 분할 4개 | Supervisor 듀얼모드 | 45 + 46,609 | 5파일 분할 |
 | `orchestrator.ts` + 분할 5개 | 오케스트레이터 | 51 + 72,348 | 6파일 분할 |
 | `agent-factory.ts` | 에이전트 팩토리 7종 | 394 | 단일 파일 |
-| `model-provider.ts` | Quad-Provider | 680 | 4단계 폴백 |
+| `model-provider.ts` | Provider Mesh | 680+ | 역할별 text mesh + Vision fallback |
 | `tools-ai-sdk/index.ts` | 도구 레지스트리 (가변) | 344 | 모듈별 도구 세트 |
 | `precomputed-state.ts` | 사전 계산 144슬롯 | 853 | O(1) 조회 |
 
@@ -280,8 +280,9 @@ Supervisor (deterministic/single-first)
             ├── Evaluator Agent (품질 평가)
             └── Optimizer Agent (품질 개선)
 
-Quad-Provider Fallback Chain:
-  Cerebras (Primary) → Mistral → Groq → Gemini (Vision)
+Provider Mesh Fallback:
+  Text: Groq/Z.AI/Mistral/Cerebras를 agent 역할별로 회전
+  Vision: Gemini → OpenRouter → Z.AI Vision
 ```
 
 ---
@@ -299,7 +300,7 @@ Quad-Provider Fallback Chain:
 ### Backend 강점
 
 1. **Modular Split Architecture**: Supervisor 5파일, Orchestrator 6파일 분할로 유지보수성 확보
-2. **Quad-Provider Resilience**: Cerebras Mistral Groq Gemini 4단계 폴백
+2. **Provider Mesh Resilience**: Groq, Z.AI, Mistral, Cerebras text mesh와 Gemini/OpenRouter/Z.AI Vision fallback
 3. **전문 도구 세트**: 서버 메트릭, RCA 분석, 이상치 탐지, 웹 검색, 계산 도구를 모듈 단위로 제공
 4. **Pre-computed State**: 144슬롯 10분 간격 사전 계산으로 ~100토큰 압축 (O(1) 조회)
 5. **Langfuse Observability**: 전체 AI 호출 추적 + 비용 자동 제어
@@ -356,7 +357,7 @@ Quad-Provider Fallback Chain:
 
 OpenManager AI v8.11.97 기준 AI Assistant는 **Frontend-Backend 양쪽 모두 높은 완성도**를 보입니다.
 
-- **Backend (95%)**: Modular Split Architecture, Quad-Provider 폴백, 전문 도구 세트, Pre-computed Data, Circuit Breaker (Orchestrator 포함), Rate Limiting 등 AI 처리의 핵심이 모두 구현됨
+- **Backend (95%)**: Modular Split Architecture, provider mesh 폴백, 전문 도구 세트, Pre-computed Data, Circuit Breaker (Orchestrator 포함), Rate Limiting 등 AI 처리의 핵심이 모두 구현됨
 - **Frontend (93%)**: Hybrid Query Router, Resumable Streaming, Clarification Dialog, 52패턴 보안 방어, Memory+Redis 다층 캐시, AI 에러 컨텍스트 로그 등 사용자 경험 관련 기능이 잘 구현됨
 
 **양쪽 완성도가 거의 동등합니다.** 초기 분석 이후 Rate Limiting, CB Orchestrator 통합, AI 에러 컨텍스트 로그, 대용량 파일 분할, planner shadow metadata, deterministic recovery/formatting guard가 누적되어 종합 94% 수준을 유지합니다. 잔여 과제는 `useHybridAIQuery.ts` 추가 분할과 route catalog 정리입니다.
@@ -381,6 +382,6 @@ See also: [AI Engine Architecture](./ai-engine-architecture.md) — Cloud Run AI
 
 ---
 
-_Last Updated: 2026-05-08 (document relationship clarified after docs hygiene review)_
+_Last Updated: 2026-05-16 (provider mesh alignment)_
 _Analysis Method: 코드베이스 실측 (wc -l, symbol analysis)_
-_Corrections: 캐시(Memory+Redis), AI error context, Provider순서(Cerebras→Mistral→Groq→Gemini), 줄 수 오류 수정_
+_Corrections: 캐시(Memory+Redis), AI error context, provider mesh 순서, 줄 수 오류 수정_

@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Active Supporting
 > Doc type: Decision Record
-> Last reviewed: 2026-05-09
+> Last reviewed: 2026-05-16
 > Canonical: docs/reference/architecture/ai/ai-assistant-improvement-boundaries.md
 > Tags: ai,assistant,boundary,free-tier,portfolio
 
@@ -16,7 +16,7 @@ Current assumptions:
 - The project is a learning and portfolio result, not a commercial production product.
 - Deployed runtime must stay within Free Tier or Free Tier-like limits. Vercel Pro is allowed only as a limited exception, not as the default solution to quality problems.
 - Monitoring data is based on pre-generated OTel replay data, not live customer telemetry.
-- Runtime text providers are Free Tier-oriented: Groq Llama 4 Scout, Cerebras `llama3.1-8b`, Mistral Small fallback, and Gemini Flash-Lite for vision.
+- Runtime providers are Free Tier-oriented: Groq Llama 4 Scout, Z.AI GLM Flash, Mistral Small, Cerebras `llama3.1-8b` until its 2026-05-27 cutoff, Gemini Flash-Lite for vision, and OpenRouter/Z.AI Vision as fallback-only routes.
 - The target quality pattern is domain-grounded assistant behavior: deterministic facts first, LLM explanation second.
 - The assistant is intentionally advisory. It can generate evidence, reports, commands, and action drafts, but real infrastructure changes require an operator outside the AI runtime.
 - UI positioning is "core server monitoring product + attached AI Assistant module." The Dashboard, server cards, server detail, logs, alerts, and topology should remain readable as monitoring product surfaces without per-entity AI execution buttons. AI execution UI belongs to the global AI sidebar and `/dashboard/ai-assistant`.

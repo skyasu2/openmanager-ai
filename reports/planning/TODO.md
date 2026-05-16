@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-15 KST (대형 리팩터 커밋 분할 기준 보강 완료)
+**Last Updated**: 2026-05-16 KST (Vercel AI SDK CI/provider mesh guard 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,15 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 현재 진행 중인 작업 없음 | — | Idle | 완료된 planning 문서 archive 정리와 대형 리팩터 커밋 분할 기준 보강 완료. 남은 항목은 On Hold 추적 항목뿐임. |
+| Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 잔여 구현 없음. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
+| 데드 코드 & 레거시 export 정리 (6건) | Medium | Approved | 데드 파일 4개(A1~A4) + deprecated export 2건(B1~B2). 제거 기준과 검증 게이트 확정. 상세: [dead-code-cleanup-plan.md](dead-code-cleanup-plan.md) |
+| AI 어시스턴트 구조 개선 (2건) | Medium | Approved | T1: CB Redis 미연결 명확화, T3: useAIChatCore artifact 상태 분리. (**T2는 NLQ Redesign N1-5로 이관 완료**) 상세: [ai-assistant-structure-improvement-plan.md](ai-assistant-structure-improvement-plan.md) |
+| NLQ Pre-processing Redesign (3건) | High | Draft | N1: LLM-first 라우팅, N2: QueryGuard, N3: 장문·로그 입력 supervisor 계약. 계약/테스트 시나리오 보강 전 구현 금지. 상세: [nlq-preprocessing-redesign-plan.md](nlq-preprocessing-redesign-plan.md) |
+| Vercel AI SDK Multi-Agent Conformance | High | Approved | 현재 부합도 8.6/10. T0~T4 2차 완료: loop settings SSOT, `agentLoop` metadata, stream `routingDecisionTrace`, Reporter pipeline stage naming, Evaluator/Optimizer pipeline-internal public 제외, conformance tests/docs 검증 완료. 잔여는 optional subagent-as-tool PoC와 `createAgentUIStreamResponse` adapter 검토. 상세: [vercel-ai-sdk-multi-agent-conformance-plan.md](vercel-ai-sdk-multi-agent-conformance-plan.md) |
+| Frontend UI 개선 (6건) | Medium | Approved | P1: BootProgressBar 포인터 overflow, AILoginRequiredModal Github 아이콘. P2: FeatureCardModal DiagramErrorBoundary 적용, wave-particles CSS 추출. P3: TopologyModal 닫기 버튼 위치, footer 기술 스택 상수화. 상세: [frontend-ui-improvement-plan.md](frontend-ui-improvement-plan.md) |
+| 로그인 페이지 개선 (8건) | Medium | Approved | L1: 게스트 에러 이중 표시 버그. L2: OAuth 취소 버튼 UX. L3~L5: 타입 중복(훅 포함)·스타일 props·이메일 초기화 리팩터. L6~L8: 상수·error.tsx·주석 정비. 상세: [login-page-improvement-plan.md](login-page-improvement-plan.md) |
+| Dashboard 핵심 컴포넌트 개선 (7건) | Medium | Approved | D1: withCurrentMetricPoint 3곳 중복 제거. D2: 탭 레이블/콘텐츠 불일치 수정. D3: activeTab dead state 제거. D4: 이중 memo() 제거. D5: deprecated addListener 제거. D6~D7: statusGradients 주석·이모지 aria 정리. 상세: [dashboard-improvement-plan.md](dashboard-improvement-plan.md) |
+| AI 사이드바 & 워크스페이스 개선 (5건) | Medium | In Progress (Codex) | S1 완료: Escape 전파 차단 보강. S2 완료: downloadBlob 5중 복제를 `downloadBlobContent`로 추출. S3 완료: 닫힌 sidebar `aria-hidden` 보강. S4 완료: sidebar 내부 `EnhancedAIChat` 헤더 중복 제거. 잔여: S5 fileErrors key 정리. 상세: [ai-sidebar-workspace-improvement-plan.md](ai-sidebar-workspace-improvement-plan.md) |
 
 ---
 
@@ -21,7 +29,12 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| 현재 백로그 없음 | — | 신규 작업은 작업 시작 전 `reports/planning/README.md` 기준에 따라 TODO 또는 plan 파일로 등록. |
+| 프론트엔드 분석 대기 — 메인 페이지 | Medium | `src/app/main/components/` 584줄 계. GuestRestrictionModal(112), SystemStartSection(114), DashboardSection(81) 검토. 로그인 계획서(L1~L2)와 유사 패턴 존재 여부 확인 필요. **Codex 분석 대기** |
+| 프론트엔드 분석 대기 — 차트 컴포넌트 | Medium | `src/components/charts/NivoTimeSeriesChart.tsx` 511줄. Nivo 라이브러리 사용 방식, memo 패턴, 반응형 처리 검토. Dashboard 계획서와 연관 가능. **Codex 분석 대기** |
+| 프론트엔드 분석 대기 — shared 컴포넌트 | Medium | `VibeCiCdSection.tsx`(377줄), `UnifiedProfileHeader.tsx`(353줄) 집중 검토. props drilling, memo 패턴. **Codex 분석 대기** |
+| 프론트엔드 분석 대기 — Zustand 스토어 | Low | `src/stores/useAISidebarStore.ts` 561줄. persist 설정, selector 구독 패턴, 상태 정규화 검토. **Codex 분석 대기** |
+| 프론트엔드 분석 대기 — AI 훅 레이어 | Low | `src/hooks/ai/useHybridAIQuery.ts`(691줄), `useAsyncAIQuery.ts`(583줄). streaming/job-queue 분기, 에러 핸들링 구조. `ai-assistant-structure-improvement-plan.md` T3와 연관. **Codex 분석 대기** |
+| 로그인 전역 `app/error.tsx` Tailwind 전환 검토 | Low | 로그인 계획서 L7과 유사하지만 범위 밖. 전체 앱 error boundary 스타일 정리 필요 여부를 별도 소규모 작업으로 판단. |
 
 ---
 
@@ -112,7 +125,43 @@
 
 ## Recent Completed
 
+### Completed (2026-05-16) — Codex
+- [x] Vercel AI SDK stable package alignment
+  - npm registry `latest` 기준으로 `ai@6.0.175`, `@ai-sdk/react@3.0.99`, `@ai-sdk/groq@3.0.38`, `@ai-sdk/google@3.0.68`, `@ai-sdk/openai@3.0.62`, `@ai-sdk/cerebras@2.0.50`, `@ai-sdk/mistral@3.0.35`를 재확인했다.
+  - 루트 앱의 `@ai-sdk/mistral`만 `^3.0.28`에서 `^3.0.35`로 patch 업그레이드해 AI Engine과 버전을 정렬했다.
+  - 루트 앱의 `@ai-sdk/react@^3.0.140`은 registry에 존재하지 않는 버전으로 확인되어 공식 stable `latest`인 `^3.0.99`로 정렬하고 lockfile 재현성을 회복했다.
+  - `ai@7.0.0-beta.116`, `@ai-sdk/react@3.0.0-beta.172`, provider beta/canary 계열은 stable `latest`가 아니므로 무료 티어 운영 안정성 기준에서 채택 보류했다.
+  - `ai` 및 `@ai-sdk/*` 의존성은 root/AI Engine 모두 exact pin으로 전환해 patch 릴리스 자동 유입을 막고, 변경점 확인 후 수동 업그레이드하도록 정렬했다.
+  - 후속 개선으로 `npm run check:ai-sdk`를 추가해 root/AI Engine의 `ai` 및 `@ai-sdk/*` 선언 버전과 lockfile 설치 버전이 실제 npm registry에 존재하는지 검증하도록 했다. 기본 모드는 미공개 버전/lock 누락을 실패 처리하고, `--strict-latest` 사용 시 latest 불일치도 실패 처리한다.
+  - `@ai-sdk/react` `UIMessage` 계약 회귀 테스트를 보강해 `reasoning`/`source-url`/`data-*`/`tool-*` 파트가 텍스트 추출에 섞이지 않고, AI SDK v6 `FileUIPart`의 `url`/`mediaType`/`filename`이 Cloud Run 첨부 형식으로 유지되는지 확인했다.
+  - GitLab validate 단계에 `validate_ai_sdk_registry` job을 추가해 root/AI Engine AI SDK 선언 버전과 lockfile 버전이 npm registry에 존재하는지 CI에서 자동 검증하도록 했다. 일반 validate는 upstream patch 릴리스만으로 막히지 않게 non-strict 모드로 두고, strict latest 점검은 수동/로컬 점검으로 유지한다.
+  - provider fallback mesh 회귀 테스트를 보강해 `A-B-C`, `B-C-A`, `C-A-B` 회전 순서에서 앞 provider가 실패해도 다음 provider로 순차 복구되는지 mock 기반으로 확인했다.
+
+### Completed (2026-05-16) — Codex
+- [x] AI provider 문서/계획서 정합성 정리
+  - AI Provider Fallback Mesh와 AI Assistant 답변 품질 안정화 결과를 운영 문서와 계획서 상태에 반영했다.
+  - 완료된 답변 품질 안정화 계획서는 archive로 이동하고, active 계획서 상태를 `Approved`/`Draft`/`tracking` 기준으로 재정렬했다.
+  - NLQ Pre-processing Redesign은 계약 변경 범위라 `Draft`를 유지하고 구현 전 보강 필요 항목을 명시했다.
+
+- [x] AI Provider Fallback Mesh
+  - Z.AI 무료 Flash 모델을 AI Engine provider mesh에 추가하고 text chain을 Groq/Z.AI/Mistral/Cerebras 축으로 분산했다.
+  - Vision fallback은 Gemini → OpenRouter → Z.AI Vision 순서로 확장했고, Z.AI request body에는 `thinking: { type: "disabled" }`를 주입해 tool-calling smoke 기준을 반영했다.
+  - Cerebras `llama3.1-8b`는 2026-05-27 종료 전까지 short-context fallback으로 유지하되, 2026-05-16 계정 header 기준 quota를 5 RPM / 30K TPM / 2.4K RPD / 1M TPD로 갱신했다.
+  - 검증: Z.AI live text/tool smoke, AI Engine `type-check`/full test, root `type-check`/`lint`/`test:quick`/`test:contract`, docs checks, `git diff --check` 통과.
+  - 상세: [archive/ai-provider-fallback-mesh-plan.md](archive/ai-provider-fallback-mesh-plan.md)
+
+### Completed (2026-05-16) — Codex
+- [x] AI Assistant 답변 품질 안정화
+  - 최근 AI Engine 답변 품질 변경을 재검토하고 SambaNova provider 추가와 Cerebras `llama3.3-70b` 조기 기본 전환은 원상복구했다.
+  - 유지한 개선: 내부 판단 절차형 프롬프트 안전화, 인텐트별 LLM 파라미터, tool result 기반 응답 enrichment 보정.
+  - 검증: AI Engine targeted 7 files / 154 tests, AI Engine full 126 files / 1224 tests, root `type-check`, `lint`, `test:quick`, `test:contract`, `line-guard`, docs checks, `git diff --check` 통과.
+  - 상세: [archive/ai-assistant-response-quality-stabilization-plan.md](archive/ai-assistant-response-quality-stabilization-plan.md)
+
 ### Completed (2026-05-15) — Codex
+- [x] DashboardClientRuntime anonymous 무한 로딩 수정
+  - `490846d7c fix(dashboard): redirect anonymous access checks`
+  - release `v8.11.156` 배포 완료, 비인증 `/dashboard` 접근 시 `/` 리다이렉트 경로로 정리
+
 - [x] Follow-up Improvements G2/G4/line-guard closure
   - [archive/follow-up-improvements-plan.md](archive/follow-up-improvements-plan.md) T0~T5 완료 및 archive 이동
   - G2: guidance CTA metadata 보존 + 실제 AI sidebar 렌더러 CTA 버튼/클릭 실행 경로 보정
