@@ -1,8 +1,8 @@
 > Owner: project
 > Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-16
-> Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture
+> Last reviewed: 2026-05-16 (베스트 프랙티스 갭 분석 반영 — N4 추가, P5~P8 진단 추가)
+> Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture,stream-filter,best-practice-gap
 
 # NLQ Pre-processing Redesign Plan
 
@@ -76,14 +76,18 @@ Cloud Run AI Engine
   └─ single/multi agent 실행
 ```
 
-### 확인된 문제 4가지
+### 확인된 문제 8가지
 
-| # | 문제 | 현상 |
-|---|------|------|
-| P1 | **LLM 결과를 Cloud Run regex가 재심사** | intentFrame이 전달되나 `selectExecutionMode()`가 자체 regex 15개+로 덮어씀. LLM 분석 낭비 |
-| P2 | **regex 오타 예외 처리 수동 누적** | `서벼`, `썹`, `servr`, `sever`, `trubleshoot` 등 수동 관리. 새 오타마다 패턴 추가 |
-| P3 | **공격 패턴 탐지가 NLQ 레이어 부재** | `security.ts` injection 탐지가 supervisor에만 적용. `/api/ai/nlq/extract-entities`는 무방비로 Groq 도달 |
-| P4 | **장문·로그 입력 처리 미정의** | NLQ route 길이 제한 없음. 에러 로그 붙여넣기 시 160-token 한도 내 추출 → 실패 |
+| # | 문제 | 현상 | 대응 |
+|---|------|------|------|
+| P1 | **LLM 결과를 Cloud Run regex가 재심사** | intentFrame이 전달되나 `selectExecutionMode()`가 자체 regex 15개+로 덮어씀. LLM 분석 낭비 | N1 |
+| P2 | **regex 오타 예외 처리 수동 누적** | `서벼`, `썹`, `servr`, `sever`, `trubleshoot` 등 수동 관리. 새 오타마다 패턴 추가 | N1 |
+| P3 | **공격 패턴 탐지가 NLQ 레이어 부재** | `security.ts` injection 탐지가 supervisor에만 적용. `/api/ai/nlq/extract-entities`는 무방비로 Groq 도달 | N2 |
+| P4 | **장문·로그 입력 처리 미정의** | NLQ route 길이 제한 없음. 에러 로그 붙여넣기 시 160-token 한도 내 추출 → 실패 | N3 |
+| P5 | **스트리밍 출력 필터 미적용** | `filterResponse()` + `DANGEROUS_OUTPUT_PATTERNS`(XSS 제거)가 레거시 JSON 경로에만 있음. `stream/v2/route.ts:443`에서 `cloudRunResponse.body`를 그대로 클라이언트에 pass-through. 실제 운영 경로인 streaming이 더 취약한 역전 상태 | N4 |
+| P6 | **`z.unknown().optional()` pass-through 필드** | `schemas.ts`의 `intentFrame`, `semanticQueryTrace`, `localRouteDecision`이 형식 검증 없이 Cloud Run에 전달됨. 악의적 사용자가 `metadata.intentFrame.confidence=100`을 조작해 라우팅에 영향 가능 | N1/N3 완료 시 schema에 타입 확정 |
+| P7 | **`requestSchema`와 `requestSchemaLoose` 동일 내용 중복** | `schemas.ts:156` vs `schemas.ts:173` — 주석은 "최소 검증"이나 실제 내용 동일. 유지보수 부담 | 이번 범위 제외 — TODO 1줄 |
+| P8 | **stream/v2 서버 컨텍스트 주입 누락 (조사 필요)** | 레거시 `route.ts:307`에서 `buildServerContextMessage()`로 alert 서버 메트릭 주입. `stream/v2/route.ts`에는 없음. Cloud Run이 자체 데이터 접근 가능하다면 무해하나, BFF 단 컨텍스트 주입이 의도였다면 누락 | 조사 후 판단 — 이번 범위 제외 |
 
 ---
 
@@ -108,7 +112,15 @@ Cloud Run AI Engine
   ├─ [N1] selectExecutionMode() → DomainIntentFrame.confidence >= 0.8이면 executionMode 우선
   ├─ [N3] inputType === 'log_paste' → multi 강제 + logExtract 컨텍스트 주입
   └─ [보안 강화] prompt injection defense-in-depth (두 번째 레이어 추가)
+
+Vercel BFF stream/v2 응답 처리
+  └─ [N4] cloudRunResponse.body → StreamOutputFilter → 클라이언트
+       ├─ XSS 패턴 스캔 (DANGEROUS_OUTPUT_PATTERNS)
+       └─ 악성 출력 탐지 (MALICIOUS_OUTPUT_PATTERNS)
 ```
+
+> **P5(스트리밍 출력 필터) 우선순위**: N2 QueryGuard와 파일/계약이 독립적이며 보안상 즉시 해소가 권고되는 항목이다. N0 완료 뒤 N2와 병렬 착수 가능하며, streaming 필터는 chunk 단위 처리가 필요해 SDD test/spec을 먼저 고정한다.
+
 
 ---
 
@@ -130,6 +142,8 @@ Cloud Run AI Engine
 | N3 | `src/app/api/ai/supervisor/schemas.test.ts` | `metadata.inputType`/`metadata.logExtract`가 허용되고 길이 초과 값은 거부 또는 truncate 계약을 따른다 |
 | N3 | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.test.ts` | Cloud Run이 `inputType`, `logExtract`, `intentFrame.executionMode`를 normalize한다 |
 | N3 | `cloud-run/ai-engine/src/domains/monitoring/routing-policy.test.ts` | `inputType='log_paste'`는 `executionMode`/regex보다 우선해 multi를 반환한다 |
+| N4 | `src/app/api/ai/supervisor/stream/v2/stream-output-filter.test.ts` | `<script>` 포함 청크는 `[removed]`로 치환되고, 시스템 프롬프트 유출 패턴은 안전 응답으로 교체되고, 정상 청크는 그대로 통과한다 |
+| N4 | `src/app/api/ai/supervisor/stream/v2/stream-output-filter.test.ts` | SSE `data: ` 프리픽스는 스캔 대상에서 제외되어 변형 없이 유지된다 |
 
 ### Legacy compatibility
 
@@ -178,6 +192,7 @@ Client는 `blocked: true`를 받으면 clarification을 열지 않고 전송을 
 | Vercel | NLQ route에 로컬 QueryGuard 추가, LLM 호출 수 변경 없음 | ✅ |
 | Cloud Run | selectExecutionMode() 단순화. LLM 추가 호출 없음 | ✅ |
 | Upstash Redis | 변경 없음 | ✅ |
+| Vercel (N4) | stream/v2 응답에 chunk 스캔 추가. 단순 regex 적용이므로 레이턴시 영향 미미 | ✅ |
 
 ---
 
@@ -458,16 +473,89 @@ inputType === 'oversized':
 
 ---
 
+## N4: 스트리밍 출력 필터 (P5 대응)
+
+### 현재 문제
+
+`stream/v2/route.ts:443`에서 `cloudRunResponse.body`를 아무 필터 없이 그대로 클라이언트에 전달한다.
+
+```typescript
+// 현재 — 필터 없음
+return new Response(streamBody, { headers: createSupervisorStreamHeaders(...) });
+```
+
+레거시 `route.ts`는 JSON 응답에 `filterResponse()` + `escapeHtml()`을 적용하는데, 실제 운영에서 더 많이 쓰이는 streaming 경로는 적용 대상이 아니다. XSS 패턴(`<script>`, `onclick=`, `javascript:` 등)이나 악성 출력(시스템 프롬프트 유출, 역할 변경 확인)이 스트리밍으로 클라이언트에 도달할 수 있다.
+
+### 설계 원칙
+
+- **청크 단위 스캔**: 스트리밍은 단일 문자열이 아니라 SSE 청크 스트림이므로 `TransformStream`으로 청크를 버퍼링하여 패턴 스캔 후 릴리즈한다.
+- **버퍼 크기 상한**: 무제한 버퍼는 메모리 위험. 청크당 최대 8KB, 누적 버퍼는 32KB로 제한한다.
+- **기존 패턴 재사용**: `DANGEROUS_OUTPUT_PATTERNS` / `MALICIOUS_OUTPUT_PATTERNS` import 재사용. 중복 구현 금지.
+- **패스스루 우선**: 패턴 미탐지 시 지연 없이 즉시 릴리즈. 탐지 시만 치환.
+- **SSE 프레임 보존**: `data: `, `event: `, `id: ` 프리픽스를 치환하지 않도록 content 부분만 스캔.
+
+### 신규 모듈: `src/app/api/ai/supervisor/stream/v2/stream-output-filter.ts`
+
+```typescript
+export function createOutputFilterStream(): TransformStream<Uint8Array, Uint8Array>
+
+// 청크 처리 흐름:
+// 1. Uint8Array → UTF-8 decode
+// 2. SSE 프리픽스 유지, content 부분만 추출
+// 3. DANGEROUS_OUTPUT_PATTERNS 스캔 → 탐지 시 '[removed]'로 치환
+// 4. MALICIOUS_OUTPUT_PATTERNS 스캔 → 탐지 시 안전 응답으로 교체
+// 5. UTF-8 encode → 다운스트림 릴리즈
+```
+
+### stream/v2/route.ts 적용
+
+```typescript
+// 변경 전
+return new Response(streamBody, { headers: ... });
+
+// 변경 후
+import { createOutputFilterStream } from './stream-output-filter';
+const filteredStream = streamBody.pipeThrough(createOutputFilterStream());
+return new Response(filteredStream, { headers: ... });
+```
+
+> **Resumable stream 호환**: `createUpstashResumableContext().createNewResumableStream()`의 `streamBody` 인자 전달 전에 filter를 적용한다. Resumable path와 pass-through path 양쪽에 모두 적용.
+
+### 승인 계약 — N4 failing test assertion
+
+| 테스트 파일 | 기대 assertion |
+|-------------|----------------|
+| `src/app/api/ai/supervisor/stream/v2/stream-output-filter.test.ts` | `<script>alert(1)</script>` 포함 청크는 `[removed]`로 치환되어 출력된다 |
+| `src/app/api/ai/supervisor/stream/v2/stream-output-filter.test.ts` | `당신은 서버 모니터링 AI 어시스턴트` 포함 청크는 안전 응답으로 교체된다 |
+| `src/app/api/ai/supervisor/stream/v2/stream-output-filter.test.ts` | 패턴 없는 정상 청크는 변형 없이 그대로 출력된다 (pass-through) |
+| `src/app/api/ai/supervisor/stream/v2/stream-output-filter.test.ts` | SSE `data: ` 프리픽스는 치환 대상에서 제외된다 |
+
+**영향 파일**:
+- `src/app/api/ai/supervisor/stream/v2/stream-output-filter.ts` (신규)
+- `src/app/api/ai/supervisor/stream/v2/route.ts` (filter 적용)
+
+**태스크**:
+- [ ] **N4-1**: `stream-output-filter.ts` 신규 — `createOutputFilterStream()` TransformStream
+- [ ] **N4-2**: SSE 청크 파싱 — content 부분 추출 + 프리픽스 보존 로직
+- [ ] **N4-3**: `stream/v2/route.ts` — pass-through path와 resumable path 양쪽에 filter 적용
+- [ ] **N4-4**: `stream-output-filter.test.ts` — XSS/악성/정상/SSE 프리픽스 케이스
+
+---
+
 ## 작업 순서 및 의존성
 
 ```
 N0 (UI input cap) — 독립, 먼저 처리 가능
-  └→ N2 (QueryGuard) — NLQ route 보안/길이 guard
-       └→ N1 (LLM-first routing) — N2 완료 후 NLQ route 통합
-            └→ N3 (장문/로그 계약) — N1의 intentFrame 계약 확정 후
+  ├→ N2 (QueryGuard) — NLQ route 보안/길이 guard
+  │    └→ N1 (LLM-first routing) — N2 완료 후 NLQ route 통합
+  │         └→ N3 (장문/로그 계약) — N1의 intentFrame 계약 확정 후
+  │              └→ [N1/N3 완료 시] schemas.ts z.unknown() → 타입 확정 (P6 해소)
+  └→ N4 (스트리밍 출력 필터) — N2와 파일/계약 독립, 병렬 착수 가능
 ```
 
 **N1이 T2를 흡수**: `ai-assistant-structure-improvement-plan.md` T2는 이 plan N1-6 완료 시 자동 종료.
+
+**P6 해소 시점**: N1에서 `SemanticIntentFrame`에 `executionMode` 타입을 확정하고, N3에서 `metadata.inputType` / `metadata.logExtract`를 schema에 추가하면 `z.unknown()` pass-through 필드가 자연스럽게 제거된다. 별도 태스크 불필요.
 
 ---
 
@@ -485,6 +573,7 @@ N0은 UI guard 소규모 변경이지만 입력 계약을 사용자에게 노출
 N2-5(guard 테스트)는 N2-1~N2-4의 선행 failing test 커밋.
 N1은 동작 변경이 있으므로 test(spec): 선행 필수.
 N3은 계약 확장이므로 test(spec): 선행 후 구현.
+N4는 N2와 파일/계약이 독립이므로 N0 완료 후 병렬 착수 가능. test(spec): 선행 필수 (streaming TransformStream 계약 변경).
 
 ---
 
@@ -514,6 +603,9 @@ cd cloud-run/ai-engine && npm run type-check && npm run test
 | log analysis 전용 tool 신규 개발 | 기존 Analyst Agent + 컨텍스트 주입으로 충분. 별도 tool은 다음 단계 |
 | Root NLQ → AI Engine provider mesh 편입 | 2026-05-16 `archive/ai-provider-fallback-mesh-plan.md`에서 검토 완료. Root 경량 classifier는 deterministic fallback이 있어 현 범위 밖으로 유지 |
 | 실시간 위협 인텔리전스 연동 | 외부 API = 비용 + 레이턴시. Free tier 원칙 위반 |
+| **P7: `requestSchema`/`requestSchemaLoose` 중복 제거** | 기능 변경 없음. TODO.md 소규모 리팩터링 1줄로 충분. N1/N3 계약 확정 후 두 스키마를 하나로 병합하는 것이 자연스러운 시점 |
+| **P8: stream/v2 서버 컨텍스트 주입 누락** | `buildServerContextMessage()`가 레거시 route에만 있음. Cloud Run은 `precomputed-state.ts`로 자체 데이터 접근 가능하므로 BFF 주입이 필수인지 불명확. 관찰 후 별도 판단 |
+| **P5의 base64 오탐 가능성 (경고)** | `security-patterns.ts`의 `encoding_bypass` 패턴이 data URL base64와 충돌 가능성 있음. 현재 `extractLastUserQuery()`가 텍스트만 추출해 실제 오탐 없음. 멀티파트 확장 시 재검토 필요 |
 
 ---
 
@@ -543,7 +635,7 @@ N1 구현 시 Q2 효과까지 자동으로 포함됨. 별도 작업 불필요.
 이 계획은 NLQ 보안 guard, Cloud Run 계약, log_paste 처리가 함께 변경되는 광범위 계약 변경이므로 Draft로 유지됐으나, 2026-05-16 아래 항목을 승인 계약으로 고정했다.
 
 **보강 필요 항목 현황:**
-- [x] N0/N1/N2/N3 failing test assertion 명시
+- [x] N0/N1/N2/N3/N4 failing test assertion 명시
 - [x] `SemanticIntentFrame.executionMode` 없는 기존 클라이언트 호환 동작 표 고정
 - [x] `inputType` / `logExtract` 길이·민감정보 제한 확정
 - [x] QueryGuard `blocked: true` 응답 계약 확정 (UI clarification 오인 방지)
