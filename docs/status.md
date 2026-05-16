@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-17 | **현재 버전 스냅샷**: v8.11.163
+**상태 스냅샷 기준일**: 2026-05-17 | **현재 버전 스냅샷**: v8.11.164
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.164** (2026-05-17) — Bug Fixes: profile: sync guest system status
 - **v8.11.163** (2026-05-17) — Bug Fixes: system: persist serverless running state
 - **v8.11.162** (2026-05-17) — Bug Fixes: dashboard: sync system controls and card spacing; Tests: qa: record v8.11.161 production dashboard check
 - **v8.11.161** (2026-05-17) — Bug Fixes: dashboard: simplify server card interaction; Code Refactoring: ai: change warning style to GPT/Gemini-style bottom append
 - **v8.11.160** (2026-05-16) — Features: ai: delegate guard warnings to llm; Bug Fixes: deploy: sync provider runtime env defaults
-- **v8.11.159** (2026-05-16) — Features: ai: rotate text providers with attribution
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
