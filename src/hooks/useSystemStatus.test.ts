@@ -66,12 +66,13 @@ describe('useSystemStatus', () => {
       expect(result.current.error).toBeNull();
     });
 
-    it('enabled=false면 refresh/startSystem 호출도 네트워크 요청을 보내지 않는다', async () => {
+    it('enabled=false면 refresh/startSystem/stopSystem 호출도 네트워크 요청을 보내지 않는다', async () => {
       const { result } = renderHook(() => useSystemStatus({ enabled: false }));
 
       await act(async () => {
         await result.current.refresh();
         await result.current.startSystem();
+        await result.current.stopSystem();
       });
 
       expect(fetchSpy).not.toHaveBeenCalled();
@@ -172,7 +173,7 @@ describe('useSystemStatus', () => {
     it('startSystem() 호출 시 POST 후 GET으로 상태를 갱신한다', async () => {
       fetchSpy
         .mockResolvedValueOnce(okResponse(makeStatus({ isRunning: false }))) // 초기 GET
-        .mockResolvedValueOnce(okResponse({ ok: true })) // POST start
+        .mockResolvedValueOnce(okResponse({ success: true, action: 'start' })) // POST start
         .mockResolvedValueOnce(okResponse(makeStatus({ isRunning: true }))); // 갱신 GET
 
       const { result } = renderHook(() => useSystemStatus());
@@ -200,10 +201,36 @@ describe('useSystemStatus', () => {
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
       await act(async () => {
-        await result.current.startSystem();
+        await expect(result.current.startSystem()).rejects.toThrow();
       });
 
       expect(result.current.error).not.toBeNull();
+    });
+
+    it('startSystem() HTTP 200 success:false면 상태 갱신 없이 error를 설정하고 throw한다', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(okResponse(makeStatus({ isRunning: false }))) // 초기 GET
+        .mockResolvedValueOnce(
+          okResponse({
+            success: false,
+            action: 'start',
+            message: '순차 서버 생성 엔진 시작 실패',
+            errors: ['engine failed'],
+          })
+        );
+
+      const { result } = renderHook(() => useSystemStatus());
+      await waitFor(() => expect(result.current.status?.isRunning).toBe(false));
+
+      await act(async () => {
+        await expect(result.current.startSystem()).rejects.toThrow(
+          '순차 서버 생성 엔진 시작 실패'
+        );
+      });
+
+      expect(result.current.status?.isRunning).toBe(false);
+      expect(result.current.error).toBe('순차 서버 생성 엔진 시작 실패');
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
     });
 
     it('isLoading 중에는 startSystem()이 중복 실행되지 않는다', async () => {
@@ -232,6 +259,30 @@ describe('useSystemStatus', () => {
       await act(async () => {
         resolve(okResponse(makeStatus()));
       });
+    });
+  });
+
+  describe('stopSystem', () => {
+    it('stopSystem() 호출 시 POST stop 후 GET으로 상태를 갱신한다', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(okResponse(makeStatus({ isRunning: true }))) // 초기 GET
+        .mockResolvedValueOnce(okResponse({ success: true, action: 'stop' })) // POST stop
+        .mockResolvedValueOnce(okResponse(makeStatus({ isRunning: false }))); // 갱신 GET
+
+      const { result } = renderHook(() => useSystemStatus());
+      await waitFor(() => expect(result.current.status?.isRunning).toBe(true));
+
+      await act(async () => {
+        await result.current.stopSystem();
+      });
+
+      expect(result.current.status?.isRunning).toBe(false);
+      const postCall = fetchSpy.mock.calls.find(
+        ([, opts]) =>
+          (opts as RequestInit)?.method === 'POST' &&
+          (opts as RequestInit)?.body === JSON.stringify({ action: 'stop' })
+      );
+      expect(postCall).toBeDefined();
     });
   });
 

@@ -199,6 +199,32 @@ describe('DashboardInteractiveShell', () => {
     expect(dashboardInitLogs).toHaveLength(1);
   });
 
+  it('does not mark the local system as started on production dashboard mount', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    const { default: DashboardInteractiveShell } = await import(
+      './DashboardInteractiveShell'
+    );
+
+    render(
+      React.createElement(DashboardInteractiveShell, {
+        initialServers: [],
+        initialTimeInfo: undefined,
+        initialDataSourceInfo: null,
+        initialFocusServerId: null,
+        isMounted: true,
+        canToggleAI: true,
+        userType: 'github',
+        isGuestFullAccess: false,
+      })
+    );
+
+    await waitFor(() => {
+      expect(ensureDataLoaded).toHaveBeenCalledTimes(1);
+    });
+
+    expect(startSystem).not.toHaveBeenCalled();
+  });
+
   it('renders dashboard app navigation links inside the interactive shell', async () => {
     const { default: DashboardInteractiveShell } = await import(
       './DashboardInteractiveShell'

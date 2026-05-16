@@ -128,6 +128,7 @@ function setupTransitiveMocks() {
     error: null,
     refresh: fn().mockResolvedValue(undefined),
     startSystem: fn().mockResolvedValue(undefined),
+    stopSystem: fn().mockResolvedValue(undefined),
   } as never);
 }
 

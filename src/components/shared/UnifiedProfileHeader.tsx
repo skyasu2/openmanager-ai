@@ -46,30 +46,36 @@ export default function UnifiedProfileHeader({
     setIsHydrated(true);
   }, []);
 
-  const { status: systemStatus } = useSystemStatus({
+  const {
+    status: systemStatus,
+    startSystem: startRemoteSystem,
+    stopSystem: stopRemoteSystem,
+  } = useSystemStatus({
     enabled: !isAuthResolving && status === 'authenticated',
   });
   // Zustand selector 패턴 사용 - 불필요한 리렌더 방지
-  const isSystemStarted = useUnifiedAdminStore(
+  const isLocalSystemStarted = useUnifiedAdminStore(
     (state) => state.isSystemStarted
   );
-  const stopSystem = useUnifiedAdminStore((state) => state.stopSystem);
-  const startSystem = useUnifiedAdminStore((state) => state.startSystem);
+  const stopLocalSystem = useUnifiedAdminStore((state) => state.stopSystem);
+  const startLocalSystem = useUnifiedAdminStore((state) => state.startSystem);
+  const isSystemStarted = systemStatus?.isRunning ?? isLocalSystemStarted;
 
   // 시스템 시작 핸들러
-  const handleSystemStart = useCallback(() => {
+  const handleSystemStart = useCallback(async () => {
     try {
       logger.info('시스템 시작 요청 (프로필에서)');
-      startSystem();
+      await startRemoteSystem();
+      startLocalSystem();
       logger.info('시스템 시작 성공');
     } catch (error) {
       logger.error('시스템 시작 오류:', error);
       alert('시스템 시작 중 오류가 발생했습니다.');
     }
-  }, [startSystem]);
+  }, [startLocalSystem, startRemoteSystem]);
 
-  // 시스템 종료 핸들러 - useUnifiedAdminStore.stopSystem 직접 사용
-  const handleSystemStop = useCallback(() => {
+  // 시스템 종료 핸들러
+  const handleSystemStop = useCallback(async () => {
     const confirmed = confirm(
       '시스템을 종료하시겠습니까?\n\n종료 후 메인 페이지에서 다시 시작할 수 있습니다.'
     );
@@ -79,15 +85,15 @@ export default function UnifiedProfileHeader({
     try {
       logger.info('시스템 종료 요청 (프로필에서)');
 
-      // useUnifiedAdminStore.stopSystem() 직접 호출
-      stopSystem();
-      logger.info('시스템 종료 성공 (Unified Store 직접 사용)');
+      await stopRemoteSystem();
+      stopLocalSystem();
+      logger.info('시스템 종료 성공');
       localStorage.removeItem('system_auto_shutdown');
     } catch (error) {
       logger.error('시스템 종료 오류:', error);
       alert('시스템 종료 중 오류가 발생했습니다.');
     }
-  }, [stopSystem]);
+  }, [stopLocalSystem, stopRemoteSystem]);
 
   // 관리자 인증 핸들러
   const handleLogoutClick = useCallback(async () => {
@@ -102,7 +108,7 @@ export default function UnifiedProfileHeader({
     const items: MenuItem[] = [];
 
     // 대시보드 열기 (시스템 실행 중일 때만)
-    if (isSystemStarted || systemStatus?.isRunning) {
+    if (isSystemStarted) {
       items.push({
         id: 'dashboard',
         label: '대시보드 열기',
@@ -170,7 +176,6 @@ export default function UnifiedProfileHeader({
     return items;
   }, [
     userType,
-    systemStatus,
     isSystemStarted,
     closeMenu,
     navigateToDashboard,
@@ -345,7 +350,7 @@ export default function UnifiedProfileHeader({
         userInfo={userInfo}
         userType={userType}
         onClose={closeMenu}
-        isSystemStarted={isSystemStarted || (systemStatus?.isRunning ?? false)}
+        isSystemStarted={isSystemStarted}
         isSystemStarting={systemStatus?.isStarting}
         onSystemStart={handleSystemStart}
         onSystemStop={handleSystemStop}

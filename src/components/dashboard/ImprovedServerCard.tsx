@@ -155,13 +155,13 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     const variantStyles = useMemo(() => {
       const styles = {
         compact: {
-          container: 'h-[172px] p-2.5',
+          container: 'h-[192px] p-3 pb-4',
         },
         detailed: {
-          container: 'h-[220px] p-3',
+          container: 'h-[244px] p-4 pb-5',
         },
         standard: {
-          container: 'h-[205px] p-2.5',
+          container: 'h-[226px] p-3 pb-4',
         },
       };
       return styles[variant] || styles.standard;

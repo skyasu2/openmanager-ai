@@ -71,6 +71,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
     isLoading: statusLoading,
     startSystem: startMultiUserSystem,
   } = useSystemStatus({ enabled: isAuthenticated });
+  const isSystemRunning = multiUserStatus?.isRunning ?? isSystemStarted;
 
   const [systemStartCountdown, setSystemStartCountdown] = useState(0);
   const [isSystemStarting, setIsSystemStarting] = useState(false);
@@ -174,7 +175,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
         showEscHint: false,
       };
     }
-    if (multiUserStatus?.isRunning || isSystemStarted) {
+    if (isSystemRunning) {
       let shutdownTime: string | null = null;
       try {
         if (typeof window !== 'undefined' && window.localStorage) {
@@ -202,8 +203,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
     systemStartCountdown,
     isSystemStarting,
     isAuthenticated,
-    multiUserStatus?.isRunning,
-    isSystemStarted,
+    isSystemRunning,
   ]);
 
   // 시스템 토글 핸들러
@@ -251,7 +251,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
     }
 
     // 이미 실행 중이면 대시보드로 이동
-    if (multiUserStatus?.isRunning || isSystemStarted) {
+    if (isSystemRunning) {
       if (pathname !== '/dashboard') router.push('/dashboard');
     } else {
       // 카운트다운 시작
@@ -271,25 +271,24 @@ export function useSystemStart(options: UseSystemStartOptions) {
         }
 
         clearCountdownTimer();
-        debug.log('🚀 카운트다운 완료 - 로딩 페이지로 이동');
+        debug.log('🚀 카운트다운 완료 - 시스템 시작 요청');
+        setIsSystemStarting(true);
         void (async () => {
           try {
             await startMultiUserSystem();
             await startSystem();
+            setPendingNavigation(SYSTEM_BOOT_PATH);
           } catch (error) {
             debug.error('❌ 시스템 시작 실패:', error);
             setIsSystemStarting(false);
           }
         })();
-        // 렌더링 외부에서 네비게이션 실행 (React 규칙 준수)
-        setPendingNavigation(SYSTEM_BOOT_PATH);
       }, COUNTDOWN_INTERVAL_MS);
     }
   }, [
     isSystemStarting,
     systemStartCountdown,
-    multiUserStatus?.isRunning,
-    isSystemStarted,
+    isSystemRunning,
     pathname,
     isAuthenticated,
     isGitHubUser,
@@ -356,7 +355,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
       };
     }
 
-    if (multiUserStatus?.isRunning || isSystemStarted) {
+    if (isSystemRunning) {
       return {
         text: '대시보드 이동',
         icon: getIcon(BarChart3, 'h-5 w-5'),
@@ -381,15 +380,14 @@ export function useSystemStart(options: UseSystemStartOptions) {
     isAuthenticated,
     isGitHubUser,
     statusLoading,
-    multiUserStatus?.isRunning,
-    isSystemStarted,
+    isSystemRunning,
   ]);
 
   return {
     // 상태
     systemStartCountdown,
     isSystemStarting,
-    isSystemStarted,
+    isSystemStarted: isSystemRunning,
     multiUserStatus,
     statusLoading,
 

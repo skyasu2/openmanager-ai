@@ -44,12 +44,22 @@ export interface SystemStatus {
   };
 }
 
+export interface SystemActionResponse {
+  success: boolean;
+  action: 'start' | 'stop' | 'restart';
+  message?: string;
+  errors?: string[];
+  warnings?: string[];
+  timestamp?: string;
+}
+
 export interface UseSystemStatusReturn {
   status: SystemStatus | null;
   isLoading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
-  startSystem: () => Promise<void>;
+  startSystem: () => Promise<SystemActionResponse | null>;
+  stopSystem: () => Promise<SystemActionResponse | null>;
 }
 
 export interface UseSystemStatusOptions {
@@ -310,33 +320,70 @@ export function useSystemStatus(
     await performFetch({ force: true });
   }, [enabled]);
 
-  const startSystem = useCallback(async () => {
-    if (!enabled) return;
+  const runSystemAction = useCallback(
+    async (action: 'start' | 'stop'): Promise<SystemActionResponse | null> => {
+      if (!enabled) return null;
 
-    // Guard against concurrent calls (e.g. double-click)
-    if (systemStatusStore.snapshot.isLoading) return;
+      // Guard against concurrent calls (e.g. double-click)
+      if (systemStatusStore.snapshot.isLoading) return null;
 
-    try {
-      updateSnapshot({ error: null, isLoading: true });
+      try {
+        updateSnapshot({ error: null, isLoading: true });
 
-      const response = await fetch('/api/system', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'start' }),
-      });
+        const response = await fetch('/api/system', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`시스템 시작 실패: ${response.statusText}`);
+        const payload = (await response
+          .json()
+          .catch(() => null)) as SystemActionResponse | null;
+
+        if (!response.ok) {
+          throw new Error(
+            payload?.message ||
+              `시스템 ${action === 'start' ? '시작' : '종료'} 실패: ${
+                response.statusText
+              }`
+          );
+        }
+
+        if (payload?.success === false) {
+          const reason = payload.message || payload.errors?.join(', ');
+          throw new Error(
+            reason ||
+              `시스템 ${action === 'start' ? '시작' : '종료'}에 실패했습니다`
+          );
+        }
+
+        await performFetch({ force: true });
+        return payload;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : `시스템 ${action === 'start' ? '시작' : '종료'}에 실패했습니다`;
+        updateSnapshot({ error: errorMessage, isLoading: false });
+        logger.error(
+          `시스템 ${action === 'start' ? '시작' : '종료'} 실패:`,
+          err
+        );
+        throw err;
       }
+    },
+    [enabled]
+  );
 
-      await performFetch({ force: true });
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : '시스템 시작에 실패했습니다';
-      updateSnapshot({ error: errorMessage, isLoading: false });
-      logger.error('시스템 시작 실패:', err);
-    }
-  }, [enabled]);
+  const startSystem = useCallback(
+    () => runSystemAction('start'),
+    [runSystemAction]
+  );
+
+  const stopSystem = useCallback(
+    () => runSystemAction('stop'),
+    [runSystemAction]
+  );
 
   return {
     status: snapshot.status,
@@ -344,5 +391,6 @@ export function useSystemStatus(
     error: snapshot.error,
     refresh,
     startSystem,
+    stopSystem,
   };
 }

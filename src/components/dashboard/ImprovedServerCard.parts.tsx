@@ -69,11 +69,11 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
           {formatMetricValue(type, value)}
         </span>
       </div>
-      <div className="flex h-12 w-full items-center justify-center">
+      <div className="flex h-14 w-full items-center justify-center">
         <SvgSparkline
           data={history && history.length > 1 ? history : [value, value]}
           width={72}
-          height={40}
+          height={48}
           color={metricSeverity.chartColor}
           fill
           strokeWidth={1.5}

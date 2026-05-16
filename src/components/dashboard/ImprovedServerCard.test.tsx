@@ -118,11 +118,17 @@ vi.mock('../shared/ServerMetricsChart', () => ({
 }));
 
 vi.mock('../shared/SvgSparkline', () => ({
-  SvgSparkline: vi.fn(({ data }: { data?: number[] }) => (
-    <div data-testid="mock-mini-chart" data-points={data?.join(',') ?? ''}>
-      Mini Chart
-    </div>
-  )),
+  SvgSparkline: vi.fn(
+    ({ data, height }: { data?: number[]; height?: number }) => (
+      <div
+        data-testid="mock-mini-chart"
+        data-points={data?.join(',') ?? ''}
+        data-height={height}
+      >
+        Mini Chart
+      </div>
+    )
+  ),
 }));
 
 vi.mock('../error/ServerCardErrorBoundary', () => ({
@@ -492,6 +498,19 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(screen.getByText('Web Server 01')).toBeInTheDocument();
     });
 
+    it('compact variant는 하단 여백을 위해 카드 높이와 padding을 확보한다', () => {
+      const { container } = render(
+        <ImprovedServerCard
+          server={mockServer}
+          onClick={mockOnClick}
+          variant="compact"
+        />
+      );
+
+      const card = getCardContainer(container);
+      expect(card).toHaveClass('h-[192px]', 'p-3', 'pb-4');
+    });
+
     it('standard variant를 렌더링한다 (기본값)', () => {
       const { container } = render(
         <ImprovedServerCard
@@ -512,6 +531,14 @@ describe('ImprovedServerCard - User Event 테스트', () => {
         />
       );
       expect(getCardContainer(container)).toBeInTheDocument();
+    });
+
+    it('미니 차트는 카드 안에서 더 큰 세로 공간을 사용한다', () => {
+      render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
+
+      const charts = screen.getAllByTestId('mock-mini-chart');
+      expect(charts[0]).toHaveAttribute('data-height', '48');
+      expect(charts[0].parentElement).toHaveClass('h-14');
     });
 
     it('compact variant에서 모바일 숨김 클래스를 유지한다', () => {
