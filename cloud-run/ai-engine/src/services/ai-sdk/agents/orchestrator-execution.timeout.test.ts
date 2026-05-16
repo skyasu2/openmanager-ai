@@ -646,6 +646,201 @@ describe('executeMultiAgent timeout contract', () => {
     );
   });
 
+  it('direct-routes low-confidence non-stream suggestions without Orchestrator LLM or decomposition', async () => {
+    const contextModule = await import('./orchestrator-context');
+    const decompositionModule = await import('./orchestrator-decomposition');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Reporter Agent',
+      confidence: 0.68,
+    });
+    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Reporter Agent');
+    mockGenerateObjectWithFallback.mockResolvedValueOnce({
+      object: {
+        selectedAgent: 'REPORTER',
+        confidence: 0.72,
+        reasoning: 'Need report',
+      },
+      usage: {
+        inputTokens: 12,
+        outputTokens: 8,
+        totalTokens: 20,
+      },
+    });
+    mockExecuteForcedRouting.mockResolvedValueOnce({
+      success: true,
+      response: 'Reporter direct response',
+      handoffs: [],
+      finalAgent: 'Reporter Agent',
+      toolsCalled: [],
+      usage: {
+        promptTokens: 10,
+        completionTokens: 5,
+        totalTokens: 15,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-reporter',
+        totalRounds: 1,
+        handoffCount: 0,
+        durationMs: 25,
+      },
+    });
+
+    const result = await executeMultiAgent({
+      messages: [
+        {
+          role: 'user',
+          content: '서버 상태 분석 결과를 보고서로 정리해줘',
+        },
+      ],
+      sessionId: 'direct-low-confidence-non-stream',
+    });
+
+    expect(result.success).toBe(true);
+    expect(decompositionModule.decomposeTask).not.toHaveBeenCalled();
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
+    expect(mockExecuteForcedRouting).toHaveBeenCalledWith(
+      '서버 상태 분석 결과를 보고서로 정리해줘',
+      'Reporter Agent',
+      expect.any(Number),
+      true,
+      true,
+      undefined,
+      undefined,
+      null,
+      undefined,
+      undefined,
+      undefined
+    );
+    if (result.success) {
+      expect(result.metadata.routingDecisionTrace?.agentDecision).toMatchObject({
+        source: 'pre_filter',
+        selectedAgent: 'Reporter Agent',
+        reasonCodes: ['agent_source_pre_filter'],
+      });
+    }
+  });
+
+  it('direct-routes low-confidence stream suggestions without Orchestrator LLM or decomposition', async () => {
+    const contextModule = await import('./orchestrator-context');
+    const decompositionModule = await import('./orchestrator-decomposition');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Advisor Agent',
+      confidence: 0.68,
+    });
+    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Advisor Agent');
+    mockGenerateObjectWithFallback.mockResolvedValueOnce({
+      object: {
+        selectedAgent: 'ADVISOR',
+        confidence: 0.72,
+        reasoning: 'Need guidance',
+      },
+      usage: {
+        inputTokens: 12,
+        outputTokens: 8,
+        totalTokens: 20,
+      },
+    });
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeMultiAgentStream({
+      messages: [{ role: 'user', content: '장애 대응 순서 알려줘' }],
+      sessionId: 'direct-low-confidence-stream',
+    })) {
+      events.push(event);
+    }
+
+    expect(events.some((event) => event.type === 'done')).toBe(true);
+    expect(decompositionModule.decomposeTask).not.toHaveBeenCalled();
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
+    expect(mockExecuteAgentStream).toHaveBeenCalledWith(
+      '장애 대응 순서 알려줘',
+      'Advisor Agent',
+      expect.any(Number),
+      'direct-low-confidence-stream',
+      true,
+      true,
+      undefined,
+      undefined,
+      null,
+      undefined,
+      undefined,
+      undefined
+    );
+  });
+
+  it('falls back to Metrics Query Agent when direct routing has no suggested agent', async () => {
+    const contextModule = await import('./orchestrator-context');
+    const decompositionModule = await import('./orchestrator-decomposition');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      confidence: 0.5,
+    });
+    vi.mocked(getAgentFromRouting).mockReturnValueOnce('Analyst Agent');
+    mockGenerateObjectWithFallback.mockResolvedValueOnce({
+      object: {
+        selectedAgent: 'ANALYST',
+        confidence: 0.72,
+        reasoning: 'Need analysis',
+      },
+      usage: {
+        inputTokens: 12,
+        outputTokens: 8,
+        totalTokens: 20,
+      },
+    });
+    mockExecuteForcedRouting.mockResolvedValueOnce({
+      success: true,
+      response: 'Metrics fallback response',
+      handoffs: [],
+      finalAgent: 'Metrics Query Agent',
+      toolsCalled: [],
+      usage: {
+        promptTokens: 10,
+        completionTokens: 5,
+        totalTokens: 15,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-metrics',
+        totalRounds: 1,
+        handoffCount: 0,
+        durationMs: 25,
+      },
+    });
+
+    const result = await executeMultiAgent({
+      messages: [{ role: 'user', content: '이 요청 처리해줘' }],
+      sessionId: 'direct-no-suggested-agent',
+    });
+
+    expect(result.success).toBe(true);
+    expect(decompositionModule.decomposeTask).not.toHaveBeenCalled();
+    expect(mockGenerateObjectWithFallback).not.toHaveBeenCalled();
+    expect(mockExecuteForcedRouting).toHaveBeenCalledWith(
+      '이 요청 처리해줘',
+      'Metrics Query Agent',
+      expect.any(Number),
+      true,
+      true,
+      undefined,
+      undefined,
+      null,
+      undefined,
+      undefined,
+      undefined
+    );
+    if (result.success) {
+      expect(result.metadata.routingDecisionTrace?.agentDecision).toMatchObject({
+        source: 'deterministic_fallback',
+        selectedAgent: 'Metrics Query Agent',
+        reasonCodes: ['agent_source_deterministic_fallback'],
+      });
+    }
+  });
+
   it('records LLM routing source when pre-filter is not decisive', async () => {
     const contextModule = await import('./orchestrator-context');
     vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
