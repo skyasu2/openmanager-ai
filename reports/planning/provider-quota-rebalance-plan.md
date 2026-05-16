@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-16 (Q0 gpt-oss-120b 정책 보정 완료)
 > Tags: ai,provider,quota,nlq,free-tier,groq,cerebras,architecture
 
 ---
@@ -95,6 +95,8 @@
 
 ### Q0. gpt-oss-120b 정책 수정 (단순 데이터 수정, SDD 게이트 불필요)
 
+**Status**: 완료 (2026-05-16)
+
 **수정 파일**: `cloud-run/ai-engine/src/services/ai-sdk/provider-model-policy.ts`
 
 ```typescript
@@ -125,6 +127,12 @@
 ```
 
 **주의 사항**: `gpt-oss-120b`는 reasoning 모델 → max_tokens 100 미만 시 `content=null` 발생. Cerebras 모델 선택기에서 reasoning 모델에 대한 min_tokens 가드 필요 여부 검토.
+
+**완료 기록**:
+- `DEFAULT_CEREBRAS_MODEL`은 즉시 전환하지 않고 `llama3.1-8b`로 유지했다. 운영 기본값 교체는 별도 스위치오버로 남긴다.
+- `gpt-oss-120b` 정책은 `fallback/enabled/green`으로 보정하고 모델별 quota를 등록했다.
+- `CEREBRAS_FALLBACK_MODEL_IDS` 미설정 시 built-in Cerebras fallback으로 `gpt-oss-120b`를 제공한다.
+- retry/fallback은 Cerebras provider 전체가 아니라 deprecated model만 건너뛰도록 보정했다.
 
 **검증 게이트**:
 ```bash
@@ -200,7 +208,7 @@ N1-0 결과 Groq 외 provider가 NLQ baseline이 되면, 위 효과는 "Groq NLQ
 
 | 작업 | SDD 필요 | 우선순위 | 예상 시간 |
 |------|:--------:|:-------:|:--------:|
-| Q0: gpt-oss-120b 정책 수정 | ❌ (데이터 수정) | P0 즉시 | 30분 |
+| Q0: gpt-oss-120b 정책 수정 | ❌ (데이터 수정) | 완료 | 30분 |
 | Q1: Orchestrator provider order + decomposition budget | ✅ (계약 변경) | P1 | 1.5시간 |
 | Q2: intentFrame trust | ✅ (NLQ Plan 연계) | P1 (NLQ Draft→Approved 후) | 별도 |
 | P2: enrichment multi-path | ❌ (저영향) | P2 관찰 후 판단 | - |

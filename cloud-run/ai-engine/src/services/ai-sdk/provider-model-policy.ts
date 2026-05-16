@@ -9,14 +9,19 @@ export const CEREBRAS_LLAMA_DEPRECATION_DATE = '2026-05-27';
 export const CEREBRAS_ZAI_GLM_MODEL_ID = 'zai-glm-4.7';
 export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
 export const CEREBRAS_DEPRECATION_REPLACEMENT =
-  'groq:meta-llama/llama-4-scout-17b-16e-instruct';
+  `cerebras:${CEREBRAS_GPT_OSS_MODEL_ID}`;
 export const CEREBRAS_DEPRECATION_CONTINGENCY = {
   date: CEREBRAS_LLAMA_DEPRECATION_DATE,
   affectedRuntimeAgents: ['Analyst Agent', 'Reporter Agent', 'Advisor Agent'],
-  fallbackChainAfterDeprecation: ['mistral', 'groq', 'zai'],
+  fallbackChainAfterDeprecation: [
+    `cerebras:${CEREBRAS_GPT_OSS_MODEL_ID}`,
+    'mistral',
+    'groq',
+    'zai',
+  ],
   visibleButExcludedModels: [CEREBRAS_ZAI_GLM_MODEL_ID],
   action:
-    'Cerebras is retained as short-context fallback only; confirm replacement model entitlement before 2026-05-27.',
+    'Cerebras llama3.1-8b remains the default until switchover, while gpt-oss-120b is enabled as the confirmed Cerebras replacement candidate.',
 } as const;
 
 export type ProviderModelRole = 'primary' | 'fallback' | 'vision' | 'excluded';
@@ -134,7 +139,8 @@ export interface ProviderReasoningCapabilityFinding {
 }
 
 export type CerebrasRuntimeModelId =
-  typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
+  | typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID
+  | typeof CEREBRAS_GPT_OSS_MODEL_ID;
 
 const DEFAULT_PROVIDER_SMOKE_MAX_AGE_DAYS = 14;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -167,10 +173,11 @@ const CEREBRAS_GPT_OSS_PROVIDER_REASONING: ProviderReasoningCapability = {
   kind: 'provider-native',
   defaultEnabled: false,
   requiresOptIn: true,
-  smokeSource: 'provider-doc',
+  lastVerified: '2026-05-16',
+  smokeSource: 'manual-smoke',
   optionShape: 'reasoning_effort',
   publicSummary:
-    'Official Cerebras docs describe GPT-OSS reasoning controls, but this model is not enabled for the current OpenManager runtime policy.',
+    'Cerebras GPT-OSS exposes provider-native reasoning controls. OpenManager keeps reasoning opt-in and requires sufficient max output tokens.',
 };
 
 export const CEREBRAS_MODEL_POLICIES = {
@@ -230,28 +237,36 @@ export const CEREBRAS_MODEL_POLICIES = {
   [CEREBRAS_GPT_OSS_MODEL_ID]: {
     provider: 'cerebras',
     modelId: CEREBRAS_GPT_OSS_MODEL_ID,
-    role: 'excluded',
+    role: 'fallback',
     lifecycle: 'production',
-    enabled: false,
+    enabled: true,
     toolCallingEnabled: true,
     structuredOutputEnabled: true,
-    quota: EMPTY_QUOTA,
+    quota: {
+      requestsPerMinute: 5,
+      tokensPerMinute: 30_000,
+      requestsPerDay: 2_400,
+      tokensPerDay: 1_000_000,
+    },
     blockAfterDeprecation: false,
-    smokeStatus: 'red',
+    smokeStatus: 'green',
     smokeEvidence: [
       '2026-05-13 current account chat completions smoke returned 404',
-      'not shown in account free-tier Limits list',
+      '2026-05-16 live smoke HTTP 200 OK, 23ms',
+      '2026-05-16 account response headers: 5 RPM / 150 RPH / 2400 RPD / 30K TPM / 1M TPD',
+      '2026-05-16 reasoning model: content field requires max_tokens >= 100',
+      'tool calling smoke: to be confirmed',
     ],
     reasoningCapability: CEREBRAS_GPT_OSS_PROVIDER_REASONING,
     freeTierLimitSummary:
-      'not in free-tier runtime candidates; current key chat smoke returned 404',
+      'Free account headers: 5 RPM / 30K TPM / 2.4K RPD / 1M TPD; reasoning model requires max_tokens >= 100',
     sourceUrls: CEREBRAS_SOURCE_URLS,
-    recommendedReplacement: CEREBRAS_QWEN_MODEL_ID,
+    recommendedReplacement: 'mistral:mistral-small-latest',
   },
 } as const satisfies Record<string, ProviderModelPolicy>;
 
 export function getCerebrasRuntimeModelIds(): CerebrasRuntimeModelId[] {
-  return [CEREBRAS_LLAMA_FALLBACK_MODEL_ID];
+  return [CEREBRAS_LLAMA_FALLBACK_MODEL_ID, CEREBRAS_GPT_OSS_MODEL_ID];
 }
 
 export function getCerebrasRuntimeModelPolicies(): ProviderModelPolicy[] {
@@ -292,8 +307,15 @@ function isPastPolicyBlockDate(policy: ProviderModelPolicy, asOf: Date): boolean
 }
 
 export function isCerebrasExpiredByDate(asOf: Date = new Date()): boolean {
+  return isCerebrasModelExpiredByDate(CEREBRAS_LLAMA_FALLBACK_MODEL_ID, asOf);
+}
+
+export function isCerebrasModelExpiredByDate(
+  modelId: string,
+  asOf: Date = new Date()
+): boolean {
   return isPastPolicyBlockDate(
-    getCerebrasModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID),
+    getCerebrasModelPolicy(modelId),
     asOf
   );
 }

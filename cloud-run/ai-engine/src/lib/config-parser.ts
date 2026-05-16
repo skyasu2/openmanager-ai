@@ -1,6 +1,7 @@
 import './env-loader';
 import { logger } from './logger';
 import {
+  CEREBRAS_GPT_OSS_MODEL_ID,
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   DEFAULT_CEREBRAS_MODEL,
 } from '../services/ai-sdk/provider-model-policy';
@@ -312,8 +313,8 @@ export function getMistralConfig(): MistralConfig | null {
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
  * @see https://inference-docs.cerebras.ai
  * Default model is the current Cerebras production model available in this
- * account. Qwen 235B remains documented as a preview override only.
- * gpt-oss-120b is excluded from free-tier runtime candidates for this account.
+ * account. Qwen 235B remains documented as a preview override only, and
+ * gpt-oss-120b is retained as the confirmed Cerebras replacement candidate.
  */
 export function getCerebrasApiKey(): string | null {
   const providersConfig = getAIProvidersConfig();
@@ -338,7 +339,8 @@ export function getCerebrasModelId(): string {
 
 /**
  * Intra-provider fallback models for Cerebras. The default model is already
- * llama3.1-8b, so the built-in fallback list is empty unless explicitly set.
+ * llama3.1-8b, so gpt-oss-120b is the built-in replacement fallback unless
+ * CEREBRAS_FALLBACK_MODEL_IDS is explicitly set.
  */
 export function getCerebrasFallbackModelIds(): string[] {
   const configured = process.env.CEREBRAS_FALLBACK_MODEL_IDS;
@@ -349,7 +351,10 @@ export function getCerebrasFallbackModelIds(): string[] {
       .filter((modelId) => modelId.length > 0);
   }
 
-  return [];
+  const defaultModel: string = DEFAULT_CEREBRAS_MODEL;
+  return defaultModel === CEREBRAS_GPT_OSS_MODEL_ID
+    ? []
+    : [CEREBRAS_GPT_OSS_MODEL_ID];
 }
 
 /**

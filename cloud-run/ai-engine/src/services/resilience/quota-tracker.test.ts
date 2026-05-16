@@ -533,15 +533,15 @@ describe('QuotaTracker — selectAvailableProvider', () => {
     expect(result!.isPreemptiveFallback).toBe(false);
   });
 
-  it('Cerebras 기본 모델 quota 초과 시 다음 provider로 전환한다', async () => {
+  it('Cerebras 기본 모델 quota 초과 시 gpt-oss 모델 quota로 전환한다', async () => {
     const limit = PROVIDER_QUOTAS.cerebras.dailyTokenLimit;
     await recordProviderUsage('cerebras', Math.ceil(limit * 0.96));
 
     const result = await selectAvailableProvider(['cerebras', 'mistral', 'groq']);
 
     expect(result).not.toBeNull();
-    expect(result!.provider).toBe('mistral');
-    expect(result!.modelId).toBeUndefined();
+    expect(result!.provider).toBe('cerebras');
+    expect(result!.modelId).toBe('gpt-oss-120b');
     expect(result!.isPreemptiveFallback).toBe(true);
   });
 
@@ -555,6 +555,11 @@ describe('QuotaTracker — selectAvailableProvider', () => {
       'cerebras',
       Math.ceil(CEREBRAS_MODEL_QUOTAS['llama3.1-8b'].dailyTokenLimit * 0.96),
       'llama3.1-8b'
+    );
+    await recordProviderUsage(
+      'cerebras',
+      Math.ceil(CEREBRAS_MODEL_QUOTAS['gpt-oss-120b'].dailyTokenLimit * 0.96),
+      'gpt-oss-120b'
     );
 
     const result = await selectAvailableProvider(['cerebras', 'mistral', 'groq']);
@@ -616,8 +621,11 @@ describe('QuotaTracker — Constants', () => {
     expect(PROVIDER_QUOTAS.gemini).toBeDefined();
   });
 
-  it('Cerebras model-aware quota defines only the production runtime model', () => {
-    expect(Object.keys(CEREBRAS_MODEL_QUOTAS)).toEqual(['llama3.1-8b']);
+  it('Cerebras model-aware quota includes default and replacement runtime models', () => {
+    expect(Object.keys(CEREBRAS_MODEL_QUOTAS)).toEqual([
+      'llama3.1-8b',
+      'gpt-oss-120b',
+    ]);
   });
 
   it('모든 쿼터에 필수 필드 존재', () => {

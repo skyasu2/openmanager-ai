@@ -3,6 +3,7 @@ import {
   getCerebrasModelId,
 } from '../../lib/config-parser';
 import {
+  CEREBRAS_GPT_OSS_MODEL_ID,
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   getCerebrasModelPolicy,
   type CerebrasRuntimeModelId,
@@ -98,6 +99,9 @@ export const CEREBRAS_MODEL_QUOTAS: Record<CerebrasQuotaModelId, ProviderQuota> 
   [CEREBRAS_LLAMA_FALLBACK_MODEL_ID]: quotaFromModelPolicy(
     CEREBRAS_LLAMA_FALLBACK_MODEL_ID
   ),
+  [CEREBRAS_GPT_OSS_MODEL_ID]: quotaFromModelPolicy(
+    CEREBRAS_GPT_OSS_MODEL_ID
+  ),
 };
 
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
@@ -105,9 +109,10 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
    * Cerebras default production model quota. Use getQuotaForProvider(provider, modelId)
    * for model-aware fallback checks.
    * @see https://inference-docs.cerebras.ai/support/rate-limits
-   * @updated 2026-04-30
+   * @updated 2026-05-16
    *
    * - llama3.1-8b account limit: 1M TPD, 30K TPM, 5 RPM, 2.4K RPD
+   * - gpt-oss-120b account limit: 1M TPD, 30K TPM, 5 RPM, 2.4K RPD
    * - Context/capability lives in provider-model-metadata; this tracker only enforces usage quotas.
    */
   cerebras: CEREBRAS_MODEL_QUOTAS[CEREBRAS_LLAMA_FALLBACK_MODEL_ID],
@@ -188,8 +193,8 @@ export function getQuotaForProvider(
   }
 
   const effectiveModelId = modelId || getCerebrasModelId();
-  if (effectiveModelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID) {
-    return CEREBRAS_MODEL_QUOTAS[effectiveModelId];
+  if (effectiveModelId in CEREBRAS_MODEL_QUOTAS) {
+    return CEREBRAS_MODEL_QUOTAS[effectiveModelId as CerebrasQuotaModelId];
   }
 
   return CEREBRAS_MODEL_QUOTAS[CEREBRAS_LLAMA_FALLBACK_MODEL_ID];

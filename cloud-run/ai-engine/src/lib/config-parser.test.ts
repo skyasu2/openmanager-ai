@@ -195,9 +195,9 @@ describe('Config Parser', () => {
       expect(getCerebrasModelId()).toBe('custom-cerebras-model');
     });
 
-    it('should not add an intra-Cerebras fallback when llama3.1-8b is already the default', () => {
+    it('should add gpt-oss-120b as the built-in Cerebras replacement fallback', () => {
       expect(CEREBRAS_LLAMA_FALLBACK_MODEL_ID).toBe('llama3.1-8b');
-      expect(getCerebrasFallbackModelIds()).toEqual([]);
+      expect(getCerebrasFallbackModelIds()).toEqual(['gpt-oss-120b']);
     });
 
     it('should disable Cerebras tool-calling by default', () => {

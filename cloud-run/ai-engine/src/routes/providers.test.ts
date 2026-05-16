@@ -71,7 +71,7 @@ describe('Provider Routes', () => {
       expect(json.available).toBeDefined();
       expect(json.info).toBeDefined();
       expect(json.modelDrift).toEqual([]);
-      expect(json.modelMetadata).toHaveLength(7);
+      expect(json.modelMetadata).toHaveLength(8);
       expect(json.info.cerebras.model).toBe('llama3.1-8b');
       expect(json.info.cerebras.toolCallingEnabled).toBe(false);
       expect(json.info.groq.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');

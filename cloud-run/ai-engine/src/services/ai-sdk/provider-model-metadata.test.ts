@@ -86,15 +86,15 @@ describe('provider model metadata', () => {
     expect(metadata.quota.tokensPerMinute).toBe(30_000);
   });
 
-  it('marks GPT-OSS as excluded from free-tier runtime candidates', () => {
+  it('marks GPT-OSS as enabled Cerebras fallback metadata', () => {
     const metadata = getCerebrasModelMetadata(CEREBRAS_GPT_OSS_MODEL_ID);
 
-    expect(metadata.role).toContain('excluded');
+    expect(metadata.role).toContain('fallback');
     expect(metadata.lifecycle).toBe('production');
-    expect(metadata.productionModel).toBe(false);
-    expect(metadata.enabled).toBe(false);
-    expect(metadata.smokeStatus).toBe('red');
-    expect(metadata.freeTierLimitSummary).toContain('not in free-tier runtime');
+    expect(metadata.productionModel).toBe(true);
+    expect(metadata.enabled).toBe(true);
+    expect(metadata.smokeStatus).toBe('green');
+    expect(metadata.freeTierLimitSummary).toContain('5 RPM');
   });
 
   it('describes the current provider chain without deprecated runtime defaults', () => {
@@ -104,6 +104,7 @@ describe('provider model metadata', () => {
 
     expect(metadata.map((entry) => entry.provider)).toEqual([
       'groq',
+      'cerebras',
       'cerebras',
       'mistral',
       'zai',
@@ -122,6 +123,14 @@ describe('provider model metadata', () => {
       metadata.find((entry) => entry.modelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID)
     ).toMatchObject({
       modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+      role: expect.stringContaining('fallback'),
+      lifecycle: 'production',
+      smokeStatus: 'green',
+    });
+    expect(
+      metadata.find((entry) => entry.modelId === CEREBRAS_GPT_OSS_MODEL_ID)
+    ).toMatchObject({
+      modelId: CEREBRAS_GPT_OSS_MODEL_ID,
       role: expect.stringContaining('fallback'),
       lifecycle: 'production',
       smokeStatus: 'green',

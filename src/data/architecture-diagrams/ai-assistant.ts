@@ -59,7 +59,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'nlq',
           label: 'Metrics Query Agent',
-          sublabel: 'Cerebras llama3.1-8b',
+          sublabel: 'Cerebras llama3.1/gpt-oss',
           type: 'secondary',
           icon: '🔍',
         },

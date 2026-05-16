@@ -26,7 +26,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     detailedContent: {
       overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 운영 의사결정 AI 어시스턴트입니다. 핵심 수치와 판정은 deterministic fact layer가 책임지고, LLM은 tool-calling과 설명·보고서·조치안 생성을 맡습니다. 내부 지식은 Supabase Postgres Full Text Search를 감싼 search_knowledge_text RPC로 검색하고, 원본 지식은 repo 문서와 seed JSON에 남겨 재생성 가능한 인덱스로 관리합니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)를 fallback으로 사용하며, RCA/report/advisor/vision처럼 복잡한 요청만 5개 라우팅 에이전트로 escalation합니다. 경량 커스텀 TypeScript ML, Knowledge Retrieval Lite(Postgres FTS + metadata boost), 요청 기반 웹 검색을 분리해 무료 티어 사용량을 예측 가능하게 유지합니다.`,
       features: [
-        '🧠 Cerebras Inference: 초고속 추론 인프라 (llama3.1-8b) — 짧은 컨텍스트 fallback 및 structured route 보조',
+        '🧠 Cerebras Inference: 초고속 추론 인프라 (llama3.1-8b / gpt-oss-120b) — 짧은 컨텍스트 fallback 및 structured route 보조',
         '⚡ Groq Cloud: LPU 기반 초고속 추론 (meta-llama/llama-4-scout-17b-16e-instruct) — Supervisor / Metrics Query / Tool-calling 핵심 모델',
         '🛡️ Mistral AI: mistral-small-latest — Groq/Cerebras 장애 또는 쿼터 초과 시 무료 티어 친화적 text last-resort fallback 담당',
         '👁️ Gemini Flash-Lite: Vision Agent 전용, 스크린샷과 긴 로그 컨텍스트 분석 — 사고 토큰 없는 안정적 비전 분석 경로',

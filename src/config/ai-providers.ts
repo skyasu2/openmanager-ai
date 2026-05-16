@@ -51,10 +51,10 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   },
   {
     name: 'Cerebras',
-    role: 'Short-context text fallback',
-    model: 'llama3.1-8b',
+    role: 'Short-context text fallback + replacement candidate',
+    model: 'llama3.1-8b / gpt-oss-120b',
     description:
-      'Production Cerebras runtime retained until 2026-05-27 deprecation, used only where context and quota allow.',
+      'Production Cerebras runtime retains llama3.1-8b as default and enables gpt-oss-120b as the confirmed replacement fallback candidate.',
     color: 'bg-blue-500',
     dailyTokenLimit: '1M tokens/day',
   },

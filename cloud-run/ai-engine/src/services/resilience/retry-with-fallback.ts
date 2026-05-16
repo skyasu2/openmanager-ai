@@ -19,7 +19,8 @@ import {
 } from '../ai-sdk/provider-capabilities';
 import {
   CEREBRAS_LLAMA_DEPRECATION_DATE,
-  isCerebrasExpiredByDate,
+  getCerebrasModelPolicy,
+  isCerebrasModelExpiredByDate,
 } from '../ai-sdk/provider-model-policy';
 import { getCircuitBreaker } from './circuit-breaker';
 import {
@@ -177,20 +178,35 @@ export async function generateTextWithRetry(
 
     const providerConfig = availableProviders[0];
     const { name: provider, getModel } = providerConfig;
-    const modelIds =
+    const configuredModelIds =
       options.providerModelIds?.[provider]?.filter(Boolean) ??
       providerConfig.modelIds();
 
-    if (provider === 'cerebras' && isCerebrasExpiredByDate()) {
-      attempts.push({
-        provider,
-        modelId: modelIds[0] ?? getCerebrasModelId(),
-        attempt: 1,
-        error: `CEREBRAS_DEPRECATED:${CEREBRAS_LLAMA_DEPRECATION_DATE}`,
-        durationMs: 0,
-      });
+    const modelIds =
+      provider === 'cerebras'
+        ? configuredModelIds.filter((modelId) => {
+            if (!isCerebrasModelExpiredByDate(modelId)) {
+              return true;
+            }
+
+            const policy = getCerebrasModelPolicy(modelId);
+            attempts.push({
+              provider,
+              modelId,
+              attempt: 1,
+              error: `CEREBRAS_DEPRECATED:${policy.deprecationDate ?? CEREBRAS_LLAMA_DEPRECATION_DATE}`,
+              durationMs: 0,
+            });
+            logger.warn(
+              `[RetryWithFallback] Skipping cerebras/${modelId}: past deprecation date ${policy.deprecationDate}`
+            );
+            return false;
+          })
+        : configuredModelIds;
+
+    if (provider === 'cerebras' && modelIds.length === 0) {
       logger.warn(
-        `[RetryWithFallback] Skipping cerebras: past deprecation date ${CEREBRAS_LLAMA_DEPRECATION_DATE}`
+        '[RetryWithFallback] Skipping cerebras: all configured models are past deprecation date'
       );
       excludedProviders.push(provider);
       continue;

@@ -49,11 +49,14 @@ const providerReasoningPolicyModule = providerModelPolicy as typeof providerMode
 };
 
 describe('provider model policy SSOT', () => {
-  it('uses Cerebras llama3.1-8b as the only runtime default after Qwen preview de-scope', () => {
+  it('uses llama3.1-8b as the default and keeps gpt-oss-120b as enabled fallback', () => {
     expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
-    expect(getCerebrasRuntimeModelIds()).toEqual([CEREBRAS_LLAMA_FALLBACK_MODEL_ID]);
+    expect(getCerebrasRuntimeModelIds()).toEqual([
+      CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+      CEREBRAS_GPT_OSS_MODEL_ID,
+    ]);
 
-    expect(getCerebrasRuntimeModelPolicies()).toHaveLength(1);
+    expect(getCerebrasRuntimeModelPolicies()).toHaveLength(2);
     expect(getCerebrasModelPolicy(CEREBRAS_QWEN_MODEL_ID)).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_QWEN_MODEL_ID,
@@ -89,14 +92,20 @@ describe('provider model policy SSOT', () => {
     });
   });
 
-  it('keeps gpt-oss-120b out of runtime candidates because the account free tier cannot use it', () => {
-    expect(getCerebrasRuntimeModelIds()).not.toContain(CEREBRAS_GPT_OSS_MODEL_ID);
+  it('enables gpt-oss-120b as the confirmed Cerebras replacement candidate', () => {
+    expect(getCerebrasRuntimeModelIds()).toContain(CEREBRAS_GPT_OSS_MODEL_ID);
     expect(getCerebrasModelPolicy(CEREBRAS_GPT_OSS_MODEL_ID)).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_GPT_OSS_MODEL_ID,
-      role: 'excluded',
-      enabled: false,
-      smokeStatus: 'red',
+      role: 'fallback',
+      enabled: true,
+      smokeStatus: 'green',
+      quota: {
+        requestsPerMinute: 5,
+        tokensPerMinute: 30_000,
+        requestsPerDay: 2_400,
+        tokensPerDay: 1_000_000,
+      },
       blockAfterDeprecation: false,
     });
   });
@@ -122,8 +131,8 @@ describe('provider model policy SSOT', () => {
       getCerebrasModelPolicy(CEREBRAS_GPT_OSS_MODEL_ID).smokeEvidence
     ).toEqual(
       expect.arrayContaining([
-        expect.stringContaining('2026-05-13'),
-        expect.stringContaining('404'),
+        expect.stringContaining('2026-05-16'),
+        expect.stringContaining('HTTP 200'),
       ])
     );
 
@@ -131,6 +140,7 @@ describe('provider model policy SSOT', () => {
       CEREBRAS_ZAI_GLM_MODEL_ID
     );
     expect(CEREBRAS_DEPRECATION_CONTINGENCY.fallbackChainAfterDeprecation).toEqual([
+      'cerebras:gpt-oss-120b',
       'mistral',
       'groq',
       'zai',
@@ -165,7 +175,7 @@ describe('provider model policy SSOT', () => {
         modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
         severity: 'P1',
         reason: `${CEREBRAS_LLAMA_FALLBACK_MODEL_ID} is blocked for cerebras after ${CEREBRAS_LLAMA_DEPRECATION_DATE}`,
-        replacement: 'groq:meta-llama/llama-4-scout-17b-16e-instruct',
+        replacement: 'cerebras:gpt-oss-120b',
       },
     ]);
   });

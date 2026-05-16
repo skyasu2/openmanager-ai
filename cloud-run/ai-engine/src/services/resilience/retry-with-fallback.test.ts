@@ -14,7 +14,7 @@ const {
   mockMarkProviderQuotaCooldown,
   mockReconcileProviderQuotaReservation,
   mockReserveProviderQuota,
-  mockIsCerebrasExpiredByDate,
+  mockIsCerebrasModelExpiredByDate,
 } = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
   mockCheckProviderStatus: vi.fn(() => ({
@@ -45,7 +45,7 @@ const {
         status: {},
       })
   ),
-  mockIsCerebrasExpiredByDate: vi.fn(() => false),
+  mockIsCerebrasModelExpiredByDate: vi.fn(() => false),
 }));
 
 vi.mock('ai', () => ({
@@ -88,7 +88,7 @@ vi.mock('../ai-sdk/provider-model-policy', async (importOriginal) => {
     await importOriginal<typeof import('../ai-sdk/provider-model-policy')>();
   return {
     ...actual,
-    isCerebrasExpiredByDate: mockIsCerebrasExpiredByDate,
+    isCerebrasModelExpiredByDate: mockIsCerebrasModelExpiredByDate,
   };
 });
 
@@ -115,7 +115,7 @@ describe('generateTextWithRetry', () => {
     mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
     mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
     mockGetCerebrasFallbackModelIds.mockReturnValue([]);
-    mockIsCerebrasExpiredByDate.mockReturnValue(false);
+    mockIsCerebrasModelExpiredByDate.mockReturnValue(false);
     mockMarkProviderQuotaCooldown.mockResolvedValue(undefined);
     mockReconcileProviderQuotaReservation.mockResolvedValue(undefined);
     mockReserveProviderQuota.mockImplementation(
@@ -193,10 +193,13 @@ describe('generateTextWithRetry', () => {
     expect(mockGetGroqModel).not.toHaveBeenCalled();
   });
 
-  it('skips Cerebras before the SDK call after the runtime deprecation date', async () => {
-    mockIsCerebrasExpiredByDate.mockReturnValue(true);
+  it('skips only deprecated Cerebras models before the SDK call after the runtime deprecation date', async () => {
+    mockGetCerebrasFallbackModelIds.mockReturnValue(['gpt-oss-120b']);
+    mockIsCerebrasModelExpiredByDate.mockImplementation(
+      (modelId: string) => modelId === 'llama3.1-8b'
+    );
     mockGenerateText.mockResolvedValueOnce({
-      text: 'ok from groq',
+      text: 'ok from gpt-oss',
       steps: [],
       usage: { inputTokens: 8, outputTokens: 4, totalTokens: 12 },
     });
@@ -210,12 +213,14 @@ describe('generateTextWithRetry', () => {
     );
 
     expect(result.success).toBe(true);
-    expect(result.provider).toBe('groq');
+    expect(result.provider).toBe('cerebras');
+    expect(result.modelId).toBe('gpt-oss-120b');
     expect(result.usedFallback).toBe(true);
-    expect(mockGetCerebrasModel).not.toHaveBeenCalled();
+    expect(mockGetCerebrasModel).toHaveBeenCalledWith('gpt-oss-120b');
+    expect(mockGetGroqModel).not.toHaveBeenCalled();
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
     expect(mockGenerateText.mock.calls[0]?.[0]).toMatchObject({
-      model: { provider: 'groq' },
+      model: { provider: 'cerebras' },
     });
     expect(result.attempts).toMatchObject([
       {
@@ -224,14 +229,14 @@ describe('generateTextWithRetry', () => {
         error: 'CEREBRAS_DEPRECATED:2026-05-27',
       },
       {
-        provider: 'groq',
-        modelId: 'groq-model',
+        provider: 'cerebras',
+        modelId: 'gpt-oss-120b',
       },
     ]);
   });
 
   it('keeps Cerebras in the provider loop before the runtime deprecation date', async () => {
-    mockIsCerebrasExpiredByDate.mockReturnValue(false);
+    mockIsCerebrasModelExpiredByDate.mockReturnValue(false);
     mockGenerateText.mockResolvedValueOnce({
       text: 'ok from cerebras',
       steps: [],

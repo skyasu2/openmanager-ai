@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../lib/config-parser', () => ({
-  getCerebrasFallbackModelIds: vi.fn(() => []),
+  getCerebrasFallbackModelIds: vi.fn(() => ['gpt-oss-120b']),
   getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   getUpstashConfig: vi.fn(() => null),
 }));
@@ -49,7 +49,10 @@ describe('QuotaTracker layering contract', () => {
     expect(getQuotaForProvider('cerebras', 'llama3.1-8b')).toEqual(
       getFacadeQuotaForProvider('cerebras', 'llama3.1-8b')
     );
-    expect(getQuotaModelCandidates('cerebras')).toEqual(['llama3.1-8b']);
+    expect(getQuotaModelCandidates('cerebras')).toEqual([
+      'llama3.1-8b',
+      'gpt-oss-120b',
+    ]);
   });
 
   it('keeps in-memory usage state behind a dedicated store module', () => {
