@@ -24,6 +24,7 @@ interface TopologyModalProps {
 interface TopologyViewProps {
   servers: Server[];
   active?: boolean;
+  onClose?: () => void;
 }
 
 const TOPOLOGY_DIAGRAM = ARCHITECTURE_DIAGRAMS[
@@ -102,7 +103,11 @@ function filterTopologyDiagram(
   };
 }
 
-export function TopologyView({ servers, active = true }: TopologyViewProps) {
+export function TopologyView({
+  servers,
+  active = true,
+  onClose,
+}: TopologyViewProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeFilter, setActiveFilter] = useState<TopologyFilterId>('all');
 
@@ -148,12 +153,22 @@ export function TopologyView({ servers, active = true }: TopologyViewProps) {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="hidden sm:flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] text-sky-700">
+          <div className="hidden items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] text-sky-700 sm:flex">
             단일 사이트: OnPrem-DC1
           </div>
-          <div className="hidden sm:flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] text-amber-700">
+          <div className="hidden items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] text-amber-700 sm:flex">
             OpenTelemetry metric model
           </div>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-rose-50 hover:text-rose-600"
+              aria-label="닫기"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -273,13 +288,7 @@ export function TopologyModal({ open, onClose, servers }: TopologyModalProps) {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 focus:outline-none"
         >
           <div className="relative h-[94vh] w-[96vw] max-w-7xl">
-            <TopologyView servers={servers} active={open} />
-            <DialogPrimitive.Close
-              className="absolute right-6 top-6 z-10 flex h-11 w-11 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-rose-50 hover:text-rose-600 cursor-pointer"
-              aria-label="닫기"
-            >
-              <X size={20} />
-            </DialogPrimitive.Close>
+            <TopologyView servers={servers} active={open} onClose={onClose} />
           </div>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

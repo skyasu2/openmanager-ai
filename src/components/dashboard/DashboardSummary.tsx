@@ -47,6 +47,7 @@ function formatDataSourceLabel(
   return `Telemetry catalog v${dataSourceInfo.scopeVersion} · updated ${generatedAt}`;
 }
 
+// TODO: dashboard-status-tokens — 향후 공유 디자인 토큰으로 통합 예정
 // 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
 const statusGradients = {
   online: {

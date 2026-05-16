@@ -334,59 +334,6 @@ export default function SystemBootClient() {
           </div>
         </div>
       </div>
-
-      {/* 첫페이지와 동일한 스타일 적용을 위한 CSS */}
-      <style jsx>{`
-        .wave-particles {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          z-index: 1;
-          pointer-events: none;
-        }
-
-        .wave-particles::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background:
-            radial-gradient(
-              circle at 20% 80%,
-              rgba(59, 130, 246, 0.1) 0%,
-              transparent 50%
-            ),
-            radial-gradient(
-              circle at 80% 20%,
-              rgba(139, 92, 246, 0.1) 0%,
-              transparent 50%
-            ),
-            radial-gradient(
-              circle at 40% 40%,
-              rgba(236, 72, 153, 0.1) 0%,
-              transparent 50%
-            );
-          animation: wave-float 20s ease-in-out infinite;
-        }
-
-        @keyframes wave-float {
-          0%,
-          100% {
-            transform: translate(0, 0) rotate(0deg);
-          }
-          33% {
-            transform: translate(30px, -30px) rotate(120deg);
-          }
-          66% {
-            transform: translate(-20px, 20px) rotate(240deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }

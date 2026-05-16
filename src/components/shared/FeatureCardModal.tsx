@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { getDiagramByCardId } from '@/data/architecture-diagrams.data';
-import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { FeatureCardModalProps } from '@/types/feature-card.types';
 import { parseMarkdownLinks } from '@/utils/markdown-parser';
@@ -16,6 +15,7 @@ import {
 } from './FeatureCardModal.utils';
 import { FeatureCardModalHeader } from './FeatureCardModalHeader';
 import type { ReactFlowDiagramProps } from './ReactFlowDiagram';
+import { DiagramErrorBoundary } from './react-flow-diagram/components';
 import { TechStackSection } from './TechStackSection';
 import { VibeCiCdSection } from './VibeCiCdSection';
 import { VibeHistorySection } from './VibeHistorySection';
@@ -170,41 +170,6 @@ export default function FeatureCardModal({
   // 바이브 히스토리 스테이지 추출
   const vibeHistoryStages = categorizedTechData.historyStages;
 
-  // 🛡️ Codex 제안: 런타임 안전성 검증
-  const renderModalSafely = () => {
-    try {
-      if (!cardData.id && isVisible) {
-        return (
-          <div className="p-6 text-center text-white">
-            <p>모달을 불러올 수 없습니다.</p>
-            <button
-              type="button"
-              onClick={onClose}
-              className="mt-4 rounded bg-red-600 px-4 py-2"
-            >
-              닫기
-            </button>
-          </div>
-        );
-      }
-      return mainContent;
-    } catch (error) {
-      logger.error('Modal rendering error:', error);
-      return (
-        <div className="p-6 text-center text-white">
-          <p>모달을 불러오는 중 오류가 발생했습니다.</p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-4 rounded bg-red-600 px-4 py-2"
-          >
-            닫기
-          </button>
-        </div>
-      );
-    }
-  };
-
   const mainContent = (
     <div
       className={
@@ -214,15 +179,17 @@ export default function FeatureCardModal({
       {/* 아키텍처 다이어그램 뷰 (React Flow 기반) */}
       {/* 🔧 key prop: showDiagram 전환 시 ReactFlow 완전 재마운트 (fitView 재계산 보장) */}
       {showDiagram && diagramData ? (
-        <ReactFlowDiagram
-          key={`diagram-${cardData.id}`}
-          diagram={diagramData}
-          compact
-          showControls
-          showHeader={false}
-          showLegend={false}
-          maximizeViewport
-        />
+        <DiagramErrorBoundary diagramTitle={diagramData.title}>
+          <ReactFlowDiagram
+            key={`diagram-${cardData.id}`}
+            diagram={diagramData}
+            compact
+            showControls
+            showHeader={false}
+            showLegend={false}
+            maximizeViewport
+          />
+        </DiagramErrorBoundary>
       ) : (
         <>
           {/* 헤더 섹션 — CI/CD 탭은 compact (아이콘·설명 축소) */}
@@ -442,7 +409,20 @@ export default function FeatureCardModal({
                 : 'calc(80dvh - 70px)', // 상세 모드: 모달 max-h-[80dvh]에 맞춤
             }}
           >
-            {renderModalSafely()}
+            {cardData.id || !isVisible ? (
+              mainContent
+            ) : (
+              <div className="p-6 text-center text-white">
+                <p>모달을 불러올 수 없습니다.</p>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="mt-4 rounded bg-red-600 px-4 py-2"
+                >
+                  닫기
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@
 
 'use client';
 
-import { Bot, Github } from 'lucide-react';
+import { Bot, LogIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -90,7 +90,7 @@ export function AILoginRequiredModal({
             className="w-full bg-linear-to-r from-purple-500 to-blue-600 text-white hover:from-purple-600 hover:to-blue-700 sm:w-auto"
             data-testid="ai-login-redirect-button"
           >
-            <Github className="mr-2 h-4 w-4" />
+            <LogIn className="mr-2 h-4 w-4" />
             로그인하기
           </Button>
         </DialogFooter>

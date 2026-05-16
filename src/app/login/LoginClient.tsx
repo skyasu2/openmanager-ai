@@ -39,6 +39,7 @@ import debug from '@/utils/debug';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
 import { useGuestLogin, useLoadingMessages, useLoginUrlParams } from './hooks';
 import { LoginButtons } from './LoginButtons';
+import type { LoadingType } from './login.constants';
 
 type AuthError = { message?: string; code?: string };
 
@@ -46,9 +47,7 @@ export default function LoginClient() {
   const isGuestFullAccessMode = isGuestFullAccessEnabled();
   const showGuestLogin = isGuestLoginButtonVisible();
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingType, setLoadingType] = useState<
-    'github' | 'guest' | 'google' | 'email' | null
-  >(null);
+  const [loadingType, setLoadingType] = useState<LoadingType>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
@@ -88,13 +87,6 @@ export default function LoginClient() {
     }
     void handleGuestLogin();
   };
-
-  const glassButtonBaseClass =
-    'group relative flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-cyan-100/80 bg-white/92 text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.16)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-50 hover:bg-white hover:shadow-[0_12px_24px_rgba(15,23,42,0.24)] active:scale-[0.98] disabled:opacity-60';
-  const providerOverlayClass =
-    'pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-blue-200/40 via-indigo-200/30 to-cyan-200/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100';
-  const guestOverlayClass =
-    'pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-slate-100/40 via-white/50 to-slate-100/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100';
 
   // Google OAuth 로그인
   const handleGoogleLogin = async () => {
@@ -185,7 +177,7 @@ export default function LoginClient() {
   };
 
   // Email Magic Link 로그인
-  const handleEmailLogin = async (email: string) => {
+  const handleEmailLogin = async (email: string): Promise<boolean> => {
     try {
       setIsLoading(true);
       setLoadingType('email');
@@ -203,7 +195,7 @@ export default function LoginClient() {
         );
         setIsLoading(false);
         setLoadingType(null);
-        return;
+        return false;
       }
 
       setSuccessMessage(
@@ -211,11 +203,13 @@ export default function LoginClient() {
       );
       setIsLoading(false);
       setLoadingType(null);
+      return true;
     } catch (error) {
       debug.error('❌ Email 로그인 에러:', error);
       setErrorMessage('링크 전송 중 예상치 못한 오류가 발생했습니다.');
       setIsLoading(false);
       setLoadingType(null);
+      return false;
     }
   };
 
@@ -262,7 +256,7 @@ export default function LoginClient() {
                   {isLoading && loadingMessage}
                 </output>
 
-                {errorMessage && (
+                {errorMessage && !isGuestModalOpen && (
                   <div className="rounded-lg border border-red-300/35 bg-red-500/15 px-4 py-3 text-sm text-red-100 backdrop-blur-sm">
                     {errorMessage}
                   </div>
@@ -276,7 +270,12 @@ export default function LoginClient() {
 
                 <Dialog
                   open={isGuestModalOpen}
-                  onOpenChange={setIsGuestModalOpen}
+                  onOpenChange={(open) => {
+                    setIsGuestModalOpen(open);
+                    if (!open) {
+                      setErrorMessage(null);
+                    }
+                  }}
                 >
                   <DialogContent className="border-cyan-500/30 bg-slate-900 sm:max-w-md">
                     <DialogHeader className="text-center">
@@ -368,7 +367,7 @@ export default function LoginClient() {
                       void handleGuestLogin();
                     }
                   }}
-                  onEmail={(email) => void handleEmailLogin(email)}
+                  onEmail={handleEmailLogin}
                   onCancel={handleCancelLoading}
                   showGuestLogin={showGuestLogin}
                   guestButtonDisabled={guestLockRemainingSeconds > 0}
@@ -377,9 +376,6 @@ export default function LoginClient() {
                       ? `게스트 잠금 (${guestLockRemainingSeconds}초)`
                       : '게스트로 체험하기'
                   }
-                  glassButtonBaseClass={glassButtonBaseClass}
-                  providerOverlayClass={providerOverlayClass}
-                  guestOverlayClass={guestOverlayClass}
                 />
               </div>
             </div>

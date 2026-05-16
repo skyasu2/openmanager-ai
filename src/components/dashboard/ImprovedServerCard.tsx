@@ -20,6 +20,7 @@ import { getServerStatusTheme } from '@/styles/design-constants';
 import type { Server as ServerType } from '@/types/server';
 import { formatUptime } from '@/utils/serverUtils';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
+import { withCurrentMetricPoint } from './dashboard-metric-points';
 import {
   CompactMetricChip,
   DetailRow,
@@ -48,6 +49,7 @@ export interface ImprovedServerCardProps {
   enableProgressiveDisclosure?: boolean;
 }
 
+// TODO: dashboard-status-tokens — 향후 공유 디자인 토큰으로 통합 예정
 // 상태별 그라데이션 (모듈 레벨 상수 — 매 렌더시 재생성 방지)
 const statusGradients = {
   critical: {
@@ -81,21 +83,6 @@ const statusGradients = {
     glow: 'rgba(139, 92, 246, 0.3)',
   },
 };
-
-function withCurrentMetricPoint(
-  values: number[],
-  currentValue: number | undefined
-): number[] {
-  if (typeof currentValue !== 'number' || !Number.isFinite(currentValue)) {
-    return values;
-  }
-
-  if (values.length === 0) {
-    return [currentValue];
-  }
-
-  return [...values.slice(0, -1), currentValue];
-}
 
 // BUG-5 fix: Tailwind JIT는 동적 클래스를 감지 못함 → 정적 룩업 맵 사용
 const hoverShadowClasses: Record<string, string> = {
@@ -506,12 +493,11 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
 
 ImprovedServerCardInner.displayName = 'ImprovedServerCardInner';
 
-// memo()를 ErrorBoundary 바깥에 적용하여 props 변경 없으면 재렌더 방지
-const ImprovedServerCard: FC<ImprovedServerCardProps> = memo((props) => (
+const ImprovedServerCard: FC<ImprovedServerCardProps> = (props) => (
   <ServerCardErrorBoundary>
     <ImprovedServerCardInner {...props} />
   </ServerCardErrorBoundary>
-));
+);
 
 ImprovedServerCard.displayName = 'ImprovedServerCard';
 

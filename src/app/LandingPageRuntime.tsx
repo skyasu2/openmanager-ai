@@ -16,7 +16,11 @@ import {
 import { useLandingPageState } from '@/app/main/hooks';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import { APP_VERSION } from '@/config/app-meta';
+import {
+  AI_PROVIDER_DISPLAY,
+  APP_VERSION,
+  TECH_STACK_DISPLAY,
+} from '@/config/app-meta';
 import {
   AI_TEXT_GRADIENT_ANIMATED_STYLE,
   PAGE_BACKGROUNDS,
@@ -48,6 +52,8 @@ const FeatureCardsGrid = dynamic(
   () => import('@/components/home/FeatureCardsGrid'),
   { ssr: false, loading: () => <FeatureCardsGridSkeleton /> }
 );
+
+const FOOTER_TECH_STACK = [TECH_STACK_DISPLAY, AI_PROVIDER_DISPLAY] as const;
 
 function Home() {
   const {
@@ -159,8 +165,14 @@ function Home() {
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
                 <span>v{APP_VERSION}</span>
               </span>
-              <span>Next.js 16 + React 19</span>
-              <span className="hidden sm:inline">Quad-Provider AI</span>
+              {FOOTER_TECH_STACK.map((item, index) => (
+                <span
+                  key={item}
+                  className={index === 1 ? 'hidden sm:inline' : undefined}
+                >
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
         </footer>

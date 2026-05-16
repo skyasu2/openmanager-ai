@@ -10,9 +10,6 @@
 import type { Metadata } from 'next';
 import '../landing-effects.css';
 
-// 서버 사이드 설정 - 서버 컴포넌트에서만 사용 가능
-// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
-
 import LoginClient from './LoginClient';
 
 export const metadata: Metadata = {
@@ -22,8 +19,5 @@ export const metadata: Metadata = {
 
 // 🎯 로그인 페이지 - 서버 컴포넌트
 export default function LoginPage() {
-  // 서버 컴포넌트에서 필요한 인증 체크나 설정을 수행할 수 있습니다
-  // 현재는 클라이언트 컴포넌트를 렌더링만 합니다
-
   return <LoginClient />;
 }

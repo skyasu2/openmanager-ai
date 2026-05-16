@@ -41,7 +41,11 @@ export const BootProgressBar = ({ progress }: BootProgressBarProps) => {
         {/* 진행률 포인터 - 부드러운 트랜지션 */}
         <div
           className="animate-pulse absolute top-1/2 h-3 w-3 -translate-y-1/2 transform rounded-full border-2 border-blue-400 bg-white shadow-lg transition-all duration-700 ease-out"
-          style={{ left: `${progress}%`, animationDuration: '1.5s' }}
+          style={{
+            left: `${progress}%`,
+            transform: 'translate(-50%, -50%)',
+            animationDuration: '1.5s',
+          }}
         />
       </div>
     </div>

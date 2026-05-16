@@ -2,8 +2,7 @@
 
 import { Mail, User } from 'lucide-react';
 import { useState } from 'react';
-
-type LoadingType = 'github' | 'guest' | 'google' | 'email' | null;
+import type { LoadingType } from './login.constants';
 
 type LoginButtonsProps = {
   currentProvider: string | null;
@@ -12,15 +11,21 @@ type LoginButtonsProps = {
   onGitHub: () => void;
   onGoogle: () => void;
   onGuest: () => void;
-  onEmail: (email: string) => void;
+  onEmail: (email: string) => Promise<boolean>;
   onCancel: () => void;
   showGuestLogin?: boolean;
   guestButtonDisabled?: boolean;
   guestButtonLabel?: string;
-  glassButtonBaseClass: string;
-  providerOverlayClass: string;
-  guestOverlayClass: string;
 };
+
+const glassButtonBaseClass =
+  'group relative flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-cyan-100/80 bg-white/92 text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.16)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-50 hover:bg-white hover:shadow-[0_12px_24px_rgba(15,23,42,0.24)] active:scale-[0.98] disabled:opacity-60';
+const providerOverlayClass =
+  'pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-blue-200/40 via-indigo-200/30 to-cyan-200/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100';
+const guestOverlayClass =
+  'pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-slate-100/40 via-white/50 to-slate-100/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100';
+const emailButtonOverrideClass =
+  'bg-slate-800! text-white! hover:bg-slate-700! hover:border-slate-600!';
 
 const Spinner = () => (
   <div className="relative z-10 h-4 w-4 animate-spin rounded-full border-2 border-cyan-200 border-t-slate-700" />
@@ -38,16 +43,16 @@ export function LoginButtons({
   showGuestLogin = true,
   guestButtonDisabled = false,
   guestButtonLabel = '게스트로 체험하기',
-  glassButtonBaseClass,
-  providerOverlayClass,
-  guestOverlayClass,
 }: LoginButtonsProps) {
   const [email, setEmail] = useState('');
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email && !isLoading) {
-      onEmail(email);
+      const sent = await onEmail(email);
+      if (sent) {
+        setEmail('');
+      }
     }
   };
 
@@ -146,7 +151,7 @@ export function LoginButtons({
         <button
           type="submit"
           disabled={isLoading || !email}
-          className={`${glassButtonBaseClass} bg-slate-800! text-white! hover:bg-slate-700! hover:border-slate-600!`}
+          className={`${glassButtonBaseClass} ${emailButtonOverrideClass}`}
         >
           {loadingType === 'email' ? <Spinner /> : null}
           <span className="relative z-10 text-sm font-medium tracking-wide">
@@ -165,7 +170,7 @@ export function LoginButtons({
         </div>
       )}
 
-      {isLoading && (
+      {isLoading && (loadingType === 'guest' || loadingType === 'email') && (
         <button
           type="button"
           onClick={onCancel}

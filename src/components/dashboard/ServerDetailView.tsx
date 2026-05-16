@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
 import type { Server } from '@/types/server';
+import { withCurrentMetricPoint } from './dashboard-metric-points';
 import { LogsTab } from './EnhancedServerModal.LogsTab';
 import { MetricsTab } from './EnhancedServerModal.MetricsTab';
 import { NetworkTab } from './EnhancedServerModal.NetworkTab';
@@ -24,6 +25,7 @@ interface ServerDetailViewProps {
 const tabs: TabInfo[] = [
   { id: 'overview', label: '종합 상황', icon: Activity },
   { id: 'metrics', label: '성능 분석', icon: BarChart3 },
+  { id: 'processes', label: '프로세스', icon: Activity },
   { id: 'logs', label: '로그 & 네트워크', icon: FileText },
 ];
 
@@ -114,21 +116,6 @@ function getHighestCurrentMetric(server: {
   return metrics.reduce((highest, current) =>
     current.value > highest.value ? current : highest
   );
-}
-
-function withCurrentMetricPoint(
-  values: number[],
-  currentValue: number | undefined
-): number[] {
-  if (typeof currentValue !== 'number' || !Number.isFinite(currentValue)) {
-    return values;
-  }
-
-  if (values.length === 0) {
-    return [currentValue];
-  }
-
-  return [...values.slice(0, -1), currentValue];
 }
 
 export default function ServerDetailView({ server }: ServerDetailViewProps) {
@@ -362,6 +349,11 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
               isRealtime={isRealtime}
               onToggleRealtime={() => setIsRealtime((prev) => !prev)}
             />
+          </div>
+        )}
+
+        {selectedTab === 'processes' && (
+          <div className="min-w-0 space-y-5">
             <ProcessesTab services={safeServer.services} />
           </div>
         )}

@@ -13,7 +13,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
 import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary';
 import { logger } from '@/lib/logging';
-import type { DashboardTab } from '@/types/dashboard/server-dashboard.types';
 import type { Server } from '@/types/server';
 import { usePerformanceTracking } from '@/utils/performance';
 
@@ -153,7 +152,6 @@ export default function ServerDashboard({
   // 🚀 성능 추적 활성화
   const performanceStats = usePerformanceTracking('ServerDashboard');
 
-  const [activeTab] = useState<DashboardTab>('servers');
   const [viewMode, setViewMode] = useState<ServerViewMode>('list');
   const [serverSortKey, setServerSortKey] = useState<ServerSortKey>('status');
   const [visibleRows, setVisibleRows] = useState(initialVisibleRows);
@@ -420,225 +418,217 @@ export default function ServerDashboard({
   return (
     <div>
       <div>
-        {activeTab === 'servers' && (
-          <div className="space-y-4">
-            <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white px-3 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-4">
-              <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
-                <legend className="sr-only">서버 보기 방식</legend>
-                <button
-                  type="button"
-                  aria-label="촘촘히 보기"
-                  aria-pressed={viewMode === 'list'}
-                  onClick={() => setViewMode('list')}
-                  className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                    viewMode === 'list'
-                      ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                      : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                  }`}
-                >
-                  <List className="h-3.5 w-3.5" />
-                  <span>촘촘히</span>
-                </button>
-                <button
-                  type="button"
-                  aria-label="넓게 보기"
-                  aria-pressed={viewMode === 'grid'}
-                  onClick={() => setViewMode('grid')}
-                  className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                    viewMode === 'grid'
-                      ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                      : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                  }`}
-                >
-                  <LayoutGrid className="h-3.5 w-3.5" />
-                  <span>넓게</span>
-                </button>
-              </fieldset>
+        <div className="space-y-4">
+          <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white px-3 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-4">
+            <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
+              <legend className="sr-only">서버 보기 방식</legend>
+              <button
+                type="button"
+                aria-label="촘촘히 보기"
+                aria-pressed={viewMode === 'list'}
+                onClick={() => setViewMode('list')}
+                className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                  viewMode === 'list'
+                    ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                    : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                }`}
+              >
+                <List className="h-3.5 w-3.5" />
+                <span>촘촘히</span>
+              </button>
+              <button
+                type="button"
+                aria-label="넓게 보기"
+                aria-pressed={viewMode === 'grid'}
+                onClick={() => setViewMode('grid')}
+                className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                  viewMode === 'grid'
+                    ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                    : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                }`}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                <span>넓게</span>
+              </button>
+            </fieldset>
 
-              <div className="flex w-full items-center gap-2 sm:w-auto">
-                <label
-                  htmlFor="server-sort"
-                  className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600"
-                >
-                  <ArrowUpDown className="h-3.5 w-3.5" />
-                  정렬
-                </label>
-                <select
-                  id="server-sort"
-                  aria-label="서버 정렬"
-                  value={serverSortKey}
-                  onChange={(event) =>
-                    setServerSortKey(event.target.value as ServerSortKey)
-                  }
-                  className="touch-text-safe-xs min-h-9 w-full rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 focus:border-blue-400 focus:outline-none sm:w-36"
-                >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="flex w-full items-center gap-2 sm:w-auto">
+              <label
+                htmlFor="server-sort"
+                className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600"
+              >
+                <ArrowUpDown className="h-3.5 w-3.5" />
+                정렬
+              </label>
+              <select
+                id="server-sort"
+                aria-label="서버 정렬"
+                value={serverSortKey}
+                onChange={(event) =>
+                  setServerSortKey(event.target.value as ServerSortKey)
+                }
+                className="touch-text-safe-xs min-h-9 w-full rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 focus:border-blue-400 focus:outline-none sm:w-36"
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
+          </div>
 
-            {/* 📊 서버 노출 정보 헤더 */}
-            {paginationInfo.totalServers > 0 && (
-              <div className="mb-4 flex items-center justify-between rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2">
-                <p className="text-sm text-blue-800">
-                  {isOverviewSurface ? (
-                    <>
-                      상위 알림 서버{' '}
-                      <span className="font-mono">
-                        {displayedServers.length}
-                      </span>
-                      개 표시
-                      <span className="ml-1 text-blue-700">
-                        (전체 {paginationInfo.totalServers}대)
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      전체 서버{' '}
-                      <span className="font-medium">
-                        {paginationInfo.totalServers}대
-                      </span>{' '}
-                      중{' '}
-                      <span className="font-mono">
-                        {displayedServers.length}
-                      </span>
-                      대 표시
-                    </>
-                  )}
-                </p>
-                <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                  {isOverviewSurface
-                    ? '위험도 우선'
-                    : displayedServers.length === paginationInfo.totalServers
-                      ? '모든 서버 표시'
-                      : `${hiddenServerCount}대 남음`}
-                </span>
-              </div>
-            )}
+          {/* 📊 서버 노출 정보 헤더 */}
+          {paginationInfo.totalServers > 0 && (
+            <div className="mb-4 flex items-center justify-between rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2">
+              <p className="text-sm text-blue-800">
+                {isOverviewSurface ? (
+                  <>
+                    상위 알림 서버{' '}
+                    <span className="font-mono">{displayedServers.length}</span>
+                    개 표시
+                    <span className="ml-1 text-blue-700">
+                      (전체 {paginationInfo.totalServers}대)
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    전체 서버{' '}
+                    <span className="font-medium">
+                      {paginationInfo.totalServers}대
+                    </span>{' '}
+                    중{' '}
+                    <span className="font-mono">{displayedServers.length}</span>
+                    대 표시
+                  </>
+                )}
+              </p>
+              <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                {isOverviewSurface
+                  ? '위험도 우선'
+                  : displayedServers.length === paginationInfo.totalServers
+                    ? '모든 서버 표시'
+                    : `${hiddenServerCount}대 남음`}
+              </span>
+            </div>
+          )}
 
-            {sortedServers.length > 0 ? (
+          {sortedServers.length > 0 ? (
+            <div
+              data-testid="server-dashboard-peek-container"
+              className="relative transition-[max-height] duration-300 ease-out"
+              style={
+                showServerGridPeek
+                  ? { maxHeight: serverGridPeekMaxHeight, overflow: 'hidden' }
+                  : undefined
+              }
+            >
               <div
-                data-testid="server-dashboard-peek-container"
-                className="relative transition-[max-height] duration-300 ease-out"
-                style={
-                  showServerGridPeek
-                    ? { maxHeight: serverGridPeekMaxHeight, overflow: 'hidden' }
-                    : undefined
+                data-testid={
+                  viewMode === 'grid'
+                    ? 'server-dashboard-grid'
+                    : 'server-dashboard-list'
+                }
+                className={
+                  viewMode === 'grid'
+                    ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 3xl:grid-cols-4'
+                    : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                 }
               >
-                <div
-                  data-testid={
-                    viewMode === 'grid'
-                      ? 'server-dashboard-grid'
-                      : 'server-dashboard-list'
-                  }
-                  className={
-                    viewMode === 'grid'
-                      ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 3xl:grid-cols-4'
-                      : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                  }
-                >
-                  {displayedServers.map((server, index) => {
-                    const serverId = server.id || `server-${index}`;
+                {displayedServers.map((server, index) => {
+                  const serverId = server.id || `server-${index}`;
 
-                    return (
-                      <ServerCardErrorBoundary
-                        key={`boundary-${serverId}`}
-                        serverId={serverId}
-                      >
-                        <ImprovedServerCard
-                          key={serverId}
-                          server={server}
-                          variant="compact"
-                          showRealTimeUpdates={true}
-                          index={index}
-                          onClick={handleServerSelect}
-                          onOpenLogs={handleOpenLogs}
-                        />
-                      </ServerCardErrorBoundary>
-                    );
-                  })}
-                </div>
-                {showServerGridPeek && (
-                  <div
+                  return (
+                    <ServerCardErrorBoundary
+                      key={`boundary-${serverId}`}
+                      serverId={serverId}
+                    >
+                      <ImprovedServerCard
+                        key={serverId}
+                        server={server}
+                        variant="compact"
+                        showRealTimeUpdates={true}
+                        index={index}
+                        onClick={handleServerSelect}
+                        onOpenLogs={handleOpenLogs}
+                      />
+                    </ServerCardErrorBoundary>
+                  );
+                })}
+              </div>
+              {showServerGridPeek && (
+                <div
+                  aria-hidden="true"
+                  data-testid="server-dashboard-peek-fade"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white via-white/85 to-transparent"
+                />
+              )}
+            </div>
+          ) : (
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                  <svg
+                    className="h-6 w-6 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                     aria-hidden="true"
-                    data-testid="server-dashboard-peek-fade"
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white via-white/85 to-transparent"
-                  />
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="mb-1 text-sm font-medium text-gray-900">
+                  서버 정보 없음
+                </h3>
+                <p className="text-sm text-gray-500">표시할 서버가 없습니다.</p>
+              </div>
+            </div>
+          )}
+
+          {(canShowMoreServers || showCollapseButton) && (
+            <div className="flex flex-col items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm sm:flex-row sm:justify-between">
+              <span className="text-slate-600">
+                {isOverviewSurface
+                  ? `상위 알림 서버 ${displayedServers.length}개 표시`
+                  : `${displayedServers.length}/${paginationInfo.totalServers}대 서버 표시`}
+              </span>
+              <div className="flex w-full gap-2 sm:w-auto">
+                {showCollapseButton && (
+                  <button
+                    type="button"
+                    onClick={handleCollapseServers}
+                    className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 sm:flex-none"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                    접기
+                  </button>
+                )}
+                {canShowMoreServers && (
+                  <button
+                    type="button"
+                    aria-label={showMoreServersButtonAriaLabel}
+                    onClick={handleShowMoreServers}
+                    className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:flex-none"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                    {showMoreServersButtonText}
+                    {hiddenServerCount > 0 && (
+                      <span className="text-blue-100">
+                        ({hiddenServerCount}대 남음)
+                      </span>
+                    )}
+                  </button>
                 )}
               </div>
-            ) : (
-              <div className="flex h-64 items-center justify-center">
-                <div className="text-center">
-                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                    <svg
-                      className="h-6 w-6 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="mb-1 text-sm font-medium text-gray-900">
-                    서버 정보 없음
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    표시할 서버가 없습니다.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {(canShowMoreServers || showCollapseButton) && (
-              <div className="flex flex-col items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm sm:flex-row sm:justify-between">
-                <span className="text-slate-600">
-                  {isOverviewSurface
-                    ? `상위 알림 서버 ${displayedServers.length}개 표시`
-                    : `${displayedServers.length}/${paginationInfo.totalServers}대 서버 표시`}
-                </span>
-                <div className="flex w-full gap-2 sm:w-auto">
-                  {showCollapseButton && (
-                    <button
-                      type="button"
-                      onClick={handleCollapseServers}
-                      className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 sm:flex-none"
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                      접기
-                    </button>
-                  )}
-                  {canShowMoreServers && (
-                    <button
-                      type="button"
-                      aria-label={showMoreServersButtonAriaLabel}
-                      onClick={handleShowMoreServers}
-                      className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:flex-none"
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                      {showMoreServersButtonText}
-                      {hiddenServerCount > 0 && (
-                        <span className="text-blue-100">
-                          ({hiddenServerCount}대 남음)
-                        </span>
-                      )}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
         {/* 다른 탭 컨텐츠는 여기에 추가될 수 있습니다. */}
       </div>
 
