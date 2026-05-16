@@ -30,7 +30,7 @@ describe('provider model metadata', () => {
 
     expect(metadata.modelId).toBe(DEFAULT_CEREBRAS_MODEL);
     expect(metadata.modelId).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
-    expect(metadata.role).toContain('primary');
+    expect(metadata.role).toContain('fallback');
     expect(metadata.lifecycle).toBe('production');
     expect(metadata.productionModel).toBe(true);
     expect(metadata.preview).toBe(false);
@@ -73,7 +73,7 @@ describe('provider model metadata', () => {
     expect(metadata).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-      role: expect.stringContaining('primary'),
+      role: expect.stringContaining('fallback'),
       lifecycle: 'production',
       productionModel: true,
       preview: false,
@@ -122,7 +122,7 @@ describe('provider model metadata', () => {
       metadata.find((entry) => entry.modelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID)
     ).toMatchObject({
       modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-      role: expect.stringContaining('primary'),
+      role: expect.stringContaining('fallback'),
       lifecycle: 'production',
       smokeStatus: 'green',
     });

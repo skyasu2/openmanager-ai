@@ -49,7 +49,7 @@ describe('agent loop settings', () => {
 
     expect(toAgentLoopTelemetry(settings, 3)).toEqual({
       implementation: 'core-stream-text',
-      maxSteps: 5,
+      maxSteps: 4,
       maxOutputTokens: 2048,
       sdkMaxRetries: 0,
       stepsExecuted: 3,

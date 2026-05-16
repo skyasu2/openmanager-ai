@@ -334,15 +334,15 @@ await pipeline.exec();
 | **Supervisor** (single) | Groq | Z.AI | Mistral → Cerebras | 단순 쿼리 1 LLM 호출 |
 | **Orchestrator** | Groq | Z.AI | Mistral → Cerebras | 라우팅 JSON만 생성 — Groq-first로 Cerebras RPM 절약 |
 | **Metrics Query Agent** | Groq | Z.AI | Mistral → Cerebras | 수식/통계/용량 계산 포함 |
-| **Analyst Agent** | Cerebras | Groq | Z.AI → Mistral | 32K context 요구 시 8K Cerebras는 capability gate로 skip |
-| **Reporter Agent** | Z.AI | Mistral | Groq → Cerebras | 보고서 생성 토큰을 Groq/Cerebras에 집중시키지 않도록 분산 |
-| **Advisor Agent** | Mistral | Z.AI | Groq → Cerebras | 명령 추천/KB 중심 경로 |
+| **Analyst Agent** | Mistral | Groq | Z.AI → Cerebras | 32K context RCA 경로. 8K Cerebras phantom primary 제거 |
+| **Reporter Agent** | Z.AI | Mistral | Groq → Cerebras | 보고서 생성 토큰 분산. conservative 5 RPM guard 때문에 4-step ceiling |
+| **Advisor Agent** | Mistral | Z.AI | Groq → Cerebras | 명령 추천/KB 중심 3-step 경로 |
 | **Vision Agent** | Gemini | OpenRouter | Z.AI Vision | 이미지/스크린샷 전용 |
 
 > SSOT: `agent-runtime-policy.ts` → `AGENT_RUNTIME_POLICIES` / `ORCHESTRATOR_RUNTIME_POLICY`
 
 **Spider-web order 이유 (2026-05-16)**:
-동일 provider가 장애·rate limit·deprecation에 걸려도 모든 agent가 같은 2순위로 몰리지 않도록 provider 순서를 역할별로 회전시킨다. Groq-first 경로는 빠른 tool loop에, Z.AI-first 경로는 보고서류 text generation에, Mistral-first 경로는 Advisor에 배치하고 Cerebras는 2026-05-27 전까지 short-context fallback으로 유지한다.
+동일 provider가 장애·rate limit·deprecation에 걸려도 모든 agent가 같은 2순위로 몰리지 않도록 provider 순서를 역할별로 회전시킨다. Groq-first 경로는 빠른 사용자-facing tool loop에, Z.AI-first 경로는 보고서류 text generation에, Mistral-first 경로는 Analyst/Advisor에 배치한다. Cerebras `llama3.1-8b`는 8K context와 2026-05-27 deprecation 때문에 16K/32K agent primary에서 제외하고 short-context last fallback으로만 유지한다.
 
 ### 모델 ID 환경변수 (즉시 교체 가능)
 

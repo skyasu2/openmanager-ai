@@ -70,6 +70,7 @@ vi.mock('../../lib/config-parser', () => ({
   getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   getCerebrasFallbackModelIds: vi.fn((): string[] => []),
   getMistralApiKey: vi.fn(() => 'test-mistral-key'),
+  getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   getZaiApiKey: vi.fn(() => 'test-zai-key'),
   getZaiBaseUrl: vi.fn(() => 'https://api.z.ai/api/paas/v4'),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
@@ -104,11 +105,11 @@ describe('Verifier model context guard', () => {
     toggleProvider('mistral', true);
   });
 
-  it('skips the 8K Cerebras runtime for Verifier long-context requirements', () => {
+  it('uses Mistral for Verifier long-context requirements and never probes 8K Cerebras', () => {
     const result = getVerifierModel();
 
-    expect(result.provider).toBe('groq');
-    expect(result.modelId).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
+    expect(result.provider).toBe('mistral');
+    expect(result.modelId).toBe('mistral-small-latest');
     expect(cerebrasModelCalls).toEqual([]);
   });
 });

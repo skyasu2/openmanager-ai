@@ -200,7 +200,7 @@ export function getNlqModel(): ModelResult | null {
 }
 
 /**
- * Analyst model: Cerebras(short-context only) → Groq → Z.AI → Mistral
+ * Analyst model: Mistral → Groq → Z.AI → Cerebras(short-context only)
  */
 export function getAnalystModel(): ModelResult | null {
   return selectTextModel('Analyst Agent', getAgentProviderOrder('Analyst Agent'), {

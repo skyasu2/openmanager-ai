@@ -87,7 +87,7 @@ export function calculateActionabilityScore(actions: string[]): number {
 
   let score = 0;
   const checkPatterns = [
-    { pattern: /`[^`]+`/, weight: 0.3 },
+    { pattern: /`(sudo|systemctl|docker|kubectl|top|ps|free|df|netstat|ss|mysql|redis|journalctl|dmesg|lsof|find)[^`]*`/, weight: 0.3 },
     { pattern: /^\$|^sudo|^systemctl|^docker/, weight: 0.25 },
     { pattern: /확인|점검|검토/, weight: 0.1 },
     { pattern: /\d+/, weight: 0.05 },

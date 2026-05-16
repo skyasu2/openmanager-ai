@@ -8,8 +8,8 @@
  * - Vision: Gemini 2.5 Flash-Lite → OpenRouter free model → Z.AI GLM-4.6V-Flash.
  *
  * @version 4.2.0
- * @updated 2026-04-25 - SambaNova 제거 (20 RPD free tier 실효성 없음)
- *                       Cerebras tool-calling 활성화 (14.4K RPD fallback 확보)
+ * @updated 2026-05-16 - SambaNova 제거 유지, Cerebras short-context fallback 보수화
+ *                       (account guard: 5 RPM / 2.4K RPD, deprecation 2026-05-27)
  */
 
 import type { LanguageModel } from 'ai';
@@ -31,7 +31,7 @@ import {
   selectAvailableProvider,
 } from '../resilience/quota-tracker';
 import {
-  CEREBRAS_FIRST_PROVIDER_ORDER,
+  ANALYST_FIRST_PROVIDER_ORDER,
   TEXT_AGENT_PROVIDER_ORDER,
 } from './agents/config/agent-runtime-policy';
 import { selectTextModel } from './agents/config/agent-model-selectors';
@@ -104,15 +104,15 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
 
 /**
  * Get verifier model with text mesh fallback + CB check.
- * Cerebras(short-context only) → Groq → Z.AI → Mistral.
- * The 32K requirement skips the 8K Cerebras runtime and selects Groq.
+ * Mistral → Groq → Z.AI → Cerebras(short-context only).
+ * Cerebras is last because the 32K requirement skips the 8K runtime.
  */
 export function getVerifierModel(): {
   model: LanguageModel;
   provider: ProviderName;
   modelId: string;
 } {
-  const result = selectTextModel('Verifier', CEREBRAS_FIRST_PROVIDER_ORDER, {
+  const result = selectTextModel('Verifier', ANALYST_FIRST_PROVIDER_ORDER, {
     throwOnEmpty: true,
     requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
   });

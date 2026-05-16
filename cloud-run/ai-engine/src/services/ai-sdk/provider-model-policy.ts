@@ -13,10 +13,10 @@ export const CEREBRAS_DEPRECATION_REPLACEMENT =
 export const CEREBRAS_DEPRECATION_CONTINGENCY = {
   date: CEREBRAS_LLAMA_DEPRECATION_DATE,
   affectedRuntimeAgents: ['Analyst Agent', 'Reporter Agent', 'Advisor Agent'],
-  fallbackChainAfterDeprecation: ['groq', 'zai', 'mistral'],
+  fallbackChainAfterDeprecation: ['mistral', 'groq', 'zai'],
   visibleButExcludedModels: [CEREBRAS_ZAI_GLM_MODEL_ID],
   action:
-    'Confirm replacement model entitlement before 2026-05-27; Z.AI/Mistral buffer reduces but does not eliminate Groq pressure.',
+    'Cerebras is retained as short-context fallback only; confirm replacement model entitlement before 2026-05-27.',
 } as const;
 
 export type ProviderModelRole = 'primary' | 'fallback' | 'vision' | 'excluded';
@@ -200,7 +200,7 @@ export const CEREBRAS_MODEL_POLICIES = {
   [CEREBRAS_LLAMA_FALLBACK_MODEL_ID]: {
     provider: 'cerebras',
     modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-    role: 'primary',
+    role: 'fallback',
     lifecycle: 'production',
     enabled: true,
     toolCallingEnabled: true,
@@ -218,7 +218,7 @@ export const CEREBRAS_MODEL_POLICIES = {
     smokeEvidence: [
       '2026-05-13 current account chat completion HTTP 200',
       '2026-05-16 account response headers: 5 RPM / 150 RPH / 2400 RPD / 30K TPM / 1M TPD',
-      '2026-05-13 retained as short-context runtime only; not evidence for Metrics Query 16K primary promotion',
+      '2026-05-16 retained as short-context fallback only; not evidence for any 16K/32K primary promotion',
       'tool calling and structured output smoke previously passed',
     ],
     reasoningCapability: NO_PROVIDER_NATIVE_REASONING,

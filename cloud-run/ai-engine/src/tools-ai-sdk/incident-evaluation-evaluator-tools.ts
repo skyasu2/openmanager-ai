@@ -226,11 +226,15 @@ export const scoreRootCauseConfidence = tool({
 
     const evidenceScore = Math.min(rootCause.evidence.length / 5, 1) * 0.4;
 
+    const causeText = rootCause.cause;
+    const hasNegativeContext = /무관|아님|아닙니다|상관없|관계없|문제없/i.test(causeText);
     const hasSpecificMetric =
-      /CPU|Memory|Disk|Network|메모리|디스크/i.test(rootCause.cause);
-    const hasServerName = /server|srv|서버/i.test(rootCause.cause);
-    const specificityScore =
-      (hasSpecificMetric ? 0.3 : 0) + (hasServerName ? 0.2 : 0);
+      /CPU|Memory|Disk|Network|메모리|디스크/i.test(causeText);
+    const hasServerName = /server|srv|서버/i.test(causeText);
+
+    const specificityScore = hasNegativeContext
+      ? 0
+      : (hasSpecificMetric ? 0.3 : 0) + (hasServerName ? 0.2 : 0);
 
     const correlationScore =
       affectedServersCount > 1

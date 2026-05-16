@@ -67,15 +67,22 @@ vi.mock('./config', () => ({
         ? 2
         : 4
   ),
-  MISTRAL_FIRST_PROVIDER_ORDER: ['mistral', 'groq', 'cerebras'],
+  MISTRAL_FIRST_PROVIDER_ORDER: ['mistral', 'zai', 'groq', 'cerebras'],
   getAgentProviderOrder: vi.fn((agentName: string) =>
-    agentName === 'Analyst Agent' ||
-    agentName === 'Reporter Agent' ||
-    agentName === 'Advisor Agent'
-      ? ['cerebras', 'groq', 'mistral']
-      : ['groq', 'cerebras', 'mistral']
+    agentName === 'Analyst Agent'
+      ? ['mistral', 'groq', 'zai', 'cerebras']
+      : agentName === 'Reporter Agent'
+        ? ['zai', 'mistral', 'groq', 'cerebras']
+        : agentName === 'Advisor Agent'
+          ? ['mistral', 'zai', 'groq', 'cerebras']
+          : ['groq', 'zai', 'mistral', 'cerebras']
   ),
-  getOrchestratorProviderOrder: vi.fn(() => ['cerebras', 'groq', 'mistral']),
+  getOrchestratorProviderOrder: vi.fn(() => [
+    'groq',
+    'zai',
+    'mistral',
+    'cerebras',
+  ]),
   getAgentConfig: (name: string) =>
     name === 'Metrics Query Agent'
       ? {
@@ -504,6 +511,7 @@ describe('executeForcedRouting', () => {
     );
     expect(mockGenerateTextWithRetry.mock.calls[1]?.[1]).toEqual([
       'mistral',
+      'zai',
       'groq',
       'cerebras',
     ]);
@@ -637,7 +645,7 @@ describe('executeForcedRouting', () => {
         },
       })
     );
-    expect(firstCall?.[1]).toEqual(['cerebras', 'groq', 'mistral']);
+    expect(firstCall?.[1]).toEqual(['mistral', 'zai', 'groq', 'cerebras']);
   });
 
   it('uses structured topology state before RAG documents for server count, role, AZ, and status questions', async () => {
@@ -1002,36 +1010,42 @@ describe('provider order policy', () => {
   it('splits text agent provider order by workload group', () => {
     expect(getAgentProviderOrder('Metrics Query Agent')).toEqual([
       'groq',
-      'cerebras',
+      'zai',
       'mistral',
+      'cerebras',
     ]);
     expect(getAgentProviderOrder('Analyst Agent')).toEqual([
-      'cerebras',
-      'groq',
       'mistral',
+      'groq',
+      'zai',
+      'cerebras',
     ]);
     expect(getAgentProviderOrder('Reporter Agent')).toEqual([
-      'cerebras',
-      'groq',
+      'zai',
       'mistral',
+      'groq',
+      'cerebras',
     ]);
     expect(getAgentProviderOrder('Advisor Agent')).toEqual([
-      'cerebras',
-      'groq',
       'mistral',
+      'zai',
+      'groq',
+      'cerebras',
     ]);
     expect(getAgentProviderOrder('Unknown Agent')).toEqual([
       'groq',
-      'cerebras',
+      'zai',
       'mistral',
+      'cerebras',
     ]);
   });
 
   it('keeps Orchestrator structured-output provider order as documented', () => {
     expect(ORCHESTRATOR_PROVIDER_ORDER).toEqual([
-      'cerebras',
       'groq',
+      'zai',
       'mistral',
+      'cerebras',
     ]);
   });
 });

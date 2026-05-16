@@ -71,6 +71,7 @@ import {
   enhanceSuggestedActions,
   extendServerCorrelation,
 } from './incident-evaluation-tools';
+import { calculateActionabilityScore } from './incident-evaluation-helpers';
 
 // ============================================================================
 // Test Data
@@ -276,6 +277,35 @@ describe('scoreRootCauseConfidence', () => {
 
     expect(specificResult.calculatedConfidence).toBeGreaterThan(genericResult.calculatedConfidence);
   });
+
+  it('does not reward negated metric mentions as cause specificity', async () => {
+    const negatedRootCause = {
+      cause: 'web-server-01 CPU 급등과는 무관',
+      confidence: 0.5,
+      evidence: ['CPU 92%'],
+      suggestedFix: 'CPU 사용량 점검',
+    };
+
+    const result = await scoreRootCauseConfidence.execute!(
+      { rootCause: negatedRootCause, affectedServersCount: 1, timelineEventsCount: 1 },
+      { toolCallId: 'test-2c', messages: [] }
+    );
+
+    expect(result.breakdown.causeSpecificity).toBe(0);
+  });
+});
+
+describe('calculateActionabilityScore', () => {
+  it('rewards executable command snippets but not generic code spans', () => {
+    const executable = calculateActionabilityScore([
+      'CPU 사용량 확인: `top -o %CPU`',
+    ]);
+    const genericCodeSpan = calculateActionabilityScore([
+      '`CPU` 지표를 확인하고 원인을 검토',
+    ]);
+
+    expect(executable).toBeGreaterThan(genericCodeSpan);
+  });
 });
 
 // ============================================================================
@@ -472,4 +502,3 @@ describe('extendServerCorrelation', () => {
     }
   });
 });
-

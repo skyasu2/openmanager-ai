@@ -61,9 +61,9 @@ function isPastDeprecationDate(
 function describeCerebrasRole(policy: ProviderModelPolicy): string {
   switch (policy.role) {
     case 'primary':
-      return 'primary short-context Cerebras production model';
+      return 'primary Cerebras model';
     case 'fallback':
-      return 'intra-Cerebras fallback';
+      return 'short-context Cerebras fallback model';
     case 'excluded':
       return 'excluded free-tier unavailable model';
     case 'vision':
@@ -116,7 +116,7 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
   return [
     {
       provider: 'groq',
-      role: 'Supervisor/Metrics Query primary + fallback for Cerebras-first agents',
+      role: 'Supervisor/Metrics Query primary + long-context fallback',
       modelId: getGroqModelId(),
       lifecycle: 'preview',
       productionModel: false,
@@ -144,7 +144,7 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
     ...cerebrasMetadata,
     {
       provider: 'mistral',
-      role: 'distributed text fallback',
+      role: 'Analyst/Advisor primary + distributed text fallback',
       modelId: getMistralModelId(),
       lifecycle: 'production',
       productionModel: true,

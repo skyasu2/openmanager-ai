@@ -49,11 +49,11 @@ export const GROQ_FIRST_PROVIDER_ORDER = [
   'mistral',
   'cerebras',
 ] as const;
-export const CEREBRAS_FIRST_PROVIDER_ORDER = [
-  'cerebras',
+export const ANALYST_FIRST_PROVIDER_ORDER = [
+  'mistral',
   'groq',
   'zai',
-  'mistral',
+  'cerebras',
 ] as const;
 export const ZAI_FIRST_PROVIDER_ORDER = [
   'zai',
@@ -75,14 +75,14 @@ export const TEXT_AGENT_PROVIDER_ORDER = GROQ_FIRST_PROVIDER_ORDER;
 //   Groq:     30 RPM / 1K RPD / 30K TPM / 500K TPD.
 //   Z.AI:     free Flash models, concurrency/rate limits are account-specific.
 //   Mistral:  workspace-tier dependent; current account smoke: 50 RPM / 50K TPM.
-//   Cerebras: 5 RPM / 2.4K RPD account limit as of 2026-05-16.
-//             llama3.1-8b is scheduled for deprecation on 2026-05-27.
+//   Cerebras: short-context fallback only. Current account smoke: 5 RPM / 2.4K RPD.
+//             llama3.1-8b has an 8K context window and deprecates on 2026-05-27.
 //
 // maxSteps cap rationale (one LLM call per step):
 //   Metrics Query:       4 steps → up to 4 Groq calls  → 6 users/min headroom
-//   Analyst/Reporter/    5 steps → up to 5 Cerebras     → preserves burst headroom
-//   Advisor (Cerebras):    calls; fallback chain becomes Groq → Mistral after
-//                          llama3.1-8b deprecation unless replacement is confirmed
+//   Analyst:             5 steps → Mistral-first RCA loop avoids phantom Cerebras skip
+//   Reporter:            4 steps → Z.AI-first, but bounded under conservative 5 RPM guard
+//   Advisor:             3 steps → searchKB → recommend → finalAnswer typical path
 //   Supervisor single:   4 steps → stopWhen enforced in supervisor-stream.ts
 //
 // evidenceBudget: max tool-result items kept in context before summarising.
@@ -123,11 +123,12 @@ export const AGENT_RUNTIME_POLICIES = {
       'finalAnswer',
     ],
   },
-  // Analyst: Cerebras-first (32K context needed). Typical flow:
+  // Analyst: Mistral-first (32K context needed). Typical flow:
   //   detectAnomalies → predictTrends → (correlate) → finalAnswer = 3–4 steps.
-  // 5 steps is the hard ceiling so one request ≤ 1 Cerebras RPM slot.
+  // Cerebras remains last because its 8K runtime cannot satisfy this path and
+  // would otherwise become a phantom primary that immediately falls through.
   'Analyst Agent': {
-    providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER,
+    providerOrder: ANALYST_FIRST_PROVIDER_ORDER,
     maxSteps: 5,
     evidenceBudget: 3,
     toolAllowlist: [
@@ -148,10 +149,10 @@ export const AGENT_RUNTIME_POLICIES = {
   // Reporter: Z.AI-first (32K context needed). Typical flow:
   //   getMetrics → buildTimeline → search evidence → finalAnswer = 3–4 steps.
   // Root-cause analysis tools stay on Analyst; Reporter consumes handoff evidence.
-  // 5 steps ceiling matches Analyst for symmetric Cerebras budget usage.
+  // 4 steps avoids saturating the conservative 5 RPM Z.AI guard on one request.
   'Reporter Agent': {
     providerOrder: ZAI_FIRST_PROVIDER_ORDER,
-    maxSteps: 5,
+    maxSteps: 4,
     evidenceBudget: 4,
     toolAllowlist: [
       'getServerMetrics',
@@ -165,10 +166,10 @@ export const AGENT_RUNTIME_POLICIES = {
   },
   // Advisor: Mistral-first. Typical flow: searchKB → recommend → finalAnswer = 3 steps.
   // Analysis/RCA tools stay on Analyst; Advisor focuses on KB, logs, and commands.
-  // 4 steps is sufficient; saves Cerebras budget vs. the Analyst/Reporter.
+  // 3 steps keeps short guidance paths cheap and leaves Mistral headroom for Analyst.
   'Advisor Agent': {
     providerOrder: MISTRAL_FIRST_PROVIDER_ORDER,
-    maxSteps: 4,
+    maxSteps: 3,
     evidenceBudget: 3,
     toolAllowlist: [
       'searchKnowledgeBase',

@@ -320,6 +320,13 @@ function evaluateReport(report: ReportForEvaluation): {
   return { overallScore, scores, issues, recommendations };
 }
 
+const ACTION_COMMAND_PATTERN =
+  /`(?:sudo|systemctl|docker|kubectl|top|ps|free|df|netstat|ss|mysql|redis|journalctl|dmesg|lsof|find)[^`]*`|^\s*(?:\$|sudo|systemctl|docker|kubectl)\b/i;
+
+function hasExecutableCommand(action: string): boolean {
+  return ACTION_COMMAND_PATTERN.test(action);
+}
+
 /**
  * Optimize report based on evaluation
  */
@@ -375,15 +382,39 @@ function optimizeReport(
 
   // Enhance suggested actions if too generic
   if (evaluation.issues.includes('권장 조치가 너무 일반적')) {
-    const focusArea = determineFocusArea(report);
     const serverType = getServerTypeFromMonitoringState(
       stateData,
       report.affectedServers[0]?.id
     );
-    const commands = getSuggestedCommands(focusArea, serverType);
 
     optimizedReport.suggestedActions = optimizedReport.suggestedActions.map((action, i) => {
-      const cmd = commands[i % commands.length];
+      if (hasExecutableCommand(action)) return action;
+
+      let actionFocusArea: ReturnType<typeof determineFocusArea> = 'general';
+      const actionLower = action.toLowerCase();
+      if (actionLower.includes('cpu')) {
+        actionFocusArea = 'cpu';
+      } else if (
+        actionLower.includes('memory') ||
+        actionLower.includes('메모리')
+      ) {
+        actionFocusArea = 'memory';
+      } else if (
+        actionLower.includes('disk') ||
+        actionLower.includes('디스크')
+      ) {
+        actionFocusArea = 'disk';
+      } else if (
+        actionLower.includes('network') ||
+        actionLower.includes('네트워크')
+      ) {
+        actionFocusArea = 'network';
+      } else {
+        actionFocusArea = determineFocusArea(report);
+      }
+
+      const commands = getSuggestedCommands(actionFocusArea, serverType);
+      const cmd = commands[i % commands.length] || 'systemctl status';
       return `${action}\n   명령어: \`${cmd}\``;
     });
     optimizations.push('권장 조치 구체화');

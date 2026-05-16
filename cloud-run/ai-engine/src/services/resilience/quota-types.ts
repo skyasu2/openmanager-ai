@@ -11,9 +11,9 @@ import {
 /*
  * CEREBRAS DEPRECATION 2026-05-27
  * After this date llama3.1-8b is expected to be unavailable.
- * Fallback chain degrades to:
- *   Cerebras-first paths: Groq -> Z.AI -> Mistral
- * Effective primary remains Groq, but Z.AI provides a free Flash buffer.
+ * Long-context paths keep Cerebras last because llama3.1-8b is 8K only.
+ * After deprecation, the remaining mesh continues as role-specific
+ * Groq/Z.AI/Mistral ordering.
  * Action: confirm replacement model entitlement before this date.
  */
 

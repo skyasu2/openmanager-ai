@@ -71,7 +71,7 @@ describe('provider model policy SSOT', () => {
     expect(getCerebrasModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID)).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-      role: 'primary',
+      role: 'fallback',
       lifecycle: 'production',
       enabled: true,
       toolCallingEnabled: true,
@@ -131,9 +131,9 @@ describe('provider model policy SSOT', () => {
       CEREBRAS_ZAI_GLM_MODEL_ID
     );
     expect(CEREBRAS_DEPRECATION_CONTINGENCY.fallbackChainAfterDeprecation).toEqual([
+      'mistral',
       'groq',
       'zai',
-      'mistral',
     ]);
   });
 

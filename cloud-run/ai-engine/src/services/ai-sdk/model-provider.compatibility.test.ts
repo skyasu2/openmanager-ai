@@ -76,6 +76,7 @@ vi.mock('../../lib/config-parser', () => ({
   getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   getCerebrasFallbackModelIds: vi.fn((): string[] => []),
   getMistralApiKey: vi.fn(() => 'test-mistral-key'),
+  getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   getZaiApiKey: vi.fn(() => 'test-zai-key'),
   getZaiBaseUrl: vi.fn(() => 'https://api.z.ai/api/paas/v4'),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
@@ -145,14 +146,14 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(vision?.modelId).toBe('gemini-2.5-flash-lite');
   });
 
-  it('keeps Supervisor Groq-first and routes Verifier to long-context Groq', () => {
+  it('keeps Supervisor Groq-first and routes Verifier to long-context Mistral', () => {
     expect(getSupervisorModel().provider).toBe('groq');
-    expect(getVerifierModel().provider).toBe('groq');
+    expect(getVerifierModel().provider).toBe('mistral');
 
     toggleProvider('cerebras', false);
     invalidateProviderStatusCache();
 
-    expect(getVerifierModel().provider).toBe('groq');
+    expect(getVerifierModel().provider).toBe('mistral');
   });
 
   it('falls back to OpenRouter when Gemini is disabled', () => {

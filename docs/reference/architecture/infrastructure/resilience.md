@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-10
+> Last reviewed: 2026-05-16
 > Canonical: docs/reference/architecture/infrastructure/resilience.md
 > Tags: resilience,circuit-breaker,fallback,retry,error-handling
 >
-> **프로젝트 버전**: v8.11.122 | **Updated**: 2026-05-10
+> **프로젝트 버전**: v8.11.156+ | **Updated**: 2026-05-16
 
 ## 개요
 
@@ -129,27 +129,36 @@ const result = await executeWithCircuitBreakerAndFallback(
 
 ## Part 2: Request-Level Retry + Provider Fallback (Cloud Run)
 
-### 3-way Provider Chain
+### Provider Mesh
 
 Cloud Run AI Engine은 LLM 호출 시 **자동 프로바이더 전환**을 수행합니다.
 
 ```
-Group A 요청(Supervisor/Metrics Query)
+Group A 요청(Supervisor/Metrics Query/Orchestrator)
   → Groq (llama-4-scout)
-     → Cerebras (llama3.1-8b)
+     → Z.AI (glm-4.5-flash)
        → Mistral (mistral-small-latest)
+         → Cerebras (llama3.1-8b short-context fallback)
 
-Group B 요청(Analyst/Reporter/Advisor/Verifier)
-  → Cerebras (llama3.1-8b; 16K/32K context floor 경로는 capability gate로 skip)
+Analyst/Verifier 장문 요청
+  → Mistral (mistral-small-latest)
      → Groq (llama-4-scout)
-       → Mistral (mistral-small-latest)
+       → Z.AI (glm-4.5-flash)
+         → Cerebras (llama3.1-8b short-context fallback)
+
+Reporter 장문 요청
+  → Z.AI (glm-4.5-flash)
+     → Mistral (mistral-small-latest)
+       → Groq (llama-4-scout)
+         → Cerebras (llama3.1-8b short-context fallback)
 ```
 
 | 프로바이더 | 모델 | 역할 | 특징 |
 |-----------|------|------|------|
 | **Groq** | llama-4-scout | Group A primary | Supervisor/Metrics Query 중심 텍스트 경로 |
-| **Cerebras** | llama3.1-8b | Short-context fallback / Group B first candidate when context permits | 8K context 제약으로 long-context 경로는 Groq로 전환 |
-| **Mistral** | mistral-small-latest | Tertiary | 무료 티어 친화적 최후 폴백 |
+| **Mistral** | mistral-small-latest | Analyst/Advisor primary | 32K 장문 경로와 높은 RPM guard에 맞춤 |
+| **Z.AI** | glm-4.5-flash | Reporter primary / text fallback | 128K context, conservative 5 RPM guard |
+| **Cerebras** | llama3.1-8b | Short-context last fallback | 8K context + 2026-05-27 deprecation 때문에 장문 primary 제외 |
 
 ### Retry 전략
 
@@ -251,7 +260,7 @@ Cloud Run (300s hard limit)
 | Supervisor (non-stream) | 50s | 40s | Soft 45s에서 정리 시작 |
 | Supervisor (stream) | 120s | 96s | `hardStreaming` + `warningStreaming` |
 | Orchestrator | 90s | 60s | 라우팅 결정 10s |
-| Agent | 45s | 35s | maxSteps=7 |
+| Agent | 45s | 35s | agent별 maxSteps=2~5 |
 | Subtask | 35s | 28s | 개별 작업 단위 |
 | Tool | 25s | 20s | 재시도 5s |
 | Reporter Pipeline | 45s | - | 이터레이션당 20s |

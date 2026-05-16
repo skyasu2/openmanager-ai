@@ -6,6 +6,7 @@ import type { AssistantRuntimeHost } from '../../assistant-runtime-host';
 import {
   AGENT_CONFIGS,
   AGENT_NAMES,
+  ANALYST_FIRST_PROVIDER_ORDER,
   MISTRAL_FIRST_PROVIDER_ORDER,
   ZAI_FIRST_PROVIDER_ORDER,
   getAgentEvidenceBudget,
@@ -49,7 +50,7 @@ const EXPECTED_POLICIES = {
     ],
   },
   'Analyst Agent': {
-    providerOrder: ['cerebras', 'groq', 'zai', 'mistral'],
+    providerOrder: ['mistral', 'groq', 'zai', 'cerebras'],
     maxSteps: 5,
     evidenceBudget: 3,
     toolAllowlist: [
@@ -69,7 +70,7 @@ const EXPECTED_POLICIES = {
   },
   'Reporter Agent': {
     providerOrder: ['zai', 'mistral', 'groq', 'cerebras'],
-    maxSteps: 5,
+    maxSteps: 4,
     evidenceBudget: 4,
     toolAllowlist: [
       'getServerMetrics',
@@ -83,7 +84,7 @@ const EXPECTED_POLICIES = {
   },
   'Advisor Agent': {
     providerOrder: ['mistral', 'zai', 'groq', 'cerebras'],
-    maxSteps: 4,
+    maxSteps: 3,
     evidenceBudget: 3,
     toolAllowlist: [
       'searchKnowledgeBase',
@@ -143,7 +144,7 @@ describe('agent runtime policy SSOT', () => {
     }
   });
 
-  it('keeps routable text agents on rotated provider fallback meshes', () => {
+  it('keeps routable text agents on quota-aware provider fallback meshes', () => {
     const routableTextAgents = [
       'Metrics Query Agent',
       'Analyst Agent',
@@ -154,13 +155,15 @@ describe('agent runtime policy SSOT', () => {
 
     expect(
       routableTextAgents.map((agentName) => getAgentProviderOrder(agentName)[0])
-    ).toEqual(['groq', 'cerebras', 'zai', 'mistral']);
+    ).toEqual(['groq', 'mistral', 'zai', 'mistral']);
 
     for (const agentName of routableTextAgents) {
       const order = getAgentProviderOrder(agentName);
 
       expect(order).toHaveLength(expectedProviders.length);
       expect([...new Set(order)].sort()).toEqual(expectedProviders);
+      expect(order[0]).not.toBe('cerebras');
+      expect(order.at(-1)).toBe('cerebras');
     }
   });
 
@@ -282,6 +285,12 @@ describe('agent runtime policy SSOT', () => {
       'groq',
       'cerebras',
     ]);
+    expect(ANALYST_FIRST_PROVIDER_ORDER).toEqual([
+      'mistral',
+      'groq',
+      'zai',
+      'cerebras',
+    ]);
     expect(ZAI_FIRST_PROVIDER_ORDER).toEqual([
       'zai',
       'mistral',
@@ -289,12 +298,13 @@ describe('agent runtime policy SSOT', () => {
       'cerebras',
     ]);
     expect(getAgentProviderOrder('Analyst Agent')).toEqual([
-      'cerebras',
+      'mistral',
       'groq',
       'zai',
-      'mistral',
+      'cerebras',
     ]);
-    expect(getAgentMaxSteps('Reporter Agent')).toBe(5);
+    expect(getAgentMaxSteps('Reporter Agent')).toBe(4);
+    expect(getAgentMaxSteps('Advisor Agent')).toBe(3);
     expect(getAgentMaxSteps('Vision Agent')).toBe(2);
     expect(getAgentEvidenceBudget('Metrics Query Agent')).toBe(2);
     expect(getAgentEvidenceBudget('NLQ Agent')).toBe(2); // backward-compat alias: 'NLQ Agent' → 'Metrics Query Agent'

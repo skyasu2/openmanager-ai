@@ -182,7 +182,7 @@ describe('selectTextModel capability requirements', () => {
   it('distributes long-context agent groups across the text mesh when Cerebras is 8K', () => {
     expect(getNlqModel()?.provider).toBe('groq');
     expect(getAdvisorModel()?.provider).toBe('mistral');
-    expect(getAnalystModel()?.provider).toBe('groq');
+    expect(getAnalystModel()?.provider).toBe('mistral');
     expect(getReporterModel()?.provider).toBe('zai');
   });
 
@@ -212,16 +212,16 @@ describe('selectTextModel capability requirements', () => {
     ];
 
     expect(results.map((result) => result?.provider)).toEqual([
-      'groq',
+      'mistral',
       'zai',
       'mistral',
     ]);
     expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
-    expect(mockGetGroqModel).toHaveBeenCalledWith('groq-model');
+    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-small-latest');
   });
 
-  it('falls Analyst and Reporter back to Groq when Cerebras is unavailable', () => {
+  it('keeps Analyst and Reporter on explicit long-context primaries when Cerebras is unavailable', () => {
     mockCheckProviderStatus.mockReturnValue({
       cerebras: false,
       groq: true,
@@ -231,7 +231,7 @@ describe('selectTextModel capability requirements', () => {
       openrouter: true,
     });
 
-    expect(getAnalystModel()?.provider).toBe('groq');
+    expect(getAnalystModel()?.provider).toBe('mistral');
     expect(getReporterModel()?.provider).toBe('zai');
   });
 
