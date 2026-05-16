@@ -156,7 +156,8 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.providerAttempts && result.providerAttempts.length > 0) ||
     typeof result.usedFallback === 'boolean' ||
     Boolean(result.fallbackReason) ||
-    typeof result.ttfbMs === 'number';
+    typeof result.ttfbMs === 'number' ||
+    typeof result.rotationSlot === 'number';
   const metadata =
     result.ragSources ||
     (result.evidenceCards && result.evidenceCards.length > 0) ||
@@ -235,6 +236,9 @@ export function buildAssistantMessageFromAsyncResult(
           }),
           ...(typeof result.ttfbMs === 'number' && {
             ttfbMs: result.ttfbMs,
+          }),
+          ...(typeof result.rotationSlot === 'number' && {
+            rotationSlot: result.rotationSlot,
           }),
         }
       : undefined;

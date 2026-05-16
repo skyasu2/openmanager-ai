@@ -199,7 +199,7 @@ export async function* streamSingleAgent(
       });
       return;
     }
-    const { model, provider, modelId } = selectedModel;
+    const { model, provider, modelId, rotationSlot } = selectedModel;
 
     // --- 2. Circuit Breaker Check ---
     const circuitBreaker = getCircuitBreaker(`stream-${provider}`);
@@ -668,6 +668,7 @@ export async function* streamSingleAgent(
         evidenceCards: streamToolEvidence.evidenceCards,
         retrieval: streamToolEvidence.retrieval,
         semanticQueryTrace: domainEvidence?.metadata?.semanticQueryTrace,
+        rotationSlot,
       });
       return;
     } catch (error) {

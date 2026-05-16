@@ -39,6 +39,7 @@ export interface AgentResult {
     finishReason?: string;
     fallbackUsed?: boolean;
     fallbackReason?: string;
+    rotationSlot?: number;
     agentLoop?: AgentLoopTelemetry;
     retrieval?: RetrievalMetadata;
   };

@@ -15,6 +15,7 @@ type SupervisorStreamModelSelection =
       model: LanguageModel;
       provider: ProviderName;
       modelId: string;
+      rotationSlot?: number;
     }
   | {
       ok: false;

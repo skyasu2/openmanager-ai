@@ -45,6 +45,31 @@ describe('AIWorkspaceMessage detail affordance', () => {
     expect(screen.queryByTestId('typewriter-markdown')).not.toBeInTheDocument();
   });
 
+  it('renders provider attribution for completed assistant responses', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-provider-attribution',
+      role: 'assistant',
+      content: 'Provider attribution response',
+      timestamp: new Date('2026-05-16T11:00:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        provider: 'groq',
+        modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        ttfbMs: 642,
+        usedFallback: true,
+        rotationSlot: 2,
+      },
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    expect(screen.getByText('Groq')).toBeInTheDocument();
+    expect(screen.getByText('/ llama-4-scout')).toBeInTheDocument();
+    expect(screen.getByText('642ms')).toBeInTheDocument();
+    expect(screen.getByText('fallback')).toBeInTheDocument();
+    expect(screen.getByText('순환 3번')).toBeInTheDocument();
+  });
+
   it('renders structured details inline when analysis metadata is absent', () => {
     const message: EnhancedChatMessage = {
       id: 'assistant-inline-details',

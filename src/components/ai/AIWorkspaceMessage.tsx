@@ -1,6 +1,7 @@
 import { Bot, Brain, ChevronDown, ChevronUp, Play, User } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
+import { ProviderAttributionChip } from '@/components/ai/analysis-basis/ProviderAttributionChip';
 import { getResponseLatencyLabel } from '@/lib/ai/response-latency-label';
 import {
   resolveAssistantResponseView,
@@ -249,6 +250,20 @@ export const AIWorkspaceMessage = memo<{
                 )}
               </div>
             </div>
+
+            {message.role === 'assistant' &&
+              !message.isStreaming &&
+              message.metadata?.provider && (
+                <div className="mt-1.5 px-1">
+                  <ProviderAttributionChip
+                    provider={message.metadata.provider}
+                    modelId={message.metadata.modelId}
+                    ttfbMs={message.metadata.ttfbMs}
+                    usedFallback={message.metadata.usedFallback}
+                    rotationSlot={message.metadata.rotationSlot}
+                  />
+                </div>
+              )}
 
             {message.role === 'assistant' &&
               !message.isStreaming &&

@@ -30,11 +30,10 @@ import {
   recordProviderUsage,
   selectAvailableProvider,
 } from '../resilience/quota-tracker';
-import {
-  ANALYST_FIRST_PROVIDER_ORDER,
-  TEXT_AGENT_PROVIDER_ORDER,
-} from './agents/config/agent-runtime-policy';
+
 import { selectTextModel } from './agents/config/agent-model-selectors';
+import { selectRoundRobinProviderOrder } from './agents/config/round-robin-provider-selector';
+
 import {
   getCerebrasModel,
   getGeminiFlashLiteModel,
@@ -91,15 +90,18 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
   model: LanguageModel;
   provider: ProviderName;
   modelId: string;
+  rotationSlot?: number;
 } {
-  const result = selectTextModel('Supervisor', TEXT_AGENT_PROVIDER_ORDER, {
+  const { providerOrder, rotationSlot } = selectRoundRobinProviderOrder(8_000);
+  const result = selectTextModel('Supervisor', providerOrder, {
     throwOnEmpty: true,
     excludeProviders,
     cbPrefix: 'supervisor',
     requiredCapabilities: { requireToolCalling: true },
+    rotationSlot,
   });
   // throwOnEmpty guarantees non-null
-  return result as { model: LanguageModel; provider: ProviderName; modelId: string };
+  return result as { model: LanguageModel; provider: ProviderName; modelId: string; rotationSlot?: number };
 }
 
 /**
@@ -111,12 +113,15 @@ export function getVerifierModel(): {
   model: LanguageModel;
   provider: ProviderName;
   modelId: string;
+  rotationSlot?: number;
 } {
-  const result = selectTextModel('Verifier', ANALYST_FIRST_PROVIDER_ORDER, {
+  const { providerOrder, rotationSlot } = selectRoundRobinProviderOrder(32_000);
+  const result = selectTextModel('Verifier', providerOrder, {
     throwOnEmpty: true,
     requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
+    rotationSlot,
   });
-  return result as { model: LanguageModel; provider: ProviderName; modelId: string };
+  return result as { model: LanguageModel; provider: ProviderName; modelId: string; rotationSlot?: number };
 }
 
 // Advisor model: re-exported from agent-model-selectors (SSOT)

@@ -318,7 +318,7 @@ await pipeline.exec();
 | **Groq** (Llama 4 Scout) | 30 | 30,000 | 1,000 | 500,000 | RPD/TPD (일 1K 요청 또는 500K 토큰) |
 | **Z.AI GLM Flash** (`glm-4.5-flash`) | 5* | 30,000* | 500* | 1,000,000* | 공식 pricing상 무료. 고정 rate 표가 아니라 account/concurrency 기반이라 runtime guard는 보수값 사용 |
 | **Mistral** (small-latest) | 50* | 50,000* | 500* | 1,000,000* | Workspace Limits 기준. 일부 chain primary/secondary로 분산 |
-| **Cerebras Llama 3.1-8b** | 5 | 30,000 | 2,400 | 1,000,000 | 현재 계정 header 기준. 8K context + 2026-05-27 deprecation |
+| **Cerebras gpt-oss-120b** | 5 | 30,000 | 2,400 | 1,000,000 | 현재 계정 header 기준. 65K context, text mesh 후보. Llama 3.1-8b는 deprecated fallback로만 취급 |
 | **Gemini Flash-Lite** | 15 | 250,000 | 1,000 | — | RPD (Vision 전용) |
 | **OpenRouter Free** | 20 | — | 50 또는 1,000 | — | `:free` 모델. 계정 credit 상태에 따라 RPD 상이, Vision fallback 전용 |
 
@@ -327,35 +327,61 @@ await pipeline.exec();
 > Z.AI Web Search는 공식 pricing상 유료(`$0.01/use`)라 Free Tier runtime에서 사용하지 않는다.
 > 런타임 SSOT: `quota-tracker.ts` `PROVIDER_QUOTAS` 상수.
 
-### Agent별 Provider 순서 (SSOT)
+### Provider 선택 전략 — Round-Robin + Context Guard + 429 Cooldown (2026-05-16~)
 
-| Agent | 1st | 2nd | 3rd | 비고 |
-|-------|-----|-----|-----|------|
-| **Supervisor** (single) | Groq | Z.AI | Mistral → Cerebras | 단순 쿼리 1 LLM 호출 |
-| **Orchestrator** | Groq | Z.AI | Mistral → Cerebras | 라우팅 JSON만 생성 — Groq-first로 Cerebras RPM 절약 |
-| **Metrics Query Agent** | Groq | Z.AI | Mistral → Cerebras | 수식/통계/용량 계산 포함 |
-| **Analyst Agent** | Mistral | Groq | Z.AI → Cerebras | 32K context RCA 경로. 8K Cerebras phantom primary 제거 |
-| **Reporter Agent** | Z.AI | Mistral | Groq → Cerebras | 보고서 생성 토큰 분산. conservative 5 RPM guard 때문에 4-step ceiling |
-| **Advisor Agent** | Mistral | Z.AI | Groq → Cerebras | 명령 추천/KB 중심 3-step 경로 |
-| **Vision Agent** | Gemini | OpenRouter | Z.AI Vision | 이미지/스크린샷 전용 |
+2026-05-16부터 에이전트별 고정 provider 순서(spider-web order)를 **Round-Robin + Context Guard + 429 Cooldown** 방식으로 대체했습니다.
 
-> SSOT: `agent-runtime-policy.ts` → `AGENT_RUNTIME_POLICIES` / `ORCHESTRATOR_RUNTIME_POLICY`
+**핵심 원리 (3-버킷 알고리즘)**:
+```
+호출마다 → [eligible, 컨텍스트 OK, cooldown 없음] → [ineligible, 컨텍스트 부족] → [cooled, 429 중]
+```
 
-**Spider-web order 이유 (2026-05-16)**:
-동일 provider가 장애·rate limit·deprecation에 걸려도 모든 agent가 같은 2순위로 몰리지 않도록 provider 순서를 역할별로 회전시킨다. Groq-first 경로는 빠른 사용자-facing tool loop에, Z.AI-first 경로는 보고서류 text generation에, Mistral-first 경로는 Analyst/Advisor에 배치한다. Cerebras `llama3.1-8b`는 8K context와 2026-05-27 deprecation 때문에 16K/32K agent primary에서 제외하고 short-context last fallback으로만 유지한다.
+| 버킷 | 조건 | 우선순위 |
+|------|------|---------|
+| eligible | context window ≥ minContextTokens AND 429 cooldown 없음 | 최우선 |
+| ineligible | context window 미달 AND cooldown 없음 | 중간 |
+| cooled | 429 cooldown 중 (context 무관) | 최후 수단 |
+
+**Rotation Pool**: `[groq, mistral, zai, cerebras]` 모듈-레벨 커서로 균등 순환
+
+| Provider | Context Window | minContext 기준 eligible 여부 |
+|----------|---------------|------------------------------|
+| Groq | 131K | 모든 에이전트 eligible |
+| Mistral | 32K | 16K/32K 에이전트 eligible (경계값 포함) |
+| Z.AI | 128K | 모든 에이전트 eligible |
+| Cerebras (gpt-oss-120b) | 65K | 모든 에이전트 eligible |
+
+> 이전 spider-web order (Groq-first, Mistral-first, Z.AI-first 고정)는 2026-05-16에 제거되었습니다.
+> SSOT: `round-robin-provider-selector.ts` / `agent-model-selectors.ts`
+
+**429 Cooldown 흐름**:
+```
+LLM 429 응답
+  → retry-with-fallback.ts: markProviderQuotaCooldown(provider)
+  → quota-store-memory.ts: inMemoryCooldowns.set(provider, {until: now + 90s})
+다음 agent 호출
+  → selectRoundRobinProviderOrder(): getMemoryCooldown(provider) → cooled 버킷으로 이동
+  → 90초 후 cooldown 자동 만료, 정상 rotation 복귀
+```
+
+**Vision Agent** (round-robin 미적용, 고정 순서 유지):
+
+| 1st | 2nd | 3rd |
+|-----|-----|-----|
+| Gemini | OpenRouter | Z.AI Vision |
 
 ### 모델 ID 환경변수 (즉시 교체 가능)
 
 | 환경변수 | 기본값 | 대상 Provider |
 |---------|-------|--------------|
-| `CEREBRAS_MODEL_ID` | `llama3.1-8b` | Cerebras production runtime |
+| `CEREBRAS_MODEL_ID` | `gpt-oss-120b` | Cerebras production runtime (2026-05-16 전환 완료) |
 | `GROQ_MODEL_ID` | `meta-llama/llama-4-scout-17b-16e-instruct` | Groq |
 | `MISTRAL_MODEL_ID` | `mistral-small-latest` | Mistral |
 | `ZAI_DEFAULT_MODEL` | `glm-4.5-flash` | Z.AI text |
 | `ZAI_VISION_MODEL_ID` | `glm-4.6v-flash` | Z.AI Vision |
 | `GEMINI_VISION_MODEL_ID` | `gemini-2.5-flash-lite` | Gemini Vision |
 
-> 코드 수정 없이 환경변수만 변경하면 모델이 즉시 교체됩니다. 2026-05-16 기준 현재 계정에서 Z.AI `glm-4.5-flash` text/tool smoke와 `glm-4.6v-flash` simple smoke는 통과했고, `glm-4.7-flash`는 429/timeout 표본으로 runtime 기본값에서 제외했습니다. Cerebras는 `llama3.1-8b`만 2026-05-27 종료 전 short-context runtime으로 유지합니다.
+> 코드 수정 없이 환경변수만 변경하면 모델이 즉시 교체됩니다. 2026-05-16 기준: Z.AI `glm-4.5-flash` text/tool smoke ✅, `glm-4.6v-flash` simple smoke ✅, `glm-4.7-flash` 429/timeout 표본으로 제외. Cerebras `gpt-oss-120b` 65K context로 전환 완료, Cerebras tool-calling은 `CEREBRAS_TOOL_CALLING_ENABLED=false` 기본값 유지.
 
 ### RPM 자동 대응 (Quota Admission Gate)
 

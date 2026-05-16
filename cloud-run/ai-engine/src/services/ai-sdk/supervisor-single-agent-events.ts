@@ -237,6 +237,7 @@ export function buildSingleAgentDoneEvent({
   evidenceCards,
   retrieval,
   semanticQueryTrace,
+  rotationSlot,
 }: SingleAgentResponseContext & {
   provider: string;
   modelId: string;
@@ -252,6 +253,7 @@ export function buildSingleAgentDoneEvent({
   evidenceCards: EvidenceCard[];
   retrieval?: RetrievalMetadata;
   semanticQueryTrace?: unknown;
+  rotationSlot?: number;
 }): StreamEvent {
   return {
     type: 'done',
@@ -269,6 +271,7 @@ export function buildSingleAgentDoneEvent({
         stepsExecuted,
         durationMs,
         mode: 'single',
+        ...(typeof rotationSlot === 'number' && { rotationSlot }),
         ...(traceId && { traceId }),
         ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
         ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),

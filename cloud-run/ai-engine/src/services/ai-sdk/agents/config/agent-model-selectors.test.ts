@@ -86,9 +86,11 @@ import {
   getReporterModel,
   selectTextModel,
 } from './agent-model-selectors';
+import { resetRoundRobinCursor } from './round-robin-provider-selector';
 
 describe('selectTextModel capability requirements', () => {
   beforeEach(() => {
+    resetRoundRobinCursor();
     vi.clearAllMocks();
     mockCheckProviderStatus.mockReturnValue({
       cerebras: true,
@@ -179,14 +181,24 @@ describe('selectTextModel capability requirements', () => {
     expect(mockGetGroqModel).toHaveBeenCalledWith('groq-model');
   });
 
-  it('distributes long-context agent groups across the text mesh when Cerebras is 8K', () => {
-    expect(getNlqModel()?.provider).toBe('groq');
-    expect(getAdvisorModel()?.provider).toBe('mistral');
-    expect(getAnalystModel()?.provider).toBe('mistral');
-    expect(getReporterModel()?.provider).toBe('zai');
+  it('rotates long-context agent groups across the text mesh when Cerebras is 8K', () => {
+    const nlq = getNlqModel();
+    const advisor = getAdvisorModel();
+    const analyst = getAnalystModel();
+    const reporter = getReporterModel();
+
+    expect(nlq?.provider).toBe('groq');
+    expect(nlq?.rotationSlot).toBe(0);
+    expect(advisor?.provider).toBe('mistral');
+    expect(advisor?.rotationSlot).toBe(1);
+    expect(analyst?.provider).toBe('zai');
+    expect(analyst?.rotationSlot).toBe(2);
+    expect(reporter?.provider).toBe('groq');
+    expect(reporter?.rotationSlot).toBe(3);
+    expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
   });
 
-  it('keeps Metrics Query on Z.AI when Groq is unavailable', () => {
+  it('moves Metrics Query to the next available rotation provider when Groq is unavailable', () => {
     mockCheckProviderStatus.mockReturnValue({
       cerebras: true,
       groq: false,
@@ -198,10 +210,11 @@ describe('selectTextModel capability requirements', () => {
 
     const result = getNlqModel();
 
-    expect(result?.provider).toBe('zai');
+    expect(result?.provider).toBe('mistral');
+    expect(result?.rotationSlot).toBe(0);
     expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
-    expect(mockGetZaiModel).toHaveBeenCalledWith('glm-4.5-flash');
+    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-small-latest');
   });
 
   it('keeps Analyst, Reporter, and Advisor on models with at least 32K context', () => {
@@ -212,16 +225,17 @@ describe('selectTextModel capability requirements', () => {
     ];
 
     expect(results.map((result) => result?.provider)).toEqual([
+      'groq',
       'mistral',
       'zai',
-      'mistral',
     ]);
+    expect(results.map((result) => result?.rotationSlot)).toEqual([0, 1, 2]);
     expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
     expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-small-latest');
   });
 
-  it('keeps Analyst and Reporter on explicit long-context primaries when Cerebras is unavailable', () => {
+  it('keeps Analyst and Reporter on available long-context providers when Cerebras is unavailable', () => {
     mockCheckProviderStatus.mockReturnValue({
       cerebras: false,
       groq: true,
@@ -231,8 +245,8 @@ describe('selectTextModel capability requirements', () => {
       openrouter: true,
     });
 
-    expect(getAnalystModel()?.provider).toBe('mistral');
-    expect(getReporterModel()?.provider).toBe('zai');
+    expect(getAnalystModel()?.provider).toBe('groq');
+    expect(getReporterModel()?.provider).toBe('mistral');
   });
 
   it('uses agent-specific circuit breaker keys for the same provider', () => {

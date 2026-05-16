@@ -95,6 +95,7 @@ import {
   invalidateProviderStatusCache,
   toggleProvider,
 } from './model-provider';
+import { setRoundRobinCursor } from './agents/config/round-robin-provider-selector';
 
 describe('Verifier model context guard', () => {
   beforeEach(() => {
@@ -103,13 +104,17 @@ describe('Verifier model context guard', () => {
     toggleProvider('cerebras', true);
     toggleProvider('groq', true);
     toggleProvider('mistral', true);
+    toggleProvider('zai', true);
   });
 
-  it('uses Mistral for Verifier long-context requirements and never probes 8K Cerebras', () => {
+  it('skips 8K Cerebras for Verifier long-context requirements before model init', () => {
+    setRoundRobinCursor(3);
+
     const result = getVerifierModel();
 
-    expect(result.provider).toBe('mistral');
-    expect(result.modelId).toBe('mistral-small-latest');
+    expect(result.provider).toBe('groq');
+    expect(result.modelId).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
+    expect(result.rotationSlot).toBe(3);
     expect(cerebrasModelCalls).toEqual([]);
   });
 });

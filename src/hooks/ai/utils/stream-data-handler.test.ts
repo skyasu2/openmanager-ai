@@ -281,6 +281,35 @@ describe('handleStreamDataPart', () => {
       );
     });
 
+    it('should store provider attribution metadata from done events', () => {
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          metadata: {
+            provider: 'groq',
+            modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
+            ttfbMs: 642,
+            usedFallback: false,
+            rotationSlot: 2,
+          },
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          provider: 'groq',
+          modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
+          ttfbMs: 642,
+          usedFallback: false,
+          rotationSlot: 2,
+          handoffHistory: [],
+        })
+      );
+    });
+
     it('should store pending tool results for deferred assistant hydration', () => {
       handleStreamDataPart(
         {

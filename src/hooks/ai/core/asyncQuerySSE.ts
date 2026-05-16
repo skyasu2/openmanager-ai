@@ -207,6 +207,7 @@ export function connectAsyncQuerySSE(
       );
       const fallbackReason = getNonEmptyString(metadata.fallbackReason);
       const ttfbMs = getFiniteNumber(metadata.ttfbMs);
+      const rotationSlot = getFiniteNumber(metadata.rotationSlot);
       const routeDecision = normalizeRouteDecision(metadata.routeDecision);
       const assistantPlan = normalizeAssistantPlan(metadata.assistantPlan);
       const assistantResult = normalizeAssistantResult(
@@ -255,6 +256,7 @@ export function connectAsyncQuerySSE(
         }),
         ...(fallbackReason && { fallbackReason }),
         ...(ttfbMs !== undefined && { ttfbMs }),
+        ...(rotationSlot !== undefined && { rotationSlot }),
         ...(routeDecision && { routeDecision }),
         ...(assistantPlan && { assistantPlan }),
         ...(assistantResult && { assistantResult }),

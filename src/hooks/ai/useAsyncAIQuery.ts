@@ -106,6 +106,7 @@ export interface AsyncQueryResult {
   usedFallback?: boolean;
   fallbackReason?: string;
   ttfbMs?: number;
+  rotationSlot?: number;
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;

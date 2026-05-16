@@ -118,6 +118,26 @@ function readDoneDataField(
   return metadata?.[key];
 }
 
+function extractStringFromDoneData(
+  doneData: ResponseSourceData | undefined,
+  key: string
+): string | undefined {
+  const value = readDoneDataField(doneData, key);
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function extractFiniteNumberFromDoneData(
+  doneData: ResponseSourceData | undefined,
+  key: string
+): number | undefined {
+  const value = readDoneDataField(doneData, key);
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
+}
+
 function extractUsedFallbackFromDoneData(
   doneData: ResponseSourceData | undefined
 ): boolean | undefined {
@@ -131,11 +151,7 @@ function extractUsedFallbackFromDoneData(
 function extractFallbackReasonFromDoneData(
   doneData: ResponseSourceData | undefined
 ): string | undefined {
-  const fallbackReason = readDoneDataField(doneData, 'fallbackReason');
-  if (typeof fallbackReason !== 'string') return undefined;
-
-  const trimmed = fallbackReason.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
+  return extractStringFromDoneData(doneData, 'fallbackReason');
 }
 
 function extractRouteDecisionFromDoneData(
@@ -419,8 +435,15 @@ export function handleStreamDataPart(
       extractModeSelectionSourceFromDoneData(doneData);
     const retrieval = extractRetrievalMetadataFromDoneData(doneData);
     const evidenceCards = extractEvidenceCardsFromDoneData(doneData);
+    const provider = extractStringFromDoneData(doneData, 'provider');
+    const modelId = extractStringFromDoneData(doneData, 'modelId');
     const usedFallback = extractUsedFallbackFromDoneData(doneData);
     const fallbackReason = extractFallbackReasonFromDoneData(doneData);
+    const ttfbMs = extractFiniteNumberFromDoneData(doneData, 'ttfbMs');
+    const rotationSlot = extractFiniteNumberFromDoneData(
+      doneData,
+      'rotationSlot'
+    );
     const routeDecision = extractRouteDecisionFromDoneData(doneData);
     const assistantPlan = extractAssistantPlanFromDoneData(doneData);
     const assistantResult = extractAssistantResultFromDoneData(doneData);
@@ -438,8 +461,12 @@ export function handleStreamDataPart(
       ...(analysisMode && { analysisMode }),
       ...(evidenceCards && { evidenceCards }),
       ...(retrieval && { retrieval }),
+      ...(provider && { provider }),
+      ...(modelId && { modelId }),
       ...(typeof usedFallback === 'boolean' && { usedFallback }),
       ...(fallbackReason && { fallbackReason }),
+      ...(typeof ttfbMs === 'number' && { ttfbMs }),
+      ...(typeof rotationSlot === 'number' && { rotationSlot }),
       ...(routeDecision && { routeDecision }),
       ...(assistantPlan && { assistantPlan }),
       ...(assistantResult && { assistantResult }),
@@ -459,8 +486,12 @@ export function handleStreamDataPart(
       analysisMode ||
       evidenceCards ||
       retrieval ||
+      provider ||
+      modelId ||
       typeof usedFallback === 'boolean' ||
       fallbackReason ||
+      typeof ttfbMs === 'number' ||
+      typeof rotationSlot === 'number' ||
       routeDecision ||
       assistantPlan ||
       assistantResult ||

@@ -193,6 +193,8 @@ export interface ChatMessage {
     ttfbMs?: number;
     confidence?: number;
     error?: string;
+    /** Round-robin provider selection slot [0-3] for UI attribution */
+    rotationSlot?: number;
     /** Langfuse trace ID for observability correlation */
     traceId?: string;
     /** 분석 근거 정보 */

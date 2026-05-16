@@ -629,3 +629,51 @@ export function getEngineColor(engine: string): string {
   if (engine.includes('Streaming')) return 'text-blue-500';
   return 'text-gray-600';
 }
+
+// ============================================================================
+// Provider Attribution Helpers
+// ============================================================================
+
+export function getProviderDisplayName(provider: string): string {
+  const map: Record<string, string> = {
+    groq: 'Groq',
+    mistral: 'Mistral',
+    zai: 'Z.AI',
+    cerebras: 'Cerebras',
+    gemini: 'Gemini',
+    openrouter: 'OpenRouter',
+  };
+  return map[provider] ?? provider;
+}
+
+/**
+ * Extract short model name from full model ID.
+ * Examples:
+ *   "meta-llama/llama-4-scout-17b-16e-instruct" → "llama-4-scout"
+ *   "mistral-small-latest" → "mistral-small"
+ *   "glm-4-flash" → "glm-4-flash"
+ */
+export function getModelShortName(modelId: string): string {
+  // Extract the model part (after /)
+  const modelPart = modelId.split('/').pop() ?? modelId;
+
+  // Remove common suffixes
+  return modelPart
+    .replace(/-\d{2}e-instruct$/, '') // llama-4-scout-17b-16e-instruct → llama-4-scout-17b
+    .replace(/-latest$/, '') // mistral-small-latest → mistral-small
+    .replace(/-\d{8}$/, '') // Some models have date suffixes
+    .replace(/-17b$/, '') // Remove bit specification if alone
+    .replace(/-instruct$/, ''); // Remove trailing instruct if present alone
+}
+
+export function getProviderDotColor(provider: string): string {
+  const colors: Record<string, string> = {
+    groq: 'bg-orange-400',
+    mistral: 'bg-blue-400',
+    zai: 'bg-purple-400',
+    cerebras: 'bg-green-400',
+    gemini: 'bg-sky-400',
+    openrouter: 'bg-slate-400',
+  };
+  return colors[provider] ?? 'bg-slate-400';
+}

@@ -26,8 +26,10 @@ ADR은 “왜 그렇게 결정했는가”를 남기는 문서입니다.
 | [ADR-003](./adr-003-promql-vs-js-array-filtering.md) | PromQL vs JS Array Filtering |
 | [ADR-004](./adr-004-vercel-ai-sdk-over-langchain.md) | Vercel AI SDK over LangChain |
 | [ADR-005](./adr-005-routing-pattern-over-orchestrator-worker.md) | Routing Pattern 전환 (Orchestrator LLM 제거, 2026-05-16) |
+| [ADR-006](./adr-006-llm-provider-load-balancing.md) | LLM Provider Load Balancing — Round-Robin + Context Guard + 429 Cooldown (2026-05-16) |
 
-> ADR-005는 `Status: Accepted`이며 Q2 구현으로 Cloud Run request path에서 Orchestrator LLM을 제거하는 결정을 고정합니다.
+> ADR-005는 Q2 구현으로 Orchestrator LLM을 Direct Router로 대체한 결정을 고정합니다.
+> ADR-006은 에이전트별 고정 provider 순서(spider-web order)를 Round-Robin + 3-버킷 알고리즘으로 대체한 결정을 고정합니다. LiteLLM/Portkey 오픈소스 도입 검토 결과도 포함합니다.
 
 ## 새 ADR 작성 기준
 

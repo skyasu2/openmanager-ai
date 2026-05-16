@@ -110,9 +110,11 @@ import {
   invalidateProviderStatusCache,
   toggleProvider,
 } from './model-provider';
+import { resetRoundRobinCursor } from './agents/config/round-robin-provider-selector';
 
 describe('model-provider compatibility (SDK upgrades)', () => {
   beforeEach(() => {
+    resetRoundRobinCursor();
     invalidateProviderStatusCache();
     toggleProvider('cerebras', true);
     toggleProvider('groq', true);
@@ -146,14 +148,21 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(vision?.modelId).toBe('gemini-2.5-flash-lite');
   });
 
-  it('keeps Supervisor Groq-first and routes Verifier to long-context Mistral', () => {
-    expect(getSupervisorModel().provider).toBe('groq');
-    expect(getVerifierModel().provider).toBe('mistral');
+  it('rotates Supervisor and Verifier across the text provider mesh', () => {
+    const supervisor = getSupervisorModel();
+    const verifier = getVerifierModel();
+
+    expect(supervisor.provider).toBe('groq');
+    expect(supervisor.rotationSlot).toBe(0);
+    expect(verifier.provider).toBe('mistral');
+    expect(verifier.rotationSlot).toBe(1);
 
     toggleProvider('cerebras', false);
     invalidateProviderStatusCache();
 
-    expect(getVerifierModel().provider).toBe('mistral');
+    const nextVerifier = getVerifierModel();
+    expect(nextVerifier.provider).toBe('zai');
+    expect(nextVerifier.rotationSlot).toBe(2);
   });
 
   it('falls back to OpenRouter when Gemini is disabled', () => {

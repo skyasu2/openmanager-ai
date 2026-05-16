@@ -93,6 +93,47 @@ Cloud Run AI Engine
 | Direct routing에서 RCA/report 품질 회귀 발생 | Q3/NLQ N1 intentFrame trust 보강 또는 제한적 hybrid fallback 재검토 |
 | Cloud Run min-instances=1 같은 유료 운영이 허용됨 | cold start/latency 압박 완화, Orchestrator 유지 재검토 |
 
+## ADR-005 부록: Provider Selection 전략 — Round-Robin + Context Guard (2026-05-16)
+
+### 결정
+
+에이전트별 고정 provider 1차 순서(`Groq-first`, `Mistral-first`, `Z.AI-first` 등)를 **Round-Robin + Context Guard**로 대체한다.
+
+```text
+이전 (per-agent hardcoded):
+  Metrics Query → Groq → Z.AI → Mistral → Cerebras
+  Analyst       → Mistral → Groq → Z.AI → Cerebras
+  Reporter      → Z.AI → Mistral → Groq → Cerebras
+  Advisor       → Mistral → Z.AI → Groq → Cerebras
+
+이후 (Round-Robin + Context Guard):
+  모든 텍스트 에이전트 → selectRoundRobinProviderOrder(minContextTokens)
+  rotation pool: [Groq, Mistral, Z.AI, Cerebras] (모듈 레벨 커서 순환)
+  context guard: minContextTokens 미충족 provider를 후미로 이동 (제외 X)
+```
+
+### 근거
+
+| 이유 | 설명 |
+|------|------|
+| 쿼터 자동 분산 | 4개 free-tier provider에 RPD/RPM 쿼터가 균등 분산됨. 단일 provider 과부하 방지 |
+| 유지보수 단순화 | provider 추가/제거 시 per-agent 순서 배열을 여러 곳에서 수정하지 않아도 됨 |
+| Cerebras gpt-oss-120b 활용 | 65K context 제공으로 llama3.1-8b 시절의 short-context 제약 해소. rotation 동등 후보 |
+| 사용자 attribution | `rotationSlot` 반환으로 UI에서 어떤 provider가 응답했는지 chip 형태로 표시 |
+
+### 트레이드오프
+
+| 얻는 것 | 잃는 것 |
+|---------|---------|
+| 쿼터 자동 분산, 단일 provider 병목 완화 | 특정 에이전트에 적합한 provider를 우선배치하는 최적화 포기 |
+| provider 추가 시 `ROTATION_POOL`만 수정하면 모든 에이전트 적용 | 동시 호출이 많을 때 커서 충돌 가능성 (현재 트래픽 수준에서 무시 가능) |
+| UI attribution으로 provider 투명성 확보 | Z.AI 실제 RPM 한도 미검증 (보수적 5 RPM 가정 유지) |
+
+### 남은 gap
+
+- **실시간 429 cooldown**: circuit breaker는 있지만 연속 429 응답을 즉시 60초 cooldown으로 처리하는 usage-aware 로직은 미구현. 트래픽 증가 시 추가 검토.
+- **Z.AI 실제 RPM 확인**: 현재 5 RPM 보수적 가정. 실제 계정 한도 확인 후 `CONTEXT_WINDOW` 테이블에 반영 필요.
+
 ## 구현 참조
 
 - N0~N4 구현 기록: `reports/planning/archive/nlq-preprocessing-redesign-plan.md`
@@ -101,3 +142,5 @@ Cloud Run AI Engine
 - Direct Router: `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-direct-routing.ts`
 - Multi-agent execution entrypoint: `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
 - Front frame 전달: `src/hooks/ai/core/createHybridChatTransport.ts`
+- Round-Robin selector: `cloud-run/ai-engine/src/services/ai-sdk/agents/config/round-robin-provider-selector.ts`
+- Provider attribution chip: `src/components/ai/analysis-basis/ProviderAttributionChip.tsx`

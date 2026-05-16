@@ -142,7 +142,7 @@ export abstract class BaseAgent {
       };
     }
 
-    const { model, provider, modelId } = modelResult;
+    const { model, provider, modelId, rotationSlot } = modelResult;
     const maxOutputTokens = resolveMaxOutputTokens(opts, provider, agentName);
     const loopSettings = buildAgentLoopSettings(agentName, 'tool-loop-agent', {
       maxSteps: options.maxSteps,
@@ -257,6 +257,7 @@ export abstract class BaseAgent {
           finishReason,
           fallbackUsed,
           fallbackReason,
+          ...(typeof rotationSlot === 'number' && { rotationSlot }),
           ...(retrievalMetadata && { retrieval: retrievalMetadata }),
         },
         ...(ragSources.length > 0 && { ragSources }),
@@ -306,7 +307,7 @@ export abstract class BaseAgent {
       return;
     }
 
-    const { model, provider, modelId } = modelResult;
+    const { model, provider, modelId, rotationSlot } = modelResult;
     const maxOutputTokens = resolveMaxOutputTokens(opts, provider, agentName);
     const loopSettings = buildAgentLoopSettings(agentName, 'tool-loop-agent', {
       maxSteps: options.maxSteps,
@@ -438,6 +439,7 @@ export abstract class BaseAgent {
               loopSettings,
               steps?.length ?? 0
             ),
+            ...(typeof rotationSlot === 'number' && { rotationSlot }),
           },
         },
       };

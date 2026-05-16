@@ -28,6 +28,7 @@ import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import { buildAssistantAnalysisBasis } from './evidence-source-helpers';
 import type {
   DeferredToolResult,
+  MessageMetadata,
   RagSource,
 } from './message-transform-internals';
 import {
@@ -125,7 +126,7 @@ export function transformUIMessageToEnhanced(
     message.role === 'assistant'
       ? options.deferredAssistantMetadataByMessageId?.[message.id]
       : undefined;
-  const metadata = mergeMessageMetadata(
+  const metadata: MessageMetadata | undefined = mergeMessageMetadata(
     getMessageMetadata(message),
     deferredMessageMetadata
   );
@@ -324,6 +325,9 @@ export function transformUIMessageToEnhanced(
             }),
             ...(typeof metadata?.ttfbMs === 'number' && {
               ttfbMs: metadata.ttfbMs,
+            }),
+            ...(typeof metadata?.rotationSlot === 'number' && {
+              rotationSlot: metadata.rotationSlot,
             }),
             ...(assistantResponseView && {
               assistantResponseView,

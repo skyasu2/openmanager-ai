@@ -432,12 +432,14 @@ async function executeSupervisorAttempt(
   let provider: ProviderName;
   let modelId: string;
   let model;
+  let rotationSlot: number | undefined;
 
   try {
     const modelResult = getSupervisorModel(excludeProviders);
     model = modelResult.model;
     provider = modelResult.provider;
     modelId = modelResult.modelId;
+    rotationSlot = modelResult.rotationSlot;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error('❌ [Supervisor] No available providers:', errorMessage);
@@ -696,6 +698,7 @@ async function executeSupervisorAttempt(
           latencyTier: finalQuality.latencyTier,
           finalAgent: qualityAgentName,
           traceId: trace.id,
+          ...(typeof rotationSlot === 'number' && { rotationSlot }),
           ...(toolResultSummaries.length > 0 && {
             toolResultSummaries,
           }),

@@ -255,6 +255,7 @@ describe('connectAsyncQuerySSE', () => {
         usedFallback: true,
         fallbackReason: 'empty_response',
         ttfbMs: 1520,
+        rotationSlot: 1,
         routeDecision: {
           intent: 'job',
           executionPath: 'job',
@@ -357,6 +358,7 @@ describe('connectAsyncQuerySSE', () => {
       usedFallback: true,
       fallbackReason: 'empty_response',
       ttfbMs: 1520,
+      rotationSlot: 1,
       routeDecision: {
         intent: 'job',
         executionPath: 'job',

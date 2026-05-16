@@ -27,14 +27,14 @@ import {
 } from '../../model-provider-core';
 import { checkProviderStatus } from '../../model-provider-status';
 import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
-import { METRICS_QUERY_AGENT_NAME } from '../../../../core/assistant-runtime/agent-name-compat';
-import { getAgentProviderOrder } from './agent-runtime-policy';
+import { selectRoundRobinProviderOrder } from './round-robin-provider-selector';
 
 export interface ModelResult {
   model: LanguageModel;
   provider: ProviderName;
   modelId: string;
   capabilities: ModelCapabilities;
+  rotationSlot?: number;  // Round-robin slot for UI attribution
 }
 
 // ============================================================================
@@ -91,6 +91,8 @@ interface SelectTextModelOptions {
   cbPrefix?: string;
   /** Minimum capabilities required by the caller */
   requiredCapabilities?: ModelCapabilityRequirements;
+  /** Round-robin slot for attribution (optional, from round-robin selector) */
+  rotationSlot?: number;
 }
 
 /**
@@ -109,6 +111,7 @@ export function selectTextModel(
     excludeProviders = [],
     cbPrefix,
     requiredCapabilities = {},
+    rotationSlot,
   } = options;
   const status = checkProviderStatus();
   const excluded = new Set<string>(excludeProviders);
@@ -151,6 +154,7 @@ export function selectTextModel(
           provider,
           modelId,
           capabilities,
+          ...(typeof rotationSlot === 'number' && { rotationSlot }),
         };
       } catch {
         const nextModel = modelIds[modelIds.indexOf(modelId) + 1];
@@ -180,49 +184,63 @@ export function selectTextModel(
 }
 
 // ============================================================================
-// Per-Agent Model Selectors (1-line delegation)
+// Per-Agent Model Selectors (Round-Robin Delegation)
 // ============================================================================
 
 /**
- * Metrics Query model: Groq → Z.AI → Mistral → Cerebras(short-context only)
+ * Metrics Query model: Round-robin with 16K context guard
  */
 export function getNlqModel(): ModelResult | null {
-  return selectTextModel(
-    METRICS_QUERY_AGENT_NAME,
-    getAgentProviderOrder(METRICS_QUERY_AGENT_NAME),
-    {
-      requiredCapabilities: {
-        requireToolCalling: true,
-        minContextTokens: 16_000,
-      },
-    }
-  );
+  const { providerOrder, rotationSlot } = selectRoundRobinProviderOrder(16_000);
+  return selectTextModel('Metrics Query Agent', providerOrder, {
+    requiredCapabilities: {
+      requireToolCalling: true,
+      minContextTokens: 16_000,
+    },
+    rotationSlot,
+  });
 }
 
 /**
- * Analyst model: Mistral → Groq → Z.AI → Cerebras(short-context only)
+ * Analyst model: Round-robin with 32K context guard
  */
 export function getAnalystModel(): ModelResult | null {
-  return selectTextModel('Analyst Agent', getAgentProviderOrder('Analyst Agent'), {
+  const { providerOrder, rotationSlot } = selectRoundRobinProviderOrder(32_000);
+  return selectTextModel('Analyst Agent', providerOrder, {
     requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
+    rotationSlot,
   });
 }
 
 /**
- * Reporter model: Z.AI → Mistral → Groq → Cerebras(short-context only)
+ * Reporter model: Round-robin with 32K context guard
  */
 export function getReporterModel(): ModelResult | null {
-  return selectTextModel('Reporter Agent', getAgentProviderOrder('Reporter Agent'), {
+  const { providerOrder, rotationSlot } = selectRoundRobinProviderOrder(32_000);
+  return selectTextModel('Reporter Agent', providerOrder, {
     requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
+    rotationSlot,
   });
 }
 
 /**
- * Advisor model: Mistral → Z.AI → Groq → Cerebras(short-context only)
+ * Advisor model: Round-robin with 32K context guard
  */
 export function getAdvisorModel(): ModelResult | null {
-  return selectTextModel('Advisor Agent', getAgentProviderOrder('Advisor Agent'), {
+  const { providerOrder, rotationSlot } = selectRoundRobinProviderOrder(32_000);
+  return selectTextModel('Advisor Agent', providerOrder, {
     requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
+    rotationSlot,
+  });
+}
+
+/**
+ * Supervisor model: Round-robin with 8K context guard (default)
+ */
+export function getSupervisorModel(): ModelResult | null {
+  const { providerOrder, rotationSlot } = selectRoundRobinProviderOrder(8_000);
+  return selectTextModel('Supervisor', providerOrder, {
+    rotationSlot,
   });
 }
 
