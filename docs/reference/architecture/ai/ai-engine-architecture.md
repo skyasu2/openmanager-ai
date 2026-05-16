@@ -163,7 +163,13 @@ Near-term priority is the destructive T5 only after user approval, followed by T
 ### 2.2. Router-first 실행 구조 (CrewAI / AutoGen 대비)
 - CrewAI 문서는 `crews/flows` 중심으로 memory, state, persist execution, resume long-running workflow 등을 제공한다고 설명합니다.
 - AutoGen 문서는 conversational single/multi-agent 애플리케이션과 event-driven multi-agent 시스템 구축을 주요 시나리오로 제시합니다.
-- OpenManager는 서버 운영 질의에서 지연 시간과 토큰 사용량의 예측 가능성을 우선하여, **Orchestrator(의도/라우팅) → 전문 Agent(실행)** 구조를 기본값으로 유지합니다. 이는 범용 우위 주장이라기보다, 현재 도메인과 비용 제약(Free Tier)에서의 운영 선택입니다.
+- OpenManager는 서버 운영 질의에서 지연 시간과 토큰 사용량의 예측 가능성을 우선하여, 현재는 **deterministic/single-first + 조건부 Orchestrator-Worker multi-agent** 구조를 유지합니다. 이는 범용 우위 주장이라기보다, 현재 도메인과 비용 제약(Free Tier)에서의 운영 선택입니다.
+
+> **[ADR-005, 2026-05-16]** Orchestrator-Worker 축소와 Routing + Tool-Loop Agent 전환은 Proposed 상태의 구조 검토입니다.
+> 확정된 현재 작업은 (1) Vercel BFF의 NLQ `intentFrame`을 Cloud Run `selectExecutionMode()`가 신뢰하도록 만드는 N1, (2) Orchestrator LLM을 Groq-last/provider budget 기반으로 줄이는 Q1입니다.
+> Orchestrator LLM 완전 제거와 전문 에이전트 직접 dispatch는 별도 SDD와 회귀 검증이 필요합니다.
+> 검토 문서: [ADR-005](../../../adr/adr-005-routing-pattern-over-orchestrator-worker.md)
+> 구현 계획: `reports/planning/nlq-preprocessing-redesign-plan.md` N1, `reports/planning/provider-quota-rebalance-plan.md` Q1
 
 ### 2.3. OpenAI Swarm / Agents SDK와의 관계
 - OpenAI `swarm` 저장소는 현재 Agents SDK로 대체되었고, production use case는 Agents SDK 사용을 권장합니다.

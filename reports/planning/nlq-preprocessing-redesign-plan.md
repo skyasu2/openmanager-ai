@@ -1,8 +1,8 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-16 (N4 streaming output filter 구현 반영)
-> Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture,stream-filter,best-practice-gap
+> Last reviewed: 2026-05-16 (Vercel→Cloud Run 라우팅 전환 범위 보정)
+> Tags: ai,nlq,routing,security,query-guard,intent-frame,log-input,architecture,stream-filter,best-practice-gap,redis,ai-sdk-routing
 
 # NLQ Pre-processing Redesign Plan
 
@@ -235,6 +235,98 @@ Client는 `blocked: true`를 받으면 clarification을 열지 않고 전송을 
 
 ---
 
+## Vercel → Cloud Run 아키텍처 컨텍스트
+
+### 전체 요청 흐름 (N0~N4 완료 기준)
+
+```
+Browser
+  └─ ChatInputArea (N0: maxLength=10,000)
+        ↓ HTTPS
+Vercel BFF (Node.js)
+  ├─ withRateLimit (Upstash Redis-first → in-memory fallback)
+  ├─ withAuth
+  ├─ [N2] QueryGuard — 결정론적 공격/유형 탐지 (Groq 호출 전)
+  ├─ [N1] Front NLQ LLM — intentFrame + executionMode 생성
+  ├─ intentFrame + inputType → request body 포함
+  └─ HTTPS POST → Cloud Run AI Engine
+        ↓
+Cloud Run AI Engine
+  ├─ Upstash Redis — provider quota 원자적 예약 (Lua EVAL)
+  ├─ [N1] selectExecutionMode() — intentFrame.confidence >= 0.8이면 우선
+  ├─ [N3] inputType='log_paste' → multi 강제 + logExtract 컨텍스트 주입
+  └─ 현재 multi-agent runtime 유지
+       ├─ Q1: Orchestrator Groq-last + 호출 예산 축소
+       └─ 후보: ADR-005 직접 routing 전환은 별도 SDD 필요
+        ↓
+Vercel BFF (stream/v2)
+  └─ [N4] StreamOutputFilter (pipeThrough) → Browser SSE
+```
+
+### AI SDK Routing 패턴과 이번 계획의 관계
+
+[AI SDK Workflow Patterns](https://ai-sdk.dev/docs/agents/workflows)는 `Routing`과 `Orchestrator-Worker`를 별도 workflow pattern으로 설명한다. 또한 [AI SDK Agents Overview](https://ai-sdk.dev/docs/agents/overview)는 반복 tool 사용에는 `ToolLoopAgent`를, 명시적 제어 흐름이 필요하면 structured workflow pattern을 사용하라고 설명한다.
+
+이번 N1 범위는 **Routing Pattern 전면 전환이 아니라 routing signal 신뢰 연결**이다. 즉, Front NLQ LLM이 만든 `intentFrame.executionMode`를 Cloud Run `selectExecutionMode()`의 primary signal로 쓰고, 기존 regex는 낮은 confidence/legacy fallback으로만 남긴다.
+
+| 구분 | 이번 계획에서 확정된 범위 | 별도 판단 필요 |
+|------|--------------------------|----------------|
+| Front intent/entity LLM | N1-0 provider fit check 후 `intentFrame` 계약 유지 | Groq 외 provider 전환 여부 |
+| Cloud Run mode selection | N1에서 `intentFrame.confidence >= 0.8` 신뢰 | specialist 직접 dispatch까지 확대할지 |
+| Orchestrator 비용 절감 | Provider Quota Plan Q1에서 Groq-last + LLM call budget 적용 | Orchestrator LLM 완전 제거 |
+| Agent 실행 구조 | 기존 Metrics Query / Analyst / Reporter / Advisor 유지 | Routing + Tool-Loop Agent 전면 전환 |
+
+QueryGuard(N2)는 routing classifier가 아니다. 공격 패턴, 길이, `log_paste` 같은 입력 형태만 얕게 분류한다. 한국어/영어 자연어 intent, 오타, 문맥 생략은 Front NLQ LLM이 처리하고, Cloud Run은 confidence와 schema를 검증해 신뢰 여부를 결정한다.
+
+### ADR-005 범위 정정
+
+`ADR-005`는 "Orchestrator LLM 제거"를 현재 구현으로 선언하지 않는다. 현재 코드에는 `decomposeTask()`와 Orchestrator LLM routing이 남아 있고, N1의 직접 목표도 `selectExecutionMode()`의 intentFrame 신뢰다.
+
+따라서 단계는 아래처럼 분리한다.
+
+| 단계 | 상태 | 목적 |
+|------|------|------|
+| N1 | Approved/In Progress | Front NLQ LLM 결과를 Cloud Run mode selection에 반영 |
+| Q1 | Approved | Orchestrator provider order를 Groq-last로 바꾸고 불필요한 decomposition/routing 이중 호출을 줄임 |
+| ADR-005 직접 routing 전환 | Proposed | Orchestrator LLM 제거와 specialist 직접 dispatch의 비용/품질/회귀 위험을 별도 SDD로 검증 |
+
+이 분리는 사용자가 지적한 제약과도 일치한다. 앞단을 ML 수준 heuristic으로 키우는 것은 Vercel/Cloud Run 사용량과 유지보수성을 동시에 악화시키고, 반대로 단순 regex만으로는 한국어/영어 표현 변형을 감당하기 어렵다. 이 계획은 그 중간 지점인 "얕은 deterministic guard + 작은 front LLM + Cloud Run confidence gate"를 채택한다.
+
+### Redis 사용 현황 — 양쪽 모두 Upstash 연결 확인
+
+Vercel과 Cloud Run은 동일한 Upstash Redis 인스턴스를 공유한다 (HTTP REST API, `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`).
+
+**Vercel BFF 현재 사용처**:
+
+| 용도 | 파일 | 비고 |
+|------|------|------|
+| Rate limiting | `src/lib/security/rate-limiter.ts` | Redis-first + in-memory fallback. `aiAnalysis`: 10 req/min / 100 req/day |
+| Resumable stream | `src/lib/ai/upstash-resumable-context.ts` | SSE stream ID 저장, 재연결 시 복구 |
+| AI response cache | `src/lib/ai/ai-cache.ts` | supervisor, status endpoint |
+
+**Cloud Run AI Engine 현재 사용처**:
+
+| 용도 | 파일 | 비고 |
+|------|------|------|
+| Provider quota 추적 | `src/services/resilience/quota-store-redis.ts` | Lua EVAL 원자적 예약/조정. `ai:quota:{provider}:{date}` 키 |
+| Provider cooldown | 동일 | 쿼터 초과 시 TTL 기반 cooldown 키 설정 |
+| Rate limiting | `src/middleware/rate-limiter.ts` | Cloud Run 자체 rate limit |
+| Session memory | `src/services/ai-sdk/session-memory.ts` | 대화 컨텍스트 Redis 저장 |
+| Circuit Breaker | `src/lib/redis-client.ts` | 3회 연속 실패 시 30초 open → in-memory fallback 자동 전환 |
+
+**Redis 신규 활용 가능성 평가**:
+
+| 활용 방안 | 타당성 | 이유 |
+|----------|--------|------|
+| NLQ intentFrame 결과 캐시 | ⚠️ 제한적 | 동일 쿼리가 재입력되는 빈도가 낮음. cache key = hash(query)이나 자연어는 변형이 많아 hit율 저조 예상. 현재 범위 제외 |
+| Vercel → Cloud Run 요청 큐 | ❌ 불필요 | HTTP proxy 방식이 이미 신뢰성 확보. Redis 큐는 비동기 Job Queue에만 필요한데 현재 202 Job Queue 경로는 별도 존재 |
+| Cloud Run 응답 결과 캐시 | ⚠️ 선택적 | 동일 deterministic 쿼리(서버 목록, 현재 메트릭 조회 등)는 Redis TTL 60s 캐시 가능. `getAICache()` 구조 이미 존재. 이번 범위 제외 — 별도 캐시 계획에서 다룸 |
+| intentFrame을 Redis에 저장해 Cloud Run에서 읽기 | ❌ 불필요 | HTTP request body에 포함시키는 현재 방식이 더 단순하고 latency 낮음. Redis 경유 시 TTL 관리 복잡성 추가 |
+
+**결론**: Redis는 이미 Vercel과 Cloud Run 양쪽에서 완전히 연결되어 사용 중이다. 이번 N0~N4 계획 범위에서 새 Redis 활용이 필요한 항목은 없으며, 기존 구조(rate limiting, quota tracking, resumable stream)가 유지된다.
+
+---
+
 ## 무료 티어 영향 분석
 
 | 플랫폼 | 영향 | 판정 |
@@ -242,7 +334,7 @@ Client는 `blocked: true`를 받으면 clarification을 열지 않고 전송을 
 | Groq | metric_peak fast-path 제거 → 소수 케이스가 LLM 경유 전환. 500K TPD 대비 무시 | ✅ |
 | Vercel | NLQ route에 로컬 QueryGuard 추가, LLM 호출 수 변경 없음 | ✅ |
 | Cloud Run | selectExecutionMode() 단순화. LLM 추가 호출 없음 | ✅ |
-| Upstash Redis | 변경 없음 | ✅ |
+| Upstash Redis | 변경 없음 (기존 rate limiting/quota/resumable 유지) | ✅ |
 | Vercel (N4) | stream/v2 응답에 chunk 스캔 추가. 단순 regex 적용이므로 레이턴시 영향 미미 | ✅ |
 
 ---
