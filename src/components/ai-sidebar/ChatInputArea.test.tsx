@@ -215,6 +215,99 @@ describe('ChatInputArea popover', () => {
     expect(screen.getByText('곧 한도 도달')).toBeInTheDocument();
   });
 
+  it('caps the chat textarea at the backend input limit', () => {
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue=""
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.getByRole('textbox', { name: 'AI 질문 입력' })
+    ).toHaveAttribute('maxlength', '10000');
+  });
+
+  it('shows character usage warning before the input hard cap', () => {
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue={'a'.repeat(8000)}
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('입력 8,000/10,000자')).toHaveClass(
+      'text-amber-700'
+    );
+  });
+
+  it('shows hard cap guidance when the input reaches 10,000 characters', () => {
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue={'a'.repeat(10_000)}
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('입력 10,000/10,000자')).toHaveClass(
+      'text-red-700'
+    );
+    expect(
+      screen.getByText('최대 입력 길이에 도달했습니다')
+    ).toBeInTheDocument();
+  });
+
   it('shows a new conversation hint when the session limit is reached', () => {
     render(
       <ChatInputArea
