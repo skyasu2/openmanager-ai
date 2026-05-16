@@ -112,19 +112,15 @@ function Home() {
         className="container relative z-10 mx-auto px-4 pt-8 sm:px-6"
       >
         <div className="mb-12 text-center">
-          <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl">
+          <h1 className="mb-3 text-3xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
             <span className="text-white">OpenManager</span>{' '}
             <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
           </h1>
-          <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/90 md:text-lg">
-            <span className="block font-medium text-white">
-              운영 데이터를 질문, 분석, 조치안으로 바로 연결하는 모니터링
-              워크플로
-            </span>
-            <span className="mt-2 block text-sm text-white/75">
-              그래프를 해석하는 대신 지금 무슨 일이 벌어지는지 바로 묻고 답을
-              받을 수 있습니다
-            </span>
+          <p className="mb-2 text-lg font-semibold text-white sm:text-xl md:text-2xl">
+            서버 운영을 AI에게 묻다
+          </p>
+          <p className="text-sm text-white/55">
+            18대 서버 · OTel 데이터 기반 포트폴리오 프로젝트
           </p>
         </div>
 

@@ -212,13 +212,13 @@ export default function FeatureCardModal({
               </p>
             </div>
           ) : (
-            <div className="mb-8 text-center">
+            <div className="mb-6 text-center">
               <div
-                className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center`}
+                className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center shadow-lg`}
               >
                 <Icon className="h-8 w-8 text-white" />
               </div>
-              <h3 className="mb-3 text-2xl font-bold">
+              <h3 className="text-2xl font-bold">
                 {renderTextWithAIGradient(title)}
                 {/* 바이브 코딩 카드 전용 뷰 표시 */}
                 {cardData.id === 'vibe-coding' && (
@@ -229,19 +229,13 @@ export default function FeatureCardModal({
                   </span>
                 )}
               </h3>
-              <p
-                id="modal-description"
-                className="mx-auto max-w-2xl text-sm text-gray-300"
-              >
+              {/* overview 텍스트 — 스크린리더 전용 (시각 영역에서 제거) */}
+              <p id="modal-description" className="sr-only">
                 {cardData.id === 'vibe-coding'
                   ? vibeView === 'history'
                     ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
-                    : parseMarkdownLinks(
-                        sanitizeModalText(detailedContent.overview)
-                      )
-                  : parseMarkdownLinks(
-                      sanitizeModalText(detailedContent.overview)
-                    )}
+                    : sanitizeModalText(detailedContent.overview)
+                  : sanitizeModalText(detailedContent.overview)}
               </p>
             </div>
           )}
