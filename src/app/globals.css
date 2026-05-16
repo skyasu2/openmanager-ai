@@ -93,11 +93,11 @@
   /* Custom max-widths */
   --max-width-tooltip: 200px;
 
-  /* 로컬 dev/build에서 remote font fetch를 피하기 위해 CSS stack만 사용 */
+  /* next/font/google로 self-host → 빌드 시 다운로드, 런타임 외부 요청 없음 */
   /* Tailwind v4: --font-family-sans가 font-sans 유틸리티와 연결됨 */
-  --font-family-sans: 'Inter', 'Noto Sans KR', ui-sans-serif, system-ui,
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, 'Noto Sans', sans-serif;
+  --font-family-sans: var(--font-noto-sans-kr), 'Noto Sans KR', ui-sans-serif,
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;

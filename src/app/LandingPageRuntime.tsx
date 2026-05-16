@@ -112,14 +112,14 @@ function Home() {
         className="container relative z-10 mx-auto px-4 pt-8 sm:px-6"
       >
         <div className="mb-12 text-center">
-          <h1 className="mb-3 text-3xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
             <span className="text-white">OpenManager</span>{' '}
             <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
           </h1>
-          <p className="mb-2 text-lg font-semibold text-white sm:text-xl md:text-2xl">
+          <p className="mb-2 text-lg font-light tracking-wide text-white/90 sm:text-xl md:text-2xl">
             서버 운영을 AI에게 묻다
           </p>
-          <p className="text-sm text-white/55">
+          <p className="text-xs tracking-widest text-white/45 sm:text-sm">
             18대 서버 · OTel 데이터 기반 포트폴리오 프로젝트
           </p>
         </div>
