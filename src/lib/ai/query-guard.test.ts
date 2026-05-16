@@ -14,7 +14,6 @@ describe('runQueryGuard', () => {
     expect(result).toMatchObject({
       verdict: 'block',
       inputType: 'natural_query',
-      confidence: undefined,
       blockReason: 'prompt_injection_high',
       truncated: false,
     });

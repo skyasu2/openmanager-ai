@@ -25,7 +25,7 @@ export const MAX_OUTPUT_LENGTH = 50000;
  * @security ReDoS 방지를 위해 값 부분을 `[^\s]{1,100}`으로 제한
  */
 export const SENSITIVE_PATTERNS = [
-  /(api[_-]?key|apikey)\s*[=:]\s*['"]?[^\s'"]{1,100}['"]?/gi,
+  /(api[\s_-]?key|apikey)\s*[=:]\s*['"]?[^\s'"]{1,100}['"]?/gi,
   /(token|bearer)\s*[=:]\s*['"]?[^\s'"]{1,100}['"]?/gi,
   /(password|passwd|pwd)\s*[=:]\s*['"]?[^\s'"]{1,100}['"]?/gi,
   /(secret|private[_-]?key)\s*[=:]\s*['"]?[^\s'"]{1,100}['"]?/gi,

@@ -623,6 +623,21 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
 
         if (clarificationRequest || shouldExtractSemanticIntentFrame(query)) {
           const entities = await extractEntitiesCached(query);
+          if (entities.blocked) {
+            setState((prev) => ({
+              ...prev,
+              isLoading: false,
+              error:
+                entities.message ??
+                '입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다. 다른 표현으로 다시 시도해주세요.',
+              errorDetails: null,
+              clarification: null,
+              warmingUp: false,
+              estimatedWaitSeconds: 0,
+            }));
+            return;
+          }
+
           if (refs.semanticIntentFrame) {
             refs.semanticIntentFrame.current = entities.intentFrame;
           }

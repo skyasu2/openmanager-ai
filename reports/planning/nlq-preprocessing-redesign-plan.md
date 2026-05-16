@@ -400,11 +400,11 @@ async function postHandler(request: NextRequest) {
 - `src/app/api/ai/supervisor/security.ts` — import 재사용, 수정 없음
 
 **태스크**:
-- [ ] **N2-1**: `query-guard.ts` 신규 — `runQueryGuard()` + 입력 유형 분류
-- [ ] **N2-2**: 로그 추출 헬퍼 `extractRelevantLogLines()`
-- [ ] **N2-3**: 로그 요약 prompt 빌더 `buildLogSummaryPrompt()`
-- [ ] **N2-4**: NLQ route에 guard 적용
-- [ ] **N2-5**: `query-guard.test.ts` — 공격/로그/혼합/정상/장문 케이스
+- [x] **N2-1**: `query-guard.ts` 신규 — `runQueryGuard()` + 입력 유형 분류
+- [x] **N2-2**: 로그 추출 헬퍼 `extractRelevantLogLines()`
+- [x] **N2-3**: 로그 요약 prompt 빌더 `buildLogSummaryPrompt()`
+- [x] **N2-4**: NLQ route에 guard 적용
+- [x] **N2-5**: `query-guard.test.ts` — 공격/로그/혼합/정상/장문 케이스
 
 ---
 

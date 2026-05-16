@@ -29,6 +29,11 @@ import {
   SEMANTIC_TIME_WINDOWS,
   SYSTEM_PROMPT,
 } from '@/lib/ai/entity-extractor';
+import {
+  BLOCKED_INPUT_MESSAGE,
+  buildLogSummaryPrompt,
+  runQueryGuard,
+} from '@/lib/ai/query-guard';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
@@ -72,7 +77,25 @@ async function postHandler(request: NextRequest) {
     return NextResponse.json({ confidence: 0 }, { status: 400 });
   }
 
-  const localEntities = extractLocalSemanticEntities(query);
+  const guard = runQueryGuard(query);
+  if (guard.verdict === 'block') {
+    return NextResponse.json(
+      {
+        confidence: 0,
+        blocked: true,
+        blockReason: guard.blockReason,
+        message: BLOCKED_INPUT_MESSAGE,
+      },
+      { status: 200 }
+    );
+  }
+
+  const queryForLLM =
+    guard.inputType === 'log_paste' || guard.inputType === 'mixed'
+      ? buildLogSummaryPrompt(guard.logExtract ?? '', guard.sanitizedQuery)
+      : guard.sanitizedQuery;
+
+  const localEntities = extractLocalSemanticEntities(guard.sanitizedQuery);
   if (localEntities) {
     return NextResponse.json(localEntities);
   }
@@ -81,7 +104,7 @@ async function postHandler(request: NextRequest) {
     const { output } = await generateText({
       model: groq(GROQ_TEXT_MODEL_ID),
       system: SYSTEM_PROMPT,
-      prompt: query,
+      prompt: queryForLLM,
       temperature: 0,
       maxOutputTokens: 160,
       output: Output.object({

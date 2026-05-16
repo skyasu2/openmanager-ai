@@ -395,7 +395,7 @@ describe('useQueryExecution', () => {
       blockReason: 'prompt_injection_high',
       message:
         '입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다. 다른 표현으로 다시 시도해주세요.',
-    } as any);
+    });
     const deps = createDeps();
 
     const { result } = renderHook(() => useQueryExecution(deps));

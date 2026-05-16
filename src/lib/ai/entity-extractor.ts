@@ -24,6 +24,12 @@ export interface ExtractedEntities {
   intentFrame?: SemanticIntentFrame;
   /** 추출 신뢰도 0-100 */
   confidence: number;
+  /** QueryGuard가 입력을 차단했는지 여부 */
+  blocked?: boolean;
+  /** 차단 원인 코드 */
+  blockReason?: string;
+  /** 사용자 표시용 차단 메시지 */
+  message?: string;
 }
 
 export const ENTITY_CONFIDENCE_THRESHOLD = 80;
@@ -341,6 +347,17 @@ export function normalizeExtractedEntities(data: unknown): ExtractedEntities {
 
   const raw = data as Record<string, unknown>;
   const confidence = clampConfidence(raw.confidence);
+  if (raw.blocked === true) {
+    return {
+      confidence,
+      blocked: true,
+      ...(typeof raw.blockReason === 'string' && {
+        blockReason: raw.blockReason,
+      }),
+      ...(typeof raw.message === 'string' && { message: raw.message }),
+    };
+  }
+
   const intentFrame = normalizeSemanticIntentFrame(raw.intentFrame);
 
   return {
