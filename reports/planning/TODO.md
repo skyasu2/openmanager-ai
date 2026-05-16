@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-16 KST (Routing & UX plan completed)
+**Last Updated**: 2026-05-16 KST (Routing & UX release deployed)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -36,7 +36,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| ~~Routing & UX 개선 — 오프도메인 경고 위임 + 보안 riskLevel 분화~~ | — | **완료** — `767acd026`로 high-only 차단, medium/low 경고 통과, off-domain 경고 위임을 구현하고 GitLab pipeline `2530042325` success 확인. 이어서 Direct Router/5 specialist agents, request guard 정책, Round-Robin provider flow를 아키텍처 문서와 ADR에 반영했다. 잔여 런타임 배포는 `v8.11.160` release/tag 판단으로 분리. 상세: [archive/routing-ux-improvement-plan.md](archive/routing-ux-improvement-plan.md) |
+| ~~Routing & UX 개선 — 오프도메인 경고 위임 + 보안 riskLevel 분화~~ | — | **완료** — `767acd026`로 high-only 차단, medium/low 경고 통과, off-domain 경고 위임을 구현하고 GitLab pipeline `2530042325` success 확인. 이어서 Direct Router/5 specialist agents, request guard 정책, Round-Robin provider flow를 아키텍처 문서와 ADR에 반영했다. `v8.11.160` release/tag pipeline `2530076991` success로 Vercel production과 Cloud Run `ai-engine-00477-fxw` 100% traffic 배포 완료. 상세: [archive/routing-ux-improvement-plan.md](archive/routing-ux-improvement-plan.md) |
 | ~~Provider runtime env sync — Z.AI/GLM 활성화 + Cerebras env drift 제거~~ | — | **완료** — Secret Manager `ai-providers-config` version 8에 `zai`를 안전 병합하고 Cloud Run `ai-engine-00476-hz2` revision을 100% traffic으로 적용했다. `/health.config.zai=true`, `CEREBRAS_MODEL_ID=gpt-oss-120b`, `ZAI_DEFAULT_MODEL=glm-4.5-flash` 확인. 재발 방지를 위해 `deploy.sh`/`cloudbuild.yaml` 기본값과 env 문서를 갱신했다. GitLab main pipeline `2530020344` success. 상세: [archive/provider-runtime-env-sync-plan.md](archive/provider-runtime-env-sync-plan.md) |
 | ~~NLQ EntitySchema provider compatibility fix~~ | — | **완료** — `/api/ai/nlq/extract-entities` structured-output schema를 required nullable 계약으로 정렬하고 top-level `metric/timeRange` provider drift를 normalizer 경계에서 흡수하도록 완충했다. `QA-20260516-0508`에서 Groq `llama-4-scout` 4/4 schema_valid·intent_accuracy·executionMode_accuracy 회복, Mistral `ministral-3b`는 4/4 schema_valid·intent_accuracy 및 3/4 executionMode_accuracy로 비교 기록. |
 | ~~NLQ front provider live 비교 QA~~ | — | **완료** — `QA-20260516-0507`에서 Groq/Mistral/Cerebras/Z.AI 후보를 provider당 4 fixture로 수동 smoke. Current schema 기준 Mistral `ministral-3b-latest`만 4/4 통과, strict required nullable schema 기준 Groq 3/4·Mistral `ministral-3b-latest` 4/4. 결론: production provider 전환보다 `NLQ EntitySchema provider compatibility fix`가 선행. |
