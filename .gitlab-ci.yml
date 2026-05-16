@@ -37,6 +37,7 @@
   - scripts/hooks/**/*
   - scripts/qa/**/*
   - scripts/release/**/*
+  - scripts/ai/check-ai-sdk-registry.sh
   - scripts/sync/**/*
   - scripts/test/**/*
   - scripts/ci/ai-engine-post-deploy-smoke.sh
@@ -79,6 +80,14 @@
   - src/app/**/*
   - package.json
   - package-lock.json
+  - .gitlab-ci.yml
+
+.ai_sdk_registry_paths: &ai_sdk_registry_paths
+  - package.json
+  - package-lock.json
+  - cloud-run/ai-engine/package.json
+  - cloud-run/ai-engine/package-lock.json
+  - scripts/ai/check-ai-sdk-registry.sh
   - .gitlab-ci.yml
 
 .frontend_deploy_paths: &frontend_deploy_paths
@@ -198,6 +207,22 @@ stages:
       when: on_success
     - when: never
 
+.ai_sdk_registry_changes: &ai_sdk_registry_changes
+  rules:
+    # QA 기록 커밋은 의존성 변경을 포함하지 않으므로 생략한다.
+    - if: '$CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: *ai_sdk_registry_paths
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes: *ai_sdk_registry_paths
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH'
+      changes: *ai_sdk_registry_paths
+      when: on_success
+    - when: never
+
 # deploy는 semver 태그(v*.*.*) push 시에만 실행한다.
 # 이유: 릴리스 케이던스(30커밋 or 1주)를 CI가 강제 보장하고,
 #       매 커밋 배포로 인한 runner 부하와 불필요한 Vercel 빌드를 방지한다.
@@ -301,6 +326,20 @@ validate_ai_engine:
     - npm run test
     - echo "✅ AI Engine validate 통과"
   timeout: 20 minutes
+  interruptible: true
+
+validate_ai_sdk_registry:
+  stage: validate
+  tags:
+    - wsl2-docker
+  <<: [*npm_cache, *ai_sdk_registry_changes]
+  before_script:
+    - npm ci --prefer-offline --cache .npm --no-audit
+  script:
+    - echo "▶ AI SDK registry/lockfile guard..."
+    - npm run check:ai-sdk
+    - echo "✅ AI SDK registry guard 통과"
+  timeout: 5 minutes
   interruptible: true
 
 validate_storybook_smoke:
