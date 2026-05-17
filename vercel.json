@@ -3,27 +3,6 @@
   "version": 2,
   "headers": [
     {
-      "source": "/api/mcp",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
-    },
-    {
       "source": "/api/ai/supervisor",
       "headers": [
         {
@@ -254,7 +233,7 @@
     }
   },
   "functions": {
-    "src/app/api/ai/supervisor/route.ts": { "memory": 1024, "maxDuration": 60 },
+    "src/app/api/ai/supervisor/route.ts": { "memory": 512, "maxDuration": 60 },
     "src/app/api/ai/supervisor/stream/v2/route.ts": {
       "memory": 512,
       "maxDuration": 60
@@ -265,6 +244,6 @@
     },
     "src/app/api/ai/jobs/route.ts": { "memory": 512, "maxDuration": 30 },
     "src/app/api/ai/*/route.ts": { "memory": 256, "maxDuration": 30 },
-    "src/app/api/*/route.ts": { "memory": 256 }
+    "src/app/api/*/route.ts": { "memory": 256, "maxDuration": 10 }
   }
 }
