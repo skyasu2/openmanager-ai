@@ -1,3 +1,4 @@
+import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import {
   type ArtifactReplayPack,
   compareArtifactReplayPacks,
@@ -7,11 +8,7 @@ import {
   readArtifactReplayPack,
   resolveArtifactSchemaEntry,
 } from './artifact-workspace-registry';
-import {
-  type ArtifactEnvelope,
-  type ChatArtifact,
-  createArtifactEnvelope,
-} from './types';
+import { type ArtifactEnvelope, createArtifactEnvelope } from './types';
 
 export const ARTIFACT_WORKSPACE_STORAGE_KEY = 'openmanager-artifact-workspace';
 export const ARTIFACT_WORKSPACE_STORE_VERSION = '2026-05-06-v1';
@@ -197,13 +194,15 @@ function toSafeFileSegment(value: string): string {
   );
 }
 
-function isSupportedChatArtifact(value: unknown): value is ChatArtifact {
+function isSupportedChatArtifact(
+  value: unknown
+): value is MonitoringChatArtifact {
   return listArtifactSchemaEntries().some((entry) => entry.isPayload(value));
 }
 
 function isSupportedArtifactEnvelope(
   value: unknown
-): value is ArtifactEnvelope {
+): value is ArtifactEnvelope<MonitoringChatArtifact> {
   if (!isRecord(value)) return false;
 
   const domainId = readString(value.domainId) ?? MONITORING_ARTIFACT_DOMAIN_ID;
@@ -222,8 +221,8 @@ function isSupportedArtifactEnvelope(
 
 function readLegacyArtifacts(
   metadata: ArtifactWorkspaceHistoryMetadata,
-  ignoredKinds: ReadonlySet<ChatArtifact['kind']>
-): ArtifactEnvelope[] {
+  ignoredKinds: ReadonlySet<MonitoringChatArtifact['kind']>
+): ArtifactEnvelope<MonitoringChatArtifact>[] {
   return [
     metadata.incidentReportArtifact,
     metadata.monitoringAnalysisArtifact,

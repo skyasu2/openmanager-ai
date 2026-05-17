@@ -2,8 +2,8 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { resolveArtifactExecutor } from '@/lib/ai/chat-artifacts/artifact-executor-registry';
 import type { ChatArtifactIntent } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
-import type { ChatArtifact } from '@/lib/ai/chat-artifacts/types';
 import { registerMonitoringArtifactExecutors } from '@/lib/ai/domains/monitoring/artifact-executors';
+import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import {
   buildArtifactErrorMetadata,
@@ -16,6 +16,8 @@ import {
 } from './chat-artifact-metadata';
 
 registerMonitoringArtifactExecutors();
+
+type ChatArtifact = MonitoringChatArtifact;
 
 type ExecutableChatArtifactIntent = Extract<
   ChatArtifactIntent,
@@ -202,7 +204,12 @@ async function generateChatArtifact({
       `Artifact executor returned no artifact: ${artifactIntent.kind}`
     );
   }
-  return artifact;
+  if (artifact.kind !== artifactIntent.kind) {
+    throw new Error(
+      `Artifact executor returned mismatched artifact kind: ${artifact.kind}`
+    );
+  }
+  return artifact as ChatArtifact;
 }
 
 function readArtifactFromMetadata(

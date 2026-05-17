@@ -1,3 +1,4 @@
+import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import {
   createArtifactReplayPack,
   MONITORING_ARTIFACT_DOMAIN_ID,
@@ -59,7 +60,7 @@ export function executeChatArtifact(
 ): Promise<ServerMonitoringAnalysisArtifact>;
 export async function executeChatArtifact(
   request: ExecuteChatArtifactRequest
-): Promise<ChatArtifact> {
+): Promise<MonitoringChatArtifact> {
   switch (request.kind) {
     case 'incident-report': {
       const { kind: _kind, ...artifactRequest } =

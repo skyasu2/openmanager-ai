@@ -1,14 +1,14 @@
+import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import {
   ARTIFACT_CONTRACT_VERSION,
   type ArtifactEnvelope,
   type ArtifactSourceMode,
-  type ChatArtifact,
 } from './types';
 
 export const MONITORING_ARTIFACT_DOMAIN_ID = 'openmanager-monitoring';
 export const ARTIFACT_REPLAY_PACK_VERSION = '2026-05-06-v1';
 
-export type ArtifactFamilyId = ChatArtifact['kind'];
+export type ArtifactFamilyId = MonitoringChatArtifact['kind'];
 
 export interface ArtifactReplayPolicy {
   persistence: 'local-session-first';
@@ -23,7 +23,7 @@ export interface ArtifactSchemaKeyInput {
 }
 
 export interface ArtifactSchemaEntry<
-  TArtifact extends ChatArtifact = ChatArtifact,
+  TArtifact extends MonitoringChatArtifact = MonitoringChatArtifact,
 > {
   domainId: string;
   familyId: ArtifactFamilyId;
@@ -44,14 +44,14 @@ export interface ArtifactReplayPackEntry {
   schema: {
     domainId: string;
     familyId: ArtifactFamilyId;
-    artifactKind: ChatArtifact['kind'];
+    artifactKind: MonitoringChatArtifact['kind'];
     artifactVersion: string;
   };
   generatedAt: string;
   sourceMode: ArtifactSourceMode;
   dataSlot?: string;
   traceId?: string;
-  payload: ChatArtifact;
+  payload: MonitoringChatArtifact;
 }
 
 export interface ArtifactReplayPack {
@@ -100,7 +100,7 @@ function isArtifactSourceMode(value: unknown): value is ArtifactSourceMode {
 
 function isIncidentReportArtifact(
   value: unknown
-): value is Extract<ChatArtifact, { kind: 'incident-report' }> {
+): value is Extract<MonitoringChatArtifact, { kind: 'incident-report' }> {
   return (
     isRecord(value) &&
     value.kind === 'incident-report' &&
@@ -111,7 +111,7 @@ function isIncidentReportArtifact(
 
 function isMonitoringAnalysisArtifact(
   value: unknown
-): value is Extract<ChatArtifact, { kind: 'monitoring-analysis' }> {
+): value is Extract<MonitoringChatArtifact, { kind: 'monitoring-analysis' }> {
   return (
     isRecord(value) &&
     value.kind === 'monitoring-analysis' &&
@@ -125,7 +125,10 @@ function isMonitoringAnalysisArtifact(
 
 function isServerMonitoringAnalysisArtifact(
   value: unknown
-): value is Extract<ChatArtifact, { kind: 'server-monitoring-analysis' }> {
+): value is Extract<
+  MonitoringChatArtifact,
+  { kind: 'server-monitoring-analysis' }
+> {
   return (
     isRecord(value) &&
     value.kind === 'server-monitoring-analysis' &&
@@ -144,7 +147,7 @@ function isServerMonitoringAnalysisArtifact(
 
 function isServerSnapshotArtifact(
   value: unknown
-): value is Extract<ChatArtifact, { kind: 'server-snapshot' }> {
+): value is Extract<MonitoringChatArtifact, { kind: 'server-snapshot' }> {
   return (
     isRecord(value) &&
     value.kind === 'server-snapshot' &&
@@ -162,7 +165,7 @@ function isServerSnapshotArtifact(
 
 function isOpsProcedureArtifact(
   value: unknown
-): value is Extract<ChatArtifact, { kind: 'ops-procedure' }> {
+): value is Extract<MonitoringChatArtifact, { kind: 'ops-procedure' }> {
   return (
     isRecord(value) &&
     value.kind === 'ops-procedure' &&

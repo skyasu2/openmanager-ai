@@ -47,6 +47,12 @@ export interface ArtifactContractMetadata {
   providerSummary?: ArtifactProviderSummary;
 }
 
+export interface ChatArtifact extends ArtifactContractMetadata {
+  kind: string;
+  generatedAt: string;
+  queryAsOfDataSlot?: JobDataSlot;
+}
+
 export interface ChatArtifactRequest {
   query: string;
   sessionId?: string;
@@ -202,13 +208,6 @@ export interface OpsProcedureArtifact extends ArtifactContractMetadata {
   };
 }
 
-export type ChatArtifact =
-  | IncidentReportArtifact
-  | MonitoringAnalysisArtifact
-  | ServerMonitoringAnalysisArtifact
-  | ServerSnapshotArtifact
-  | OpsProcedureArtifact;
-
 export interface ArtifactEnvelope<
   TArtifact extends ChatArtifact = ChatArtifact,
 > {
@@ -261,9 +260,18 @@ function readArtifactDataSlot(artifact: ChatArtifact): string | undefined {
   if (artifact.queryAsOfDataSlot?.timeLabel) {
     return artifact.queryAsOfDataSlot.timeLabel;
   }
-  if (artifact.kind === 'server-snapshot') return artifact.slot?.timeLabel;
+
+  const snapshotSlot = (artifact as { slot?: unknown }).slot;
+  if (artifact.kind === 'server-snapshot' && isRecord(snapshotSlot)) {
+    const timeLabel = readPublicString(snapshotSlot.timeLabel);
+    if (timeLabel) return timeLabel;
+  }
+
+  const analysis = (artifact as { analysis?: unknown }).analysis;
   if (artifact.kind === 'monitoring-analysis') {
-    return artifact.analysis.slot?.timeLabel;
+    if (!isRecord(analysis)) return undefined;
+    const slot = analysis.slot;
+    if (isRecord(slot)) return readPublicString(slot.timeLabel);
   }
   return undefined;
 }

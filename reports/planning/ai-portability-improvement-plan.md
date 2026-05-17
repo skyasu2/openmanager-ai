@@ -20,6 +20,12 @@
 > `chat-artifact-execution.ts`의 kind별 생성 switch를 제거했다. 모니터링 실행기 5종은
 > `src/lib/ai/domains/monitoring/artifact-executors.ts`에서 등록하며, ops-procedure
 > follow-up edit은 registry context의 `readPreviousArtifact()` 경계로 유지한다.
+>
+> 2026-05-17 Codex 진행 메모: T1은 `ChatArtifact`를 도메인 중립 베이스
+> 인터페이스로 낮추고, 모니터링 5종 유니온을
+> `src/lib/ai/domains/monitoring/artifact-registry.ts`의
+> `MonitoringChatArtifact`로 이동했다. 공유 envelope helper 시그니처는 유지하고,
+> 모니터링 UI/워크스페이스 소비자는 monitoring domain 유니온을 명시적으로 사용한다.
 
 ## 목적
 
@@ -108,6 +114,7 @@ export type ChatArtifact =
 export interface ChatArtifact extends ArtifactContractMetadata {
   kind: string;
   generatedAt: string;
+  queryAsOfDataSlot?: JobDataSlot;
 }
 
 // 모니터링 특화 유니온은 domains/monitoring/ 내부로 이동
@@ -126,8 +133,8 @@ export type MonitoringChatArtifact =
 
 **검증**: `npm run type-check` 통과, `test:quick` 통과.
 
-- [ ] T1 구현
-- [ ] T1 테스트 통과 확인
+- [x] T1 구현
+- [x] T1 테스트 통과 확인
 
 ---
 
@@ -192,7 +199,7 @@ return renderer(entry.artifact);
 
 - [x] T2a 테스트 시나리오 S1/S2/S4 작성 (`test(spec):` 커밋)
 - [x] T2a 렌더러 등록 API 추가 및 `ArtifactRendererHost` switch 제거
-- [ ] T2 잔여 S3 도메인 독립 타입 컴파일 테스트 작성 (T1과 함께 진행)
+- [x] T2 잔여 S3 도메인 독립 타입 컴파일 테스트 작성 (T1과 함께 진행)
 - [x] T2 구현
 - [x] T2 테스트 통과 확인
 

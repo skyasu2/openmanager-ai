@@ -7,13 +7,13 @@ import {
   type ChatArtifactIntentReason,
   createArtifactGuidanceMessage,
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
-import {
-  type ChatArtifact,
-  createArtifactEnvelope,
-} from '@/lib/ai/chat-artifacts/types';
+import { createArtifactEnvelope } from '@/lib/ai/chat-artifacts/types';
 import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
+import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import { buildRouteDecision } from '@/lib/ai/route-decision';
 import type { JobDataSlot } from '@/types/ai-jobs';
+
+type ChatArtifact = MonitoringChatArtifact;
 
 export type GuidanceCtaTarget = 'incident-report' | 'monitoring-analysis';
 

@@ -7,7 +7,7 @@ import {
   fetchLLMChatArtifactIntent,
   shouldUseLLMChatArtifactIntent,
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
-import type { ChatArtifact } from '@/lib/ai/chat-artifacts/types';
+import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { FileAttachment } from '../useFileAttachments';
 import { startChatArtifactGeneration } from './chat-artifact-execution';
@@ -15,6 +15,8 @@ import {
   createArtifactGuidanceMessages,
   type GuidanceCtaTarget,
 } from './chat-artifact-metadata';
+
+type ChatArtifact = MonitoringChatArtifact;
 
 type ForcedGuidanceArtifactIntent = Extract<
   ChatArtifactIntent,
