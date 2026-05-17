@@ -1,0 +1,63 @@
+{
+  "runId": "QA-20260518-0513",
+  "recordedAt": "2026-05-17T16:04:28.616Z",
+  "recordedAtKst": "2026-05-18 01:04:28 KST",
+  "runTitle": "AI Env Disclosure Guard Targeted QA",
+  "owner": "codex",
+  "source": "codex-cli+curl+vitest",
+  "environment": {
+    "target": "vercel-production + local-ai-engine-validation",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "88c93213e68b24bcfa2b0ed12555b825e8a325c5"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "security-pack"],
+  "coveredSurfaces": [
+    "/api/ai/supervisor/stream/v2",
+    "Cloud Run AI Engine internal disclosure policy",
+    "verified guest AI assistant session"
+  ],
+  "skippedSurfaces": [
+    "full browser visual regression",
+    "post-deploy retest of the new guard"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 6,
+    "failed": 1
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Production verified guest AI flow did not leak secret values, but assistant-scoped env disclosure still reached the LLM and recommended generic env inspection commands before this patch.",
+      "nextAction": "Deploy the AI Engine guard and rerun the same prompt against production."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "AI env disclosure guard QA evidence",
+      "path": "reports/qa/evidence/qa-20260518-ai-env-disclosure-guard.md",
+      "note": "curl production observation plus local deterministic guard validation; no secret or cookie values recorded."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

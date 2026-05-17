@@ -195,7 +195,7 @@ export function buildKnowledgeBaseGroundedAnswer(
       options.internalDisclosureMode
     )
   ) {
-    return buildInternalImplementationPathRefusal();
+    return buildInternalImplementationPathRefusal(query);
   }
 
   const knowledgeOutputs = toolResults

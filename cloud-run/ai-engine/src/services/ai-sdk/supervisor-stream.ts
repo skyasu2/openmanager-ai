@@ -100,7 +100,7 @@ export async function* executeSupervisorStream(
     )
   ) {
     const durationMs = Date.now() - startTime;
-    const answer = buildInternalImplementationPathRefusal();
+    const answer = buildInternalImplementationPathRefusal(queryText);
     yield { type: 'text_delta', data: answer };
     yield {
       type: 'done',

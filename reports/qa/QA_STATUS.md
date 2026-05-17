@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-17 17:57:53 KST
+> Generated at: 2026-05-18 01:04:29 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 510 |
-| Total Runs (Counted) | 406 |
+| Total Recorded Runs | 511 |
+| Total Runs (Counted) | 407 |
 | Non-counted Runs | 104 |
-| Total Checks | 3635 |
-| Passed | 3496 |
-| Failed | 129 |
+| Total Checks | 3642 |
+| Passed | 3502 |
+| Failed | 130 |
 | Completed Items | 585 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260517-0512 (2026-05-17T08:57:50.648Z) |
-| Latest Recorded Run | QA-20260517-0512 (2026-05-17T08:57:50.648Z) |
+| Last Counted Run | QA-20260518-0513 (2026-05-17T16:04:28.616Z) |
+| Latest Recorded Run | QA-20260518-0513 (2026-05-17T16:04:28.616Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,39 +34,33 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260517-0512 (2026-05-17T08:57:50.648Z)
+Latest run: QA-20260518-0513 (2026-05-17T16:04:28.616Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | yes | Deploy the AI Engine guard and rerun the same prompt against production. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after production AI Assistant smoke; effective usage about 10.7667 USD, billed 0.0000 USD. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-16T08:57:50.648Z -> 2026-05-17T08:57:50.648Z (24h)
-- Runs with observations: 3 recorded / 1 counted
-- Samples: 10
+- Window: 2026-05-16T16:04:28.616Z -> 2026-05-17T16:04:28.616Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 3
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor/Monitoring Agent | openmanager-ai-engine | 1 | 7471ms | 7471ms | - | - | 130ms | 130ms | QA-20260517-0512 |
 | Reporter Agent | openmanager-ai-engine | 1 | 4870ms | 4870ms | - | - | 1531ms | 1531ms | QA-20260517-0512 |
-| Front NLQ semantic parser | zai | 1 | 3758ms | 3758ms | - | - | - | - | QA-20260516-0507 |
-| Front NLQ semantic parser | groq | 2 | 974ms | 1359ms | - | - | - | - | QA-20260516-0508 |
-| Front NLQ semantic parser | mistral | 3 | 918ms | 1054ms | - | - | - | - | QA-20260516-0508 |
-| Front NLQ semantic parser | cerebras | 1 | 771ms | 771ms | - | - | - | - | QA-20260516-0507 |
 | Analyst Agent | openmanager-ai-engine | 1 | 303ms | 303ms | - | - | 303ms | 303ms | QA-20260517-0512 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-16T08:57:50.648Z -> 2026-05-17T08:57:50.648Z (24h)
+- Window: 2026-05-16T16:04:28.616Z -> 2026-05-17T16:04:28.616Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,31 +72,29 @@ Latest run: QA-20260517-0512 (2026-05-17T08:57:50.648Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5 / SHA 798de818
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Vercel production /api/health, Vercel production /api/health?service=ai&soft=true, Vercel production /api/version, Vercel production /login guest PIN flow, Vercel production /dashboard/ai-assistant AI Chat, Vercel production /api/ai/supervisor/stream/v2, Vercel production /api/ai/incident-report, Vercel production /api/ai/intelligent-monitoring, Guest /api/ai/status admin boundary
-- Skipped Surfaces: OAuth provider end-to-end login was skipped; guest PIN login was used, Full five-question conversational regression pack was not run; this was a targeted live smoke for the AI Assistant page, Admin-only /api/ai/status success path was not tested because the available browser session is guest-scoped
+- Deployment: SHA 88c93213
+- Coverage Packs: ai-core, security-pack
+- Covered Surfaces: /api/ai/supervisor/stream/v2, Cloud Run AI Engine internal disclosure policy, verified guest AI assistant session
+- Skipped Surfaces: full browser visual regression, post-deploy retest of the new guard
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.165 tag pipeline | [GitLab v8.11.165 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415) | - |
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment v8.11.165 | [Vercel production deployment v8.11.165](https://vercel.com/skyasus-projects/openmanager-ai/EG1U8xTdXAvgrhLTLnW5NQmoznt5) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | AI Assistant live smoke JSON evidence | `reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.json` | - |
-| playwright-screenshot | AI Assistant live smoke final monitoring screen | `reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.png` | - |
+| playwright-network | AI env disclosure guard QA evidence | `reports/qa/evidence/qa-20260518-ai-env-disclosure-guard.md` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-security-reliability: AI Security & Reliability Architect (last QA-20260518-0513)
+  next: Deploy the AI Engine guard and rerun the same prompt against production.
 
 ## Pending Improvements
 
@@ -776,6 +768,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260518-0513 | 2026-05-17T16:04:28.616Z | targeted | no | yes | AI Env Disclosure Guard Targeted QA | 7 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260517-0512 | 2026-05-17T08:57:50.648Z | targeted | yes | yes | v8.11.165 Vercel Production AI Assistant Live Smoke | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260517-0511 | 2026-05-16T18:51:23.923Z | targeted | yes | yes | v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260517-0510 | 2026-05-16T16:03:37.386Z | targeted | yes | yes | v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls | 10 | 2 | 2 | 0 | 0 | 1 |
@@ -795,4 +788,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260513-0496 | 2026-05-13T05:24:07.631Z | targeted | yes | yes | Production QA - v8.11.144 AI Assistant 3-Feature Closure | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0495 | 2026-05-13T05:02:59.311Z | targeted | yes | yes | Production QA - v8.11.143 AI Assistant 3-Feature Check | 3 | 1 | 1 | 0 | 0 | 3 |
 | QA-20260513-0494 | 2026-05-13T04:07:53.842Z | targeted | yes | yes | Production QA - v8.11.143 Score Deduction Closure | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260513-0493 | 2026-05-13T03:45:28.442Z | targeted | no | no | Diagnostic Follow-up - v8.11.142 Frontend Score Deductions | 16 | 0 | 0 | 0 | 0 | 0 |

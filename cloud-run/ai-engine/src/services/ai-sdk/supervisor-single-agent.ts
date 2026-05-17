@@ -144,7 +144,7 @@ export async function executeSupervisor(
     )
   ) {
     const durationMs = Date.now() - startTime;
-    const response = buildInternalImplementationPathRefusal();
+    const response = buildInternalImplementationPathRefusal(queryText);
     return {
       success: true,
       response,

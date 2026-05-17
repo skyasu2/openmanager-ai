@@ -82,7 +82,11 @@ export function* streamInternalImplementationPathRefusal({
   startTime: number;
 }): Generator<StreamEvent> {
   const durationMs = Date.now() - startTime;
-  const answer = buildInternalImplementationPathRefusal();
+  const queryText =
+    context.request.messages
+      .filter((message) => message.role === 'user')
+      .at(-1)?.content ?? '';
+  const answer = buildInternalImplementationPathRefusal(queryText);
   yield { type: 'text_delta', data: answer };
   yield {
     type: 'done',

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-17T08:57:50.648Z"
+    "updatedAt": "2026-05-17T16:04:28.616Z"
   },
   "sequence": {
-    "nextRunNumber": 513
+    "nextRunNumber": 514
   },
   "summary": {
-    "totalRecordedRuns": 510,
-    "totalRuns": 406,
+    "totalRecordedRuns": 511,
+    "totalRuns": 407,
     "excludedRuns": 104,
-    "totalChecks": 3635,
-    "totalPassed": 3496,
-    "totalFailed": 129,
+    "totalChecks": 3642,
+    "totalPassed": 3502,
+    "totalFailed": 130,
     "completionRate": 100,
     "completedItems": 585,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260517-0512",
-    "lastRecordedAt": "2026-05-17T08:57:50.648Z",
-    "latestRecordedRunId": "QA-20260517-0512",
-    "latestRecordedAt": "2026-05-17T08:57:50.648Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260518-0513",
+    "lastRecordedAt": "2026-05-17T16:04:28.616Z",
+    "latestRecordedRunId": "QA-20260518-0513",
+    "latestRecordedAt": "2026-05-17T16:04:28.616Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -57265,6 +57265,74 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0513",
+      "recordedAt": "2026-05-17T16:04:28.616Z",
+      "recordedAtKst": "2026-05-18 01:04:28 KST",
+      "title": "AI Env Disclosure Guard Targeted QA",
+      "owner": "codex",
+      "source": "codex-cli+curl+vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0513.json",
+      "environment": {
+        "target": "vercel-production + local-ai-engine-validation",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "88c93213e68b24bcfa2b0ed12555b825e8a325c5"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "security-pack"
+      ],
+      "coveredSurfaces": [
+        "/api/ai/supervisor/stream/v2",
+        "Cloud Run AI Engine internal disclosure policy",
+        "verified guest AI assistant session"
+      ],
+      "skippedSurfaces": [
+        "full browser visual regression",
+        "post-deploy retest of the new guard"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 6,
+        "failed": 1
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Production verified guest AI flow did not leak secret values, but assistant-scoped env disclosure still reached the LLM and recommended generic env inspection commands before this patch.",
+          "nextAction": "Deploy the AI Engine guard and rerun the same prompt against production."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "AI env disclosure guard QA evidence",
+          "path": "reports/qa/evidence/qa-20260518-ai-env-disclosure-guard.md",
+          "note": "curl production observation plus local deterministic guard validation; no secret or cookie values recorded."
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -57307,17 +57375,17 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 76,
-      "appropriateCount": 58,
+      "seenCount": 77,
+      "appropriateCount": 59,
       "partialCount": 18,
       "inappropriateCount": 0,
-      "improvementNeededCount": 18,
-      "lastRunId": "QA-20260517-0512",
-      "lastSeenAt": "2026-05-17T08:57:50.648Z",
+      "improvementNeededCount": 19,
+      "lastRunId": "QA-20260518-0513",
+      "lastSeenAt": "2026-05-17T16:04:28.616Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Guest session could use intended AI Assistant surfaces, while /api/ai/status remained protected with 403 Admin access required.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "Production verified guest AI flow did not leak secret values, but assistant-scoped env disclosure still reached the LLM and recommended generic env inspection commands before this patch.",
+      "lastNextAction": "Deploy the AI Engine guard and rerun the same prompt against production."
     },
     "sre-devops": {
       "domainId": "sre-devops",
