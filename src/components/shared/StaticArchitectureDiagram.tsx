@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 
 // ─── Layout constants ────────────────────────────────────────────────────────
@@ -27,6 +27,7 @@ const BADGE_CY = 70;
 const BADGE_H = 14;
 const BADGE_W = 40;
 const BADGE_X = 9;
+const PORT_GAP = 8;
 
 // ─── Tailwind color map ───────────────────────────────────────────────────────
 const TW: Record<string, string> = {
@@ -158,41 +159,52 @@ function computeLayout(diagram: ArchitectureDiagram) {
 function connPath(
   from: NR,
   to: NR,
-  _NW: number,
+  NW: number,
   vw: number
 ): { d: string; mx: number; my: number } {
-  const sx = from.cx;
-  const sy = from.y + NH; // source exits bottom
-  const tx = to.cx;
-  const ty = to.y; // target enters top
-
-  // Same layer → U-curve below the swimlane
+  // Same layer -> side ports. This prevents arrows from diving through nodes.
   if (from.li === to.li) {
-    const offY = sy + 22;
+    const flowsRight = to.cx >= from.cx;
+    const sx = flowsRight ? from.x + NW : from.x;
+    const sy = from.y + NH / 2;
+    const tx = flowsRight ? to.x - PORT_GAP : to.x + NW + PORT_GAP;
+    const ty = to.y + NH / 2;
+    const bendY = from.y - 18;
+    const c1x = sx + (flowsRight ? 34 : -34);
+    const c2x = tx + (flowsRight ? -34 : 34);
+
     return {
-      d: `M${sx},${sy} C${sx},${offY} ${tx},${offY} ${tx},${ty}`,
+      d: `M${sx},${sy} C${c1x},${sy} ${c1x},${bendY} ${(sx + tx) / 2},${bendY} C${c2x},${bendY} ${c2x},${ty} ${tx},${ty}`,
       mx: (sx + tx) / 2,
-      my: offY + 4,
+      my: bendY - 2,
     };
   }
 
-  // Normal downward → smooth cubic bezier
-  if (sy < ty - 4) {
+  // Normal downward -> bottom port to top port, ending just before target.
+  if (from.li < to.li) {
+    const sx = from.cx;
+    const sy = from.y + NH;
+    const tx = to.cx;
+    const ty = to.y - PORT_GAP;
     const dy = ty - sy;
-    const c1y = sy + dy * 0.44;
-    const c2y = ty - dy * 0.44;
+    const curve = Math.max(24, dy * 0.42);
+
     return {
-      d: `M${sx},${sy} C${sx},${c1y} ${tx},${c2y} ${tx},${ty}`,
+      d: `M${sx},${sy} C${sx},${sy + curve} ${tx},${ty - curve} ${tx},${ty}`,
       mx: (sx + tx) / 2,
       my: (sy + ty) / 2,
     };
   }
 
-  // Upward → route via right edge of canvas
-  const rightX = vw - CP + 8;
+  // Return/upward flow -> top port to target bottom port via the right rail.
+  const sx = from.cx;
+  const sy = from.y;
+  const tx = to.cx;
+  const ty = to.y + NH + PORT_GAP;
+  const rightX = vw - CP - 4;
   const midY = (sy + ty) / 2;
   return {
-    d: `M${sx},${sy} C${sx},${sy + 28} ${rightX},${midY - 10} ${rightX},${midY} C${rightX},${midY + 10} ${tx},${ty - 28} ${tx},${ty}`,
+    d: `M${sx},${sy} C${sx},${sy - 30} ${rightX},${sy - 30} ${rightX},${midY} C${rightX},${ty + 30} ${tx},${ty + 30} ${tx},${ty}`,
     mx: rightX - 10,
     my: midY,
   };
@@ -222,6 +234,10 @@ const TYPE_LABEL: Record<string, string> = {
 type Props = { diagram: ArchitectureDiagram; className?: string };
 
 export function StaticArchitectureDiagram({ diagram, className }: Props) {
+  const rawId = useId();
+  const markerIdPrefix = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
+  const solidMarkerId = `sad-arr-s-${markerIdPrefix}`;
+  const dashedMarkerId = `sad-arr-d-${markerIdPrefix}`;
   const { vw, vh, nrMap, bands, NW } = useMemo(
     () => computeLayout(diagram),
     [diagram]
@@ -235,9 +251,11 @@ export function StaticArchitectureDiagram({ diagram, className }: Props) {
       <svg
         viewBox={`0 0 ${vw} ${vh}`}
         width="100%"
-        height="auto"
-        className="block select-none"
-        style={{ aspectRatio: `${vw} / ${vh}`, minWidth: Math.min(vw, 520) }}
+        className="block h-auto select-none"
+        style={{
+          aspectRatio: `${vw} / ${vh}`,
+          minWidth: `min(100%, ${Math.min(vw, 520)}px)`,
+        }}
         data-testid="static-architecture-diagram-canvas"
         role="img"
         aria-label={`${diagram.title} 아키텍처 다이어그램`}
@@ -284,26 +302,26 @@ export function StaticArchitectureDiagram({ diagram, className }: Props) {
 
           {/* Arrow markers */}
           <marker
-            id="arr-s"
-            viewBox="0 0 10 10"
-            refX="8"
-            refY="5"
-            markerWidth="5"
-            markerHeight="5"
-            orient="auto-start-reverse"
+            id={solidMarkerId}
+            viewBox="0 0 12 12"
+            refX="9.5"
+            refY="6"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto"
           >
-            <path d="M0,1.5 L8.5,5 L0,8.5z" fill="rgba(255,255,255,0.4)" />
+            <path d="M1,2 L10,6 L1,10z" fill="rgba(255,255,255,0.48)" />
           </marker>
           <marker
-            id="arr-d"
-            viewBox="0 0 10 10"
-            refX="8"
-            refY="5"
-            markerWidth="5"
-            markerHeight="5"
-            orient="auto-start-reverse"
+            id={dashedMarkerId}
+            viewBox="0 0 12 12"
+            refX="9.5"
+            refY="6"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto"
           >
-            <path d="M0,1.5 L8.5,5 L0,8.5z" fill="rgba(167,139,250,0.75)" />
+            <path d="M1,2 L10,6 L1,10z" fill="rgba(167,139,250,0.82)" />
           </marker>
 
           {/* Layer gradient definitions */}
@@ -433,7 +451,9 @@ export function StaticArchitectureDiagram({ diagram, className }: Props) {
           const stroke = isDash
             ? 'rgba(196,181,253,0.72)'
             : 'rgba(203,213,225,0.38)';
-          const marker = isDash ? 'url(#arr-d)' : 'url(#arr-s)';
+          const marker = isDash
+            ? `url(#${dashedMarkerId})`
+            : `url(#${solidMarkerId})`;
           const lbl = conn.label;
           const lblW = lbl
             ? Math.max(32, Math.min(82, lbl.length * 5.6 + 14))
@@ -448,6 +468,7 @@ export function StaticArchitectureDiagram({ diagram, className }: Props) {
                 fill="none"
                 strokeDasharray={isDash ? '5,4' : undefined}
                 opacity="0.6"
+                vectorEffect="non-scaling-stroke"
               />
               <path
                 d={d}
@@ -457,6 +478,7 @@ export function StaticArchitectureDiagram({ diagram, className }: Props) {
                 strokeDasharray={isDash ? '5,4' : undefined}
                 markerEnd={marker}
                 opacity="0.92"
+                vectorEffect="non-scaling-stroke"
               />
               {lbl && (
                 <g>

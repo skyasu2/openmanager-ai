@@ -59,6 +59,40 @@ describe('StaticArchitectureDiagram', () => {
     expect(screen.getByText('일반 연결')).toBeInTheDocument();
   });
 
+  it('SVG에 브라우저 콘솔 오류를 만드는 invalid height 속성을 넣지 않는다', () => {
+    render(<StaticArchitectureDiagram diagram={diagram} />);
+
+    const canvas = screen.getByTestId('static-architecture-diagram-canvas');
+    expect(canvas).toHaveAttribute('viewBox');
+    expect(canvas).toHaveAttribute('width', '100%');
+    expect(canvas).not.toHaveAttribute('height', 'auto');
+    expect(canvas).toHaveClass('h-auto');
+    expect(canvas).toHaveStyle({ minWidth: 'min(100%, 520px)' });
+  });
+
+  it('화살표 marker id를 인스턴스별로 고유하게 생성한다', () => {
+    render(
+      <>
+        <StaticArchitectureDiagram diagram={diagram} />
+        <StaticArchitectureDiagram diagram={diagram} />
+      </>
+    );
+
+    const markerIds = Array.from(document.querySelectorAll('marker')).map(
+      (marker) => marker.id
+    );
+
+    expect(markerIds).toHaveLength(4);
+    expect(new Set(markerIds).size).toBe(4);
+    expect(
+      Array.from(document.querySelectorAll('path[marker-end]')).every((path) =>
+        markerIds.some(
+          (id) => path.getAttribute('marker-end') === `url(#${id})`
+        )
+      )
+    ).toBe(true);
+  });
+
   it('빈 레이어 목록도 레이아웃 계산 오류 없이 처리한다', () => {
     render(<StaticArchitectureDiagram diagram={{ ...diagram, layers: [] }} />);
 

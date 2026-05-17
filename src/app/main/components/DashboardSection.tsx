@@ -37,7 +37,9 @@ export function DashboardSection({
               {/* 손가락 포인터 */}
               <div className="flex flex-col items-center gap-1">
                 <span className="finger-pointer-dashboard">👆</span>
-                <span className="text-xs text-white/60">클릭하세요</span>
+                <span className="text-xs font-medium text-white/[0.78]">
+                  클릭하세요
+                </span>
               </div>
 
               {onStopSystem && (
@@ -66,7 +68,7 @@ export function DashboardSection({
           )}
         </div>
       </div>
-      <p className="mt-4 text-center text-xs text-white/75">
+      <p className="mt-4 text-center text-sm font-medium text-white/[0.82]">
         시스템이 활성화되어 있습니다. 대시보드에서 상세 모니터링을 확인하세요.
       </p>
     </div>

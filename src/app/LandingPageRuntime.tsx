@@ -110,19 +110,22 @@ function Home() {
 
       <main
         aria-label="메인 콘텐츠"
-        className="container relative z-10 mx-auto px-4 pt-8 sm:px-6"
+        className="container relative z-10 mx-auto px-4 pt-7 sm:px-6 sm:pt-8"
       >
-        <div className="mb-12 text-center">
-          <h1 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="text-white [text-shadow:0_0_40px_rgba(255,255,255,0.25),0_2px_8px_rgba(0,0,0,0.8)]">
-              OpenManager
-            </span>{' '}
-            <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
+        <div className="landing-hero-copy mx-auto mb-12 max-w-5xl text-center sm:mb-14">
+          <h1 className="mb-4 text-5xl font-black leading-none tracking-normal text-white sm:text-6xl md:text-7xl lg:text-8xl">
+            <span className="landing-title-main">OpenManager</span>{' '}
+            <span
+              className="landing-title-ai"
+              style={AI_TEXT_GRADIENT_ANIMATED_STYLE}
+            >
+              AI
+            </span>
           </h1>
-          <p className="mb-2 text-lg font-light tracking-wide text-white/90 sm:text-xl md:text-2xl">
+          <p className="landing-hero-subtitle mb-3 text-xl font-semibold leading-snug tracking-normal text-white sm:text-2xl md:text-3xl">
             서버 운영을 AI에게 묻다
           </p>
-          <p className="text-xs tracking-widest text-white/60 sm:text-sm">
+          <p className="landing-hero-kicker text-sm font-medium leading-relaxed tracking-normal text-white/[0.78] sm:text-base">
             18대 서버 · OTel 데이터 기반 포트폴리오 프로젝트
           </p>
         </div>
@@ -145,11 +148,8 @@ function Home() {
           )}
         </div>
 
-        <section
-          className="mb-12 rounded-[2rem] border border-white/10 bg-white/[0.03] px-4 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.6)] backdrop-blur-sm sm:px-6"
-          aria-label="주요 기능 소개"
-        >
-          <p className="mb-5 text-center text-[11px] font-semibold uppercase tracking-[0.25em] text-white/30">
+        <section className="mb-12" aria-label="주요 기능 소개">
+          <p className="mb-5 text-center text-sm font-semibold tracking-normal text-white/70">
             주요 기능
           </p>
           <FeatureCardsGrid />
