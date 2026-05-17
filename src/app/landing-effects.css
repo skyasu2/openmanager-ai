@@ -1,6 +1,6 @@
 /* Landing and auth surfaces share these animated helpers. */
 
-.wave-particles {
+.landing-visual-surface .wave-particles {
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -28,7 +28,7 @@
   will-change: transform;
 }
 
-.wave-particles::before {
+.landing-visual-surface .wave-particles::before {
   content: none;
 }
 
@@ -176,7 +176,7 @@
 }
 
 @media (max-width: 768px) {
-  .wave-particles {
+  .landing-visual-surface .wave-particles {
     background:
       radial-gradient(
         ellipse at center,
@@ -198,7 +198,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wave-particles,
+  .landing-visual-surface .wave-particles,
   .mouse-spotlight__fragment,
   .finger-pointer-primary,
   .finger-pointer-dashboard,
@@ -206,7 +206,7 @@
     animation: none;
   }
 
-  .wave-particles {
+  .landing-visual-surface .wave-particles {
     opacity: 0.5;
   }
 

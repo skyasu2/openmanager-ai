@@ -88,7 +88,7 @@ function Home() {
 
   return (
     <div
-      className="min-h-screen bg-black"
+      className="landing-visual-surface min-h-screen bg-black"
       data-system-active={isSystemStarted ? 'true' : 'false'}
     >
       <MouseSpotlight />

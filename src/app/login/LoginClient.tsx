@@ -214,7 +214,7 @@ export default function LoginClient() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-black font-sans">
+    <div className="landing-visual-surface relative flex min-h-screen flex-col overflow-hidden bg-black font-sans">
       <MouseSpotlight />
       <div className="wave-particles" />
 
