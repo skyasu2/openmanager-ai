@@ -1,5 +1,75 @@
 /* Landing and auth surfaces share these animated helpers. */
 
+/* Custom cursor — desktop pointer devices only */
+.landing-visual-surface {
+  cursor: none;
+}
+.landing-visual-surface * {
+  cursor: none !important;
+}
+
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  background: #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  margin-left: -2.5px;
+  margin-top: -2.5px;
+  will-change: transform;
+  transition: opacity 200ms ease;
+}
+
+.custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  margin-left: -18px;
+  margin-top: -18px;
+  will-change: transform;
+  transition:
+    opacity 200ms ease,
+    width 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease;
+}
+
+.custom-cursor-ring[data-hover] {
+  width: 56px;
+  height: 56px;
+  margin-left: -28px;
+  margin-top: -28px;
+  border-color: rgba(139, 92, 246, 0.65);
+}
+
+@media (pointer: coarse) {
+  .custom-cursor-dot,
+  .custom-cursor-ring {
+    display: none;
+  }
+  .landing-visual-surface,
+  .landing-visual-surface * {
+    cursor: auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .custom-cursor-ring {
+    transition: opacity 200ms ease;
+  }
+}
+
 .landing-visual-surface .wave-particles {
   position: fixed;
   inset: 0;

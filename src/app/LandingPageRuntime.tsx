@@ -14,6 +14,7 @@ import {
   SystemStartSection,
 } from '@/app/main/components';
 import { useLandingPageState } from '@/app/main/hooks';
+import { CustomCursor } from '@/components/landing/CustomCursor';
 import { MouseSpotlight } from '@/components/landing/MouseSpotlight';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
@@ -91,6 +92,7 @@ function Home() {
       className="landing-visual-surface min-h-screen bg-black"
       data-system-active={isSystemStarted ? 'true' : 'false'}
     >
+      <CustomCursor />
       <MouseSpotlight />
       <div className="wave-particles" />
 
@@ -111,14 +113,16 @@ function Home() {
         className="container relative z-10 mx-auto px-4 pt-8 sm:px-6"
       >
         <div className="mb-12 text-center">
-          <h1 className="mb-3 text-3xl font-extrabold sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="text-white">OpenManager</span>{' '}
+          <h1 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            <span className="text-white [text-shadow:0_0_40px_rgba(255,255,255,0.25),0_2px_8px_rgba(0,0,0,0.8)]">
+              OpenManager
+            </span>{' '}
             <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
           </h1>
-          <p className="mb-2 text-lg font-light text-white/90 sm:text-xl md:text-2xl">
+          <p className="mb-2 text-lg font-light tracking-wide text-white/90 sm:text-xl md:text-2xl">
             서버 운영을 AI에게 묻다
           </p>
-          <p className="text-xs text-white/45 sm:text-sm">
+          <p className="text-xs tracking-widest text-white/60 sm:text-sm">
             18대 서버 · OTel 데이터 기반 포트폴리오 프로젝트
           </p>
         </div>
