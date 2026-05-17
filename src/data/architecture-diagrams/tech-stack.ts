@@ -130,5 +130,6 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
     // Build → Framework
     { from: 'biome', to: 'typescript', label: 'Lint' },
     { from: 'vitest', to: 'nextjs', label: 'Test' },
+    { from: 'playwright', to: 'nextjs', label: 'E2E Test' },
   ],
 };

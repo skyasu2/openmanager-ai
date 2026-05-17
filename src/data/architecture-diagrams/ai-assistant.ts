@@ -46,7 +46,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'orchestrator',
           label: 'Supervisor + Orchestrator',
-          sublabel: 'Mode decision + plannerShadow',
+          sublabel: 'Direct Routing · Round-Robin dispatch',
           type: 'highlight',
           icon: '🧠',
         },
@@ -59,28 +59,28 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'nlq',
           label: 'Metrics Query Agent',
-          sublabel: 'Cerebras llama3.1/gpt-oss',
-          type: 'secondary',
-          icon: '🔍',
-        },
-        {
-          id: 'analyst',
-          label: 'Analyst Agent',
-          sublabel: 'Anomaly & RCA',
+          sublabel: 'Round-Robin · 16K ctx · tool-loop',
           type: 'secondary',
           icon: '📊',
         },
         {
+          id: 'analyst',
+          label: 'Analyst Agent',
+          sublabel: 'Round-Robin · 32K ctx · Anomaly',
+          type: 'secondary',
+          icon: '🔬',
+        },
+        {
           id: 'reporter',
           label: 'Reporter Agent',
-          sublabel: 'Report + deterministic Eval/Opt',
+          sublabel: 'Round-Robin · 32K ctx · Pipeline',
           type: 'secondary',
           icon: '📑',
         },
         {
           id: 'advisor',
           label: 'Advisor Agent',
-          sublabel: 'Groq/Cerebras + Knowledge Lite',
+          sublabel: 'Round-Robin · 32K ctx · Knowledge',
           type: 'secondary',
           icon: '💡',
         },
@@ -114,6 +114,40 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
       ],
     },
     {
+      title: 'Provider Round-Robin Pool',
+      color: 'from-violet-500 to-purple-600',
+      nodes: [
+        {
+          id: 'rr-groq',
+          label: 'Groq',
+          sublabel: 'Llama 4 Scout · 131K ctx',
+          type: 'tertiary',
+          icon: '⚡',
+        },
+        {
+          id: 'rr-mistral',
+          label: 'Mistral',
+          sublabel: 'Small · 32K ctx',
+          type: 'tertiary',
+          icon: '🌊',
+        },
+        {
+          id: 'rr-zai',
+          label: 'Z.AI',
+          sublabel: 'GLM Flash · 128K ctx',
+          type: 'tertiary',
+          icon: '✨',
+        },
+        {
+          id: 'rr-cerebras',
+          label: 'Cerebras',
+          sublabel: 'gpt-oss-120b · 65K ctx',
+          type: 'tertiary',
+          icon: '🔮',
+        },
+      ],
+    },
+    {
       title: 'Data & Knowledge',
       color: 'from-green-500 to-emerald-600',
       nodes: [
@@ -122,7 +156,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
           label: 'Knowledge Retrieval',
           sublabel: 'BM25 RPC + metadata boost',
           type: 'secondary',
-          icon: '🔍',
+          icon: '📚',
         },
         {
           id: 'websearch',
@@ -194,5 +228,9 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'uimessagestream', to: 'resumable', type: 'dashed' },
     { from: 'artifact-replay', to: 'user', label: 'Restore' },
     { from: 'uimessagestream', to: 'user', label: 'Response' },
+    { from: 'provider-gate', to: 'rr-groq', type: 'dashed' },
+    { from: 'provider-gate', to: 'rr-mistral', type: 'dashed' },
+    { from: 'provider-gate', to: 'rr-zai', type: 'dashed' },
+    { from: 'provider-gate', to: 'rr-cerebras', type: 'dashed' },
   ],
 };

@@ -208,8 +208,8 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'api-was-dc1-02', to: 'cache-redis-dc1-02' },
     {
       from: 'api-was-dc1-03',
-      to: 'cache-redis-dc1-02',
-      label: 'Cache Fallback',
+      to: 'cache-redis-dc1-03',
+      label: 'Cache AZ3',
       type: 'dashed',
     },
     // DB Replication

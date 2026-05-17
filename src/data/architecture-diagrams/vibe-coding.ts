@@ -12,10 +12,10 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       nodes: [
         {
           id: 'antigravity',
-          label: 'Google Antigravity',
-          sublabel: 'WSL 터미널 호스트 IDE',
+          label: 'WSL2 Ubuntu 24.04',
+          sublabel: 'Windows 개발 호스트 환경',
           type: 'highlight',
-          icon: '🌌',
+          icon: '🐧',
         },
         {
           id: 'claude-code',
