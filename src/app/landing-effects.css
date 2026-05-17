@@ -1,10 +1,10 @@
 /* Landing and auth surfaces share these animated helpers. */
 
-/* Custom cursor — desktop pointer devices only */
-.landing-visual-surface {
+/* Custom cursor — only surfaces that mount <CustomCursor /> */
+.has-custom-cursor {
   cursor: none;
 }
-.landing-visual-surface * {
+.has-custom-cursor * {
   cursor: none !important;
 }
 
@@ -58,8 +58,8 @@
   .custom-cursor-ring {
     display: none;
   }
-  .landing-visual-surface,
-  .landing-visual-surface * {
+  .has-custom-cursor,
+  .has-custom-cursor * {
     cursor: auto !important;
   }
 }

@@ -89,7 +89,7 @@ function Home() {
 
   return (
     <div
-      className="landing-visual-surface min-h-screen bg-black"
+      className="landing-visual-surface has-custom-cursor min-h-screen bg-black"
       data-system-active={isSystemStarted ? 'true' : 'false'}
     >
       <CustomCursor />
