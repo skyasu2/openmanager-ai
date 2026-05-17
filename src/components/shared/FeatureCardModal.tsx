@@ -1,38 +1,22 @@
 'use client';
 
 import { Bot, Zap } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { getDiagramByCardId } from '@/data/architecture-diagrams.data';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { FeatureCardModalProps } from '@/types/feature-card.types';
 import { parseMarkdownLinks } from '@/utils/markdown-parser';
-import { FeatureCardDiagramSummary } from './FeatureCardDiagramSummary';
 import {
   buildCategorizedTechData,
   getSafeCardData,
   sanitizeModalText,
 } from './FeatureCardModal.utils';
 import { FeatureCardModalHeader } from './FeatureCardModalHeader';
-import type { ReactFlowDiagramProps } from './ReactFlowDiagram';
-import { DiagramErrorBoundary } from './react-flow-diagram/components';
+import { StaticArchitectureDiagram } from './StaticArchitectureDiagram';
 import { TechStackSection } from './TechStackSection';
 import { VibeCiCdSection } from './VibeCiCdSection';
 import { VibeHistorySection } from './VibeHistorySection';
-
-// React Flow는 클라이언트 사이드에서만 렌더링 (SSR 비활성화)
-const ReactFlowDiagram = dynamic<ReactFlowDiagramProps>(
-  () => import('./ReactFlowDiagram'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-card-lg items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-purple-500" />
-      </div>
-    ),
-  }
-);
 
 type VibeView = 'current' | 'history' | 'cicd';
 
@@ -232,28 +216,9 @@ export default function FeatureCardModal({
   const vibeHistoryStages = categorizedTechData.historyStages;
 
   const mainContent = (
-    <div
-      className={
-        showDiagram ? 'px-3 pb-3 pt-2 text-white sm:px-4' : 'p-6 text-white'
-      }
-    >
-      {/* 아키텍처 다이어그램 뷰 (React Flow 기반) */}
-      {/* 🔧 key prop: showDiagram 전환 시 ReactFlow 완전 재마운트 (fitView 재계산 보장) */}
+    <div className={showDiagram ? 'p-3 text-white sm:p-4' : 'p-6 text-white'}>
       {showDiagram && diagramData ? (
-        <div className="space-y-3">
-          <FeatureCardDiagramSummary diagram={diagramData} />
-          <DiagramErrorBoundary diagramTitle={diagramData.title}>
-            <ReactFlowDiagram
-              key={`diagram-${cardData.id}`}
-              diagram={diagramData}
-              compact
-              showControls
-              showHeader={false}
-              showLegend={false}
-              maximizeViewport
-            />
-          </DiagramErrorBoundary>
-        </div>
+        <StaticArchitectureDiagram diagram={diagramData} />
       ) : (
         <>
           {/* 헤더 섹션 — CI/CD 탭은 compact (아이콘·설명 축소) */}
@@ -426,11 +391,7 @@ export default function FeatureCardModal({
       {/* 🔧 P1: dvh 단위로 모바일 주소바 문제 해결, motion-reduce 지원 */}
       <div
         ref={actualModalRef}
-        className={`relative z-10 w-full transform overflow-hidden rounded-2xl border border-gray-600/50 bg-linear-to-br from-gray-900 via-gray-900 to-gray-800 shadow-2xl transition-all duration-300 motion-reduce:transition-none ${
-          showDiagram
-            ? 'max-h-[92dvh] max-w-[72vw] sm:max-w-[68vw] lg:max-w-4xl xl:max-w-5xl'
-            : 'max-h-[80dvh] max-w-[92vw] sm:max-w-lg md:max-w-xl lg:max-w-3xl'
-        } ${!cardData.id ? 'hidden' : ''}`}
+        className={`relative z-10 w-full transform overflow-hidden rounded-2xl border border-white/[0.11] bg-[#08101c] shadow-[0_32px_80px_rgba(0,0,0,0.7)] transition-all duration-300 motion-reduce:transition-none max-h-[88dvh] max-w-[92vw] sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl ${!cardData.id ? 'hidden' : ''}`}
         data-modal-content="portal-unified-v4-ai-cross-verified"
         style={{
           transform: isVisible && cardData.id ? 'scale(1)' : 'scale(0.95)',
@@ -443,18 +404,16 @@ export default function FeatureCardModal({
       >
         {/* Hook 안정화: 조건부 렌더링 제거, CSS로 가시성 제어 */}
 
-        <div
-          className={`absolute left-0 right-0 top-0 h-48 bg-linear-to-b ${gradient} opacity-20 blur-3xl`}
-        ></div>
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-indigo-400/40 to-transparent" />
         <div className="relative z-10 flex h-full flex-col">
           <FeatureCardModalHeader
             title={title}
             Icon={Icon}
+            gradient={gradient}
             showDiagram={showDiagram}
             diagramData={diagramData}
             cardId={cardData.id ?? undefined}
             vibeView={vibeView}
-            variant={variant ?? 'home'}
             onToggleDiagram={toggleDiagram}
             onSetVibeView={setScopedVibeView}
             onClose={onClose}
@@ -466,9 +425,7 @@ export default function FeatureCardModal({
             data-card-id={cardData.id ?? undefined}
             data-view-mode={modalViewMode}
             style={{
-              maxHeight: showDiagram
-                ? 'calc(92dvh - 62px)' // 다이어그램 모드: 상단 헤더 압축 + 모달 높이 확장
-                : 'calc(80dvh - 70px)', // 상세 모드: 모달 max-h-[80dvh]에 맞춤
+              maxHeight: 'calc(88dvh - 60px)',
             }}
           >
             {cardData.id || !isVisible ? (

@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 145 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 146 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 152 |
+| Total TSX component inventory | 153 |
 
 ## App Route-Local Component Distribution
 
@@ -51,13 +51,13 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29829 |
-| Component nodes | 145 |
-| Component edges | 144 |
-| Graph density | 0.69% |
+| Component source lines | 30490 |
+| Component nodes | 146 |
+| Component edges | 143 |
+| Graph density | 0.68% |
 | Alias edges (`@/components/*`) | 39 |
-| Relative edges (`./`, `../`) | 105 |
-| Isolated components | 23 |
+| Relative edges (`./`, `../`) | 104 |
+| Isolated components | 24 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
 
@@ -75,7 +75,7 @@ flowchart LR
   d7["home (2)"]
   d8["landing (1)"]
   d9["providers (4)"]
-  d10["shared (24)"]
+  d10["shared (25)"]
   d11["system (2)"]
   d12["ui (9)"]
   d13["unified-profile (3)"]
@@ -83,7 +83,7 @@ flowchart LR
   d4 -->|32| d4
   d1 -->|14| d1
   d1 -->|12| d0
-  d10 -->|11| d10
+  d10 -->|10| d10
   d4 -->|5| d12
   d0 -->|3| d1
   d1 -->|3| d12
@@ -109,7 +109,7 @@ flowchart LR
 | --- | --- |
 | ai | 43 |
 | dashboard | 34 |
-| shared | 24 |
+| shared | 25 |
 | ai-sidebar | 16 |
 | ui | 9 |
 | providers | 4 |
@@ -130,7 +130,7 @@ flowchart LR
 | dashboard | dashboard | 32 |
 | ai-sidebar | ai-sidebar | 14 |
 | ai-sidebar | ai | 12 |
-| shared | shared | 11 |
+| shared | shared | 10 |
 | dashboard | ui | 5 |
 | ai | ai-sidebar | 3 |
 | ai-sidebar | ui | 3 |
@@ -177,8 +177,8 @@ flowchart LR
 | ai/AIWorkspaceMessage | 6 |
 | dashboard/DashboardRoutedContent | 6 |
 | dashboard/ServerDetailView | 6 |
-| shared/FeatureCardModal | 6 |
 | ai/domain-renderers/ArtifactRendererHost | 5 |
+| shared/FeatureCardModal | 5 |
 | ai/analysis/ServerResultCard | 4 |
 | dashboard/DashboardHeader | 4 |
 | ai-sidebar/AISidebarHeader | 3 |
@@ -198,7 +198,7 @@ ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCar
 ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/analysis-basis/ProviderAttributionChip, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
-shared/FeatureCardModal -> shared/FeatureCardDiagramSummary, shared/FeatureCardModalHeader, shared/ReactFlowDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
+ai/domain-renderers/ArtifactRendererHost -> ai/IncidentReportArtifactCard, ai/MonitoringAnalysisArtifactCard, ai/OpsProcedureArtifactCard, ai/ServerMonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard
 ```
 
 ## Update Rule
