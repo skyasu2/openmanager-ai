@@ -13,7 +13,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'gitlab',
           label: 'GitLab',
-          sublabel: 'validate + semver tag deploy',
+          sublabel: 'validate · semver tag deploy',
           type: 'highlight',
           icon: '🦊',
         },
@@ -32,7 +32,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
         },
         {
           id: 'cloudrun',
-          label: 'Cloud Run AI Engine',
+          label: 'Cloud Run Engine',
           sublabel: 'Node.js 24 + Hono + AI SDK',
           type: 'highlight',
           icon: '🚀',

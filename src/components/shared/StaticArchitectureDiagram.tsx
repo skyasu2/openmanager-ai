@@ -87,27 +87,66 @@ type Band = {
 };
 
 // ─── Dynamic NW calculation ───────────────────────────────────────────────────
+// Node width per max-nodes-in-a-layer bucket. Bumped from 132/150/170 because
+// the previous values truncated common Korean+English labels like
+// "Supervisor Router" (17 visual units), "Knowledge Retrieval Lite" (24),
+// and "Deterministic Fact Layer" (24). Diagrams scroll horizontally so we
+// can afford ~20-30px more breathing room per node.
 function calcNW(maxNodes: number): number {
-  if (maxNodes <= 2) return 220;
-  if (maxNodes <= 3) return 196;
-  if (maxNodes <= 4) return 170;
-  if (maxNodes <= 5) return 150;
-  return 132; // 6+
+  if (maxNodes <= 2) return 260;
+  if (maxNodes <= 3) return 220;
+  if (maxNodes <= 4) return 196;
+  if (maxNodes <= 5) return 172;
+  return 152; // 6+
 }
 
-function truncateText(value: string, maxLength: number): string {
-  if (value.length <= maxLength) return value;
-  return `${value.slice(0, Math.max(1, maxLength - 1))}…`;
+// CJK / fullwidth characters take ~1.7x the visual width of Latin glyphs.
+// Detection covers Hangul, CJK Unified Ideographs, Hiragana, Katakana, and
+// fullwidth ASCII so Korean tech-stack labels stop getting clipped at 13 chars.
+function isWide(ch: string): boolean {
+  const code = ch.charCodeAt(0);
+  return (
+    (code >= 0xac00 && code <= 0xd7a3) || // Hangul syllables
+    (code >= 0x1100 && code <= 0x11ff) || // Hangul Jamo
+    (code >= 0x3130 && code <= 0x318f) || // Hangul compat Jamo
+    (code >= 0x3040 && code <= 0x30ff) || // Hiragana + Katakana
+    (code >= 0x4e00 && code <= 0x9fff) || // CJK Unified
+    (code >= 0xff00 && code <= 0xff60) // Fullwidth ASCII
+  );
+}
+
+function visualWidth(value: string): number {
+  let w = 0;
+  for (const ch of value) w += isWide(ch) ? 1.7 : 1;
+  return w;
+}
+
+function truncateText(value: string, maxVisual: number): string {
+  if (visualWidth(value) <= maxVisual) return value;
+  let w = 0;
+  let out = '';
+  // Reserve one slot for the ellipsis (counts as 1 visual unit).
+  const budget = Math.max(1, maxVisual - 1);
+  for (const ch of value) {
+    const next = w + (isWide(ch) ? 1.7 : 1);
+    if (next > budget) break;
+    out += ch;
+    w = next;
+  }
+  return `${out}…`;
 }
 
 function labelLimit(nodeWidth: number, hasIcon: boolean): number {
+  // Label uses ~12px font-weight 600; one Latin char ≈ 6.6px, one CJK ≈ 11.2px.
+  // visualWidth() already scales CJK by 1.7, so a single unit ≈ 6.6px here.
   const textWidth = nodeWidth - (hasIcon ? TEXT_X_ICON + 10 : 24);
-  return Math.max(9, Math.floor(textWidth / 7.2));
+  return Math.max(9, Math.floor(textWidth / 6.6));
 }
 
 function sublabelLimit(nodeWidth: number, hasIcon: boolean): number {
+  // Sublabel font is 9.5px; one Latin char ≈ 5.4px, one CJK ≈ 9.2px (≈1.7x).
   const textWidth = nodeWidth - (hasIcon ? TEXT_X_ICON + 10 : 24);
-  return Math.max(13, Math.floor(textWidth / 5.8));
+  return Math.max(13, Math.floor(textWidth / 5.4));
 }
 
 // ─── Layout computation ───────────────────────────────────────────────────────
@@ -435,7 +474,7 @@ export function StaticArchitectureDiagram({ diagram, className }: Props) {
               fontFamily="system-ui,-apple-system,sans-serif"
               dominantBaseline="middle"
             >
-              {truncateText(title, 14)}
+              {truncateText(title, 20)}
             </text>
           </g>
         ))}
@@ -455,9 +494,10 @@ export function StaticArchitectureDiagram({ diagram, className }: Props) {
             ? `url(#${dashedMarkerId})`
             : `url(#${solidMarkerId})`;
           const lbl = conn.label;
-          const lblW = lbl
-            ? Math.max(32, Math.min(82, lbl.length * 5.6 + 14))
-            : 0;
+          // Visual-width aware sizing so Korean connection labels like "라우팅"
+          // (3 chars but ~5 visual units) get the same headroom as English.
+          const lblVW = lbl ? visualWidth(lbl) : 0;
+          const lblW = lbl ? Math.max(34, Math.min(96, lblVW * 5.8 + 16)) : 0;
 
           return (
             <g key={`c-${i}`}>
@@ -510,7 +550,7 @@ export function StaticArchitectureDiagram({ diagram, className }: Props) {
                     textAnchor="middle"
                     dominantBaseline="middle"
                   >
-                    {truncateText(lbl, 12)}
+                    {truncateText(lbl, 16)}
                   </text>
                 </g>
               )}

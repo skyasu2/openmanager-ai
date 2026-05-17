@@ -99,8 +99,8 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
       nodes: [
         {
           id: 'deterministic',
-          label: 'Deterministic Fact Layer',
-          sublabel: '순위 · 메트릭 · fallback',
+          label: 'Fact Layer',
+          sublabel: '결정론적 순위 · 메트릭 · fallback',
           type: 'highlight',
           icon: '✓',
         },
@@ -114,7 +114,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
       ],
     },
     {
-      title: '텍스트 Provider Pool',
+      title: '텍스트 Providers',
       color: 'from-violet-500 to-purple-600',
       nodes: [
         {
@@ -153,7 +153,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
       nodes: [
         {
           id: 'knowledgelite',
-          label: 'Knowledge Retrieval Lite',
+          label: 'Knowledge Lite',
           sublabel: 'Postgres FTS + metadata boost',
           type: 'secondary',
           icon: '📚',
@@ -187,7 +187,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         },
         {
           id: 'resumable',
-          label: 'Resumable Stream v2',
+          label: 'Resumable v2',
           sublabel: 'Redis 상태 + 자동 재연결',
           type: 'secondary',
           icon: '🔄',
@@ -215,8 +215,8 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'orchestrator', to: 'vision', label: '라우팅' },
     { from: 'orchestrator', to: 'deterministic', label: '보정' },
     { from: 'orchestrator', to: 'provider-gate', label: '선택' },
-    { from: 'provider-gate', to: 'nlq', type: 'dashed' },
-    { from: 'provider-gate', to: 'reporter', type: 'dashed' },
+    // provider-gate → agents 중복 dashed 제거: 이미 orchestrator → agent 경로가
+    // 라우팅을 표현하므로, provider-gate 는 provider pool 선택만 보여주도록 단순화.
     { from: 'nlq', to: 'otel-data', type: 'dashed' },
     { from: 'analyst', to: 'otel-data', type: 'dashed' },
     { from: 'advisor', to: 'knowledgelite', type: 'dashed' },
