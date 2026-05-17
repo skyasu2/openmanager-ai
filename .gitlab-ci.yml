@@ -392,6 +392,13 @@ validate_bundle_budget:
     - npm ci --prefer-offline --cache .npm --no-audit
   script:
     - echo "▶ Bundle size budget 관측 (warn-first, non-blocking)..."
+    - |
+      if [ -z "${BUNDLEMON_PROJECT_ID:-}" ]; then
+        echo "⚪ BUNDLEMON_PROJECT_ID가 없어 bundlemon 업로드를 건너뜁니다."
+        echo "   build:ci만 실행해 production bundle 생성 가능 여부를 확인합니다."
+        npm run build:ci
+        exit 0
+      fi
     - npm run bundle:budget
     - echo "✅ Bundle size budget 관측 완료"
   timeout: 15 minutes
