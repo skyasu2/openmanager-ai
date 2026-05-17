@@ -14,7 +14,6 @@ import {
   SystemStartSection,
 } from '@/app/main/components';
 import { useLandingPageState } from '@/app/main/hooks';
-import { CustomCursor } from '@/components/landing/CustomCursor';
 import { MouseSpotlight } from '@/components/landing/MouseSpotlight';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
@@ -89,10 +88,9 @@ function Home() {
 
   return (
     <div
-      className="landing-visual-surface has-custom-cursor min-h-screen bg-black"
+      className="landing-visual-surface min-h-screen bg-black"
       data-system-active={isSystemStarted ? 'true' : 'false'}
     >
-      <CustomCursor />
       <MouseSpotlight />
       <div className="wave-particles" />
 

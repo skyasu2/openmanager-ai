@@ -12,7 +12,7 @@ const quickNodeTestPatterns = [
   'src/services/monitoring/HealthCalculator.test.ts',
   'tests/artifacts/**/*.bench.ts',
   'tests/intent-classifier/**/*.eval.test.ts',
-  'tests/unit/dev/{vercel-font-source-guard,periodic-jobs-contract,component-map-verify-script,api-endpoints-doc-contract}.test.ts',
+  'tests/unit/dev/{vercel-font-source-guard,landing-cursor-guard,periodic-jobs-contract,component-map-verify-script,api-endpoints-doc-contract}.test.ts',
 ];
 
 /**
