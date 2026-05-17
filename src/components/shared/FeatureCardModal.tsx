@@ -419,12 +419,14 @@ export default function FeatureCardModal({
           />
           <div
             ref={scrollContainerRef}
-            className="overflow-y-auto scroll-smooth"
+            className="overflow-y-auto scroll-smooth [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/[0.07] [&::-webkit-scrollbar-thumb:hover]:bg-white/[0.13]"
             data-testid="feature-card-modal-scroll"
             data-card-id={cardData.id ?? undefined}
             data-view-mode={modalViewMode}
             style={{
               maxHeight: 'calc(88dvh - 60px)',
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(255,255,255,0.06) transparent',
             }}
           >
             {cardData.id || !isVisible ? (

@@ -16,13 +16,6 @@ vi.mock('@/stores/useUnifiedAdminStore', () => ({
   ) => selector({ aiAgent: { isEnabled: true } }),
 }));
 
-vi.mock('next/dynamic', () => ({
-  default: () =>
-    function MockDynamicComponent() {
-      return <div data-testid="mock-react-flow-diagram" />;
-    },
-}));
-
 const vibeCard = FEATURE_CARDS_DATA.find((card) => card.id === 'vibe-coding');
 const aiCard = FEATURE_CARDS_DATA.find((card) => card.id === 'ai-assistant');
 const techCard = FEATURE_CARDS_DATA.find((card) => card.id === 'tech-stack');
@@ -157,7 +150,11 @@ describe('FeatureCardModal', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /아키텍처 보기/i }));
 
-    expect(screen.getByTestId('mock-react-flow-diagram')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', {
+        name: /AI 어시스턴트 런타임 아키텍처 다이어그램/i,
+      })
+    ).toBeInTheDocument();
     expect(screen.getByLabelText('다이어그램 요약')).toHaveTextContent(
       'AI 어시스턴트 런타임'
     );
@@ -172,7 +169,9 @@ describe('FeatureCardModal', () => {
     expect(nextScrollContainer).toHaveAttribute('data-view-mode', 'current');
     expect(nextScrollContainer.scrollTop).toBe(0);
     expect(
-      screen.queryByTestId('mock-react-flow-diagram')
+      screen.queryByRole('img', {
+        name: /AI 어시스턴트 런타임 아키텍처 다이어그램/i,
+      })
     ).not.toBeInTheDocument();
   });
 
@@ -180,7 +179,11 @@ describe('FeatureCardModal', () => {
     const { rerenderModal } = renderSwitchableModal(aiCard);
 
     fireEvent.click(screen.getByRole('button', { name: /아키텍처 보기/i }));
-    expect(screen.getByTestId('mock-react-flow-diagram')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', {
+        name: /AI 어시스턴트 런타임 아키텍처 다이어그램/i,
+      })
+    ).toBeInTheDocument();
 
     rerenderModal(null, false);
     rerenderModal(techCard, true);
@@ -190,7 +193,9 @@ describe('FeatureCardModal', () => {
       'current'
     );
     expect(
-      screen.queryByTestId('mock-react-flow-diagram')
+      screen.queryByRole('img', {
+        name: /AI 어시스턴트 런타임 아키텍처 다이어그램/i,
+      })
     ).not.toBeInTheDocument();
   });
 });
