@@ -17,6 +17,7 @@
 'use client';
 
 import { type FormEvent, useState } from 'react';
+import { MouseSpotlight } from '@/components/landing/MouseSpotlight';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import {
   Dialog,
@@ -34,7 +35,6 @@ import {
   signInWithEmailMagicLink,
   signInWithOAuthProvider,
 } from '@/lib/auth/supabase-auth-oauth';
-import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import debug from '@/utils/debug';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
 import { useGuestLogin, useLoadingMessages, useLoginUrlParams } from './hooks';
@@ -214,9 +214,8 @@ export default function LoginClient() {
   };
 
   return (
-    <div
-      className={`relative flex min-h-screen flex-col overflow-hidden font-sans ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}
-    >
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-black font-sans">
+      <MouseSpotlight />
       <div className="wave-particles" />
 
       <header className="relative z-50 flex items-center p-4 sm:p-6">
@@ -231,12 +230,15 @@ export default function LoginClient() {
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 pb-8 pt-2 sm:pt-4">
         <div className="w-full max-w-[400px] animate-fade-in">
           {/* Card */}
-          <div className="relative overflow-hidden rounded-2xl border border-white/25 bg-white/10 px-8 py-10 shadow-[0_16px_48px_rgba(15,23,42,0.35)] backdrop-blur-xl">
-            <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/20 via-white/10 to-white/5" />
+          <div className="relative overflow-hidden rounded-2xl border border-white/[0.12] bg-white/[0.06] px-8 py-10 shadow-[0_24px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl">
+            {/* 상단 인디고 엣지 라인 */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-indigo-400/50 to-transparent" />
+            {/* 내부 광택 */}
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/[0.10] via-white/[0.04] to-transparent" />
             <div className="relative">
               {/* Header */}
               <div className="mb-8 text-center">
-                <div className="mx-auto mb-5 h-12 w-12 rounded-xl bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 shadow-[0_0_28px_rgba(168,85,247,0.4)]" />
+                <div className="mx-auto mb-5 h-12 w-12 rounded-xl bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-[0_0_32px_rgba(129,92,255,0.45)]" />
                 <h1 className="mb-1.5 text-xl font-semibold tracking-tight text-white">
                   <span>OpenManager </span>
                   {renderAIGradientWithAnimation('AI')}
@@ -277,7 +279,7 @@ export default function LoginClient() {
                     }
                   }}
                 >
-                  <DialogContent className="border-cyan-500/30 bg-slate-900 sm:max-w-md">
+                  <DialogContent className="border-indigo-500/25 bg-[#0a0a0f] sm:max-w-md">
                     <DialogHeader className="text-center">
                       <DialogTitle className="text-xl font-semibold text-white">
                         게스트 로그인
@@ -294,10 +296,10 @@ export default function LoginClient() {
                     )}
 
                     <form onSubmit={handleGuestModalSubmit} className="mt-4">
-                      <div className="rounded-lg bg-slate-800/50 p-4">
+                      <div className="rounded-lg bg-white/[0.06] p-4">
                         <label
                           htmlFor="guest-pin-input"
-                          className="mb-2 block text-sm font-medium text-cyan-100"
+                          className="mb-2 block text-sm font-medium text-white/80"
                         >
                           게스트 PIN (4자리)
                         </label>
@@ -319,7 +321,7 @@ export default function LoginClient() {
                           }}
                           disabled={isLoading || guestLockRemainingSeconds > 0}
                           placeholder="PIN 4자리 입력"
-                          className="h-12 w-full rounded-lg border border-slate-600 bg-slate-900 px-4 text-center text-lg tracking-[0.25em] text-white outline-none transition-all placeholder:text-base placeholder:tracking-normal placeholder:text-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 disabled:opacity-60"
+                          className="h-12 w-full rounded-lg border border-white/[0.15] bg-black/40 px-4 text-center text-lg tracking-[0.25em] text-white outline-none transition-all placeholder:text-base placeholder:tracking-normal placeholder:text-white/30 focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/20 disabled:opacity-60"
                         />
                         <div className="mt-3 text-center text-xs text-red-300/80">
                           {guestLockRemainingSeconds > 0
@@ -334,7 +336,7 @@ export default function LoginClient() {
                         <button
                           type="button"
                           onClick={() => setIsGuestModalOpen(false)}
-                          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-800 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
+                          className="h-11 w-full rounded-lg border border-white/[0.12] bg-white/[0.06] text-sm font-medium text-white/70 transition-colors hover:bg-white/[0.10]"
                         >
                           취소
                         </button>
@@ -345,7 +347,7 @@ export default function LoginClient() {
                             guestLockRemainingSeconds > 0 ||
                             guestPinInput.length < 4
                           }
-                          className="h-11 w-full rounded-lg bg-cyan-600 text-sm font-medium text-white transition-colors hover:bg-cyan-500 disabled:opacity-50"
+                          className="h-11 w-full rounded-lg bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:opacity-50"
                         >
                           {isLoading ? '로그인 중...' : '로그인'}
                         </button>

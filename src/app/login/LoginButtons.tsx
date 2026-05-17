@@ -19,13 +19,13 @@ type LoginButtonsProps = {
 };
 
 const glassButtonBaseClass =
-  'group relative flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-cyan-100/80 bg-white/92 text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.16)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-50 hover:bg-white hover:shadow-[0_12px_24px_rgba(15,23,42,0.24)] active:scale-[0.98] disabled:opacity-60';
+  'group relative flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-white/20 bg-white/90 text-slate-900 shadow-[0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] active:scale-[0.98] disabled:opacity-50';
 const providerOverlayClass =
-  'pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-blue-200/40 via-indigo-200/30 to-cyan-200/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100';
+  'pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-indigo-100/50 via-blue-50/30 to-cyan-100/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100';
 const guestOverlayClass =
-  'pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-slate-100/40 via-white/50 to-slate-100/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100';
+  'pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-slate-100/30 via-white/40 to-slate-100/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100';
 const emailButtonOverrideClass =
-  'bg-slate-800! text-white! hover:bg-slate-700! hover:border-slate-600!';
+  'border-indigo-400/30! bg-indigo-950/80! text-white! shadow-[0_4px_16px_rgba(79,70,229,0.25)]! hover:bg-indigo-900/80! hover:border-indigo-400/50! hover:shadow-[0_8px_24px_rgba(79,70,229,0.35)]!';
 
 const Spinner = () => (
   <div className="relative z-10 h-4 w-4 animate-spin rounded-full border-2 border-cyan-200 border-t-slate-700" />
@@ -128,16 +128,16 @@ export function LoginButtons({
       )}
 
       <div className="relative my-2 flex items-center gap-4">
-        <div className="h-px w-full bg-cyan-200/55" />
-        <span className="whitespace-nowrap text-xs font-medium text-cyan-100/80">
+        <div className="h-px w-full bg-white/[0.12]" />
+        <span className="whitespace-nowrap text-xs font-medium text-white/40">
           이메일 로그인
         </span>
-        <div className="h-px w-full bg-cyan-200/55" />
+        <div className="h-px w-full bg-white/[0.12]" />
       </div>
 
       <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
         <div className="relative">
-          <Mail className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+          <Mail className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-white/35" />
           <input
             type="email"
             value={email}
@@ -145,7 +145,7 @@ export function LoginButtons({
             disabled={isLoading}
             required
             placeholder="이메일 주소"
-            className="h-12 w-full rounded-xl border border-cyan-100/50 bg-white/70 pl-11 pr-4 text-sm text-slate-800 outline-none backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-100 disabled:opacity-60"
+            className="h-12 w-full rounded-xl border border-white/[0.15] bg-white/[0.08] pl-11 pr-4 text-sm text-white outline-none backdrop-blur-sm transition-all placeholder:text-white/40 focus:border-indigo-400/60 focus:bg-white/[0.12] focus:ring-2 focus:ring-indigo-400/20 disabled:opacity-50"
           />
         </div>
         <button
@@ -162,11 +162,11 @@ export function LoginButtons({
 
       {showGuestLogin && currentProvider !== 'guest' && (
         <div className="relative my-2 flex items-center gap-4">
-          <div className="h-px w-full bg-cyan-200/55" />
-          <span className="whitespace-nowrap text-xs font-medium text-cyan-100/80">
+          <div className="h-px w-full bg-white/[0.12]" />
+          <span className="whitespace-nowrap text-xs font-medium text-white/40">
             체험하기
           </span>
-          <div className="h-px w-full bg-cyan-200/55" />
+          <div className="h-px w-full bg-white/[0.12]" />
         </div>
       )}
 
@@ -174,7 +174,7 @@ export function LoginButtons({
         <button
           type="button"
           onClick={onCancel}
-          className="flex h-10 w-full items-center justify-center rounded-lg border border-cyan-100/80 bg-white/85 text-sm text-slate-700 transition-colors hover:bg-white"
+          className="flex h-10 w-full items-center justify-center rounded-lg border border-white/[0.12] bg-white/[0.06] text-sm text-white/70 transition-colors hover:bg-white/[0.10] hover:text-white/90"
         >
           취소
         </button>
