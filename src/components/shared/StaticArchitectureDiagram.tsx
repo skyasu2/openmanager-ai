@@ -142,7 +142,7 @@ function computeLayout(diagram: ArchitectureDiagram) {
 function connPath(
   from: NR,
   to: NR,
-  NW: number,
+  _NW: number,
   vw: number
 ): { d: string; mx: number; my: number } {
   const sx = from.cx;

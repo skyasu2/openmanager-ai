@@ -37,7 +37,6 @@ export default function FeatureCardModal({
   onClose,
   renderTextWithAIGradient,
   modalRef,
-  variant = 'home',
   isVisible,
 }: FeatureCardModalProps) {
   const [viewState, setViewState] = React.useState<ModalViewState>(
