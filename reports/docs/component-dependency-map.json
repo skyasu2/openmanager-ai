@@ -11,13 +11,13 @@
     "totalComponentNodes": 153
   },
   "metrics": {
-    "componentSourceLines": 30460,
+    "componentSourceLines": 30615,
     "componentNodes": 146,
-    "componentEdges": 143,
-    "graphDensity": 0.006755,
+    "componentEdges": 144,
+    "graphDensity": 0.006802,
     "aliasEdges": 39,
-    "relativeEdges": 104,
-    "isolatedComponents": 24,
+    "relativeEdges": 105,
+    "isolatedComponents": 23,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
   },
@@ -101,11 +101,11 @@
       "outDegree": 6
     },
     {
-      "component": "ai/domain-renderers/ArtifactRendererHost",
-      "outDegree": 5
+      "component": "shared/FeatureCardModal",
+      "outDegree": 6
     },
     {
-      "component": "shared/FeatureCardModal",
+      "component": "ai/domain-renderers/ArtifactRendererHost",
       "outDegree": 5
     },
     {
@@ -145,7 +145,7 @@
     {
       "fromDomain": "shared",
       "toDomain": "shared",
-      "count": 10
+      "count": 11
     },
     {
       "fromDomain": "dashboard",
