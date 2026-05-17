@@ -16,14 +16,18 @@ const INITIAL_SPOTLIGHT_STYLE: SpotlightStyle = {
 const ANCHOR_SELECTOR = '[data-spotlight-anchor="system-start"]';
 
 const SPOTLIGHT_FRAGMENTS = [
-  { x: -170, y: -92, width: 46, height: 8, rotate: -18, depth: 0.75 },
-  { x: -104, y: -142, width: 18, height: 18, rotate: 28, depth: -0.45 },
-  { x: 92, y: -132, width: 58, height: 7, rotate: 14, depth: 0.6 },
-  { x: 166, y: -46, width: 22, height: 22, rotate: 42, depth: -0.7 },
-  { x: 128, y: 80, width: 44, height: 8, rotate: -26, depth: 0.5 },
-  { x: 34, y: 138, width: 16, height: 16, rotate: 18, depth: -0.55 },
-  { x: -132, y: 104, width: 56, height: 7, rotate: 24, depth: 0.68 },
-  { x: -198, y: 24, width: 20, height: 20, rotate: -38, depth: -0.4 },
+  { x: -170, y: -92, width: 8, height: 8, rotate: -18, depth: 0.75 },
+  { x: -104, y: -142, width: 6, height: 6, rotate: 28, depth: -0.45 },
+  { x: 92, y: -132, width: 9, height: 9, rotate: 14, depth: 0.6 },
+  { x: 166, y: -46, width: 7, height: 7, rotate: 42, depth: -0.7 },
+  { x: 128, y: 80, width: 8, height: 8, rotate: -26, depth: 0.5 },
+  { x: 34, y: 138, width: 6, height: 6, rotate: 18, depth: -0.55 },
+  { x: -132, y: 104, width: 9, height: 9, rotate: 24, depth: 0.68 },
+  { x: -198, y: 24, width: 7, height: 7, rotate: -38, depth: -0.4 },
+  { x: -58, y: -188, width: 6, height: 6, rotate: -8, depth: 0.42 },
+  { x: 218, y: 18, width: 10, height: 10, rotate: 6, depth: 0.82 },
+  { x: 72, y: 188, width: 7, height: 7, rotate: -34, depth: -0.48 },
+  { x: -238, y: -38, width: 8, height: 8, rotate: 12, depth: 0.58 },
 ] as const;
 
 const clamp = (value: number, min: number, max: number) =>
@@ -65,18 +69,51 @@ export function MouseSpotlight() {
     };
 
     const updateFragments = (clientX: number, clientY: number) => {
-      const pullX = clamp((clientX - anchorPosition.x) * 0.045, -22, 22);
-      const pullY = clamp((clientY - anchorPosition.y) * 0.045, -18, 18);
+      const deltaX = clientX - anchorPosition.x;
+      const deltaY = clientY - anchorPosition.y;
+      const cursorDistance = Math.hypot(deltaX, deltaY) || 1;
+      const cursorUnitX = deltaX / cursorDistance;
+      const cursorUnitY = deltaY / cursorDistance;
+      const intensity = clamp(cursorDistance / 520, 0, 1);
+      const pullX = clamp(deltaX * 0.075, -52, 52);
+      const pullY = clamp(deltaY * 0.075, -42, 42);
 
       fragments.forEach((fragment, index) => {
-        const depth = SPOTLIGHT_FRAGMENTS[index]?.depth ?? 0.5;
-        fragment.style.setProperty(
-          '--react-x',
-          `${(pullX * depth).toFixed(2)}px`
+        const config = SPOTLIGHT_FRAGMENTS[index];
+        if (!config) return;
+
+        const fragmentDistance = Math.hypot(config.x, config.y) || 1;
+        const fragmentUnitX = config.x / fragmentDistance;
+        const fragmentUnitY = config.y / fragmentDistance;
+        const alignment =
+          fragmentUnitX * cursorUnitX + fragmentUnitY * cursorUnitY;
+        const exposedSide = (alignment + 1) / 2;
+        const radialBoost = (exposedSide - 0.35) * intensity * 18;
+        const depth = config.depth;
+        const reactX = pullX * depth + fragmentUnitX * radialBoost;
+        const reactY = pullY * depth + fragmentUnitY * radialBoost;
+        const reactRotate = clamp(
+          (pullX * 0.22 + pullY * 0.18) * depth + alignment * intensity * 12,
+          -18,
+          18
         );
+        const reactScale = 1 + intensity * (0.08 + exposedSide * 0.12);
+        const fragmentOpacity = clamp(
+          0.27 + intensity * 0.18 + exposedSide * 0.16,
+          0.24,
+          0.72
+        );
+
+        fragment.style.setProperty('--react-x', `${reactX.toFixed(2)}px`);
+        fragment.style.setProperty('--react-y', `${reactY.toFixed(2)}px`);
         fragment.style.setProperty(
-          '--react-y',
-          `${(pullY * depth).toFixed(2)}px`
+          '--react-rotate',
+          `${reactRotate.toFixed(2)}deg`
+        );
+        fragment.style.setProperty('--react-scale', reactScale.toFixed(3));
+        fragment.style.setProperty(
+          '--fragment-opacity',
+          fragmentOpacity.toFixed(3)
         );
       });
     };

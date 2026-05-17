@@ -23,12 +23,11 @@
       rgba(30, 64, 175, 0.10) 0%,
       transparent 50%
     );
-  animation: wave-drift 40s ease-in-out infinite;
-  transform: translateZ(0);
-  will-change: transform;
+  transform: none;
 }
 
-.landing-visual-surface .wave-particles::before {
+.landing-visual-surface .wave-particles::before,
+.landing-visual-surface .wave-particles::after {
   content: none;
 }
 
@@ -51,75 +50,36 @@
   top: var(--anchor-y, 42vh);
   width: var(--fragment-w);
   height: var(--fragment-h);
-  border: 1px solid rgba(125, 211, 252, 0.18);
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    rgba(45, 212, 191, 0.08),
-    rgba(125, 211, 252, 0.34),
-    rgba(168, 85, 247, 0.12)
-  );
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.78);
   box-shadow:
-    0 0 14px rgba(56, 189, 248, 0.12),
-    inset 0 0 10px rgba(255, 255, 255, 0.04);
-  clip-path: polygon(10% 0, 100% 20%, 88% 100%, 0 78%);
-  opacity: 0.48;
+    0 0 14px rgba(255, 255, 255, 0.22),
+    0 0 28px rgba(255, 255, 255, 0.08);
+  opacity: var(--fragment-opacity, 0.34);
   transform: translate3d(
       calc(var(--fragment-x) + var(--react-x, 0px)),
       calc(var(--fragment-y) + var(--react-y, 0px)),
       0
     )
-    rotate(var(--fragment-rotate));
+    rotate(calc(var(--fragment-rotate) + var(--react-rotate, 0deg)))
+    scale(var(--react-scale, 1));
   transition:
-    opacity 180ms ease,
-    transform 220ms ease-out;
+    opacity 160ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
   animation: mouse-fragment-idle 5.6s ease-in-out infinite;
   animation-delay: var(--fragment-delay);
-  will-change: transform;
-}
-
-.mouse-spotlight__fragment:nth-child(2n) {
-  border-color: rgba(196, 181, 253, 0.18);
-  background: linear-gradient(
-    90deg,
-    rgba(168, 85, 247, 0.1),
-    rgba(96, 165, 250, 0.28),
-    rgba(45, 212, 191, 0.09)
-  );
-}
-
-.mouse-spotlight__fragment:nth-child(3n) {
-  border-radius: 4px;
-  background: rgba(34, 211, 238, 0.22);
-}
-
-@keyframes wave-drift {
-  0%,
-  100% {
-    transform: translateX(0%) translateY(0%) scale(1);
-  }
-
-  25% {
-    transform: translateX(2%) translateY(-1.5%) scale(1.02);
-  }
-
-  50% {
-    transform: translateX(-2%) translateY(1.8%) scale(0.98);
-  }
-
-  75% {
-    transform: translateX(1.5%) translateY(-0.8%) scale(1.01);
-  }
+  will-change: transform, opacity;
 }
 
 @keyframes mouse-fragment-idle {
   0%,
   100% {
-    opacity: 0.28;
+    filter: brightness(0.92);
   }
 
   50% {
-    opacity: 0.52;
+    filter: brightness(1.18);
   }
 }
 
@@ -188,7 +148,6 @@
         rgba(156, 39, 176, 0.08) 0%,
         transparent 70%
       );
-    animation: none;
     opacity: 0.6;
   }
 

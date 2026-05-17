@@ -83,15 +83,32 @@ describe('MouseSpotlight', () => {
       expect(firstFragment?.style.getPropertyValue('--react-y')).not.toBe(
         '0.00px'
       );
+      expect(firstFragment?.style.getPropertyValue('--react-rotate')).not.toBe(
+        '0.00deg'
+      );
+      expect(
+        Number(firstFragment?.style.getPropertyValue('--react-scale'))
+      ).toBeGreaterThan(1);
+      expect(
+        Number(firstFragment?.style.getPropertyValue('--fragment-opacity'))
+      ).toBeGreaterThan(0.27);
     });
   });
 
   it('오비트 링 없이 반응 조각만 렌더링한다', () => {
     const { container } = render(<MouseSpotlight />);
+    const fragments = Array.from(
+      container.querySelectorAll<HTMLElement>('.mouse-spotlight__fragment')
+    );
 
-    expect(
-      container.querySelectorAll('.mouse-spotlight__fragment')
-    ).toHaveLength(8);
+    expect(fragments).toHaveLength(12);
+    fragments.forEach((fragment) => {
+      const width = fragment.style.getPropertyValue('--fragment-w');
+      const height = fragment.style.getPropertyValue('--fragment-h');
+
+      expect(width).toBe(height);
+      expect(Number(width.replace('px', ''))).toBeLessThanOrEqual(10);
+    });
     expect(container.querySelector('.mouse-spotlight__orbit')).toBeNull();
     expect(container.querySelector('.mouse-spotlight__signal')).toBeNull();
   });
