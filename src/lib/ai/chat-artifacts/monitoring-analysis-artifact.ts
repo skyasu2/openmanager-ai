@@ -547,7 +547,7 @@ export async function generateMonitoringAnalysisArtifact({
     analysis.factPack?.evidenceRefs
   );
 
-  return attachArtifactEnvelopeMetadata(
+  return attachArtifactEnvelopeMetadata<MonitoringAnalysisArtifact>(
     {
       kind: 'monitoring-analysis',
       generatedAt: new Date().toISOString(),
@@ -619,7 +619,7 @@ export async function generateServerMonitoringArtifact({
     analysis._source ||
     (typeof data._source === 'string' ? data._source : undefined);
 
-  return attachArtifactEnvelopeMetadata(
+  return attachArtifactEnvelopeMetadata<ServerMonitoringAnalysisArtifact>(
     {
       kind: 'server-monitoring-analysis',
       generatedAt: new Date().toISOString(),

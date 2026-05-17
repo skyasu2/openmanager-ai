@@ -396,7 +396,7 @@ export async function generateOpsProcedureArtifact({
   const metricLabel = METRIC_LABELS[metric];
   const generatedAt = new Date().toISOString();
 
-  return attachArtifactEnvelopeMetadata(
+  return attachArtifactEnvelopeMetadata<OpsProcedureArtifact>(
     {
       kind: 'ops-procedure',
       generatedAt,

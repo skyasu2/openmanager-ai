@@ -30,7 +30,9 @@ function readPreviousOpsProcedureArtifact({
   readPreviousArtifact,
 }: ArtifactExecutorContext): OpsProcedureArtifact | undefined {
   const artifact = readPreviousArtifact?.('ops-procedure');
-  return artifact?.kind === 'ops-procedure' ? artifact : undefined;
+  return artifact?.kind === 'ops-procedure'
+    ? (artifact as OpsProcedureArtifact)
+    : undefined;
 }
 
 async function executeOpsProcedureArtifact(

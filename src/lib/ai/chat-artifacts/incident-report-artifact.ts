@@ -187,7 +187,7 @@ export async function generateIncidentReportArtifact({
 
   const report = normalizeIncidentReport(data.report);
 
-  return attachArtifactEnvelopeMetadata(
+  return attachArtifactEnvelopeMetadata<IncidentReportArtifact>(
     {
       kind: 'incident-report',
       generatedAt: new Date().toISOString(),
