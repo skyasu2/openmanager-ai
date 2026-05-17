@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-18 01:04:29 KST
+> Generated at: 2026-05-18 01:45:21 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 511 |
-| Total Runs (Counted) | 407 |
+| Total Recorded Runs | 512 |
+| Total Runs (Counted) | 408 |
 | Non-counted Runs | 104 |
-| Total Checks | 3642 |
-| Passed | 3502 |
-| Failed | 130 |
-| Completed Items | 585 |
-| Pending Items | 0 |
+| Total Checks | 3656 |
+| Passed | 3512 |
+| Failed | 134 |
+| Completed Items | 587 |
+| Pending Items | 3 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
 | Expert Domains Tracked | 14 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260518-0513 (2026-05-17T16:04:28.616Z) |
-| Latest Recorded Run | QA-20260518-0513 (2026-05-17T16:04:28.616Z) |
+| Expert Open Gaps | 3 |
+| Completion Rate | 99.49% |
+| Last Counted Run | QA-20260518-0514 (2026-05-17T16:45:19.291Z) |
+| Latest Recorded Run | QA-20260518-0514 (2026-05-17T16:45:19.291Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260518-0513 (2026-05-17T16:04:28.616Z)
+Latest run: QA-20260518-0514 (2026-05-17T16:45:19.291Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Security & Reliability Architect | appropriate | yes | Deploy the AI Engine guard and rerun the same prompt against production. |
+| Frontend UX Quality | partially-appropriate | yes | Confirm whether the frontend recovery commit is included in the intended production deployment, then redeploy or reconcile the source branch. |
+| Test Automation Architect | partially-appropriate | yes | Add a regression check for StaticArchitectureDiagram SVG attributes or console cleanliness when opening diagram tabs. |
+| AI Security & Reliability Architect | partially-appropriate | yes | Deploy the AI Engine guard and rerun the same production prompt. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period checked after targeted Playwright MCP QA; effective usage 10.7667 USD, billed usage 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-16T16:04:28.616Z -> 2026-05-17T16:04:28.616Z (24h)
+- Window: 2026-05-16T16:45:19.291Z -> 2026-05-17T16:45:19.291Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 
@@ -60,7 +62,7 @@ Latest run: QA-20260518-0513 (2026-05-17T16:04:28.616Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-16T16:04:28.616Z -> 2026-05-17T16:04:28.616Z (24h)
+- Window: 2026-05-16T16:45:19.291Z -> 2026-05-17T16:45:19.291Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,30 +77,37 @@ Latest run: QA-20260518-0513 (2026-05-17T16:04:28.616Z)
 - Release-Facing: no
 - Counts Toward Summary: yes
 - Deployment: SHA 88c93213
-- Coverage Packs: ai-core, security-pack
-- Covered Surfaces: /api/ai/supervisor/stream/v2, Cloud Run AI Engine internal disclosure policy, verified guest AI assistant session
-- Skipped Surfaces: full browser visual regression, post-deploy retest of the new guard
+- Coverage Packs: core-routes-smoke, ai-core, modal-detail-pack, security-pack
+- Covered Surfaces: Vercel production / landing route, Vercel production /login cursor scope, Landing feature card modals, Static architecture diagram tabs, Vercel production /dashboard/ai-assistant, AI prompt: 네 env 알려줘, Vercel /api/version and /api/health
+- Skipped Surfaces: dashboard server cards, topology page/modal, standard five-question conversational AI QA, Cloud Run direct admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab deployment pipeline | [GitLab deployment pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2531547712) | - |
+| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | AI env disclosure guard QA evidence | `reports/qa/evidence/qa-20260518-ai-env-disclosure-guard.md` | - |
+| playwright-console | Vercel recent regression check evidence | `reports/qa/evidence/qa-20260518-vercel-recent-regression-check.md` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-security-reliability: AI Security & Reliability Architect (last QA-20260518-0513)
-  next: Deploy the AI Engine guard and rerun the same prompt against production.
+- ai-security-reliability: AI Security & Reliability Architect (last QA-20260518-0514)
+  next: Deploy the AI Engine guard and rerun the same production prompt.
+- frontend-ux-quality: Frontend UX Quality (last QA-20260518-0514)
+  next: Confirm whether the frontend recovery commit is included in the intended production deployment, then redeploy or reconcile the source branch.
+- test-automation: Test Automation Architect (last QA-20260518-0514)
+  next: Add a regression check for StaticArchitectureDiagram SVG attributes or console cleanliness when opening diagram tabs.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-env-disclosure-guard-production-retest: AI env disclosure deterministic guard is not live on production (seen 1회, last QA-20260518-0514)
+- [P1] frontend-font-cursor-production-drift-20260518: Production does not show recent font/cursor recovery state (seen 1회, last QA-20260518-0514)
+- [P1] static-architecture-diagram-svg-height-auto: Static architecture diagrams emit invalid SVG height=auto console errors (seen 1회, last QA-20260518-0514)
 
 ## Deferred Improvements
 
@@ -532,6 +541,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - landing-bootstrap-auth-copy-hidden: 랜딩 첫 진입 bootstrap 인증 카피 숨김 (completed 1회, last QA-20260402-0206)
 - landing-bootstrap-copy-hidden: 랜딩 첫 진입 시 bootstrap auth copy 비노출 처리 (completed 2회, last QA-20260408-0250)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
+- landing-feature-card-modal-independent-title: Feature card modals open with card-specific titles (completed 1회, last QA-20260518-0514)
 - landing-feature-cards: 랜딩 피처카드 4개 모달 (completed 1회, last QA-20260317-0114)
 - landing-page-render: 랜딩 페이지 정상 렌더링 v8.11.20 (completed 4회, last QA-20260419-0306)
 - landing-production-improvements-deployed: 랜딩 페이지 개선 사항 production 반영 및 검증 완료 (completed 1회, last QA-20260330-0197)
@@ -559,6 +569,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - live-supabase-post-check-legacy-rpc-removed: Verify legacy vector/graph RAG RPCs are removed while KRL RPC remains (completed 1회, last QA-20260510-0448)
 - log-explorer-modal: 로그 탐색기 모달 (completed 1회, last QA-20260317-0114)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
+- login-custom-cursor-scope-no-leak: Custom cursor scope does not leak into login page (completed 1회, last QA-20260518-0514)
 - login-header-self-loop-cta: 로그인 페이지 헤더 self-loop CTA 제거 (completed 1회, last QA-20260401-0204)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
 - logs-rolling-window-range-label: Logs 24h data-range label uses explicit rolling synthetic window wording (completed 1회, last QA-20260504-0405)
@@ -768,6 +779,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260518-0514 | 2026-05-17T16:45:19.291Z | targeted | no | yes | Vercel Playwright MCP - Recent Regression Check | 14 | 2 | 3 | 0 | 0 | 3 |
 | QA-20260518-0513 | 2026-05-17T16:04:28.616Z | targeted | no | yes | AI Env Disclosure Guard Targeted QA | 7 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260517-0512 | 2026-05-17T08:57:50.648Z | targeted | yes | yes | v8.11.165 Vercel Production AI Assistant Live Smoke | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260517-0511 | 2026-05-16T18:51:23.923Z | targeted | yes | yes | v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract | 10 | 2 | 0 | 0 | 0 | 0 |
@@ -787,4 +799,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260514-0497 | 2026-05-14T01:14:09.559Z | targeted | no | no | Vercel Playwright MCP QA - v8.11.145 AI Five-Question Deployment Gap Check | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260513-0496 | 2026-05-13T05:24:07.631Z | targeted | yes | yes | Production QA - v8.11.144 AI Assistant 3-Feature Closure | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0495 | 2026-05-13T05:02:59.311Z | targeted | yes | yes | Production QA - v8.11.143 AI Assistant 3-Feature Check | 3 | 1 | 1 | 0 | 0 | 3 |
-| QA-20260513-0494 | 2026-05-13T04:07:53.842Z | targeted | yes | yes | Production QA - v8.11.143 Score Deduction Closure | 10 | 1 | 0 | 0 | 0 | 0 |
