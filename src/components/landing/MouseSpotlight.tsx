@@ -1,16 +1,21 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useEffect, useRef } from 'react';
 
+type SpotlightStyle = CSSProperties & {
+  '--x': string;
+  '--y': string;
+};
+
+const INITIAL_SPOTLIGHT_STYLE: SpotlightStyle = {
+  '--x': '50vw',
+  '--y': '40vh',
+};
+
 /**
- * Linear/Vercel 스타일 마우스 스포트라이트.
- *
- * 레퍼런스 기준:
- * - 반경 900px (넓을수록 중심 밀도 낮아져 자연스러움)
- * - 인디고 틴트 rgba(200,210,255,0.045) — 순수 흰색보다 덜 눈에 띄고
- *   wave-particles 보라/인디고 계열과 조화
- * - 45%에서 transparent — 가장자리 경계선 없는 자연스러운 페이드
- * - rAF 업데이트로 리플로우 없이 동작
+ * OpenManager 스타일 마우스 스포트라이트.
+ * 운영 신호가 커서 주변으로 모이는 느낌만 남기고 실제 UI보다 뒤에 둔다.
  */
 export function MouseSpotlight() {
   const ref = useRef<HTMLDivElement>(null);
@@ -18,7 +23,7 @@ export function MouseSpotlight() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    let rafId: number;
+    let rafId = 0;
 
     const onMove = (e: MouseEvent) => {
       cancelAnimationFrame(rafId);
@@ -39,11 +44,15 @@ export function MouseSpotlight() {
     <div
       ref={ref}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[2]"
-      style={{
-        background:
-          'radial-gradient(900px circle at var(--x, 50vw) var(--y, 40vh), rgba(200,210,255,0.045), transparent 45%)',
-      }}
-    />
+      className="mouse-spotlight"
+      data-testid="mouse-spotlight"
+      style={INITIAL_SPOTLIGHT_STYLE}
+    >
+      <span className="mouse-spotlight__orbit mouse-spotlight__orbit--outer" />
+      <span className="mouse-spotlight__orbit mouse-spotlight__orbit--inner" />
+      <span className="mouse-spotlight__signal mouse-spotlight__signal--primary" />
+      <span className="mouse-spotlight__signal mouse-spotlight__signal--metric" />
+      <span className="mouse-spotlight__signal mouse-spotlight__signal--trace" />
+    </div>
   );
 }
