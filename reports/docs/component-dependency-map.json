@@ -6,16 +6,16 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
-    "sharedComponentNodes": 146,
+    "sharedComponentNodes": 147,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 153
+    "totalComponentNodes": 154
   },
   "metrics": {
-    "componentSourceLines": 30679,
-    "componentNodes": 146,
-    "componentEdges": 144,
-    "graphDensity": 0.006802,
-    "aliasEdges": 39,
+    "componentSourceLines": 30807,
+    "componentNodes": 147,
+    "componentEdges": 146,
+    "graphDensity": 0.006803,
+    "aliasEdges": 41,
     "relativeEdges": 105,
     "isolatedComponents": 23,
     "sccCycleGroups": 0,
@@ -67,7 +67,7 @@
       "inDegree": 2
     },
     {
-      "component": "ai/IncidentReportArtifactCard",
+      "component": "ai/AssistantAgentBadge",
       "inDegree": 2
     }
   ],
@@ -86,11 +86,11 @@
     },
     {
       "component": "ai-sidebar/SidebarMessage",
-      "outDegree": 7
+      "outDegree": 8
     },
     {
       "component": "ai/AIWorkspaceMessage",
-      "outDegree": 6
+      "outDegree": 7
     },
     {
       "component": "dashboard/DashboardRoutedContent",
@@ -125,7 +125,7 @@
     {
       "fromDomain": "ai",
       "toDomain": "ai",
-      "count": 42
+      "count": 43
     },
     {
       "fromDomain": "dashboard",
@@ -140,7 +140,7 @@
     {
       "fromDomain": "ai-sidebar",
       "toDomain": "ai",
-      "count": 12
+      "count": 13
     },
     {
       "fromDomain": "shared",

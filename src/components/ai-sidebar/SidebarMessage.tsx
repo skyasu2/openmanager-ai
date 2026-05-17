@@ -3,6 +3,7 @@
 import { Bot, Cpu, Play, User } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
+import { AssistantAgentBadge } from '@/components/ai/AssistantAgentBadge';
 import { IncidentReportArtifactCard } from '@/components/ai/IncidentReportArtifactCard';
 import { MessageActions } from '@/components/ai/MessageActions';
 import { MonitoringAnalysisArtifactCard } from '@/components/ai/MonitoringAnalysisArtifactCard';
@@ -100,6 +101,11 @@ export const MessageComponent = memo<{
     const responseLatencyLabel = getResponseLatencyLabel(
       message.metadata?.processingTime
     );
+    const showAssistantMetaChips =
+      message.role === 'assistant' &&
+      !message.isStreaming &&
+      (Boolean(message.metadata?.handoffHistory?.length) ||
+        Boolean(responseLatencyLabel));
     const isCollapsibleAssistantResponse = Boolean(
       assistantResponseView?.shouldCollapse
     );
@@ -175,7 +181,7 @@ export const MessageComponent = memo<{
                 className={`overflow-hidden rounded-2xl p-4 shadow-xs ${
                   message.role === 'user'
                     ? 'rounded-tr-sm bg-linear-to-br from-blue-500 to-blue-600 text-white'
-                    : 'rounded-tl-sm border border-gray-100 bg-white text-gray-800'
+                    : 'rounded-tl-sm border border-slate-200 bg-gradient-to-br from-slate-50 to-white text-slate-800'
                 }`}
                 data-testid={
                   message.role === 'assistant' ? 'ai-response' : undefined
@@ -253,21 +259,27 @@ export const MessageComponent = memo<{
 
             {/* 타임스탬프 & 메타데이터 */}
             <div
-              className={`mt-1 flex items-center justify-between ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+              className={`mt-1 flex items-center justify-between gap-2 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
             >
               <p className="text-xs text-gray-500">
                 {typeof message.timestamp === 'string'
                   ? new Date(message.timestamp).toLocaleTimeString()
                   : message.timestamp.toLocaleTimeString()}
               </p>
-              {/* 처리 시간 표시 (assistant 메시지만) */}
-              {message.role === 'assistant' && responseLatencyLabel && (
-                <span
-                  className={`rounded-full border px-2 py-0.5 text-xs font-medium ${responseLatencyLabel.className}`}
-                  title={responseLatencyLabel.title}
-                >
-                  {responseLatencyLabel.label}
-                </span>
+              {showAssistantMetaChips && (
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <AssistantAgentBadge
+                    handoffHistory={message.metadata?.handoffHistory}
+                  />
+                  {responseLatencyLabel && (
+                    <span
+                      className={`rounded-full border px-2 py-0.5 text-xs font-medium ${responseLatencyLabel.className}`}
+                      title={responseLatencyLabel.title}
+                    >
+                      {responseLatencyLabel.label}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
 

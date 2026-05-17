@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 146 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 147 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 153 |
+| Total TSX component inventory | 154 |
 
 ## App Route-Local Component Distribution
 
@@ -51,11 +51,11 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 30679 |
-| Component nodes | 146 |
-| Component edges | 144 |
+| Component source lines | 30807 |
+| Component nodes | 147 |
+| Component edges | 146 |
 | Graph density | 0.68% |
-| Alias edges (`@/components/*`) | 39 |
+| Alias edges (`@/components/*`) | 41 |
 | Relative edges (`./`, `../`) | 105 |
 | Isolated components | 23 |
 | SCC cycle groups | 0 |
@@ -65,7 +65,7 @@ Route-local component files:
 
 ```mermaid
 flowchart LR
-  d0["ai (43)"]
+  d0["ai (44)"]
   d1["ai-sidebar (16)"]
   d2["auth (1)"]
   d3["charts (2)"]
@@ -79,10 +79,10 @@ flowchart LR
   d11["system (2)"]
   d12["ui (9)"]
   d13["unified-profile (3)"]
-  d0 -->|42| d0
+  d0 -->|43| d0
   d4 -->|32| d4
   d1 -->|14| d1
-  d1 -->|12| d0
+  d1 -->|13| d0
   d10 -->|11| d10
   d4 -->|5| d12
   d0 -->|3| d1
@@ -107,7 +107,7 @@ flowchart LR
 
 | Domain | Node Count |
 | --- | --- |
-| ai | 43 |
+| ai | 44 |
 | dashboard | 34 |
 | shared | 25 |
 | ai-sidebar | 16 |
@@ -126,10 +126,10 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
-| ai | ai | 42 |
+| ai | ai | 43 |
 | dashboard | dashboard | 32 |
 | ai-sidebar | ai-sidebar | 14 |
-| ai-sidebar | ai | 12 |
+| ai-sidebar | ai | 13 |
 | shared | shared | 11 |
 | dashboard | ui | 5 |
 | ai | ai-sidebar | 3 |
@@ -164,7 +164,7 @@ flowchart LR
 | ai/AIContentArea | 2 |
 | ai/AnalysisBasisBadge | 2 |
 | ai/artifact-workspace/ArtifactWorkspacePanel | 2 |
-| ai/IncidentReportArtifactCard | 2 |
+| ai/AssistantAgentBadge | 2 |
 
 ## Top Component Hubs by Out-Degree (Top 12)
 
@@ -173,8 +173,8 @@ flowchart LR
 | ai/AIWorkspace | 10 |
 | ai-sidebar/EnhancedAIChat | 9 |
 | ai-sidebar/AISidebarV4 | 8 |
-| ai-sidebar/SidebarMessage | 7 |
-| ai/AIWorkspaceMessage | 6 |
+| ai-sidebar/SidebarMessage | 8 |
+| ai/AIWorkspaceMessage | 7 |
 | dashboard/DashboardRoutedContent | 6 |
 | dashboard/ServerDetailView | 6 |
 | shared/FeatureCardModal | 6 |
@@ -194,8 +194,8 @@ flowchart LR
 ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, ai/AIAssistantIconPanel, ai/AIContentArea, ai/AIWorkspaceEmbeddedLayout, ai/AIWorkspaceFullscreenHeader
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/DeveloperPanel, ai-sidebar/EnhancedAIChat
-ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard, ai/WebSourceCards
-ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/analysis-basis/ProviderAttributionChip, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer
+ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/AssistantAgentBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard
+ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/AssistantAgentBadge, ai/analysis-basis/ProviderAttributionChip, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
 shared/FeatureCardModal -> shared/FeatureCardDiagramSummary, shared/FeatureCardModalHeader, shared/StaticArchitectureDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
