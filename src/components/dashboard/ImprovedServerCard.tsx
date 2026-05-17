@@ -194,7 +194,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       statusAccentBorderClasses[safeServer.status] ||
       statusAccentBorderClasses.online;
     const actionRailClass = `flex items-center gap-1 ${isCompactVariant ? 'pt-1 sm:pt-2' : 'pt-4'}`;
-    const actionButtonClass = `flex items-center justify-center bg-black/5 text-gray-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+    const actionButtonClass = `flex items-center justify-center bg-slate-100 text-gray-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
       isCompactVariant ? 'h-9 w-9 rounded-lg' : 'h-11 w-11 rounded-full'
     }`;
 

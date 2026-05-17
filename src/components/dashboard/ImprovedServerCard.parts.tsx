@@ -108,7 +108,7 @@ interface DetailRowProps {
 }
 
 export const DetailRow = ({ icon, label, value }: DetailRowProps) => (
-  <div className="flex items-center gap-1.5 rounded-md border border-gray-200/50 bg-black/5 px-2 py-1.5">
+  <div className="flex items-center gap-1.5 rounded-md border border-gray-200/50 bg-slate-50 px-2 py-1.5">
     <div className="text-gray-500">{icon}</div>
     <div className="min-w-0">
       <div className="text-2xs font-medium uppercase tracking-wide text-gray-500">

@@ -20,11 +20,11 @@ import type { DashboardStats } from './types/dashboard.types';
 const ServerDashboard = dynamic(() => import('./ServerDashboard'), {
   ssr: false,
   loading: () => (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur-md">
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="animate-pulse space-y-4">
-        <div className="h-4 rounded bg-white/10" />
-        <div className="h-4 rounded bg-white/10" />
-        <div className="h-4 w-5/6 rounded bg-white/10" />
+        <div className="h-4 rounded bg-slate-200" />
+        <div className="h-4 rounded bg-slate-200" />
+        <div className="h-4 w-5/6 rounded bg-slate-200" />
       </div>
     </div>
   ),

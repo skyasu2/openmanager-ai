@@ -21,7 +21,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('dashboard modal light-mode contract', () => {
-  it('TopologyModal keeps a light shell and isolates the dark graph canvas', () => {
+  it('TopologyModal keeps a light shell and light graph canvas', () => {
     render(<TopologyModal open onClose={vi.fn()} servers={[]} />);
 
     const shell = screen.getByTestId('topology-modal-shell');
@@ -29,7 +29,7 @@ describe('dashboard modal light-mode contract', () => {
 
     expect(shell).toHaveClass('bg-white');
     expect(shell).not.toHaveClass('bg-slate-900');
-    expect(canvas).toHaveClass('bg-slate-950');
+    expect(canvas).toHaveClass('bg-slate-50');
   });
 
   it('AILoginRequiredModal uses the dashboard light dialog shell', () => {

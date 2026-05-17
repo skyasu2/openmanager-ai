@@ -172,10 +172,35 @@ export function TopologyView({
         </div>
       </div>
 
-      {/* Compact note strip */}
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-gray-50 px-4 py-1.5 text-[10px] text-gray-500 sm:px-6">
-        <span>현실 반영: 계층 분리, DB 복제, 백업 경로</span>
-        <span className="hidden sm:inline">상태 표시는 5초 주기로 갱신</span>
+      {/* Architecture summary */}
+      <div className="flex shrink-0 flex-col gap-3 border-b border-gray-100 bg-slate-50/80 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-indigo-500">
+            Topology Summary
+          </p>
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-slate-600">
+            {TOPOLOGY_DIAGRAM.description}
+          </p>
+        </div>
+        <dl className="grid shrink-0 grid-cols-3 gap-2">
+          {[
+            { label: 'Layers', value: TOTAL_LAYERS },
+            { label: 'Nodes', value: TOTAL_NODES },
+            { label: 'Edges', value: TOTAL_EDGES },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-center shadow-xs"
+            >
+              <dt className="text-[10px] font-medium text-slate-400">
+                {item.label}
+              </dt>
+              <dd className="mt-0.5 text-sm font-semibold text-slate-800">
+                {item.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
 
       {/* Topology controls */}
@@ -214,7 +239,7 @@ export function TopologyView({
 
       {/* Content */}
       <div
-        className="relative flex-1 bg-slate-950"
+        className="relative flex-1 bg-slate-50"
         data-testid="topology-modal-canvas"
       >
         <Suspense
@@ -282,7 +307,7 @@ export function TopologyModal({ open, onClose, servers }: TopologyModalProps) {
       }}
     >
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-500/25 backdrop-blur-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           aria-label="인프라 토폴로지 맵"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 focus:outline-none"

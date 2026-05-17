@@ -27,7 +27,7 @@ export const AnimatedAISidebar = dynamic(
   },
   {
     loading: () => (
-      <div className="fixed inset-0 z-50 h-dvh w-screen max-w-none border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 md:right-0 md:left-auto md:w-96 lg:w-[680px]">
+      <div className="fixed inset-0 z-50 h-dvh w-screen max-w-none border-l border-gray-200 bg-white md:right-0 md:left-auto md:w-96 lg:w-[680px]">
         <div className="flex h-full items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
         </div>
@@ -38,14 +38,14 @@ export const AnimatedAISidebar = dynamic(
 );
 
 export const ContentLoadingSkeleton = () => (
-  <div className="min-h-screen bg-gray-100 p-6 dark:bg-gray-900">
+  <div className="min-h-screen bg-gray-100 p-6">
     <div className="space-y-6">
-      <div className="h-16 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800"></div>
+      <div className="h-16 animate-pulse rounded-lg bg-gray-200"></div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="h-24 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800"
+            className="h-24 animate-pulse rounded-lg bg-gray-200"
           ></div>
         ))}
       </div>
@@ -53,7 +53,7 @@ export const ContentLoadingSkeleton = () => (
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
           <div
             key={i}
-            className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800"
+            className="h-48 animate-pulse rounded-lg bg-gray-200"
           ></div>
         ))}
       </div>

@@ -207,7 +207,7 @@ export function DashboardNavigation({
           <button
             type="button"
             aria-label="대시보드 메뉴 배경 닫기"
-            className="absolute inset-0 bg-slate-950/45"
+            className="absolute inset-0 bg-slate-500/25"
             onClick={() => setMobileOpen(false)}
           />
           <div

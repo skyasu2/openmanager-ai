@@ -378,7 +378,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           type="button"
           aria-label="사이드바 닫기"
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-slate-500/25 backdrop-blur-sm md:hidden"
         />
       )}
       <div

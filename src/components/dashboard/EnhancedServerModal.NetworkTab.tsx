@@ -86,24 +86,26 @@ export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
       {/* 네트워크 상태 카드들 */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* 네트워크 상태 카드 */}
-        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-500 to-teal-600 p-6 shadow-xl">
-          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm ring-1 ring-emerald-50">
+          <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-emerald-400 to-teal-500" />
           <div className="relative z-10">
             <div className="mb-4 flex items-center justify-between">
-              <h4 className="text-lg font-bold text-white">네트워크 상태</h4>
+              <h4 className="text-lg font-bold text-slate-900">
+                네트워크 상태
+              </h4>
               <span className="text-2xl">🌍</span>
             </div>
             <div className="mb-4 flex items-center gap-3">
               <div
                 className={`h-4 w-4 rounded-full ${networkStatusInfo.color} shadow-lg`}
               />
-              <span className="text-xl font-bold text-white">
+              <span className="text-xl font-bold text-slate-900">
                 {networkStatusInfo.text}
               </span>
             </div>
-            <div className="rounded-lg bg-white/20 p-3 backdrop-blur-sm">
-              <div className="mb-1 text-xs text-white/80">네트워크 속도</div>
-              <div className="text-2xl font-bold text-white">
+            <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-3">
+              <div className="mb-1 text-xs text-emerald-700">네트워크 속도</div>
+              <div className="text-2xl font-bold text-emerald-900">
                 {server.specs?.network_speed || '1 Gbps'}
               </div>
             </div>
@@ -111,26 +113,28 @@ export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
         </div>
 
         {/* 네트워크 사용률 카드 */}
-        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 p-6 shadow-xl">
-          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
+        <div className="relative overflow-hidden rounded-2xl border border-blue-100 bg-white p-6 shadow-sm ring-1 ring-blue-50">
+          <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-blue-400 to-indigo-500" />
           <div className="relative z-10">
             <div className="mb-4 flex items-center justify-between">
-              <h4 className="text-lg font-bold text-white">네트워크 사용률</h4>
+              <h4 className="text-lg font-bold text-slate-900">
+                네트워크 사용률
+              </h4>
               <span className="text-2xl">📊</span>
             </div>
-            <div className="mb-2 text-4xl font-bold text-white">
+            <div className="mb-2 text-4xl font-bold text-blue-700">
               {latestNetwork.toFixed(1)}%
             </div>
-            <div className="rounded-lg bg-white/20 p-3 backdrop-blur-sm">
+            <div className="rounded-lg border border-blue-100 bg-blue-50 p-3">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-white/80">대역폭 상태</span>
+                <span className="text-blue-700">대역폭 상태</span>
                 <span
                   className={`font-bold ${
                     latestNetwork >= networkThreshold.critical
-                      ? 'text-red-100'
+                      ? 'text-red-700'
                       : latestNetwork >= networkThreshold.warning
-                        ? 'text-amber-100'
-                        : 'text-emerald-100'
+                        ? 'text-amber-700'
+                        : 'text-emerald-700'
                   }`}
                 >
                   {latestNetwork >= networkThreshold.critical
