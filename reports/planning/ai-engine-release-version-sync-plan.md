@@ -1,13 +1,14 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-17
 > Tags: cloud-run, release, gitlab-ci, ai-engine
 
 # Release Component Version Contract Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-17
+- 완료일: 2026-05-17
 - TODO.md 연결: Active Tasks > 릴리스 구성요소 버전 계약 정리
 
 ## 목표
@@ -86,7 +87,34 @@ aiEngine version         = Cloud Run AI Engine 구현체 버전
 - [x] T3 — release script 분리 버전 정책 반영.
 - [x] T4 — `ai-engine-post-deploy-smoke.sh` expected AI Engine version 검증 추가.
 - [x] T5 — targeted tests 및 기본 검증 실행.
-- [ ] T6 — 다음 semver release/tag pipeline에서 component version 계약 재확인.
+- [x] T6 — 다음 semver release/tag pipeline에서 component version 계약 재확인.
+
+## T6 검증 결과
+
+2026-05-17 KST, `RELEASE_BUMP_AI_ENGINE_VERSION=1 npm run release:publish:patch`로 `v8.11.166` semver tag pipeline을 실행했다.
+
+```text
+release commit  : 88c93213e chore(release): 8.11.166
+tag pipeline    : 2531547712 success
+frontend deploy : post_deploy_smoke success
+ai-engine deploy: deploy_ai_engine success
+ai-engine smoke : post_deploy_ai_engine_smoke success
+```
+
+핵심 로그:
+
+```text
+decision=deploy reason=ai_engine_version_metadata_release_tag files="cloud-run/ai-engine/package-lock.json cloud-run/ai-engine/package.json" tag=v8.11.166
+App Version:8.11.166
+Free-tier guardrails passed
+```
+
+실서비스 확인:
+
+```text
+Vercel /api/version: version=8.11.166, versions.overall=8.11.166, versions.frontend=8.11.166
+Cloud Run /health: status=ok, service=ai-engine, version=8.11.166
+```
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -100,5 +128,5 @@ aiEngine version         = Cloud Run AI Engine 구현체 버전
 
 - [x] targeted CI unit tests 통과.
 - [x] `git diff --check` 통과.
-- [ ] 다음 semver tag pipeline에서 `deploy_ai_engine`가 AI Engine version-only 변경을 skip하지 않는다.
-- [ ] Cloud Run `/health.version`이 AI Engine expected package version과 일치한다.
+- [x] 다음 semver tag pipeline에서 `deploy_ai_engine`가 AI Engine version-only 변경을 skip하지 않는다.
+- [x] Cloud Run `/health.version`이 AI Engine expected package version과 일치한다.
