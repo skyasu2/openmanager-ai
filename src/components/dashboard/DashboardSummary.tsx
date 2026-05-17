@@ -136,8 +136,8 @@ function StatusCard({
       aria-label={`${label} ${count}대 필터`}
       aria-pressed={isInteractive ? activeFilter === status : undefined}
       className={cn(
-        'group relative overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md p-4 text-left min-h-[84px]',
-        'transition-all duration-300 hover:shadow-lg hover:scale-[1.02]',
+        'group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-md p-4 text-left min-h-[84px]',
+        'border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ring-1 ring-white/60',
         gradient.border,
         gradient.glow,
         onFilterChange && 'cursor-pointer active:scale-[0.98]',
@@ -166,8 +166,8 @@ function StatusCard({
         </span>
         <span
           className={cn(
-            'mt-2 text-2xl font-semibold tracking-tight',
-            countColorClass && count > 0 ? countColorClass : 'text-gray-800'
+            'mt-2 text-3xl font-bold tracking-tight tabular-nums leading-none',
+            countColorClass && count > 0 ? countColorClass : 'text-slate-700'
           )}
         >
           {count}
@@ -258,7 +258,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         {/* 1. Total Servers - 그라데이션 강화 */}
         <div
           data-testid="dashboard-total-card"
-          className="order-3 lg:order-1 group relative flex flex-row items-center justify-between rounded-2xl border border-white/60 bg-white/60 backdrop-blur-md p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden"
+          className="order-3 lg:order-1 group relative flex flex-row items-center justify-between rounded-2xl border border-blue-100/70 bg-white/80 backdrop-blur-md p-5 shadow-sm ring-1 ring-blue-50 transition-all duration-300 hover:shadow-blue-100/60 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden"
         >
           {/* 그라데이션 배경 */}
           <div
@@ -272,9 +272,10 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
               </span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-semibold text-gray-800 leading-none tracking-tight">
+              <span className="text-4xl font-bold text-slate-800 leading-none tracking-tight tabular-nums">
                 {safeStats.total}
               </span>
+              <span className="text-sm font-medium text-slate-400">대</span>
             </div>
             {dataSlotInfo && (
               <p className="mt-2 text-[11px] font-medium text-gray-500">
@@ -424,33 +425,33 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             <div className="flex flex-1 shrink-0 flex-wrap items-center justify-end gap-3 text-center pr-1 sm:gap-4 sm:pr-4">
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-semibold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
+                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.critical > 0 ? 'text-rose-500' : 'text-slate-300'}`}
                 >
                   {safeStats.critical}
                 </div>
-                <div className="mt-1 text-xs font-medium uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
                   위험
                 </div>
               </div>
-              <div className="h-10 w-px bg-gray-100" />
+              <div className="h-10 w-px bg-slate-100" />
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-semibold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
+                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.warning > 0 ? 'text-amber-500' : 'text-slate-300'}`}
                 >
                   {safeStats.warning}
                 </div>
-                <div className="mt-1 text-xs font-medium uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
                   경고
                 </div>
               </div>
-              <div className="h-10 w-px bg-gray-100" />
+              <div className="h-10 w-px bg-slate-100" />
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-semibold leading-none tabular-nums ${safeStats.offline > 0 ? 'text-slate-600' : 'text-gray-400'}`}
+                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.offline > 0 ? 'text-slate-500' : 'text-slate-300'}`}
                 >
                   {safeStats.offline}
                 </div>
-                <div className="mt-1 text-xs font-medium uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
                   오프라인
                 </div>
               </div>

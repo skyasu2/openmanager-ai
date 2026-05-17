@@ -228,8 +228,8 @@ export default memo(function DashboardContent({
             />
           </>
         ) : (
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-            <div className="text-center text-gray-500">
+          <div className="rounded-xl border border-slate-200/60 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
+            <div className="text-center text-slate-500">
               {emptyStateMode === 'filtered-empty' ? (
                 <>
                   <p className="mb-2 text-lg">
