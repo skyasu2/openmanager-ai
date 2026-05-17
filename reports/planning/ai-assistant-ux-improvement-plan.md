@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: How-to
 > Last reviewed: 2026-05-17
 > Tags: ai-assistant, ux, frontend, chat, sidebar
@@ -9,6 +9,10 @@
 **작성 일자**: 2026-05-17  
 **분석 범위**: AI 어시스턴트 사이드바 + 전체 페이지 (`/dashboard/ai-assistant`)  
 **비교 기준**: ChatGPT, Claude.ai 디자인 패턴 및 UX 관행
+
+## 진행 기록
+
+- 2026-05-17 Codex: Phase 1 착수. T1 레일 텍스트 줄바꿈 방어, T2 대시보드 내 AI 어시스턴트 헤더 통합 및 중복 채팅 헤더 제거, T5 기본 접힘 상태 확인 완료.
 
 ---
 
@@ -346,11 +350,11 @@ Phase 3 — 웰컴 화면 (별도 세션, 데이터 연동 필요)
 
 ## 완료 기준 (전체)
 
-- [ ] T1: 미니뷰 텍스트 줄바꿈 없음
-- [ ] T2: 헤더 1줄로 통합
+- [x] T1: 미니뷰 텍스트 줄바꿈 없음
+- [x] T2: 헤더 1줄로 통합
 - [ ] T3: 웰컴 화면에 현재 서버 상태 반영
 - [ ] T4: 사용자/AI 버블 시각 구분 명확
-- [ ] T5: 분석 근거 기본 접힘
+- [x] T5: 분석 근거 기본 접힘
 - [ ] T6: 스크롤 복귀 버튼 동작
 - [ ] T7: 에이전트 배지 표시
 - [ ] `npm run validate:all` 통과

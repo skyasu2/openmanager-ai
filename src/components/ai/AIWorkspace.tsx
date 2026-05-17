@@ -367,6 +367,7 @@ export default function AIWorkspace({
           estimatedWaitSeconds={estimatedWaitSeconds}
           queuedQueries={queuedQueries}
           removeQueuedQuery={removeQueuedQuery}
+          showInternalHeader={false}
         />
       </Activity>
       <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>

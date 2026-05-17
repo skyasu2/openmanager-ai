@@ -1,6 +1,6 @@
 'use client';
 
-import { PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { Bot, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
@@ -34,8 +34,22 @@ export function AIWorkspaceEmbeddedLayout({
   return (
     <div className="flex h-full min-h-0 w-full overflow-hidden bg-white text-gray-900">
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-3 py-2 sm:px-4">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2 sm:gap-3">
+            <div className="flex h-10 shrink-0 items-center gap-2 pr-1">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
+                <Bot className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <h1 className="truncate text-sm font-semibold text-slate-900">
+                  AI 어시스턴트
+                </h1>
+                <p className="sr-only">
+                  질의, Reporter, Analyst 기능을 한 화면에서 실행
+                </p>
+              </div>
+            </div>
+
             {AI_WORKSPACE_FUNCTION_TABS.map((item) => {
               const Icon = item.icon;
               const active = selectedFunction === item.id;
@@ -48,7 +62,7 @@ export function AIWorkspaceEmbeddedLayout({
                   aria-label={`${item.label} ${item.description}`}
                   aria-pressed={active}
                   className={cn(
-                    'inline-flex h-11 items-center gap-2 rounded-lg border px-3 text-left transition-colors',
+                    'inline-flex h-10 items-center gap-2 rounded-lg border px-2.5 text-left transition-colors sm:px-3',
                     active
                       ? 'border-blue-200 bg-blue-50 text-blue-700'
                       : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -59,7 +73,7 @@ export function AIWorkspaceEmbeddedLayout({
                     <span className="block text-sm font-semibold leading-tight">
                       {item.label}
                     </span>
-                    <span className="block text-xs leading-tight text-slate-500">
+                    <span className="hidden text-xs leading-tight text-slate-500 sm:block">
                       {item.description}
                     </span>
                   </span>

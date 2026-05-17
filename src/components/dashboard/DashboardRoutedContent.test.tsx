@@ -306,5 +306,11 @@ describe('DashboardRoutedContent route query contracts', () => {
       'flex-1',
       'overflow-hidden'
     );
+    expect(
+      screen.queryByRole('heading', { name: 'AI 어시스턴트' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('질의, Reporter, Analyst 기능을 한 화면에서 실행')
+    ).not.toBeInTheDocument();
   });
 });

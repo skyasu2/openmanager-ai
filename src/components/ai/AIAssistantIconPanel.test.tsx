@@ -27,7 +27,7 @@ describe('AIAssistantIconPanel', () => {
       />
     );
 
-    expect(screen.getByText('AI 기능')).toBeInTheDocument();
+    expect(screen.getByText('AI 기능')).toHaveClass('whitespace-nowrap');
     expect(screen.queryByText('AI 활성')).not.toBeInTheDocument();
     expect(container.querySelector('.animate-pulse')).toBeNull();
   });

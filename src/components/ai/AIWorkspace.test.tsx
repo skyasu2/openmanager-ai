@@ -345,6 +345,9 @@ describe('AIWorkspace', () => {
     render(<AIWorkspace embedded />);
 
     expect(
+      screen.getByRole('heading', { name: 'AI 어시스턴트' })
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole('button', { name: /AI Chat\s+자연어 질의/i })
     ).toBeInTheDocument();
     expect(
@@ -357,6 +360,21 @@ describe('AIWorkspace', () => {
       screen.queryByRole('button', { name: '대시보드로 돌아가기' })
     ).not.toBeInTheDocument();
     expect(screen.queryByText('AI Engine Active')).not.toBeInTheDocument();
+
+    const lastCall = mockEnhancedAIChat.mock.calls.at(-1)?.[0] as
+      | Record<string, unknown>
+      | undefined;
+    expect(lastCall?.showInternalHeader).toBe(false);
+  });
+
+  it('hides the nested chat header inside the fullscreen workspace', () => {
+    render(<AIWorkspace />);
+
+    const lastCall = mockEnhancedAIChat.mock.calls.at(-1)?.[0] as
+      | Record<string, unknown>
+      | undefined;
+
+    expect(lastCall?.showInternalHeader).toBe(false);
   });
 
   it('does not expose internal agent names in fullscreen function navigation', () => {

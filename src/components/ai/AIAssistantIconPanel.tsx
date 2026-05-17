@@ -217,8 +217,10 @@ export default function AIAssistantIconPanel({
       className={`flex flex-col space-y-2 border-l border-gray-200 bg-white p-3 ${className}`}
     >
       {/* 헤더 */}
-      <div className="mb-2 text-center">
-        <p className="text-xs font-medium text-gray-600">AI 기능</p>
+      <div className="mb-2 flex justify-center">
+        <p className="whitespace-nowrap text-center text-xs font-medium text-gray-600">
+          AI 기능
+        </p>
       </div>
 
       {/* 아이콘 버튼들 - 🔧 P3: 메모이제이션된 IconButton 사용 */}
