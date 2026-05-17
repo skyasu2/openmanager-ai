@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-17T18:08:49.082Z"
+    "updatedAt": "2026-05-17T18:27:54.947Z"
   },
   "sequence": {
-    "nextRunNumber": 516
+    "nextRunNumber": 517
   },
   "summary": {
-    "totalRecordedRuns": 513,
-    "totalRuns": 409,
+    "totalRecordedRuns": 514,
+    "totalRuns": 410,
     "excludedRuns": 104,
-    "totalChecks": 3670,
-    "totalPassed": 3526,
+    "totalChecks": 3690,
+    "totalPassed": 3545,
     "totalFailed": 134,
     "completionRate": 100,
     "completedItems": 590,
@@ -21,10 +21,10 @@
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0515",
-    "lastRecordedAt": "2026-05-17T18:08:49.082Z",
-    "latestRecordedRunId": "QA-20260518-0515",
-    "latestRecordedAt": "2026-05-17T18:08:49.082Z"
+    "lastRunId": "QA-20260518-0516",
+    "lastRecordedAt": "2026-05-17T18:27:54.947Z",
+    "latestRecordedRunId": "QA-20260518-0516",
+    "latestRecordedAt": "2026-05-17T18:27:54.947Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -57695,6 +57695,112 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0516",
+      "recordedAt": "2026-05-17T18:27:54.947Z",
+      "recordedAtKst": "2026-05-18 03:27:54 KST",
+      "title": "Vercel Chrome-DevTools QA - Recent Changes (v8.11.167)",
+      "owner": "claude",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0516.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5Tn7eRynsx1aP6cnVWipELbfDE5G",
+        "deploymentUrl": "https://openmanager-506gm4jyy-skyasus-projects.vercel.app",
+        "commitSha": "125fcbafd0bd17a50746bb9962c71d3a6aedba39"
+      },
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "security-pack"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/login (guest PIN)",
+        "/dashboard",
+        "AI 어시스턴트 사이드바",
+        "ChatArtifact (장애 보고서)",
+        "AI Security Guard"
+      ],
+      "skippedSurfaces": [
+        "서버 상세 페이지",
+        "이상감지/추세 탭",
+        "자동장애 보고서 탭",
+        "전체 화면 AI"
+      ],
+      "checks": {
+        "total": 20,
+        "passed": 19,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar - 장애 보고서 생성",
+          "agent": "Reporter",
+          "provider": "streaming-ai",
+          "model": "unknown",
+          "route": "/api/ai/supervisor",
+          "source": "timestamp diff (3:21:05 → 3:21:08)",
+          "latencyMs": 3000
+        },
+        {
+          "surface": "AI sidebar - security guard",
+          "agent": "NLQ",
+          "provider": "streaming-ai",
+          "model": "unknown",
+          "route": "/api/ai/supervisor",
+          "source": "응답 빠름 label",
+          "latencyMs": 1000
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-quality",
+          "domainName": "Frontend UX Quality",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Landing page, font, custom cursor, dashboard, AI sidebar all visually verified",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Env/secret disclosure guard hardened and verified - SUPABASE_SERVICE_ROLE_KEY query blocked with fast intercept",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "Billing period 2026-05-01~2026-05-17: effective 10.7667 USD, billed 0.0000 USD. No anomalies.",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -57737,16 +57843,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 79,
-      "appropriateCount": 60,
+      "seenCount": 80,
+      "appropriateCount": 61,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260518-0515",
-      "lastSeenAt": "2026-05-17T18:08:49.082Z",
+      "lastRunId": "QA-20260518-0516",
+      "lastSeenAt": "2026-05-17T18:27:54.947Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production env-disclosure prompt is now handled by deterministic refusal and did not leak secrets.",
+      "lastRationale": "Env/secret disclosure guard hardened and verified - SUPABASE_SERVICE_ROLE_KEY query blocked with fast intercept",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -57873,16 +57979,16 @@
       "domainName": "Frontend UX Quality",
       "firstSeenRunId": "QA-20260430-0374",
       "firstSeenAt": "2026-04-29T18:53:53.244Z",
-      "seenCount": 5,
-      "appropriateCount": 2,
+      "seenCount": 6,
+      "appropriateCount": 3,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260518-0515",
-      "lastSeenAt": "2026-05-17T18:08:49.082Z",
+      "lastRunId": "QA-20260518-0516",
+      "lastSeenAt": "2026-05-17T18:27:54.947Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production typography, cursor scoping, and diagram modal rendering now match the intended v8.11.167 state.",
+      "lastRationale": "Landing page, font, custom cursor, dashboard, AI sidebar all visually verified",
       "lastNextAction": ""
     },
     "frontend-ui-ux": {

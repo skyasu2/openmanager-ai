@@ -1,0 +1,104 @@
+{
+  "runId": "QA-20260518-0516",
+  "recordedAt": "2026-05-17T18:27:54.947Z",
+  "recordedAtKst": "2026-05-18 03:27:54 KST",
+  "runTitle": "Vercel Chrome-DevTools QA - Recent Changes (v8.11.167)",
+  "owner": "claude",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5Tn7eRynsx1aP6cnVWipELbfDE5G",
+    "deploymentUrl": "https://openmanager-506gm4jyy-skyasus-projects.vercel.app",
+    "commitSha": "125fcbafd0bd17a50746bb9962c71d3a6aedba39"
+  },
+  "scope": "release-gate",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "security-pack"
+  ],
+  "coveredSurfaces": [
+    "/",
+    "/login (guest PIN)",
+    "/dashboard",
+    "AI 어시스턴트 사이드바",
+    "ChatArtifact (장애 보고서)",
+    "AI Security Guard"
+  ],
+  "skippedSurfaces": [
+    "서버 상세 페이지",
+    "이상감지/추세 탭",
+    "자동장애 보고서 탭",
+    "전체 화면 AI"
+  ],
+  "checks": {
+    "total": 20,
+    "passed": 19,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar - 장애 보고서 생성",
+      "agent": "Reporter",
+      "provider": "streaming-ai",
+      "model": "unknown",
+      "route": "/api/ai/supervisor",
+      "source": "timestamp diff (3:21:05 → 3:21:08)",
+      "latencyMs": 3000
+    },
+    {
+      "surface": "AI sidebar - security guard",
+      "agent": "NLQ",
+      "provider": "streaming-ai",
+      "model": "unknown",
+      "route": "/api/ai/supervisor",
+      "source": "응답 빠름 label",
+      "latencyMs": 1000
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux-quality",
+      "domainName": "Frontend UX Quality",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Landing page, font, custom cursor, dashboard, AI sidebar all visually verified",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Env/secret disclosure guard hardened and verified - SUPABASE_SERVICE_ROLE_KEY query blocked with fast intercept",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "",
+      "summary": "Billing period 2026-05-01~2026-05-17: effective 10.7667 USD, billed 0.0000 USD. No anomalies.",
+      "evidence": "",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
