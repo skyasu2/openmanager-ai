@@ -1,7 +1,9 @@
 import type { UIMessage } from '@ai-sdk/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { executeChatArtifact } from '@/lib/ai/chat-artifacts/artifact-execution';
+import { registerArtifactExecutor } from '@/lib/ai/chat-artifacts/artifact-executor-registry';
 import { ARTIFACT_INTENT_RULE_VERSION } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import { startChatArtifactGeneration } from './chat-artifact-execution';
 
 vi.mock('@/lib/ai/chat-artifacts/artifact-execution', () => ({
@@ -18,6 +20,11 @@ vi.mock('@/lib/ai/chat-artifacts/server-snapshot-artifact', () => ({
 }));
 
 const mockExecuteChatArtifact = vi.mocked(executeChatArtifact);
+const mockGenerateServerSnapshotArtifact = vi.mocked(
+  generateServerSnapshotArtifact
+);
+
+const cleanupCallbacks: Array<() => void> = [];
 
 describe('startChatArtifactGeneration', () => {
   beforeEach(() => {
@@ -25,7 +32,90 @@ describe('startChatArtifactGeneration', () => {
   });
 
   afterEach(() => {
+    for (const cleanup of cleanupCallbacks.splice(0)) {
+      cleanup();
+    }
     vi.useRealTimers();
+  });
+
+  it('executes artifact intents through the registered executor', async () => {
+    const artifact = {
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-17T00:00:00.000Z',
+      title: '현재 서버 상태 스냅샷',
+      summary: '4대 서버 중 위험 1대입니다.',
+      source: 'otel-static',
+      slot: {
+        slotIndex: 42,
+        minuteOfDay: 420,
+        timeLabel: '07:00 KST',
+      },
+      totals: {
+        total: 4,
+        online: 2,
+        warning: 1,
+        critical: 1,
+        offline: 0,
+      },
+      averages: {
+        cpu: 60,
+        memory: 67.8,
+        disk: 56.8,
+        network: 35,
+      },
+      topServers: [],
+      alerts: [],
+    } as const;
+    const registeredExecutor = vi.fn(async ({ artifactIntent, query }) => {
+      expect(artifactIntent).toMatchObject({
+        kind: 'server-snapshot',
+        reason: 'server_snapshot_action_pattern',
+      });
+      expect(query).toBe('현재 서버 상태 스냅샷');
+      return artifact;
+    });
+    cleanupCallbacks.push(
+      registerArtifactExecutor({ kind: 'server-snapshot' }, registeredExecutor)
+    );
+
+    let messages: UIMessage[] = [];
+    const messagesRef = { current: messages };
+    const setMessages = vi.fn((nextMessages: UIMessage[]) => {
+      messages = nextMessages;
+      messagesRef.current = nextMessages;
+    });
+    const setError = vi.fn();
+    const setArtifactIsLoading = vi.fn();
+    const artifactRequestIdRef = { current: null };
+    const artifactAbortControllerRef = { current: null };
+    const artifactInFlightRef = { current: false };
+
+    startChatArtifactGeneration({
+      artifactIntent: {
+        kind: 'server-snapshot',
+        reason: 'server_snapshot_action_pattern',
+        ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
+      },
+      query: '현재 서버 상태 스냅샷',
+      sessionId: 'session-test',
+      messages,
+      messagesRef,
+      setMessages,
+      setError,
+      setArtifactIsLoading,
+      artifactRequestIdRef,
+      artifactAbortControllerRef,
+      artifactInFlightRef,
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(registeredExecutor).toHaveBeenCalledTimes(1);
+    expect(mockGenerateServerSnapshotArtifact).not.toHaveBeenCalled();
+    expect(setError).toHaveBeenLastCalledWith(null);
+    expect(messages.at(-1)?.metadata).toMatchObject({
+      serverSnapshotArtifact: artifact,
+    });
   });
 
   it('executes server-monitoring-analysis intents with the parsed server id', async () => {
