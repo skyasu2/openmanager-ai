@@ -16,7 +16,6 @@ import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { clearChatHistory } from '@/hooks/ai/utils/chat-history-storage';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
-import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
 import { BootProgressBar } from './components/BootProgressBar';
@@ -196,18 +195,14 @@ export default function SystemBootClient() {
   // 클라이언트 렌더링이 준비되지 않았으면 로딩 표시
   if (!isClient) {
     return (
-      <div
-        className={`flex min-h-screen items-center justify-center ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}
-      >
+      <div className="flex min-h-screen items-center justify-center bg-black">
         <div className="text-white">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div
-      className={`relative min-h-screen overflow-hidden ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}
-    >
+    <div className="relative min-h-screen overflow-hidden bg-black">
       {/* 첫페이지와 동일한 웨이브 파티클 배경 효과 */}
       <div className="wave-particles"></div>
 
