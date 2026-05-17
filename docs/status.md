@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-18 | **현재 버전 스냅샷**: v8.11.168
+**상태 스냅샷 기준일**: 2026-05-18 | **현재 버전 스냅샷**: v8.11.169
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.169** (2026-05-18) — Bug Fixes: diagram: improve static label readability; Tests: qa: record v8.11.168 cursor closure
 - **v8.11.168** (2026-05-18) — Tests: qa: record v8.11.167 recent changes check; Tests: qa: record v8.11.167 post-deploy closure; Bug Fixes: landing: remove cursor-following dot
 - **v8.11.167** (2026-05-18) — Tests: qa: record vercel regression findings; Tests: font: allow centralized next font usage; Tests: spec: add ChatArtifact portability boundary
 - **v8.11.166** (2026-05-17) — Performance Improvements: dashboard: tune server overview rendering; Features: ai-ui: personalize assistant welcome prompts; Features: ai-ui: improve assistant message flow
 - **v8.11.165** (2026-05-17) — Bug Fixes: system: allow profile controls during status fetch
-- **v8.11.164** (2026-05-17) — Bug Fixes: profile: sync guest system status
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
