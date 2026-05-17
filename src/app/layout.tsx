@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Noto_Sans_KR } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { RootClientRuntime } from '@/app/RootClientRuntime';
 import { ClientProviders } from '@/components/providers/ClientProviders';
@@ -13,6 +14,14 @@ import { getSiteUrl } from '@/lib/site-url';
 // 🌐 SEO Configuration
 const SITE_URL = getSiteUrl();
 const SITE_NAME = 'OpenManager AI';
+
+// next/font: 빌드 시 self-host -> 런타임 외부 요청 없음.
+const notoSansKR = Noto_Sans_KR({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700', '800'],
+  variable: '--font-noto-sans-kr',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   // 📌 기본 메타데이터
@@ -121,7 +130,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning className={notoSansKR.variable}>
       <body className="font-sans antialiased">
         <ClientProviders>
           {children}
