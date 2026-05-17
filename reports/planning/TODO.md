@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-17 KST (AI 어시스턴트 UX Phase 3 완료)
+**Last Updated**: 2026-05-17 KST (Frontend UI 개선 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -14,7 +14,6 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | 릴리스 구성요소 버전 계약 정리 — overall/frontend/ai-engine 버전 분리 | High | In Progress (Codex) | 구현/로컬 검증 완료. 최근 Vercel/Cloud Run QA에서 기능은 정상이나 frontend `8.11.165` vs Cloud Run `8.11.161` 관측. 이를 장애가 아니라 구성요소 버전 계약 혼용 문제로 재정의하고, overall/frontend/ai-engine 버전 노출과 release bump/deploy 정책을 분리. 남은 확인은 다음 semver tag pipeline의 `deploy_ai_engine`/smoke 관측. 상세: [ai-engine-release-version-sync-plan.md](ai-engine-release-version-sync-plan.md) |
-| Frontend UI 개선 — 모바일 CPU 게이지 잘림 + ServerDashboard 렌더 최적화 | Medium | Approved (Codex 위임 대기) | T1(모바일 CSS) + T2(useMemo/임계값). 상세: [frontend-inspection-improvement-plan.md](frontend-inspection-improvement-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 잔여 구현 없음. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -117,6 +116,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-17) — Codex (Frontend UI)
+- [x] Frontend UI 개선 T1/T2 완료
+  - 모바일 시스템 리소스 CPU 게이지가 375px에서 좌측 edge에 붙지 않도록 `justify-evenly px-2 sm:px-0`로 보정.
+  - `ServerDashboard` 서버 validation을 `servers` 변경 기준 `useMemo`로 분리하고, 개발 성능 경고 임계값을 100ms로 정렬.
+  - 검증: dashboard targeted tests 2 files / 14 tests PASS, `type-check`/`lint`/`test:quick`/docs checks PASS. 상세: [archive/frontend-inspection-improvement-plan.md](archive/frontend-inspection-improvement-plan.md)
 
 ### Completed (2026-05-17) — Codex (AI Assistant UX)
 - [x] AI 어시스턴트 UX 개선 T1~T7 완료

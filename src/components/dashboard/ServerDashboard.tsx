@@ -175,9 +175,7 @@ export default function ServerDashboard({
     setIsClient(true);
   }, []);
 
-  // 🚀 서버 정렬 최적화: 외부 상수와 최적화된 함수 사용
-  // 🔧 Phase 4: paginatedServers → servers (props로 전달받음)
-  const sortedServers = useMemo(() => {
+  const validatedServers = useMemo(() => {
     // 🛡️ AI 교차검증: servers 다층 안전성 검증 (Codex 94.1% 개선)
     if (!servers) {
       logger.warn('⚠️ ServerDashboard: servers가 undefined입니다.');
@@ -195,8 +193,7 @@ export default function ServerDashboard({
       return [];
     }
 
-    // 🛡️ Codex 권장: 각 서버 객체 유효성 검증
-    const validatedServers = servers.filter((server, index) => {
+    const validServers = servers.filter((server, index) => {
       if (!server || typeof server !== 'object') {
         logger.warn(
           `⚠️ ServerDashboard: 서버[${index}]가 유효하지 않음:`,
@@ -214,12 +211,18 @@ export default function ServerDashboard({
       return true;
     });
 
-    if (validatedServers.length !== servers.length) {
+    if (validServers.length !== servers.length) {
       logger.warn(
-        `⚠️ ServerDashboard: ${servers.length - validatedServers.length}개 서버가 유효하지 않아 제외되었습니다.`
+        `⚠️ ServerDashboard: ${servers.length - validServers.length}개 서버가 유효하지 않아 제외되었습니다.`
       );
     }
 
+    return validServers;
+  }, [servers]);
+
+  // 🚀 서버 정렬 최적화: 외부 상수와 최적화된 함수 사용
+  // 🔧 Phase 4: paginatedServers → servers (props로 전달받음)
+  const sortedServers = useMemo(() => {
     return [...validatedServers].sort((a, b) => {
       if (serverSortKey === 'cpu') {
         const cpuDiff = (b.cpu ?? 0) - (a.cpu ?? 0);
@@ -240,7 +243,7 @@ export default function ServerDashboard({
 
       return compareByStatusPriority(a, b);
     });
-  }, [servers, serverSortKey]);
+  }, [serverSortKey, validatedServers]);
 
   const cardsPerRow = useMemo(
     () => getServerCardColumns(viewMode, serverGridWidth),

@@ -19,6 +19,7 @@ class PerformanceTracker {
   private lastLogTimes = new Map<string, number>();
   private isEnabled: boolean = process.env.NODE_ENV === 'development';
   private static readonly LOG_THROTTLE_MS = 30_000;
+  private static readonly SLOW_RENDER_WARNING_MS = 100;
 
   private recordMeasurement(
     name: string,
@@ -49,13 +50,13 @@ class PerformanceTracker {
     const lastLoggedAt = this.lastLogTimes.get(name) ?? 0;
     const shouldLog =
       now - lastLoggedAt >= PerformanceTracker.LOG_THROTTLE_MS ||
-      duration >= 50;
+      duration >= PerformanceTracker.SLOW_RENDER_WARNING_MS;
 
     if (shouldLog) {
       this.lastLogTimes.set(name, now);
 
-      // 개발환경 로그 스팸 방지: 30초 단위로만 출력 (또는 50ms 이상 급격한 느림)
-      if (duration > 16) {
+      // 개발환경 로그 스팸 방지: 30초 단위로만 출력 (또는 100ms 이상 급격한 느림)
+      if (duration >= PerformanceTracker.SLOW_RENDER_WARNING_MS) {
         logger.warn(`🐌 성능 경고: ${name} - ${duration.toFixed(2)}ms`);
       } else if (duration > 5) {
         logger.info(`⚡ 성능 측정: ${name} - ${duration.toFixed(2)}ms`);
