@@ -196,7 +196,7 @@ ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCar
 ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/analysis-basis/ProviderAttributionChip, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
-shared/FeatureCardModal -> shared/FeatureCardModalHeader, shared/FeatureCardDiagramSummary, shared/ReactFlowDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
+shared/FeatureCardModal -> shared/FeatureCardDiagramSummary, shared/FeatureCardModalHeader, shared/ReactFlowDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
 ```
 
 ## Update Rule
