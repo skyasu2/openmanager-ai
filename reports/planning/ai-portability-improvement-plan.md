@@ -15,6 +15,11 @@
 > 키 기반 렌더러 등록 API로 구현했다. 모니터링 카드 5종은
 > `ArtifactRendererHost` switch에서 분리되어 별도 등록 모듈에서 초기화되며, 테스트
 > 전용 외부 도메인 `mock-report` 렌더러가 host를 통해 표시되는 회귀 테스트를 추가했다.
+>
+> 2026-05-17 Codex 진행 메모: T3는 `ArtifactExecutorRegistry`를 추가해
+> `chat-artifact-execution.ts`의 kind별 생성 switch를 제거했다. 모니터링 실행기 5종은
+> `src/lib/ai/domains/monitoring/artifact-executors.ts`에서 등록하며, ops-procedure
+> follow-up edit은 registry context의 `readPreviousArtifact()` 경계로 유지한다.
 
 ## 목적
 
@@ -197,7 +202,8 @@ return renderer(entry.artifact);
 
 **대상 파일**
 - `src/hooks/ai/core/chat-artifact-execution.ts`
-- `src/lib/ai/domains/monitoring/` (모니터링 실행기 등록 파일 신규 또는 T2 등록 파일에 통합)
+- `src/lib/ai/chat-artifacts/artifact-executor-registry.ts`
+- `src/lib/ai/domains/monitoring/artifact-executors.ts`
 
 **작업 내용**
 
@@ -235,8 +241,8 @@ return executor(intent, options);
 
 **검증**: `chat-artifact-execution.test.ts` 기존 테스트 전체 통과, `type-check` 통과.
 
-- [ ] T3 구현
-- [ ] T3 테스트 통과 확인
+- [x] T3 구현
+- [x] T3 테스트 통과 확인
 
 ---
 

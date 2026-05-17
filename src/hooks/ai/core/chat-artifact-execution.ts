@@ -1,19 +1,9 @@
 import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
-import { executeChatArtifact } from '@/lib/ai/chat-artifacts/artifact-execution';
-import type {
-  ChatArtifactIntent,
-  ChatArtifactIntentReason,
-} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
-import {
-  generateOpsProcedureArtifact,
-  patchOpsProcedureArtifactFromQuery,
-} from '@/lib/ai/chat-artifacts/ops-procedure-artifact';
-import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
-import type {
-  ChatArtifact,
-  OpsProcedureArtifact,
-} from '@/lib/ai/chat-artifacts/types';
+import { resolveArtifactExecutor } from '@/lib/ai/chat-artifacts/artifact-executor-registry';
+import type { ChatArtifactIntent } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import type { ChatArtifact } from '@/lib/ai/chat-artifacts/types';
+import { registerMonitoringArtifactExecutors } from '@/lib/ai/domains/monitoring/artifact-executors';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import {
   buildArtifactErrorMetadata,
@@ -24,6 +14,8 @@ import {
   getArtifactStepMessages,
   getArtifactSuccessText,
 } from './chat-artifact-metadata';
+
+registerMonitoringArtifactExecutors();
 
 type ExecutableChatArtifactIntent = Extract<
   ChatArtifactIntent,
@@ -192,100 +184,50 @@ async function generateChatArtifact({
   signal: AbortSignal;
   messagesRef: MutableRefObject<UIMessage[]>;
 }): Promise<ChatArtifact> {
-  switch (artifactIntent.kind) {
-    case 'incident-report':
-      return executeChatArtifact({
-        kind: 'incident-report',
-        query,
-        sessionId,
-        queryAsOfDataSlot,
-        signal,
-      });
-    case 'server-snapshot':
-      return generateServerSnapshotArtifact({
-        query,
-        sessionId,
-        queryAsOfDataSlot,
-        signal,
-      });
-    case 'ops-procedure':
-      return generateOpsProcedureArtifactFromIntent({
-        query,
-        sessionId,
-        queryAsOfDataSlot,
-        signal,
-        intentReason: artifactIntent.reason,
-        messagesRef,
-      });
-    case 'monitoring-analysis':
-      return executeChatArtifact({
-        kind: 'monitoring-analysis',
-        query,
-        sessionId,
-        queryAsOfDataSlot,
-        signal,
-      });
-    case 'server-monitoring-analysis':
-      return executeChatArtifact({
-        kind: 'server-monitoring-analysis',
-        query,
-        sessionId,
-        serverId: artifactIntent.serverId,
-        serverName: artifactIntent.serverName ?? artifactIntent.serverId,
-        queryAsOfDataSlot,
-        signal,
-      });
-  }
-}
-
-async function generateOpsProcedureArtifactFromIntent({
-  query,
-  sessionId,
-  queryAsOfDataSlot,
-  signal,
-  intentReason,
-  messagesRef,
-}: {
-  query: string;
-  sessionId: string;
-  queryAsOfDataSlot?: JobDataSlot;
-  signal: AbortSignal;
-  intentReason: ChatArtifactIntentReason;
-  messagesRef: MutableRefObject<UIMessage[]>;
-}): Promise<OpsProcedureArtifact> {
-  if (intentReason !== 'ops_procedure_followup_edit_pattern') {
-    return generateOpsProcedureArtifact({
-      query,
-      sessionId,
-      queryAsOfDataSlot,
-      signal,
-    });
+  const executor = resolveArtifactExecutor({ kind: artifactIntent.kind });
+  if (!executor) {
+    throw new Error(`Unsupported artifact kind: ${artifactIntent.kind}`);
   }
 
-  const existingArtifact =
-    findLastOpsProcedureArtifact(messagesRef.current) ??
-    (await generateOpsProcedureArtifact({
-      query,
-      sessionId,
-      queryAsOfDataSlot,
-      signal,
-    }));
-
-  return patchOpsProcedureArtifactFromQuery(existingArtifact, query);
+  const artifact = await executor({
+    artifactIntent,
+    query,
+    sessionId,
+    signal,
+    ...(queryAsOfDataSlot && { queryAsOfDataSlot }),
+    readPreviousArtifact: (kind) => findLastArtifact(messagesRef.current, kind),
+  });
+  if (!artifact) {
+    throw new Error(
+      `Artifact executor returned no artifact: ${artifactIntent.kind}`
+    );
+  }
+  return artifact;
 }
 
-function readOpsProcedureArtifactFromMetadata(
+function readArtifactFromMetadata(
+  kind: string,
   metadata: unknown
-): OpsProcedureArtifact | undefined {
+): ChatArtifact | undefined {
   if (typeof metadata !== 'object' || metadata === null) return undefined;
   const record = metadata as Record<string, unknown>;
 
-  if (
-    typeof record.opsProcedureArtifact === 'object' &&
-    record.opsProcedureArtifact !== null &&
-    (record.opsProcedureArtifact as { kind?: unknown }).kind === 'ops-procedure'
-  ) {
-    return record.opsProcedureArtifact as OpsProcedureArtifact;
+  const legacyArtifactKeys = [
+    'incidentReportArtifact',
+    'monitoringAnalysisArtifact',
+    'serverMonitoringAnalysisArtifact',
+    'serverSnapshotArtifact',
+    'opsProcedureArtifact',
+  ];
+  for (const artifactKey of legacyArtifactKeys) {
+    const artifact = record[artifactKey];
+    if (
+      typeof artifact === 'object' &&
+      artifact !== null &&
+      (artifact as { kind?: unknown }).kind === kind
+    ) {
+      return artifact as ChatArtifact;
+    }
   }
 
   const envelopes = Array.isArray(record.artifactEnvelopes)
@@ -295,25 +237,24 @@ function readOpsProcedureArtifactFromMetadata(
     if (typeof envelope !== 'object' || envelope === null) continue;
     const payload = (envelope as { payload?: unknown }).payload;
     if (
-      (envelope as { kind?: unknown }).kind === 'ops-procedure' &&
+      (envelope as { kind?: unknown }).kind === kind &&
       typeof payload === 'object' &&
       payload !== null &&
-      (payload as { kind?: unknown }).kind === 'ops-procedure'
+      (payload as { kind?: unknown }).kind === kind
     ) {
-      return payload as OpsProcedureArtifact;
+      return payload as ChatArtifact;
     }
   }
 
   return undefined;
 }
 
-function findLastOpsProcedureArtifact(
-  messages: UIMessage[]
-): OpsProcedureArtifact | undefined {
+function findLastArtifact(
+  messages: UIMessage[],
+  kind: string
+): ChatArtifact | undefined {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
-    const artifact = readOpsProcedureArtifactFromMetadata(
-      messages[index]?.metadata
-    );
+    const artifact = readArtifactFromMetadata(kind, messages[index]?.metadata);
     if (artifact) return artifact;
   }
   return undefined;

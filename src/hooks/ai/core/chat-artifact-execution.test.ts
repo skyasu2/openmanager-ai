@@ -4,6 +4,7 @@ import { executeChatArtifact } from '@/lib/ai/chat-artifacts/artifact-execution'
 import { registerArtifactExecutor } from '@/lib/ai/chat-artifacts/artifact-executor-registry';
 import { ARTIFACT_INTENT_RULE_VERSION } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
+import type { ServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/types';
 import { startChatArtifactGeneration } from './chat-artifact-execution';
 
 vi.mock('@/lib/ai/chat-artifacts/artifact-execution', () => ({
@@ -39,7 +40,7 @@ describe('startChatArtifactGeneration', () => {
   });
 
   it('executes artifact intents through the registered executor', async () => {
-    const artifact = {
+    const artifact: ServerSnapshotArtifact = {
       kind: 'server-snapshot',
       generatedAt: '2026-05-17T00:00:00.000Z',
       title: '현재 서버 상태 스냅샷',
@@ -65,7 +66,7 @@ describe('startChatArtifactGeneration', () => {
       },
       topServers: [],
       alerts: [],
-    } as const;
+    };
     const registeredExecutor = vi.fn(async ({ artifactIntent, query }) => {
       expect(artifactIntent).toMatchObject({
         kind: 'server-snapshot',
