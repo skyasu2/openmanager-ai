@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-17 03:51:24 KST
+> Generated at: 2026-05-17 17:57:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 509 |
-| Total Runs (Counted) | 405 |
+| Total Recorded Runs | 510 |
+| Total Runs (Counted) | 406 |
 | Non-counted Runs | 104 |
-| Total Checks | 3626 |
-| Passed | 3487 |
+| Total Checks | 3635 |
+| Passed | 3496 |
 | Failed | 129 |
-| Completed Items | 584 |
+| Completed Items | 585 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
 | Expert Domains Tracked | 14 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260517-0511 (2026-05-16T18:51:23.923Z) |
-| Latest Recorded Run | QA-20260517-0511 (2026-05-16T18:51:23.923Z) |
+| Last Counted Run | QA-20260517-0512 (2026-05-17T08:57:50.648Z) |
+| Latest Recorded Run | QA-20260517-0512 (2026-05-17T08:57:50.648Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,35 +34,39 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260517-0511 (2026-05-16T18:51:23.923Z)
+Latest run: QA-20260517-0512 (2026-05-17T08:57:50.648Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| AI Quality Assurance Specialist | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after production QA; effective usage about 10.0954 USD, billed 0.0000 USD. |
+| vercel | cli | checked | normal | Current billing period checked after production AI Assistant smoke; effective usage about 10.7667 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-15T18:51:23.923Z -> 2026-05-16T18:51:23.923Z (24h)
-- Runs with observations: 2 recorded / 0 counted
-- Samples: 7
+- Window: 2026-05-16T08:57:50.648Z -> 2026-05-17T08:57:50.648Z (24h)
+- Runs with observations: 3 recorded / 1 counted
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Supervisor/Monitoring Agent | openmanager-ai-engine | 1 | 7471ms | 7471ms | - | - | 130ms | 130ms | QA-20260517-0512 |
+| Reporter Agent | openmanager-ai-engine | 1 | 4870ms | 4870ms | - | - | 1531ms | 1531ms | QA-20260517-0512 |
 | Front NLQ semantic parser | zai | 1 | 3758ms | 3758ms | - | - | - | - | QA-20260516-0507 |
 | Front NLQ semantic parser | groq | 2 | 974ms | 1359ms | - | - | - | - | QA-20260516-0508 |
 | Front NLQ semantic parser | mistral | 3 | 918ms | 1054ms | - | - | - | - | QA-20260516-0508 |
 | Front NLQ semantic parser | cerebras | 1 | 771ms | 771ms | - | - | - | - | QA-20260516-0507 |
+| Analyst Agent | openmanager-ai-engine | 1 | 303ms | 303ms | - | - | 303ms | 303ms | QA-20260517-0512 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-15T18:51:23.923Z -> 2026-05-16T18:51:23.923Z (24h)
+- Window: 2026-05-16T08:57:50.648Z -> 2026-05-17T08:57:50.648Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -77,9 +81,9 @@ Latest run: QA-20260517-0511 (2026-05-16T18:51:23.923Z)
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5 / SHA 798de818
-- Coverage Packs: core-routes-smoke, dashboard-core
-- Covered Surfaces: Vercel production / version badge v8.11.165, Vercel production /login guest PIN flow, Top-right profile dropdown system status label, Profile system stop action -> POST /api/system {action: stop}, Profile system start action -> POST /api/system {action: start}, Vercel production /api/system serverless Redis-backed running state
-- Skipped Surfaces: AI chat conversational QA was not part of this UI state-contract check, OAuth provider end-to-end login was skipped; guest PIN login was used, Dashboard server card detail flow was not retested in this targeted rerun, Cloud Run admin observability endpoints were not part of this Vercel UI rerun
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: Vercel production /api/health, Vercel production /api/health?service=ai&soft=true, Vercel production /api/version, Vercel production /login guest PIN flow, Vercel production /dashboard/ai-assistant AI Chat, Vercel production /api/ai/supervisor/stream/v2, Vercel production /api/ai/incident-report, Vercel production /api/ai/intelligent-monitoring, Guest /api/ai/status admin boundary
+- Skipped Surfaces: OAuth provider end-to-end login was skipped; guest PIN login was used, Full five-question conversational regression pack was not run; this was a targeted live smoke for the AI Assistant page, Admin-only /api/ai/status success path was not tested because the available browser session is guest-scoped
 
 ## Links (Latest Run)
 
@@ -93,7 +97,8 @@ Latest run: QA-20260517-0511 (2026-05-16T18:51:23.923Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | v8.11.165 system state toggle final running state | `reports/qa/evidence/qa-20260517-v811165-system-state-toggle.png` | - |
+| playwright-network | AI Assistant live smoke JSON evidence | `reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.json` | - |
+| playwright-screenshot | AI Assistant live smoke final monitoring screen | `reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -706,6 +711,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - validation-evidence-summary-clarity: Validation evidence summary 카피와 정보 우선순위 정리 (completed 1회, last QA-20260324-0171)
 - validation-public-snapshot-artifact: Validation evidence public snapshot artifact 분리 (completed 1회, last QA-20260323-0168)
 - validation-stale-banner-client-side-fix: Validation stale banner client-side age check fix (completed 1회, last QA-20260324-0170)
+- vercel-ai-assistant-live-smoke-v811165: Verify Vercel production AI Assistant Chat, Reporter, and Analyst live paths (completed 1회, last QA-20260517-0512)
 - vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
 - vercel-deployment-ready: Vercel 배포 3건 모두 READY (completed 1회, last QA-20260314-0096)
 - vercel-playwright-mcp-v81189-targeted-qa: v8.11.89 Vercel production Playwright MCP targeted QA completed (completed 1회, last QA-20260504-0402)
@@ -770,6 +776,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260517-0512 | 2026-05-17T08:57:50.648Z | targeted | yes | yes | v8.11.165 Vercel Production AI Assistant Live Smoke | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260517-0511 | 2026-05-16T18:51:23.923Z | targeted | yes | yes | v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260517-0510 | 2026-05-16T16:03:37.386Z | targeted | yes | yes | v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls | 10 | 2 | 2 | 0 | 0 | 1 |
 | QA-20260516-0509 | 2026-05-16T11:16:06.924Z | targeted | no | no | v8.11.158 Production Deploy Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -789,4 +796,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260513-0495 | 2026-05-13T05:02:59.311Z | targeted | yes | yes | Production QA - v8.11.143 AI Assistant 3-Feature Check | 3 | 1 | 1 | 0 | 0 | 3 |
 | QA-20260513-0494 | 2026-05-13T04:07:53.842Z | targeted | yes | yes | Production QA - v8.11.143 Score Deduction Closure | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260513-0493 | 2026-05-13T03:45:28.442Z | targeted | no | no | Diagnostic Follow-up - v8.11.142 Frontend Score Deductions | 16 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260513-0492 | 2026-05-13T02:51:02.949Z | targeted | yes | yes | Vercel Playwright QA - v8.11.142 Frontend Non-AI Status and Design | 14 | 0 | 0 | 0 | 0 | 0 |

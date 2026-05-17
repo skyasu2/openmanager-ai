@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-16T18:51:23.923Z"
+    "updatedAt": "2026-05-17T08:57:50.648Z"
   },
   "sequence": {
-    "nextRunNumber": 512
+    "nextRunNumber": 513
   },
   "summary": {
-    "totalRecordedRuns": 509,
-    "totalRuns": 405,
+    "totalRecordedRuns": 510,
+    "totalRuns": 406,
     "excludedRuns": 104,
-    "totalChecks": 3626,
-    "totalPassed": 3487,
+    "totalChecks": 3635,
+    "totalPassed": 3496,
     "totalFailed": 129,
     "completionRate": 100,
-    "completedItems": 584,
+    "completedItems": 585,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260517-0511",
-    "lastRecordedAt": "2026-05-16T18:51:23.923Z",
-    "latestRecordedRunId": "QA-20260517-0511",
-    "latestRecordedAt": "2026-05-16T18:51:23.923Z"
+    "lastRunId": "QA-20260517-0512",
+    "lastRecordedAt": "2026-05-17T08:57:50.648Z",
+    "latestRecordedRunId": "QA-20260517-0512",
+    "latestRecordedAt": "2026-05-17T08:57:50.648Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14321,6 +14321,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-16T18:51:23.923Z"
+    },
+    "vercel-ai-assistant-live-smoke-v811165": {
+      "id": "vercel-ai-assistant-live-smoke-v811165",
+      "title": "Verify Vercel production AI Assistant Chat, Reporter, and Analyst live paths",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260517-0512",
+      "firstSeenAt": "2026-05-17T08:57:50.648Z",
+      "lastSeenRunId": "QA-20260517-0512",
+      "lastSeenAt": "2026-05-17T08:57:50.648Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production v8.11.165: /api/health 200 healthy, AI health 200 ok, guest login 200, Chat stream 200, incident report 200, intelligent monitoring 200. User-visible Chat summary, Redis memory warning report, and monitoring analysis rendered.",
+      "lastNote": "/api/ai/status returned 403 for guest, which matches the admin-only boundary rather than an assistant runtime failure.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-17T08:57:50.648Z"
     }
   },
   "runs": [
@@ -57090,6 +57114,157 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260517-0512",
+      "recordedAt": "2026-05-17T08:57:50.648Z",
+      "recordedAtKst": "2026-05-17 17:57:50 KST",
+      "title": "v8.11.165 Vercel Production AI Assistant Live Smoke",
+      "owner": "codex",
+      "source": "playwright-node",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260517-0512.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5",
+        "deploymentUrl": "https://openmanager-7mtg9iwhp-skyasus-projects.vercel.app",
+        "commitSha": "798de818384c6d183b351df2b82c6e84ce9840be"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/health",
+        "Vercel production /api/health?service=ai&soft=true",
+        "Vercel production /api/version",
+        "Vercel production /login guest PIN flow",
+        "Vercel production /dashboard/ai-assistant AI Chat",
+        "Vercel production /api/ai/supervisor/stream/v2",
+        "Vercel production /api/ai/incident-report",
+        "Vercel production /api/ai/intelligent-monitoring",
+        "Guest /api/ai/status admin boundary"
+      ],
+      "skippedSurfaces": [
+        "OAuth provider end-to-end login was skipped; guest PIN login was used",
+        "Full five-question conversational regression pack was not run; this was a targeted live smoke for the AI Assistant page",
+        "Admin-only /api/ai/status success path was not tested because the available browser session is guest-scoped"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Assistant Chat server summary",
+          "agent": "Supervisor/Monitoring Agent",
+          "provider": "openmanager-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "x-ai-latency-ms header + browser stopwatch",
+          "latencyMs": 7471,
+          "processingTimeMs": 130
+        },
+        {
+          "surface": "AI Assistant incident report generation",
+          "agent": "Reporter Agent",
+          "provider": "openmanager-ai-engine",
+          "route": "/api/ai/incident-report",
+          "source": "x-ai-latency-ms header + browser stopwatch",
+          "latencyMs": 4870,
+          "processingTimeMs": 1531
+        },
+        {
+          "surface": "AI Assistant intelligent monitoring batch analysis",
+          "agent": "Analyst Agent",
+          "provider": "openmanager-ai-engine",
+          "route": "/api/ai/intelligent-monitoring",
+          "source": "x-ai-latency-ms header",
+          "latencyMs": 303,
+          "processingTimeMs": 303
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI Assistant Chat, Reporter, and Analyst surfaces all returned HTTP 200 and rendered user-visible monitoring/report output in one guest session.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel health/version APIs and Cloud Run-backed AI health were healthy for v8.11.165; Vercel usage remained normal after the live smoke.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Guest session could use intended AI Assistant surfaces, while /api/ai/status remained protected with 403 Admin access required.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-17T17:55:34+09:00",
+          "summary": "Current billing period checked after production AI Assistant smoke; effective usage about 10.7667 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "AI Assistant live smoke JSON evidence",
+          "path": "reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.json"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Assistant live smoke final monitoring screen",
+          "path": "reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.165 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.165",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EG1U8xTdXAvgrhLTLnW5NQmoznt5"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -57098,16 +57273,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 257,
-      "appropriateCount": 220,
+      "seenCount": 258,
+      "appropriateCount": 221,
       "partialCount": 37,
       "inappropriateCount": 0,
       "improvementNeededCount": 47,
-      "lastRunId": "QA-20260516-0509",
-      "lastSeenAt": "2026-05-16T11:16:06.924Z",
+      "lastRunId": "QA-20260517-0512",
+      "lastSeenAt": "2026-05-17T08:57:50.648Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production deploy contains the NLQ schema compatibility fix verified by QA-20260516-0508; production version and commit smoke passed after deployment.",
+      "lastRationale": "Production AI Assistant Chat, Reporter, and Analyst surfaces all returned HTTP 200 and rendered user-visible monitoring/report output in one guest session.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -57132,16 +57307,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 75,
-      "appropriateCount": 57,
+      "seenCount": 76,
+      "appropriateCount": 58,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260514-0501",
-      "lastSeenAt": "2026-05-14T07:04:04.756Z",
+      "lastRunId": "QA-20260517-0512",
+      "lastSeenAt": "2026-05-17T08:57:50.648Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Checked diagnostic recommendations are read-only and exclude restart, cache clear, package cleanup, journal vacuum, rm, and kill commands.",
+      "lastRationale": "Guest session could use intended AI Assistant surfaces, while /api/ai/status remained protected with 403 Admin access required.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -57149,16 +57324,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 187,
-      "appropriateCount": 168,
+      "seenCount": 188,
+      "appropriateCount": 169,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260517-0511",
-      "lastSeenAt": "2026-05-16T18:51:23.923Z",
+      "lastRunId": "QA-20260517-0512",
+      "lastSeenAt": "2026-05-17T08:57:50.648Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The GitLab tag pipeline 2530528415 deployed v8.11.165 successfully, Vercel production reports the matching version/deployment, and the system start/stop state now uses the remote /api/system action result before local UI state changes.",
+      "lastRationale": "Vercel health/version APIs and Cloud Run-backed AI health were healthy for v8.11.165; Vercel usage remained normal after the live smoke.",
       "lastNextAction": ""
     },
     "test-automation": {

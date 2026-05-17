@@ -1,0 +1,188 @@
+{
+  "recordedAt": "2026-05-17T08:55:13.372Z",
+  "target": "https://openmanager-ai.vercel.app",
+  "finalUrl": "https://openmanager-ai.vercel.app/dashboard/ai-assistant",
+  "healthBefore": {
+    "status": 0,
+    "ok": false,
+    "body": "Error: page.evaluate: TypeError: Failed to fetch\n    at eval (eval at evaluate (:290:30), <anonymous>:2:28)\n    at UtilityScript.evaluate (<anonymous>:292:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+    "note": "Browser pre-navigation fetch ran from opaque/null origin and was blocked by CORS; API health was verified separately with curl in healthCurl and aiHealthCurl."
+  },
+  "version": {
+    "status": 200,
+    "ok": true,
+    "body": {
+      "version": "8.11.165",
+      "buildVersion": "8.11.165",
+      "nextjs": "16.1.6",
+      "environment": "production",
+      "commitSha": "798de818384c6d183b351df2b82c6e84ce9840be",
+      "shortCommitSha": "798de81838",
+      "releaseTag": "v8.11.165",
+      "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415",
+      "deploymentProvider": "vercel",
+      "timestamp": "2026-05-17T08:54:59.288Z"
+    }
+  },
+  "login": {
+    "ok": true,
+    "candidateIndex": 1,
+    "loginStatus": 200,
+    "finalUrl": "https://openmanager-ai.vercel.app/"
+  },
+  "statusAsGuest": {
+    "status": 403,
+    "ok": false,
+    "body": {
+      "error": "Forbidden - Admin access required"
+    }
+  },
+  "chat": {
+    "ok": true,
+    "status": 200,
+    "latencyMs": 7471,
+    "excerpt": "개요 서버 알림 로그 토폴로지 OpenManager AI 시스템 대기 2026.05.17 17:55:03 (일) GU 게스트 사용자 게스트 로그인 AI 어시스턴트 질의, Reporter, Analyst 기능을 한 화면에서 실행 AI Chat 자연어 질의 장애 보고서 보고서 생성 이상감지/추세 이상 신호 분석 컨텍스트 AI Chat AI 기반 대화형 인터페이스 현재 서버 전체 상태를 요약해줘 오후 05:54:57 복사 📊 서버 현황 요약 • 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대 • 평균 CPU: 34%, 메모리: 48%, 디스크: 37% ⚠️ 주의 서버 • cache-redis-dc1-01: 메모리 88% (안정 추세 →) 📈 추세 • 전체 서버는 평균 대비 큰 변동 없이 안정적입니다. 💡 권고 • cache-redis-dc1-01: 메모리 상위 프로세스, OOM/GC 로그, cache eviction 또는 누수 징후를 우선 확인하세요. 오후 05:54:57 응답 빠름 복사 다시 생성 deterministic / monitoring-server-health 분석 근거 도구: monitoring-server-health · 모드: 오토 대화 2/50 서버 운영 중심 Enter로 전송, Shift+Enter로 줄바꿈"
+  },
+  "report": {
+    "ok": true,
+    "status": 200,
+    "latencyMs": 4870,
+    "excerpt": "장애 보고서 작성 생성·복사·다운로드 기준 17:50 KST · slot 107 새 보고서 전체 (1) 심각 (0) 경고 (1) 정보 (0) Redis 서버 메모리 경고 오후 05:55:07 원인: 메모리 사용률 급증 (88%) 영향: 주의 1대 · 위험 0대 다음 조치: 메모리 모니터링 강화 18 전체 17 정상 1 주의 0 위험 영향받는 서버: cache-redis-dc1-01 활성 MD 복사 다운로드 1 활성 이슈 0 해결됨 1 전체"
+  },
+  "monitoring": {
+    "ok": true,
+    "status": 200,
+    "excerpt": "이상감지/추세 이상 신호 분석 이상감지/추세 기준 17:50 KST · slot 107 분석 대상 전체 시스템 (18개 서버) cache-redis-dc1-01 web-nginx-dc1-01 web-nginx-dc1-02 web-nginx-dc1-03 api-was-dc1-01 api-was-dc1-02 api-was-dc1-03 db-mysql-dc1-primary db-mysql-dc1-replica db-mysql-dc1-backup cache-redis-dc1-02 cache-redis-dc1-03 storage-nfs-dc1-01 storage-nfs-dc1-02 storage-s3gw-dc1-01 lb-haproxy-dc1-01 lb-haproxy-dc1-03 lb-haproxy-dc1-02 전체 시스템 또는 특정 서버를 선택해 이상감지·추세 분석 범위를 정합니다. 초기화 전체 분석 전체 시스템 상태 주의 17 정상 1 주의 0 위험 주요 이슈 cache-redis-dc1-01 - 메모리 88% memory 88% >= 80% · 신뢰도 90% 조치: 다음 10분 슬롯에서도 유지되는지 확인하고 여유 용량을 점검하세요. 서버별 상세 분석 (18개) 문제 서버를 먼저 보여주고, 서버 카드를 열면 이상 감지와 추세 근거를 바로 확인할 수 있습니다. 전체 18 이슈 서버 1 정상 서버 17 cache-redis-dc1-01 주의 이상 1 상세 분석 접기 현재 상태 1개 이상 감지 주말 메모리 medium 88% 0% 80% 이상 감지 (medium) 알고리즘: monitoring-snapshot-risk-signal api-was-dc1-01 정상 이상 없음 상세 분석 펼치기 api-was-dc1-02 정상 이상 없음 상세 분석 펼치기 api-was-dc1-03 정상 이상 없음 상"
+  },
+  "apiResponses": [
+    {
+      "method": "POST",
+      "url": "/api/auth/guest-login",
+      "status": 200,
+      "vercelId": "icn1::icn1::6mzpz-1779008014492-87339ddd8765"
+    },
+    {
+      "method": "POST",
+      "url": "/api/ai/wake-up",
+      "status": 200,
+      "vercelId": "icn1::icn1::6mzpz-1779008015315-28fdad662598"
+    },
+    {
+      "method": "HEAD",
+      "url": "/api/system",
+      "status": 200,
+      "vercelId": "icn1::icn1::rxc8t-1779008015857-9578cf4b67b7"
+    },
+    {
+      "method": "GET",
+      "url": "/api/system",
+      "status": 200,
+      "vercelId": "icn1::icn1::l9l8d-1779008015899-00b176ad9e51"
+    },
+    {
+      "method": "GET",
+      "url": "/api/system",
+      "status": 200,
+      "vercelId": "icn1::icn1::rxc8t-1779008063874-a7735d334279"
+    },
+    {
+      "method": "GET",
+      "url": "/api/version",
+      "status": 200,
+      "vercelId": "icn1::icn1::vd8v7-1779008099226-c97fa4176dc1"
+    },
+    {
+      "method": "GET",
+      "url": "/api/ai/status",
+      "status": 403,
+      "vercelId": "icn1::icn1::vd8v7-1779008099304-105adf625a35"
+    },
+    {
+      "method": "POST",
+      "url": "/api/ai/supervisor/stream/v2",
+      "status": 200,
+      "aiLatencyMs": 130,
+      "vercelId": "icn1::icn1::k2qdj-1779008099566-3ebbc8cc9644"
+    },
+    {
+      "method": "POST",
+      "url": "/api/ai/incident-report",
+      "status": 200,
+      "aiLatencyMs": 1531,
+      "vercelId": "icn1::icn1::js7ng-1779008104987-5b5409137a38"
+    },
+    {
+      "method": "POST",
+      "url": "/api/ai/intelligent-monitoring",
+      "status": 200,
+      "aiLatencyMs": 303,
+      "vercelId": "icn1::icn1::9pflx-1779008110641-3abc2041637c"
+    }
+  ],
+  "consoleIssueCount": 2,
+  "consoleIssues": [
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://openmanager-ai.vercel.app/api/health?service=ai&soft=true' from origin 'null' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "artifacts": {
+    "evidencePath": "reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.json",
+    "screenshotPath": "reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.png"
+  },
+  "healthCurl": {
+    "status": 200,
+    "ok": true,
+    "body": {
+      "success": true,
+      "data": {
+        "status": "healthy",
+        "services": {
+          "database": {
+            "status": "connected",
+            "lastCheck": "2026-05-17T08:55:34.332Z",
+            "latency": 3
+          },
+          "cache": {
+            "status": "connected",
+            "lastCheck": "2026-05-17T08:55:34.332Z",
+            "latency": 3
+          },
+          "ai": {
+            "status": "connected",
+            "lastCheck": "2026-05-17T08:55:34.332Z",
+            "latency": 3
+          }
+        },
+        "uptime": 855,
+        "version": "8.11.165",
+        "timestamp": "2026-05-17T08:55:34.332Z"
+      },
+      "timestamp": "2026-05-17T08:55:34.333Z"
+    }
+  },
+  "aiHealthCurl": {
+    "status": 200,
+    "ok": true,
+    "body": {
+      "status": "ok",
+      "healthy": true,
+      "backend": "cloud-run",
+      "latency": 168,
+      "timestamp": "2026-05-17T08:53:33.028Z"
+    }
+  },
+  "overallPass": true,
+  "usageCheck": {
+    "platform": "vercel",
+    "status": "checked",
+    "result": "normal",
+    "effectiveUsd": 10.7667,
+    "billedUsd": 0,
+    "checkedAt": "2026-05-17T17:55:34+09:00"
+  }
+}

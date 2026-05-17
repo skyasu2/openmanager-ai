@@ -1,0 +1,165 @@
+{
+  "runId": "QA-20260517-0512",
+  "recordedAt": "2026-05-17T08:57:50.648Z",
+  "recordedAtKst": "2026-05-17 17:57:50 KST",
+  "runTitle": "v8.11.165 Vercel Production AI Assistant Live Smoke",
+  "owner": "codex",
+  "source": "playwright-node",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5",
+    "deploymentUrl": "https://openmanager-7mtg9iwhp-skyasus-projects.vercel.app",
+    "commitSha": "798de818384c6d183b351df2b82c6e84ce9840be"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "Vercel production /api/health",
+    "Vercel production /api/health?service=ai&soft=true",
+    "Vercel production /api/version",
+    "Vercel production /login guest PIN flow",
+    "Vercel production /dashboard/ai-assistant AI Chat",
+    "Vercel production /api/ai/supervisor/stream/v2",
+    "Vercel production /api/ai/incident-report",
+    "Vercel production /api/ai/intelligent-monitoring",
+    "Guest /api/ai/status admin boundary"
+  ],
+  "skippedSurfaces": [
+    "OAuth provider end-to-end login was skipped; guest PIN login was used",
+    "Full five-question conversational regression pack was not run; this was a targeted live smoke for the AI Assistant page",
+    "Admin-only /api/ai/status success path was not tested because the available browser session is guest-scoped"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Assistant Chat server summary",
+      "agent": "Supervisor/Monitoring Agent",
+      "provider": "openmanager-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "x-ai-latency-ms header + browser stopwatch",
+      "latencyMs": 7471,
+      "processingTimeMs": 130
+    },
+    {
+      "surface": "AI Assistant incident report generation",
+      "agent": "Reporter Agent",
+      "provider": "openmanager-ai-engine",
+      "route": "/api/ai/incident-report",
+      "source": "x-ai-latency-ms header + browser stopwatch",
+      "latencyMs": 4870,
+      "processingTimeMs": 1531
+    },
+    {
+      "surface": "AI Assistant intelligent monitoring batch analysis",
+      "agent": "Analyst Agent",
+      "provider": "openmanager-ai-engine",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "x-ai-latency-ms header",
+      "latencyMs": 303,
+      "processingTimeMs": 303
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production AI Assistant Chat, Reporter, and Analyst surfaces all returned HTTP 200 and rendered user-visible monitoring/report output in one guest session.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel health/version APIs and Cloud Run-backed AI health were healthy for v8.11.165; Vercel usage remained normal after the live smoke.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Guest session could use intended AI Assistant surfaces, while /api/ai/status remained protected with 403 Admin access required.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-17T17:55:34+09:00",
+      "summary": "Current billing period checked after production AI Assistant smoke; effective usage about 10.7667 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "AI Assistant live smoke JSON evidence",
+      "path": "reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.json"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Assistant live smoke final monitoring screen",
+      "path": "reports/qa/evidence/qa-20260517-v811165-ai-assistant-live-smoke.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "vercel-ai-assistant-live-smoke-v811165",
+      "title": "Verify Vercel production AI Assistant Chat, Reporter, and Analyst live paths",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production v8.11.165: /api/health 200 healthy, AI health 200 ok, guest login 200, Chat stream 200, incident report 200, intelligent monitoring 200. User-visible Chat summary, Redis memory warning report, and monitoring analysis rendered.",
+      "note": "/api/ai/status returned 403 for guest, which matches the admin-only boundary rather than an assistant runtime failure.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Health API checked with curl after browser pre-navigation health fetch hit expected null-origin CORS behavior. Curl /api/health returned services database/cache/ai connected and version 8.11.165; /api/health?service=ai&soft=true returned backend cloud-run healthy true.",
+    "AI Chat response summarized 18 servers: 17 normal, 1 warning, 0 critical/offline; warning was cache-redis-dc1-01 memory around 88%.",
+    "Reporter generated a Redis memory warning report with active issue count 1.",
+    "Intelligent monitoring batch analysis returned overall caution, 18 servers, 1 issue server, 17 normal servers.",
+    "Guest /api/ai/status returned 403 Forbidden - Admin access required; treated as an access-control pass for this guest-scoped smoke."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.165 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment v8.11.165",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/EG1U8xTdXAvgrhLTLnW5NQmoznt5"
+    }
+  ]
+}
