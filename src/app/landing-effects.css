@@ -5,17 +5,23 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
+  /* 완전 블랙 배경 위에서 더 선명하게 */
   background:
     radial-gradient(
       ellipse at center,
-      rgba(103, 80, 164, 0.18) 0%,
-      rgba(121, 134, 203, 0.12) 40%,
+      rgba(99, 72, 180, 0.22) 0%,
+      rgba(109, 120, 210, 0.10) 45%,
       transparent 70%
     ),
     radial-gradient(
-      ellipse at 80% 20%,
-      rgba(156, 39, 176, 0.15) 0%,
-      transparent 60%
+      ellipse at 80% 15%,
+      rgba(139, 30, 170, 0.16) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 15% 85%,
+      rgba(30, 64, 175, 0.10) 0%,
+      transparent 50%
     );
   animation: wave-drift 40s ease-in-out infinite;
   transform: translateZ(0);

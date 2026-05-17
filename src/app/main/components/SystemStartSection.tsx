@@ -37,7 +37,7 @@ export function SystemStartSection({
           type="button"
           onClick={onSystemToggle}
           disabled={buttonConfig.disabled}
-          className={`relative flex h-16 w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-xl border font-semibold shadow-xl transition-all duration-300 sm:w-64 ${buttonConfig.className}`}
+          className={`relative flex h-16 w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-xl border font-semibold shadow-xl ring-1 ring-white/10 transition-all duration-300 hover:ring-white/25 hover:shadow-2xl sm:w-64 ${buttonConfig.className}`}
         >
           {/* 카운트다운 오버레이 */}
           {systemStartCountdown > 0 && (

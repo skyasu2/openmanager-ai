@@ -14,6 +14,7 @@ import {
   SystemStartSection,
 } from '@/app/main/components';
 import { useLandingPageState } from '@/app/main/hooks';
+import { MouseSpotlight } from '@/components/landing/MouseSpotlight';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import {
@@ -21,10 +22,7 @@ import {
   APP_VERSION,
   TECH_STACK_DISPLAY,
 } from '@/config/app-meta';
-import {
-  AI_TEXT_GRADIENT_ANIMATED_STYLE,
-  PAGE_BACKGROUNDS,
-} from '@/styles/design-constants';
+import { AI_TEXT_GRADIENT_ANIMATED_STYLE } from '@/styles/design-constants';
 import { envLabel } from '@/utils/vercel-env-utils';
 
 const UnifiedProfileHeader = dynamic(
@@ -90,9 +88,10 @@ function Home() {
 
   return (
     <div
-      className={`min-h-screen ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}
+      className="min-h-screen bg-black"
       data-system-active={isSystemStarted ? 'true' : 'false'}
     >
+      <MouseSpotlight />
       <div className="wave-particles" />
 
       <header className="relative z-50 flex min-h-[72px] items-center justify-between p-4 sm:min-h-[88px] sm:p-6">
@@ -143,9 +142,12 @@ function Home() {
         </div>
 
         <section
-          className="mb-12 rounded-[2rem] border border-white/10 bg-black/15 px-4 py-6 shadow-[0_24px_80px_rgba(15,23,42,0.28)] backdrop-blur-sm sm:px-6"
+          className="mb-12 rounded-[2rem] border border-white/10 bg-white/[0.03] px-4 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.6)] backdrop-blur-sm sm:px-6"
           aria-label="주요 기능 소개"
         >
+          <p className="mb-5 text-center text-[11px] font-semibold uppercase tracking-[0.25em] text-white/30">
+            주요 기능
+          </p>
           <FeatureCardsGrid />
         </section>
 
