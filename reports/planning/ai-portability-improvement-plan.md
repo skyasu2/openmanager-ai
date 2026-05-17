@@ -1,10 +1,15 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: How-to
 > Last reviewed: 2026-05-17
 > Tags: portability, refactor, ai-artifacts, domain-pattern
 
 # AI 어시스턴트 이식성 개선 계획
+
+> 2026-05-17 Codex 착수 메모: 코드 확인 결과 `artifact-workspace-registry.ts`와
+> `artifact-renderer-registry.ts`가 이미 일부 존재한다. 따라서 1차 구현은 T1 전체
+> 타입 제너릭화보다 위험이 낮은 **T2a 렌더러 등록 API + Host switch 제거**를 먼저
+> 진행한다. 이후 T1/T3에서 타입/실행기 표면을 순차적으로 분리한다.
 
 ## 목적
 
@@ -175,6 +180,8 @@ return renderer(entry.artifact);
 
 **검증**: S1~S4 시나리오 테스트 작성 후 통과.
 
+- [ ] T2a 테스트 시나리오 S1/S2/S4 작성 (`test(spec):` 커밋)
+- [ ] T2a 렌더러 등록 API 추가 및 `ArtifactRendererHost` switch 제거
 - [ ] T2 테스트 시나리오 S1~S4 작성 (`test(spec):` 커밋)
 - [ ] T2 구현
 - [ ] T2 테스트 통과 확인
