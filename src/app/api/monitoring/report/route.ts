@@ -9,6 +9,9 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
+
+export const maxDuration = 10;
+
 import { logger } from '@/lib/logging';
 import {
   type MonitoringReportErrorCode,

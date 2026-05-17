@@ -3,6 +3,8 @@ import { getCorsHeaders } from '@/lib/api/cors';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 
+export const maxDuration = 10;
+
 // Edge Runtime 사용 (빠른 응답, 낮은 비용)
 // CSP 리포트는 실시간성이 덜 중요 - Node.js Runtime 사용
 

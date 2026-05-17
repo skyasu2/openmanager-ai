@@ -11,6 +11,9 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisDel, redisGet, redisSet } from '@/lib/redis';
+
+export const maxDuration = 10;
+
 import type {
   AIJob,
   JobStatusResponse,

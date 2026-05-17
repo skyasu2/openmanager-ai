@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-17
 > Tags: portability, refactor, ai-artifacts, domain-pattern
@@ -26,6 +26,11 @@
 > `src/lib/ai/domains/monitoring/artifact-registry.ts`의
 > `MonitoringChatArtifact`로 이동했다. 공유 envelope helper 시그니처는 유지하고,
 > 모니터링 UI/워크스페이스 소비자는 monitoring domain 유니온을 명시적으로 사용한다.
+>
+> 2026-05-17 Codex 완료 메모: T4 참조 문서
+> `docs/reference/architecture/ai/domain-portability.md`를 추가해 backend
+> `AssistantDomain`, frontend artifact renderer/executor registry, 포팅 checklist,
+> stock/code-review shell 예시를 정리했다.
 
 ## 목적
 
@@ -271,7 +276,7 @@ return executor(intent, options);
 - 현재 기술 스택 (Next.js, Vercel AI SDK v6, Hono, BaseAgent 등)
 ```
 
-- [ ] T4 문서 작성
+- [x] T4 문서 작성
 
 ---
 
