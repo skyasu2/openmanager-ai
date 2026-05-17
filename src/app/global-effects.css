@@ -22,8 +22,8 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   touch-action: manipulation;
-  /* Tailwind v4의 font-sans만으로는 일부 surface가 흔들려 직접 고정 */
-  font-family: 'Inter', 'Noto Sans KR', ui-sans-serif, system-ui,
+  /* next/font CSS 변수 우선, 명시 폴백 유지 */
+  font-family: var(--font-noto-sans-kr), 'Noto Sans KR', ui-sans-serif, system-ui,
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, 'Noto Sans', sans-serif;
   line-height: 1.6;
