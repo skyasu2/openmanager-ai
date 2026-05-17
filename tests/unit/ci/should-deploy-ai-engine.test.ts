@@ -84,10 +84,19 @@ function commitVersionOnlyAiEngineChange(cwd: string) {
   return runGit(cwd, ['rev-parse', 'HEAD']);
 }
 
-function runGuard(cwd: string, base: string, head: string) {
+function runGuard(
+  cwd: string,
+  base: string,
+  head: string,
+  env: NodeJS.ProcessEnv = {}
+) {
   return spawnSync('bash', [SCRIPT_PATH, '--base', base, '--head', head], {
     cwd,
     encoding: 'utf8',
+    env: {
+      ...process.env,
+      ...env,
+    },
   });
 }
 
@@ -118,7 +127,7 @@ describe('should-deploy-ai-engine.sh', () => {
     expect(result.stdout).toContain('decision=deploy');
   });
 
-  it('skips Cloud Run deploy for ai-engine package version-only release metadata', () => {
+  it('skips Cloud Run deploy for branch ai-engine package version-only metadata', () => {
     const { dir } = createRepo();
     commitVersionOnlyAiEngineChange(dir);
     const base = runGit(dir, ['rev-parse', 'HEAD^']);
@@ -129,6 +138,23 @@ describe('should-deploy-ai-engine.sh', () => {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('decision=skip');
     expect(result.stdout).toContain('reason=ai_engine_version_metadata_only');
+  });
+
+  it('deploys Cloud Run for semver tag ai-engine package version-only metadata', () => {
+    const { dir } = createRepo();
+    commitVersionOnlyAiEngineChange(dir);
+    const base = runGit(dir, ['rev-parse', 'HEAD^']);
+    const head = runGit(dir, ['rev-parse', 'HEAD']);
+
+    const result = runGuard(dir, base, head, {
+      CI_COMMIT_TAG: 'v1.0.1',
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('decision=deploy');
+    expect(result.stdout).toContain(
+      'reason=ai_engine_version_metadata_release_tag'
+    );
   });
 
   it('deploys Cloud Run when ai-engine package metadata changes beyond version fields', () => {

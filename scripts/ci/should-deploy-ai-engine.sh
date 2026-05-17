@@ -57,6 +57,10 @@ is_zero_sha() {
   esac
 }
 
+is_semver_tag() {
+  [[ "${1:-}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+}
+
 resolve_previous_semver_tag() {
   local current_tag="${CI_COMMIT_TAG:-}"
 
@@ -201,6 +205,11 @@ if [ "$has_ai_engine_change" = "true" ]; then
   done <<EOF
 $changed_files
 EOF
+
+  if is_semver_tag "${CI_COMMIT_TAG:-}"; then
+    echo "decision=deploy reason=ai_engine_version_metadata_release_tag files=\"${ai_engine_changed_files% }\" tag=${CI_COMMIT_TAG} base=${base_ref} head=${HEAD_REF}"
+    exit 0
+  fi
 
   echo "decision=skip reason=ai_engine_version_metadata_only files=\"${ai_engine_changed_files% }\" base=${base_ref} head=${HEAD_REF}"
   exit 0

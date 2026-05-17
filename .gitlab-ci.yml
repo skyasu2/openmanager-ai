@@ -533,7 +533,9 @@ post_deploy_ai_engine_smoke:
     - gcloud auth activate-service-account --key-file=gcp-key.json
     - gcloud config set project "$GCP_PROJECT_ID"
     - echo "▶ AI Engine post-deploy smoke..."
-    - bash scripts/ci/ai-engine-post-deploy-smoke.sh
+    - |
+      AI_ENGINE_EXPECTED_VERSION="$(node -p "require('./cloud-run/ai-engine/package.json').version")" \
+        bash scripts/ci/ai-engine-post-deploy-smoke.sh
     - echo "✅ AI Engine post-deploy smoke 통과"
   after_script:
     - rm -f gcp-key.json

@@ -58,10 +58,35 @@ function initReleaseRepo() {
       cwd: process.cwd(),
     }
   );
+  writeFileSync(join(repoDir, '.gitignore'), 'node_modules/\n', 'utf8');
+  mkdirSync(join(repoDir, 'node_modules', 'ts-node', 'dist'), {
+    recursive: true,
+  });
+  writeFileSync(
+    join(repoDir, 'node_modules', 'ts-node', 'dist', 'bin.js'),
+    [
+      '#!/usr/bin/env node',
+      "const fs = require('node:fs');",
+      "fs.mkdirSync('docs', { recursive: true });",
+      "fs.writeFileSync('docs/status.md', '# Status\\n\\nFixture status.\\n', 'utf8');",
+      '',
+    ].join('\n'),
+    'utf8'
+  );
   writeFileSync(join(repoDir, 'README.md'), '# fixture\n', 'utf8');
   writeFileSync(
     join(repoDir, 'package.json'),
-    JSON.stringify({ name: 'fixture', version: '1.2.3' }, null, 2),
+    JSON.stringify(
+      {
+        name: 'fixture',
+        version: '1.2.3',
+        scripts: {
+          'docs:status:check': 'node -e "process.exit(0)"',
+        },
+      },
+      null,
+      2
+    ),
     'utf8'
   );
   writeFileSync(
@@ -122,7 +147,7 @@ function initReleaseRepo() {
     ),
     'utf8'
   );
-  runCommand('git', ['-C', repoDir, 'add', 'README.md'], {
+  runCommand('git', ['-C', repoDir, 'add', 'README.md', '.gitignore'], {
     cwd: process.cwd(),
   });
   runCommand('git', ['-C', repoDir, 'add', '.'], { cwd: process.cwd() });
@@ -178,6 +203,12 @@ function commitRepoChanges(repoDir: string, message: string) {
   });
 }
 
+function tagRepo(repoDir: string, tag: string) {
+  runCommand('git', ['-C', repoDir, 'tag', '-a', tag, '-m', tag], {
+    cwd: process.cwd(),
+  });
+}
+
 function runPublish(
   cwd: string,
   args: string[] = [],
@@ -211,7 +242,7 @@ describe('release publish script', () => {
       CANONICAL_REMOTE: 'gitlab',
     });
 
-    expect(result.status).toBe(0);
+    expect(result.status, `${result.stdout}${result.stderr}`).toBe(0);
     expect(result.stdout).toContain('🔍 Dry-run 모드');
     expect(result.stdout).toContain('Release dry-run');
     expect(result.stdout).toContain('next: 1.3.0');
@@ -384,7 +415,7 @@ describe('release publish script', () => {
       RELEASE_VERIFY_PRODUCTION: 'false',
     });
 
-    expect(result.status).toBe(0);
+    expect(result.status, `${result.stdout}${result.stderr}`).toBe(0);
     expect(result.stdout).toContain(
       '⚪ Base release drift gate skipped (RELEASE_REQUIRE_DEPLOYED_BASE=false)'
     );
@@ -411,5 +442,71 @@ describe('release publish script', () => {
     expect(readFileSync(join(repoDir, 'CHANGELOG.md'), 'utf8')).toContain(
       '## [1.2.4]'
     );
+  });
+
+  it('keeps AI Engine component version for frontend-only releases after the previous tag', () => {
+    const repoDir = initReleaseRepo();
+    writeReleaseConsistencyScript(repoDir);
+    commitRepoChanges(repoDir, 'test: add release consistency fixture');
+    tagRepo(repoDir, 'v1.2.3');
+
+    mkdirSync(join(repoDir, 'src', 'app'), { recursive: true });
+    writeFileSync(
+      join(repoDir, 'src', 'app', 'page.tsx'),
+      'export default null;\n'
+    );
+    commitRepoChanges(repoDir, 'fix: adjust frontend shell');
+
+    const result = runPublish(repoDir, ['patch'], {
+      RELEASE_REQUIRE_DEPLOYED_BASE: 'false',
+      RELEASE_VERIFY_PRODUCTION: 'false',
+    });
+
+    expect(result.status, `${result.stdout}${result.stderr}`).toBe(0);
+    expect(
+      JSON.parse(readFileSync(join(repoDir, 'package.json'), 'utf8')).version
+    ).toBe('1.2.4');
+    expect(
+      JSON.parse(
+        readFileSync(
+          join(repoDir, 'cloud-run', 'ai-engine', 'package.json'),
+          'utf8'
+        )
+      ).version
+    ).toBe('1.2.3');
+  });
+
+  it('bumps AI Engine component version when its implementation changed after the previous tag', () => {
+    const repoDir = initReleaseRepo();
+    writeReleaseConsistencyScript(repoDir);
+    commitRepoChanges(repoDir, 'test: add release consistency fixture');
+    tagRepo(repoDir, 'v1.2.3');
+
+    mkdirSync(join(repoDir, 'cloud-run', 'ai-engine', 'src'), {
+      recursive: true,
+    });
+    writeFileSync(
+      join(repoDir, 'cloud-run', 'ai-engine', 'src', 'index.ts'),
+      'export const changed = true;\n'
+    );
+    commitRepoChanges(repoDir, 'fix(ai-engine): update runtime implementation');
+
+    const result = runPublish(repoDir, ['patch'], {
+      RELEASE_REQUIRE_DEPLOYED_BASE: 'false',
+      RELEASE_VERIFY_PRODUCTION: 'false',
+    });
+
+    expect(result.status, `${result.stdout}${result.stderr}`).toBe(0);
+    expect(
+      JSON.parse(readFileSync(join(repoDir, 'package.json'), 'utf8')).version
+    ).toBe('1.2.4');
+    expect(
+      JSON.parse(
+        readFileSync(
+          join(repoDir, 'cloud-run', 'ai-engine', 'package.json'),
+          'utf8'
+        )
+      ).version
+    ).toBe('1.2.4');
   });
 });

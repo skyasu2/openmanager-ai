@@ -142,6 +142,8 @@ describe('/api/health service-specific AI health', () => {
     mockCheckCloudRunHealth.mockResolvedValueOnce({
       healthy: true,
       latency: 45,
+      service: 'ai-engine',
+      version: '8.11.161',
     });
 
     const response = await GET(
@@ -155,6 +157,12 @@ describe('/api/health service-specific AI health', () => {
       healthy: true,
       backend: 'cloud-run',
       latency: 45,
+      service: 'ai-engine',
+      version: '8.11.161',
+      aiEngine: {
+        service: 'ai-engine',
+        version: '8.11.161',
+      },
     });
   });
 });

@@ -192,6 +192,36 @@ describe('ai-proxy runtime config', () => {
     vi.useRealTimers();
   });
 
+  it('reads Cloud Run health service and version metadata', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('VERCEL', '1');
+    vi.stubEnv('CLOUD_RUN_ENABLED', 'true');
+    vi.stubEnv('CLOUD_RUN_AI_URL', 'https://ai.run.app');
+    vi.stubEnv('CLOUD_RUN_API_SECRET', 'secret');
+
+    const { checkCloudRunHealth } = await loadProxy();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          status: 'ok',
+          service: 'ai-engine',
+          version: '8.11.161',
+        }),
+      })
+    );
+
+    const result = await checkCloudRunHealth(5000);
+
+    expect(result).toMatchObject({
+      healthy: true,
+      service: 'ai-engine',
+      version: '8.11.161',
+    });
+  });
+
   it('preserves structured Cloud Run error payloads', async () => {
     vi.stubEnv('NODE_ENV', 'production');
     vi.stubEnv('VERCEL', '1');

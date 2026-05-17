@@ -42,12 +42,15 @@ if (!expectedVersion) {
   pass('REL-001', `package version=${expectedVersion}`);
 }
 
-if (enginePkg.version === expectedVersion) {
-  pass('REL-002', 'cloud-run/ai-engine/package.json version matches');
+if (/^\d+\.\d+\.\d+$/.test(String(enginePkg.version || '').trim())) {
+  pass(
+    'REL-002',
+    `ai-engine component version=${String(enginePkg.version).trim()}`
+  );
 } else {
   fail(
     'REL-002',
-    `ai-engine version mismatch (root=${expectedVersion}, ai-engine=${enginePkg.version})`
+    `ai-engine package version is not valid semver: ${enginePkg.version || 'empty'}`
   );
 }
 

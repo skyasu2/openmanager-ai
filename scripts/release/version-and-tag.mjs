@@ -276,13 +276,58 @@ function updateChangelog(version, section) {
   return `${prefix}${section}${rest}`;
 }
 
-function updatePackageFiles(version) {
+function isTruthyEnv(name) {
+  return ['1', 'true', 'yes', 'y', 'on'].includes(
+    String(process.env[name] || '').trim().toLowerCase()
+  );
+}
+
+function isAiEngineVersionMetadataPath(file) {
+  return (
+    file === 'cloud-run/ai-engine/package.json' ||
+    file === 'cloud-run/ai-engine/package-lock.json'
+  );
+}
+
+function hasAiEngineImplementationChanges(previousTag) {
+  if (!previousTag) {
+    return true;
+  }
+
+  const changedFiles = git(['diff', '--name-only', `${previousTag}..HEAD`])
+    .split('\n')
+    .map((file) => file.trim())
+    .filter(Boolean);
+
+  return changedFiles.some(
+    (file) =>
+      file.startsWith('cloud-run/ai-engine/') &&
+      !isAiEngineVersionMetadataPath(file)
+  );
+}
+
+function shouldUpdateAiEnginePackageVersion({ firstRelease, previousTag }) {
+  return (
+    firstRelease ||
+    !previousTag ||
+    isTruthyEnv('RELEASE_BUMP_AI_ENGINE_VERSION') ||
+    hasAiEngineImplementationChanges(previousTag)
+  );
+}
+
+function updatePackageFiles(version, { includeAiEngine }) {
   const files = [
     'package.json',
     'package-lock.json',
-    'cloud-run/ai-engine/package.json',
-    'cloud-run/ai-engine/package-lock.json',
   ];
+
+  if (includeAiEngine) {
+    files.push(
+      'cloud-run/ai-engine/package.json',
+      'cloud-run/ai-engine/package-lock.json'
+    );
+  }
+
   const changed = [];
 
   for (const file of files) {
@@ -316,12 +361,22 @@ function updateStatusSnapshot() {
   );
 }
 
-function printDryRun({ currentVersion, newVersion, releaseAs, previousTag, section }) {
+function printDryRun({
+  currentVersion,
+  newVersion,
+  releaseAs,
+  previousTag,
+  section,
+  includeAiEngineVersion,
+}) {
   console.log('Release dry-run');
   console.log(`current: ${currentVersion}`);
   console.log(`next: ${newVersion}`);
   console.log(`release-as: ${releaseAs}`);
   console.log(`previous-tag: ${previousTag || '(none)'}`);
+  console.log(
+    `ai-engine-version: ${includeAiEngineVersion ? 'update' : 'keep'}`
+  );
   console.log('');
   console.log(section.trimEnd());
 }
@@ -343,6 +398,10 @@ function main() {
     : bumpVersion(currentVersion, releaseAs);
   const tag = `v${newVersion}`;
   const config = loadReleaseConfig();
+  const includeAiEngineVersion = shouldUpdateAiEnginePackageVersion({
+    firstRelease: options.firstRelease,
+    previousTag,
+  });
   const section = changelogSection({
     version: newVersion,
     previousTag,
@@ -351,7 +410,14 @@ function main() {
   });
 
   if (options.dryRun) {
-    printDryRun({ currentVersion, newVersion, releaseAs, previousTag, section });
+    printDryRun({
+      currentVersion,
+      newVersion,
+      releaseAs,
+      previousTag,
+      section,
+      includeAiEngineVersion,
+    });
     return;
   }
 
@@ -360,7 +426,9 @@ function main() {
     throw new Error(`Tag ${tag} already exists`);
   }
 
-  const changed = updatePackageFiles(newVersion);
+  const changed = updatePackageFiles(newVersion, {
+    includeAiEngine: includeAiEngineVersion,
+  });
   writeText('CHANGELOG.md', updateChangelog(newVersion, section));
   changed.push('CHANGELOG.md');
   updateStatusSnapshot();

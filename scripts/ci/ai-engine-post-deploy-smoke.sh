@@ -9,6 +9,7 @@ TIMEOUT_S="${AI_ENGINE_SMOKE_TIMEOUT_S:-8}"
 RETRIES="${AI_ENGINE_SMOKE_RETRIES:-6}"
 RETRY_DELAY_S="${AI_ENGINE_SMOKE_RETRY_DELAY_S:-5}"
 AI_ENGINE_URL="${AI_ENGINE_URL:-}"
+AI_ENGINE_EXPECTED_VERSION="${AI_ENGINE_EXPECTED_VERSION:-}"
 
 usage() {
   cat <<'EOF'
@@ -23,6 +24,7 @@ Environment:
   AI_ENGINE_SMOKE_TIMEOUT_S     Default: 8
   AI_ENGINE_SMOKE_RETRIES       Default: 6
   AI_ENGINE_SMOKE_RETRY_DELAY_S Default: 5
+  AI_ENGINE_EXPECTED_VERSION    Optional /health.version expectation
 EOF
 }
 
@@ -70,6 +72,7 @@ request_check() {
   local path="$1"
   local expected_status="$2"
   local body_pattern="$3"
+  local keep_body_path="${4:-}"
   local tmp_body
   tmp_body="$(mktemp)"
 
@@ -94,8 +97,44 @@ request_check() {
     return 1
   fi
 
+  if [ -n "$keep_body_path" ]; then
+    cp "$tmp_body" "$keep_body_path"
+  fi
+
   rm -f "$tmp_body"
   return 0
+}
+
+assert_expected_health_version() {
+  local body_file="$1"
+
+  if [ -z "$AI_ENGINE_EXPECTED_VERSION" ]; then
+    return 0
+  fi
+
+  node - "$body_file" "$AI_ENGINE_EXPECTED_VERSION" <<'NODE'
+const fs = require('node:fs');
+
+const [bodyFile, expectedVersion] = process.argv.slice(2);
+let payload;
+
+try {
+  payload = JSON.parse(fs.readFileSync(bodyFile, 'utf8'));
+} catch (error) {
+  console.error(`expected valid JSON from /health: ${error.message}`);
+  process.exit(1);
+}
+
+const actualVersion =
+  payload && typeof payload.version === 'string' ? payload.version.trim() : '';
+
+if (actualVersion !== expectedVersion) {
+  console.error(
+    `expected /health.version ${expectedVersion}, got ${actualVersion || 'unknown'}`
+  );
+  process.exit(1);
+}
+NODE
 }
 
 request_status_only() {
@@ -149,9 +188,16 @@ echo "AI Engine Post-Deploy Smoke"
 echo "- target: ${TARGET_URL}"
 echo "- timeout: ${TIMEOUT_S}s"
 echo "- retries: ${RETRIES}"
+if [ -n "$AI_ENGINE_EXPECTED_VERSION" ]; then
+  echo "- expected version: ${AI_ENGINE_EXPECTED_VERSION}"
+fi
 echo ""
 
-run_with_retry "GET /health" request_check "/health" "200" '"status":"ok"'
+HEALTH_BODY_FILE="$(mktemp)"
+trap 'rm -f "$HEALTH_BODY_FILE"' EXIT
+
+run_with_retry "GET /health" request_check "/health" "200" '"status":"ok"' "$HEALTH_BODY_FILE"
+assert_expected_health_version "$HEALTH_BODY_FILE"
 run_with_retry "GET /warmup" request_check "/warmup" "200" '"status":"warmed_up"'
 
 echo "- GET /monitoring (unauthenticated)"

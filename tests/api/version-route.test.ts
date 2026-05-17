@@ -30,6 +30,25 @@ describe('GET /api/version', () => {
 
     expect(body.version).toBe('1.2.3');
     expect(body.buildVersion).toBe(packageVersion);
+    expect(body.versions).toMatchObject({
+      overall: packageVersion,
+      frontend: '1.2.3',
+    });
+  });
+
+  it('separates overall release version from frontend implementation version', async () => {
+    vi.stubEnv('APP_RELEASE_TAG', 'v1.2.4');
+    vi.stubEnv('NEXT_PUBLIC_APP_VERSION', '1.2.3');
+
+    const body = await importAndCall();
+
+    expect(body.version).toBe('1.2.3');
+    expect(body.buildVersion).toBe(packageVersion);
+    expect(body.releaseTag).toBe('v1.2.4');
+    expect(body.versions).toEqual({
+      overall: '1.2.4',
+      frontend: '1.2.3',
+    });
   });
 
   it('always exposes package buildVersion for deploy verification', async () => {
