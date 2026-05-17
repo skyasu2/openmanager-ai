@@ -269,7 +269,9 @@ describe('AI artifact cards', () => {
     );
 
     expect(screen.getByText('장애 보고서')).toBeInTheDocument();
-    expect(screen.getByText('DB 메모리 경고')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'DB 메모리 경고' })
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /MD 다운로드/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /TXT 다운로드/i })).toBeEnabled();
     expect(
@@ -382,7 +384,9 @@ describe('AI artifact cards', () => {
     expect(
       screen.getByRole('link', { name: /cache-redis-dc1-01/i })
     ).toHaveAttribute('href', '/dashboard/servers/cache-redis-dc1-01');
-    expect(screen.getByText('API worker 수를 임시 증설')).toBeInTheDocument();
+    expect(
+      screen.getAllByText('API worker 수를 임시 증설').length
+    ).toBeGreaterThan(0);
     expect(screen.getByText(/cpu 94%/i)).toBeInTheDocument();
     expect(screen.getByText('CPU 임계치 초과')).toBeInTheDocument();
   });

@@ -10,6 +10,11 @@
 > `artifact-renderer-registry.ts`가 이미 일부 존재한다. 따라서 1차 구현은 T1 전체
 > 타입 제너릭화보다 위험이 낮은 **T2a 렌더러 등록 API + Host switch 제거**를 먼저
 > 진행한다. 이후 T1/T3에서 타입/실행기 표면을 순차적으로 분리한다.
+>
+> 2026-05-17 Codex 진행 메모: T2a는 `domainId + artifactKind + artifactVersion`
+> 키 기반 렌더러 등록 API로 구현했다. 모니터링 카드 5종은
+> `ArtifactRendererHost` switch에서 분리되어 별도 등록 모듈에서 초기화되며, 테스트
+> 전용 외부 도메인 `mock-report` 렌더러가 host를 통해 표시되는 회귀 테스트를 추가했다.
 
 ## 목적
 
@@ -126,7 +131,7 @@ export type MonitoringChatArtifact =
 **대상 파일**
 - `src/lib/ai/domain-renderers/artifact-renderer-registry.ts`
 - `src/components/ai/domain-renderers/ArtifactRendererHost.tsx`
-- `src/lib/ai/domains/monitoring/` (모니터링 렌더러 등록 초기화 파일 신규)
+- `src/components/ai/domain-renderers/monitoring-artifact-renderers.tsx`
 
 **작업 내용**
 
@@ -180,11 +185,11 @@ return renderer(entry.artifact);
 
 **검증**: S1~S4 시나리오 테스트 작성 후 통과.
 
-- [ ] T2a 테스트 시나리오 S1/S2/S4 작성 (`test(spec):` 커밋)
-- [ ] T2a 렌더러 등록 API 추가 및 `ArtifactRendererHost` switch 제거
-- [ ] T2 테스트 시나리오 S1~S4 작성 (`test(spec):` 커밋)
-- [ ] T2 구현
-- [ ] T2 테스트 통과 확인
+- [x] T2a 테스트 시나리오 S1/S2/S4 작성 (`test(spec):` 커밋)
+- [x] T2a 렌더러 등록 API 추가 및 `ArtifactRendererHost` switch 제거
+- [ ] T2 잔여 S3 도메인 독립 타입 컴파일 테스트 작성 (T1과 함께 진행)
+- [x] T2 구현
+- [x] T2 테스트 통과 확인
 
 ---
 
