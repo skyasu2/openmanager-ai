@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -54,7 +54,10 @@ function firstMatchLine(source: string, pattern: RegExp): number | undefined {
 describe('AI assistant portable boundary contract', () => {
   it('keeps shared/runtime assistant files free of monitoring domain ownership', () => {
     const findings = BOUNDARY_RULES.flatMap((rule) => {
-      const source = readFileSync(join(PROJECT_ROOT, rule.file), 'utf8');
+      const filePath = join(PROJECT_ROOT, rule.file);
+      if (!existsSync(filePath)) return [];
+
+      const source = readFileSync(filePath, 'utf8');
       const line = firstMatchLine(source, rule.pattern);
       if (!line) return [];
 
@@ -62,5 +65,23 @@ describe('AI assistant portable boundary contract', () => {
     });
 
     expect(findings).toEqual([]);
+  });
+
+  it('keeps ChatArtifact as a domain-neutral base contract', () => {
+    const sharedTypes = readFileSync(
+      join(PROJECT_ROOT, 'src/lib/ai/chat-artifacts/types.ts'),
+      'utf8'
+    );
+    const monitoringRegistry = readFileSync(
+      join(PROJECT_ROOT, 'src/lib/ai/domains/monitoring/artifact-registry.ts'),
+      'utf8'
+    );
+
+    expect(sharedTypes).toContain('export interface ChatArtifact');
+    expect(sharedTypes).not.toMatch(/export type ChatArtifact\s*=/);
+    expect(sharedTypes).not.toMatch(
+      /export type ChatArtifact[\s\S]*IncidentReportArtifact[\s\S]*OpsProcedureArtifact/
+    );
+    expect(monitoringRegistry).toContain('export type MonitoringChatArtifact');
   });
 });
