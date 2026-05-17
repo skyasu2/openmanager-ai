@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-17T18:27:54.947Z"
+    "updatedAt": "2026-05-17T21:57:55.297Z"
   },
   "sequence": {
-    "nextRunNumber": 517
+    "nextRunNumber": 518
   },
   "summary": {
-    "totalRecordedRuns": 514,
-    "totalRuns": 410,
+    "totalRecordedRuns": 515,
+    "totalRuns": 411,
     "excludedRuns": 104,
-    "totalChecks": 3690,
-    "totalPassed": 3545,
+    "totalChecks": 3698,
+    "totalPassed": 3553,
     "totalFailed": 134,
     "completionRate": 100,
-    "completedItems": 590,
+    "completedItems": 591,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0516",
-    "lastRecordedAt": "2026-05-17T18:27:54.947Z",
-    "latestRecordedRunId": "QA-20260518-0516",
-    "latestRecordedAt": "2026-05-17T18:27:54.947Z"
+    "lastRunId": "QA-20260518-0517",
+    "lastRecordedAt": "2026-05-17T21:57:55.297Z",
+    "latestRecordedRunId": "QA-20260518-0517",
+    "latestRecordedAt": "2026-05-17T21:57:55.297Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14465,6 +14465,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-17T18:08:49.082Z"
+    },
+    "landing-custom-cursor-removal": {
+      "id": "landing-custom-cursor-removal",
+      "title": "Remove cursor-following white dot while preserving MouseSpotlight reaction",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260518-0517",
+      "firstSeenAt": "2026-05-17T21:57:55.297Z",
+      "lastSeenRunId": "QA-20260518-0517",
+      "lastSeenAt": "2026-05-17T21:57:55.297Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production Playwright DOM verification on v8.11.168",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-17T21:57:55.297Z"
     }
   },
   "runs": [
@@ -57801,6 +57825,107 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0517",
+      "recordedAt": "2026-05-17T21:57:55.297Z",
+      "recordedAtKst": "2026-05-18 06:57:55 KST",
+      "title": "v8.11.168 Production Cursor Regression Closure",
+      "owner": "codex",
+      "source": "playwright-local",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0517.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "v8.11.168-gitlab-pipeline-2531890112",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "f6fe66328bb95d080cc8747853af99b53b942e2d"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version v8.11.168",
+        "Landing page custom cursor removal",
+        "Landing MouseSpotlight button-centered reaction",
+        "Noto Sans KR computed font and next/font fallback status",
+        "Landing network error scan"
+      ],
+      "skippedSurfaces": [
+        "dashboard authenticated flows",
+        "AI assistant conversational QA",
+        "diagram modal visual matrix",
+        "mobile responsive matrix"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-quality",
+          "domainName": "Frontend UX Quality",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The unintended cursor-following white dot is absent on production while the intended system-start anchored MouseSpotlight fragments still react to mouse movement.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "A node-level regression guard was added to test:quick to prevent reintroducing CustomCursor, has-custom-cursor, custom-cursor-dot, or cursor:none on the landing effect.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T06:56:08+09:00",
+          "summary": "Billing period 2026-05-01..2026-05-17: effective 10.7667 USD, billed 0.0000 USD, chargeCount 9744. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.168 cursor production verification",
+          "path": "reports/qa/evidence/qa-20260518-v811168-cursor-regression.md",
+          "note": "DOM: customCursorDot=0, customCursorRing=0, hasCustomCursorClass=0, fragments=24, bodyCursor=auto. Mouse move changed fragment react values from firstReactX=-31.82px to 25.78px. /api/version returned 8.11.168."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.168 deployment pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2531890112"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -57877,16 +58002,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 223,
-      "appropriateCount": 204,
+      "seenCount": 224,
+      "appropriateCount": 205,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0515",
-      "lastSeenAt": "2026-05-17T18:08:49.082Z",
+      "lastRunId": "QA-20260518-0517",
+      "lastSeenAt": "2026-05-17T21:57:55.297Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "StaticArchitectureDiagram gained regression coverage for invalid SVG height and marker id uniqueness; CustomCursor gained ring-removal coverage.",
+      "lastRationale": "A node-level regression guard was added to test:quick to prevent reintroducing CustomCursor, has-custom-cursor, custom-cursor-dot, or cursor:none on the landing effect.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -57979,16 +58104,16 @@
       "domainName": "Frontend UX Quality",
       "firstSeenRunId": "QA-20260430-0374",
       "firstSeenAt": "2026-04-29T18:53:53.244Z",
-      "seenCount": 6,
-      "appropriateCount": 3,
+      "seenCount": 7,
+      "appropriateCount": 4,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260518-0516",
-      "lastSeenAt": "2026-05-17T18:27:54.947Z",
+      "lastRunId": "QA-20260518-0517",
+      "lastSeenAt": "2026-05-17T21:57:55.297Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Landing page, font, custom cursor, dashboard, AI sidebar all visually verified",
+      "lastRationale": "The unintended cursor-following white dot is absent on production while the intended system-start anchored MouseSpotlight fragments still react to mouse movement.",
       "lastNextAction": ""
     },
     "frontend-ui-ux": {
