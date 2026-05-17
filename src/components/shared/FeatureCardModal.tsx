@@ -7,6 +7,7 @@ import { getDiagramByCardId } from '@/data/architecture-diagrams.data';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { FeatureCardModalProps } from '@/types/feature-card.types';
 import { parseMarkdownLinks } from '@/utils/markdown-parser';
+import { FeatureCardDiagramSummary } from './FeatureCardDiagramSummary';
 import {
   buildCategorizedTechData,
   getSafeCardData,
@@ -217,7 +218,10 @@ export default function FeatureCardModal({
   const mainContent = (
     <div className={showDiagram ? 'p-3 text-white sm:p-4' : 'p-6 text-white'}>
       {showDiagram && diagramData ? (
-        <StaticArchitectureDiagram diagram={diagramData} />
+        <div className="space-y-3">
+          <FeatureCardDiagramSummary diagram={diagramData} />
+          <StaticArchitectureDiagram diagram={diagramData} />
+        </div>
       ) : (
         <>
           {/* 헤더 섹션 — CI/CD 탭은 compact (아이콘·설명 축소) */}
