@@ -47,6 +47,10 @@ vi.mock('@/hooks/ai/utils/chat-history-storage', () => ({
   loadChatHistory: vi.fn(() => null),
 }));
 
+vi.mock('@/hooks/useServerQuery', () => ({
+  useServerQuery: vi.fn(() => ({ data: [] })),
+}));
+
 vi.mock('@/components/ai-sidebar/ChatMessageList', () => ({
   ChatMessageList: () => <div data-testid="chat-message-list" />,
 }));

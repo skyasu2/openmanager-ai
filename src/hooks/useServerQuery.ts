@@ -21,10 +21,12 @@ const fetchServers = async (): Promise<EnhancedServerMetrics[]> => {
 type UseServerQueryOptions = {
   /** Pre-fetched servers from Server Component (Phase 2: SSR) */
   initialData?: Server[];
+  /** Allows lightweight consumers to defer polling until their surface is visible. */
+  enabled?: boolean;
 };
 
 export function useServerQuery(options: UseServerQueryOptions = {}) {
-  const { initialData } = options;
+  const { enabled = true, initialData } = options;
 
   // Transform initial data to EnhancedServerMetrics format
   const transformedInitialData = initialData
@@ -36,6 +38,7 @@ export function useServerQuery(options: UseServerQueryOptions = {}) {
     queryFn: fetchServers,
     initialData: transformedInitialData,
     initialDataUpdatedAt: transformedInitialData ? Date.now() : undefined,
+    enabled,
     refetchInterval: () => getMsUntilNextServerDataSlot(),
     staleTime: SERVER_DATA_STALE_TIME_MS,
     gcTime: SERVER_DATA_GC_TIME_MS,

@@ -1,5 +1,5 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-17
 > Tags: ai-assistant, ux, frontend, chat, sidebar
@@ -14,6 +14,7 @@
 
 - 2026-05-17 Codex: Phase 1 착수. T1 레일 텍스트 줄바꿈 방어, T2 대시보드 내 AI 어시스턴트 헤더 통합 및 중복 채팅 헤더 제거, T5 기본 접힘 상태 확인 완료.
 - 2026-05-17 Codex: Phase 2 구현. T4 AI 메시지 연한 버블 구분, T6 최신 메시지 복귀 버튼, T7 handoff 대상 에이전트 배지를 사이드바/전체 페이지 양쪽에 반영.
+- 2026-05-17 Codex: Phase 3 구현. T3 웰컴 화면을 현재 서버 상태 요약 배너와 상태 기반 동적 제안 카드로 전환하고, 빈 대화 상태에서 서버 목록 쿼리 결과를 반영하도록 연결.
 
 ---
 

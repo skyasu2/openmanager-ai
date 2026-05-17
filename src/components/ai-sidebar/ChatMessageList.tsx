@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import type { WelcomeServerMetric } from '@/components/ai/WelcomePromptCards';
 import { WelcomePromptCards } from '@/components/ai/WelcomePromptCards';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 
@@ -38,6 +39,7 @@ interface ChatMessageListProps {
   ) => void;
   setInputValue: (value: string) => void;
   onStarterPromptSubmit?: (prompt: string) => void;
+  welcomeServers?: readonly WelcomeServerMetric[];
 }
 
 export const ChatMessageList = memo(function ChatMessageList({
@@ -52,6 +54,7 @@ export const ChatMessageList = memo(function ChatMessageList({
   onArtifactGuidanceCta,
   setInputValue,
   onStarterPromptSubmit,
+  welcomeServers,
 }: ChatMessageListProps) {
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const hasMessages = allMessages.length > 0;
@@ -132,6 +135,7 @@ export const ChatMessageList = memo(function ChatMessageList({
           {allMessages.length === 0 && (
             <WelcomePromptCards
               onPromptClick={onStarterPromptSubmit ?? setInputValue}
+              servers={welcomeServers}
             />
           )}
 

@@ -14,6 +14,7 @@ import type {
   HandoffEventData,
 } from '@/hooks/ai/useHybridAIQuery';
 import { loadChatHistory } from '@/hooks/ai/utils/chat-history-storage';
+import { useServerQuery } from '@/hooks/useServerQuery';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import {
   type EnhancedChatMessage,
@@ -177,6 +178,10 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   );
 
   const [hasPersistedHistory, setHasPersistedHistory] = useState(false);
+  const shouldLoadWelcomeSummary = allMessages.length === 0;
+  const { data: welcomeServers } = useServerQuery({
+    enabled: shouldLoadWelcomeSummary,
+  });
 
   const hasRestored = restoreBannerDismissed || allMessages.length === 0;
 
@@ -249,6 +254,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           onArtifactGuidanceCta={onArtifactGuidanceCta}
           setInputValue={setInputValue}
           onStarterPromptSubmit={onStarterPromptSubmit}
+          welcomeServers={welcomeServers}
         />
       )}
 
