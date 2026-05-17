@@ -35,6 +35,7 @@ export function SystemStartSection({
         {/* 시스템 시작 버튼 */}
         <button
           type="button"
+          data-spotlight-anchor="system-start"
           onClick={onSystemToggle}
           disabled={buttonConfig.disabled}
           className={`relative flex h-16 w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-xl border font-semibold shadow-xl ring-1 ring-white/10 transition-all duration-300 hover:ring-white/25 hover:shadow-2xl sm:w-64 ${buttonConfig.className}`}
