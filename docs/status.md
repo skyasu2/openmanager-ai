@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-17
+> Last reviewed: 2026-05-18
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-17 | **현재 버전 스냅샷**: v8.11.166
+**상태 스냅샷 기준일**: 2026-05-18 | **현재 버전 스냅샷**: v8.11.167
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.167** (2026-05-18) — Tests: qa: record vercel regression findings; Tests: font: allow centralized next font usage; Tests: spec: add ChatArtifact portability boundary
 - **v8.11.166** (2026-05-17) — Performance Improvements: dashboard: tune server overview rendering; Features: ai-ui: personalize assistant welcome prompts; Features: ai-ui: improve assistant message flow
 - **v8.11.165** (2026-05-17) — Bug Fixes: system: allow profile controls during status fetch
 - **v8.11.164** (2026-05-17) — Bug Fixes: profile: sync guest system status
 - **v8.11.163** (2026-05-17) — Bug Fixes: system: persist serverless running state
-- **v8.11.162** (2026-05-17) — Bug Fixes: dashboard: sync system controls and card spacing; Tests: qa: record v8.11.161 production dashboard check
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
