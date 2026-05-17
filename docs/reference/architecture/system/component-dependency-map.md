@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 148 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 149 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 155 |
+| Total TSX component inventory | 156 |
 
 ## App Route-Local Component Distribution
 
@@ -51,13 +51,13 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 31128 |
-| Component nodes | 148 |
+| Component source lines | 31224 |
+| Component nodes | 149 |
 | Component edges | 147 |
-| Graph density | 0.68% |
+| Graph density | 0.67% |
 | Alias edges (`@/components/*`) | 41 |
 | Relative edges (`./`, `../`) | 106 |
-| Isolated components | 23 |
+| Isolated components | 24 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
 
@@ -73,7 +73,7 @@ flowchart LR
   d5["emergency (1)"]
   d6["error (3)"]
   d7["home (2)"]
-  d8["landing (1)"]
+  d8["landing (2)"]
   d9["providers (4)"]
   d10["shared (25)"]
   d11["system (2)"]
@@ -117,10 +117,10 @@ flowchart LR
 | unified-profile | 3 |
 | charts | 2 |
 | home | 2 |
+| landing | 2 |
 | system | 2 |
 | auth | 1 |
 | emergency | 1 |
-| landing | 1 |
 
 ## Top Domain Edges (Top 28)
 

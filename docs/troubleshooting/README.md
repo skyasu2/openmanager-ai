@@ -4,13 +4,14 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-18
 > Canonical: docs/troubleshooting/README.md
 > Tags: troubleshooting,index,operations
 
 ## Available Docs
 
 - [Common Issues](./common-issues.md)
+- [Landing Visual Regression](./landing-visual-regression.md)
 - [Operations](../operations/README.md)
 - [Deployment Guide](../operations/deployment-guide.md)
 - [Rollback Guide](../operations/rollback-guide.md)
@@ -30,6 +31,7 @@ npm run docs:check
 |---|---|
 | 배포 직후 production 이상 | [Rollback Guide](../operations/rollback-guide.md) |
 | GitLab runner, protected tag, deploy variable 문제 | [Common Issues](./common-issues.md#gitlab-ci-runner-executor-transition), [Deployment Guide](../operations/deployment-guide.md) |
+| 랜딩/로그인 시각 효과, 폰트, 커서 범위 문제 | [Landing Visual Regression](./landing-visual-regression.md) |
 | API 문서와 실제 route 불일치 | [API Endpoints](../reference/api/endpoints.md), `npm run docs:api:endpoints:check` |
 | AI 응답 지연/실패 | [AI Engine Architecture](../reference/architecture/ai/ai-engine-architecture.md), [Observability](../guides/observability.md) |
 | health check 호출 기준 혼선 | [Health Check Policy](../guides/standards/health-check-policy.md) |
