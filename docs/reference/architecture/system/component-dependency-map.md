@@ -51,7 +51,7 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 30615 |
+| Component source lines | 30652 |
 | Component nodes | 146 |
 | Component edges | 144 |
 | Graph density | 0.68% |
