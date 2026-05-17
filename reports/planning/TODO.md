@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-17 KST (Frontend 점검 완료, 개선 계획서 작성)
+**Last Updated**: 2026-05-17 KST (AI 어시스턴트 이식성 개선 계획서 작성)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -24,6 +24,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` 기본값으로 production에서 single mode 실질 비활성. 경량 단순쿼리 경로 설계 시 재검토. |
+| AI 어시스턴트 이식성 개선 — 프론트엔드 아티팩트 레지스트리 전환 (T1~T4) | Low | 다른 도메인 AI 어시스턴트 제작 시 이 프로젝트를 참조할 수 있도록 정비. 백엔드는 이미 완성. 프론트엔드 3곳(ChatArtifact 유니온, ArtifactRendererHost switch, chat-artifact-execution switch)을 레지스트리 패턴으로 전환. 상세: [ai-portability-improvement-plan.md](ai-portability-improvement-plan.md) |
 
 ---
 
