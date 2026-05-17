@@ -70,6 +70,30 @@ describe('AIWorkspaceMessage detail affordance', () => {
     expect(screen.getByText('순환 3번')).toBeInTheDocument();
   });
 
+  it('distinguishes assistant responses with a soft bubble and handoff target badge', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-workspace-bubble-agent',
+      role: 'assistant',
+      content: '분석 에이전트가 패턴을 확인했습니다.',
+      timestamp: new Date('2026-05-17T08:05:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        handoffHistory: [{ from: 'supervisor', to: 'analyst' }],
+      },
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    expect(screen.getByTestId('ai-response')).toHaveClass(
+      'bg-gradient-to-br',
+      'from-slate-50',
+      'border-slate-200'
+    );
+    expect(screen.getByTestId('assistant-agent-badge')).toHaveTextContent(
+      '심층 분석'
+    );
+  });
+
   it('renders structured details inline when analysis metadata is absent', () => {
     const message: EnhancedChatMessage = {
       id: 'assistant-inline-details',

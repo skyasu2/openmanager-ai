@@ -111,4 +111,54 @@ describe('ChatMessageList', () => {
       'overflow-y-auto'
     );
   });
+
+  it('shows a scroll-to-bottom button when the user is away from the latest message', () => {
+    render(
+      <ChatMessageList
+        scrollContainerRef={createRef<HTMLDivElement>()}
+        autoReportTrigger={{ shouldGenerate: false }}
+        allMessages={[
+          createMessage({ id: 'm1', content: 'first' }),
+          createMessage({ id: 'm2', content: 'latest' }),
+        ]}
+        limitedMessages={[
+          createMessage({ id: 'm1', content: 'first' }),
+          createMessage({ id: 'm2', content: 'latest' }),
+        ]}
+        messagesEndRef={createRef<HTMLDivElement>()}
+        MessageComponent={MessageComponent}
+        isGenerating={false}
+        regenerateResponse={vi.fn()}
+        setInputValue={vi.fn()}
+      />
+    );
+
+    const messageRegion = screen.getByRole('log', {
+      name: 'AI 대화 메시지',
+    });
+    const scrollTo = vi.fn();
+    Object.defineProperties(messageRegion, {
+      clientHeight: { configurable: true, value: 400 },
+      scrollHeight: { configurable: true, value: 1000 },
+      scrollTop: { configurable: true, writable: true, value: 300 },
+      scrollTo: { configurable: true, value: scrollTo },
+    });
+
+    fireEvent.scroll(messageRegion);
+
+    const scrollButton = screen.getByRole('button', {
+      name: '최신 메시지로 이동',
+    });
+    expect(scrollButton).toBeVisible();
+
+    fireEvent.click(scrollButton);
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      top: 1000,
+      behavior: 'smooth',
+    });
+    expect(
+      screen.queryByRole('button', { name: '최신 메시지로 이동' })
+    ).not.toBeInTheDocument();
+  });
 });

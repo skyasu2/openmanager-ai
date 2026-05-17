@@ -167,6 +167,33 @@ describe('SidebarMessage detail expand', () => {
     expect(onArtifactGuidanceCta).toHaveBeenCalledWith('monitoring-analysis');
   });
 
+  it('distinguishes assistant responses with a soft bubble and handoff target badge', () => {
+    render(
+      <MessageComponent
+        message={{
+          id: 'assistant-bubble-agent',
+          role: 'assistant',
+          content: '보고서 에이전트가 장애 요약을 작성했습니다.',
+          timestamp: new Date('2026-05-17T08:00:00.000Z'),
+          isStreaming: false,
+          metadata: {
+            handoffHistory: [{ from: 'supervisor', to: 'reporter' }],
+          },
+        }}
+        isLastMessage={true}
+      />
+    );
+
+    expect(screen.getByTestId('ai-response')).toHaveClass(
+      'bg-gradient-to-br',
+      'from-slate-50',
+      'border-slate-200'
+    );
+    expect(screen.getByTestId('assistant-agent-badge')).toHaveTextContent(
+      '보고서 생성'
+    );
+  });
+
   it('renders the real analysis basis tabs for assistant messages with analysis metadata', () => {
     render(
       <MessageComponent
