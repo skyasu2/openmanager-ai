@@ -85,6 +85,7 @@ export const Shield = noop;
 export const ShieldCheck = noop;
 export const Sparkles = noop;
 export const Square = noop;
+export const Tag = noop;
 export const Target = noop;
 export const Terminal = noop;
 export const ThumbsDown = noop;
