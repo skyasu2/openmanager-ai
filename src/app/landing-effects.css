@@ -50,12 +50,12 @@
   top: var(--anchor-y, 42vh);
   width: var(--fragment-w);
   height: var(--fragment-h);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.72);
   box-shadow:
-    0 0 14px rgba(255, 255, 255, 0.22),
-    0 0 28px rgba(255, 255, 255, 0.08);
+    0 0 10px rgba(255, 255, 255, 0.18),
+    0 0 22px rgba(255, 255, 255, 0.08);
   opacity: var(--fragment-opacity, 0.34);
   transform: translate3d(
       calc(var(--fragment-x) + var(--react-x, 0px)),

@@ -91,7 +91,10 @@ describe('MouseSpotlight', () => {
       ).toBeGreaterThan(1);
       expect(
         Number(firstFragment?.style.getPropertyValue('--fragment-opacity'))
-      ).toBeGreaterThan(0.27);
+      ).toBeGreaterThan(0.28);
+      expect(
+        Number(firstFragment?.style.getPropertyValue('--fragment-opacity'))
+      ).toBeLessThanOrEqual(0.62);
     });
   });
 
@@ -101,13 +104,13 @@ describe('MouseSpotlight', () => {
       container.querySelectorAll<HTMLElement>('.mouse-spotlight__fragment')
     );
 
-    expect(fragments).toHaveLength(12);
+    expect(fragments).toHaveLength(24);
     fragments.forEach((fragment) => {
       const width = fragment.style.getPropertyValue('--fragment-w');
       const height = fragment.style.getPropertyValue('--fragment-h');
 
       expect(width).toBe(height);
-      expect(Number(width.replace('px', ''))).toBeLessThanOrEqual(10);
+      expect(Number(width.replace('px', ''))).toBeLessThanOrEqual(5);
     });
     expect(container.querySelector('.mouse-spotlight__orbit')).toBeNull();
     expect(container.querySelector('.mouse-spotlight__signal')).toBeNull();

@@ -16,18 +16,30 @@ const INITIAL_SPOTLIGHT_STYLE: SpotlightStyle = {
 const ANCHOR_SELECTOR = '[data-spotlight-anchor="system-start"]';
 
 const SPOTLIGHT_FRAGMENTS = [
-  { x: -170, y: -92, width: 8, height: 8, rotate: -18, depth: 0.75 },
-  { x: -104, y: -142, width: 6, height: 6, rotate: 28, depth: -0.45 },
-  { x: 92, y: -132, width: 9, height: 9, rotate: 14, depth: 0.6 },
-  { x: 166, y: -46, width: 7, height: 7, rotate: 42, depth: -0.7 },
-  { x: 128, y: 80, width: 8, height: 8, rotate: -26, depth: 0.5 },
-  { x: 34, y: 138, width: 6, height: 6, rotate: 18, depth: -0.55 },
-  { x: -132, y: 104, width: 9, height: 9, rotate: 24, depth: 0.68 },
-  { x: -198, y: 24, width: 7, height: 7, rotate: -38, depth: -0.4 },
-  { x: -58, y: -188, width: 6, height: 6, rotate: -8, depth: 0.42 },
-  { x: 218, y: 18, width: 10, height: 10, rotate: 6, depth: 0.82 },
-  { x: 72, y: 188, width: 7, height: 7, rotate: -34, depth: -0.48 },
-  { x: -238, y: -38, width: 8, height: 8, rotate: 12, depth: 0.58 },
+  { x: -320, y: -164, width: 4, height: 4, rotate: -18, depth: 0.74 },
+  { x: -246, y: -228, width: 3, height: 3, rotate: 28, depth: -0.45 },
+  { x: -148, y: -184, width: 5, height: 5, rotate: 14, depth: 0.58 },
+  { x: -62, y: -262, width: 3, height: 3, rotate: -8, depth: 0.42 },
+  { x: 74, y: -224, width: 4, height: 4, rotate: 19, depth: -0.5 },
+  { x: 168, y: -176, width: 5, height: 5, rotate: 6, depth: 0.62 },
+  { x: 286, y: -118, width: 4, height: 4, rotate: 42, depth: -0.68 },
+  { x: 342, y: -24, width: 3, height: 3, rotate: -22, depth: 0.78 },
+  { x: 252, y: 48, width: 5, height: 5, rotate: -26, depth: 0.5 },
+  { x: 318, y: 142, width: 4, height: 4, rotate: 11, depth: -0.56 },
+  { x: 186, y: 196, width: 3, height: 3, rotate: -34, depth: -0.48 },
+  { x: 88, y: 276, width: 4, height: 4, rotate: 18, depth: 0.52 },
+  { x: -28, y: 228, width: 5, height: 5, rotate: 24, depth: 0.66 },
+  { x: -126, y: 292, width: 3, height: 3, rotate: -16, depth: -0.42 },
+  { x: -226, y: 208, width: 4, height: 4, rotate: -38, depth: -0.4 },
+  { x: -344, y: 112, width: 5, height: 5, rotate: 12, depth: 0.56 },
+  { x: -284, y: 12, width: 3, height: 3, rotate: -4, depth: 0.72 },
+  { x: -204, y: -42, width: 4, height: 4, rotate: 31, depth: -0.58 },
+  { x: -98, y: 44, width: 3, height: 3, rotate: 7, depth: 0.44 },
+  { x: 44, y: 92, width: 4, height: 4, rotate: -28, depth: -0.52 },
+  { x: 132, y: 8, width: 3, height: 3, rotate: 15, depth: 0.7 },
+  { x: 222, y: -72, width: 4, height: 4, rotate: -31, depth: -0.46 },
+  { x: -14, y: -126, width: 5, height: 5, rotate: 34, depth: 0.48 },
+  { x: 18, y: 166, width: 3, height: 3, rotate: -11, depth: -0.62 },
 ] as const;
 
 const clamp = (value: number, min: number, max: number) =>
@@ -97,11 +109,11 @@ export function MouseSpotlight() {
           -18,
           18
         );
-        const reactScale = 1 + intensity * (0.08 + exposedSide * 0.12);
+        const reactScale = 1 + intensity * (0.05 + exposedSide * 0.08);
         const fragmentOpacity = clamp(
-          0.27 + intensity * 0.18 + exposedSide * 0.16,
-          0.24,
-          0.72
+          0.28 + intensity * 0.14 + exposedSide * 0.2,
+          0.28,
+          0.62
         );
 
         fragment.style.setProperty('--react-x', `${reactX.toFixed(2)}px`);
