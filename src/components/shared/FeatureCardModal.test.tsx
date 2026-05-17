@@ -7,6 +7,7 @@ import { createRef } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FEATURE_CARDS_DATA } from '@/data/feature-cards.data';
 import { VIBE_CODING_DATA } from '@/data/tech-stacks/vibe-coding';
+import type { FeatureCard } from '@/types/feature-card.types';
 import FeatureCardModal from './FeatureCardModal';
 
 vi.mock('@/stores/useUnifiedAdminStore', () => ({
@@ -24,6 +25,7 @@ vi.mock('next/dynamic', () => ({
 
 const vibeCard = FEATURE_CARDS_DATA.find((card) => card.id === 'vibe-coding');
 const aiCard = FEATURE_CARDS_DATA.find((card) => card.id === 'ai-assistant');
+const techCard = FEATURE_CARDS_DATA.find((card) => card.id === 'tech-stack');
 
 if (!vibeCard) {
   throw new Error('vibe-coding feature card not found');
@@ -31,6 +33,10 @@ if (!vibeCard) {
 
 if (!aiCard) {
   throw new Error('ai-assistant feature card not found');
+}
+
+if (!techCard) {
+  throw new Error('tech-stack feature card not found');
 }
 
 describe('FeatureCardModal', () => {
@@ -64,6 +70,42 @@ describe('FeatureCardModal', () => {
         isVisible
       />
     );
+  };
+
+  const renderSwitchableModal = (
+    selectedCard: FeatureCard | null = aiCard,
+    isVisible = true
+  ) => {
+    const modalRef = createRef<HTMLDivElement>();
+    const onClose = vi.fn();
+
+    const view = render(
+      <FeatureCardModal
+        selectedCard={selectedCard}
+        onClose={onClose}
+        renderTextWithAIGradient={(text) => text}
+        modalRef={modalRef}
+        isVisible={isVisible}
+      />
+    );
+
+    return {
+      ...view,
+      onClose,
+      rerenderModal: (
+        nextCard: FeatureCard | null,
+        nextVisible = Boolean(nextCard)
+      ) =>
+        view.rerender(
+          <FeatureCardModal
+            selectedCard={nextCard}
+            onClose={onClose}
+            renderTextWithAIGradient={(text) => text}
+            modalRef={modalRef}
+            isVisible={nextVisible}
+          />
+        ),
+    };
   };
 
   it('바이브 탭 전환 시 헤더와 본문이 함께 바뀐다', () => {
@@ -108,5 +150,47 @@ describe('FeatureCardModal', () => {
       screen.getByText(/repo 문서\/seed JSON을 원본 지식/)
     ).toBeInTheDocument();
     expect(screen.queryByText('RAG')).not.toBeInTheDocument();
+  });
+
+  it('카드 전환 시 이전 카드의 다이어그램 모드와 스크롤 위치를 공유하지 않는다', () => {
+    const { rerenderModal } = renderSwitchableModal(aiCard);
+
+    fireEvent.click(screen.getByRole('button', { name: /아키텍처 보기/i }));
+
+    expect(screen.getByTestId('mock-react-flow-diagram')).toBeInTheDocument();
+    expect(screen.getByLabelText('다이어그램 요약')).toHaveTextContent(
+      'AI 어시스턴트 런타임'
+    );
+
+    const scrollContainer = screen.getByTestId('feature-card-modal-scroll');
+    scrollContainer.scrollTop = 320;
+
+    rerenderModal(techCard);
+
+    const nextScrollContainer = screen.getByTestId('feature-card-modal-scroll');
+    expect(nextScrollContainer).toHaveAttribute('data-card-id', 'tech-stack');
+    expect(nextScrollContainer).toHaveAttribute('data-view-mode', 'current');
+    expect(nextScrollContainer.scrollTop).toBe(0);
+    expect(
+      screen.queryByTestId('mock-react-flow-diagram')
+    ).not.toBeInTheDocument();
+  });
+
+  it('닫힌 뒤 다른 카드로 다시 열어도 이전 다이어그램 상태를 노출하지 않는다', () => {
+    const { rerenderModal } = renderSwitchableModal(aiCard);
+
+    fireEvent.click(screen.getByRole('button', { name: /아키텍처 보기/i }));
+    expect(screen.getByTestId('mock-react-flow-diagram')).toBeInTheDocument();
+
+    rerenderModal(null, false);
+    rerenderModal(techCard, true);
+
+    expect(screen.getByTestId('feature-card-modal-scroll')).toHaveAttribute(
+      'data-view-mode',
+      'current'
+    );
+    expect(
+      screen.queryByTestId('mock-react-flow-diagram')
+    ).not.toBeInTheDocument();
   });
 });

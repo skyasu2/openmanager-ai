@@ -8,6 +8,7 @@ import { getDiagramByCardId } from '@/data/architecture-diagrams.data';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { FeatureCardModalProps } from '@/types/feature-card.types';
 import { parseMarkdownLinks } from '@/utils/markdown-parser';
+import { FeatureCardDiagramSummary } from './FeatureCardDiagramSummary';
 import {
   buildCategorizedTechData,
   getSafeCardData,
@@ -33,6 +34,20 @@ const ReactFlowDiagram = dynamic<ReactFlowDiagramProps>(
   }
 );
 
+type VibeView = 'current' | 'history' | 'cicd';
+
+type ModalViewState = {
+  cardId: string | null;
+  showDiagram: boolean;
+  vibeView: VibeView;
+};
+
+const DEFAULT_MODAL_VIEW_STATE: ModalViewState = {
+  cardId: null,
+  showDiagram: false,
+  vibeView: 'current',
+};
+
 export default function FeatureCardModal({
   selectedCard,
   onClose,
@@ -41,29 +56,17 @@ export default function FeatureCardModal({
   variant = 'home',
   isVisible,
 }: FeatureCardModalProps) {
-  // 모달은 항상 다크 테마로 고정
-  // 바이브 코딩 카드 전용 모드 상태
-  const [vibeView, setVibeView] = React.useState<
-    'current' | 'history' | 'cicd'
-  >('current');
-  // 아키텍처 다이어그램 뷰 상태 (모든 카드에 적용)
-  const [showDiagram, setShowDiagram] = React.useState(false);
+  const [viewState, setViewState] = React.useState<ModalViewState>(
+    DEFAULT_MODAL_VIEW_STATE
+  );
   const selectedCardId = selectedCard?.id ?? null;
 
-  // 모달이 열릴 때 기본 상세보기 모드로 초기화
-  useEffect(() => {
-    if (isVisible) {
-      setShowDiagram(false);
-      setVibeView('current');
-    }
-  }, [isVisible]);
-
-  // 카드 전환 시 기본 상세보기 모드로 초기화
-  useEffect(() => {
-    if (!isVisible || !selectedCardId) return;
-    setShowDiagram(false);
-    setVibeView('current');
-  }, [isVisible, selectedCardId]);
+  const isViewStateCurrent =
+    isVisible && selectedCardId !== null && viewState.cardId === selectedCardId;
+  const showDiagram = isViewStateCurrent ? viewState.showDiagram : false;
+  const vibeView = isViewStateCurrent ? viewState.vibeView : 'current';
+  const modalViewMode = showDiagram ? 'diagram' : vibeView;
+  const modalScrollResetKey = `${selectedCardId ?? 'none'}:${modalViewMode}`;
 
   // AI 상태 확인 (AI 제한 처리용)
   const aiAgentEnabled = useUnifiedAdminStore(
@@ -72,7 +75,65 @@ export default function FeatureCardModal({
 
   // 내부 ref (외부 modalRef가 없을 경우 대체)
   const internalRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const actualModalRef = modalRef || internalRef;
+
+  React.useLayoutEffect(() => {
+    setViewState((previousState) => {
+      if (!isVisible || !selectedCardId) {
+        return previousState.cardId === null
+          ? previousState
+          : DEFAULT_MODAL_VIEW_STATE;
+      }
+
+      if (previousState.cardId === selectedCardId) {
+        return previousState;
+      }
+
+      return {
+        cardId: selectedCardId,
+        showDiagram: false,
+        vibeView: 'current',
+      };
+    });
+  }, [isVisible, selectedCardId]);
+
+  React.useLayoutEffect(() => {
+    if (!isVisible) return;
+
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    scrollContainer.dataset.scrollResetKey = modalScrollResetKey;
+    scrollContainer.scrollTop = 0;
+    scrollContainer.scrollLeft = 0;
+  }, [isVisible, modalScrollResetKey]);
+
+  const toggleDiagram = React.useCallback(() => {
+    if (!selectedCardId) return;
+
+    setViewState((previousState) => ({
+      cardId: selectedCardId,
+      showDiagram:
+        previousState.cardId === selectedCardId
+          ? !previousState.showDiagram
+          : true,
+      vibeView: 'current',
+    }));
+  }, [selectedCardId]);
+
+  const setScopedVibeView = React.useCallback(
+    (nextView: VibeView) => {
+      if (!selectedCardId) return;
+
+      setViewState({
+        cardId: selectedCardId,
+        showDiagram: false,
+        vibeView: nextView,
+      });
+    },
+    [selectedCardId]
+  );
 
   // 🔧 P0: 통합 키보드 핸들러 (ESC 닫기 + Tab 포커스 트래핑)
   useEffect(() => {
@@ -179,17 +240,20 @@ export default function FeatureCardModal({
       {/* 아키텍처 다이어그램 뷰 (React Flow 기반) */}
       {/* 🔧 key prop: showDiagram 전환 시 ReactFlow 완전 재마운트 (fitView 재계산 보장) */}
       {showDiagram && diagramData ? (
-        <DiagramErrorBoundary diagramTitle={diagramData.title}>
-          <ReactFlowDiagram
-            key={`diagram-${cardData.id}`}
-            diagram={diagramData}
-            compact
-            showControls
-            showHeader={false}
-            showLegend={false}
-            maximizeViewport
-          />
-        </DiagramErrorBoundary>
+        <div className="space-y-3">
+          <FeatureCardDiagramSummary diagram={diagramData} />
+          <DiagramErrorBoundary diagramTitle={diagramData.title}>
+            <ReactFlowDiagram
+              key={`diagram-${cardData.id}`}
+              diagram={diagramData}
+              compact
+              showControls
+              showHeader={false}
+              showLegend={false}
+              maximizeViewport
+            />
+          </DiagramErrorBoundary>
+        </div>
       ) : (
         <>
           {/* 헤더 섹션 — CI/CD 탭은 compact (아이콘·설명 축소) */}
@@ -391,12 +455,16 @@ export default function FeatureCardModal({
             cardId={cardData.id ?? undefined}
             vibeView={vibeView}
             variant={variant ?? 'home'}
-            onToggleDiagram={() => setShowDiagram(!showDiagram)}
-            onSetVibeView={setVibeView}
+            onToggleDiagram={toggleDiagram}
+            onSetVibeView={setScopedVibeView}
             onClose={onClose}
           />
           <div
+            ref={scrollContainerRef}
             className="overflow-y-auto scroll-smooth"
+            data-testid="feature-card-modal-scroll"
+            data-card-id={cardData.id ?? undefined}
+            data-view-mode={modalViewMode}
             style={{
               maxHeight: showDiagram
                 ? 'calc(92dvh - 62px)' // 다이어그램 모드: 상단 헤더 압축 + 모달 높이 확장

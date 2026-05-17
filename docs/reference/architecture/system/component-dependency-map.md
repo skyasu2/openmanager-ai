@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 143 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 144 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 150 |
+| Total TSX component inventory | 151 |
 
 ## App Route-Local Component Distribution
 
@@ -51,12 +51,12 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29637 |
-| Component nodes | 143 |
-| Component edges | 143 |
+| Component source lines | 29779 |
+| Component nodes | 144 |
+| Component edges | 144 |
 | Graph density | 0.70% |
 | Alias edges (`@/components/*`) | 39 |
-| Relative edges (`./`, `../`) | 104 |
+| Relative edges (`./`, `../`) | 105 |
 | Isolated components | 22 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
@@ -74,7 +74,7 @@ flowchart LR
   d6["error (3)"]
   d7["home (2)"]
   d8["providers (4)"]
-  d9["shared (23)"]
+  d9["shared (24)"]
   d10["system (2)"]
   d11["ui (9)"]
   d12["unified-profile (3)"]
@@ -82,7 +82,7 @@ flowchart LR
   d4 -->|32| d4
   d1 -->|14| d1
   d1 -->|12| d0
-  d9 -->|10| d9
+  d9 -->|11| d9
   d4 -->|5| d11
   d0 -->|3| d1
   d1 -->|3| d11
@@ -108,7 +108,7 @@ flowchart LR
 | --- | --- |
 | ai | 43 |
 | dashboard | 34 |
-| shared | 23 |
+| shared | 24 |
 | ai-sidebar | 16 |
 | ui | 9 |
 | providers | 4 |
@@ -128,7 +128,7 @@ flowchart LR
 | dashboard | dashboard | 32 |
 | ai-sidebar | ai-sidebar | 14 |
 | ai-sidebar | ai | 12 |
-| shared | shared | 10 |
+| shared | shared | 11 |
 | dashboard | ui | 5 |
 | ai | ai-sidebar | 3 |
 | ai-sidebar | ui | 3 |
@@ -175,8 +175,8 @@ flowchart LR
 | ai/AIWorkspaceMessage | 6 |
 | dashboard/DashboardRoutedContent | 6 |
 | dashboard/ServerDetailView | 6 |
+| shared/FeatureCardModal | 6 |
 | ai/domain-renderers/ArtifactRendererHost | 5 |
-| shared/FeatureCardModal | 5 |
 | ai/analysis/ServerResultCard | 4 |
 | dashboard/DashboardHeader | 4 |
 | ai-sidebar/AISidebarHeader | 3 |
@@ -196,7 +196,7 @@ ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCar
 ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/analysis-basis/ProviderAttributionChip, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
-ai/domain-renderers/ArtifactRendererHost -> ai/IncidentReportArtifactCard, ai/MonitoringAnalysisArtifactCard, ai/OpsProcedureArtifactCard, ai/ServerMonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard
+shared/FeatureCardModal -> shared/FeatureCardModalHeader, shared/FeatureCardDiagramSummary, shared/ReactFlowDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
 ```
 
 ## Update Rule

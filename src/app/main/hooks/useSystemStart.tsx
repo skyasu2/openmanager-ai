@@ -21,6 +21,7 @@ import { debugWithEnv } from '@/utils/vercel-env-utils';
 const SYSTEM_START_COUNTDOWN_SECONDS = 5; // Cloud Run cold start 대기 (5-10초)
 const COUNTDOWN_INTERVAL_MS = 1000;
 const SYSTEM_BOOT_PATH = '/system-boot';
+const LOGIN_PATH = '/login';
 
 type GuestRestrictionReason = 'login-required' | 'guest-start-blocked';
 
@@ -229,8 +230,8 @@ export function useSystemStart(options: UseSystemStartOptions) {
         cancelCountdown();
       }
 
-      logger.info('🔐 비로그인 사용자 - 시스템 시작 잠금 모달 표시');
-      openGuestRestriction('login-required');
+      logger.info('🔐 비로그인 사용자 - 로그인 페이지로 이동');
+      router.push(LOGIN_PATH);
       return;
     }
 
@@ -275,7 +276,14 @@ export function useSystemStart(options: UseSystemStartOptions) {
         setIsSystemStarting(true);
         void (async () => {
           try {
-            await startMultiUserSystem();
+            const remoteStartResult = await startMultiUserSystem();
+            if (!remoteStartResult) {
+              logger.warn(
+                '시스템 시작 요청이 실행되지 않아 로컬 시작을 중단합니다'
+              );
+              setIsSystemStarting(false);
+              return;
+            }
             await startSystem();
             setPendingNavigation(SYSTEM_BOOT_PATH);
           } catch (error) {

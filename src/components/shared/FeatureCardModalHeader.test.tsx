@@ -41,7 +41,7 @@ describe('FeatureCardModalHeader', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: /아키텍처 보기/i }));
-    fireEvent.click(screen.getByRole('button', { name: /Close modal/i }));
+    fireEvent.click(screen.getByRole('button', { name: /모달 닫기/i }));
 
     expect(onToggleDiagram).toHaveBeenCalledTimes(1);
     expect(onClose).toHaveBeenCalledTimes(1);

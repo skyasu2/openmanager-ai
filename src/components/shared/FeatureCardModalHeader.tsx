@@ -1,6 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { FileText, Network, X } from 'lucide-react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 
 type VibeView = 'current' | 'history' | 'cicd';
@@ -36,6 +36,8 @@ export function FeatureCardModalHeader({
   onSetVibeView,
   onClose,
 }: FeatureCardModalHeaderProps) {
+  const DiagramToggleIcon = showDiagram ? FileText : Network;
+
   return (
     <header
       className={`flex shrink-0 flex-col items-stretch gap-3 border-b border-gray-700/50 sm:flex-row sm:items-center sm:justify-between ${
@@ -66,10 +68,11 @@ export function FeatureCardModalHeader({
           <button
             type="button"
             onClick={onToggleDiagram}
-            className="rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:from-indigo-500 hover:to-purple-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:from-indigo-500 hover:to-purple-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
             aria-label={showDiagram ? '상세 내용 보기' : '아키텍처 보기'}
           >
-            {showDiagram ? '📄 상세 내용' : '📊 아키텍처'}
+            <DiagramToggleIcon className="h-4 w-4" aria-hidden="true" />
+            <span>{showDiagram ? '상세 내용' : '아키텍처'}</span>
           </button>
         )}
 
@@ -100,9 +103,9 @@ export function FeatureCardModalHeader({
           type="button"
           onClick={onClose}
           className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
-          aria-label="Close modal"
+          aria-label="모달 닫기"
         >
-          <X size={20} />
+          <X size={20} aria-hidden="true" />
         </button>
       </div>
     </header>

@@ -1,19 +1,10 @@
 import type { Metadata, Viewport } from 'next';
-import { Noto_Sans_KR } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { RootClientRuntime } from '@/app/RootClientRuntime';
 import { ClientProviders } from '@/components/providers/ClientProviders';
 import './globals.css';
 import './global-effects.css';
 import { getSiteUrl } from '@/lib/site-url';
-
-// next/font: 빌드 시 self-host → 런타임 외부 요청 없음 (GDPR safe, CDN 지연 없음)
-const notoSansKR = Noto_Sans_KR({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '700', '800'],
-  variable: '--font-noto-sans-kr',
-  display: 'swap',
-});
 
 // Vercel Analytics & Speed Insights (무료 티어 최적화 - 비활성화)
 // import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -130,7 +121,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko" suppressHydrationWarning className={notoSansKR.variable}>
+    <html lang="ko" suppressHydrationWarning>
       <body className="font-sans antialiased">
         <ClientProviders>
           {children}
