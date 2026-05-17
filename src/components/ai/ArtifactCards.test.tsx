@@ -3,7 +3,7 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   type ArtifactReplayPack,
   MONITORING_ARTIFACT_DOMAIN_ID,
@@ -18,6 +18,10 @@ import {
   ARTIFACT_CONTRACT_VERSION,
   createArtifactEnvelope,
 } from '@/lib/ai/chat-artifacts/types';
+import {
+  registerArtifactRenderer,
+  unregisterArtifactRenderer,
+} from '@/lib/ai/domain-renderers/artifact-renderer-registry';
 import { ArtifactRendererHost } from './domain-renderers/ArtifactRendererHost';
 import { IncidentReportArtifactCard } from './IncidentReportArtifactCard';
 import {
@@ -112,6 +116,28 @@ const serverMonitoringArtifact: ServerMonitoringAnalysisArtifact = {
   sourceMode: 'tool-result',
 };
 
+const customRendererKey = {
+  domainId: 'sample-domain',
+  artifactKind: 'mock-report',
+  artifactVersion: '2026-05-17-test',
+};
+
+const customArtifact = {
+  kind: 'mock-report',
+  generatedAt: '2026-05-17T00:00:00.000Z',
+  title: '외부 도메인 리포트',
+} as const;
+
+function isCustomArtifact(value: unknown): value is typeof customArtifact {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as { kind?: unknown }).kind === customArtifact.kind &&
+    typeof (value as { generatedAt?: unknown }).generatedAt === 'string' &&
+    typeof (value as { title?: unknown }).title === 'string'
+  );
+}
+
 function readStoredArtifactKinds(): Array<
   ArtifactReplayPack['entries'][number]['schema']['artifactKind']
 > {
@@ -124,6 +150,10 @@ describe('AI artifact cards', () => {
   beforeEach(() => {
     mockOpenFullscreen.mockClear();
     window.sessionStorage.clear();
+  });
+
+  afterEach(() => {
+    unregisterArtifactRenderer(customRendererKey);
   });
 
   it('renders ops procedure artifact cards through the domain renderer host', () => {
@@ -182,6 +212,41 @@ describe('AI artifact cards', () => {
     );
     expect(screen.getByRole('button', { name: /Markdown/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /JSON/i })).toBeEnabled();
+  });
+
+  it('renders artifacts from a renderer registered outside the monitoring domain', () => {
+    registerArtifactRenderer(
+      customRendererKey,
+      (artifact) => {
+        const title =
+          typeof (artifact as { title?: unknown }).title === 'string'
+            ? (artifact as { title: string }).title
+            : 'untitled';
+        return <div data-testid="mock-report-card">{title}</div>;
+      },
+      { isPayload: isCustomArtifact }
+    );
+
+    render(
+      <ArtifactRendererHost
+        metadata={{
+          artifactEnvelopes: [
+            {
+              domainId: customRendererKey.domainId,
+              kind: customRendererKey.artifactKind,
+              artifactVersion: customRendererKey.artifactVersion,
+              generatedAt: customArtifact.generatedAt,
+              sourceMode: 'tool-result',
+              payload: customArtifact,
+            },
+          ],
+        }}
+      />
+    );
+
+    expect(screen.getByTestId('mock-report-card')).toHaveTextContent(
+      '외부 도메인 리포트'
+    );
   });
 
   it('renders incident report artifact actions', () => {

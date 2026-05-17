@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
   ARTIFACT_CONTRACT_VERSION,
   type ServerSnapshotArtifact,
@@ -7,7 +7,10 @@ import {
   createArtifactRendererKey,
   isArtifactRendererKeyAllowed,
   MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
+  registerArtifactRenderer,
+  resolveArtifactRenderer,
   resolveArtifactRendererEntries,
+  unregisterArtifactRenderer,
 } from './artifact-renderer-registry';
 
 const snapshotArtifact: ServerSnapshotArtifact = {
@@ -90,7 +93,33 @@ const opsProcedureArtifact = {
   },
 } as const;
 
+const customRendererKey = {
+  domainId: 'sample-domain',
+  artifactKind: 'mock-report',
+  artifactVersion: '2026-05-17-test',
+};
+
+const customArtifact = {
+  kind: 'mock-report',
+  generatedAt: '2026-05-17T00:00:00.000Z',
+  title: '외부 도메인 리포트',
+} as const;
+
+function isCustomArtifact(value: unknown): value is typeof customArtifact {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as { kind?: unknown }).kind === customArtifact.kind &&
+    typeof (value as { generatedAt?: unknown }).generatedAt === 'string' &&
+    typeof (value as { title?: unknown }).title === 'string'
+  );
+}
+
 describe('frontend artifact renderer registry contract', () => {
+  afterEach(() => {
+    unregisterArtifactRenderer(customRendererKey);
+  });
+
   it('allows only domain + artifact kind + version renderer keys', () => {
     const supportedKey = createArtifactRendererKey({
       domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
@@ -221,5 +250,52 @@ describe('frontend artifact renderer registry contract', () => {
         status: 'supported',
       }),
     ]);
+  });
+
+  it('resolves entries and renderer functions registered by another domain', () => {
+    registerArtifactRenderer(
+      customRendererKey,
+      (artifact) => {
+        const title =
+          typeof (artifact as { title?: unknown }).title === 'string'
+            ? (artifact as { title: string }).title
+            : 'untitled';
+        return `rendered:${title}`;
+      },
+      { isPayload: isCustomArtifact }
+    );
+
+    const entries = resolveArtifactRendererEntries({
+      artifactEnvelopes: [
+        {
+          ...customRendererKey,
+          kind: customRendererKey.artifactKind,
+          generatedAt: customArtifact.generatedAt,
+          sourceMode: 'tool-result',
+          payload: customArtifact,
+        },
+      ],
+    });
+
+    expect(entries).toEqual([
+      expect.objectContaining({
+        status: 'supported',
+        domainId: customRendererKey.domainId,
+        artifactKind: customRendererKey.artifactKind,
+        artifactVersion: customRendererKey.artifactVersion,
+        artifact: customArtifact,
+      }),
+    ]);
+
+    const [entry] = entries;
+    expect(entry?.status).toBe('supported');
+    if (entry?.status !== 'supported') {
+      throw new Error('expected supported custom renderer entry');
+    }
+
+    const renderer = resolveArtifactRenderer(entry);
+    expect(renderer?.(entry.artifact, entry)).toBe(
+      'rendered:외부 도메인 리포트'
+    );
   });
 });
