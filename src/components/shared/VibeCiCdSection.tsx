@@ -2,13 +2,16 @@
 
 import type { LucideIcon } from 'lucide-react';
 import {
+  Activity,
   ArrowRight,
   Box,
   Globe,
   MonitorCheck,
   Rocket,
   Send,
+  Server,
   ShieldCheck,
+  Tag,
 } from 'lucide-react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 import { cn } from '@/lib/utils';
@@ -109,8 +112,8 @@ const PIPELINE_CARDS: PipelineCard[] = [
     ring: 'ring-amber-500/40',
     accent: 'text-amber-300',
     footer: {
-      label: '공용 러너',
-      value: '~4분',
+      label: '자체 러너 (WSL2)',
+      value: '0분',
       bg: 'bg-amber-500/10',
       text: 'text-amber-300',
       border: 'border-amber-500/20',
@@ -177,6 +180,21 @@ const SCENARIOS = [
       { id: 'ci-skip', label: 'CI 스킵', icon: ArrowRight },
     ] satisfies ScenarioStep[],
   },
+  {
+    id: 'release',
+    label: 'v태그 릴리스',
+    labelColor: 'text-amber-300',
+    border: 'border-amber-500/20',
+    bg: 'bg-amber-500/5',
+    steps: [
+      { id: 'tag', label: 'v*.*.* 태그', icon: Tag },
+      { id: 'push', label: 'push', icon: Send },
+      { id: 'validate', label: '검사', icon: ShieldCheck },
+      { id: 'deploy', label: '배포', icon: Rocket },
+      { id: 'ai-engine', label: 'AI Engine', icon: Server },
+      { id: 'smoke', label: '스모크', icon: Activity },
+    ] satisfies ScenarioStep[],
+  },
 ] as const;
 
 export function VibeCiCdSection({
@@ -191,11 +209,49 @@ export function VibeCiCdSection({
           내가 구성한 GitLab CI/CD
         </p>
         <p className="mt-3 text-center text-[11px] text-white/65">
-          로컬 훅 뒤에 GitLab CI를 validate와 deploy로 나누고, 마지막에는 Vercel
-          prebuilt 배포로 production을 갱신하는 흐름입니다.
+          로컬 훅 → GitLab CI 4단계(validate · deploy · deploy_ai · smoke) →
+          Vercel 프로덕션. 모든 CI job이 내 PC 자체 러너에서 실행되어{' '}
+          <span className="font-bold text-violet-300/80">
+            GitLab CI minutes 월 0분
+          </span>{' '}
+          소진합니다.
         </p>
 
         <div className="mt-6">
+          {/* Zone indicator — desktop only */}
+          <div className="mb-3 hidden items-stretch gap-1.5 sm:flex">
+            <div className="flex flex-[2] items-center justify-center rounded-lg border border-sky-500/15 bg-sky-500/5 py-1.5">
+              <span className="text-[8px] font-bold uppercase tracking-widest text-sky-400/50">
+                로컬
+              </span>
+            </div>
+            <div className="flex shrink-0 items-center">
+              <ArrowRight
+                className="h-2.5 w-2.5 text-white/15"
+                aria-hidden="true"
+              />
+            </div>
+            <div className="flex flex-[2] flex-col items-center justify-center rounded-lg border border-violet-500/15 bg-violet-500/5 py-1.5">
+              <span className="text-[8px] font-bold uppercase tracking-widest text-violet-400/50">
+                GitLab CI
+              </span>
+              <span className="mt-0.5 text-[7px] text-violet-300/35">
+                자체 러너 · 월 0분
+              </span>
+            </div>
+            <div className="flex shrink-0 items-center">
+              <ArrowRight
+                className="h-2.5 w-2.5 text-white/15"
+                aria-hidden="true"
+              />
+            </div>
+            <div className="flex flex-1 items-center justify-center rounded-lg border border-emerald-500/15 bg-emerald-500/5 py-1.5">
+              <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400/50">
+                Vercel
+              </span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-start sm:overflow-x-hidden">
             {PIPELINE_CARDS.map((card, index) => {
               const Icon = card.icon;
@@ -324,11 +380,12 @@ export function VibeCiCdSection({
             왜 이렇게 나눴나
           </p>
           <p className="mt-1 text-[11px] leading-relaxed text-white/70">
-            validate는 내 PC의{' '}
+            validate · deploy 모두 내 PC의{' '}
             <code className="text-cyan-300/90">wsl2-docker</code> self-hosted
-            runner에서 실행해 GitLab minutes를 거의 쓰지 않게 했고, deploy는
-            shared runner에서 prebuilt 결과만 올려 배포 시간을 짧게
-            유지했습니다.
+            runner에서 실행해 GitLab CI minutes를 월 0분 소진합니다. deploy는{' '}
+            <code className="text-amber-300/80">vercel build</code> 결과를
+            prebuilt 아티팩트로 올려 배포 시간을 최소화합니다. semver 태그 push
+            시에는 deploy_ai · smoke 단계가 추가 실행됩니다.
           </p>
           <p className="mt-2 text-[10px] leading-relaxed text-white/55">
             제약: self-hosted runner가 꺼져 있으면 validate는 shared runner로
