@@ -19,6 +19,7 @@ import {
   extractToolBasedData,
   getReporterDegradationReasonCode,
   IncidentReportOutputSchema,
+  mergeIncidentRecommendations,
   normalizeAgentIncidentReportOutput,
   parseAgentJsonResponse,
 } from './analytics-report-utils';
@@ -275,6 +276,81 @@ describe('extractToolBasedData', () => {
         metric: 'memory',
         value: 87,
       },
+    ]);
+  });
+
+  it('CPU와 network 이상 항목에서 실행 가능한 진단 조치를 생성한다', () => {
+    const anomalyData = {
+      anomalies: [
+        {
+          server_id: 'lb-haproxy-dc1-01',
+          server_name: 'lb-haproxy-dc1-01',
+          metric: 'Cpu',
+          value: 85,
+          severity: 'warning',
+        },
+        {
+          server_id: 'lb-haproxy-dc1-01',
+          server_name: 'lb-haproxy-dc1-01',
+          metric: 'Network',
+          value: 86.3,
+          severity: 'critical',
+        },
+      ],
+      affectedServers: ['lb-haproxy-dc1-01'],
+      hasAnomalies: true,
+      anomalyCount: 2,
+      summary: {
+        totalServers: 18,
+        onlineCount: 17,
+        warningCount: 0,
+        criticalCount: 1,
+      },
+    };
+
+    const result = extractToolBasedData(anomalyData, null, null);
+    const actions = result.recommendations.map((item) => item.action).join('\n');
+
+    expect(result.severity).toBe('critical');
+    expect(actions).toContain('CPU 상위 프로세스 확인');
+    expect(actions).toContain('top -o %CPU -b -n 1 | head -20');
+    expect(actions).toContain('HAProxy 세션/백엔드 상태 확인');
+    expect(actions).toContain('show stat');
+    expect(result.postmortem.prevention).toEqual(
+      result.recommendations.map((recommendation) => recommendation.action)
+    );
+  });
+});
+
+describe('mergeIncidentRecommendations', () => {
+  it('deterministic 진단 조치를 일반적인 업그레이드 조치보다 먼저 배치한다', () => {
+    const result = mergeIncidentRecommendations(
+      [
+        {
+          action:
+            'lb-haproxy-dc1-01 CPU 상위 프로세스 확인 (85%)\n명령어: `top -o %CPU -b -n 1 | head -20`',
+          priority: 'medium',
+          expected_impact: '부하 프로세스 식별',
+        },
+      ],
+      [
+        {
+          action: '서버 리소스 업그레이드',
+          priority: 'high',
+          expected_impact: '성능 개선',
+        },
+        {
+          action: '로드 밸런싱 조정',
+          priority: 'medium',
+          expected_impact: '트래픽 분산',
+        },
+      ]
+    );
+
+    expect(result.map((item) => item.action)).toEqual([
+      expect.stringContaining('CPU 상위 프로세스 확인'),
+      '서버 리소스 업그레이드',
+      '로드 밸런싱 조정',
     ]);
   });
 });

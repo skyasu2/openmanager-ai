@@ -31,6 +31,7 @@ import {
   extractToolBasedData,
   getReporterDegradationReasonCode,
   IncidentReportOutputSchema,
+  mergeIncidentRecommendations,
   normalizeAgentIncidentReportOutput,
   type IncidentReportOutput,
 } from './analytics-report-utils';
@@ -380,6 +381,11 @@ ${buildMonitoringEvidenceContext(monitoringGrounding)}
 - affectedServers: 관련 서버별 id, name, severity, metric, value
 - root_cause: 근본 원인 분석 결과
 - recommendations: action, priority, expected_impact 형식의 조치 목록
+- recommendations 작성 규칙:
+  - action에는 운영자가 바로 실행할 수 있는 읽기 전용 확인 명령어를 "명령어: \`...\`" 형식으로 포함
+  - CPU/Memory/Disk/Network 이상 항목별 현재 측정값과 대상 서버를 명시
+  - load balancer 또는 HAProxy 서버는 프로세스 확인 후 HAProxy 세션/백엔드 상태 확인을 우선
+  - "서버 리소스 업그레이드", "스케일업", "로드 밸런싱 조정"은 원인 확인 뒤의 후속 조치로만 사용
 - pattern: 감지된 패턴 설명
 - postmortem: timeline, hypotheses, prevention 목록`;
 
@@ -425,6 +431,10 @@ ${buildMonitoringEvidenceContext(monitoringGrounding)}
       agentReportOutput,
       toolBasedData
     );
+    const recommendations = mergeIncidentRecommendations(
+      toolBasedData.recommendations,
+      agentReport.recommendations
+    );
 
     // 5. Merge tool-based data with agent response (agent takes precedence for text fields)
     const finalReport = {
@@ -445,9 +455,7 @@ ${buildMonitoringEvidenceContext(monitoringGrounding)}
         primary_cause: agentReport.root_cause || '도구 분석 결과를 참조하세요',
         contributing_factors: [],
       },
-      recommendations: agentReport.recommendations.length > 0
-        ? agentReport.recommendations
-        : toolBasedData.recommendations,
+      recommendations,
       pattern: agentReport.pattern || toolBasedData.pattern,
       postmortem: agentReport.postmortem,
       sourceMode: monitoringGrounding.sourceMode,

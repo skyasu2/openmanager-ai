@@ -266,6 +266,69 @@ describe('detectAnomaliesAllServers', () => {
         expect(result.anomalies.length).toBe(0);
       }
     });
+
+    it('should include network metrics in all-server anomaly scans', async () => {
+      const externalServers = [
+        {
+          id: 'lb-haproxy-dc1-01',
+          name: 'HAProxy LB 01',
+          type: 'loadbalancer',
+          status: 'critical' as const,
+          cpu: 45,
+          memory: 40,
+          disk: 30,
+          network: 86.3,
+        },
+      ];
+
+      const result = await detectAnomaliesAllServers.execute(
+        { metricType: 'all', externalServers },
+        {} as never
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.anomalies).toEqual([
+          expect.objectContaining({
+            server_id: 'lb-haproxy-dc1-01',
+            metric: 'Network',
+            value: 86.3,
+            severity: 'critical',
+          }),
+        ]);
+        expect(result.affectedServers).toEqual(['lb-haproxy-dc1-01']);
+      }
+    });
+
+    it('should filter to network metrics only', async () => {
+      const externalServers = [
+        {
+          id: 'edge-01',
+          name: 'Edge 01',
+          type: 'loadbalancer',
+          status: 'warning' as const,
+          cpu: 91,
+          memory: 40,
+          disk: 30,
+          network: 72,
+        },
+      ];
+
+      const result = await detectAnomaliesAllServers.execute(
+        { metricType: 'network', externalServers },
+        {} as never
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.anomalies).toEqual([
+          expect.objectContaining({
+            metric: 'Network',
+            severity: 'warning',
+          }),
+        ]);
+      }
+    });
   });
 
   describe('Affected Servers Tracking', () => {

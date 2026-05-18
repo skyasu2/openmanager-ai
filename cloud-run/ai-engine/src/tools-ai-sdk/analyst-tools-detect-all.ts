@@ -36,6 +36,7 @@ const ExternalServerSchema = z.object({
     cpu: z.array(z.number()).optional(),
     memory: z.array(z.number()).optional(),
     disk: z.array(z.number()).optional(),
+    network: z.array(z.number()).optional(),
   }).optional(),
 });
 
@@ -65,7 +66,12 @@ function buildExternalServersCacheFingerprint(
     memory: number;
     disk: number;
     network: number;
-    history?: { cpu?: number[]; memory?: number[]; disk?: number[] };
+    history?: {
+      cpu?: number[];
+      memory?: number[];
+      disk?: number[];
+      network?: number[];
+    };
   }>
 ): string {
   const normalized = externalServers.map((server) => ({
@@ -81,6 +87,7 @@ function buildExternalServersCacheFingerprint(
       ...(server.history?.cpu ? { cpu: [...server.history.cpu] } : {}),
       ...(server.history?.memory ? { memory: [...server.history.memory] } : {}),
       ...(server.history?.disk ? { disk: [...server.history.disk] } : {}),
+      ...(server.history?.network ? { network: [...server.history.network] } : {}),
     },
   }));
 
@@ -115,7 +122,7 @@ export const detectAnomaliesAllServers = tool({
     '전체 서버의 이상치를 한번에 탐지합니다. "이상 있는 서버?", "서버 분석해줘" 등의 질문에 이 도구를 먼저 호출하세요. 1회 호출로 모든 서버를 스캔합니다.',
   inputSchema: z.object({
     metricType: z
-      .enum(['cpu', 'memory', 'disk', 'all'])
+      .enum(['cpu', 'memory', 'disk', 'network', 'all'])
       .default('all')
       .describe('분석할 메트릭 타입'),
     /**
@@ -132,11 +139,16 @@ export const detectAnomaliesAllServers = tool({
     metricType,
     externalServers,
   }: {
-    metricType: 'cpu' | 'memory' | 'disk' | 'all';
+    metricType: 'cpu' | 'memory' | 'disk' | 'network' | 'all';
     externalServers?: Array<{
       id: string; name: string; type: string; status: string;
       cpu: number; memory: number; disk: number; network: number;
-      history?: { cpu?: number[]; memory?: number[]; disk?: number[] };
+      history?: {
+        cpu?: number[];
+        memory?: number[];
+        disk?: number[];
+        network?: number[];
+      };
     }>;
   }) => {
     try {
@@ -166,12 +178,13 @@ export const detectAnomaliesAllServers = tool({
                       ...(s.history?.cpu ? { cpu: s.history.cpu } : {}),
                       ...(s.history?.memory ? { memory: s.history.memory } : {}),
                       ...(s.history?.disk ? { disk: s.history.disk } : {}),
+                      ...(s.history?.network ? { network: s.history.network } : {}),
                     },
                   ])
               )
             : undefined;
 
-          const metrics = ['cpu', 'memory', 'disk'] as const;
+          const metrics = ['cpu', 'memory', 'disk', 'network'] as const;
           const targetMetrics =
             metricType === 'all'
               ? metrics
