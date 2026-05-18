@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T12:23:32.919Z"
+    "updatedAt": "2026-05-18T14:49:19.097Z"
   },
   "sequence": {
-    "nextRunNumber": 527
+    "nextRunNumber": 528
   },
   "summary": {
-    "totalRecordedRuns": 524,
-    "totalRuns": 418,
+    "totalRecordedRuns": 525,
+    "totalRuns": 419,
     "excludedRuns": 106,
-    "totalChecks": 3788,
-    "totalPassed": 3643,
+    "totalChecks": 3808,
+    "totalPassed": 3663,
     "totalFailed": 134,
     "completionRate": 100,
-    "completedItems": 597,
+    "completedItems": 598,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 15,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0526",
-    "lastRecordedAt": "2026-05-18T12:23:32.919Z",
-    "latestRecordedRunId": "QA-20260518-0526",
-    "latestRecordedAt": "2026-05-18T12:23:32.919Z"
+    "lastRunId": "QA-20260518-0527",
+    "lastRecordedAt": "2026-05-18T14:49:19.097Z",
+    "latestRecordedRunId": "QA-20260518-0527",
+    "latestRecordedAt": "2026-05-18T14:49:19.097Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14633,6 +14633,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-18T11:57:44.191Z"
+    },
+    "reporter-fallback-monitoring-evidence-v811175": {
+      "id": "reporter-fallback-monitoring-evidence-v811175",
+      "title": "Reporter fallback reflects monitoring warning/critical evidence instead of normalizing it away",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260518-0527",
+      "firstSeenAt": "2026-05-18T14:49:19.097Z",
+      "lastSeenRunId": "QA-20260518-0527",
+      "lastSeenAt": "2026-05-18T14:49:19.097Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.175 production Reporter generated a warning report with affected server, anomaly, timeline, and read-only diagnostics after v8.11.174 reproduced a normal-summary mismatch.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T14:49:19.097Z"
     }
   },
   "runs": [
@@ -59229,6 +59253,157 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0527",
+      "recordedAt": "2026-05-18T14:49:19.097Z",
+      "recordedAtKst": "2026-05-18 23:49:19 KST",
+      "title": "v8.11.175 Vercel Playwright MCP Reporter Fallback Evidence Fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0527.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V",
+        "deploymentUrl": "https://openmanager-gfgclo7qa-skyasus-projects.vercel.app",
+        "commitSha": "7da68ac4a1772efbe83ee7760f77affe4396cf46"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version reports v8.11.175",
+        "Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V Ready",
+        "GitLab release pipeline 2534475056 success including deploy_ai_engine and smoke jobs",
+        "Dashboard route /dashboard render with 18-server OTel snapshot",
+        "Dashboard slot 23:40 KST (slot 142/143)",
+        "Dashboard current state: 17 online, 1 warning, 0 risk, 0 offline",
+        "AI assistant sidebar open and AI Engine Ready indicator",
+        "Reporter tab open",
+        "Reporter incident report generation through UI prompt",
+        "POST /api/ai/incident-report 200 with queryAsOf slot 142",
+        "Reporter card no longer reports 정상 for warning/critical grounding evidence",
+        "Reporter detail expansion",
+        "Reporter detected anomaly section with storage-nfs-dc1-01 Disk 85%",
+        "Reporter recommended actions include du, df/mount, and journalctl read-only diagnostics",
+        "Vercel usage post-QA check"
+      ],
+      "skippedSurfaces": [
+        "Full visual regression pack",
+        "Standard five-question conversational AI suite, because this run targeted Reporter fallback evidence handling",
+        "Manual forced provider failure after deploy; the production path already exercised Reporter degraded fallback before the fix"
+      ],
+      "checks": {
+        "total": 20,
+        "passed": 20,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run reproduced the production Reporter fallback mismatch, added regression coverage, deployed the fix, and rechecked the same Reporter UI/API path on Vercel production.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Monitoring warning/critical grounding evidence now affects report severity, affected servers, timeline, and read-only diagnostic actions instead of being hidden behind a normal summary.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The fix keeps recommendations read-only and preserves the normal authenticated production UI path; no direct API bypass was used for the final acceptance check.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main validate, release deployment, Cloud Run AI Engine deploy, smoke jobs, Vercel deployment readiness, version endpoint, and usage check all passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted Vitest coverage protects the no-metric-anomaly but warning/critical grounding-evidence path, and Playwright MCP captured durable before/after production evidence.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T23:45:55+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Reporter fallback evidence QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Reporter fallback evidence fix QA notes",
+          "path": "reports/qa/evidence/qa-20260518-v811175-reporter-fallback-evidence-fix.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Pre-fix fallback mismatch on v8.11.174",
+          "path": "reports/qa/evidence/qa-20260518-v811174-reporter-fallback-mismatch.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Post-fix Reporter detail on v8.11.175",
+          "path": "reports/qa/evidence/qa-20260518-v811175-reporter-fallback-evidence-fixed.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline 2534462479",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534462479"
+        },
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2534475056",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534475056"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/C8eLVUEdzSPMY83AwFUezu7ybd8V"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -59237,16 +59412,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 261,
-      "appropriateCount": 224,
+      "seenCount": 262,
+      "appropriateCount": 225,
       "partialCount": 37,
       "inappropriateCount": 0,
       "improvementNeededCount": 47,
-      "lastRunId": "QA-20260518-0526",
-      "lastSeenAt": "2026-05-18T12:23:32.919Z",
+      "lastRunId": "QA-20260518-0527",
+      "lastSeenAt": "2026-05-18T14:49:19.097Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The recheck directly covered the changed Reporter UI/API path, report generation, detail rendering, and postmortem content on the deployed production surface.",
+      "lastRationale": "The run reproduced the production Reporter fallback mismatch, added regression coverage, deployed the fix, and rechecked the same Reporter UI/API path on Vercel production.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -59254,16 +59429,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 127,
-      "appropriateCount": 96,
+      "seenCount": 128,
+      "appropriateCount": 97,
       "partialCount": 31,
       "inappropriateCount": 0,
       "improvementNeededCount": 32,
-      "lastRunId": "QA-20260515-0503",
-      "lastSeenAt": "2026-05-14T18:50:43.003Z",
+      "lastRunId": "QA-20260518-0527",
+      "lastSeenAt": "2026-05-18T14:49:19.097Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The completed artifact exposed the expected 18-server OpenTelemetry snapshot, 5 risk signals, role summaries, capacity alerts, and risk evidence.",
+      "lastRationale": "Monitoring warning/critical grounding evidence now affects report severity, affected servers, timeline, and read-only diagnostic actions instead of being hidden behind a normal summary.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -59271,16 +59446,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 86,
-      "appropriateCount": 67,
+      "seenCount": 87,
+      "appropriateCount": 68,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260518-0526",
-      "lastSeenAt": "2026-05-18T12:23:32.919Z",
+      "lastRunId": "QA-20260518-0527",
+      "lastSeenAt": "2026-05-18T14:49:19.097Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run used the normal production UI path and confirmed the AI engine Ready status and successful Reporter API response without bypassing app controls.",
+      "lastRationale": "The fix keeps recommendations read-only and preserves the normal authenticated production UI path; no direct API bypass was used for the final acceptance check.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -59288,16 +59463,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 198,
-      "appropriateCount": 179,
+      "seenCount": 199,
+      "appropriateCount": 180,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0526",
-      "lastSeenAt": "2026-05-18T12:23:32.919Z",
+      "lastRunId": "QA-20260518-0527",
+      "lastSeenAt": "2026-05-18T14:49:19.097Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The deployed Vercel release, production dashboard OTel snapshot, Reporter API response, and Vercel usage were verified after the change.",
+      "lastRationale": "GitLab main validate, release deployment, Cloud Run AI Engine deploy, smoke jobs, Vercel deployment readiness, version endpoint, and usage check all passed.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -59305,16 +59480,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 230,
-      "appropriateCount": 210,
+      "seenCount": 231,
+      "appropriateCount": 211,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0526",
-      "lastSeenAt": "2026-05-18T12:23:32.919Z",
+      "lastRunId": "QA-20260518-0527",
+      "lastSeenAt": "2026-05-18T14:49:19.097Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP covered the browser path and durable evidence was captured; disk/SLA/dedup edge cases remain covered by targeted regression tests from the release.",
+      "lastRationale": "Targeted Vitest coverage protects the no-metric-anomaly but warning/critical grounding-evidence path, and Playwright MCP captured durable before/after production evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

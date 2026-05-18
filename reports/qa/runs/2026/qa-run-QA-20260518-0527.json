@@ -1,0 +1,163 @@
+{
+  "runId": "QA-20260518-0527",
+  "recordedAt": "2026-05-18T14:49:19.097Z",
+  "recordedAtKst": "2026-05-18 23:49:19 KST",
+  "runTitle": "v8.11.175 Vercel Playwright MCP Reporter Fallback Evidence Fix",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V",
+    "deploymentUrl": "https://openmanager-gfgclo7qa-skyasus-projects.vercel.app",
+    "commitSha": "7da68ac4a1772efbe83ee7760f77affe4396cf46"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version reports v8.11.175",
+    "Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V Ready",
+    "GitLab release pipeline 2534475056 success including deploy_ai_engine and smoke jobs",
+    "Dashboard route /dashboard render with 18-server OTel snapshot",
+    "Dashboard slot 23:40 KST (slot 142/143)",
+    "Dashboard current state: 17 online, 1 warning, 0 risk, 0 offline",
+    "AI assistant sidebar open and AI Engine Ready indicator",
+    "Reporter tab open",
+    "Reporter incident report generation through UI prompt",
+    "POST /api/ai/incident-report 200 with queryAsOf slot 142",
+    "Reporter card no longer reports 정상 for warning/critical grounding evidence",
+    "Reporter detail expansion",
+    "Reporter detected anomaly section with storage-nfs-dc1-01 Disk 85%",
+    "Reporter recommended actions include du, df/mount, and journalctl read-only diagnostics",
+    "Vercel usage post-QA check"
+  ],
+  "skippedSurfaces": [
+    "Full visual regression pack",
+    "Standard five-question conversational AI suite, because this run targeted Reporter fallback evidence handling",
+    "Manual forced provider failure after deploy; the production path already exercised Reporter degraded fallback before the fix"
+  ],
+  "checks": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run reproduced the production Reporter fallback mismatch, added regression coverage, deployed the fix, and rechecked the same Reporter UI/API path on Vercel production.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Monitoring warning/critical grounding evidence now affects report severity, affected servers, timeline, and read-only diagnostic actions instead of being hidden behind a normal summary.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The fix keeps recommendations read-only and preserves the normal authenticated production UI path; no direct API bypass was used for the final acceptance check.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab main validate, release deployment, Cloud Run AI Engine deploy, smoke jobs, Vercel deployment readiness, version endpoint, and usage check all passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Targeted Vitest coverage protects the no-metric-anomaly but warning/critical grounding-evidence path, and Playwright MCP captured durable before/after production evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T23:45:55+09:00",
+      "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Reporter fallback evidence QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Reporter fallback evidence fix QA notes",
+      "path": "reports/qa/evidence/qa-20260518-v811175-reporter-fallback-evidence-fix.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Pre-fix fallback mismatch on v8.11.174",
+      "path": "reports/qa/evidence/qa-20260518-v811174-reporter-fallback-mismatch.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Post-fix Reporter detail on v8.11.175",
+      "path": "reports/qa/evidence/qa-20260518-v811175-reporter-fallback-evidence-fixed.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "reporter-fallback-monitoring-evidence-v811175",
+      "title": "Reporter fallback reflects monitoring warning/critical evidence instead of normalizing it away",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.175 production Reporter generated a warning report with affected server, anomaly, timeline, and read-only diagnostics after v8.11.174 reproduced a normal-summary mismatch.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main validate pipeline 2534462479",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534462479"
+    },
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2534475056",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534475056"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/C8eLVUEdzSPMY83AwFUezu7ybd8V"
+    }
+  ]
+}
