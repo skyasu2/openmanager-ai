@@ -611,6 +611,26 @@ describe('Analytics Routes', () => {
       expect(json._fallbackReason).toContain('rate limit');
     });
 
+    it('Reporter structured output schema drift 시 tool-based fallback을 반환한다', async () => {
+      vi.mocked(generateText).mockRejectedValueOnce(
+        new Error(
+          "Generated JSON does not match the expected schema. Error: jsonschema: '/postmortem/timeline/0' expected string, but got object"
+        )
+      );
+
+      const res = await app.request('/analytics/incident-report', {
+        method: 'POST',
+        body: JSON.stringify({ serverId: 'web-01' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(json._source).toContain('Fallback');
+      expect(json._fallbackReason).toContain('expected schema');
+    });
+
     it('복구 불가능한 에러 시 에러 응답을 반환한다', async () => {
       vi.mocked(generateText).mockRejectedValueOnce(new Error('unexpected error'));
 

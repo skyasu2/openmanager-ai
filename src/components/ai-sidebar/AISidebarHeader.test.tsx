@@ -13,8 +13,10 @@ vi.mock('@/components/ui/BasicTyping', () => ({
 }));
 
 vi.mock('@/components/ai-sidebar/CloudRunStatusIndicator', () => ({
-  CloudRunStatusIndicator: () => (
-    <div data-testid="cloud-run-status">Cloud Run</div>
+  CloudRunStatusIndicator: (props: { enabled?: boolean }) => (
+    <div data-enabled={String(props.enabled)} data-testid="cloud-run-status">
+      Cloud Run
+    </div>
   ),
 }));
 
@@ -83,5 +85,14 @@ describe('AISidebarHeader', () => {
 
     expect(screen.getByText('전체화면')).toBeInTheDocument();
     expect(onOpenFullscreen).toHaveBeenCalledTimes(1);
+  });
+
+  it('Cloud Run 상태는 대시보드 시작 상태와 분리해서 표시한다', () => {
+    render(<AISidebarHeader onClose={vi.fn()} />);
+
+    expect(screen.getByTestId('cloud-run-status')).toHaveAttribute(
+      'data-enabled',
+      'undefined'
+    );
   });
 });

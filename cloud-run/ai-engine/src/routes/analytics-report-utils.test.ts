@@ -18,6 +18,7 @@ vi.mock('../lib/logger', () => ({
 import {
   extractToolBasedData,
   IncidentReportOutputSchema,
+  normalizeAgentIncidentReportOutput,
   parseAgentJsonResponse,
 } from './analytics-report-utils';
 
@@ -76,6 +77,24 @@ describe('IncidentReportOutputSchema', () => {
         ],
       }).success
     ).toBe(false);
+  });
+
+  it('provider가 postmortem timeline을 객체 배열로 반환해도 허용한다', () => {
+    expect(
+      IncidentReportOutputSchema.safeParse({
+        ...strictStructuredOutput,
+        postmortem: {
+          ...strictStructuredOutput.postmortem,
+          timeline: [
+            {
+              timestamp: '2026-05-18T01:50:00.000Z',
+              event: 'CPU 96% threshold breach',
+              severity: 'critical',
+            },
+          ],
+        },
+      }).success
+    ).toBe(true);
   });
 });
 
@@ -284,6 +303,37 @@ describe('parseAgentJsonResponse', () => {
       },
     ]);
     expect(result.postmortem.timeline).toEqual(['10:00 - CPU spike']);
+  });
+
+  it('객체형 postmortem timeline 항목을 문자열로 정규화한다', () => {
+    const result = normalizeAgentIncidentReportOutput(
+      {
+        title: 'CPU 과부하',
+        severity: 'critical',
+        description: '설명',
+        affected_servers: ['web-01'],
+        affectedServers: [],
+        root_cause: '과부하',
+        recommendations: [],
+        pattern: '스파이크',
+        postmortem: {
+          timeline: [
+            {
+              timestamp: '2026-05-18T01:50:00.000Z',
+              event: 'CPU 96% threshold breach',
+              severity: 'critical',
+            },
+          ],
+          hypotheses: ['트래픽 급증'],
+          prevention: ['오토스케일 정책 점검'],
+        },
+      },
+      fallback
+    );
+
+    expect(result.postmortem.timeline).toEqual([
+      '2026-05-18T01:50:00.000Z - CPU 96% threshold breach - (critical)',
+    ]);
   });
 
   it('코드블록 없는 JSON도 파싱한다', () => {

@@ -14,7 +14,6 @@ import type { FC } from 'react';
 import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
 import BasicTyping from '@/components/ui/BasicTyping';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
-import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { CloudRunStatusIndicator } from './CloudRunStatusIndicator';
 
 const AI_SIDEBAR_SUBTITLES: Record<AIAssistantFunction, string> = {
@@ -37,10 +36,6 @@ export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
   activeFunction = 'chat',
 }: AISidebarHeaderProps) => {
   const clearMessages = useAISidebarStore((state) => state.clearMessages);
-  // 시스템 상태와 Cloud Run 상태 연동
-  const isSystemStarted = useUnifiedAdminStore(
-    (state) => state.isSystemStarted
-  );
 
   const handleNewChat = () => {
     if (onNewSession) {
@@ -75,13 +70,10 @@ export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
         </div>
       </div>
 
-      {/* Cloud Run 상태 인디케이터 - 시스템 상태와 연동 */}
+      {/* Cloud Run 상태 인디케이터 */}
+      {/* AI Engine availability is independent from the simulated dashboard start state. */}
       <div className="mx-2 shrink-0">
-        <CloudRunStatusIndicator
-          compact
-          autoCheckInterval={300000}
-          enabled={isSystemStarted}
-        />
+        <CloudRunStatusIndicator compact autoCheckInterval={300000} />
       </div>
 
       {onOpenFullscreen && (

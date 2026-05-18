@@ -51,6 +51,20 @@ const SeveritySchema = z.enum([
   'info',
 ]);
 
+const PostmortemTimelineEntrySchema = z.union([
+  z.string(),
+  z
+    .object({
+      timestamp: z.string().optional(),
+      event: z.string().optional(),
+      description: z.string().optional(),
+      message: z.string().optional(),
+      title: z.string().optional(),
+      severity: z.string().optional(),
+    })
+    .passthrough(),
+]);
+
 export const IncidentReportOutputSchema = z
   .object({
     title: z.string(),
@@ -78,7 +92,7 @@ export const IncidentReportOutputSchema = z
       ),
     pattern: z.string(),
     postmortem: z.object({
-      timeline: z.array(z.string()),
+      timeline: z.array(PostmortemTimelineEntrySchema),
       hypotheses: z.array(z.string()),
       prevention: z.array(z.string()),
     }),
@@ -129,6 +143,54 @@ function normalizeAffectedServers(
       ...(typeof server.metric === 'string' ? { metric: server.metric } : {}),
       ...(typeof server.value === 'number' ? { value: server.value } : {}),
     }));
+}
+
+function readTimelineText(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizePostmortemTimeline(
+  value: Partial<IncidentReportOutput>['postmortem'] extends { timeline?: infer T }
+    ? T
+    : unknown,
+  fallback: string[]
+): string[] {
+  if (!Array.isArray(value)) return fallback;
+
+  const normalized = value
+    .map((entry) => {
+      if (typeof entry === 'string') {
+        return entry.trim();
+      }
+
+      if (!entry || typeof entry !== 'object') {
+        return '';
+      }
+
+      const record = entry as Record<string, unknown>;
+      const timestamp = readTimelineText(record.timestamp);
+      const event =
+        readTimelineText(record.event) ||
+        readTimelineText(record.description) ||
+        readTimelineText(record.message) ||
+        readTimelineText(record.title);
+      const severity = readTimelineText(record.severity);
+
+      if (!timestamp && !event && !severity) {
+        return '';
+      }
+
+      return [
+        timestamp,
+        event,
+        severity ? `(${severity})` : '',
+      ]
+        .filter(Boolean)
+        .join(' - ');
+    })
+    .filter((entry): entry is string => entry.length > 0);
+
+  return normalized.length > 0 ? normalized : fallback;
 }
 
 /**
@@ -338,7 +400,10 @@ export function normalizeAgentIncidentReportOutput(
       Array.isArray(postmortem.hypotheses) &&
       Array.isArray(postmortem.prevention)
         ? {
-            timeline: postmortem.timeline,
+            timeline: normalizePostmortemTimeline(
+              postmortem.timeline,
+              fallback.postmortem.timeline
+            ),
             hypotheses: postmortem.hypotheses,
             prevention: postmortem.prevention,
           }

@@ -76,6 +76,9 @@ function isRecoverableReporterError(error: unknown): boolean {
     'service unavailable',
     'provider',
     'model',
+    'expected schema',
+    'failed_generation',
+    'jsonschema',
   ].some((keyword) => message.includes(keyword));
 }
 
