@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-18
+> Last reviewed: 2026-05-19
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-18 | **현재 버전 스냅샷**: v8.11.175
+**상태 스냅샷 기준일**: 2026-05-19 | **현재 버전 스냅샷**: v8.11.176
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.176** (2026-05-19) — Bug Fixes: ai: stabilize nlq anomaly reporting flows; Bug Fixes: ai: improve reporter incident analysis path; Tests: qa: record reporter fallback evidence QA
 - **v8.11.175** (2026-05-18) — Bug Fixes: ai: include monitoring evidence in reporter fallback
 - **v8.11.174** (2026-05-18) — Bug Fixes: ai: improve incident reporter diagnostics; Tests: qa: record v8.11.173 reporter mcp recheck; Tests: qa: record v8.11.173 reporter production QA
 - **v8.11.173** (2026-05-18) — Bug Fixes: ai: address reporter pipeline review findings; Bug Fixes: ai: strengthen reporter pipeline quality; Bug Fixes: ai: improve reporter pipeline — history timestamps, real SLA, actionable commands
 - **v8.11.172** (2026-05-18) — Bug Fixes: ai: expose reporter degraded artifact metadata; Tests: qa: record reporter cloud run verification
-- **v8.11.171** (2026-05-18) — Bug Fixes: ai: make reporter fallback provider-safe
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
