@@ -63,6 +63,10 @@ export const SEMANTIC_INTENTS = [
   'metric_peak',
   'metric_current',
   'metric_trend',
+  'anomaly_detection',
+  'anomaly_prediction',
+  'capacity_forecast',
+  'failure_risk',
   'server_health',
   'root_cause',
   'incident_report',
@@ -87,6 +91,7 @@ export const SEMANTIC_METRICS = [
   'network',
   'load1',
   'load5',
+  'all',
   'unknown',
 ] as const;
 export type SemanticMetric = (typeof SEMANTIC_METRICS)[number];
@@ -154,10 +159,10 @@ Output format (JSON only, no explanation):
   "timeRange": "<1h|6h|24h|7d|null>",
   "intentFrame": {
     "domain": "<monitoring|unknown>",
-    "intent": "<metric_peak|metric_current|metric_trend|server_health|root_cause|incident_report|ops_advice|log_analysis|unknown>",
+    "intent": "<metric_peak|metric_current|metric_trend|anomaly_detection|anomaly_prediction|capacity_forecast|failure_risk|server_health|root_cause|incident_report|ops_advice|log_analysis|unknown>",
     "scope": "<whole_fleet|server|group|unknown>",
     "targets": ["<known server ID or group hint>"],
-    "metric": "<cpu|memory|disk|network|load1|load5|unknown>",
+    "metric": "<cpu|memory|disk|network|load1|load5|all|unknown>",
     "timeWindow": "<current|1h|6h|24h|7d|unknown>",
     "aggregation": "<peak|max|avg|top_n|summary|unknown>",
     "topN": <number or null>,
@@ -176,11 +181,15 @@ Rules:
 - Whole-fleet questions do not need a server ID. Use scope "whole_fleet" when the user asks across all servers, the fleet, or does not name a single server but asks for a ranking/peak/summary.
 - Use scope "server" only when the user asks about one specific server.
 - Set executionMode "single" for simple/current metric lookups, rankings, status checks, and formatting-only rewrites.
+- Set intent "anomaly_detection" for current anomaly, abnormal, spike, detection, "이상 탐지", "비정상 감지" questions.
+- Set intent "anomaly_prediction" for future-looking anomaly signal questions such as "이상 징후 예측", "미리 감지", or "위험 징후".
+- Set intent "capacity_forecast" for resource exhaustion/capacity forecasts such as disk/memory/cpu saturation, "고갈", "임계치 넘기 전", or "언제 포화".
+- Set intent "failure_risk" for broad failure-risk questions such as "장애 날 것 같은 서버", "장애 위험", or "불안정한 서버".
 - Set intent "root_cause" for RCA, causality, correlation, incident cause, "왜", "원인", "근본 원인" questions.
 - Set intent "incident_report" for incident/failure report creation or timeline report requests.
 - Set intent "ops_advice" for runbooks, commands, remediation, troubleshooting, or action-plan advice.
 - Set intent "log_analysis" for pasted logs or requests to analyze error/warning logs.
-- Set executionMode "multi" for root-cause analysis, incident reports, runbooks, advice/action plans, log analysis, correlation, prediction/trend analysis, or multi-step operational investigation.
+- Set executionMode "multi" for anomaly detection/prediction, capacity forecast, failure risk, root-cause analysis, incident reports, runbooks, advice/action plans, log analysis, correlation, prediction/trend analysis, or multi-step operational investigation.
 - Set executionMode "unknown" when the execution path is unclear; do not guess from provider/tool names.
 - Keep provider/function/tool names out of every field.`;
 

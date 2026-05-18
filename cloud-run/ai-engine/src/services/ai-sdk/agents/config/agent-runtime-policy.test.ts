@@ -214,6 +214,7 @@ describe('agent runtime policy SSOT', () => {
 
   it('keeps single-path intent tool overlays inside their owner agent ceilings', () => {
     const intentOwners: MonitoringToolIntent[] = [
+      'anomaly',
       'math',
       'prediction',
       'metricRanking',
@@ -225,6 +226,19 @@ describe('agent runtime policy SSOT', () => {
       expect(getMonitoringIntentOwnerAgent(intent)).toBeDefined();
       expect(getUncoveredMonitoringIntentTools(intent)).toEqual([]);
       expect(getMonitoringIntentTools(intent)).toContain('finalAnswer');
+    }
+  });
+
+  it('keeps Analyst analysis overlays aligned with the fleet scan prompt', () => {
+    for (const intent of ['anomaly', 'prediction', 'rca'] as const) {
+      const tools = getMonitoringIntentTools(intent);
+
+      expect(getMonitoringIntentOwnerAgent(intent)).toBe('Analyst Agent');
+      expect(tools).toContain('detectAnomaliesAllServers');
+      expect(tools.indexOf('detectAnomaliesAllServers')).toBeLessThan(
+        tools.indexOf('finalAnswer')
+      );
+      expect(getUncoveredMonitoringIntentTools(intent)).toEqual([]);
     }
   });
 

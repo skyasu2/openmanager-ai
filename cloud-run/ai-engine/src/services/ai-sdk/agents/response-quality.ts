@@ -27,8 +27,8 @@ const COMMON_DETECTED_PATTERNS: DetectedPatternRule[] = [
   { pattern: /[一-鿿]/, flag: 'CONTAINS_CHINESE_CHARS' },
 ];
 
-const CONFIDENCE_SCORE_PATTERN =
-  /(?:\*\*)?(?:신뢰도|confidence)(?:\*\*)?\s*[:：]\s*\d{1,3}(?:\.\d+)?%/i;
+const EVIDENCE_STRENGTH_PATTERN =
+  /(?:근거\s*강도|신호\s*강도|evidence\s*strength|signal\s*strength|도구\s*(?:confidence|신뢰도)|(?:신뢰도|confidence)\s*[:：]\s*\d{1,3}(?:\.\d+)?%)/i;
 
 const AGENT_RESPONSE_POLICIES: Record<string, AgentResponsePolicy> = {
   'Metrics Query Agent': {
@@ -50,8 +50,8 @@ const AGENT_RESPONSE_POLICIES: Record<string, AgentResponsePolicy> = {
     requiredPatterns: [
       { pattern: /(현황|요약)/, flag: 'MISSING_SCENARIO_OVERVIEW' },
       { pattern: /\d{1,3}(?:\.\d+)?%/, flag: 'MISSING_PERCENT_EVIDENCE' },
-      { pattern: /(원인|가설|추정 원인|신뢰도)/, flag: 'MISSING_CAUSE_HYPOTHESIS' },
-      { pattern: CONFIDENCE_SCORE_PATTERN, flag: 'MISSING_CONFIDENCE_SCORE' },
+      { pattern: /(원인|가설|추정 원인|근거\s*강도|신호\s*강도)/, flag: 'MISSING_CAUSE_HYPOTHESIS' },
+      { pattern: EVIDENCE_STRENGTH_PATTERN, flag: 'MISSING_EVIDENCE_STRENGTH' },
       { pattern: /(→|유발|전파|인과|원인.*결과)/, flag: 'MISSING_CAUSAL_DIRECTION' },
       { pattern: /(조치|권장)/, flag: 'MISSING_ACTION_SECTION' },
     ],
@@ -63,7 +63,7 @@ const AGENT_RESPONSE_POLICIES: Record<string, AgentResponsePolicy> = {
       { pattern: /(##\s*개요|##\s*영향 범위|##\s*타임라인|###\s*개요|###\s*근본 원인)/, flag: 'MISSING_REPORT_SECTIONS' },
       { pattern: /(권장|재발|조치|권고)/, flag: 'MISSING_ACTION_SECTION' },
       { pattern: /(영향|사이드|재현|영향도)/, flag: 'MISSING_IMPACT_EVIDENCE' },
-      { pattern: CONFIDENCE_SCORE_PATTERN, flag: 'MISSING_CONFIDENCE_SCORE' },
+      { pattern: EVIDENCE_STRENGTH_PATTERN, flag: 'MISSING_EVIDENCE_STRENGTH' },
     ],
   },
   'Advisor Agent': {

@@ -37,6 +37,7 @@ export const MONITORING_INTENT_TOOL_POLICIES = {
   anomaly: {
     ownerAgent: 'Analyst Agent',
     activeTools: [
+      'detectAnomaliesAllServers',
       'detectAnomalies',
       'predictTrends',
       'analyzePattern',
@@ -48,6 +49,7 @@ export const MONITORING_INTENT_TOOL_POLICIES = {
   prediction: {
     ownerAgent: 'Analyst Agent',
     activeTools: [
+      'detectAnomaliesAllServers',
       'predictTrends',
       'analyzePattern',
       'detectAnomalies',
@@ -70,6 +72,7 @@ export const MONITORING_INTENT_TOOL_POLICIES = {
   rca: {
     ownerAgent: 'Analyst Agent',
     activeTools: [
+      'detectAnomaliesAllServers',
       'findRootCause',
       'buildIncidentTimeline',
       'correlateMetrics',

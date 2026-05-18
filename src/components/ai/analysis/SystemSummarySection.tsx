@@ -68,7 +68,7 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
                   <div className="mt-0.5 text-xs text-gray-500">
                     {issue.reason}
                     {issue.confidence
-                      ? ` · 신뢰도 ${Math.round(issue.confidence * 100)}%`
+                      ? ` · 신호 강도 ${Math.round(issue.confidence * 100)}%`
                       : ''}
                   </div>
                 )}

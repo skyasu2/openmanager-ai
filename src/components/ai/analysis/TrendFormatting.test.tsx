@@ -96,7 +96,9 @@ describe('analysis trend formatting', () => {
 
     render(<SystemSummarySection summary={summary} />);
 
-    expect(screen.getByText('상한 80% 초과 · 신뢰도 91%')).toBeInTheDocument();
+    expect(
+      screen.getByText('상한 80% 초과 · 신호 강도 91%')
+    ).toBeInTheDocument();
     expect(
       screen.getByText('조치: MEMORY 포화 원인을 즉시 확인하세요')
     ).toBeInTheDocument();

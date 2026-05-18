@@ -16,7 +16,7 @@ describe('evaluateAgentResponseQuality', () => {
     expect(result.qualityFlags).toContain('MISSING_ACTION_SECTION');
   });
 
-  it('flags Analyst responses missing an explicit confidence score', () => {
+  it('flags Analyst responses missing evidence strength', () => {
     const result = evaluateAgentResponseQuality(
       'Analyst Agent',
       [
@@ -28,7 +28,7 @@ describe('evaluateAgentResponseQuality', () => {
       { durationMs: 1200 }
     );
 
-    expect(result.qualityFlags).toContain('MISSING_CONFIDENCE_SCORE');
+    expect(result.qualityFlags).toContain('MISSING_EVIDENCE_STRENGTH');
     expect(result.qualityFlags).not.toContain('MISSING_CAUSE_HYPOTHESIS');
   });
 
@@ -37,17 +37,17 @@ describe('evaluateAgentResponseQuality', () => {
       'Analyst Agent',
       [
         '현황 요약: api-was-dc1-01 CPU 82%로 warning 상태입니다.',
-        '추정 원인: 배치 작업 집중 가능성이 큽니다. 신뢰도: 84%',
+        '추정 원인: 배치 작업 집중 가능성이 큽니다. 근거 강도: 높음',
         '조치: ps aux --sort=-%cpu 결과를 확인하고 배치 스케줄을 분산하세요.',
       ].join('\n'),
       { durationMs: 1200 }
     );
 
     expect(result.qualityFlags).toContain('MISSING_CAUSAL_DIRECTION');
-    expect(result.qualityFlags).not.toContain('MISSING_CONFIDENCE_SCORE');
+    expect(result.qualityFlags).not.toContain('MISSING_EVIDENCE_STRENGTH');
   });
 
-  it('flags Reporter responses missing an explicit confidence score', () => {
+  it('flags Reporter responses missing evidence strength', () => {
     const result = evaluateAgentResponseQuality(
       'Reporter Agent',
       [
@@ -65,7 +65,7 @@ describe('evaluateAgentResponseQuality', () => {
       { durationMs: 2200 }
     );
 
-    expect(result.qualityFlags).toContain('MISSING_CONFIDENCE_SCORE');
+    expect(result.qualityFlags).toContain('MISSING_EVIDENCE_STRENGTH');
   });
 
   it('flags Chinese characters without failing format compliance by itself', () => {

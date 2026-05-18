@@ -30,6 +30,7 @@ export interface IntentClassification {
   metric?: QueryMetric;
   operator?: QueryOperator;
   threshold?: number;
+  inferredThreshold?: boolean;
   rankCount?: number;
   rankOrder?: QueryRankOrder;
   statusValue?: QueryStatus;
@@ -60,6 +61,21 @@ const THRESHOLD_FILTER_SIGNALS =
 const RANKING_SIGNALS =
   /(상위|하위|top|bottom)\s*\d{1,2}|(가장\s*(높|낮|많|적))|(\d{1,2}\s*(개|위|번째))\s*(순|위)|순위|랭킹|rank(ing|ed)?\s+by|sort\s+by|highest|lowest|most|least|높은|낮은/i;
 
+// Metric issue filter without an explicit threshold.
+// e.g. "네트워크 문제가 있는 서버만", "방금 분석한 서버 중 disk 이상만 골라줘"
+const METRIC_ISSUE_FILTER_SIGNALS =
+  /(?:문제|이상|비정상|위험|경고|포화|병목|장애).{0,24}(?:있는|인|난|발생|서버|것)|(?:있는\s*것만|골라|추려|필터|filter|only|문제\s*있는)/i;
+
+const DEFAULT_ISSUE_THRESHOLD_BY_METRIC: Record<
+  Exclude<QueryMetric, 'status'>,
+  number
+> = {
+  cpu: 80,
+  memory: 80,
+  disk: 80,
+  network: 70,
+};
+
 function normalizeOperator(raw: string): QueryOperator {
   const value = raw.trim().toLowerCase();
   if (value === '이상') return '>=';
@@ -88,6 +104,13 @@ function parseStatusValue(query: string): QueryStatus | undefined {
   if (/warning|경고/i.test(query)) return 'warning';
   if (/online|온라인|정상/i.test(query)) return 'online';
   return undefined;
+}
+
+function getDefaultIssueThreshold(
+  metric: QueryMetric | undefined
+): number | undefined {
+  if (!metric || metric === 'status') return undefined;
+  return DEFAULT_ISSUE_THRESHOLD_BY_METRIC[metric];
 }
 
 function hasExplicitStatusFilter(query: string): boolean {
@@ -181,6 +204,21 @@ export function classifyQueryIntent(query: string): IntentClassification {
       metric,
       operator: comparison.operator,
       threshold: comparison.threshold,
+    };
+  }
+
+  const defaultIssueThreshold = getDefaultIssueThreshold(metric);
+  if (
+    defaultIssueThreshold !== undefined &&
+    METRIC_ISSUE_FILTER_SIGNALS.test(query)
+  ) {
+    return {
+      intent: 'data-filter',
+      confidence: 'high',
+      metric,
+      operator: '>=',
+      threshold: defaultIssueThreshold,
+      inferredThreshold: true,
     };
   }
 

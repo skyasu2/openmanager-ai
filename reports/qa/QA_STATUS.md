@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-18 23:49:21 KST
+> Generated at: 2026-05-19 04:14:22 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 525 |
-| Total Runs (Counted) | 419 |
+| Total Recorded Runs | 526 |
+| Total Runs (Counted) | 420 |
 | Non-counted Runs | 106 |
-| Total Checks | 3808 |
-| Passed | 3663 |
-| Failed | 134 |
+| Total Checks | 3821 |
+| Passed | 3674 |
+| Failed | 136 |
 | Completed Items | 598 |
-| Pending Items | 0 |
+| Pending Items | 2 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 24 |
+| Wont-Fix Items | 25 |
 | Expert Domains Tracked | 15 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260518-0527 (2026-05-18T14:49:19.097Z) |
-| Latest Recorded Run | QA-20260518-0527 (2026-05-18T14:49:19.097Z) |
+| Expert Open Gaps | 3 |
+| Completion Rate | 99.67% |
+| Last Counted Run | QA-20260519-0528 (2026-05-18T19:14:20.082Z) |
+| Latest Recorded Run | QA-20260519-0528 (2026-05-18T19:14:20.082Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,38 +34,36 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260518-0527 (2026-05-18T14:49:19.097Z)
+Latest run: QA-20260519-0528 (2026-05-18T19:14:20.082Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | After deploying today's NLQ/anomaly routing changes, rerun the standard five-question suite and specifically recheck the network-only follow-up. |
+| IT Monitoring & Observability SME | partially-appropriate | yes | Verify network metric selection and replace or justify confidence labels in the anomaly/trend surface. |
 | AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| DevOps / SRE Engineer | partially-appropriate | yes | Use the GitLab CI release path or an explicit preview deployment before treating this as validation of today's local changes. |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Reporter fallback evidence QA. |
+| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Vercel Playwright MCP AI drift check. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-17T14:49:19.097Z -> 2026-05-18T14:49:19.097Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 6
+- Window: 2026-05-17T19:14:20.082Z -> 2026-05-18T19:14:20.082Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 4
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Reporter Agent | cloud-run | 3 | 11609ms | 30498ms | - | - | 11264ms | 29753ms | QA-20260518-0523 |
-| Reporter | streaming-ai | 1 | 3000ms | 3000ms | - | - | - | - | QA-20260518-0516 |
-| NLQ | streaming-ai | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260518-0516 |
 | Health Check | cloud-run | 1 | 129ms | 129ms | - | - | - | - | QA-20260518-0522 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-17T14:49:19.097Z -> 2026-05-18T14:49:19.097Z (24h)
+- Window: 2026-05-17T19:14:20.082Z -> 2026-05-18T19:14:20.082Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -77,18 +75,17 @@ Latest run: QA-20260518-0527 (2026-05-18T14:49:19.097Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
 - Deployment: dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V / SHA 7da68ac4
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production /api/version reports v8.11.175, Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V Ready, GitLab release pipeline 2534475056 success including deploy_ai_engine and smoke jobs, Dashboard route /dashboard render with 18-server OTel snapshot, Dashboard slot 23:40 KST (slot 142/143), Dashboard current state: 17 online, 1 warning, 0 risk, 0 offline, AI assistant sidebar open and AI Engine Ready indicator, Reporter tab open, Reporter incident report generation through UI prompt, POST /api/ai/incident-report 200 with queryAsOf slot 142, Reporter card no longer reports 정상 for warning/critical grounding evidence, Reporter detail expansion, Reporter detected anomaly section with storage-nfs-dc1-01 Disk 85%, Reporter recommended actions include du, df/mount, and journalctl read-only diagnostics, Vercel usage post-QA check
-- Skipped Surfaces: Full visual regression pack, Standard five-question conversational AI suite, because this run targeted Reporter fallback evidence handling, Manual forced provider failure after deploy; the production path already exercised Reporter degraded fallback before the fix
+- Covered Surfaces: Vercel production /api/version reports v8.11.175 and commit 7da68ac4a1, Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V is READY, Dashboard route /dashboard renders 18-server OTel snapshot, Dashboard slot 04:00 KST (slot 24/143), 16 online, 2 warning, 0 risk, 0 offline, AI assistant sidebar opens through Playwright MCP, AI engine indicator reports Ready, Standard conversational AI question 1: full server status summary passed, Standard conversational AI question 2: web-server-01 alias resolved to web-nginx-dc1-01 with metrics passed, Standard conversational AI question 3: 24h load peak identified load1 peak at 2026-05-19 03:50 passed, Standard conversational AI question 4: immediate action needed separated no-critical from two disk warning servers passed, Standard conversational AI question 5: network-only follow-up returned generic full-system summary instead of filtering network issues, AI assistant anomaly/trend tab renders full-system analysis and two disk warning servers, Network requests observed for wake-up, health, supervisor stream, NLQ extraction, async jobs, and intelligent-monitoring, Browser console warnings/errors were zero, Vercel usage post-QA check
+- Skipped Surfaces: Full visual regression pack, Reporter incident report generation; this run targeted NLQ, anomaly/prediction, and AI assistant routing changes, Preview deployment of today's local workspace; production deployment authority remains GitLab CI and current production does not include local HEAD 73281f363f02
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main validate pipeline 2534462479 | [GitLab main validate pipeline 2534462479](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534462479) | - |
 | general | GitLab release pipeline 2534475056 | [GitLab release pipeline 2534475056](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534475056) | - |
 | vercel-deployment | Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V | [Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V](https://vercel.com/skyasus-projects/openmanager-ai/C8eLVUEdzSPMY83AwFUezu7ybd8V) | - |
 
@@ -96,17 +93,22 @@ Latest run: QA-20260518-0527 (2026-05-18T14:49:19.097Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Reporter fallback evidence fix QA notes | `reports/qa/evidence/qa-20260518-v811175-reporter-fallback-evidence-fix.md` | - |
-| playwright-screenshot | Pre-fix fallback mismatch on v8.11.174 | `reports/qa/evidence/qa-20260518-v811174-reporter-fallback-mismatch.png` | - |
-| playwright-screenshot | Post-fix Reporter detail on v8.11.175 | `reports/qa/evidence/qa-20260518-v811175-reporter-fallback-evidence-fixed.png` | - |
+| playwright-console | AI NLQ/anomaly production drift QA notes | `reports/qa/evidence/qa-20260519-v811175-ai-nlq-anomaly-drift.md` | - |
+| playwright-screenshot | AI anomaly/trend tab on v8.11.175 production | `reports/qa/evidence/qa-20260519-v811175-ai-anomaly-tab.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260519-0528)
+  next: After deploying today's NLQ/anomaly routing changes, rerun the standard five-question suite and specifically recheck the network-only follow-up.
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260519-0528)
+  next: Verify network metric selection and replace or justify confidence labels in the anomaly/trend surface.
+- sre-devops: DevOps / SRE Engineer (last QA-20260519-0528)
+  next: Use the GitLab CI release path or an explicit preview deployment before treating this as validation of today's local changes.
 
 ## Pending Improvements
 
-- None
+- [P0] vercel-deployment-drift-local-ai-changes: Today's local AI/NLQ/anomaly changes are not present on Vercel production (seen 1회, last QA-20260519-0528)
+- [P1] ai-network-followup-context-filtering: Network-only conversational follow-up returns generic system summary (seen 1회, last QA-20260519-0528)
 
 ## Deferred Improvements
 
@@ -114,7 +116,7 @@ Latest run: QA-20260518-0527 (2026-05-18T14:49:19.097Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 16
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 17
 
 ### Platform Constraint
 
@@ -174,6 +176,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-trend-formatting-and-issue-ranking-polish: Analyst trend target formatting and issue ranking need polish (seen 1회, last QA-20260427-0352)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] anomaly-trend-confidence-label-review: Anomaly/trend UI still displays confidence-style labels (seen 1회, last QA-20260519-0528)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] landing-tech-stack-version-copy-drift: 기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리 (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -789,6 +793,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0528 | 2026-05-18T19:14:20.082Z | targeted | no | yes | v8.11.175 Vercel Playwright MCP AI NLQ/Anomaly Drift Check | 13 | 0 | 2 | 0 | 1 | 3 |
 | QA-20260518-0527 | 2026-05-18T14:49:19.097Z | targeted | yes | yes | v8.11.175 Vercel Playwright MCP Reporter Fallback Evidence Fix | 20 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0526 | 2026-05-18T12:23:32.919Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Today Reporter Change Check | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0525 | 2026-05-18T11:57:44.191Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Reporter Review Fixes | 12 | 3 | 0 | 0 | 0 | 0 |
@@ -808,4 +813,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260517-0511 | 2026-05-16T18:51:23.923Z | targeted | yes | yes | v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260517-0510 | 2026-05-16T16:03:37.386Z | targeted | yes | yes | v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls | 10 | 2 | 2 | 0 | 0 | 1 |
 | QA-20260516-0509 | 2026-05-16T11:16:06.924Z | targeted | no | no | v8.11.158 Production Deploy Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260516-0508 | 2026-05-16T10:45:41.451Z | targeted | no | no | NLQ EntitySchema Provider Compatibility Fix Verification - v8.11.157 | 7 | 1 | 0 | 0 | 0 | 0 |

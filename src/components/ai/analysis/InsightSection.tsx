@@ -32,7 +32,7 @@ export function InsightSection({ data }: InsightSectionProps) {
                   {item.pattern}
                 </span>
                 <span className="text-xs text-purple-400">
-                  신뢰도 {Math.round(item.confidence * 100)}%
+                  신호 강도 {Math.round(item.confidence * 100)}%
                 </span>
               </div>
             </div>

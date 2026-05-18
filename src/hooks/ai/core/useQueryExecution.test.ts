@@ -481,9 +481,12 @@ describe('useQueryExecution', () => {
     ['어떤 서버가 제일 힘들어?', true],
     ['느린 서버 찾아줘', true],
     ['서버 부담 큰 곳', true],
+    ['이상 탐지해줘', true],
+    ['디스크 고갈 예측해줘', true],
+    ['장애 날 것 같은 서버 있어?', true],
     ['서버 상태 어때?', false],
     ['알려줘', false],
-  ])('semantic extraction gate를 자연어 부하 표현에만 연다: %s', (query, expected) => {
+  ])('semantic extraction gate를 분석/예측 의미가 있는 질의에 연다: %s', (query, expected) => {
     expect(shouldExtractSemanticIntentFrame(query)).toBe(expected);
   });
 

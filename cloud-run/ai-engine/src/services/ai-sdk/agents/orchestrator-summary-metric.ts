@@ -316,7 +316,7 @@ export function buildMetricThresholdFilterFromPayload(
   const total = payload.filterSummary?.total ?? payload.servers.length;
   const lines = [
     `📊 **${label} 사용률 ${threshold}% ${formatOperatorForTitle(operator)} 서버 ${matchedCount}대**`,
-    `• 기준: 전체 ${total}대 중 ${label} ${operator} ${threshold}%`,
+    `• 기준: 전체 ${total}대 중 ${label} ${operator} ${threshold}%${classification.inferredThreshold ? ' (경고 임계값 기준)' : ''}`,
   ];
 
   if (sortableEntries.length === 0) {

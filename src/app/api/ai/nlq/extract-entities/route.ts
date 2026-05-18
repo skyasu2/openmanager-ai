@@ -106,7 +106,7 @@ async function postHandler(request: NextRequest) {
       system: SYSTEM_PROMPT,
       prompt: queryForLLM,
       temperature: 0,
-      maxOutputTokens: 160,
+      maxOutputTokens: 320,
       output: Output.object({
         schema: EntitySchema,
         name: 'nlq_entities',

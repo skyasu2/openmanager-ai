@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T14:49:19.097Z"
+    "updatedAt": "2026-05-18T19:14:20.082Z"
   },
   "sequence": {
-    "nextRunNumber": 528
+    "nextRunNumber": 529
   },
   "summary": {
-    "totalRecordedRuns": 525,
-    "totalRuns": 419,
+    "totalRecordedRuns": 526,
+    "totalRuns": 420,
     "excludedRuns": 106,
-    "totalChecks": 3808,
-    "totalPassed": 3663,
-    "totalFailed": 134,
-    "completionRate": 100,
+    "totalChecks": 3821,
+    "totalPassed": 3674,
+    "totalFailed": 136,
+    "completionRate": 99.67,
     "completedItems": 598,
-    "pendingItems": 0,
+    "pendingItems": 2,
     "deferredItems": 0,
-    "wontFixItems": 24,
+    "wontFixItems": 25,
     "expertDomainsTracked": 15,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0527",
-    "lastRecordedAt": "2026-05-18T14:49:19.097Z",
-    "latestRecordedRunId": "QA-20260518-0527",
-    "latestRecordedAt": "2026-05-18T14:49:19.097Z"
+    "expertDomainsOpenGaps": 3,
+    "lastRunId": "QA-20260519-0528",
+    "lastRecordedAt": "2026-05-18T19:14:20.082Z",
+    "latestRecordedRunId": "QA-20260519-0528",
+    "latestRecordedAt": "2026-05-18T19:14:20.082Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14657,6 +14657,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-18T14:49:19.097Z"
+    },
+    "vercel-deployment-drift-local-ai-changes": {
+      "id": "vercel-deployment-drift-local-ai-changes",
+      "title": "Today's local AI/NLQ/anomaly changes are not present on Vercel production",
+      "priority": "P0",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260519-0528",
+      "firstSeenAt": "2026-05-18T19:14:20.082Z",
+      "lastSeenRunId": "QA-20260519-0528",
+      "lastSeenAt": "2026-05-18T19:14:20.082Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production reports v8.11.175 commit 7da68ac4a1; local workspace is 73281f363f02 with unstaged changes. Vercel production QA cannot validate the local changes until a preview or GitLab CI production release is created.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T19:14:20.082Z"
+    },
+    "ai-network-followup-context-filtering": {
+      "id": "ai-network-followup-context-filtering",
+      "title": "Network-only conversational follow-up returns generic system summary",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260519-0528",
+      "firstSeenAt": "2026-05-18T19:14:20.082Z",
+      "lastSeenRunId": "QA-20260519-0528",
+      "lastSeenAt": "2026-05-18T19:14:20.082Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Standard QA question 5 should filter previously analyzed servers by network issue, but production v8.11.175 repeated the full server summary.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T19:14:20.082Z"
+    },
+    "anomaly-trend-confidence-label-review": {
+      "id": "anomaly-trend-confidence-label-review",
+      "title": "Anomaly/trend UI still displays confidence-style labels",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260519-0528",
+      "firstSeenAt": "2026-05-18T19:14:20.082Z",
+      "lastSeenRunId": "QA-20260519-0528",
+      "lastSeenAt": "2026-05-18T19:14:20.082Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "The anomaly/trend tab rendered disk warnings with `신뢰도 90%`; review this alongside the recent prompt/persona wording changes.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Treat as wording/semantics cleanup unless the label is used as a contractual confidence score.",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-18T19:14:20.082Z"
     }
   },
   "runs": [
@@ -59504,6 +59576,147 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260519-0528",
+      "recordedAt": "2026-05-18T19:14:20.082Z",
+      "recordedAtKst": "2026-05-19 04:14:20 KST",
+      "title": "v8.11.175 Vercel Playwright MCP AI NLQ/Anomaly Drift Check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260519-0528.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V",
+        "deploymentUrl": "https://openmanager-gfgclo7qa-skyasus-projects.vercel.app",
+        "commitSha": "7da68ac4a1772efbe83ee7760f77affe4396cf46"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version reports v8.11.175 and commit 7da68ac4a1",
+        "Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V is READY",
+        "Dashboard route /dashboard renders 18-server OTel snapshot",
+        "Dashboard slot 04:00 KST (slot 24/143), 16 online, 2 warning, 0 risk, 0 offline",
+        "AI assistant sidebar opens through Playwright MCP",
+        "AI engine indicator reports Ready",
+        "Standard conversational AI question 1: full server status summary passed",
+        "Standard conversational AI question 2: web-server-01 alias resolved to web-nginx-dc1-01 with metrics passed",
+        "Standard conversational AI question 3: 24h load peak identified load1 peak at 2026-05-19 03:50 passed",
+        "Standard conversational AI question 4: immediate action needed separated no-critical from two disk warning servers passed",
+        "Standard conversational AI question 5: network-only follow-up returned generic full-system summary instead of filtering network issues",
+        "AI assistant anomaly/trend tab renders full-system analysis and two disk warning servers",
+        "Network requests observed for wake-up, health, supervisor stream, NLQ extraction, async jobs, and intelligent-monitoring",
+        "Browser console warnings/errors were zero",
+        "Vercel usage post-QA check"
+      ],
+      "skippedSurfaces": [
+        "Full visual regression pack",
+        "Reporter incident report generation; this run targeted NLQ, anomaly/prediction, and AI assistant routing changes",
+        "Preview deployment of today's local workspace; production deployment authority remains GitLab CI and current production does not include local HEAD 73281f363f02"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 11,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The standard five-question suite passed 4/5, but the network-only follow-up failed by returning a generic system summary instead of respecting prior context and filtering network issues.",
+          "nextAction": "After deploying today's NLQ/anomaly routing changes, rerun the standard five-question suite and specifically recheck the network-only follow-up."
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Dashboard and anomaly/trend data are grounded, but the AI follow-up did not preserve network metric intent and the anomaly/trend UI still presents confidence-style labels.",
+          "nextAction": "Verify network metric selection and replace or justify confidence labels in the anomaly/trend surface."
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The QA used authenticated UI paths only, observed no browser console warnings/errors, and did not bypass CSRF-protected AI endpoints.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Vercel production is healthy but does not contain today's local workspace changes; production remains on v8.11.175 commit 7da68ac4a1 while local HEAD is 73281f363f02 with unstaged changes.",
+          "nextAction": "Use the GitLab CI release path or an explicit preview deployment before treating this as validation of today's local changes."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP covered route render, AI assistant UI flow, five standard AI prompts, anomaly/trend tab, network request capture, console capture, and durable evidence artifacts.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-19T04:12:00+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Vercel Playwright MCP AI drift check.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "AI NLQ/anomaly production drift QA notes",
+          "path": "reports/qa/evidence/qa-20260519-v811175-ai-nlq-anomaly-drift.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI anomaly/trend tab on v8.11.175 production",
+          "path": "reports/qa/evidence/qa-20260519-v811175-ai-anomaly-tab.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2534475056",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534475056"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/C8eLVUEdzSPMY83AwFUezu7ybd8V"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 3,
+      "completedCount": 0,
+      "pendingCount": 2,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -59512,50 +59725,50 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 262,
+      "seenCount": 263,
       "appropriateCount": 225,
-      "partialCount": 37,
+      "partialCount": 38,
       "inappropriateCount": 0,
-      "improvementNeededCount": 47,
-      "lastRunId": "QA-20260518-0527",
-      "lastSeenAt": "2026-05-18T14:49:19.097Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The run reproduced the production Reporter fallback mismatch, added regression coverage, deployed the fix, and rechecked the same Reporter UI/API path on Vercel production.",
-      "lastNextAction": ""
+      "improvementNeededCount": 48,
+      "lastRunId": "QA-20260519-0528",
+      "lastSeenAt": "2026-05-18T19:14:20.082Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "The standard five-question suite passed 4/5, but the network-only follow-up failed by returning a generic system summary instead of respecting prior context and filtering network issues.",
+      "lastNextAction": "After deploying today's NLQ/anomaly routing changes, rerun the standard five-question suite and specifically recheck the network-only follow-up."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 128,
+      "seenCount": 129,
       "appropriateCount": 97,
-      "partialCount": 31,
+      "partialCount": 32,
       "inappropriateCount": 0,
-      "improvementNeededCount": 32,
-      "lastRunId": "QA-20260518-0527",
-      "lastSeenAt": "2026-05-18T14:49:19.097Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Monitoring warning/critical grounding evidence now affects report severity, affected servers, timeline, and read-only diagnostic actions instead of being hidden behind a normal summary.",
-      "lastNextAction": ""
+      "improvementNeededCount": 33,
+      "lastRunId": "QA-20260519-0528",
+      "lastSeenAt": "2026-05-18T19:14:20.082Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Dashboard and anomaly/trend data are grounded, but the AI follow-up did not preserve network metric intent and the anomaly/trend UI still presents confidence-style labels.",
+      "lastNextAction": "Verify network metric selection and replace or justify confidence labels in the anomaly/trend surface."
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 87,
-      "appropriateCount": 68,
+      "seenCount": 88,
+      "appropriateCount": 69,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260518-0527",
-      "lastSeenAt": "2026-05-18T14:49:19.097Z",
+      "lastRunId": "QA-20260519-0528",
+      "lastSeenAt": "2026-05-18T19:14:20.082Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The fix keeps recommendations read-only and preserves the normal authenticated production UI path; no direct API bypass was used for the final acceptance check.",
+      "lastRationale": "The QA used authenticated UI paths only, observed no browser console warnings/errors, and did not bypass CSRF-protected AI endpoints.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -59563,33 +59776,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 199,
+      "seenCount": 200,
       "appropriateCount": 180,
-      "partialCount": 19,
+      "partialCount": 20,
       "inappropriateCount": 0,
-      "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0527",
-      "lastSeenAt": "2026-05-18T14:49:19.097Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main validate, release deployment, Cloud Run AI Engine deploy, smoke jobs, Vercel deployment readiness, version endpoint, and usage check all passed.",
-      "lastNextAction": ""
+      "improvementNeededCount": 24,
+      "lastRunId": "QA-20260519-0528",
+      "lastSeenAt": "2026-05-18T19:14:20.082Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Vercel production is healthy but does not contain today's local workspace changes; production remains on v8.11.175 commit 7da68ac4a1 while local HEAD is 73281f363f02 with unstaged changes.",
+      "lastNextAction": "Use the GitLab CI release path or an explicit preview deployment before treating this as validation of today's local changes."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 231,
-      "appropriateCount": 211,
+      "seenCount": 232,
+      "appropriateCount": 212,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0527",
-      "lastSeenAt": "2026-05-18T14:49:19.097Z",
+      "lastRunId": "QA-20260519-0528",
+      "lastSeenAt": "2026-05-18T19:14:20.082Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Targeted Vitest coverage protects the no-metric-anomaly but warning/critical grounding-evidence path, and Playwright MCP captured durable before/after production evidence.",
+      "lastRationale": "Playwright MCP covered route render, AI assistant UI flow, five standard AI prompts, anomaly/trend tab, network request capture, console capture, and durable evidence artifacts.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

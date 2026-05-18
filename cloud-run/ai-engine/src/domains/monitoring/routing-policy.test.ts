@@ -396,6 +396,7 @@ describe('createPrepareStep', () => {
   it('should route anomaly queries to anomaly tools', async () => {
     const prepare = createPrepareStep('이상 탐지해줘');
     const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('detectAnomaliesAllServers');
     expect(result.activeTools).toContain('detectAnomalies');
     expect(result.toolChoice).toBe('required');
   });
@@ -412,6 +413,7 @@ describe('createPrepareStep', () => {
   it('should route prediction queries to trend tools including capacity projection', async () => {
     const prepare = createPrepareStep('트렌드 예측해줘');
     const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('detectAnomaliesAllServers');
     expect(result.activeTools).toContain('predictTrends');
     expect(result.activeTools).toContain('estimateCapacityProjection');
     expect(result.toolChoice).toBe('required');
@@ -420,6 +422,7 @@ describe('createPrepareStep', () => {
   it('should route RCA queries to incident tools', async () => {
     const prepare = createPrepareStep('장애 원인 분석');
     const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('detectAnomaliesAllServers');
     expect(result.activeTools).toContain('findRootCause');
     expect(result.activeTools).toContain('buildIncidentTimeline');
     expect(result.toolChoice).toBe('required');

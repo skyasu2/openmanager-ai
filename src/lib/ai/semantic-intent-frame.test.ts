@@ -83,6 +83,10 @@ describe('semantic intent frame mapping', () => {
   it.each([
     ['metric_current', 'monitoring.metric_current'],
     ['metric_trend', 'monitoring.metric_trend'],
+    ['anomaly_detection', 'monitoring.anomaly_detection'],
+    ['anomaly_prediction', 'monitoring.anomaly_prediction'],
+    ['capacity_forecast', 'monitoring.capacity_forecast'],
+    ['failure_risk', 'monitoring.failure_risk'],
     ['root_cause', 'monitoring.root_cause'],
     ['incident_report', 'monitoring.incident_report'],
     ['ops_advice', 'monitoring.ops_advice'],

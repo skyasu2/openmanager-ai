@@ -103,6 +103,47 @@ describe('normalizeExtractedEntities', () => {
     });
   });
 
+  it.each([
+    ['anomaly_detection', '이상 탐지', 'all'],
+    ['anomaly_prediction', '이상 예측', 'all'],
+    ['capacity_forecast', '디스크 고갈 예측', 'disk'],
+    ['failure_risk', '장애 위험', 'unknown'],
+  ] as const)('keeps %s semantic intent frames for Analyst routing', (intent, label, metric) => {
+    expect(
+      normalizeExtractedEntities({
+        confidence: 92,
+        intentFrame: {
+          domain: 'monitoring',
+          intent,
+          scope: 'whole_fleet',
+          targets: [],
+          metric,
+          timeWindow: '6h',
+          aggregation: 'summary',
+          topN: null,
+          ambiguity: 'low',
+          executionMode: 'multi',
+          confidence: 92,
+          reason: label,
+        },
+      })
+    ).toEqual({
+      confidence: 92,
+      intentFrame: {
+        domain: 'monitoring',
+        intent,
+        scope: 'whole_fleet',
+        targets: [],
+        metric,
+        timeWindow: '6h',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        executionMode: 'multi',
+        confidence: 92,
+      },
+    });
+  });
+
   it('drops unknown entity values instead of trusting arbitrary payloads', () => {
     expect(
       normalizeExtractedEntities({

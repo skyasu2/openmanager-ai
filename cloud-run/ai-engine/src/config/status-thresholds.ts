@@ -102,6 +102,29 @@ export function buildTrendThresholds(): Record<string, { warning: number; critic
   return result;
 }
 
+function roundThreshold(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+/**
+ * Build dynamic load average thresholds from server CPU core count.
+ * Load average is not a percent metric:
+ * - warning: runnable queue reaches available cores
+ * - critical: sustained queue is 1.5x available cores
+ * - recovery: queue drops below 70% of available cores
+ */
+export function buildLoadAverageThresholds(cpuCores: number): {
+  warning: number;
+  critical: number;
+  recovery: number;
+} {
+  return {
+    warning: roundThreshold(cpuCores),
+    critical: roundThreshold(cpuCores * 1.5),
+    recovery: roundThreshold(cpuCores * 0.7),
+  };
+}
+
 export type MetricType = keyof Omit<typeof STATUS_THRESHOLDS, 'responseTime'>;
 export type ServerStatus = 'online' | 'warning' | 'critical';
 

@@ -119,7 +119,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
         model: { modelId: 'meta-llama/llama-4-scout-17b-16e-instruct' },
         prompt: 'api-was-dc1-01 CPU 어때?',
         temperature: 0,
-        maxOutputTokens: 160,
+        maxOutputTokens: 320,
         output: expect.objectContaining({ kind: 'object-output' }),
       })
     );
@@ -149,6 +149,27 @@ describe('POST /api/ai/nlq/extract-entities', () => {
         timeRange: 'current',
         intentFrame: null,
         confidence: 90,
+      }).success
+    ).toBe(true);
+    expect(
+      config?.schema?.safeParse({
+        server: null,
+        metric: null,
+        timeRange: null,
+        intentFrame: {
+          domain: 'monitoring',
+          intent: 'capacity_forecast',
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'disk',
+          timeWindow: '6h',
+          aggregation: 'summary',
+          topN: null,
+          ambiguity: 'low',
+          executionMode: 'multi',
+          confidence: 92,
+        },
+        confidence: 92,
       }).success
     ).toBe(true);
 
@@ -235,8 +256,52 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     expect(mockGenerateText).toHaveBeenCalledWith(
       expect.objectContaining({
         prompt: '최근 하루 load 피크 시간과 대응 방법 알려줘',
-        maxOutputTokens: 160,
+        maxOutputTokens: 320,
         output: expect.objectContaining({ kind: 'object-output' }),
+      })
+    );
+  });
+
+  it('returns anomaly prediction semantic intents from the Vercel parser contract', async () => {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
+        confidence: 92,
+        intentFrame: {
+          domain: 'monitoring',
+          intent: 'failure_risk',
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'unknown',
+          timeWindow: '6h',
+          aggregation: 'summary',
+          topN: null,
+          ambiguity: 'low',
+          executionMode: 'multi',
+          confidence: 92,
+        },
+      },
+    });
+
+    const response = await POST(
+      buildRequest({
+        query: '장애 날 것 같은 서버 있어?',
+      })
+    );
+
+    await expect(response.json()).resolves.toMatchObject({
+      confidence: 92,
+      inputType: 'natural_query',
+      intentFrame: {
+        intent: 'failure_risk',
+        scope: 'whole_fleet',
+        metric: 'unknown',
+        executionMode: 'multi',
+      },
+    });
+    expect(mockGenerateText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: '장애 날 것 같은 서버 있어?',
+        maxOutputTokens: 320,
       })
     );
   });

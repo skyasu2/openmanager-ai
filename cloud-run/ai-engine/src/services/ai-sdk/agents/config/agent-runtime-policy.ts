@@ -129,7 +129,7 @@ export const AGENT_RUNTIME_POLICIES = {
     ],
   },
   // Analyst: Mistral-first (32K context needed). Typical flow:
-  //   detectAnomalies → predictTrends → (correlate) → finalAnswer = 3–4 steps.
+  //   detectAnomaliesAllServers → detectAnomalies/predictTrends → finalAnswer.
   // Cerebras remains last because its 8K runtime cannot satisfy this path and
   // would otherwise become a phantom primary that immediately falls through.
   'Analyst Agent': {

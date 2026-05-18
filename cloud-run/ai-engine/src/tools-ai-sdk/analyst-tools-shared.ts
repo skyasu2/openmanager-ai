@@ -4,7 +4,7 @@ import type { TrendDataPoint } from '../lib/ai/monitoring/TrendPredictor';
 
 /** 외부 데이터 소스에서 제공하는 서버별 메트릭 히스토리 (10분 간격, 최근순) */
 export type ExternalMetricHistory = Record<string, Record<string, number[]>>;
-// 구조: { [serverId]: { cpu: number[], memory: number[], disk: number[], network: number[] } }
+// 구조: { [serverId]: { cpu, memory, disk, network, load1, load5: number[] } }
 
 export interface AnomalyResultItem {
   isAnomaly: boolean;

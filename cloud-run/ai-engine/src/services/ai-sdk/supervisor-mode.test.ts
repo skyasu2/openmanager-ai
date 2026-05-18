@@ -78,6 +78,31 @@ describe('resolveSupervisorMode', () => {
     ).toBe('multi');
   });
 
+  it('uses forwarded anomaly prediction intentFrame executionMode for auto routing', () => {
+    delete process.env.ALLOW_DEGRADED_SINGLE;
+    expect(
+      resolveSupervisorMode({
+        mode: 'auto',
+        messages: [{ role: 'user', content: '장애 날 것 같은 서버 있어?' }],
+        metadata: {
+          intentFrame: {
+            domainId: 'openmanager-monitoring',
+            intent: 'failure_risk',
+            capabilityId: 'monitoring.failure_risk',
+            scope: 'whole_fleet',
+            targets: [],
+            metric: 'unknown',
+            timeWindow: '6h',
+            aggregation: 'summary',
+            ambiguity: 'low',
+            executionMode: 'multi',
+            confidence: 0.92,
+          },
+        },
+      })
+    ).toBe('multi');
+  });
+
   it('keeps low-complexity auto requests in single mode even when degraded single is disallowed', () => {
     delete process.env.ALLOW_DEGRADED_SINGLE;
     expect(

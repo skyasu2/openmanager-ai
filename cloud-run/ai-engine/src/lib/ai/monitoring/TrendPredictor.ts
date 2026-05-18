@@ -207,12 +207,14 @@ export class TrendPredictor {
    * @param historicalData - 과거 데이터 포인트 배열
    * @param metricName - 메트릭 이름 (cpu, memory, disk, network)
    * @param predictionHorizon - 기준 추세 계산 및 경보 ETA를 볼 시간 범위 (기본 1시간)
+   * @param thresholdOverride - 서버별 동적 임계값 (예: load average의 cpuCores 기반 임계값)
    * @returns 향상된 예측 결과
    */
   public predictEnhanced(
     historicalData: TrendDataPoint[],
     metricName: string = 'cpu',
-    predictionHorizon: number = 3600000
+    predictionHorizon: number = 3600000,
+    thresholdOverride?: MetricThresholds
   ): EnhancedTrendPrediction {
     const normalizedPredictionHorizon = Math.max(
       0,
@@ -226,6 +228,10 @@ export class TrendPredictor {
     );
     const currentValue = basePrediction.details.currentValue;
     const slope = basePrediction.details.slope;
+    const thresholds =
+      thresholdOverride ||
+      this.thresholds[metricName] ||
+      (this.thresholds['cpu'] ?? buildTrendThresholds()['cpu']);
 
     // 1.5. 백분율 메트릭(cpu/memory/disk/network): 포화 모델 적용
     // 선형 회귀는 100% 초과를 예측하지만, 실제로는:
@@ -235,8 +241,7 @@ export class TrendPredictor {
     // 따라서 critical 임계값(90%) 이상에서는 로지스틱 감속을 적용
     const percentMetrics = new Set(['cpu', 'memory', 'disk', 'network']);
     if (percentMetrics.has(metricName)) {
-      const cpuFallback = this.thresholds['cpu'] ?? buildTrendThresholds()['cpu'];
-      const criticalThreshold = (this.thresholds[metricName] || cpuFallback).critical;
+      const criticalThreshold = thresholds.critical;
       const linearPrediction = basePrediction.prediction;
 
       let adjusted: number;
@@ -261,9 +266,6 @@ export class TrendPredictor {
             : 0;
       }
     }
-
-    // 2. 임계값 가져오기
-    const thresholds = this.thresholds[metricName] || (this.thresholds['cpu'] ?? buildTrendThresholds()['cpu']);
 
     // 3. 현재 상태 판단
     const currentStatus = determineStatus(currentValue, thresholds);

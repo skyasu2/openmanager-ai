@@ -61,6 +61,9 @@ const mockServers = [
     memory: 62,
     disk: 55,
     network: 50,
+    load1: 2.2,
+    load5: 1.8,
+    cpuCores: 4,
   },
   {
     id: 'web-nginx-dc1-02',
@@ -71,6 +74,9 @@ const mockServers = [
     memory: 82, // >= 75 warning threshold
     disk: 60,
     network: 60,
+    load1: 3.4,
+    load5: 2.9,
+    cpuCores: 4,
   },
   {
     id: 'db-mysql-dc1-01',
@@ -81,6 +87,9 @@ const mockServers = [
     memory: 95, // >= 90 critical threshold
     disk: 65,
     network: 70,
+    load1: 7.2,
+    load5: 6.1,
+    cpuCores: 4,
   },
   {
     id: 'db-mysql-dc1-02',
@@ -91,6 +100,9 @@ const mockServers = [
     memory: 55,
     disk: 60,
     network: 40,
+    load1: 1.4,
+    load5: 1.2,
+    cpuCores: 4,
   },
   {
     id: 'cache-redis-dc1-01',
@@ -101,6 +113,9 @@ const mockServers = [
     memory: 40,
     disk: 20,
     network: 30,
+    load1: 0.8,
+    load5: 0.7,
+    cpuCores: 2,
   },
 ];
 
@@ -772,5 +787,133 @@ describe('predictTrends', () => {
       'cpu',
       2 * 60 * 60 * 1000
     );
+  });
+
+  it('should support network metric trend prediction with injected history', async () => {
+    const result = await predictTrends.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'network',
+        predictionHours: 1,
+        currentMetrics: { network: 68 },
+        history: { network: [20, 30, 45, 60, 68] },
+      },
+      {} as never
+    );
+
+    expect(mockPredictEnhanced).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ value: 20 }),
+        expect.objectContaining({ value: 30 }),
+        expect.objectContaining({ value: 45 }),
+        expect.objectContaining({ value: 60 }),
+        expect.objectContaining({ value: 68 }),
+      ]),
+      'network',
+      60 * 60 * 1000
+    );
+    expect(result).toMatchObject({
+      success: true,
+      results: {
+        network: expect.objectContaining({
+          currentValue: expect.any(Number),
+        }),
+      },
+    });
+  });
+
+  it('should include network when predicting all metrics', async () => {
+    const result = await predictTrends.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'all',
+        predictionHours: 1,
+      },
+      {} as never
+    );
+
+    expect(mockPredictEnhanced).toHaveBeenCalledWith(
+      expect.any(Array),
+      'network',
+      60 * 60 * 1000
+    );
+    expect(result).toMatchObject({
+      success: true,
+      results: {
+        cpu: expect.any(Object),
+        memory: expect.any(Object),
+        disk: expect.any(Object),
+        network: expect.any(Object),
+      },
+    });
+  });
+
+  it('should support load1 trend prediction with cpu-core thresholds', async () => {
+    const result = await predictTrends.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'load1',
+        predictionHours: 1,
+        currentMetrics: { load1: 2.8, cpuCores: 4 },
+        history: { load1: [1.1, 1.4, 1.8, 2.3, 2.8] },
+      },
+      {} as never
+    );
+
+    expect(mockPredictEnhanced).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ value: 1.1 }),
+        expect.objectContaining({ value: 1.4 }),
+        expect.objectContaining({ value: 1.8 }),
+        expect.objectContaining({ value: 2.3 }),
+        expect.objectContaining({ value: 2.8 }),
+      ]),
+      'load1',
+      60 * 60 * 1000,
+      { warning: 4, critical: 6, recovery: 2.8 }
+    );
+    expect(result).toMatchObject({
+      success: true,
+      results: {
+        load1: expect.objectContaining({
+          currentValue: 2.8,
+        }),
+      },
+    });
+  });
+
+  it('should include load averages when predicting all metrics for cpu-core servers', async () => {
+    const result = await predictTrends.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'all',
+        predictionHours: 1,
+      },
+      {} as never
+    );
+
+    expect(mockPredictEnhanced).toHaveBeenCalledWith(
+      expect.any(Array),
+      'load1',
+      60 * 60 * 1000,
+      { warning: 4, critical: 6, recovery: 2.8 }
+    );
+    expect(mockPredictEnhanced).toHaveBeenCalledWith(
+      expect.any(Array),
+      'load5',
+      60 * 60 * 1000,
+      { warning: 4, critical: 6, recovery: 2.8 }
+    );
+    expect(result).toMatchObject({
+      success: true,
+      results: {
+        cpu: expect.any(Object),
+        memory: expect.any(Object),
+        disk: expect.any(Object),
+        network: expect.any(Object),
+        load1: expect.any(Object),
+        load5: expect.any(Object),
+      },
+    });
   });
 });

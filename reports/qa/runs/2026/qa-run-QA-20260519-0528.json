@@ -1,0 +1,184 @@
+{
+  "runId": "QA-20260519-0528",
+  "recordedAt": "2026-05-18T19:14:20.082Z",
+  "recordedAtKst": "2026-05-19 04:14:20 KST",
+  "runTitle": "v8.11.175 Vercel Playwright MCP AI NLQ/Anomaly Drift Check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V",
+    "deploymentUrl": "https://openmanager-gfgclo7qa-skyasus-projects.vercel.app",
+    "commitSha": "7da68ac4a1772efbe83ee7760f77affe4396cf46"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version reports v8.11.175 and commit 7da68ac4a1",
+    "Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V is READY",
+    "Dashboard route /dashboard renders 18-server OTel snapshot",
+    "Dashboard slot 04:00 KST (slot 24/143), 16 online, 2 warning, 0 risk, 0 offline",
+    "AI assistant sidebar opens through Playwright MCP",
+    "AI engine indicator reports Ready",
+    "Standard conversational AI question 1: full server status summary passed",
+    "Standard conversational AI question 2: web-server-01 alias resolved to web-nginx-dc1-01 with metrics passed",
+    "Standard conversational AI question 3: 24h load peak identified load1 peak at 2026-05-19 03:50 passed",
+    "Standard conversational AI question 4: immediate action needed separated no-critical from two disk warning servers passed",
+    "Standard conversational AI question 5: network-only follow-up returned generic full-system summary instead of filtering network issues",
+    "AI assistant anomaly/trend tab renders full-system analysis and two disk warning servers",
+    "Network requests observed for wake-up, health, supervisor stream, NLQ extraction, async jobs, and intelligent-monitoring",
+    "Browser console warnings/errors were zero",
+    "Vercel usage post-QA check"
+  ],
+  "skippedSurfaces": [
+    "Full visual regression pack",
+    "Reporter incident report generation; this run targeted NLQ, anomaly/prediction, and AI assistant routing changes",
+    "Preview deployment of today's local workspace; production deployment authority remains GitLab CI and current production does not include local HEAD 73281f363f02"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 11,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The standard five-question suite passed 4/5, but the network-only follow-up failed by returning a generic system summary instead of respecting prior context and filtering network issues.",
+      "nextAction": "After deploying today's NLQ/anomaly routing changes, rerun the standard five-question suite and specifically recheck the network-only follow-up."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Dashboard and anomaly/trend data are grounded, but the AI follow-up did not preserve network metric intent and the anomaly/trend UI still presents confidence-style labels.",
+      "nextAction": "Verify network metric selection and replace or justify confidence labels in the anomaly/trend surface."
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The QA used authenticated UI paths only, observed no browser console warnings/errors, and did not bypass CSRF-protected AI endpoints.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Vercel production is healthy but does not contain today's local workspace changes; production remains on v8.11.175 commit 7da68ac4a1 while local HEAD is 73281f363f02 with unstaged changes.",
+      "nextAction": "Use the GitLab CI release path or an explicit preview deployment before treating this as validation of today's local changes."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP covered route render, AI assistant UI flow, five standard AI prompts, anomaly/trend tab, network request capture, console capture, and durable evidence artifacts.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-19T04:12:00+09:00",
+      "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Vercel Playwright MCP AI drift check.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "AI NLQ/anomaly production drift QA notes",
+      "path": "reports/qa/evidence/qa-20260519-v811175-ai-nlq-anomaly-drift.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI anomaly/trend tab on v8.11.175 production",
+      "path": "reports/qa/evidence/qa-20260519-v811175-ai-anomaly-tab.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "vercel-deployment-drift-local-ai-changes",
+      "title": "Today's local AI/NLQ/anomaly changes are not present on Vercel production",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production reports v8.11.175 commit 7da68ac4a1; local workspace is 73281f363f02 with unstaged changes. Vercel production QA cannot validate the local changes until a preview or GitLab CI production release is created.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-network-followup-context-filtering",
+      "title": "Network-only conversational follow-up returns generic system summary",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Standard QA question 5 should filter previously analyzed servers by network issue, but production v8.11.175 repeated the full server summary.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "anomaly-trend-confidence-label-review",
+      "title": "Anomaly/trend UI still displays confidence-style labels",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Treat as wording/semantics cleanup unless the label is used as a contractual confidence score.",
+      "evidence": "",
+      "note": "The anomaly/trend tab rendered disk warnings with `신뢰도 90%`; review this alongside the recent prompt/persona wording changes.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Direct Playwright MCP initially failed because a stale MCP Chrome profile was locked; the MCP-only Chrome process was terminated and the Playwright MCP session then ran normally.",
+    "This run is not release-facing because it checks the current production deployment rather than a deployed copy of today's local workspace changes.",
+    "Vercel production network requests included /api/ai/nlq/extract-entities 200 and /api/ai/jobs 201 during the conversational QA."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2534475056",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534475056"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/C8eLVUEdzSPMY83AwFUezu7ybd8V"
+    }
+  ]
+}

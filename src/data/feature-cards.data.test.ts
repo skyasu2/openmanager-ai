@@ -55,8 +55,8 @@ describe('feature card public data', () => {
 
     expect(copy).toContain('BM25 RPC + metadata boost');
     expect(copy).toContain('Postgres FTS');
-    expect(copy).toContain('GitLab CI deploy gate');
-    expect(copy).toContain('Request-driven AI job dispatch');
+    expect(copy).toContain('CI 배포 게이트');
+    expect(copy).toContain('요청 기반 AI job dispatch');
     expect(copy).not.toContain('BM25 + pgVector');
     expect(copy).not.toContain('Tavily Hybrid RAG');
     expect(copy).not.toContain('PostgreSQL + pgVector');

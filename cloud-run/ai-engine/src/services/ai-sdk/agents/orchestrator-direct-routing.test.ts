@@ -41,6 +41,10 @@ describe('resolveDirectRoutingTarget', () => {
     ['monitoring.root_cause', 'root_cause', 'Analyst Agent'],
     ['monitoring.log_analysis', 'log_analysis', 'Analyst Agent'],
     ['monitoring.metric_trend', 'metric_trend', 'Analyst Agent'],
+    ['monitoring.anomaly_detection', 'anomaly_detection', 'Analyst Agent'],
+    ['monitoring.anomaly_prediction', 'anomaly_prediction', 'Analyst Agent'],
+    ['monitoring.capacity_forecast', 'capacity_forecast', 'Analyst Agent'],
+    ['monitoring.failure_risk', 'failure_risk', 'Analyst Agent'],
     ['monitoring.metric_current', 'metric_current', 'Metrics Query Agent'],
   ] as const)(
     'uses high-confidence semantic frame %s before regex fallback',

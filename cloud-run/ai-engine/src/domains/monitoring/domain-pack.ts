@@ -44,6 +44,10 @@ import { parseMonitoringPeakMetricIntent } from './peak-metric-intent';
 import {
   MONITORING_DOMAIN_ID,
   MONITORING_DOMAIN_VERSION,
+  MONITORING_ANOMALY_DETECTION_CAPABILITY_ID,
+  MONITORING_ANOMALY_PREDICTION_CAPABILITY_ID,
+  MONITORING_CAPACITY_FORECAST_CAPABILITY_ID,
+  MONITORING_FAILURE_RISK_CAPABILITY_ID,
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
@@ -51,6 +55,10 @@ import {
 export {
   MONITORING_DOMAIN_ID,
   MONITORING_DOMAIN_VERSION,
+  MONITORING_ANOMALY_DETECTION_CAPABILITY_ID,
+  MONITORING_ANOMALY_PREDICTION_CAPABILITY_ID,
+  MONITORING_CAPACITY_FORECAST_CAPABILITY_ID,
+  MONITORING_FAILURE_RISK_CAPABILITY_ID,
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
@@ -250,6 +258,38 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       intents: ['server_health'],
       requiredSlots: ['aggregation'],
       optionalSlots: ['targets', 'scope'],
+    },
+    {
+      id: MONITORING_ANOMALY_DETECTION_CAPABILITY_ID,
+      description:
+        'Route current anomaly detection requests to the Analyst evidence path.',
+      intents: ['anomaly_detection'],
+      requiredSlots: ['scope'],
+      optionalSlots: ['metric', 'targets', 'timeWindow'],
+    },
+    {
+      id: MONITORING_ANOMALY_PREDICTION_CAPABILITY_ID,
+      description:
+        'Route future anomaly signal requests to the Analyst evidence path.',
+      intents: ['anomaly_prediction'],
+      requiredSlots: ['scope'],
+      optionalSlots: ['metric', 'targets', 'timeWindow'],
+    },
+    {
+      id: MONITORING_CAPACITY_FORECAST_CAPABILITY_ID,
+      description:
+        'Route capacity saturation forecast requests to the Analyst evidence path.',
+      intents: ['capacity_forecast'],
+      requiredSlots: ['metric'],
+      optionalSlots: ['targets', 'scope', 'timeWindow'],
+    },
+    {
+      id: MONITORING_FAILURE_RISK_CAPABILITY_ID,
+      description:
+        'Route broad failure-risk screening requests to the Analyst evidence path.',
+      intents: ['failure_risk'],
+      requiredSlots: ['scope'],
+      optionalSlots: ['metric', 'targets', 'timeWindow'],
     },
   ],
 };

@@ -72,9 +72,17 @@ function resolveSemanticFrameAgent(
     semanticKey.includes('root_cause') ||
     semanticKey.includes('log_analysis') ||
     semanticKey.includes('metric_trend') ||
+    semanticKey.includes('anomaly_detection') ||
+    semanticKey.includes('anomaly_prediction') ||
+    semanticKey.includes('capacity_forecast') ||
+    semanticKey.includes('failure_risk') ||
     intent === 'root_cause' ||
     intent === 'log_analysis' ||
-    intent === 'metric_trend'
+    intent === 'metric_trend' ||
+    intent === 'anomaly_detection' ||
+    intent === 'anomaly_prediction' ||
+    intent === 'capacity_forecast' ||
+    intent === 'failure_risk'
   ) {
     return 'Analyst Agent';
   }

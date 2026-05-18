@@ -2,6 +2,8 @@
  * @vitest-environment node
  */
 
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -105,6 +107,7 @@ vi.mock('@/utils/debug', () => ({
 }));
 
 import * as routeModule from './route';
+import { INCIDENT_REPORT_ROUTE_MAX_DURATION_SECONDS } from './route-helpers';
 
 const { POST } = routeModule;
 
@@ -115,6 +118,29 @@ function createPostRequest(body: Record<string, unknown>): NextRequest {
     body: JSON.stringify(body),
   });
 }
+
+describe('/api/ai/incident-report function budget contract', () => {
+  it('keeps route maxDuration aligned with retry budget helper', () => {
+    expect(routeModule.maxDuration).toBe(
+      INCIDENT_REPORT_ROUTE_MAX_DURATION_SECONDS
+    );
+  });
+
+  it('declares explicit Vercel function override for the 60s report route', () => {
+    const vercelConfig = JSON.parse(
+      readFileSync(join(process.cwd(), 'vercel.json'), 'utf-8')
+    ) as {
+      functions?: Record<string, { memory?: number; maxDuration?: number }>;
+    };
+
+    expect(
+      vercelConfig.functions?.['src/app/api/ai/incident-report/route.ts']
+    ).toEqual({
+      memory: 256,
+      maxDuration: INCIDENT_REPORT_ROUTE_MAX_DURATION_SECONDS,
+    });
+  });
+});
 
 describe('/api/ai/incident-report POST', () => {
   beforeEach(() => {

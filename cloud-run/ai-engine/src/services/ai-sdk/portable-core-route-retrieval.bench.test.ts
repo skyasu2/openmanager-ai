@@ -150,6 +150,7 @@ describe('portable core route/tool trace replay benchmark', () => {
           escalationReasonCodes: ['incident_report_requested'],
         },
         activeTools: [
+          'detectAnomaliesAllServers',
           'findRootCause',
           'buildIncidentTimeline',
           'correlateMetrics',

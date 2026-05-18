@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-18 KST (Reporter Pipeline 품질 개선 완료)
+**Last Updated**: 2026-05-19 KST (Vercel function budget 명시화 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -114,6 +114,30 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-19) — Codex (Vercel Function Budget)
+- [x] Vercel function budget 명시화 완료
+  - `api/ai/incident-report`의 60초 함수 설정은 장애보고서 retry budget을 위한 예외로 유지하고, `vercel.json`에 explicit function override를 추가했다.
+  - route export `maxDuration`, 내부 retry budget helper, `vercel.json` override가 일치하도록 회귀 테스트를 추가했다.
+  - 검증: targeted incident-report route test, root `type-check`/`lint`/`test:quick`/`test:contract` PASS. 상세: [archive/vercel-function-budget-plan.md](archive/vercel-function-budget-plan.md)
+
+### Completed (2026-05-19) — Codex (Analyst predictTrends Load Average)
+- [x] Analyst `predictTrends` load average metric 확장 완료
+  - `metricType: "load1"`/`"load5"` 단일 예측과 `metricType: "all"` 전체 예측에 load average를 포함했다.
+  - load average는 percent 임계값으로 clamp하지 않고, 서버별 `cpuCores` 기반 `warning=cores`, `critical=cores*1.5`, `recovery=cores*0.7` 임계값을 사용한다.
+  - 검증: AI Engine targeted `analyst-tools.test.ts`, AI Engine `type-check`, AI Engine full test PASS. 상세: [archive/predict-trends-load-plan.md](archive/predict-trends-load-plan.md)
+
+### Completed (2026-05-19) — Codex (Analyst predictTrends Network)
+- [x] Analyst `predictTrends` network metric 확장 완료
+  - `metricType: "network"` 단일 예측과 `metricType: "all"` 전체 예측에 network를 포함하도록 도구 계약을 정렬했다.
+  - `currentMetrics.network`와 `history.network` 주입 경로를 회귀 테스트로 고정했다.
+  - 검증: AI Engine targeted `analyst-tools.test.ts`, AI Engine `type-check`, AI Engine full test PASS. 상세: [archive/predict-trends-network-plan.md](archive/predict-trends-network-plan.md)
+
+### Completed (2026-05-19) — Codex (Vercel NLQ Semantic Intent)
+- [x] Vercel NLQ semantic intent 확장 완료
+  - `/api/ai/nlq/extract-entities` intentFrame 계약에 `anomaly_detection`, `anomaly_prediction`, `capacity_forecast`, `failure_risk`를 추가하고 출력 한도를 320 tokens로 조정했다.
+  - Cloud Run direct semantic routing과 monitoring capability manifest가 신규 intent를 Analyst Agent 경로로 해석하도록 정렬했다.
+  - 검증: root targeted semantic tests, root `type-check`/`lint`/`test:quick`/`test:contract`, AI Engine `type-check`/full test PASS. 상세: [archive/semantic-intent-anomaly-prediction-plan.md](archive/semantic-intent-anomaly-prediction-plan.md)
 
 ### Completed (2026-05-18) — Codex (Reporter Pipeline Quality)
 - [x] Reporter Pipeline 품질 개선 T1~T6 완료

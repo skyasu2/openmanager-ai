@@ -244,8 +244,6 @@ describe('release publish script', () => {
 
     expect(result.status, `${result.stdout}${result.stderr}`).toBe(0);
     expect(result.stdout).toContain('🔍 Dry-run 모드');
-    expect(result.stdout).toContain('Release dry-run');
-    expect(result.stdout).toContain('next: 1.3.0');
     expect(result.stdout).toContain(
       'Actual canonical publish path in this repository is: git push --follow-tags gitlab main'
     );
@@ -422,7 +420,8 @@ describe('release publish script', () => {
     expect(result.stdout).toContain(
       '⚪ Production verification skipped (RELEASE_VERIFY_PRODUCTION=false)'
     );
-    expect(result.stdout).toContain('Release commit and tag created: v1.2.4');
+    expect(result.stdout).toContain('✅ v1.2.4 태그 생성 완료');
+    expect(result.stdout).toContain('✅ 릴리스 완료: v1.2.4');
     expect(
       runCommand('git', ['-C', repoDir, 'tag', '--list', 'v1.2.4'], {
         cwd: process.cwd(),

@@ -16,7 +16,7 @@ export interface ArtifactIntentProductionSampleCase
 
 export const artifactIntentProductionSampleCorpus = {
   sourceVersion: '2026-05-05-v1',
-  classifierRuleVersion: '2026-05-04-v1',
+  classifierRuleVersion: '2026-05-15-v1',
   cases: [
     {
       id: 'prod-qa-ir-001',

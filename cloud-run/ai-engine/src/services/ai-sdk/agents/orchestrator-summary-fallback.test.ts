@@ -883,6 +883,32 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('web-01');
   });
 
+  it('answers metric issue follow-up filters with the metric warning threshold instead of a generic summary', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+      'Metrics Query Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'web-01', status: 'online', cpu: 70, memory: 30, disk: 20, network: 10 },
+              { id: 'lb-haproxy-dc1-01', status: 'warning', cpu: 25, memory: 45, disk: 26, network: 72 },
+              { id: 'api-was-dc1-01', status: 'online', cpu: 63, memory: 44, disk: 31, network: 69 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('네트워크 사용률 70% 이상 서버 1대');
+    expect(summary).toContain('경고 임계값 기준');
+    expect(summary).toContain('lb-haproxy-dc1-01: 네트워크 72%');
+    expect(summary).toContain('인터페이스 오류, 연결 수, LB 트래픽 분산');
+    expect(summary).not.toContain('📊 서버 현황 요약');
+    expect(summary).not.toContain('api-was-dc1-01: 네트워크 69%');
+  });
+
   it('builds deterministic ascending CPU rankings and excludes offline servers', () => {
     const summary = buildDeterministicSummaryFallback(
       'CPU 사용률이 가장 낮은 서버 2대 알려줘',

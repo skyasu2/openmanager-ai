@@ -25,7 +25,10 @@ import {
   getHistoryForMetric,
   type AnomalyResultItem,
 } from './analyst-tools-shared';
-import { STATUS_THRESHOLDS } from '../config/status-thresholds';
+import {
+  buildLoadAverageThresholds,
+  STATUS_THRESHOLDS,
+} from '../config/status-thresholds';
 
 const SingleServerHistorySchema = z.object({
   cpu: z.array(z.number()).optional(),
@@ -305,24 +308,22 @@ export const detectAnomalies = tool({
               const load1 = analyzedServer.load1;
               const cores = analyzedServer.cpuCores;
 
-              // Rule: Load > Cores (Warning), Load > Cores * 1.5 (Critical)
-              const loadWarning = cores * 1.0;
-              const loadCritical = cores * 1.5;
+              const loadThreshold = buildLoadAverageThresholds(cores);
 
-              if (load1 >= loadWarning) {
-                const isLoadCritical = load1 >= loadCritical;
+              if (load1 >= loadThreshold.warning) {
+                const isLoadCritical = load1 >= loadThreshold.critical;
                 results['load_average'] = {
                   isAnomaly: true,
                   severity: isLoadCritical ? 'high' : 'medium',
                   signalStrength: 0.85,
                   currentValue: load1,
                   decisionSource: 'threshold',
-                  analysisBasis: `rule=load-threshold, value=${load1}, warning=${loadWarning}, critical=${loadCritical}`,
+                  analysisBasis: `rule=load-threshold, value=${load1}, warning=${loadThreshold.warning}, critical=${loadThreshold.critical}`,
                   rationale: [
-                    `load-warning:${load1}>=warning(${loadWarning})`,
-                    isLoadCritical ? `load-critical:${load1}>=critical(${loadCritical})` : 'load-below-critical',
+                    `load-warning:${load1}>=warning(${loadThreshold.warning})`,
+                    isLoadCritical ? `load-critical:${load1}>=critical(${loadThreshold.critical})` : 'load-below-critical',
                   ],
-                  threshold: { upper: loadWarning, lower: 0 },
+                  threshold: { upper: loadThreshold.warning, lower: 0 },
                   thresholdExceeded: true
                 };
               }

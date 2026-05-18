@@ -4,6 +4,7 @@ import { getCurrentState, type ServerSnapshot } from '../data/precomputed-state'
 import { getTrendPredictor } from '../lib/ai/monitoring/TrendPredictor';
 import { getDataCache } from '../lib/cache-layer';
 import { MAX_PREDICTION_HORIZON } from '../lib/ai/monitoring/TrendPredictor.types';
+import { buildLoadAverageThresholds } from '../config/status-thresholds';
 import {
   getCurrentSlotIndex,
   getHistoryForMetric,
@@ -11,22 +12,36 @@ import {
   type TrendResultItem,
 } from './analyst-tools-shared';
 
+const TREND_METRICS = ['cpu', 'memory', 'disk', 'network', 'load1', 'load5'] as const;
+type TrendMetric = (typeof TREND_METRICS)[number];
+
+function isLoadMetric(metric: TrendMetric): metric is 'load1' | 'load5' {
+  return metric === 'load1' || metric === 'load5';
+}
+
+function isPercentMetric(metric: TrendMetric): boolean {
+  return metric === 'cpu' || metric === 'memory' || metric === 'disk' || metric === 'network';
+}
+
 const SingleServerHistorySchema = z.object({
   cpu: z.array(z.number()).optional(),
   memory: z.array(z.number()).optional(),
   disk: z.array(z.number()).optional(),
+  network: z.array(z.number()).optional(),
+  load1: z.array(z.number()).optional(),
+  load5: z.array(z.number()).optional(),
 });
 
 export const predictTrends = tool({
   description:
-    '서버 메트릭의 단기 위험 추세를 계산합니다. 선택한 시간 범위 기준으로 투영값, 임계값 접근 가능성, 정상 복귀 가능성을 함께 제공합니다.',
+    '서버 메트릭의 단기 위험 추세를 계산합니다. CPU/Memory/Disk/Network는 percent 임계값, load1/load5는 cpuCores 기반 임계값으로 투영값, 임계값 접근 가능성, 정상 복귀 가능성을 제공합니다.',
   inputSchema: z.object({
     serverId: z
       .string()
       .optional()
       .describe('분석할 서버 ID (선택, 미입력시 첫 번째 서버)'),
     metricType: z
-      .enum(['cpu', 'memory', 'disk', 'all'])
+      .enum(['cpu', 'memory', 'disk', 'network', 'load1', 'load5', 'all'])
       .default('all')
       .describe('분석할 메트릭 타입'),
     predictionHours: z
@@ -38,6 +53,10 @@ export const predictTrends = tool({
         cpu: z.number().optional(),
         memory: z.number().optional(),
         disk: z.number().optional(),
+        network: z.number().optional(),
+        load1: z.number().optional(),
+        load5: z.number().optional(),
+        cpuCores: z.number().optional(),
       })
       .optional()
       .describe('현재 서버 메트릭 (실시간 데이터 주입용)'),
@@ -53,17 +72,24 @@ export const predictTrends = tool({
     history,
   }: {
     serverId?: string;
-    metricType: 'cpu' | 'memory' | 'disk' | 'all';
+    metricType: TrendMetric | 'all';
     predictionHours: number;
     currentMetrics?: {
       cpu?: number;
       memory?: number;
       disk?: number;
+      network?: number;
+      load1?: number;
+      load5?: number;
+      cpuCores?: number;
     };
     history?: {
       cpu?: number[];
       memory?: number[];
       disk?: number[];
+      network?: number[];
+      load1?: number[];
+      load5?: number[];
     };
   }) => {
     try {
@@ -100,11 +126,10 @@ export const predictTrends = tool({
               }
             : undefined;
 
-          const metrics = ['cpu', 'memory', 'disk'] as const;
-          const targetMetrics =
+          const targetMetrics: readonly TrendMetric[] =
             metricType === 'all'
-              ? metrics
-              : [metricType as (typeof metrics)[number]];
+              ? TREND_METRICS
+              : [metricType];
 
           interface EnhancedTrendResult extends TrendResultItem {
             currentStatus: 'online' | 'warning' | 'critical';
@@ -127,12 +152,53 @@ export const predictTrends = tool({
           const warnings: string[] = [];
           const criticalAlerts: string[] = [];
           const recoveryPredictions: string[] = [];
+          const skippedMetrics: string[] = [];
           const fixedSlot = getCurrentSlotIndex();
 
           for (const metric of targetMetrics) {
             const currentValue = analyzedServer[
               metric as keyof typeof analyzedServer
-            ] as number;
+            ] as number | undefined;
+            if (typeof currentValue !== 'number' || !Number.isFinite(currentValue)) {
+              if (metricType !== 'all') {
+                return {
+                  success: false,
+                  error: `메트릭 값을 찾을 수 없습니다: ${metric}`,
+                  systemMessage: `TOOL_EXECUTION_FAILED: ${metric} 현재값이 없어 트렌드 예측에 실패했습니다.`,
+                  suggestedAgentAction: `${metric} 메트릭이 수집되는 서버인지 확인하고, 가능하면 currentMetrics.${metric} 값을 포함해 다시 호출하세요.`,
+                };
+              }
+              skippedMetrics.push(`${metric}:missing-current-value`);
+              continue;
+            }
+
+            const thresholdOverride = isLoadMetric(metric)
+              ? (() => {
+                  const cpuCores = analyzedServer.cpuCores;
+                  if (
+                    typeof cpuCores !== 'number' ||
+                    !Number.isFinite(cpuCores) ||
+                    cpuCores <= 0
+                  ) {
+                    return null;
+                  }
+                  return buildLoadAverageThresholds(cpuCores);
+                })()
+              : undefined;
+
+            if (thresholdOverride === null) {
+              if (metricType !== 'all') {
+                return {
+                  success: false,
+                  error: `load average 해석에 필요한 cpuCores 값을 찾을 수 없습니다: ${metric}`,
+                  systemMessage: `TOOL_EXECUTION_FAILED: ${metric} 예측에는 서버별 cpuCores 값이 필요합니다.`,
+                  suggestedAgentAction: '서버의 CPU 코어 수를 확인하거나 currentMetrics.cpuCores 값을 포함해 다시 호출하세요.',
+                };
+              }
+              skippedMetrics.push(`${metric}:missing-cpu-cores`);
+              continue;
+            }
+
             const historyPoints = getHistoryForMetric(
               analyzedServer.id,
               metric,
@@ -141,21 +207,27 @@ export const predictTrends = tool({
               externalHistory
             );
             const trendHistory = toTrendDataPoints(historyPoints);
-            const prediction = predictor.predictEnhanced(
-              trendHistory,
-              metric,
-              predictionHorizonMs
-            );
+            const prediction = thresholdOverride
+              ? predictor.predictEnhanced(
+                  trendHistory,
+                  metric,
+                  predictionHorizonMs,
+                  thresholdOverride
+                )
+              : predictor.predictEnhanced(
+                  trendHistory,
+                  metric,
+                  predictionHorizonMs
+                );
 
-            const clampedPrediction = Math.max(
-              0,
-              Math.min(100, prediction.prediction)
-            );
+            const projectedValue = isPercentMetric(metric)
+              ? Math.max(0, Math.min(100, prediction.prediction))
+              : Math.max(0, prediction.prediction);
 
             results[metric] = {
               trend: prediction.trend,
               currentValue,
-              projectedValue: Math.round(clampedPrediction * 100) / 100,
+              projectedValue: Math.round(projectedValue * 100) / 100,
               changePercent:
                 Math.round(prediction.details.predictedChangePercent * 100) / 100,
               signalStrength: Math.round(prediction.confidence * 100) / 100,
@@ -214,6 +286,7 @@ export const predictTrends = tool({
               warnings,
               criticalAlerts,
               recoveryPredictions,
+              skippedMetrics,
             },
             message,
             timestamp: new Date().toISOString(),
