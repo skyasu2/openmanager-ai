@@ -435,6 +435,19 @@ function buildMonitoringRecommendation(
   const priority = toIncidentPriority(evidence.severity);
 
   if (
+    summary.includes('hikaripool') ||
+    summary.includes('connection pool') ||
+    summary.includes('db connection') ||
+    summary.includes('sqltransientconnectionexception')
+  ) {
+    return {
+      action: `${evidence.serverId} HikariPool/DB 커넥션풀 타임아웃 확인\n명령어: \`journalctl -xe --no-pager | grep -Ei "HikariPool|SQLTransientConnectionException|connection timeout" | tail -50\``,
+      priority,
+      expected_impact: 'WAS DB 연결 대기, 커넥션풀 고갈, DB 지연 전파 여부 확인',
+    };
+  }
+
+  if (
     summary.includes('mysql') ||
     summary.includes('mysqld') ||
     summary.includes('innodb')
@@ -465,6 +478,71 @@ function buildMonitoringRecommendation(
     priority,
     expected_impact: '이상 징후 발생 시점의 시스템 로그 확인',
   };
+}
+
+function buildMonitoringCausalHypotheses(
+  timelineEvents: NonNullable<MonitoringGroundingForReport['timeline']>['events'],
+  evidenceRefs: MonitoringEvidenceRef[]
+): string[] {
+  const texts = [
+    ...timelineEvents.map(
+      (event) => `${event.serverId ?? ''} ${event.description}`
+    ),
+    ...evidenceRefs.map(
+      (evidence) => `${evidence.serverId ?? ''} ${evidence.summary}`
+    ),
+  ].map((text) => text.toLowerCase());
+
+  const hasDbIoSignal = texts.some(
+    (text) =>
+      (text.includes('db-') ||
+        text.includes('mysql') ||
+        text.includes('mysqld') ||
+        text.includes('innodb')) &&
+      (text.includes('disk') ||
+        text.includes('fsync') ||
+        text.includes('i/o') ||
+        text.includes('io latency') ||
+        text.includes('write') ||
+        text.includes('nfs'))
+  );
+  const hasHikariSignal = texts.some(
+    (text) =>
+      text.includes('hikaripool') ||
+      text.includes('connection pool') ||
+      text.includes('db connection') ||
+      text.includes('sqltransientconnectionexception')
+  );
+  const hasDownstreamLatency = texts.some(
+    (text) =>
+      text.includes('downstream') ||
+      text.includes('transaction latency') ||
+      text.includes('latency') ||
+      text.includes('timeout')
+  );
+  const hasStorageSignal = texts.some(
+    (text) =>
+      text.includes('nfs') ||
+      text.includes('minio') ||
+      text.includes('mount') ||
+      text.includes('upload stalled') ||
+      text.includes('backup')
+  );
+
+  const hypotheses: string[] = [];
+  if (hasDbIoSignal && hasHikariSignal) {
+    hypotheses.push(
+      hasDownstreamLatency
+        ? 'DB 디스크 I/O 지연이 WAS HikariPool 연결 대기/타임아웃으로 전파된 정황이 있습니다. 인과 체인: DB 디스크/fsync 지연 → WAS DB 커넥션풀 고갈/대기 증가 → downstream transaction 지연.'
+        : 'DB 디스크 I/O 지연이 WAS HikariPool 연결 대기/타임아웃으로 전파된 정황이 있습니다. 인과 체인: DB 디스크/fsync 지연 → WAS DB 커넥션풀 고갈/대기 증가.'
+    );
+  } else if (hasStorageSignal && hasDbIoSignal) {
+    hypotheses.push(
+      '스토리지/NFS 지연이 DB 쓰기 지연으로 이어진 정황이 있습니다. 인과 체인: 스토리지 I/O 지연 → DB write/fsync 대기 증가 → 상위 서비스 응답 지연.'
+    );
+  }
+
+  return hypotheses;
 }
 
 function mergeAffectedServerSummaries(
@@ -558,6 +636,10 @@ function enrichWithMonitoringGrounding(
       (recommendation): recommendation is IncidentRecommendation =>
         recommendation !== null
     );
+  const causalHypotheses = buildMonitoringCausalHypotheses(
+    notableTimelineEvents,
+    notableEvidenceRefs
+  );
   const severity = [...notableEvidenceRefs, ...notableTimelineEvents].reduce(
     (current, item) => maxSeverity(current, item.severity),
     data.severity
@@ -620,13 +702,22 @@ function enrichWithMonitoringGrounding(
         ...monitoringPostmortemTimeline,
       ]),
       hypotheses:
-        data.postmortem.hypotheses.length === 1 &&
-        data.postmortem.hypotheses[0] ===
-          '수집된 이상 징후를 기준으로 추가 원인 분석이 필요합니다.'
-          ? [
-              '로그 타임라인에서 warning/critical 이벤트가 확인되어 스토리지 I/O 또는 서비스 지연 가능성을 우선 확인해야 합니다.',
-            ]
-          : data.postmortem.hypotheses,
+        causalHypotheses.length > 0
+          ? uniqueStrings([
+              ...causalHypotheses,
+              ...data.postmortem.hypotheses.filter(
+                (hypothesis) =>
+                  hypothesis !==
+                  '수집된 이상 징후를 기준으로 추가 원인 분석이 필요합니다.'
+              ),
+            ])
+          : data.postmortem.hypotheses.length === 1 &&
+              data.postmortem.hypotheses[0] ===
+                '수집된 이상 징후를 기준으로 추가 원인 분석이 필요합니다.'
+            ? [
+                '로그 타임라인에서 warning/critical 이벤트가 확인되어 스토리지 I/O 또는 서비스 지연 가능성을 우선 확인해야 합니다.',
+              ]
+            : data.postmortem.hypotheses,
       prevention:
         monitoringRecommendations.length > 0
           ? mergeIncidentRecommendations(

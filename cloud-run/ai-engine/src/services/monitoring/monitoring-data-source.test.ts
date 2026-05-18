@@ -203,6 +203,36 @@ describe('MonitoringDataSource', () => {
     });
   });
 
+  it('orders incident timeline events inside the slot instead of flattening every log timestamp', async () => {
+    const source = createMonitoringDataSource({ mode: 'replay-json' });
+
+    const result = await source.buildIncidentTimeline({
+      serverId: 'api-was-dc1-01',
+      limit: 5,
+      queryAsOf: {
+        createdAt: '2026-04-30T00:00:00.000Z',
+        source: 'vercel-static-otel',
+        datasetVersion: '24h-rotating-v1.0.0',
+        dataSlot: {
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        },
+      },
+    });
+
+    expect(result.events).toEqual([
+      expect.objectContaining({
+        eventType: 'metric',
+        timestamp: '2026-04-29T22:00:00.000Z',
+      }),
+      expect.objectContaining({
+        eventType: 'log',
+        timestamp: '2026-04-29T22:01:00.000Z',
+      }),
+    ]);
+  });
+
   it('anchors metric series to the requested queryAsOf slot', async () => {
     const source = createMonitoringDataSource({ mode: 'replay-json' });
 

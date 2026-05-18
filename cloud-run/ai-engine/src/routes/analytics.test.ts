@@ -148,6 +148,71 @@ const { mockMonitoringSource, MockMonitoringDataSourceError } = vi.hoisted(() =>
   };
 });
 
+const { mockExecuteReporterPipeline } = vi.hoisted(() => ({
+  mockExecuteReporterPipeline: vi.fn(async () => ({
+    success: true,
+    report: {
+      title: 'Reporter pipeline baseline',
+      summary:
+        'DB 디스크 I/O 지연이 API WAS HikariPool timeout으로 전파된 정황',
+      affectedServers: [
+        {
+          id: 'api-was-dc1-01',
+          name: 'api-was-dc1-01',
+          status: 'warning',
+          primaryIssue: 'CPU 87.3%',
+        },
+      ],
+      timeline: [
+        {
+          timestamp: '2026-04-30T00:00:00.000Z',
+          eventType: 'threshold_breach',
+          severity: 'warning',
+          description: 'api-was-dc1-01 CPU 87.3%',
+        },
+      ],
+      rootCause: {
+        cause: 'DB I/O latency propagated to API WAS',
+        confidence: 0.82,
+        evidence: ['HikariPool timeout', 'fsync latency'],
+        suggestedFix: 'DB I/O와 WAS 커넥션풀을 함께 확인',
+      },
+      suggestedActions: [
+        'DB I/O 대기 확인\n명령어: `iostat -xz 1 5`',
+      ],
+      warnings: [],
+      predictions: [],
+      sla: {
+        targetUptime: 99.9,
+        actualUptime: 98.5,
+        slaViolation: false,
+      },
+    },
+    quality: {
+      initialScore: 0.74,
+      finalScore: 0.82,
+      iterations: 2,
+    },
+    metadata: {
+      durationMs: 12,
+      agentsUsed: ['Reporter Agent'],
+      pipelineStages: [
+        {
+          stage: 'reporter',
+          label: 'Reporter Agent',
+          execution: 'deterministic',
+        },
+        {
+          stage: 'evaluator',
+          label: 'Reporter Pipeline: evaluator stage',
+          execution: 'deterministic',
+        },
+      ],
+      optimizationsApplied: ['근본원인 분석 심화'],
+    },
+  })),
+}));
+
 vi.mock('../lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
@@ -252,6 +317,10 @@ vi.mock('../services/ai-sdk/agents/agent-factory', () => ({
   AgentFactory: {
     isAvailable: vi.fn(() => true),
   },
+}));
+
+vi.mock('../services/ai-sdk/agents/reporter-pipeline', () => ({
+  executeReporterPipeline: mockExecuteReporterPipeline,
 }));
 
 vi.mock('../services/monitoring/monitoring-data-source', () => ({
@@ -576,9 +645,20 @@ describe('Analytics Routes', () => {
         name: 'incident_report',
         schema: expect.any(Object),
       });
+      expect(generateTextInput?.maxOutputTokens).toBe(3072);
       expect(prompt).toContain('Monitoring evidenceRefs');
-      expect(prompt).toContain('작성 필드');
+      expect(prompt).toContain('인과 체인');
+      expect(prompt).toContain('Reporter pipeline baseline');
       expect(prompt).not.toContain('```json');
+      expect(mockExecuteReporterPipeline).toHaveBeenCalledWith(
+        expect.stringContaining('CPU 경고 보고서 생성'),
+        expect.objectContaining({
+          dataSource: expect.any(Object),
+          domainId: 'monitoring',
+          maxIterations: 2,
+          qualityThreshold: 0.75,
+        })
+      );
     });
 
     it('Reporter Agent 사용 불가 시 fallback을 반환한다', async () => {

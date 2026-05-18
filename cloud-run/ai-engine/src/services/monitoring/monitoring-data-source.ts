@@ -503,17 +503,35 @@ function collectLogs(
   slotMeta: MonitoringSlotMetadata
 ): MonitoringLogResult['logs'] {
   const logs: MonitoringLogResult['logs'] = [];
+  let slotLocalLogIndex = 0;
   for (const [serverId, serverLogs] of Object.entries(slot.serverLogs ?? {})) {
     for (const log of serverLogs) {
+      slotLocalLogIndex += 1;
       logs.push({
         ...log,
         serverId,
         severity: logLevelToSeverity(log.level),
-        timestamp: slotMeta.startTime,
+        timestamp: buildSlotLocalLogTimestamp(
+          slotMeta.startTime,
+          slotLocalLogIndex
+        ),
       });
     }
   }
   return logs.sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
+}
+
+function buildSlotLocalLogTimestamp(
+  slotStartTime: string,
+  logIndex: number
+): string {
+  const startTime = Date.parse(slotStartTime);
+  if (!Number.isFinite(startTime)) {
+    return slotStartTime;
+  }
+
+  const offsetMinutes = Math.min(Math.max(logIndex, 1), 9);
+  return new Date(startTime + offsetMinutes * 60 * 1000).toISOString();
 }
 
 function logToEvidence(
@@ -530,7 +548,7 @@ function logToEvidence(
     kind: 'log',
     serverId: log.serverId,
     timeRange: {
-      from: slot.startTime,
+      from: log.timestamp,
       to: slot.endTime,
     },
     summary: `${log.serverId} ${log.source}: ${log.message}`,

@@ -414,6 +414,116 @@ describe('extractToolBasedData', () => {
     expect(actions).toContain('MySQL/InnoDB 지연 로그 확인');
     expect(actions).not.toContain('서버 리소스 업그레이드');
   });
+
+  it('DB I/O와 WAS HikariPool 로그를 인과 체인 가설로 묶는다', () => {
+    const result = extractToolBasedData(
+      {
+        success: true,
+        totalServers: 18,
+        anomalies: [],
+        hasAnomalies: false,
+        anomalyCount: 0,
+        summary: {
+          totalServers: 18,
+          onlineCount: 18,
+          warningCount: 0,
+          criticalCount: 0,
+        },
+      },
+      null,
+      null,
+      undefined,
+      {
+        evidenceRefs: [
+          {
+            id: 'evidence-db-fsync',
+            kind: 'log',
+            serverId: 'db-mysql-dc1-primary',
+            timeRange: {
+              from: '2026-05-18T16:20:00.000Z',
+              to: '2026-05-18T16:21:00.000Z',
+            },
+            summary:
+              'db-mysql-dc1-primary mysqld: InnoDB fsync latency 2255ms with disk 83%',
+            value: 83,
+            threshold: 80,
+            severity: 'warning',
+          },
+          {
+            id: 'evidence-hikari-timeout',
+            kind: 'log',
+            serverId: 'api-was-dc1-01',
+            timeRange: {
+              from: '2026-05-18T16:21:00.000Z',
+              to: '2026-05-18T16:22:00.000Z',
+            },
+            summary:
+              'api-was-dc1-01 java: HikariPool DB connection timeout after 1317ms',
+            severity: 'critical',
+          },
+          {
+            id: 'evidence-downstream-latency',
+            kind: 'log',
+            serverId: 'api-was-dc1-03',
+            timeRange: {
+              from: '2026-05-18T16:22:00.000Z',
+              to: '2026-05-18T16:23:00.000Z',
+            },
+            summary:
+              'api-was-dc1-03 java: downstream transaction latency 1753ms',
+            severity: 'warning',
+          },
+        ],
+        timeline: {
+          sourceMode: 'replay-json',
+          events: [
+            {
+              timestamp: '2026-05-18T16:20:00.000Z',
+              serverId: 'db-mysql-dc1-primary',
+              severity: 'warning',
+              eventType: 'log',
+              description:
+                'db-mysql-dc1-primary mysqld: InnoDB fsync latency 2255ms with disk 83%',
+              evidenceRefId: 'evidence-db-fsync',
+            },
+            {
+              timestamp: '2026-05-18T16:21:00.000Z',
+              serverId: 'api-was-dc1-01',
+              severity: 'critical',
+              eventType: 'log',
+              description:
+                'api-was-dc1-01 java: HikariPool DB connection timeout after 1317ms',
+              evidenceRefId: 'evidence-hikari-timeout',
+            },
+            {
+              timestamp: '2026-05-18T16:22:00.000Z',
+              serverId: 'api-was-dc1-03',
+              severity: 'warning',
+              eventType: 'log',
+              description:
+                'api-was-dc1-03 java: downstream transaction latency 1753ms',
+              evidenceRefId: 'evidence-downstream-latency',
+            },
+          ],
+          evidenceRefs: [],
+        },
+      }
+    );
+
+    expect(result.postmortem.hypotheses).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining(
+          'DB 디스크 I/O 지연이 WAS HikariPool 연결 대기/타임아웃으로 전파'
+        ),
+      ])
+    );
+    expect(result.postmortem.hypotheses.join('\n')).toContain(
+      'downstream transaction 지연'
+    );
+    expect(result.recommendations.map((item) => item.action).join('\n')).toContain(
+      'HikariPool'
+    );
+  });
 });
 
 describe('mergeIncidentRecommendations', () => {
