@@ -140,6 +140,16 @@
       "type": "playwright-console",
       "label": "Production session console log on v8.11.20",
       "path": "reports/qa/evidence/qa-20260418-session-console.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Network log v8.11.20",
+      "path": "reports/qa/evidence/qa-20260418-network.txt"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Broad QA summary v8.12.0",
+      "path": "reports/qa/evidence/qa-20260418-v8120-broad-summary.md"
     }
   ],
   "completedImprovements": [

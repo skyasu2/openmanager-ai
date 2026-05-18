@@ -34818,6 +34818,16 @@
           "type": "playwright-console",
           "label": "Production session console log on v8.11.20",
           "path": "reports/qa/evidence/qa-20260418-session-console.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Network log v8.11.20",
+          "path": "reports/qa/evidence/qa-20260418-network.txt"
+        },
+        {
+          "type": "playwright-report",
+          "label": "Broad QA summary v8.12.0",
+          "path": "reports/qa/evidence/qa-20260418-v8120-broad-summary.md"
         }
       ],
       "links": [
@@ -35359,6 +35369,26 @@
           "type": "playwright-screenshot",
           "label": "AI sidebar response",
           "path": "reports/qa/evidence/qa-20260419-broad-ai-sidebar-v823.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Modal alerts tab",
+          "path": "reports/qa/evidence/qa-20260419-modal-alerts.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Modal logs tab",
+          "path": "reports/qa/evidence/qa-20260419-modal-logs.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Modal performance tab",
+          "path": "reports/qa/evidence/qa-20260419-modal-performance.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Modal server detail",
+          "path": "reports/qa/evidence/qa-20260419-modal-server-detail.png"
         }
       ],
       "links": [
@@ -47657,6 +47687,16 @@
           "type": "playwright-report",
           "label": "v8.11.112 AI Assistant scroll and user-mode internal disclosure evidence",
           "path": "reports/qa/evidence/qa-20260507-v811112-ai-scroll-internal-disclosure.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant scroll desktop 1440px",
+          "path": "reports/qa/evidence/qa-20260507-v811112-ai-assistant-scroll-desktop-1440.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant scroll mobile 390px",
+          "path": "reports/qa/evidence/qa-20260507-v811112-ai-assistant-scroll-mobile-390.png"
         }
       ],
       "links": [
@@ -48153,6 +48193,61 @@
           "type": "playwright-screenshot",
           "label": "토폴로지",
           "path": "reports/qa/evidence/qa-20260508-topology.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI chat bottom",
+          "path": "reports/qa/evidence/qa-20260508-ai-chat-bottom.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI chat scroll",
+          "path": "reports/qa/evidence/qa-20260508-ai-chat-scroll.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI question sent",
+          "path": "reports/qa/evidence/qa-20260508-ai-question-sent.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Anomaly tab",
+          "path": "reports/qa/evidence/qa-20260508-anomaly-tab.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard charts",
+          "path": "reports/qa/evidence/qa-20260508-dashboard-charts.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Nivo chart visible",
+          "path": "reports/qa/evidence/qa-20260508-nivo-chart-visible.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Nivo timeseries",
+          "path": "reports/qa/evidence/qa-20260508-nivo-timeseries.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Performance tab",
+          "path": "reports/qa/evidence/qa-20260508-perf-tab.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter tab",
+          "path": "reports/qa/evidence/qa-20260508-reporter-tab.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Server detail",
+          "path": "reports/qa/evidence/qa-20260508-server-detail.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Server Nivo chart",
+          "path": "reports/qa/evidence/qa-20260508-server-nivo-chart.png"
         }
       ],
       "links": [],
@@ -57992,7 +58087,12 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "no-screenshot-taken",
+        "reason": "chrome-devtools-mcp QA — snapshot/screenshot not captured; textual checks sufficient for this session"
+      }
     },
     {
       "runId": "QA-20260518-0517",

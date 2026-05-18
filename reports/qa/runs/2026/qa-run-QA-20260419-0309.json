@@ -132,6 +132,26 @@
       "type": "playwright-screenshot",
       "label": "AI sidebar response",
       "path": "reports/qa/evidence/qa-20260419-broad-ai-sidebar-v823.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Modal alerts tab",
+      "path": "reports/qa/evidence/qa-20260419-modal-alerts.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Modal logs tab",
+      "path": "reports/qa/evidence/qa-20260419-modal-logs.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Modal performance tab",
+      "path": "reports/qa/evidence/qa-20260419-modal-performance.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Modal server detail",
+      "path": "reports/qa/evidence/qa-20260419-modal-server-detail.png"
     }
   ],
   "completedImprovements": [

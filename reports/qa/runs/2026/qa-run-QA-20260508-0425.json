@@ -109,6 +109,61 @@
       "type": "playwright-screenshot",
       "label": "토폴로지",
       "path": "reports/qa/evidence/qa-20260508-topology.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI chat bottom",
+      "path": "reports/qa/evidence/qa-20260508-ai-chat-bottom.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI chat scroll",
+      "path": "reports/qa/evidence/qa-20260508-ai-chat-scroll.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI question sent",
+      "path": "reports/qa/evidence/qa-20260508-ai-question-sent.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Anomaly tab",
+      "path": "reports/qa/evidence/qa-20260508-anomaly-tab.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard charts",
+      "path": "reports/qa/evidence/qa-20260508-dashboard-charts.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Nivo chart visible",
+      "path": "reports/qa/evidence/qa-20260508-nivo-chart-visible.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Nivo timeseries",
+      "path": "reports/qa/evidence/qa-20260508-nivo-timeseries.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Performance tab",
+      "path": "reports/qa/evidence/qa-20260508-perf-tab.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter tab",
+      "path": "reports/qa/evidence/qa-20260508-reporter-tab.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server detail",
+      "path": "reports/qa/evidence/qa-20260508-server-detail.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server Nivo chart",
+      "path": "reports/qa/evidence/qa-20260508-server-nivo-chart.png"
     }
   ],
   "completedImprovements": [],

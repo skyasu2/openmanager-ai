@@ -105,6 +105,16 @@
       "type": "playwright-report",
       "label": "v8.11.112 AI Assistant scroll and user-mode internal disclosure evidence",
       "path": "reports/qa/evidence/qa-20260507-v811112-ai-scroll-internal-disclosure.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI assistant scroll desktop 1440px",
+      "path": "reports/qa/evidence/qa-20260507-v811112-ai-assistant-scroll-desktop-1440.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI assistant scroll mobile 390px",
+      "path": "reports/qa/evidence/qa-20260507-v811112-ai-assistant-scroll-mobile-390.png"
     }
   ],
   "completedImprovements": [

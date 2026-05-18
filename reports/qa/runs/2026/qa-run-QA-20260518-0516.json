@@ -100,5 +100,10 @@
   "deferredImprovements": [],
   "wontFixImprovements": [],
   "notes": [],
-  "links": []
+  "links": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "no-screenshot-taken",
+    "reason": "chrome-devtools-mcp QA — snapshot/screenshot not captured; textual checks sufficient for this session"
+  }
 }

@@ -13,7 +13,7 @@ const MIB = 1024 * 1024;
 const STORAGE_DEFAULTS = {
   qaWarnBytes: toBytesFromEnv('QA_AUDIT_QA_WARN_MB', 100),
   runsWarnBytes: toBytesFromEnv('QA_AUDIT_RUNS_WARN_MB', 70),
-  evidenceWarnBytes: toBytesFromEnv('QA_AUDIT_EVIDENCE_WARN_MB', 40),
+  evidenceWarnBytes: toBytesFromEnv('QA_AUDIT_EVIDENCE_WARN_MB', 120),
   largeFileWarnBytes: toBytesFromEnv('QA_AUDIT_LARGE_FILE_MB', 8),
   runArtifactWarnBytes: toBytesFromEnv('QA_AUDIT_RUN_ARTIFACT_WARN_MB', 4),
   artifactFileWarnBytes: toBytesFromEnv('QA_AUDIT_ARTIFACT_FILE_WARN_MB', 1.5),
