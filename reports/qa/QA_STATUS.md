@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-18 10:37:13 KST
+> Generated at: 2026-05-18 13:12:36 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 519 |
-| Total Runs (Counted) | 413 |
+| Total Recorded Runs | 520 |
+| Total Runs (Counted) | 414 |
 | Non-counted Runs | 106 |
-| Total Checks | 3726 |
-| Passed | 3581 |
+| Total Checks | 3738 |
+| Passed | 3593 |
 | Failed | 134 |
 | Completed Items | 592 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 15 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260518-0519 (2026-05-18T00:54:54.418Z) |
-| Latest Recorded Run | QA-20260518-0521 (2026-05-18T01:37:12.860Z) |
+| Last Counted Run | QA-20260518-0522 (2026-05-18T04:12:29.303Z) |
+| Latest Recorded Run | QA-20260518-0522 (2026-05-18T04:12:29.303Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,38 +34,39 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260518-0521 (2026-05-18T01:37:12.860Z)
+Latest run: QA-20260518-0522 (2026-05-18T04:12:29.303Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| SRE / Deployment | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
-| Free Tier Cost Guard | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| gcp-cloud-run | gcloud | checked | normal | Cloud Run ai-engine revision ai-engine-00481-8cl is Ready with 100% traffic, 1 CPU / 512Mi, and no current-revision ERROR logs after deployment. |
-| gcp-cloud-build | gcloud | checked | normal | Latest 20 builds are SUCCESS and last 200 builds have no explicit options.machineType value. |
+| vercel | cli | checked | normal | Current period effective $10.7667, billed $0.0000; no unexpected billed usage observed during production QA. |
+| gcp-cloud-run | gcloud | checked | normal | Cloud Run ai-engine revision ai-engine-00483-42j is Ready with 100% traffic, 1 CPU / 512Mi, maxScale 1. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-17T01:37:12.860Z -> 2026-05-18T01:37:12.860Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 5
+- Window: 2026-05-17T04:12:29.303Z -> 2026-05-18T04:12:29.303Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 8
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Reporter Agent | cloud-run | 2 | 16371ms | 30498ms | - | - | 15854ms | 29753ms | QA-20260518-0522 |
 | Supervisor/Monitoring Agent | openmanager-ai-engine | 1 | 7471ms | 7471ms | - | - | 130ms | 130ms | QA-20260517-0512 |
 | Reporter Agent | openmanager-ai-engine | 1 | 4870ms | 4870ms | - | - | 1531ms | 1531ms | QA-20260517-0512 |
 | Reporter | streaming-ai | 1 | 3000ms | 3000ms | - | - | - | - | QA-20260518-0516 |
 | NLQ | streaming-ai | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260518-0516 |
 | Analyst Agent | openmanager-ai-engine | 1 | 303ms | 303ms | - | - | 303ms | 303ms | QA-20260517-0512 |
+| Health Check | cloud-run | 1 | 129ms | 129ms | - | - | - | - | QA-20260518-0522 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-17T01:37:12.860Z -> 2026-05-18T01:37:12.860Z (24h)
+- Window: 2026-05-17T04:12:29.303Z -> 2026-05-18T04:12:29.303Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -76,26 +77,27 @@ Latest run: QA-20260518-0521 (2026-05-18T01:37:12.860Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: ai-engine-00481-8cl / SHA c14fc685
-- Coverage Packs: observability-pack, ai-core
-- Covered Surfaces: Google Cloud Run ai-engine service describe, Cloud Run latest revision and 100% traffic, Cloud Run direct /health, Cloud Run protected /monitoring unauthenticated guard, Cloud Run current revision ERROR log scan, Cloud Run resource limit cost guard, Cloud Build machineType cost guard, Vercel /api/health frontend-to-ai connectivity, Vercel /api/version deployment metadata, Recent commit scope vs Cloud Run deploy necessity
-- Skipped Surfaces: live conversational AI prompt rerun, Cloud Run authenticated /monitoring details, Cloud Tasks queue dispatch replay, mobile responsive matrix
+- Scope: release-gate
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_6vJBFjs5zyp5P3TtaVWoP7hskWFi / SHA eace7809
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: Vercel /api/version, Vercel /api/health, GitLab v8.11.171 release pipeline, Cloud Run ai-engine service describe, Cloud Run /health, Cloud Run direct /api/ai/incident-report, Authenticated Vercel /api/ai/incident-report, Dashboard AI engine status indicator, Reporter structured-output parse fallback, Vercel usage check
+- Skipped Surfaces: Full visual regression pack, Unauthenticated Vercel incident-report success path
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run ai-engine | [Cloud Run ai-engine](https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine) | - |
-| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
+| general | GitLab release pipeline 2532578122 | [GitLab release pipeline 2532578122](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532578122) | - |
+| monitoring | Cloud Run ai-engine service | [Cloud Run ai-engine service](https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/dpl_6vJBFjs5zyp5P3TtaVWoP7hskWFi) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Cloud Run weekly operational check | `reports/qa/evidence/qa-20260518-cloud-run-weekly-operational-check.md` | - |
+| playwright-console | Reporter Cloud Run verification evidence | `reports/qa/evidence/qa-20260518-v811171-reporter-cloudrun-verification.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -780,6 +782,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260518-0522 | 2026-05-18T04:12:29.303Z | release-gate | yes | yes | v8.11.171 Reporter Cloud Run Production Verification | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0521 | 2026-05-18T01:37:12.860Z | targeted | no | no | Cloud Run Weekly Operational Check | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0520 | 2026-05-18T01:15:27.412Z | targeted | no | no | v8.11.169 Current Vercel Playwright MCP Rerun | 20 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0519 | 2026-05-18T00:54:54.418Z | targeted | yes | yes | v8.11.169 Current Vercel Playwright MCP Check | 16 | 0 | 0 | 0 | 0 | 0 |
@@ -799,4 +802,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260515-0505 | 2026-05-15T06:50:53.160Z | targeted | no | yes | Supabase Live QA - KRL Legacy GraphRAG Inventory Removal | 29 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260515-0504 | 2026-05-15T06:36:37.546Z | targeted | no | yes | Local Playwright QA - KRL EvidenceCards Source Rendering | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260515-0503 | 2026-05-14T18:50:43.003Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.153 Follow-up Improvements | 12 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260514-0502 | 2026-05-14T13:48:56.400Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.150 Artifact UX Closure | 12 | 5 | 0 | 0 | 0 | 0 |

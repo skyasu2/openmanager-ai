@@ -1,0 +1,144 @@
+{
+  "runId": "QA-20260518-0522",
+  "recordedAt": "2026-05-18T04:12:29.303Z",
+  "recordedAtKst": "2026-05-18 13:12:29 KST",
+  "runTitle": "v8.11.171 Reporter Cloud Run Production Verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_6vJBFjs5zyp5P3TtaVWoP7hskWFi",
+    "deploymentUrl": "https://openmanager-jvt6fy6hi-skyasus-projects.vercel.app",
+    "commitSha": "eace78090f6b717441a1d7a30eea5ad01d49341c"
+  },
+  "scope": "release-gate",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "Vercel /api/version",
+    "Vercel /api/health",
+    "GitLab v8.11.171 release pipeline",
+    "Cloud Run ai-engine service describe",
+    "Cloud Run /health",
+    "Cloud Run direct /api/ai/incident-report",
+    "Authenticated Vercel /api/ai/incident-report",
+    "Dashboard AI engine status indicator",
+    "Reporter structured-output parse fallback",
+    "Vercel usage check"
+  ],
+  "skippedSurfaces": [
+    "Full visual regression pack",
+    "Unauthenticated Vercel incident-report success path"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Cloud Run direct Reporter",
+      "agent": "Reporter Agent",
+      "provider": "cloud-run",
+      "model": "gpt-oss-120b",
+      "route": "/api/ai/incident-report",
+      "source": "curl timing + response payload",
+      "latencyMs": 2244,
+      "processingTimeMs": 1954
+    },
+    {
+      "surface": "Authenticated Vercel Reporter",
+      "agent": "Reporter Agent",
+      "provider": "cloud-run",
+      "model": "gpt-oss-120b",
+      "route": "/api/ai/incident-report",
+      "source": "Playwright page fetch + X-AI-Latency-Ms",
+      "latencyMs": 30498,
+      "processingTimeMs": 29753
+    },
+    {
+      "surface": "Dashboard AI engine status indicator",
+      "agent": "Health Check",
+      "provider": "cloud-run",
+      "model": "health",
+      "route": "/api/health?service=ai&soft=true",
+      "source": "Playwright DOM title",
+      "latencyMs": 129
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Reporter structured-output drift now returns a successful Cloud Run tool-based report instead of a frontend fallback failure.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel and Cloud Run are aligned on v8.11.171, GitLab release pipeline completed, and Cloud Run keeps free-tier resource limits.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T13:10:14+09:00",
+      "summary": "Current period effective $10.7667, billed $0.0000; no unexpected billed usage observed during production QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "gcloud",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T13:06:00+09:00",
+      "summary": "Cloud Run ai-engine revision ai-engine-00483-42j is Ready with 100% traffic, 1 CPU / 512Mi, maxScale 1.",
+      "evidence": "gcloud run services describe ai-engine --region asia-northeast1",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Reporter Cloud Run verification evidence",
+      "path": "reports/qa/evidence/qa-20260518-v811171-reporter-cloudrun-verification.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2532578122",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532578122"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine service",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/dpl_6vJBFjs5zyp5P3TtaVWoP7hskWFi"
+    }
+  ]
+}
