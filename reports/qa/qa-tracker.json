@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T00:32:15.109Z"
+    "updatedAt": "2026-05-18T00:54:54.418Z"
   },
   "sequence": {
-    "nextRunNumber": 519
+    "nextRunNumber": 520
   },
   "summary": {
-    "totalRecordedRuns": 516,
-    "totalRuns": 412,
+    "totalRecordedRuns": 517,
+    "totalRuns": 413,
     "excludedRuns": 104,
-    "totalChecks": 3710,
-    "totalPassed": 3565,
+    "totalChecks": 3726,
+    "totalPassed": 3581,
     "totalFailed": 134,
     "completionRate": 100,
     "completedItems": 592,
@@ -21,10 +21,10 @@
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0518",
-    "lastRecordedAt": "2026-05-18T00:32:15.109Z",
-    "latestRecordedRunId": "QA-20260518-0518",
-    "latestRecordedAt": "2026-05-18T00:32:15.109Z"
+    "lastRunId": "QA-20260518-0519",
+    "lastRecordedAt": "2026-05-18T00:54:54.418Z",
+    "latestRecordedRunId": "QA-20260518-0519",
+    "latestRecordedAt": "2026-05-18T00:54:54.418Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -58060,6 +58060,123 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0519",
+      "recordedAt": "2026-05-18T00:54:54.418Z",
+      "recordedAtKst": "2026-05-18 09:54:54 KST",
+      "title": "v8.11.169 Current Vercel Playwright MCP Check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0519.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "v8.11.169-gitlab-pipeline-2532228902",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "8e294644304f181bff1f74fa4fe4936bde833ebe"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel production landing route /",
+        "Landing footer version v8.11.169",
+        "Feature card modal independent state reset",
+        "AI Assistant architecture modal diagram",
+        "Cloud Platform architecture modal diagram",
+        "Tech Stack modal detail view",
+        "AI Development Workflow CI/CD tab",
+        "Vercel /api/version",
+        "Vercel /api/health",
+        "Unauthenticated /dashboard auth guard redirect to /login",
+        "Vercel usage check"
+      ],
+      "skippedSurfaces": [
+        "authenticated dashboard internals",
+        "AI assistant conversational QA",
+        "mobile responsive matrix",
+        "Cloud Run admin /monitoring",
+        "React Flow topology modal"
+      ],
+      "checks": {
+        "total": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-quality",
+          "domainName": "Frontend UX Quality",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Landing, four feature-card modals, diagram toggles, Vibe CI/CD tab, and modal state reset all passed on Vercel production.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP covered the core landing/modal surfaces. The MCP browser context closed during dashboard CTA interaction, so dashboard/auth/API checks were repeated with a direct Playwright browser smoke and recorded as an automation fallback rather than product failure.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "SRE / Deployment",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production /api/version reports v8.11.169 from GitLab pipeline 2532228902, /api/health is healthy, and Vercel usage remains billed 0.0000 USD.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T09:53:12+09:00",
+          "summary": "Billing period 2026-05-01..2026-05-18: effective 10.7667 USD, billed 0.0000 USD, chargeCount 9744. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.169 current Vercel Playwright MCP check",
+          "path": "reports/qa/evidence/qa-20260518-v811169-current-vercel-mcp.md",
+          "note": "Playwright MCP verified landing/modal surfaces. A direct Playwright fallback verified /api/version, /api/health, and unauthenticated dashboard guard after MCP browser context closed during dashboard CTA click."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.169 deployment pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532228902"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -58119,16 +58236,16 @@
       "domainName": "SRE / Deployment",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 190,
-      "appropriateCount": 171,
+      "seenCount": 191,
+      "appropriateCount": 172,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0518",
-      "lastSeenAt": "2026-05-18T00:32:15.109Z",
+      "lastRunId": "QA-20260518-0519",
+      "lastSeenAt": "2026-05-18T00:54:54.418Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab semver tag pipeline 2532228902 completed successfully and production /api/version reports 8.11.169.",
+      "lastRationale": "Production /api/version reports v8.11.169 from GitLab pipeline 2532228902, /api/health is healthy, and Vercel usage remains billed 0.0000 USD.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -58136,16 +58253,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 225,
+      "seenCount": 226,
       "appropriateCount": 206,
-      "partialCount": 19,
+      "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0518",
-      "lastSeenAt": "2026-05-18T00:32:15.109Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260518-0519",
+      "lastSeenAt": "2026-05-18T00:54:54.418Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The static diagram unit test, quick test suite, type check, lint, docs component verification, production Playwright MCP flow, and release pipeline all passed.",
+      "lastRationale": "Playwright MCP covered the core landing/modal surfaces. The MCP browser context closed during dashboard CTA interaction, so dashboard/auth/API checks were repeated with a direct Playwright browser smoke and recorded as an automation fallback rather than product failure.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -58238,16 +58355,16 @@
       "domainName": "Frontend UX Quality",
       "firstSeenRunId": "QA-20260430-0374",
       "firstSeenAt": "2026-04-29T18:53:53.244Z",
-      "seenCount": 8,
-      "appropriateCount": 5,
+      "seenCount": 9,
+      "appropriateCount": 6,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260518-0518",
-      "lastSeenAt": "2026-05-18T00:32:15.109Z",
+      "lastRunId": "QA-20260518-0519",
+      "lastSeenAt": "2026-05-18T00:54:54.418Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production feature-card modals render the revised static diagrams after the architecture toggle, with primary labels no longer clipped on the checked AI Assistant and Cloud Platform paths.",
+      "lastRationale": "Landing, four feature-card modals, diagram toggles, Vibe CI/CD tab, and modal state reset all passed on Vercel production.",
       "lastNextAction": ""
     },
     "frontend-ui-ux": {

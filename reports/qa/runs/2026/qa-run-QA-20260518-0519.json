@@ -1,0 +1,115 @@
+{
+  "runId": "QA-20260518-0519",
+  "recordedAt": "2026-05-18T00:54:54.418Z",
+  "recordedAtKst": "2026-05-18 09:54:54 KST",
+  "runTitle": "v8.11.169 Current Vercel Playwright MCP Check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.11.169-gitlab-pipeline-2532228902",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "8e294644304f181bff1f74fa4fe4936bde833ebe"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "Vercel production landing route /",
+    "Landing footer version v8.11.169",
+    "Feature card modal independent state reset",
+    "AI Assistant architecture modal diagram",
+    "Cloud Platform architecture modal diagram",
+    "Tech Stack modal detail view",
+    "AI Development Workflow CI/CD tab",
+    "Vercel /api/version",
+    "Vercel /api/health",
+    "Unauthenticated /dashboard auth guard redirect to /login",
+    "Vercel usage check"
+  ],
+  "skippedSurfaces": [
+    "authenticated dashboard internals",
+    "AI assistant conversational QA",
+    "mobile responsive matrix",
+    "Cloud Run admin /monitoring",
+    "React Flow topology modal"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux-quality",
+      "domainName": "Frontend UX Quality",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Landing, four feature-card modals, diagram toggles, Vibe CI/CD tab, and modal state reset all passed on Vercel production.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP covered the core landing/modal surfaces. The MCP browser context closed during dashboard CTA interaction, so dashboard/auth/API checks were repeated with a direct Playwright browser smoke and recorded as an automation fallback rather than product failure.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "SRE / Deployment",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production /api/version reports v8.11.169 from GitLab pipeline 2532228902, /api/health is healthy, and Vercel usage remains billed 0.0000 USD.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T09:53:12+09:00",
+      "summary": "Billing period 2026-05-01..2026-05-18: effective 10.7667 USD, billed 0.0000 USD, chargeCount 9744. No unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.169 current Vercel Playwright MCP check",
+      "path": "reports/qa/evidence/qa-20260518-v811169-current-vercel-mcp.md",
+      "note": "Playwright MCP verified landing/modal surfaces. A direct Playwright fallback verified /api/version, /api/health, and unauthenticated dashboard guard after MCP browser context closed during dashboard CTA click."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Observed 401 /api/system only in a fresh unauthenticated browser context; classified as expected auth guard behavior.",
+    "Authenticated dashboard internals were intentionally skipped in this targeted current-state check because the fresh browser context redirects /dashboard to /login and AI live QA was not requested."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.169 deployment pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532228902"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
