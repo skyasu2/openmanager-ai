@@ -11,7 +11,7 @@
 export interface AIProviderConfig {
   /** Provider 이름 */
   name: string;
-  /** 역할 (Primary, NLQ Agent, Verifier 등) */
+  /** 역할 (Primary, Metrics Query Agent, Verifier 등) */
   role: string;
   /** 모델명 */
   model: string;
@@ -23,6 +23,11 @@ export interface AIProviderConfig {
   dailyTokenLimit?: string;
 }
 
+export const GROQ_TEXT_MODEL_ID =
+  'meta-llama/llama-4-scout-17b-16e-instruct';
+export const ZAI_TEXT_MODEL_ID = 'glm-4.5-flash';
+export const ZAI_VISION_MODEL_ID = 'glm-4.6v-flash';
+
 /**
  * 현재 활성화된 AI Provider 목록
  * - registry-core.yaml과 동기화 유지 필요
@@ -30,27 +35,35 @@ export interface AIProviderConfig {
 export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     name: 'Groq',
-    role: 'Primary text routing',
-    model: 'llama-4-scout-17b',
+    role: 'Groq-first text mesh',
+    model: GROQ_TEXT_MODEL_ID,
     description:
-      'Primary text provider for Supervisor, Verifier, NLQ, Analyst, Reporter, and Advisor requests',
+      'Fast text provider for Supervisor, Metrics Query, Orchestrator, and fallback paths',
     color: 'bg-purple-500',
   },
   {
-    name: 'Cerebras',
-    role: 'Structured routing + secondary text fallback',
-    model: 'llama3.1-8b',
+    name: 'Z.AI',
+    role: 'Free GLM Flash fallback',
+    model: `${ZAI_TEXT_MODEL_ID} / ${ZAI_VISION_MODEL_ID}`,
     description:
-      'Production Cerebras runtime for short-context fallback. Qwen 235B is preview/high-traffic and gpt-oss-120b is excluded because the current account chat completion smoke returns 404.',
+      'Free GLM Flash text and vision fallback. Runtime disables thinking for short tool-calling and structured-output tasks.',
+    color: 'bg-cyan-500',
+  },
+  {
+    name: 'Cerebras',
+    role: 'Short-context text fallback + replacement candidate',
+    model: 'llama3.1-8b / gpt-oss-120b',
+    description:
+      'Production Cerebras runtime retains llama3.1-8b as default and enables gpt-oss-120b as the confirmed replacement fallback candidate.',
     color: 'bg-blue-500',
     dailyTokenLimit: '1M tokens/day',
   },
   {
     name: 'Mistral',
-    role: 'Last-resort text fallback',
+    role: 'Distributed text fallback',
     model: 'mistral-small-latest',
     description:
-      'Free-tier friendly last-resort text fallback for agents. It is not used for RAG runtime retrieval.',
+      'Free-tier friendly text provider used as first/secondary fallback for selected agent paths.',
     color: 'bg-amber-500',
   },
   {
@@ -59,6 +72,13 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
     model: 'gemini-2.5-flash-lite',
     description: 'Primary vision provider for screenshot and multimodal analysis',
     color: 'bg-emerald-500',
+  },
+  {
+    name: 'OpenRouter',
+    role: 'Vision fallback',
+    model: 'free vision model',
+    description: 'OpenRouter free-model fallback for screenshot and multimodal analysis',
+    color: 'bg-sky-500',
   },
 ];
 

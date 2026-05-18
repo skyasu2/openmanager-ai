@@ -1,3 +1,4 @@
+import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import {
   type ArtifactReplayPack,
   compareArtifactReplayPacks,
@@ -7,11 +8,7 @@ import {
   readArtifactReplayPack,
   resolveArtifactSchemaEntry,
 } from './artifact-workspace-registry';
-import {
-  type ArtifactEnvelope,
-  type ChatArtifact,
-  createArtifactEnvelope,
-} from './types';
+import { type ArtifactEnvelope, createArtifactEnvelope } from './types';
 
 export const ARTIFACT_WORKSPACE_STORAGE_KEY = 'openmanager-artifact-workspace';
 export const ARTIFACT_WORKSPACE_STORE_VERSION = '2026-05-06-v1';
@@ -58,6 +55,13 @@ export interface ArtifactReplayPackComparisonSummary {
   missingCount: number;
   addedCount: number;
   changedCount: number;
+  items: ArtifactReplayPackComparisonItem[];
+}
+
+export interface ArtifactReplayPackComparisonItem {
+  id: string;
+  label: string;
+  status: 'matched' | 'missing' | 'added' | 'changed';
 }
 
 export interface CreateArtifactWorkspaceStoreOptions {
@@ -80,7 +84,9 @@ export interface ArtifactWorkspaceHistoryMetadata {
   artifactEnvelopes?: ArtifactEnvelope[];
   incidentReportArtifact?: unknown;
   monitoringAnalysisArtifact?: unknown;
+  serverMonitoringAnalysisArtifact?: unknown;
   serverSnapshotArtifact?: unknown;
+  opsProcedureArtifact?: unknown;
 }
 
 export interface ArtifactWorkspaceStorage {
@@ -188,13 +194,15 @@ function toSafeFileSegment(value: string): string {
   );
 }
 
-function isSupportedChatArtifact(value: unknown): value is ChatArtifact {
+function isSupportedChatArtifact(
+  value: unknown
+): value is MonitoringChatArtifact {
   return listArtifactSchemaEntries().some((entry) => entry.isPayload(value));
 }
 
 function isSupportedArtifactEnvelope(
   value: unknown
-): value is ArtifactEnvelope {
+): value is ArtifactEnvelope<MonitoringChatArtifact> {
   if (!isRecord(value)) return false;
 
   const domainId = readString(value.domainId) ?? MONITORING_ARTIFACT_DOMAIN_ID;
@@ -213,12 +221,14 @@ function isSupportedArtifactEnvelope(
 
 function readLegacyArtifacts(
   metadata: ArtifactWorkspaceHistoryMetadata,
-  ignoredKinds: ReadonlySet<ChatArtifact['kind']>
-): ArtifactEnvelope[] {
+  ignoredKinds: ReadonlySet<MonitoringChatArtifact['kind']>
+): ArtifactEnvelope<MonitoringChatArtifact>[] {
   return [
     metadata.incidentReportArtifact,
     metadata.monitoringAnalysisArtifact,
+    metadata.serverMonitoringAnalysisArtifact,
     metadata.serverSnapshotArtifact,
+    metadata.opsProcedureArtifact,
   ]
     .filter(isSupportedChatArtifact)
     .filter((artifact) => !ignoredKinds.has(artifact.kind))
@@ -229,6 +239,56 @@ function readLegacyArtifacts(
         traceId: readString(metadata.traceId),
       })
     );
+}
+
+function mapReplayPackEntries(
+  pack: ArtifactReplayPack | undefined
+): Map<string, ArtifactReplayPack['entries'][number]> {
+  return new Map(pack?.entries.map((entry) => [entry.id, entry]) ?? []);
+}
+
+function formatReplayGeneratedAt(generatedAt: string): string {
+  const date = new Date(generatedAt);
+  if (!Number.isFinite(date.getTime())) return generatedAt;
+
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    hour: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+    minute: '2-digit',
+    month: '2-digit',
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+  })
+    .formatToParts(date)
+    .reduce<Record<string, string>>((acc, part) => {
+      if (part.type !== 'literal') {
+        acc[part.type] = part.value;
+      }
+      return acc;
+    }, {});
+
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute} KST`;
+}
+
+function createComparisonItem(
+  id: string,
+  status: ArtifactReplayPackComparisonItem['status'],
+  entries: Map<string, ArtifactReplayPack['entries'][number]>
+): ArtifactReplayPackComparisonItem {
+  const entry = entries.get(id);
+  const label = entry
+    ? `${entry.schema.artifactKind} (${formatReplayGeneratedAt(
+        entry.generatedAt
+      )})`
+    : id;
+
+  return {
+    id,
+    label,
+    status,
+  };
 }
 
 export function createArtifactWorkspaceStore(
@@ -361,10 +421,15 @@ export function createArtifactReplayPackComparisonSummary(
   expected: unknown,
   actual: unknown
 ): ArtifactReplayPackComparisonSummary {
+  const expectedPack = readArtifactReplayPack(expected);
+  const actualPack = readArtifactReplayPack(actual);
   const comparison = compareArtifactReplayPacks(expected, actual);
   const missingCount = comparison.missing.length;
   const addedCount = comparison.added.length;
   const changedCount = comparison.changed.length;
+  const expectedEntries = mapReplayPackEntries(expectedPack);
+  const actualEntries = mapReplayPackEntries(actualPack);
+  const baseEntries = new Map([...actualEntries, ...expectedEntries]);
 
   return {
     status:
@@ -375,5 +440,19 @@ export function createArtifactReplayPackComparisonSummary(
     missingCount,
     addedCount,
     changedCount,
+    items: [
+      ...comparison.matched.map((id) =>
+        createComparisonItem(id, 'matched', baseEntries)
+      ),
+      ...comparison.missing.map((id) =>
+        createComparisonItem(id, 'missing', expectedEntries)
+      ),
+      ...comparison.added.map((id) =>
+        createComparisonItem(id, 'added', actualEntries)
+      ),
+      ...comparison.changed.map((id) =>
+        createComparisonItem(id, 'changed', baseEntries)
+      ),
+    ],
   };
 }

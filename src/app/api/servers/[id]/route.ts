@@ -1,6 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { OTEL_METRIC } from '@/constants/otel-metric-names';
+
+export const maxDuration = 10;
+
 import { getTimeSeries } from '@/data/otel-data';
 import { withAuth } from '@/lib/auth/api-auth';
 import type {

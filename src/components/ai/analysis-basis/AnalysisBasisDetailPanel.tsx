@@ -73,6 +73,10 @@ const CopyActionButton: FC<{
   );
 };
 
+function shouldShowTechnicalToolName(toolName: string): boolean {
+  return !/^generate[A-Z][A-Za-z]*Artifact$/.test(toolName);
+}
+
 interface AnalysisBasisDetailPanelProps {
   active: boolean;
   debugBundle: string;
@@ -317,6 +321,8 @@ export function AnalysisBasisDetailPanel({
                   const toolPresentation = getToolPresentation(
                     toolResult.toolName
                   );
+                  const displayLabel =
+                    toolResult.label?.trim() || toolPresentation.label;
                   const failureReason = classifyFailureReason(
                     toolResult.summary,
                     toolResult.preview
@@ -334,14 +340,18 @@ export function AnalysisBasisDetailPanel({
                               className="text-xs font-medium text-slate-700"
                               title={toolPresentation.description ?? undefined}
                             >
-                              {toolPresentation.label}
+                              {displayLabel}
                             </span>
-                            <span
-                              className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500"
-                              title={`${toolResult.toolName} 내부 도구명`}
-                            >
-                              {toolResult.toolName}
-                            </span>
+                            {shouldShowTechnicalToolName(
+                              toolResult.toolName
+                            ) && (
+                              <span
+                                className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500"
+                                title={`${toolResult.toolName} 내부 도구명`}
+                              >
+                                {toolResult.toolName}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <span className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500">

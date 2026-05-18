@@ -2,12 +2,13 @@
  * AI 서비스 Circuit Breaker 패턴 구현
  *
  * Architecture (split into sub-modules):
- * - circuit-breaker/state-store.ts: 분산 상태 관리 (IDistributedStateStore, InMemory, Redis)
+ * - circuit-breaker/state-store.ts: 선택적 분산 상태 저장소 타입/연결점
  * - circuit-breaker/events.ts: 이벤트 시스템 (CircuitBreakerEventEmitter)
  * - circuit-breaker.ts (this): Breaker 클래스 + Manager + Executor + Status
  *
  * @see https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker
  * @updated 2026-02-10 - Split into sub-modules (704 → ~440 lines)
+ * @updated 2026-05-16 - Request path clarified as in-memory only
  */
 
 import { logger } from '@/lib/logging';
@@ -32,11 +33,7 @@ export {
 } from './circuit-breaker/state-store';
 
 import { circuitBreakerEvents } from './circuit-breaker/events';
-// Internal imports
-import {
-  ensureRedisStateStore,
-  isRedisStateStoreInitialized,
-} from './circuit-breaker/state-store';
+import { isRedisStateStoreInitialized } from './circuit-breaker/state-store';
 
 // ============================================================================
 // Circuit Breaker 구현
@@ -48,6 +45,9 @@ import {
  * ⚠️ 서버리스 한계: 이 클래스는 인스턴스별 로컬 상태를 사용합니다.
  * Vercel 멀티 인스턴스 환경에서는 인스턴스 간 상태가 공유되지 않으므로,
  * 인스턴스 A가 OPEN이어도 인스턴스 B는 CLOSED일 수 있습니다.
+ *
+ * Redis-backed state store 코드는 future/internal 연결점으로 남겨두지만,
+ * 현재 request path의 상태 전이는 이 클래스의 in-memory 필드만 사용합니다.
  */
 export class AIServiceCircuitBreaker {
   private failures = 0;
@@ -279,8 +279,6 @@ export async function executeWithCircuitBreakerAndFallback<T>(
   primaryFn: () => Promise<T>,
   fallbackFn: () => T | Promise<T>
 ): Promise<ExecutionResult<T>> {
-  await ensureRedisStateStore();
-
   const breaker = aiCircuitBreaker.getBreaker(serviceName);
   const status = breaker.getStatus();
 

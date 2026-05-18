@@ -46,48 +46,63 @@ export default function UnifiedProfileHeader({
     setIsHydrated(true);
   }, []);
 
-  const { status: systemStatus } = useSystemStatus({
-    enabled: !isAuthResolving && status === 'authenticated',
+  const {
+    status: systemStatus,
+    startSystem: startRemoteSystem,
+    stopSystem: stopRemoteSystem,
+  } = useSystemStatus({
+    enabled:
+      !isAuthResolving && (status === 'authenticated' || userType === 'guest'),
   });
-  // 🎯 Zustand selector 패턴 사용 - 불필요한 리렌더 방지
-  const isSystemStarted = useUnifiedAdminStore(
+  // Zustand selector 패턴 사용 - 불필요한 리렌더 방지
+  const isLocalSystemStarted = useUnifiedAdminStore(
     (state) => state.isSystemStarted
   );
-  const stopSystem = useUnifiedAdminStore((state) => state.stopSystem);
-  const startSystem = useUnifiedAdminStore((state) => state.startSystem);
+  const stopLocalSystem = useUnifiedAdminStore((state) => state.stopSystem);
+  const startLocalSystem = useUnifiedAdminStore((state) => state.startSystem);
+  const isSystemStarted = systemStatus?.isRunning ?? isLocalSystemStarted;
 
   // 시스템 시작 핸들러
-  const handleSystemStart = useCallback(() => {
+  const handleSystemStart = useCallback(async () => {
     try {
-      logger.info('🚀 시스템 시작 요청 (프로필에서)');
-      startSystem();
-      logger.info('✅ 시스템 시작 성공');
+      logger.info('시스템 시작 요청 (프로필에서)');
+      const result = await startRemoteSystem();
+      if (!result) {
+        logger.warn('시스템 시작 요청이 실행되지 않아 로컬 상태를 유지합니다.');
+        return;
+      }
+      startLocalSystem();
+      logger.info('시스템 시작 성공');
     } catch (error) {
-      logger.error('❌ 시스템 시작 오류:', error);
-      alert('❌ 시스템 시작 중 오류가 발생했습니다.');
+      logger.error('시스템 시작 오류:', error);
+      alert('시스템 시작 중 오류가 발생했습니다.');
     }
-  }, [startSystem]);
+  }, [startLocalSystem, startRemoteSystem]);
 
-  // 시스템 종료 핸들러 - useUnifiedAdminStore.stopSystem 직접 사용
-  const handleSystemStop = useCallback(() => {
+  // 시스템 종료 핸들러
+  const handleSystemStop = useCallback(async () => {
     const confirmed = confirm(
-      '⚠️ 시스템을 종료하시겠습니까?\n\n종료 후 메인 페이지에서 다시 시작할 수 있습니다.'
+      '시스템을 종료하시겠습니까?\n\n종료 후 메인 페이지에서 다시 시작할 수 있습니다.'
     );
 
     if (!confirmed) return;
 
     try {
-      logger.info('🛑 시스템 종료 요청 (프로필에서)');
+      logger.info('시스템 종료 요청 (프로필에서)');
 
-      // useUnifiedAdminStore.stopSystem() 직접 호출
-      stopSystem();
-      logger.info('✅ 시스템 종료 성공 (Unified Store 직접 사용)');
+      const result = await stopRemoteSystem();
+      if (!result) {
+        logger.warn('시스템 종료 요청이 실행되지 않아 로컬 상태를 유지합니다.');
+        return;
+      }
+      stopLocalSystem();
+      logger.info('시스템 종료 성공');
       localStorage.removeItem('system_auto_shutdown');
     } catch (error) {
-      logger.error('❌ 시스템 종료 오류:', error);
-      alert('❌ 시스템 종료 중 오류가 발생했습니다.');
+      logger.error('시스템 종료 오류:', error);
+      alert('시스템 종료 중 오류가 발생했습니다.');
     }
-  }, [stopSystem]);
+  }, [stopLocalSystem, stopRemoteSystem]);
 
   // 관리자 인증 핸들러
   const handleLogoutClick = useCallback(async () => {
@@ -102,7 +117,7 @@ export default function UnifiedProfileHeader({
     const items: MenuItem[] = [];
 
     // 대시보드 열기 (시스템 실행 중일 때만)
-    if (isSystemStarted || systemStatus?.isRunning) {
+    if (isSystemStarted) {
       items.push({
         id: 'dashboard',
         label: '대시보드 열기',
@@ -170,7 +185,6 @@ export default function UnifiedProfileHeader({
     return items;
   }, [
     userType,
-    systemStatus,
     isSystemStarted,
     closeMenu,
     navigateToDashboard,
@@ -260,7 +274,7 @@ export default function UnifiedProfileHeader({
           className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto sm:gap-2 sm:px-4"
           data-testid="login-button"
         >
-          <User className="h-4 w-4" />
+          <User className="h-4 w-4" aria-hidden="true" />
           <span className="hidden sm:inline">로그인</span>
         </button>
       </div>
@@ -280,7 +294,7 @@ export default function UnifiedProfileHeader({
           if (isAuthResolving) {
             return;
           }
-          logger.info('👤 프로필 버튼 클릭됨');
+          logger.info('프로필 버튼 클릭됨');
           toggleMenu();
         }}
         disabled={isAuthResolving}
@@ -302,7 +316,10 @@ export default function UnifiedProfileHeader({
               <div className="h-3 w-20 animate-pulse rounded bg-gray-200" />
               <div className="h-2.5 w-16 animate-pulse rounded bg-gray-100" />
             </div>
-            <ChevronDown className="hidden h-4 w-4 text-gray-300 sm:block" />
+            <ChevronDown
+              className="hidden h-4 w-4 text-gray-300 sm:block"
+              aria-hidden="true"
+            />
           </>
         ) : (
           <>
@@ -329,6 +346,7 @@ export default function UnifiedProfileHeader({
               className={`hidden h-4 w-4 text-gray-400 transition-transform duration-200 sm:block ${
                 menuState.showProfileMenu ? 'rotate-180' : ''
               }`}
+              aria-hidden="true"
             />
           </>
         )}
@@ -341,7 +359,7 @@ export default function UnifiedProfileHeader({
         userInfo={userInfo}
         userType={userType}
         onClose={closeMenu}
-        isSystemStarted={isSystemStarted || (systemStatus?.isRunning ?? false)}
+        isSystemStarted={isSystemStarted}
         isSystemStarting={systemStatus?.isStarting}
         onSystemStart={handleSystemStart}
         onSystemStop={handleSystemStop}

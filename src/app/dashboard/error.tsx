@@ -63,7 +63,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
       solution: '인터넷 연결을 확인하고 다시 시도해주세요.',
       icon: AlertTriangle,
       color: 'text-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-900/20',
+      bgColor: 'bg-orange-50',
     },
     auth: {
       title: '권한 오류',
@@ -71,7 +71,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
       solution: '로그인 후 다시 시도하거나 관리자에게 문의하세요.',
       icon: Settings,
       color: 'text-red-600',
-      bgColor: 'bg-red-50 dark:bg-red-900/20',
+      bgColor: 'bg-red-50',
     },
     loading: {
       title: '로딩 시간 초과',
@@ -79,7 +79,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
       solution: '페이지를 새로고침하거나 잠시 후 다시 시도해주세요.',
       icon: RefreshCw,
       color: 'text-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+      bgColor: 'bg-blue-50',
     },
     unknown: {
       title: '알 수 없는 오류',
@@ -87,7 +87,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
       solution: '문제가 지속되면 관리자에게 문의해주세요.',
       icon: Bug,
       color: 'text-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+      bgColor: 'bg-purple-50',
     },
   };
 
@@ -95,7 +95,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
   const IconComponent = currentError.icon;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 to-blue-50 p-4 dark:from-slate-900 dark:to-slate-800">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 to-blue-50 p-4">
       <div className="w-full max-w-2xl">
         <Card className={`${currentError.bgColor} border-2`}>
           <CardHeader className="text-center">
@@ -104,23 +104,19 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
                 <IconComponent className={`h-12 w-12 ${currentError.color}`} />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+            <CardTitle className="text-2xl font-bold text-gray-900">
               {currentError.title}
             </CardTitle>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              {currentError.description}
-            </p>
+            <p className="mt-2 text-gray-600">{currentError.description}</p>
           </CardHeader>
 
           <CardContent className="space-y-6">
             {/* 해결 방법 */}
             <div className="text-center">
-              <p className="mb-4 text-sm font-medium text-gray-900 dark:text-white">
+              <p className="mb-4 text-sm font-medium text-gray-900">
                 해결 방법:
               </p>
-              <p className="text-gray-600 dark:text-gray-400">
-                {currentError.solution}
-              </p>
+              <p className="text-gray-600">{currentError.solution}</p>
             </div>
 
             {/* 액션 버튼들 */}
@@ -149,7 +145,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
                   router.replace('/dashboard?instant=true&safe=true')
                 }
                 variant="outline"
-                className="w-full border-green-300 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-400"
+                className="w-full border-green-300 text-green-700 hover:bg-green-50"
               >
                 <Settings className="mr-2 h-4 w-4" />
                 안전 모드로 접속
@@ -158,21 +154,21 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
 
             {/* 에러 상세 정보 (개발자용) */}
             {process.env.NODE_ENV === 'development' && (
-              <details className="rounded-lg bg-gray-100 p-4 dark:bg-slate-800">
-                <summary className="cursor-pointer font-medium text-gray-900 dark:text-white">
+              <details className="rounded-lg bg-gray-100 p-4">
+                <summary className="cursor-pointer font-medium text-gray-900">
                   개발자 정보
                 </summary>
                 <div className="mt-4 space-y-2 text-sm">
                   <div>
                     <strong>Error Message:</strong>
-                    <code className="mt-1 block rounded bg-gray-200 p-2 text-xs dark:bg-slate-700">
+                    <code className="mt-1 block rounded bg-gray-200 p-2 text-xs">
                       {error.message}
                     </code>
                   </div>
                   {error.digest && (
                     <div>
                       <strong>Error Digest:</strong>
-                      <code className="mt-1 block rounded bg-gray-200 p-2 text-xs dark:bg-slate-700">
+                      <code className="mt-1 block rounded bg-gray-200 p-2 text-xs">
                         {error.digest}
                       </code>
                     </div>
@@ -180,7 +176,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
                   {error.stack && (
                     <div>
                       <strong>Stack Trace:</strong>
-                      <code className="mt-1 block max-h-32 overflow-auto rounded bg-gray-200 p-2 text-xs dark:bg-slate-700">
+                      <code className="mt-1 block max-h-32 overflow-auto rounded bg-gray-200 p-2 text-xs">
                         {error.stack}
                       </code>
                     </div>
@@ -195,7 +191,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
                 onClick={handleReport}
                 disabled={isReporting}
                 variant="ghost"
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-gray-500 hover:text-gray-700"
               >
                 <Bug className="mr-2 h-4 w-4" />
                 {isReporting ? '신고 중...' : '문제 신고하기'}
@@ -204,7 +200,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
 
             {/* 추가 도움말 */}
             <div className="border-t pt-4 text-center">
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500">
                 문제가 계속 발생하면{' '}
                 <a
                   href="mailto:support@openmanager.com"
@@ -220,9 +216,9 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
 
         {/* 시스템 상태 확인 */}
         <div className="mt-6 text-center">
-          <Card className="bg-white/50 backdrop-blur-sm dark:bg-slate-900/50">
+          <Card className="bg-white/70 backdrop-blur-sm">
             <CardContent className="p-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600">
                 시스템 상태를 확인하려면{' '}
                 <a
                   href="/api/health"

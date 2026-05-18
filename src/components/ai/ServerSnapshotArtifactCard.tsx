@@ -2,6 +2,7 @@
 
 import { Download, FileText, Server } from 'lucide-react';
 import Link from 'next/link';
+import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
 import {
   buildServerSnapshotJson,
   buildServerSnapshotMarkdown,
@@ -11,18 +12,6 @@ import {
   readServerSnapshotTopServers,
 } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import type { ServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/types';
-
-function downloadBlob(content: string, filename: string, type: string): void {
-  const blob = new Blob([content], { type: `${type};charset=utf-8` });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
 
 function statusClass(
   status: ServerSnapshotArtifact['topServers'][number]['status']
@@ -50,7 +39,7 @@ function downloadSnapshot(
 ): void {
   const stamp = artifact.generatedAt.replace(/[:.]/g, '-');
   if (format === 'json') {
-    downloadBlob(
+    downloadBlobContent(
       buildServerSnapshotJson(artifact),
       `server-snapshot-${stamp}.json`,
       'application/json'
@@ -58,7 +47,7 @@ function downloadSnapshot(
     return;
   }
 
-  downloadBlob(
+  downloadBlobContent(
     buildServerSnapshotMarkdown(artifact),
     `server-snapshot-${stamp}.md`,
     'text/markdown'

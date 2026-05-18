@@ -73,11 +73,16 @@ import {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 } from '@/lib/ai/constants/stream-errors';
+import type { SemanticIntentFrame } from '@/lib/ai/entity-extractor';
 import {
   type AIRateLimitErrorDetails,
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import {
+  buildSemanticIntentRequestMetadata,
+  type SemanticPreprocessingMetadata,
+} from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
@@ -151,9 +156,11 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.providerAttempts && result.providerAttempts.length > 0) ||
     typeof result.usedFallback === 'boolean' ||
     Boolean(result.fallbackReason) ||
-    typeof result.ttfbMs === 'number';
+    typeof result.ttfbMs === 'number' ||
+    typeof result.rotationSlot === 'number';
   const metadata =
     result.ragSources ||
+    (result.evidenceCards && result.evidenceCards.length > 0) ||
     result.traceId ||
     typeof result.processingTimeMs === 'number' ||
     Boolean(result.latencyTier) ||
@@ -164,12 +171,17 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.routeDecision) ||
     Boolean(result.assistantPlan) ||
     Boolean(result.assistantResult) ||
+    Boolean(result.semanticQueryTrace) ||
     (result.toolsCalled && result.toolsCalled.length > 0) ||
     hasExplicitHandoffHistory ||
     (result.toolResultSummaries && result.toolResultSummaries.length > 0) ||
     hasProviderTelemetry
       ? {
           ...(result.ragSources && { ragSources: result.ragSources }),
+          ...(result.evidenceCards &&
+            result.evidenceCards.length > 0 && {
+              evidenceCards: result.evidenceCards,
+            }),
           ...(result.retrieval && { retrieval: result.retrieval }),
           ...(result.traceId && { traceId: result.traceId }),
           ...(typeof result.processingTimeMs === 'number' && {
@@ -200,6 +212,9 @@ export function buildAssistantMessageFromAsyncResult(
           ...(result.assistantResult && {
             assistantResult: result.assistantResult,
           }),
+          ...(result.semanticQueryTrace && {
+            semanticQueryTrace: result.semanticQueryTrace,
+          }),
           ...(hasExplicitHandoffHistory && {
             handoffHistory: result.handoffHistory,
           }),
@@ -221,6 +236,9 @@ export function buildAssistantMessageFromAsyncResult(
           }),
           ...(typeof result.ttfbMs === 'number' && {
             ttfbMs: result.ttfbMs,
+          }),
+          ...(typeof result.rotationSlot === 'number' && {
+            rotationSlot: result.rotationSlot,
           }),
         }
       : undefined;
@@ -341,6 +359,12 @@ export function useHybridAIQuery(
     queryAsOfDataSlot
   );
   const currentRouteDecisionRef = useRef<RouteDecision | undefined>(undefined);
+  const semanticIntentFrameRef = useRef<SemanticIntentFrame | undefined>(
+    undefined
+  );
+  const semanticPreprocessingRef = useRef<
+    SemanticPreprocessingMetadata | undefined
+  >(undefined);
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
@@ -408,6 +432,9 @@ export function useHybridAIQuery(
         analysisModeRef,
         queryAsOfDataSlotRef,
         localRouteDecisionRef: currentRouteDecisionRef,
+        currentQueryRef,
+        semanticIntentFrameRef,
+        semanticPreprocessingRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
@@ -442,6 +469,11 @@ export function useHybridAIQuery(
           stopChatRef.current();
         },
         runJobQueueQuery: (query: string) => {
+          const semanticIntentPayload = buildSemanticIntentRequestMetadata({
+            frame: semanticIntentFrameRef.current,
+            originalQuery: query,
+            preprocessing: semanticPreprocessingRef.current,
+          });
           const jobQueueOptions = {
             ...(analysisModeRef.current && {
               analysisMode: analysisModeRef.current,
@@ -452,6 +484,12 @@ export function useHybridAIQuery(
             ...buildSourceToolRequestOptions({
               webSearchEnabled: webSearchEnabledRef.current,
               ragEnabled: ragEnabledRef.current,
+            }),
+            ...(semanticIntentPayload.metadata?.intentFrame && {
+              intentFrame: semanticIntentPayload.metadata.intentFrame,
+            }),
+            ...(semanticIntentPayload.semanticQueryTrace && {
+              semanticQueryTrace: semanticIntentPayload.semanticQueryTrace,
             }),
           };
 
@@ -576,6 +614,8 @@ export function useHybridAIQuery(
       pendingQuery: pendingQueryRef,
       pendingAttachments: pendingAttachmentsRef,
       rateLimitBlock: rateLimitBlockRef,
+      semanticIntentFrame: semanticIntentFrameRef,
+      semanticPreprocessing: semanticPreprocessingRef,
     },
     analysisMode,
     ragEnabled,

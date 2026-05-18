@@ -1,4 +1,6 @@
-export const ARTIFACT_INTENT_RULE_VERSION = '2026-05-04-v1';
+import { resolveRegisteredServerId } from '@/config/server-registry';
+
+export const ARTIFACT_INTENT_RULE_VERSION = '2026-05-15-v1';
 
 type ChatArtifactIntentVersion = {
   ruleVersion: typeof ARTIFACT_INTENT_RULE_VERSION;
@@ -8,7 +10,18 @@ type ChatArtifactIntentWithoutVersion =
   | { kind: 'none' }
   | { kind: 'incident-report'; reason: ChatArtifactIntentReason }
   | { kind: 'monitoring-analysis'; reason: ChatArtifactIntentReason }
+  | {
+      kind: 'server-monitoring-analysis';
+      serverId: string;
+      serverName?: string;
+      reason: ChatArtifactIntentReason;
+    }
   | { kind: 'server-snapshot'; reason: ChatArtifactIntentReason }
+  | {
+      kind: 'ops-procedure';
+      procedureType: 'runbook' | 'alert-rule' | 'script';
+      reason: ChatArtifactIntentReason;
+    }
   | {
       kind: 'guidance';
       target: 'incident-report' | 'monitoring-analysis';
@@ -25,6 +38,9 @@ export type ChatArtifactIntentReason =
   | 'monitoring_action_pattern'
   | 'monitoring_guidance_pattern'
   | 'monitoring_implicit_artifact_keyword'
+  | 'ops_procedure_action_pattern'
+  | 'ops_procedure_followup_edit_pattern'
+  | 'server_monitoring_action_pattern'
   | 'server_snapshot_action_pattern'
   | 'server_snapshot_implicit_artifact_keyword'
   | 'llm_artifact_classification'
@@ -50,12 +66,22 @@ const MONITORING_ACTION_PATTERN =
   /(분석\s*(해|해줘|해주세요|해줄래|좀|부탁|요청)|분석해|실행|돌려|요약\s*(해|해줘|해주세요|해줄래|부탁|요청)|요약해|확인\s*(해|해줘|해주세요|해줄래|부탁|요청)|확인해|생성(?!\s*(방법|법|기능|설명|안내))|만들|다운로드(?!\s*(방법|법|기능|설명|안내))|예측\s*(해|해줘|해주세요|해줄래|부탁|요청)|예측해|forecast|analy[sz]e|run)/i;
 const MONITORING_ARTIFACT_PATTERN =
   /(이상\s*감지|이상감지|이상\s*탐지|추세\s*(분석|리포트|보고서)|트렌드\s*(분석|리포트|보고서)|리스크\s*(추세|분석)|장애\s*(예측|예상)|예측\s*(분석|리포트|보고서)|anomaly\s*detection|forecast|trend\s*(analysis|report)?)/i;
+const SERVER_MONITORING_ID_PATTERN =
+  /\b((?:api|web|db|cache|storage|lb|monitoring|batch|worker)-[a-z0-9]+(?:-[a-z0-9]+)*)\b/i;
 const SERVER_SNAPSHOT_SUBJECT_PATTERN =
   /(서버\s*상태|인프라\s*상태|전체\s*인프라|운영\s*(현황|상태)|server\s*status|server\s*snapshot|infrastructure\s*status|operational\s*status)/i;
 const SERVER_SNAPSHOT_ARTIFACT_PATTERN =
   /(스냅샷|상태\s*(카드|리포트|보고서)|현황\s*카드|요약\s*카드|snapshot|status\s*(card|report)|export)/i;
 const SERVER_SNAPSHOT_ACTION_PATTERN =
   /(생성(?!\s*(방법|법|기능|설명|안내))|만들|만들어|보여줘|다운로드(?!\s*(방법|법|기능|설명|안내))|내려받|요청|뽑아|출력|export|generate|download|create)/i;
+const OPS_PROCEDURE_OPERATIONAL_CONTEXT_PATTERN =
+  /(서버|인프라|운영|모니터링|장애|로그|에러|경고|cpu|메모리|memory|디스크|disk|네트워크|network|promql|prometheus|alertmanager|slack|슬랙|webhook|runbook|런북)/i;
+const OPS_PROCEDURE_SHAPE_PATTERN =
+  /(스크립트|script|bash|shell|쉘|slack|슬랙|webhook|alertmanager|prometheus|promql|알림\s*(규칙|설정|스크립트)?|runbook|런북|대응\s*(순서|절차)|원인과\s*대응|확인\s*명령어)/i;
+const OPS_PROCEDURE_ACTION_PATTERN =
+  /(짜줘|작성|생성|만들|만들어|알려줘|정리|출력|generate|create|write|build|draft)/i;
+const OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN =
+  /(이\s*)?(스크립트|설정|룰|rule|runbook|런북|절차).*(임계치|임계값|threshold).*(바꿔|변경|수정|올려|낮춰|change|update)/i;
 const LLM_ARTIFACT_CANDIDATE_PATTERN =
   /(장애|인시던트|incident|보고서|리포트|report|이상\s*(감지|탐지)|이상감지|추세|트렌드|리스크|예측|모니터링|anomaly|forecast|trend|risk)/i;
 const LLM_ARTIFACT_ACTION_HINT_PATTERN =
@@ -83,6 +109,48 @@ function isFormattingOnlyRequest(query: string): boolean {
   );
 }
 
+function readOpsProcedureType(
+  query: string
+): 'runbook' | 'alert-rule' | 'script' {
+  if (
+    /alertmanager|prometheus|alert\s*rule|알림\s*(규칙|설정)|yaml/i.test(query)
+  ) {
+    return 'alert-rule';
+  }
+  if (
+    /runbook|런북|대응\s*(순서|절차)|원인과\s*대응|로그.*(원인|대응)/i.test(
+      query
+    )
+  ) {
+    return 'runbook';
+  }
+  return 'script';
+}
+
+function isOpsProcedureRequest(query: string): boolean {
+  return (
+    OPS_PROCEDURE_OPERATIONAL_CONTEXT_PATTERN.test(query) &&
+    OPS_PROCEDURE_SHAPE_PATTERN.test(query) &&
+    OPS_PROCEDURE_ACTION_PATTERN.test(query)
+  );
+}
+
+function readServerMonitoringServerId(query: string): string | undefined {
+  const rawServerReference = query
+    .match(SERVER_MONITORING_ID_PATTERN)?.[1]
+    ?.toLowerCase();
+  if (!rawServerReference) return undefined;
+
+  return resolveRegisteredServerId(rawServerReference) ?? rawServerReference;
+}
+
+function isServerMonitoringArtifactRequest(query: string): boolean {
+  return (
+    MONITORING_ACTION_PATTERN.test(query) ||
+    (MONITORING_ARTIFACT_PATTERN.test(query) && isImplicitKeywordRequest(query))
+  );
+}
+
 export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   const normalized = query.trim();
   if (!normalized) return withRuleVersion({ kind: 'none' });
@@ -91,6 +159,22 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
 
   if (isFormattingOnlyRequest(normalized)) {
     return withRuleVersion({ kind: 'none' });
+  }
+
+  if (OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN.test(normalized)) {
+    return withRuleVersion({
+      kind: 'ops-procedure',
+      procedureType: readOpsProcedureType(normalized),
+      reason: 'ops_procedure_followup_edit_pattern',
+    });
+  }
+
+  if (!isNegated && isOpsProcedureRequest(normalized)) {
+    return withRuleVersion({
+      kind: 'ops-procedure',
+      procedureType: readOpsProcedureType(normalized),
+      reason: 'ops_procedure_action_pattern',
+    });
   }
 
   if (
@@ -113,6 +197,28 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
       return withRuleVersion({
         kind: 'server-snapshot',
         reason: 'server_snapshot_implicit_artifact_keyword',
+      });
+    }
+  }
+
+  const serverMonitoringServerId = readServerMonitoringServerId(normalized);
+  if (serverMonitoringServerId && MONITORING_PATTERN.test(normalized)) {
+    if (
+      ARTIFACT_GUIDANCE_PRIORITY_PATTERN.test(normalized) ||
+      ARTIFACT_GUIDANCE_PATTERN.test(normalized)
+    ) {
+      return withRuleVersion({
+        kind: 'guidance',
+        target: 'monitoring-analysis',
+        reason: 'monitoring_guidance_pattern',
+      });
+    }
+    if (!isNegated && isServerMonitoringArtifactRequest(normalized)) {
+      return withRuleVersion({
+        kind: 'server-monitoring-analysis',
+        serverId: serverMonitoringServerId,
+        serverName: serverMonitoringServerId,
+        reason: 'server_monitoring_action_pattern',
       });
     }
   }
@@ -189,6 +295,14 @@ export function shouldUseLLMChatArtifactIntent(query: string): boolean {
   if (!normalized) return false;
   if (ARTIFACT_NEGATION_PATTERN.test(normalized)) return false;
   if (isFormattingOnlyRequest(normalized)) return false;
+  if (
+    OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN.test(normalized) ||
+    isOpsProcedureRequest(normalized) ||
+    (readServerMonitoringServerId(normalized) &&
+      MONITORING_PATTERN.test(normalized))
+  ) {
+    return false;
+  }
   if (!LLM_ARTIFACT_CANDIDATE_PATTERN.test(normalized)) return false;
   if (LLM_ARTIFACT_ACTION_HINT_PATTERN.test(normalized)) return true;
 

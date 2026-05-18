@@ -62,6 +62,26 @@ const TOOL_PRESENTATIONS: Record<string, ToolPresentation> = {
     label: '조치 명령어 정리',
     description: '운영자가 바로 실행할 수 있는 점검·조치 명령어를 제안합니다.',
   },
+  generateIncidentReportArtifact: {
+    label: '장애 보고서 생성',
+    description: '현재 이상 징후를 장애 보고서 아티팩트로 정리합니다.',
+  },
+  generateMonitoringAnalysisArtifact: {
+    label: '이상감지/추세 분석',
+    description: '전체 서버의 이상 신호와 추세를 아티팩트로 정리합니다.',
+  },
+  generateServerMonitoringArtifact: {
+    label: '단일 서버 이상감지 분석',
+    description: '선택한 서버의 이상 신호와 추세를 아티팩트로 정리합니다.',
+  },
+  generateServerSnapshotArtifact: {
+    label: '서버 현황 스냅샷',
+    description: '현재 서버 상태를 스냅샷 아티팩트로 정리합니다.',
+  },
+  generateOpsProcedureArtifact: {
+    label: '운영 절차 생성',
+    description: '운영 대응 절차와 검증 항목을 아티팩트로 정리합니다.',
+  },
   searchWeb: {
     label: '웹 자료 확인',
     description: '공식 문서나 외부 자료를 찾아 최신 정보를 보완합니다.',

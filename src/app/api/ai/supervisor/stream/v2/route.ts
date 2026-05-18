@@ -19,16 +19,10 @@
 import { generateId } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { createDeveloperContextStreamPayload } from '@/lib/ai/developer-panel';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
-import { normalizeRouteDecision } from '@/lib/ai/route-decision';
-import {
-  INVALID_SESSION_ID_MESSAGE,
-  normalizeSupervisorDeviceType,
-  normalizeSupervisorSessionId,
-} from '@/lib/ai/supervisor/request-contracts';
+import { normalizeSupervisorDeviceType } from '@/lib/ai/supervisor/request-contracts';
 import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
@@ -46,21 +40,29 @@ import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
 } from '../../request-utils';
-import { requestSchemaLoose } from '../../schemas';
+import { requestSchema } from '../../schemas';
 import { resolveScopedSessionIds } from '../../session-owner';
 import {
   createStreamErrorResponse,
   createStreamFallbackResponse,
-  getStreamOwnerKey,
   NORMALIZED_MESSAGES_SCHEMA,
   trimMessagesForContext,
-  UI_MESSAGE_STREAM_HEADERS,
 } from './route-utils';
+import { createOutputFilterStream } from './stream-output-filter';
 import {
-  clearActiveStreamId,
-  getActiveStreamId,
-  saveActiveStreamId,
-} from './stream-state';
+  AI_FIRST_QUERY_HEADER,
+  AI_WARMUP_STARTED_AT_HEADER,
+  createDeveloperContextDataParts as buildDeveloperContextDataParts,
+  cleanupStaleStreamMapping,
+  createDeveloperContextStreamPart,
+  createSupervisorStreamHeaders,
+  isResumableStreamsEnabled,
+  normalizeFrontendLocalRouteDecision,
+  prependStreamDataPart,
+  resumeStreamHandler,
+  trackFirstQueryLatency,
+} from './stream-response-builder';
+import { clearActiveStreamId, saveActiveStreamId } from './stream-state';
 import {
   getSupervisorStreamAbortTimeoutMs,
   getSupervisorStreamRetryTimeoutMs,
@@ -78,187 +80,18 @@ import { createUpstashResumableContext } from './upstash-resumable';
 // @see src/config/ai-proxy.config.ts (런타임 타임아웃 설정)
 // ============================================================================
 export const maxDuration = 60;
-const AI_WARMUP_STARTED_AT_HEADER = 'x-ai-warmup-started-at';
-const AI_FIRST_QUERY_HEADER = 'x-ai-first-query';
-const DEVELOPER_CONTEXT_STREAM_PART_TYPE = 'data-developer-context';
-
-function isResumableStreamsEnabled(): boolean {
-  return process.env.AI_RESUMABLE_STREAMS_ENABLED === 'true';
-}
-
-function normalizeFrontendLocalRouteDecision(value: unknown) {
-  const decision = normalizeRouteDecision(value);
-  if (!decision) return undefined;
-  return decision.decidedBy === 'frontend' ? decision : undefined;
-}
-
-function createDeveloperContextStreamPart(params: {
-  cloudRunHealthy: boolean;
-  cloudRunUrl: string;
-}) {
-  return {
-    type: DEVELOPER_CONTEXT_STREAM_PART_TYPE,
-    data: createDeveloperContextStreamPayload({
-      cloudRunHealthy: params.cloudRunHealthy,
-      cloudRunUrl: params.cloudRunUrl,
-      disclosureMode: 'developer',
-    }),
-  } satisfies { type: `data-${string}`; data: unknown };
-}
-
-function prependStreamDataPart(
-  body: ReadableStream<Uint8Array>,
-  dataPart: { type: `data-${string}`; data: unknown }
-): ReadableStream<Uint8Array> {
-  const reader = body.getReader();
-  const encoder = new TextEncoder();
-  let didPrepend = false;
-
-  return new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      if (!didPrepend) {
-        didPrepend = true;
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify(dataPart)}\n\n`)
-        );
-        return;
-      }
-
-      const { done, value } = await reader.read();
-      if (done) {
-        controller.close();
-        return;
-      }
-      controller.enqueue(value);
-    },
-    cancel(reason) {
-      return reader.cancel(reason);
-    },
-  });
-}
-
-// ============================================================================
-// 🔁 GET - Resume Stream (Upstash-compatible polling)
-// ============================================================================
-
-const resumeStreamHandler = async (req: NextRequest) => {
-  const url = new URL(req.url);
-  const rawSessionId = url.searchParams.get('sessionId');
-  const skipParam = url.searchParams.get('skip');
-
-  // 🎯 CODEX Review Fix: skip 파라미터 검증 (NaN/음수 방지)
-  const skipChunks = skipParam ? Number(skipParam) : 0;
-  if (!Number.isInteger(skipChunks) || skipChunks < 0) {
-    return NextResponse.json(
-      { error: 'skip must be a non-negative integer' },
-      { status: 400 }
-    );
-  }
-
-  const sessionId = normalizeSupervisorSessionId(rawSessionId);
-  if (!sessionId) {
-    return NextResponse.json(
-      { error: INVALID_SESSION_ID_MESSAGE },
-      { status: 400 }
-    );
-  }
-
-  if (!isResumableStreamsEnabled()) {
-    logger.debug('[SupervisorStreamV2] Resume requested while disabled');
-    return new Response(null, {
-      status: 204,
-      headers: { 'X-Resumable': 'false' },
-    });
-  }
-
-  const ownerKey = getStreamOwnerKey(req);
-
-  logger.info(
-    `🔄 [SupervisorStreamV2] Resume request for session: ${sessionId}, skip: ${skipChunks}`
-  );
-
-  // Check for active stream in Redis
-  const activeStreamId = await getActiveStreamId(sessionId, ownerKey);
-
-  if (!activeStreamId) {
-    logger.debug(
-      `[SupervisorStreamV2] No active stream for session: ${sessionId}`
-    );
-    return new Response(null, { status: 204 });
-  }
-
-  // Create resumable context and attempt to resume
-  const resumableContext = createUpstashResumableContext();
-  const streamStatus = await resumableContext.hasExistingStream(activeStreamId);
-
-  if (!streamStatus) {
-    logger.debug(
-      `[SupervisorStreamV2] Stream not found in Redis: ${activeStreamId}`
-    );
-    await clearActiveStreamId(sessionId, ownerKey);
-    return new Response(null, { status: 204 });
-  }
-
-  // 🎯 CODEX Review Fix: completed 상태에서도 남은 chunk 재전송 허용
-  // 네트워크 단절 후 복구 시 이미 완료된 스트림도 이어받기 가능
-  if (streamStatus === 'completed') {
-    logger.info(
-      `[SupervisorStreamV2] Stream completed, attempting resume for remaining chunks: ${activeStreamId}`
-    );
-  }
-
-  // Resume the stream (works for both active and completed)
-  const resumedStream = await resumableContext.resumeExistingStream(
-    activeStreamId,
-    skipChunks
-  );
-
-  if (!resumedStream) {
-    logger.warn(
-      `[SupervisorStreamV2] Failed to resume stream: ${activeStreamId}`
-    );
-    await clearActiveStreamId(sessionId, ownerKey);
-    return new Response(null, { status: 204 });
-  }
-
-  // 🎯 CODEX Review R3 Fix: 완료된 스트림은 one-shot replay이므로
-  // session mapping 즉시 정리 (더 이상 polling 불필요)
-  if (streamStatus === 'completed') {
-    await clearActiveStreamId(sessionId, ownerKey);
-    logger.info(
-      `[SupervisorStreamV2] Cleared session mapping for completed stream: ${activeStreamId}`
-    );
-  }
-
-  logger.info(`✅ [SupervisorStreamV2] Stream resumed: ${activeStreamId}`);
-
-  return new Response(resumedStream, {
-    headers: {
-      ...UI_MESSAGE_STREAM_HEADERS,
-      'X-Session-Id': sessionId,
-      'X-Stream-Id': activeStreamId,
-      'X-Resumed': 'true',
-      'X-Skip-Chunks': String(skipChunks),
-    },
-  });
-};
 
 export const GET = withRateLimit(
   rateLimiters.aiAnalysis,
   withAuth(resumeStreamHandler)
 );
 
-// ============================================================================
-// 🌊 POST - Create UIMessageStream (Pass-through, no resumable)
-// ============================================================================
-
 export const POST = withRateLimit(
   rateLimiters.aiAnalysis,
   withAuth(async (req: NextRequest) => {
     try {
-      // 1. Validate request (using loose schema - Cloud Run does full validation)
       const body = await req.json();
-      const parseResult = requestSchemaLoose.safeParse(body);
+      const parseResult = requestSchema.safeParse(body);
 
       if (!parseResult.success) {
         logger.warn(
@@ -283,6 +116,8 @@ export const POST = withRateLimit(
         analysisMode,
         queryAsOfDataSlot,
         localRouteDecision: rawLocalRouteDecision,
+        metadata,
+        semanticQueryTrace,
       } = parseResult.data;
       const queryAsOf = buildJobQueryAsOf(
         new Date().toISOString(),
@@ -297,7 +132,6 @@ export const POST = withRateLimit(
         );
       }
 
-      // 2. Extract session ID
       const { sessionId, ownerKey } = resolveScopedSessionIds(
         req,
         bodySessionId
@@ -318,32 +152,8 @@ export const POST = withRateLimit(
         isFirstQuery
       );
 
-      if (isFirstQuery && warmupStartedAt) {
-        const latencyMs = Date.now() - warmupStartedAt;
-        if (latencyMs >= 0 && latencyMs <= 15 * 60 * 1000) {
-          logger.info(
-            {
-              event: 'first_query_latency',
-              sessionId,
-              first_query_latency_ms: latencyMs,
-              warmup_started_at_ms: warmupStartedAt,
-            },
-            '[AI Warmup] First query latency tracked'
-          );
-        } else {
-          logger.warn(
-            {
-              event: 'first_query_latency_invalid',
-              sessionId,
-              warmup_started_at_ms: warmupStartedAt,
-              computed_latency_ms: latencyMs,
-            },
-            '[AI Warmup] Invalid first query latency window'
-          );
-        }
-      }
+      trackFirstQueryLatency({ isFirstQuery, warmupStartedAt, sessionId });
 
-      // 3. Extract and sanitize query
       const queryResult = extractAndValidateQuery(messages as HybridMessage[]);
       if (!queryResult.ok) {
         if (queryResult.reason === 'blocked') {
@@ -385,7 +195,6 @@ export const POST = withRateLimit(
         `[SupervisorStreamV2] Warmup-aware first query: ${isFirstWarmupQuery}`
       );
 
-      // 4. Normalize messages for Cloud Run
       const sanitizedMessages = applySanitizedQueryToMessages(
         messages as HybridMessage[],
         userQuery
@@ -405,7 +214,6 @@ export const POST = withRateLimit(
         );
       }
 
-      // 5. Get Cloud Run URL
       const cloudRunConfig = getRequiredCloudRunConfig();
       if (!cloudRunConfig.ok) {
         logger.error(`❌ [SupervisorStreamV2] ${cloudRunConfig.message}`);
@@ -415,38 +223,21 @@ export const POST = withRateLimit(
         );
       }
 
-      // 6. Generate stream ID for tracking
       const streamId = generateId();
       const resumableStreamsEnabled = isResumableStreamsEnabled();
 
       // Best-effort cleanup for stale stream mapping in same owner/session scope
       if (resumableStreamsEnabled) {
-        try {
-          const staleStreamId = await getActiveStreamId(sessionId, ownerKey);
-          if (staleStreamId && staleStreamId !== streamId) {
-            const cleanupContext = createUpstashResumableContext();
-            await cleanupContext.clearStream(staleStreamId);
-            await clearActiveStreamId(sessionId, ownerKey);
-          }
-        } catch (cleanupError) {
-          logger.warn(
-            { err: cleanupError },
-            '[SupervisorStreamV2] Stale stream cleanup failed'
-          );
-        }
+        await cleanupStaleStreamMapping({ sessionId, ownerKey, streamId });
       }
 
-      // 7. Proxy to Cloud Run v2 endpoint
       const streamUrl = `${cloudRunConfig.url}/api/ai/supervisor/stream/v2`;
       const createDeveloperContextDataParts = (cloudRunHealthy: boolean) =>
-        internalDisclosureMode
-          ? [
-              createDeveloperContextStreamPart({
-                cloudRunHealthy,
-                cloudRunUrl: cloudRunConfig.url,
-              }),
-            ]
-          : [];
+        buildDeveloperContextDataParts({
+          enabled: Boolean(internalDisclosureMode),
+          cloudRunHealthy,
+          cloudRunUrl: cloudRunConfig.url,
+        });
 
       logger.info(`🔗 [SupervisorStreamV2] Connecting to: ${streamUrl}`);
       logger.info(`🆔 [SupervisorStreamV2] Stream ID: ${streamId}`);
@@ -496,6 +287,11 @@ export const POST = withRateLimit(
                 queryAsOf,
                 ...(internalDisclosureMode && { internalDisclosureMode }),
                 ...(localRouteDecision && { localRouteDecision }),
+                ...(metadata && { metadata }),
+                ...(semanticQueryTrace !== undefined &&
+                semanticQueryTrace !== null
+                  ? { semanticQueryTrace }
+                  : {}),
               }),
               signal: AbortSignal.timeout(timeoutMs),
             });
@@ -641,49 +437,42 @@ export const POST = withRateLimit(
               })
             )
           : cloudRunResponse.body;
+        const filteredStreamBody = streamBody.pipeThrough(
+          createOutputFilterStream()
+        );
 
         if (!resumableStreamsEnabled) {
           logger.info(`✅ [SupervisorStreamV2] Stream started (pass-through)`);
 
-          return new Response(streamBody, {
-            headers: {
-              ...UI_MESSAGE_STREAM_HEADERS,
-              'X-Session-Id': sessionId,
-              'X-Stream-Id': streamId,
-              'X-Backend': 'cloud-run-stream-v2',
-              'X-Stream-Protocol': 'ui-message-stream',
-              'X-Resumable': 'false',
-              ...timingHeaders,
-            },
+          return new Response(filteredStreamBody, {
+            headers: createSupervisorStreamHeaders({
+              sessionId,
+              streamId,
+              resumable: false,
+              timingHeaders,
+            }),
           });
         }
 
-        // 8. Save stream ID to Redis for tracking
         await saveActiveStreamId(sessionId, streamId, ownerKey);
 
-        // 9. Wrap stream with Upstash-compatible resumable context
         const resumableContext = createUpstashResumableContext();
         const resumableStream = await resumableContext.createNewResumableStream(
           streamId,
-          () => streamBody
+          () => filteredStreamBody
         );
 
         logger.info(`✅ [SupervisorStreamV2] Stream started (resumable)`);
 
-        // 10. Return resumable stream response
         return new Response(resumableStream, {
-          headers: {
-            ...UI_MESSAGE_STREAM_HEADERS,
-            'X-Session-Id': sessionId,
-            'X-Stream-Id': streamId,
-            'X-Backend': 'cloud-run-stream-v2',
-            'X-Stream-Protocol': 'ui-message-stream',
-            'X-Resumable': 'true',
-            ...timingHeaders,
-          },
+          headers: createSupervisorStreamHeaders({
+            sessionId,
+            streamId,
+            resumable: true,
+            timingHeaders,
+          }),
         });
       } catch (error) {
-        // Clear both session mapping and resumable stream data
         if (resumableStreamsEnabled) {
           await clearActiveStreamId(sessionId, ownerKey);
           const cleanupContext = createUpstashResumableContext();

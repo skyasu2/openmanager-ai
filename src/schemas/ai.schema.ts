@@ -33,6 +33,8 @@ export const AIModelSchema = z.enum([
   'meta-llama/llama-4-scout-17b-16e-instruct',
   'mistral-small-latest',
   'mistral-large-latest',
+  'glm-4.5-flash',
+  'glm-4.6v-flash',
   'mistral-embed',
   // Vision / auxiliary
   'gemini-2.5-flash',

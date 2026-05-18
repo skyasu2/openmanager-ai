@@ -2,8 +2,13 @@ import {
   type IncidentReport,
   normalizeIncidentSeverity,
 } from '@/components/ai/pages/auto-report/types';
+import {
+  normalizeReporterDegradationReasonCode,
+  normalizeReporterFallbackSource,
+} from '@/lib/ai/degradation-metadata';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import {
+  type ArtifactDegradationSummary,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
   type IncidentReportArtifact,
@@ -15,6 +20,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function readString(value: unknown, fallback = ''): string {
   return typeof value === 'string' && value.length > 0 ? value : fallback;
+}
+
+function readNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
 }
 
 function readStringArray(value: unknown): string[] {
@@ -37,13 +48,66 @@ function normalizeSystemSummary(
   const criticalServers = Number(
     value.critical_servers ?? value.criticalServers ?? 0
   );
+  const uptimePercent = readNumber(value.uptime_percent ?? value.uptimePercent);
+  const affectedDurationMinutes = readNumber(
+    value.affected_duration_minutes ?? value.affectedDurationMinutes
+  );
+  const dataSlotLabel = readString(
+    value.data_slot_label ?? value.dataSlotLabel
+  );
 
   return {
     totalServers: Number.isFinite(totalServers) ? totalServers : 0,
     healthyServers: Number.isFinite(healthyServers) ? healthyServers : 0,
     warningServers: Number.isFinite(warningServers) ? warningServers : 0,
     criticalServers: Number.isFinite(criticalServers) ? criticalServers : 0,
+    ...(uptimePercent !== undefined && { uptimePercent }),
+    ...(affectedDurationMinutes !== undefined && {
+      affectedDurationMinutes,
+    }),
+    ...(dataSlotLabel && { dataSlotLabel }),
   };
+}
+
+function normalizeLogPatterns(value: unknown): IncidentReport['logPatterns'] {
+  if (!Array.isArray(value)) return undefined;
+
+  const patterns = value
+    .map((entry): NonNullable<IncidentReport['logPatterns']>[number] | null => {
+      if (!isRecord(entry)) return null;
+      const severity = readString(entry.severity).toUpperCase();
+      if (
+        severity !== 'ERROR' &&
+        severity !== 'WARNING' &&
+        severity !== 'INFO'
+      ) {
+        return null;
+      }
+
+      const message = readString(entry.message);
+      const serverId = readString(entry.serverId ?? entry.server_id);
+      const firstSeen = readString(entry.firstSeen ?? entry.first_seen);
+      const lastSeen = readString(entry.lastSeen ?? entry.last_seen);
+      const count = readNumber(entry.count);
+      if (!message || !serverId || !firstSeen || !lastSeen || !count) {
+        return null;
+      }
+
+      return {
+        message,
+        count,
+        severity,
+        serverId,
+        firstSeen,
+        lastSeen,
+      };
+    })
+    .filter(
+      (entry): entry is NonNullable<IncidentReport['logPatterns']>[number] =>
+        entry !== null
+    );
+
+  return patterns.length > 0 ? patterns : undefined;
 }
 
 function normalizeIncidentReport(
@@ -71,6 +135,9 @@ function normalizeIncidentReport(
       ? (rawReport.recommendations as IncidentReport['recommendations'])
       : undefined,
     systemSummary: normalizeSystemSummary(rawReport.system_summary),
+    logPatterns: normalizeLogPatterns(
+      rawReport.log_patterns ?? rawReport.logPatterns
+    ),
     anomalies: Array.isArray(rawReport.anomalies)
       ? (rawReport.anomalies as IncidentReport['anomalies'])
       : undefined,
@@ -80,6 +147,23 @@ function normalizeIncidentReport(
     postmortem: isRecord(rawReport.postmortem)
       ? (rawReport.postmortem as unknown as IncidentReport['postmortem'])
       : undefined,
+  };
+}
+
+function normalizeDegradationSummary(
+  rawReport: Record<string, unknown>
+): ArtifactDegradationSummary | undefined {
+  if (rawReport.degraded !== true) return undefined;
+
+  const reasonCode = readString(
+    rawReport.fallbackReasonCode ?? rawReport.degradationReasonCode
+  );
+  const fallbackSource = readString(rawReport.fallbackSource);
+
+  return {
+    degraded: true,
+    reasonCode: normalizeReporterDegradationReasonCode(reasonCode),
+    fallbackSource: normalizeReporterFallbackSource(fallbackSource),
   };
 }
 
@@ -124,14 +208,22 @@ export async function generateIncidentReportArtifact({
   }
 
   const report = normalizeIncidentReport(data.report);
+  const degradation = normalizeDegradationSummary(data.report);
 
-  return attachArtifactEnvelopeMetadata(
+  return attachArtifactEnvelopeMetadata<IncidentReportArtifact>(
     {
       kind: 'incident-report',
       generatedAt: new Date().toISOString(),
       report,
       source:
         readString(data.report._source) || readString(data.source) || undefined,
+      ...(degradation && {
+        degradation,
+        providerSummary: {
+          usedFallback: true,
+          fallbackReason: degradation.reasonCode ?? 'degraded',
+        },
+      }),
       queryAsOfDataSlot,
     },
     {

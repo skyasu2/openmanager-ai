@@ -17,15 +17,39 @@ interface AnalysisBasisMetadataProps {
   meaningfulTools?: string[];
 }
 
+const SOURCE_GROUP_CLASS_NAMES = {
+  'monitoring-data': 'bg-emerald-50 text-emerald-700',
+  'knowledge-base': 'bg-purple-50 text-purple-700',
+  'web-search': 'bg-sky-50 text-sky-700',
+  'tool-result': 'bg-slate-100 text-slate-700',
+} as const;
+
 export function AnalysisBasisMetadata({
   basis,
   meaningfulTools,
 }: AnalysisBasisMetadataProps) {
-  const ragSources = basis.ragSources ?? [];
-  const hasRagEvidence = ragSources.some(
+  const evidenceSources =
+    basis.evidenceCards && basis.evidenceCards.length > 0
+      ? basis.evidenceCards.map((card) => ({
+          key: card.id,
+          title: card.title,
+          score: card.score,
+          sourceType: card.sourceType,
+          category: card.category,
+          url: card.url,
+        }))
+      : (basis.ragSources ?? []).map((source, idx) => ({
+          key: `legacy-rag-${idx}-${source.title}`,
+          title: source.title,
+          score: source.similarity,
+          sourceType: source.sourceType,
+          category: source.category,
+          url: source.url,
+        }));
+  const hasRagEvidence = evidenceSources.some(
     (source) => source.sourceType !== 'web'
   );
-  const hasWebEvidence = ragSources.some(
+  const hasWebEvidence = evidenceSources.some(
     (source) => source.sourceType === 'web'
   );
   const hasLegacyRagEvidence =
@@ -34,7 +58,6 @@ export function AnalysisBasisMetadata({
     basis.featureStatus ??
     buildAnalysisFeatureStatus({
       retrieval: basis.retrieval,
-      ragEnabled: Boolean(basis.ragUsed),
       hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
       hasWebEvidence,
       analysisMode: basis.analysisMode,
@@ -77,6 +100,26 @@ export function AnalysisBasisMetadata({
         {featureBadges.map(renderFeatureBadge)}
       </div>
 
+      {basis.sourceGroups && basis.sourceGroups.length > 0 && (
+        <div className="flex items-start gap-2">
+          <Database className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400" />
+          <span className="shrink-0 text-gray-500">근거 출처:</span>
+          <div className="flex flex-wrap gap-1">
+            {basis.sourceGroups.map((group) => (
+              <span
+                key={group.type}
+                className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+                  SOURCE_GROUP_CLASS_NAMES[group.type]
+                }`}
+                title={group.detail}
+              >
+                {group.label} {group.count}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {meaningfulTools && meaningfulTools.length > 0 && (
         <div className="flex items-start gap-2">
           <Database className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400" />
@@ -110,17 +153,15 @@ export function AnalysisBasisMetadata({
         </div>
       )}
 
-      {ragSources.length > 0 && (
+      {evidenceSources.length > 0 && (
         <div className="mt-2 border-t border-gray-200 pt-2">
           <div className="mb-1.5 flex items-center gap-2">
             <BookOpen className="h-3.5 w-3.5 text-purple-500" />
-            <span className="text-xs font-medium text-gray-600">
-              RAG 참조 문서
-            </span>
+            <span className="text-xs font-medium text-gray-600">참조 근거</span>
           </div>
           <div className="ml-5 space-y-1">
-            {ragSources.map((source, idx) => (
-              <div key={idx} className="flex items-center gap-2 text-xs">
+            {evidenceSources.map((source, idx) => (
+              <div key={source.key} className="flex items-center gap-2 text-xs">
                 <span className="shrink-0 text-gray-400">[{idx + 1}]</span>
                 {source.url ? (
                   <a
@@ -146,14 +187,14 @@ export function AnalysisBasisMetadata({
                 {source.sourceType !== 'web' && (
                   <span
                     className={`shrink-0 rounded px-1 py-0.5 text-xs font-medium ${
-                      source.similarity >= 0.8
+                      source.score >= 0.8
                         ? 'bg-green-100 text-green-700'
-                        : source.similarity >= 0.6
+                        : source.score >= 0.6
                           ? 'bg-yellow-100 text-yellow-700'
                           : 'bg-gray-100 text-gray-600'
                     }`}
                   >
-                    {Math.round(source.similarity * 100)}%
+                    {Math.round(source.score * 100)}%
                   </span>
                 )}
                 <span className="shrink-0 rounded bg-purple-50 px-1 py-0.5 text-xs text-purple-600">

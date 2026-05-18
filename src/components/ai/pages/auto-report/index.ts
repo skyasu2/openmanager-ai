@@ -15,16 +15,11 @@ export {
 // Sub Components
 export { default as ReportCard } from './ReportCard';
 // Types
-export type {
-  IncidentReport,
-  ServerMetric,
-} from './types';
+export type { IncidentReport } from './types';
 // Utils
 export {
-  extractNumericValue,
   getSeverityColor,
   getSeverityIcon,
   getStatusBadgeStyle,
   getStatusLabel,
-  mapSeverity,
 } from './utils';

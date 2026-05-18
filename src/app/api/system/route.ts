@@ -105,13 +105,36 @@ async function runInitialization(): Promise<string[]> {
 async function syncSystemRunningFlag(
   isRunning: boolean,
   action: string
-): Promise<void> {
+): Promise<boolean> {
   const synced = await setSystemRunningFlag(isRunning);
   if (!synced) {
     systemLogger.warn(
       `[System] Redis system flag sync failed (action=${action}, isRunning=${isRunning})`
     );
   }
+  return synced;
+}
+
+function isServerlessSystemRuntime(): boolean {
+  return process.env.VERCEL === '1' || Boolean(process.env.VERCEL_ENV);
+}
+
+function buildServerlessSystemActionResponse(
+  action: 'start' | 'stop',
+  synced: boolean
+) {
+  const actionLabel = action === 'start' ? '시작' : '중지';
+
+  return NextResponse.json({
+    success: synced,
+    action,
+    message: synced
+      ? `서버리스 시스템 실행 상태 ${actionLabel} 완료`
+      : `서버리스 시스템 실행 상태 ${actionLabel} 실패`,
+    errors: synced ? [] : ['REDIS_SYNC_FAILED'],
+    warnings: ['SERVERLESS_VIRTUAL_SYSTEM_STATE'],
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // ============================================================================
@@ -224,9 +247,13 @@ export const GET = withAuth(async (request: NextRequest) => {
           status.running ||
           (metrics.totalProcesses > 0 &&
             metrics.runningProcesses / metrics.totalProcesses >= 0.5);
-        // 실행 상태의 SSOT는 프로세스 매니저 상태를 우선한다.
-        // Redis는 보조 신호로만 사용하여 stale 플래그에 의한 오탐을 줄인다.
-        const isSystemRunning = processBasedRunning;
+        // Vercel 서버리스에서는 ProcessManager의 in-memory 상태가 요청 간 유지되지 않는다.
+        // 이 환경에서는 Redis 플래그를 사용자-facing 실행 상태 SSOT로 사용한다.
+        const useRedisAsStateSource = isServerlessSystemRuntime();
+        const isSystemRunning =
+          useRedisAsStateSource && redisSystemRunning !== null
+            ? redisSystemRunning
+            : processBasedRunning;
         const redisStateMismatch =
           redisSystemRunning !== null &&
           redisSystemRunning !== processBasedRunning;
@@ -251,11 +278,15 @@ export const GET = withAuth(async (request: NextRequest) => {
             ai: true,
           },
           systemStateSource:
-            redisSystemRunning === null
-              ? 'process-manager'
-              : redisStateMismatch
-                ? 'process-manager(redis-mismatch)'
-                : 'process-manager+redis',
+            useRedisAsStateSource && redisSystemRunning !== null
+              ? redisStateMismatch
+                ? 'redis(serverless,process-mismatch)'
+                : 'redis(serverless)+process-manager'
+              : redisSystemRunning === null
+                ? 'process-manager'
+                : redisStateMismatch
+                  ? 'process-manager(redis-mismatch)'
+                  : 'process-manager+redis',
           // 기존 데이터도 함께 반환 (호환성)
           metrics,
           timestamp: new Date().toISOString(),
@@ -289,12 +320,16 @@ export const POST = withAuth(async (request: NextRequest) => {
 
     debug.log('🔧 System POST action:', action);
 
-    const manager = getProcessManager();
-
     switch (action) {
       // System Control Actions (from unified)
       case 'start': {
         systemLogger.system('🚀 통합 시스템 시작 요청');
+        if (isServerlessSystemRuntime()) {
+          const synced = await syncSystemRunningFlag(true, 'start-serverless');
+          return buildServerlessSystemActionResponse('start', synced);
+        }
+
+        const manager = getProcessManager();
         const result = await manager.startSystem(options);
         if (result.success) {
           await syncSystemRunningFlag(true, 'start');
@@ -312,6 +347,12 @@ export const POST = withAuth(async (request: NextRequest) => {
 
       case 'stop': {
         systemLogger.system('🛑 통합 시스템 중지 요청');
+        if (isServerlessSystemRuntime()) {
+          const synced = await syncSystemRunningFlag(false, 'stop-serverless');
+          return buildServerlessSystemActionResponse('stop', synced);
+        }
+
+        const manager = getProcessManager();
         const result = await manager.stopSystem();
         if (result.success) {
           await syncSystemRunningFlag(false, 'stop');
@@ -328,7 +369,25 @@ export const POST = withAuth(async (request: NextRequest) => {
 
       case 'restart': {
         systemLogger.system('🔄 통합 시스템 재시작 요청');
+        if (isServerlessSystemRuntime()) {
+          await syncSystemRunningFlag(false, 'restart-stop-serverless');
+          const synced = await syncSystemRunningFlag(
+            true,
+            'restart-start-serverless'
+          );
+          return NextResponse.json({
+            success: synced,
+            action: 'restart',
+            message: synced
+              ? '서버리스 시스템 실행 상태 재시작 완료'
+              : '서버리스 시스템 실행 상태 재시작 실패',
+            errors: synced ? [] : ['REDIS_SYNC_FAILED'],
+            warnings: ['SERVERLESS_VIRTUAL_SYSTEM_STATE'],
+            timestamp: new Date().toISOString(),
+          });
+        }
 
+        const manager = getProcessManager();
         const stopResult = await manager.stopSystem();
         if (!stopResult.success) {
           return NextResponse.json(

@@ -28,11 +28,11 @@ const FeatureCardItem = memo(
     onCardClick: (cardId: string) => void;
     isAIDisabled: boolean;
   }) => {
-    // 카드 타입별 스타일 헬퍼 - 성능 최적화 (shadow 제거, ring만 유지)
+    // 카드 타입별 스타일 헬퍼
     const getCardStyles = useCallback((card: FeatureCard) => {
       return {
-        title: 'text-white/95 group-hover:text-white',
-        description: 'text-white/[0.76] group-hover:text-white/90',
+        title: 'text-white group-hover:text-white',
+        description: 'text-white/[0.88] group-hover:text-white/95',
         hoverRing: card.isAICard
           ? 'group-hover:ring-pink-400/40'
           : card.isVibeCard
@@ -72,9 +72,9 @@ const FeatureCardItem = memo(
         onClick={() => onCardClick(card.id)}
       >
         <div
-          className={`relative flex h-full min-h-[13rem] overflow-hidden rounded-lg border border-white/20 bg-white/[0.09] p-4 transition-all duration-200 ease-out hover:bg-white/[0.14] group-hover:-translate-y-0.5 group-active:translate-y-0 motion-reduce:transform-none sm:min-h-[14.5rem] md:min-h-[17rem] lg:min-h-[15.5rem] ${
+          className={`relative flex h-full min-h-[13rem] overflow-hidden rounded-lg border border-white/[0.24] bg-white/[0.115] p-4 shadow-lg shadow-black/25 transition-all duration-200 ease-out hover:bg-white/[0.16] hover:shadow-xl hover:shadow-black/[0.35] group-hover:-translate-y-0.5 group-active:translate-y-0 motion-reduce:transform-none sm:min-h-[14.5rem] md:min-h-[17rem] lg:min-h-[15.5rem] ${
             card.isSpecial
-              ? 'border-amber-500/30 bg-linear-to-br from-amber-500/10 to-orange-500/10'
+              ? 'border-amber-400/40 bg-linear-to-br from-amber-500/[0.16] to-orange-500/[0.14]'
               : ''
           }`}
         >
@@ -116,13 +116,13 @@ const FeatureCardItem = memo(
 
             <h2
               id={titleId}
-              className={`mb-2 text-base font-semibold leading-snug transition-colors ${cardStyles.title}`}
+              className={`mb-2 text-[1.0625rem] font-semibold leading-snug transition-colors ${cardStyles.title}`}
             >
               {card.title}
             </h2>
             <p
               id={descriptionId}
-              className={`text-[0.8125rem] leading-relaxed transition-colors ${cardStyles.description}`}
+              className={`text-sm leading-relaxed transition-colors ${cardStyles.description}`}
             >
               {card.description}
             </p>
@@ -139,7 +139,7 @@ const FeatureCardItem = memo(
 
             <ArrowRight
               aria-hidden="true"
-              className="mt-auto h-4 w-4 self-end text-white/45 transition-transform group-hover:translate-x-0.5 group-hover:text-white/75 motion-reduce:transform-none"
+              className="mt-auto h-4 w-4 self-end text-white/60 transition-transform group-hover:translate-x-0.5 group-hover:text-white/90 motion-reduce:transform-none"
             />
           </div>
 

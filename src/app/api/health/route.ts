@@ -372,11 +372,19 @@ export async function GET(request: NextRequest) {
   if (service === 'cloudrun' || service === 'ai') {
     const result = await checkCloudRunHealth();
     if (result.healthy) {
+      const aiEngine = {
+        service: result.service ?? 'ai-engine',
+        ...(result.version ? { version: result.version } : {}),
+      };
+
       return NextResponse.json({
         status: 'ok',
         healthy: true,
         backend: 'cloud-run',
         latency: result.latency,
+        service: aiEngine.service,
+        ...(result.version ? { version: result.version } : {}),
+        aiEngine,
         timestamp: new Date().toISOString(),
       });
     }

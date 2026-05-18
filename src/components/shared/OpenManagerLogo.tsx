@@ -28,6 +28,8 @@ interface OpenManagerLogoProps {
   prefetch?: boolean;
   /** 로고 제목 태그 (접근성/문서 구조 제어용) */
   titleAs?: 'h1' | 'p' | 'span';
+  /** 로고 제목 글자 두께 */
+  titleWeight?: 'bold' | 'semibold';
 }
 
 /**
@@ -45,6 +47,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   href,
   prefetch = false,
   titleAs = 'h1',
+  titleWeight = 'bold',
 }) => {
   const { aiAgent, isSystemStarted } = useUnifiedAdminStore(
     useShallow((s) => ({
@@ -68,6 +71,8 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   const subtitleColor = variant === 'dark' ? 'text-white/90' : 'text-gray-500';
 
   const TitleTag = titleAs;
+  const titleWeightClass =
+    titleWeight === 'semibold' ? 'font-semibold' : 'font-bold';
 
   const content = (
     <div
@@ -86,7 +91,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
       {/* 텍스트 영역 - suppressHydrationWarning for dynamic subtitle */}
       <div className="min-w-0 text-left" suppressHydrationWarning>
         <TitleTag
-          className={`truncate font-bold ${
+          className={`truncate ${titleWeightClass} ${
             compactOnMobile ? 'text-base sm:text-xl' : 'text-xl'
           } ${titleColor}`}
         >

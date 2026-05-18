@@ -9,8 +9,8 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '세계 최대 AI 칩 Wafer-Scale Engine(WSE-3) 기반 추론 서비스. 850,000개 코어가 단일 웨이퍼에 집적되어 GPU 클러스터의 통신 병목 없이 초고속 추론 제공',
     implementation:
-      '→ 짧은 컨텍스트 fallback 및 structured route 보조. 8K context 제약이 있어 장문 Agent 경로는 Groq/Mistral fallback으로 전환',
-    version: 'Llama 3.1 8B',
+      '→ 짧은 컨텍스트 fallback 및 structured route 보조. llama3.1-8b 기본값을 유지하면서 gpt-oss-120b를 replacement fallback 후보로 활성화',
+    version: 'Llama 3.1 8B / GPT-OSS 120B',
     status: 'active',
     icon: '🧠',
     tags: ['WSE-3', 'Planning', '웨이퍼스케일'],
@@ -23,7 +23,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       'LPU(Language Processing Unit) 기반 초고속 추론 인프라. GPU 대비 일관된 응답 속도와 낮은 지연시간으로 500 Tokens/s 속도 제공',
     implementation:
-      '→ NLQ + Analyst + Tool-calling 1순위 모델. 고도의 도구 실행력으로 실시간 메트릭 조회 및 이상 분석 전담',
+      '→ Metrics Query + Analyst + Tool-calling 1순위 모델. 고도의 도구 실행력으로 실시간 메트릭 조회 및 이상 분석 전담',
     version: 'Llama 4 Scout (17B)',
     status: 'active',
     icon: '⚡',
@@ -37,7 +37,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '프랑스 AI 스타트업의 효율적인 오픈웨이트 LLM. 무료 티어 보호를 위해 Large 대신 Small 계열을 text fallback 기본값으로 사용',
     implementation:
-      '→ Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback. RAG runtime과 임베딩 경로에서는 제외',
+      '→ Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback. 내부 지식 검색 runtime과 임베딩 경로에서는 제외',
     version: 'mistral-small-latest',
     status: 'active',
     icon: '🛡️',
@@ -65,7 +65,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'critical',
     description:
-      'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject API를 통해 tool-calling LLM 응답, structured output, 스트리밍을 제공',
+      'Vercel이 개발한 AI 애플리케이션 프레임워크. generateText + Output.object와 streamText를 통해 tool-calling LLM 응답, structured output, 스트리밍을 제공',
     implementation:
       'deterministic/single-first 런타임을 기본값으로 두고, RCA/report/advisor/vision 같은 복잡 질의만 5개 라우팅 에이전트로 escalation',
     version: '6.0',
@@ -74,19 +74,19 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     tags: ['AI SDK', 'Streaming', 'Tool Calling', 'Decision Layer'],
     type: 'opensource',
   },
-  // ========== Database & RAG ==========
+  // ========== Database & Internal Knowledge ==========
   {
     name: 'Supabase Postgres',
     category: 'database',
     importance: 'high',
     description:
-      'PostgreSQL full-text search 기반 운영 지식 저장소. 과거 vector 컬럼은 호환 데이터로 남지만 runtime 검색 경로에서는 사용하지 않음',
+      'PostgreSQL Full Text Search 기반 운영 지식 검색 인덱스. 원본 지식은 repo 문서/seed JSON에 두고 Supabase는 재생성 가능한 serving index로 사용',
     implementation:
-      '과거 장애 사례 및 해결 방법 저장. Advisor Agent가 searchKnowledgeBase 도구로 유사 사례 검색',
-    version: 'PostgreSQL 15 + BM25 RPC',
+      '운영 runbook, 장애 사례, 토폴로지 문서를 knowledge_base에 materialize하고 search_knowledge_text RPC로 검색',
+    version: 'PostgreSQL 17 + FTS RPC',
     status: 'active',
     icon: '🐘',
-    tags: ['BM25', 'RAG', 'Metadata Boost'],
+    tags: ['Postgres FTS', 'Internal Knowledge', 'Metadata Boost'],
     type: 'commercial',
   },
   {
@@ -94,9 +94,9 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'high',
     description:
-      'BM25 텍스트 매칭과 metadata boost를 결합한 경량 지식 검색 계층. 외부 프레임워크 없이 직접 구성',
+      'PostgreSQL Full Text Search와 metadata boost를 결합한 경량 지식 검색 계층. 외부 검색 SaaS나 graph runtime 없이 직접 구성',
     implementation:
-      'Supabase search_knowledge_text RPC + 메타데이터 부스트로 검색 흐름을 구성. Reporter Agent의 searchKnowledgeBase 도구로 연결',
+      'Supabase search_knowledge_text RPC + 메타데이터 부스트로 검색 흐름을 구성. Reporter/Advisor Agent의 searchKnowledgeBase 도구로 연결',
     version: 'In-house',
     status: 'active',
     icon: '🔍',
@@ -137,7 +137,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'low',
     description:
-      '과거 GraphRAG/벡터 인덱싱 경로에서 사용하던 텍스트 임베딩 모델. 현재 AI assistant Knowledge Retrieval Lite request path에서는 사용하지 않음',
+      '과거 그래프/벡터 인덱싱 경로에서 사용하던 텍스트 임베딩 모델. 현재 AI assistant Knowledge Retrieval Lite request path에서는 사용하지 않음',
     implementation:
       '→ Cloud Run embedding endpoint와 runtime helper는 제거됨. 운영 질의의 지식 검색은 BM25 + metadata boost 중심으로 처리',
     version: 'mistral-embed (1024d)',
@@ -168,7 +168,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       'Serverless Redis 서비스. Edge에서 동작하는 초저지연 캐싱과 Rate Limiting 제공',
     implementation:
-      '→ AI 응답 캐싱(3시간 TTL), API Rate Limiting, 세션 저장에 사용. 무료 티어 10K req/day',
+      '→ AI 응답 캐싱(3시간 TTL), API Rate Limiting, 세션 저장에 사용. 무료 티어 500K commands/month',
     version: '@upstash/redis v1.36',
     status: 'active',
     icon: '⚡',

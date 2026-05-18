@@ -133,9 +133,9 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                     value: formatRelativeTime(server.lastUpdate),
                     icon: '🔄',
                   },
-                ].map((item, idx) => (
+                ].map((item) => (
                   <div
-                    key={idx}
+                    key={item.label}
                     className="flex min-w-0 flex-col gap-1 rounded-lg p-2 transition-colors hover:bg-gray-50 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="flex min-w-0 items-center gap-2">
@@ -176,9 +176,9 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
 
               <div className="space-y-3">
                 {server.services && server.services.length > 0 ? (
-                  server.services.map((service, index) => (
+                  server.services.map((service) => (
                     <div
-                      key={index}
+                      key={service.name}
                       className="flex min-w-0 flex-col gap-2 rounded-lg bg-linear-to-r from-gray-50 to-transparent p-3 transition-colors hover:from-gray-100 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex min-w-0 items-center gap-3">
@@ -203,11 +203,18 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                               : 'bg-linear-to-r from-amber-100 to-amber-200 text-amber-800'
                         }`}
                       >
+                        <span aria-hidden="true">
+                          {service.status === 'running'
+                            ? '✅'
+                            : service.status === 'stopped'
+                              ? '🛑'
+                              : '⏸️'}
+                        </span>{' '}
                         {service.status === 'running'
-                          ? '✅ 실행중'
+                          ? '실행중'
                           : service.status === 'stopped'
-                            ? '🛑 중지됨'
-                            : '⏸️ 대기중'}
+                            ? '중지됨'
+                            : '대기중'}
                       </span>
                     </div>
                   ))

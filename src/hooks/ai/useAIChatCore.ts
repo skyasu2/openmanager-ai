@@ -1,17 +1,6 @@
 'use client';
 
-/**
- * 🤖 useAIChatCore - AI 채팅 공통 로직 훅
- *
- * AISidebarV4와 AIWorkspace에서 공유하는 핵심 로직:
- * - Hybrid AI Query (Streaming + Job Queue)
- * - 세션 제한
- * - 메시지 변환
- * - 파일 첨부 재시도 지원
- *
- * @note 유틸리티는 utils/ 폴더로 분리됨
- * @updated 2026-01-28 - 재시도 시 파일 첨부 보존 (lastAttachmentsRef)
- */
+// Shared AI chat core for AISidebarV4 and AIWorkspace.
 
 import type { UIMessage } from '@ai-sdk/react';
 import {
@@ -22,51 +11,37 @@ import {
   useRef,
   useState,
 } from 'react';
-import { getComplexityThreshold } from '@/config/ai-proxy.config';
 import {
   type AgentStatusEventData,
-  type AIStreamStatus,
   type ClarificationOption,
-  type ClarificationRequest,
   type HandoffEventData,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
-import {
-  buildAssistantPlanFromRouteDecision,
-  buildAssistantResultFromRouteDecision,
-} from '@/lib/ai/assistant-contract';
-import {
-  type ChatArtifactIntentReason,
-  classifyChatArtifactIntent,
-  createArtifactGuidanceMessage,
-  fetchLLMChatArtifactIntent,
-  shouldUseLLMChatArtifactIntent,
-} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
-import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
-import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
-import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
-import {
-  type ChatArtifact,
-  createArtifactEnvelope,
-} from '@/lib/ai/chat-artifacts/types';
 import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
-import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
-import type { AIErrorDetails } from '@/lib/ai/error-details';
-import { buildRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
-import {
-  type EnhancedChatMessage,
-  useAISidebarStore,
-} from '@/stores/useAISidebarStore';
-import type { JobDataSlot } from '@/types/ai-jobs';
-import type { SessionState } from '@/types/session';
+import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import { buildFrontendQueryRoutingDecision } from './core/query-routing';
+import {
+  runArtifactGuidanceCta,
+  tryHandleChatArtifactRequest,
+} from './core/chat-artifact-guidance';
+import type { GuidanceCtaTarget } from './core/chat-artifact-metadata';
+import {
+  createDebugRoutingMessages,
+  createQAAssistantMessages,
+  isDebugRoutingPrompt,
+  isQAThinkingVisualizerPrompt,
+} from './core/routing-debug-messages';
+import { useArtifactManager } from './core/useArtifactManager';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
 import { useChatSessionState } from './core/useChatSessionState';
 import type { StreamRagSource } from './types/stream-rag.types';
+import type {
+  UseAIChatCoreOptions as UseAIChatCoreOptionsBase,
+  UseAIChatCoreReturn as UseAIChatCoreReturnBase,
+} from './useAIChatCore.types';
 import { useAIChatHybridCallbacks } from './useAIChatHybridCallbacks';
 import { useDeferredMessageMetadata } from './useDeferredMessageMetadata';
 import { useEnhancedChatMessages } from './useEnhancedChatMessages';
@@ -78,394 +53,8 @@ export { convertThinkingStepsToUI };
 // NOTE: SessionState 타입은 './core/useChatSessionState'에서 직접 import하세요.
 // Storybook vitest mock 변환기가 type 재내보내기를 런타임 값으로 취급하므로 제거
 
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface UseAIChatCoreOptions {
-  /** 세션 ID (외부에서 전달 시 사용) */
-  sessionId?: string;
-  /** 메시지 전송 콜백 */
-  onMessageSend?: (message: string) => void;
-  /** 세션 제한 비활성화 (전체화면에서 필요시) */
-  disableSessionLimit?: boolean;
-  /** Dashboard snapshot data slot used to keep sidebar AI answers aligned. */
-  queryAsOfDataSlot?: JobDataSlot;
-}
-
-export interface UseAIChatCoreReturn {
-  // 입력 상태
-  input: string;
-  setInput: (value: string) => void;
-
-  // 메시지
-  messages: EnhancedChatMessage[];
-  sendQuery: (query: string) => void;
-
-  // 로딩/진행 상태
-  isLoading: boolean;
-  hybridState: {
-    progress?: { progress: number; stage: string; message?: string };
-    jobId?: string;
-    error?: string | null;
-    errorDetails?: AIErrorDetails | null;
-  };
-  currentMode?: 'streaming' | 'job-queue';
-  streamStatus?: AIStreamStatus;
-
-  // 에러 상태
-  error: string | null;
-  clearError: () => void;
-
-  // 세션 관리
-  sessionId: string;
-  sessionState: SessionState;
-  handleNewSession: () => void;
-
-  // 액션
-  regenerateLastResponse: () => void;
-  /** 마지막 쿼리 재시도 (파일 첨부 포함) */
-  retryLastQuery: () => void;
-  stop: () => void;
-  cancel: () => void;
-
-  // 입력 처리 (파일 첨부 지원)
-  handleSendInput: (attachments?: FileAttachment[]) => void;
-
-  // 명확화 기능
-  clarification: ClarificationRequest | null;
-  selectClarification: (option: ClarificationOption) => void;
-  submitCustomClarification: (customInput: string) => void;
-  skipClarification: () => void;
-  /** 명확화 취소 (쿼리 미실행, 상태 정리만) */
-  dismissClarification: () => void;
-
-  // 대기열 큐 상태
-  queuedQueries: Array<{
-    id: number;
-    text: string;
-    attachments?: FileAttachment[];
-  }>;
-  removeQueuedQuery: (index: number) => void;
-
-  // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
-  currentAgentStatus: AgentStatusEventData | null;
-  currentHandoff: HandoffEventData | null;
-  developerPanelData: DeveloperPanelData | null;
-
-  /** Cloud Run AI Engine 웜업 중 여부 */
-  warmingUp: boolean;
-  /** 웜업 예상 대기 시간 (초) */
-  estimatedWaitSeconds: number;
-}
-
-const QA_THINKING_VISUALIZER_PROMPT = '/qa-thinking-visualizer';
-const DEBUG_ROUTING_PROMPT = '/debug-routing';
-
-function isQAThinkingVisualizerPrompt(text: string): boolean {
-  const normalized = text.trim().toLowerCase();
-  return normalized.includes(QA_THINKING_VISUALIZER_PROMPT);
-}
-
-function isDebugRoutingPrompt(text: string): boolean {
-  return text.trim().toLowerCase().startsWith(DEBUG_ROUTING_PROMPT);
-}
-
-function createDebugRoutingMessages(
-  fullText: string,
-  analysisMode: import('@/types/ai/analysis-mode').AnalysisMode
-): [UIMessage, UIMessage] {
-  const query = fullText.replace(/^\/debug-routing\s*/i, '').trim();
-  const token = Date.now().toString(36);
-
-  const threshold = getComplexityThreshold(); // 기본 19
-  const routingDecision = buildFrontendQueryRoutingDecision({
-    query: query || '(쿼리 없음)',
-    complexityThreshold: threshold,
-    analysisMode,
-  });
-  const {
-    analysis,
-    forceJobQueue: forceResult,
-    modeAdjustedThreshold,
-    queryMode,
-  } = routingDecision;
-
-  const isComplex = queryMode === 'job-queue';
-  const routePath = isComplex
-    ? 'Job Queue (/api/ai/jobs)'
-    : 'Streaming (/api/ai/supervisor/stream/v2)';
-
-  const factorLines =
-    analysis.factors.length > 0
-      ? analysis.factors.map((f) => `  · ${f}`).join('\n')
-      : '  · (없음)';
-
-  const forceNote = forceResult.force
-    ? `\n⚡ 강제 Job Queue: 키워드 "${forceResult.matchedKeyword}" 감지`
-    : '';
-
-  const thinkingNote =
-    analysisMode === 'thinking'
-      ? `\n🧠 thinking 모드: threshold ${threshold} → ${modeAdjustedThreshold} (−8)`
-      : '';
-
-  const resultText =
-    `🔍 **Routing Debug**\n` +
-    `\`\`\`\n` +
-    `쿼리:       ${query || '(없음)'}\n` +
-    `복잡도:     ${analysis.level} (score: ${analysis.score})\n` +
-    `threshold:  ${modeAdjustedThreshold} (기본값: ${threshold})\n` +
-    `경로:       ${isComplex ? '🔄 ' : '⚡ '}${routePath}\n` +
-    `\`\`\`\n` +
-    `**factors**\n${factorLines}` +
-    forceNote +
-    thinkingNote;
-
-  const userMessage: UIMessage = {
-    id: `debug-user-${token}`,
-    role: 'user',
-    parts: [{ type: 'text', text: fullText }],
-  };
-  const assistantMessage: UIMessage = {
-    id: `debug-assistant-${token}`,
-    role: 'assistant',
-    parts: [{ type: 'text', text: resultText }],
-  };
-
-  return [userMessage, assistantMessage];
-}
-
-function createQAToolResultSummaries() {
-  return [
-    {
-      toolName: 'analyzeIntent',
-      label: '의도 분석',
-      summary: '질문의 핵심 의도를 분석해 서버 진단 요청으로 분류했습니다.',
-      status: 'completed' as const,
-    },
-    {
-      toolName: 'selectRoute',
-      label: '라우팅 결정',
-      summary: '실시간 메트릭 기반 분석 경로를 선택했습니다.',
-      status: 'completed' as const,
-    },
-    {
-      toolName: 'generateInsight',
-      label: '인사이트 생성',
-      summary: '우선 조치 항목과 근거를 구조화했습니다.',
-      status: 'completed' as const,
-    },
-  ];
-}
-
-function createQAAssistantMessages(text: string): [UIMessage, UIMessage] {
-  const token = Date.now().toString(36);
-  const userMessage: UIMessage = {
-    id: `qa-user-${token}`,
-    role: 'user',
-    parts: [{ type: 'text', text }],
-  };
-  const assistantMessage: UIMessage = {
-    id: `qa-assistant-${token}`,
-    role: 'assistant',
-    parts: [
-      {
-        type: 'text',
-        text: 'QA thinking visualizer 샘플 응답입니다. AI 처리 과정 토글을 펼쳐 단계 렌더링을 확인하세요.',
-      },
-    ],
-    metadata: {
-      traceId: `qa-trace-${token}`,
-      toolsCalled: ['analyzeIntent', 'selectRoute', 'generateInsight'],
-      toolResultSummaries: createQAToolResultSummaries(),
-    },
-  };
-
-  return [userMessage, assistantMessage];
-}
-
-function createTextMessage({
-  id,
-  role,
-  text,
-  metadata,
-}: {
-  id: string;
-  role: 'user' | 'assistant';
-  text: string;
-  metadata?: Record<string, unknown>;
-}): UIMessage {
-  return {
-    id,
-    role,
-    parts: [{ type: 'text', text }],
-    ...(metadata && { metadata }),
-  };
-}
-
-function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
-  switch (kind) {
-    case 'incident-report':
-      return '장애 보고서를 작성하고 있습니다.';
-    case 'monitoring-analysis':
-      return '이상감지/추세 분석을 실행하고 있습니다.';
-    case 'server-snapshot':
-      return '서버 상태 스냅샷을 생성하고 있습니다.';
-  }
-}
-
-function getArtifactSuccessText(artifact: ChatArtifact): string {
-  if (artifact.kind === 'incident-report') {
-    return [
-      '장애 보고서를 작성했습니다.',
-      '',
-      `- 제목: ${artifact.report.title}`,
-      `- 영향 서버: ${artifact.report.affectedServers.length}대`,
-      '',
-      '아래 카드에서 MD/TXT 파일로 내려받거나 장애 보고서 작성 화면에서 확인할 수 있습니다.',
-    ].join('\n');
-  }
-
-  if (artifact.kind === 'server-snapshot') {
-    return [
-      '서버 상태 스냅샷을 생성했습니다.',
-      '',
-      `- 총 서버: ${artifact.totals.total}대`,
-      `- 주의/위험: ${artifact.totals.warning + artifact.totals.critical + artifact.totals.offline}대`,
-      '',
-      '아래 카드에서 MD/JSON 파일로 내려받을 수 있습니다.',
-    ].join('\n');
-  }
-
-  return [
-    '이상감지/추세 분석을 완료했습니다.',
-    '',
-    `- 분석 서버: ${artifact.serverCount}대`,
-    `- 위험 신호: ${artifact.riskSignalCount}건`,
-    '',
-    '아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.',
-  ].join('\n');
-}
-
-function isAbortError(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'name' in error &&
-    (error as { name?: unknown }).name === 'AbortError'
-  );
-}
-
-function getArtifactErrorText(
-  kind: ChatArtifact['kind'],
-  error: unknown
-): string {
-  if (isAbortError(error)) {
-    const target =
-      kind === 'incident-report'
-        ? '장애 보고서 작성'
-        : kind === 'server-snapshot'
-          ? '서버 상태 스냅샷 생성'
-          : '이상감지/추세 분석';
-    return `${target}을 중단했습니다.`;
-  }
-
-  const message = error instanceof Error ? error.message : String(error);
-  const target =
-    kind === 'incident-report'
-      ? '장애 보고서 작성'
-      : kind === 'server-snapshot'
-        ? '서버 상태 스냅샷 생성'
-        : '이상감지/추세 분석';
-  return `${target}을 완료하지 못했습니다. ${message}`;
-}
-
-function buildArtifactMetadata(
-  artifact: ChatArtifact,
-  intentReason: ChatArtifactIntentReason,
-  queryAsOfDataSlot?: JobDataSlot
-): Record<string, unknown> {
-  const routeDecision = buildRouteDecision({
-    intent: 'artifact',
-    executionPath: 'client-artifact',
-    artifactKind: artifact.kind,
-    reasonCodes: [intentReason],
-    decidedBy: 'frontend',
-    ...(queryAsOfDataSlot?.timeLabel && {
-      dataSlot: queryAsOfDataSlot.timeLabel,
-    }),
-  });
-  const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
-  const assistantResult = buildAssistantResultFromRouteDecision(routeDecision);
-  const artifactEnvelope = createArtifactEnvelope(artifact, {
-    domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
-    sourceMode:
-      artifact.sourceMode ??
-      (artifact.kind === 'server-snapshot' ? 'otel-static' : 'tool-result'),
-    ...(queryAsOfDataSlot?.timeLabel && {
-      dataSlot: queryAsOfDataSlot.timeLabel,
-    }),
-  });
-
-  if (artifact.kind === 'incident-report') {
-    return {
-      artifactIntentReason: intentReason,
-      routeDecision,
-      assistantPlan,
-      assistantResult,
-      artifactEnvelopes: [artifactEnvelope],
-      incidentReportArtifact: artifact,
-      toolsCalled: ['generateIncidentReportArtifact'],
-      toolResultSummaries: [
-        {
-          toolName: 'generateIncidentReportArtifact',
-          label: '장애 보고서 작성',
-          summary: `${artifact.report.title} 보고서를 생성했습니다.`,
-          status: 'completed' as const,
-        },
-      ],
-    };
-  }
-
-  if (artifact.kind === 'server-snapshot') {
-    return {
-      artifactIntentReason: intentReason,
-      routeDecision,
-      assistantPlan,
-      assistantResult,
-      artifactEnvelopes: [artifactEnvelope],
-      serverSnapshotArtifact: artifact,
-      toolsCalled: ['generateServerSnapshotArtifact'],
-      toolResultSummaries: [
-        {
-          toolName: 'generateServerSnapshotArtifact',
-          label: '서버 상태 스냅샷',
-          summary: `${artifact.totals.total}대 서버 상태 스냅샷을 생성했습니다.`,
-          status: 'completed' as const,
-        },
-      ],
-    };
-  }
-
-  return {
-    artifactIntentReason: intentReason,
-    routeDecision,
-    assistantPlan,
-    assistantResult,
-    artifactEnvelopes: [artifactEnvelope],
-    monitoringAnalysisArtifact: artifact,
-    toolsCalled: ['generateMonitoringAnalysisArtifact'],
-    toolResultSummaries: [
-      {
-        toolName: 'generateMonitoringAnalysisArtifact',
-        label: '이상감지/추세 분석',
-        summary: `${artifact.serverCount}개 서버 분석과 위험 신호 ${artifact.riskSignalCount}건을 정리했습니다.`,
-        status: 'completed' as const,
-      },
-    ],
-  };
-}
+export interface UseAIChatCoreOptions extends UseAIChatCoreOptionsBase {}
+export interface UseAIChatCoreReturn extends UseAIChatCoreReturnBase {}
 
 // ============================================================================
 // Hook
@@ -484,7 +73,15 @@ export function useAIChatCore(
   // 입력 상태
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [artifactIsLoading, setArtifactIsLoading] = useState(false);
+  const artifactManager = useArtifactManager();
+  const {
+    isLoading: artifactIsLoading,
+    setLoading: setArtifactIsLoading,
+    refs: artifactRefs,
+    isBusy: isArtifactBusy,
+    reset: resetArtifactManager,
+    abortActiveRequest: abortArtifactRequest,
+  } = artifactManager;
 
   // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
   const [currentAgentStatus, setCurrentAgentStatus] =
@@ -493,9 +90,8 @@ export function useAIChatCore(
     null
   );
 
-  // 웹 검색 UI 상태와 내부 RAG override 상태 (Store에서 읽기)
+  // 웹 검색 UI 상태 (Store에서 읽기). 지식 검색은 서버의 Auto 정책이 결정한다.
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
-  const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
   const analysisMode = useAISidebarStore((s) => s.analysisMode);
   const persistedSidebarMessages = useAISidebarStore((s) => s.messages);
   const persistedSidebarSessionId = useAISidebarStore((s) => s.sessionId);
@@ -523,10 +119,21 @@ export function useAIChatCore(
   const lastQueryRef = useRef<string>('');
   const lastAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const pendingQueryRef = useRef<string>('');
-  const artifactIntentInFlightRef = useRef(false);
-  const artifactInFlightRef = useRef(false);
-  const artifactRequestIdRef = useRef<string | null>(null);
-  const artifactAbortControllerRef = useRef<AbortController | null>(null);
+  const resetOutgoingRequestState = useCallback(
+    (
+      query: string,
+      attachments: FileAttachment[] | null = null,
+      pendingQuery = ''
+    ) => {
+      setError(null);
+      setStreamRagSources([]);
+      lastQueryRef.current = query;
+      lastAttachmentsRef.current = attachments;
+      pendingQueryRef.current = pendingQuery;
+      setInput('');
+    },
+    []
+  );
 
   // 🧩 Composed Hooks
   const { sessionId, refreshSessionId, setSessionId } =
@@ -601,7 +208,6 @@ export function useAIChatCore(
   } = useHybridAIQuery({
     sessionId,
     webSearchEnabled,
-    ragEnabled,
     analysisMode,
     queryAsOfDataSlot,
     ...hybridCallbacks,
@@ -650,7 +256,6 @@ export function useAIChatCore(
     deferredToolResultsByMessageId,
     streamRagSources:
       streamRagSources.length > 0 ? streamRagSources : undefined,
-    ragEnabled,
   });
 
   // 🧩 History Hook (Needs messages from hybrid query)
@@ -729,12 +334,7 @@ export function useAIChatCore(
     setCurrentHandoff(null);
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
-    artifactAbortControllerRef.current?.abort();
-    artifactAbortControllerRef.current = null;
-    artifactRequestIdRef.current = null;
-    artifactIntentInFlightRef.current = false;
-    artifactInFlightRef.current = false;
-    setArtifactIsLoading(false);
+    resetArtifactManager();
     clearHistory();
     clearQueue();
     syncChatSnapshot([], nextSessionId);
@@ -746,6 +346,7 @@ export function useAIChatCore(
     clearQueue,
     syncChatSnapshot,
     updateDeveloperPanelData,
+    resetArtifactManager,
   ]);
 
   const clearError = useCallback(() => {
@@ -809,14 +410,53 @@ export function useAIChatCore(
     [selectClarification]
   );
 
+  const handleArtifactGuidanceCta = useCallback(
+    (target: GuidanceCtaTarget) => {
+      runArtifactGuidanceCta({
+        target,
+        disableSessionLimit,
+        sessionLimitReached: sessionState.isLimitReached,
+        sessionMessageCount: sessionState.count,
+        hybridIsLoading,
+        resetRequestState: resetOutgoingRequestState,
+        onSessionLimitReached: (messageCount) => {
+          logger.warn(`⚠️ [Session] Limit reached (${messageCount} messages)`);
+        },
+        sessionId,
+        queryAsOfDataSlot,
+        messagesRef,
+        setMessages,
+        setError,
+        setArtifactIsLoading,
+        artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
+        artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
+        artifactInFlightRef: artifactRefs.artifactInFlightRef,
+        artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
+      });
+    },
+    [
+      artifactRefs,
+      disableSessionLimit,
+      sessionState.isLimitReached,
+      sessionState.count,
+      hybridIsLoading,
+      resetOutgoingRequestState,
+      sessionId,
+      queryAsOfDataSlot,
+      setMessages,
+      setArtifactIsLoading,
+    ]
+  );
+
   // ============================================================================
   // Input Handler
   // ============================================================================
 
   const handleSendInput = useCallback(
-    async (attachments?: FileAttachment[]) => {
+    async (attachments?: FileAttachment[], overrideText?: string) => {
       // 🎯 Fix: 텍스트 또는 첨부 중 하나는 있어야 전송
-      const hasText = input.trim().length > 0;
+      const textInput = overrideText ?? input;
+      const hasText = textInput.trim().length > 0;
       const hasAttachments = attachments && attachments.length > 0;
 
       if (!hasText && !hasAttachments) return;
@@ -829,7 +469,7 @@ export function useAIChatCore(
       }
 
       // 🎯 Fix: 첨부만 있을 경우 기본 텍스트 설정
-      const effectiveText = hasText ? input : '[이미지/파일 분석 요청]';
+      const effectiveText = hasText ? textInput : '[이미지/파일 분석 요청]';
 
       // 🎯 Batching: 스트리밍 중이면 큐에 추가 (즉시 전송하지 않음)
       if (hybridIsLoading) {
@@ -838,7 +478,7 @@ export function useAIChatCore(
         return;
       }
 
-      if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
+      if (isArtifactBusy()) {
         setError(
           '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
         );
@@ -846,12 +486,7 @@ export function useAIChatCore(
       }
 
       if (isQAThinkingVisualizerPrompt(effectiveText)) {
-        setError(null);
-        setStreamRagSources([]);
-        lastQueryRef.current = effectiveText;
-        lastAttachmentsRef.current = attachments || null;
-        pendingQueryRef.current = '';
-        setInput('');
+        resetOutgoingRequestState(effectiveText, attachments || null);
         const [qaUserMessage, qaAssistantMessage] =
           createQAAssistantMessages(effectiveText);
         setMessages([...messages, qaUserMessage, qaAssistantMessage]);
@@ -859,12 +494,7 @@ export function useAIChatCore(
       }
 
       if (isDebugRoutingPrompt(effectiveText)) {
-        setError(null);
-        setStreamRagSources([]);
-        lastQueryRef.current = effectiveText;
-        lastAttachmentsRef.current = attachments || null;
-        pendingQueryRef.current = '';
-        setInput('');
+        resetOutgoingRequestState(effectiveText, attachments || null);
         const [dbgUserMsg, dbgAssistantMsg] = createDebugRoutingMessages(
           effectiveText,
           analysisMode
@@ -873,231 +503,31 @@ export function useAIChatCore(
         return;
       }
 
-      const regexIntent = classifyChatArtifactIntent(effectiveText);
-      let artifactIntent = regexIntent;
-      if (
-        regexIntent.kind === 'none' &&
-        shouldUseLLMChatArtifactIntent(effectiveText)
-      ) {
-        const intentAbortController = new AbortController();
-        artifactIntentInFlightRef.current = true;
-        artifactAbortControllerRef.current = intentAbortController;
-        try {
-          artifactIntent = await fetchLLMChatArtifactIntent(
-            effectiveText,
-            intentAbortController.signal
-          );
-        } finally {
-          artifactIntentInFlightRef.current = false;
-          if (artifactAbortControllerRef.current === intentAbortController) {
-            artifactAbortControllerRef.current = null;
-          }
-        }
-
-        // fetchLLMChatArtifactIntent intentionally degrades failures to none.
-        // On an explicit abort, stop here so cancellation does not fall through
-        // into the normal Supervisor chat path.
-        if (intentAbortController.signal.aborted) {
-          return;
-        }
-      }
-      if (artifactIntent.kind === 'guidance') {
-        setError(null);
-        setStreamRagSources([]);
-        lastQueryRef.current = effectiveText;
-        lastAttachmentsRef.current = attachments || null;
-        pendingQueryRef.current = '';
-        setInput('');
-        const token = Date.now().toString(36);
-        setMessages([
-          ...messages,
-          createTextMessage({
-            id: `artifact-guidance-user-${token}`,
-            role: 'user',
-            text: effectiveText,
-          }),
-          createTextMessage({
-            id: `artifact-guidance-assistant-${token}`,
-            role: 'assistant',
-            text: createArtifactGuidanceMessage(artifactIntent.target),
-            metadata: {
-              artifactIntentReason: artifactIntent.reason,
-              artifactIntentTarget: artifactIntent.target,
-            },
-          }),
-        ]);
+      const artifactHandled = await tryHandleChatArtifactRequest({
+        query: effectiveText,
+        attachments,
+        messages,
+        resetRequestState: resetOutgoingRequestState,
+        artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
+        sessionId,
+        queryAsOfDataSlot,
+        messagesRef,
+        setMessages,
+        setError,
+        setArtifactIsLoading,
+        artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
+        artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
+        artifactInFlightRef: artifactRefs.artifactInFlightRef,
+      });
+      if (artifactHandled) {
         return;
       }
 
-      if (
-        artifactIntent.kind === 'incident-report' ||
-        artifactIntent.kind === 'monitoring-analysis' ||
-        artifactIntent.kind === 'server-snapshot'
-      ) {
-        const artifactKind = artifactIntent.kind;
-        setError(null);
-        setStreamRagSources([]);
-        lastQueryRef.current = effectiveText;
-        lastAttachmentsRef.current = attachments || null;
-        pendingQueryRef.current = '';
-        setInput('');
-
-        const token = Date.now().toString(36);
-        const userMessage = createTextMessage({
-          id: `artifact-user-${token}`,
-          role: 'user',
-          text: effectiveText,
-        });
-        const pendingAssistantMessage = createTextMessage({
-          id: `artifact-assistant-${token}`,
-          role: 'assistant',
-          text: getArtifactLoadingText(artifactKind),
-        });
-        const fallbackArtifactMessages = [...messages, userMessage];
-        const abortController = new AbortController();
-        setMessages([...fallbackArtifactMessages, pendingAssistantMessage]);
-        artifactRequestIdRef.current = token;
-        artifactAbortControllerRef.current = abortController;
-        artifactInFlightRef.current = true;
-        setArtifactIsLoading(true);
-
-        void (async () => {
-          try {
-            const artifact =
-              artifactKind === 'incident-report'
-                ? await generateIncidentReportArtifact({
-                    query: effectiveText,
-                    sessionId,
-                    queryAsOfDataSlot,
-                    signal: abortController.signal,
-                  })
-                : artifactKind === 'server-snapshot'
-                  ? await generateServerSnapshotArtifact({
-                      query: effectiveText,
-                      sessionId,
-                      queryAsOfDataSlot,
-                      signal: abortController.signal,
-                    })
-                  : await generateMonitoringAnalysisArtifact({
-                      query: effectiveText,
-                      sessionId,
-                      queryAsOfDataSlot,
-                      signal: abortController.signal,
-                    });
-
-            if (artifactRequestIdRef.current !== token) {
-              return;
-            }
-
-            const finalMessage = createTextMessage({
-              id: pendingAssistantMessage.id,
-              role: 'assistant',
-              text: getArtifactSuccessText(artifact),
-              metadata: buildArtifactMetadata(
-                artifact,
-                artifactIntent.reason,
-                queryAsOfDataSlot
-              ),
-            });
-            const currentMessages = messagesRef.current;
-            const nextMessages = currentMessages.some(
-              (message) => message.id === pendingAssistantMessage.id
-            )
-              ? currentMessages.map((message) =>
-                  message.id === pendingAssistantMessage.id
-                    ? finalMessage
-                    : message
-                )
-              : [...fallbackArtifactMessages, finalMessage];
-
-            setError(null);
-            setMessages(nextMessages);
-          } catch (requestError) {
-            if (artifactRequestIdRef.current !== token) {
-              return;
-            }
-
-            const errorText = getArtifactErrorText(artifactKind, requestError);
-            const routeDecision = buildRouteDecision({
-              intent: 'artifact',
-              executionPath: 'client-artifact',
-              artifactKind,
-              reasonCodes: [artifactIntent.reason],
-              decidedBy: 'frontend',
-              ...(queryAsOfDataSlot?.timeLabel && {
-                dataSlot: queryAsOfDataSlot.timeLabel,
-              }),
-            });
-            const errorMessage = createTextMessage({
-              id: pendingAssistantMessage.id,
-              role: 'assistant',
-              text: errorText,
-              metadata: {
-                artifactIntentReason: artifactIntent.reason,
-                routeDecision,
-                assistantPlan:
-                  buildAssistantPlanFromRouteDecision(routeDecision),
-                assistantResult: buildAssistantResultFromRouteDecision(
-                  routeDecision,
-                  {
-                    status: 'failed',
-                    errorCode: isAbortError(requestError)
-                      ? 'ARTIFACT_ABORTED'
-                      : 'ARTIFACT_GENERATION_FAILED',
-                  }
-                ),
-                toolResultSummaries: [
-                  {
-                    toolName:
-                      artifactKind === 'incident-report'
-                        ? 'generateIncidentReportArtifact'
-                        : artifactKind === 'server-snapshot'
-                          ? 'generateServerSnapshotArtifact'
-                          : 'generateMonitoringAnalysisArtifact',
-                    label:
-                      artifactKind === 'incident-report'
-                        ? '장애 보고서 작성'
-                        : artifactKind === 'server-snapshot'
-                          ? '서버 상태 스냅샷'
-                          : '이상감지/추세 분석',
-                    summary: errorText,
-                    status: 'failed' as const,
-                  },
-                ],
-              },
-            });
-            const currentMessages = messagesRef.current;
-            const nextMessages = currentMessages.some(
-              (message) => message.id === pendingAssistantMessage.id
-            )
-              ? currentMessages.map((message) =>
-                  message.id === pendingAssistantMessage.id
-                    ? errorMessage
-                    : message
-                )
-              : [...fallbackArtifactMessages, errorMessage];
-
-            setError(errorText);
-            setMessages(nextMessages);
-          } finally {
-            if (artifactRequestIdRef.current === token) {
-              artifactRequestIdRef.current = null;
-              artifactAbortControllerRef.current = null;
-              artifactInFlightRef.current = false;
-              setArtifactIsLoading(false);
-            }
-          }
-        })();
-        return;
-      }
-
-      setError(null);
-      setStreamRagSources([]);
-      lastQueryRef.current = effectiveText;
-      lastAttachmentsRef.current = attachments || null;
-      pendingQueryRef.current = effectiveText;
-      setInput('');
-
+      resetOutgoingRequestState(
+        effectiveText,
+        attachments || null,
+        effectiveText
+      );
       // 🎯 파일 첨부와 함께 전송
       sendQuery(effectiveText, attachments);
     },
@@ -1113,17 +543,21 @@ export function useAIChatCore(
       analysisMode,
       sessionId,
       queryAsOfDataSlot,
+      resetOutgoingRequestState,
+      artifactRefs,
+      isArtifactBusy,
+      setArtifactIsLoading,
     ]
   );
 
   const stopGeneration = useCallback(() => {
-    if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
-      artifactAbortControllerRef.current?.abort();
+    if (isArtifactBusy()) {
+      abortArtifactRequest();
       return;
     }
 
     stop();
-  }, [stop]);
+  }, [abortArtifactRequest, isArtifactBusy, stop]);
 
   // ============================================================================
   // Return
@@ -1153,6 +587,7 @@ export function useAIChatCore(
     stop: stopGeneration,
     cancel,
     handleSendInput,
+    handleArtifactGuidanceCta,
     clarification: hybridState.clarification ?? null,
     selectClarification: wrappedSelectClarification,
     submitCustomClarification,

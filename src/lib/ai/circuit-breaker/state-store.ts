@@ -1,7 +1,10 @@
 /**
  * Circuit Breaker Distributed State Store
  *
- * @description 분산 환경에서 Circuit Breaker 상태 공유를 위한 인터페이스 및 구현
+ * @description
+ * 분산 환경에서 Circuit Breaker 상태 공유를 위한 인터페이스 및 구현입니다.
+ * 현재 AI circuit breaker request path는 in-memory 상태만 사용하며,
+ * 이 모듈은 future/internal Redis 연결점으로 보존합니다.
  * @created 2026-02-10 - Extracted from circuit-breaker.ts
  */
 
@@ -21,7 +24,10 @@ export interface CircuitState {
 
 /**
  * 분산 Circuit Breaker 상태 저장소 인터페이스
- * 서버리스 환경에서 인스턴스 간 상태 공유를 위해 구현
+ * 현재 request path에서는 사용하지 않으며, 향후 인스턴스 간 상태 공유를
+ * 실제로 연결할 때 사용할 내부 계약입니다.
+ *
+ * @internal
  */
 export interface IDistributedStateStore {
   getState(serviceName: string): Promise<CircuitState | null>;
@@ -36,7 +42,11 @@ export interface IDistributedStateStore {
 
 /**
  * 인메모리 상태 저장소 (기본 구현)
- * 서버리스에서는 인스턴스 간 공유되지 않음 - Redis로 교체 권장
+ * 현재 request path의 AIServiceCircuitBreaker는 이 저장소도 직접 읽지 않고
+ * 클래스 인스턴스 필드만 사용합니다. 이 구현은 Redis-backed store 테스트와
+ * future/internal 연결점 보존을 위한 기본 구현입니다.
+ *
+ * @internal
  */
 export class InMemoryStateStore implements IDistributedStateStore {
   private states = new Map<string, CircuitState>();
@@ -68,26 +78,30 @@ export class InMemoryStateStore implements IDistributedStateStore {
 // Singleton Management
 // ============================================================================
 
-// Retained for Redis-backed store injection even though the current breaker
-// implementation only tracks whether distributed state was initialized.
+// Redis-backed store injection을 위한 future/internal 연결점입니다.
+// 현재 breaker 상태 전이는 AIServiceCircuitBreaker 인스턴스 필드만 사용합니다.
 let _defaultStateStore: IDistributedStateStore = new InMemoryStateStore();
 let redisInitialized = false;
 let redisInitPromise: Promise<boolean> | null = null;
 
+/** @internal */
 export function setDistributedStateStore(store: IDistributedStateStore): void {
   _defaultStateStore = store;
   redisInitialized = true;
 }
 
+/** @internal */
 export function isRedisStateStoreInitialized(): boolean {
   return redisInitialized;
 }
 
 /**
- * Redis Circuit Breaker Store 자동 초기화
- * Redis가 활성화되어 있으면 분산 상태 저장소로 자동 전환
+ * Redis Circuit Breaker Store 수동 초기화 연결점입니다.
  *
- * 동시 호출 시 중복 초기화 방지를 위해 promise 캐싱 적용
+ * 현재 request path에서는 호출하지 않습니다. 향후 분산 CB 상태를 실제로
+ * 연결할 때 명시적으로 호출하기 위한 내부 API로 보존합니다.
+ *
+ * @internal
  */
 export async function ensureRedisStateStore(): Promise<boolean> {
   if (redisInitialized) return true;

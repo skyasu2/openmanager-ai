@@ -23,129 +23,19 @@ import {
   formatRotatingTimestamp,
 } from '@/utils/dashboard/rotating-timestamp';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
-import { FilterChip } from '../shared/FilterChip';
-import { StatCell } from '../shared/StatCell';
+import { AlertHistoryFilterBar } from './AlertHistoryFilterBar';
+import {
+  buildAlertFilterQuery,
+  buildAlertFilterUrl,
+  formatDuration,
+  INITIAL_DISPLAY,
+  LOAD_MORE_COUNT,
+  normalizeInitialServerId,
+  parseAlertFilterQuery,
+  severityColors,
+} from './AlertHistoryModal.helpers';
+import { AlertHistoryStatsFooter } from './AlertHistoryStatsFooter';
 import type { AlertHistoryModalProps } from './alert-history.types';
-import { TIME_RANGE_OPTIONS } from './alert-history.types';
-
-const severityColors: Record<AlertSeverity, { badge: string; border: string }> =
-  {
-    critical: {
-      badge: 'bg-red-100 text-red-700 border-red-200',
-      border: 'border-l-red-500',
-    },
-    warning: {
-      badge: 'bg-amber-100 text-amber-700 border-amber-200',
-      border: 'border-l-amber-500',
-    },
-  };
-
-function formatDuration(seconds: number): string {
-  if (seconds < 60) return `${seconds}s`;
-  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
-  return `${Math.round(seconds / 3600)}h ${Math.round((seconds % 3600) / 60)}m`;
-}
-
-const INITIAL_DISPLAY = 50;
-const LOAD_MORE_COUNT = 50;
-const DEFAULT_TIME_RANGE_MS = 86_400_000;
-const ALERT_FILTER_QUERY_KEYS = [
-  'severity',
-  'state',
-  'server',
-  'serverId',
-  'range',
-  'q',
-] as const;
-
-type AlertFilterQueryState = {
-  severity: AlertSeverity | 'all';
-  state: AlertState | 'all';
-  serverId: string;
-  timeRangeMs: number;
-  keyword: string;
-};
-
-const normalizeInitialServerId = (
-  initialServerId: string | null | undefined,
-  serverIds: string[]
-) =>
-  initialServerId && serverIds.includes(initialServerId) ? initialServerId : '';
-
-function parseAlertSeverity(value: string | null): AlertSeverity | 'all' {
-  return value === 'critical' || value === 'warning' ? value : 'all';
-}
-
-function parseAlertState(value: string | null): AlertState | 'all' {
-  return value === 'firing' || value === 'resolved' ? value : 'all';
-}
-
-function parseAlertTimeRange(value: string | null): number {
-  if (!value) return DEFAULT_TIME_RANGE_MS;
-  if (value === '1h') return 3_600_000;
-  if (value === '6h') return 21_600_000;
-  if (value === '24h') return 86_400_000;
-  if (value === 'all') return 0;
-
-  const numericValue = Number(value);
-  const supportedRange = TIME_RANGE_OPTIONS.find(
-    (option) => option.value === numericValue
-  );
-
-  return supportedRange?.value ?? DEFAULT_TIME_RANGE_MS;
-}
-
-function formatAlertTimeRange(value: number): string | null {
-  if (value === 3_600_000) return '1h';
-  if (value === 21_600_000) return '6h';
-  if (value === 0) return 'all';
-  return null;
-}
-
-function parseAlertFilterQuery(
-  searchParams: URLSearchParams,
-  serverIds: string[],
-  initialServerId: string
-): AlertFilterQueryState {
-  return {
-    severity: parseAlertSeverity(searchParams.get('severity')),
-    state: parseAlertState(searchParams.get('state')),
-    serverId: normalizeInitialServerId(
-      searchParams.get('server') ??
-        searchParams.get('serverId') ??
-        initialServerId,
-      serverIds
-    ),
-    timeRangeMs: parseAlertTimeRange(searchParams.get('range')),
-    keyword: searchParams.get('q')?.trim() ?? '',
-  };
-}
-
-function buildAlertFilterQuery(
-  currentQueryString: string,
-  filters: AlertFilterQueryState
-) {
-  const next = new URLSearchParams(currentQueryString);
-  ALERT_FILTER_QUERY_KEYS.forEach((key) => {
-    next.delete(key);
-  });
-
-  if (filters.severity !== 'all') next.set('severity', filters.severity);
-  if (filters.state !== 'all') next.set('state', filters.state);
-  if (filters.serverId) next.set('server', filters.serverId);
-
-  const rangeParam = formatAlertTimeRange(filters.timeRangeMs);
-  if (rangeParam) next.set('range', rangeParam);
-
-  if (filters.keyword) next.set('q', filters.keyword);
-
-  return next;
-}
-
-function buildAlertFilterUrl(pathname: string, params: URLSearchParams) {
-  const query = params.toString();
-  return query ? `${pathname}?${query}` : pathname;
-}
 
 export function AlertHistoryPanel({
   active = true,
@@ -364,95 +254,20 @@ export function AlertHistoryPanel({
         </div>
       </div>
 
-      {/* Search & Filter Bar */}
-      <div className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-4 py-3 backdrop-blur-sm sm:px-6">
-        <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
-          <input
-            id="alert-history-search"
-            name="alert-history-search"
-            type="text"
-            value={keyword}
-            onChange={(e) => handleKeywordChange(e.target.value)}
-            placeholder="서버, 메트릭 검색"
-            aria-label="알림 검색"
-            className="touch-text-safe-xs w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none sm:w-52 sm:py-1.5"
-          />
-
-          <div className="hidden h-4 w-px bg-gray-200 sm:block" />
-
-          {/* Severity chips */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-medium text-gray-500">심각도</span>
-            {(['all', 'warning', 'critical'] as const).map((s) => (
-              <FilterChip
-                key={s}
-                label={
-                  s === 'all' ? '전체' : s === 'critical' ? '위험' : '경고'
-                }
-                active={severity === s}
-                onClick={() => handleFilterChange(() => setSeverity(s))}
-                variant={s}
-              />
-            ))}
-          </div>
-
-          <div className="hidden h-4 w-px bg-gray-200 sm:block" />
-
-          {/* State chips */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-medium text-gray-500">상태</span>
-            {(['all', 'firing', 'resolved'] as const).map((s) => (
-              <FilterChip
-                key={s}
-                label={
-                  s === 'all' ? '전체' : s === 'firing' ? '발생중' : '해결됨'
-                }
-                active={state === s}
-                onClick={() => handleFilterChange(() => setState(s))}
-                variant={s}
-              />
-            ))}
-          </div>
-
-          <div className="hidden h-4 w-px bg-gray-200 sm:block" />
-
-          {/* Server dropdown */}
-          <select
-            id="alert-history-server-filter"
-            name="alert-history-server-filter"
-            value={serverId}
-            onChange={(e) =>
-              handleFilterChange(() => setServerId(e.target.value), {
-                serverTouched: true,
-              })
-            }
-            aria-label="서버 필터"
-            className="touch-text-safe-xs w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
-          >
-            <option value="">전체 서버</option>
-            {serverIds.map((id) => (
-              <option key={id} value={id}>
-                {id}
-              </option>
-            ))}
-          </select>
-
-          {/* Time range */}
-          <div className="flex flex-wrap items-center gap-1.5 sm:ml-auto">
-            {TIME_RANGE_OPTIONS.map((opt) => (
-              <FilterChip
-                key={opt.value}
-                label={opt.label}
-                active={timeRangeMs === opt.value}
-                onClick={() =>
-                  handleFilterChange(() => setTimeRangeMs(opt.value))
-                }
-                variant="time"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      <AlertHistoryFilterBar
+        keyword={keyword}
+        severity={severity}
+        state={state}
+        serverId={serverId}
+        timeRangeMs={timeRangeMs}
+        serverIds={serverIds}
+        onKeywordChange={handleKeywordChange}
+        onFilterChange={handleFilterChange}
+        onSetSeverity={setSeverity}
+        onSetState={setState}
+        onSetServerId={setServerId}
+        onSetTimeRangeMs={setTimeRangeMs}
+      />
 
       <div className="border-b border-gray-100 bg-gray-50/80 px-4 py-2.5 sm:px-6">
         <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-600">
@@ -540,64 +355,30 @@ export function AlertHistoryPanel({
         )}
       </div>
 
-      {/* Stats Footer */}
-      <div className="grid grid-cols-2 gap-3 border-t border-gray-100 bg-gray-50/80 px-4 py-3 sm:grid-cols-5 sm:gap-4 sm:px-6">
-        <StatCell
-          label="전체"
-          value={stats.total}
-          color="text-gray-800"
-          active={severity === 'all' && state === 'all'}
-          onClick={() =>
-            startTransition(() => {
-              setSeverity('all');
-              setState('all');
-              setDisplayCount(INITIAL_DISPLAY);
-            })
-          }
-        />
-        <StatCell
-          label="위험"
-          value={stats.critical}
-          color="text-red-600"
-          active={severity === 'critical'}
-          onClick={() =>
-            handleFilterChange(() =>
-              setSeverity((prev) => (prev === 'critical' ? 'all' : 'critical'))
+      <AlertHistoryStatsFooter
+        stats={stats}
+        severity={severity}
+        state={state}
+        onShowAll={() =>
+          startTransition(() => {
+            setSeverity('all');
+            setState('all');
+            setDisplayCount(INITIAL_DISPLAY);
+          })
+        }
+        onToggleSeverity={(nextSeverity) =>
+          handleFilterChange(() =>
+            setSeverity((prev) =>
+              prev === nextSeverity ? 'all' : nextSeverity
             )
-          }
-        />
-        <StatCell
-          label="경고"
-          value={stats.warning}
-          color="text-amber-600"
-          active={severity === 'warning'}
-          onClick={() =>
-            handleFilterChange(() =>
-              setSeverity((prev) => (prev === 'warning' ? 'all' : 'warning'))
-            )
-          }
-        />
-        <StatCell
-          label="발생중"
-          value={stats.firing}
-          color="text-red-500"
-          active={state === 'firing'}
-          onClick={() =>
-            handleFilterChange(() =>
-              setState((prev) => (prev === 'firing' ? 'all' : 'firing'))
-            )
-          }
-        />
-        <StatCell
-          label="평균 해결"
-          value={
-            stats.avgResolutionSec > 0
-              ? formatDuration(stats.avgResolutionSec)
-              : '-'
-          }
-          color="text-blue-600"
-        />
-      </div>
+          )
+        }
+        onToggleState={(nextState) =>
+          handleFilterChange(() =>
+            setState((prev) => (prev === nextState ? 'all' : nextState))
+          )
+        }
+      />
     </div>
   );
 }

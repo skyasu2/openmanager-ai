@@ -22,11 +22,17 @@ export const SwimlaneBgNode = memo(
         }}
       >
         {/* Swimlane 배경 */}
-        <div className="absolute inset-0 rounded-xl border border-white/5 bg-white/[0.03]" />
+        <div className="absolute inset-0 rounded-xl border border-slate-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]" />
+        <div
+          className={`absolute inset-0 rounded-xl bg-linear-to-br ${data.color} opacity-[0.045]`}
+        />
+        <div
+          className={`absolute bottom-0 left-0 top-0 w-1 rounded-l-xl bg-linear-to-b ${data.color} opacity-70`}
+        />
 
         {/* 왼쪽 라벨 영역 배경 (Unified Sidebar Style) */}
         <div
-          className="absolute top-0 bottom-0 rounded-l-xl border-r border-white/10 bg-slate-900/40 backdrop-blur-sm"
+          className="absolute top-0 bottom-0 rounded-l-xl border-r border-slate-200 bg-slate-50/90 backdrop-blur-sm"
           style={{
             left: SWIMLANE_PADDING,
             width: LABEL_AREA_WIDTH,

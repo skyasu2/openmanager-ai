@@ -46,12 +46,12 @@ export class DiagramErrorBoundary extends Component<
       }
 
       return (
-        <div className="flex h-card-lg flex-col items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10 p-8">
+        <div className="flex h-card-lg flex-col items-center justify-center rounded-xl border border-red-200 bg-red-50 p-8">
           <div className="mb-4 text-4xl">⚠️</div>
-          <h3 className="mb-2 text-lg font-semibold text-red-400">
+          <h3 className="mb-2 text-lg font-semibold text-red-700">
             다이어그램 로드 실패
           </h3>
-          <p className="mb-4 text-center text-sm text-gray-400">
+          <p className="mb-4 text-center text-sm text-slate-600">
             {this.props.diagramTitle
               ? `"${this.props.diagramTitle}" 다이어그램을 표시할 수 없습니다.`
               : '다이어그램을 표시할 수 없습니다.'}
@@ -59,7 +59,7 @@ export class DiagramErrorBoundary extends Component<
           <button
             type="button"
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="mt-4 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20"
+            className="mt-4 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100"
           >
             다시 시도
           </button>

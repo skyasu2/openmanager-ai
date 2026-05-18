@@ -47,12 +47,13 @@ export function sanitizeInput(text: string): SanitizationResult {
   }
 
   // 2. 민감 정보 마스킹
+  let sensitiveInfoMasked = false;
   for (const pattern of SENSITIVE_PATTERNS) {
     const before = sanitized;
     sanitized = sanitized.replace(pattern, '[REDACTED]');
-    if (before !== sanitized) {
+    if (before !== sanitized && !sensitiveInfoMasked) {
       modifications.push('sensitive_info_masked');
-      break; // 한 번만 기록
+      sensitiveInfoMasked = true;
     }
   }
 

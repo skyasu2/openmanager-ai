@@ -90,7 +90,7 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
           <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">
             시스템 리소스
           </p>
-          <div className="flex items-center justify-around">
+          <div className="flex items-center justify-evenly px-2 sm:px-0">
             {gauges.map((g) => (
               <MiniGauge
                 key={g.key}
@@ -167,7 +167,7 @@ function MiniGauge({
   color: string;
 }) {
   const size = 72;
-  const strokeWidth = 5;
+  const strokeWidth = 4;
   const radius = (size - strokeWidth * 2) / 2;
   const circumference = 2 * Math.PI * radius;
   const percentage = Math.max(0, Math.min(100, value));
@@ -204,7 +204,7 @@ function MiniGauge({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-bold text-gray-900">{value}%</span>
+          <span className="text-sm font-semibold text-gray-900">{value}%</span>
         </div>
       </div>
       <span className="mt-1.5 text-xs text-slate-500">{label}</span>

@@ -6,10 +6,9 @@ import { useCallback, useEffect, useState } from 'react';
 import debug from '@/utils/debug';
 import {
   LOADING_MESSAGE_INTERVAL_MS,
+  type LoadingType,
   SUCCESS_MESSAGE_TIMEOUT_MS,
 } from '../login.constants';
-
-type LoadingType = 'github' | 'guest' | 'google' | 'email' | null;
 
 const LOADING_MESSAGES: Record<NonNullable<LoadingType>, readonly string[]> = {
   github: [

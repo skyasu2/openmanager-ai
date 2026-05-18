@@ -14,13 +14,15 @@ import {
   SystemStartSection,
 } from '@/app/main/components';
 import { useLandingPageState } from '@/app/main/hooks';
+import { MouseSpotlight } from '@/components/landing/MouseSpotlight';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import { APP_VERSION } from '@/config/app-meta';
 import {
-  AI_TEXT_GRADIENT_ANIMATED_STYLE,
-  PAGE_BACKGROUNDS,
-} from '@/styles/design-constants';
+  AI_PROVIDER_DISPLAY,
+  APP_VERSION,
+  TECH_STACK_DISPLAY,
+} from '@/config/app-meta';
+import { AI_TEXT_GRADIENT_ANIMATED_STYLE } from '@/styles/design-constants';
 import { envLabel } from '@/utils/vercel-env-utils';
 
 const UnifiedProfileHeader = dynamic(
@@ -49,6 +51,8 @@ const FeatureCardsGrid = dynamic(
   { ssr: false, loading: () => <FeatureCardsGridSkeleton /> }
 );
 
+const FOOTER_TECH_STACK = [TECH_STACK_DISPLAY, AI_PROVIDER_DISPLAY] as const;
+
 function Home() {
   const {
     authError,
@@ -61,8 +65,6 @@ function Home() {
     isMounted,
     isSystemStarted,
     systemStartCountdown,
-    isSystemStarting,
-    multiUserStatus,
     navigateToDashboard,
     retryAuth,
     shouldShowLoading,
@@ -86,9 +88,10 @@ function Home() {
 
   return (
     <div
-      className={`min-h-screen ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}
+      className="landing-visual-surface min-h-screen bg-black"
       data-system-active={isSystemStarted ? 'true' : 'false'}
     >
+      <MouseSpotlight />
       <div className="wave-particles" />
 
       <header className="relative z-50 flex min-h-[72px] items-center justify-between p-4 sm:min-h-[88px] sm:p-6">
@@ -105,22 +108,23 @@ function Home() {
 
       <main
         aria-label="메인 콘텐츠"
-        className="container relative z-10 mx-auto px-4 pt-8 sm:px-6"
+        className="container relative z-10 mx-auto px-4 pt-7 sm:px-6 sm:pt-8"
       >
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl">
-            <span className="text-white">OpenManager</span>{' '}
-            <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
+        <div className="landing-hero-copy mx-auto mb-12 max-w-5xl text-center sm:mb-14">
+          <h1 className="mb-4 text-5xl font-black leading-none tracking-normal text-white sm:text-6xl md:text-7xl lg:text-8xl">
+            <span className="landing-title-main">OpenManager</span>{' '}
+            <span
+              className="landing-title-ai"
+              style={AI_TEXT_GRADIENT_ANIMATED_STYLE}
+            >
+              AI
+            </span>
           </h1>
-          <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/85 md:text-lg">
-            <span className="block font-medium text-white/90">
-              운영 데이터를 질문, 분석, 조치안으로 바로 연결하는 모니터링
-              워크플로
-            </span>
-            <span className="mt-2 block text-sm text-white/60">
-              그래프를 해석하는 대신 지금 무슨 일이 벌어지는지 바로 묻고 답을
-              받을 수 있습니다
-            </span>
+          <p className="landing-hero-subtitle mb-3 text-xl font-semibold leading-snug tracking-normal text-white sm:text-2xl md:text-3xl">
+            서버 운영을 AI에게 묻다
+          </p>
+          <p className="landing-hero-kicker text-sm font-medium leading-relaxed tracking-normal text-white/[0.78] sm:text-base">
+            18대 서버 · OTel 데이터 기반 포트폴리오 프로젝트
           </p>
         </div>
 
@@ -129,9 +133,6 @@ function Home() {
             <SystemStartSection
               isMounted={isMounted}
               systemStartCountdown={systemStartCountdown}
-              isSystemStarting={isSystemStarting}
-              isSystemStarted={isSystemStarted}
-              isSystemRunning={multiUserStatus?.isRunning || false}
               buttonConfig={buttonConfig}
               statusInfo={statusInfo}
               onSystemToggle={handleSystemToggle}
@@ -146,6 +147,9 @@ function Home() {
         </div>
 
         <section className="mb-12" aria-label="주요 기능 소개">
+          <p className="mb-5 text-center text-sm font-semibold tracking-normal text-white/70">
+            주요 기능
+          </p>
           <FeatureCardsGrid />
         </section>
 
@@ -159,8 +163,14 @@ function Home() {
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
                 <span>v{APP_VERSION}</span>
               </span>
-              <span>Next.js 16 + React 19</span>
-              <span className="hidden sm:inline">Quad-Provider AI</span>
+              {FOOTER_TECH_STACK.map((item, index) => (
+                <span
+                  key={item}
+                  className={index === 1 ? 'hidden sm:inline' : undefined}
+                >
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
         </footer>

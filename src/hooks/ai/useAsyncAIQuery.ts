@@ -36,10 +36,18 @@ import {
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import type {
+  DomainIntentFramePayload,
+  SemanticPreprocessingMetadata,
+  SemanticQueryTrace,
+} from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
-import type { RetrievalMetadata } from '@/types/ai/retrieval-status';
+import type {
+  EvidenceCard,
+  RetrievalMetadata,
+} from '@/types/ai/retrieval-status';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
@@ -86,6 +94,7 @@ export interface AsyncQueryResult {
     sourceType: string;
     category?: string;
   }>;
+  evidenceCards?: EvidenceCard[];
   retrieval?: RetrievalMetadata;
   processingTimeMs?: number;
   latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
@@ -97,9 +106,11 @@ export interface AsyncQueryResult {
   usedFallback?: boolean;
   fallbackReason?: string;
   ttfbMs?: number;
+  rotationSlot?: number;
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
+  semanticQueryTrace?: SemanticQueryTrace;
   error?: string;
   /** Langfuse trace ID for observability correlation */
   traceId?: string;
@@ -148,6 +159,57 @@ export interface AsyncQueryRequestOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
+  intentFrame?: DomainIntentFramePayload;
+  semanticQueryTrace?: SemanticQueryTrace;
+  inputType?: SemanticPreprocessingMetadata['inputType'];
+  logExtract?: string;
+}
+
+export interface AsyncQueryJobRequestBody {
+  query: string;
+  options: {
+    sessionId?: string;
+    metadata: Record<string, unknown>;
+  };
+}
+
+export function buildAsyncQueryJobRequestBody(
+  query: string,
+  sessionId?: string,
+  requestOptions?: AsyncQueryRequestOptions
+): AsyncQueryJobRequestBody {
+  return {
+    query,
+    options: {
+      sessionId,
+      metadata: {
+        ...(requestOptions?.analysisMode && {
+          analysisMode: requestOptions.analysisMode,
+        }),
+        ...(typeof requestOptions?.enableRAG === 'boolean' && {
+          enableRAG: requestOptions.enableRAG,
+        }),
+        ...(typeof requestOptions?.enableWebSearch === 'boolean' && {
+          enableWebSearch: requestOptions.enableWebSearch,
+        }),
+        ...(requestOptions?.queryAsOfDataSlot && {
+          queryAsOfDataSlot: requestOptions.queryAsOfDataSlot,
+        }),
+        ...(requestOptions?.intentFrame && {
+          intentFrame: requestOptions.intentFrame,
+        }),
+        ...(requestOptions?.semanticQueryTrace && {
+          semanticQueryTrace: requestOptions.semanticQueryTrace,
+        }),
+        ...(requestOptions?.inputType && {
+          inputType: requestOptions.inputType,
+        }),
+        ...(requestOptions?.logExtract && {
+          logExtract: requestOptions.logExtract,
+        }),
+      },
+    },
+  };
 }
 
 // ============================================================================
@@ -202,6 +264,59 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
 
   // 🎯 P1-5 Fix: Keep cleanupRef updated with latest cleanup function
   cleanupRef.current = cleanup;
+
+  const createCompletionHandlers = useCallback(
+    (
+      resolve: (result: AsyncQueryResult) => void,
+      getCapturedJobId: () => string | null
+    ) => {
+      const handleError = (
+        error: string,
+        errorDetails: AIErrorDetails | null = inferAIErrorDetailsFromMessage(
+          error
+        )
+      ) => {
+        cleanup();
+        jobIdRef.current = null;
+        progressRef.current = 0;
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          isConnected: false,
+          error,
+          errorDetails,
+          progress: null,
+        }));
+        onError?.(error, errorDetails);
+        resolve({
+          success: false,
+          error,
+          jobId: getCapturedJobId() ?? undefined,
+        });
+      };
+
+      const handleResult = (result: AsyncQueryResult) => {
+        cleanup();
+        jobIdRef.current = null;
+        const resultWithJobId = {
+          ...result,
+          jobId: getCapturedJobId() ?? undefined,
+        };
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          isConnected: false,
+          result: resultWithJobId,
+          errorDetails: null,
+        }));
+        onResult?.(resultWithJobId);
+        resolve(resultWithJobId);
+      };
+
+      return { handleError, handleResult };
+    },
+    [cleanup, onError, onResult]
+  );
 
   // 🎯 P1-5 Fix: Cleanup on unmount to prevent EventSource memory leak
   // Uses ref to avoid stale closure issues with useCallback dependencies
@@ -261,46 +376,10 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
       return new Promise((resolve) => {
         // 🎯 Store jobId for closure access (Stale Closure 방지)
         let capturedJobId: string | null = null;
-
-        const handleError = (
-          error: string,
-          errorDetails: AIErrorDetails | null = inferAIErrorDetailsFromMessage(
-            error
-          )
-        ) => {
-          cleanup();
-          jobIdRef.current = null;
-          progressRef.current = 0;
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            isConnected: false,
-            error,
-            errorDetails,
-            progress: null, // 🎯 P2 Fix: Clear progress on error to avoid "80% complete... ERROR" UX
-          }));
-          onError?.(error, errorDetails);
-          resolve({ success: false, error, jobId: capturedJobId ?? undefined });
-        };
-
-        const handleResult = (result: AsyncQueryResult) => {
-          cleanup();
-          jobIdRef.current = null;
-          // 🎯 Include jobId in result for Stale Closure prevention
-          const resultWithJobId = {
-            ...result,
-            jobId: capturedJobId ?? undefined,
-          };
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            isConnected: false,
-            result: resultWithJobId,
-            errorDetails: null,
-          }));
-          onResult?.(resultWithJobId);
-          resolve(resultWithJobId);
-        };
+        const { handleError, handleResult } = createCompletionHandlers(
+          resolve,
+          () => capturedJobId
+        );
 
         // 🎯 P1 Fix: Create AbortController for this request
         abortControllerRef.current = new AbortController();
@@ -312,27 +391,13 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
               {
                 method: 'POST',
                 headers,
-                body: JSON.stringify({
-                  query,
-                  options: {
+                body: JSON.stringify(
+                  buildAsyncQueryJobRequestBody(
+                    query,
                     sessionId,
-                    metadata: {
-                      ...(requestOptions?.analysisMode && {
-                        analysisMode: requestOptions.analysisMode,
-                      }),
-                      ...(typeof requestOptions?.enableRAG === 'boolean' && {
-                        enableRAG: requestOptions.enableRAG,
-                      }),
-                      ...(typeof requestOptions?.enableWebSearch ===
-                        'boolean' && {
-                        enableWebSearch: requestOptions.enableWebSearch,
-                      }),
-                      ...(requestOptions?.queryAsOfDataSlot && {
-                        queryAsOfDataSlot: requestOptions.queryAsOfDataSlot,
-                      }),
-                    },
-                  },
-                }),
+                    requestOptions
+                  )
+                ),
                 signal, // 🎯 P1 Fix: Pass abort signal for cancellation
               },
               {
@@ -420,7 +485,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
           });
       });
     },
-    [sessionId, timeout, onProgress, onResult, onError, cleanup]
+    [sessionId, timeout, onProgress, createCompletionHandlers, cleanup]
   );
 
   // Reset state
@@ -456,51 +521,19 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
 
       return new Promise((resolve) => {
         let capturedJobId: string | null = failedJobId;
+        const { handleError, handleResult } = createCompletionHandlers(
+          resolve,
+          () => capturedJobId
+        );
 
-        const handleError = (
-          error: string,
-          errorDetails: AIErrorDetails | null = inferAIErrorDetailsFromMessage(
-            error
-          )
-        ) => {
-          cleanup();
-          jobIdRef.current = null;
-          progressRef.current = 0;
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            isConnected: false,
-            error,
-            errorDetails,
-            progress: null,
-          }));
-          onError?.(error, errorDetails);
-          resolve({ success: false, error, jobId: capturedJobId ?? undefined });
-        };
-
-        const handleResult = (result: AsyncQueryResult) => {
-          cleanup();
-          jobIdRef.current = null;
-          const resultWithJobId = {
-            ...result,
-            jobId: capturedJobId ?? undefined,
-          };
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            isConnected: false,
-            result: resultWithJobId,
-            errorDetails: null,
-          }));
-          onResult?.(resultWithJobId);
-          resolve(resultWithJobId);
-        };
-
+        abortControllerRef.current = new AbortController();
+        const { signal } = abortControllerRef.current;
         void createCSRFHeaders()
           .then((headers) =>
             fetch(`/api/ai/jobs/${failedJobId}/retry`, {
               method: 'POST',
               headers,
+              signal,
             })
           )
           .then(async (res) => {
@@ -546,7 +579,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
           });
       });
     },
-    [timeout, cleanup, onProgress, onResult, onError]
+    [timeout, cleanup, onProgress, createCompletionHandlers]
   );
 
   return {

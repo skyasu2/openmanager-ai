@@ -1,13 +1,17 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
 import {
+  Activity,
   ArrowRight,
   Box,
   Globe,
   MonitorCheck,
   Rocket,
   Send,
+  Server,
   ShieldCheck,
+  Tag,
 } from 'lucide-react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 import { cn } from '@/lib/utils';
@@ -22,7 +26,7 @@ type FooterBadge = {
 
 type PipelineCard = {
   id: string;
-  icon: typeof MonitorCheck;
+  icon: LucideIcon;
   stage: string;
   detail: [string, string];
   bg: string;
@@ -32,6 +36,12 @@ type PipelineCard = {
   ring: string;
   accent: string;
   footer: FooterBadge;
+};
+
+type ScenarioStep = {
+  id: string;
+  label: string;
+  icon: LucideIcon;
 };
 
 const PIPELINE_CARDS: PipelineCard[] = [
@@ -102,8 +112,8 @@ const PIPELINE_CARDS: PipelineCard[] = [
     ring: 'ring-amber-500/40',
     accent: 'text-amber-300',
     footer: {
-      label: '공용 러너',
-      value: '~4분',
+      label: '자체 러너 (WSL2)',
+      value: '0분',
       bg: 'bg-amber-500/10',
       text: 'text-amber-300',
       border: 'border-amber-500/20',
@@ -136,8 +146,13 @@ const SCENARIOS = [
     labelColor: 'text-sky-300',
     border: 'border-sky-500/20',
     bg: 'bg-sky-500/5',
-    steps: ['💻', '📤', '🛡️', '🚀', '🌐'],
-    stepLabels: ['pre-hooks', 'push', '검사', '배포', '완료'],
+    steps: [
+      { id: 'pre-hooks', label: 'pre-hooks', icon: MonitorCheck },
+      { id: 'push', label: 'push', icon: Send },
+      { id: 'validate', label: '검사', icon: ShieldCheck },
+      { id: 'deploy', label: '배포', icon: Rocket },
+      { id: 'done', label: '완료', icon: Globe },
+    ] satisfies ScenarioStep[],
   },
   {
     id: 'big',
@@ -145,8 +160,14 @@ const SCENARIOS = [
     labelColor: 'text-purple-300',
     border: 'border-purple-500/20',
     bg: 'bg-purple-500/5',
-    steps: ['💻', '🐳', '📤', '🛡️', '🚀', '🔍'],
-    stepLabels: ['pre-hooks', 'Docker CI', 'push', '검사', '배포', 'QA'],
+    steps: [
+      { id: 'pre-hooks', label: 'pre-hooks', icon: MonitorCheck },
+      { id: 'docker-ci', label: 'Docker CI', icon: Box },
+      { id: 'push', label: 'push', icon: Send },
+      { id: 'validate', label: '검사', icon: ShieldCheck },
+      { id: 'deploy', label: '배포', icon: Rocket },
+      { id: 'qa', label: 'QA', icon: Globe },
+    ] satisfies ScenarioStep[],
   },
   {
     id: 'docs',
@@ -154,8 +175,25 @@ const SCENARIOS = [
     labelColor: 'text-slate-400',
     border: 'border-slate-500/20',
     bg: 'bg-slate-500/5',
-    steps: ['📤', '⏭️'],
-    stepLabels: ['push', 'CI 스킵'],
+    steps: [
+      { id: 'push', label: 'push', icon: Send },
+      { id: 'ci-skip', label: 'CI 스킵', icon: ArrowRight },
+    ] satisfies ScenarioStep[],
+  },
+  {
+    id: 'release',
+    label: 'v태그 릴리스',
+    labelColor: 'text-amber-300',
+    border: 'border-amber-500/20',
+    bg: 'bg-amber-500/5',
+    steps: [
+      { id: 'tag', label: 'v*.*.* 태그', icon: Tag },
+      { id: 'push', label: 'push', icon: Send },
+      { id: 'validate', label: '검사', icon: ShieldCheck },
+      { id: 'deploy', label: '배포', icon: Rocket },
+      { id: 'ai-engine', label: 'AI Engine', icon: Server },
+      { id: 'smoke', label: '스모크', icon: Activity },
+    ] satisfies ScenarioStep[],
   },
 ] as const;
 
@@ -167,15 +205,53 @@ export function VibeCiCdSection({
   return (
     <div className="space-y-6">
       <section className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-transparent px-5 py-6">
-        <p className="text-center text-[10px] font-bold tracking-widest text-white/25">
+        <p className="text-center text-[10px] font-bold tracking-widest text-white/55">
           내가 구성한 GitLab CI/CD
         </p>
-        <p className="mt-3 text-center text-[11px] text-white/35">
-          로컬 훅 뒤에 GitLab CI를 validate와 deploy로 나누고, 마지막에는 Vercel
-          prebuilt 배포로 production을 갱신하는 흐름입니다.
+        <p className="mt-3 text-center text-[11px] text-white/65">
+          로컬 훅 → GitLab CI 4단계(validate · deploy · deploy_ai · smoke) →
+          Vercel 프로덕션. 모든 CI job이 내 PC 자체 러너에서 실행되어{' '}
+          <span className="font-bold text-violet-300/80">
+            GitLab CI minutes 월 0분
+          </span>{' '}
+          소진합니다.
         </p>
 
         <div className="mt-6">
+          {/* Zone indicator — desktop only */}
+          <div className="mb-3 hidden items-stretch gap-1.5 sm:flex">
+            <div className="flex flex-[2] items-center justify-center rounded-lg border border-sky-500/15 bg-sky-500/5 py-1.5">
+              <span className="text-[8px] font-bold uppercase tracking-widest text-sky-400/50">
+                로컬
+              </span>
+            </div>
+            <div className="flex shrink-0 items-center">
+              <ArrowRight
+                className="h-2.5 w-2.5 text-white/15"
+                aria-hidden="true"
+              />
+            </div>
+            <div className="flex flex-[2] flex-col items-center justify-center rounded-lg border border-violet-500/15 bg-violet-500/5 py-1.5">
+              <span className="text-[8px] font-bold uppercase tracking-widest text-violet-400/50">
+                GitLab CI
+              </span>
+              <span className="mt-0.5 text-[7px] text-violet-300/35">
+                자체 러너 · 월 0분
+              </span>
+            </div>
+            <div className="flex shrink-0 items-center">
+              <ArrowRight
+                className="h-2.5 w-2.5 text-white/15"
+                aria-hidden="true"
+              />
+            </div>
+            <div className="flex flex-1 items-center justify-center rounded-lg border border-emerald-500/15 bg-emerald-500/5 py-1.5">
+              <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400/50">
+                Vercel
+              </span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-start sm:overflow-x-hidden">
             {PIPELINE_CARDS.map((card, index) => {
               const Icon = card.icon;
@@ -204,8 +280,9 @@ export function VibeCiCdSection({
                         card.iconText,
                         card.ring
                       )}
+                      aria-hidden="true"
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
 
                     <p
@@ -221,7 +298,7 @@ export function VibeCiCdSection({
                       {card.detail.map((line) => (
                         <span
                           key={line}
-                          className="text-center text-[9px] leading-tight text-white/35"
+                          className="text-center text-[9px] leading-tight text-white/60"
                         >
                           {line}
                         </span>
@@ -269,7 +346,10 @@ export function VibeCiCdSection({
 
                   {index < PIPELINE_CARDS.length - 1 && (
                     <div className="mt-16 hidden shrink-0 items-center px-0.5 sm:flex">
-                      <ArrowRight className="h-3 w-3 text-white/15" />
+                      <ArrowRight
+                        className="h-3 w-3 text-white/45"
+                        aria-hidden="true"
+                      />
                     </div>
                   )}
                 </div>
@@ -283,9 +363,9 @@ export function VibeCiCdSection({
         <div className="flex flex-col gap-3 rounded-xl border border-white/5 bg-white/2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/10 text-rose-400">
-              <ShieldCheck className="h-3.5 w-3.5" />
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
             </div>
-            <p className="text-[11px] font-medium text-white/40">
+            <p className="text-[11px] font-medium text-white/70">
               validate와 deploy를 분리하고, production 배포는 한 번에 하나씩만
               실행하도록 구성했습니다.
             </p>
@@ -299,14 +379,15 @@ export function VibeCiCdSection({
           <p className="text-[11px] font-bold text-amber-300/80">
             왜 이렇게 나눴나
           </p>
-          <p className="mt-1 text-[11px] leading-relaxed text-white/40">
-            validate는 내 PC의{' '}
-            <code className="text-cyan-300/70">wsl2-docker</code> self-hosted
-            runner에서 실행해 GitLab minutes를 거의 쓰지 않게 했고, deploy는
-            shared runner에서 prebuilt 결과만 올려 배포 시간을 짧게
-            유지했습니다.
+          <p className="mt-1 text-[11px] leading-relaxed text-white/70">
+            validate · deploy 모두 내 PC의{' '}
+            <code className="text-cyan-300/90">wsl2-docker</code> self-hosted
+            runner에서 실행해 GitLab CI minutes를 월 0분 소진합니다. deploy는{' '}
+            <code className="text-amber-300/80">vercel build</code> 결과를
+            prebuilt 아티팩트로 올려 배포 시간을 최소화합니다. semver 태그 push
+            시에는 deploy_ai · smoke 단계가 추가 실행됩니다.
           </p>
-          <p className="mt-2 text-[10px] leading-relaxed text-white/25">
+          <p className="mt-2 text-[10px] leading-relaxed text-white/55">
             제약: self-hosted runner가 꺼져 있으면 validate는 shared runner로
             자동 전환되지 않고 pending 상태로 대기합니다.
           </p>
@@ -337,24 +418,33 @@ export function VibeCiCdSection({
               </span>
 
               <div className="flex flex-wrap items-center gap-1.5">
-                {scenario.steps.map((emoji, index) => (
-                  <span
-                    key={`${scenario.id}-${scenario.stepLabels[index]}`}
-                    className="flex items-center gap-1.5"
-                  >
-                    <span className="flex flex-col items-center">
-                      <span className="text-base leading-none transition-transform motion-safe:group-hover:scale-110 motion-reduce:transform-none motion-reduce:transition-none">
-                        {emoji}
+                {scenario.steps.map((step, index) => {
+                  const StepIcon = step.icon;
+                  return (
+                    <span
+                      key={`${scenario.id}-${step.id}`}
+                      className="flex items-center gap-1.5"
+                    >
+                      <span className="flex flex-col items-center">
+                        <span className="text-base leading-none transition-transform motion-safe:group-hover:scale-110 motion-reduce:transform-none motion-reduce:transition-none">
+                          <StepIcon
+                            className="h-4 w-4 text-white/35"
+                            aria-hidden="true"
+                          />
+                        </span>
+                        <span className="mt-1 text-[8px] font-medium leading-none text-white/20">
+                          {step.label}
+                        </span>
                       </span>
-                      <span className="mt-1 text-[8px] font-medium leading-none text-white/20">
-                        {scenario.stepLabels[index]}
-                      </span>
+                      {index < scenario.steps.length - 1 && (
+                        <ArrowRight
+                          className="h-3 w-3 shrink-0 text-white/10"
+                          aria-hidden="true"
+                        />
+                      )}
                     </span>
-                    {index < scenario.steps.length - 1 && (
-                      <ArrowRight className="h-3 w-3 shrink-0 text-white/10" />
-                    )}
-                  </span>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -362,7 +452,7 @@ export function VibeCiCdSection({
       </details>
 
       <div className="flex items-center gap-3 rounded-xl border border-dashed border-white/10 bg-white/2 px-4 py-3">
-        <Box className="h-4 w-4 shrink-0 text-white/20" />
+        <Box className="h-4 w-4 shrink-0 text-white/20" aria-hidden="true" />
         <p className="text-[10px] leading-relaxed text-white/30">
           <span className="font-bold text-white/50">GitHub Snapshot</span>
           {' · '}선택 사항 · 공개 code-only 스냅샷 · 배포 권위 없음

@@ -25,9 +25,11 @@ import type {
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
+  EvidenceCard,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
 import type { JobDataSlot } from '@/types/ai-jobs';
@@ -35,6 +37,62 @@ import type { JobDataSlot } from '@/types/ai-jobs';
 // AI Thinking Step 타입 import (ai-sidebar에서 제공)
 import type { AIThinkingStep } from '../types/ai-sidebar';
 import { SESSION_LIMITS } from '../types/session';
+
+export const AI_SIDEBAR_WIDTH_LIMITS = {
+  MIN: 440,
+  DEFAULT: 680,
+  MAX: 960,
+} as const;
+
+export const AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT = 20;
+
+export type AISidebarTab =
+  | 'chat'
+  | 'presets'
+  | 'thinking'
+  | 'settings'
+  | 'functions';
+
+const AI_SIDEBAR_TABS = [
+  'chat',
+  'presets',
+  'thinking',
+  'settings',
+  'functions',
+] as const satisfies readonly AISidebarTab[];
+
+const createSessionId = () =>
+  typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+export function normalizeAISidebarWidth(width: unknown): number {
+  if (typeof width !== 'number' || !Number.isFinite(width)) {
+    return AI_SIDEBAR_WIDTH_LIMITS.DEFAULT;
+  }
+
+  return Math.min(
+    AI_SIDEBAR_WIDTH_LIMITS.MAX,
+    Math.max(AI_SIDEBAR_WIDTH_LIMITS.MIN, Math.round(width))
+  );
+}
+
+function normalizeActiveTab(tab: unknown): AISidebarTab {
+  return typeof tab === 'string' &&
+    (AI_SIDEBAR_TABS as readonly string[]).includes(tab)
+    ? (tab as AISidebarTab)
+    : 'chat';
+}
+
+function normalizeAnalysisMode(mode: unknown): AnalysisMode {
+  return mode === 'thinking' ? 'thinking' : 'auto';
+}
+
+function normalizeSessionId(sessionId: unknown): string {
+  return typeof sessionId === 'string' && sessionId.trim().length > 0
+    ? sessionId
+    : createSessionId();
+}
 
 export interface AgentLog {
   id: string;
@@ -61,7 +119,7 @@ export interface AnalysisBasis {
   timeRange?: string;
   /** 실제 호출된 도구 이름 목록 */
   toolsCalled?: string[];
-  /** RAG 검색 출처 목록 */
+  /** Legacy retrieval source list for old chat history and web-source cards */
   ragSources?: Array<{
     title: string;
     similarity: number;
@@ -69,12 +127,29 @@ export interface AnalysisBasis {
     category?: string;
     url?: string;
   }>;
+  /** Canonical retrieval evidence for new AI Engine responses */
+  evidenceCards?: EvidenceCard[];
   /** Retrieval execution contract from Cloud Run AI Engine */
   retrieval?: RetrievalMetadata;
   /** UI-facing status split: enabled vs used vs suppressed vs unavailable */
   featureStatus?: AnalysisFeatureStatus;
+  /** Operator-facing grouping of evidence/source origins */
+  sourceGroups?: AnalysisBasisSourceGroup[];
   /** 사용자가 선택한 분석 강도 모드 */
   analysisMode?: AnalysisMode;
+}
+
+export type AnalysisBasisSourceGroupType =
+  | 'monitoring-data'
+  | 'knowledge-base'
+  | 'web-search'
+  | 'tool-result';
+
+export interface AnalysisBasisSourceGroup {
+  type: AnalysisBasisSourceGroupType;
+  label: string;
+  count: number;
+  detail?: string;
 }
 
 export interface ToolResultSummary {
@@ -103,7 +178,7 @@ export interface ChatMessage {
   id: string;
   content: string;
   role: 'user' | 'assistant' | 'system' | 'thinking';
-  timestamp: Date;
+  timestamp: Date | string;
   engine?: string;
   metadata?: {
     processingTime?: number;
@@ -118,6 +193,8 @@ export interface ChatMessage {
     ttfbMs?: number;
     confidence?: number;
     error?: string;
+    /** Round-robin provider selection slot [0-3] for UI attribution */
+    rotationSlot?: number;
     /** Langfuse trace ID for observability correlation */
     traceId?: string;
     /** 분석 근거 정보 */
@@ -128,6 +205,8 @@ export interface ChatMessage {
     assistantPlan?: AssistantPlan;
     /** read-only assistant result facade derived from routeDecision */
     assistantResult?: AssistantResult;
+    /** semantic parser/evidence routing trace for domain evidence answers */
+    semanticQueryTrace?: SemanticQueryTrace;
     /** 접을 수 있는 응답 뷰 */
     assistantResponseView?: {
       summary: string;
@@ -138,6 +217,13 @@ export interface ChatMessage {
     artifactIntentReason?: ChatArtifactIntentReason;
     /** guidance 응답일 때 대상 아티팩트 */
     artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
+    /** metadata message type marker for guidance-only responses */
+    type?: 'guidance';
+    /** guidance 응답을 즉시 artifact 실행으로 전환하는 CTA */
+    guidanceCta?: {
+      target: 'incident-report' | 'monitoring-analysis';
+      label: string;
+    };
     /** 채팅에서 생성한 사용자 다운로드 가능 장애 보고서 */
     incidentReportArtifact?: IncidentReportArtifact;
     /** 채팅에서 생성한 사용자 다운로드 가능 이상감지/추세 분석 */
@@ -181,7 +267,65 @@ export interface PendingAIEntryState {
   selectedFunction?: AIEntryFunction;
   analysisMode?: AnalysisMode;
   queryAsOfDataSlot?: JobDataSlot;
+  artifactWorkspaceId?: string;
   target?: AIEntryTarget;
+}
+
+function isPersistableMessage(
+  message: unknown
+): message is EnhancedChatMessage {
+  if (!message || typeof message !== 'object') {
+    return false;
+  }
+
+  const candidate = message as Partial<EnhancedChatMessage>;
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.content === 'string' &&
+    typeof candidate.role === 'string' &&
+    ['user', 'assistant', 'system', 'thinking'].includes(candidate.role) &&
+    (candidate.timestamp instanceof Date ||
+      typeof candidate.timestamp === 'string')
+  );
+}
+
+function normalizeMessageSnapshot(
+  messages: unknown,
+  limit: number = SESSION_LIMITS.MESSAGE_LIMIT
+): EnhancedChatMessage[] {
+  if (!Array.isArray(messages)) {
+    return [];
+  }
+
+  return messages.filter(isPersistableMessage).slice(-limit);
+}
+
+function normalizeRehydratedState(state: AISidebarState): void {
+  const persisted = state as AISidebarState & {
+    activeTab?: unknown;
+    analysisMode?: unknown;
+    isMinimized?: unknown;
+    messages?: unknown;
+    restoreBannerDismissed?: unknown;
+    sessionId?: unknown;
+    sidebarWidth?: unknown;
+    webSearchEnabled?: unknown;
+  };
+
+  state.isOpen = false;
+  state.isMinimized = persisted.isMinimized === true;
+  state.activeTab = normalizeActiveTab(persisted.activeTab);
+  state.sidebarWidth = normalizeAISidebarWidth(persisted.sidebarWidth);
+  state.webSearchEnabled = persisted.webSearchEnabled === true;
+  state.analysisMode = normalizeAnalysisMode(persisted.analysisMode);
+  state.restoreBannerDismissed = persisted.restoreBannerDismissed === true;
+  state.messages = normalizeMessageSnapshot(
+    persisted.messages,
+    AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT
+  );
+  state.sessionId = normalizeSessionId(persisted.sessionId);
+  state.pendingPrefillMessage = null;
+  state.pendingEntryState = null;
 }
 
 // 🔧 타입 정의
@@ -277,7 +421,7 @@ interface AISidebarState {
   // UI 상태
   isOpen: boolean;
   isMinimized: boolean;
-  activeTab: 'chat' | 'presets' | 'thinking' | 'settings' | 'functions';
+  activeTab: AISidebarTab;
   /** 사이드바 너비 (px) - 드래그 리사이즈용 */
   sidebarWidth: number;
   /** 외부 UI 액션에서 주입하는 입력 초안 */
@@ -292,9 +436,6 @@ interface AISidebarState {
 
   // 웹 검색 source mode. false=Auto, true=On.
   webSearchEnabled: boolean;
-
-  // Internal RAG override. Product UI no longer exposes this; false means Auto.
-  ragEnabled: boolean;
 
   // 분석 강도 모드
   analysisMode: AnalysisMode;
@@ -316,12 +457,9 @@ interface AISidebarState {
   setWebSearchEnabled: (
     enabled: boolean | ((prev: boolean) => boolean)
   ) => void;
-  setRagEnabled: (enabled: boolean | ((prev: boolean) => boolean)) => void;
   setAnalysisMode: (mode: AnalysisMode) => void;
   dismissRestoreBanner: () => void;
-  setActiveTab: (
-    tab: 'chat' | 'presets' | 'thinking' | 'settings' | 'functions'
-  ) => void;
+  setActiveTab: (tab: AISidebarTab) => void;
 
   // 채팅 관련 액션들
   addMessage: (message: EnhancedChatMessage) => void;
@@ -348,18 +486,14 @@ export const useAISidebarStore = create<AISidebarState>()(
         isOpen: false,
         isMinimized: false,
         activeTab: 'chat',
-        sidebarWidth: 680, // 기본 너비 680px
+        sidebarWidth: AI_SIDEBAR_WIDTH_LIMITS.DEFAULT,
         pendingPrefillMessage: null,
         pendingEntryState: null,
         webSearchEnabled: false,
-        ragEnabled: false,
         analysisMode: 'auto',
         restoreBannerDismissed: false,
         messages: [],
-        sessionId:
-          typeof crypto !== 'undefined' && crypto.randomUUID
-            ? crypto.randomUUID()
-            : `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        sessionId: createSessionId(),
         // currentEngine 제거 - v4.0: UNIFIED 모드로 자동 선택
 
         // UI 액션들
@@ -424,21 +558,14 @@ export const useAISidebarStore = create<AISidebarState>()(
 
         toggleSidebar: () => set((state) => ({ isOpen: !state.isOpen })),
 
-        setSidebarWidth: (width) => set({ sidebarWidth: width }),
+        setSidebarWidth: (width) =>
+          set({ sidebarWidth: normalizeAISidebarWidth(width) }),
 
         setWebSearchEnabled: (enabled) =>
           set((state) => ({
             webSearchEnabled:
               typeof enabled === 'function'
                 ? enabled(state.webSearchEnabled)
-                : enabled,
-          })),
-
-        setRagEnabled: (enabled) =>
-          set((state) => ({
-            ragEnabled:
-              typeof enabled === 'function'
-                ? enabled(state.ragEnabled)
                 : enabled,
           })),
 
@@ -451,15 +578,19 @@ export const useAISidebarStore = create<AISidebarState>()(
         // 채팅 관련 액션들
         addMessage: (message) =>
           set((state) => ({
-            messages: [...state.messages, message].slice(
-              -SESSION_LIMITS.MESSAGE_LIMIT
-            ), // SESSION_LIMITS 상수 사용 (50개, 보안 강화)
+            messages: normalizeMessageSnapshot(
+              [...state.messages, message],
+              SESSION_LIMITS.MESSAGE_LIMIT
+            ),
           })),
 
         syncChatSnapshot: (messages, sessionId) =>
           set({
-            messages: messages.slice(-SESSION_LIMITS.MESSAGE_LIMIT),
-            sessionId,
+            messages: normalizeMessageSnapshot(
+              messages,
+              SESSION_LIMITS.MESSAGE_LIMIT
+            ),
+            sessionId: normalizeSessionId(sessionId),
           }),
 
         updateMessage: (messageId, updates) =>
@@ -478,18 +609,14 @@ export const useAISidebarStore = create<AISidebarState>()(
             isOpen: false,
             isMinimized: false,
             activeTab: 'chat',
-            sidebarWidth: 680, // 기본 너비로 리셋
+            sidebarWidth: AI_SIDEBAR_WIDTH_LIMITS.DEFAULT,
             pendingPrefillMessage: null,
             pendingEntryState: null,
             webSearchEnabled: false,
-            ragEnabled: false,
             analysisMode: 'auto',
             restoreBannerDismissed: false,
             messages: [],
-            sessionId:
-              typeof crypto !== 'undefined' && crypto.randomUUID
-                ? crypto.randomUUID()
-                : `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+            sessionId: createSessionId(),
             // currentEngine 제거 - v4.0: UNIFIED 모드로 자동 선택
           }),
       }),
@@ -498,24 +625,24 @@ export const useAISidebarStore = create<AISidebarState>()(
         partialize: (state) => ({
           // 중요한 상태만 영속화
           isMinimized: state.isMinimized,
-          activeTab: state.activeTab,
-          sidebarWidth: state.sidebarWidth, // 사이드바 너비 영속화
+          activeTab: normalizeActiveTab(state.activeTab),
+          sidebarWidth: normalizeAISidebarWidth(state.sidebarWidth),
           webSearchEnabled: state.webSearchEnabled,
-          analysisMode: state.analysisMode,
+          analysisMode: normalizeAnalysisMode(state.analysisMode),
           restoreBannerDismissed: state.restoreBannerDismissed,
-          // 🔥 대화 기록 영속화 (최근 20개만 - localStorage 5MB 초과 방지)
-          messages: state.messages.slice(-20),
+          messages: normalizeMessageSnapshot(
+            state.messages,
+            AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT
+          ),
           // currentEngine 제거 - v4.0: localStorage 마이그레이션으로 자동 정리됨
-          sessionId: state.sessionId,
+          sessionId: normalizeSessionId(state.sessionId),
         }),
         // SSR 안전성을 위한 완전한 hydration 제어
         skipHydration: true,
         // Hydration 불일치 방지를 위한 추가 옵션
         onRehydrateStorage: () => (state) => {
-          // Hydration 후 초기 상태 정규화
           if (state) {
-            state.isOpen = false; // 초기에는 항상 닫힌 상태로 시작
-            state.ragEnabled = false; // stale hidden UI override 방지: Auto mode
+            normalizeRehydratedState(state);
           }
         },
       }

@@ -10,7 +10,11 @@ import {
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
-import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
+import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
+import {
+  normalizeEvidenceCards,
+  normalizeRetrievalMetadata,
+} from '@/lib/ai/utils/retrieval-status';
 import { logger } from '@/lib/logging';
 import { calculateBackoff } from '@/lib/utils/retry';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
@@ -203,11 +207,16 @@ export function connectAsyncQuerySSE(
       );
       const fallbackReason = getNonEmptyString(metadata.fallbackReason);
       const ttfbMs = getFiniteNumber(metadata.ttfbMs);
+      const rotationSlot = getFiniteNumber(metadata.rotationSlot);
       const routeDecision = normalizeRouteDecision(metadata.routeDecision);
       const assistantPlan = normalizeAssistantPlan(metadata.assistantPlan);
       const assistantResult = normalizeAssistantResult(
         metadata.assistantResult
       );
+      const semanticQueryTrace = normalizeSemanticQueryTrace(
+        metadata.semanticQueryTrace
+      );
+      const evidenceCards = normalizeEvidenceCards(resultData.evidenceCards);
 
       onResult({
         success: true,
@@ -218,6 +227,7 @@ export function connectAsyncQuerySSE(
           : undefined,
         toolResults: resultData.toolResults,
         ragSources: resultData.ragSources,
+        ...(evidenceCards.length > 0 && { evidenceCards }),
         processingTimeMs: resultData.processingTimeMs,
         latencyTier:
           metadata.latencyTier === 'fast' ||
@@ -246,9 +256,11 @@ export function connectAsyncQuerySSE(
         }),
         ...(fallbackReason && { fallbackReason }),
         ...(ttfbMs !== undefined && { ttfbMs }),
+        ...(rotationSlot !== undefined && { rotationSlot }),
         ...(routeDecision && { routeDecision }),
         ...(assistantPlan && { assistantPlan }),
         ...(assistantResult && { assistantResult }),
+        ...(semanticQueryTrace && { semanticQueryTrace }),
         ...(metadata.analysisMode === 'auto' ||
         metadata.analysisMode === 'thinking'
           ? { analysisMode: metadata.analysisMode }

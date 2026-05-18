@@ -1,14 +1,14 @@
+import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import {
   ARTIFACT_CONTRACT_VERSION,
   type ArtifactEnvelope,
   type ArtifactSourceMode,
-  type ChatArtifact,
 } from './types';
 
 export const MONITORING_ARTIFACT_DOMAIN_ID = 'openmanager-monitoring';
 export const ARTIFACT_REPLAY_PACK_VERSION = '2026-05-06-v1';
 
-export type ArtifactFamilyId = ChatArtifact['kind'];
+export type ArtifactFamilyId = MonitoringChatArtifact['kind'];
 
 export interface ArtifactReplayPolicy {
   persistence: 'local-session-first';
@@ -23,7 +23,7 @@ export interface ArtifactSchemaKeyInput {
 }
 
 export interface ArtifactSchemaEntry<
-  TArtifact extends ChatArtifact = ChatArtifact,
+  TArtifact extends MonitoringChatArtifact = MonitoringChatArtifact,
 > {
   domainId: string;
   familyId: ArtifactFamilyId;
@@ -32,7 +32,9 @@ export interface ArtifactSchemaEntry<
   legacyMetadataKey:
     | 'incidentReportArtifact'
     | 'monitoringAnalysisArtifact'
-    | 'serverSnapshotArtifact';
+    | 'serverMonitoringAnalysisArtifact'
+    | 'serverSnapshotArtifact'
+    | 'opsProcedureArtifact';
   replayPolicy: ArtifactReplayPolicy;
   isPayload: (value: unknown) => value is TArtifact;
 }
@@ -42,14 +44,14 @@ export interface ArtifactReplayPackEntry {
   schema: {
     domainId: string;
     familyId: ArtifactFamilyId;
-    artifactKind: ChatArtifact['kind'];
+    artifactKind: MonitoringChatArtifact['kind'];
     artifactVersion: string;
   };
   generatedAt: string;
   sourceMode: ArtifactSourceMode;
   dataSlot?: string;
   traceId?: string;
-  payload: ChatArtifact;
+  payload: MonitoringChatArtifact;
 }
 
 export interface ArtifactReplayPack {
@@ -98,7 +100,7 @@ function isArtifactSourceMode(value: unknown): value is ArtifactSourceMode {
 
 function isIncidentReportArtifact(
   value: unknown
-): value is Extract<ChatArtifact, { kind: 'incident-report' }> {
+): value is Extract<MonitoringChatArtifact, { kind: 'incident-report' }> {
   return (
     isRecord(value) &&
     value.kind === 'incident-report' &&
@@ -109,7 +111,7 @@ function isIncidentReportArtifact(
 
 function isMonitoringAnalysisArtifact(
   value: unknown
-): value is Extract<ChatArtifact, { kind: 'monitoring-analysis' }> {
+): value is Extract<MonitoringChatArtifact, { kind: 'monitoring-analysis' }> {
   return (
     isRecord(value) &&
     value.kind === 'monitoring-analysis' &&
@@ -121,9 +123,31 @@ function isMonitoringAnalysisArtifact(
   );
 }
 
+function isServerMonitoringAnalysisArtifact(
+  value: unknown
+): value is Extract<
+  MonitoringChatArtifact,
+  { kind: 'server-monitoring-analysis' }
+> {
+  return (
+    isRecord(value) &&
+    value.kind === 'server-monitoring-analysis' &&
+    !!readString(value.generatedAt) &&
+    !!readString(value.title) &&
+    !!readString(value.summary) &&
+    !!readString(value.serverId) &&
+    !!readString(value.serverName) &&
+    (value.overallStatus === 'online' ||
+      value.overallStatus === 'warning' ||
+      value.overallStatus === 'critical') &&
+    isRecord(value.analysis) &&
+    isRecord(value.server)
+  );
+}
+
 function isServerSnapshotArtifact(
   value: unknown
-): value is Extract<ChatArtifact, { kind: 'server-snapshot' }> {
+): value is Extract<MonitoringChatArtifact, { kind: 'server-snapshot' }> {
   return (
     isRecord(value) &&
     value.kind === 'server-snapshot' &&
@@ -136,6 +160,25 @@ function isServerSnapshotArtifact(
     isRecord(value.averages) &&
     Array.isArray(value.topServers) &&
     Array.isArray(value.alerts)
+  );
+}
+
+function isOpsProcedureArtifact(
+  value: unknown
+): value is Extract<MonitoringChatArtifact, { kind: 'ops-procedure' }> {
+  return (
+    isRecord(value) &&
+    value.kind === 'ops-procedure' &&
+    !!readString(value.generatedAt) &&
+    !!readString(value.title) &&
+    !!readString(value.summary) &&
+    (value.procedureType === 'runbook' ||
+      value.procedureType === 'alert-rule' ||
+      value.procedureType === 'script') &&
+    isRecord(value.inputs) &&
+    isRecord(value.runbook) &&
+    Array.isArray(value.codeBlocks) &&
+    isRecord(value.validation)
   );
 }
 
@@ -160,12 +203,30 @@ const ARTIFACT_SCHEMA_ENTRIES: ArtifactSchemaEntry[] = [
   },
   {
     domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+    familyId: 'server-monitoring-analysis',
+    artifactKind: 'server-monitoring-analysis',
+    artifactVersion: ARTIFACT_CONTRACT_VERSION,
+    legacyMetadataKey: 'serverMonitoringAnalysisArtifact',
+    replayPolicy: REPLAY_POLICY,
+    isPayload: isServerMonitoringAnalysisArtifact,
+  },
+  {
+    domainId: MONITORING_ARTIFACT_DOMAIN_ID,
     familyId: 'server-snapshot',
     artifactKind: 'server-snapshot',
     artifactVersion: ARTIFACT_CONTRACT_VERSION,
     legacyMetadataKey: 'serverSnapshotArtifact',
     replayPolicy: REPLAY_POLICY,
     isPayload: isServerSnapshotArtifact,
+  },
+  {
+    domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+    familyId: 'ops-procedure',
+    artifactKind: 'ops-procedure',
+    artifactVersion: ARTIFACT_CONTRACT_VERSION,
+    legacyMetadataKey: 'opsProcedureArtifact',
+    replayPolicy: REPLAY_POLICY,
+    isPayload: isOpsProcedureArtifact,
   },
 ];
 

@@ -192,7 +192,7 @@ export const SLAWidget = memo(function SLAWidget({
           <div className="flex items-center gap-3">
             <div className="text-right">
               <div
-                className={`text-xl font-bold ${getUptimeColor(metrics.actualUptime, metrics.targetUptime)}`}
+                className={`text-xl font-semibold ${getUptimeColor(metrics.actualUptime, metrics.targetUptime)}`}
               >
                 {metrics.actualUptime.toFixed(2)}%
               </div>
@@ -217,7 +217,7 @@ export const SLAWidget = memo(function SLAWidget({
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Target className="h-5 w-5 text-blue-500" />
-          <span className="font-bold text-gray-800">SLA 현황</span>
+          <span className="font-semibold text-gray-800">SLA 현황</span>
           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
             {PERIOD_LABELS[metrics.period]}
           </span>
@@ -237,7 +237,7 @@ export const SLAWidget = memo(function SLAWidget({
           <div>
             <div className="text-sm text-gray-600">현재 가용률</div>
             <div
-              className={`text-3xl font-bold ${getUptimeColor(metrics.actualUptime, metrics.targetUptime)}`}
+              className={`text-3xl font-semibold ${getUptimeColor(metrics.actualUptime, metrics.targetUptime)}`}
             >
               {metrics.actualUptime.toFixed(3)}%
             </div>
@@ -281,7 +281,7 @@ export const SLAWidget = memo(function SLAWidget({
             <Clock className="h-3.5 w-3.5" />
             MTTR
           </div>
-          <div className="mt-1 text-lg font-bold text-gray-800">
+          <div className="mt-1 text-lg font-semibold text-gray-800">
             {formatMinutes(metrics.mttr)}
           </div>
           <div className="text-xs text-gray-400">평균 복구 시간</div>
@@ -293,7 +293,7 @@ export const SLAWidget = memo(function SLAWidget({
             <Activity className="h-3.5 w-3.5" />
             MTTA
           </div>
-          <div className="mt-1 text-lg font-bold text-gray-800">
+          <div className="mt-1 text-lg font-semibold text-gray-800">
             {formatMinutes(metrics.mtta)}
           </div>
           <div className="text-xs text-gray-400">평균 인지 시간</div>
@@ -305,7 +305,7 @@ export const SLAWidget = memo(function SLAWidget({
             <TrendingUp className="h-3.5 w-3.5" />
             다운타임
           </div>
-          <div className="mt-1 text-lg font-bold text-gray-800">
+          <div className="mt-1 text-lg font-semibold text-gray-800">
             {formatMinutes(metrics.downtimeMinutes)}
           </div>
           <div className="text-xs text-gray-400">누적 중단 시간</div>
@@ -318,7 +318,7 @@ export const SLAWidget = memo(function SLAWidget({
             남은 예산
           </div>
           <div
-            className={`mt-1 text-lg font-bold ${metrics.remainingBudget > 0 ? 'text-green-600' : 'text-red-600'}`}
+            className={`mt-1 text-lg font-semibold ${metrics.remainingBudget > 0 ? 'text-green-600' : 'text-red-600'}`}
           >
             {formatMinutes(metrics.remainingBudget)}
           </div>
@@ -329,7 +329,7 @@ export const SLAWidget = memo(function SLAWidget({
       {/* Incident Count */}
       <div className="mt-3 flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-sm">
         <span className="text-gray-600">총 장애 건수</span>
-        <span className="font-bold text-gray-800">
+        <span className="font-semibold text-gray-800">
           {metrics.incidentCount}건
         </span>
       </div>

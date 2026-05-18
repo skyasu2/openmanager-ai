@@ -71,6 +71,7 @@ export const MessageActions = memo(function MessageActions({
         onClick={handleCopy}
         className="flex min-h-6 min-w-6 items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         title="메시지 복사"
+        aria-label={copied ? '메시지 복사됨' : '메시지 복사'}
       >
         {copied ? (
           <>
@@ -94,6 +95,7 @@ export const MessageActions = memo(function MessageActions({
             onClick={handleRegenerate}
             className="flex min-h-6 min-w-6 items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             title="다시 생성"
+            aria-label="응답 다시 생성"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">다시 생성</span>

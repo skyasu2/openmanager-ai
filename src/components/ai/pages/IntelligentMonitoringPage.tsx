@@ -13,15 +13,22 @@
 'use client';
 
 import { Monitor, Play, RefreshCw, Server } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
 import { useServerQuery } from '@/hooks/useServerQuery';
-import { createQueryAsOf } from '@/lib/ai/query-as-of';
-import { logger } from '@/lib/logging';
+import {
+  createArtifactExecutionWorkspaceId,
+  executeChatArtifact,
+  saveArtifactExecutionReplayPack,
+} from '@/lib/ai/chat-artifacts/artifact-execution';
+import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-workspace-store';
+import type {
+  MonitoringAnalysisArtifact,
+  ServerMonitoringCurrentMetrics,
+} from '@/lib/ai/chat-artifacts/types';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AnalysisResponse,
-  CloudRunAnalysisResponse,
   MetricAnomalyResult,
   MonitoringBatchAnalysisResponse,
   MonitoringBatchRiskSignal,
@@ -33,7 +40,9 @@ import type {
 import type { EnhancedServerMetrics } from '@/types/server';
 
 interface IntelligentMonitoringPageProps {
+  artifactWorkspaceId?: string;
   queryAsOfDataSlot?: JobDataSlot;
+  autoAnalyzeOnVisible?: boolean;
 }
 
 function batchStatusToOverallStatus(
@@ -164,8 +173,30 @@ function adaptMonitoringBatchResponse(
   };
 }
 
+function createServerMonitoringCurrentMetrics(
+  serverData?: EnhancedServerMetrics
+): ServerMonitoringCurrentMetrics | undefined {
+  if (!serverData) return undefined;
+
+  return {
+    cpu: serverData.cpu,
+    memory: serverData.memory,
+    disk: serverData.disk,
+    network: serverData.network,
+    load1: serverData.systemInfo?.loadAverage?.split(',')[0]
+      ? Number.parseFloat(serverData.systemInfo.loadAverage.split(',')[0]!)
+      : undefined,
+    load5: serverData.systemInfo?.loadAverage?.split(',')[1]
+      ? Number.parseFloat(serverData.systemInfo.loadAverage.split(',')[1]!)
+      : undefined,
+    cpuCores: serverData.specs?.cpu_cores,
+  };
+}
+
 export default function IntelligentMonitoringPage({
+  artifactWorkspaceId,
   queryAsOfDataSlot,
+  autoAnalyzeOnVisible = false,
 }: IntelligentMonitoringPageProps = {}) {
   // 서버 데이터 (React Query)
   const {
@@ -180,6 +211,24 @@ export default function IntelligentMonitoringPage({
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const hasAutoAnalyzedRef = useRef(false);
+
+  useEffect(() => {
+    if (!artifactWorkspaceId) return;
+
+    const replayPack =
+      createArtifactWorkspaceStore().readReplayPack(artifactWorkspaceId);
+    const artifact = replayPack?.entries.find(
+      (entry) => entry.schema.artifactKind === 'monitoring-analysis'
+    )?.payload as MonitoringAnalysisArtifact | undefined;
+    if (!artifact) return;
+
+    hasAutoAnalyzedRef.current = true;
+    setError(null);
+    setIsAnalyzing(false);
+    setProgress({ current: 0, total: 0 });
+    setResult(adaptMonitoringBatchResponse(artifact.analysis));
+  }, [artifactWorkspaceId]);
 
   // 🔧 P3: useCallback으로 핸들러 메모이제이션
   const handleServerChange = useCallback(
@@ -195,85 +244,22 @@ export default function IntelligentMonitoringPage({
       serverId: string,
       serverName: string,
       serverData?: EnhancedServerMetrics
-    ): Promise<ServerAnalysisResult | null> => {
-      try {
-        // Prepare current metrics for AI Engine
-        const currentMetrics = serverData
-          ? {
-              cpu: serverData.cpu,
-              memory: serverData.memory,
-              disk: serverData.disk,
-              network: serverData.network,
-              load1: serverData.systemInfo?.loadAverage?.split(',')[0]
-                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[0]!)
-                : undefined,
-              load5: serverData.systemInfo?.loadAverage?.split(',')[1]
-                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[1]!)
-                : undefined,
-              cpuCores: serverData.specs?.cpu_cores,
-            }
-          : undefined;
+    ): Promise<ServerAnalysisResult> => {
+      const artifact = await executeChatArtifact({
+        kind: 'server-monitoring-analysis',
+        query: `${serverName} 이상감지/추세 분석`,
+        sessionId: 'intelligent-monitoring-page',
+        serverId,
+        serverName,
+        currentMetrics: createServerMonitoringCurrentMetrics(serverData),
+        queryAsOfDataSlot,
+      });
+      saveArtifactExecutionReplayPack({
+        artifact,
+        workspaceId: createArtifactExecutionWorkspaceId(artifact),
+      });
 
-        const response = await fetch('/api/ai/intelligent-monitoring', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'analyze_server',
-            serverId,
-            analysisType: 'full',
-            currentMetrics,
-            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
-          }),
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error(
-              '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.'
-            );
-          }
-          logger.error(`[${serverName}] API 요청 실패: ${response.status}`);
-          return null;
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-          logger.error(`[${serverName}] 분석 실패:`, data.error);
-          return null;
-        }
-
-        const analysisData = data.data as CloudRunAnalysisResponse;
-
-        // 전체 상태 판단
-        let overallStatus: 'online' | 'warning' | 'critical' = 'online';
-        if (analysisData.anomalyDetection?.hasAnomalies) {
-          const anomalyResults = analysisData.anomalyDetection.results;
-          const severities = Object.values(anomalyResults).map(
-            (r) => r.severity
-          );
-          if (severities.includes('high')) {
-            overallStatus = 'critical';
-          } else if (severities.includes('medium')) {
-            overallStatus = 'warning';
-          }
-        }
-
-        return {
-          ...analysisData,
-          serverName,
-          overallStatus,
-        };
-      } catch (err) {
-        if (
-          err instanceof Error &&
-          err.message.includes('로그인이 필요합니다')
-        ) {
-          throw err;
-        }
-        logger.error(`[${serverName}] 분석 오류:`, err);
-        return null;
-      }
+      return artifact.server;
     },
     [queryAsOfDataSlot]
   );
@@ -300,46 +286,22 @@ export default function IntelligentMonitoringPage({
           serverInfo // Pass server info
         );
 
-        if (!serverResult) {
-          throw new Error('서버 분석에 실패했습니다.');
-        }
-
-        // 단일 서버도 CloudRunAnalysisResponse로 반환
         setResult(serverResult);
       } else {
-        // 전체 시스템 분석은 Cloud Run batch endpoint 1회 호출로 처리한다.
+        // 전체 시스템 분석은 Chat과 동일한 artifact execution layer를 사용한다.
         setProgress({ current: 0, total: 1 });
-        const response = await fetch('/api/ai/intelligent-monitoring', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'analyze_batch',
-            serverId: 'all',
-            analysisType: 'full',
-            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
-          }),
+        const artifact = await executeChatArtifact({
+          kind: 'monitoring-analysis',
+          query: '전체 시스템 이상감지/추세 분석',
+          sessionId: 'intelligent-monitoring-page',
+          queryAsOfDataSlot,
         });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error(
-              '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.'
-            );
-          }
-          throw new Error('전체 시스템 분석에 실패했습니다.');
-        }
-
-        const data = await response.json();
-        if (!data.success || !data.data) {
-          throw new Error('전체 시스템 분석에 실패했습니다.');
-        }
-
+        saveArtifactExecutionReplayPack({
+          artifact,
+          workspaceId: createArtifactExecutionWorkspaceId(artifact),
+        });
         setProgress({ current: 1, total: 1 });
-        setResult(
-          adaptMonitoringBatchResponse(
-            data.data as MonitoringBatchAnalysisResponse
-          )
-        );
+        setResult(adaptMonitoringBatchResponse(artifact.analysis));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '알 수 없는 오류');
@@ -348,6 +310,15 @@ export default function IntelligentMonitoringPage({
       setProgress({ current: 0, total: 0 });
     }
   }, [selectedServer, servers, analyzeSingleServer, queryAsOfDataSlot]);
+
+  useEffect(() => {
+    if (!autoAnalyzeOnVisible || hasAutoAnalyzedRef.current) {
+      return;
+    }
+
+    hasAutoAnalyzedRef.current = true;
+    void runAnalysis();
+  }, [autoAnalyzeOnVisible, runAnalysis]);
 
   const serverListStatusLabel = isServerListLoading
     ? '서버 목록 로딩 중'

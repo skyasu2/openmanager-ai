@@ -7,6 +7,11 @@ import {
   getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
 
+export {
+  normalizeReporterDegradationReasonCode,
+  normalizeReporterFallbackSource,
+} from '@/lib/ai/degradation-metadata';
+
 export const IncidentReportRequestSchema = z
   .object({
     action: z.literal('generate'),

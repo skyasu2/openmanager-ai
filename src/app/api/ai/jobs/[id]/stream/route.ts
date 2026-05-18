@@ -23,6 +23,10 @@ import type { RedisJobProgress } from '@/types/ai-jobs';
 import { sanitizeJobMetadataForClient } from '../../job-metadata';
 import { isJobOwnedByRequester } from '../../job-ownership';
 import {
+  getSubstantiveJobResultContent,
+  JOB_RESULT_QUALITY_FAILURE_MESSAGE,
+} from '../../job-result-quality';
+import {
   buildProgressEventData,
   getJobStreamMaxWaitTimeMs,
   getPollIntervalByStatus,
@@ -149,14 +153,29 @@ export async function GET(
             lastKnownStatus = result.status;
 
             if (result.status === 'completed') {
+              const substantiveResult = getSubstantiveJobResultContent(
+                result.result
+              );
+              if (!substantiveResult) {
+                sendEvent('error', {
+                  jobId,
+                  status: 'failed',
+                  error: JOB_RESULT_QUALITY_FAILURE_MESSAGE,
+                  processingTimeMs: result.processingTimeMs,
+                  timestamp: result.completedAt,
+                });
+                break;
+              }
+
               sendEvent('result', {
                 jobId,
                 status: 'completed',
-                response: result.result,
+                response: substantiveResult,
                 targetAgent: result.targetAgent,
                 toolsCalled: result.toolsCalled,
                 toolResults: result.toolResults,
                 ragSources: result.ragSources,
+                evidenceCards: result.evidenceCards,
                 metadata: sanitizeJobMetadataForClient(result.metadata),
                 processingTimeMs: result.processingTimeMs,
                 timestamp: result.completedAt,

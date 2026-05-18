@@ -2,59 +2,59 @@ import type { ArchitectureDiagram } from '../architecture-diagrams.types';
 
 export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
   id: 'vibe-coding',
-  title: 'Vibe Coding Split-Runner Delivery Flow',
+  title: 'AI 개발 워크플로우와 배포 게이트',
   description:
-    'Local WSL + AI-first build loop → pre-commit + pre-push gate → optional local Docker CI → GitLab CI validate (wsl2-docker self-hosted) → GitLab CI deploy (shared runner) → Vercel production → optional public snapshot sync.',
+    'WSL 기반 AI 개발 루프에서 로컬 훅, 선택적 Docker CI, GitLab validate/deploy, Vercel production, 공개 스냅샷 동기화까지 이어지는 실제 운영 흐름입니다.',
   layers: [
     {
-      title: 'Local Dev Loop',
+      title: '로컬 개발 루프',
       color: 'from-yellow-500 to-amber-600',
       nodes: [
         {
-          id: 'antigravity',
-          label: 'Google Antigravity',
-          sublabel: 'WSL 터미널 호스트 IDE',
+          id: 'wsl',
+          label: 'WSL2 Ubuntu 24.04',
+          sublabel: '주 개발 실행 환경',
           type: 'highlight',
-          icon: '🌌',
+          icon: '🐧',
         },
         {
-          id: 'claude-code',
-          label: 'Claude Code',
-          sublabel: 'AI-first 구현 루프',
+          id: 'ai-cli',
+          label: 'AI CLI Agents',
+          sublabel: 'Claude Code · Codex · Gemini',
           type: 'highlight',
           icon: '🤖',
         },
       ],
     },
     {
-      title: 'Local Quality Gates',
+      title: '로컬 품질 게이트',
       color: 'from-emerald-500 to-teal-600',
       nodes: [
         {
           id: 'pre-commit',
           label: 'Pre-commit Hook',
-          sublabel: 'Biome format + lint gate',
+          sublabel: 'Biome format + lint',
           type: 'primary',
           icon: '🪝',
         },
         {
           id: 'pre-push',
           label: 'Pre-push Hook',
-          sublabel: 'related tests + changed TS scope',
+          sublabel: '관련 테스트 + 변경 TS 범위',
           type: 'highlight',
           icon: '🛫',
         },
         {
           id: 'local-ci',
           label: 'Local Docker CI',
-          sublabel: 'broad/release change only',
+          sublabel: 'broad/release 변경만',
           type: 'primary',
           icon: '🐋',
         },
       ],
     },
     {
-      title: 'GitLab CI Pipeline',
+      title: 'GitLab CI',
       color: 'from-orange-500 to-amber-600',
       nodes: [
         {
@@ -74,7 +74,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       ],
     },
     {
-      title: 'Deploy & Public Sync',
+      title: '배포와 공개 스냅샷',
       color: 'from-sky-500 to-indigo-600',
       nodes: [
         {
@@ -102,8 +102,8 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
     },
   ],
   connections: [
-    { from: 'antigravity', to: 'claude-code', label: 'WSL' },
-    { from: 'claude-code', to: 'pre-commit', label: 'commit' },
+    { from: 'wsl', to: 'ai-cli', label: '작업' },
+    { from: 'ai-cli', to: 'pre-commit', label: 'commit' },
     { from: 'pre-commit', to: 'pre-push', label: 'local gate' },
     { from: 'pre-push', to: 'gitlab', label: 'quick pass' },
     {

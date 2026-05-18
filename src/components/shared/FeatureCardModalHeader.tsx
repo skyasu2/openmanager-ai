@@ -1,6 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { FileText, Network, X } from 'lucide-react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 
 type VibeView = 'current' | 'history' | 'cicd';
@@ -8,11 +8,11 @@ type VibeView = 'current' | 'history' | 'cicd';
 type FeatureCardModalHeaderProps = {
   title: string;
   Icon: React.ElementType;
+  gradient: string;
   showDiagram: boolean;
   diagramData: ArchitectureDiagram | null;
   cardId: string | undefined;
   vibeView: VibeView;
-  variant: 'home' | 'landing';
   onToggleDiagram: () => void;
   onSetVibeView: (view: VibeView) => void;
   onClose: () => void;
@@ -27,30 +27,33 @@ const VIBE_VIEWS: { id: VibeView; label: string }[] = [
 export function FeatureCardModalHeader({
   title,
   Icon,
+  gradient,
   showDiagram,
   diagramData,
   cardId,
   vibeView,
-  variant,
   onToggleDiagram,
   onSetVibeView,
   onClose,
 }: FeatureCardModalHeaderProps) {
+  const DiagramToggleIcon = showDiagram ? FileText : Network;
+
   return (
     <header
-      className={`flex shrink-0 flex-col items-stretch gap-3 border-b border-gray-700/50 sm:flex-row sm:items-center sm:justify-between ${
+      className={`flex shrink-0 flex-col items-stretch gap-3 border-b border-white/[0.08] sm:flex-row sm:items-center sm:justify-between ${
         showDiagram ? 'px-4 py-2.5' : 'p-4'
       }`}
     >
       <div className={`flex items-center ${showDiagram ? 'gap-2.5' : 'gap-3'}`}>
         <div
-          className={`flex items-center justify-center rounded-lg bg-gray-800 ${
+          className={`flex items-center justify-center rounded-lg bg-linear-to-br ${gradient} ${
             showDiagram ? 'h-7 w-7' : 'h-8 w-8'
           }`}
         >
           <Icon
-            className={showDiagram ? 'h-4 w-4' : 'h-5 w-5'}
-            style={{ color: variant === 'home' ? 'white' : 'currentColor' }}
+            className={
+              showDiagram ? 'h-4 w-4 text-white' : 'h-5 w-5 text-white'
+            }
           />
         </div>
         <h2
@@ -66,10 +69,11 @@ export function FeatureCardModalHeader({
           <button
             type="button"
             onClick={onToggleDiagram}
-            className="rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:from-indigo-500 hover:to-purple-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:from-indigo-500 hover:to-purple-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
             aria-label={showDiagram ? '상세 내용 보기' : '아키텍처 보기'}
           >
-            {showDiagram ? '📄 상세 내용' : '📊 아키텍처'}
+            <DiagramToggleIcon className="h-4 w-4" aria-hidden="true" />
+            <span>{showDiagram ? '상세 내용' : '아키텍처'}</span>
           </button>
         )}
 
@@ -99,10 +103,10 @@ export function FeatureCardModalHeader({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
-          aria-label="Close modal"
+          className="rounded-full p-2 text-white/40 transition-colors hover:bg-white/[0.08] hover:text-white"
+          aria-label="모달 닫기"
         >
-          <X size={20} />
+          <X size={20} aria-hidden="true" />
         </button>
       </div>
     </header>

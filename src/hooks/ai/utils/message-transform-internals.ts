@@ -11,6 +11,7 @@ import type {
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import {
   getToolDescription,
@@ -24,6 +25,7 @@ import type {
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
+  EvidenceCard,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
@@ -39,6 +41,7 @@ export type RagSource = {
 export type MessageMetadata = {
   traceId?: string;
   ragSources?: RagSource[];
+  evidenceCards?: EvidenceCard[];
   retrieval?: RetrievalMetadata;
   featureStatus?: AnalysisFeatureStatus;
   enableRAG?: boolean;
@@ -55,10 +58,17 @@ export type MessageMetadata = {
   usedFallback?: boolean;
   fallbackReason?: string;
   ttfbMs?: number;
+  rotationSlot?: number;
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
+  semanticQueryTrace?: SemanticQueryTrace;
   assistantResponseView?: StructuredAssistantResponse;
+  type?: 'guidance';
+  guidanceCta?: {
+    target: 'incident-report' | 'monitoring-analysis';
+    label: string;
+  };
   artifactIntentReason?: ChatArtifactIntentReason;
   artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
   incidentReportArtifact?: IncidentReportArtifact;

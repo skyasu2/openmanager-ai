@@ -15,7 +15,6 @@ interface UseEnhancedChatMessagesOptions {
   deferredAssistantMetadataByMessageId: Record<string, Record<string, unknown>>;
   deferredToolResultsByMessageId: Record<string, PendingStreamToolResult[]>;
   streamRagSources?: StreamRagSource[];
-  ragEnabled: boolean;
 }
 
 interface MessageTransformCacheEntry {
@@ -23,7 +22,6 @@ interface MessageTransformCacheEntry {
   isLastMessage: boolean;
   loadingForMessage: boolean;
   currentMode?: 'streaming' | 'job-queue';
-  ragEnabled: boolean;
   traceId?: string;
   deferredMetadata?: Record<string, unknown>;
   deferredToolResults?: PendingStreamToolResult[];
@@ -39,7 +37,6 @@ export function useEnhancedChatMessages({
   deferredAssistantMetadataByMessageId,
   deferredToolResultsByMessageId,
   streamRagSources,
-  ragEnabled,
 }: UseEnhancedChatMessagesOptions): EnhancedChatMessage[] {
   const transformCacheRef = useRef<Map<string, MessageTransformCacheEntry>>(
     new Map()
@@ -72,7 +69,6 @@ export function useEnhancedChatMessages({
         cached.isLastMessage === isLastMessage &&
         cached.loadingForMessage === loadingForMessage &&
         cached.currentMode === currentMode &&
-        cached.ragEnabled === ragEnabled &&
         cached.traceId === traceId &&
         cached.deferredMetadata === deferredMetadata &&
         cached.deferredToolResults === deferredToolResults &&
@@ -92,7 +88,6 @@ export function useEnhancedChatMessages({
           deferredAssistantMetadataByMessageId,
           deferredToolResultsByMessageId,
           streamRagSources,
-          ragEnabled,
         },
         isLastMessage
       );
@@ -102,7 +97,6 @@ export function useEnhancedChatMessages({
         isLastMessage,
         loadingForMessage,
         currentMode,
-        ragEnabled,
         traceId,
         deferredMetadata,
         deferredToolResults,
@@ -128,6 +122,5 @@ export function useEnhancedChatMessages({
     deferredAssistantMetadataByMessageId,
     deferredToolResultsByMessageId,
     streamRagSources,
-    ragEnabled,
   ]);
 }

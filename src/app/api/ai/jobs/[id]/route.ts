@@ -11,6 +11,9 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisDel, redisGet, redisSet } from '@/lib/redis';
+
+export const maxDuration = 10;
+
 import type {
   AIJob,
   JobStatusResponse,
@@ -19,6 +22,11 @@ import type {
 import { withCSRFProtection } from '@/utils/security/csrf';
 import { sanitizeJobMetadataForClient } from '../job-metadata';
 import { isJobOwnedByRequester } from '../job-ownership';
+import {
+  getSubstantiveJobResultContent,
+  JOB_RESULT_QUALITY_FAILURE_MESSAGE,
+  shouldFailCompletedJobResult,
+} from '../job-result-quality';
 
 // ============================================
 // GET /api/ai/jobs/:id - Job 상태 조회
@@ -61,15 +69,17 @@ export const GET = withAuth(async function GET(
       progressInfo = await redisGet<RedisJobProgress>(`job:progress:${jobId}`);
     }
     const clientMetadata = sanitizeJobMetadataForClient(job.metadata);
+    const substantiveResult = getSubstantiveJobResultContent(job.result);
+    const qualityFailed = shouldFailCompletedJobResult(job.status, job.result);
 
     const response: JobStatusResponse = {
       jobId: job.id,
       type: job.type,
-      status: job.status,
+      status: qualityFailed ? 'failed' : job.status,
       progress: progressInfo?.progress ?? job.progress,
       currentStep: progressInfo?.stage ?? job.currentStep,
-      result: job.result ? { content: job.result } : null,
-      error: job.error,
+      result: substantiveResult ? { content: substantiveResult } : null,
+      error: qualityFailed ? JOB_RESULT_QUALITY_FAILURE_MESSAGE : job.error,
       errorDetails: job.errorDetails ?? null,
       createdAt: job.createdAt,
       startedAt: job.startedAt,

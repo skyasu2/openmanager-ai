@@ -375,7 +375,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         importance: 'high',
         description: 'Vercel 분리 AI 엔진 - Free Tier 운영',
         implementation:
-          'Vercel(Frontend)과 Cloud Run(AI Engine)으로 하이브리드 아키텍처 운영. 5개 라우팅 에이전트(NLQ/Analyst/Reporter/Advisor/Vision) + Knowledge Retrieval Lite(BM25 RPC + metadata boost). Cloud Run Free Tier 엄수(1vCPU, 512Mi)',
+          'Vercel(Frontend)과 Cloud Run(AI Engine)으로 하이브리드 아키텍처 운영. Metrics Query/Analyst/Reporter/Advisor/Vision 실행 에이전트 + Knowledge Retrieval Lite(BM25 RPC + metadata boost). Cloud Run Free Tier 엄수(1vCPU, 512Mi)',
         version: 'v8.10+',
         status: 'active',
         icon: '☁️',

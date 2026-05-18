@@ -1,69 +1,56 @@
 'use client';
 
 import { Bot, Zap } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { getDiagramByCardId } from '@/data/architecture-diagrams.data';
-import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { FeatureCardModalProps } from '@/types/feature-card.types';
 import { parseMarkdownLinks } from '@/utils/markdown-parser';
+import { FeatureCardDiagramSummary } from './FeatureCardDiagramSummary';
 import {
   buildCategorizedTechData,
   getSafeCardData,
   sanitizeModalText,
 } from './FeatureCardModal.utils';
 import { FeatureCardModalHeader } from './FeatureCardModalHeader';
-import type { ReactFlowDiagramProps } from './ReactFlowDiagram';
+import { StaticArchitectureDiagram } from './StaticArchitectureDiagram';
 import { TechStackSection } from './TechStackSection';
 import { VibeCiCdSection } from './VibeCiCdSection';
 import { VibeHistorySection } from './VibeHistorySection';
 
-// React Flow는 클라이언트 사이드에서만 렌더링 (SSR 비활성화)
-const ReactFlowDiagram = dynamic<ReactFlowDiagramProps>(
-  () => import('./ReactFlowDiagram'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-card-lg items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-purple-500" />
-      </div>
-    ),
-  }
-);
+type VibeView = 'current' | 'history' | 'cicd';
+
+type ModalViewState = {
+  cardId: string | null;
+  showDiagram: boolean;
+  vibeView: VibeView;
+};
+
+const DEFAULT_MODAL_VIEW_STATE: ModalViewState = {
+  cardId: null,
+  showDiagram: false,
+  vibeView: 'current',
+};
 
 export default function FeatureCardModal({
   selectedCard,
   onClose,
   renderTextWithAIGradient,
   modalRef,
-  variant = 'home',
   isVisible,
 }: FeatureCardModalProps) {
-  // 모달은 항상 다크 테마로 고정
-  // 바이브 코딩 카드 전용 모드 상태
-  const [vibeView, setVibeView] = React.useState<
-    'current' | 'history' | 'cicd'
-  >('current');
-  // 아키텍처 다이어그램 뷰 상태 (모든 카드에 적용)
-  const [showDiagram, setShowDiagram] = React.useState(false);
+  const [viewState, setViewState] = React.useState<ModalViewState>(
+    DEFAULT_MODAL_VIEW_STATE
+  );
   const selectedCardId = selectedCard?.id ?? null;
 
-  // 모달이 열릴 때 기본 상세보기 모드로 초기화
-  useEffect(() => {
-    if (isVisible) {
-      setShowDiagram(false);
-      setVibeView('current');
-    }
-  }, [isVisible]);
-
-  // 카드 전환 시 기본 상세보기 모드로 초기화
-  useEffect(() => {
-    if (!isVisible || !selectedCardId) return;
-    setShowDiagram(false);
-    setVibeView('current');
-  }, [isVisible, selectedCardId]);
+  const isViewStateCurrent =
+    isVisible && selectedCardId !== null && viewState.cardId === selectedCardId;
+  const showDiagram = isViewStateCurrent ? viewState.showDiagram : false;
+  const vibeView = isViewStateCurrent ? viewState.vibeView : 'current';
+  const modalViewMode = showDiagram ? 'diagram' : vibeView;
+  const modalScrollResetKey = `${selectedCardId ?? 'none'}:${modalViewMode}`;
 
   // AI 상태 확인 (AI 제한 처리용)
   const aiAgentEnabled = useUnifiedAdminStore(
@@ -72,7 +59,65 @@ export default function FeatureCardModal({
 
   // 내부 ref (외부 modalRef가 없을 경우 대체)
   const internalRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const actualModalRef = modalRef || internalRef;
+
+  React.useLayoutEffect(() => {
+    setViewState((previousState) => {
+      if (!isVisible || !selectedCardId) {
+        return previousState.cardId === null
+          ? previousState
+          : DEFAULT_MODAL_VIEW_STATE;
+      }
+
+      if (previousState.cardId === selectedCardId) {
+        return previousState;
+      }
+
+      return {
+        cardId: selectedCardId,
+        showDiagram: false,
+        vibeView: 'current',
+      };
+    });
+  }, [isVisible, selectedCardId]);
+
+  React.useLayoutEffect(() => {
+    if (!isVisible) return;
+
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    scrollContainer.dataset.scrollResetKey = modalScrollResetKey;
+    scrollContainer.scrollTop = 0;
+    scrollContainer.scrollLeft = 0;
+  }, [isVisible, modalScrollResetKey]);
+
+  const toggleDiagram = React.useCallback(() => {
+    if (!selectedCardId) return;
+
+    setViewState((previousState) => ({
+      cardId: selectedCardId,
+      showDiagram:
+        previousState.cardId === selectedCardId
+          ? !previousState.showDiagram
+          : true,
+      vibeView: 'current',
+    }));
+  }, [selectedCardId]);
+
+  const setScopedVibeView = React.useCallback(
+    (nextView: VibeView) => {
+      if (!selectedCardId) return;
+
+      setViewState({
+        cardId: selectedCardId,
+        showDiagram: false,
+        vibeView: nextView,
+      });
+    },
+    [selectedCardId]
+  );
 
   // 🔧 P0: 통합 키보드 핸들러 (ESC 닫기 + Tab 포커스 트래핑)
   useEffect(() => {
@@ -170,59 +215,13 @@ export default function FeatureCardModal({
   // 바이브 히스토리 스테이지 추출
   const vibeHistoryStages = categorizedTechData.historyStages;
 
-  // 🛡️ Codex 제안: 런타임 안전성 검증
-  const renderModalSafely = () => {
-    try {
-      if (!cardData.id && isVisible) {
-        return (
-          <div className="p-6 text-center text-white">
-            <p>모달을 불러올 수 없습니다.</p>
-            <button
-              type="button"
-              onClick={onClose}
-              className="mt-4 rounded bg-red-600 px-4 py-2"
-            >
-              닫기
-            </button>
-          </div>
-        );
-      }
-      return mainContent;
-    } catch (error) {
-      logger.error('Modal rendering error:', error);
-      return (
-        <div className="p-6 text-center text-white">
-          <p>모달을 불러오는 중 오류가 발생했습니다.</p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-4 rounded bg-red-600 px-4 py-2"
-          >
-            닫기
-          </button>
-        </div>
-      );
-    }
-  };
-
   const mainContent = (
-    <div
-      className={
-        showDiagram ? 'px-3 pb-3 pt-2 text-white sm:px-4' : 'p-6 text-white'
-      }
-    >
-      {/* 아키텍처 다이어그램 뷰 (React Flow 기반) */}
-      {/* 🔧 key prop: showDiagram 전환 시 ReactFlow 완전 재마운트 (fitView 재계산 보장) */}
+    <div className={showDiagram ? 'p-3 text-white sm:p-4' : 'p-6 text-white'}>
       {showDiagram && diagramData ? (
-        <ReactFlowDiagram
-          key={`diagram-${cardData.id}`}
-          diagram={diagramData}
-          compact
-          showControls
-          showHeader={false}
-          showLegend={false}
-          maximizeViewport
-        />
+        <div className="space-y-3">
+          <FeatureCardDiagramSummary diagram={diagramData} />
+          <StaticArchitectureDiagram diagram={diagramData} />
+        </div>
       ) : (
         <>
           {/* 헤더 섹션 — CI/CD 탭은 compact (아이콘·설명 축소) */}
@@ -245,13 +244,13 @@ export default function FeatureCardModal({
               </p>
             </div>
           ) : (
-            <div className="mb-8 text-center">
+            <div className="mb-6 text-center">
               <div
-                className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center`}
+                className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center shadow-lg`}
               >
                 <Icon className="h-8 w-8 text-white" />
               </div>
-              <h3 className="mb-3 text-2xl font-bold">
+              <h3 className="text-2xl font-bold">
                 {renderTextWithAIGradient(title)}
                 {/* 바이브 코딩 카드 전용 뷰 표시 */}
                 {cardData.id === 'vibe-coding' && (
@@ -262,19 +261,13 @@ export default function FeatureCardModal({
                   </span>
                 )}
               </h3>
-              <p
-                id="modal-description"
-                className="mx-auto max-w-2xl text-sm text-gray-300"
-              >
+              {/* overview 텍스트 — 스크린리더 전용 (시각 영역에서 제거) */}
+              <p id="modal-description" className="sr-only">
                 {cardData.id === 'vibe-coding'
                   ? vibeView === 'history'
                     ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
-                    : parseMarkdownLinks(
-                        sanitizeModalText(detailedContent.overview)
-                      )
-                  : parseMarkdownLinks(
-                      sanitizeModalText(detailedContent.overview)
-                    )}
+                    : sanitizeModalText(detailedContent.overview)
+                  : sanitizeModalText(detailedContent.overview)}
               </p>
             </div>
           )}
@@ -401,11 +394,7 @@ export default function FeatureCardModal({
       {/* 🔧 P1: dvh 단위로 모바일 주소바 문제 해결, motion-reduce 지원 */}
       <div
         ref={actualModalRef}
-        className={`relative z-10 w-full transform overflow-hidden rounded-2xl border border-gray-600/50 bg-linear-to-br from-gray-900 via-gray-900 to-gray-800 shadow-2xl transition-all duration-300 motion-reduce:transition-none ${
-          showDiagram
-            ? 'max-h-[92dvh] max-w-[72vw] sm:max-w-[68vw] lg:max-w-4xl xl:max-w-5xl'
-            : 'max-h-[80dvh] max-w-[92vw] sm:max-w-lg md:max-w-xl lg:max-w-3xl'
-        } ${!cardData.id ? 'hidden' : ''}`}
+        className={`relative z-10 w-full transform overflow-hidden rounded-2xl border border-white/[0.11] bg-[#08101c] shadow-[0_32px_80px_rgba(0,0,0,0.7)] transition-all duration-300 motion-reduce:transition-none max-h-[88dvh] max-w-[92vw] sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl ${!cardData.id ? 'hidden' : ''}`}
         data-modal-content="portal-unified-v4-ai-cross-verified"
         style={{
           transform: isVisible && cardData.id ? 'scale(1)' : 'scale(0.95)',
@@ -418,31 +407,46 @@ export default function FeatureCardModal({
       >
         {/* Hook 안정화: 조건부 렌더링 제거, CSS로 가시성 제어 */}
 
-        <div
-          className={`absolute left-0 right-0 top-0 h-48 bg-linear-to-b ${gradient} opacity-20 blur-3xl`}
-        ></div>
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-indigo-400/40 to-transparent" />
         <div className="relative z-10 flex h-full flex-col">
           <FeatureCardModalHeader
             title={title}
             Icon={Icon}
+            gradient={gradient}
             showDiagram={showDiagram}
             diagramData={diagramData}
             cardId={cardData.id ?? undefined}
             vibeView={vibeView}
-            variant={variant ?? 'home'}
-            onToggleDiagram={() => setShowDiagram(!showDiagram)}
-            onSetVibeView={setVibeView}
+            onToggleDiagram={toggleDiagram}
+            onSetVibeView={setScopedVibeView}
             onClose={onClose}
           />
           <div
-            className="overflow-y-auto scroll-smooth"
+            ref={scrollContainerRef}
+            className="overflow-y-auto scroll-smooth [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/[0.07] [&::-webkit-scrollbar-thumb:hover]:bg-white/[0.13]"
+            data-testid="feature-card-modal-scroll"
+            data-card-id={cardData.id ?? undefined}
+            data-view-mode={modalViewMode}
             style={{
-              maxHeight: showDiagram
-                ? 'calc(92dvh - 62px)' // 다이어그램 모드: 상단 헤더 압축 + 모달 높이 확장
-                : 'calc(80dvh - 70px)', // 상세 모드: 모달 max-h-[80dvh]에 맞춤
+              maxHeight: 'calc(88dvh - 60px)',
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(255,255,255,0.06) transparent',
             }}
           >
-            {renderModalSafely()}
+            {cardData.id || !isVisible ? (
+              mainContent
+            ) : (
+              <div className="p-6 text-center text-white">
+                <p>모달을 불러올 수 없습니다.</p>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="mt-4 rounded bg-red-600 px-4 py-2"
+                >
+                  닫기
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

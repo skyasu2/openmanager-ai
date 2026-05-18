@@ -12,6 +12,7 @@ import {
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
+import { enrichIncidentReportPayload } from './enrichment';
 import { executeGenerateRetry } from './retry-handler';
 import {
   getFallbackMessage,
@@ -23,11 +24,43 @@ import {
   INCIDENT_REPORT_ENDPOINT,
   type IncidentReportRequest,
   isFallbackPayload,
+  normalizeReporterDegradationReasonCode,
+  normalizeReporterFallbackSource,
   toFallbackReasonCode,
   withNoStoreHeaders,
 } from './route-helpers';
 
 type ValidationFieldErrors = Record<string, string[] | undefined>;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function readIncidentReportDegradation(responseData: Record<string, unknown>) {
+  const report = responseData.report;
+  if (!isRecord(report) || report.degraded !== true) return null;
+
+  return {
+    reasonCode: normalizeReporterDegradationReasonCode(
+      report.fallbackReasonCode ?? report.degradationReasonCode
+    ),
+    fallbackSource: normalizeReporterFallbackSource(report.fallbackSource),
+  };
+}
+
+function normalizeIncidentReportDegradationFields(
+  report: Record<string, unknown>
+): Record<string, unknown> {
+  if (report.degraded !== true) return report;
+
+  return {
+    ...report,
+    fallbackReasonCode: normalizeReporterDegradationReasonCode(
+      report.fallbackReasonCode ?? report.degradationReasonCode
+    ),
+    fallbackSource: normalizeReporterFallbackSource(report.fallbackSource),
+  };
+}
 
 export function createValidationErrorResponse(
   fieldErrors: ValidationFieldErrors
@@ -158,6 +191,12 @@ function createSuccessResponse(
   if (didDirectRetry) {
     successHeaders['X-Direct-Retry'] = '1';
   }
+  const degradation = readIncidentReportDegradation(responseData);
+  if (degradation) {
+    successHeaders['X-AI-Degraded'] = 'true';
+    successHeaders['X-AI-Degradation-Reason'] = degradation.reasonCode;
+    successHeaders['X-AI-Fallback-Source'] = degradation.fallbackSource;
+  }
 
   return NextResponse.json(responseData, {
     headers: withNoStoreHeaders({
@@ -223,12 +262,25 @@ export async function handleValidatedIncidentReportRequest(
         throw new Error(cloudRunResult.error ?? 'Cloud Run request failed');
       }
 
-      return {
-        success: true,
-        report: {
-          ...cloudRunResult.data,
+      const cloudRunReport: Record<string, unknown> = isRecord(
+        cloudRunResult.data
+      )
+        ? { ...cloudRunResult.data }
+        : {};
+      delete cloudRunReport.fallbackReason;
+      delete cloudRunReport._fallbackReason;
+      const enrichedReport = await enrichIncidentReportPayload(
+        {
+          ...cloudRunReport,
           _source: 'Cloud Run AI Engine',
         },
+        body.queryAsOf
+      );
+      const report = normalizeIncidentReportDegradationFields(enrichedReport);
+
+      return {
+        success: true,
+        report,
       };
     };
 

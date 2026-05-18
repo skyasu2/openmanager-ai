@@ -12,16 +12,19 @@
 
 import { AlertCircle, FileText, RefreshCw, X } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
-import { rulesLoader } from '@/config/rules/loader';
-import { useServerQuery } from '@/hooks/useServerQuery';
-import { createQueryAsOf } from '@/lib/ai/query-as-of';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  createArtifactExecutionWorkspaceId,
+  executeChatArtifact,
+  saveArtifactExecutionReplayPack,
+} from '@/lib/ai/chat-artifacts/artifact-execution';
+import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-workspace-store';
+import type { IncidentReportArtifact } from '@/lib/ai/chat-artifacts/types';
 import { logger } from '@/lib/logging';
 import type { JobDataSlot } from '@/types/ai-jobs';
 
 import ReportCard from './ReportCard';
-import type { IncidentReport, ServerMetric } from './types';
-import { extractNumericValue, mapSeverity } from './utils';
+import type { IncidentReport } from './types';
 
 // ============================================================================
 // Module-level cache — survives Activity hide/show and potential remounts
@@ -29,6 +32,7 @@ import { extractNumericValue, mapSeverity } from './utils';
 let reportsCache: IncidentReport[] = [];
 
 interface AutoReportPageProps {
+  artifactWorkspaceId?: string;
   queryAsOfDataSlot?: JobDataSlot;
 }
 
@@ -68,56 +72,10 @@ const REPORT_QUICK_STARTS: ReportQuickStart[] = [
   },
 ];
 
-function normalizeRecommendations(
-  recommendations: unknown
-): IncidentReport['recommendations'] {
-  if (!Array.isArray(recommendations)) return [];
-
-  return recommendations.map((recommendation) => {
-    const item = recommendation as {
-      action?: string;
-      priority?: string;
-      expected_impact?: string;
-    };
-
-    return {
-      action: item.action || '추가 조치 필요',
-      priority: item.priority || 'medium',
-      expected_impact: item.expected_impact || '영향 감소',
-    };
-  });
-}
-
-function normalizeRelatedServers(report: Record<string, unknown>) {
-  if (!Array.isArray(report.affectedServers)) return [];
-
-  return report.affectedServers
-    .filter(
-      (
-        server
-      ): server is {
-        id?: string;
-        name?: string;
-        severity?: string;
-        metric?: string;
-        value?: number;
-      } => typeof server === 'object' && server !== null
-    )
-    .map((server) => ({
-      id: server.id || server.name || 'unknown-server',
-      name: server.name || server.id || 'unknown-server',
-      severity: server.severity || 'info',
-      metric: server.metric,
-      value: server.value,
-    }));
-}
-
 export default function AutoReportPage({
+  artifactWorkspaceId,
   queryAsOfDataSlot,
 }: AutoReportPageProps = {}) {
-  // Server data (React Query)
-  const { data: servers = [], isLoading: isServersLoading } = useServerQuery();
-
   // Reports state — initialized from module-level cache
   const [reports, setReportsState] = useState<IncidentReport[]>(reportsCache);
   const setReports = useCallback(
@@ -138,186 +96,50 @@ export default function AutoReportPage({
   const [downloadMenuId, setDownloadMenuId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!artifactWorkspaceId) return;
+
+    const replayPack =
+      createArtifactWorkspaceStore().readReplayPack(artifactWorkspaceId);
+    const artifact = replayPack?.entries.find(
+      (entry) => entry.schema.artifactKind === 'incident-report'
+    )?.payload as IncidentReportArtifact | undefined;
+    if (!artifact) return;
+
+    setReports((prev) => [
+      {
+        ...artifact.report,
+        timestamp:
+          artifact.report.timestamp instanceof Date
+            ? artifact.report.timestamp
+            : new Date(artifact.report.timestamp),
+      },
+      ...prev.filter((report) => report.id !== artifact.report.id),
+    ]);
+  }, [artifactWorkspaceId, setReports]);
+
   // Generate new report
   const handleGenerateReport = useCallback(
     async (preset?: ReportQuickStart) => {
-      if (servers.length === 0) {
-        setError('서버 데이터를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-        return;
-      }
       setIsGenerating(true);
       setError(null);
 
       try {
-        const metrics: ServerMetric[] = servers.map((server) => ({
-          server_id: server.id,
-          server_name: server.name,
-          cpu: extractNumericValue(server.cpu ?? 0),
-          memory: extractNumericValue(server.memory ?? 0),
-          disk: extractNumericValue(server.disk ?? 0),
-          network: extractNumericValue(server.network ?? 0),
-          timestamp: new Date().toISOString(),
-        }));
-
-        const response = await fetch('/api/ai/incident-report', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'generate',
-            metrics,
-            notify: true,
-            ...(preset
-              ? {
-                  query: preset.query,
-                  category: preset.category,
-                  severity: preset.severity,
-                }
-              : {}),
-            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
-          }),
+        const artifact = await executeChatArtifact({
+          kind: 'incident-report',
+          query:
+            preset?.query ?? '현재 이상 징후를 장애 보고서 형식으로 정리해줘',
+          sessionId: 'auto-report-page',
+          queryAsOfDataSlot,
         });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            setError('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.');
-            return;
-          }
-          throw new Error(`API 오류: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Fallback 응답 처리
-        if (data.source === 'fallback' || !data.success) {
-          setError(
-            data.message ||
-              '보고서 생성 서비스가 일시적으로 불안정합니다. 잠시 후 다시 시도해주세요.'
-          );
-          return;
-        }
-
-        // 보고서 데이터 없음 처리
-        if (!data.report) {
-          setError('보고서 데이터를 받지 못했습니다. 다시 시도해주세요.');
-          return;
-        }
-
-        if (data.success && data.report) {
-          // 시스템 요약: API 데이터 우선, 없으면 로컬 계산
-          const apiSystemSummary = data.report.system_summary;
-          const systemSummary = apiSystemSummary
-            ? {
-                totalServers: apiSystemSummary.total_servers ?? metrics.length,
-                healthyServers:
-                  apiSystemSummary.healthy_servers ??
-                  apiSystemSummary.online_servers ??
-                  0,
-                warningServers: apiSystemSummary.warning_servers ?? 0,
-                criticalServers: apiSystemSummary.critical_servers ?? 0,
-              }
-            : (() => {
-                const statusCounts = { online: 0, warning: 0, critical: 0 };
-                for (const m of metrics) {
-                  const status = rulesLoader.getServerStatus({
-                    cpu: m.cpu,
-                    memory: m.memory,
-                    disk: m.disk,
-                  });
-                  statusCounts[status]++;
-                }
-                return {
-                  totalServers: metrics.length,
-                  healthyServers: statusCounts.online,
-                  warningServers: statusCounts.warning,
-                  criticalServers: statusCounts.critical,
-                };
-              })();
-
-          // 이상 항목: API 데이터 우선, 없으면 로컬 계산
-          const apiAnomalies = data.report.anomalies;
-          const anomalies =
-            Array.isArray(apiAnomalies) && apiAnomalies.length > 0
-              ? apiAnomalies
-              : metrics
-                  .filter(
-                    (m) =>
-                      rulesLoader.isWarning('cpu', m.cpu) ||
-                      rulesLoader.isCritical('cpu', m.cpu) ||
-                      rulesLoader.isWarning('memory', m.memory) ||
-                      rulesLoader.isCritical('memory', m.memory) ||
-                      rulesLoader.isWarning('disk', m.disk) ||
-                      rulesLoader.isCritical('disk', m.disk)
-                  )
-                  .flatMap((m) => {
-                    const items = [];
-                    if (
-                      rulesLoader.isWarning('cpu', m.cpu) ||
-                      rulesLoader.isCritical('cpu', m.cpu)
-                    )
-                      items.push({
-                        server_id: m.server_id,
-                        server_name: m.server_name,
-                        metric: 'CPU',
-                        value: m.cpu,
-                        severity: rulesLoader.isCritical('cpu', m.cpu)
-                          ? 'critical'
-                          : 'warning',
-                      });
-                    if (
-                      rulesLoader.isWarning('memory', m.memory) ||
-                      rulesLoader.isCritical('memory', m.memory)
-                    )
-                      items.push({
-                        server_id: m.server_id,
-                        server_name: m.server_name,
-                        metric: 'Memory',
-                        value: m.memory,
-                        severity: rulesLoader.isCritical('memory', m.memory)
-                          ? 'critical'
-                          : 'warning',
-                      });
-                    if (
-                      rulesLoader.isWarning('disk', m.disk) ||
-                      rulesLoader.isCritical('disk', m.disk)
-                    )
-                      items.push({
-                        server_id: m.server_id,
-                        server_name: m.server_name,
-                        metric: 'Disk',
-                        value: m.disk,
-                        severity: rulesLoader.isCritical('disk', m.disk)
-                          ? 'critical'
-                          : 'warning',
-                      });
-                    return items;
-                  });
-
-          const newReport: IncidentReport = {
-            id: data.report.id,
-            title: data.report.title,
-            severity: mapSeverity(data.report.severity),
-            timestamp: new Date(data.report.created_at),
-            affectedServers:
-              data.report.affected_servers ||
-              normalizeRelatedServers(data.report).map((server) => server.id),
-            relatedServers: normalizeRelatedServers(data.report),
-            description:
-              data.report.root_cause_analysis?.primary_cause ||
-              data.report.description ||
-              '새로운 이상 징후가 감지되었습니다.',
-            status: 'active',
-            pattern: data.report.pattern,
-            recommendations: normalizeRecommendations(
-              data.report.recommendations
-            ),
-            systemSummary,
-            anomalies,
-            timeline: data.report.timeline,
-            postmortem: data.report.postmortem,
-          };
-
-          setReports((prev) => [newReport, ...prev]);
-        }
+        saveArtifactExecutionReplayPack({
+          artifact,
+          workspaceId: createArtifactExecutionWorkspaceId(artifact),
+        });
+        setReports((prev) => [
+          artifact.report,
+          ...prev.filter((report) => report.id !== artifact.report.id),
+        ]);
       } catch (err) {
         logger.error('보고서 생성 실패:', err);
         setError(
@@ -329,7 +151,7 @@ export default function AutoReportPage({
         setIsGenerating(false);
       }
     },
-    [servers, setReports, queryAsOfDataSlot]
+    [setReports, queryAsOfDataSlot]
   );
 
   // Event handlers
@@ -408,19 +230,13 @@ export default function AutoReportPage({
               type="button"
               data-testid="report-generate-btn"
               onClick={() => handleGenerateReport()}
-              disabled={isGenerating || isServersLoading}
+              disabled={isGenerating}
               className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-red-500 px-3 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
                 className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`}
               />
-              <span>
-                {isServersLoading
-                  ? '서버 로딩 중...'
-                  : isGenerating
-                    ? '생성 중...'
-                    : '새 보고서'}
-              </span>
+              <span>{isGenerating ? '생성 중...' : '새 보고서'}</span>
             </button>
           </div>
         </div>
@@ -523,7 +339,7 @@ export default function AutoReportPage({
                   key={preset.id}
                   type="button"
                   onClick={() => handleGenerateReport(preset)}
-                  disabled={isGenerating || isServersLoading}
+                  disabled={isGenerating}
                   className="rounded-lg border border-red-100 bg-white px-3 py-2 text-left transition-colors hover:border-red-200 hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
                 >
                   <span className="block text-sm font-semibold text-gray-800">
@@ -539,17 +355,13 @@ export default function AutoReportPage({
               type="button"
               data-testid="report-generate-cta"
               onClick={() => handleGenerateReport()}
-              disabled={isGenerating || isServersLoading}
+              disabled={isGenerating}
               className="inline-flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-sm text-white transition-all hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
-                className={`h-4 w-4 ${isGenerating || isServersLoading ? 'animate-spin' : ''}`}
+                className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`}
               />
-              <span>
-                {isServersLoading
-                  ? '서버 데이터 로딩 중...'
-                  : '첫 보고서 생성하기'}
-              </span>
+              <span>첫 보고서 생성하기</span>
             </button>
           </div>
         )}

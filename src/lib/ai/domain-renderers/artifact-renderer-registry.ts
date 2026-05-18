@@ -1,9 +1,11 @@
+import type { ReactNode } from 'react';
 import {
   listArtifactSchemaEntries,
   MONITORING_ARTIFACT_DOMAIN_ID,
   resolveArtifactSchemaEntry,
 } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
 import {
+  ARTIFACT_CONTRACT_VERSION,
   type ArtifactEnvelope,
   type ArtifactSourceMode,
   type ChatArtifact,
@@ -13,12 +15,48 @@ import {
 export const MONITORING_ARTIFACT_RENDERER_DOMAIN_ID =
   MONITORING_ARTIFACT_DOMAIN_ID;
 
-export type ArtifactRendererKind = ChatArtifact['kind'];
+export type ArtifactRendererKind = string;
+export interface ArtifactRendererPayload {
+  kind: string;
+  generatedAt: string;
+  artifactVersion?: string;
+  sourceMode?: ArtifactSourceMode;
+  dataSlot?: string;
+  traceId?: string;
+  evidence?: unknown;
+  providerSummary?: unknown;
+}
+
+export interface ArtifactRendererEnvelope
+  extends Omit<
+    ArtifactEnvelope,
+    'artifactVersion' | 'kind' | 'generatedAt' | 'payload'
+  > {
+  domainId?: string;
+  artifactVersion: string;
+  kind: string;
+  generatedAt: string;
+  payload: ArtifactRendererPayload;
+}
+
+export type ArtifactRendererFn = (
+  artifact: ArtifactRendererPayload,
+  entry: SupportedArtifactRendererEntry
+) => ReactNode;
 
 export interface ArtifactRendererKeyInput {
   domainId: string;
   artifactKind: string;
   artifactVersion: string;
+}
+
+export interface RegisterArtifactRendererOptions {
+  isPayload?: (value: unknown) => boolean;
+}
+
+interface ArtifactRendererRegistration extends ArtifactRendererKeyInput {
+  renderer: ArtifactRendererFn;
+  isPayload?: (value: unknown) => boolean;
 }
 
 export interface SupportedArtifactRendererEntry {
@@ -27,8 +65,8 @@ export interface SupportedArtifactRendererEntry {
   domainId: string;
   artifactKind: ArtifactRendererKind;
   artifactVersion: string;
-  artifact: ChatArtifact;
-  envelope: ArtifactEnvelope;
+  artifact: ArtifactRendererPayload;
+  envelope: ArtifactRendererEnvelope;
 }
 
 export interface UnsupportedArtifactRendererEntry {
@@ -63,6 +101,8 @@ const MONITORING_ARTIFACT_RENDERER_KEYS = new Set(
   )
 );
 
+const artifactRendererMap = new Map<string, ArtifactRendererRegistration>();
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -71,14 +111,6 @@ function readString(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim().length > 0
     ? value.trim()
     : undefined;
-}
-
-function isArtifactKind(value: unknown): value is ArtifactRendererKind {
-  return (
-    value === 'incident-report' ||
-    value === 'monitoring-analysis' ||
-    value === 'server-snapshot'
-  );
 }
 
 function isArtifactSourceMode(value: unknown): value is ArtifactSourceMode {
@@ -91,6 +123,52 @@ function isArtifactSourceMode(value: unknown): value is ArtifactSourceMode {
 
 function isChatArtifact(value: unknown): value is ChatArtifact {
   return listArtifactSchemaEntries().some((entry) => entry.isPayload(value));
+}
+
+function isBaseChatArtifactPayload(
+  value: unknown,
+  expectedKind: string
+): value is ArtifactRendererPayload {
+  return (
+    isRecord(value) &&
+    value.kind === expectedKind &&
+    !!readString(value.generatedAt)
+  );
+}
+
+function readRendererArtifactEnvelope(
+  artifact: ArtifactRendererPayload,
+  domainId: string,
+  sourceEnvelope?: RawArtifactEnvelope
+): ArtifactRendererEnvelope {
+  const artifactVersion =
+    sourceEnvelope?.artifactVersion ??
+    artifact.artifactVersion ??
+    ARTIFACT_CONTRACT_VERSION;
+  const sourceMode =
+    sourceEnvelope?.sourceMode ?? artifact.sourceMode ?? 'restored-legacy';
+
+  if (isChatArtifact(artifact)) {
+    const envelope = readArtifactEnvelope(artifact);
+    return {
+      ...envelope,
+      domainId,
+      artifactVersion,
+      sourceMode,
+      payload: artifact,
+    };
+  }
+
+  return {
+    domainId,
+    artifactVersion,
+    kind: artifact.kind,
+    generatedAt: artifact.generatedAt,
+    sourceMode,
+    ...(artifact.dataSlot && { dataSlot: artifact.dataSlot }),
+    ...(artifact.traceId && { traceId: artifact.traceId }),
+    payload: artifact,
+  };
 }
 
 function normalizeRawEnvelope(value: unknown): RawArtifactEnvelope | undefined {
@@ -134,11 +212,15 @@ function toUnsupportedEntry(
 }
 
 function toSupportedEntry(
-  artifact: ChatArtifact,
+  artifact: ArtifactRendererPayload,
   domainId: string,
   sourceEnvelope?: RawArtifactEnvelope
 ): SupportedArtifactRendererEntry | UnsupportedArtifactRendererEntry {
-  const envelope = readArtifactEnvelope(artifact);
+  const envelope = readRendererArtifactEnvelope(
+    artifact,
+    domainId,
+    sourceEnvelope
+  );
   const artifactVersion =
     sourceEnvelope?.artifactVersion ?? envelope.artifactVersion;
   const key = createArtifactRendererKey({
@@ -165,13 +247,7 @@ function toSupportedEntry(
     artifactKind: artifact.kind,
     artifactVersion,
     artifact,
-    envelope: {
-      ...envelope,
-      artifactVersion,
-      ...(sourceEnvelope?.sourceMode && {
-        sourceMode: sourceEnvelope.sourceMode,
-      }),
-    },
+    envelope,
   };
 }
 
@@ -183,8 +259,41 @@ export function createArtifactRendererKey({
   return `${domainId}:${artifactKind}:${artifactVersion}`;
 }
 
+function resolveArtifactRendererRegistration(
+  input: ArtifactRendererKeyInput | { key: string }
+): ArtifactRendererRegistration | undefined {
+  const key = 'key' in input ? input.key : createArtifactRendererKey(input);
+  return artifactRendererMap.get(key);
+}
+
+export function registerArtifactRenderer(
+  input: ArtifactRendererKeyInput,
+  renderer: ArtifactRendererFn,
+  options: RegisterArtifactRendererOptions = {}
+): void {
+  artifactRendererMap.set(createArtifactRendererKey(input), {
+    ...input,
+    renderer,
+    ...(options.isPayload && { isPayload: options.isPayload }),
+  });
+}
+
+export function unregisterArtifactRenderer(
+  input: ArtifactRendererKeyInput
+): void {
+  artifactRendererMap.delete(createArtifactRendererKey(input));
+}
+
+export function resolveArtifactRenderer(
+  entry: Pick<SupportedArtifactRendererEntry, 'key'>
+): ArtifactRendererFn | undefined {
+  return resolveArtifactRendererRegistration(entry)?.renderer;
+}
+
 export function isArtifactRendererKeyAllowed(key: string): boolean {
-  return MONITORING_ARTIFACT_RENDERER_KEYS.has(key);
+  return (
+    MONITORING_ARTIFACT_RENDERER_KEYS.has(key) || artifactRendererMap.has(key)
+  );
 }
 
 export function resolveArtifactRendererEntries(
@@ -202,29 +311,34 @@ export function resolveArtifactRendererEntries(
     const envelope = normalizeRawEnvelope(rawEnvelope);
     if (!envelope) continue;
 
-    if (!isArtifactKind(envelope.kind)) {
-      entries.push(toUnsupportedEntry(envelope, 'invalid_payload'));
-      continue;
-    }
-
     const schema = resolveArtifactSchemaEntry({
       domainId: envelope.domainId,
       artifactKind: envelope.kind,
       artifactVersion: envelope.artifactVersion,
     });
+    const rendererRegistration = resolveArtifactRendererRegistration({
+      domainId: envelope.domainId,
+      artifactKind: envelope.kind,
+      artifactVersion: envelope.artifactVersion,
+    });
 
-    if (!schema) {
+    if (!schema && !rendererRegistration) {
       entries.push(toUnsupportedEntry(envelope, 'unknown_renderer'));
       continue;
     }
 
-    if (!schema.isPayload(envelope.payload)) {
+    const isPayload = schema?.isPayload ?? rendererRegistration?.isPayload;
+    const isValidPayload = isPayload
+      ? isPayload(envelope.payload)
+      : isBaseChatArtifactPayload(envelope.payload, envelope.kind);
+
+    if (!isValidPayload) {
       entries.push(toUnsupportedEntry(envelope, 'invalid_payload'));
       continue;
     }
 
     const entry = toSupportedEntry(
-      envelope.payload,
+      envelope.payload as ArtifactRendererPayload,
       envelope.domainId,
       envelope
     );
@@ -237,7 +351,9 @@ export function resolveArtifactRendererEntries(
   const legacyArtifacts = [
     metadata.incidentReportArtifact,
     metadata.monitoringAnalysisArtifact,
+    metadata.serverMonitoringAnalysisArtifact,
     metadata.serverSnapshotArtifact,
+    metadata.opsProcedureArtifact,
   ];
 
   for (const artifact of legacyArtifacts) {

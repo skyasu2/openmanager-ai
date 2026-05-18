@@ -20,6 +20,10 @@ import {
 } from 'lucide-react';
 import { memo } from 'react';
 import type { AgentStatus } from '@/hooks/ai/useHybridAIQuery';
+import {
+  METRICS_QUERY_AGENT_NAME,
+  normalizeAgentDisplayName,
+} from '@/lib/ai/agent-name-compat';
 
 export type { AgentStatus } from '@/hooks/ai/useHybridAIQuery';
 
@@ -38,7 +42,7 @@ export interface AgentStatusIndicatorProps {
 const AGENT_ICONS: Record<string, typeof Bot> = {
   Orchestrator: Bot,
   'OpenManager Orchestrator': Bot,
-  'NLQ Agent': Search,
+  [METRICS_QUERY_AGENT_NAME]: Search,
   'Analyst Agent': Cpu,
   'Reporter Agent': FileText,
   'Advisor Agent': HelpCircle,
@@ -51,7 +55,7 @@ const AGENT_ICONS: Record<string, typeof Bot> = {
 const AGENT_DESCRIPTIONS: Record<string, string> = {
   Orchestrator: '최적 에이전트를 선택하고 있습니다',
   'OpenManager Orchestrator': '최적 에이전트를 선택하고 있습니다',
-  'NLQ Agent': '서버 데이터를 조회하고 있습니다',
+  [METRICS_QUERY_AGENT_NAME]: '서버 데이터를 조회하고 있습니다',
   'Analyst Agent': '패턴을 분석하고 있습니다',
   'Reporter Agent': '보고서를 작성하고 있습니다',
   'Advisor Agent': '지식 베이스를 검색하고 있습니다',
@@ -117,7 +121,7 @@ export function parseAgentStatus(
   }
 
   return {
-    agent: obj.agent,
+    agent: normalizeAgentDisplayName(obj.agent) ?? obj.agent,
     status: status as AgentStatus,
   };
 }
@@ -127,10 +131,11 @@ export function parseAgentStatus(
  */
 export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
   ({ agent, status, message, compact = false }) => {
-    const Icon = AGENT_ICONS[agent] || Bot;
+    const displayAgent = normalizeAgentDisplayName(agent) ?? agent;
+    const Icon = AGENT_ICONS[displayAgent] || Bot;
     const style = STATUS_STYLES[status as AgentStatus] ?? FALLBACK_STATUS_STYLE;
     const label = STATUS_LABELS[status as AgentStatus] ?? FALLBACK_STATUS_LABEL;
-    const description = message ?? AGENT_DESCRIPTIONS[agent];
+    const description = message ?? AGENT_DESCRIPTIONS[displayAgent];
     const runtimeDetail = message?.trim() || null;
     const isActiveStatus = ACTIVE_STATUSES.has(status);
 
@@ -141,7 +146,7 @@ export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
         >
           {isActiveStatus && <Loader2 className="h-3 w-3 animate-spin" />}
           <Icon className="h-3.5 w-3.5" />
-          <span className="font-semibold">{agent}</span>
+          <span className="font-semibold">{displayAgent}</span>
           {description && (
             <>
               <span className="opacity-50">·</span>
@@ -161,7 +166,7 @@ export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
         >
           {isActiveStatus && <Loader2 className="h-4 w-4 animate-spin" />}
           <Icon className="h-4 w-4" />
-          <span className="text-sm font-medium">{agent}</span>
+          <span className="text-sm font-medium">{displayAgent}</span>
           <span className="text-xs opacity-75">• {label}</span>
           {runtimeDetail && (
             <span className="text-xs opacity-60">· {runtimeDetail}</span>

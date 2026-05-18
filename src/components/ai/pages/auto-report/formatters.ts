@@ -7,6 +7,7 @@
  */
 
 import { APP_VERSION } from '@/config/app-meta';
+import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
 import {
   buildDetectionSection,
   buildDetectionSectionText,
@@ -46,6 +47,24 @@ function formatReportTimestamp(report: IncidentReport): Date {
   return report.timestamp instanceof Date ? report.timestamp : new Date();
 }
 
+function buildUptimeImpactLine(report: IncidentReport): string {
+  if (!report.systemSummary) return '';
+
+  const parts = [
+    typeof report.systemSummary.uptimePercent === 'number'
+      ? `가용률 ${report.systemSummary.uptimePercent}%`
+      : null,
+    typeof report.systemSummary.affectedDurationMinutes === 'number'
+      ? `경고 지속 ${report.systemSummary.affectedDurationMinutes}분`
+      : null,
+    report.systemSummary.dataSlotLabel
+      ? `기준 ${report.systemSummary.dataSlotLabel}`
+      : null,
+  ].filter((part): part is string => part !== null);
+
+  return parts.length > 0 ? `**가용성 영향**: ${parts.join(' | ')}\n\n` : '';
+}
+
 export function buildReportDownloadFilename(
   report: IncidentReport,
   format: 'md' | 'txt'
@@ -83,9 +102,21 @@ export function formatReportAsMarkdown(report: IncidentReport): string {
 | 위험 | ${report.systemSummary.criticalServers}대 |
 
 **영향도**: 전체 인프라의 ${report.systemSummary.totalServers > 0 ? Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100) : 0}%가 영향받음
+${buildUptimeImpactLine(report)}
 
 `
     : '';
+
+  const logPatternsSection =
+    report.logPatterns && report.logPatterns.length > 0
+      ? `## 반복 로그 패턴
+
+| 심각도 | 건수 | 서버 | 패턴 |
+|--------|------|------|------|
+${report.logPatterns.map((pattern) => `| ${pattern.severity} | ${pattern.count}건 | ${pattern.serverId} | ${pattern.message} |`).join('\n')}
+
+`
+      : '';
 
   // 타임라인 섹션
   const timelineSection =
@@ -193,7 +224,7 @@ ${report.description}
 
 ${report.affectedServers.length > 0 ? report.affectedServers.map((s) => `- \`${s}\``).join('\n') : '- 없음'}
 
-${systemSummarySection}${timelineSection}${anomaliesSection}${buildDetectionSection(report)}${patternSection}${recommendationsSection}${postmortemSection}${buildResolutionSection(report)}${buildTopologyImpactSection(report)}---
+${systemSummarySection}${logPatternsSection}${timelineSection}${anomaliesSection}${buildDetectionSection(report)}${patternSection}${recommendationsSection}${postmortemSection}${buildResolutionSection(report)}${buildTopologyImpactSection(report)}---
 
 ## 📎 부록
 
@@ -230,8 +261,18 @@ export function formatReportAsText(report: IncidentReport): string {
 정상: ${report.systemSummary.healthyServers}대
 경고: ${report.systemSummary.warningServers}대
 위험: ${report.systemSummary.criticalServers}대
+${buildUptimeImpactLine(report)}
 `
     : '';
+
+  const logPatternsTxt =
+    report.logPatterns && report.logPatterns.length > 0
+      ? `
+반복 로그 패턴
+--------------
+${report.logPatterns.map((pattern) => `- ${pattern.severity} ${pattern.count}건 ${pattern.serverId}: ${pattern.message}`).join('\n')}
+`
+      : '';
 
   // 타임라인 (TXT)
   const timelineTxt =
@@ -301,7 +342,7 @@ ${report.description}
 영향받는 서버
 ------------
 ${report.affectedServers.length > 0 ? report.affectedServers.join(', ') : '없음'}
-${systemSummaryTxt}${timelineTxt}${anomaliesTxt}${buildDetectionSectionText(report)}${patternTxt}
+${systemSummaryTxt}${logPatternsTxt}${timelineTxt}${anomaliesTxt}${buildDetectionSectionText(report)}${patternTxt}
 ${recommendationsTxt}${postmortemTxt}${buildResolutionSectionText(report)}${buildTopologyImpactSectionText(report)}
 ---
 자동 생성된 장애 보고서 - OpenManager AI v${APP_VERSION}
@@ -337,13 +378,9 @@ export function downloadReport(
       : formatReportAsText(report);
   const mimeType = format === 'md' ? 'text/markdown' : 'text/plain';
 
-  const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = buildReportDownloadFilename(report, format);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  downloadBlobContent(
+    content,
+    buildReportDownloadFilename(report, format),
+    mimeType
+  );
 }

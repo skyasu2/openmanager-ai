@@ -10,14 +10,11 @@ import {
   normalizeAssistantResult,
 } from '@/lib/ai/assistant-contract';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
+import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import {
   extractTextFromUIMessage,
   normalizeAIResponse,
 } from '@/lib/ai/utils/message-normalizer';
-import {
-  buildAnalysisFeatureStatus,
-  normalizeRetrievalMetadata,
-} from '@/lib/ai/utils/retrieval-status';
 import {
   getToolDescription,
   getToolLabel,
@@ -28,10 +25,11 @@ import type {
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
+import { buildAssistantAnalysisBasis } from './evidence-source-helpers';
 import type {
   DeferredToolResult,
+  MessageMetadata,
   RagSource,
-  ToolPartWithCallId,
 } from './message-transform-internals';
 import {
   buildParityAwareAssistantResponseView,
@@ -39,32 +37,14 @@ import {
   createDeferredToolParts,
   createThinkingStepsFromSummaries,
   createThinkingStepsFromToolNames,
-  dedupeToolNames,
-  extractToolOutput,
-  getCompletedToolNames,
   getMessageMetadata,
-  isServerAnalysisToolName,
   isToolPartWithCallId,
   mergeMessageMetadata,
   normalizeToolNames,
-  reorderToolNamesForDisplay,
   reorderToolPartsForDisplay,
   reorderToolResultSummariesForDisplay,
   shouldPrioritizeMetricRankingPresentation,
 } from './message-transform-internals';
-
-function findRetrievalMetadataFromToolParts(toolParts: ToolPartWithCallId[]) {
-  for (const toolPart of toolParts) {
-    if (toolPart.type !== 'tool-searchKnowledgeBase') continue;
-    const output = extractToolOutput(toolPart);
-    if (!output || typeof output !== 'object') continue;
-    const retrieval = normalizeRetrievalMetadata(
-      (output as Record<string, unknown>).retrieval
-    );
-    if (retrieval) return retrieval;
-  }
-  return undefined;
-}
 
 // ============================================================================
 // ThinkingSteps 변환
@@ -146,7 +126,7 @@ export function transformUIMessageToEnhanced(
     message.role === 'assistant'
       ? options.deferredAssistantMetadataByMessageId?.[message.id]
       : undefined;
-  const metadata = mergeMessageMetadata(
+  const metadata: MessageMetadata | undefined = mergeMessageMetadata(
     getMessageMetadata(message),
     deferredMessageMetadata
   );
@@ -243,6 +223,9 @@ export function transformUIMessageToEnhanced(
   const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
   const assistantPlan = normalizeAssistantPlan(metadata?.assistantPlan);
   const assistantResult = normalizeAssistantResult(metadata?.assistantResult);
+  const semanticQueryTrace = normalizeSemanticQueryTrace(
+    metadata?.semanticQueryTrace
+  );
   const incidentReportArtifact = metadata?.incidentReportArtifact;
   const monitoringAnalysisArtifact = metadata?.monitoringAnalysisArtifact;
   const serverSnapshotArtifact = metadata?.serverSnapshotArtifact;
@@ -253,6 +236,9 @@ export function transformUIMessageToEnhanced(
   );
   const hasArtifactIntentMetadata = Boolean(
     metadata?.artifactIntentReason || metadata?.artifactIntentTarget
+  );
+  const hasGuidanceMetadata = Boolean(
+    metadata?.type === 'guidance' || metadata?.guidanceCta
   );
   const handoffHistory = metadata?.handoffHistory;
   const hasProviderTelemetry =
@@ -266,85 +252,18 @@ export function transformUIMessageToEnhanced(
   // 분석 근거 생성 (assistant 메시지에만)
   let analysisBasis: AnalysisBasis | undefined;
   if (message.role === 'assistant') {
-    const isJobQueue = currentMode === 'job-queue';
-
-    // 실제 호출된 도구 이름 추출
-    const metadataToolNames = reorderToolNamesForDisplay(
-      normalizeToolNames(metadata?.toolsCalled),
-      prioritizeMetricRankingPresentation
-    );
-    const calledToolNames = dedupeToolNames([
-      ...metadataToolNames,
-      ...toolParts.map((p) => p.type.slice(5)),
-    ]);
-    const completedToolNames = dedupeToolNames([
-      ...metadataToolNames,
-      ...getCompletedToolNames(toolParts),
-    ]);
-    const hasServerAnalysisEvidence = completedToolNames.some(
-      isServerAnalysisToolName
-    );
-
-    // RAG 출처 추출 (job-queue: metadata, streaming: streamRagSources fallback)
-    const ragSources =
-      metadata?.ragSources ?? (isLastMessage ? streamRagSources : undefined);
-    const hasRag = ragSources && ragSources.length > 0;
-
-    const webSources = ragSources?.filter((s) => s.sourceType === 'web') ?? [];
-    const hasWebSearch = webSources.length > 0;
-    const hasKnowledgeSearch = Boolean(
-      ragSources?.some((s) => s.sourceType !== 'web')
-    );
-    const retrieval =
-      normalizeRetrievalMetadata(metadata?.retrieval) ??
-      findRetrievalMetadataFromToolParts(toolParts);
-    const effectiveRagEnabled =
-      typeof metadata?.enableRAG === 'boolean'
-        ? metadata.enableRAG
-        : ragEnabled;
-    const effectiveWebSearchEnabled =
-      metadata?.enableWebSearch !== undefined
-        ? metadata.enableWebSearch
-        : webSearchEnabled;
-    const featureStatus =
-      metadata?.featureStatus ??
-      buildAnalysisFeatureStatus({
-        retrieval,
-        ragEnabled: effectiveRagEnabled,
-        webSearchEnabled: effectiveWebSearchEnabled,
-        hasKnowledgeEvidence: hasKnowledgeSearch,
-        hasWebEvidence: hasWebSearch,
-        analysisMode: metadata?.analysisMode,
-      });
-    const retrievalIndicatesKnowledgeUse = Boolean(retrieval?.retrievalUsed);
-
-    // dataSource 결정: 실제 도구 호출 기반 + 토글 상태 반영
-    let dataSource: string;
-    if (hasWebSearch) {
-      dataSource = `웹 검색 (${webSources.length}건)`;
-    } else if (hasRag) {
-      dataSource = `RAG 지식베이스 검색 (${ragSources.length}건)`;
-    } else if (retrievalIndicatesKnowledgeUse) {
-      dataSource = `RAG 지식베이스 검색 (${retrieval?.evidenceCount ?? 0}건)`;
-    } else if (hasServerAnalysisEvidence) {
-      dataSource = '서버 실시간 데이터 분석';
-    } else if (effectiveRagEnabled) {
-      dataSource = '일반 대화 응답 (RAG 활성)';
-    } else {
-      dataSource = '일반 대화 응답';
-    }
-
-    analysisBasis = {
-      dataSource,
-      engine: isJobQueue ? 'Cloud Run AI' : 'Streaming AI',
-      ragUsed: hasKnowledgeSearch || retrievalIndicatesKnowledgeUse,
-      toolsCalled: calledToolNames.length > 0 ? calledToolNames : undefined,
-      timeRange: hasServerAnalysisEvidence ? '최근 1시간' : undefined,
-      ragSources: hasRag ? ragSources : undefined,
-      ...(retrieval && { retrieval }),
-      featureStatus,
-      analysisMode: metadata?.analysisMode,
-    };
+    analysisBasis = buildAssistantAnalysisBasis({
+      metadata,
+      toolParts,
+      toolResultSummaries,
+      prioritizeMetricRankingPresentation,
+      currentMode,
+      isLastMessage,
+      streamRagSources,
+      ragEnabled,
+      webSearchEnabled,
+      semanticQueryTrace,
+    });
   }
 
   return {
@@ -361,7 +280,9 @@ export function transformUIMessageToEnhanced(
       routeDecision ||
       assistantPlan ||
       assistantResult ||
+      semanticQueryTrace ||
       assistantResponseView ||
+      hasGuidanceMetadata ||
       hasChatArtifact ||
       hasArtifactIntentMetadata ||
       handoffHistory ||
@@ -373,6 +294,7 @@ export function transformUIMessageToEnhanced(
             ...(routeDecision && { routeDecision }),
             ...(assistantPlan && { assistantPlan }),
             ...(assistantResult && { assistantResult }),
+            ...(semanticQueryTrace && { semanticQueryTrace }),
             ...(typeof metadata?.processingTime === 'number' && {
               processingTime: metadata.processingTime,
             }),
@@ -404,8 +326,17 @@ export function transformUIMessageToEnhanced(
             ...(typeof metadata?.ttfbMs === 'number' && {
               ttfbMs: metadata.ttfbMs,
             }),
+            ...(typeof metadata?.rotationSlot === 'number' && {
+              rotationSlot: metadata.rotationSlot,
+            }),
             ...(assistantResponseView && {
               assistantResponseView,
+            }),
+            ...(metadata?.type === 'guidance' && {
+              type: metadata.type,
+            }),
+            ...(metadata?.guidanceCta && {
+              guidanceCta: metadata.guidanceCta,
             }),
             ...(metadata?.artifactIntentReason && {
               artifactIntentReason: metadata.artifactIntentReason,

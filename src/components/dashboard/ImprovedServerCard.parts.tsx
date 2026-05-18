@@ -22,13 +22,13 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
       if (val >= 85) {
         return {
           chartColor: '#ef4444',
-          textClass: 'text-red-700 font-bold',
+          textClass: 'text-red-700 font-semibold',
         };
       }
       if (val >= 70) {
         return {
           chartColor: '#f97316',
-          textClass: 'text-amber-700 font-semibold',
+          textClass: 'text-amber-700 font-medium',
         };
       }
       return {
@@ -40,13 +40,13 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
     if (val >= 85) {
       return {
         chartColor: '#ef4444',
-        textClass: 'text-red-700 font-bold',
+        textClass: 'text-red-700 font-semibold',
       };
     }
     if (val >= 70) {
       return {
         chartColor: '#f97316',
-        textClass: 'text-amber-700 font-semibold',
+        textClass: 'text-amber-700 font-medium',
       };
     }
     return {
@@ -69,11 +69,11 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
           {formatMetricValue(type, value)}
         </span>
       </div>
-      <div className="flex h-12 w-full items-center justify-center">
+      <div className="flex h-14 w-full items-center justify-center">
         <SvgSparkline
           data={history && history.length > 1 ? history : [value, value]}
           width={72}
-          height={40}
+          height={48}
           color={metricSeverity.chartColor}
           fill
           strokeWidth={1.5}
@@ -92,10 +92,10 @@ export const CompactMetricChip = ({
   value: number;
 }) => (
   <div className="rounded-md border border-gray-200/80 bg-white/70 px-2 py-1 text-center">
-    <div className="text-2xs font-semibold tracking-wide text-gray-500">
+    <div className="text-2xs font-medium tracking-wide text-gray-500">
       {label}
     </div>
-    <div className="text-xs font-bold tabular-nums text-gray-800">
+    <div className="text-xs font-medium tabular-nums text-gray-800">
       {Math.round(value)}%
     </div>
   </div>
@@ -108,10 +108,10 @@ interface DetailRowProps {
 }
 
 export const DetailRow = ({ icon, label, value }: DetailRowProps) => (
-  <div className="flex items-center gap-1.5 rounded-md border border-gray-200/50 bg-black/5 px-2 py-1.5">
+  <div className="flex items-center gap-1.5 rounded-md border border-gray-200/50 bg-slate-50 px-2 py-1.5">
     <div className="text-gray-500">{icon}</div>
     <div className="min-w-0">
-      <div className="text-2xs font-semibold uppercase tracking-wide text-gray-500">
+      <div className="text-2xs font-medium uppercase tracking-wide text-gray-500">
         {label}
       </div>
       <div className="truncate text-xs font-medium text-gray-700">{value}</div>

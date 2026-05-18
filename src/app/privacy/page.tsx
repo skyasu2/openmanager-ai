@@ -20,7 +20,8 @@ export default function PrivacyPage() {
         <div className="mb-8">
           <Link
             href="/login"
-            className="text-sm text-white/60 hover:text-white transition-colors"
+            prefetch={false}
+            className="inline-flex min-h-8 items-center text-sm text-white/60 transition-colors hover:text-white"
           >
             ← 로그인으로 돌아가기
           </Link>

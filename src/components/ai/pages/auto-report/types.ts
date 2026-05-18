@@ -104,7 +104,18 @@ export interface IncidentReport {
     healthyServers: number;
     warningServers: number;
     criticalServers: number;
+    uptimePercent?: number;
+    affectedDurationMinutes?: number;
+    dataSlotLabel?: string;
   };
+  logPatterns?: Array<{
+    message: string;
+    count: number;
+    severity: 'ERROR' | 'WARNING' | 'INFO';
+    serverId: string;
+    firstSeen: string;
+    lastSeen: string;
+  }>;
   anomalies?: Array<{
     server_id: string;
     server_name: string;
@@ -117,17 +128,4 @@ export interface IncidentReport {
     event: string;
     severity: string;
   }>;
-}
-
-/**
- * 서버 메트릭 데이터
- */
-export interface ServerMetric {
-  server_id: string;
-  server_name: string;
-  cpu: number;
-  memory: number;
-  disk: number;
-  network: number;
-  timestamp: string;
 }

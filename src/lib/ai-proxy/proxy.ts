@@ -163,6 +163,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+function readNonEmptyString(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 function parseStructuredErrorPayload(errorText: string): unknown {
   try {
     return JSON.parse(errorText);
@@ -354,6 +363,8 @@ export type CloudRunHealthReasonCode =
 export type CloudRunHealthResult = {
   healthy: boolean;
   latency?: number;
+  service?: string;
+  version?: string;
   error?: string;
   reasonCode?: CloudRunHealthReasonCode;
   recoverable?: boolean;
@@ -391,9 +402,14 @@ export async function checkCloudRunHealth(
     const latency = Date.now() - startTime;
 
     if (response.ok) {
+      const payload = await response.json().catch(() => undefined);
+      const health = isRecord(payload) ? payload : undefined;
+
       return {
         healthy: true,
         latency,
+        service: readNonEmptyString(health?.service),
+        version: readNonEmptyString(health?.version),
       };
     }
 

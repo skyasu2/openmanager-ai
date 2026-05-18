@@ -1,13 +1,21 @@
 import { z } from 'zod';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import type {
+  CloudRunAnalysisResponse,
+  MetricAnomalyResult,
   MonitoringBatchAnalysisResponse,
   MonitoringBatchEvidenceRef,
+  ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
+import type { OTelResourceCatalog } from '@/types/otel-metrics';
 import {
+  type ArtifactEvidence,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
   type MonitoringAnalysisArtifact,
+  type MonitoringRoleGroupSummary,
+  type ServerMonitoringAnalysisArtifact,
+  type ServerMonitoringArtifactRequest,
 } from './types';
 
 const MonitoringBatchServerSchema = z
@@ -37,6 +45,25 @@ const MonitoringBatchRiskSignalSchema = z
     evidenceRefId: z.string(),
   })
   .passthrough();
+
+const MonitoringBatchCapacityAlertSchema = z.object({
+  id: z.string(),
+  serverId: z.string(),
+  serverName: z.string(),
+  serverType: z.string(),
+  metric: z.enum(['cpu', 'memory', 'disk', 'network']),
+  currentValue: z.number(),
+  predictedValue: z.number(),
+  warningThreshold: z.number(),
+  criticalThreshold: z.number(),
+  willBreachWarning: z.boolean(),
+  timeToWarningMinutes: z.number().nullable(),
+  willBreachCritical: z.boolean(),
+  timeToCriticalMinutes: z.number().nullable(),
+  severity: z.enum(['warning', 'critical']),
+  humanReadable: z.string(),
+  evidenceRefId: z.string(),
+});
 
 const MonitoringBatchEvidenceRefBaseSchema = z.object({
   id: z.string(),
@@ -150,16 +177,44 @@ const MonitoringBatchAnalysisResponseSchema = z
   })
   .passthrough()
   .transform((analysis): MonitoringBatchAnalysisResponse => {
-    const { factPack: rawFactPack, ...rest } = analysis as typeof analysis & {
+    const {
+      capacityAlerts: rawCapacityAlerts,
+      factPack: rawFactPack,
+      ...rest
+    } = analysis as typeof analysis & {
+      capacityAlerts?: unknown;
       factPack?: unknown;
     };
+    const parsedCapacityAlerts = z
+      .array(MonitoringBatchCapacityAlertSchema)
+      .safeParse(rawCapacityAlerts);
     const parsedFactPack = MonitoringBatchFactPackSchema.safeParse(rawFactPack);
 
     return {
       ...rest,
+      ...(parsedCapacityAlerts.success
+        ? { capacityAlerts: parsedCapacityAlerts.data }
+        : {}),
       ...(parsedFactPack.success ? { factPack: parsedFactPack.data } : {}),
     } as MonitoringBatchAnalysisResponse;
   });
+
+const ServerMonitoringAnalysisResponseSchema = z
+  .object({
+    success: z.literal(true),
+    serverId: z.string(),
+    analysisType: z.enum(['full', 'anomaly', 'trend', 'pattern']),
+    timestamp: z.string(),
+    _source: z.string().optional(),
+  })
+  .passthrough()
+  .transform(
+    (
+      analysis
+    ): CloudRunAnalysisResponse & {
+      _source?: string;
+    } => analysis as CloudRunAnalysisResponse & { _source?: string }
+  );
 
 export function parseMonitoringBatchAnalysisResponse(
   value: unknown
@@ -168,11 +223,24 @@ export function parseMonitoringBatchAnalysisResponse(
   return parsed.success ? parsed.data : null;
 }
 
+export function parseServerMonitoringAnalysisResponse(
+  value: unknown
+): (CloudRunAnalysisResponse & { _source?: string }) | null {
+  const parsed = ServerMonitoringAnalysisResponseSchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
+
 export function summarizeMonitoringAnalysis(
   analysis: MonitoringBatchAnalysisResponse
 ): Omit<
   MonitoringAnalysisArtifact,
-  'kind' | 'generatedAt' | 'analysis' | 'source' | 'queryAsOfDataSlot'
+  | 'kind'
+  | 'generatedAt'
+  | 'analysis'
+  | 'capacityAlerts'
+  | 'roleGroupSummary'
+  | 'source'
+  | 'queryAsOfDataSlot'
 > {
   const warningServers =
     analysis.factPack?.summary.warning ??
@@ -201,6 +269,113 @@ export function summarizeMonitoringAnalysis(
   };
 }
 
+const ROLE_DISPLAY_ORDER = [
+  'web',
+  'application',
+  'database',
+  'cache',
+  'storage',
+  'loadbalancer',
+  'monitoring',
+  'batch',
+  'worker',
+  'unknown',
+] as const;
+
+const ROLE_ALIASES: Record<string, string> = {
+  api: 'application',
+  app: 'application',
+  apps: 'application',
+  was: 'application',
+  db: 'database',
+  mysql: 'database',
+  postgres: 'database',
+  postgresql: 'database',
+  redis: 'cache',
+  memcached: 'cache',
+  lb: 'loadbalancer',
+  load_balancer: 'loadbalancer',
+};
+
+function normalizeServerRole(value: string | undefined): string {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) return 'unknown';
+  return ROLE_ALIASES[normalized] ?? normalized;
+}
+
+function readCatalogServerRole(
+  catalog: OTelResourceCatalog | null | undefined,
+  serverId: string
+): string | undefined {
+  return catalog?.resources?.[serverId]?.['server.role'];
+}
+
+function roleSortIndex(role: string): number {
+  const index = ROLE_DISPLAY_ORDER.indexOf(
+    role as (typeof ROLE_DISPLAY_ORDER)[number]
+  );
+  return index === -1 ? ROLE_DISPLAY_ORDER.length : index;
+}
+
+function safeMetricValue(value: number): number {
+  return Number.isFinite(value) ? value : 0;
+}
+
+export function buildMonitoringRoleGroupSummary(
+  analysis: MonitoringBatchAnalysisResponse,
+  catalog?: OTelResourceCatalog | null
+): MonitoringRoleGroupSummary[] {
+  const groups = new Map<
+    string,
+    {
+      count: number;
+      warningCount: number;
+      criticalCount: number;
+      cpuTotal: number;
+      memoryTotal: number;
+      diskTotal: number;
+    }
+  >();
+
+  for (const server of analysis.servers) {
+    const role = normalizeServerRole(
+      readCatalogServerRole(catalog, server.id) ?? server.type
+    );
+    const group = groups.get(role) ?? {
+      count: 0,
+      warningCount: 0,
+      criticalCount: 0,
+      cpuTotal: 0,
+      memoryTotal: 0,
+      diskTotal: 0,
+    };
+
+    group.count += 1;
+    group.warningCount += server.status === 'warning' ? 1 : 0;
+    group.criticalCount +=
+      server.status === 'critical' || server.status === 'offline' ? 1 : 0;
+    group.cpuTotal += safeMetricValue(server.cpu);
+    group.memoryTotal += safeMetricValue(server.memory);
+    group.diskTotal += safeMetricValue(server.disk);
+    groups.set(role, group);
+  }
+
+  return Array.from(groups.entries())
+    .sort(([roleA], [roleB]) => {
+      const orderDiff = roleSortIndex(roleA) - roleSortIndex(roleB);
+      return orderDiff !== 0 ? orderDiff : roleA.localeCompare(roleB);
+    })
+    .map(([role, group]) => ({
+      role,
+      count: group.count,
+      warningCount: group.warningCount,
+      criticalCount: group.criticalCount,
+      avgCpu: Math.round(group.cpuTotal / group.count),
+      avgMemory: Math.round(group.memoryTotal / group.count),
+      avgDisk: Math.round(group.diskTotal / group.count),
+    }));
+}
+
 function mapMonitoringFactPackEvidence(
   evidenceRefs: MonitoringBatchEvidenceRef[] | undefined
 ) {
@@ -216,6 +391,116 @@ function mapMonitoringFactPackEvidence(
     ...(evidence.metric ? { metric: evidence.metric } : {}),
     severity: evidence.severity,
   }));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizePublicSeverity(
+  severity: unknown
+): ArtifactEvidence['severity'] {
+  if (severity === 'high' || severity === 'critical') return 'critical';
+  if (severity === 'medium' || severity === 'warning') return 'warning';
+  return 'info';
+}
+
+function normalizeAnomalyStatusSeverity(
+  severity: unknown
+): MetricAnomalyResult['severity'] | 'critical' | 'warning' | undefined {
+  if (
+    severity === 'low' ||
+    severity === 'medium' ||
+    severity === 'high' ||
+    severity === 'critical' ||
+    severity === 'warning'
+  ) {
+    return severity;
+  }
+  return undefined;
+}
+
+function readServerAnomalyResults(
+  analysis: CloudRunAnalysisResponse
+): Record<string, unknown> {
+  return isRecord(analysis.anomalyDetection?.results)
+    ? analysis.anomalyDetection.results
+    : {};
+}
+
+function deriveServerOverallStatus(
+  analysis: CloudRunAnalysisResponse
+): ServerAnalysisResult['overallStatus'] {
+  if (!analysis.anomalyDetection?.hasAnomalies) {
+    return 'online';
+  }
+
+  const severities = Object.values(readServerAnomalyResults(analysis))
+    .map((result) =>
+      isRecord(result)
+        ? normalizeAnomalyStatusSeverity(result.severity)
+        : undefined
+    )
+    .filter((severity): severity is NonNullable<typeof severity> => !!severity);
+
+  if (
+    severities.includes('high') ||
+    severities.includes('critical') ||
+    analysis.anomalyDetection.anomalyCount > 1
+  ) {
+    return 'critical';
+  }
+  if (
+    severities.includes('medium') ||
+    severities.includes('warning') ||
+    analysis.anomalyDetection.anomalyCount > 0
+  ) {
+    return 'warning';
+  }
+
+  return 'online';
+}
+
+function summarizeServerMonitoringAnalysis(
+  server: ServerAnalysisResult
+): Pick<ServerMonitoringAnalysisArtifact, 'title' | 'summary'> {
+  const anomalyCount = server.anomalyDetection?.anomalyCount ?? 0;
+  const risingMetrics =
+    server.trendPrediction?.summary?.increasingMetrics ?? [];
+
+  return {
+    title: `${server.serverName} 이상감지/추세 분석`,
+    summary:
+      anomalyCount > 0
+        ? `${server.serverName}에서 이상 신호 ${anomalyCount}건 감지`
+        : risingMetrics.length > 0
+          ? `${server.serverName}에서 상승 추세 ${risingMetrics.length}건 감지`
+          : `${server.serverName} 상태 정상`,
+  };
+}
+
+function mapServerMonitoringEvidence(
+  server: ServerAnalysisResult
+): ArtifactEvidence[] | undefined {
+  const evidence = Object.entries(readServerAnomalyResults(server))
+    .map(([metric, rawResult]): ArtifactEvidence | undefined => {
+      if (!isRecord(rawResult)) return undefined;
+      const isAnomaly = rawResult.isAnomaly === true;
+      if (!isAnomaly) return undefined;
+
+      const severity = normalizePublicSeverity(rawResult.severity);
+      return {
+        id: `${server.serverId}-${metric}-anomaly`,
+        kind: 'metric',
+        serverId: server.serverId,
+        metric,
+        severity,
+        summary: `${server.serverName} ${metric} 이상 신호 ${severity}`,
+      };
+    })
+    .filter((entry): entry is ArtifactEvidence => entry !== undefined);
+
+  return evidence.length > 0 ? evidence : undefined;
 }
 
 export async function generateMonitoringAnalysisArtifact({
@@ -256,16 +541,20 @@ export async function generateMonitoringAnalysisArtifact({
   }
 
   const summary = summarizeMonitoringAnalysis(analysis);
+  const roleGroupSummary = buildMonitoringRoleGroupSummary(analysis);
+  const capacityAlerts = analysis.capacityAlerts ?? [];
   const evidence = mapMonitoringFactPackEvidence(
     analysis.factPack?.evidenceRefs
   );
 
-  return attachArtifactEnvelopeMetadata(
+  return attachArtifactEnvelopeMetadata<MonitoringAnalysisArtifact>(
     {
       kind: 'monitoring-analysis',
       generatedAt: new Date().toISOString(),
       ...summary,
       analysis,
+      ...(capacityAlerts.length > 0 ? { capacityAlerts } : {}),
+      ...(roleGroupSummary.length > 0 ? { roleGroupSummary } : {}),
       source:
         analysis._source ||
         (typeof data._source === 'string' ? data._source : undefined),
@@ -275,6 +564,78 @@ export async function generateMonitoringAnalysisArtifact({
       sourceMode: 'tool-result',
       dataSlot: analysis.slot.timeLabel,
       evidence,
+    }
+  );
+}
+
+export async function generateServerMonitoringArtifact({
+  query,
+  sessionId,
+  serverId,
+  serverName,
+  currentMetrics,
+  queryAsOfDataSlot,
+  signal,
+}: ServerMonitoringArtifactRequest): Promise<ServerMonitoringAnalysisArtifact> {
+  const response = await fetch('/api/ai/intelligent-monitoring', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify({
+      action: 'analyze_server',
+      serverId,
+      analysisType: 'full',
+      query,
+      sessionId,
+      currentMetrics,
+      queryAsOf: createQueryAsOf(queryAsOfDataSlot),
+    }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.');
+    }
+    throw new Error(`이상감지/추세 분석 요청 실패: ${response.status}`);
+  }
+
+  const data = (await response.json()) as {
+    success?: boolean;
+    data?: unknown;
+    _source?: unknown;
+  };
+  const analysis = parseServerMonitoringAnalysisResponse(data.data);
+  if (!data.success || !analysis) {
+    throw new Error('단일 서버 이상감지/추세 분석 데이터를 받지 못했습니다.');
+  }
+
+  const server: ServerAnalysisResult = {
+    ...analysis,
+    serverName,
+    overallStatus: deriveServerOverallStatus(analysis),
+  };
+  const summary = summarizeServerMonitoringAnalysis(server);
+  const source =
+    analysis._source ||
+    (typeof data._source === 'string' ? data._source : undefined);
+
+  return attachArtifactEnvelopeMetadata<ServerMonitoringAnalysisArtifact>(
+    {
+      kind: 'server-monitoring-analysis',
+      generatedAt: new Date().toISOString(),
+      ...summary,
+      serverId,
+      serverName,
+      overallStatus: server.overallStatus,
+      analysis,
+      server,
+      source,
+      queryAsOfDataSlot,
+    },
+    {
+      sourceMode: 'tool-result',
+      dataSlot: queryAsOfDataSlot?.timeLabel,
+      evidence: mapServerMonitoringEvidence(server),
     }
   );
 }

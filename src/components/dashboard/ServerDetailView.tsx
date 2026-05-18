@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
 import type { Server } from '@/types/server';
+import { withCurrentMetricPoint } from './dashboard-metric-points';
 import { LogsTab } from './EnhancedServerModal.LogsTab';
 import { MetricsTab } from './EnhancedServerModal.MetricsTab';
 import { NetworkTab } from './EnhancedServerModal.NetworkTab';
@@ -24,6 +25,7 @@ interface ServerDetailViewProps {
 const tabs: TabInfo[] = [
   { id: 'overview', label: '종합 상황', icon: Activity },
   { id: 'metrics', label: '성능 분석', icon: BarChart3 },
+  { id: 'processes', label: '프로세스', icon: Activity },
   { id: 'logs', label: '로그 & 네트워크', icon: FileText },
 ];
 
@@ -116,21 +118,6 @@ function getHighestCurrentMetric(server: {
   );
 }
 
-function withCurrentMetricPoint(
-  values: number[],
-  currentValue: number | undefined
-): number[] {
-  if (typeof currentValue !== 'number' || !Number.isFinite(currentValue)) {
-    return values;
-  }
-
-  if (values.length === 0) {
-    return [currentValue];
-  }
-
-  return [...values.slice(0, -1), currentValue];
-}
-
 export default function ServerDetailView({ server }: ServerDetailViewProps) {
   const [selectedTab, setSelectedTab] = useState<TabId>('overview');
   const [isRealtime, setIsRealtime] = useState(true);
@@ -207,7 +194,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
         </p>
         <Link
           href="/dashboard/servers"
-          className="mt-4 inline-flex h-10 items-center rounded-lg border border-slate-200 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          className="mt-4 inline-flex h-10 items-center rounded-lg border border-slate-200 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
           서버 목록으로 이동
         </Link>
@@ -238,7 +225,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
         <div className="mb-4">
           <Link
             href="/dashboard/servers"
-            className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 hover:bg-slate-50"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
             서버 목록
@@ -248,11 +235,11 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-xs font-semibold uppercase text-slate-400">
+              <p className="text-xs font-medium uppercase text-slate-400">
                 서버 상세
               </p>
               <span
-                className={`inline-flex h-6 items-center gap-1.5 rounded-full border px-2 text-xs font-semibold ${statusBadge.className}`}
+                className={`inline-flex h-6 items-center gap-1.5 rounded-full border px-2 text-xs font-medium ${statusBadge.className}`}
               >
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${statusBadge.dotClassName}`}
@@ -260,7 +247,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
                 {statusBadge.label}
               </span>
             </div>
-            <h1 className="mt-1 truncate text-2xl font-bold text-slate-900">
+            <h1 className="mt-1 truncate text-2xl font-semibold text-slate-900">
               {safeServer.name}
             </h1>
             <p className="mt-1 text-sm text-slate-500">
@@ -272,7 +259,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
             <button
               type="button"
               onClick={() => setIsRealtime((prev) => !prev)}
-              className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-semibold ${
+              className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-medium ${
                 isRealtime
                   ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
                   : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
@@ -293,7 +280,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
           <div className="min-w-0">
             <dt className="text-xs font-medium text-slate-400">현재 병목</dt>
             <dd
-              className="mt-1 truncate text-sm font-semibold text-slate-900"
+              className="mt-1 truncate text-sm font-medium text-slate-900"
               data-testid="detail-summary-hot-metric"
             >
               {METRIC_LABELS[highestMetric.key]}{' '}
@@ -303,7 +290,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
           <div className="min-w-0">
             <dt className="text-xs font-medium text-slate-400">서비스</dt>
             <dd
-              className="mt-1 truncate text-sm font-semibold text-slate-900"
+              className="mt-1 truncate text-sm font-medium text-slate-900"
               data-testid="detail-summary-services"
             >
               {runningServiceCount}/{safeServer.services.length} 실행중
@@ -312,7 +299,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
           <div className="min-w-0">
             <dt className="text-xs font-medium text-slate-400">알림/로그</dt>
             <dd
-              className="mt-1 truncate text-sm font-semibold text-slate-900"
+              className="mt-1 truncate text-sm font-medium text-slate-900"
               data-testid="detail-summary-alerts"
             >
               {alertLogCount}건 확인 필요
@@ -321,7 +308,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
           <div className="min-w-0">
             <dt className="text-xs font-medium text-slate-400">네트워크</dt>
             <dd
-              className="mt-1 truncate text-sm font-semibold text-slate-900"
+              className="mt-1 truncate text-sm font-medium text-slate-900"
               data-testid="detail-summary-network"
             >
               {Math.round(safeServer.network ?? 0)}% · {networkStatusLabel}
@@ -362,6 +349,11 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
               isRealtime={isRealtime}
               onToggleRealtime={() => setIsRealtime((prev) => !prev)}
             />
+          </div>
+        )}
+
+        {selectedTab === 'processes' && (
+          <div className="min-w-0 space-y-5">
             <ProcessesTab services={safeServer.services} />
           </div>
         )}

@@ -8,16 +8,6 @@
  * - 세션 제한 (전체화면에서는 비활성화)
  */
 
-import {
-  ArrowLeftFromLine,
-  Bot,
-  FileText,
-  MessageSquare,
-  Monitor,
-  PanelRightClose,
-  PanelRightOpen,
-  Plus,
-} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
   Activity,
@@ -27,101 +17,30 @@ import {
   useRef,
   useState,
 } from 'react';
-import { CloudRunStatusIndicator } from '@/components/ai-sidebar/CloudRunStatusIndicator';
 import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
-import { APP_VERSION } from '@/config/app-meta';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
 import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
-import { cn } from '@/lib/utils';
 import {
   type PendingAIEntryState,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
 import type { JobDataSlot } from '@/types/ai-jobs';
-import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
-import { OpenManagerLogo } from '../shared/OpenManagerLogo';
-import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
+import {
+  DASHBOARD_ROUTE,
+  MOBILE_WORKSPACE_MEDIA_QUERY,
+} from './AIWorkspace.constants';
+import { AIWorkspaceEmbeddedLayout } from './AIWorkspaceEmbeddedLayout';
+import { AIWorkspaceFullscreenHeader } from './AIWorkspaceFullscreenHeader';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
+import { AIWorkspaceNavigationSidebar } from './AIWorkspaceNavigationSidebar';
 import { ArtifactWorkspacePanel } from './artifact-workspace/ArtifactWorkspacePanel';
 import SystemContextPanel from './SystemContextPanel';
+import { useAIAssistantLightTheme } from './useAIAssistantLightTheme';
 
 // 🔧 공통 로직은 useAIChatCore 훅에서 관리
-
-const AI_ASSISTANT_LIGHT_THEME_TOKENS = {
-  '--background': '0 0% 100%',
-  '--foreground': '222.2 84% 4.9%',
-  '--card': '0 0% 100%',
-  '--card-foreground': '222.2 84% 4.9%',
-  '--popover': '0 0% 100%',
-  '--popover-foreground': '222.2 84% 4.9%',
-  '--secondary': '210 40% 96%',
-  '--secondary-foreground': '222.2 84% 4.9%',
-  '--muted': '210 40% 96%',
-  '--muted-foreground': '215.4 16.3% 46.9%',
-  '--accent': '210 40% 96%',
-  '--accent-foreground': '222.2 84% 4.9%',
-  '--border': '214.3 31.8% 91.4%',
-  '--input': '214.3 31.8% 91.4%',
-} as const;
-
-const MOBILE_WORKSPACE_MEDIA_QUERY = '(max-width: 767px)';
-const DASHBOARD_ROUTE = '/dashboard';
-
-const AI_WORKSPACE_FUNCTION_TABS: Array<{
-  id: AIAssistantFunction;
-  label: string;
-  description: string;
-  icon: typeof MessageSquare;
-}> = [
-  {
-    id: 'chat',
-    label: 'AI Chat',
-    description: '자연어 질의',
-    icon: MessageSquare,
-  },
-  {
-    id: 'auto-report',
-    label: '장애 보고서',
-    description: '보고서 생성',
-    icon: FileText,
-  },
-  {
-    id: 'intelligent-monitoring',
-    label: '이상감지/추세',
-    description: '이상 신호 분석',
-    icon: Monitor,
-  },
-];
-
-function useAIAssistantLightTheme() {
-  useEffect(() => {
-    const root = document.documentElement;
-    const previousTokens = new Map<string, string>();
-    const previousColorScheme = root.style.colorScheme;
-
-    for (const [token, value] of Object.entries(
-      AI_ASSISTANT_LIGHT_THEME_TOKENS
-    )) {
-      previousTokens.set(token, root.style.getPropertyValue(token));
-      root.style.setProperty(token, value);
-    }
-    root.style.colorScheme = 'light';
-
-    return () => {
-      for (const [token, previousValue] of previousTokens) {
-        if (previousValue) {
-          root.style.setProperty(token, previousValue);
-        } else {
-          root.style.removeProperty(token);
-        }
-      }
-      root.style.colorScheme = previousColorScheme;
-    };
-  }, []);
-}
 
 interface AIWorkspaceProps {
   /** Dashboard route body mode. Avoids the legacy standalone AI shell. */
@@ -176,6 +95,9 @@ export default function AIWorkspace({
   const [workspaceQueryAsOfDataSlot, setWorkspaceQueryAsOfDataSlot] = useState(
     pendingEntryState?.queryAsOfDataSlot ?? queryAsOfDataSlot
   );
+  const [workspaceArtifactId, setWorkspaceArtifactId] = useState(
+    pendingEntryState?.artifactWorkspaceId
+  );
 
   useEffect(() => {
     if (pendingEntryState?.queryAsOfDataSlot) {
@@ -186,6 +108,7 @@ export default function AIWorkspace({
 
   const handleFunctionSelect = useCallback(
     (func: AIAssistantFunction) => {
+      setWorkspaceArtifactId(undefined);
       setSelectedFunction(func);
     },
     [setSelectedFunction]
@@ -224,6 +147,7 @@ export default function AIWorkspace({
     cancel,
     // 통합 입력 핸들러
     handleSendInput,
+    handleArtifactGuidanceCta,
     // 명확화 기능
     clarification,
     selectClarification,
@@ -351,6 +275,7 @@ export default function AIWorkspace({
     }
 
     setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot ?? queryAsOfDataSlot);
+    setWorkspaceArtifactId(entry.artifactWorkspaceId);
 
     if (entry.draft) {
       setInput(entry.draft);
@@ -408,11 +333,16 @@ export default function AIWorkspace({
           inputValue={input}
           setInputValue={setInput}
           handleSendInput={handleSendInput}
+          onStarterPromptSubmit={(prompt) => {
+            setInput(prompt);
+            handleSendInput(undefined, prompt);
+          }}
           sessionState={sessionState}
           onNewSession={handleNewSession}
           isGenerating={isLoading}
           streamStatus={streamStatus}
           regenerateResponse={regenerateLastResponse}
+          onArtifactGuidanceCta={handleArtifactGuidanceCta}
           onStopGeneration={stop}
           jobProgress={hybridState.progress}
           jobId={hybridState.jobId}
@@ -437,11 +367,13 @@ export default function AIWorkspace({
           estimatedWaitSeconds={estimatedWaitSeconds}
           queuedQueries={queuedQueries}
           removeQueuedQuery={removeQueuedQuery}
+          showInternalHeader={false}
         />
       </Activity>
       <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
         <div className="h-full p-0">
           <AIContentArea
+            artifactWorkspaceId={workspaceArtifactId}
             selectedFunction={selectedFunction}
             queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
           />
@@ -475,82 +407,17 @@ export default function AIWorkspace({
 
   if (embedded) {
     return (
-      <div className="flex h-full min-h-0 w-full overflow-hidden bg-white text-gray-900">
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3">
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
-              {AI_WORKSPACE_FUNCTION_TABS.map((item) => {
-                const Icon = item.icon;
-                const active = selectedFunction === item.id;
-
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleFunctionSelect(item.id)}
-                    aria-label={`${item.label} ${item.description}`}
-                    aria-pressed={active}
-                    className={cn(
-                      'inline-flex h-11 items-center gap-2 rounded-lg border px-3 text-left transition-colors',
-                      active
-                        ? 'border-blue-200 bg-blue-50 text-blue-700'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                    <span className="min-w-0">
-                      <span className="block text-sm font-semibold leading-tight">
-                        {item.label}
-                      </span>
-                      <span className="block text-xs leading-tight text-slate-500">
-                        {item.description}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {selectedFunction === 'chat' && (
-              <button
-                type="button"
-                onClick={handleToggleRightPanel}
-                className="hidden h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 lg:inline-flex"
-                aria-label={
-                  isRightPanelOpen
-                    ? '시스템 컨텍스트 닫기'
-                    : '시스템 컨텍스트 열기'
-                }
-                aria-pressed={isRightPanelOpen}
-              >
-                {isRightPanelOpen ? (
-                  <PanelRightClose className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <PanelRightOpen className="h-4 w-4" aria-hidden="true" />
-                )}
-                컨텍스트
-              </button>
-            )}
-          </div>
-
-          <div className="relative min-h-0 flex-1 overflow-hidden">
-            {renderAssistantContent()}
-          </div>
-        </div>
-
-        {selectedFunction === 'chat' && isRightPanelOpen && (
-          <SystemContextPanel
-            className="hidden xl:flex"
-            finalModelId={latestAssistantRuntime?.modelId}
-            finalProvider={latestAssistantRuntime?.provider}
-          >
-            <ArtifactWorkspacePanel
-              messages={enhancedMessages}
-              workspaceId={artifactWorkspaceId}
-            />
-          </SystemContextPanel>
-        )}
-      </div>
+      <AIWorkspaceEmbeddedLayout
+        selectedFunction={selectedFunction}
+        isRightPanelOpen={isRightPanelOpen}
+        assistantContent={renderAssistantContent()}
+        finalModelId={latestAssistantRuntime?.modelId}
+        finalProvider={latestAssistantRuntime?.provider}
+        artifactWorkspaceId={artifactWorkspaceId}
+        messages={enhancedMessages}
+        onFunctionSelect={handleFunctionSelect}
+        onToggleRightPanel={handleToggleRightPanel}
+      />
     );
   }
 
@@ -558,196 +425,26 @@ export default function AIWorkspace({
   // 🎨 화이트 모드 전환 (2025-12 업데이트)
   return (
     <div className="flex h-full w-full overflow-hidden bg-white text-gray-900">
-      {/* LEFT SIDEBAR (Navigation) - Hidden on mobile */}
-      <div className="hidden md:flex w-[280px] flex-col border-r border-gray-200 bg-gray-50">
-        {/* Header with Logo */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-2">
-          <OpenManagerLogo variant="light" showSubtitle={false} href="/" />
-        </div>
-
-        {/* Current Session Section */}
-        <div className="flex-1 px-3 overflow-y-auto">
-          <div className="mb-4">
-            <div className="mb-2 flex items-center justify-between px-1">
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                현재 세션
-              </span>
-              <button
-                type="button"
-                onClick={handleNewSession}
-                className="flex min-h-6 min-w-6 items-center gap-1 rounded px-1.5 py-0.5 text-xs text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700"
-                title="새 대화 시작"
-              >
-                <Plus className="h-3 w-3" />
-                <span>새 대화</span>
-              </button>
-            </div>
-            {enhancedMessages.length > 0 ? (
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2.5 text-sm text-blue-700 border border-blue-100">
-                  <MessageSquare className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate flex-1">진행 중인 대화</span>
-                  <span className="text-xs text-blue-500 shrink-0">
-                    {enhancedMessages.filter((m) => m.role === 'user').length}개
-                    질문
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="px-3 py-6 text-center">
-                <Bot className="mx-auto mb-2 h-10 w-10 text-gray-300" />
-                <p className="text-sm text-gray-500">새 대화를 시작하세요</p>
-                <p className="mt-1 text-xs text-gray-400">
-                  AI에게 질문해보세요!
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Features Section (하단) - Fullscreen용 리스트 레이아웃 */}
-        <div className="shrink-0 border-t border-gray-200 px-3 py-3">
-          <div className="mb-2 px-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            AI 기능
-          </div>
-          <div className="space-y-1">
-            {/* 자연어 질의 */}
-            <button
-              type="button"
-              onClick={() => handleFunctionSelect('chat')}
-              className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-                selectedFunction === 'chat'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <MessageSquare className="h-4 w-4 shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium">AI Chat</div>
-                <div className="text-xs text-gray-500 truncate">
-                  자연어 질의
-                </div>
-              </div>
-            </button>
-            {/* 자동 장애보고서 */}
-            <button
-              type="button"
-              onClick={() => handleFunctionSelect('auto-report')}
-              className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-                selectedFunction === 'auto-report'
-                  ? 'bg-pink-50 text-pink-700 border border-pink-200'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <FileText className="h-4 w-4 shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium">장애 보고서</div>
-                <div className="text-xs text-gray-500 truncate">
-                  보고서 생성
-                </div>
-              </div>
-            </button>
-            {/* 이상감지/추세 */}
-            <button
-              type="button"
-              onClick={() => handleFunctionSelect('intelligent-monitoring')}
-              className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-                selectedFunction === 'intelligent-monitoring'
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <Monitor className="h-4 w-4 shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium">이상감지/추세</div>
-                <div className="text-xs text-gray-500 truncate">
-                  이상 신호 분석
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Bottom Status */}
-        <div className="shrink-0 border-t border-gray-200 px-3 py-2.5">
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="font-medium text-gray-600">AI Engine</span>
-              <CloudRunStatusIndicator autoCheckInterval={300000} />
-            </div>
-            <span className="text-gray-400">v{APP_VERSION}</span>
-          </div>
-        </div>
-      </div>
+      <AIWorkspaceNavigationSidebar
+        selectedFunction={selectedFunction}
+        hasMessages={enhancedMessages.length > 0}
+        userQuestionCount={
+          enhancedMessages.filter((message) => message.role === 'user').length
+        }
+        onNewSession={handleNewSession}
+        onFunctionSelect={handleFunctionSelect}
+      />
 
       {/* CENTER & RIGHT (Main Content) */}
       <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {/* CENTER CONTENT */}
         <div className="flex flex-1 flex-col relative min-w-0">
-          {/* 🎯 통합 헤더 (대시보드와 동일한 스타일) - Desktop Only */}
-          <header className="hidden md:flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-xs">
-            {/* 좌측: 대시보드 버튼 + 브레드크럼 */}
-            <div className="flex items-center gap-4">
-              {/* 대시보드 돌아가기 버튼 */}
-              <button
-                type="button"
-                onClick={() => router.push('/dashboard')}
-                className="flex min-h-6 min-w-6 items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
-                title="대시보드로 돌아가기"
-                aria-label="대시보드로 돌아가기"
-              >
-                <ArrowLeftFromLine className="h-4 w-4" />
-                <span>대시보드</span>
-              </button>
-              {/* 브레드크럼 구분선 */}
-              <div className="h-5 w-px bg-gray-200" />
-              {/* 브레드크럼 */}
-              <div className="flex items-center gap-2 text-gray-500 text-sm">
-                <span className="font-medium text-gray-900">AI Workspace</span>
-                <span>/</span>
-                <span className="text-blue-600 capitalize font-medium">
-                  {selectedFunction === 'chat'
-                    ? '대화'
-                    : selectedFunction === 'auto-report'
-                      ? '보고서'
-                      : '모니터링'}
-                </span>
-              </div>
-            </div>
-
-            {/* 중앙: 실시간 정보 (숨김 on mobile) */}
-            <div className="hidden md:flex items-center">
-              <RealTimeDisplay />
-            </div>
-
-            {/* 우측: 패널 토글 + 프로필 */}
-            <div className="flex items-center gap-3">
-              {/* 패널 토글 버튼 */}
-              {selectedFunction === 'chat' && (
-                <button
-                  type="button"
-                  onClick={handleToggleRightPanel}
-                  className="hidden min-h-6 min-w-6 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 lg:flex"
-                  title="시스템 컨텍스트 패널 토글"
-                  aria-label={
-                    isRightPanelOpen
-                      ? '시스템 컨텍스트 닫기'
-                      : '시스템 컨텍스트 열기'
-                  }
-                  aria-pressed={isRightPanelOpen}
-                >
-                  {isRightPanelOpen ? (
-                    <PanelRightClose className="h-5 w-5" />
-                  ) : (
-                    <PanelRightOpen className="h-5 w-5" />
-                  )}
-                </button>
-              )}
-
-              {/* 프로필 헤더 (대시보드와 동일) */}
-              <UnifiedProfileHeader />
-            </div>
-          </header>
+          <AIWorkspaceFullscreenHeader
+            selectedFunction={selectedFunction}
+            isRightPanelOpen={isRightPanelOpen}
+            onBackToDashboard={() => router.push('/dashboard')}
+            onToggleRightPanel={handleToggleRightPanel}
+          />
 
           <div className="flex-1 overflow-hidden relative">
             {renderAssistantContent()}

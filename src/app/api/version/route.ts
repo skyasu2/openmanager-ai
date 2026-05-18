@@ -17,10 +17,21 @@ const PIPELINE_URL =
   process.env.APP_PIPELINE_URL || process.env.CI_PIPELINE_URL || '';
 const DEPLOYMENT_PROVIDER = process.env.APP_DEPLOYMENT_PROVIDER || 'vercel';
 
+function normalizeReleaseVersion(tag: string): string {
+  const trimmed = tag.trim();
+  return trimmed.startsWith('v') ? trimmed.slice(1) : trimmed;
+}
+
 export async function GET() {
+  const overallVersion = normalizeReleaseVersion(RELEASE_TAG) || BUILD_VERSION;
+
   return NextResponse.json({
     version: APP_VERSION,
     buildVersion: BUILD_VERSION,
+    versions: {
+      overall: overallVersion,
+      frontend: APP_VERSION,
+    },
     nextjs: process.env.NEXT_PUBLIC_NEXTJS_VERSION || 'unknown',
     environment: process.env.NODE_ENV || 'development',
     commitSha: COMMIT_SHA,

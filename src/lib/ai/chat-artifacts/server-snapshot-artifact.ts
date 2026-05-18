@@ -147,7 +147,7 @@ export async function generateServerSnapshotArtifact({
 
   const slot = createSlot(summary, queryAsOfDataSlot);
 
-  return attachArtifactEnvelopeMetadata(
+  return attachArtifactEnvelopeMetadata<ServerSnapshotArtifact>(
     {
       kind: 'server-snapshot',
       generatedAt: new Date().toISOString(),

@@ -1,17 +1,13 @@
-import type {
-  IncidentReportArtifact,
-  MonitoringAnalysisArtifact,
-  ServerSnapshotArtifact,
-} from '@/lib/ai/chat-artifacts/types';
 import {
   type ArtifactRendererEntry,
+  resolveArtifactRenderer,
   resolveArtifactRendererEntries,
   type SupportedArtifactRendererEntry,
   type UnsupportedArtifactRendererEntry,
 } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
-import { IncidentReportArtifactCard } from '../IncidentReportArtifactCard';
-import { MonitoringAnalysisArtifactCard } from '../MonitoringAnalysisArtifactCard';
-import { ServerSnapshotArtifactCard } from '../ServerSnapshotArtifactCard';
+import { registerMonitoringArtifactRenderers } from './monitoring-artifact-renderers';
+
+registerMonitoringArtifactRenderers();
 
 interface ArtifactRendererHostProps {
   metadata: unknown;
@@ -35,27 +31,17 @@ function UnsupportedArtifactFallback({
   );
 }
 
-function renderSupportedArtifact(entry: SupportedArtifactRendererEntry) {
-  switch (entry.artifactKind) {
-    case 'incident-report':
-      return (
-        <IncidentReportArtifactCard
-          artifact={entry.artifact as IncidentReportArtifact}
-        />
-      );
-    case 'monitoring-analysis':
-      return (
-        <MonitoringAnalysisArtifactCard
-          artifact={entry.artifact as MonitoringAnalysisArtifact}
-        />
-      );
-    case 'server-snapshot':
-      return (
-        <ServerSnapshotArtifactCard
-          artifact={entry.artifact as ServerSnapshotArtifact}
-        />
-      );
-  }
+function toMissingRendererEntry(
+  entry: SupportedArtifactRendererEntry
+): UnsupportedArtifactRendererEntry {
+  return {
+    status: 'unsupported',
+    key: entry.key,
+    domainId: entry.domainId,
+    artifactKind: entry.artifactKind,
+    artifactVersion: entry.artifactVersion,
+    reason: 'unknown_renderer',
+  };
 }
 
 function renderArtifactEntry(entry: ArtifactRendererEntry) {
@@ -63,7 +49,14 @@ function renderArtifactEntry(entry: ArtifactRendererEntry) {
     return <UnsupportedArtifactFallback entry={entry} />;
   }
 
-  return renderSupportedArtifact(entry);
+  const renderer = resolveArtifactRenderer(entry);
+  if (!renderer) {
+    return (
+      <UnsupportedArtifactFallback entry={toMissingRendererEntry(entry)} />
+    );
+  }
+
+  return renderer(entry.artifact, entry);
 }
 
 export function ArtifactRendererHost({ metadata }: ArtifactRendererHostProps) {

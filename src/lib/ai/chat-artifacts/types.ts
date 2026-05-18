@@ -1,6 +1,15 @@
 import type { IncidentReport } from '@/components/ai/pages/auto-report/types';
+import {
+  normalizeReporterDegradationReasonCode,
+  normalizeReporterFallbackSource,
+} from '@/lib/ai/degradation-metadata';
 import type { JobDataSlot } from '@/types/ai-jobs';
-import type { MonitoringBatchAnalysisResponse } from '@/types/intelligent-monitoring.types';
+import type {
+  CloudRunAnalysisResponse,
+  MonitoringBatchAnalysisResponse,
+  MonitoringBatchCapacityAlert,
+  ServerAnalysisResult,
+} from '@/types/intelligent-monitoring.types';
 
 export const ARTIFACT_CONTRACT_VERSION = '2026-05-03-v1';
 
@@ -33,6 +42,12 @@ export interface ArtifactProviderSummary {
   attempts?: ArtifactProviderAttemptSummary[];
 }
 
+export interface ArtifactDegradationSummary {
+  degraded: boolean;
+  reasonCode?: string;
+  fallbackSource?: string;
+}
+
 export interface ArtifactContractMetadata {
   artifactVersion?: string;
   sourceMode?: ArtifactSourceMode;
@@ -40,6 +55,13 @@ export interface ArtifactContractMetadata {
   traceId?: string;
   evidence?: ArtifactEvidence[];
   providerSummary?: ArtifactProviderSummary;
+  degradation?: ArtifactDegradationSummary;
+}
+
+export interface ChatArtifact extends ArtifactContractMetadata {
+  kind: string;
+  generatedAt: string;
+  queryAsOfDataSlot?: JobDataSlot;
 }
 
 export interface ChatArtifactRequest {
@@ -67,6 +89,49 @@ export interface MonitoringAnalysisArtifact extends ArtifactContractMetadata {
   warningServers: number;
   criticalServers: number;
   analysis: MonitoringBatchAnalysisResponse;
+  capacityAlerts?: MonitoringBatchCapacityAlert[];
+  roleGroupSummary?: MonitoringRoleGroupSummary[];
+  source?: string;
+  queryAsOfDataSlot?: JobDataSlot;
+}
+
+export interface MonitoringRoleGroupSummary {
+  role: string;
+  count: number;
+  warningCount: number;
+  criticalCount: number;
+  avgCpu: number;
+  avgMemory: number;
+  avgDisk: number;
+}
+
+export interface ServerMonitoringCurrentMetrics {
+  cpu?: number;
+  memory?: number;
+  disk?: number;
+  network?: number;
+  load1?: number;
+  load5?: number;
+  cpuCores?: number;
+}
+
+export interface ServerMonitoringArtifactRequest extends ChatArtifactRequest {
+  serverId: string;
+  serverName: string;
+  currentMetrics?: ServerMonitoringCurrentMetrics;
+}
+
+export interface ServerMonitoringAnalysisArtifact
+  extends ArtifactContractMetadata {
+  kind: 'server-monitoring-analysis';
+  generatedAt: string;
+  title: string;
+  summary: string;
+  serverId: string;
+  serverName: string;
+  overallStatus: ServerAnalysisResult['overallStatus'];
+  analysis: CloudRunAnalysisResponse;
+  server: ServerAnalysisResult;
   source?: string;
   queryAsOfDataSlot?: JobDataSlot;
 }
@@ -111,10 +176,48 @@ export interface ServerSnapshotArtifact extends ArtifactContractMetadata {
   }>;
 }
 
-export type ChatArtifact =
-  | IncidentReportArtifact
-  | MonitoringAnalysisArtifact
-  | ServerSnapshotArtifact;
+export interface OpsProcedureArtifact extends ArtifactContractMetadata {
+  kind: 'ops-procedure';
+  generatedAt: string;
+  title: string;
+  summary: string;
+  procedureType: 'runbook' | 'alert-rule' | 'script';
+  source: 'tool-result' | 'otel-static';
+  queryAsOfDataSlot?: JobDataSlot;
+  inputs: {
+    metric?: 'cpu' | 'memory' | 'disk' | 'network';
+    threshold?: number;
+    serverScope?: 'all' | 'group' | 'server';
+    serverId?: string;
+    group?: string;
+    timeWindowMinutes?: number;
+    notificationTarget?: 'slack-webhook' | 'none';
+  };
+  evidence: ArtifactEvidence[];
+  runbook: {
+    symptoms: string[];
+    likelyCauses: string[];
+    responseSteps: string[];
+    validationSteps: string[];
+    rollbackOrStopConditions: string[];
+    limitations: string[];
+  };
+  codeBlocks: Array<{
+    id: string;
+    title: string;
+    language: 'bash' | 'yaml' | 'promql' | 'markdown';
+    content: string;
+    executable: boolean;
+    requiredEnv: string[];
+    safetyLevel: 'read-only' | 'notification-only' | 'mutating';
+    notes: string[];
+  }>;
+  validation: {
+    noFakeFunctions: boolean;
+    noHardcodedSecrets: boolean;
+    requiresManualReview: boolean;
+  };
+}
 
 export interface ArtifactEnvelope<
   TArtifact extends ChatArtifact = ChatArtifact,
@@ -128,6 +231,7 @@ export interface ArtifactEnvelope<
   traceId?: string;
   evidence?: ArtifactEvidence[];
   providerSummary?: ArtifactProviderSummary;
+  degradation?: ArtifactDegradationSummary;
   payload: TArtifact;
 }
 
@@ -139,6 +243,7 @@ export interface CreateArtifactEnvelopeOptions {
   traceId?: string;
   evidence?: ArtifactEvidence[];
   providerSummary?: unknown;
+  degradation?: unknown;
 }
 
 type VersionedArtifact<TArtifact extends ChatArtifact> = TArtifact & {
@@ -168,9 +273,18 @@ function readArtifactDataSlot(artifact: ChatArtifact): string | undefined {
   if (artifact.queryAsOfDataSlot?.timeLabel) {
     return artifact.queryAsOfDataSlot.timeLabel;
   }
-  if (artifact.kind === 'server-snapshot') return artifact.slot?.timeLabel;
+
+  const snapshotSlot = (artifact as { slot?: unknown }).slot;
+  if (artifact.kind === 'server-snapshot' && isRecord(snapshotSlot)) {
+    const timeLabel = readPublicString(snapshotSlot.timeLabel);
+    if (timeLabel) return timeLabel;
+  }
+
+  const analysis = (artifact as { analysis?: unknown }).analysis;
   if (artifact.kind === 'monitoring-analysis') {
-    return artifact.analysis.slot?.timeLabel;
+    if (!isRecord(analysis)) return undefined;
+    const slot = analysis.slot;
+    if (isRecord(slot)) return readPublicString(slot.timeLabel);
   }
   return undefined;
 }
@@ -271,12 +385,30 @@ export function sanitizeArtifactProviderSummary(
   return Object.keys(summary).length > 0 ? summary : undefined;
 }
 
+export function sanitizeArtifactDegradationSummary(
+  value: unknown
+): ArtifactDegradationSummary | undefined {
+  if (!isRecord(value)) return undefined;
+  if (typeof value.degraded !== 'boolean') return undefined;
+
+  return {
+    degraded: value.degraded,
+    ...(value.degraded && {
+      reasonCode: normalizeReporterDegradationReasonCode(value.reasonCode),
+      fallbackSource: normalizeReporterFallbackSource(value.fallbackSource),
+    }),
+  };
+}
+
 export function createArtifactEnvelope<TArtifact extends ChatArtifact>(
   artifact: TArtifact,
   options: CreateArtifactEnvelopeOptions = {}
 ): ArtifactEnvelope<TArtifact> {
   const providerSummary = sanitizeArtifactProviderSummary(
     options.providerSummary ?? artifact.providerSummary
+  );
+  const degradation = sanitizeArtifactDegradationSummary(
+    options.degradation ?? artifact.degradation
   );
   const evidence = options.evidence ?? readArtifactEvidence(artifact.evidence);
 
@@ -297,6 +429,7 @@ export function createArtifactEnvelope<TArtifact extends ChatArtifact>(
     }),
     ...(evidence && { evidence }),
     ...(providerSummary && { providerSummary }),
+    ...(degradation && { degradation }),
     payload: artifact,
   };
 }
@@ -325,5 +458,6 @@ export function attachArtifactEnvelopeMetadata<TArtifact extends ChatArtifact>(
     ...(envelope.providerSummary && {
       providerSummary: envelope.providerSummary,
     }),
+    ...(envelope.degradation && { degradation: envelope.degradation }),
   };
 }

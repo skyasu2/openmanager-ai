@@ -20,7 +20,10 @@ import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useResizable } from '@/hooks/ui/useResizable';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { cn } from '@/lib/utils';
-import { useAISidebarStore } from '@/stores/useAISidebarStore';
+import {
+  AI_SIDEBAR_WIDTH_LIMITS,
+  useAISidebarStore,
+} from '@/stores/useAISidebarStore';
 // Types
 import type { AISidebarV3Props } from '@/types/ai-sidebar/ai-sidebar-types';
 import { AISidebarHeader } from './AISidebarHeader';
@@ -35,9 +38,9 @@ import { MessageComponent } from './SidebarMessage';
 // - 메시지 변환
 
 // 📐 리사이즈 상수
-const SIDEBAR_MIN_WIDTH = 440;
-const SIDEBAR_MAX_WIDTH = 960;
-const SIDEBAR_DEFAULT_WIDTH = 680;
+const SIDEBAR_MIN_WIDTH = AI_SIDEBAR_WIDTH_LIMITS.MIN;
+const SIDEBAR_MAX_WIDTH = AI_SIDEBAR_WIDTH_LIMITS.MAX;
+const SIDEBAR_DEFAULT_WIDTH = AI_SIDEBAR_WIDTH_LIMITS.DEFAULT;
 const MOBILE_BREAKPOINT = 768; // md breakpoint
 
 // 🔒 완전 Client-Only AI 사이드바 컴포넌트 (V4 - useAIChatCore 통합)
@@ -143,6 +146,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     cancel,
     // 통합 입력 핸들러
     handleSendInput,
+    handleArtifactGuidanceCta,
     // 명확화 기능
     clarification,
     selectClarification,
@@ -314,11 +318,16 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               inputValue={input}
               setInputValue={setInput}
               handleSendInput={handleSendInput}
+              onStarterPromptSubmit={(prompt) => {
+                setInput(prompt);
+                handleSendInput(undefined, prompt);
+              }}
               sessionState={sessionState}
               onNewSession={handleNewSession}
               isGenerating={isLoading}
               streamStatus={streamStatus}
               regenerateResponse={regenerateLastResponse}
+              onArtifactGuidanceCta={handleArtifactGuidanceCta}
               onStopGeneration={stop}
               jobProgress={hybridState.progress}
               jobId={hybridState.jobId}
@@ -343,6 +352,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               estimatedWaitSeconds={estimatedWaitSeconds}
               queuedQueries={queuedQueries}
               removeQueuedQuery={removeQueuedQuery}
+              showInternalHeader={false}
             />
           </Activity>
           {/* Reporter/Analyst - Activity API로 상태 유지 */}
@@ -368,7 +378,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           type="button"
           aria-label="사이드바 닫기"
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-slate-500/25 backdrop-blur-sm md:hidden"
         />
       )}
       <div
@@ -376,6 +386,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         role="dialog"
         aria-labelledby="ai-sidebar-v4-title"
         aria-modal={isOpen || undefined}
+        aria-hidden={!isOpen}
         className={cn(
           'gpu-sidebar-slide-in fixed z-50 flex bg-white shadow-2xl',
           isMobile
@@ -408,6 +419,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
             activeFunction={selectedFunction}
             onClose={onClose}
             onNewSession={handleNewSession}
+            onOpenFullscreen={handleOpenFullscreen}
           />
           <div className="flex-1 overflow-hidden pb-20 sm:pb-0">
             <AIErrorBoundary

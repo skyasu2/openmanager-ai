@@ -11,6 +11,7 @@ import type {
 } from '@/lib/ai/assistant-contract';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 
 // ============================================
@@ -147,6 +148,7 @@ export interface AIJob {
     routeDecision?: RouteDecision;
     assistantPlan?: AssistantPlan;
     assistantResult?: AssistantResult;
+    semanticQueryTrace?: SemanticQueryTrace;
   };
 }
 

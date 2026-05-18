@@ -20,11 +20,11 @@ import type { DashboardStats } from './types/dashboard.types';
 const ServerDashboard = dynamic(() => import('./ServerDashboard'), {
   ssr: false,
   loading: () => (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur-md">
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="animate-pulse space-y-4">
-        <div className="h-4 rounded bg-white/10" />
-        <div className="h-4 rounded bg-white/10" />
-        <div className="h-4 w-5/6 rounded bg-white/10" />
+        <div className="h-4 rounded bg-slate-200" />
+        <div className="h-4 rounded bg-slate-200" />
+        <div className="h-4 w-5/6 rounded bg-slate-200" />
       </div>
     </div>
   ),
@@ -164,7 +164,7 @@ export default memo(function DashboardContent({
       <div className="min-h-screen bg-linear-to-br from-purple-50 to-blue-50 p-6">
         <div className="mx-auto max-w-7xl">
           <div className="rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-2xl font-bold text-gray-900">
+            <h2 className="mb-4 text-2xl font-semibold text-gray-900">
               🔄 서버 생성 중...
             </h2>
             <p className="text-gray-600">
@@ -228,8 +228,8 @@ export default memo(function DashboardContent({
             />
           </>
         ) : (
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-            <div className="text-center text-gray-500">
+          <div className="rounded-xl border border-slate-200/60 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
+            <div className="text-center text-slate-500">
               {emptyStateMode === 'filtered-empty' ? (
                 <>
                   <p className="mb-2 text-lg">

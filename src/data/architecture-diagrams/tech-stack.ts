@@ -2,12 +2,12 @@ import type { ArchitectureDiagram } from '../architecture-diagrams.types';
 
 export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
   id: 'tech-stack',
-  title: 'Frontend Architecture',
+  title: '프론트엔드 기술 스택',
   description:
-    'Next.js 16 + React 19 + TypeScript 6.0 기반 Next-Gen 프론트엔드 스택. 레이어별 기술 분리.',
+    'Next.js 16, React 19, TypeScript 6.0 기반 UI와 144 슬롯 시계열 차트, AI 스트리밍 화면을 레이어별로 분리한 구조입니다.',
   layers: [
     {
-      title: 'Presentation Layer',
+      title: '화면 표현',
       color: 'from-pink-500 to-rose-500',
       nodes: [
         {
@@ -20,21 +20,21 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'tailwind',
           label: 'Tailwind CSS 4.2',
-          sublabel: 'Oxide Engine',
+          sublabel: '유틸리티 기반 디자인',
           type: 'secondary',
           icon: '🎨',
         },
         {
-          id: 'animate',
-          label: 'Tailwind Animate',
-          sublabel: 'CSS Animations',
+          id: 'charts',
+          label: 'Charts',
+          sublabel: 'Nivo · SVG Sparkline · uPlot',
           type: 'secondary',
-          icon: '🎭', // Mask for animation/drama
+          icon: '📈',
         },
       ],
     },
     {
-      title: 'State Layer',
+      title: '상태 관리',
       color: 'from-amber-500 to-orange-500',
       nodes: [
         {
@@ -47,21 +47,21 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'tanstack',
           label: 'TanStack Query v5',
-          sublabel: 'Server State',
+          sublabel: '서버 상태 캐시',
           type: 'secondary',
           icon: '📡', // Satellite for remote data
         },
         {
           id: 'hooks',
           label: 'React 19 Hooks',
-          sublabel: 'Local State',
+          sublabel: '컴포넌트 로컬 상태',
           type: 'tertiary',
           icon: '⚓', // Hook
         },
       ],
     },
     {
-      title: 'Framework Layer',
+      title: '앱 프레임워크',
       color: 'from-blue-500 to-indigo-600',
       nodes: [
         {
@@ -81,14 +81,14 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'radix',
           label: 'Radix UI',
-          sublabel: 'Accessible Primitives',
+          sublabel: '접근성 primitive',
           type: 'secondary',
           icon: '🧩',
         },
       ],
     },
     {
-      title: 'Build & Tools',
+      title: '검증 도구',
       color: 'from-gray-500 to-gray-600',
       nodes: [
         {
@@ -101,14 +101,14 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'vitest',
           label: 'Vitest',
-          sublabel: 'Unit Tests',
+          sublabel: 'unit · contract',
           type: 'tertiary',
           icon: '🧪',
         },
         {
           id: 'playwright',
           label: 'Playwright',
-          sublabel: 'E2E Tests',
+          sublabel: 'E2E · QA evidence',
           type: 'tertiary',
           icon: '🎭',
         },
@@ -120,6 +120,7 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'nextjs', to: 'react', label: 'Renders' },
     { from: 'radix', to: 'react', label: 'Components' },
     { from: 'tailwind', to: 'react', label: 'Styles' },
+    { from: 'charts', to: 'react', label: 'Render' },
     // State → Presentation
     { from: 'zustand', to: 'react', label: 'Global' },
     { from: 'hooks', to: 'react', label: 'Local' },
@@ -130,5 +131,6 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
     // Build → Framework
     { from: 'biome', to: 'typescript', label: 'Lint' },
     { from: 'vitest', to: 'nextjs', label: 'Test' },
+    { from: 'playwright', to: 'nextjs', label: 'E2E Test' },
   ],
 };

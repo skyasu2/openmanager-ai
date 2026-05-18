@@ -15,11 +15,14 @@ export const LayerLabelNode = memo(
     return (
       <div className="group flex h-full w-full flex-col justify-center pr-4 text-right transition-opacity">
         <div className="relative z-10" title={data.title}>
-          <span className="block truncate text-xs font-bold leading-tight text-white/90 transition-colors group-hover:text-white">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Layer
+          </span>
+          <span className="mt-0.5 block truncate text-xs font-bold leading-tight text-slate-700 transition-colors group-hover:text-indigo-700">
             {data.title}
           </span>
           <div
-            className={`ml-auto mt-1 h-0.5 w-6 rounded-full opacity-80 transition-all duration-200 group-hover:w-10 group-hover:opacity-100 bg-linear-to-r ${data.color}`}
+            className={`ml-auto mt-2 h-0.5 w-7 rounded-full opacity-80 transition-all duration-200 group-hover:w-11 group-hover:opacity-100 bg-linear-to-r ${data.color}`}
           />
         </div>
       </div>

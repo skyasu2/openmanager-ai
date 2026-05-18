@@ -21,11 +21,16 @@ import {
   normalizeRouteDecision,
   type RouteDecision,
 } from '@/lib/ai/route-decision';
+import {
+  normalizeSemanticQueryTrace,
+  type SemanticQueryTrace,
+} from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
+  EvidenceCard,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
 
@@ -49,6 +54,7 @@ export interface StoredMessageMetadata {
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
+  semanticQueryTrace?: SemanticQueryTrace;
   toolsCalled?: string[];
   ragSources?: Array<{
     title: string;
@@ -57,6 +63,7 @@ export interface StoredMessageMetadata {
     category?: string;
     url?: string;
   }>;
+  evidenceCards?: EvidenceCard[];
   assistantResponseView?: {
     summary: string;
     details?: string | null;
@@ -153,6 +160,9 @@ export function saveChatHistory(
         const assistantResult = normalizeAssistantResult(
           metadata?.assistantResult
         );
+        const semanticQueryTrace = normalizeSemanticQueryTrace(
+          metadata?.semanticQueryTrace
+        );
         const hasExplicitHandoffHistory = Array.isArray(
           metadata?.handoffHistory
         );
@@ -162,10 +172,12 @@ export function saveChatHistory(
           analysisBasis?.featureStatus ||
           analysisBasis?.analysisMode ||
           analysisBasis?.toolsCalled ||
+          analysisBasis?.evidenceCards ||
           analysisBasis?.ragSources ||
           routeDecision ||
           assistantPlan ||
           assistantResult ||
+          semanticQueryTrace ||
           metadata?.assistantResponseView ||
           metadata?.artifactIntentReason ||
           metadata?.artifactIntentTarget ||
@@ -191,6 +203,9 @@ export function saveChatHistory(
                 ...(analysisBasis?.toolsCalled && {
                   toolsCalled: analysisBasis.toolsCalled,
                 }),
+                ...(analysisBasis?.evidenceCards && {
+                  evidenceCards: analysisBasis.evidenceCards,
+                }),
                 ...(analysisBasis?.ragSources && {
                   ragSources: analysisBasis.ragSources,
                 }),
@@ -202,6 +217,9 @@ export function saveChatHistory(
                 }),
                 ...(assistantResult && {
                   assistantResult,
+                }),
+                ...(semanticQueryTrace && {
+                  semanticQueryTrace,
                 }),
                 ...(metadata?.assistantResponseView && {
                   assistantResponseView: metadata.assistantResponseView,

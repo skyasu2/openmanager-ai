@@ -434,7 +434,7 @@ export async function getAIResponseCache(
         hit: true,
         data: cached,
         latencyMs,
-        // ttlRemaining 생략 - Upstash 10K commands/day 절약
+        // ttlRemaining 생략 - Upstash Free 500K commands/month 절약
       };
     }
 

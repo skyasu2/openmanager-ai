@@ -74,16 +74,9 @@ const DashboardHeader = memo(function DashboardHeader({
       syncLayout(event.matches);
     };
 
-    if (typeof mediaQuery.addEventListener === 'function') {
-      mediaQuery.addEventListener('change', handleChange);
-      return () => {
-        mediaQuery.removeEventListener('change', handleChange);
-      };
-    }
-
-    mediaQuery.addListener(handleChange);
+    mediaQuery.addEventListener('change', handleChange);
     return () => {
-      mediaQuery.removeListener(handleChange);
+      mediaQuery.removeEventListener('change', handleChange);
     };
   }, []);
 
@@ -146,18 +139,27 @@ const DashboardHeader = memo(function DashboardHeader({
   return (
     <header
       suppressHydrationWarning
-      className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs"
+      className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/95 shadow-sm backdrop-blur-md"
     >
-      <div className="flex min-w-0 items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
+      {/* 브랜드 액센트 라인 */}
+      <div className="absolute inset-x-0 top-0 h-[2px] bg-linear-to-r from-blue-500 via-indigo-500 to-violet-500" />
+      <div className="flex min-w-0 items-center justify-between gap-3 py-4 pr-4 pl-16 sm:gap-4 sm:pr-6 lg:px-6">
         {/* 왼쪽: 브랜드 로고 */}
-        <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden pr-3">
-          <OpenManagerLogo variant="light" compactOnMobile href="/" />
+        <div className="flex min-w-0 flex-1 basis-0 items-center gap-4 overflow-hidden">
+          <OpenManagerLogo
+            variant="light"
+            compactOnMobile
+            href="/"
+            titleWeight="semibold"
+          />
         </div>
 
         {/* 중앙: 실시간 정보 + 세션 카운트다운 */}
         {isDesktopLayout && (
-          <div className="hidden items-center gap-4 lg:flex">
-            <RealTimeDisplay />
+          <div className="hidden min-w-0 shrink items-center justify-center gap-3 overflow-hidden px-2 lg:flex xl:gap-4">
+            <div className="hidden xl:block">
+              <RealTimeDisplay />
+            </div>
             <SessionCountdown />
           </div>
         )}
@@ -186,7 +188,7 @@ const DashboardHeader = memo(function DashboardHeader({
 
       {/* 모바일용 실시간 정보 + 세션 카운트다운 */}
       {!isDesktopLayout && (
-        <div className="border-t border-gray-200 bg-gray-50 px-4 py-2 lg:hidden">
+        <div className="border-t border-slate-200/60 bg-slate-50/80 px-4 py-2 lg:hidden">
           <div className="flex flex-nowrap items-center justify-center gap-2 text-xs">
             <RealTimeDisplay />
             <SessionCountdown />

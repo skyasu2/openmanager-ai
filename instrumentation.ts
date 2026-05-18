@@ -28,13 +28,11 @@ export async function register() {
     }
 
     // 선택적 환경변수 검증
-    try {
-      const { validateEnvironmentVariables } = await import(
-        './src/lib/config/env-validation'
+    const testApiKey = process.env.TEST_API_KEY;
+    if (testApiKey && testApiKey.length < 8) {
+      console.error(
+        `⚠️ 선택적 환경변수 검증 실패: TEST_API_KEY must be at least 8 characters long. Current length: ${testApiKey.length}.`
       );
-      validateEnvironmentVariables();
-    } catch (error) {
-      console.error('⚠️ 선택적 환경변수 검증 실패:', error);
       process.exit(1);
     }
 

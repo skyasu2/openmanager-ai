@@ -147,6 +147,16 @@ export const messageSchema = z
     { message: 'Message must include non-empty parts array or content string' }
   );
 
+const semanticMetadataSchema = z
+  .object({
+    intentFrame: z.unknown().optional(),
+    inputType: z
+      .enum(['natural_query', 'log_paste', 'mixed', 'oversized'])
+      .optional(),
+    logExtract: z.string().max(8_000).optional(),
+  })
+  .passthrough();
+
 export const requestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(50),
   sessionId: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
@@ -155,21 +165,8 @@ export const requestSchema = z.object({
   analysisMode: z.enum(['auto', 'thinking']).optional(),
   queryAsOfDataSlot: z.unknown().optional(),
   localRouteDecision: z.unknown().optional(),
-});
-
-/**
- * 프록시 모드용 느슨한 스키마 (V2 전용)
- * Cloud Run에서 최종 검증이 이루어지므로 Vercel 단에서는 최소 검증만 수행
- * @see stream/v2/route.ts
- */
-export const requestSchemaLoose = z.object({
-  messages: z.array(messageSchema).min(1).max(50),
-  sessionId: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
-  enableWebSearch: z.boolean().optional(),
-  enableRAG: z.boolean().optional(),
-  analysisMode: z.enum(['auto', 'thinking']).optional(),
-  queryAsOfDataSlot: z.unknown().optional(),
-  localRouteDecision: z.unknown().optional(),
+  metadata: semanticMetadataSchema.optional(),
+  semanticQueryTrace: z.unknown().optional(),
 });
 
 // ============================================================================

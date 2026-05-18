@@ -43,7 +43,7 @@ export const RealtimeChart: FC<RealtimeChartProps> = ({
     return (
       <div
         style={{ height }}
-        className="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/40"
+        className="flex items-center justify-center rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500"
       >
         데이터 대기중...
       </div>
@@ -57,7 +57,7 @@ export const RealtimeChart: FC<RealtimeChartProps> = ({
   const lastValue = data[data.length - 1] ?? 0;
 
   return (
-    <div className="rounded-lg border border-white/10 bg-white/5 p-4 shadow-xs">
+    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-xs">
       <div style={{ height: `${height}px` }}>
         <UPlotTimeSeries
           data={uplotData}

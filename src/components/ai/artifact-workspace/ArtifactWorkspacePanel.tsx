@@ -1,6 +1,13 @@
 'use client';
 
-import { Download, GitCompareArrows, Save, Trash2, Upload } from 'lucide-react';
+import {
+  Download,
+  GitCompareArrows,
+  HelpCircle,
+  Save,
+  Trash2,
+  Upload,
+} from 'lucide-react';
 import type { ChangeEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import type { ArtifactReplayPack } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
@@ -238,6 +245,14 @@ export function ArtifactWorkspacePanel({
           <p className="mt-0.5 text-xs text-slate-500">
             replay pack {replayPacks.length}개 · 현재 대화{' '}
             {supportedCurrentArtifactCount}개
+            <span
+              role="img"
+              aria-label="replay pack 설명"
+              className="ml-1 inline-flex align-[-2px] text-slate-400"
+              title="대화 이력과 분석 결과를 저장·불러오는 스냅샷"
+            >
+              <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+            </span>
           </p>
         </div>
         <button
@@ -384,13 +399,33 @@ export function ArtifactWorkspacePanel({
 
       {comparison && (
         <div
-          className="grid grid-cols-2 gap-1.5 rounded border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-800"
+          className="space-y-2 rounded border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-800"
           data-testid="artifact-workspace-comparison"
         >
-          <span>matched {comparison.matchedCount}</span>
-          <span>missing {comparison.missingCount}</span>
-          <span>added {comparison.addedCount}</span>
-          <span>changed {comparison.changedCount}</span>
+          <div className="grid grid-cols-2 gap-1.5">
+            <span>matched {comparison.matchedCount}</span>
+            <span>missing {comparison.missingCount}</span>
+            <span>added {comparison.addedCount}</span>
+            <span>changed {comparison.changedCount}</span>
+          </div>
+          {comparison.items.length > 0 && (
+            <ul
+              aria-label="replay pack 비교 상세"
+              className="space-y-1 border-t border-emerald-200 pt-2"
+            >
+              {comparison.items.map((item) => (
+                <li
+                  key={`${item.status}:${item.id}`}
+                  className="flex min-w-0 items-center justify-between gap-2"
+                >
+                  <span className="min-w-0 truncate text-emerald-900">
+                    {item.label}
+                  </span>
+                  <span className="shrink-0 font-medium">{item.status}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
 

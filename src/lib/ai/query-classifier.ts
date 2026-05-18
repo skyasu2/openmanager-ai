@@ -7,6 +7,10 @@
  * - Cloud Run Supervisor가 고급 분류 담당
  */
 
+import type { OffDomainGuardCategory } from './off-domain-guard';
+import { getOffDomainGuardrail } from './off-domain-guard';
+import { hasExplicitServerReference } from './server-scope-detection';
+
 export interface QueryClassification {
   complexity: number; // 1-5
   intent:
@@ -22,6 +26,7 @@ export interface QueryClassification {
   latency?: number;
   /** off-domain 감지 시 true. best-effort 응답 + disclaimer 표시 트리거 */
   isOffDomain?: boolean;
+  offDomainCategory?: OffDomainGuardCategory;
 }
 
 /**
@@ -64,26 +69,16 @@ export class QueryClassifier {
    */
   private fallbackClassify(query: string): QueryClassification {
     const q = query.toLowerCase();
-    const INFRA_CONTEXT_PATTERN =
-      /서버|서벼|썹|인프라|시스템|시스탬|모니터링|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i;
-    const FORCE_KB_QUERY_PATTERN =
-      /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)/i;
-    const OFF_DOMAIN_GENERAL_PATTERNS =
-      /(날씨|weather|운세|horoscope|뉴스|news|환율|exchange\s*rate|주가|stock\s*price|시세|가격|비트코인|btc|맛집|restaurant|번역|translate|일정|calendar)/i;
+    const offDomainGuardrail = getOffDomainGuardrail(query);
 
-    // 오프도메인 감지: 서버 운영과 무관한 생활형/오락형 질문
-    // hard reject 아님 — best-effort 처리 + disclaimer 표시 트리거
-    if (
-      OFF_DOMAIN_GENERAL_PATTERNS.test(query) &&
-      !INFRA_CONTEXT_PATTERN.test(query) &&
-      !FORCE_KB_QUERY_PATTERN.test(query)
-    ) {
+    if (offDomainGuardrail) {
       return {
         complexity: 1,
         intent: 'off-domain',
-        reasoning: 'Off-domain: non-server general query',
+        reasoning: `Off-domain guardrail: ${offDomainGuardrail.category}`,
         confidence: 90,
         isOffDomain: true,
+        offDomainCategory: offDomainGuardrail.category,
       };
     }
     let confidence = 70; // 기본 신뢰도
@@ -92,9 +87,11 @@ export class QueryClassifier {
     if (query.length > 50) confidence += 10; // 긴 쿼리는 더 구체적
     if (query.length < 10) confidence -= 20; // 짧은 쿼리는 모호
 
-    // 서버 이름이 명시된 경우 신뢰도 상승
-    if (
-      /[a-z]+-[a-z]+-\d+|server-?\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i.test(
+    // 실제 서버 ID가 명시된 경우 스코프가 확정된 질의로 간주
+    if (hasExplicitServerReference(query)) {
+      confidence += 25;
+    } else if (
+      /mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i.test(
         query
       )
     ) {

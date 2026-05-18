@@ -47,6 +47,8 @@ interface CloudRunHandlerParams {
   analysisMode?: AnalysisMode;
   rateLimitIdentity?: string;
   internalDisclosureMode?: SupervisorInternalDisclosureMode;
+  metadata?: Record<string, unknown>;
+  semanticQueryTrace?: unknown;
 }
 
 /**
@@ -71,6 +73,8 @@ export async function handleCloudRunStream(
     analysisMode,
     rateLimitIdentity,
     internalDisclosureMode,
+    metadata,
+    semanticQueryTrace,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -108,6 +112,10 @@ export async function handleCloudRunStream(
           enableRAG,
           analysisMode,
           ...(internalDisclosureMode && { internalDisclosureMode }),
+          ...(metadata && { metadata }),
+          ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
+            ? { semanticQueryTrace }
+            : {}),
         },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',
@@ -234,6 +242,8 @@ export async function handleCloudRunJson(
     analysisMode,
     rateLimitIdentity,
     internalDisclosureMode,
+    metadata,
+    semanticQueryTrace,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -271,6 +281,10 @@ export async function handleCloudRunJson(
           enableRAG,
           analysisMode,
           ...(internalDisclosureMode && { internalDisclosureMode }),
+          ...(metadata && { metadata }),
+          ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
+            ? { semanticQueryTrace }
+            : {}),
         },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',

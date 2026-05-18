@@ -31,7 +31,15 @@ import {
   ANALYSIS_MODE_LABELS,
   type AnalysisMode,
 } from '@/types/ai/analysis-mode';
-import type { SessionState } from '@/types/session';
+import { SESSION_LIMITS, type SessionState } from '@/types/session';
+
+const CHAT_INPUT_MAX_LENGTH = 10_000;
+const CHAT_INPUT_WARNING_LENGTH = 8_000;
+const CHAT_INPUT_COUNT_FORMATTER = new Intl.NumberFormat('en-US');
+
+function formatChatInputCount(value: number): string {
+  return CHAT_INPUT_COUNT_FORMATTER.format(value);
+}
 
 interface ChatInputAreaProps {
   textareaRef: RefObject<HTMLTextAreaElement | null>;
@@ -106,6 +114,13 @@ export const ChatInputArea = memo(function ChatInputArea({
   // 활성화된 도구 수 (badge 표시용)
   const activeToolCount = webSearchEnabled ? 1 : 0;
   const showAnalysisModeBadge = analysisMode !== 'auto';
+  const sessionCount = sessionState?.count ?? 0;
+  const showSessionWarning =
+    Boolean(sessionState?.isWarning) && !sessionState?.isLimitReached;
+  const inputLength = inputValue.length;
+  const showInputLengthWarning = inputLength >= CHAT_INPUT_WARNING_LENGTH;
+  const isInputAtHardCap = inputLength >= CHAT_INPUT_MAX_LENGTH;
+  const inputLengthLabel = `입력 ${formatChatInputCount(inputLength)}/${formatChatInputCount(CHAT_INPUT_MAX_LENGTH)}자`;
 
   // 외부 클릭 시 popover 닫기
   useEffect(() => {
@@ -124,6 +139,7 @@ export const ChatInputArea = memo(function ChatInputArea({
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
         e.preventDefault();
         closePopover(true);
       }
@@ -185,7 +201,10 @@ export const ChatInputArea = memo(function ChatInputArea({
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
                   <div className="space-y-1">
                     {fileErrors.map((err, idx) => (
-                      <p key={idx} className="text-xs text-red-600">
+                      <p
+                        key={`${idx}-${err.message}`}
+                        className="text-xs text-red-600"
+                      >
                         {err.message}
                       </p>
                     ))}
@@ -311,7 +330,9 @@ export const ChatInputArea = memo(function ChatInputArea({
               {isPopoverOpen && (
                 <div
                   ref={popoverRef}
-                  className="absolute bottom-12 left-0 z-50 w-64 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
+                  role="dialog"
+                  aria-label="도구 및 옵션"
+                  className="absolute bottom-12 left-0 z-50 max-h-[min(70vh,28rem)] w-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
                 >
                   {/* Web source mode */}
                   {onToggleWebSearch && (
@@ -385,8 +406,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                           )}
                         </div>
                         <p className="mt-2 text-xs leading-relaxed text-gray-500">
-                          심층 분석은 숨겨진 모델 추론이 아니라 더 긴
-                          분석/라우팅 경로입니다.
+                          멀티 에이전트 분석 활성화 · 예상 +5~15초
                         </p>
                       </div>
                     </>
@@ -434,6 +454,7 @@ export const ChatInputArea = memo(function ChatInputArea({
               minHeight={48}
               maxHeight={200}
               maxHeightVh={30}
+              maxLength={CHAT_INPUT_MAX_LENGTH}
               id="ai-chat-input"
               name="ai-chat-input"
               aria-label="AI 질문 입력"
@@ -469,6 +490,12 @@ export const ChatInputArea = memo(function ChatInputArea({
             </div>
           </form>
 
+          {sessionState?.isLimitReached && (
+            <div className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
+              새 대화를 시작하면 계속 이용할 수 있습니다
+            </div>
+          )}
+
           {/* 숨겨진 파일 입력 */}
           <input
             ref={fileInputRef}
@@ -483,10 +510,51 @@ export const ChatInputArea = memo(function ChatInputArea({
           />
 
           {/* 하단 힌트 */}
-          <div className="mt-2 flex items-center justify-between text-xs text-gray-400">
-            <div className="flex items-center gap-2">
-              {sessionState && !sessionState.isWarning && (
-                <span>대화 {sessionState.count}/20</span>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-400">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              {sessionState && (
+                <span
+                  className={
+                    sessionState.isLimitReached
+                      ? 'font-medium text-red-700'
+                      : showSessionWarning
+                        ? 'font-medium text-amber-700'
+                        : undefined
+                  }
+                  title={
+                    showSessionWarning
+                      ? '곧 한도 도달'
+                      : sessionState.isLimitReached
+                        ? '대화 한도 도달'
+                        : undefined
+                  }
+                >
+                  대화 {sessionCount}/{SESSION_LIMITS.MESSAGE_LIMIT}
+                </span>
+              )}
+              {showInputLengthWarning && (
+                <span
+                  className={`font-medium ${
+                    isInputAtHardCap ? 'text-red-700' : 'text-amber-700'
+                  }`}
+                  title={
+                    isInputAtHardCap
+                      ? '입력 길이 한도 도달'
+                      : '긴 입력은 답변 품질과 처리 시간에 영향을 줄 수 있습니다'
+                  }
+                >
+                  {inputLengthLabel}
+                </span>
+              )}
+              {showSessionWarning && (
+                <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
+                  곧 한도 도달
+                </span>
+              )}
+              {isInputAtHardCap && (
+                <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 font-medium text-red-700">
+                  최대 입력 길이에 도달했습니다
+                </span>
               )}
               {attachments.length > 0 && (
                 <span className="text-blue-500">
@@ -495,7 +563,7 @@ export const ChatInputArea = memo(function ChatInputArea({
               )}
               <span>서버 운영 중심</span>
             </div>
-            <span>Enter로 전송, Shift+Enter로 줄바꿈</span>
+            <span className="shrink-0">Enter로 전송, Shift+Enter로 줄바꿈</span>
           </div>
         </div>
       </div>

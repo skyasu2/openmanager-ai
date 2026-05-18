@@ -9,45 +9,6 @@ import { createElement } from 'react';
 import type { IncidentSeverity, IncidentStatus } from './types';
 
 /**
- * 숫자 값 추출 헬퍼
- * 객체에서 숫자 값을 추출합니다.
- */
-export function extractNumericValue(
-  value: number | Record<string, unknown>
-): number {
-  if (typeof value === 'number') return value;
-  if (typeof value !== 'object' || value === null) return 0;
-
-  if ('in' in value && 'out' in value) {
-    const inVal = typeof value.in === 'number' ? value.in : 0;
-    const outVal = typeof value.out === 'number' ? value.out : 0;
-    return (inVal + outVal) / 2;
-  }
-  if ('used' in value && typeof value.used === 'number') {
-    return value.used;
-  }
-  if ('usage' in value && typeof value.usage === 'number') {
-    return value.usage;
-  }
-  return 0;
-}
-
-/**
- * API 심각도를 UI 심각도로 매핑
- */
-export function mapSeverity(apiSeverity: string): IncidentSeverity {
-  switch (apiSeverity) {
-    case 'critical':
-    case 'high':
-      return 'critical';
-    case 'medium':
-      return 'warning';
-    default:
-      return 'info';
-  }
-}
-
-/**
  * 심각도에 따른 아이콘 반환
  */
 export function getSeverityIcon(severity: IncidentSeverity) {

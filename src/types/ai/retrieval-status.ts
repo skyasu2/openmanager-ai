@@ -1,4 +1,4 @@
-export type RetrievalMode = 'off' | 'lite' | 'text-only' | 'cosine-neighbor';
+export type RetrievalMode = 'off' | 'lite' | 'text-only';
 
 export type RetrievalSuppressedReason =
   | 'disabled'
@@ -14,6 +14,19 @@ export interface RetrievalMetadata {
   suppressedReason?: RetrievalSuppressedReason;
   evidenceCount: number;
   webUsed: boolean;
+}
+
+export type EvidenceSourceType = 'knowledge' | 'incident' | 'runbook' | 'web';
+
+export interface EvidenceCard {
+  id: string;
+  title: string;
+  summary: string;
+  sourceType: EvidenceSourceType;
+  score: number;
+  category?: string;
+  reason?: string;
+  url?: string;
 }
 
 export type FeatureExecutionStatus =

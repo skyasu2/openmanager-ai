@@ -19,6 +19,7 @@ import debug from '@/utils/debug';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
   DEFAULT_REDIRECT_PATH,
+  type LoadingType,
   PAGE_REDIRECT_DELAY_MS,
   REDIRECT_STORAGE_KEY,
   sanitizeRedirectPath,
@@ -86,7 +87,7 @@ function createGuestAttemptSeed(): string {
 
 export function useGuestLogin(deps: {
   setIsLoading: (v: boolean) => void;
-  setLoadingType: (v: 'github' | 'guest' | 'google' | 'email' | null) => void;
+  setLoadingType: (v: LoadingType) => void;
   setErrorMessage: (msg: string | null) => void;
   setSuccessMessage: (msg: string | null) => void;
 }) {

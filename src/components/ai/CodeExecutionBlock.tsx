@@ -155,6 +155,7 @@ export const CodeExecutionBlock = memo(function CodeExecutionBlock({
             onClick={handleCopy}
             className="flex items-center space-x-1 rounded px-2 py-1 text-xs text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
             title="코드 복사"
+            aria-label={isCopied ? '코드 복사됨' : '코드 복사'}
           >
             {isCopied ? (
               <>

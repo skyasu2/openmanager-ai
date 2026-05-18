@@ -11,9 +11,20 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
+import type {
+  ExtractedEntities,
+  SemanticIntentFrame,
+} from '@/lib/ai/entity-extractor';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
+import { getOffDomainGuardrail } from '@/lib/ai/off-domain-guard';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import type { RouteDecision } from '@/lib/ai/route-decision';
+import {
+  buildSemanticIntentRequestMetadata,
+  type DomainIntentFramePayload,
+  type SemanticPreprocessingMetadata,
+  type SemanticQueryTrace,
+} from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
@@ -23,8 +34,17 @@ import {
   generateMessageId,
   sanitizeMessages,
 } from '../utils/hybrid-query-utils';
+import {
+  extractEntitiesCached,
+  shouldExtractSemanticIntentFrame,
+} from './entity-extraction-cache';
 import { buildFrontendQueryRoutingDecision } from './query-routing';
 import { buildSourceToolRequestOptions } from './source-tool-request-options';
+
+export {
+  clearEntityExtractionCacheForTesting,
+  shouldExtractSemanticIntentFrame,
+} from './entity-extraction-cache';
 
 // ============================================================================
 // Types
@@ -44,6 +64,10 @@ interface AsyncJobRequestOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
+  intentFrame?: DomainIntentFramePayload;
+  semanticQueryTrace?: SemanticQueryTrace;
+  inputType?: SemanticPreprocessingMetadata['inputType'];
+  logExtract?: string;
 }
 
 type SendMessageLike = (message: {
@@ -97,6 +121,12 @@ export interface QueryExecutionDeps {
     pendingQuery: MutableRefObject<string | null>;
     pendingAttachments: MutableRefObject<FileAttachment[] | null>;
     rateLimitBlock: MutableRefObject<ActiveRateLimitBlock | null>;
+    semanticIntentFrame?: MutableRefObject<
+      SemanticIntentFrame | undefined | null
+    >;
+    semanticPreprocessing?: MutableRefObject<
+      SemanticPreprocessingMetadata | undefined | null
+    >;
   };
   analysisMode?: AnalysisMode;
   ragEnabled?: boolean;
@@ -215,8 +245,53 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       // Redirect 이벤트 처리를 위해 현재 쿼리 저장
       refs.currentQuery.current = trimmedQuery;
 
-      // 1. 복잡도 분석 + 의도 기반 Job Queue 강제 라우팅
       const hasAttachments = Boolean(attachments?.length);
+      const offDomainGuardrail = hasAttachments
+        ? null
+        : getOffDomainGuardrail(trimmedQuery);
+
+      if (offDomainGuardrail) {
+        const assistantMessage: UIMessage = {
+          id: generateMessageId('assistant'),
+          role: 'assistant',
+          parts: [
+            {
+              type: 'text',
+              text: offDomainGuardrail.response,
+            },
+          ],
+        };
+        const nextMessages: UIMessage[] = isRetry
+          ? [assistantMessage]
+          : [
+              {
+                id: generateMessageId('user'),
+                role: 'user',
+                parts: [{ type: 'text', text: trimmedQuery }],
+              },
+              assistantMessage,
+            ];
+
+        setMessages((prev) => [...sanitizeMessages(prev), ...nextMessages]);
+        setState((prev) => ({
+          ...prev,
+          mode: 'streaming',
+          complexity: 'simple',
+          progress: null,
+          jobId: null,
+          isLoading: false,
+          error: null,
+          errorDetails: null,
+          warning: offDomainGuardrail.warning,
+          processingTime: 0,
+          clarification: null,
+          warmingUp: false,
+          estimatedWaitSeconds: 0,
+        }));
+        return;
+      }
+
+      // 1. 복잡도 분석 + 의도 기반 Job Queue 강제 라우팅
       const routingDecision = buildFrontendQueryRoutingDecision({
         query: trimmedQuery,
         complexityThreshold,
@@ -232,25 +307,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         routeDecision,
       } = routingDecision;
 
-      // 오프도메인 감지: best-effort 모드로 처리하되 실패 시 요청 자체는 막지 않는다.
-      void Promise.resolve()
-        .then(() => classifyQuery(trimmedQuery))
-        .then((classification) => {
-          if (!classification?.isOffDomain) return;
-
-          setState((prev) => ({
-            ...prev,
-            warning:
-              prev.warning ??
-              '참고: 저는 서버 운영·모니터링 중심 AI입니다. 일반 정보 답변은 정확도와 최신성이 제한될 수 있습니다.',
-          }));
-        })
-        .catch((error) => {
-          logger.warn(
-            '[HybridAI] Query classification failed, continuing without off-domain disclaimer',
-            error
-          );
-        });
       const isComplex = queryMode === 'job-queue';
       onRouteDecision?.(routeDecision);
 
@@ -340,6 +396,11 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             ragEnabled,
             webSearchEnabled,
           }),
+          ...buildJobSemanticOptions({
+            frame: refs.semanticIntentFrame?.current,
+            preprocessing: refs.semanticPreprocessing?.current,
+            originalQuery: trimmedQuery,
+          }),
         };
         const jobQueueRequest =
           Object.keys(jobQueueOptions).length > 0
@@ -395,6 +456,11 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         if (shouldUseLocalDevLegacyFallback) {
           const sanitizedMessages = getSanitizedMessagesForSend();
           const nextMessages = [...sanitizedMessages, requestUserMessage];
+          const semanticIntentPayload = buildSemanticIntentRequestMetadata({
+            frame: refs.semanticIntentFrame?.current,
+            preprocessing: refs.semanticPreprocessing?.current,
+            originalQuery: trimmedQuery,
+          });
 
           setMessages(nextMessages);
 
@@ -411,6 +477,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
                 webSearchEnabled,
                 ragEnabled,
               }),
+              ...semanticIntentPayload,
             }),
           })
             .then(async (response) => {
@@ -530,6 +597,12 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       // 원본 쿼리 및 첨부 파일 저장 (명확화 플로우에서 사용)
       refs.pendingQuery.current = query;
       refs.pendingAttachments.current = attachments || null;
+      if (refs.semanticIntentFrame) {
+        refs.semanticIntentFrame.current = undefined;
+      }
+      if (refs.semanticPreprocessing) {
+        refs.semanticPreprocessing.current = undefined;
+      }
 
       // 초기화
       setState((prev) => ({ ...prev, error: null, errorDetails: null }));
@@ -546,7 +619,12 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           return;
         }
 
-        // 1. 쿼리 분류 (Groq LLM 사용)
+        if (getOffDomainGuardrail(query)) {
+          executeQuery(query);
+          return;
+        }
+
+        // 1. 쿼리 분류
         const classification = await classifyQuery(query);
 
         if (process.env.NODE_ENV === 'development') {
@@ -555,11 +633,47 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           );
         }
 
-        // 2. 명확화 필요 여부 체크
-        const clarificationRequest = generateClarification(
-          query,
-          classification
-        );
+        let clarificationRequest = generateClarification(query, classification);
+
+        if (clarificationRequest || shouldExtractSemanticIntentFrame(query)) {
+          const entities = await extractEntitiesCached(query);
+          if (entities.blocked) {
+            setState((prev) => ({
+              ...prev,
+              isLoading: false,
+              error:
+                entities.message ??
+                '입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다. 다른 표현으로 다시 시도해주세요.',
+              errorDetails: null,
+              clarification: null,
+              warmingUp: false,
+              estimatedWaitSeconds: 0,
+            }));
+            return;
+          }
+
+          if (refs.semanticIntentFrame) {
+            refs.semanticIntentFrame.current = entities.intentFrame;
+          }
+          if (refs.semanticPreprocessing) {
+            refs.semanticPreprocessing.current =
+              toSemanticPreprocessingMetadata(entities);
+          }
+
+          if (process.env.NODE_ENV === 'development') {
+            logger.info(
+              `[HybridAI] Entities: server=${entities.server ?? 'none'}, metric=${entities.metric ?? 'none'}, timeRange=${entities.timeRange ?? 'none'}, intent=${entities.intentFrame?.intent ?? 'none'}, confidence=${entities.confidence}%`
+            );
+          }
+
+          if (clarificationRequest) {
+            clarificationRequest = generateClarification(
+              query,
+              classification,
+              entities
+            );
+          }
+        }
 
         if (clarificationRequest) {
           setState((prev) => ({
@@ -593,4 +707,46 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
   );
 
   return { executeQuery, sendQuery };
+}
+
+function buildJobSemanticOptions(params: {
+  frame: SemanticIntentFrame | undefined | null;
+  preprocessing?: SemanticPreprocessingMetadata | undefined | null;
+  originalQuery: string;
+}): Pick<
+  AsyncJobRequestOptions,
+  'intentFrame' | 'semanticQueryTrace' | 'inputType' | 'logExtract'
+> {
+  const semanticIntentPayload = buildSemanticIntentRequestMetadata({
+    frame: params.frame,
+    preprocessing: params.preprocessing,
+    originalQuery: params.originalQuery,
+  });
+
+  return {
+    ...(semanticIntentPayload.metadata?.intentFrame && {
+      intentFrame: semanticIntentPayload.metadata.intentFrame,
+    }),
+    ...(semanticIntentPayload.semanticQueryTrace && {
+      semanticQueryTrace: semanticIntentPayload.semanticQueryTrace,
+    }),
+    ...(semanticIntentPayload.metadata?.inputType && {
+      inputType: semanticIntentPayload.metadata.inputType,
+    }),
+    ...(semanticIntentPayload.metadata?.logExtract && {
+      logExtract: semanticIntentPayload.metadata.logExtract,
+    }),
+  };
+}
+
+function toSemanticPreprocessingMetadata(
+  entities: Pick<ExtractedEntities, 'inputType' | 'logExtract' | 'truncated'>
+): SemanticPreprocessingMetadata | undefined {
+  if (!entities.inputType) return undefined;
+
+  return {
+    inputType: entities.inputType,
+    ...(entities.logExtract && { logExtract: entities.logExtract }),
+    ...(entities.truncated && { truncated: true }),
+  };
 }

@@ -125,7 +125,7 @@ const COMPLEXITY_KEYWORDS = {
     '진단',
     'diagnose',
   ],
-  // RAG 검색 (복잡도 +25) - KB 기반 검색은 HyDE + Rerank으로 지연 발생
+  // 지식 근거 검색 (복잡도 +25) - KB 기반 검색은 추가 조회 비용이 발생
   ragSearch: [
     '과거 장애',
     '장애 이력',

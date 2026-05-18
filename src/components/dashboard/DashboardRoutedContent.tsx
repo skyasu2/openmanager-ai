@@ -78,7 +78,7 @@ function PageFrame({
       <main className="flex h-full min-h-0 w-full min-w-0 overflow-hidden px-4 pb-6 sm:px-6 lg:px-8">
         <div className="mx-auto flex h-full min-h-0 w-full min-w-0 max-w-none flex-col gap-4 2xl:max-w-[1800px]">
           <div className="shrink-0 pt-1">
-            <h1 className="text-2xl font-bold tracking-normal text-slate-900">
+            <h1 className="text-2xl font-semibold tracking-normal text-slate-900">
               {title}
             </h1>
             <p className="mt-1 text-sm text-slate-500">{description}</p>
@@ -93,7 +93,7 @@ function PageFrame({
     <main className="h-full w-full min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6 lg:px-8">
       <div className="mx-auto w-full min-w-0 max-w-none space-y-4 2xl:max-w-[1800px]">
         <div className="pt-1">
-          <h1 className="text-2xl font-bold tracking-normal text-slate-900">
+          <h1 className="text-2xl font-semibold tracking-normal text-slate-900">
             {title}
           </h1>
           <p className="mt-1 text-sm text-slate-500">{description}</p>
@@ -240,15 +240,13 @@ export default function DashboardRoutedContent({
 
   if (view === 'ai-assistant') {
     return (
-      <PageFrame
-        title="AI 어시스턴트"
-        description="질의, Reporter, Analyst 기능을 한 화면에서 실행"
-        contained
-      >
-        <div className="flex min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <AIWorkspace embedded queryAsOfDataSlot={aiQueryAsOfDataSlot} />
+      <main className="flex h-full min-h-0 w-full min-w-0 overflow-hidden px-4 pt-1 pb-6 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-full min-h-0 w-full min-w-0 max-w-none 2xl:max-w-[1800px]">
+          <div className="flex min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <AIWorkspace embedded queryAsOfDataSlot={aiQueryAsOfDataSlot} />
+          </div>
         </div>
-      </PageFrame>
+      </main>
     );
   }
 

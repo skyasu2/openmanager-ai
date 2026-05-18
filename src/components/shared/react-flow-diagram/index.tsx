@@ -46,12 +46,12 @@ function DiagramZoomToolbar() {
   const reactFlow = useReactFlow();
 
   return (
-    <fieldset className="nodrag nopan absolute right-3 top-3 z-10 flex items-center overflow-hidden rounded-lg border border-white/15 bg-slate-900/85 shadow-lg backdrop-blur-md">
+    <fieldset className="nodrag nopan absolute right-3 top-3 z-10 flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white/90 shadow-md backdrop-blur-md">
       <legend className="sr-only">토폴로지 줌 컨트롤</legend>
       <button
         type="button"
         onClick={() => reactFlow.zoomIn?.({ duration: 180 })}
-        className="flex h-9 w-9 items-center justify-center border-r border-white/10 text-slate-100 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+        className="flex h-9 w-9 items-center justify-center border-r border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
         aria-label="토폴로지 확대"
         title="확대"
       >
@@ -60,7 +60,7 @@ function DiagramZoomToolbar() {
       <button
         type="button"
         onClick={() => reactFlow.zoomOut?.({ duration: 180 })}
-        className="flex h-9 w-9 items-center justify-center border-r border-white/10 text-slate-100 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+        className="flex h-9 w-9 items-center justify-center border-r border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
         aria-label="토폴로지 축소"
         title="축소"
       >
@@ -69,7 +69,7 @@ function DiagramZoomToolbar() {
       <button
         type="button"
         onClick={() => reactFlow.fitView(FIT_VIEW_OPTIONS)}
-        className="flex h-9 w-9 items-center justify-center text-slate-100 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+        className="flex h-9 w-9 items-center justify-center text-slate-600 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
         aria-label="토폴로지 화면 맞춤"
         title="화면 맞춤"
       >
@@ -110,7 +110,7 @@ function ReactFlowDiagram({
     () => ({
       type: 'smoothstep',
       animated: true,
-      style: { stroke: '#60a5fa', strokeWidth: 1.5, strokeDasharray: '5,5' },
+      style: { stroke: '#6366f1', strokeWidth: 1.5, strokeDasharray: '5,5' },
     }),
     []
   );
@@ -131,10 +131,10 @@ function ReactFlowDiagram({
         {/* 다이어그램 헤더 */}
         {showHeader && (
           <div className="text-center">
-            <h3 className="mb-2 text-xl font-bold text-white">
+            <h3 className="mb-2 text-xl font-bold text-slate-800">
               {diagram.title}
             </h3>
-            <p className="mx-auto max-w-2xl text-sm text-gray-300">
+            <p className="mx-auto max-w-2xl text-sm text-slate-500">
               {diagram.description}
             </p>
           </div>
@@ -143,7 +143,7 @@ function ReactFlowDiagram({
         {/* React Flow 캔버스 */}
         <DiagramErrorBoundary diagramTitle={diagram.title}>
           <div
-            className={`rounded-xl border border-white/10 bg-linear-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl shadow-2xl ${canvasHeightClass}`}
+            className={`rounded-xl border border-slate-200 bg-white shadow-sm ${canvasHeightClass}`}
           >
             <ReactFlow
               nodes={nodes}
@@ -166,30 +166,30 @@ function ReactFlowDiagram({
               proOptions={{ hideAttribution: true }}
               nodesFocusable
               edgesFocusable
-              className="react-flow-dark"
+              colorMode="light"
               aria-label={`${diagram.title} 아키텍처 다이어그램`}
             >
               {showZoomToolbar && <DiagramZoomToolbar />}
-              <Background color="#94a3b8" gap={24} size={1.5} />
+              <Background color="#e2e8f0" gap={24} size={1.5} />
               {showControls && (
                 <Controls
-                  className="!border-white/20 !bg-slate-800/80 [&>button]:!border-white/20 [&>button]:!bg-slate-700/80 [&>button:hover]:!bg-slate-600/80 [&>button>svg]:!fill-white/80"
+                  className="!border-slate-200 !bg-white [&>button]:!border-slate-200 [&>button]:!bg-white [&>button:hover]:!bg-slate-100 [&>button>svg]:!fill-slate-600"
                   showInteractive={false}
                   aria-label={ARIA_LABEL_CONFIG['controls.ariaLabel']}
                 />
               )}
               {showMiniMap && (
                 <MiniMap
-                  className="!border-white/20 !bg-slate-800/80"
+                  className="!border-slate-200 !bg-white"
                   nodeColor={(node) => {
                     const data = node.data as CustomNodeData;
                     if (data?.nodeType === 'highlight')
-                      return 'rgba(250, 204, 21, 0.8)';
+                      return 'rgba(234, 179, 8, 0.7)';
                     if (data?.nodeType === 'primary')
-                      return 'rgba(255, 255, 255, 0.6)';
-                    return 'rgba(255, 255, 255, 0.3)';
+                      return 'rgba(99, 102, 241, 0.5)';
+                    return 'rgba(148, 163, 184, 0.4)';
                   }}
-                  maskColor="rgba(0, 0, 0, 0.8)"
+                  maskColor="rgba(241, 245, 249, 0.75)"
                   aria-label={ARIA_LABEL_CONFIG['minimap.ariaLabel']}
                 />
               )}
@@ -200,26 +200,26 @@ function ReactFlowDiagram({
 
         {/* 범례 */}
         {showLegend && (
-          <div className="flex flex-wrap justify-center gap-3 border-t border-white/10 pt-3">
+          <div className="flex flex-wrap justify-center gap-3 border-t border-slate-200 pt-3">
             <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded bg-linear-to-br from-yellow-500/40 to-amber-500/40 ring-1 ring-yellow-400/50" />
-              <span className="text-2xs text-gray-400">핵심</span>
+              <div className="h-2.5 w-2.5 rounded bg-linear-to-br from-yellow-400/60 to-amber-400/60 ring-1 ring-yellow-500/40" />
+              <span className="text-2xs text-slate-500">핵심</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded bg-white/15 ring-1 ring-white/30" />
-              <span className="text-2xs text-gray-400">주요</span>
+              <div className="h-2.5 w-2.5 rounded bg-indigo-100 ring-1 ring-indigo-300/60" />
+              <span className="text-2xs text-slate-500">주요</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded bg-white/5 ring-1 ring-white/10" />
-              <span className="text-2xs text-gray-400">보조</span>
+              <div className="h-2.5 w-2.5 rounded bg-slate-100 ring-1 ring-slate-300/60" />
+              <span className="text-2xs text-slate-500">보조</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="h-3 w-4 border-t border-dashed border-purple-400/60" />
-              <span className="text-2xs text-gray-400">검증</span>
+              <div className="h-3 w-4 border-t border-dashed border-purple-400/70" />
+              <span className="text-2xs text-slate-500">검증</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="h-3 w-4 border-t border-white/40" />
-              <span className="text-2xs text-gray-400">데이터</span>
+              <div className="h-3 w-4 border-t border-slate-400/60" />
+              <span className="text-2xs text-slate-500">데이터</span>
             </div>
           </div>
         )}

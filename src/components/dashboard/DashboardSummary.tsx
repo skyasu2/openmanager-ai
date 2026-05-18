@@ -47,6 +47,7 @@ function formatDataSourceLabel(
   return `Telemetry catalog v${dataSourceInfo.scopeVersion} · updated ${generatedAt}`;
 }
 
+// TODO: dashboard-status-tokens — 향후 공유 디자인 토큰으로 통합 예정
 // 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
 const statusGradients = {
   online: {
@@ -135,15 +136,15 @@ function StatusCard({
       aria-label={`${label} ${count}대 필터`}
       aria-pressed={isInteractive ? activeFilter === status : undefined}
       className={cn(
-        'group relative overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md p-4 text-left min-h-[84px]',
-        'transition-all duration-300 hover:shadow-lg hover:scale-[1.02]',
+        'group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-md p-4 text-left min-h-[84px]',
+        'border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ring-1 ring-white/60',
         gradient.border,
         gradient.glow,
         onFilterChange && 'cursor-pointer active:scale-[0.98]',
         !onFilterChange &&
           'disabled:cursor-default disabled:hover:scale-100 disabled:hover:shadow-none',
         activeFilter === status &&
-          `ring-2 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`,
+          `ring-1 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`,
         className
       )}
     >
@@ -160,13 +161,13 @@ function StatusCard({
         </>
       )}
       <div className="relative z-10 flex flex-col">
-        <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600/80">
+        <span className="flex items-center gap-1.5 text-xs font-medium text-gray-600/80">
           {icon} {label}
         </span>
         <span
           className={cn(
-            'mt-2 text-2xl font-bold tracking-tight',
-            countColorClass && count > 0 ? countColorClass : 'text-gray-800'
+            'mt-2 text-3xl font-bold tracking-tight tabular-nums leading-none',
+            countColorClass && count > 0 ? countColorClass : 'text-slate-700'
           )}
         >
           {count}
@@ -178,7 +179,7 @@ function StatusCard({
 
 function StatusHeaderActionGroup({ children }: { children: React.ReactNode }) {
   return (
-    <fieldset className="ml-0 inline-flex flex-wrap items-stretch overflow-hidden rounded-xl border border-white/80 bg-white/90 shadow-xs ring-1 ring-slate-200/70 backdrop-blur-sm divide-x divide-slate-200/80 sm:ml-1 sm:flex-nowrap">
+    <fieldset className="ml-0 inline-flex flex-wrap items-stretch overflow-hidden rounded-xl border border-white/80 bg-white/90 shadow-xs ring-1 ring-slate-200/70 backdrop-blur-sm divide-x divide-slate-200/60 sm:ml-1 sm:flex-nowrap">
       <legend className="sr-only">상태 헤더 도구</legend>
       {children}
     </fieldset>
@@ -209,7 +210,7 @@ function StatusHeaderActionButton({
       aria-label={ariaLabel}
       title={title}
       className={cn(
-        'relative flex h-12 min-w-12 items-center justify-center gap-1.5 bg-transparent px-2.5 text-xs font-semibold text-gray-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-300/70 sm:px-3 cursor-pointer',
+        'relative flex h-12 min-w-12 items-center justify-center gap-1.5 bg-transparent px-2.5 text-xs font-medium text-gray-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-300/70 sm:px-3 cursor-pointer',
         accentClassName
       )}
     >
@@ -257,7 +258,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         {/* 1. Total Servers - 그라데이션 강화 */}
         <div
           data-testid="dashboard-total-card"
-          className="order-3 lg:order-1 group relative flex flex-row items-center justify-between rounded-2xl border border-white/60 bg-white/60 backdrop-blur-md p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden"
+          className="order-3 lg:order-1 group relative flex flex-row items-center justify-between rounded-2xl border border-blue-100/70 bg-white/80 backdrop-blur-md p-5 shadow-sm ring-1 ring-blue-50 transition-all duration-300 hover:shadow-blue-100/60 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden"
         >
           {/* 그라데이션 배경 */}
           <div
@@ -271,9 +272,10 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
               </span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-gray-800 leading-none tracking-tight">
+              <span className="text-4xl font-bold text-slate-800 leading-none tracking-tight tabular-nums">
                 {safeStats.total}
               </span>
+              <span className="text-sm font-medium text-slate-400">대</span>
             </div>
             {dataSlotInfo && (
               <p className="mt-2 text-[11px] font-medium text-gray-500">
@@ -373,11 +375,11 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                 )}
               </div>
               <div className="whitespace-nowrap">
-                <div className="text-2xs font-bold uppercase tracking-wider text-gray-400 leading-tight">
+                <div className="text-2xs font-medium uppercase tracking-wider text-gray-400 leading-tight">
                   상태
                 </div>
                 <div
-                  className={`text-sm font-bold leading-snug ${systemHealthGradient.text}`}
+                  className={`text-sm font-medium leading-snug ${systemHealthGradient.text}`}
                 >
                   {safeStats.critical > 0 || safeStats.offline > 0
                     ? '문제 발생'
@@ -399,7 +401,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     label="알림"
                     badge={
                       activeAlertsCount > 0 ? (
-                        <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white leading-none">
+                        <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white leading-none">
                           {activeAlertsCount}
                         </span>
                       ) : undefined
@@ -423,33 +425,33 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             <div className="flex flex-1 shrink-0 flex-wrap items-center justify-end gap-3 text-center pr-1 sm:gap-4 sm:pr-4">
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
+                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.critical > 0 ? 'text-rose-500' : 'text-slate-300'}`}
                 >
                   {safeStats.critical}
                 </div>
-                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
                   위험
                 </div>
               </div>
-              <div className="h-10 w-px bg-gray-200" />
+              <div className="h-10 w-px bg-slate-100" />
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
+                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.warning > 0 ? 'text-amber-500' : 'text-slate-300'}`}
                 >
                   {safeStats.warning}
                 </div>
-                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
                   경고
                 </div>
               </div>
-              <div className="h-10 w-px bg-gray-200" />
+              <div className="h-10 w-px bg-slate-100" />
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.offline > 0 ? 'text-slate-600' : 'text-gray-400'}`}
+                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.offline > 0 ? 'text-slate-500' : 'text-slate-300'}`}
                 >
                   {safeStats.offline}
                 </div>
-                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
                   오프라인
                 </div>
               </div>

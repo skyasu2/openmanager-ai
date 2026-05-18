@@ -20,6 +20,7 @@ import {
   type RouteDecision,
   type RouteDecisionComplexity,
 } from '@/lib/ai/route-decision';
+import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import {
   analyzeJobQueryComplexity,
   inferJobType,
@@ -51,6 +52,11 @@ import {
   type SupervisorInternalDisclosureMode,
 } from '../supervisor/internal-disclosure-mode';
 import { buildScopedJobListKey, resolveJobOwnerKey } from './job-ownership';
+import {
+  getSubstantiveJobResultContent,
+  JOB_RESULT_QUALITY_FAILURE_MESSAGE,
+  shouldFailCompletedJobResult,
+} from './job-result-quality';
 
 // ============================================
 // 상수 정의
@@ -81,6 +87,7 @@ interface JobToolOptions {
   enableWebSearch?: boolean;
   internalDisclosureMode?: SupervisorInternalDisclosureMode;
   localRouteDecision?: RouteDecision;
+  metadata?: Record<string, unknown>;
 }
 
 function mapJobComplexityToRouteDecision(
@@ -99,10 +106,35 @@ function isAnalysisMode(value: unknown): value is AnalysisMode {
   return value === 'auto' || value === 'thinking';
 }
 
+function isSupervisorInputType(value: unknown): value is string {
+  return (
+    value === 'natural_query' ||
+    value === 'log_paste' ||
+    value === 'mixed' ||
+    value === 'oversized'
+  );
+}
+
 function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
   const analysisMode = metadata?.analysisMode;
   const enableRAG = metadata?.enableRAG;
   const enableWebSearch = metadata?.enableWebSearch;
+  const semanticQueryTrace = normalizeSemanticQueryTrace(
+    metadata?.semanticQueryTrace
+  );
+  const semanticMetadata = {
+    ...(metadata?.intentFrame !== undefined
+      ? { intentFrame: metadata.intentFrame }
+      : {}),
+    ...(semanticQueryTrace && { semanticQueryTrace }),
+    ...(isSupervisorInputType(metadata?.inputType) && {
+      inputType: metadata.inputType,
+    }),
+    ...(typeof metadata?.logExtract === 'string' &&
+    metadata.logExtract.trim().length > 0
+      ? { logExtract: metadata.logExtract.trim().slice(0, 8_000) }
+      : {}),
+  };
 
   return {
     ...(isAnalysisMode(analysisMode) && {
@@ -113,6 +145,9 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
     }),
     ...(typeof enableWebSearch === 'boolean' && {
       enableWebSearch,
+    }),
+    ...(Object.keys(semanticMetadata).length > 0 && {
+      metadata: semanticMetadata,
     }),
   };
 }
@@ -367,14 +402,17 @@ export const GET = withRateLimit(rateLimiters.default, withAuth(handleGET));
  * Redis Job을 API 응답 형식으로 변환
  */
 function mapJobToResponse(job: AIJob): JobStatusResponse {
+  const substantiveResult = getSubstantiveJobResultContent(job.result);
+  const qualityFailed = shouldFailCompletedJobResult(job.status, job.result);
+
   return {
     jobId: job.id,
     type: job.type,
-    status: job.status,
+    status: qualityFailed ? 'failed' : job.status,
     progress: job.progress,
     currentStep: job.currentStep,
-    result: job.result ? { content: job.result } : null,
-    error: job.error,
+    result: substantiveResult ? { content: substantiveResult } : null,
+    error: qualityFailed ? JOB_RESULT_QUALITY_FAILURE_MESSAGE : job.error,
     errorDetails: job.errorDetails ?? null,
     createdAt: job.createdAt,
     startedAt: job.startedAt,

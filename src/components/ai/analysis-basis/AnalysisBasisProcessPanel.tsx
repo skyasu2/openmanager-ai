@@ -15,6 +15,57 @@ import {
   STEP_STATUS_LABELS,
 } from './shared';
 
+const AGENT_COLORS: Record<string, string> = {
+  supervisor: 'bg-violet-100 text-violet-700 border-violet-200',
+  nlq: 'bg-blue-100 text-blue-700 border-blue-200',
+  'metrics-query': 'bg-blue-100 text-blue-700 border-blue-200',
+  analyst: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  reporter: 'bg-amber-100 text-amber-700 border-amber-200',
+  advisor: 'bg-orange-100 text-orange-700 border-orange-200',
+  vision: 'bg-purple-100 text-purple-700 border-purple-200',
+};
+
+function agentColor(name: string): string {
+  const key = name.toLowerCase().replace(/\s+/g, '-');
+  for (const [pattern, cls] of Object.entries(AGENT_COLORS)) {
+    if (key.includes(pattern)) return cls;
+  }
+  return 'bg-slate-100 text-slate-700 border-slate-200';
+}
+
+function AgentTimeline({
+  handoffHistory,
+}: {
+  handoffHistory: ResponseHandoff[];
+}) {
+  const steps = [
+    handoffHistory[0]?.from,
+    ...handoffHistory.map((h) => h.to),
+  ].filter((s): s is string => Boolean(s));
+
+  return (
+    <div className="flex flex-wrap items-center gap-1">
+      {steps.map((step, i) => (
+        <span key={`${step}-${i}`} className="flex items-center gap-1">
+          <span
+            className={`rounded border px-2 py-0.5 text-[11px] font-medium ${agentColor(step)}`}
+            title={
+              i > 0 ? (handoffHistory[i - 1]?.reason ?? undefined) : undefined
+            }
+          >
+            {step}
+          </span>
+          {i < steps.length - 1 && (
+            <span className="text-slate-400" aria-hidden="true">
+              →
+            </span>
+          )}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 interface AnalysisBasisProcessPanelProps {
   active: boolean;
   details?: string | null;
@@ -115,14 +166,20 @@ export function AnalysisBasisProcessPanel({
         )}
       </div>
 
-      {executionPath.length > 0 && (
+      {(handoffHistory && handoffHistory.length > 0
+        ? true
+        : executionPath.length > 0) && (
         <div className="rounded border border-slate-200 bg-slate-50 p-2">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">
             실행 경로
           </p>
-          <p className="text-xs leading-relaxed text-slate-700">
-            {executionPath.join(' → ')}
-          </p>
+          {handoffHistory && handoffHistory.length > 0 ? (
+            <AgentTimeline handoffHistory={handoffHistory} />
+          ) : (
+            <p className="text-xs leading-relaxed text-slate-700">
+              {executionPath.join(' → ')}
+            </p>
+          )}
         </div>
       )}
 
@@ -134,6 +191,8 @@ export function AnalysisBasisProcessPanel({
           <div className="space-y-2">
             {toolResultSummaries.map((toolResult, index) => {
               const toolPresentation = getToolPresentation(toolResult.toolName);
+              const displayLabel =
+                toolResult.label?.trim() || toolPresentation.label;
               const failureReason = classifyFailureReason(
                 toolResult.summary,
                 toolResult.preview
@@ -149,7 +208,7 @@ export function AnalysisBasisProcessPanel({
                       className="text-xs font-medium text-slate-700"
                       title={toolPresentation.description ?? undefined}
                     >
-                      {toolPresentation.label}
+                      {displayLabel}
                     </span>
                     <span className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500">
                       {toolResult.status === 'failed' ? '실패' : '완료'}

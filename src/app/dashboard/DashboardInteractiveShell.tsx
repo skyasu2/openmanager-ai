@@ -289,6 +289,7 @@ export default function DashboardInteractiveShell({
 
   useEffect(() => {
     if (
+      process.env.NODE_ENV !== 'development' ||
       isSystemStarted ||
       hasAutoStartedSystemRef.current ||
       !consumeDashboardDevEffect('dashboard-auto-start')

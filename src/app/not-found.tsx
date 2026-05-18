@@ -47,6 +47,7 @@ export default async function NotFound() {
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/"
+              prefetch={false}
               className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
             >
               <Home className="mr-2 h-4 w-4" />
@@ -54,6 +55,7 @@ export default async function NotFound() {
             </Link>
             <Link
               href="/dashboard"
+              prefetch={false}
               className="inline-flex items-center justify-center rounded-lg bg-gray-600 px-6 py-3 font-medium text-white transition-colors hover:bg-gray-700"
             >
               <Search className="mr-2 h-4 w-4" />
@@ -68,13 +70,25 @@ export default async function NotFound() {
               <span className="text-sm">찾고 계신 페이지가 있나요?</span>
             </div>
             <div className="mt-2 space-y-2 text-sm text-gray-400">
-              <Link href="/" className="block hover:text-blue-400">
+              <Link
+                href="/"
+                prefetch={false}
+                className="block min-h-8 rounded px-2 py-1 hover:text-blue-400"
+              >
                 • 메인 대시보드
               </Link>
-              <Link href="/dashboard" className="block hover:text-blue-400">
+              <Link
+                href="/dashboard"
+                prefetch={false}
+                className="block min-h-8 rounded px-2 py-1 hover:text-blue-400"
+              >
                 • 서버 대시보드
               </Link>
-              <Link href="/login" className="block hover:text-blue-400">
+              <Link
+                href="/login"
+                prefetch={false}
+                className="block min-h-8 rounded px-2 py-1 hover:text-blue-400"
+              >
                 • 로그인
               </Link>
             </div>
