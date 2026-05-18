@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260518-0523",
+  "recordedAt": "2026-05-18T06:32:08.153Z",
+  "recordedAtKst": "2026-05-18 15:32:08 KST",
+  "runTitle": "v8.11.172 Reporter Degraded Metadata Production Verification",
+  "owner": "codex",
+  "source": "manual-curl-gitlab-gcloud",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG",
+    "deploymentUrl": "https://openmanager-je43spluy-skyasus-projects.vercel.app",
+    "commitSha": "2aec191db87e94fa7060200a78e68447a460d0f9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core"],
+  "coveredSurfaces": [
+    "GitLab v8.11.172 release pipeline",
+    "Vercel /api/version",
+    "Cloud Run ai-engine service describe",
+    "Cloud Run direct /api/ai/incident-report",
+    "Reporter degraded-success metadata regression tests"
+  ],
+  "skippedSurfaces": [
+    "Full visual regression pack",
+    "Authenticated browser AI sidebar artifact render",
+    "Forced production degraded fallback path"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Cloud Run direct Reporter",
+      "agent": "Reporter Agent",
+      "provider": "cloud-run",
+      "model": "gpt-oss-120b",
+      "route": "/api/ai/incident-report",
+      "source": "curl response payload",
+      "latencyMs": 2086,
+      "processingTimeMs": 2086
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Reporter tool-based degraded success now carries sanitized metadata through Cloud Run, Vercel route headers, artifact envelope metadata, and incident artifact UI without exposing raw provider strings.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production and Cloud Run revision are aligned on v8.11.172, GitLab release pipeline completed, and Cloud Run remains maxScale 1 with free-tier guardrails.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T15:26:41+09:00",
+      "summary": "Current period effective $10.7667, billed $0.0000; no unexpected billed usage observed during production verification.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "gcloud",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T15:24:00+09:00",
+      "summary": "Cloud Run ai-engine revision ai-engine-00484-q2s is Ready with 100% traffic and BUILD_SHA=2aec191d.",
+      "evidence": "gcloud run services describe ai-engine --region asia-northeast1",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Reporter degraded metadata production verification",
+      "path": "reports/qa/evidence/qa-20260518-v811172-reporter-degraded-metadata.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "reporter-degraded-artifact-metadata-v811172",
+      "title": "Reporter degraded-success metadata is preserved through artifact rendering",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run/Vercel route/unit tests plus production Reporter smoke on v8.11.172",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "The live production Reporter smoke used the normal Reporter path, so degraded fields were absent. Forced degraded fallback was not triggered in production to avoid manipulating provider availability.",
+    "The initial release script smoke timed out before deploy because the tag pipeline waited behind the release commit main validation pipeline; final GitLab tag pipeline status is success."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2532907618",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532907618"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine service",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG"
+    }
+  ]
+}

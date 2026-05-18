@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-18 13:12:36 KST
+> Generated at: 2026-05-18 15:32:09 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 520 |
-| Total Runs (Counted) | 414 |
+| Total Recorded Runs | 521 |
+| Total Runs (Counted) | 415 |
 | Non-counted Runs | 106 |
-| Total Checks | 3738 |
-| Passed | 3593 |
+| Total Checks | 3748 |
+| Passed | 3603 |
 | Failed | 134 |
-| Completed Items | 592 |
+| Completed Items | 593 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
 | Expert Domains Tracked | 15 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260518-0522 (2026-05-18T04:12:29.303Z) |
-| Latest Recorded Run | QA-20260518-0522 (2026-05-18T04:12:29.303Z) |
+| Last Counted Run | QA-20260518-0523 (2026-05-18T06:32:08.153Z) |
+| Latest Recorded Run | QA-20260518-0523 (2026-05-18T06:32:08.153Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260518-0522 (2026-05-18T04:12:29.303Z)
+Latest run: QA-20260518-0523 (2026-05-18T06:32:08.153Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -45,18 +45,18 @@ Latest run: QA-20260518-0522 (2026-05-18T04:12:29.303Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current period effective $10.7667, billed $0.0000; no unexpected billed usage observed during production QA. |
-| gcp-cloud-run | gcloud | checked | normal | Cloud Run ai-engine revision ai-engine-00483-42j is Ready with 100% traffic, 1 CPU / 512Mi, maxScale 1. |
+| vercel | cli | checked | normal | Current period effective $10.7667, billed $0.0000; no unexpected billed usage observed during production verification. |
+| gcp-cloud-run | gcloud | checked | normal | Cloud Run ai-engine revision ai-engine-00484-q2s is Ready with 100% traffic and BUILD_SHA=2aec191d. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-17T04:12:29.303Z -> 2026-05-18T04:12:29.303Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 8
+- Window: 2026-05-17T06:32:08.153Z -> 2026-05-18T06:32:08.153Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 9
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Reporter Agent | cloud-run | 2 | 16371ms | 30498ms | - | - | 15854ms | 29753ms | QA-20260518-0522 |
+| Reporter Agent | cloud-run | 3 | 11609ms | 30498ms | - | - | 11264ms | 29753ms | QA-20260518-0523 |
 | Supervisor/Monitoring Agent | openmanager-ai-engine | 1 | 7471ms | 7471ms | - | - | 130ms | 130ms | QA-20260517-0512 |
 | Reporter Agent | openmanager-ai-engine | 1 | 4870ms | 4870ms | - | - | 1531ms | 1531ms | QA-20260517-0512 |
 | Reporter | streaming-ai | 1 | 3000ms | 3000ms | - | - | - | - | QA-20260518-0516 |
@@ -66,7 +66,7 @@ Latest run: QA-20260518-0522 (2026-05-18T04:12:29.303Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-17T04:12:29.303Z -> 2026-05-18T04:12:29.303Z (24h)
+- Window: 2026-05-17T06:32:08.153Z -> 2026-05-18T06:32:08.153Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -77,27 +77,27 @@ Latest run: QA-20260518-0522 (2026-05-18T04:12:29.303Z)
 
 ## Coverage (Latest Run)
 
-- Scope: release-gate
+- Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_6vJBFjs5zyp5P3TtaVWoP7hskWFi / SHA eace7809
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Vercel /api/version, Vercel /api/health, GitLab v8.11.171 release pipeline, Cloud Run ai-engine service describe, Cloud Run /health, Cloud Run direct /api/ai/incident-report, Authenticated Vercel /api/ai/incident-report, Dashboard AI engine status indicator, Reporter structured-output parse fallback, Vercel usage check
-- Skipped Surfaces: Full visual regression pack, Unauthenticated Vercel incident-report success path
+- Deployment: dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG / SHA 2aec191d
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: GitLab v8.11.172 release pipeline, Vercel /api/version, Cloud Run ai-engine service describe, Cloud Run direct /api/ai/incident-report, Reporter degraded-success metadata regression tests
+- Skipped Surfaces: Full visual regression pack, Authenticated browser AI sidebar artifact render, Forced production degraded fallback path
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2532578122 | [GitLab release pipeline 2532578122](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532578122) | - |
+| general | GitLab release pipeline 2532907618 | [GitLab release pipeline 2532907618](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532907618) | - |
 | monitoring | Cloud Run ai-engine service | [Cloud Run ai-engine service](https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/dpl_6vJBFjs5zyp5P3TtaVWoP7hskWFi) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Reporter Cloud Run verification evidence | `reports/qa/evidence/qa-20260518-v811171-reporter-cloudrun-verification.md` | - |
+| playwright-console | Reporter degraded metadata production verification | `reports/qa/evidence/qa-20260518-v811172-reporter-degraded-metadata.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -641,6 +641,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - reporter-agent-generate: Reporter Agent 보고서 생성 신뢰도 80% (completed 1회, last QA-20260419-0306)
 - reporter-agent-pass: Reporter Agent 보고서 즉시 생성 정상 (completed 1회, last QA-20260326-0190)
 - reporter-analyst-production-mcp-functional-check-v81136: Reporter and Analyst production MCP functional check on v8.11.36 (completed 1회, last QA-20260427-0352)
+- reporter-degraded-artifact-metadata-v811172: Reporter degraded-success metadata is preserved through artifact rendering (completed 1회, last QA-20260518-0523)
 - reporter-download-action-visibility-v81197: Reporter generated report exposes visible MD copy and download actions (completed 1회, last QA-20260505-0409)
 - reporter-empty-cta-generate-v880: Reporter 빈 상태 CTA 생성 경로 검증 (completed 1회, last QA-20260308-0058)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
@@ -782,6 +783,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260518-0523 | 2026-05-18T06:32:08.153Z | targeted | yes | yes | v8.11.172 Reporter Degraded Metadata Production Verification | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0522 | 2026-05-18T04:12:29.303Z | release-gate | yes | yes | v8.11.171 Reporter Cloud Run Production Verification | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0521 | 2026-05-18T01:37:12.860Z | targeted | no | no | Cloud Run Weekly Operational Check | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0520 | 2026-05-18T01:15:27.412Z | targeted | no | no | v8.11.169 Current Vercel Playwright MCP Rerun | 20 | 0 | 0 | 0 | 0 | 0 |
@@ -801,4 +803,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260515-0506 | 2026-05-15T07:20:51.624Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.154 KRL Closure | 17 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260515-0505 | 2026-05-15T06:50:53.160Z | targeted | no | yes | Supabase Live QA - KRL Legacy GraphRAG Inventory Removal | 29 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260515-0504 | 2026-05-15T06:36:37.546Z | targeted | no | yes | Local Playwright QA - KRL EvidenceCards Source Rendering | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260515-0503 | 2026-05-14T18:50:43.003Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.153 Follow-up Improvements | 12 | 4 | 0 | 0 | 0 | 0 |

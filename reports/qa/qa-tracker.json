@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T04:12:29.303Z"
+    "updatedAt": "2026-05-18T06:32:08.153Z"
   },
   "sequence": {
-    "nextRunNumber": 523
+    "nextRunNumber": 524
   },
   "summary": {
-    "totalRecordedRuns": 520,
-    "totalRuns": 414,
+    "totalRecordedRuns": 521,
+    "totalRuns": 415,
     "excludedRuns": 106,
-    "totalChecks": 3738,
-    "totalPassed": 3593,
+    "totalChecks": 3748,
+    "totalPassed": 3603,
     "totalFailed": 134,
     "completionRate": 100,
-    "completedItems": 592,
+    "completedItems": 593,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 15,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0522",
-    "lastRecordedAt": "2026-05-18T04:12:29.303Z",
-    "latestRecordedRunId": "QA-20260518-0522",
-    "latestRecordedAt": "2026-05-18T04:12:29.303Z"
+    "lastRunId": "QA-20260518-0523",
+    "lastRecordedAt": "2026-05-18T06:32:08.153Z",
+    "latestRecordedRunId": "QA-20260518-0523",
+    "latestRecordedAt": "2026-05-18T06:32:08.153Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14513,6 +14513,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-18T00:32:15.109Z"
+    },
+    "reporter-degraded-artifact-metadata-v811172": {
+      "id": "reporter-degraded-artifact-metadata-v811172",
+      "title": "Reporter degraded-success metadata is preserved through artifact rendering",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260518-0523",
+      "firstSeenAt": "2026-05-18T06:32:08.153Z",
+      "lastSeenRunId": "QA-20260518-0523",
+      "lastSeenAt": "2026-05-18T06:32:08.153Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Cloud Run/Vercel route/unit tests plus production Reporter smoke on v8.11.172",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T06:32:08.153Z"
     }
   },
   "runs": [
@@ -58573,6 +58597,132 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0523",
+      "recordedAt": "2026-05-18T06:32:08.153Z",
+      "recordedAtKst": "2026-05-18 15:32:08 KST",
+      "title": "v8.11.172 Reporter Degraded Metadata Production Verification",
+      "owner": "codex",
+      "source": "manual-curl-gitlab-gcloud",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0523.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG",
+        "deploymentUrl": "https://openmanager-je43spluy-skyasus-projects.vercel.app",
+        "commitSha": "2aec191db87e94fa7060200a78e68447a460d0f9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.11.172 release pipeline",
+        "Vercel /api/version",
+        "Cloud Run ai-engine service describe",
+        "Cloud Run direct /api/ai/incident-report",
+        "Reporter degraded-success metadata regression tests"
+      ],
+      "skippedSurfaces": [
+        "Full visual regression pack",
+        "Authenticated browser AI sidebar artifact render",
+        "Forced production degraded fallback path"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Cloud Run direct Reporter",
+          "agent": "Reporter Agent",
+          "provider": "cloud-run",
+          "model": "gpt-oss-120b",
+          "route": "/api/ai/incident-report",
+          "source": "curl response payload",
+          "latencyMs": 2086,
+          "processingTimeMs": 2086
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Reporter tool-based degraded success now carries sanitized metadata through Cloud Run, Vercel route headers, artifact envelope metadata, and incident artifact UI without exposing raw provider strings.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel production and Cloud Run revision are aligned on v8.11.172, GitLab release pipeline completed, and Cloud Run remains maxScale 1 with free-tier guardrails.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T15:26:41+09:00",
+          "summary": "Current period effective $10.7667, billed $0.0000; no unexpected billed usage observed during production verification.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T15:24:00+09:00",
+          "summary": "Cloud Run ai-engine revision ai-engine-00484-q2s is Ready with 100% traffic and BUILD_SHA=2aec191d.",
+          "evidence": "gcloud run services describe ai-engine --region asia-northeast1",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Reporter degraded metadata production verification",
+          "path": "reports/qa/evidence/qa-20260518-v811172-reporter-degraded-metadata.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2532907618",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532907618"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine service",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -58615,16 +58765,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 82,
-      "appropriateCount": 63,
+      "seenCount": 83,
+      "appropriateCount": 64,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260518-0522",
-      "lastSeenAt": "2026-05-18T04:12:29.303Z",
+      "lastRunId": "QA-20260518-0523",
+      "lastSeenAt": "2026-05-18T06:32:08.153Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Reporter structured-output drift now returns a successful Cloud Run tool-based report instead of a frontend fallback failure.",
+      "lastRationale": "Reporter tool-based degraded success now carries sanitized metadata through Cloud Run, Vercel route headers, artifact envelope metadata, and incident artifact UI without exposing raw provider strings.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -58632,16 +58782,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 194,
-      "appropriateCount": 175,
+      "seenCount": 195,
+      "appropriateCount": 176,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0522",
-      "lastSeenAt": "2026-05-18T04:12:29.303Z",
+      "lastRunId": "QA-20260518-0523",
+      "lastSeenAt": "2026-05-18T06:32:08.153Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel and Cloud Run are aligned on v8.11.171, GitLab release pipeline completed, and Cloud Run keeps free-tier resource limits.",
+      "lastRationale": "Vercel production and Cloud Run revision are aligned on v8.11.172, GitLab release pipeline completed, and Cloud Run remains maxScale 1 with free-tier guardrails.",
       "lastNextAction": ""
     },
     "test-automation": {
