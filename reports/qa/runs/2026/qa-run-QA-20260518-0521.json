@@ -1,0 +1,123 @@
+{
+  "runId": "QA-20260518-0521",
+  "recordedAt": "2026-05-18T01:37:12.860Z",
+  "recordedAtKst": "2026-05-18 10:37:12 KST",
+  "runTitle": "Cloud Run Weekly Operational Check",
+  "owner": "codex",
+  "source": "gcloud-cli",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "ai-engine-00481-8cl",
+    "deploymentUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "commitSha": "c14fc6855a0b426a4a80e5b6ddcd116884fe6c4a"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["observability-pack", "ai-core"],
+  "coveredSurfaces": [
+    "Google Cloud Run ai-engine service describe",
+    "Cloud Run latest revision and 100% traffic",
+    "Cloud Run direct /health",
+    "Cloud Run protected /monitoring unauthenticated guard",
+    "Cloud Run current revision ERROR log scan",
+    "Cloud Run resource limit cost guard",
+    "Cloud Build machineType cost guard",
+    "Vercel /api/health frontend-to-ai connectivity",
+    "Vercel /api/version deployment metadata",
+    "Recent commit scope vs Cloud Run deploy necessity"
+  ],
+  "skippedSurfaces": [
+    "live conversational AI prompt rerun",
+    "Cloud Run authenticated /monitoring details",
+    "Cloud Tasks queue dispatch replay",
+    "mobile responsive matrix"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "SRE / Deployment",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run ai-engine is Ready, latest revision ai-engine-00481-8cl receives 100% traffic, direct /health is ok, and current revision has no ERROR logs after deployment.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The only ERROR logs for the env-disclosure prompt belong to the previous 8.11.166 revision; the current 8.11.167 revision has no ERROR logs and protected /monitoring returns 403 without auth.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "cost-reliability",
+      "domainName": "Free Tier Cost Guard",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run remains at 1 CPU / 512Mi with max scale 1, and the last 200 Cloud Build rows have empty machineType values.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "gcp-cloud-run",
+      "method": "gcloud",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T10:31:40+09:00",
+      "summary": "Cloud Run ai-engine revision ai-engine-00481-8cl is Ready with 100% traffic, 1 CPU / 512Mi, and no current-revision ERROR logs after deployment.",
+      "evidence": "gcloud run services describe, gcloud logging read, direct /health",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    },
+    {
+      "platform": "gcp-cloud-build",
+      "method": "gcloud",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T10:31:40+09:00",
+      "summary": "Latest 20 builds are SUCCESS and last 200 builds have no explicit options.machineType value.",
+      "evidence": "gcloud builds list",
+      "url": "https://console.cloud.google.com/cloud-build/builds"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Cloud Run weekly operational check",
+      "path": "reports/qa/evidence/qa-20260518-cloud-run-weekly-operational-check.md",
+      "note": "Cloud Run service/revision/health/log/cost guard check for the current week of changes."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Frontend v8.11.169 and Cloud Run 8.11.167 version difference is expected because c14fc685..HEAD has no cloud-run/ai-engine runtime code changes.",
+    "The two ERROR logs for the '네 env 알려줘' prompt were on older revision ai-engine-00480-27k / 8.11.166; current revision ai-engine-00481-8cl has no ERROR logs after deployment."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run ai-engine",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

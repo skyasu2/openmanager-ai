@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T01:15:27.412Z"
+    "updatedAt": "2026-05-18T01:37:12.860Z"
   },
   "sequence": {
-    "nextRunNumber": 521
+    "nextRunNumber": 522
   },
   "summary": {
-    "totalRecordedRuns": 518,
+    "totalRecordedRuns": 519,
     "totalRuns": 413,
-    "excludedRuns": 105,
+    "excludedRuns": 106,
     "totalChecks": 3726,
     "totalPassed": 3581,
     "totalFailed": 134,
@@ -19,12 +19,12 @@
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
-    "expertDomainsTracked": 14,
+    "expertDomainsTracked": 15,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260518-0519",
     "lastRecordedAt": "2026-05-18T00:54:54.418Z",
-    "latestRecordedRunId": "QA-20260518-0520",
-    "latestRecordedAt": "2026-05-18T01:15:27.412Z"
+    "latestRecordedRunId": "QA-20260518-0521",
+    "latestRecordedAt": "2026-05-18T01:37:12.860Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -58298,6 +58298,131 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0521",
+      "recordedAt": "2026-05-18T01:37:12.860Z",
+      "recordedAtKst": "2026-05-18 10:37:12 KST",
+      "title": "Cloud Run Weekly Operational Check",
+      "owner": "codex",
+      "source": "gcloud-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0521.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00481-8cl",
+        "deploymentUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "commitSha": "c14fc6855a0b426a4a80e5b6ddcd116884fe6c4a"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "observability-pack",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Google Cloud Run ai-engine service describe",
+        "Cloud Run latest revision and 100% traffic",
+        "Cloud Run direct /health",
+        "Cloud Run protected /monitoring unauthenticated guard",
+        "Cloud Run current revision ERROR log scan",
+        "Cloud Run resource limit cost guard",
+        "Cloud Build machineType cost guard",
+        "Vercel /api/health frontend-to-ai connectivity",
+        "Vercel /api/version deployment metadata",
+        "Recent commit scope vs Cloud Run deploy necessity"
+      ],
+      "skippedSurfaces": [
+        "live conversational AI prompt rerun",
+        "Cloud Run authenticated /monitoring details",
+        "Cloud Tasks queue dispatch replay",
+        "mobile responsive matrix"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "SRE / Deployment",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run ai-engine is Ready, latest revision ai-engine-00481-8cl receives 100% traffic, direct /health is ok, and current revision has no ERROR logs after deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The only ERROR logs for the env-disclosure prompt belong to the previous 8.11.166 revision; the current 8.11.167 revision has no ERROR logs and protected /monitoring returns 403 without auth.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "cost-reliability",
+          "domainName": "Free Tier Cost Guard",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run remains at 1 CPU / 512Mi with max scale 1, and the last 200 Cloud Build rows have empty machineType values.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "gcp-cloud-run",
+          "method": "gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T10:31:40+09:00",
+          "summary": "Cloud Run ai-engine revision ai-engine-00481-8cl is Ready with 100% traffic, 1 CPU / 512Mi, and no current-revision ERROR logs after deployment.",
+          "evidence": "gcloud run services describe, gcloud logging read, direct /health",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        },
+        {
+          "platform": "gcp-cloud-build",
+          "method": "gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T10:31:40+09:00",
+          "summary": "Latest 20 builds are SUCCESS and last 200 builds have no explicit options.machineType value.",
+          "evidence": "gcloud builds list",
+          "url": "https://console.cloud.google.com/cloud-build/builds"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Cloud Run weekly operational check",
+          "path": "reports/qa/evidence/qa-20260518-cloud-run-weekly-operational-check.md",
+          "note": "Cloud Run service/revision/health/log/cost guard check for the current week of changes."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run ai-engine",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -58340,16 +58465,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 80,
-      "appropriateCount": 61,
+      "seenCount": 81,
+      "appropriateCount": 62,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260518-0516",
-      "lastSeenAt": "2026-05-17T18:27:54.947Z",
+      "lastRunId": "QA-20260518-0521",
+      "lastSeenAt": "2026-05-18T01:37:12.860Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Env/secret disclosure guard hardened and verified - SUPABASE_SERVICE_ROLE_KEY query blocked with fast intercept",
+      "lastRationale": "The only ERROR logs for the env-disclosure prompt belong to the previous 8.11.166 revision; the current 8.11.167 revision has no ERROR logs and protected /monitoring returns 403 without auth.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -58357,16 +58482,16 @@
       "domainName": "SRE / Deployment",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 192,
-      "appropriateCount": 173,
+      "seenCount": 193,
+      "appropriateCount": 174,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0520",
-      "lastSeenAt": "2026-05-18T01:15:27.412Z",
+      "lastRunId": "QA-20260518-0521",
+      "lastSeenAt": "2026-05-18T01:37:12.860Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production /api/version reports v8.11.169, /api/health is healthy, and Vercel usage remains billed 0.0000 USD.",
+      "lastRationale": "Cloud Run ai-engine is Ready, latest revision ai-engine-00481-8cl receives 100% traffic, direct /health is ok, and current revision has no ERROR logs after deployment.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -58537,6 +58662,23 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "The change is a patch-level React and React DOM dependency alignment; installed package versions, import smoke, and root type-check passed.",
+      "lastNextAction": ""
+    },
+    "cost-reliability": {
+      "domainId": "cost-reliability",
+      "domainName": "Free Tier Cost Guard",
+      "firstSeenRunId": "QA-20260518-0521",
+      "firstSeenAt": "2026-05-18T01:37:12.860Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260518-0521",
+      "lastSeenAt": "2026-05-18T01:37:12.860Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Cloud Run remains at 1 CPU / 512Mi with max scale 1, and the last 200 Cloud Build rows have empty machineType values.",
       "lastNextAction": ""
     }
   }

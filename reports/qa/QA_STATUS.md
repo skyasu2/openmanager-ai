@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-18 10:15:34 KST
+> Generated at: 2026-05-18 10:37:13 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 518 |
+| Total Recorded Runs | 519 |
 | Total Runs (Counted) | 413 |
-| Non-counted Runs | 105 |
+| Non-counted Runs | 106 |
 | Total Checks | 3726 |
 | Passed | 3581 |
 | Failed | 134 |
@@ -17,11 +17,11 @@
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
-| Expert Domains Tracked | 14 |
+| Expert Domains Tracked | 15 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260518-0519 (2026-05-18T00:54:54.418Z) |
-| Latest Recorded Run | QA-20260518-0520 (2026-05-18T01:15:27.412Z) |
+| Latest Recorded Run | QA-20260518-0521 (2026-05-18T01:37:12.860Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260518-0520 (2026-05-18T01:15:27.412Z)
+Latest run: QA-20260518-0521 (2026-05-18T01:37:12.860Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Frontend UX Quality | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
 | SRE / Deployment | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
+| Free Tier Cost Guard | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Billing period 2026-05-01..2026-05-18: effective 10.7667 USD, billed 0.0000 USD, chargeCount 9744. No unexpected billed usage. |
+| gcp-cloud-run | gcloud | checked | normal | Cloud Run ai-engine revision ai-engine-00481-8cl is Ready with 100% traffic, 1 CPU / 512Mi, and no current-revision ERROR logs after deployment. |
+| gcp-cloud-build | gcloud | checked | normal | Latest 20 builds are SUCCESS and last 200 builds have no explicit options.machineType value. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-17T01:15:27.412Z -> 2026-05-18T01:15:27.412Z (24h)
+- Window: 2026-05-17T01:37:12.860Z -> 2026-05-18T01:37:12.860Z (24h)
 - Runs with observations: 2 recorded / 2 counted
 - Samples: 5
 
@@ -64,7 +65,7 @@ Latest run: QA-20260518-0520 (2026-05-18T01:15:27.412Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-17T01:15:27.412Z -> 2026-05-18T01:15:27.412Z (24h)
+- Window: 2026-05-17T01:37:12.860Z -> 2026-05-18T01:37:12.860Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,23 +79,23 @@ Latest run: QA-20260518-0520 (2026-05-18T01:15:27.412Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: v8.11.169-gitlab-pipeline-2532228902 / SHA 8e294644
-- Coverage Packs: core-routes-smoke, modal-detail-pack, dashboard-core
-- Covered Surfaces: Vercel production landing route /, Landing footer version v8.11.169, Feature card modal independent state reset, AI Assistant architecture modal diagram, Cloud Platform architecture modal diagram, AI Development Workflow CI/CD tab, Dashboard CTA navigation to /dashboard, Dashboard overview render, Dashboard sidebar links, Dashboard server status summary, Playwright MCP console cleanliness, Vercel /api/version, Vercel /api/health, Vercel usage check
-- Skipped Surfaces: AI assistant conversational QA, mobile responsive matrix, Cloud Run admin /monitoring, React Flow topology modal deep interaction, server detail modal tab matrix
+- Deployment: ai-engine-00481-8cl / SHA c14fc685
+- Coverage Packs: observability-pack, ai-core
+- Covered Surfaces: Google Cloud Run ai-engine service describe, Cloud Run latest revision and 100% traffic, Cloud Run direct /health, Cloud Run protected /monitoring unauthenticated guard, Cloud Run current revision ERROR log scan, Cloud Run resource limit cost guard, Cloud Build machineType cost guard, Vercel /api/health frontend-to-ai connectivity, Vercel /api/version deployment metadata, Recent commit scope vs Cloud Run deploy necessity
+- Skipped Surfaces: live conversational AI prompt rerun, Cloud Run authenticated /monitoring details, Cloud Tasks queue dispatch replay, mobile responsive matrix
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.169 deployment pipeline | [GitLab v8.11.169 deployment pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532228902) | - |
+| general | Cloud Run ai-engine | [Cloud Run ai-engine](https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine) | - |
 | general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.169 current Vercel Playwright MCP rerun | `reports/qa/evidence/qa-20260518-v811169-current-vercel-mcp-rerun.md` | - |
+| playwright-console | Cloud Run weekly operational check | `reports/qa/evidence/qa-20260518-cloud-run-weekly-operational-check.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -779,6 +780,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260518-0521 | 2026-05-18T01:37:12.860Z | targeted | no | no | Cloud Run Weekly Operational Check | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0520 | 2026-05-18T01:15:27.412Z | targeted | no | no | v8.11.169 Current Vercel Playwright MCP Rerun | 20 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0519 | 2026-05-18T00:54:54.418Z | targeted | yes | yes | v8.11.169 Current Vercel Playwright MCP Check | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0518 | 2026-05-18T00:32:15.109Z | targeted | yes | yes | v8.11.169 Production Diagram Regression Closure | 12 | 1 | 0 | 0 | 0 | 0 |
@@ -798,4 +800,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260515-0504 | 2026-05-15T06:36:37.546Z | targeted | no | yes | Local Playwright QA - KRL EvidenceCards Source Rendering | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260515-0503 | 2026-05-14T18:50:43.003Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.153 Follow-up Improvements | 12 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260514-0502 | 2026-05-14T13:48:56.400Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.150 Artifact UX Closure | 12 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260514-0501 | 2026-05-14T07:04:04.756Z | targeted | yes | yes | Vercel Playwright QA - v8.11.149 AI Diagnostic Commands | 10 | 4 | 0 | 0 | 0 | 0 |
