@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-18 KST (Reporter degraded metadata contract hardening 진행)
+**Last Updated**: 2026-05-18 KST (Reporter degraded metadata contract hardening 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,6 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Reporter degraded metadata contract hardening | High | In Progress (Codex) | Reporter degraded-success 공개 계약을 `fallbackReasonCode`/`fallbackSource`/artifact `degradation.reasonCode` 중심으로 고정하고 raw provider reason 및 legacy `_fallbackReason` 공개를 제거 중. 구현·targeted/type/full AI Engine/test:quick 단독 검증은 통과, 잔여는 root `lint`, `test:contract`, 최종 diff/commit/pipeline 확인. 상세: [reporter-degraded-metadata-contract-plan.md](reporter-degraded-metadata-contract-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-17 release 관측에서 `BUNDLEMON_PROJECT_ID` 미설정 시 allow-failure job이 실패 표시되는 노이즈를 확인해, CI는 env 미설정 시 `build:ci`만 실행하고 bundlemon 업로드를 skip하도록 보정. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -115,6 +114,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-18) — Codex (Reporter Degraded Metadata Contract)
+- [x] Reporter degraded metadata contract hardening 완료
+  - Cloud Run Reporter fallback 응답에서 raw `fallbackReason`과 legacy `_fallbackReason` 공개를 제거했다.
+  - Next API와 artifact 경계에서 `fallbackReasonCode`/`fallbackSource`를 allowlist 기반으로 정규화하고 invalid metadata를 기본값으로 흡수했다.
+  - Cloud Run helper, API route, artifact generator, artifact envelope sanitizer 회귀 테스트를 보강했다.
+  - 검증: root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine full test, docs checks PASS. GitLab main pipeline `2533242669` success. 상세: [reporter-degraded-metadata-contract-plan.md](reporter-degraded-metadata-contract-plan.md)
 
 ### Completed (2026-05-17) — Codex (AI Assistant Portability)
 - [x] AI 어시스턴트 이식성 개선 T1~T4 완료

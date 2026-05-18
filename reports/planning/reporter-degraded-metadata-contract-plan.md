@@ -1,12 +1,12 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-18
 > Tags: reporter,artifact,api-contract,degradation,security
 
 # Reporter Degraded Metadata Contract Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-18
 - TODO.md 연결: Active Tasks > Reporter degraded metadata contract hardening
 
@@ -85,7 +85,7 @@ v8.11.170~172에서 Reporter degraded metadata가 Cloud Run → Next API → Art
 - [x] Task 2 — Next API header/body degradation metadata 정규화
 - [x] Task 3 — Root artifact degradation metadata 정규화
 - [x] Task 4 — root `lint`/`test:contract` 추가 검증
-- [ ] Task 5 — 최종 diff 리뷰, commit, GitLab push/pipeline 확인
+- [x] Task 5 — 최종 diff 리뷰, commit, GitLab push/pipeline 확인
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -104,7 +104,13 @@ v8.11.170~172에서 Reporter degraded metadata가 Cloud Run → Next API → Art
 - [x] `cd cloud-run/ai-engine && npm run test` 통과
 - [x] `npm run test:quick` 단독 재실행 통과
 - [x] `npm run test:contract` 통과
-- [ ] GitLab pipeline 결과 확인
+- [x] GitLab pipeline 결과 확인
+
+## 완료 기록
+
+- 커밋: `4621dfc94 fix(ai): harden reporter degraded metadata contract`
+- GitLab pipeline: `2533242669` success
+- Pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2533242669
 
 ## 잔여 리스크
 
