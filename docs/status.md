@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-18 | **현재 버전 스냅샷**: v8.11.171
+**상태 스냅샷 기준일**: 2026-05-18 | **현재 버전 스냅샷**: v8.11.172
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.172** (2026-05-18) — Bug Fixes: ai: expose reporter degraded artifact metadata; Tests: qa: record reporter cloud run verification
 - **v8.11.171** (2026-05-18) — Bug Fixes: ai: make reporter fallback provider-safe
 - **v8.11.170** (2026-05-18) — Bug Fixes: ai: harden incident report reporter path; Tests: qa: record cloud run operational check; Tests: qa: record vercel mcp rerun
 - **v8.11.169** (2026-05-18) — Bug Fixes: diagram: improve static label readability; Tests: qa: record v8.11.168 cursor closure
 - **v8.11.168** (2026-05-18) — Tests: qa: record v8.11.167 recent changes check; Tests: qa: record v8.11.167 post-deploy closure; Bug Fixes: landing: remove cursor-following dot
-- **v8.11.167** (2026-05-18) — Tests: qa: record vercel regression findings; Tests: font: allow centralized next font usage; Tests: spec: add ChatArtifact portability boundary
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
