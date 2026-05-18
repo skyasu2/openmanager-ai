@@ -73,7 +73,6 @@ describe('generateIncidentReportArtifact', () => {
         degraded: true,
         fallbackSource: 'tool-based',
         reasonCode: 'provider_parse_drift',
-        fallbackReason: 'No object generated: could not parse the response.',
       },
       providerSummary: {
         usedFallback: true,
@@ -96,6 +95,44 @@ describe('generateIncidentReportArtifact', () => {
           },
         ],
       },
+    });
+  });
+
+  it('normalizes degraded report metadata from API responses before artifact exposure', async () => {
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        source: 'cloud-run',
+        report: {
+          id: 'incident-artifact-unsafe-metadata',
+          title: 'Reporter fallback',
+          severity: 'warning',
+          created_at: '2026-05-03T00:00:00.000Z',
+          affected_servers: ['cache-redis-dc1-01'],
+          degraded: true,
+          fallbackSource: 'unexpected-source',
+          fallbackReasonCode: 'unexpected\r\nX-Injected: true',
+          fallbackReason: 'provider returned malformed output',
+          _source: 'cloud-run',
+        },
+      }),
+    } as Response);
+
+    const artifact = await generateIncidentReportArtifact({
+      query: '장애 보고서 작성해줘',
+      sessionId: 'session-test',
+      queryAsOfDataSlot,
+    });
+
+    expect(artifact.degradation).toEqual({
+      degraded: true,
+      fallbackSource: 'tool-based',
+      reasonCode: 'reporter_degraded',
+    });
+    expect(artifact.providerSummary).toEqual({
+      usedFallback: true,
+      fallbackReason: 'reporter_degraded',
     });
   });
 });

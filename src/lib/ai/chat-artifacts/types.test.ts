@@ -4,6 +4,7 @@ import {
   createArtifactEnvelope,
   readArtifactEnvelope,
   type ServerSnapshotArtifact,
+  sanitizeArtifactDegradationSummary,
   sanitizeArtifactProviderSummary,
 } from './types';
 
@@ -102,5 +103,20 @@ describe('chat artifact envelope contract', () => {
     });
     expect(JSON.stringify(providerSummary)).not.toContain('sk-live-secret');
     expect(JSON.stringify(providerSummary)).not.toContain('internal-platform');
+  });
+
+  it('normalizes artifact degradation metadata before envelope exposure', () => {
+    const degradation = sanitizeArtifactDegradationSummary({
+      degraded: true,
+      reasonCode: 'unexpected\r\nX-Injected: true',
+      fallbackSource: 'external-source',
+      fallbackReason: 'Bearer abc123 sk-live-secret',
+    });
+
+    expect(degradation).toEqual({
+      degraded: true,
+      reasonCode: 'reporter_degraded',
+      fallbackSource: 'tool-based',
+    });
   });
 });

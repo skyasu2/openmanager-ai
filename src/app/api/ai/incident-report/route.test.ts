@@ -206,6 +206,7 @@ describe('/api/ai/incident-report POST', () => {
         fallbackSource: 'tool-based',
         fallbackReasonCode: 'provider_parse_drift',
         fallbackReason: 'No object generated: could not parse the response.',
+        _fallbackReason: 'legacy internal reason',
       },
     });
 
@@ -227,6 +228,41 @@ describe('/api/ai/incident-report POST', () => {
       degraded: true,
       fallbackSource: 'tool-based',
       fallbackReasonCode: 'provider_parse_drift',
+    });
+    expect(data.report?.fallbackReason).toBeUndefined();
+    expect(data.report?._fallbackReason).toBeUndefined();
+  });
+
+  it('Cloud Run degraded-success 헤더는 허용된 메타데이터 값으로 정규화한다', async () => {
+    mockProxyToCloudRun.mockResolvedValueOnce({
+      success: true,
+      data: {
+        id: 'report-degraded-invalid',
+        title: '도구 기반 보고서',
+        severity: 'warning',
+        created_at: '2026-05-18T02:30:00.000Z',
+        affected_servers: ['cache-redis-dc1-01'],
+        degraded: true,
+        fallbackSource: 'unexpected-source',
+        fallbackReasonCode: 'unexpected\r\nX-Injected: true',
+      },
+    });
+
+    const response = await POST(
+      createPostRequest({ action: 'generate', metrics: [] })
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-AI-Degraded')).toBe('true');
+    expect(response.headers.get('X-AI-Degradation-Reason')).toBe(
+      'reporter_degraded'
+    );
+    expect(response.headers.get('X-AI-Fallback-Source')).toBe('tool-based');
+    expect(data.report).toMatchObject({
+      degraded: true,
+      fallbackSource: 'tool-based',
+      fallbackReasonCode: 'reporter_degraded',
     });
   });
 

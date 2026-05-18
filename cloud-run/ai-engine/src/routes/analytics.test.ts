@@ -608,7 +608,9 @@ describe('Analytics Routes', () => {
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json._source).toContain('Fallback');
-      expect(json._fallbackReason).toContain('rate limit');
+      expect(json).not.toHaveProperty('_fallbackReason');
+      expect(json).not.toHaveProperty('fallbackReason');
+      expect(json.fallbackReasonCode).toBe('provider_rate_limit');
     });
 
     it('Reporter structured output schema drift 시 tool-based fallback을 반환한다', async () => {
@@ -628,7 +630,8 @@ describe('Analytics Routes', () => {
       const json = await res.json();
       expect(json.success).toBe(true);
       expect(json._source).toContain('Fallback');
-      expect(json._fallbackReason).toContain('expected schema');
+      expect(json).not.toHaveProperty('_fallbackReason');
+      expect(json).not.toHaveProperty('fallbackReason');
       expect(json.degraded).toBe(true);
       expect(json.fallbackSource).toBe('tool-based');
       expect(json.fallbackReasonCode).toBe('provider_schema_drift');
@@ -649,11 +652,11 @@ describe('Analytics Routes', () => {
       const json = await res.json();
       expect(json.success).toBe(true);
       expect(json._source).toContain('Fallback');
-      expect(json._fallbackReason).toContain('could not parse');
+      expect(json).not.toHaveProperty('_fallbackReason');
+      expect(json).not.toHaveProperty('fallbackReason');
       expect(json.degraded).toBe(true);
       expect(json.fallbackSource).toBe('tool-based');
       expect(json.fallbackReasonCode).toBe('provider_parse_drift');
-      expect(json.fallbackReason).toContain('could not parse');
     });
 
     it('복구 불가능한 에러 시 에러 응답을 반환한다', async () => {

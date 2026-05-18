@@ -29,6 +29,7 @@ import { getAgentConfig } from '../services/ai-sdk/agents/config';
 import { AgentFactory } from '../services/ai-sdk/agents/agent-factory';
 import {
   extractToolBasedData,
+  getReporterDegradationReasonCode,
   IncidentReportOutputSchema,
   normalizeAgentIncidentReportOutput,
   type IncidentReportOutput,
@@ -85,61 +86,6 @@ function isRecoverableReporterError(error: unknown): boolean {
     'could not parse',
     'parse the response',
   ].some((keyword) => message.includes(keyword));
-}
-
-function getReporterDegradationReasonCode(reason?: string): string {
-  const message = reason?.toLowerCase() ?? '';
-  if (!message) return 'reporter_degraded';
-  if (message.includes('reporter_unavailable')) return 'reporter_unavailable';
-  if (
-    message.includes('invalid json schema') ||
-    message.includes('expected schema') ||
-    message.includes('response_format') ||
-    message.includes('jsonschema')
-  ) {
-    return 'provider_schema_drift';
-  }
-  if (
-    message.includes('no object generated') ||
-    message.includes('could not parse') ||
-    message.includes('parse the response')
-  ) {
-    return 'provider_parse_drift';
-  }
-  if (
-    message.includes('rate limit') ||
-    message.includes('too many') ||
-    message.includes('quota') ||
-    message.includes('429')
-  ) {
-    return 'provider_rate_limit';
-  }
-  if (
-    message.includes('timeout') ||
-    message.includes('timed out') ||
-    message.includes('deadline')
-  ) {
-    return 'provider_timeout';
-  }
-  if (
-    message.includes('503') ||
-    message.includes('502') ||
-    message.includes('504') ||
-    message.includes('service unavailable')
-  ) {
-    return 'provider_unavailable';
-  }
-  return 'reporter_degraded';
-}
-
-function sanitizeReporterFallbackReason(reason?: string): string | undefined {
-  const trimmed = reason?.trim();
-  if (!trimmed) return undefined;
-
-  return trimmed
-    .replace(/bearer\s+\S+/gi, 'Bearer [redacted]')
-    .replace(/sk-[a-z0-9_-]+/gi, '[redacted]')
-    .slice(0, 240);
 }
 
 async function readRequestBody(c: Context): Promise<Record<string, unknown>> {
@@ -374,14 +320,11 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
       source: string,
       fallbackReason?: string
     ) => {
-      const safeFallbackReason = sanitizeReporterFallbackReason(fallbackReason);
-
       return {
         ...toolBasedData,
         degraded: true,
         fallbackSource: 'tool-based',
         fallbackReasonCode: getReporterDegradationReasonCode(fallbackReason),
-        ...(safeFallbackReason ? { fallbackReason: safeFallbackReason } : {}),
         sourceMode: monitoringGrounding.sourceMode,
         queryAsOf: monitoringGrounding.queryAsOf,
         evidenceRefs: monitoringGrounding.evidenceRefs,
@@ -389,7 +332,6 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
         created_at: new Date().toISOString(),
         _source: source,
         _durationMs: Date.now() - startTime,
-        ...(safeFallbackReason ? { _fallbackReason: safeFallbackReason } : {}),
       };
     };
 

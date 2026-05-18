@@ -24,6 +24,8 @@ import {
   INCIDENT_REPORT_ENDPOINT,
   type IncidentReportRequest,
   isFallbackPayload,
+  normalizeReporterDegradationReasonCode,
+  normalizeReporterFallbackSource,
   toFallbackReasonCode,
   withNoStoreHeaders,
 } from './route-helpers';
@@ -39,16 +41,24 @@ function readIncidentReportDegradation(responseData: Record<string, unknown>) {
   if (!isRecord(report) || report.degraded !== true) return null;
 
   return {
-    reasonCode:
-      typeof report.fallbackReasonCode === 'string'
-        ? report.fallbackReasonCode
-        : typeof report.degradationReasonCode === 'string'
-          ? report.degradationReasonCode
-          : 'reporter_degraded',
-    fallbackSource:
-      typeof report.fallbackSource === 'string'
-        ? report.fallbackSource
-        : 'tool-based',
+    reasonCode: normalizeReporterDegradationReasonCode(
+      report.fallbackReasonCode ?? report.degradationReasonCode
+    ),
+    fallbackSource: normalizeReporterFallbackSource(report.fallbackSource),
+  };
+}
+
+function normalizeIncidentReportDegradationFields(
+  report: Record<string, unknown>
+): Record<string, unknown> {
+  if (report.degraded !== true) return report;
+
+  return {
+    ...report,
+    fallbackReasonCode: normalizeReporterDegradationReasonCode(
+      report.fallbackReasonCode ?? report.degradationReasonCode
+    ),
+    fallbackSource: normalizeReporterFallbackSource(report.fallbackSource),
   };
 }
 
@@ -252,13 +262,21 @@ export async function handleValidatedIncidentReportRequest(
         throw new Error(cloudRunResult.error ?? 'Cloud Run request failed');
       }
 
-      const report = await enrichIncidentReportPayload(
+      const cloudRunReport: Record<string, unknown> = isRecord(
+        cloudRunResult.data
+      )
+        ? { ...cloudRunResult.data }
+        : {};
+      delete cloudRunReport.fallbackReason;
+      delete cloudRunReport._fallbackReason;
+      const enrichedReport = await enrichIncidentReportPayload(
         {
-          ...cloudRunResult.data,
+          ...cloudRunReport,
           _source: 'Cloud Run AI Engine',
         },
         body.queryAsOf
       );
+      const report = normalizeIncidentReportDegradationFields(enrichedReport);
 
       return {
         success: true,

@@ -1,4 +1,8 @@
 import type { IncidentReport } from '@/components/ai/pages/auto-report/types';
+import {
+  normalizeReporterDegradationReasonCode,
+  normalizeReporterFallbackSource,
+} from '@/lib/ai/degradation-metadata';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   CloudRunAnalysisResponse,
@@ -42,7 +46,6 @@ export interface ArtifactDegradationSummary {
   degraded: boolean;
   reasonCode?: string;
   fallbackSource?: string;
-  fallbackReason?: string;
 }
 
 export interface ArtifactContractMetadata {
@@ -390,14 +393,9 @@ export function sanitizeArtifactDegradationSummary(
 
   return {
     degraded: value.degraded,
-    ...(readPublicString(value.reasonCode) && {
-      reasonCode: readPublicString(value.reasonCode),
-    }),
-    ...(readPublicString(value.fallbackSource) && {
-      fallbackSource: readPublicString(value.fallbackSource),
-    }),
-    ...(readPublicString(value.fallbackReason) && {
-      fallbackReason: readPublicString(value.fallbackReason),
+    ...(value.degraded && {
+      reasonCode: normalizeReporterDegradationReasonCode(value.reasonCode),
+      fallbackSource: normalizeReporterFallbackSource(value.fallbackSource),
     }),
   };
 }

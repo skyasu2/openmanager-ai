@@ -2,6 +2,10 @@ import {
   type IncidentReport,
   normalizeIncidentSeverity,
 } from '@/components/ai/pages/auto-report/types';
+import {
+  normalizeReporterDegradationReasonCode,
+  normalizeReporterFallbackSource,
+} from '@/lib/ai/degradation-metadata';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import {
   type ArtifactDegradationSummary,
@@ -155,15 +159,11 @@ function normalizeDegradationSummary(
     rawReport.fallbackReasonCode ?? rawReport.degradationReasonCode
   );
   const fallbackSource = readString(rawReport.fallbackSource);
-  const fallbackReason = readString(
-    rawReport.fallbackReason ?? rawReport._fallbackReason
-  );
 
   return {
     degraded: true,
-    ...(reasonCode && { reasonCode }),
-    ...(fallbackSource && { fallbackSource }),
-    ...(fallbackReason && { fallbackReason }),
+    reasonCode: normalizeReporterDegradationReasonCode(reasonCode),
+    fallbackSource: normalizeReporterFallbackSource(fallbackSource),
   };
 }
 
@@ -221,8 +221,7 @@ export async function generateIncidentReportArtifact({
         degradation,
         providerSummary: {
           usedFallback: true,
-          fallbackReason:
-            degradation.reasonCode ?? degradation.fallbackReason ?? 'degraded',
+          fallbackReason: degradation.reasonCode ?? 'degraded',
         },
       }),
       queryAsOfDataSlot,

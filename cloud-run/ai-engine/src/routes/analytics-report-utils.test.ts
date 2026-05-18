@@ -17,6 +17,7 @@ vi.mock('../lib/logger', () => ({
 
 import {
   extractToolBasedData,
+  getReporterDegradationReasonCode,
   IncidentReportOutputSchema,
   normalizeAgentIncidentReportOutput,
   parseAgentJsonResponse,
@@ -96,6 +97,21 @@ describe('IncidentReportOutputSchema', () => {
       }).success
     ).toBe(false);
   });
+});
+
+describe('reporter degradation metadata helpers', () => {
+  it.each([
+    ['reporter_unavailable', 'reporter_unavailable'],
+    ['expected schema mismatch from jsonschema', 'provider_schema_drift'],
+    ['No object generated: could not parse the response.', 'provider_parse_drift'],
+    ['429 rate limit exceeded', 'provider_rate_limit'],
+    ['request timed out before deadline', 'provider_timeout'],
+    ['503 service unavailable', 'provider_unavailable'],
+    ['unexpected provider failure', 'reporter_degraded'],
+  ])('%s -> %s', (reason, expected) => {
+    expect(getReporterDegradationReasonCode(reason)).toBe(expected);
+  });
+
 });
 
 describe('extractToolBasedData', () => {
