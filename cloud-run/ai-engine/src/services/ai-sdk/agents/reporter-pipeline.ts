@@ -90,6 +90,9 @@ const DEFAULT_CONFIG: PipelineConfig = {
   timeout: 40_000, // Increased from 25s for complex report generation (Job Queue has 120s)
 };
 
+const REPORTER_HISTORY_SLOT_COUNT = 12;
+const NO_INCIDENT_QUALITY_THRESHOLD = 0.65;
+
 const REPORTER_PIPELINE_STAGE_LABELS: Record<ReporterPipelineStage, string> = {
   reporter: 'Reporter Agent',
   evaluator: 'Reporter Pipeline: evaluator stage',
@@ -115,6 +118,20 @@ function dedupePipelineStages(
     seen.add(stage);
     return true;
   });
+}
+
+function getEffectiveQualityThreshold(
+  report: ReportForEvaluation,
+  configuredThreshold: number
+): number {
+  if (report.affectedServers.length === 0) {
+    if (configuredThreshold > DEFAULT_CONFIG.qualityThreshold) {
+      return configuredThreshold;
+    }
+    return Math.min(configuredThreshold, NO_INCIDENT_QUALITY_THRESHOLD);
+  }
+
+  return configuredThreshold;
 }
 
 // ============================================================================
@@ -162,7 +179,7 @@ export async function executeReporterPipeline(
       ),
       resolveDomainHistory(
         finalConfig.dataSource,
-        6,
+        REPORTER_HISTORY_SLOT_COUNT,
         dataSourceContext,
         'reporter-pipeline'
       ),
@@ -213,12 +230,16 @@ export async function executeReporterPipeline(
 
       const evaluation = evaluateReport(currentReport);
       currentScore = evaluation.overallScore;
+      const qualityThreshold = getEffectiveQualityThreshold(
+        currentReport,
+        finalConfig.qualityThreshold
+      );
 
       logger.info(`[Evaluation] Score: ${(currentScore * 100).toFixed(1)}%`);
 
       // Check if quality threshold met
-      if (currentScore >= finalConfig.qualityThreshold) {
-        logger.info(`[ReporterPipeline] Quality threshold met (${(currentScore * 100).toFixed(1)}% >= ${(finalConfig.qualityThreshold * 100).toFixed(1)}%)`);
+      if (currentScore >= qualityThreshold) {
+        logger.info(`[ReporterPipeline] Quality threshold met (${(currentScore * 100).toFixed(1)}% >= ${(qualityThreshold * 100).toFixed(1)}%)`);
         break;
       }
 
@@ -294,17 +315,18 @@ function evaluateReport(report: ReportForEvaluation): {
   issues: string[];
   recommendations: string[];
 } {
+  const isNoIncident = report.affectedServers.length === 0;
   const scores: EvaluationScores = {
     structure: calculateStructureScore(report),
     completeness: calculateCompletenessScore(report),
-    accuracy: report.rootCause?.confidence ?? 0.5,
+    accuracy: isNoIncident ? 0.85 : (report.rootCause?.confidence ?? 0.5),
     actionability: calculateActionabilityScore(report.suggestedActions),
   };
 
   const overallScore = (
-    scores.structure * 0.2 +
-    scores.completeness * 0.25 +
-    scores.accuracy * 0.35 +
+    scores.structure * 0.25 +
+    scores.completeness * 0.3 +
+    scores.accuracy * 0.25 +
     scores.actionability * 0.2
   );
 
@@ -341,6 +363,37 @@ function optimizeReport(
 } {
   const optimizations: string[] = [];
   const optimizedReport = { ...report };
+
+  if (report.affectedServers.length === 0) {
+    const preventiveActions: string[] = [];
+    const warningCount = report.warnings?.length ?? 0;
+    const predictionCount = report.predictions?.length ?? 0;
+
+    if (warningCount > 0) {
+      preventiveActions.push(
+        `임계 근접 서버 ${warningCount}대 예방 점검\n   명령어: \`top -o %CPU -b -n 1 | head -20\``
+      );
+    }
+
+    if (predictionCount > 0) {
+      preventiveActions.push(
+        `예측 추세 ${predictionCount}건 재확인\n   명령어: \`journalctl -xe --no-pager | tail -50\``
+      );
+    }
+
+    const existingActions = new Set(optimizedReport.suggestedActions);
+    const newActions = preventiveActions.filter(
+      (action) => !existingActions.has(action)
+    );
+
+    if (newActions.length > 0) {
+      optimizedReport.suggestedActions = [
+        ...optimizedReport.suggestedActions,
+        ...newActions,
+      ];
+      optimizations.push('예방 점검 예측 강화');
+    }
+  }
 
   // Optimize root cause if confidence is low
   if (

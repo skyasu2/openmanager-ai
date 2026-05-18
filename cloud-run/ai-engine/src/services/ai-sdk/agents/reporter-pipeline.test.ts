@@ -339,6 +339,77 @@ describe('Reporter Pipeline', () => {
       });
     });
 
+    it('requests twelve history slots for two-hour reporter context', async () => {
+      const snapshot = vi.fn(async () => ({
+        timestamp: '2026-05-06T00:00:00+09:00',
+        data: sampleState,
+      }));
+      const history = vi.fn(async () => []);
+
+      const result = await executeReporterPipeline('히스토리 슬롯 수 확인', {
+        dataSource: { snapshot, history },
+        domainId: 'sample-support',
+      });
+
+      expect(result.success).toBe(true);
+      expect(history.mock.calls[0]?.[0]).toBe(12);
+    });
+
+    it('passes no-incident preventive reports once they meet the relaxed score threshold', async () => {
+      const baseTime = Date.parse('2026-05-18T00:00:00.000Z');
+      const dataSource = {
+        async snapshot() {
+          return {
+            timestamp: new Date(baseTime + 3 * 10 * 60 * 1000).toISOString(),
+            data: {
+              servers: [
+                {
+                  id: 'web-server-01',
+                  name: 'Web Server 01',
+                  type: 'web',
+                  status: 'online',
+                  cpu: 76,
+                  memory: 52,
+                  disk: 40,
+                  network: 30,
+                },
+              ],
+            },
+          };
+        },
+        async history(count = 12) {
+          return Array.from({ length: count }, (_, index) => ({
+            timestamp: new Date(baseTime + index * 10 * 60 * 1000).toISOString(),
+            data: {
+              servers: [
+                {
+                  id: 'web-server-01',
+                  cpu: 70 + index,
+                  memory: 52,
+                },
+              ],
+            },
+          }));
+        },
+      };
+
+      const result = await executeReporterPipeline('예방 점검 보고서', {
+        dataSource,
+        domainId: 'sample-support',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.report?.affectedServers).toEqual([]);
+      expect(result.report?.warnings?.length).toBeGreaterThan(0);
+      expect(result.report?.predictions?.length).toBeGreaterThan(0);
+      expect(result.quality.finalScore).toBeGreaterThanOrEqual(0.65);
+      expect(result.metadata.pipelineStages).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ stage: 'optimizer' }),
+        ])
+      );
+    });
+
     it('normalizes domain history oldest-to-newest before trend prediction', async () => {
       const baseTime = Date.parse('2026-05-06T00:30:00+09:00');
       const dataSource = {
@@ -418,6 +489,60 @@ describe('Reporter Pipeline', () => {
       expect(result.success).toBe(true);
       expect(result.metadata.optimizationsApplied).toBeDefined();
       expect(Array.isArray(result.metadata.optimizationsApplied)).toBe(true);
+    });
+
+    it('applies no-incident preventive optimization when forced below threshold', async () => {
+      const baseTime = Date.parse('2026-05-18T00:00:00.000Z');
+      const dataSource = {
+        async snapshot() {
+          return {
+            timestamp: new Date(baseTime + 3 * 10 * 60 * 1000).toISOString(),
+            data: {
+              servers: [
+                {
+                  id: 'web-server-01',
+                  name: 'Web Server 01',
+                  type: 'web',
+                  status: 'online',
+                  cpu: 76,
+                  memory: 52,
+                  disk: 40,
+                  network: 30,
+                },
+              ],
+            },
+          };
+        },
+        async history(count = 12) {
+          return Array.from({ length: count }, (_, index) => ({
+            timestamp: new Date(baseTime + index * 10 * 60 * 1000).toISOString(),
+            data: {
+              servers: [
+                {
+                  id: 'web-server-01',
+                  cpu: 70 + index,
+                  memory: 52,
+                },
+              ],
+            },
+          }));
+        },
+      };
+
+      const result = await executeReporterPipeline('예방 점검 최적화', {
+        dataSource,
+        domainId: 'sample-support',
+        qualityThreshold: 0.95,
+        maxIterations: 2,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.report?.affectedServers).toEqual([]);
+      expect(result.report?.predictions?.length).toBeGreaterThan(0);
+      expect(result.metadata.optimizationsApplied).toContain(
+        '예방 점검 예측 강화'
+      );
+      expect(result.report?.suggestedActions.join('\n')).toContain('예측 추세');
     });
   });
 

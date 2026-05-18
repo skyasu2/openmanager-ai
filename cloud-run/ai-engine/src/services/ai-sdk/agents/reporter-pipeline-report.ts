@@ -235,21 +235,26 @@ function buildHistoryForMetric(
 ): MetricDataPoint[] {
   const now = Date.now();
   const baseTime = now - (now % (10 * 60 * 1000));
-  const values = history
-    .slice(-36)
-    .map((slot) => slot.servers.find((server) => server.id === serverId)?.[metric])
-    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+  const entries = history.slice(-36).flatMap((slot) => {
+    const value = slot.servers.find((server) => server.id === serverId)?.[metric];
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return [];
+    }
 
-  if (values.length === 0) {
+    return [{ timestamp: slot.timestampMs, value }];
+  });
+
+  if (entries.length === 0) {
     return Array.from({ length: 36 }, (_, index) => ({
       timestamp: baseTime - (35 - index) * 600000,
       value: currentValue,
     }));
   }
 
-  return values.map((value, index) => ({
-    timestamp: baseTime - (values.length - 1 - index) * 600000,
-    value,
+  return entries.map((entry, index) => ({
+    timestamp:
+      entry.timestamp ?? baseTime - (entries.length - 1 - index) * 600000,
+    value: entry.value,
   }));
 }
 
@@ -409,6 +414,34 @@ function buildSuggestedActions(
   return actions;
 }
 
+function buildPredictionTargets(
+  affectedServers: ReportForEvaluation['affectedServers'],
+  warnings: NonNullable<ReportForEvaluation['warnings']>
+): ReportForEvaluation['affectedServers'] {
+  const targets = new Map<string, ReportForEvaluation['affectedServers'][number]>();
+
+  for (const server of affectedServers) {
+    targets.set(server.id, server);
+  }
+
+  for (const warning of warnings) {
+    if (warning.currentValue < 70) {
+      continue;
+    }
+
+    if (!targets.has(warning.serverId)) {
+      targets.set(warning.serverId, {
+        id: warning.serverId,
+        name: warning.serverName,
+        status: 'online',
+        primaryIssue: `${warning.metric.toUpperCase()} ${warning.currentValue.toFixed(1)}% 임계 근접`,
+      });
+    }
+  }
+
+  return Array.from(targets.values());
+}
+
 export function generateInitialReport(
   stateInput?: unknown,
   historyInput?: unknown[]
@@ -506,7 +539,11 @@ export function generateInitialReport(
       }
     }
 
-    const predictions = generatePredictions(affectedServers, state, history);
+    const predictions = generatePredictions(
+      buildPredictionTargets(affectedServers, warnings),
+      state,
+      history
+    );
     const suggestedActions = buildSuggestedActions(affectedServers);
     const sla = calculateActualUptime(history, state);
 

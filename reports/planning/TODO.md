@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-18 KST (Reporter degraded metadata contract hardening 완료)
+**Last Updated**: 2026-05-18 KST (Reporter Pipeline 품질 개선 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -114,6 +114,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-18) — Codex (Reporter Pipeline Quality)
+- [x] Reporter Pipeline 품질 개선 T1~T6 완료
+  - no-incident 보고서는 기본 품질 threshold를 0.65로 완화하고, rootCause 부재를 accuracy 감점으로 보지 않도록 평가 가중치를 조정했다.
+  - warnings 서버도 predictions 대상에 포함하고, history 조회/계산을 12슬롯 2시간 기준 및 실제 slot timestamp 기준으로 정렬했다.
+  - no-incident 최적화 경로에서 임계 근접/예측 추세 액션을 보강하고 회귀 테스트를 추가했다.
+  - 검증: Reporter targeted tests 25 PASS, AI Engine agents tests 399 PASS, AI Engine `type-check`, AI Engine full test 1326 PASS. 상세: [archive/reporter-pipeline-quality-plan.md](archive/reporter-pipeline-quality-plan.md)
 
 ### Completed (2026-05-18) — Codex (Reporter Degraded Metadata Contract)
 - [x] Reporter degraded metadata contract hardening 완료
