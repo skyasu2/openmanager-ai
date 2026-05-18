@@ -1,0 +1,187 @@
+{
+  "runId": "QA-20260518-0525",
+  "recordedAt": "2026-05-18T11:57:44.191Z",
+  "recordedAtKst": "2026-05-18 20:57:44 KST",
+  "runTitle": "v8.11.173 Vercel Playwright MCP Reporter Review Fixes",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+    "deploymentUrl": "https://openmanager-cxyz6razc-skyasus-projects.vercel.app",
+    "commitSha": "cdbec15ab4f6d567049c8149ad94470813176c7f"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline 2533982020 success",
+    "Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+    "Vercel /api/version v8.11.173 commit cdbec15ab4f6d567049c8149ad94470813176c7f",
+    "Cloud Run ai-engine /health v8.11.173",
+    "Landing route / render with v8.11.173 badge",
+    "Dashboard route /dashboard render with 18-server OTel snapshot",
+    "AI sidebar open and engine Ready indicator",
+    "Reporter UI periodic operations report generation",
+    "Reporter no-incident report card and detail view",
+    "POST /api/ai/incident-report 200",
+    "Vercel usage post-QA check"
+  ],
+  "skippedSurfaces": [
+    "Full visual regression pack",
+    "Forced production degraded Reporter provider fallback path",
+    "Live disk-threshold breach path because current production snapshot has no disk metric above the production threshold",
+    "Cloud Run admin observability /monitoring and /monitoring/traces"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Reporter no-incident UI generation, report detail rendering, production API status, and regression-test-only edge paths covered the review fixes at the right risk level.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The release preserved the authenticated UI path and used the normal CSRF-protected Reporter flow instead of bypassing production controls.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Vercel production deployment, Cloud Run health, and Vercel usage were all verified after release.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Local regression tests covered disk timeline, SLA short-window threshold, and command dedup edge cases; Playwright MCP covered the rendered production Reporter surface.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T20:52:00+09:00",
+      "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.173 production QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "curl",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T20:52:11+09:00",
+      "summary": "Cloud Run ai-engine /health returned status ok, version 8.11.173, routesReady true, redis degraded false.",
+      "evidence": "curl -s https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Reporter review fixes QA evidence",
+      "path": "reports/qa/evidence/qa-20260518-v811173-reporter-review-fixes.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter no-incident report detail",
+      "path": "reports/qa/evidence/qa-20260518-v811173-reporter-review-fixes.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "reporter-timeline-disk-threshold-v811173",
+      "title": "Reporter timeline records disk threshold breaches",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reporter-pipeline-report.test.ts disk timeline regression plus v8.11.173 release QA",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-short-sla-violation-threshold-v811173",
+      "title": "Reporter short snapshot SLA violation threshold avoids false severe violation",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reporter-pipeline-report.test.ts short-window SLA regression plus v8.11.173 release QA",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-no-incident-command-dedup-v811173",
+      "title": "Reporter no-incident path deduplicates repeated top command actions",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reporter-pipeline.test.ts no-incident command dedup regression plus v8.11.173 release QA",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local validation before release: targeted Reporter vitest 27/27 pass, ai-sdk agents vitest 401/401 pass, cloud-run/ai-engine npm test 1328/1328 pass, type-check pass.",
+    "Production Reporter generated a no-incident report with 18 total servers, 17 normal, 1 warning, and 0 risk servers.",
+    "Disk threshold and SLA review fixes remain local-regression-test verified because the live production OTel snapshot did not contain a disk metric above the production critical threshold."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2533982020",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2533982020"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine service",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/EWpPNaJ7EXfkPKngFjwZTpo5mAqy"
+    }
+  ]
+}

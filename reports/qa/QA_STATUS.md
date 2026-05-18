@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-18 19:16:55 KST
+> Generated at: 2026-05-18 20:57:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 522 |
-| Total Runs (Counted) | 416 |
+| Total Recorded Runs | 523 |
+| Total Runs (Counted) | 417 |
 | Non-counted Runs | 106 |
-| Total Checks | 3763 |
-| Passed | 3618 |
+| Total Checks | 3775 |
+| Passed | 3630 |
 | Failed | 134 |
-| Completed Items | 594 |
+| Completed Items | 597 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
 | Expert Domains Tracked | 15 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260518-0524 (2026-05-18T10:16:53.509Z) |
-| Latest Recorded Run | QA-20260518-0524 (2026-05-18T10:16:53.509Z) |
+| Last Counted Run | QA-20260518-0525 (2026-05-18T11:57:44.191Z) |
+| Latest Recorded Run | QA-20260518-0525 (2026-05-18T11:57:44.191Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260518-0524 (2026-05-18T10:16:53.509Z)
+Latest run: QA-20260518-0525 (2026-05-18T11:57:44.191Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -47,11 +47,12 @@ Latest run: QA-20260518-0524 (2026-05-18T10:16:53.509Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Playwright MCP production QA. |
+| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.173 production QA. |
+| gcp-cloud-run | curl | checked | normal | Cloud Run ai-engine /health returned status ok, version 8.11.173, routesReady true, redis degraded false. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-17T10:16:53.509Z -> 2026-05-18T10:16:53.509Z (24h)
+- Window: 2026-05-17T11:57:44.191Z -> 2026-05-18T11:57:44.191Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 6
 
@@ -64,7 +65,7 @@ Latest run: QA-20260518-0524 (2026-05-18T10:16:53.509Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-17T10:16:53.509Z -> 2026-05-18T10:16:53.509Z (24h)
+- Window: 2026-05-17T11:57:44.191Z -> 2026-05-18T11:57:44.191Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,24 +79,25 @@ Latest run: QA-20260518-0524 (2026-05-18T10:16:53.509Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG / SHA 2aec191d
+- Deployment: dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy / SHA cdbec15a
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production deployment dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG, Vercel /api/version v8.11.172 commit 2aec191db87e94fa7060200a78e68447a460d0f9, Vercel /api/health database/cache/AI connected, Landing route / render with v8.11.172, Login route /login render with OAuth/email/guest controls, Dashboard route /dashboard OTel snapshot and server counts, AI sidebar open and engine Ready indicator, Reporter UI incident-report generation, POST /api/ai/incident-report 200, Reporter visible card raw fallback metadata absence, Reporter artifact workspace raw fallback metadata absence, Fullscreen /dashboard/ai-assistant render, Browser console warnings/errors 0, Vercel usage post-QA check
-- Skipped Surfaces: Full visual regression pack, Forced production degraded Reporter provider failure path, Cloud Run admin observability /monitoring and /monitoring/traces, Local main font bundle-budget commit 6e10e37e Vercel production verification because it is not deployed
+- Covered Surfaces: GitLab tag pipeline 2533982020 success, Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy, Vercel /api/version v8.11.173 commit cdbec15ab4f6d567049c8149ad94470813176c7f, Cloud Run ai-engine /health v8.11.173, Landing route / render with v8.11.173 badge, Dashboard route /dashboard render with 18-server OTel snapshot, AI sidebar open and engine Ready indicator, Reporter UI periodic operations report generation, Reporter no-incident report card and detail view, POST /api/ai/incident-report 200, Vercel usage post-QA check
+- Skipped Surfaces: Full visual regression pack, Forced production degraded Reporter provider fallback path, Live disk-threshold breach path because current production snapshot has no disk metric above the production threshold, Cloud Run admin observability /monitoring and /monitoring/traces
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2532907618 | [GitLab release pipeline 2532907618](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532907618) | - |
-| vercel-deployment | Vercel production deployment dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG | [Vercel production deployment dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG](https://vercel.com/skyasus-projects/openmanager-ai/8mZ3ciQgf8UU7i2a3smsw6fxiXaG) | - |
+| general | GitLab release pipeline 2533982020 | [GitLab release pipeline 2533982020](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2533982020) | - |
+| monitoring | Cloud Run ai-engine service | [Cloud Run ai-engine service](https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine) | - |
+| vercel-deployment | Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy | [Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy](https://vercel.com/skyasus-projects/openmanager-ai/EWpPNaJ7EXfkPKngFjwZTpo5mAqy) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Vercel Playwright MCP Reporter metadata evidence | `reports/qa/evidence/qa-20260518-v811172-vercel-playwright-mcp.md` | - |
-| playwright-screenshot | Reporter UI generated incident report | `reports/qa/evidence/qa-20260518-v811172-reporter-mcp.png` | - |
+| playwright-console | Reporter review fixes QA evidence | `reports/qa/evidence/qa-20260518-v811173-reporter-review-fixes.md` | - |
+| playwright-screenshot | Reporter no-incident report detail | `reports/qa/evidence/qa-20260518-v811173-reporter-review-fixes.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -649,12 +651,15 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - reporter-generate: Reporter 보고서 생성 (completed 1회, last QA-20260317-0114)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 2회, last QA-20260309-0069)
+- reporter-no-incident-command-dedup-v811173: Reporter no-incident path deduplicates repeated top command actions (completed 1회, last QA-20260518-0525)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 2회, last QA-20260315-0104)
+- reporter-short-sla-violation-threshold-v811173: Reporter short snapshot SLA violation threshold avoids false severe violation (completed 1회, last QA-20260518-0525)
 - reporter-sidebar-state-retention-chat-switch: Reporter 생성 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
 - reporter-structured-output-local-fix: Reporter structured output schema local fix prepared (completed 1회, last QA-20260513-0495)
 - reporter-structured-output-production-deploy: Deploy Reporter structured output schema fix (completed 1회, last QA-20260513-0496)
+- reporter-timeline-disk-threshold-v811173: Reporter timeline records disk threshold breaches (completed 1회, last QA-20260518-0525)
 - root-auth-session-lazy-imports: Defer auth/session/store heavy imports on the root path (completed 2회, last QA-20260422-0329)
 - root-client-provider-prune: Remove unused root AccessibilityProvider wrapper (completed 1회, last QA-20260422-0326)
 - root-client-runtime-split: Non-critical root client runtime modules split behind dynamic wrapper (completed 1회, last QA-20260419-0314)
@@ -782,6 +787,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260518-0525 | 2026-05-18T11:57:44.191Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Reporter Review Fixes | 12 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260518-0524 | 2026-05-18T10:16:53.509Z | targeted | yes | yes | v8.11.172 Vercel Playwright MCP Reporter Metadata Boundary Check | 15 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0523 | 2026-05-18T06:32:08.153Z | targeted | yes | yes | v8.11.172 Reporter Degraded Metadata Production Verification | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0522 | 2026-05-18T04:12:29.303Z | release-gate | yes | yes | v8.11.171 Reporter Cloud Run Production Verification | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -801,4 +807,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260516-0508 | 2026-05-16T10:45:41.451Z | targeted | no | no | NLQ EntitySchema Provider Compatibility Fix Verification - v8.11.157 | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260516-0507 | 2026-05-16T10:31:04.202Z | targeted | no | no | NLQ Provider Live Comparison Smoke - v8.11.157 | 11 | 1 | 1 | 0 | 1 | 1 |
 | QA-20260515-0506 | 2026-05-15T07:20:51.624Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.154 KRL Closure | 17 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260515-0505 | 2026-05-15T06:50:53.160Z | targeted | no | yes | Supabase Live QA - KRL Legacy GraphRAG Inventory Removal | 29 | 1 | 0 | 0 | 0 | 0 |

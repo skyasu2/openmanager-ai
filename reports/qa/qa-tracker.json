@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T10:16:53.509Z"
+    "updatedAt": "2026-05-18T11:57:44.191Z"
   },
   "sequence": {
-    "nextRunNumber": 525
+    "nextRunNumber": 526
   },
   "summary": {
-    "totalRecordedRuns": 522,
-    "totalRuns": 416,
+    "totalRecordedRuns": 523,
+    "totalRuns": 417,
     "excludedRuns": 106,
-    "totalChecks": 3763,
-    "totalPassed": 3618,
+    "totalChecks": 3775,
+    "totalPassed": 3630,
     "totalFailed": 134,
     "completionRate": 100,
-    "completedItems": 594,
+    "completedItems": 597,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 15,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0524",
-    "lastRecordedAt": "2026-05-18T10:16:53.509Z",
-    "latestRecordedRunId": "QA-20260518-0524",
-    "latestRecordedAt": "2026-05-18T10:16:53.509Z"
+    "lastRunId": "QA-20260518-0525",
+    "lastRecordedAt": "2026-05-18T11:57:44.191Z",
+    "latestRecordedRunId": "QA-20260518-0525",
+    "latestRecordedAt": "2026-05-18T11:57:44.191Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14561,6 +14561,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-18T10:16:53.509Z"
+    },
+    "reporter-timeline-disk-threshold-v811173": {
+      "id": "reporter-timeline-disk-threshold-v811173",
+      "title": "Reporter timeline records disk threshold breaches",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260518-0525",
+      "firstSeenAt": "2026-05-18T11:57:44.191Z",
+      "lastSeenRunId": "QA-20260518-0525",
+      "lastSeenAt": "2026-05-18T11:57:44.191Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reporter-pipeline-report.test.ts disk timeline regression plus v8.11.173 release QA",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T11:57:44.191Z"
+    },
+    "reporter-short-sla-violation-threshold-v811173": {
+      "id": "reporter-short-sla-violation-threshold-v811173",
+      "title": "Reporter short snapshot SLA violation threshold avoids false severe violation",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260518-0525",
+      "firstSeenAt": "2026-05-18T11:57:44.191Z",
+      "lastSeenRunId": "QA-20260518-0525",
+      "lastSeenAt": "2026-05-18T11:57:44.191Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reporter-pipeline-report.test.ts short-window SLA regression plus v8.11.173 release QA",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T11:57:44.191Z"
+    },
+    "reporter-no-incident-command-dedup-v811173": {
+      "id": "reporter-no-incident-command-dedup-v811173",
+      "title": "Reporter no-incident path deduplicates repeated top command actions",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260518-0525",
+      "firstSeenAt": "2026-05-18T11:57:44.191Z",
+      "lastSeenRunId": "QA-20260518-0525",
+      "lastSeenAt": "2026-05-18T11:57:44.191Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reporter-pipeline.test.ts no-incident command dedup regression plus v8.11.173 release QA",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T11:57:44.191Z"
     }
   },
   "runs": [
@@ -58880,6 +58952,151 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0525",
+      "recordedAt": "2026-05-18T11:57:44.191Z",
+      "recordedAtKst": "2026-05-18 20:57:44 KST",
+      "title": "v8.11.173 Vercel Playwright MCP Reporter Review Fixes",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0525.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+        "deploymentUrl": "https://openmanager-cxyz6razc-skyasus-projects.vercel.app",
+        "commitSha": "cdbec15ab4f6d567049c8149ad94470813176c7f"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline 2533982020 success",
+        "Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+        "Vercel /api/version v8.11.173 commit cdbec15ab4f6d567049c8149ad94470813176c7f",
+        "Cloud Run ai-engine /health v8.11.173",
+        "Landing route / render with v8.11.173 badge",
+        "Dashboard route /dashboard render with 18-server OTel snapshot",
+        "AI sidebar open and engine Ready indicator",
+        "Reporter UI periodic operations report generation",
+        "Reporter no-incident report card and detail view",
+        "POST /api/ai/incident-report 200",
+        "Vercel usage post-QA check"
+      ],
+      "skippedSurfaces": [
+        "Full visual regression pack",
+        "Forced production degraded Reporter provider fallback path",
+        "Live disk-threshold breach path because current production snapshot has no disk metric above the production threshold",
+        "Cloud Run admin observability /monitoring and /monitoring/traces"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Reporter no-incident UI generation, report detail rendering, production API status, and regression-test-only edge paths covered the review fixes at the right risk level.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release preserved the authenticated UI path and used the normal CSRF-protected Reporter flow instead of bypassing production controls.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Vercel production deployment, Cloud Run health, and Vercel usage were all verified after release.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local regression tests covered disk timeline, SLA short-window threshold, and command dedup edge cases; Playwright MCP covered the rendered production Reporter surface.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T20:52:00+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.173 production QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "curl",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T20:52:11+09:00",
+          "summary": "Cloud Run ai-engine /health returned status ok, version 8.11.173, routesReady true, redis degraded false.",
+          "evidence": "curl -s https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Reporter review fixes QA evidence",
+          "path": "reports/qa/evidence/qa-20260518-v811173-reporter-review-fixes.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter no-incident report detail",
+          "path": "reports/qa/evidence/qa-20260518-v811173-reporter-review-fixes.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2533982020",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2533982020"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine service",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EWpPNaJ7EXfkPKngFjwZTpo5mAqy"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -58888,16 +59105,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 259,
-      "appropriateCount": 222,
+      "seenCount": 260,
+      "appropriateCount": 223,
       "partialCount": 37,
       "inappropriateCount": 0,
       "improvementNeededCount": 47,
-      "lastRunId": "QA-20260518-0524",
-      "lastSeenAt": "2026-05-18T10:16:53.509Z",
+      "lastRunId": "QA-20260518-0525",
+      "lastSeenAt": "2026-05-18T11:57:44.191Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Reporter UI generation, API status, artifact persistence, and raw metadata exposure checks covered the changed user-facing AI surface.",
+      "lastRationale": "Reporter no-incident UI generation, report detail rendering, production API status, and regression-test-only edge paths covered the review fixes at the right risk level.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -58922,16 +59139,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 84,
-      "appropriateCount": 65,
+      "seenCount": 85,
+      "appropriateCount": 66,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260518-0524",
-      "lastSeenAt": "2026-05-18T10:16:53.509Z",
+      "lastRunId": "QA-20260518-0525",
+      "lastSeenAt": "2026-05-18T11:57:44.191Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Public UI and artifact workspace did not expose raw fallback reason fields or provider reason details.",
+      "lastRationale": "The release preserved the authenticated UI path and used the normal CSRF-protected Reporter flow instead of bypassing production controls.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -58939,16 +59156,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 196,
-      "appropriateCount": 177,
+      "seenCount": 197,
+      "appropriateCount": 178,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0524",
-      "lastSeenAt": "2026-05-18T10:16:53.509Z",
+      "lastRunId": "QA-20260518-0525",
+      "lastSeenAt": "2026-05-18T11:57:44.191Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel deployment identity, health endpoints, console cleanliness, and usage check were verified on production.",
+      "lastRationale": "GitLab tag pipeline, Vercel production deployment, Cloud Run health, and Vercel usage were all verified after release.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -58956,16 +59173,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 228,
-      "appropriateCount": 208,
+      "seenCount": 229,
+      "appropriateCount": 209,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0524",
-      "lastSeenAt": "2026-05-18T10:16:53.509Z",
+      "lastRunId": "QA-20260518-0525",
+      "lastSeenAt": "2026-05-18T11:57:44.191Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP exercised rendered routes and Reporter UI generation rather than HTTP-only checks.",
+      "lastRationale": "Local regression tests covered disk timeline, SLA short-window threshold, and command dedup edge cases; Playwright MCP covered the rendered production Reporter surface.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
