@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T00:54:54.418Z"
+    "updatedAt": "2026-05-18T01:15:27.412Z"
   },
   "sequence": {
-    "nextRunNumber": 520
+    "nextRunNumber": 521
   },
   "summary": {
-    "totalRecordedRuns": 517,
+    "totalRecordedRuns": 518,
     "totalRuns": 413,
-    "excludedRuns": 104,
+    "excludedRuns": 105,
     "totalChecks": 3726,
     "totalPassed": 3581,
     "totalFailed": 134,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260518-0519",
     "lastRecordedAt": "2026-05-18T00:54:54.418Z",
-    "latestRecordedRunId": "QA-20260518-0519",
-    "latestRecordedAt": "2026-05-18T00:54:54.418Z"
+    "latestRecordedRunId": "QA-20260518-0520",
+    "latestRecordedAt": "2026-05-18T01:15:27.412Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -58177,6 +58177,127 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0520",
+      "recordedAt": "2026-05-18T01:15:27.412Z",
+      "recordedAtKst": "2026-05-18 10:15:27 KST",
+      "title": "v8.11.169 Current Vercel Playwright MCP Rerun",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0520.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "v8.11.169-gitlab-pipeline-2532228902",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "8e294644304f181bff1f74fa4fe4936bde833ebe"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "modal-detail-pack",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production landing route /",
+        "Landing footer version v8.11.169",
+        "Feature card modal independent state reset",
+        "AI Assistant architecture modal diagram",
+        "Cloud Platform architecture modal diagram",
+        "AI Development Workflow CI/CD tab",
+        "Dashboard CTA navigation to /dashboard",
+        "Dashboard overview render",
+        "Dashboard sidebar links",
+        "Dashboard server status summary",
+        "Playwright MCP console cleanliness",
+        "Vercel /api/version",
+        "Vercel /api/health",
+        "Vercel usage check"
+      ],
+      "skippedSurfaces": [
+        "AI assistant conversational QA",
+        "mobile responsive matrix",
+        "Cloud Run admin /monitoring",
+        "React Flow topology modal deep interaction",
+        "server detail modal tab matrix"
+      ],
+      "checks": {
+        "total": 20,
+        "passed": 20,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-quality",
+          "domainName": "Frontend UX Quality",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The rerun confirmed landing, feature-card modals, diagram toggles, modal state scoping, Vibe CI/CD tab, and dashboard overview render on Vercel production.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The stale Playwright MCP context was recovered with browser_close, then the rerun completed with zero console errors or warnings.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "SRE / Deployment",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production /api/version reports v8.11.169, /api/health is healthy, and Vercel usage remains billed 0.0000 USD.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T10:13:56+09:00",
+          "summary": "Billing period 2026-05-01..2026-05-18: effective 10.7667 USD, billed 0.0000 USD, chargeCount 9744. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.169 current Vercel Playwright MCP rerun",
+          "path": "reports/qa/evidence/qa-20260518-v811169-current-vercel-mcp-rerun.md",
+          "note": "Recovered stale MCP tab state, then verified landing, modal diagrams, Vibe CI/CD tab, dashboard overview, console cleanliness, API health/version, and Vercel usage."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.169 deployment pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532228902"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -58236,16 +58357,16 @@
       "domainName": "SRE / Deployment",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 191,
-      "appropriateCount": 172,
+      "seenCount": 192,
+      "appropriateCount": 173,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0519",
-      "lastSeenAt": "2026-05-18T00:54:54.418Z",
+      "lastRunId": "QA-20260518-0520",
+      "lastSeenAt": "2026-05-18T01:15:27.412Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production /api/version reports v8.11.169 from GitLab pipeline 2532228902, /api/health is healthy, and Vercel usage remains billed 0.0000 USD.",
+      "lastRationale": "Production /api/version reports v8.11.169, /api/health is healthy, and Vercel usage remains billed 0.0000 USD.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -58253,16 +58374,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 226,
-      "appropriateCount": 206,
+      "seenCount": 227,
+      "appropriateCount": 207,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0519",
-      "lastSeenAt": "2026-05-18T00:54:54.418Z",
-      "lastFit": "partially-appropriate",
+      "lastRunId": "QA-20260518-0520",
+      "lastSeenAt": "2026-05-18T01:15:27.412Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP covered the core landing/modal surfaces. The MCP browser context closed during dashboard CTA interaction, so dashboard/auth/API checks were repeated with a direct Playwright browser smoke and recorded as an automation fallback rather than product failure.",
+      "lastRationale": "The stale Playwright MCP context was recovered with browser_close, then the rerun completed with zero console errors or warnings.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -58355,16 +58476,16 @@
       "domainName": "Frontend UX Quality",
       "firstSeenRunId": "QA-20260430-0374",
       "firstSeenAt": "2026-04-29T18:53:53.244Z",
-      "seenCount": 9,
-      "appropriateCount": 6,
+      "seenCount": 10,
+      "appropriateCount": 7,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260518-0519",
-      "lastSeenAt": "2026-05-18T00:54:54.418Z",
+      "lastRunId": "QA-20260518-0520",
+      "lastSeenAt": "2026-05-18T01:15:27.412Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Landing, four feature-card modals, diagram toggles, Vibe CI/CD tab, and modal state reset all passed on Vercel production.",
+      "lastRationale": "The rerun confirmed landing, feature-card modals, diagram toggles, modal state scoping, Vibe CI/CD tab, and dashboard overview render on Vercel production.",
       "lastNextAction": ""
     },
     "frontend-ui-ux": {

@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-18 09:54:58 KST
+> Generated at: 2026-05-18 10:15:34 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 517 |
+| Total Recorded Runs | 518 |
 | Total Runs (Counted) | 413 |
-| Non-counted Runs | 104 |
+| Non-counted Runs | 105 |
 | Total Checks | 3726 |
 | Passed | 3581 |
 | Failed | 134 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260518-0519 (2026-05-18T00:54:54.418Z) |
-| Latest Recorded Run | QA-20260518-0519 (2026-05-18T00:54:54.418Z) |
+| Latest Recorded Run | QA-20260518-0520 (2026-05-18T01:15:27.412Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,12 +34,12 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260518-0519 (2026-05-18T00:54:54.418Z)
+Latest run: QA-20260518-0520 (2026-05-18T01:15:27.412Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | Frontend UX Quality | appropriate | no | - |
-| Test Automation Architect | partially-appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 | SRE / Deployment | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
@@ -50,7 +50,7 @@ Latest run: QA-20260518-0519 (2026-05-18T00:54:54.418Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-17T00:54:54.418Z -> 2026-05-18T00:54:54.418Z (24h)
+- Window: 2026-05-17T01:15:27.412Z -> 2026-05-18T01:15:27.412Z (24h)
 - Runs with observations: 2 recorded / 2 counted
 - Samples: 5
 
@@ -64,7 +64,7 @@ Latest run: QA-20260518-0519 (2026-05-18T00:54:54.418Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-17T00:54:54.418Z -> 2026-05-18T00:54:54.418Z (24h)
+- Window: 2026-05-17T01:15:27.412Z -> 2026-05-18T01:15:27.412Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -76,12 +76,12 @@ Latest run: QA-20260518-0519 (2026-05-18T00:54:54.418Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
+- Release-Facing: no
+- Counts Toward Summary: no
 - Deployment: v8.11.169-gitlab-pipeline-2532228902 / SHA 8e294644
-- Coverage Packs: core-routes-smoke, modal-detail-pack
-- Covered Surfaces: Vercel production landing route /, Landing footer version v8.11.169, Feature card modal independent state reset, AI Assistant architecture modal diagram, Cloud Platform architecture modal diagram, Tech Stack modal detail view, AI Development Workflow CI/CD tab, Vercel /api/version, Vercel /api/health, Unauthenticated /dashboard auth guard redirect to /login, Vercel usage check
-- Skipped Surfaces: authenticated dashboard internals, AI assistant conversational QA, mobile responsive matrix, Cloud Run admin /monitoring, React Flow topology modal
+- Coverage Packs: core-routes-smoke, modal-detail-pack, dashboard-core
+- Covered Surfaces: Vercel production landing route /, Landing footer version v8.11.169, Feature card modal independent state reset, AI Assistant architecture modal diagram, Cloud Platform architecture modal diagram, AI Development Workflow CI/CD tab, Dashboard CTA navigation to /dashboard, Dashboard overview render, Dashboard sidebar links, Dashboard server status summary, Playwright MCP console cleanliness, Vercel /api/version, Vercel /api/health, Vercel usage check
+- Skipped Surfaces: AI assistant conversational QA, mobile responsive matrix, Cloud Run admin /monitoring, React Flow topology modal deep interaction, server detail modal tab matrix
 
 ## Links (Latest Run)
 
@@ -94,7 +94,7 @@ Latest run: QA-20260518-0519 (2026-05-18T00:54:54.418Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.169 current Vercel Playwright MCP check | `reports/qa/evidence/qa-20260518-v811169-current-vercel-mcp.md` | - |
+| playwright-console | v8.11.169 current Vercel Playwright MCP rerun | `reports/qa/evidence/qa-20260518-v811169-current-vercel-mcp-rerun.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -779,6 +779,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260518-0520 | 2026-05-18T01:15:27.412Z | targeted | no | no | v8.11.169 Current Vercel Playwright MCP Rerun | 20 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0519 | 2026-05-18T00:54:54.418Z | targeted | yes | yes | v8.11.169 Current Vercel Playwright MCP Check | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0518 | 2026-05-18T00:32:15.109Z | targeted | yes | yes | v8.11.169 Production Diagram Regression Closure | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0517 | 2026-05-17T21:57:55.297Z | targeted | yes | yes | v8.11.168 Production Cursor Regression Closure | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -798,4 +799,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260515-0503 | 2026-05-14T18:50:43.003Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.153 Follow-up Improvements | 12 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260514-0502 | 2026-05-14T13:48:56.400Z | targeted | yes | yes | Vercel Playwright MCP QA - v8.11.150 Artifact UX Closure | 12 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260514-0501 | 2026-05-14T07:04:04.756Z | targeted | yes | yes | Vercel Playwright QA - v8.11.149 AI Diagnostic Commands | 10 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260514-0500 | 2026-05-14T05:01:29.591Z | targeted | no | no | Vercel Playwright MCP Verification Rerun - v8.11.147 AI Five-Question | 10 | 0 | 0 | 0 | 0 | 0 |
