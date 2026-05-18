@@ -312,7 +312,13 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
       );
 
     // 2. Extract structured data from tool results
-    const toolBasedData = extractToolBasedData(anomalyData, trendData, timelineData, serverId);
+    const toolBasedData = extractToolBasedData(
+      anomalyData,
+      trendData,
+      timelineData,
+      serverId,
+      monitoringGrounding
+    );
 
     // Check if Reporter Agent is available
     const reporterConfig = getAgentConfig('Reporter Agent');

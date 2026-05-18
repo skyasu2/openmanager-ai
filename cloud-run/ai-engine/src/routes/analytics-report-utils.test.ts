@@ -320,6 +320,100 @@ describe('extractToolBasedData', () => {
       result.recommendations.map((recommendation) => recommendation.action)
     );
   });
+
+  it('metric anomaly가 없어도 monitoring warning/critical 로그 evidence를 fallback 보고서에 반영한다', () => {
+    const result = extractToolBasedData(
+      {
+        success: true,
+        totalServers: 18,
+        anomalies: [],
+        hasAnomalies: false,
+        anomalyCount: 0,
+        summary: {
+          totalServers: 18,
+          onlineCount: 18,
+          warningCount: 0,
+          criticalCount: 0,
+        },
+      },
+      null,
+      null,
+      undefined,
+      {
+        evidenceRefs: [
+          {
+            id: 'evidence-log-storage',
+            kind: 'log',
+            serverId: 'storage-s3gw-dc1-01',
+            timeRange: {
+              from: '2026-05-18T14:00:00.000Z',
+              to: '2026-05-18T14:10:00.000Z',
+            },
+            summary:
+              'storage-s3gw-dc1-01 syslog: minio[11900]: ERROR: Multipart upload stalled during backup window',
+            severity: 'critical',
+          },
+          {
+            id: 'evidence-log-db',
+            kind: 'log',
+            serverId: 'db-mysql-dc1-backup',
+            timeRange: {
+              from: '2026-05-18T14:00:00.000Z',
+              to: '2026-05-18T14:10:00.000Z',
+            },
+            summary:
+              'db-mysql-dc1-backup mysqld: [Warning] InnoDB: Write to NFS mount stalled for 1736ms',
+            severity: 'warning',
+          },
+        ],
+        timeline: {
+          sourceMode: 'replay-json',
+          events: [
+            {
+              timestamp: '2026-05-18T14:00:00.000Z',
+              serverId: 'storage-s3gw-dc1-01',
+              severity: 'critical',
+              eventType: 'log',
+              description:
+                'storage-s3gw-dc1-01 syslog: minio upload stalled during backup window',
+              evidenceRefId: 'evidence-log-storage',
+            },
+            {
+              timestamp: '2026-05-18T14:00:00.000Z',
+              serverId: 'db-mysql-dc1-backup',
+              severity: 'warning',
+              eventType: 'log',
+              description:
+                'db-mysql-dc1-backup mysqld: InnoDB write to NFS mount stalled',
+              evidenceRefId: 'evidence-log-db',
+            },
+          ],
+          evidenceRefs: [],
+        },
+      }
+    );
+
+    const actions = result.recommendations.map((item) => item.action).join('\n');
+
+    expect(result.title).toBe('로그 이상 감지: 2건 발견');
+    expect(result.severity).toBe('critical');
+    expect(result.description).toContain('warning/critical');
+    expect(result.affected_servers).toEqual([
+      'storage-s3gw-dc1-01',
+      'db-mysql-dc1-backup',
+    ]);
+    expect(result.system_summary.warning_servers).toBe(1);
+    expect(result.system_summary.critical_servers).toBe(1);
+    expect(result.pattern).toBe('로그 기반 이상 패턴 감지됨');
+    expect(result.postmortem.timeline).toEqual([
+      '14:00 - storage-s3gw-dc1-01 syslog: minio upload stalled during backup window',
+      '14:00 - db-mysql-dc1-backup mysqld: InnoDB write to NFS mount stalled',
+    ]);
+    expect(actions).toContain('스토리지 I/O와 마운트 상태 확인');
+    expect(actions).toContain('df -h');
+    expect(actions).toContain('MySQL/InnoDB 지연 로그 확인');
+    expect(actions).not.toContain('서버 리소스 업그레이드');
+  });
 });
 
 describe('mergeIncidentRecommendations', () => {
