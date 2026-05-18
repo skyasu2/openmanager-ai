@@ -1,0 +1,122 @@
+{
+  "runId": "QA-20260518-0518",
+  "recordedAt": "2026-05-18T00:32:15.109Z",
+  "recordedAtKst": "2026-05-18 09:32:15 KST",
+  "runTitle": "v8.11.169 Production Diagram Regression Closure",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.11.169-gitlab-pipeline-2532228902",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "8e294644304f181bff1f74fa4fe4936bde833ebe"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "Vercel production /api/version v8.11.169",
+    "Landing feature card modal architecture toggle",
+    "AI Assistant static architecture diagram",
+    "Cloud Platform static architecture diagram",
+    "StaticArchitectureDiagram CJK visual-width label handling",
+    "Diagram modal connection count and label readability"
+  ],
+  "skippedSurfaces": [
+    "dashboard authenticated flows",
+    "AI assistant conversational QA",
+    "mobile responsive matrix",
+    "React Flow topology modal"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux-quality",
+      "domainName": "Frontend UX Quality",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production feature-card modals render the revised static diagrams after the architecture toggle, with primary labels no longer clipped on the checked AI Assistant and Cloud Platform paths.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The static diagram unit test, quick test suite, type check, lint, docs component verification, production Playwright MCP flow, and release pipeline all passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "SRE / Deployment",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab semver tag pipeline 2532228902 completed successfully and production /api/version reports 8.11.169.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T09:28:52+09:00",
+      "summary": "Billing period 2026-05-01..2026-05-18: effective 10.7667 USD, billed 0.0000 USD, chargeCount 9744. No unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.169 diagram production verification",
+      "path": "reports/qa/evidence/qa-20260518-v811169-diagram-regression.md",
+      "note": "MCP browser snapshot verified AI Assistant diagram 8 layers / 21 nodes / 27 connections and Cloud Platform diagram 4 layers / 11 nodes / 13 connections on production v8.11.169."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-diagram-label-readability",
+      "title": "Improve static architecture diagram label readability and simplify dense AI Assistant arrows",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production Playwright MCP verification on v8.11.169",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Primary node labels are fixed in the checked production diagrams. Some long sublabels still ellipsize by design inside compact nodes, while full text remains available in the node accessibility labels."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.169 deployment pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532228902"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

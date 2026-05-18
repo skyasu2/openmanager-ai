@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-17T21:57:55.297Z"
+    "updatedAt": "2026-05-18T00:32:15.109Z"
   },
   "sequence": {
-    "nextRunNumber": 518
+    "nextRunNumber": 519
   },
   "summary": {
-    "totalRecordedRuns": 515,
-    "totalRuns": 411,
+    "totalRecordedRuns": 516,
+    "totalRuns": 412,
     "excludedRuns": 104,
-    "totalChecks": 3698,
-    "totalPassed": 3553,
+    "totalChecks": 3710,
+    "totalPassed": 3565,
     "totalFailed": 134,
     "completionRate": 100,
-    "completedItems": 591,
+    "completedItems": 592,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 14,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0517",
-    "lastRecordedAt": "2026-05-17T21:57:55.297Z",
-    "latestRecordedRunId": "QA-20260518-0517",
-    "latestRecordedAt": "2026-05-17T21:57:55.297Z"
+    "lastRunId": "QA-20260518-0518",
+    "lastRecordedAt": "2026-05-18T00:32:15.109Z",
+    "latestRecordedRunId": "QA-20260518-0518",
+    "latestRecordedAt": "2026-05-18T00:32:15.109Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14489,6 +14489,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-17T21:57:55.297Z"
+    },
+    "landing-diagram-label-readability": {
+      "id": "landing-diagram-label-readability",
+      "title": "Improve static architecture diagram label readability and simplify dense AI Assistant arrows",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260518-0518",
+      "firstSeenAt": "2026-05-18T00:32:15.109Z",
+      "lastSeenRunId": "QA-20260518-0518",
+      "lastSeenAt": "2026-05-18T00:32:15.109Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production Playwright MCP verification on v8.11.169",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T00:32:15.109Z"
     }
   },
   "runs": [
@@ -57926,6 +57950,116 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0518",
+      "recordedAt": "2026-05-18T00:32:15.109Z",
+      "recordedAtKst": "2026-05-18 09:32:15 KST",
+      "title": "v8.11.169 Production Diagram Regression Closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0518.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "v8.11.169-gitlab-pipeline-2532228902",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "8e294644304f181bff1f74fa4fe4936bde833ebe"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version v8.11.169",
+        "Landing feature card modal architecture toggle",
+        "AI Assistant static architecture diagram",
+        "Cloud Platform static architecture diagram",
+        "StaticArchitectureDiagram CJK visual-width label handling",
+        "Diagram modal connection count and label readability"
+      ],
+      "skippedSurfaces": [
+        "dashboard authenticated flows",
+        "AI assistant conversational QA",
+        "mobile responsive matrix",
+        "React Flow topology modal"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-quality",
+          "domainName": "Frontend UX Quality",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production feature-card modals render the revised static diagrams after the architecture toggle, with primary labels no longer clipped on the checked AI Assistant and Cloud Platform paths.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The static diagram unit test, quick test suite, type check, lint, docs component verification, production Playwright MCP flow, and release pipeline all passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "SRE / Deployment",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab semver tag pipeline 2532228902 completed successfully and production /api/version reports 8.11.169.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T09:28:52+09:00",
+          "summary": "Billing period 2026-05-01..2026-05-18: effective 10.7667 USD, billed 0.0000 USD, chargeCount 9744. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.169 diagram production verification",
+          "path": "reports/qa/evidence/qa-20260518-v811169-diagram-regression.md",
+          "note": "MCP browser snapshot verified AI Assistant diagram 8 layers / 21 nodes / 27 connections and Cloud Platform diagram 4 layers / 11 nodes / 13 connections on production v8.11.169."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.169 deployment pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532228902"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -57982,19 +58116,19 @@
     },
     "sre-devops": {
       "domainId": "sre-devops",
-      "domainName": "DevOps / SRE Engineer",
+      "domainName": "SRE / Deployment",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 189,
-      "appropriateCount": 170,
+      "seenCount": 190,
+      "appropriateCount": 171,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0515",
-      "lastSeenAt": "2026-05-17T18:08:49.082Z",
+      "lastRunId": "QA-20260518-0518",
+      "lastSeenAt": "2026-05-18T00:32:15.109Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main validate and v8.11.167 tag pipeline completed successfully; release smoke verified the deployed version.",
+      "lastRationale": "GitLab semver tag pipeline 2532228902 completed successfully and production /api/version reports 8.11.169.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -58002,16 +58136,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 224,
-      "appropriateCount": 205,
+      "seenCount": 225,
+      "appropriateCount": 206,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0517",
-      "lastSeenAt": "2026-05-17T21:57:55.297Z",
+      "lastRunId": "QA-20260518-0518",
+      "lastSeenAt": "2026-05-18T00:32:15.109Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "A node-level regression guard was added to test:quick to prevent reintroducing CustomCursor, has-custom-cursor, custom-cursor-dot, or cursor:none on the landing effect.",
+      "lastRationale": "The static diagram unit test, quick test suite, type check, lint, docs component verification, production Playwright MCP flow, and release pipeline all passed.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -58104,16 +58238,16 @@
       "domainName": "Frontend UX Quality",
       "firstSeenRunId": "QA-20260430-0374",
       "firstSeenAt": "2026-04-29T18:53:53.244Z",
-      "seenCount": 7,
-      "appropriateCount": 4,
+      "seenCount": 8,
+      "appropriateCount": 5,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260518-0517",
-      "lastSeenAt": "2026-05-17T21:57:55.297Z",
+      "lastRunId": "QA-20260518-0518",
+      "lastSeenAt": "2026-05-18T00:32:15.109Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The unintended cursor-following white dot is absent on production while the intended system-start anchored MouseSpotlight fragments still react to mouse movement.",
+      "lastRationale": "Production feature-card modals render the revised static diagrams after the architecture toggle, with primary labels no longer clipped on the checked AI Assistant and Cloud Platform paths.",
       "lastNextAction": ""
     },
     "frontend-ui-ux": {
