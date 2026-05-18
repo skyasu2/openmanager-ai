@@ -51,20 +51,6 @@ const SeveritySchema = z.enum([
   'info',
 ]);
 
-const PostmortemTimelineEntrySchema = z.union([
-  z.string(),
-  z
-    .object({
-      timestamp: z.string().optional(),
-      event: z.string().optional(),
-      description: z.string().optional(),
-      message: z.string().optional(),
-      title: z.string().optional(),
-      severity: z.string().optional(),
-    })
-    .passthrough(),
-]);
-
 export const IncidentReportOutputSchema = z
   .object({
     title: z.string(),
@@ -92,7 +78,7 @@ export const IncidentReportOutputSchema = z
       ),
     pattern: z.string(),
     postmortem: z.object({
-      timeline: z.array(PostmortemTimelineEntrySchema),
+      timeline: z.array(z.string()),
       hypotheses: z.array(z.string()),
       prevention: z.array(z.string()),
     }),
@@ -150,9 +136,7 @@ function readTimelineText(value: unknown): string {
 }
 
 function normalizePostmortemTimeline(
-  value: Partial<IncidentReportOutput>['postmortem'] extends { timeline?: infer T }
-    ? T
-    : unknown,
+  value: unknown,
   fallback: string[]
 ): string[] {
   if (!Array.isArray(value)) return fallback;

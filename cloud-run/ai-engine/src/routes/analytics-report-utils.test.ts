@@ -79,7 +79,7 @@ describe('IncidentReportOutputSchema', () => {
     ).toBe(false);
   });
 
-  it('provider가 postmortem timeline을 객체 배열로 반환해도 허용한다', () => {
+  it('structured output 스키마는 provider 호환성을 위해 timeline string[]만 허용한다', () => {
     expect(
       IncidentReportOutputSchema.safeParse({
         ...strictStructuredOutput,
@@ -94,7 +94,7 @@ describe('IncidentReportOutputSchema', () => {
           ],
         },
       }).success
-    ).toBe(true);
+    ).toBe(false);
   });
 });
 
