@@ -543,6 +543,11 @@ describe('Reporter Pipeline', () => {
         '예방 점검 예측 강화'
       );
       expect(result.report?.suggestedActions.join('\n')).toContain('예측 추세');
+      const topCommandCount =
+        result.report?.suggestedActions.filter((action) =>
+          action.includes('`top -o %CPU -b -n 1 | head -20`')
+        ).length ?? 0;
+      expect(topCommandCount).toBe(1);
     });
   });
 

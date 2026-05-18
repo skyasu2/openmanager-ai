@@ -152,4 +152,72 @@ describe('reporter-pipeline-report', () => {
       new Date(baseTime).toISOString()
     );
   });
+
+  it('records disk threshold breaches in the timeline', () => {
+    const baseTime = Date.parse('2026-05-18T00:00:00.000Z');
+    const report = generateInitialReport(
+      {
+        timestamp: new Date(baseTime + TEN_MINUTES_MS).toISOString(),
+        servers: [
+          {
+            id: 'storage-01',
+            name: 'Storage 01',
+            type: 'storage',
+            status: 'online',
+            cpu: 20,
+            memory: 40,
+            disk: 92,
+            network: 20,
+          },
+        ],
+      },
+      [
+        {
+          timestamp: new Date(baseTime).toISOString(),
+          data: {
+            timestamp: new Date(baseTime).toISOString(),
+            servers: [{ id: 'storage-01', cpu: 20, memory: 40, disk: 91 }],
+          },
+        },
+      ]
+    );
+
+    expect(report?.timeline).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          timestamp: new Date(baseTime).toISOString(),
+          eventType: 'threshold_breach',
+          severity: 'critical',
+          description: 'Storage 01: Disk 91.0%',
+        }),
+      ])
+    );
+  });
+
+  it('does not mark a no-history current issue as an SLA violation', () => {
+    const baseTime = Date.parse('2026-05-18T00:00:00.000Z');
+    const report = generateInitialReport(
+      {
+        timestamp: new Date(baseTime).toISOString(),
+        servers: [
+          {
+            id: 'api-server-01',
+            name: 'API Server 01',
+            type: 'application',
+            status: 'critical',
+            cpu: 91,
+            memory: 55,
+            disk: 30,
+            network: 20,
+          },
+        ],
+      },
+      []
+    );
+
+    expect(report?.sla).toMatchObject({
+      actualUptime: 98.5,
+      slaViolation: false,
+    });
+  });
 });

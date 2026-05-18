@@ -344,9 +344,22 @@ function evaluateReport(report: ReportForEvaluation): {
 
 const ACTION_COMMAND_PATTERN =
   /`(?:sudo|systemctl|docker|kubectl|top|ps|free|df|netstat|ss|mysql|redis|journalctl|dmesg|lsof|find)[^`]*`|^\s*(?:\$|sudo|systemctl|docker|kubectl)\b/i;
+const INLINE_COMMAND_PATTERN = /`([^`]+)`/g;
 
 function hasExecutableCommand(action: string): boolean {
   return ACTION_COMMAND_PATTERN.test(action);
+}
+
+function extractInlineCommands(action: string): string[] {
+  return Array.from(action.matchAll(INLINE_COMMAND_PATTERN))
+    .map((match) => match[1]?.trim())
+    .filter((command): command is string => Boolean(command));
+}
+
+function hasDuplicateCommand(action: string, existingCommands: Set<string>): boolean {
+  return extractInlineCommands(action).some((command) =>
+    existingCommands.has(command)
+  );
 }
 
 /**
@@ -377,13 +390,18 @@ function optimizeReport(
 
     if (predictionCount > 0) {
       preventiveActions.push(
-        `예측 추세 ${predictionCount}건 재확인\n   명령어: \`journalctl -xe --no-pager | tail -50\``
+        `예측 추세 ${predictionCount}건 재확인\n   명령어: \`vmstat 1 5\``
       );
     }
 
     const existingActions = new Set(optimizedReport.suggestedActions);
+    const existingCommands = new Set(
+      optimizedReport.suggestedActions.flatMap(extractInlineCommands)
+    );
     const newActions = preventiveActions.filter(
-      (action) => !existingActions.has(action)
+      (action) =>
+        !existingActions.has(action) &&
+        !hasDuplicateCommand(action, existingCommands)
     );
 
     if (newActions.length > 0) {

@@ -31,6 +31,12 @@ interface MetricDataPoint {
   value: number;
 }
 
+const TIMELINE_METRICS = [
+  { key: 'cpu', label: 'CPU' },
+  { key: 'memory', label: 'Memory' },
+  { key: 'disk', label: 'Disk' },
+] as const satisfies Array<{ key: Extract<MonitoringMetric, 'cpu' | 'memory' | 'disk'>; label: string }>;
+
 const COMMAND_TEMPLATES: Record<string, string[]> = {
   cpu: [
     'top -o %CPU -b -n 1 | head -20',
@@ -294,27 +300,20 @@ function buildTimelineFromHistory(
     const slotTs = slot.timestamp ?? now.toISOString();
     for (const server of slot.servers) {
       const name = serverNameMap.get(server.id) ?? server.id;
-      if (typeof server.cpu === 'number' && server.cpu >= thresholds.cpu) {
-        const key = `${server.id}:cpu`;
-        if (!seenBreaches.has(key)) {
-          seenBreaches.add(key);
-          timeline.push({
-            timestamp: slotTs,
-            eventType: 'threshold_breach',
-            severity: server.cpu >= 90 ? 'critical' : 'warning',
-            description: `${name}: CPU ${server.cpu.toFixed(1)}%`,
-          });
+      for (const metric of TIMELINE_METRICS) {
+        const value = server[metric.key];
+        if (typeof value !== 'number' || value < thresholds[metric.key]) {
+          continue;
         }
-      }
-      if (typeof server.memory === 'number' && server.memory >= thresholds.memory) {
-        const key = `${server.id}:memory`;
+
+        const key = `${server.id}:${metric.key}`;
         if (!seenBreaches.has(key)) {
           seenBreaches.add(key);
           timeline.push({
             timestamp: slotTs,
             eventType: 'threshold_breach',
-            severity: server.memory >= 90 ? 'critical' : 'warning',
-            description: `${name}: Memory ${server.memory.toFixed(1)}%`,
+            severity: value >= 90 ? 'critical' : 'warning',
+            description: `${name}: ${metric.label} ${value.toFixed(1)}%`,
           });
         }
       }
@@ -323,20 +322,17 @@ function buildTimelineFromHistory(
 
   // 히스토리에 없던 신규 임계 초과(현재 상태)
   for (const server of state.servers) {
-    if (server.cpu >= thresholds.cpu && !seenBreaches.has(`${server.id}:cpu`)) {
+    for (const metric of TIMELINE_METRICS) {
+      const value = server[metric.key];
+      if (value < thresholds[metric.key] || seenBreaches.has(`${server.id}:${metric.key}`)) {
+        continue;
+      }
+
       timeline.push({
         timestamp: now.toISOString(),
         eventType: 'threshold_breach',
-        severity: server.cpu >= 90 ? 'critical' : 'warning',
-        description: `${server.name}: CPU ${server.cpu.toFixed(1)}%`,
-      });
-    }
-    if (server.memory >= thresholds.memory && !seenBreaches.has(`${server.id}:memory`)) {
-      timeline.push({
-        timestamp: now.toISOString(),
-        eventType: 'threshold_breach',
-        severity: server.memory >= 90 ? 'critical' : 'warning',
-        description: `${server.name}: Memory ${server.memory.toFixed(1)}%`,
+        severity: value >= 90 ? 'critical' : 'warning',
+        description: `${server.name}: ${metric.label} ${value.toFixed(1)}%`,
       });
     }
   }
@@ -351,13 +347,18 @@ function calculateActualUptime(
 ): { targetUptime: number; actualUptime: number; slaViolation: boolean } {
   const criticalThreshold = 90;
   const target = 99.9;
+  const shortWindowViolationThreshold = 95;
 
   if (history.length === 0) {
     const hasIssue = state.servers.some(
       (s) => s.cpu >= criticalThreshold || s.memory >= criticalThreshold
     );
     const actual = hasIssue ? 98.5 : 99.9;
-    return { targetUptime: target, actualUptime: actual, slaViolation: actual < target };
+    return {
+      targetUptime: target,
+      actualUptime: actual,
+      slaViolation: actual < shortWindowViolationThreshold,
+    };
   }
 
   const healthySlots = history.filter(
@@ -370,7 +371,11 @@ function calculateActualUptime(
   ).length;
 
   const actual = Math.round((healthySlots / history.length) * 1000) / 10;
-  return { targetUptime: target, actualUptime: actual, slaViolation: actual < target };
+  return {
+    targetUptime: target,
+    actualUptime: actual,
+    slaViolation: actual < shortWindowViolationThreshold,
+  };
 }
 
 // 실행 가능한 CLI 명령어를 포함한 권장 조치 목록 생성.
