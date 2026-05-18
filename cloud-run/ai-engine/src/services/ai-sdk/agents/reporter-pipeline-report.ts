@@ -273,6 +273,142 @@ export function getMetricAverageFromMonitoringHistory(
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
+// 히스토리 슬롯의 실제 timestamp를 사용해 타임라인 구성.
+// 히스토리 → 현재 순으로 첫 번째 임계 초과 이벤트를 기록하고 중복을 제거한다.
+function buildTimelineFromHistory(
+  history: MonitoringHistorySlot[],
+  state: MonitoringState,
+  thresholds: { cpu: number; memory: number; disk: number },
+  serverNameMap: Map<string, string>,
+  now: Date
+): ReportForEvaluation['timeline'] {
+  const timeline: ReportForEvaluation['timeline'] = [];
+  const seenBreaches = new Set<string>();
+
+  for (const slot of history) {
+    const slotTs = slot.timestamp ?? now.toISOString();
+    for (const server of slot.servers) {
+      const name = serverNameMap.get(server.id) ?? server.id;
+      if (typeof server.cpu === 'number' && server.cpu >= thresholds.cpu) {
+        const key = `${server.id}:cpu`;
+        if (!seenBreaches.has(key)) {
+          seenBreaches.add(key);
+          timeline.push({
+            timestamp: slotTs,
+            eventType: 'threshold_breach',
+            severity: server.cpu >= 90 ? 'critical' : 'warning',
+            description: `${name}: CPU ${server.cpu.toFixed(1)}%`,
+          });
+        }
+      }
+      if (typeof server.memory === 'number' && server.memory >= thresholds.memory) {
+        const key = `${server.id}:memory`;
+        if (!seenBreaches.has(key)) {
+          seenBreaches.add(key);
+          timeline.push({
+            timestamp: slotTs,
+            eventType: 'threshold_breach',
+            severity: server.memory >= 90 ? 'critical' : 'warning',
+            description: `${name}: Memory ${server.memory.toFixed(1)}%`,
+          });
+        }
+      }
+    }
+  }
+
+  // 히스토리에 없던 신규 임계 초과(현재 상태)
+  for (const server of state.servers) {
+    if (server.cpu >= thresholds.cpu && !seenBreaches.has(`${server.id}:cpu`)) {
+      timeline.push({
+        timestamp: now.toISOString(),
+        eventType: 'threshold_breach',
+        severity: server.cpu >= 90 ? 'critical' : 'warning',
+        description: `${server.name}: CPU ${server.cpu.toFixed(1)}%`,
+      });
+    }
+    if (server.memory >= thresholds.memory && !seenBreaches.has(`${server.id}:memory`)) {
+      timeline.push({
+        timestamp: now.toISOString(),
+        eventType: 'threshold_breach',
+        severity: server.memory >= 90 ? 'critical' : 'warning',
+        description: `${server.name}: Memory ${server.memory.toFixed(1)}%`,
+      });
+    }
+  }
+
+  return timeline;
+}
+
+// 히스토리 슬롯에서 critical 임계 초과 비율로 실제 uptime 계산.
+function calculateActualUptime(
+  history: MonitoringHistorySlot[],
+  state: MonitoringState
+): { targetUptime: number; actualUptime: number; slaViolation: boolean } {
+  const criticalThreshold = 90;
+  const target = 99.9;
+
+  if (history.length === 0) {
+    const hasIssue = state.servers.some(
+      (s) => s.cpu >= criticalThreshold || s.memory >= criticalThreshold
+    );
+    const actual = hasIssue ? 98.5 : 99.9;
+    return { targetUptime: target, actualUptime: actual, slaViolation: actual < target };
+  }
+
+  const healthySlots = history.filter(
+    (slot) =>
+      !slot.servers.some(
+        (s) =>
+          (typeof s.cpu === 'number' && s.cpu >= criticalThreshold) ||
+          (typeof s.memory === 'number' && s.memory >= criticalThreshold)
+      )
+  ).length;
+
+  const actual = Math.round((healthySlots / history.length) * 1000) / 10;
+  return { targetUptime: target, actualUptime: actual, slaViolation: actual < target };
+}
+
+// 실행 가능한 CLI 명령어를 포함한 권장 조치 목록 생성.
+function buildSuggestedActions(
+  affectedServers: ReportForEvaluation['affectedServers']
+): string[] {
+  if (affectedServers.length === 0) {
+    return [
+      '전체 서버 리소스 점검\n   명령어: `top -o %CPU -b -n 1 | head -20`',
+      '디스크 사용량 확인\n   명령어: `df -h`',
+      '시스템 로그 이상 확인\n   명령어: `journalctl -xe --no-pager | tail -50`',
+    ];
+  }
+
+  const actions: string[] = [];
+  const hasCpu = affectedServers.some((s) => s.primaryIssue.includes('CPU'));
+  const hasMem = affectedServers.some(
+    (s) => s.primaryIssue.includes('Memory') || s.primaryIssue.includes('메모리')
+  );
+  const hasDisk = affectedServers.some(
+    (s) => s.primaryIssue.includes('Disk') || s.primaryIssue.includes('디스크')
+  );
+
+  if (hasCpu) {
+    actions.push('CPU 사용량 점검\n   명령어: `top -o %CPU -b -n 1 | head -20`');
+    actions.push('CPU 집중 프로세스 확인\n   명령어: `ps aux --sort=-%cpu | head -10`');
+  }
+  if (hasMem) {
+    actions.push('메모리 사용량 확인\n   명령어: `free -h`');
+    actions.push('메모리 집중 프로세스 확인\n   명령어: `ps aux --sort=-%mem | head -10`');
+  }
+  if (hasDisk) {
+    actions.push('디스크 사용량 확인\n   명령어: `df -h`');
+    actions.push('대용량 파일 탐색\n   명령어: `du -sh /* 2>/dev/null | sort -hr | head -10`');
+  }
+  if (actions.length === 0) {
+    actions.push('시스템 상태 점검\n   명령어: `systemctl status`');
+  }
+  actions.push('시스템 로그 확인\n   명령어: `journalctl -xe --no-pager | tail -50`');
+
+  return actions;
+}
+
 export function generateInitialReport(
   stateInput?: unknown,
   historyInput?: unknown[]
@@ -284,6 +420,7 @@ export function generateInitialReport(
     }
     const history = toMonitoringHistory(historyInput);
     const now = new Date();
+    const serverNameMap = new Map(state.servers.map((s) => [s.id, s.name]));
 
     const affectedServers = state.servers
       .filter((server) => server.status === 'warning' || server.status === 'critical')
@@ -309,31 +446,14 @@ export function generateInitialReport(
         };
       });
 
-    const timeline: ReportForEvaluation['timeline'] = [];
     const thresholds = {
       cpu: STATUS_THRESHOLDS.cpu.warning,
       memory: STATUS_THRESHOLDS.memory.warning,
       disk: STATUS_THRESHOLDS.disk.warning,
     };
 
-    for (const server of state.servers) {
-      if (server.cpu >= thresholds.cpu) {
-        timeline.push({
-          timestamp: now.toISOString(),
-          eventType: 'threshold_breach',
-          severity: server.cpu >= 90 ? 'critical' : 'warning',
-          description: `${server.name}: CPU ${server.cpu.toFixed(1)}%`,
-        });
-      }
-      if (server.memory >= thresholds.memory) {
-        timeline.push({
-          timestamp: now.toISOString(),
-          eventType: 'threshold_breach',
-          severity: server.memory >= 90 ? 'critical' : 'warning',
-          description: `${server.name}: Memory ${server.memory.toFixed(1)}%`,
-        });
-      }
-    }
+    // 히스토리 슬롯의 실제 timestamp를 활용한 타임라인
+    const timeline = buildTimelineFromHistory(history, state, thresholds, serverNameMap, now);
 
     let rootCause: ReportForEvaluation['rootCause'] = null;
     if (affectedServers.length > 0) {
@@ -375,6 +495,7 @@ export function generateInitialReport(
             threshold: hard,
             gap: +(hard - value).toFixed(1),
           });
+          // near_threshold 이벤트는 현재 시각 기준
           timeline.push({
             timestamp: now.toISOString(),
             eventType: 'near_threshold',
@@ -386,35 +507,31 @@ export function generateInitialReport(
     }
 
     const predictions = generatePredictions(affectedServers, state, history);
+    const suggestedActions = buildSuggestedActions(affectedServers);
+    const sla = calculateActualUptime(history, state);
 
-    const suggestedActions: string[] = [];
-    if (affectedServers.some((server) => server.primaryIssue.includes('CPU'))) {
-      suggestedActions.push('CPU 사용량 점검');
-    }
-    if (affectedServers.some((server) => server.primaryIssue.includes('Memory'))) {
-      suggestedActions.push('메모리 사용량 확인');
-    }
-    if (suggestedActions.length === 0) {
-      suggestedActions.push('시스템 모니터링 유지');
-    }
+    const title =
+      affectedServers.length > 0
+        ? `${now.toISOString().slice(0, 10)} 시스템 장애 보고서`
+        : `${now.toISOString().slice(0, 10)} 시스템 예방 점검 보고서`;
+
+    const summary =
+      affectedServers.length > 0
+        ? `${affectedServers.length}대 서버에서 이상 감지됨. 주요 이슈: ${affectedServers[0]?.primaryIssue || '확인 필요'}`
+        : warnings.length > 0
+          ? `전체 서버 정상 운영 중. ${warnings.length}대 서버 임계 근접 모니터링 권장`
+          : '모든 서버 정상 운영 중';
 
     return {
-      title: `${now.toISOString().slice(0, 10)} 시스템 상태 보고서`,
-      summary:
-        affectedServers.length > 0
-          ? `${affectedServers.length}대 서버에서 이상 감지됨. 주요 이슈: ${affectedServers[0]?.primaryIssue || '확인 필요'}`
-          : '모든 서버 정상 운영 중',
+      title,
+      summary,
       affectedServers,
       timeline: timeline.slice(0, 10),
       rootCause,
       suggestedActions,
       warnings: warnings.slice(0, 5),
       predictions,
-      sla: {
-        targetUptime: 99.9,
-        actualUptime: 99.5,
-        slaViolation: false,
-      },
+      sla,
     };
   } catch (error) {
     logger.error('[generateInitialReport] Error:', error);

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T06:32:08.153Z"
+    "updatedAt": "2026-05-18T10:16:53.509Z"
   },
   "sequence": {
-    "nextRunNumber": 524
+    "nextRunNumber": 525
   },
   "summary": {
-    "totalRecordedRuns": 521,
-    "totalRuns": 415,
+    "totalRecordedRuns": 522,
+    "totalRuns": 416,
     "excludedRuns": 106,
-    "totalChecks": 3748,
-    "totalPassed": 3603,
+    "totalChecks": 3763,
+    "totalPassed": 3618,
     "totalFailed": 134,
     "completionRate": 100,
-    "completedItems": 593,
+    "completedItems": 594,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 15,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0523",
-    "lastRecordedAt": "2026-05-18T06:32:08.153Z",
-    "latestRecordedRunId": "QA-20260518-0523",
-    "latestRecordedAt": "2026-05-18T06:32:08.153Z"
+    "lastRunId": "QA-20260518-0524",
+    "lastRecordedAt": "2026-05-18T10:16:53.509Z",
+    "latestRecordedRunId": "QA-20260518-0524",
+    "latestRecordedAt": "2026-05-18T10:16:53.509Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14537,6 +14537,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-18T06:32:08.153Z"
+    },
+    "reporter-degraded-metadata-vercel-ui-boundary-v811172": {
+      "id": "reporter-degraded-metadata-vercel-ui-boundary-v811172",
+      "title": "Reporter metadata public UI/artifact boundary verified on Vercel production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260518-0524",
+      "firstSeenAt": "2026-05-18T10:16:53.509Z",
+      "lastSeenRunId": "QA-20260518-0524",
+      "lastSeenAt": "2026-05-18T10:16:53.509Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-18T10:16:53.509Z"
     }
   },
   "runs": [
@@ -58723,6 +58747,139 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0524",
+      "recordedAt": "2026-05-18T10:16:53.509Z",
+      "recordedAtKst": "2026-05-18 19:16:53 KST",
+      "title": "v8.11.172 Vercel Playwright MCP Reporter Metadata Boundary Check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0524.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG",
+        "deploymentUrl": "https://openmanager-je43spluy-skyasus-projects.vercel.app",
+        "commitSha": "2aec191db87e94fa7060200a78e68447a460d0f9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production deployment dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG",
+        "Vercel /api/version v8.11.172 commit 2aec191db87e94fa7060200a78e68447a460d0f9",
+        "Vercel /api/health database/cache/AI connected",
+        "Landing route / render with v8.11.172",
+        "Login route /login render with OAuth/email/guest controls",
+        "Dashboard route /dashboard OTel snapshot and server counts",
+        "AI sidebar open and engine Ready indicator",
+        "Reporter UI incident-report generation",
+        "POST /api/ai/incident-report 200",
+        "Reporter visible card raw fallback metadata absence",
+        "Reporter artifact workspace raw fallback metadata absence",
+        "Fullscreen /dashboard/ai-assistant render",
+        "Browser console warnings/errors 0",
+        "Vercel usage post-QA check"
+      ],
+      "skippedSurfaces": [
+        "Full visual regression pack",
+        "Forced production degraded Reporter provider failure path",
+        "Cloud Run admin observability /monitoring and /monitoring/traces",
+        "Local main font bundle-budget commit 6e10e37e Vercel production verification because it is not deployed"
+      ],
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Reporter UI generation, API status, artifact persistence, and raw metadata exposure checks covered the changed user-facing AI surface.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Public UI and artifact workspace did not expose raw fallback reason fields or provider reason details.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel deployment identity, health endpoints, console cleanliness, and usage check were verified on production.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP exercised rendered routes and Reporter UI generation rather than HTTP-only checks.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T19:15:23+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Playwright MCP production QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Vercel Playwright MCP Reporter metadata evidence",
+          "path": "reports/qa/evidence/qa-20260518-v811172-vercel-playwright-mcp.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter UI generated incident report",
+          "path": "reports/qa/evidence/qa-20260518-v811172-reporter-mcp.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2532907618",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532907618"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/8mZ3ciQgf8UU7i2a3smsw6fxiXaG"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -58731,16 +58888,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 258,
-      "appropriateCount": 221,
+      "seenCount": 259,
+      "appropriateCount": 222,
       "partialCount": 37,
       "inappropriateCount": 0,
       "improvementNeededCount": 47,
-      "lastRunId": "QA-20260517-0512",
-      "lastSeenAt": "2026-05-17T08:57:50.648Z",
+      "lastRunId": "QA-20260518-0524",
+      "lastSeenAt": "2026-05-18T10:16:53.509Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production AI Assistant Chat, Reporter, and Analyst surfaces all returned HTTP 200 and rendered user-visible monitoring/report output in one guest session.",
+      "lastRationale": "Reporter UI generation, API status, artifact persistence, and raw metadata exposure checks covered the changed user-facing AI surface.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -58765,16 +58922,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 83,
-      "appropriateCount": 64,
+      "seenCount": 84,
+      "appropriateCount": 65,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260518-0523",
-      "lastSeenAt": "2026-05-18T06:32:08.153Z",
+      "lastRunId": "QA-20260518-0524",
+      "lastSeenAt": "2026-05-18T10:16:53.509Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Reporter tool-based degraded success now carries sanitized metadata through Cloud Run, Vercel route headers, artifact envelope metadata, and incident artifact UI without exposing raw provider strings.",
+      "lastRationale": "Public UI and artifact workspace did not expose raw fallback reason fields or provider reason details.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -58782,16 +58939,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 195,
-      "appropriateCount": 176,
+      "seenCount": 196,
+      "appropriateCount": 177,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0523",
-      "lastSeenAt": "2026-05-18T06:32:08.153Z",
+      "lastRunId": "QA-20260518-0524",
+      "lastSeenAt": "2026-05-18T10:16:53.509Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel production and Cloud Run revision are aligned on v8.11.172, GitLab release pipeline completed, and Cloud Run remains maxScale 1 with free-tier guardrails.",
+      "lastRationale": "Vercel deployment identity, health endpoints, console cleanliness, and usage check were verified on production.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -58799,16 +58956,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 227,
-      "appropriateCount": 207,
+      "seenCount": 228,
+      "appropriateCount": 208,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0520",
-      "lastSeenAt": "2026-05-18T01:15:27.412Z",
+      "lastRunId": "QA-20260518-0524",
+      "lastSeenAt": "2026-05-18T10:16:53.509Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The stale Playwright MCP context was recovered with browser_close, then the rerun completed with zero console errors or warnings.",
+      "lastRationale": "Playwright MCP exercised rendered routes and Reporter UI generation rather than HTTP-only checks.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

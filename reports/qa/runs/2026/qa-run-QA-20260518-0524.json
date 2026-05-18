@@ -1,0 +1,148 @@
+{
+  "runId": "QA-20260518-0524",
+  "recordedAt": "2026-05-18T10:16:53.509Z",
+  "recordedAtKst": "2026-05-18 19:16:53 KST",
+  "runTitle": "v8.11.172 Vercel Playwright MCP Reporter Metadata Boundary Check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG",
+    "deploymentUrl": "https://openmanager-je43spluy-skyasus-projects.vercel.app",
+    "commitSha": "2aec191db87e94fa7060200a78e68447a460d0f9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production deployment dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG",
+    "Vercel /api/version v8.11.172 commit 2aec191db87e94fa7060200a78e68447a460d0f9",
+    "Vercel /api/health database/cache/AI connected",
+    "Landing route / render with v8.11.172",
+    "Login route /login render with OAuth/email/guest controls",
+    "Dashboard route /dashboard OTel snapshot and server counts",
+    "AI sidebar open and engine Ready indicator",
+    "Reporter UI incident-report generation",
+    "POST /api/ai/incident-report 200",
+    "Reporter visible card raw fallback metadata absence",
+    "Reporter artifact workspace raw fallback metadata absence",
+    "Fullscreen /dashboard/ai-assistant render",
+    "Browser console warnings/errors 0",
+    "Vercel usage post-QA check"
+  ],
+  "skippedSurfaces": [
+    "Full visual regression pack",
+    "Forced production degraded Reporter provider failure path",
+    "Cloud Run admin observability /monitoring and /monitoring/traces",
+    "Local main font bundle-budget commit 6e10e37e Vercel production verification because it is not deployed"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Reporter UI generation, API status, artifact persistence, and raw metadata exposure checks covered the changed user-facing AI surface.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Public UI and artifact workspace did not expose raw fallback reason fields or provider reason details.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel deployment identity, health endpoints, console cleanliness, and usage check were verified on production.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP exercised rendered routes and Reporter UI generation rather than HTTP-only checks.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T19:15:23+09:00",
+      "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Playwright MCP production QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Vercel Playwright MCP Reporter metadata evidence",
+      "path": "reports/qa/evidence/qa-20260518-v811172-vercel-playwright-mcp.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter UI generated incident report",
+      "path": "reports/qa/evidence/qa-20260518-v811172-reporter-mcp.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "reporter-degraded-metadata-vercel-ui-boundary-v811172",
+      "title": "Reporter metadata public UI/artifact boundary verified on Vercel production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright MCP generated one Reporter incident report through the UI and found no raw fallback metadata in visible text or session artifact workspace.",
+    "The run verified deployed production v8.11.172; local HEAD 6e10e37e was not present in Vercel production deployment list."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2532907618",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2532907618"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_8mZ3ciQgf8UU7i2a3smsw6fxiXaG",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/8mZ3ciQgf8UU7i2a3smsw6fxiXaG"
+    }
+  ]
+}
