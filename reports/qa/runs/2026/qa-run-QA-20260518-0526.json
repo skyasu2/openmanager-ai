@@ -1,0 +1,134 @@
+{
+  "runId": "QA-20260518-0526",
+  "recordedAt": "2026-05-18T12:23:32.919Z",
+  "recordedAtKst": "2026-05-18 21:23:32 KST",
+  "runTitle": "v8.11.173 Vercel Playwright MCP Today Reporter Change Check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+    "deploymentUrl": "https://openmanager-cxyz6razc-skyasus-projects.vercel.app",
+    "commitSha": "cdbec15ab4f6d567049c8149ad94470813176c7f"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production / render with v8.11.173 version badge",
+    "Dashboard route /dashboard render with 18-server OTel snapshot",
+    "Dashboard current risk state: 17 online, 0 warning, 1 risk, 0 offline",
+    "AI assistant sidebar open and engine Ready indicator",
+    "Reporter tab open",
+    "Reporter incident report generation for threshold-exceeding server",
+    "Reporter incident report card title/cause/impact/next-action fields",
+    "Reporter detail expansion",
+    "Reporter detected anomaly section with lb-haproxy-dc1-01 CPU 85%",
+    "Reporter recommended actions section",
+    "Reporter postmortem timeline section",
+    "POST /api/ai/incident-report 200",
+    "Vercel usage post-QA check"
+  ],
+  "skippedSurfaces": [
+    "Full visual regression pack",
+    "Forced production degraded Reporter provider fallback path",
+    "Live disk-threshold breach path because current production snapshot has no disk metric above the production critical threshold",
+    "Standard five-question conversational AI suite, because this run targeted today's Reporter changes"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The recheck directly covered the changed Reporter UI/API path, report generation, detail rendering, and postmortem content on the deployed production surface.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run used the normal production UI path and confirmed the AI engine Ready status and successful Reporter API response without bypassing app controls.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The deployed Vercel release, production dashboard OTel snapshot, Reporter API response, and Vercel usage were verified after the change.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP covered the browser path and durable evidence was captured; disk/SLA/dedup edge cases remain covered by targeted regression tests from the release.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-18T21:22:00+09:00",
+      "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after the targeted Reporter MCP recheck.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Today Reporter change check evidence",
+      "path": "reports/qa/evidence/qa-20260518-v811173-today-reporter-mcp.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter incident detail",
+      "path": "reports/qa/evidence/qa-20260518-v811173-today-reporter-mcp.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production Reporter generated an incident report for lb-haproxy-dc1-01 CPU 85% with one risk server.",
+    "Detail view displayed detected anomaly, recommended actions, pattern, and postmortem timeline.",
+    "The live snapshot did not include a critical disk breach, so the disk threshold fix was not live-triggered in this targeted production run."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2533982020",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2533982020"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/EWpPNaJ7EXfkPKngFjwZTpo5mAqy"
+    }
+  ]
+}

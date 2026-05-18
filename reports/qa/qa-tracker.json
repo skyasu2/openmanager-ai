@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T11:57:44.191Z"
+    "updatedAt": "2026-05-18T12:23:32.919Z"
   },
   "sequence": {
-    "nextRunNumber": 526
+    "nextRunNumber": 527
   },
   "summary": {
-    "totalRecordedRuns": 523,
-    "totalRuns": 417,
+    "totalRecordedRuns": 524,
+    "totalRuns": 418,
     "excludedRuns": 106,
-    "totalChecks": 3775,
-    "totalPassed": 3630,
+    "totalChecks": 3788,
+    "totalPassed": 3643,
     "totalFailed": 134,
     "completionRate": 100,
     "completedItems": 597,
@@ -21,10 +21,10 @@
     "wontFixItems": 24,
     "expertDomainsTracked": 15,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260518-0525",
-    "lastRecordedAt": "2026-05-18T11:57:44.191Z",
-    "latestRecordedRunId": "QA-20260518-0525",
-    "latestRecordedAt": "2026-05-18T11:57:44.191Z"
+    "lastRunId": "QA-20260518-0526",
+    "lastRecordedAt": "2026-05-18T12:23:32.919Z",
+    "latestRecordedRunId": "QA-20260518-0526",
+    "latestRecordedAt": "2026-05-18T12:23:32.919Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -59097,6 +59097,138 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260518-0526",
+      "recordedAt": "2026-05-18T12:23:32.919Z",
+      "recordedAtKst": "2026-05-18 21:23:32 KST",
+      "title": "v8.11.173 Vercel Playwright MCP Today Reporter Change Check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260518-0526.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+        "deploymentUrl": "https://openmanager-cxyz6razc-skyasus-projects.vercel.app",
+        "commitSha": "cdbec15ab4f6d567049c8149ad94470813176c7f"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production / render with v8.11.173 version badge",
+        "Dashboard route /dashboard render with 18-server OTel snapshot",
+        "Dashboard current risk state: 17 online, 0 warning, 1 risk, 0 offline",
+        "AI assistant sidebar open and engine Ready indicator",
+        "Reporter tab open",
+        "Reporter incident report generation for threshold-exceeding server",
+        "Reporter incident report card title/cause/impact/next-action fields",
+        "Reporter detail expansion",
+        "Reporter detected anomaly section with lb-haproxy-dc1-01 CPU 85%",
+        "Reporter recommended actions section",
+        "Reporter postmortem timeline section",
+        "POST /api/ai/incident-report 200",
+        "Vercel usage post-QA check"
+      ],
+      "skippedSurfaces": [
+        "Full visual regression pack",
+        "Forced production degraded Reporter provider fallback path",
+        "Live disk-threshold breach path because current production snapshot has no disk metric above the production critical threshold",
+        "Standard five-question conversational AI suite, because this run targeted today's Reporter changes"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The recheck directly covered the changed Reporter UI/API path, report generation, detail rendering, and postmortem content on the deployed production surface.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run used the normal production UI path and confirmed the AI engine Ready status and successful Reporter API response without bypassing app controls.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The deployed Vercel release, production dashboard OTel snapshot, Reporter API response, and Vercel usage were verified after the change.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP covered the browser path and durable evidence was captured; disk/SLA/dedup edge cases remain covered by targeted regression tests from the release.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-18T21:22:00+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after the targeted Reporter MCP recheck.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Today Reporter change check evidence",
+          "path": "reports/qa/evidence/qa-20260518-v811173-today-reporter-mcp.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter incident detail",
+          "path": "reports/qa/evidence/qa-20260518-v811173-today-reporter-mcp.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2533982020",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2533982020"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_EWpPNaJ7EXfkPKngFjwZTpo5mAqy",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EWpPNaJ7EXfkPKngFjwZTpo5mAqy"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -59105,16 +59237,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 260,
-      "appropriateCount": 223,
+      "seenCount": 261,
+      "appropriateCount": 224,
       "partialCount": 37,
       "inappropriateCount": 0,
       "improvementNeededCount": 47,
-      "lastRunId": "QA-20260518-0525",
-      "lastSeenAt": "2026-05-18T11:57:44.191Z",
+      "lastRunId": "QA-20260518-0526",
+      "lastSeenAt": "2026-05-18T12:23:32.919Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Reporter no-incident UI generation, report detail rendering, production API status, and regression-test-only edge paths covered the review fixes at the right risk level.",
+      "lastRationale": "The recheck directly covered the changed Reporter UI/API path, report generation, detail rendering, and postmortem content on the deployed production surface.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -59139,16 +59271,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 85,
-      "appropriateCount": 66,
+      "seenCount": 86,
+      "appropriateCount": 67,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260518-0525",
-      "lastSeenAt": "2026-05-18T11:57:44.191Z",
+      "lastRunId": "QA-20260518-0526",
+      "lastSeenAt": "2026-05-18T12:23:32.919Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The release preserved the authenticated UI path and used the normal CSRF-protected Reporter flow instead of bypassing production controls.",
+      "lastRationale": "The run used the normal production UI path and confirmed the AI engine Ready status and successful Reporter API response without bypassing app controls.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -59156,16 +59288,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 197,
-      "appropriateCount": 178,
+      "seenCount": 198,
+      "appropriateCount": 179,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260518-0525",
-      "lastSeenAt": "2026-05-18T11:57:44.191Z",
+      "lastRunId": "QA-20260518-0526",
+      "lastSeenAt": "2026-05-18T12:23:32.919Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel production deployment, Cloud Run health, and Vercel usage were all verified after release.",
+      "lastRationale": "The deployed Vercel release, production dashboard OTel snapshot, Reporter API response, and Vercel usage were verified after the change.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -59173,16 +59305,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 229,
-      "appropriateCount": 209,
+      "seenCount": 230,
+      "appropriateCount": 210,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260518-0525",
-      "lastSeenAt": "2026-05-18T11:57:44.191Z",
+      "lastRunId": "QA-20260518-0526",
+      "lastSeenAt": "2026-05-18T12:23:32.919Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Local regression tests covered disk timeline, SLA short-window threshold, and command dedup edge cases; Playwright MCP covered the rendered production Reporter surface.",
+      "lastRationale": "Playwright MCP covered the browser path and durable evidence was captured; disk/SLA/dedup edge cases remain covered by targeted regression tests from the release.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
