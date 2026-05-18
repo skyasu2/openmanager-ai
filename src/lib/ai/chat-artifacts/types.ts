@@ -38,6 +38,13 @@ export interface ArtifactProviderSummary {
   attempts?: ArtifactProviderAttemptSummary[];
 }
 
+export interface ArtifactDegradationSummary {
+  degraded: boolean;
+  reasonCode?: string;
+  fallbackSource?: string;
+  fallbackReason?: string;
+}
+
 export interface ArtifactContractMetadata {
   artifactVersion?: string;
   sourceMode?: ArtifactSourceMode;
@@ -45,6 +52,7 @@ export interface ArtifactContractMetadata {
   traceId?: string;
   evidence?: ArtifactEvidence[];
   providerSummary?: ArtifactProviderSummary;
+  degradation?: ArtifactDegradationSummary;
 }
 
 export interface ChatArtifact extends ArtifactContractMetadata {
@@ -220,6 +228,7 @@ export interface ArtifactEnvelope<
   traceId?: string;
   evidence?: ArtifactEvidence[];
   providerSummary?: ArtifactProviderSummary;
+  degradation?: ArtifactDegradationSummary;
   payload: TArtifact;
 }
 
@@ -231,6 +240,7 @@ export interface CreateArtifactEnvelopeOptions {
   traceId?: string;
   evidence?: ArtifactEvidence[];
   providerSummary?: unknown;
+  degradation?: unknown;
 }
 
 type VersionedArtifact<TArtifact extends ChatArtifact> = TArtifact & {
@@ -372,12 +382,35 @@ export function sanitizeArtifactProviderSummary(
   return Object.keys(summary).length > 0 ? summary : undefined;
 }
 
+export function sanitizeArtifactDegradationSummary(
+  value: unknown
+): ArtifactDegradationSummary | undefined {
+  if (!isRecord(value)) return undefined;
+  if (typeof value.degraded !== 'boolean') return undefined;
+
+  return {
+    degraded: value.degraded,
+    ...(readPublicString(value.reasonCode) && {
+      reasonCode: readPublicString(value.reasonCode),
+    }),
+    ...(readPublicString(value.fallbackSource) && {
+      fallbackSource: readPublicString(value.fallbackSource),
+    }),
+    ...(readPublicString(value.fallbackReason) && {
+      fallbackReason: readPublicString(value.fallbackReason),
+    }),
+  };
+}
+
 export function createArtifactEnvelope<TArtifact extends ChatArtifact>(
   artifact: TArtifact,
   options: CreateArtifactEnvelopeOptions = {}
 ): ArtifactEnvelope<TArtifact> {
   const providerSummary = sanitizeArtifactProviderSummary(
     options.providerSummary ?? artifact.providerSummary
+  );
+  const degradation = sanitizeArtifactDegradationSummary(
+    options.degradation ?? artifact.degradation
   );
   const evidence = options.evidence ?? readArtifactEvidence(artifact.evidence);
 
@@ -398,6 +431,7 @@ export function createArtifactEnvelope<TArtifact extends ChatArtifact>(
     }),
     ...(evidence && { evidence }),
     ...(providerSummary && { providerSummary }),
+    ...(degradation && { degradation }),
     payload: artifact,
   };
 }
@@ -426,5 +460,6 @@ export function attachArtifactEnvelopeMetadata<TArtifact extends ChatArtifact>(
     ...(envelope.providerSummary && {
       providerSummary: envelope.providerSummary,
     }),
+    ...(envelope.degradation && { degradation: envelope.degradation }),
   };
 }

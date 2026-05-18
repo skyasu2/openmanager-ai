@@ -48,6 +48,10 @@ describe('generateIncidentReportArtifact', () => {
           root_cause_analysis: {
             primary_cause: 'API 서버 CPU가 임계치를 초과했습니다.',
           },
+          degraded: true,
+          fallbackSource: 'tool-based',
+          fallbackReasonCode: 'provider_parse_drift',
+          fallbackReason: 'No object generated: could not parse the response.',
           _source: 'cloud-run',
         },
       }),
@@ -65,6 +69,16 @@ describe('generateIncidentReportArtifact', () => {
       sourceMode: 'tool-result',
       dataSlot: '07:00 KST',
       source: 'cloud-run',
+      degradation: {
+        degraded: true,
+        fallbackSource: 'tool-based',
+        reasonCode: 'provider_parse_drift',
+        fallbackReason: 'No object generated: could not parse the response.',
+      },
+      providerSummary: {
+        usedFallback: true,
+        fallbackReason: 'provider_parse_drift',
+      },
       report: {
         id: 'incident-artifact-1',
         title: 'API CPU 포화',

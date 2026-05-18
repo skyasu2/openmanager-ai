@@ -151,6 +151,9 @@ export function IncidentReportArtifactCard({
   const timeline = report.timeline?.slice(0, 2) ?? [];
   const logPatterns = report.logPatterns?.slice(0, 3) ?? [];
   const uptimeImpact = formatUptimeImpact(report.systemSummary);
+  const degradation = artifact.degradation?.degraded
+    ? artifact.degradation
+    : null;
   const hasDetails =
     affectedServers.length > 0 ||
     recommendations.length > 0 ||
@@ -186,6 +189,18 @@ export function IncidentReportArtifactCard({
             >
               {report.severity}
             </span>
+            {degradation && (
+              <span
+                className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-medium text-slate-600"
+                title={
+                  degradation.reasonCode
+                    ? `보완 경로: ${degradation.reasonCode}`
+                    : '보완 경로'
+                }
+              >
+                도구 기반 보완
+              </span>
+            )}
           </div>
           <h3 className="mt-1 truncate text-sm font-medium text-slate-800">
             {report.title}

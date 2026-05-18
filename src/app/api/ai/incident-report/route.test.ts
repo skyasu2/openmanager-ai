@@ -193,6 +193,43 @@ describe('/api/ai/incident-report POST', () => {
     expect(data.report?.id).toBe('report-1');
   });
 
+  it('Cloud Run degraded-success 메타데이터를 성공 응답에 보존한다', async () => {
+    mockProxyToCloudRun.mockResolvedValueOnce({
+      success: true,
+      data: {
+        id: 'report-degraded',
+        title: '도구 기반 보고서',
+        severity: 'warning',
+        created_at: '2026-05-18T02:30:00.000Z',
+        affected_servers: ['cache-redis-dc1-01'],
+        degraded: true,
+        fallbackSource: 'tool-based',
+        fallbackReasonCode: 'provider_parse_drift',
+        fallbackReason: 'No object generated: could not parse the response.',
+      },
+    });
+
+    const response = await POST(
+      createPostRequest({ action: 'generate', metrics: [] })
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-Fallback-Response')).toBeNull();
+    expect(response.headers.get('X-AI-Degraded')).toBe('true');
+    expect(response.headers.get('X-AI-Degradation-Reason')).toBe(
+      'provider_parse_drift'
+    );
+    expect(response.headers.get('X-AI-Fallback-Source')).toBe('tool-based');
+    expect(data.success).toBe(true);
+    expect(data.report).toMatchObject({
+      id: 'report-degraded',
+      degraded: true,
+      fallbackSource: 'tool-based',
+      fallbackReasonCode: 'provider_parse_drift',
+    });
+  });
+
   it('enableRAG 값이 Cloud Run proxy body에 전달되어야 함', async () => {
     await POST(
       createPostRequest({ action: 'generate', metrics: [], enableRAG: true })

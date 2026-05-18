@@ -255,6 +255,11 @@ describe('AI artifact cards', () => {
         artifact={{
           kind: 'incident-report',
           generatedAt: '2026-05-02T00:00:00.000Z',
+          degradation: {
+            degraded: true,
+            reasonCode: 'provider_parse_drift',
+            fallbackSource: 'tool-based',
+          },
           report: {
             id: 'incident-artifact-1',
             title: 'DB 메모리 경고',
@@ -272,6 +277,7 @@ describe('AI artifact cards', () => {
     expect(
       screen.getByRole('heading', { name: 'DB 메모리 경고' })
     ).toBeInTheDocument();
+    expect(screen.getByText('도구 기반 보완')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /MD 다운로드/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /TXT 다운로드/i })).toBeEnabled();
     expect(

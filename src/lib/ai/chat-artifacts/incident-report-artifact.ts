@@ -4,6 +4,7 @@ import {
 } from '@/components/ai/pages/auto-report/types';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import {
+  type ArtifactDegradationSummary,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
   type IncidentReportArtifact,
@@ -145,6 +146,27 @@ function normalizeIncidentReport(
   };
 }
 
+function normalizeDegradationSummary(
+  rawReport: Record<string, unknown>
+): ArtifactDegradationSummary | undefined {
+  if (rawReport.degraded !== true) return undefined;
+
+  const reasonCode = readString(
+    rawReport.fallbackReasonCode ?? rawReport.degradationReasonCode
+  );
+  const fallbackSource = readString(rawReport.fallbackSource);
+  const fallbackReason = readString(
+    rawReport.fallbackReason ?? rawReport._fallbackReason
+  );
+
+  return {
+    degraded: true,
+    ...(reasonCode && { reasonCode }),
+    ...(fallbackSource && { fallbackSource }),
+    ...(fallbackReason && { fallbackReason }),
+  };
+}
+
 export async function generateIncidentReportArtifact({
   query,
   sessionId,
@@ -186,6 +208,7 @@ export async function generateIncidentReportArtifact({
   }
 
   const report = normalizeIncidentReport(data.report);
+  const degradation = normalizeDegradationSummary(data.report);
 
   return attachArtifactEnvelopeMetadata<IncidentReportArtifact>(
     {
@@ -194,6 +217,14 @@ export async function generateIncidentReportArtifact({
       report,
       source:
         readString(data.report._source) || readString(data.source) || undefined,
+      ...(degradation && {
+        degradation,
+        providerSummary: {
+          usedFallback: true,
+          fallbackReason:
+            degradation.reasonCode ?? degradation.fallbackReason ?? 'degraded',
+        },
+      }),
       queryAsOfDataSlot,
     },
     {

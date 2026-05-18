@@ -30,6 +30,28 @@ import {
 
 type ValidationFieldErrors = Record<string, string[] | undefined>;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function readIncidentReportDegradation(responseData: Record<string, unknown>) {
+  const report = responseData.report;
+  if (!isRecord(report) || report.degraded !== true) return null;
+
+  return {
+    reasonCode:
+      typeof report.fallbackReasonCode === 'string'
+        ? report.fallbackReasonCode
+        : typeof report.degradationReasonCode === 'string'
+          ? report.degradationReasonCode
+          : 'reporter_degraded',
+    fallbackSource:
+      typeof report.fallbackSource === 'string'
+        ? report.fallbackSource
+        : 'tool-based',
+  };
+}
+
 export function createValidationErrorResponse(
   fieldErrors: ValidationFieldErrors
 ) {
@@ -158,6 +180,12 @@ function createSuccessResponse(
   }
   if (didDirectRetry) {
     successHeaders['X-Direct-Retry'] = '1';
+  }
+  const degradation = readIncidentReportDegradation(responseData);
+  if (degradation) {
+    successHeaders['X-AI-Degraded'] = 'true';
+    successHeaders['X-AI-Degradation-Reason'] = degradation.reasonCode;
+    successHeaders['X-AI-Fallback-Source'] = degradation.fallbackSource;
   }
 
   return NextResponse.json(responseData, {
