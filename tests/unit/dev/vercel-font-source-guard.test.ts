@@ -56,6 +56,7 @@ describe('Vercel font source guard', () => {
     expect(layout).toContain(
       "import { Noto_Sans_KR } from 'next/font/google';"
     );
+    expect(layout).toContain("weight: 'variable'");
     expect(layout).toContain("variable: '--font-noto-sans-kr'");
     expect(layout).toContain('className={notoSansKR.variable}');
     expect(globals).toContain('var(--font-noto-sans-kr)');

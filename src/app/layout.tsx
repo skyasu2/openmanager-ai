@@ -18,7 +18,7 @@ const SITE_NAME = 'OpenManager AI';
 // next/font: 빌드 시 self-host -> 런타임 외부 요청 없음.
 const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '700', '800'],
+  weight: 'variable',
   variable: '--font-noto-sans-kr',
   display: 'swap',
 });
