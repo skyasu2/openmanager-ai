@@ -143,8 +143,8 @@
 
 - [x] Task 0 — Plan approval and current runtime hardening scope review
   - 완료 기준: 이 plan이 Approved로 전환되고, 이번 runtime hardening 변경 범위가 plan 범위와 일치함을 확인한다.
-- [ ] Task 1 — Analyst lightweight evidence contract finalize
-  - 완료 기준: targeted Analyst tests, AI Engine `type-check`, AI Engine full test 통과 완료. GitLab commit/push/pipeline 확인은 production post-deploy retest와 함께 남았다.
+- [x] Task 1 — Analyst lightweight evidence contract finalize
+  - 완료 기준: targeted Analyst tests, AI Engine `type-check`, AI Engine full test 통과 완료. GitLab main pipeline `2536158018` success. production post-deploy retest는 QA pending closure로 남았다.
 - [x] Task 2 — Reporter live generation/degraded closure QA
   - 완료 기준: production incident report generation을 실행하고 `degraded`/`fallbackReasonCode`/latency를 QA에 기록한다.
 - [x] Task 3 — Broad QA skipped surface closure
@@ -190,7 +190,7 @@
 
 ## 완료 기준
 
-- [ ] Analyst evidence contract 변경이 GitLab pipeline을 통과한다.
+- [x] Analyst evidence contract 변경이 GitLab pipeline을 통과한다. (`2536158018` success)
 - [x] Vercel production QA가 최신 skipped surface를 보강한다.
 - [x] Reporter live generation degraded 상태가 기록되고, 필요 시 후속 code-fix가 분리된다.
 - [x] 장기 세션 data slot freeze가 정책적으로 정리된다.
