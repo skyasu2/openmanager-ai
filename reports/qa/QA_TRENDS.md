@@ -1,39 +1,39 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-19 15:25:41 KST
+> Generated at: 2026-05-19 16:40:24 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 534 |
-| Counted Runs | 427 |
-| Total Checks | 3891 |
-| Total Passed | 3738 |
+| Recorded Runs | 535 |
+| Counted Runs | 428 |
+| Total Checks | 3898 |
+| Total Passed | 3745 |
 | Total Failed | 142 |
 | Overall Pass Rate | 96.07% |
-| Latest Recorded Run | QA-20260519-0536 |
-| Last Counted Run | QA-20260519-0535 |
+| Latest Recorded Run | QA-20260519-0537 |
+| Last Counted Run | QA-20260519-0537 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T06:23:47.328Z -> 2026-05-19T06:23:47.328Z (24h)
+- Window: 2026-05-18T07:40:00.196Z -> 2026-05-19T07:40:00.196Z (24h)
 - Runs with observations: 4 recorded / 4 counted
-- Samples: 7
+- Samples: 8
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | mistral | 2 | 14779ms | 23558ms | - | - | - | - | QA-20260519-0535 |
 | NLQ Agent | unknown | 1 | 14000ms | 14000ms | - | - | - | - | QA-20260519-0532 |
 | Reporter Agent | unknown | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260519-0532 |
-| Reporter Agent | cloud-run | 1 | 2086ms | 2086ms | - | - | 2086ms | 2086ms | QA-20260518-0523 |
 | NLQ | deterministic | 1 | 310ms | 310ms | - | - | - | - | QA-20260519-0533 |
-| Analyst Agent | deterministic | 1 | 273ms | 273ms | - | - | - | - | QA-20260519-0535 |
+| Analyst Agent | deterministic | 2 | 137ms | 273ms | - | - | - | - | QA-20260519-0537 |
+| Advisor Agent | deterministic | 1 | 0ms | 0ms | - | - | - | - | QA-20260519-0537 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T06:23:47.328Z -> 2026-05-19T06:23:47.328Z (24h)
+- Window: 2026-05-18T07:40:00.196Z -> 2026-05-19T07:40:00.196Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -52,9 +52,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 427 | 3891 | 96.07% | 78 | 18.27% | 86 | 20.14% |
-| Last 30 Counted Runs | 30 | 370 | 95.68% | 6 | 20% | 6 | 20% |
-| Last 10 Counted Runs | 10 | 116 | 93.1% | 3 | 30% | 3 | 30% |
+| All Counted Runs | 428 | 3898 | 96.07% | 78 | 18.22% | 86 | 20.09% |
+| Last 30 Counted Runs | 30 | 367 | 95.64% | 6 | 20% | 6 | 20% |
+| Last 10 Counted Runs | 10 | 110 | 92.73% | 3 | 30% | 3 | 30% |
 
 ## Gate Run Windows
 
@@ -74,7 +74,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 348 | 242 |
+| targeted | 349 | 243 |
 | legacy | 137 | 137 |
 | broad | 35 | 34 |
 | release-gate | 9 | 9 |
@@ -84,7 +84,7 @@
 
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| P0 | 47 | 9 | 19.15% | 1 | 0 | 0% | 46 | 0 |
+| P0 | 47 | 10 | 21.28% | 0 | 0 | 0% | 47 | 0 |
 | P1 | 272 | 102 | 37.5% | 0 | 0 | 0% | 266 | 6 |
 | P2 | 279 | 59 | 21.15% | 0 | 0 | 0% | 260 | 19 |
 | P3 | 40 | 14 | 35% | 0 | 0 | 0% | 39 | 1 |
@@ -94,6 +94,7 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| dpl_E5zZztMow1QgjEaSyvPCL1Sj3hqP | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260519-0537 | cb05a58e |
 | icn1::icn1::7hs47-1779167617388-c78b3062ad59 | vercel-production | 1 | 18 | 77.78% | 1 | 100% | QA-20260519-0535 | 4ce2e3f7 |
 | dpl_clytpcga8 | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260519-0534 | 870fb39a |
 | dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1 | vercel-production | 3 | 23 | 91.3% | 1 | 33.33% | QA-20260519-0533 | 5801a008 |
@@ -105,7 +106,6 @@
 | dpl_6vJBFjs5zyp5P3TtaVWoP7hskWFi | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260518-0522 | eace7809 |
 | v8.11.169-gitlab-pipeline-2532228902 | vercel-production | 2 | 28 | 100% | 0 | 0% | QA-20260518-0519 | 8e294644 |
 | v8.11.168-gitlab-pipeline-2531890112 | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260518-0517 | f6fe6632 |
-| dpl_5Tn7eRynsx1aP6cnVWipELbfDE5G | vercel-production | 2 | 34 | 100% | 0 | 0% | QA-20260518-0516 | 125fcbaf |
 
 ## Recent Daily Trend (KST)
 
@@ -124,7 +124,7 @@
 | 2026-05-15 | 4 | 63 | 100% | 0 | 0 | 0% |
 | 2026-05-17 | 3 | 29 | 93.1% | 1 | 1 | 33.33% |
 | 2026-05-18 | 13 | 173 | 96.53% | 2 | 2 | 15.38% |
-| 2026-05-19 | 8 | 83 | 90.36% | 3 | 3 | 37.5% |
+| 2026-05-19 | 9 | 90 | 91.11% | 3 | 3 | 33.33% |
 
 ## Recent Regression Runs
 
@@ -145,7 +145,6 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
-| weekly-hardening-production-post-deploy-retest | P0 | pending | 1 | QA-20260519-0536 | Deploy weekly hardening changes and rerun focused Vercel production QA |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

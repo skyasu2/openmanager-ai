@@ -1,0 +1,153 @@
+{
+  "runId": "QA-20260519-0537",
+  "recordedAt": "2026-05-19T07:40:00.196Z",
+  "recordedAtKst": "2026-05-19 16:40:00 KST",
+  "runTitle": "v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_E5zZztMow1QgjEaSyvPCL1Sj3hqP",
+    "deploymentUrl": "https://openmanager-axbcbgn0x-skyasus-projects.vercel.app",
+    "commitSha": "cb05a58efae1b0059b652f5c7222a29023a5d134"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface", "observability-pack"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant (AI Chat remediation query)",
+    "/dashboard/ai-assistant (이상감지/추세 single-server analysis)",
+    "/api/ai/intelligent-monitoring analyze_server",
+    "/api/version",
+    "GitLab tag pipeline deploy smoke",
+    "Vercel usage check"
+  ],
+  "skippedSurfaces": [
+    "vision agent (not changed in v8.11.181 hotfix)",
+    "rate limit 429 직접 트리거 (일일 한도 보존)"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Chat - Redis memory remediation command response",
+      "agent": "Advisor Agent",
+      "provider": "deterministic",
+      "model": "service-command-catalog",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright UI footer",
+      "latencyMs": 0
+    },
+    {
+      "surface": "Intelligent Monitoring single-server analyze_server cache HIT",
+      "agent": "Analyst Agent",
+      "provider": "deterministic",
+      "model": "monitoring-analyze-server",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "Playwright fetch headers",
+      "latencyMs": 0
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Advisor remediation output returned command-focused Redis diagnostics, and the Analyst single-server UI no longer fails on cached analyze_server responses.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Single-server analysis displayed current anomalies, thresholds, and trend sections for cache-redis-dc1-01 using the latest OTel slot.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Main hotfix pipeline and v8.11.181 tag pipeline both completed successfully, and production version smoke passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The previous production failure was reproduced first, fixed with a cache-HIT regression test, deployed, and retested with Playwright MCP.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-19T16:36:23+09:00",
+      "summary": "Current billing period checked after v8.11.181 production QA; effective=12.6977 USD, billed=0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.181 weekly hardening post-deploy evidence",
+      "path": "reports/qa/evidence/qa-20260519-v811181-weekly-hardening-post-deploy.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "weekly-hardening-production-post-deploy-retest",
+      "title": "Deploy weekly hardening changes and rerun focused Vercel production QA",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.181 Playwright MCP retest: AI remediation command response, analyze_server cache HIT contract, and single-server UI analysis all passed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.11.180 production QA reproduced the stale cache-HIT single-server UI failure before the hotfix.",
+    "v8.11.181 normalizes cached legacy analyze_server responses after withAICache.",
+    "Direct API verification used the same sessionId/queryAsOf cache key and observed X-Cache=HIT with data object shape."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main hotfix pipeline 2536302748",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536302748"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.11.181 tag pipeline 2536315753",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536315753"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-19T06:23:47.328Z"
+    "updatedAt": "2026-05-19T07:40:00.196Z"
   },
   "sequence": {
-    "nextRunNumber": 537
+    "nextRunNumber": 538
   },
   "summary": {
-    "totalRecordedRuns": 534,
-    "totalRuns": 427,
+    "totalRecordedRuns": 535,
+    "totalRuns": 428,
     "excludedRuns": 107,
-    "totalChecks": 3891,
-    "totalPassed": 3738,
+    "totalChecks": 3898,
+    "totalPassed": 3745,
     "totalFailed": 142,
-    "completionRate": 99.84,
-    "completedItems": 611,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 612,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 27,
     "expertDomainsTracked": 17,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260519-0535",
-    "lastRecordedAt": "2026-05-19T05:14:14.572Z",
-    "latestRecordedRunId": "QA-20260519-0536",
-    "latestRecordedAt": "2026-05-19T06:23:47.328Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260519-0537",
+    "lastRecordedAt": "2026-05-19T07:40:00.196Z",
+    "latestRecordedRunId": "QA-20260519-0537",
+    "latestRecordedAt": "2026-05-19T07:40:00.196Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15046,25 +15046,25 @@
       "id": "weekly-hardening-production-post-deploy-retest",
       "title": "Deploy weekly hardening changes and rerun focused Vercel production QA",
       "priority": "P0",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260519-0536",
       "firstSeenAt": "2026-05-19T06:23:47.328Z",
-      "lastSeenRunId": "QA-20260519-0536",
-      "lastSeenAt": "2026-05-19T06:23:47.328Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260519-0537",
+      "lastSeenAt": "2026-05-19T07:40:00.196Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.11.181 Playwright MCP retest: AI remediation command response, analyze_server cache HIT contract, and single-server UI analysis all passed.",
       "lastNote": "Local contracts are green; production closure requires GitLab pipeline/deploy and focused Vercel retest for AI Chat remediation and analyze_server shape.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-19T06:23:47.328Z"
+      "lastStatusChangeAt": "2026-05-19T07:40:00.196Z"
     }
   },
   "runs": [
@@ -60994,6 +60994,147 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260519-0537",
+      "recordedAt": "2026-05-19T07:40:00.196Z",
+      "recordedAtKst": "2026-05-19 16:40:00 KST",
+      "title": "v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260519-0537.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_E5zZztMow1QgjEaSyvPCL1Sj3hqP",
+        "deploymentUrl": "https://openmanager-axbcbgn0x-skyasus-projects.vercel.app",
+        "commitSha": "cb05a58efae1b0059b652f5c7222a29023a5d134"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant (AI Chat remediation query)",
+        "/dashboard/ai-assistant (이상감지/추세 single-server analysis)",
+        "/api/ai/intelligent-monitoring analyze_server",
+        "/api/version",
+        "GitLab tag pipeline deploy smoke",
+        "Vercel usage check"
+      ],
+      "skippedSurfaces": [
+        "vision agent (not changed in v8.11.181 hotfix)",
+        "rate limit 429 직접 트리거 (일일 한도 보존)"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Chat - Redis memory remediation command response",
+          "agent": "Advisor Agent",
+          "provider": "deterministic",
+          "model": "service-command-catalog",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright UI footer",
+          "latencyMs": 0
+        },
+        {
+          "surface": "Intelligent Monitoring single-server analyze_server cache HIT",
+          "agent": "Analyst Agent",
+          "provider": "deterministic",
+          "model": "monitoring-analyze-server",
+          "route": "/api/ai/intelligent-monitoring",
+          "source": "Playwright fetch headers",
+          "latencyMs": 0
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Advisor remediation output returned command-focused Redis diagnostics, and the Analyst single-server UI no longer fails on cached analyze_server responses.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Single-server analysis displayed current anomalies, thresholds, and trend sections for cache-redis-dc1-01 using the latest OTel slot.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Main hotfix pipeline and v8.11.181 tag pipeline both completed successfully, and production version smoke passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previous production failure was reproduced first, fixed with a cache-HIT regression test, deployed, and retested with Playwright MCP.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-19T16:36:23+09:00",
+          "summary": "Current billing period checked after v8.11.181 production QA; effective=12.6977 USD, billed=0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.181 weekly hardening post-deploy evidence",
+          "path": "reports/qa/evidence/qa-20260519-v811181-weekly-hardening-post-deploy.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main hotfix pipeline 2536302748",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536302748"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.11.181 tag pipeline 2536315753",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536315753"
+        },
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -61002,33 +61143,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 267,
-      "appropriateCount": 227,
+      "seenCount": 268,
+      "appropriateCount": 228,
       "partialCount": 40,
       "inappropriateCount": 0,
       "improvementNeededCount": 50,
-      "lastRunId": "QA-20260519-0536",
-      "lastSeenAt": "2026-05-19T06:23:47.328Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Local contract tests now cover the production QA-20260519-0535 failures, but Vercel production still needs a post-deploy retest before release closure.",
-      "lastNextAction": "Deploy weekly hardening changes and rerun focused Vercel AI Assistant/analyze_server QA."
+      "lastRunId": "QA-20260519-0537",
+      "lastSeenAt": "2026-05-19T07:40:00.196Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Advisor remediation output returned command-focused Redis diagnostics, and the Analyst single-server UI no longer fails on cached analyze_server responses.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 133,
-      "appropriateCount": 101,
+      "seenCount": 134,
+      "appropriateCount": 102,
       "partialCount": 32,
       "inappropriateCount": 0,
       "improvementNeededCount": 33,
-      "lastRunId": "QA-20260519-0536",
-      "lastSeenAt": "2026-05-19T06:23:47.328Z",
+      "lastRunId": "QA-20260519-0537",
+      "lastSeenAt": "2026-05-19T07:40:00.196Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Analyst tools expose deterministic evidence boundaries, signal-strength semantics, and metric-level trend rationale without adding heavy ML or extra LLM loops.",
+      "lastRationale": "Single-server analysis displayed current anomalies, thresholds, and trend sections for cache-redis-dc1-01 using the latest OTel slot.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -61053,16 +61194,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 202,
-      "appropriateCount": 182,
+      "seenCount": 203,
+      "appropriateCount": 183,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260519-0534",
-      "lastSeenAt": "2026-05-19T04:11:01.014Z",
+      "lastRunId": "QA-20260519-0537",
+      "lastSeenAt": "2026-05-19T07:40:00.196Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2535911663, Vercel production smoke, and usage guard all passed for v8.11.179.",
+      "lastRationale": "Main hotfix pipeline and v8.11.181 tag pipeline both completed successfully, and production version smoke passed.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -61070,16 +61211,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 237,
-      "appropriateCount": 217,
+      "seenCount": 238,
+      "appropriateCount": 218,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260519-0534",
-      "lastSeenAt": "2026-05-19T04:11:01.014Z",
+      "lastRunId": "QA-20260519-0537",
+      "lastSeenAt": "2026-05-19T07:40:00.196Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Regression coverage includes targeted Vitest assertions for scaled confidence plus Playwright MCP production verification.",
+      "lastRationale": "The previous production failure was reproduced first, fixed with a cache-HIT regression test, deployed, and retested with Playwright MCP.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

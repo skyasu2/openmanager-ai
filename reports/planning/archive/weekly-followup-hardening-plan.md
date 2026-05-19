@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-19
 > Tags: qa,analyst,reporter,vercel,cloud-run,free-tier
 
 # Weekly Follow-up Hardening Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-19
 - TODO.md 연결: Active Tasks > 주간 개선 후속 안정화
 
@@ -194,6 +194,6 @@
 - [x] Vercel production QA가 최신 skipped surface를 보강한다.
 - [x] Reporter live generation degraded 상태가 기록되고, 필요 시 후속 code-fix가 분리된다.
 - [x] 장기 세션 data slot freeze가 정책적으로 정리된다.
-- [ ] `npm run qa:status`에서 pending 0, expert open gap 0 유지.
+- [x] `npm run qa:status`에서 pending 0, expert open gap 0 유지. (`QA-20260519-0537`)
 - [x] `npm run qa:evidence:audit`에서 orphan/missing warning 0 유지.
-- [ ] 완료 후 이 plan은 `reports/planning/archive/`로 이동한다.
+- [x] 완료 후 이 plan은 `reports/planning/archive/`로 이동한다.

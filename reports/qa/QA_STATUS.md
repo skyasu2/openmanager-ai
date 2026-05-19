@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 15:25:40 KST
+> Generated at: 2026-05-19 16:40:23 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 534 |
-| Total Runs (Counted) | 427 |
+| Total Recorded Runs | 535 |
+| Total Runs (Counted) | 428 |
 | Non-counted Runs | 107 |
-| Total Checks | 3891 |
-| Passed | 3738 |
+| Total Checks | 3898 |
+| Passed | 3745 |
 | Failed | 142 |
-| Completed Items | 611 |
-| Pending Items | 1 |
+| Completed Items | 612 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 27 |
 | Expert Domains Tracked | 17 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.84% |
-| Last Counted Run | QA-20260519-0535 (2026-05-19T05:14:14.572Z) |
-| Latest Recorded Run | QA-20260519-0536 (2026-05-19T06:23:47.328Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260519-0537 (2026-05-19T07:40:00.196Z) |
+| Latest Recorded Run | QA-20260519-0537 (2026-05-19T07:40:00.196Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,38 +34,39 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0536 (2026-05-19T06:23:47.328Z)
+Latest run: QA-20260519-0537 (2026-05-19T07:40:00.196Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Deploy weekly hardening changes and rerun focused Vercel AI Assistant/analyze_server QA. |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | not-applicable | skipped | unknown | Local deterministic contract closure only; no Vercel function/build usage was generated. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.181 production QA; effective=12.6977 USD, billed=0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T06:23:47.328Z -> 2026-05-19T06:23:47.328Z (24h)
+- Window: 2026-05-18T07:40:00.196Z -> 2026-05-19T07:40:00.196Z (24h)
 - Runs with observations: 4 recorded / 4 counted
-- Samples: 7
+- Samples: 8
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | mistral | 2 | 14779ms | 23558ms | - | - | - | - | QA-20260519-0535 |
 | NLQ Agent | unknown | 1 | 14000ms | 14000ms | - | - | - | - | QA-20260519-0532 |
 | Reporter Agent | unknown | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260519-0532 |
-| Reporter Agent | cloud-run | 1 | 2086ms | 2086ms | - | - | 2086ms | 2086ms | QA-20260518-0523 |
 | NLQ | deterministic | 1 | 310ms | 310ms | - | - | - | - | QA-20260519-0533 |
-| Analyst Agent | deterministic | 1 | 273ms | 273ms | - | - | - | - | QA-20260519-0535 |
+| Analyst Agent | deterministic | 2 | 137ms | 273ms | - | - | - | - | QA-20260519-0537 |
+| Advisor Agent | deterministic | 1 | 0ms | 0ms | - | - | - | - | QA-20260519-0537 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T06:23:47.328Z -> 2026-05-19T06:23:47.328Z (24h)
+- Window: 2026-05-18T07:40:00.196Z -> 2026-05-19T07:40:00.196Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -77,33 +78,34 @@ Latest run: QA-20260519-0536 (2026-05-19T06:23:47.328Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 4ce2e3f7
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: Analyst lightweight evidence contract, Advisor remediation routing precedence, Cerebras GPT-OSS output-token guard, OpenRouter/Z.AI vision fallback metadata contract, intelligent-monitoring analyze_server response normalization, planning archive hygiene
-- Skipped Surfaces: Vercel production post-deploy retest, Reporter live generation rerun; existing production non-degraded proof is QA-20260519-0529
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_E5zZztMow1QgjEaSyvPCL1Sj3hqP / SHA cb05a58e
+- Coverage Packs: ai-core, ai-advanced-surface, observability-pack
+- Covered Surfaces: /dashboard/ai-assistant (AI Chat remediation query), /dashboard/ai-assistant (이상감지/추세 single-server analysis), /api/ai/intelligent-monitoring analyze_server, /api/version, GitLab tag pipeline deploy smoke, Vercel usage check
+- Skipped Surfaces: vision agent (not changed in v8.11.181 hotfix), rate limit 429 직접 트리거 (일일 한도 보존)
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab main hotfix pipeline 2536302748 | [GitLab main hotfix pipeline 2536302748](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536302748) | - |
+| general | GitLab v8.11.181 tag pipeline 2536315753 | [GitLab v8.11.181 tag pipeline 2536315753](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536315753) | - |
+| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-console | v8.11.181 weekly hardening post-deploy evidence | `reports/qa/evidence/qa-20260519-v811181-weekly-hardening-post-deploy.md` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260519-0536)
-  next: Deploy weekly hardening changes and rerun focused Vercel AI Assistant/analyze_server QA.
+- None
 
 ## Pending Improvements
 
-- [P0] weekly-hardening-production-post-deploy-retest: Deploy weekly hardening changes and rerun focused Vercel production QA (seen 1회, last QA-20260519-0536)
+- None
 
 ## Deferred Improvements
 
@@ -754,6 +756,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - vision-production-latency-sample-refresh: Vision 최신 production latency 표본 보강 (completed 1회, last QA-20260421-0322)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - weekly-followup-planning-hygiene: Weekly follow-up planning hygiene and data slot policy updated (completed 1회, last QA-20260519-0536)
+- weekly-hardening-production-post-deploy-retest: Deploy weekly hardening changes and rerun focused Vercel production QA (completed 1회, last QA-20260519-0537)
 - zod-v4-ai-engine-migration: Migrate AI Engine from Zod v3 to Zod v4 (completed 1회, last QA-20260511-0471)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
@@ -805,6 +808,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0537 | 2026-05-19T07:40:00.196Z | targeted | yes | yes | v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0536 | 2026-05-19T06:23:47.328Z | targeted | no | no | Weekly follow-up hardening local contract closure | 10 | 5 | 1 | 0 | 0 | 1 |
 | QA-20260519-0535 | 2026-05-19T05:14:14.572Z | broad | yes | yes | v8.11.179 Chrome DevTools MCP QA - AI Assistant 미검증 영역 집중 테스트 | 18 | 0 | 0 | 0 | 3 | 1 |
 | QA-20260519-0534 | 2026-05-19T04:11:01.014Z | targeted | yes | yes | v8.11.179 Vercel Playwright QA - anomaly confidence and AI gradient | 6 | 2 | 0 | 0 | 0 | 0 |
@@ -824,4 +828,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0520 | 2026-05-18T01:15:27.412Z | targeted | no | no | v8.11.169 Current Vercel Playwright MCP Rerun | 20 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0519 | 2026-05-18T00:54:54.418Z | targeted | yes | yes | v8.11.169 Current Vercel Playwright MCP Check | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0518 | 2026-05-18T00:32:15.109Z | targeted | yes | yes | v8.11.169 Production Diagram Regression Closure | 12 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260518-0517 | 2026-05-17T21:57:55.297Z | targeted | yes | yes | v8.11.168 Production Cursor Regression Closure | 8 | 1 | 0 | 0 | 0 | 0 |

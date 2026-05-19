@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-19 KST (주간 개선 후속 안정화 계획 추가)
+**Last Updated**: 2026-05-19 KST (주간 개선 후속 안정화 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,6 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 주간 개선 후속 안정화 (Analyst evidence contract + broad QA + Reporter live closure) | High | In Progress (Codex) | 2026-05-12~19 변경 평가 결과, 추가 구현보다 release confidence 보강이 우선. Analyst 경량 evidence contract 마감, latest skipped QA surface 보강, Reporter live degraded 여부 확인, 장기 session data slot drift 정책화, QA attribution/plan hygiene를 포함한다. 2026-05-19 후속으로 OpenRouter fallback freshness, Cerebras output guard, Advisor routing precedence, `analyze_server` shape normalization을 진행하되 관리자용 live smoke endpoint는 제외한다. GitLab main pipeline `2536158018` success. 남은 작업은 release 배포 후 production QA pending closure다. 상세: [weekly-followup-hardening-plan.md](weekly-followup-hardening-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -116,6 +115,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-19) — Codex (Weekly Follow-up Hardening)
+- [x] 주간 개선 후속 안정화 완료
+  - Analyst evidence contract, OpenRouter fallback freshness, Cerebras short-output guard, Advisor routing precedence, `analyze_server` normalization, QA attribution, planning hygiene를 반영했다.
+  - v8.11.180 production QA에서 stale cache HIT 단일 서버 UI 실패를 재현했고, v8.11.181에서 cached legacy analyze_server response도 `data` object로 정규화하도록 hotfix했다.
+  - 검증: root `type-check`/`lint`/`test:quick`, targeted route test, AI Engine `type-check`/full test, GitLab main pipelines `2536158018`/`2536302748` success, tag pipeline `2536315753` success, Vercel Playwright MCP QA `QA-20260519-0537` PASS. `qa:status` pending 0, expert open gap 0. 상세: [archive/weekly-followup-hardening-plan.md](archive/weekly-followup-hardening-plan.md)
 
 ### Completed (2026-05-19) — Codex (Vercel Function Budget)
 - [x] Vercel function budget 명시화 완료
