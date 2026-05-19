@@ -330,4 +330,51 @@ describe('/api/ai/intelligent-monitoring POST', () => {
       },
     });
   });
+
+  it('cached legacy analyze_server response도 data shape로 정규화한다', async () => {
+    mockWithAICache.mockResolvedValueOnce({
+      cached: true,
+      data: {
+        success: true,
+        response: JSON.stringify({
+          success: true,
+          serverId: 'cache-01',
+          analysisType: 'full',
+          anomalyDetection: { results: [] },
+        }),
+        _source: 'Cloud Run AI Engine',
+        _fallback: false,
+      },
+    });
+
+    const response = await POST(
+      createPostRequest({
+        action: 'analyze_server',
+        serverId: 'cache-01',
+        analysisType: 'full',
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-Cache')).toBe('HIT');
+    expect(response.headers.get('X-AI-Provider')).toBe('deterministic');
+    expect(response.headers.get('X-AI-Model')).toBe(
+      'monitoring-analyze-server'
+    );
+    expect(mockProxyToCloudRun).not.toHaveBeenCalled();
+    await expect(response.json()).resolves.toMatchObject({
+      success: true,
+      data: {
+        serverId: 'cache-01',
+        analysisType: 'full',
+        timestamp: expect.any(String),
+        anomalyDetection: { results: [] },
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'monitoring-analyze-server',
+          usedFallback: false,
+        },
+      },
+    });
+  });
 });

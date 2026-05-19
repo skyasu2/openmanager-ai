@@ -244,6 +244,42 @@ function normalizeAnalyzeServerPayload(
   };
 }
 
+function normalizeMonitoringResponseData(
+  value: CacheableAIResponse,
+  context: AnalyzeServerRequestContext
+): CacheableAIResponse {
+  if (isBatchAnalysisRequest(context.action, context.serverId)) {
+    return value;
+  }
+
+  if (!isRecord(value)) {
+    return value;
+  }
+
+  if (isRecord(value.data)) {
+    return {
+      ...value,
+      data: normalizeAnalyzeServerPayload(value.data, context),
+    } as CacheableAIResponse;
+  }
+
+  if (typeof value.response === 'string') {
+    const normalizedData = normalizeAnalyzeServerPayload(value, context);
+    if (isRecord(normalizedData)) {
+      const normalizedResponse = { ...value };
+      delete normalizedResponse.response;
+
+      return {
+        ...normalizedResponse,
+        success: true,
+        data: normalizedData,
+      } as CacheableAIResponse;
+    }
+  }
+
+  return value;
+}
+
 function readMonitoringProviderHeaders(
   responseData: CacheableAIResponse
 ): Record<string, string> {
@@ -395,7 +431,11 @@ async function postHandler(request: NextRequest) {
     );
 
     // 3. 응답 반환
-    const responseData = cacheResult.data;
+    const responseData = normalizeMonitoringResponseData(cacheResult.data, {
+      action,
+      serverId,
+      analysisType,
+    });
     const providerHeaders = readMonitoringProviderHeaders(responseData);
     const isFallback = (responseData as Record<string, unknown>)._fallback;
     const passThroughStatus = readPassThroughStatus(responseData);
