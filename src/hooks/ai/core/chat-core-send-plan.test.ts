@@ -22,9 +22,10 @@ describe('chat-core-send-plan', () => {
     const attachment = {
       id: 'file-1',
       name: 'screenshot.png',
-      type: 'image/png',
+      mimeType: 'image/png',
       size: 100,
-      dataUrl: 'data:image/png;base64,test',
+      data: 'data:image/png;base64,test',
+      type: 'image' as const,
     };
 
     expect(

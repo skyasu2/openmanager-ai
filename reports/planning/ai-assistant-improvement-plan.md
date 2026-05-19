@@ -34,7 +34,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 | 파일 | 현재 | 목표 | 메모 |
 |------|-----:|-----:|------|
 | `cloud-run/.../orchestrator-routing.ts` | 384 | 완료 | `orchestrator-routing-policy.ts`/`orchestrator-routing-telemetry-helpers.ts` 추출로 483→384. C1 완료 |
-| `src/hooks/ai/useAIChatCore.ts` | 607 | ≤580 | 597→607로 재증가. guidance CTA helper 분리 이후 hybrid/artifact 진입 분기가 다시 inline화 경향 |
+| `src/hooks/ai/useAIChatCore.ts` | 578 | 완료 | `chat-core-send-plan.ts` 추출로 607→578. C2 완료 |
 | `src/hooks/ai/useHybridAIQuery.ts` | 704 | ≤600 (1차), ≤500 (2차) | `frontend-backend-comparison.md`의 잔여 909줄/~844줄 표기를 704줄 기준으로 정정. F2-r 후속 작업 명확화 필요 |
 | `src/stores/useAISidebarStore.ts` | 674 | 후속 후보 | comparison 문서의 551줄 기록은 stale였으며, 현재 plan의 구현 task 범위에는 포함하지 않음 |
 | `cloud-run/.../reporter-pipeline-report.ts` | 673 | ≤600 | report schema/format/score가 한 파일에 혼재. 정상 범주이나 단일 모듈 확장 시 분리 후보 |
@@ -64,7 +64,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 | 경계 | 변경 전 | 변경 후 |
 |------|---------|---------|
 | `orchestrator-routing.ts` LOC | 483 | 384 (routing policy/tool observation helper 추출 완료) |
-| `useAIChatCore.ts` LOC | 607 | ≤580 (hybrid 분기 헬퍼 추출) |
+| `useAIChatCore.ts` LOC | 607 | 578 (send plan/helper 추출 완료) |
 | `useHybridAIQuery.ts` LOC | 704 | ≤600 (1차), ≤500 (2차 후속) |
 | AI hook 진입 맵 | 없음 | `docs/reference/architecture/ai/ai-hooks-map.md` 1페이지 |
 | Orchestrator LLM routing 복원 | 금지 | 금지 유지 |
@@ -78,7 +78,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 ### 테스트 시나리오
 
 - [x] `orchestrator-routing.ts` 추출 후 `targeted Vitest` (orchestrator routing test suite) PASS
-- [ ] `useAIChatCore.ts` 추출 후 `useAIChatCore.test.ts` + `useEnhancedChatMessages.test.ts` PASS
+- [x] `useAIChatCore.ts` 추출 후 `useAIChatCore.test.ts` + `useEnhancedChatMessages.test.ts` PASS
 - [ ] `useHybridAIQuery.ts` 추출 후 `useHybridAIQuery.test.ts` PASS
 - [ ] AI hook map 문서가 9개 hook 모두를 1줄 이상 설명한다
 - [ ] `npm run docs:budget:strict` 통과 (활성 문서 한도 90 유지)
@@ -89,7 +89,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 | ID | 작업 | 상태 | 비고 |
 |----|------|------|------|
 | C1 | `orchestrator-routing.ts` → `orchestrator-routing-policy.ts`/`orchestrator-routing-telemetry-helpers.ts` 추출 (≤450) | completed | 483→384. SDD failing spec 커밋 `1371c7fd8` 선행 |
-| C2 | `useAIChatCore.ts` → hybrid 분기 헬퍼 추출 (≤580) | pending | SDD: `test(spec):` 선행 |
+| C2 | `useAIChatCore.ts` → hybrid 분기 헬퍼 추출 (≤580) | completed | 607→578. SDD failing spec 커밋 `76988f50d` 선행 |
 | C3 | `useHybridAIQuery.ts` 1차 분할 (≤600) | pending | 904→704 부분 진척 반영, 잔여 분할 우선순위 재산정 |
 | D1 | `frontend-backend-comparison.md` LOC/표 갱신 | completed | 현재 LOC drift 정리 완료. C1~C3 적용 후 각 task에서 재측정 |
 | D2 | Vision provider chain 문서 정리 | completed | `Gemini -> Z.AI Vision` 기준 반영 |
