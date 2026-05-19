@@ -31,6 +31,8 @@ import { jsonSuccess, handleValidationError } from '../lib/error-handler';
 
 export const providersRouter = new Hono();
 
+const MANAGED_PROVIDERS: ProviderName[] = ['cerebras', 'groq', 'zai', 'mistral', 'gemini'];
+
 /**
  * GET /providers - Get current provider status
  */
@@ -60,6 +62,10 @@ providersRouter.get('/', (c: Context) => {
         visionModel: getZaiVisionModelId(),
       },
       mistral: { role: 'Distributed text fallback', model: getMistralModelId() },
+      gemini: {
+        role: 'Vision primary',
+        model: process.env.GEMINI_VISION_MODEL_ID || 'gemini-2.5-flash-lite',
+      },
     },
   });
 });
@@ -71,10 +77,9 @@ providersRouter.get('/', (c: Context) => {
  */
 providersRouter.post('/:name/toggle', async (c: Context) => {
   const name = c.req.param('name') as ProviderName;
-  const validProviders: ProviderName[] = ['cerebras', 'groq', 'zai', 'mistral'];
 
-  if (!validProviders.includes(name)) {
-    return handleValidationError(c, `Invalid provider: ${name}. Valid: ${validProviders.join(', ')}`);
+  if (!MANAGED_PROVIDERS.includes(name)) {
+    return handleValidationError(c, `Invalid provider: ${name}. Valid: ${MANAGED_PROVIDERS.join(', ')}`);
   }
 
   const body = await c.req.json();
@@ -94,9 +99,7 @@ providersRouter.post('/:name/toggle', async (c: Context) => {
  * POST /providers/reset - Reset all providers to enabled
  */
 providersRouter.post('/reset', (c: Context) => {
-  const providers: ProviderName[] = ['cerebras', 'groq', 'zai', 'mistral'];
-
-  for (const provider of providers) {
+  for (const provider of MANAGED_PROVIDERS) {
     toggleProvider(provider, true);
   }
 

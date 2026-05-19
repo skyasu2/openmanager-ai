@@ -85,6 +85,8 @@ describe('Provider Routes', () => {
       expect(json.info.mistral.role).toBe('Distributed text fallback');
       expect(json.info.mistral.model).toBe('mistral-small-latest');
       expect(json.info.mistral.role).not.toContain('RAG');
+      expect(json.info.gemini.role).toBe('Vision primary');
+      expect(json.info.gemini.model).toBe('gemini-2.5-flash-lite');
     });
   });
 
@@ -114,6 +116,20 @@ describe('Provider Routes', () => {
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json.enabled).toBe(true);
+    });
+
+    it('Gemini vision provider를 비활성화한다', async () => {
+      const res = await app.request('/providers/gemini/toggle', {
+        method: 'POST',
+        body: JSON.stringify({ enabled: false }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.provider).toBe('gemini');
+      expect(json.enabled).toBe(false);
+      expect(toggleProvider).toHaveBeenCalledWith('gemini', false);
     });
 
     it('잘못된 프로바이더 이름 시 400을 반환한다', async () => {
@@ -149,7 +165,8 @@ describe('Provider Routes', () => {
       const json = await res.json();
       expect(json.success).toBe(true);
       expect(json.message).toContain('reset');
-      expect(toggleProvider).toHaveBeenCalledTimes(4);
+      expect(toggleProvider).toHaveBeenCalledTimes(5);
+      expect(toggleProvider).toHaveBeenCalledWith('gemini', true);
       expect(checkProviderStatus).toHaveBeenCalled();
     });
   });
