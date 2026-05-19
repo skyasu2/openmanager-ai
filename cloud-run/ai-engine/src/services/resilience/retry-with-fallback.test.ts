@@ -10,7 +10,6 @@ const {
   mockGetCerebrasModelId,
   mockGetCerebrasFallbackModelIds,
   mockIsCerebrasToolCallingEnabled,
-  mockIsOpenRouterVisionToolCallingEnabled,
   mockMarkProviderQuotaCooldown,
   mockReconcileProviderQuotaReservation,
   mockReserveProviderQuota,
@@ -23,7 +22,6 @@ const {
     mistral: true,
     zai: true,
     gemini: false,
-    openrouter: false,
   })),
   mockGetCerebrasModel: vi.fn(() => ({ provider: 'cerebras' })),
   mockGetGroqModel: vi.fn(() => ({ provider: 'groq' })),
@@ -32,7 +30,6 @@ const {
   mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   mockGetCerebrasFallbackModelIds: vi.fn((): string[] => []),
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
-  mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
   mockMarkProviderQuotaCooldown: vi.fn(() => Promise.resolve()),
   mockReconcileProviderQuotaReservation: vi.fn(() => Promise.resolve()),
   mockReserveProviderQuota: vi.fn(
@@ -68,7 +65,6 @@ vi.mock('../../lib/config-parser', () => ({
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),
-  isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
 }));
 
 vi.mock('./circuit-breaker', () => ({
@@ -110,10 +106,8 @@ describe('generateTextWithRetry', () => {
       mistral: true,
       zai: true,
       gemini: false,
-      openrouter: false,
     });
     mockIsCerebrasToolCallingEnabled.mockReturnValue(true);
-    mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
     mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
     mockGetCerebrasFallbackModelIds.mockReturnValue([]);
     mockIsCerebrasModelExpiredByDate.mockReturnValue(false);

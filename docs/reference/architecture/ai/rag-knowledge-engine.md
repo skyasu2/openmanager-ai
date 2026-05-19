@@ -267,7 +267,7 @@ if (enableRAG && activeTools.includes('searchKnowledgeBase')) {
 }
 ```
 
-에이전트는 `agent-runtime-policy.ts`의 tool allowlist와 evidence budget을 따릅니다. Vision path는 내부 지식 검색과 결합하지 않고 Gemini/OpenRouter/Z.AI Vision path를 유지합니다.
+에이전트는 `agent-runtime-policy.ts`의 tool allowlist와 evidence budget을 따릅니다. Vision path는 내부 지식 검색과 결합하지 않고 Gemini/Z.AI Vision path를 유지합니다.
 
 ---
 

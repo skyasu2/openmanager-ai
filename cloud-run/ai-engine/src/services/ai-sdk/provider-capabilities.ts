@@ -3,7 +3,6 @@ import {
   getZaiModelId,
   isCerebrasLongContextEnabled,
   isCerebrasToolCallingEnabled,
-  isOpenRouterVisionToolCallingEnabled,
 } from '../../lib/config-parser';
 import type { ModelCapabilities, ProviderName } from './model-provider.types';
 import { CEREBRAS_MODEL_POLICIES } from './provider-model-policy';
@@ -91,14 +90,6 @@ export function getProviderCapabilities(
         supportsVision: true,
         supportsLongContext: true,
         contextWindowTokens: 1_000_000,
-      };
-    case 'openrouter':
-      return {
-        supportsToolCalling: isOpenRouterVisionToolCallingEnabled(),
-        supportsStructuredOutput: true,
-        supportsVision: true,
-        supportsLongContext: true,
-        contextWindowTokens: 128_000,
       };
   }
 }

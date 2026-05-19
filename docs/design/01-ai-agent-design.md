@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-19
 > Canonical: docs/design/01-ai-agent-design.md
 > Tags: design,ai,agent,supervisor
 
@@ -21,7 +21,7 @@
 | NLQ Pipeline (BFF 전처리) | ChatInputArea UX guard → QueryGuard(공격/로그/장문) → Groq NLQ LLM → `SemanticIntentFrame` + `executionMode` 슬롯 → streaming output filter |
 | Supervisor | 요청 수신, `intentFrame` 신뢰 경로 기반 mode 결정, single/multi path 선택, stream metadata 보존 |
 | Direct Router (`orchestrator-*` legacy module names) | `preFilterQuery()` 기반 fast path, specialist 직접 routing, deterministic fallback |
-| Metrics Query Agent | 서버 메트릭 조회, 필터링, 수식/통계 계산, 용량 추정 |
+| Metrics Query Agent (alias: NLQ Agent) | 서버 메트릭 조회, 필터링, 수식/통계 계산, 용량 추정. 코드 SSOT는 `cloud-run/ai-engine/src/services/ai-sdk/agents/nlq-agent.ts` (factory 등록명 `nlq`). 운영 문서에서는 `Metrics Query Agent` 호칭을 사용하지만, factory/route metadata/메모리 인벤토리에서는 `NLQ` 표기를 그대로 사용한다 (`MEMORY.md` "5개 라우팅 에이전트: NLQ, Analyst, Reporter, Advisor, Vision"). |
 | Analyst Agent | anomaly, RCA, trend, monitoring snapshot 분석 |
 | Reporter Agent | incident/report artifact 생성과 deterministic Eval/Opt pipeline |
 | Advisor Agent | 운영 조치 제안, Knowledge Retrieval Lite evidence 활용 |
@@ -49,3 +49,4 @@
 - [AI Engine Architecture](../reference/architecture/ai/ai-engine-architecture.md)
 - [Artifact System Design](06-artifact-system.md)
 - [AI Assistant Architecture Evolution Plan](../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md)
+- [AI Assistant Improvement Plan (2026-05-19)](../../reports/planning/ai-assistant-improvement-plan.md)

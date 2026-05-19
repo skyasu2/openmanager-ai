@@ -10,7 +10,6 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Tool } from 'ai';
-import { isOpenRouterVisionToolCallingEnabled } from '../../../lib/config-parser';
 
 // Mock model-provider before imports
 vi.mock('../model-provider', () => ({
@@ -36,7 +35,6 @@ vi.mock('../../../lib/config-parser', () => ({
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
-  isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
   getUpstashConfig: vi.fn(() => null),
 }));
 
@@ -126,7 +124,6 @@ function createMockConfig(overrides: Partial<{
 describe('BaseAgent', { timeout: 60000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(false);
 
     // Default mock for generateText - successful response
     mockGenerateText.mockResolvedValue({
@@ -238,61 +235,6 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(callArgs.tools).toHaveProperty('searchWeb');
     });
 
-    it('should disable tools for Vision Agent on OpenRouter by default', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
-      const mockConfig = createMockConfig({
-        getModel: () => ({
-          model: { modelId: 'google/gemma-3-27b-it:free' },
-          provider: 'openrouter',
-          modelId: 'google/gemma-3-27b-it:free',
-        }),
-      });
-
-      class VisionTestAgent extends BaseAgent {
-        getName(): string {
-          return 'Vision Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
-      }
-
-      const agent = new VisionTestAgent();
-      await agent.run('test query');
-
-      const callArgs = mockGenerateText.mock.calls[0][0];
-      expect(callArgs.tools).toEqual({});
-    });
-
-    it('should keep tools when OPENROUTER_VISION_TOOL_CALLING is enabled', async () => {
-      const { BaseAgent } = await import('./base-agent');
-      vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(true);
-
-      const mockConfig = createMockConfig({
-        getModel: () => ({
-          model: { modelId: 'google/gemma-3-27b-it:free' },
-          provider: 'openrouter',
-          modelId: 'google/gemma-3-27b-it:free',
-        }),
-      });
-
-      class VisionTestAgent extends BaseAgent {
-        getName(): string {
-          return 'Vision Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
-      }
-
-      const agent = new VisionTestAgent();
-      await agent.run('test query');
-
-      const callArgs = mockGenerateText.mock.calls[0][0];
-      expect(callArgs.tools).toHaveProperty('finalAnswer');
-      expect(callArgs.tools).toHaveProperty('searchWeb');
-    });
   });
 
   // ==========================================================================

@@ -20,9 +20,7 @@ vi.mock('../lib/config-parser', () => ({
   getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
-  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   isCerebrasToolCallingEnabled: vi.fn(() => false),
-  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
 }));
 
 vi.mock('../services/ai-sdk/model-provider', () => ({
@@ -32,12 +30,14 @@ vi.mock('../services/ai-sdk/model-provider', () => ({
     groq: true,
     zai: true,
     mistral: true,
+    gemini: true,
   })),
   checkProviderStatus: vi.fn(() => ({
     cerebras: true,
     groq: true,
     zai: true,
     mistral: false,
+    gemini: true,
   })),
 }));
 
@@ -68,11 +68,12 @@ describe('Provider Routes', () => {
         groq: true,
         zai: true,
         mistral: true,
+        gemini: true,
       });
       expect(json.available).toBeDefined();
       expect(json.info).toBeDefined();
       expect(json.modelDrift).toEqual([]);
-      expect(json.modelMetadata).toHaveLength(8);
+      expect(json.modelMetadata).toHaveLength(7);
       expect(json.info.cerebras.model).toBe('llama3.1-8b');
       expect(json.info.cerebras.toolCallingEnabled).toBe(false);
       expect(json.info.groq.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');

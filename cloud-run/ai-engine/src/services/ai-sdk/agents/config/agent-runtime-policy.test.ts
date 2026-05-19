@@ -118,7 +118,7 @@ const EXPECTED_POLICIES = {
   },
   'Vision Agent': {
     providerOrder: [],
-    nativeProviderOrder: ['gemini', 'openrouter', 'zai'],
+    nativeProviderOrder: ['gemini', 'zai'],
     maxSteps: 2,
     evidenceBudget: 0,
     toolAllowlist: ['analyzeScreenshot', 'finalAnswer'],

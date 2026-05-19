@@ -57,7 +57,7 @@ vi.mock('@ai-sdk/openai', () => ({
   createOpenAI: vi.fn(() => {
     return (_modelId: string) => ({
       specificationVersion: 'v1',
-      provider: 'openrouter',
+      provider: 'zai',
       modelId: _modelId,
       defaultObjectGenerationMode: 'json',
       doGenerate: vi.fn(),
@@ -84,17 +84,9 @@ vi.mock('../../lib/config-parser', () => ({
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getGeminiApiKey: vi.fn(() => 'test-gemini-key'),
-  getOpenRouterApiKey: vi.fn(() => 'test-openrouter-key'),
   getUpstashConfig: vi.fn(() => null),
-  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
-  getOpenRouterVisionFallbackModelIds: vi.fn(() => [
-    'google/gemma-3-12b-it:free',
-    'google/gemma-3-4b-it:free',
-  ]),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
-  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
-  isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 
 import {
@@ -102,7 +94,6 @@ import {
   getGeminiFlashLiteModel,
   getGroqModel,
   getMistralModel,
-  getOpenRouterVisionModel,
   getZaiModel,
   getZaiVisionModel,
   getSupervisorModel,
@@ -111,7 +102,6 @@ import {
   invalidateProviderStatusCache,
   toggleProvider,
 } from './model-provider';
-import { isOpenRouterVisionFallbackEnabled } from '../../lib/config-parser';
 import { resetRoundRobinCursor } from './agents/config/round-robin-provider-selector';
 
 describe('model-provider compatibility (SDK upgrades)', () => {
@@ -123,8 +113,6 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     toggleProvider('mistral', true);
     toggleProvider('zai', true);
     toggleProvider('gemini', true);
-    toggleProvider('openrouter', true);
-    vi.mocked(isOpenRouterVisionFallbackEnabled).mockReturnValue(false);
   });
 
   it('creates all provider models with LanguageModel shape', () => {
@@ -135,7 +123,6 @@ describe('model-provider compatibility (SDK upgrades)', () => {
       getZaiModel('glm-4.5-flash'),
       getZaiVisionModel('glm-4.6v-flash'),
       getGeminiFlashLiteModel('gemini-2.5-flash-lite'),
-      getOpenRouterVisionModel('google/gemma-3-27b-it:free'),
     ];
 
     for (const model of models) {
@@ -178,77 +165,13 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(vision?.modelId).toBe('glm-4.6v-flash');
   });
 
-  it('uses opt-in OpenRouter when Gemini and Z.AI are disabled', () => {
-    toggleProvider('gemini', false);
-    toggleProvider('zai', false);
-    vi.mocked(isOpenRouterVisionFallbackEnabled).mockReturnValue(true);
-    invalidateProviderStatusCache();
-
-    const vision = getVisionAgentModel();
-    expect(vision).not.toBeNull();
-    expect(vision?.provider).toBe('openrouter');
-    expect(vision?.modelId).toBe('google/gemma-3-27b-it:free');
-  });
-
-  it('returns null when only disabled OpenRouter Vision fallback is configured', () => {
+  it('returns null when Gemini and Z.AI Vision are disabled', () => {
     toggleProvider('gemini', false);
     toggleProvider('zai', false);
     invalidateProviderStatusCache();
 
     const vision = getVisionAgentModel();
     expect(vision).toBeNull();
-  });
-
-  it('configures OpenRouter provider with recommended headers and request patching', () => {
-    getOpenRouterVisionModel('google/gemma-3-27b-it:free');
-
-    expect(createOpenAI).toHaveBeenCalledWith(
-      expect.objectContaining({
-        baseURL: 'https://openrouter.ai/api/v1',
-        name: 'openrouter',
-        headers: expect.objectContaining({
-          'X-Title': 'OpenManager AI',
-        }),
-        fetch: expect.any(Function),
-      })
-    );
-  });
-
-  it('injects OpenRouter models fallback chain for vision requests', async () => {
-    getOpenRouterVisionModel('google/gemma-3-27b-it:free');
-
-    const openrouterOptions = vi.mocked(createOpenAI).mock.calls.at(-1)?.[0];
-    expect(openrouterOptions).toBeDefined();
-    expect(openrouterOptions?.fetch).toBeTypeOf('function');
-
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(null, { status: 204 })
-    );
-
-    await openrouterOptions?.fetch?.('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      body: JSON.stringify({
-        model: 'google/gemma-3-27b-it:free',
-        messages: [{ role: 'user', content: 'ping' }],
-      }),
-    });
-
-    const patchedBody = fetchSpy.mock.calls.at(-1)?.[1]?.body;
-    expect(typeof patchedBody).toBe('string');
-    const payload = JSON.parse(patchedBody as string) as {
-      provider: { allow_fallbacks: boolean; require_parameters: boolean };
-      models: string[];
-    };
-
-    expect(payload.provider.allow_fallbacks).toBe(true);
-    expect(payload.provider.require_parameters).toBe(true);
-    expect(payload.models).toEqual([
-      'google/gemma-3-27b-it:free',
-      'google/gemma-3-12b-it:free',
-      'google/gemma-3-4b-it:free',
-    ]);
-
-    fetchSpy.mockRestore();
   });
 
   it('injects Z.AI thinking disabled for free Flash requests', async () => {
@@ -284,7 +207,6 @@ describe('model-provider compatibility (SDK upgrades)', () => {
 
   it('returns null when all Vision providers are disabled', () => {
     toggleProvider('gemini', false);
-    toggleProvider('openrouter', false);
     toggleProvider('zai', false);
     invalidateProviderStatusCache();
 

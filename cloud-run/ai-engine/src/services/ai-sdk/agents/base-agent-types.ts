@@ -78,8 +78,5 @@ export const DEFAULT_OPTIONS: Required<
 };
 
 export const VISION_AGENT_NAME = 'Vision Agent' as const;
-export const OPENROUTER_VISION_MIN_OUTPUT_TOKENS = 256;
-export const VISION_EMPTY_RESPONSE_FALLBACK =
-  '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.';
 export const GENERIC_EMPTY_RESPONSE_FALLBACK =
   'AI 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.';

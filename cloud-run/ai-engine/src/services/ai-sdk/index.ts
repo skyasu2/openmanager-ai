@@ -4,7 +4,7 @@
  * Central export point for Vercel AI SDK services.
  * Replaces LangGraph-based agents.
  *
- * @version 2.0.0 - Removed OpenRouter and Summarizer Agent
+ * @version 2.0.0 - Removed legacy router provider and Summarizer Agent
  * @updated 2026-01-12
  */
 

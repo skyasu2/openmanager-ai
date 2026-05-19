@@ -16,9 +16,6 @@ import {
   isCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled,
   getMistralModelId,
-  getOpenRouterVisionModelId,
-  getOpenRouterVisionFallbackModelIds,
-  isOpenRouterVisionToolCallingEnabled,
   isSingleModeAllowed,
   getConfigStatus,
   clearConfigCache,
@@ -367,46 +364,7 @@ describe('Config Parser', () => {
   });
 
   // ============================================================================
-  // 7. OpenRouter Vision Config Tests
-  // ============================================================================
-  describe('OpenRouter Vision config', () => {
-    it('should use default vision model when env is missing', () => {
-      delete process.env.OPENROUTER_MODEL_VISION;
-      expect(getOpenRouterVisionModelId()).toBe('google/gemma-3-27b-it:free');
-    });
-
-    it('should use OPENROUTER_MODEL_VISION when configured', () => {
-      process.env.OPENROUTER_MODEL_VISION = 'google/gemma-3-4b-it:free';
-      expect(getOpenRouterVisionModelId()).toBe('google/gemma-3-4b-it:free');
-    });
-
-    it('should parse fallback model list from env', () => {
-      process.env.OPENROUTER_MODEL_VISION_FALLBACKS = 'a/b:free, c/d:free, a/b:free';
-      expect(getOpenRouterVisionFallbackModelIds()).toEqual(['a/b:free', 'c/d:free']);
-    });
-
-    it('should return default fallback list when env is missing', () => {
-      delete process.env.OPENROUTER_MODEL_VISION_FALLBACKS;
-      // 2026-04-04: nemotron(content=None 버그), mistral-small-3.1:free(404) 제거
-      expect(getOpenRouterVisionFallbackModelIds()).toEqual([
-        'google/gemma-3-12b-it:free',
-        'google/gemma-3-4b-it:free',
-      ]);
-    });
-
-    it('should disable OpenRouter vision tool-calling by default', () => {
-      delete process.env.OPENROUTER_VISION_TOOL_CALLING;
-      expect(isOpenRouterVisionToolCallingEnabled()).toBe(false);
-    });
-
-    it('should enable OpenRouter vision tool-calling when env is true', () => {
-      process.env.OPENROUTER_VISION_TOOL_CALLING = 'true';
-      expect(isOpenRouterVisionToolCallingEnabled()).toBe(true);
-    });
-  });
-
-  // ============================================================================
-  // 8. Single-agent degraded gate tests
+  // 7. Single-agent degraded gate tests
   // ============================================================================
   describe('Single-agent degraded gate', () => {
     it('should disable degraded single mode by default', () => {

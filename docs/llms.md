@@ -54,7 +54,7 @@ Product positioning:
   - Analyst / Verifier path: Mistral → Groq → Z.AI → Cerebras*
   - Reporter path: Z.AI → Mistral → Groq → Cerebras*
   - Advisor path: Mistral → Z.AI → Groq → Cerebras*
-  - Vision path: Gemini Flash-Lite → OpenRouter → Z.AI
+  - Vision path: Gemini Flash-Lite → Z.AI Vision
   - *Cerebras `llama3.1-8b`: 2026-05-27 cutoff, `isCerebrasExpiredByDate()` graceful exit 구현 완료
 - Tools: 30 specialized tools (Metrics 6, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4, Math 3)
 - Observability: Langfuse mode audit (`requestedMode`, `resolvedMode`, `modeSelectionSource`) + `handoffCount`

@@ -54,7 +54,7 @@ graph TB
         Supabase["Supabase<br/>(PostgreSQL + Auth/RLS)"]
         Redis["Upstash Redis<br/>(Cache, Stream, Job State)"]
         CloudTasks["Cloud Tasks<br/>(Async Job Dispatch)"]
-        LLM["LLM Providers<br/>(Groq, Z.AI, Mistral,<br/>Cerebras, Gemini, OpenRouter)"]
+        LLM["LLM Providers<br/>(Groq, Z.AI, Mistral,<br/>Cerebras, Gemini)"]
     end
 
     subgraph Data["Data (Build-Time)"]
@@ -114,7 +114,7 @@ graph TB
    │ Supabase     │      │ Upstash Redis│       │ LLM Providers    │
    │ PostgreSQL   │      │ Cache/Stream │       │ Groq/Z.AI/       │
    │ + Auth/RLS   │      │ Job State    │       │ Mistral/Cerebras │
-   │              │      │              │       │ Gemini/OpenRouter│
+   │              │      │              │       │ Gemini Vision    │
    └──────────────┘      └──────────────┘       └──────────────────┘
                                    ▲
                                    │ Cloud Tasks dispatches long jobs to
@@ -347,7 +347,7 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 | **Analyst** | Round-Robin text mesh, min context 32K | 이상 감지, RCA, 추세·로그 분석 | 외부 |
 | **Reporter** | Round-Robin text mesh, min context 32K | 장애 보고서, 타임라인, 요약 | 외부 |
 | **Advisor** | Round-Robin text mesh, min context 32K | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
-| **Vision** | Gemini 2.5 Flash-Lite → OpenRouter vision → Z.AI Vision | 스크린샷/로그 이미지 분석, 웹 검색 보조 | 외부 |
+| **Vision** | Gemini 2.5 Flash-Lite → Z.AI Vision | 스크린샷/로그 이미지 분석, 웹 검색 보조 | 외부 |
 
 Evaluator/Optimizer는 Reporter 품질 보정용 deterministic pipeline stage이며 독립 실행 에이전트로 노출하지 않습니다.
 
@@ -390,7 +390,7 @@ CLOSED (정상) ──5회 실패──► OPEN (차단) ──30초──► HA
 Text specialist agents: Round-Robin + Context Guard (Groq, Mistral, Z.AI, Cerebras)
 Direct Router: deterministic routing, no LLM call
 Structured-output compatibility helper: provider capability gate + fallback
-Vision: Gemini Flash-Lite → OpenRouter → Z.AI Vision
+Vision: Gemini Flash-Lite → Z.AI Vision
 모두 실패 → Static Fallback Response
 ```
 

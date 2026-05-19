@@ -41,7 +41,7 @@ const RULES: DeprecatedModelRule[] = [
     pattern: /gemini-2\.0-flash/,
   },
   {
-    label: 'removed OpenRouter Nemotron vision fallback',
+    label: 'removed Nemotron vision fallback',
     pattern: /nvidia\/nemotron-nano-12b-v2-vl(?::free)?/,
   },
   {
@@ -51,10 +51,6 @@ const RULES: DeprecatedModelRule[] = [
   {
     label: 'legacy Groq Maverick preview primary',
     pattern: /meta-llama\/llama-4-maverick/,
-  },
-  {
-    label: 'non-deterministic OpenRouter free router',
-    pattern: /openrouter\/free/,
   },
 ];
 

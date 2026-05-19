@@ -3,10 +3,8 @@ import {
   getCerebrasModelId,
   getGroqModelId,
   getMistralModelId,
-  getOpenRouterVisionModelId,
   getZaiModelId,
   getZaiVisionModelId,
-  isOpenRouterVisionFallbackEnabled,
 } from '../../lib/config-parser';
 import type { ProviderName } from './model-provider.types';
 import {
@@ -104,7 +102,6 @@ export function getCerebrasModelMetadata(
 
 export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
   const geminiVisionModelId = process.env.GEMINI_VISION_MODEL_ID || 'gemini-2.5-flash-lite';
-  const openRouterVisionFallbackEnabled = isOpenRouterVisionFallbackEnabled();
   const cerebrasMetadata = [
     getCerebrasModelPolicy(getCerebrasModelId()),
     ...getCerebrasRuntimeModelPolicies(),
@@ -228,34 +225,6 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
       sourceUrls: [
         'https://ai.google.dev/gemini-api/docs/pricing',
         'https://ai.google.dev/gemini-api/docs/rate-limits',
-      ],
-    },
-    {
-      provider: 'openrouter',
-      role: 'vision fallback',
-      modelId: getOpenRouterVisionModelId(),
-      lifecycle: 'production',
-      productionModel: false,
-      preview: false,
-      deprecated: false,
-      enabled: openRouterVisionFallbackEnabled,
-      toolCallingEnabled: false,
-      structuredOutputEnabled: true,
-      blockAfterDeprecation: false,
-      smokeStatus: openRouterVisionFallbackEnabled ? 'unknown' : 'red',
-      smokeEvidence: openRouterVisionFallbackEnabled
-        ? ['OpenRouter vision fallback is opt-in; live smoke validation required before green status']
-        : ['disabled by default after OpenRouter vision fallback live smoke drift'],
-      quota: {
-        requestsPerMinute: 1,
-        tokensPerMinute: 30_000,
-        requestsPerDay: 50,
-        tokensPerDay: 1_000_000,
-      },
-      freeTierLimitSummary: '50 requests/day by default; fallback only',
-      sourceUrls: [
-        'https://openrouter.ai/docs/api/reference/limits',
-        'https://openrouter.ai/pricing',
       ],
     },
     {

@@ -32,7 +32,6 @@ const {
   mockGetZaiModel,
   mockGetZaiVisionModel,
   mockGetGeminiFlashLiteModel,
-  mockGetOpenRouterVisionModel,
   mockGetCerebrasModelId,
   mockGetCerebrasFallbackModelIds,
 } = vi.hoisted(() => ({
@@ -42,7 +41,6 @@ const {
     mistral: true,
     zai: true,
     gemini: true,
-    openrouter: true,
   })),
   mockGetCerebrasModel: vi.fn((modelId: string) => ({
     provider: 'cerebras',
@@ -60,10 +58,6 @@ const {
   })),
   mockGetGeminiFlashLiteModel: vi.fn((modelId: string) => ({
     provider: 'gemini',
-    modelId,
-  })),
-  mockGetOpenRouterVisionModel: vi.fn((modelId: string) => ({
-    provider: 'openrouter',
     modelId,
   })),
   mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
@@ -94,7 +88,6 @@ vi.mock('../model-provider-core', () => ({
   getMistralModel: mockGetMistralModel,
   getZaiModel: mockGetZaiModel,
   getZaiVisionModel: mockGetZaiVisionModel,
-  getOpenRouterVisionModel: mockGetOpenRouterVisionModel,
 }));
 
 vi.mock('../model-provider-status', () => ({
@@ -110,9 +103,7 @@ vi.mock('../../../lib/config-parser', async (importOriginal) => {
     getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
     getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
     getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
-    getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
     isCerebrasToolCallingEnabled: vi.fn(() => true),
-    isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
   };
 });
 

@@ -95,7 +95,7 @@ flowchart TB
 
     Multi --> Agents["Metrics Query / Analyst / Reporter / Advisor / Vision"]
     Agents --> ProviderGate["Capability + Quota Provider Gate\nprovider-capabilities.ts"]
-    ProviderGate --> LLM["Text: Groq / Z.AI / Mistral / Cerebras\nVision: Gemini / OpenRouter / Z.AI Vision"]
+    ProviderGate --> LLM["Text: Groq / Z.AI / Mistral / Cerebras\nVision: Gemini / Z.AI Vision"]
 
     Agents --> Data["OTel + Knowledge Retrieval Lite"]
     Single --> Recovery["Deterministic Recovery\n(formatting guard / ranking fallback)"]
@@ -153,7 +153,7 @@ Cloud Run Supervisor
      `-- multi  -> Direct Router -> Metrics Query / Analyst / Reporter / Advisor / Vision
   -> provider gate
      +-- text: Groq / Z.AI / Mistral / Cerebras
-     `-- vision: Gemini / OpenRouter / Z.AI Vision
+     `-- vision: Gemini / Z.AI Vision
   -> deterministic recovery -> UIMessageStream -> UI
 ```
 

@@ -3,7 +3,6 @@ import {
   getGeminiApiKey,
   getGroqApiKey,
   getMistralApiKey,
-  getOpenRouterApiKey,
   getZaiApiKey,
 } from '../../lib/config-parser';
 import { logger } from '../../lib/logger';
@@ -19,7 +18,6 @@ const providerToggleState: Record<ProviderName, boolean> = {
   mistral: true,
   zai: true,
   gemini: true,
-  openrouter: true,
 };
 
 /**
@@ -67,7 +65,6 @@ export function checkProviderStatus(): ProviderStatus {
     mistral: !!getMistralApiKey() && isProviderEnabled('mistral'),
     zai: !!getZaiApiKey() && isProviderEnabled('zai'),
     gemini: !!getGeminiApiKey() && isProviderEnabled('gemini'),
-    openrouter: !!getOpenRouterApiKey() && isProviderEnabled('openrouter'),
   };
 
   return cachedProviderStatus;

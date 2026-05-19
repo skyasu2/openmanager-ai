@@ -59,7 +59,6 @@ vi.mock('../../model-provider-status', () => ({
     groq: true,
     mistral: true,
     gemini: true,
-    openrouter: true,
   })),
 }));
 
@@ -70,7 +69,6 @@ vi.mock('../../model-provider-core', () => ({
   getZaiModel: vi.fn(),
   getZaiVisionModel: vi.fn(),
   getGeminiFlashLiteModel: vi.fn(),
-  getOpenRouterVisionModel: vi.fn(),
 }));
 
 vi.mock('../../../../lib/config-parser', () => ({
@@ -84,13 +82,8 @@ vi.mock('../../../../lib/config-parser', () => ({
   getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getGeminiApiKey: vi.fn(() => 'test-gemini-key'),
-  getOpenRouterApiKey: vi.fn(() => 'test-openrouter-key'),
-  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
-  getOpenRouterVisionFallbackModelIds: vi.fn(() => []),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
-  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
-  isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 
 import { getAgentConfig, getAgentInstructions } from './agent-configs';

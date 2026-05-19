@@ -28,7 +28,7 @@ OpenManager AI는 Groq, Mistral, Z.AI, Cerebras 4개 무료 tier LLM provider를
 | Weighted Round-Robin | 정적 가중치, 실시간 반응 없음 | 낮음~중간 | 보통 | LiteLLM, Portkey |
 | Usage-Based (TPM/RPM 추적) | 실시간 카운터, 임계 도달 시 cooldown | 중간 | 매우 좋음 | LiteLLM `usage-based-routing` |
 | Circuit Breaker + Fallback 체인 | 연속 실패·P95 latency trip | 높음 | 매우 좋음 | Portkey, LiteLLM cooldowns |
-| Semantic / Cost 기반 | 쿼리 복잡도별 모델 분류 | 높음 | 비용 최적 | OpenRouter, LLMRouter |
+| Semantic / Cost 기반 | 쿼리 복잡도별 모델 분류 | 높음 | 비용 최적 | 외부 LLM router 제품군 |
 
 ## 오픈소스 도입 검토 결과
 

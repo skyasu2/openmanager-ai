@@ -251,7 +251,7 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 | Secret Name | 환경변수 | JSON 내용 |
 |-------------|---------|----------|
 | `supabase-config` | `SUPABASE_CONFIG` | `url`, `anonKey`, `serviceRoleKey` |
-| `ai-providers-config` | `AI_PROVIDERS_CONFIG` | `cerebras`, `groq`, `zai`, `mistral`, `google`, `openrouter` API 키 |
+| `ai-providers-config` | `AI_PROVIDERS_CONFIG` | `cerebras`, `groq`, `zai`, `mistral`, `google` API 키 |
 | `kv-config` | `KV_CONFIG` | `upstashRedisRestUrl`, `upstashRedisRestToken` |
 | `cloud-run-api-secret` | `CLOUD_RUN_API_SECRET` | API 인증 키 (단일 문자열) |
 | `langfuse-config` | `LANGFUSE_CONFIG` | `secretKey`, `publicKey`, `baseUrl` |
@@ -286,7 +286,6 @@ ZAI_DEFAULT_MODEL=glm-4.5-flash
 ZAI_VISION_MODEL_ID=glm-4.6v-flash
 MISTRAL_API_KEY=xxx      # Analyst/Advisor primary + distributed text fallback
 GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash-lite)
-OPENROUTER_API_KEY=sk-or-v1-xxx # Vision fallback (gemma free model chain)
 
 # 시크릿 설정 주의사항:
 # 1. API 키 값 양끝에 큰따옴표(")가 포함된 경우 일부 파싱 로직에서 에러(Unauthorized/Leaked)가 발생할 수 있습니다. 

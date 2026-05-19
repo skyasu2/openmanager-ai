@@ -136,7 +136,7 @@ const status = AgentFactory.getAvailabilityStatus();
 
 ### Vision Agent
 
-Gemini Flash Primary + OpenRouter Fallback:
+Gemini Flash Primary + Z.AI Vision fallback:
 
 | Feature | Capability |
 |---------|------------|
@@ -145,7 +145,7 @@ Gemini Flash Primary + OpenRouter Fallback:
 | **Google Search** | Grounding 지원 |
 | **URL Context** | 웹 페이지 분석 |
 
-**Graceful Degradation**: Gemini/OpenRouter 모두 미구성 시 → Analyst Agent로 폴백 (제한된 분석)
+**Graceful Degradation**: Gemini/Z.AI Vision 모두 미구성 시 → Analyst Agent로 폴백 (제한된 분석)
 
 ```typescript
 import { getVisionAgentOrFallback, isVisionQuery } from './vision-agent';
@@ -167,7 +167,7 @@ if (isVisionQuery(query)) {
 | Analyst/Reporter/Advisor/Verifier | Groq long-context path; Cerebras `llama3.1-8b` only when context permits | → Mistral | Free-tier constrained; quota guarded |
 | Orchestrator | Groq primary; Cerebras `llama3.1-8b` short-context fallback | → Mistral | Free-tier constrained; quota guarded |
 | Summarization fallback | Mistral `mistral-small-latest` | → Groq → Cerebras | Workspace-tier dependent; low RPM |
-| **Vision Agent** | **Gemini `gemini-2.5-flash-lite`** | **→ OpenRouter Gemma fallback** | **15 RPM, 1K RPD** |
+| **Vision Agent** | **Gemini `gemini-2.5-flash-lite`** | **→ Z.AI GLM-4.6V-Flash** | **15 RPM, 1K RPD primary; fallback quota guarded** |
 
 ### Agent Usage by Feature
 
@@ -231,7 +231,6 @@ CEREBRAS_API_KEY=xxx               # Cerebras (Primary - Supervisor, NLQ)
 GROQ_API_KEY=xxx                   # Groq (Analyst, Reporter)
 MISTRAL_API_KEY=xxx                # Mistral last-resort text fallback
 MISTRAL_MODEL_ID=mistral-small-latest
-# OPENROUTER_API_KEY=xxx           # 제거됨 (2026-01-07) - Summarizer Agent 통합
 
 # Optional - Observability (FREE)
 LANGFUSE_SECRET_KEY=xxx
@@ -344,11 +343,11 @@ Current: `8.11.113`
 
 ### v5.88.0 (2026-01-16)
 - Summarizer Agent 제거 (NLQ Agent로 통합)
-- OpenRouter 프로바이더 제거 (Tri-provider: Cerebras/Groq/Mistral)
+- Legacy router provider 제거 (Tri-provider: Cerebras/Groq/Mistral)
 - 5-Agent 시스템으로 단순화
 
 ### v5.83.14 (2026-01-04)
-- Free Tier 한도 정보 정확화 (Cerebras 1M, Groq ~1K, OpenRouter 50)
+- Free Tier 한도 정보 정확화 (Cerebras 1M, Groq ~1K)
 - Agent Usage by Feature 섹션 추가
 - Summarizer Agent 문서화
 

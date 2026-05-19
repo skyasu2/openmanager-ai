@@ -64,7 +64,7 @@ export async function executeVisionOrFallback(
   }
 
   logger.warn(
-    '⚠️ [Vision] Vision providers unavailable (Gemini/OpenRouter), falling back to Analyst Agent'
+    '⚠️ [Vision] Vision providers unavailable (Gemini/Z.AI), falling back to Analyst Agent'
   );
   return executeForcedRouting(
     query,

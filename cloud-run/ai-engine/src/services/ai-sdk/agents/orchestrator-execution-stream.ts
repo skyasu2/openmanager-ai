@@ -113,7 +113,7 @@ export async function* executeMultiAgentStream(
   );
   if (directResolvedTarget.degradedFromVision) {
     logger.warn(
-      '[Stream] Vision providers unavailable (Gemini/OpenRouter), falling back to Analyst Agent'
+      '[Stream] Vision providers unavailable (Gemini/Z.AI), falling back to Analyst Agent'
     );
     yield {
       type: 'agent_status',

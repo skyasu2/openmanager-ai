@@ -10,7 +10,6 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Tool } from 'ai';
-import { isOpenRouterVisionToolCallingEnabled } from '../../../lib/config-parser';
 
 // Mock model-provider before imports
 vi.mock('../model-provider', () => ({
@@ -36,7 +35,6 @@ vi.mock('../../../lib/config-parser', () => ({
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
-  isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
   getUpstashConfig: vi.fn(() => null),
 }));
 
@@ -128,7 +126,6 @@ function createMockConfig(overrides: Partial<{
 describe('BaseAgent', { timeout: 15000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(false);
 
     // Default mock for generateText - successful response
     mockGenerateText.mockResolvedValue({
@@ -287,7 +284,7 @@ describe('BaseAgent', { timeout: 15000 }, () => {
       expect(textDeltas[0].data).toBe('Fallback answer');
     });
 
-    it('should emit EMPTY_RESPONSE warning and fallback text for Vision OpenRouter empty stream', async () => {
+    it('should emit EMPTY_RESPONSE warning and fallback text for Vision empty stream', async () => {
 
       mockStreamText.mockReturnValue({
         textStream: (async function* () {
@@ -306,9 +303,9 @@ describe('BaseAgent', { timeout: 15000 }, () => {
 
       const mockConfig = createMockConfig({
         getModel: () => ({
-          model: { modelId: 'google/gemma-3-27b-it:free' },
-          provider: 'openrouter',
-          modelId: 'google/gemma-3-27b-it:free',
+          model: { modelId: 'glm-4.6v-flash' },
+          provider: 'zai',
+          modelId: 'glm-4.6v-flash',
         }),
       });
 
@@ -329,7 +326,7 @@ describe('BaseAgent', { timeout: 15000 }, () => {
       }
 
       const callArgs = mockStreamText.mock.calls[0][0];
-      expect(callArgs.maxOutputTokens).toBe(256);
+      expect(callArgs.maxOutputTokens).toBe(64);
 
       const warningEvent = events.find((e) => e.type === 'warning');
       expect(warningEvent).toBeDefined();
@@ -337,7 +334,7 @@ describe('BaseAgent', { timeout: 15000 }, () => {
 
       const textDeltas = events.filter((e) => e.type === 'text_delta');
       expect(textDeltas.at(-1)?.data).toBe(
-        '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.'
+        'AI 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.'
       );
     });
 
@@ -364,9 +361,9 @@ describe('BaseAgent', { timeout: 15000 }, () => {
 
       const mockConfig = createMockConfig({
         getModel: () => ({
-          model: { modelId: 'google/gemma-3-27b-it:free' },
-          provider: 'openrouter',
-          modelId: 'google/gemma-3-27b-it:free',
+          model: { modelId: 'glm-4.6v-flash' },
+          provider: 'zai',
+          modelId: 'glm-4.6v-flash',
         }),
       });
 
@@ -392,7 +389,7 @@ describe('BaseAgent', { timeout: 15000 }, () => {
 
       const textDeltas = events.filter((e) => e.type === 'text_delta');
       expect(textDeltas.at(-1)?.data).toBe(
-        '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.'
+        'AI 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.'
       );
     });
 

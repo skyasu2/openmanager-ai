@@ -641,7 +641,6 @@ export function getProviderDisplayName(provider: string): string {
     zai: 'Z.AI',
     cerebras: 'Cerebras',
     gemini: 'Gemini',
-    openrouter: 'OpenRouter',
   };
   return map[provider] ?? provider;
 }
@@ -673,7 +672,6 @@ export function getProviderDotColor(provider: string): string {
     zai: 'bg-purple-400',
     cerebras: 'bg-green-400',
     gemini: 'bg-sky-400',
-    openrouter: 'bg-slate-400',
   };
   return colors[provider] ?? 'bg-slate-400';
 }

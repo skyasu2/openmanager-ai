@@ -192,13 +192,13 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
   },
 
   // =========================================================================
-  // Vision Agent (Gemini Flash → OpenRouter Fallback)
+  // Vision Agent (Gemini Flash → Z.AI Vision fallback)
   // =========================================================================
 
   'Vision Agent': {
     name: 'Vision Agent',
     description: getDomainAgentRole('Vision Agent').description,
-    getModel: getVisionModel, // Gemini → OpenRouter fallback
+    getModel: getVisionModel, // Gemini → Z.AI Vision fallback
     instructions: VISION_INSTRUCTIONS,
     tools: buildAgentTools('Vision Agent'),
     visibility: 'routable',

@@ -10,7 +10,6 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Tool } from 'ai';
-import { isOpenRouterVisionToolCallingEnabled } from '../../../lib/config-parser';
 
 // Mock model-provider before imports
 vi.mock('../model-provider', () => ({
@@ -38,7 +37,6 @@ vi.mock('../../../lib/config-parser', () => ({
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
-  isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
   getUpstashConfig: vi.fn(() => null),
 }));
 
@@ -128,7 +126,6 @@ function createMockConfig(overrides: Partial<{
 describe('BaseAgent', { timeout: 60000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(false);
 
     // Default mock for generateText - successful response
     mockGenerateText.mockResolvedValue({
@@ -463,74 +460,6 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(result.toolsCalled).toContain('searchKnowledgeBase');
       expect(result.metadata.provider).toBe('cerebras');
       expect(result.metadata.modelId).toBe(cerebrasModelId);
-      expect(result.metadata.fallbackUsed).toBe(true);
-      expect(result.metadata.fallbackReason).toBe('EMPTY_RESPONSE');
-    });
-
-    it('should enforce minimum maxOutputTokens for Vision Agent on OpenRouter', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
-      const mockConfig = createMockConfig({
-        getModel: () => ({
-          model: { modelId: 'google/gemma-3-27b-it:free' },
-          provider: 'openrouter',
-          modelId: 'google/gemma-3-27b-it:free',
-        }),
-      });
-
-      class VisionTestAgent extends BaseAgent {
-        getName(): string {
-          return 'Vision Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
-      }
-
-      const agent = new VisionTestAgent();
-      await agent.run('vision query', { maxOutputTokens: 64 });
-
-      const callArgs = mockGenerateText.mock.calls[0][0];
-      expect(callArgs.maxOutputTokens).toBe(256);
-    });
-
-    it('should return fallback text when Vision OpenRouter response is empty', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
-      mockGenerateText.mockResolvedValue({
-        text: '',
-        usage: { inputTokens: 100, outputTokens: 32, totalTokens: 132 },
-        steps: [
-          {
-            finishReason: 'length',
-            toolCalls: [],
-            toolResults: [],
-          },
-        ],
-      });
-
-      const mockConfig = createMockConfig({
-        getModel: () => ({
-          model: { modelId: 'google/gemma-3-27b-it:free' },
-          provider: 'openrouter',
-          modelId: 'google/gemma-3-27b-it:free',
-        }),
-      });
-
-      class VisionTestAgent extends BaseAgent {
-        getName(): string {
-          return 'Vision Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
-      }
-
-      const agent = new VisionTestAgent();
-      const result = await agent.run('vision query', { maxOutputTokens: 64 });
-
-      expect(result.success).toBe(true);
-      expect(result.text).toContain('비전 분석 모델 응답이 비어 있습니다');
       expect(result.metadata.fallbackUsed).toBe(true);
       expect(result.metadata.fallbackReason).toBe('EMPTY_RESPONSE');
     });

@@ -8,11 +8,9 @@ const {
   mockGetZaiModel,
   mockGetZaiVisionModel,
   mockGetGeminiFlashLiteModel,
-  mockGetOpenRouterVisionModel,
   mockGetCerebrasModelId,
   mockGetCerebrasFallbackModelIds,
   mockIsCerebrasToolCallingEnabled,
-  mockIsOpenRouterVisionToolCallingEnabled,
   mockGetCircuitBreaker,
 } = vi.hoisted(() => ({
   mockCheckProviderStatus: vi.fn(() => ({
@@ -21,7 +19,6 @@ const {
     mistral: true,
     zai: true,
     gemini: true,
-    openrouter: true,
   })),
   mockGetCerebrasModel: vi.fn((modelId: string) => ({ provider: 'cerebras', modelId })),
   mockGetGroqModel: vi.fn((modelId: string) => ({ provider: 'groq', modelId })),
@@ -29,11 +26,9 @@ const {
   mockGetZaiModel: vi.fn((modelId: string) => ({ provider: 'zai', modelId })),
   mockGetZaiVisionModel: vi.fn((modelId: string) => ({ provider: 'zai', modelId })),
   mockGetGeminiFlashLiteModel: vi.fn((modelId: string) => ({ provider: 'gemini', modelId })),
-  mockGetOpenRouterVisionModel: vi.fn((modelId: string) => ({ provider: 'openrouter', modelId })),
   mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   mockGetCerebrasFallbackModelIds: vi.fn((): string[] => []),
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
-  mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
   mockGetCircuitBreaker: vi.fn(() => ({
     isAllowed: () => true,
   })),
@@ -46,11 +41,8 @@ vi.mock('../../../../lib/config-parser', () => ({
   getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
   getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
-  getOpenRouterVisionModelId: vi.fn(() => 'openrouter-vision-model'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),
-  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
-  isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
 }));
 
 vi.mock('../../../../lib/logger', () => ({
@@ -73,7 +65,6 @@ vi.mock('../../model-provider-core', () => ({
   getMistralModel: mockGetMistralModel,
   getZaiModel: mockGetZaiModel,
   getZaiVisionModel: mockGetZaiVisionModel,
-  getOpenRouterVisionModel: mockGetOpenRouterVisionModel,
 }));
 
 vi.mock('../../model-provider-status', () => ({
@@ -99,10 +90,8 @@ describe('selectTextModel capability requirements', () => {
       mistral: true,
       zai: true,
       gemini: true,
-      openrouter: true,
     });
     mockIsCerebrasToolCallingEnabled.mockReturnValue(true);
-    mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
     mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
     mockGetCerebrasFallbackModelIds.mockReturnValue([]);
     mockGetCerebrasModel.mockImplementation((modelId: string) => ({ provider: 'cerebras', modelId }));
@@ -131,7 +120,6 @@ describe('selectTextModel capability requirements', () => {
       mistral: false,
       zai: false,
       gemini: false,
-      openrouter: false,
     });
 
     const result = selectTextModel('Test Agent', ['cerebras'], {
@@ -206,7 +194,6 @@ describe('selectTextModel capability requirements', () => {
       mistral: true,
       zai: true,
       gemini: true,
-      openrouter: true,
     });
 
     const result = getNlqModel();
@@ -243,7 +230,6 @@ describe('selectTextModel capability requirements', () => {
       mistral: true,
       zai: true,
       gemini: true,
-      openrouter: true,
     });
 
     expect(getAnalystModel()?.provider).toBe('groq');

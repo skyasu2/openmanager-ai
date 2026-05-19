@@ -5,7 +5,7 @@
  * - Text mesh: Groq, Z.AI, Mistral, Cerebras are rotated by agent role.
  * - Cerebras: llama3.1-8b only when context permits; blocked after 2026-05-27.
  * - Z.AI: free GLM Flash text/vision fallback with thinking disabled by request patch.
- * - Vision: Gemini 2.5 Flash-Lite → Z.AI GLM-4.6V-Flash; OpenRouter opt-in only.
+ * - Vision: Gemini 2.5 Flash-Lite → Z.AI GLM-4.6V-Flash.
  *
  * @version 4.2.0
  * @updated 2026-05-16 - SambaNova 제거 유지, Cerebras short-context fallback 보수화
@@ -20,10 +20,8 @@ import {
   getCerebrasModelId,
   getGroqModelId,
   getMistralModelId,
-  getOpenRouterVisionModelId,
   getZaiModelId,
   getZaiVisionModelId,
-  isOpenRouterVisionFallbackEnabled,
 } from '../../lib/config-parser';
 import {
   type LLMProviderName as QuotaProviderName,
@@ -40,7 +38,6 @@ import {
   getGeminiFlashLiteModel,
   getGroqModel,
   getMistralModel,
-  getOpenRouterVisionModel,
   getZaiModel,
   getZaiVisionModel,
 } from './model-provider-core';
@@ -62,7 +59,6 @@ export {
   getGeminiFlashLiteModel,
   getGroqModel,
   getMistralModel,
-  getOpenRouterVisionModel,
   getZaiModel,
   getZaiVisionModel,
 } from './model-provider-core';
@@ -135,18 +131,16 @@ export { getAdvisorModel } from './agents/config/agent-model-selectors';
  *       This function is a low-level utility for direct model access.
  *
  * Primary: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
- * Fallback: Z.AI GLM-4.6V-Flash; OpenRouter free model only when explicitly enabled.
+ * Fallback: Z.AI GLM-4.6V-Flash.
  *
  * @returns Model info or null (graceful degradation)
- * @updated 2026-02-15 - Added OpenRouter request best-practice defaults
  */
 export function getVisionAgentModel(): {
   model: LanguageModel;
-  provider: 'gemini' | 'openrouter' | 'zai';
+  provider: 'gemini' | 'zai';
   modelId: string;
 } | null {
   const status = checkProviderStatus();
-  const openRouterFallbackEnabled = isOpenRouterVisionFallbackEnabled();
 
   // 1. Try Gemini (Primary)
   if (status.gemini) {
@@ -177,32 +171,17 @@ export function getVisionAgentModel(): {
     }
   }
 
-  // 3. Try OpenRouter only when explicitly enabled after live validation.
-  if (status.openrouter && openRouterFallbackEnabled) {
-    try {
-      const modelId = getOpenRouterVisionModelId();
-      logger.info(`[Vision Agent] Using opt-in OpenRouter fallback: ${modelId}`);
-      return {
-        model: getOpenRouterVisionModel(modelId),
-        provider: 'openrouter',
-        modelId: modelId,
-      };
-    } catch (error) {
-      logger.error('❌ [Vision Agent] OpenRouter initialization failed:', error);
-    }
-  }
-
   logger.warn('⚠️ [Vision Agent] No vision provider available - Vision features disabled');
   return null;
 }
 
 /**
  * Check if Vision Agent is available
- * @returns true if Gemini, Z.AI, or opt-in OpenRouter provider is configured and enabled
+ * @returns true if Gemini or Z.AI provider is configured and enabled
  */
 export function isVisionAgentAvailable(): boolean {
   const status = checkProviderStatus();
-  return status.gemini || !!status.zai || (status.openrouter && isOpenRouterVisionFallbackEnabled());
+  return status.gemini || !!status.zai;
 }
 
 // ============================================================================
@@ -233,9 +212,6 @@ export async function testProviderHealth(
         break;
       case 'gemini':
         getGeminiFlashLiteModel();
-        break;
-      case 'openrouter':
-        getOpenRouterVisionModel();
         break;
     }
 
@@ -275,10 +251,6 @@ export async function checkAllProvidersHealth(): Promise<ProviderHealth[]> {
   if (status.gemini) {
     results.push(await testProviderHealth('gemini'));
   }
-  if (status.openrouter && isOpenRouterVisionFallbackEnabled()) {
-    results.push(await testProviderHealth('openrouter'));
-  }
-
   return results;
 }
 
@@ -293,11 +265,6 @@ export function logProviderStatus(): void {
     Mistral: status.mistral ? 'ok' : 'off',
     ZAI: status.zai ? 'ok' : 'off',
     Gemini: status.gemini ? 'ok (Vision)' : 'off',
-    OpenRouter: status.openrouter
-      ? isOpenRouterVisionFallbackEnabled()
-        ? 'ok (Vision Fallback opt-in)'
-        : 'configured (Vision Fallback disabled)'
-      : 'off',
   }, '[Provider Status]');
 }
 

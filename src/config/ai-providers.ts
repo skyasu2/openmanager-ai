@@ -73,13 +73,6 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
     description: 'Primary vision provider for screenshot and multimodal analysis',
     color: 'bg-emerald-500',
   },
-  {
-    name: 'OpenRouter',
-    role: 'Vision fallback',
-    model: 'free vision model',
-    description: 'OpenRouter free-model fallback for screenshot and multimodal analysis',
-    color: 'bg-sky-500',
-  },
 ];
 
 /**

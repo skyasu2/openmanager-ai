@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-19 KST (주간 개선 후속 안정화 완료)
+**Last Updated**: 2026-05-19 KST (OpenRouter provider code path 제거)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,6 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| AI 어시스턴트 코드/문서 개선 | Medium | Draft | `orchestrator-routing.ts`(483→≤450), `useAIChatCore.ts`(607→≤580), `useHybridAIQuery.ts`(704→≤600) 재분할 및 `frontend-backend-comparison.md` LOC drift(useAIChatCore 426→607, useHybridAIQuery 909→704, useAISidebarStore 551→674) 갱신, `01-ai-agent-design.md` NLQ↔Metrics Query 별칭 명시, AI hooks 진입 맵(9 hooks) 신규 작성. Vision provider chain 문서 정리는 완료되어 남은 작업에서 제외. 상세: [ai-assistant-improvement-plan.md](ai-assistant-improvement-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -115,6 +116,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-19) — Codex (OpenRouter Removal)
+- [x] OpenRouter provider runtime code path 제거 완료
+  - Vision fallback은 `Gemini -> Z.AI Vision`만 유지하고, OpenRouter provider factory/status/metadata/env/docs/test 경로를 제거했다.
+  - 실환경 provider precheck에서 Gemini/Groq/Cerebras/Mistral/Z.AI는 available 및 metadata green, OpenRouter는 disabled/red로 확인되어 제거 대상임을 확정했다.
+  - 검증: AI Engine `type-check`/targeted tests/full tests, root `type-check`/`lint`/`test:quick`/`test:contract`, docs checks, `git diff --check` PASS. 상세: [archive/openrouter-code-removal-plan.md](archive/openrouter-code-removal-plan.md)
 
 ### Completed (2026-05-19) — Codex (Weekly Follow-up Hardening)
 - [x] 주간 개선 후속 안정화 완료

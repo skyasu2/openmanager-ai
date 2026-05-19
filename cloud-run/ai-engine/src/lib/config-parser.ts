@@ -55,7 +55,6 @@ export interface SupabaseConfig {
  * Contains API keys for multiple AI providers
  *
  * @updated 2026-01-27 - Added Gemini Flash-Lite for Vision Agent
- * @updated 2026-02-15 - Re-added OpenRouter as Vision fallback with guarded defaults
  */
 export interface AIProvidersConfig {
   groq: string;
@@ -65,7 +64,6 @@ export interface AIProvidersConfig {
   tavily: string;
   tavilyBackup?: string; // Failover key
   gemini?: string; // Vision Agent - Gemini 2.5 Flash-Lite
-  openrouter?: string; // Fallback Vision
 }
 
 /**
@@ -134,15 +132,6 @@ let cachedSupabaseConfig: SupabaseConfig | null = null;
 let cachedAIProvidersConfig: AIProvidersConfig | null = null;
 let cachedKVConfig: KVConfig | null = null;
 let cachedLangfuseConfig: LangfuseConfig | null = null;
-
-// OpenRouter 무료 비전 모델 (2026-04-04 실제 테스트 기준)
-// 테스트 결과: gemma-3-27b ✅ / gemma-3-12b ✅ / gemma-3-4b ✅
-// 제거: nvidia/nemotron (content=None 버그), mistral-small-3.1:free (404 endpoint 삭제됨)
-const DEFAULT_OPENROUTER_VISION_MODEL = 'google/gemma-3-27b-it:free'; // 131K ctx, 27B
-const DEFAULT_OPENROUTER_VISION_FALLBACKS = [
-  'google/gemma-3-12b-it:free',   // 32K ctx, 12B
-  'google/gemma-3-4b-it:free',    // 32K ctx, 4B (최후 보루)
-];
 
 /**
  * Get Supabase configuration
@@ -459,66 +448,12 @@ export function getGeminiApiKey(): string | null {
 }
 
 /**
- * Get OpenRouter API Key (Fallback Vision)
- */
-export function getOpenRouterApiKey(): string | null {
-  const providersConfig = getAIProvidersConfig();
-  if (providersConfig?.openrouter) return providersConfig.openrouter;
-  return process.env.OPENROUTER_API_KEY || null;
-}
-
-/**
- * Get OpenRouter Vision Model ID
- * Default: google/gemma-3-27b-it:free
- */
-export function getOpenRouterVisionModelId(): string {
-  return process.env.OPENROUTER_MODEL_VISION || DEFAULT_OPENROUTER_VISION_MODEL;
-}
-
-/**
- * Get OpenRouter Vision fallback model IDs (comma-separated)
- * Example: "mistralai/mistral-small-3.1-24b-instruct:free,google/gemma-3-4b-it:free"
- */
-export function getOpenRouterVisionFallbackModelIds(): string[] {
-  const raw = process.env.OPENROUTER_MODEL_VISION_FALLBACKS;
-  if (!raw) return [...DEFAULT_OPENROUTER_VISION_FALLBACKS];
-
-  const parsed = raw
-    .split(',')
-    .map(model => model.trim())
-    .filter(Boolean);
-
-  if (parsed.length === 0) {
-    return [...DEFAULT_OPENROUTER_VISION_FALLBACKS];
-  }
-
-  return [...new Set(parsed)];
-}
-
-/**
  * Check if single-agent mode is allowed in production.
  * Default: false (Multi-agent is the standard).
  * Can be overridden via ALLOW_DEGRADED_SINGLE env var for emergency/degraded operations.
  */
 export function isSingleModeAllowed(): boolean {
   return process.env.ALLOW_DEGRADED_SINGLE === 'true';
-}
-
-/**
- * Free-tier OpenRouter vision models often fail on tool calling.
- * Default is disabled for reliability; enable only when validated.
- */
-export function isOpenRouterVisionToolCallingEnabled(): boolean {
-  return process.env.OPENROUTER_VISION_TOOL_CALLING === 'true';
-}
-
-/**
- * OpenRouter vision fallback is opt-in only.
- * Recent live smoke evidence showed fallback drift, so default runtime should
- * prefer validated Gemini/Z.AI vision paths and expose OpenRouter as disabled.
- */
-export function isOpenRouterVisionFallbackEnabled(): boolean {
-  return process.env.OPENROUTER_VISION_FALLBACK_ENABLED === 'true';
 }
 
 /**
@@ -572,7 +507,6 @@ export function getConfigStatus(): {
   tavily: boolean;
   tavilyBackup: boolean;
   gemini: boolean;
-  openrouter: boolean;
   langfuse: boolean;
   cloudRunApi: boolean;
 } {
@@ -586,7 +520,6 @@ export function getConfigStatus(): {
     tavily: getTavilyApiKey() !== null,
     tavilyBackup: getTavilyApiKeyBackup() !== null,
     gemini: getGeminiApiKey() !== null,
-    openrouter: getOpenRouterApiKey() !== null,
     langfuse: getLangfuseConfig() !== null,
     cloudRunApi: getCloudRunApiSecret() !== null,
   };

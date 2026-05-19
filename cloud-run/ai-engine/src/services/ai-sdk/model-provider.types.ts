@@ -3,8 +3,7 @@ export type ProviderName =
   | 'groq'
   | 'mistral'
   | 'zai'
-  | 'gemini'
-  | 'openrouter';
+  | 'gemini';
 
 export interface ProviderStatus {
   cerebras: boolean;
@@ -12,7 +11,6 @@ export interface ProviderStatus {
   mistral: boolean;
   zai?: boolean;
   gemini: boolean;
-  openrouter: boolean;
 }
 
 export interface ProviderHealth {

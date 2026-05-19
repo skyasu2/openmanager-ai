@@ -5,13 +5,11 @@ const {
   mockIsCerebrasLongContextEnabled,
   mockGetCerebrasModelId,
   mockGetZaiModelId,
-  mockIsOpenRouterVisionToolCallingEnabled,
 } = vi.hoisted(() => ({
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
   mockIsCerebrasLongContextEnabled: vi.fn(() => true),
   mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   mockGetZaiModelId: vi.fn(() => 'glm-4.5-flash'),
-  mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 
 vi.mock('../../lib/config-parser', () => ({
@@ -19,7 +17,6 @@ vi.mock('../../lib/config-parser', () => ({
   getZaiModelId: mockGetZaiModelId,
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: mockIsCerebrasLongContextEnabled,
-  isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
 }));
 
 import { getProviderCapabilities } from './provider-capabilities';
@@ -32,7 +29,6 @@ describe('provider capabilities', () => {
     mockIsCerebrasLongContextEnabled.mockReturnValue(true);
     mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
     mockGetZaiModelId.mockReturnValue('glm-4.5-flash');
-    mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
   });
 
   it('reflects Cerebras tool-calling env gate', () => {
@@ -64,15 +60,6 @@ describe('provider capabilities', () => {
     );
 
     expect(capabilities.supportsLongContext).toBe(false);
-  });
-
-  it('reflects OpenRouter vision tool-calling env gate', () => {
-    mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(false);
-
-    const capabilities = getProviderCapabilities('openrouter');
-
-    expect(capabilities.supportsToolCalling).toBe(false);
-    expect(capabilities.supportsVision).toBe(true);
   });
 
   it('marks Z.AI Flash as long-context text and Z.AI V as vision-capable', () => {

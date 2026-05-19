@@ -12,9 +12,6 @@ import {
   getGroqModelId,
   getMistralApiKey,
   getMistralModelId,
-  getOpenRouterApiKey,
-  getOpenRouterVisionFallbackModelIds,
-  getOpenRouterVisionModelId,
   getZaiApiKey,
   getZaiBaseUrl,
   getZaiModelId,
@@ -93,74 +90,6 @@ function getZaiProvider() {
   return _zai;
 }
 
-function patchOpenRouterRequestInit(init?: RequestInit): RequestInit | undefined {
-  if (!init?.body || typeof init.body !== 'string') {
-    return init;
-  }
-
-  try {
-    const parsedBody = JSON.parse(init.body) as Record<string, unknown>;
-    const provider =
-      typeof parsedBody.provider === 'object' && parsedBody.provider !== null
-        ? (parsedBody.provider as Record<string, unknown>)
-        : {};
-
-    const modelId = typeof parsedBody.model === 'string' ? parsedBody.model : null;
-    const primaryVisionModel = getOpenRouterVisionModelId();
-
-    if (!('allow_fallbacks' in provider)) {
-      provider.allow_fallbacks = true;
-    }
-
-    if (!('require_parameters' in provider)) {
-      provider.require_parameters = true;
-    }
-
-    if (modelId === primaryVisionModel && !Array.isArray(parsedBody.models)) {
-      const fallbacks = getOpenRouterVisionFallbackModelIds();
-      parsedBody.models = [...new Set([primaryVisionModel, ...fallbacks])];
-    }
-
-    return {
-      ...init,
-      body: JSON.stringify({
-        ...parsedBody,
-        provider,
-      }),
-    };
-  } catch {
-    return init;
-  }
-}
-
-let _openrouter: ReturnType<typeof createOpenAI> | null = null;
-
-function getOpenRouterProvider() {
-  if (_openrouter) return _openrouter;
-  const apiKey = getOpenRouterApiKey();
-  if (!apiKey) throw new Error('OPENROUTER_API_KEY not configured');
-
-  const referer = process.env.OPENROUTER_HTTP_REFERER;
-  const title = process.env.OPENROUTER_X_TITLE || 'OpenManager AI';
-
-  const headers: Record<string, string> = {};
-  if (referer) {
-    headers['HTTP-Referer'] = referer;
-  }
-  if (title) {
-    headers['X-Title'] = title;
-  }
-
-  _openrouter = createOpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    apiKey,
-    name: 'openrouter',
-    headers,
-    fetch: async (input, init) => fetch(input, patchOpenRouterRequestInit(init)),
-  });
-  return _openrouter;
-}
-
 function asLanguageModel(model: unknown): LanguageModel {
   if (!model || (typeof model !== 'object' && typeof model !== 'function')) {
     throw new TypeError('[ModelProvider] Model must be an object or function');
@@ -223,12 +152,6 @@ export function getGeminiFlashLiteModel(
 ): LanguageModel {
   const gemini = getGeminiProvider();
   return asLanguageModel(gemini(modelId));
-}
-
-export function getOpenRouterVisionModel(modelId?: string): LanguageModel {
-  const openrouter = getOpenRouterProvider();
-  const model = modelId || getOpenRouterVisionModelId();
-  return getOpenAICompatibleChatModel(openrouter, model);
 }
 
 export function getZaiVisionModel(

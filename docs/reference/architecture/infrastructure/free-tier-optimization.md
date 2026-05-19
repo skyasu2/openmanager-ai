@@ -320,7 +320,6 @@ await pipeline.exec();
 | **Mistral** (small-latest) | 50* | 50,000* | 500* | 1,000,000* | Workspace Limits 기준. 일부 chain primary/secondary로 분산 |
 | **Cerebras gpt-oss-120b** | 5 | 30,000 | 2,400 | 1,000,000 | 현재 계정 header 기준. 65K context, text mesh 후보. Llama 3.1-8b는 deprecated fallback로만 취급 |
 | **Gemini Flash-Lite** | 15 | 250,000 | 1,000 | — | RPD (Vision 전용) |
-| **OpenRouter Free** | 20 | — | 50 또는 1,000 | — | `:free` 모델. 계정 credit 상태에 따라 RPD 상이, Vision fallback 전용 |
 
 > 수치는 2026-05-16 기준 공식 문서와 현재 계정 smoke/header 확인치. 공급사 정책이 수시 변경되므로 모델 전략 변경 전 재확인 필수.
 > `*` 항목은 provider가 공개 고정 표로 보장하는 값이 아니라 현재 workspace/account smoke와 OpenManager runtime guard 기준이다.
@@ -366,9 +365,9 @@ LLM 429 응답
 
 **Vision Agent** (round-robin 미적용, 고정 순서 유지):
 
-| 1st | 2nd | 3rd |
-|-----|-----|-----|
-| Gemini | OpenRouter | Z.AI Vision |
+| 1st | 2nd |
+|-----|-----|
+| Gemini | Z.AI Vision |
 
 ### 모델 ID 환경변수 (즉시 교체 가능)
 

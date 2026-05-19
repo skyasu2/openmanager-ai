@@ -35,7 +35,7 @@ const {
       createModel('gemini', modelId)
     ),
     mockCreateOpenAI: vi.fn(() => (modelId: string) =>
-      createModel('openrouter', modelId)
+      createModel('zai', modelId)
     ),
   };
 });
@@ -78,17 +78,9 @@ vi.mock('../../lib/config-parser', () => ({
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getGeminiApiKey: vi.fn(() => 'test-gemini-key'),
-  getOpenRouterApiKey: vi.fn(() => 'test-openrouter-key'),
   getUpstashConfig: vi.fn(() => null),
-  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
-  getOpenRouterVisionFallbackModelIds: vi.fn(() => [
-    'google/gemma-3-12b-it:free',
-    'google/gemma-3-4b-it:free',
-  ]),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
-  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
-  isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 
 import {
