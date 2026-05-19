@@ -13,7 +13,6 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 어시스턴트 코드/문서 개선 | Medium | Approved | C1 `orchestrator-routing.ts` 483→384, C2 `useAIChatCore.ts` 607→578, C3 `useHybridAIQuery.ts` 704→523 완료. 남은 작업은 AI hooks 진입 맵(9 hooks) 신규 작성. `frontend-backend-comparison.md` LOC drift, `01-ai-agent-design.md` NLQ↔Metrics Query 별칭, `memory/ops-knowledge.md`↔코드 정합 grep은 완료. Vision provider chain 문서 정리는 완료되어 남은 작업에서 제외. 상세: [ai-assistant-improvement-plan.md](ai-assistant-improvement-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -116,6 +115,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-19) — Codex (AI Assistant Code/Docs Improvement)
+- [x] AI Assistant 코드/문서 개선 C1~C3/D4 완료
+  - C1: `orchestrator-routing.ts` 483→384 (`orchestrator-routing-policy.ts`, `orchestrator-routing-telemetry-helpers.ts` 추출)
+  - C2: `useAIChatCore.ts` 607→578 (`chat-core-send-plan.ts` 추출)
+  - C3: `useHybridAIQuery.ts` 704→523 (`async-result-message.ts` 추출)
+  - D4: [ai-hooks-map.md](../../docs/reference/architecture/ai/ai-hooks-map.md) 신규 작성으로 9개 AI hook entry map 정리
 
 ### Completed (2026-05-19) — Codex (AI Engine Line Guard)
 - [x] `analytics-report-utils.ts` line-guard fail 복구

@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-19
 > Tags: ai-assistant,refactor,docs,frontend,cloud-run
 
 # AI Assistant Improvement Plan (2026-05-19)
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-19
 - TODO.md 연결: Active Tasks > AI 어시스턴트 코드/문서 개선
 - 의존성: 없음
@@ -16,8 +16,8 @@
 OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/components + Supervisor proxy)의 코드 위생과 canonical 문서 정합성을 다음 한 사이클 안에 끌어올린다.
 
 - 코드: hot file 재팽창(`orchestrator-routing.ts`, `useAIChatCore.ts`, `useHybridAIQuery.ts`) 1차 분리 완료. 신규 abstraction 추가 금지.
-- 문서: `ai-engine-architecture.md`, `frontend-backend-comparison.md`, `01-ai-agent-design.md`, `02-runtime-architecture.md`의 stale 수치/표현 갱신. 신규 진입 맵 1장 추가.
-- 다이어그램: Vision provider 체인은 `Gemini -> Z.AI Vision` 기준으로 갱신 완료. 남은 작업은 hot file 분리와 hook map 작성이다.
+- 문서: `frontend-backend-comparison.md`, `01-ai-agent-design.md` stale 수치/표현 갱신과 hook 진입 맵 1장 추가 완료.
+- 다이어그램: Vision provider 체인은 `Gemini -> Z.AI Vision` 기준으로 갱신 완료.
 
 ## 비목표
 
@@ -49,7 +49,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 | `ai-engine-architecture.md` provider mesh | stale Vision provider chain | `Gemini -> Z.AI Vision` | 완료 | provider removal follow-up에서 반영 |
 | `02-runtime-architecture.md:98` | Mermaid LLM 박스 | `Gemini -> Z.AI Vision` | 완료 | provider removal follow-up에서 반영 |
 | `01-ai-agent-design.md` | 5 specialist 표 + `Metrics Query Agent` 명칭 | Metrics Query Agent (alias: NLQ Agent) | 코드 SSOT는 `nlq-agent.ts` 기반 NLQ Agent이며 별칭 명시 완료 | 완료 |
-| `(없음)` | AI hooks 진입 맵 | 없음 | `useAIChatCore/Surface/EntryController/Hybrid/Async/Enhanced/Deferred/Developer/FileAttachments` 9개 hook 진입점 | D4 신규 1장 |
+| `ai-hooks-map.md` | AI hooks 진입 맵 | 없음 | `useAIChatCore/Surface/EntryController/Hybrid/Async/Enhanced/Deferred/Developer/FileAttachments` 9개 hook 진입점 | 완료 |
 
 ### 메모리 기록과 코드 정합
 
@@ -66,7 +66,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 | `orchestrator-routing.ts` LOC | 483 | 384 (routing policy/tool observation helper 추출 완료) |
 | `useAIChatCore.ts` LOC | 607 | 578 (send plan/helper 추출 완료) |
 | `useHybridAIQuery.ts` LOC | 704 | 523 (1차 완료, ≤500 2차 후속 후보) |
-| AI hook 진입 맵 | 없음 | `docs/reference/architecture/ai/ai-hooks-map.md` 1페이지 |
+| AI hook 진입 맵 | 없음 | `docs/reference/architecture/ai/ai-hooks-map.md` 1페이지 완료 |
 | Orchestrator LLM routing 복원 | 금지 | 금지 유지 |
 
 ### 문서 경계
@@ -80,9 +80,9 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 - [x] `orchestrator-routing.ts` 추출 후 `targeted Vitest` (orchestrator routing test suite) PASS
 - [x] `useAIChatCore.ts` 추출 후 `useAIChatCore.test.ts` + `useEnhancedChatMessages.test.ts` PASS
 - [x] `useHybridAIQuery.ts` 추출 후 `useHybridAIQuery.test.ts` PASS
-- [ ] AI hook map 문서가 9개 hook 모두를 1줄 이상 설명한다
-- [ ] `npm run docs:budget:strict` 통과 (활성 문서 한도 90 유지)
-- [ ] `npm run line-guard` 통과
+- [x] AI hook map 문서가 9개 hook 모두를 1줄 이상 설명한다
+- [x] `npm run docs:budget:strict` 통과 (활성 문서 한도 90 유지)
+- [x] `npm run line-guard` 통과
 
 ## Task 목록
 
@@ -94,7 +94,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 | D1 | `frontend-backend-comparison.md` LOC/표 갱신 | completed | 현재 LOC drift 정리 완료. C1~C3 적용 후 각 task에서 재측정 |
 | D2 | Vision provider chain 문서 정리 | completed | `Gemini -> Z.AI Vision` 기준 반영 |
 | D3 | `01-ai-agent-design.md` NLQ ↔ Metrics Query 별칭 명시 | completed | 2026-05-19 문서 확인 |
-| D4 | `ai-hooks-map.md` 신규 1페이지 작성 | pending | 9 hook entry 매트릭스 |
+| D4 | `ai-hooks-map.md` 신규 1페이지 작성 | completed | 9 hook entry 매트릭스 |
 | Z1 | `memory/ops-knowledge.md` ↔ 코드 정합 grep 검증 결과 본 plan에 기록 | completed | provider mesh, KRL, direct routing 확인 |
 
 ## 검증
