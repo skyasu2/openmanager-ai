@@ -1,0 +1,258 @@
+{
+  "runId": "QA-20260519-0538",
+  "recordedAt": "2026-05-19T11:08:35.867Z",
+  "recordedAtKst": "2026-05-19 20:08:35 KST",
+  "runTitle": "Production Vision Attachment Routing QA - v8.11.184",
+  "owner": "codex",
+  "source": "playwright-mcp + cloud-run-api",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EAfnBF9W49oPUsAVn1cWwz8TAYZw",
+    "deploymentUrl": "https://openmanager-8s0qbrpuy-skyasus-projects.vercel.app",
+    "commitSha": "02a05eba19b7be4d9cc1d19bc9af015d53c6cdce"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/api/version",
+    "Cloud Run /health",
+    "Cloud Run /api/ai/supervisor Vision image attachment",
+    "Vision Agent real Playwright PNG input",
+    "standard five-question conversational AI smoke"
+  ],
+  "skippedSurfaces": [
+    "Vercel authenticated AI image upload UI path",
+    "broad dashboard modal/detail pack",
+    "provider matrix beyond active routing"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Vision Agent Playwright PNG analysis",
+      "agent": "Vision Agent",
+      "provider": "gemini",
+      "model": "gemini-2.5-flash-lite",
+      "route": "Cloud Run /api/ai/supervisor",
+      "source": "production Cloud Run JSON response metadata",
+      "latencyMs": 11774,
+      "ttfbMs": 0,
+      "processingTimeMs": 11774
+    },
+    {
+      "surface": "standard five-question conversational smoke",
+      "agent": "Metrics Query Agent / Supervisor",
+      "provider": "groq/mistral/zai",
+      "model": "active provider rotation",
+      "route": "Cloud Run /api/ai/supervisor",
+      "source": "production Cloud Run JSON response metadata",
+      "latencyMs": 28809,
+      "ttfbMs": 0,
+      "processingTimeMs": 28809
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vision image attachment routing, native multimodal execution, and standard five-question AI smoke were covered on production Cloud Run.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab release pipeline, Vercel version endpoint, Cloud Run health, and post-deploy smoke all reached v8.11.184.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The direct Vercel JSON API correctly rejected unauthenticated access with 401, so the image attachment end-to-end UI upload path was not covered in this targeted run.",
+      "nextAction": "Add or document a CSRF-safe authenticated Playwright UI flow for image attachment upload when the frontend exposes that control."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-19T20:00:45+09:00",
+      "summary": "Current billing period checked after production QA; effective usage 12.6977 USD, billed 0.0000 USD, no unexpected paid usage reported by CLI.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Vision smoke input: previous Playwright QA screenshot",
+      "path": "reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "vision-attachment-routing",
+      "title": "Image/file attachments force Vision multi-agent route",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "modeSelectionSource=vision_input, finalAgent=Vision Agent",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "vision-native-multimodal",
+      "title": "Vision Agent image/file path uses native multimodal model call",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tools/stopWhen omitted for Vision image attachments; production Gemini response non-empty",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "vision-ui-upload-e2e",
+      "title": "Authenticated frontend image-upload UI E2E path",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Current production frontend JSON API requires auth and CSRF-safe UI interaction; direct backend Vision path is covered.",
+      "evidence": "",
+      "note": "Add when the AI Assistant frontend exposes or stabilizes image attachment upload controls.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "action-needed-transient-500-observation",
+      "title": "One transient 500 on standard question 4 before immediate retry success",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Initial action-needed smoke returned 500 once; two immediate retries passed with grounded Metrics Query Agent responses.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "feature-dod-ai-engine-typecheck",
+      "title": "AI Engine type-check",
+      "priority": "P2",
+      "evidence": "cd cloud-run/ai-engine && npm run type-check",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "feature-dod-ai-engine-tests",
+      "title": "AI Engine targeted and full tests",
+      "priority": "P2",
+      "evidence": "targeted 97/97 PASS; full 1345/1345 PASS",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "feature-dod-root-contract",
+      "title": "Root API contract tests",
+      "priority": "P2",
+      "evidence": "npm run test:contract -> 24/24 PASS",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "release-dod-gitlab-tag-pipeline",
+      "title": "GitLab v8.11.184 tag pipeline",
+      "priority": "P2",
+      "evidence": "pipeline 2536955714 success",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "release-dod-production-version",
+      "title": "Vercel and Cloud Run production version",
+      "priority": "P2",
+      "evidence": "Vercel /api/version=8.11.184; Cloud Run /health.version=8.11.184",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Main validate pipeline 2536946848 succeeded for fix commit 20e4fce43.",
+    "Release tag pipeline 2536955714 succeeded for v8.11.184.",
+    "Vercel Playwright MCP rendered production / and /api/version returned v8.11.184.",
+    "Cloud Run production Vision smoke used reports/qa/evidence/qa-20260519-v811181-analyze-server-cache-hit-pass.png as real image input and returned finalAgent=Vision Agent, provider=gemini, modeSelectionSource=vision_input, responseChars=759.",
+    "Unauthenticated Vercel /api/ai/supervisor direct JSON smoke returned 401 as expected; UI-authenticated image upload path was intentionally skipped in this targeted run.",
+    "Standard five conversational AI questions passed after one transient 500 on question 4 was retried twice successfully."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline 2536955714",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536955714"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health"
+    }
+  ]
+}

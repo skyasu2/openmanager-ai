@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 16:44:03 KST
+> Generated at: 2026-05-19 20:08:39 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 535 |
-| Total Runs (Counted) | 428 |
+| Total Recorded Runs | 536 |
+| Total Runs (Counted) | 429 |
 | Non-counted Runs | 107 |
-| Total Checks | 3898 |
-| Passed | 3745 |
+| Total Checks | 3912 |
+| Passed | 3759 |
 | Failed | 142 |
-| Completed Items | 612 |
+| Completed Items | 614 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 27 |
+| Wont-Fix Items | 34 |
 | Expert Domains Tracked | 17 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260519-0537 (2026-05-19T07:40:00.196Z) |
-| Latest Recorded Run | QA-20260519-0537 (2026-05-19T07:40:00.196Z) |
+| Last Counted Run | QA-20260519-0538 (2026-05-19T11:08:35.867Z) |
+| Latest Recorded Run | QA-20260519-0538 (2026-05-19T11:08:35.867Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,31 +34,32 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0537 (2026-05-19T07:40:00.196Z)
+Latest run: QA-20260519-0538 (2026-05-19T11:08:35.867Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| Test Automation Architect | partially-appropriate | yes | Add or document a CSRF-safe authenticated Playwright UI flow for image attachment upload when the frontend exposes that control. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.181 production QA; effective=12.6977 USD, billed=0.0000 USD. |
+| vercel | cli | checked | normal | Current billing period checked after production QA; effective usage 12.6977 USD, billed 0.0000 USD, no unexpected paid usage reported by CLI. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T07:40:00.196Z -> 2026-05-19T07:40:00.196Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 8
+- Window: 2026-05-18T11:08:35.867Z -> 2026-05-19T11:08:35.867Z (24h)
+- Runs with observations: 5 recorded / 5 counted
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Metrics Query Agent / Supervisor | groq/mistral/zai | 1 | 28809ms | 28809ms | 0ms | 0ms | 28809ms | 28809ms | QA-20260519-0538 |
 | Analyst Agent | mistral | 2 | 14779ms | 23558ms | - | - | - | - | QA-20260519-0535 |
 | NLQ Agent | unknown | 1 | 14000ms | 14000ms | - | - | - | - | QA-20260519-0532 |
+| Vision Agent | gemini | 1 | 11774ms | 11774ms | 0ms | 0ms | 11774ms | 11774ms | QA-20260519-0538 |
 | Reporter Agent | unknown | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260519-0532 |
 | NLQ | deterministic | 1 | 310ms | 310ms | - | - | - | - | QA-20260519-0533 |
 | Analyst Agent | deterministic | 2 | 137ms | 273ms | - | - | - | - | QA-20260519-0537 |
@@ -66,7 +67,7 @@ Latest run: QA-20260519-0537 (2026-05-19T07:40:00.196Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T07:40:00.196Z -> 2026-05-19T07:40:00.196Z (24h)
+- Window: 2026-05-18T11:08:35.867Z -> 2026-05-19T11:08:35.867Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -80,29 +81,29 @@ Latest run: QA-20260519-0537 (2026-05-19T07:40:00.196Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_E5zZztMow1QgjEaSyvPCL1Sj3hqP / SHA cb05a58e
-- Coverage Packs: ai-core, ai-advanced-surface, observability-pack
-- Covered Surfaces: /dashboard/ai-assistant (AI Chat remediation query), /dashboard/ai-assistant (이상감지/추세 single-server analysis), /api/ai/intelligent-monitoring analyze_server, /api/version, GitLab tag pipeline deploy smoke, Vercel usage check
-- Skipped Surfaces: vision agent (not changed in v8.11.181 hotfix), rate limit 429 직접 트리거 (일일 한도 보존)
+- Deployment: dpl_EAfnBF9W49oPUsAVn1cWwz8TAYZw / SHA 02a05eba
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: /, /api/version, Cloud Run /health, Cloud Run /api/ai/supervisor Vision image attachment, Vision Agent real Playwright PNG input, standard five-question conversational AI smoke
+- Skipped Surfaces: Vercel authenticated AI image upload UI path, broad dashboard modal/detail pack, provider matrix beyond active routing
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main hotfix pipeline 2536302748 | [GitLab main hotfix pipeline 2536302748](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536302748) | - |
-| general | GitLab v8.11.181 tag pipeline 2536315753 | [GitLab v8.11.181 tag pipeline 2536315753](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536315753) | - |
-| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
+| general | GitLab tag pipeline 2536955714 | [GitLab tag pipeline 2536955714](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536955714) | - |
+| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
+| monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-490817238363.asia-northeast1.run.app/health) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.181 weekly hardening post-deploy evidence | `reports/qa/evidence/qa-20260519-v811181-weekly-hardening-post-deploy.md` | - |
-| playwright-screenshot | v8.11.181 analyze_server cache HIT UI pass screenshot | `reports/qa/evidence/qa-20260519-v811181-analyze-server-cache-hit-pass.png` | - |
+| playwright-screenshot | Vision smoke input: previous Playwright QA screenshot | `reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- test-automation: Test Automation Architect (last QA-20260519-0538)
+  next: Add or document a CSRF-safe authenticated Playwright UI flow for image attachment upload when the frontend exposes that control.
 
 ## Pending Improvements
 
@@ -114,7 +115,7 @@ Latest run: QA-20260519-0537 (2026-05-19T07:40:00.196Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 19
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 23
 
 ### Platform Constraint
 
@@ -138,6 +139,12 @@ _Accepted to preserve the free-tier production shape instead of increasing deplo
 
 _Accepted because the item is historical, legacy, or superseded by current QA/CI gates._
 
+- [P2] feature-dod-ai-engine-tests: AI Engine targeted and full tests (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] feature-dod-ai-engine-typecheck: AI Engine type-check (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] feature-dod-root-contract: Root API contract tests (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (seen 9회, last QA-20260307-0053)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] feature-dod-unit-tests: 단위 테스트 158개 통과 (seen 9회, last QA-20260307-0053)
@@ -188,6 +195,14 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] nlq-provider-ministral3b-candidate-v811157: Evaluate Mistral ministral-3b as front NLQ primary or fallback after schema compatibility fix (seen 1회, last QA-20260516-0507)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] release-dod-gitlab-tag-pipeline: GitLab v8.11.184 tag pipeline (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] release-dod-production-version: Vercel and Cloud Run production version (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] action-needed-transient-500-observation: One transient 500 on standard question 4 before immediate retry success (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] vision-ui-upload-e2e: Authenticated frontend image-upload UI E2E path (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 
 ## Completed Improvements
@@ -754,6 +769,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - vibe-cicd-modal-local-dev-stale-view: 로컬 dev Vibe Coding 모달 stale view 해소 (completed 1회, last QA-20260331-0202)
 - vibe-hybrid-delivery-wording: Vibe Coding 모달의 배포 설명을 하이브리드 전달 구조 기준으로 정정 (completed 1회, last QA-20260330-0200)
 - vibe-qa-modal-replaced-with-cicd: Vibe Coding 모달의 QA 탭을 CI/CD 구조 설명으로 교체 (completed 1회, last QA-20260330-0200)
+- vision-attachment-routing: Image/file attachments force Vision multi-agent route (completed 1회, last QA-20260519-0538)
+- vision-native-multimodal: Vision Agent image/file path uses native multimodal model call (completed 1회, last QA-20260519-0538)
 - vision-production-latency-sample-refresh: Vision 최신 production latency 표본 보강 (completed 1회, last QA-20260421-0322)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - weekly-followup-planning-hygiene: Weekly follow-up planning hygiene and data slot policy updated (completed 1회, last QA-20260519-0536)
@@ -809,6 +826,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0538 | 2026-05-19T11:08:35.867Z | targeted | yes | yes | Production Vision Attachment Routing QA - v8.11.184 | 14 | 2 | 0 | 0 | 7 | 1 |
 | QA-20260519-0537 | 2026-05-19T07:40:00.196Z | targeted | yes | yes | v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0536 | 2026-05-19T06:23:47.328Z | targeted | no | no | Weekly follow-up hardening local contract closure | 10 | 5 | 1 | 0 | 0 | 1 |
 | QA-20260519-0535 | 2026-05-19T05:14:14.572Z | broad | yes | yes | v8.11.179 Chrome DevTools MCP QA - AI Assistant 미검증 영역 집중 테스트 | 18 | 0 | 0 | 0 | 3 | 1 |
@@ -828,4 +846,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0521 | 2026-05-18T01:37:12.860Z | targeted | no | no | Cloud Run Weekly Operational Check | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0520 | 2026-05-18T01:15:27.412Z | targeted | no | no | v8.11.169 Current Vercel Playwright MCP Rerun | 20 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0519 | 2026-05-18T00:54:54.418Z | targeted | yes | yes | v8.11.169 Current Vercel Playwright MCP Check | 16 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260518-0518 | 2026-05-18T00:32:15.109Z | targeted | yes | yes | v8.11.169 Production Diagram Regression Closure | 12 | 1 | 0 | 0 | 0 | 0 |
