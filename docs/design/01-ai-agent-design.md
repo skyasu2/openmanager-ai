@@ -49,4 +49,4 @@
 - [AI Engine Architecture](../reference/architecture/ai/ai-engine-architecture.md)
 - [Artifact System Design](06-artifact-system.md)
 - [AI Assistant Architecture Evolution Plan](../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md)
-- [AI Assistant Improvement Plan (2026-05-19)](../../reports/planning/ai-assistant-improvement-plan.md)
+- [AI Assistant Improvement Plan (2026-05-19)](../../reports/planning/archive/ai-assistant-improvement-plan.md)

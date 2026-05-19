@@ -8,7 +8,7 @@
 
 - 상태: Completed
 - 작성일: 2026-05-19
-- TODO.md 연결: Active Tasks > AI 어시스턴트 코드/문서 개선
+- TODO.md 연결: Recent Completed > AI Assistant Code/Docs Improvement
 - 의존성: 없음
 
 ## 목표
@@ -110,9 +110,9 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 
 ## 참고 문서
 
-- [ai-engine-architecture.md](../../docs/reference/architecture/ai/ai-engine-architecture.md)
-- [ai-assistant-improvement-boundaries.md](../../docs/reference/architecture/ai/ai-assistant-improvement-boundaries.md)
-- [01-ai-agent-design.md](../../docs/design/01-ai-agent-design.md)
-- [02-runtime-architecture.md](../../docs/architecture/02-runtime-architecture.md)
-- [frontend-backend-comparison.md](../../docs/reference/architecture/ai/frontend-backend-comparison.md)
-- [openrouter-code-removal-plan.md](./archive/openrouter-code-removal-plan.md)
+- [ai-engine-architecture.md](../../../docs/reference/architecture/ai/ai-engine-architecture.md)
+- [ai-assistant-improvement-boundaries.md](../../../docs/reference/architecture/ai/ai-assistant-improvement-boundaries.md)
+- [01-ai-agent-design.md](../../../docs/design/01-ai-agent-design.md)
+- [02-runtime-architecture.md](../../../docs/architecture/02-runtime-architecture.md)
+- [frontend-backend-comparison.md](../../../docs/reference/architecture/ai/frontend-backend-comparison.md)
+- [openrouter-code-removal-plan.md](./openrouter-code-removal-plan.md)

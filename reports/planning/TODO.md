@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-19 KST (line-guard gate restored and AI Assistant plan approved)
+**Last Updated**: 2026-05-19 KST (AI assistant plan archived and bundle budget interim sanity checked)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
+| Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). 2026-05-19 중간 sanity check도 동일 기준 PASS. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
 ## Backlog

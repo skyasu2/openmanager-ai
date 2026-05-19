@@ -72,4 +72,4 @@ The allowed path is to improve the assistant around the model, not to assume a s
 
 Related work plan: [AI Assistant Architecture Evolution Plan](../../../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md).
 Dashboard surface follow-up: [Dashboard AI Surface Boundary Plan](../../../../reports/planning/archive/dashboard-ai-surface-boundary-plan.md).
-Current improvement cycle: [AI Assistant Improvement Plan (2026-05-19)](../../../../reports/planning/ai-assistant-improvement-plan.md) — hot file 재분할 및 frontend-backend-comparison LOC drift 정리. 본 boundaries 문서의 Free Tier/advisory/positioning 원칙을 변경하지 않음.
+Current improvement cycle: [AI Assistant Improvement Plan (2026-05-19)](../../../../reports/planning/archive/ai-assistant-improvement-plan.md) — hot file 재분할 및 frontend-backend-comparison LOC drift 정리. 본 boundaries 문서의 Free Tier/advisory/positioning 원칙을 변경하지 않음.

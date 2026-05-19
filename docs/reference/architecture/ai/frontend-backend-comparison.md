@@ -214,7 +214,7 @@ graph LR
 | `src/app/api/ai/supervisor/route.ts` | legacy JSON/text 프록시 | 414 | 14% |
 | `src/app/api/ai/supervisor/security.ts` | 보안 레이어 (패턴 분리) | 298 (+ `security-patterns.ts` 254) | — |
 
-> **LOC drift 정리 (2026-05-19)**: 이전 측정(useAIChatCore 426 / useHybridAIQuery 909 / useAISidebarStore 551 / security 596)은 stale 상태였습니다. 현 plan: [ai-assistant-improvement-plan.md](../../../../reports/planning/ai-assistant-improvement-plan.md) — useAIChatCore 578, useHybridAIQuery 523으로 1차 목표 완료.
+> **LOC drift 정리 (2026-05-19)**: 이전 측정(useAIChatCore 426 / useHybridAIQuery 909 / useAISidebarStore 551 / security 596)은 stale 상태였습니다. 현 plan: [ai-assistant-improvement-plan.md](../../../../reports/planning/archive/ai-assistant-improvement-plan.md) — useAIChatCore 578, useHybridAIQuery 523으로 1차 목표 완료.
 
 ### Backend 핵심 파일
 
