@@ -1,6 +1,8 @@
 /** Shared execution/streaming implementation for all AI agents. */
 
 import {
+  generateText,
+  streamText,
   ToolLoopAgent,
   type ToolSet,
   type LanguageModel,
@@ -48,6 +50,16 @@ export type {
 
 function getAgentInstructions(config: AgentConfig, query: string): string {
   return config.getInstructions?.(query) ?? config.instructions;
+}
+
+function shouldUseNativeVisionPrompt(
+  agentName: string,
+  options: AgentRunOptions
+): boolean {
+  return (
+    agentName === 'Vision Agent' &&
+    ((options.images?.length ?? 0) > 0 || (options.files?.length ?? 0) > 0)
+  );
 }
 
 export abstract class BaseAgent {
@@ -164,23 +176,46 @@ export abstract class BaseAgent {
         opts,
         this.buildUserContent.bind(this)
       );
+      const instructions = getAgentInstructions(config, query);
+      const useNativeVisionPrompt = shouldUseNativeVisionPrompt(
+        agentName,
+        opts
+      );
 
-      const agent = this.createToolLoopAgent({
-        model,
-        instructions: getAgentInstructions(config, query),
-        tools: filteredTools,
-        temperature: opts.temperature,
-        loopSettings,
-      });
-
-      const result = await agent.generate({
-        messages,
-        timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, stepMs: Math.max((opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) - 5_000, 5_000) },
-        onStepFinish: ({ finishReason, toolCalls }) => {
-          const toolNames = toolCalls?.map(tc => tc.toolName) || [];
-          logger.debug(`[${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`);
-        },
-      });
+      const result = useNativeVisionPrompt
+        ? await generateText({
+            model,
+            system: instructions,
+            messages,
+            temperature: opts.temperature,
+            maxOutputTokens: loopSettings.maxOutputTokens,
+            maxRetries: loopSettings.sdkMaxRetries,
+            timeout: {
+              totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs,
+            },
+          })
+        : await this.createToolLoopAgent({
+            model,
+            instructions,
+            tools: filteredTools,
+            temperature: opts.temperature,
+            loopSettings,
+          }).generate({
+            messages,
+            timeout: {
+              totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs,
+              stepMs: Math.max(
+                (opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) - 5_000,
+                5_000
+              ),
+            },
+            onStepFinish: ({ finishReason, toolCalls }) => {
+              const toolNames = toolCalls?.map((tc) => tc.toolName) || [];
+              logger.debug(
+                `[${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`
+              );
+            },
+          });
 
       const toolsCalled: string[] = [];
       const ragSources: AgentResult['ragSources'] = [];
@@ -322,22 +357,43 @@ export abstract class BaseAgent {
         opts,
         this.buildUserContent.bind(this)
       );
-      const agent = this.createToolLoopAgent({
-        model,
-        instructions: getAgentInstructions(config, query),
-        tools: filteredTools,
-        temperature: opts.temperature,
-        loopSettings,
-      });
-
-      const streamResult = await agent.stream({
-        messages,
-        timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, chunkMs: 30_000 },
-        onStepFinish: ({ finishReason, toolCalls }) => {
-          const toolNames = toolCalls?.map(tc => tc.toolName) || [];
-          logger.debug(`[${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`);
-        },
-      });
+      const instructions = getAgentInstructions(config, query);
+      const useNativeVisionPrompt = shouldUseNativeVisionPrompt(
+        agentName,
+        opts
+      );
+      const streamResult = useNativeVisionPrompt
+        ? streamText({
+            model,
+            system: instructions,
+            messages,
+            temperature: opts.temperature,
+            maxOutputTokens: loopSettings.maxOutputTokens,
+            maxRetries: loopSettings.sdkMaxRetries,
+            timeout: {
+              totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs,
+              chunkMs: 30_000,
+            },
+          })
+        : await this.createToolLoopAgent({
+            model,
+            instructions,
+            tools: filteredTools,
+            temperature: opts.temperature,
+            loopSettings,
+          }).stream({
+            messages,
+            timeout: {
+              totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs,
+              chunkMs: 30_000,
+            },
+            onStepFinish: ({ finishReason, toolCalls }) => {
+              const toolNames = toolCalls?.map((tc) => tc.toolName) || [];
+              logger.debug(
+                `[${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`
+              );
+            },
+          });
 
       const toolsCalled: string[] = [];
       let hasTextContent = false;

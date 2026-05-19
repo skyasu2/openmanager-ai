@@ -179,6 +179,8 @@ export async function* executeAgentStream(
         ? `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}`
         : query;
       const userContent = buildMultimodalContent(promptWithContext, images, files);
+      const useNativeVisionPrompt =
+        isVisionAgent && ((images?.length ?? 0) > 0 || (files?.length ?? 0) > 0);
       const systemContent = [
         getAgentInstructions(agentConfig, query),
         domainEvidencePrompt,
@@ -228,8 +230,10 @@ export async function* executeAgentStream(
           { role: 'system', content: systemContent },
           { role: 'user', content: userContent as UserContent },
         ],
-        tools: filteredTools as Parameters<typeof streamText>[0]['tools'],
-        stopWhen: loopSettings.stopWhen,
+        ...(!useNativeVisionPrompt && {
+          tools: filteredTools as Parameters<typeof streamText>[0]['tools'],
+          stopWhen: loopSettings.stopWhen,
+        }),
         temperature: 0.4,
         maxOutputTokens: loopSettings.maxOutputTokens,
         maxRetries: loopSettings.sdkMaxRetries,

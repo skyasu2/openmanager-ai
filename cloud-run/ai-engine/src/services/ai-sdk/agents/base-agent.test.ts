@@ -213,6 +213,46 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       );
     });
 
+    it('should use native multimodal prompting for Vision image attachments', async () => {
+      const { BaseAgent } = await import('./base-agent');
+      const mockConfig = createMockConfig({
+        name: 'Vision Agent',
+        getModel: () => ({
+          model: { modelId: 'gemini-2.5-flash-lite' },
+          provider: 'gemini',
+          modelId: 'gemini-2.5-flash-lite',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
+        getName(): string {
+          return 'Vision Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new VisionTestAgent();
+      const result = await agent.run('첨부된 Playwright 스크린샷을 분석해줘', {
+        images: [{ data: 'data:image/png;base64,abc', mimeType: 'image/png' }],
+      });
+
+      const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(result.success).toBe(true);
+      expect(callArgs.tools).toBeUndefined();
+      expect(callArgs.stopWhen).toBeUndefined();
+      expect(callArgs.system).toBe('You are a test agent.');
+      expect(callArgs.messages.at(-1).content).toEqual([
+        { type: 'text', text: '첨부된 Playwright 스크린샷을 분석해줘' },
+        {
+          type: 'image',
+          image: 'data:image/png;base64,abc',
+          mimeType: 'image/png',
+        },
+      ]);
+    });
+
     it('should extract finalAnswer from toolResults', async () => {
       const { BaseAgent } = await import('./base-agent');
 

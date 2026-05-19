@@ -58,6 +58,7 @@ export interface TraceMetadata {
     | 'explicit'
     | 'auto_complexity'
     | 'auto_default'
+    | 'vision_input'
     | 'single_disallowed_upgrade'
     | 'analysis_mode_thinking';
   autoSelectedByComplexity?: 'single' | 'multi';

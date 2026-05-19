@@ -57,6 +57,16 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBe(0.92);
   });
 
+  it('routes Playwright screenshot attachments to Vision Agent without server keywords', () => {
+    const result = preFilterQuery('첨부된 Playwright 스크린샷을 분석해줘', {
+      hasImageAttachments: true,
+    });
+
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('Vision Agent');
+    expect(result.confidence).toBe(0.92);
+  });
+
   it('prefers analyst/reporter/advisor with high confidence for clear intent', () => {
     expect(preFilterQuery('CPU 급증 원인 분석해줘').suggestedAgent).toBe('Analyst Agent');
     expect(preFilterQuery('장애 보고서 작성해줘').suggestedAgent).toBe('Reporter Agent');

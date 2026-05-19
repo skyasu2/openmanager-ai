@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-19 KST (OpenRouter provider code path 제거)
+**Last Updated**: 2026-05-19 KST (Vision attachment routing hotfix)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -116,6 +116,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-19) — Codex (Vision Attachment Routing)
+- [x] Playwright screenshot 등 실제 이미지 첨부가 Vision Agent로 라우팅되지 않던 문제 수정
+  - 이미지/파일 첨부가 있으면 auto mode가 `vision_input` 근거로 multi-agent 경로를 선택하도록 정렬했다.
+  - 서버 키워드가 없는 "첨부된 Playwright 스크린샷" 질의도 Vision Agent pre-filter로 분류한다.
+  - Vision Agent 이미지/파일 입력은 범용 tool loop 대신 Gemini/Z.AI 네이티브 멀티모달 호출을 사용해 빈 응답을 방지한다.
+  - 검증: AI Engine targeted tests 97 PASS, AI Engine `type-check`, AI Engine full test 1345 PASS, 실제 Playwright PNG 로컬 Vision smoke PASS.
 
 ### Completed (2026-05-19) — Codex (OpenRouter Removal)
 - [x] OpenRouter provider runtime code path 제거 완료

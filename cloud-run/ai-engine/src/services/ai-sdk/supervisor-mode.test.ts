@@ -55,6 +55,23 @@ describe('resolveSupervisorMode', () => {
     ).toBe('multi');
   });
 
+  it('routes image attachments to multi-agent vision path regardless of text complexity', () => {
+    delete process.env.ALLOW_DEGRADED_SINGLE;
+    const decision = resolveSupervisorModeDecision({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content: '첨부된 Playwright 스크린샷을 분석해줘',
+        },
+      ],
+      images: [{ data: 'data:image/png;base64,aaa', mimeType: 'image/png' }],
+    });
+
+    expect(decision.resolvedMode).toBe('multi');
+    expect(decision.modeSelectionSource).toBe('vision_input');
+  });
+
   it('uses forwarded NLQ intentFrame executionMode for auto routing', () => {
     delete process.env.ALLOW_DEGRADED_SINGLE;
     expect(

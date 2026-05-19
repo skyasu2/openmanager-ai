@@ -72,6 +72,20 @@ describe('extractQueryRoutingSignals', () => {
     expect(signals.preFilter.suggestedAgent).toBe(preFilter.suggestedAgent);
   });
 
+  it('classifies attached Playwright screenshots as Vision pre-filter even without server keywords', () => {
+    const query = '첨부된 Playwright 스크린샷을 분석해줘';
+    const signals = extractQueryRoutingSignals(query, {
+      hasImageAttachments: true,
+    });
+
+    expect(signals.intent).toBe('vision');
+    expect(signals.preFilter.action).toBe('suggest_agent');
+    expect(signals.preFilter.suggestedAgent).toBe('Vision Agent');
+    expect(signals.preFilter.reasonCodes).toContain(
+      'prefilter_vision_attachment'
+    );
+  });
+
   it('keeps deterministic extraction under the p50 latency budget', () => {
     const query =
       '서버 상태와 원인 분석을 비교하고 해결 방법도 알려줘. 지난 24시간 load1 피크도 같이 확인해줘';

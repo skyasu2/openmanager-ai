@@ -87,6 +87,11 @@ vi.mock('../../resilience/quota-tracker', () => ({
 vi.mock('./orchestrator-routing', () => ({
   getAgentConfig: vi.fn(() => ({
     instructions: 'Test instructions',
+    getModel: vi.fn(() => ({
+      model: { provider: 'gemini' },
+      provider: 'gemini',
+      modelId: 'gemini-vision-model',
+    })),
     tools: {
       getServerMetrics: { execute: vi.fn() },
       finalAnswer: { execute: vi.fn() },
@@ -278,6 +283,41 @@ describe('executeAgentStream', () => {
     expect(firstCall.messages?.[1]?.content).toBe(
       '최근 하루 load 피크 시간과 대응 방법 알려줘'
     );
+  });
+
+  it('uses native multimodal prompting without tool loop for Vision image attachments', async () => {
+    mockStreamText.mockReturnValue(
+      createStreamResult({
+        chunks: ['스크린샷 분석 결과'],
+        steps: [],
+      })
+    );
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeAgentStream(
+      '첨부된 Playwright 스크린샷을 분석해줘',
+      'Vision Agent',
+      Date.now(),
+      'vision-session',
+      false,
+      false,
+      [{ data: 'data:image/png;base64,abc', mimeType: 'image/png' }],
+      undefined,
+      undefined,
+      createTestDataSource(),
+      'openmanager-monitoring'
+    )) {
+      events.push(event);
+    }
+
+    const firstCall = mockStreamText.mock.calls[0]?.[0] as {
+      tools?: unknown;
+      stopWhen?: unknown;
+    };
+
+    expect(firstCall.tools).toBeUndefined();
+    expect(firstCall.stopWhen).toBeUndefined();
+    expect(events.some((event) => event.type === 'text_delta')).toBe(true);
   });
 
   it('uses deterministic fallback for starter summary prompts without extra LLM summarization', async () => {

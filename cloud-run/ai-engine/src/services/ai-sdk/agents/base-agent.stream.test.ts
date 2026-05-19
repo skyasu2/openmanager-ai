@@ -419,6 +419,53 @@ describe('BaseAgent', { timeout: 15000 }, () => {
       );
     });
 
+    it('should stream Vision image attachments through native multimodal prompting', async () => {
+      const mockConfig = createMockConfig({
+        name: 'Vision Agent',
+        getModel: () => ({
+          model: { modelId: 'gemini-2.5-flash-lite' },
+          provider: 'gemini',
+          modelId: 'gemini-2.5-flash-lite',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
+        getName(): string {
+          return 'Vision Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new VisionTestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
+
+      for await (const event of agent.stream(
+        '첨부된 Playwright 스크린샷을 분석해줘',
+        {
+          images: [
+            { data: 'data:image/png;base64,abc', mimeType: 'image/png' },
+          ],
+        }
+      )) {
+        events.push(event);
+      }
+
+      const callArgs = mockStreamText.mock.calls[0][0];
+      expect(callArgs.tools).toBeUndefined();
+      expect(callArgs.stopWhen).toBeUndefined();
+      expect(callArgs.messages.at(-1).content).toEqual([
+        { type: 'text', text: '첨부된 Playwright 스크린샷을 분석해줘' },
+        {
+          type: 'image',
+          image: 'data:image/png;base64,abc',
+          mimeType: 'image/png',
+        },
+      ]);
+      expect(events.some((event) => event.type === 'text_delta')).toBe(true);
+    });
+
     it('should yield tool_call events', async () => {
 
       mockStreamText.mockReturnValue({

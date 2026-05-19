@@ -359,6 +359,18 @@ function buildPreFilterSignal(
   const hasServerKeyword =
     isForceKnowledgeBaseIntent ||
     SERVER_KEYWORDS.some((keyword) => normalized.includes(keyword));
+  const hasAttachmentVisionHint =
+    (options.hasImageAttachments === true || options.hasFileAttachments === true) &&
+    ATTACHMENT_VISION_PATTERN.test(normalized);
+
+  if (hasAttachmentVisionHint) {
+    return {
+      action: 'suggest_agent',
+      suggestedAgent: 'Vision Agent',
+      confidence: 0.92,
+      reasonCodes: ['prefilter_vision_attachment'],
+    };
+  }
 
   if (!hasServerKeyword) {
     return {
@@ -368,9 +380,6 @@ function buildPreFilterSignal(
     };
   }
 
-  const hasAttachmentVisionHint =
-    (options.hasImageAttachments === true || options.hasFileAttachments === true) &&
-    ATTACHMENT_VISION_PATTERN.test(normalized);
   const isVisionIntent = ATTACHMENT_VISION_PATTERN.test(query) || hasAttachmentVisionHint;
   const isAnalystIntent = ANALYST_QUERY_PATTERN.test(query);
   const isReporterIntent =

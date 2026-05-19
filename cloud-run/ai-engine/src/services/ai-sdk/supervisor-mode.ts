@@ -174,7 +174,13 @@ export interface SupervisorAssistantResult {
 export function resolveSupervisorModeDecision(
   request: Pick<
     SupervisorRequest,
-    'mode' | 'messages' | 'analysisMode' | 'runtimeHost' | 'metadata'
+    | 'mode'
+    | 'messages'
+    | 'analysisMode'
+    | 'runtimeHost'
+    | 'metadata'
+    | 'images'
+    | 'files'
   >,
 ): ResolvedSupervisorModeDecision {
   const requestedMode = request.mode || 'auto';
@@ -222,6 +228,16 @@ export function resolveSupervisorModeDecision(
     };
   }
 
+  if (hasAnyAttachment(request)) {
+    return {
+      requestedMode,
+      resolvedMode: 'multi',
+      modeSelectionSource: 'vision_input',
+      autoSelectedByComplexity: 'multi',
+      ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
+    };
+  }
+
   const intentFrame = normalizeSupervisorIntentFrame(
     request.metadata?.intentFrame
   );
@@ -259,7 +275,13 @@ export function resolveSupervisorModeDecision(
 export function resolveSupervisorMode(
   request: Pick<
     SupervisorRequest,
-    'mode' | 'messages' | 'analysisMode' | 'runtimeHost' | 'metadata'
+    | 'mode'
+    | 'messages'
+    | 'analysisMode'
+    | 'runtimeHost'
+    | 'metadata'
+    | 'images'
+    | 'files'
   >,
 ): ResolvedSupervisorMode {
   return resolveSupervisorModeDecision(request).resolvedMode;

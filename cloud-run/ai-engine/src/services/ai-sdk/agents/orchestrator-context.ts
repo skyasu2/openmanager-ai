@@ -460,6 +460,17 @@ export function preFilterQuery(
   const isForceKnowledgeBaseIntent = FORCE_KB_QUERY_PATTERN.test(query);
   const hasServerKeyword =
     isForceKnowledgeBaseIntent || SERVER_KEYWORDS.some(kw => normalized.includes(kw));
+  const hasAttachmentVisionHint =
+    (context.hasImageAttachments || context.hasFileAttachments) &&
+    looksLikeAttachedVisionRequest(normalized);
+
+  if (hasAttachmentVisionHint) {
+    return {
+      shouldHandoff: true,
+      suggestedAgent: 'Vision Agent',
+      confidence: 0.92,
+    };
+  }
 
   if (hasServerKeyword) {
     const firstOnCallAnswer = buildFirstOnCallChecklistAnswer(query);
@@ -480,9 +491,6 @@ export function preFilterQuery(
       };
     }
 
-    const hasAttachmentVisionHint =
-      (context.hasImageAttachments || context.hasFileAttachments) &&
-      looksLikeAttachedVisionRequest(normalized);
     const isVisionIntent = isVisionQuery(query) || hasAttachmentVisionHint;
     const isAnalystIntent = ANALYST_QUERY_PATTERN.test(query);
     const isReporterIntent =
