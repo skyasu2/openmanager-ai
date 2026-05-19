@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 11:09:52 KST
+> Generated at: 2026-05-19 11:21:04 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 529 |
-| Total Runs (Counted) | 423 |
+| Total Recorded Runs | 530 |
+| Total Runs (Counted) | 424 |
 | Non-counted Runs | 106 |
-| Total Checks | 3856 |
-| Passed | 3709 |
+| Total Checks | 3861 |
+| Passed | 3714 |
 | Failed | 136 |
 | Completed Items | 604 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 15 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260519-0531 (2026-05-19T02:09:49.493Z) |
-| Latest Recorded Run | QA-20260519-0531 (2026-05-19T02:09:49.493Z) |
+| Last Counted Run | QA-20260519-0532 (2026-05-19T02:21:04.444Z) |
+| Latest Recorded Run | QA-20260519-0532 (2026-05-19T02:21:04.444Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0531 (2026-05-19T02:09:49.493Z)
+Latest run: QA-20260519-0532 (2026-05-19T02:21:04.444Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -45,22 +45,24 @@ Latest run: QA-20260519-0531 (2026-05-19T02:09:49.493Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.178 targeted production QA. |
+| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.177 targeted production QA. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T02:09:49.493Z -> 2026-05-19T02:09:49.493Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 4
+- Window: 2026-05-18T02:21:04.444Z -> 2026-05-19T02:21:04.444Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Reporter Agent | cloud-run | 3 | 11609ms | 30498ms | - | - | 11264ms | 29753ms | QA-20260518-0523 |
+| NLQ Agent | unknown | 1 | 14000ms | 14000ms | - | - | - | - | QA-20260519-0532 |
+| Reporter Agent | unknown | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260519-0532 |
 | Health Check | cloud-run | 1 | 129ms | 129ms | - | - | - | - | QA-20260518-0522 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T02:09:49.493Z -> 2026-05-19T02:09:49.493Z (24h)
+- Window: 2026-05-18T02:21:04.444Z -> 2026-05-19T02:21:04.444Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,24 +76,22 @@ Latest run: QA-20260519-0531 (2026-05-19T02:09:49.493Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1 / SHA 5801a008
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Vercel production serves v8.11.178 on /api/version, Vercel production root route loads OpenManager AI landing page, Header logo AI text uses gradient-diagonal 3s animation, Hero title AI text uses gradient-diagonal 3s animation, Header and hero AI text background-position changes over time, Production gradient-diagonal keyframes animate background-position, Dashboard route loads on production, Dashboard AI assistant button uses shared gradient-diagonal 3s style, Dashboard AI assistant button background-position changes over time, Vercel production smoke script passed /, /login, and /api/version, GitLab v8.11.178 tag pipeline succeeded, Vercel usage check stayed normal with billed usage $0.0000
-- Skipped Surfaces: Full conversational AI five-question pack; change scope is visual gradient restoration only, Full mobile responsive pack; desktop production representative viewport covered, Full visual regression matrix; targeted computed-style and screenshot evidence captured, Cloud Run observability pack; no backend or AI runtime contract changed
+- Deployment: dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1 / SHA ae9d7cd6
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: /dashboard, ai-sidebar, auto-report, anomaly-trend, nlq-chat
+- Skipped Surfaces: observability-pack, auth-flow
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab tag pipeline 2535756579 | [GitLab tag pipeline 2535756579](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535756579) | - |
-| vercel-deployment | Vercel production deployment dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1 | [Vercel production deployment dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1](https://openmanager-ja5xj0cfi-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI gradient restored on v8.11.178 production landing page | `reports/qa/evidence/qa-20260519-v811178-ai-gradient-production.png` | - |
-| playwright-console | AI gradient computed-style verification notes | `reports/qa/evidence/qa-20260519-v811178-ai-gradient-production.md` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -788,6 +788,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0532 | 2026-05-19T02:21:04.444Z | targeted | yes | yes | v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260519-0531 | 2026-05-19T02:09:49.493Z | targeted | yes | yes | v8.11.178 Vercel Playwright MCP AI Gradient Restoration QA | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0530 | 2026-05-19T00:36:38.886Z | targeted | yes | yes | v8.11.177 Vercel Playwright MCP Incident Detail Button QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0529 | 2026-05-19T00:09:51.939Z | release-gate | yes | yes | v8.11.176 Vercel Playwright MCP AI Release QA | 15 | 4 | 0 | 0 | 0 | 0 |
@@ -807,4 +808,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0515 | 2026-05-17T18:08:49.082Z | targeted | yes | yes | v8.11.167 Vercel Production Post-Deploy Regression Closure | 14 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260518-0514 | 2026-05-17T16:45:19.291Z | targeted | no | yes | Vercel Playwright MCP - Recent Regression Check | 14 | 2 | 3 | 0 | 0 | 3 |
 | QA-20260518-0513 | 2026-05-17T16:04:28.616Z | targeted | no | yes | AI Env Disclosure Guard Targeted QA | 7 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260517-0512 | 2026-05-17T08:57:50.648Z | targeted | yes | yes | v8.11.165 Vercel Production AI Assistant Live Smoke | 9 | 1 | 0 | 0 | 0 | 0 |

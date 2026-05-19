@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260519-0532",
+  "recordedAt": "2026-05-19T02:21:04.444Z",
+  "recordedAtKst": "2026-05-19 11:21:04 KST",
+  "runTitle": "v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback",
+  "owner": "claude",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1",
+    "deploymentUrl": "",
+    "commitSha": "ae9d7cd647868ad1ba6de4ddb6a1015a37bf08b2"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "ai-sidebar",
+    "auto-report",
+    "anomaly-trend",
+    "nlq-chat"
+  ],
+  "skippedSurfaces": ["observability-pack", "auth-flow"],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "auto-report generation",
+      "agent": "Reporter Agent",
+      "provider": "unknown",
+      "model": "unknown",
+      "route": "/api/ai/supervisor",
+      "source": "UI timer observation",
+      "latencyMs": 6000
+    },
+    {
+      "surface": "NLQ anomaly chat",
+      "agent": "NLQ Agent",
+      "provider": "unknown",
+      "model": "unknown",
+      "route": "/api/ai/supervisor",
+      "source": "UI response slow label",
+      "latencyMs": 14000
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux-accessibility",
+      "domainName": "Frontend UX & Accessibility Reviewer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "인시던트 상세 버튼 expandable/expanded 속성 정상, 접기/펼치기 레이블 전환 접근성 충족",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "chrome-devtools MCP로 핵심 변경 3개 릴리즈(v8.11.175-177) 검증 완료",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-19T01:25:00+09:00",
+      "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.177 targeted production QA.",
+      "evidence": "qa-tracker.json latestRun usageChecks reference",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

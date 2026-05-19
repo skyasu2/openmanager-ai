@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-19T02:09:49.493Z"
+    "updatedAt": "2026-05-19T02:21:04.444Z"
   },
   "sequence": {
-    "nextRunNumber": 532
+    "nextRunNumber": 533
   },
   "summary": {
-    "totalRecordedRuns": 529,
-    "totalRuns": 423,
+    "totalRecordedRuns": 530,
+    "totalRuns": 424,
     "excludedRuns": 106,
-    "totalChecks": 3856,
-    "totalPassed": 3709,
+    "totalChecks": 3861,
+    "totalPassed": 3714,
     "totalFailed": 136,
     "completionRate": 100,
     "completedItems": 604,
@@ -21,10 +21,10 @@
     "wontFixItems": 24,
     "expertDomainsTracked": 15,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260519-0531",
-    "lastRecordedAt": "2026-05-19T02:09:49.493Z",
-    "latestRecordedRunId": "QA-20260519-0531",
-    "latestRecordedAt": "2026-05-19T02:09:49.493Z"
+    "lastRunId": "QA-20260519-0532",
+    "lastRecordedAt": "2026-05-19T02:21:04.444Z",
+    "latestRecordedRunId": "QA-20260519-0532",
+    "latestRecordedAt": "2026-05-19T02:21:04.444Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -60170,6 +60170,107 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260519-0532",
+      "recordedAt": "2026-05-19T02:21:04.444Z",
+      "recordedAtKst": "2026-05-19 11:21:04 KST",
+      "title": "v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback",
+      "owner": "claude",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260519-0532.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1",
+        "deploymentUrl": "",
+        "commitSha": "ae9d7cd647868ad1ba6de4ddb6a1015a37bf08b2"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard",
+        "ai-sidebar",
+        "auto-report",
+        "anomaly-trend",
+        "nlq-chat"
+      ],
+      "skippedSurfaces": [
+        "observability-pack",
+        "auth-flow"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "auto-report generation",
+          "agent": "Reporter Agent",
+          "provider": "unknown",
+          "model": "unknown",
+          "route": "/api/ai/supervisor",
+          "source": "UI timer observation",
+          "latencyMs": 6000
+        },
+        {
+          "surface": "NLQ anomaly chat",
+          "agent": "NLQ Agent",
+          "provider": "unknown",
+          "model": "unknown",
+          "route": "/api/ai/supervisor",
+          "source": "UI response slow label",
+          "latencyMs": 14000
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-accessibility",
+          "domainName": "Frontend UX & Accessibility Reviewer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "인시던트 상세 버튼 expandable/expanded 속성 정상, 접기/펼치기 레이블 전환 접근성 충족",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "chrome-devtools MCP로 핵심 변경 3개 릴리즈(v8.11.175-177) 검증 완료",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-19T01:25:00+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.177 targeted production QA.",
+          "evidence": "qa-tracker.json latestRun usageChecks reference",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -60246,16 +60347,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 235,
-      "appropriateCount": 215,
+      "seenCount": 236,
+      "appropriateCount": 216,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260519-0531",
-      "lastSeenAt": "2026-05-19T02:09:49.493Z",
+      "lastRunId": "QA-20260519-0532",
+      "lastSeenAt": "2026-05-19T02:21:04.444Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Regression tests now assert gradient-diagonal background-position behavior and AI UI animation style.",
+      "lastRationale": "chrome-devtools MCP로 핵심 변경 3개 릴리즈(v8.11.175-177) 검증 완료",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -60331,16 +60432,16 @@
       "domainName": "Frontend UX & Accessibility Reviewer",
       "firstSeenRunId": "QA-20260424-0346",
       "firstSeenAt": "2026-04-24T09:25:23.818Z",
-      "seenCount": 3,
-      "appropriateCount": 3,
+      "seenCount": 4,
+      "appropriateCount": 4,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260519-0531",
-      "lastSeenAt": "2026-05-19T02:09:49.493Z",
+      "lastRunId": "QA-20260519-0532",
+      "lastSeenAt": "2026-05-19T02:21:04.444Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Logo, hero, and dashboard AI button gradient motion were verified with computed styles and visual evidence.",
+      "lastRationale": "인시던트 상세 버튼 expandable/expanded 속성 정상, 접기/펼치기 레이블 전환 접근성 충족",
       "lastNextAction": ""
     },
     "frontend-ux-quality": {
