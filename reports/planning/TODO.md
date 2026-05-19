@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-19 KST (GLM Vision fallback live smoke recorded)
+**Last Updated**: 2026-05-19 KST (line-guard gate restored and AI Assistant plan approved)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 어시스턴트 코드/문서 개선 | Medium | Draft | `orchestrator-routing.ts`(483→≤450), `useAIChatCore.ts`(607→≤580), `useHybridAIQuery.ts`(704→≤600) 재분할 및 `frontend-backend-comparison.md` LOC drift(useAIChatCore 426→607, useHybridAIQuery 909→704, useAISidebarStore 551→674) 갱신, `01-ai-agent-design.md` NLQ↔Metrics Query 별칭 명시, AI hooks 진입 맵(9 hooks) 신규 작성. Vision provider chain 문서 정리는 완료되어 남은 작업에서 제외. 상세: [ai-assistant-improvement-plan.md](ai-assistant-improvement-plan.md) |
+| AI 어시스턴트 코드/문서 개선 | Medium | Approved | `orchestrator-routing.ts`(483→≤450), `useAIChatCore.ts`(607→≤580), `useHybridAIQuery.ts`(704→≤600 1차) 재분할과 AI hooks 진입 맵(9 hooks) 신규 작성이 남음. `frontend-backend-comparison.md` LOC drift, `01-ai-agent-design.md` NLQ↔Metrics Query 별칭, `memory/ops-knowledge.md`↔코드 정합 grep은 완료. Vision provider chain 문서 정리는 완료되어 남은 작업에서 제외. 상세: [ai-assistant-improvement-plan.md](ai-assistant-improvement-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -116,6 +116,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-19) — Codex (AI Engine Line Guard)
+- [x] `analytics-report-utils.ts` line-guard fail 복구
+  - 997줄 단일 route helper를 schema/recommendation/monitoring-grounding/types 모듈로 분리해 facade 파일을 362줄로 축소했다.
+  - 기존 public export 표면은 유지하고, analytics route 테스트와 전체 AI Engine 테스트로 회귀를 확인했다.
+  - 검증: targeted analytics route tests 44 PASS, AI Engine `type-check`, AI Engine full test 1345 PASS, `npm run line-guard` PASS, `git diff --check` PASS.
 
 ### Completed (2026-05-19) — Codex (Vision Attachment Routing)
 - [x] Playwright screenshot 등 실제 이미지 첨부가 Vision Agent로 라우팅되지 않던 문제 수정

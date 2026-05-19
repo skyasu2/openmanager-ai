@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-05-19
 > Tags: ai-assistant,refactor,docs,frontend,cloud-run
 
 # AI Assistant Improvement Plan (2026-05-19)
 
-- 상태: Draft
+- 상태: Approved
 - 작성일: 2026-05-19
 - TODO.md 연결: Active Tasks > AI 어시스턴트 코드/문서 개선
 - 의존성: 없음
@@ -23,7 +23,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 
 - 신규 specialist agent 추가
 - Orchestrator LLM routing 복원
-- Knowledge Retrieval Full GraphRAG 재도입 (메모리 `MEMORY.md` 기준 제거 완료)
+- Knowledge Retrieval Full GraphRAG 재도입 (`memory/ops-knowledge.md` 기준 제거 완료)
 - 유료 frontier 모델 도입 (`ai-assistant-improvement-boundaries.md` Free Tier 원칙)
 - Per-entity AI CTA 부활 (boundaries 문서 재확인)
 
@@ -35,27 +35,27 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 |------|-----:|-----:|------|
 | `cloud-run/.../orchestrator-routing.ts` | 483 | ≤450 | 459→483으로 재팽창. 직전 분할(`orchestrator-prompt-helpers.ts`) 이후 routing telemetry/policy 코드가 다시 누적 |
 | `src/hooks/ai/useAIChatCore.ts` | 607 | ≤580 | 597→607로 재증가. guidance CTA helper 분리 이후 hybrid/artifact 진입 분기가 다시 inline화 경향 |
-| `src/hooks/ai/useHybridAIQuery.ts` | 704 | ≤500 | `frontend-backend-comparison.md`에 909줄 / 목표 500으로 기록되어 있으나 실제 704줄로 이미 부분 진척. F2-r 후속 작업 명확화 필요 |
-| `src/stores/useAISidebarStore.ts` | 674 | ≤600 | comparison 문서의 551줄 기록은 stale |
+| `src/hooks/ai/useHybridAIQuery.ts` | 704 | ≤600 (1차), ≤500 (2차) | `frontend-backend-comparison.md`의 잔여 909줄/~844줄 표기를 704줄 기준으로 정정. F2-r 후속 작업 명확화 필요 |
+| `src/stores/useAISidebarStore.ts` | 674 | 후속 후보 | comparison 문서의 551줄 기록은 stale였으며, 현재 plan의 구현 task 범위에는 포함하지 않음 |
 | `cloud-run/.../reporter-pipeline-report.ts` | 673 | ≤600 | report schema/format/score가 한 파일에 혼재. 정상 범주이나 단일 모듈 확장 시 분리 후보 |
 
 ### 문서/다이어그램 stale
 
 | 위치 | 항목 | 현재 표기 | 실제 | 처리 |
 |------|------|-----------|------|------|
-| `frontend-backend-comparison.md:84,214,248` | useAIChatCore LOC | 426 | 607 | D1에서 갱신 |
-| `frontend-backend-comparison.md:210,248,370,376` | useHybridAIQuery LOC | 909 | 704 | D1에서 갱신 + F2-r 잔여량 재계산 |
-| `frontend-backend-comparison.md:212,250` | useAISidebarStore LOC | 551 | 674 | D1에서 갱신 |
+| `frontend-backend-comparison.md` | useAIChatCore LOC | 426 | 607 | 갱신 완료 |
+| `frontend-backend-comparison.md` | useHybridAIQuery LOC / F2-r 잔여량 | 909 / ~844 | 704 | 갱신 완료. C3은 ≤600 1차, ≤500 2차 후속 |
+| `frontend-backend-comparison.md` | useAISidebarStore LOC | 551 | 674 | 갱신 완료. 구현 task는 후속 후보로만 유지 |
 | `ai-engine-architecture.md` provider mesh | stale Vision provider chain | `Gemini -> Z.AI Vision` | 완료 | provider removal follow-up에서 반영 |
 | `02-runtime-architecture.md:98` | Mermaid LLM 박스 | `Gemini -> Z.AI Vision` | 완료 | provider removal follow-up에서 반영 |
-| `01-ai-agent-design.md` | 5 specialist 표 + `Metrics Query Agent` 명칭 | `Metrics Query Agent` | 코드 SSOT는 `nlq-agent.ts` 기반 NLQ Agent. NLQ → Metrics Query 별칭 명시 필요 | D3 |
+| `01-ai-agent-design.md` | 5 specialist 표 + `Metrics Query Agent` 명칭 | Metrics Query Agent (alias: NLQ Agent) | 코드 SSOT는 `nlq-agent.ts` 기반 NLQ Agent이며 별칭 명시 완료 | 완료 |
 | `(없음)` | AI hooks 진입 맵 | 없음 | `useAIChatCore/Surface/EntryController/Hybrid/Async/Enhanced/Deferred/Developer/FileAttachments` 9개 hook 진입점 | D4 신규 1장 |
 
 ### 메모리 기록과 코드 정합
 
-- MEMORY.md "Orchestrator LLM routing 제거됨 (2026-05-16)" → 코드: `orchestrator-direct-routing.ts` 존재 확인 ✅
-- MEMORY.md "Knowledge Retrieval Lite (BM25+metadata boost)" → 코드: `knowledge-retrieval-lite.ts` 존재 확인 ✅
-- MEMORY.md "Z.AI GLM Flash provider mesh 편입" → 코드: provider 설정 확인 필요 (T-Z1에서 grep 검증)
+- `memory/ops-knowledge.md` "Orchestrator LLM routing 제거됨 (2026-05-16)" → 코드/문서: `orchestrator-direct-routing.ts`, `docs/adr/adr-005-routing-pattern-over-orchestrator-worker.md` 확인 ✅
+- `memory/ops-knowledge.md` "Knowledge Retrieval Lite (BM25+metadata boost)" → 코드: `knowledge-retrieval-lite.ts` 확인 ✅
+- `memory/ops-knowledge.md` "Z.AI GLM Flash provider mesh 편입" → 코드: `agent-model-selectors.ts`에서 GLM Flash / Gemini→Z.AI Vision fallback selector 확인 ✅
 
 ## 계약 (Contract)
 
@@ -91,16 +91,16 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 | C1 | `orchestrator-routing.ts` → `orchestrator-routing-policy.ts`/`orchestrator-routing-telemetry-helpers.ts` 추출 (≤450) | pending | SDD: `test(spec):` 선행 |
 | C2 | `useAIChatCore.ts` → hybrid 분기 헬퍼 추출 (≤580) | pending | SDD: `test(spec):` 선행 |
 | C3 | `useHybridAIQuery.ts` 1차 분할 (≤600) | pending | 904→704 부분 진척 반영, 잔여 분할 우선순위 재산정 |
-| D1 | `frontend-backend-comparison.md` LOC/표 갱신 | pending | C1~C3 적용 후 |
+| D1 | `frontend-backend-comparison.md` LOC/표 갱신 | completed | 현재 LOC drift 정리 완료. C1~C3 적용 후 각 task에서 재측정 |
 | D2 | Vision provider chain 문서 정리 | completed | `Gemini -> Z.AI Vision` 기준 반영 |
-| D3 | `01-ai-agent-design.md` NLQ ↔ Metrics Query 별칭 명시 | pending | 1~2줄 추가 |
+| D3 | `01-ai-agent-design.md` NLQ ↔ Metrics Query 별칭 명시 | completed | 2026-05-19 문서 확인 |
 | D4 | `ai-hooks-map.md` 신규 1페이지 작성 | pending | 9 hook entry 매트릭스 |
-| Z1 | MEMORY ↔ 코드 정합 grep 검증 결과 본 plan에 기록 | pending | provider mesh, NLQ pipeline 표현 검증 |
+| Z1 | `memory/ops-knowledge.md` ↔ 코드 정합 grep 검증 결과 본 plan에 기록 | completed | provider mesh, KRL, direct routing 확인 |
 
 ## 검증
 
 - 코드 변경: `npm run type-check`, `npm run lint`, `npm run test:quick`, AI Engine `type-check` + targeted test
-- 문서 변경: `npm run docs:check`, `npm run docs:budget:strict`, `npm run docs:ai-consistency`
+- 문서 변경: `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check`
 - 배포: 본 plan은 인프라/배포 영향 없음. release lock-step 불필요.
 
 ## 롤백 기준
