@@ -40,9 +40,15 @@ vi.mock('@/stores/useUnifiedAdminStore', () => ({
 vi.mock('@/styles/design-constants', () => ({
   AI_ICON_GRADIENT_ANIMATED_STYLE: {
     background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    backgroundSize: '200% 200%',
+    animation: 'gradient-diagonal 3s ease infinite',
   },
   AI_TEXT_GRADIENT_ANIMATED_STYLE: {
     background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    backgroundSize: '200% 200%',
+    animation: 'gradient-diagonal 3s ease infinite',
+    WebkitTextFillColor: 'transparent',
+    color: 'transparent',
   },
 }));
 
@@ -74,5 +80,15 @@ describe('OpenManagerLogo', () => {
     const title = screen.getByRole('heading', { name: /OpenManager AI/ });
     expect(title).toHaveClass('font-semibold');
     expect(title).not.toHaveClass('font-bold');
+  });
+
+  it('AI 텍스트에 diagonal 그라데이션 애니메이션 스타일을 적용한다', () => {
+    render(<OpenManagerLogo variant="light" />);
+
+    const aiText = screen.getByText('AI');
+    expect(aiText.style.background).toBeTruthy();
+    expect(aiText.style.backgroundSize).toBe('200% 200%');
+    expect(aiText.style.animation).toContain('gradient-diagonal 3s');
+    expect(aiText.style.color).toBe('transparent');
   });
 });

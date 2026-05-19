@@ -66,6 +66,8 @@ describe('AIAssistantButton', () => {
       expect(button.getAttribute('aria-label')).toBe('AI 어시스턴트 닫기');
       expect(button.getAttribute('aria-pressed')).toBe('true');
       expect(button.style.background).toBeTruthy();
+      expect(button.style.backgroundSize).toBe('200% 200%');
+      expect(button.style.animation).toContain('gradient-diagonal 3s');
     });
   });
 

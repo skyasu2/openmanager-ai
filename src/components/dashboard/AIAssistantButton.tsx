@@ -2,6 +2,7 @@
 
 import { Bot } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
+import { AI_ICON_GRADIENT_ANIMATED_STYLE } from '@/styles/design-constants';
 
 /**
  * AI 어시스턴트 버튼 Props
@@ -22,7 +23,7 @@ interface AIAssistantButtonProps {
  * - AI 사이드바 토글 기능
  * - 활성화 상태에 따른 시각적 피드백
  * - Hydration 불일치 방지
- * - ✨ 그라데이션 애니메이션 (gradient-shift 4초)
+ * - ✨ 그라데이션 애니메이션 (gradient-diagonal)
  *
  * @example
  * ```tsx
@@ -58,12 +59,7 @@ export const AIAssistantButton = memo(function AIAssistantButton({
         }`}
         style={
           isMounted && (isOpen || isEnabled)
-            ? {
-                background:
-                  'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899, #a855f7)',
-                backgroundSize: '300% 300%',
-                animation: 'gradient-diagonal 6s ease-in-out infinite',
-              }
+            ? AI_ICON_GRADIENT_ANIMATED_STYLE
             : undefined
         }
         title={
