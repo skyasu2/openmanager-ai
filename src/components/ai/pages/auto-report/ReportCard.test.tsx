@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import ReportCard from './ReportCard';
 import type { IncidentReport } from './types';
@@ -106,6 +106,53 @@ describe('ReportCard', () => {
     );
     expect(screen.getByTestId('report-card-footer').className).toContain(
       'border-t'
+    );
+  });
+
+  it('shows an explicit detail button with expanded state', () => {
+    const onToggleDetail = vi.fn();
+
+    const { rerender } = render(
+      <ReportCard
+        report={createReport()}
+        index={0}
+        isSelected={false}
+        downloadMenuId={null}
+        onToggleDetail={onToggleDetail}
+        onResolve={vi.fn()}
+        onSetDownloadMenuId={vi.fn()}
+      />
+    );
+
+    const collapsedButton = screen.getByRole('button', {
+      name: '보고서 상세 보기',
+    });
+    expect(collapsedButton).toHaveTextContent('보고서 상세 보기');
+    expect(collapsedButton).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(collapsedButton);
+    expect(onToggleDetail).toHaveBeenCalledWith('report-1');
+
+    rerender(
+      <ReportCard
+        report={createReport()}
+        index={0}
+        isSelected={true}
+        downloadMenuId={null}
+        onToggleDetail={onToggleDetail}
+        onResolve={vi.fn()}
+        onSetDownloadMenuId={vi.fn()}
+      />
+    );
+
+    const expandedButton = screen.getByRole('button', {
+      name: '보고서 상세 접기',
+    });
+    expect(expandedButton).toHaveTextContent('상세 접기');
+    expect(expandedButton).toHaveAttribute('aria-expanded', 'true');
+    expect(expandedButton).toHaveAttribute(
+      'aria-controls',
+      'report-report-1-details'
     );
   });
 });
