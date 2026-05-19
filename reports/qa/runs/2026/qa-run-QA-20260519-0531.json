@@ -1,0 +1,126 @@
+{
+  "runId": "QA-20260519-0531",
+  "recordedAt": "2026-05-19T02:09:49.493Z",
+  "recordedAtKst": "2026-05-19 11:09:49 KST",
+  "runTitle": "v8.11.178 Vercel Playwright MCP AI Gradient Restoration QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1",
+    "deploymentUrl": "https://openmanager-ja5xj0cfi-skyasus-projects.vercel.app",
+    "commitSha": "5801a008e37f60d2159b5bac1399a598614142db"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "Vercel production serves v8.11.178 on /api/version",
+    "Vercel production root route loads OpenManager AI landing page",
+    "Header logo AI text uses gradient-diagonal 3s animation",
+    "Hero title AI text uses gradient-diagonal 3s animation",
+    "Header and hero AI text background-position changes over time",
+    "Production gradient-diagonal keyframes animate background-position",
+    "Dashboard route loads on production",
+    "Dashboard AI assistant button uses shared gradient-diagonal 3s style",
+    "Dashboard AI assistant button background-position changes over time",
+    "Vercel production smoke script passed /, /login, and /api/version",
+    "GitLab v8.11.178 tag pipeline succeeded",
+    "Vercel usage check stayed normal with billed usage $0.0000"
+  ],
+  "skippedSurfaces": [
+    "Full conversational AI five-question pack; change scope is visual gradient restoration only",
+    "Full mobile responsive pack; desktop production representative viewport covered",
+    "Full visual regression matrix; targeted computed-style and screenshot evidence captured",
+    "Cloud Run observability pack; no backend or AI runtime contract changed"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux-accessibility",
+      "domainName": "Frontend UX & Accessibility Reviewer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Logo, hero, and dashboard AI button gradient motion were verified with computed styles and visual evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Regression tests now assert gradient-diagonal background-position behavior and AI UI animation style.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-19T11:01:21+09:00",
+      "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.178 targeted production QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI gradient restored on v8.11.178 production landing page",
+      "path": "reports/qa/evidence/qa-20260519-v811178-ai-gradient-production.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "AI gradient computed-style verification notes",
+      "path": "reports/qa/evidence/qa-20260519-v811178-ai-gradient-production.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-gradient-motion-restored-v811178",
+      "title": "AI text and shared diagonal gradient motion restored",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "gradient-diagonal keyframes restored to background-position; production Playwright verified moving AI text and dashboard AI button",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production /api/version returned releaseTag=v8.11.178 and pipelineUrl=https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535756579.",
+    "Local gates passed before release: targeted Vitest, type-check, lint, test:quick, docs:components:verify.",
+    "No AI prompt, provider, routing, or backend runtime contract changed."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline 2535756579",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535756579"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1",
+      "url": "https://openmanager-ja5xj0cfi-skyasus-projects.vercel.app/"
+    }
+  ]
+}
