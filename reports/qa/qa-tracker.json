@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-18T19:14:20.082Z"
+    "updatedAt": "2026-05-19T00:09:51.939Z"
   },
   "sequence": {
-    "nextRunNumber": 529
+    "nextRunNumber": 530
   },
   "summary": {
-    "totalRecordedRuns": 526,
-    "totalRuns": 420,
+    "totalRecordedRuns": 527,
+    "totalRuns": 421,
     "excludedRuns": 106,
-    "totalChecks": 3821,
-    "totalPassed": 3674,
+    "totalChecks": 3836,
+    "totalPassed": 3689,
     "totalFailed": 136,
-    "completionRate": 99.67,
-    "completedItems": 598,
-    "pendingItems": 2,
+    "completionRate": 100,
+    "completedItems": 602,
+    "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 25,
+    "wontFixItems": 24,
     "expertDomainsTracked": 15,
-    "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260519-0528",
-    "lastRecordedAt": "2026-05-18T19:14:20.082Z",
-    "latestRecordedRunId": "QA-20260519-0528",
-    "latestRecordedAt": "2026-05-18T19:14:20.082Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260519-0529",
+    "lastRecordedAt": "2026-05-19T00:09:51.939Z",
+    "latestRecordedRunId": "QA-20260519-0529",
+    "latestRecordedAt": "2026-05-19T00:09:51.939Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14660,75 +14660,99 @@
     },
     "vercel-deployment-drift-local-ai-changes": {
       "id": "vercel-deployment-drift-local-ai-changes",
-      "title": "Today's local AI/NLQ/anomaly changes are not present on Vercel production",
+      "title": "Today's local AI/NLQ/anomaly changes are deployed to Vercel production",
       "priority": "P0",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260519-0528",
       "firstSeenAt": "2026-05-18T19:14:20.082Z",
-      "lastSeenRunId": "QA-20260519-0528",
-      "lastSeenAt": "2026-05-18T19:14:20.082Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "Production reports v8.11.175 commit 7da68ac4a1; local workspace is 73281f363f02 with unstaged changes. Vercel production QA cannot validate the local changes until a preview or GitLab CI production release is created.",
+      "lastNote": "Production v8.11.176 deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ serves commit 55af9601bead10653e713f602c328de703de813c and the GitLab tag pipeline succeeded.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-18T19:14:20.082Z"
+      "lastStatusChangeAt": "2026-05-19T00:09:51.939Z"
     },
     "ai-network-followup-context-filtering": {
       "id": "ai-network-followup-context-filtering",
-      "title": "Network-only conversational follow-up returns generic system summary",
+      "title": "Network-only conversational follow-up returns scoped network filter output",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260519-0528",
       "firstSeenAt": "2026-05-18T19:14:20.082Z",
-      "lastSeenRunId": "QA-20260519-0528",
-      "lastSeenAt": "2026-05-18T19:14:20.082Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "Standard QA question 5 should filter previously analyzed servers by network issue, but production v8.11.175 repeated the full server summary.",
+      "lastNote": "The follow-up query returned `네트워크 사용률 70% 이상 서버 0대` with `경고 임계값 기준` instead of the generic full-system summary.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-18T19:14:20.082Z"
+      "lastStatusChangeAt": "2026-05-19T00:09:51.939Z"
     },
     "anomaly-trend-confidence-label-review": {
       "id": "anomaly-trend-confidence-label-review",
-      "title": "Anomaly/trend UI still displays confidence-style labels",
+      "title": "Anomaly/trend confidence-style label replaced with signal strength wording",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260519-0528",
       "firstSeenAt": "2026-05-18T19:14:20.082Z",
-      "lastSeenRunId": "QA-20260519-0528",
-      "lastSeenAt": "2026-05-18T19:14:20.082Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "The anomaly/trend tab rendered disk warnings with `신뢰도 90%`; review this alongside the recent prompt/persona wording changes.",
+      "lastNote": "Production v8.11.176 anomaly/trend tab displays `신호 강도 90%` and the old `신뢰도` label was not present.",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "Treat as wording/semantics cleanup unless the label is used as a contractual confidence score.",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-05-18T19:14:20.082Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-19T00:09:51.939Z"
+    },
+    "incident-report-non-degraded-pipeline": {
+      "id": "incident-report-non-degraded-pipeline",
+      "title": "Incident report generation returns non-degraded Reporter Pipeline success",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260519-0529",
+      "firstSeenAt": "2026-05-19T00:09:51.939Z",
+      "lastSeenRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Direct API verification returned HTTP 200, `_fallback=false`, no fallback/degraded headers, `reporterPipeline.success=true`, and a 6-event time-ordered timeline.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-19T00:09:51.939Z"
     }
   },
   "runs": [
@@ -59717,6 +59741,169 @@
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260519-0529",
+      "recordedAt": "2026-05-19T00:09:51.939Z",
+      "recordedAtKst": "2026-05-19 09:09:51 KST",
+      "title": "v8.11.176 Vercel Playwright MCP AI Release QA",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260519-0529.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ",
+        "deploymentUrl": "https://openmanager-ww2v63kw0-skyasus-projects.vercel.app",
+        "commitSha": "55af9601bead10653e713f602c328de703de813c"
+      },
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ is READY",
+        "Vercel production /api/version reports v8.11.176 and commit 55af9601bead10653e713f602c328de703de813c",
+        "GitLab main pipeline 2535579211 succeeded",
+        "GitLab tag pipeline 2535579215 succeeded for v8.11.176",
+        "Dashboard route /dashboard renders 18-server OTel snapshot at 08:30 KST slot 51/143",
+        "AI assistant sidebar opens and engine indicator reports Ready",
+        "AI immediate-action query separates no immediate critical action from one warning server",
+        "Network-only conversational follow-up returns a scoped network filter result instead of generic system summary",
+        "Network follow-up explicitly uses network >= 70% warning threshold basis",
+        "AI anomaly/trend tab renders full-system analysis and one warning server",
+        "AI anomaly/trend tab displays 신호 강도 and no longer displays 신뢰도",
+        "Incident report UI generates one warning report",
+        "Incident report API returns HTTP 200 with _fallback=false, no X-Fallback-Response, and no X-AI-Degraded header",
+        "Incident report response includes reporterPipeline.success=true and a time-ordered 6-event timeline",
+        "Browser console warnings/errors were zero",
+        "AI network requests returned HTTP 200/201 for wake-up, health, supervisor stream, NLQ extraction, async jobs, intelligent monitoring, and incident report",
+        "Vercel usage post-QA check"
+      ],
+      "skippedSurfaces": [
+        "Full visual regression pack",
+        "Mobile responsive pack",
+        "Public GitHub snapshot sync; canonical release path is GitLab CI only"
+      ],
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The regression targets from QA-20260519-0528 were rechecked on production v8.11.176: network follow-up filtering now returns a scoped network result, anomaly wording is corrected, and incident report generation returns non-degraded success.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard, anomaly/trend, network follow-up, and incident report outputs are grounded in the 08:30 KST OTel snapshot and expose thresholds, affected servers, and time-ordered evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The QA used authenticated guest UI paths, observed zero browser console warnings/errors, and verified incident report responses did not expose degraded fallback headers.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main and semver tag pipelines both succeeded, Vercel production serves v8.11.176, Cloud Run AI Engine deploy/smoke completed, and Vercel usage remains normal.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP covered rendered UI, conversational AI flow, anomaly/trend tab, incident report artifact generation, direct API metadata, screenshots, network requests, and console checks.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-19T08:38:30+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.176 production QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.176 AI release QA notes",
+          "path": "reports/qa/evidence/qa-20260519-v811176-ai-release-qa.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard render on v8.11.176 production",
+          "path": "reports/qa/evidence/qa-20260519-v811176-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI network follow-up filter result",
+          "path": "reports/qa/evidence/qa-20260519-v811176-ai-network-filter.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Anomaly tab signal strength wording",
+          "path": "reports/qa/evidence/qa-20260519-v811176-anomaly-tab-signal-strength.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Incident report generated on v8.11.176 production",
+          "path": "reports/qa/evidence/qa-20260519-v811176-incident-report.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main pipeline 2535579211",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535579211"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline 2535579215",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535579215"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/BdrMbVYEqzZb7vBE9Px2ukpswKpZ"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -59725,50 +59912,50 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 263,
-      "appropriateCount": 225,
+      "seenCount": 264,
+      "appropriateCount": 226,
       "partialCount": 38,
       "inappropriateCount": 0,
       "improvementNeededCount": 48,
-      "lastRunId": "QA-20260519-0528",
-      "lastSeenAt": "2026-05-18T19:14:20.082Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The standard five-question suite passed 4/5, but the network-only follow-up failed by returning a generic system summary instead of respecting prior context and filtering network issues.",
-      "lastNextAction": "After deploying today's NLQ/anomaly routing changes, rerun the standard five-question suite and specifically recheck the network-only follow-up."
+      "lastRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The regression targets from QA-20260519-0528 were rechecked on production v8.11.176: network follow-up filtering now returns a scoped network result, anomaly wording is corrected, and incident report generation returns non-degraded success.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 129,
-      "appropriateCount": 97,
+      "seenCount": 130,
+      "appropriateCount": 98,
       "partialCount": 32,
       "inappropriateCount": 0,
       "improvementNeededCount": 33,
-      "lastRunId": "QA-20260519-0528",
-      "lastSeenAt": "2026-05-18T19:14:20.082Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Dashboard and anomaly/trend data are grounded, but the AI follow-up did not preserve network metric intent and the anomaly/trend UI still presents confidence-style labels.",
-      "lastNextAction": "Verify network metric selection and replace or justify confidence labels in the anomaly/trend surface."
+      "lastRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Dashboard, anomaly/trend, network follow-up, and incident report outputs are grounded in the 08:30 KST OTel snapshot and expose thresholds, affected servers, and time-ordered evidence.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 88,
-      "appropriateCount": 69,
+      "seenCount": 89,
+      "appropriateCount": 70,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260519-0528",
-      "lastSeenAt": "2026-05-18T19:14:20.082Z",
+      "lastRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The QA used authenticated UI paths only, observed no browser console warnings/errors, and did not bypass CSRF-protected AI endpoints.",
+      "lastRationale": "The QA used authenticated guest UI paths, observed zero browser console warnings/errors, and verified incident report responses did not expose degraded fallback headers.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -59776,33 +59963,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 200,
-      "appropriateCount": 180,
+      "seenCount": 201,
+      "appropriateCount": 181,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260519-0528",
-      "lastSeenAt": "2026-05-18T19:14:20.082Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Vercel production is healthy but does not contain today's local workspace changes; production remains on v8.11.175 commit 7da68ac4a1 while local HEAD is 73281f363f02 with unstaged changes.",
-      "lastNextAction": "Use the GitLab CI release path or an explicit preview deployment before treating this as validation of today's local changes."
+      "lastRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "GitLab main and semver tag pipelines both succeeded, Vercel production serves v8.11.176, Cloud Run AI Engine deploy/smoke completed, and Vercel usage remains normal.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 232,
-      "appropriateCount": 212,
+      "seenCount": 233,
+      "appropriateCount": 213,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260519-0528",
-      "lastSeenAt": "2026-05-18T19:14:20.082Z",
+      "lastRunId": "QA-20260519-0529",
+      "lastSeenAt": "2026-05-19T00:09:51.939Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP covered route render, AI assistant UI flow, five standard AI prompts, anomaly/trend tab, network request capture, console capture, and durable evidence artifacts.",
+      "lastRationale": "Playwright MCP covered rendered UI, conversational AI flow, anomaly/trend tab, incident report artifact generation, direct API metadata, screenshots, network requests, and console checks.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

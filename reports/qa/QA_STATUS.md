@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 04:14:22 KST
+> Generated at: 2026-05-19 09:09:54 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 526 |
-| Total Runs (Counted) | 420 |
+| Total Recorded Runs | 527 |
+| Total Runs (Counted) | 421 |
 | Non-counted Runs | 106 |
-| Total Checks | 3821 |
-| Passed | 3674 |
+| Total Checks | 3836 |
+| Passed | 3689 |
 | Failed | 136 |
-| Completed Items | 598 |
-| Pending Items | 2 |
+| Completed Items | 602 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 25 |
+| Wont-Fix Items | 24 |
 | Expert Domains Tracked | 15 |
-| Expert Open Gaps | 3 |
-| Completion Rate | 99.67% |
-| Last Counted Run | QA-20260519-0528 (2026-05-18T19:14:20.082Z) |
-| Latest Recorded Run | QA-20260519-0528 (2026-05-18T19:14:20.082Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260519-0529 (2026-05-19T00:09:51.939Z) |
+| Latest Recorded Run | QA-20260519-0529 (2026-05-19T00:09:51.939Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -30,29 +30,29 @@
 
 ## Historical Trend Warnings
 
-- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 2 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260504-0405 (broad), QA-20260505-0407 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260505-0407 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0528 (2026-05-18T19:14:20.082Z)
+Latest run: QA-20260519-0529 (2026-05-19T00:09:51.939Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | After deploying today's NLQ/anomaly routing changes, rerun the standard five-question suite and specifically recheck the network-only follow-up. |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Verify network metric selection and replace or justify confidence labels in the anomaly/trend surface. |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | partially-appropriate | yes | Use the GitLab CI release path or an explicit preview deployment before treating this as validation of today's local changes. |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after Vercel Playwright MCP AI drift check. |
+| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.176 production QA. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-17T19:14:20.082Z -> 2026-05-18T19:14:20.082Z (24h)
+- Window: 2026-05-18T00:09:51.939Z -> 2026-05-19T00:09:51.939Z (24h)
 - Runs with observations: 2 recorded / 2 counted
 - Samples: 4
 
@@ -63,7 +63,7 @@ Latest run: QA-20260519-0528 (2026-05-18T19:14:20.082Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-17T19:14:20.082Z -> 2026-05-18T19:14:20.082Z (24h)
+- Window: 2026-05-18T00:09:51.939Z -> 2026-05-19T00:09:51.939Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,41 +74,39 @@ Latest run: QA-20260519-0528 (2026-05-18T19:14:20.082Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
+- Scope: release-gate
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V / SHA 7da68ac4
+- Deployment: dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ / SHA 55af9601
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production /api/version reports v8.11.175 and commit 7da68ac4a1, Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V is READY, Dashboard route /dashboard renders 18-server OTel snapshot, Dashboard slot 04:00 KST (slot 24/143), 16 online, 2 warning, 0 risk, 0 offline, AI assistant sidebar opens through Playwright MCP, AI engine indicator reports Ready, Standard conversational AI question 1: full server status summary passed, Standard conversational AI question 2: web-server-01 alias resolved to web-nginx-dc1-01 with metrics passed, Standard conversational AI question 3: 24h load peak identified load1 peak at 2026-05-19 03:50 passed, Standard conversational AI question 4: immediate action needed separated no-critical from two disk warning servers passed, Standard conversational AI question 5: network-only follow-up returned generic full-system summary instead of filtering network issues, AI assistant anomaly/trend tab renders full-system analysis and two disk warning servers, Network requests observed for wake-up, health, supervisor stream, NLQ extraction, async jobs, and intelligent-monitoring, Browser console warnings/errors were zero, Vercel usage post-QA check
-- Skipped Surfaces: Full visual regression pack, Reporter incident report generation; this run targeted NLQ, anomaly/prediction, and AI assistant routing changes, Preview deployment of today's local workspace; production deployment authority remains GitLab CI and current production does not include local HEAD 73281f363f02
+- Covered Surfaces: Vercel production deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ is READY, Vercel production /api/version reports v8.11.176 and commit 55af9601bead10653e713f602c328de703de813c, GitLab main pipeline 2535579211 succeeded, GitLab tag pipeline 2535579215 succeeded for v8.11.176, Dashboard route /dashboard renders 18-server OTel snapshot at 08:30 KST slot 51/143, AI assistant sidebar opens and engine indicator reports Ready, AI immediate-action query separates no immediate critical action from one warning server, Network-only conversational follow-up returns a scoped network filter result instead of generic system summary, Network follow-up explicitly uses network >= 70% warning threshold basis, AI anomaly/trend tab renders full-system analysis and one warning server, AI anomaly/trend tab displays 신호 강도 and no longer displays 신뢰도, Incident report UI generates one warning report, Incident report API returns HTTP 200 with _fallback=false, no X-Fallback-Response, and no X-AI-Degraded header, Incident report response includes reporterPipeline.success=true and a time-ordered 6-event timeline, Browser console warnings/errors were zero, AI network requests returned HTTP 200/201 for wake-up, health, supervisor stream, NLQ extraction, async jobs, intelligent monitoring, and incident report, Vercel usage post-QA check
+- Skipped Surfaces: Full visual regression pack, Mobile responsive pack, Public GitHub snapshot sync; canonical release path is GitLab CI only
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2534475056 | [GitLab release pipeline 2534475056](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2534475056) | - |
-| vercel-deployment | Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V | [Vercel production deployment dpl_C8eLVUEdzSPMY83AwFUezu7ybd8V](https://vercel.com/skyasus-projects/openmanager-ai/C8eLVUEdzSPMY83AwFUezu7ybd8V) | - |
+| general | GitLab main pipeline 2535579211 | [GitLab main pipeline 2535579211](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535579211) | - |
+| general | GitLab tag pipeline 2535579215 | [GitLab tag pipeline 2535579215](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535579215) | - |
+| vercel-deployment | Vercel production deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ | [Vercel production deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ](https://vercel.com/skyasus-projects/openmanager-ai/BdrMbVYEqzZb7vBE9Px2ukpswKpZ) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | AI NLQ/anomaly production drift QA notes | `reports/qa/evidence/qa-20260519-v811175-ai-nlq-anomaly-drift.md` | - |
-| playwright-screenshot | AI anomaly/trend tab on v8.11.175 production | `reports/qa/evidence/qa-20260519-v811175-ai-anomaly-tab.png` | - |
+| playwright-console | v8.11.176 AI release QA notes | `reports/qa/evidence/qa-20260519-v811176-ai-release-qa.md` | - |
+| playwright-screenshot | Dashboard render on v8.11.176 production | `reports/qa/evidence/qa-20260519-v811176-dashboard.png` | - |
+| playwright-screenshot | AI network follow-up filter result | `reports/qa/evidence/qa-20260519-v811176-ai-network-filter.png` | - |
+| playwright-screenshot | Anomaly tab signal strength wording | `reports/qa/evidence/qa-20260519-v811176-anomaly-tab-signal-strength.png` | - |
+| playwright-screenshot | Incident report generated on v8.11.176 production | `reports/qa/evidence/qa-20260519-v811176-incident-report.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260519-0528)
-  next: After deploying today's NLQ/anomaly routing changes, rerun the standard five-question suite and specifically recheck the network-only follow-up.
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260519-0528)
-  next: Verify network metric selection and replace or justify confidence labels in the anomaly/trend surface.
-- sre-devops: DevOps / SRE Engineer (last QA-20260519-0528)
-  next: Use the GitLab CI release path or an explicit preview deployment before treating this as validation of today's local changes.
+- None
 
 ## Pending Improvements
 
-- [P0] vercel-deployment-drift-local-ai-changes: Today's local AI/NLQ/anomaly changes are not present on Vercel production (seen 1회, last QA-20260519-0528)
-- [P1] ai-network-followup-context-filtering: Network-only conversational follow-up returns generic system summary (seen 1회, last QA-20260519-0528)
+- None
 
 ## Deferred Improvements
 
@@ -116,7 +114,7 @@ Latest run: QA-20260519-0528 (2026-05-18T19:14:20.082Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 17
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 16
 
 ### Platform Constraint
 
@@ -176,8 +174,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-trend-formatting-and-issue-ranking-polish: Analyst trend target formatting and issue ranking need polish (seen 1회, last QA-20260427-0352)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P2] anomaly-trend-confidence-label-review: Anomaly/trend UI still displays confidence-style labels (seen 1회, last QA-20260519-0528)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] landing-tech-stack-version-copy-drift: 기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리 (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -283,6 +279,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-memory-topn-broad-ranking-korean-response: AI memory TOP-N broad ranking should answer in Korean without server_id clarification (completed 1회, last QA-20260510-0440)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
+- ai-network-followup-context-filtering: Network-only conversational follow-up returns scoped network filter output (completed 1회, last QA-20260519-0529)
 - ai-nlq-entity-confidence-boundary: Trust only known high-confidence extracted entities (completed 2회, last QA-20260510-0461)
 - ai-nlq-entity-route-auth-rate-limit: Protect NLQ entity extraction route with auth and rate limiting (completed 2회, last QA-20260510-0461)
 - ai-nlq-entity-server-inventory-sync: Use server registry as NLQ entity extraction server inventory (completed 1회, last QA-20260510-0461)
@@ -400,6 +397,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - analyst-sidebar-state-retention-chat-switch: Analyst 선택 서버와 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - analyst-state-loss-on-chat-switch: Analyst 선택 서버와 결과가 chat 전환 후 유지 (completed 1회, last QA-20260319-0127)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
+- anomaly-trend-confidence-label-review: Anomaly/trend confidence-style label replaced with signal strength wording (completed 1회, last QA-20260519-0529)
 - api-metrics-route-status-label-contract: Preserve status label for openmanager_server_status (completed 1회, last QA-20260511-0472)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - approval-history-runtime-smoke: approvalStore pending/decision/history/stats runtime path verified (completed 1회, last QA-20260411-0270)
@@ -542,6 +540,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - health-route-envelope-test-alignment: Health route envelope/cache typing 정렬 (completed 1회, last QA-20260325-0184)
 - health-route-supabase-session-timeout: 헬스체크 Supabase 세션 프로브 타임아웃 강제 (completed 1회, last QA-20260325-0183)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
+- incident-report-non-degraded-pipeline: Incident report generation returns non-degraded Reporter Pipeline success (completed 1회, last QA-20260519-0529)
 - internal-disclosure-user-mode-v811112: General user-mode internal path disclosure blocked (completed 1회, last QA-20260507-0419)
 - landing-bootstrap-auth-copy-hidden: 랜딩 첫 진입 bootstrap 인증 카피 숨김 (completed 1회, last QA-20260402-0206)
 - landing-bootstrap-copy-hidden: 랜딩 첫 진입 시 bootstrap auth copy 비노출 처리 (completed 2회, last QA-20260408-0250)
@@ -730,6 +729,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - validation-stale-banner-client-side-fix: Validation stale banner client-side age check fix (completed 1회, last QA-20260324-0170)
 - vercel-ai-assistant-live-smoke-v811165: Verify Vercel production AI Assistant Chat, Reporter, and Analyst live paths (completed 1회, last QA-20260517-0512)
 - vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
+- vercel-deployment-drift-local-ai-changes: Today's local AI/NLQ/anomaly changes are deployed to Vercel production (completed 1회, last QA-20260519-0529)
 - vercel-deployment-ready: Vercel 배포 3건 모두 READY (completed 1회, last QA-20260314-0096)
 - vercel-playwright-mcp-v81189-targeted-qa: v8.11.89 Vercel production Playwright MCP targeted QA completed (completed 1회, last QA-20260504-0402)
 - vercel-prod-ai-clarification: AI 질의 모호성 해소 UI 정상 렌더링 및 Fallback 응답 확인 (completed 1회, last QA-20260317-0114)
@@ -793,6 +793,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0529 | 2026-05-19T00:09:51.939Z | release-gate | yes | yes | v8.11.176 Vercel Playwright MCP AI Release QA | 15 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260519-0528 | 2026-05-18T19:14:20.082Z | targeted | no | yes | v8.11.175 Vercel Playwright MCP AI NLQ/Anomaly Drift Check | 13 | 0 | 2 | 0 | 1 | 3 |
 | QA-20260518-0527 | 2026-05-18T14:49:19.097Z | targeted | yes | yes | v8.11.175 Vercel Playwright MCP Reporter Fallback Evidence Fix | 20 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0526 | 2026-05-18T12:23:32.919Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Today Reporter Change Check | 13 | 0 | 0 | 0 | 0 | 0 |
@@ -812,4 +813,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260517-0512 | 2026-05-17T08:57:50.648Z | targeted | yes | yes | v8.11.165 Vercel Production AI Assistant Live Smoke | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260517-0511 | 2026-05-16T18:51:23.923Z | targeted | yes | yes | v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260517-0510 | 2026-05-16T16:03:37.386Z | targeted | yes | yes | v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls | 10 | 2 | 2 | 0 | 0 | 1 |
-| QA-20260516-0509 | 2026-05-16T11:16:06.924Z | targeted | no | no | v8.11.158 Production Deploy Smoke | 4 | 1 | 0 | 0 | 0 | 0 |
