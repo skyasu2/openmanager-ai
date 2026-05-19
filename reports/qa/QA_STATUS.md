@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 20:08:39 KST
+> Generated at: 2026-05-19 20:41:06 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 536 |
+| Total Recorded Runs | 537 |
 | Total Runs (Counted) | 429 |
-| Non-counted Runs | 107 |
+| Non-counted Runs | 108 |
 | Total Checks | 3912 |
 | Passed | 3759 |
 | Failed | 142 |
-| Completed Items | 614 |
+| Completed Items | 615 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 34 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260519-0538 (2026-05-19T11:08:35.867Z) |
-| Latest Recorded Run | QA-20260519-0538 (2026-05-19T11:08:35.867Z) |
+| Latest Recorded Run | QA-20260519-0539 (2026-05-19T11:41:05.468Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,25 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0538 (2026-05-19T11:08:35.867Z)
+Latest run: QA-20260519-0539 (2026-05-19T11:41:05.468Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | partially-appropriate | yes | Add or document a CSRF-safe authenticated Playwright UI flow for image attachment upload when the frontend exposes that control. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after production QA; effective usage 12.6977 USD, billed 0.0000 USD, no unexpected paid usage reported by CLI. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T11:08:35.867Z -> 2026-05-19T11:08:35.867Z (24h)
-- Runs with observations: 5 recorded / 5 counted
-- Samples: 10
+- Window: 2026-05-18T11:41:05.468Z -> 2026-05-19T11:41:05.468Z (24h)
+- Runs with observations: 6 recorded / 5 counted
+- Samples: 11
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -60,6 +59,7 @@ Latest run: QA-20260519-0538 (2026-05-19T11:08:35.867Z)
 | Analyst Agent | mistral | 2 | 14779ms | 23558ms | - | - | - | - | QA-20260519-0535 |
 | NLQ Agent | unknown | 1 | 14000ms | 14000ms | - | - | - | - | QA-20260519-0532 |
 | Vision Agent | gemini | 1 | 11774ms | 11774ms | 0ms | 0ms | 11774ms | 11774ms | QA-20260519-0538 |
+| Vision Agent | zai | 1 | 6704ms | 6704ms | 0ms | 0ms | 6704ms | 6704ms | QA-20260519-0539 |
 | Reporter Agent | unknown | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260519-0532 |
 | NLQ | deterministic | 1 | 310ms | 310ms | - | - | - | - | QA-20260519-0533 |
 | Analyst Agent | deterministic | 2 | 137ms | 273ms | - | - | - | - | QA-20260519-0537 |
@@ -67,7 +67,7 @@ Latest run: QA-20260519-0538 (2026-05-19T11:08:35.867Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T11:08:35.867Z -> 2026-05-19T11:08:35.867Z (24h)
+- Window: 2026-05-18T11:41:05.468Z -> 2026-05-19T11:41:05.468Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -79,26 +79,25 @@ Latest run: QA-20260519-0538 (2026-05-19T11:08:35.867Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_EAfnBF9W49oPUsAVn1cWwz8TAYZw / SHA 02a05eba
-- Coverage Packs: core-routes-smoke, ai-core
-- Covered Surfaces: /, /api/version, Cloud Run /health, Cloud Run /api/ai/supervisor Vision image attachment, Vision Agent real Playwright PNG input, standard five-question conversational AI smoke
-- Skipped Surfaces: Vercel authenticated AI image upload UI path, broad dashboard modal/detail pack, provider matrix beyond active routing
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA 02a05eba
+- Coverage Packs: ai-core
+- Covered Surfaces: Cloud Run /api/ai/providers runtime toggle, Cloud Run /api/ai/supervisor Vision image attachment, Vision Agent Z.AI GLM fallback with one real Playwright PNG input, Provider restoration after manual smoke
+- Skipped Surfaces: Gemini Vision primary retest (already verified in QA-20260519-0538), Repeated Vision provider matrix (manual-only quota guardrail), Authenticated frontend image upload UI E2E
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab tag pipeline 2536955714 | [GitLab tag pipeline 2536955714](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536955714) | - |
-| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
+| general | Vercel production version | [Vercel production version](https://openmanager-ai.vercel.app/api/version) | - |
 | monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-490817238363.asia-northeast1.run.app/health) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Vision smoke input: previous Playwright QA screenshot | `reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png` | - |
+| playwright-screenshot | Vision smoke input: existing Playwright QA screenshot | `reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -775,6 +774,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - weekly-followup-planning-hygiene: Weekly follow-up planning hygiene and data slot policy updated (completed 1회, last QA-20260519-0536)
 - weekly-hardening-production-post-deploy-retest: Deploy weekly hardening changes and rerun focused Vercel production QA (completed 1회, last QA-20260519-0537)
+- zai-glm-vision-fallback-live-smoke: Z.AI GLM Vision fallback 실제 이미지 입력 live smoke 확인 (completed 1회, last QA-20260519-0539)
 - zod-v4-ai-engine-migration: Migrate AI Engine from Zod v3 to Zod v4 (completed 1회, last QA-20260511-0471)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
@@ -826,6 +826,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0539 | 2026-05-19T11:41:05.468Z | targeted | no | no | Manual Cloud Run QA - Z.AI GLM Vision fallback live smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0538 | 2026-05-19T11:08:35.867Z | targeted | yes | yes | Production Vision Attachment Routing QA - v8.11.184 | 14 | 2 | 0 | 0 | 7 | 1 |
 | QA-20260519-0537 | 2026-05-19T07:40:00.196Z | targeted | yes | yes | v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0536 | 2026-05-19T06:23:47.328Z | targeted | no | no | Weekly follow-up hardening local contract closure | 10 | 5 | 1 | 0 | 0 | 1 |
@@ -845,4 +846,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0522 | 2026-05-18T04:12:29.303Z | release-gate | yes | yes | v8.11.171 Reporter Cloud Run Production Verification | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0521 | 2026-05-18T01:37:12.860Z | targeted | no | no | Cloud Run Weekly Operational Check | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0520 | 2026-05-18T01:15:27.412Z | targeted | no | no | v8.11.169 Current Vercel Playwright MCP Rerun | 20 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260518-0519 | 2026-05-18T00:54:54.418Z | targeted | yes | yes | v8.11.169 Current Vercel Playwright MCP Check | 16 | 0 | 0 | 0 | 0 | 0 |

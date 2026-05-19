@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-19T11:08:35.867Z"
+    "updatedAt": "2026-05-19T11:41:05.468Z"
   },
   "sequence": {
-    "nextRunNumber": 539
+    "nextRunNumber": 540
   },
   "summary": {
-    "totalRecordedRuns": 536,
+    "totalRecordedRuns": 537,
     "totalRuns": 429,
-    "excludedRuns": 107,
+    "excludedRuns": 108,
     "totalChecks": 3912,
     "totalPassed": 3759,
     "totalFailed": 142,
     "completionRate": 100,
-    "completedItems": 614,
+    "completedItems": 615,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 34,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260519-0538",
     "lastRecordedAt": "2026-05-19T11:08:35.867Z",
-    "latestRecordedRunId": "QA-20260519-0538",
-    "latestRecordedAt": "2026-05-19T11:08:35.867Z"
+    "latestRecordedRunId": "QA-20260519-0539",
+    "latestRecordedAt": "2026-05-19T11:41:05.468Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15281,6 +15281,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-19T11:08:35.867Z"
+    },
+    "zai-glm-vision-fallback-live-smoke": {
+      "id": "zai-glm-vision-fallback-live-smoke",
+      "title": "Z.AI GLM Vision fallback 실제 이미지 입력 live smoke 확인",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260519-0539",
+      "firstSeenAt": "2026-05-19T11:41:05.468Z",
+      "lastSeenRunId": "QA-20260519-0539",
+      "lastSeenAt": "2026-05-19T11:41:05.468Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "gemini toggle=false 상태에서 Cloud Run /api/ai/supervisor가 provider=zai, modelId=glm-4.6v-flash, finalAgent=Vision Agent, success=true로 응답.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-19T11:41:05.468Z"
     }
   },
   "runs": [
@@ -61493,6 +61517,106 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 7
+    },
+    {
+      "runId": "QA-20260519-0539",
+      "recordedAt": "2026-05-19T11:41:05.468Z",
+      "recordedAtKst": "2026-05-19 20:41:05 KST",
+      "title": "Manual Cloud Run QA - Z.AI GLM Vision fallback live smoke",
+      "owner": "codex",
+      "source": "manual-cloud-run",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260519-0539.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "commitSha": "02a05eba19b7be4d9cc1d19bc9af015d53c6cdce"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Cloud Run /api/ai/providers runtime toggle",
+        "Cloud Run /api/ai/supervisor Vision image attachment",
+        "Vision Agent Z.AI GLM fallback with one real Playwright PNG input",
+        "Provider restoration after manual smoke"
+      ],
+      "skippedSurfaces": [
+        "Gemini Vision primary retest (already verified in QA-20260519-0538)",
+        "Repeated Vision provider matrix (manual-only quota guardrail)",
+        "Authenticated frontend image upload UI E2E"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Cloud Run Vision fallback image smoke",
+          "agent": "Vision Agent",
+          "provider": "zai",
+          "model": "glm-4.6v-flash",
+          "route": "/api/ai/supervisor",
+          "source": "/tmp/glm-vision-summary.json",
+          "latencyMs": 6704,
+          "ttfbMs": 0,
+          "processingTimeMs": 6704
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "사용자 명시 요청에 따라 Vision 실이미지 live smoke를 1회만 실행했고 provider/model metadata로 fallback 동작을 검증했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "runtime provider toggle 전후 상태를 확인했고 smoke 후 모든 provider toggle과 availability가 원복되었다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Vision smoke input: existing Playwright QA screenshot",
+          "path": "reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png",
+          "note": "Reused existing durable input image for non-counting manual GLM fallback smoke to avoid additional evidence storage."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production version",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -61501,16 +61625,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 269,
-      "appropriateCount": 229,
+      "seenCount": 270,
+      "appropriateCount": 230,
       "partialCount": 40,
       "inappropriateCount": 0,
       "improvementNeededCount": 50,
-      "lastRunId": "QA-20260519-0538",
-      "lastSeenAt": "2026-05-19T11:08:35.867Z",
+      "lastRunId": "QA-20260519-0539",
+      "lastSeenAt": "2026-05-19T11:41:05.468Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vision image attachment routing, native multimodal execution, and standard five-question AI smoke were covered on production Cloud Run.",
+      "lastRationale": "사용자 명시 요청에 따라 Vision 실이미지 live smoke를 1회만 실행했고 provider/model metadata로 fallback 동작을 검증했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -61552,16 +61676,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 204,
-      "appropriateCount": 184,
+      "seenCount": 205,
+      "appropriateCount": 185,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260519-0538",
-      "lastSeenAt": "2026-05-19T11:08:35.867Z",
+      "lastRunId": "QA-20260519-0539",
+      "lastSeenAt": "2026-05-19T11:41:05.468Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab release pipeline, Vercel version endpoint, Cloud Run health, and post-deploy smoke all reached v8.11.184.",
+      "lastRationale": "runtime provider toggle 전후 상태를 확인했고 smoke 후 모든 provider toggle과 availability가 원복되었다.",
       "lastNextAction": ""
     },
     "test-automation": {
