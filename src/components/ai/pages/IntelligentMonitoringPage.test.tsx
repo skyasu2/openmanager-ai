@@ -209,7 +209,12 @@ vi.mock('@/components/ai/AnalysisResultsCard', () => ({
         <a href="/login">로그인하기</a>
       </div>
     ) : (
-      <div>{result ? 'has-result' : 'empty'}</div>
+      <div>
+        {result ? 'has-result' : 'empty'}
+        {result ? (
+          <pre data-testid="analysis-result">{JSON.stringify(result)}</pre>
+        ) : null}
+      </div>
     ),
 }));
 
@@ -494,5 +499,130 @@ describe('IntelligentMonitoringPage', () => {
       })
     );
     expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('snapshot risk signal 신호 강도는 severity와 임계 초과 거리를 반영한다', async () => {
+    mockUseServerQuery.mockReturnValue({
+      data: [
+        {
+          id: 'server-1',
+          name: '웹 서버 01',
+          cpu: 82,
+          memory: 51,
+          disk: 33,
+          network: 12,
+        },
+        {
+          id: 'server-2',
+          name: 'DB 서버 01',
+          cpu: 96,
+          memory: 44,
+          disk: 57,
+          network: 9,
+        },
+      ],
+    });
+    mockExecuteChatArtifact.mockResolvedValueOnce({
+      ...monitoringArtifact,
+      analysis: {
+        ...monitoringArtifact.analysis,
+        servers: [
+          {
+            id: 'server-1',
+            name: '웹 서버 01',
+            type: 'web',
+            status: 'warning',
+            cpu: 82,
+            memory: 51,
+            disk: 33,
+            network: 12,
+          },
+          {
+            id: 'server-2',
+            name: 'DB 서버 01',
+            type: 'database',
+            status: 'critical',
+            cpu: 96,
+            memory: 44,
+            disk: 57,
+            network: 9,
+          },
+        ],
+        riskSignals: [
+          {
+            id: 'risk-server-1-cpu',
+            serverId: 'server-1',
+            serverName: '웹 서버 01',
+            serverType: 'web',
+            metric: 'cpu',
+            value: 82,
+            threshold: 80,
+            trend: 'up',
+            severity: 'warning',
+            evidenceRefId: 'evidence-risk-server-1-cpu',
+          },
+          {
+            id: 'risk-server-2-cpu',
+            serverId: 'server-2',
+            serverName: 'DB 서버 01',
+            serverType: 'database',
+            metric: 'cpu',
+            value: 96,
+            threshold: 80,
+            trend: 'up',
+            severity: 'critical',
+            evidenceRefId: 'evidence-risk-server-2-cpu',
+          },
+        ],
+      },
+    });
+
+    render(
+      <IntelligentMonitoringPage
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '전체 분석' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('has-result')).toBeInTheDocument();
+    });
+
+    const result = JSON.parse(
+      screen.getByTestId('analysis-result').textContent ?? '{}'
+    ) as {
+      servers: Array<{
+        serverId: string;
+        anomalyDetection: {
+          results: Record<string, { confidence: number }>;
+        };
+      }>;
+      summary: {
+        topIssues: Array<{ serverId: string; confidence: number }>;
+      };
+    };
+    const warningConfidence = result.servers.find(
+      (server) => server.serverId === 'server-1'
+    )?.anomalyDetection.results.cpu?.confidence;
+    const criticalConfidence = result.servers.find(
+      (server) => server.serverId === 'server-2'
+    )?.anomalyDetection.results.cpu?.confidence;
+
+    expect(warningConfidence).toBe(0.64);
+    expect(criticalConfidence).toBe(0.97);
+    expect(warningConfidence).toBeLessThan(criticalConfidence ?? 0);
+    expect(
+      result.summary.topIssues.find((issue) => issue.serverId === 'server-1')
+        ?.confidence
+    ).toBe(warningConfidence);
+    expect(
+      result.summary.topIssues.find((issue) => issue.serverId === 'server-2')
+        ?.confidence
+    ).toBe(criticalConfidence);
   });
 });

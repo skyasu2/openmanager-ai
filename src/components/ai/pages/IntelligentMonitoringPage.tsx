@@ -63,6 +63,29 @@ function riskSeverityToAnomalySeverity(
   return severity === 'critical' ? 'high' : 'medium';
 }
 
+function clampConfidence(value: number): number {
+  return Math.max(0.5, Math.min(0.98, Math.round(value * 100) / 100));
+}
+
+function calculateSnapshotRiskConfidence(
+  signal: MonitoringBatchRiskSignal
+): number {
+  const distanceAboveThreshold = Math.max(signal.value - signal.threshold, 0);
+  const remainingRange = Math.max(100 - signal.threshold, 1);
+  const thresholdDistanceRatio = Math.min(
+    distanceAboveThreshold / remainingRange,
+    1
+  );
+  const base = signal.severity === 'critical' ? 0.78 : 0.58;
+  const distanceWeight = signal.severity === 'critical' ? 0.2 : 0.25;
+  const trendAdjustment =
+    signal.trend === 'up' ? 0.03 : signal.trend === 'down' ? -0.04 : 0;
+
+  return clampConfidence(
+    base + thresholdDistanceRatio * distanceWeight + trendAdjustment
+  );
+}
+
 function buildSnapshotAnomalyResults(
   server: MonitoringBatchServer,
   riskSignals: MonitoringBatchRiskSignal[]
@@ -75,7 +98,7 @@ function buildSnapshotAnomalyResults(
         {
           isAnomaly: true,
           severity: riskSeverityToAnomalySeverity(signal.severity),
-          confidence: 0.9,
+          confidence: calculateSnapshotRiskConfidence(signal),
           currentValue: signal.value,
           threshold: {
             upper: signal.threshold,
@@ -116,7 +139,7 @@ function createBatchSystemSummary(
       metric: signal.metric,
       severity: riskSeverityToAnomalySeverity(signal.severity),
       currentValue: signal.value,
-      confidence: 0.9,
+      confidence: calculateSnapshotRiskConfidence(signal),
       threshold: {
         upper: signal.threshold,
         lower: 0,
