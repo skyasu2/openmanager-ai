@@ -5,7 +5,7 @@
  * - Text mesh: Groq, Z.AI, Mistral, Cerebras are rotated by agent role.
  * - Cerebras: llama3.1-8b only when context permits; blocked after 2026-05-27.
  * - Z.AI: free GLM Flash text/vision fallback with thinking disabled by request patch.
- * - Vision: Gemini 2.5 Flash-Lite → OpenRouter free model → Z.AI GLM-4.6V-Flash.
+ * - Vision: Gemini 2.5 Flash-Lite → Z.AI GLM-4.6V-Flash; OpenRouter opt-in only.
  *
  * @version 4.2.0
  * @updated 2026-05-16 - SambaNova 제거 유지, Cerebras short-context fallback 보수화
@@ -23,6 +23,7 @@ import {
   getOpenRouterVisionModelId,
   getZaiModelId,
   getZaiVisionModelId,
+  isOpenRouterVisionFallbackEnabled,
 } from '../../lib/config-parser';
 import {
   type LLMProviderName as QuotaProviderName,
@@ -128,13 +129,13 @@ export function getVerifierModel(): {
 export { getAdvisorModel } from './agents/config/agent-model-selectors';
 
 /**
- * Get Vision Agent model (Gemini Flash-Lite with OpenRouter and Z.AI fallback)
+ * Get Vision Agent model (Gemini Flash-Lite with Z.AI fallback)
  *
  * @note Actual agent execution uses agent-configs.ts getVisionModel().
  *       This function is a low-level utility for direct model access.
  *
  * Primary: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
- * Fallback: OpenRouter free model → Z.AI GLM-4.6V-Flash
+ * Fallback: Z.AI GLM-4.6V-Flash; OpenRouter free model only when explicitly enabled.
  *
  * @returns Model info or null (graceful degradation)
  * @updated 2026-02-15 - Added OpenRouter request best-practice defaults
@@ -145,6 +146,7 @@ export function getVisionAgentModel(): {
   modelId: string;
 } | null {
   const status = checkProviderStatus();
+  const openRouterFallbackEnabled = isOpenRouterVisionFallbackEnabled();
 
   // 1. Try Gemini (Primary)
   if (status.gemini) {
@@ -156,26 +158,11 @@ export function getVisionAgentModel(): {
         modelId: geminiModelId,
       };
     } catch (error) {
-      logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
+      logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying Z.AI Vision:', error);
     }
   }
 
-  // 2. Try OpenRouter (Fallback)
-  if (status.openrouter) {
-    try {
-      const modelId = getOpenRouterVisionModelId();
-      logger.info(`[Vision Agent] Using OpenRouter fallback: ${modelId}`);
-      return {
-        model: getOpenRouterVisionModel(modelId),
-        provider: 'openrouter',
-        modelId: modelId,
-      };
-    } catch (error) {
-      logger.error('❌ [Vision Agent] OpenRouter initialization failed:', error);
-    }
-  }
-
-  // 3. Try Z.AI Vision (Fallback)
+  // 2. Try Z.AI Vision (Fallback)
   if (status.zai) {
     try {
       const modelId = getZaiVisionModelId();
@@ -190,17 +177,32 @@ export function getVisionAgentModel(): {
     }
   }
 
+  // 3. Try OpenRouter only when explicitly enabled after live validation.
+  if (status.openrouter && openRouterFallbackEnabled) {
+    try {
+      const modelId = getOpenRouterVisionModelId();
+      logger.info(`[Vision Agent] Using opt-in OpenRouter fallback: ${modelId}`);
+      return {
+        model: getOpenRouterVisionModel(modelId),
+        provider: 'openrouter',
+        modelId: modelId,
+      };
+    } catch (error) {
+      logger.error('❌ [Vision Agent] OpenRouter initialization failed:', error);
+    }
+  }
+
   logger.warn('⚠️ [Vision Agent] No vision provider available - Vision features disabled');
   return null;
 }
 
 /**
  * Check if Vision Agent is available
- * @returns true if Gemini or OpenRouter provider is configured and enabled
+ * @returns true if Gemini, Z.AI, or opt-in OpenRouter provider is configured and enabled
  */
 export function isVisionAgentAvailable(): boolean {
   const status = checkProviderStatus();
-  return status.gemini || status.openrouter || !!status.zai;
+  return status.gemini || !!status.zai || (status.openrouter && isOpenRouterVisionFallbackEnabled());
 }
 
 // ============================================================================
@@ -273,7 +275,7 @@ export async function checkAllProvidersHealth(): Promise<ProviderHealth[]> {
   if (status.gemini) {
     results.push(await testProviderHealth('gemini'));
   }
-  if (status.openrouter) {
+  if (status.openrouter && isOpenRouterVisionFallbackEnabled()) {
     results.push(await testProviderHealth('openrouter'));
   }
 
@@ -291,7 +293,11 @@ export function logProviderStatus(): void {
     Mistral: status.mistral ? 'ok' : 'off',
     ZAI: status.zai ? 'ok' : 'off',
     Gemini: status.gemini ? 'ok (Vision)' : 'off',
-    OpenRouter: status.openrouter ? 'ok (Vision Fallback)' : 'off',
+    OpenRouter: status.openrouter
+      ? isOpenRouterVisionFallbackEnabled()
+        ? 'ok (Vision Fallback opt-in)'
+        : 'configured (Vision Fallback disabled)'
+      : 'off',
   }, '[Provider Status]');
 }
 

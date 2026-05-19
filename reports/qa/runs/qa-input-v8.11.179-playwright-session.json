@@ -1,0 +1,283 @@
+{
+  "runTitle": "v8.11.179 Chrome DevTools MCP QA - AI Assistant 미검증 영역 집중 테스트",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface",
+    "security-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant (AI Chat 탭)",
+    "/dashboard/ai-assistant (이상감지/추세 탭)",
+    "/dashboard/servers/:id (존재하지 않는 서버)",
+    "/api/ai/intelligent-monitoring",
+    "/api/health",
+    "/api/system",
+    "보안 헤더 점검",
+    "Rate limit 헤더 점검"
+  ],
+  "skippedSurfaces": [
+    "incident reporter generation (보고서 생성 탭)",
+    "vision agent",
+    "rate limit 429 직접 트리거 (일일 한도 보존)"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "4ce2e3f71",
+    "deploymentId": "icn1::icn1::7hs47-1779167617388-c78b3062ad59"
+  },
+  "checks": {
+    "total": 18,
+    "passed": 14,
+    "failed": 4
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Chat - CPU 상위 3개 서버",
+      "agent": "Analyst Agent",
+      "provider": "mistral",
+      "model": "mistral-small",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "network response timing",
+      "latencyMs": 6000,
+      "ttfbMs": null,
+      "processingTimeMs": null
+    },
+    {
+      "surface": "AI Chat - 메모리 경고 서버 조치 방법",
+      "agent": "Analyst Agent",
+      "provider": "mistral",
+      "model": "mistral-small",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "network response timing",
+      "latencyMs": 23558,
+      "ttfbMs": null,
+      "processingTimeMs": null,
+      "note": "응답 느림 표시 + 낮은 품질 응답"
+    },
+    {
+      "surface": "이상감지/추세 전체 분석",
+      "agent": "Analyst Agent",
+      "provider": "deterministic",
+      "model": "monitoring-snapshot-risk-signal",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "x-ai-latency-ms header",
+      "latencyMs": 273,
+      "ttfbMs": null,
+      "processingTimeMs": null
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "checkedAt": "2026-05-19T05:10:00.000Z",
+      "source": "response-headers",
+      "result": "plan=pro, x-vercel-plan=pro 확인. 빌드 머신 Standard 유지. Fluid Compute 활성. 일일 rate limit 100/day 기준 93 remaining.",
+      "withinLimits": true
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Conversational AI Q4 응답 품질 저하 확인(23558ms + 이전 요약 반복). Analyst 단일 서버 분석 응답 구조 불일치로 파싱 실패.",
+      "nextAction": "analyze_server 응답 정규화 및 AI 조치 방법 응답 품질 개선 필요"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "이상감지/추세 전체 분석 정상. 신호강도 58%, monitoring-snapshot-risk-signal 알고리즘 정확. capacityAlerts 53분 후 critical 예측 포함.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "보안 헤더 전체 양호. HSTS/CSP/X-Frame-Options/nosniff 확인. /api/system ERR_ABORTED는 클라이언트 사이드 경쟁상태로 보안 이슈 아님.",
+      "nextAction": ""
+    }
+  ],
+  "checkDetails": [
+    {
+      "id": "auth-guest-login",
+      "title": "게스트 PIN 로그인 정상 작동",
+      "status": "passed",
+      "surface": "/login → /dashboard"
+    },
+    {
+      "id": "auth-session-terminate",
+      "title": "세션 종료 버튼 정상 작동",
+      "status": "passed",
+      "surface": "/dashboard 헤더"
+    },
+    {
+      "id": "auth-guest-logout-endpoint",
+      "title": "/api/auth/guest-logout 엔드포인트 존재",
+      "status": "failed",
+      "surface": "/api/auth/guest-logout",
+      "note": "404 반환 - 로그아웃이 클라이언트 사이드 쿠키 삭제만으로 처리됨",
+      "severity": "P2"
+    },
+    {
+      "id": "conversational-ai-cpu-top3",
+      "title": "AI Chat: CPU 상위 3개 서버 질의 정확도",
+      "status": "passed",
+      "surface": "AI Chat 탭",
+      "note": "db-mysql-dc1-primary 40%, api-was-dc1-01 38%, api-was-dc1-02 37% - OTel 데이터 일치"
+    },
+    {
+      "id": "conversational-ai-server-detail",
+      "title": "AI Chat: 특정 서버 이상 상세 질의",
+      "status": "passed",
+      "surface": "AI Chat 탭",
+      "note": "cache-redis-dc1-01 memory 80% warning 정확히 응답"
+    },
+    {
+      "id": "conversational-ai-system-summary",
+      "title": "AI Chat: 전체 시스템 상태 요약",
+      "status": "passed",
+      "surface": "AI Chat 탭"
+    },
+    {
+      "id": "conversational-ai-remediation-quality",
+      "title": "AI Chat: 메모리 경고 서버 조치 방법 응답 품질",
+      "status": "failed",
+      "surface": "AI Chat 탭",
+      "note": "23558ms 지연 + 이전 서버 현황 요약 반복, 구체적 조치 명령어(redis-cli, MEMORY DOCTOR 등) 미제공. 도구 선택은 정상이었으나 LLM 응답 품질 저하",
+      "severity": "P2"
+    },
+    {
+      "id": "analyst-full-system-analysis",
+      "title": "이상감지/추세: 전체 시스템 분석 정상",
+      "status": "passed",
+      "surface": "이상감지/추세 탭",
+      "note": "18서버 분석, cache-redis-dc1-01 memory 80% warning, 신호강도 58%, medium, monitoring-snapshot-risk-signal 알고리즘"
+    },
+    {
+      "id": "analyst-signal-strength-accuracy",
+      "title": "이상감지/추세: 신호 강도 수치 정합성",
+      "status": "passed",
+      "surface": "이상감지/추세 탭",
+      "note": "memory 80% = threshold 80% → 신호강도 58%, medium 분류 정확"
+    },
+    {
+      "id": "analyst-single-server-analysis",
+      "title": "이상감지/추세: 단일 서버 선택 분석",
+      "status": "failed",
+      "surface": "이상감지/추세 탭 드롭다운",
+      "note": "cache-redis-dc1-01 선택 후 분석 시작 → '분석 실패' 표시. 원인: analyze_server 응답 {success, response: stringified} vs analyze_batch {success, data: object} 구조 불일치로 프론트엔드 파싱 실패. API는 200 정상 반환.",
+      "severity": "P1"
+    },
+    {
+      "id": "analyst-full-analysis-rerun",
+      "title": "이상감지/추세: 전체 분석 재실행",
+      "status": "passed",
+      "surface": "이상감지/추세 탭",
+      "note": "전체 분석 버튼 재실행 시 정상 결과 반환"
+    },
+    {
+      "id": "error-handling-nonexistent-server",
+      "title": "존재하지 않는 서버 URL graceful 처리",
+      "status": "passed",
+      "surface": "/dashboard/servers/non-existent-server-xyz",
+      "note": "'서버 정보를 찾을 수 없습니다.' 메시지 + 서버 목록 링크 표시, 콘솔 에러 없음"
+    },
+    {
+      "id": "error-handling-invalid-api-action",
+      "title": "잘못된 API action 파라미터 graceful 처리",
+      "status": "passed",
+      "surface": "/api/ai/intelligent-monitoring",
+      "note": "invalid_action 파라미터 → 200 + 부분 실패 응답, 500 없음"
+    },
+    {
+      "id": "security-headers",
+      "title": "보안 헤더 전체 양호",
+      "status": "passed",
+      "surface": "모든 응답 헤더",
+      "note": "HSTS(max-age=31536000), CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, X-XSS-Protection: 1; mode=block, Referrer-Policy: strict-origin-when-cross-origin"
+    },
+    {
+      "id": "rate-limit-headers",
+      "title": "Rate limit 헤더 정상",
+      "status": "passed",
+      "surface": "/api/ai/intelligent-monitoring",
+      "note": "x-ratelimit-limit: 10/window, x-ratelimit-daily-limit: 100/day 헤더 정상 반환"
+    },
+    {
+      "id": "api-system-abort",
+      "title": "/api/system ERR_ABORTED 반복",
+      "status": "failed",
+      "surface": "/dashboard (모든 네비게이션)",
+      "note": "매 대시보드 네비게이션 시 /api/system이 ERR_ABORTED. React AbortController 경쟁상태로 추정 (JS 직접 호출 시 200 정상). 콘솔 에러는 없음.",
+      "severity": "P2"
+    },
+    {
+      "id": "health-api-services",
+      "title": "/api/health 서비스 상태 정상",
+      "status": "passed",
+      "surface": "/api/health",
+      "note": "DB 연결 7ms, cache 5ms, AI 5ms - 모두 connected"
+    },
+    {
+      "id": "console-errors-dashboard",
+      "title": "대시보드 콘솔 에러 없음",
+      "status": "passed",
+      "surface": "/dashboard, /dashboard/ai-assistant, /dashboard/servers/...",
+      "note": "현재 세션 네비게이션 전체에서 콘솔 error/warn 없음"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "analyst-single-server-response-mismatch",
+      "title": "Analyst 단일 서버 분석 응답 구조 불일치 수정",
+      "priority": "P1",
+      "isBlocking": false,
+      "note": "analyze_server action이 {success, response: stringified} 반환 → 프론트엔드 {success, data: object} 기대. /api/ai/intelligent-monitoring 응답 정규화 또는 프론트엔드 파서 수정 필요"
+    },
+    {
+      "id": "ai-remediation-response-quality",
+      "title": "AI Chat 조치 방법 응답 품질 개선",
+      "priority": "P2",
+      "isBlocking": false,
+      "note": "메모리 경고 조치 방법 질의 시 구체적 명령어(redis-cli, MEMORY DOCTOR 등) 미포함. Mistral-small 프롬프트 또는 Advisor 라우팅 검토 필요"
+    },
+    {
+      "id": "api-system-abort-race-condition",
+      "title": "/api/system ERR_ABORTED 경쟁상태 해결",
+      "priority": "P2",
+      "isBlocking": false,
+      "note": "React 컴포넌트 unmount 시 AbortController 취소로 대시보드 시스템 상태 초기 로딩 실패. React StrictMode double-mount 또는 네비게이션 cleanup 검토"
+    }
+  ],
+  "notes": [
+    "Chrome DevTools MCP (headed mode)로 진행 - Playwright MCP 대체",
+    "v8.11.179 production 기준",
+    "단일 서버 분석 버그는 새로 발견된 P1 이슈",
+    "conversational AI Q4 응답 품질 저하는 LLM(mistral-small) 한계로 추정",
+    "rate limit 일일 잔여: 93/100 (QA 완료 시점 기준)"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

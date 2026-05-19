@@ -191,6 +191,13 @@ describe('detectAnomaliesAllServers', () => {
         expect(result.algorithmVersion).toBe('2.5.0');
         expect(result.decisionSource).toBe('threshold_scan+linear_trend_scan');
         expect(result.analysisBasis).toBe('status-thresholds:ssot,history:last90min,horizon:30min');
+        expect(result.evidenceContract).toMatchObject({
+          mode: 'deterministic_evidence',
+          toolRole: 'extract_metric_signals',
+          llmRole: 'interpret_cause_impact_actions_from_evidence',
+          signalStrengthMeaning: 'evidence_strength_not_incident_probability',
+        });
+        expect(result.evidenceContract.limitations).toContain('not_trained_ml');
         expect(result.risingTrendScan.method).toBe('linear_trend_scan');
         expect(result._algorithm).toContain('Rising Trend Scan');
       }
@@ -470,6 +477,7 @@ describe('detectAnomaliesAllServers', () => {
         expect(result).toHaveProperty('algorithmVersion');
         expect(result).toHaveProperty('decisionSource');
         expect(result).toHaveProperty('analysisBasis');
+        expect(result).toHaveProperty('evidenceContract');
         expect(result).toHaveProperty('risingTrendScan');
         expect(result).toHaveProperty('_algorithm');
       }
@@ -698,6 +706,10 @@ describe('detectAnomalies', () => {
       expect(cpu.analysisBasis).toContain('rule=threshold');
       expect(cpu.rationale).toBeInstanceOf(Array);
       expect(cpu.rationale.length).toBeGreaterThan(0);
+      expect(result.evidenceContract).toMatchObject({
+        mode: 'deterministic_evidence',
+        signalStrengthMeaning: 'evidence_strength_not_incident_probability',
+      });
       expect(result._algorithm).toBe('Threshold + Statistical + Enhanced Metrics');
       expect(result).toHaveProperty('summaryMessage');
     }
@@ -915,5 +927,34 @@ describe('predictTrends', () => {
         load5: expect.any(Object),
       },
     });
+  });
+
+  it('should expose lightweight evidence contract and trend decision metadata', async () => {
+    const result = await predictTrends.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        predictionHours: 1,
+      },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.decisionSource).toBe('linear_projection+threshold');
+      expect(result.analysisBasis).toContain('last36slots-or-injected');
+      expect(result.evidenceContract).toMatchObject({
+        mode: 'deterministic_evidence',
+        llmRole: 'interpret_cause_impact_actions_from_evidence',
+      });
+      expect(result.evidenceContract.limitations).toContain(
+        'requires_llm_interpretation_for_causality'
+      );
+      expect(result.results.cpu).toMatchObject({
+        decisionSource: 'linear_projection',
+        analysisBasis: expect.stringContaining('metric:cpu'),
+        rationale: expect.arrayContaining(['trend:stable']),
+      });
+    }
   });
 });

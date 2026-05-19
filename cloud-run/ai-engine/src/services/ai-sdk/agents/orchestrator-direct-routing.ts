@@ -101,12 +101,31 @@ function resolveSemanticFrameAgent(
   return undefined;
 }
 
+function isExplicitAdvisorPreFilter(preFilterResult: PreFilterResult): boolean {
+  return (
+    preFilterResult.suggestedAgent === 'Advisor Agent' &&
+    normalizeConfidence(preFilterResult.confidence) >= 0.75
+  );
+}
+
 export function resolveDirectRoutingTarget(
   preFilterResult: PreFilterResult,
   context: DirectRoutingContext = {}
 ): DirectRoutingTarget {
   const semanticAgent = resolveSemanticFrameAgent(context.intentFrame);
   if (semanticAgent) {
+    if (
+      semanticAgent === 'Analyst Agent' &&
+      isExplicitAdvisorPreFilter(preFilterResult)
+    ) {
+      return {
+        agentName: 'Advisor Agent',
+        confidence: preFilterResult.confidence,
+        source: 'pre_filter',
+        reason: 'Direct routing (explicit remediation pre-filter)',
+      };
+    }
+
     return {
       agentName: semanticAgent,
       confidence: normalizeConfidence(context.intentFrame?.confidence),

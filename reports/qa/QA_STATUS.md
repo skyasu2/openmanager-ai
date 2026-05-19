@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 13:15:06 KST
+> Generated at: 2026-05-19 15:25:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 532 |
-| Total Runs (Counted) | 426 |
-| Non-counted Runs | 106 |
-| Total Checks | 3873 |
-| Passed | 3724 |
-| Failed | 138 |
-| Completed Items | 606 |
-| Pending Items | 0 |
+| Total Recorded Runs | 534 |
+| Total Runs (Counted) | 427 |
+| Non-counted Runs | 107 |
+| Total Checks | 3891 |
+| Passed | 3738 |
+| Failed | 142 |
+| Completed Items | 611 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 24 |
+| Wont-Fix Items | 27 |
 | Expert Domains Tracked | 17 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260519-0534 (2026-05-19T04:11:01.014Z) |
-| Latest Recorded Run | QA-20260519-0534 (2026-05-19T04:11:01.014Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.84% |
+| Last Counted Run | QA-20260519-0535 (2026-05-19T05:14:14.572Z) |
+| Latest Recorded Run | QA-20260519-0536 (2026-05-19T06:23:47.328Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -30,44 +30,42 @@
 
 ## Historical Trend Warnings
 
-- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260505-0407 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260519-0535 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0534 (2026-05-19T04:11:01.014Z)
+Latest run: QA-20260519-0536 (2026-05-19T06:23:47.328Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Deploy weekly hardening changes and rerun focused Vercel AI Assistant/analyze_server QA. |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
-| 이상감지 알고리즘 | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.179 production QA; effective $11.4422, billed $0.0000. |
+| vercel | not-applicable | skipped | unknown | Local deterministic contract closure only; no Vercel function/build usage was generated. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T04:11:01.014Z -> 2026-05-19T04:11:01.014Z (24h)
+- Window: 2026-05-18T06:23:47.328Z -> 2026-05-19T06:23:47.328Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Reporter Agent | cloud-run | 3 | 11609ms | 30498ms | - | - | 11264ms | 29753ms | QA-20260518-0523 |
+| Analyst Agent | mistral | 2 | 14779ms | 23558ms | - | - | - | - | QA-20260519-0535 |
 | NLQ Agent | unknown | 1 | 14000ms | 14000ms | - | - | - | - | QA-20260519-0532 |
 | Reporter Agent | unknown | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260519-0532 |
+| Reporter Agent | cloud-run | 1 | 2086ms | 2086ms | - | - | 2086ms | 2086ms | QA-20260518-0523 |
 | NLQ | deterministic | 1 | 310ms | 310ms | - | - | - | - | QA-20260519-0533 |
-| Health Check | cloud-run | 1 | 129ms | 129ms | - | - | - | - | QA-20260518-0522 |
+| Analyst Agent | deterministic | 1 | 273ms | 273ms | - | - | - | - | QA-20260519-0535 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T04:11:01.014Z -> 2026-05-19T04:11:01.014Z (24h)
+- Window: 2026-05-18T06:23:47.328Z -> 2026-05-19T06:23:47.328Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -79,12 +77,12 @@ Latest run: QA-20260519-0534 (2026-05-19T04:11:01.014Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_clytpcga8 / SHA 870fb39a
-- Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: /dashboard/ai-assistant, AI Assistant anomaly/trend tab, snapshot anomaly confidence, AI gradient header
-- Skipped Surfaces: conversational-ai-qa, incident reporter generation, core route pack, observability/security pack
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA 4ce2e3f7
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: Analyst lightweight evidence contract, Advisor remediation routing precedence, Cerebras GPT-OSS output-token guard, OpenRouter/Z.AI vision fallback metadata contract, intelligent-monitoring analyze_server response normalization, planning archive hygiene
+- Skipped Surfaces: Vercel production post-deploy retest, Reporter live generation rerun; existing production non-degraded proof is QA-20260519-0529
 
 ## Links (Latest Run)
 
@@ -96,16 +94,16 @@ Latest run: QA-20260519-0534 (2026-05-19T04:11:01.014Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.179 anomaly confidence Playwright evidence | `reports/qa/evidence/qa-20260519-v811179-anomaly-confidence.md` | - |
-| playwright-screenshot | v8.11.179 anomaly confidence production screenshot | `reports/qa/evidence/qa-20260519-v811179-anomaly-confidence.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260519-0536)
+  next: Deploy weekly hardening changes and rerun focused Vercel AI Assistant/analyze_server QA.
 
 ## Pending Improvements
 
-- None
+- [P0] weekly-hardening-production-post-deploy-retest: Deploy weekly hardening changes and rerun focused Vercel production QA (seen 1회, last QA-20260519-0536)
 
 ## Deferred Improvements
 
@@ -113,7 +111,7 @@ Latest run: QA-20260519-0534 (2026-05-19T04:11:01.014Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 16
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 19
 
 ### Platform Constraint
 
@@ -152,6 +150,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 - [P1] ai-thinking-visualizer-contract-drift: Thinking visualizer production UI contract drift (seen 2회, last QA-20260428-0357)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P1] analyst-single-server-response-mismatch: Analyst 단일 서버 분석 응답 구조 불일치 수정 (seen 1회, last QA-20260519-0535)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P1] landing-console-api-system-unauthorized: 랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P1] landing-vibe-content-deployment-drift: Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 (seen 1회, last QA-20260330-0195)
@@ -164,6 +164,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-metric-ranking-memory-path-metadata: Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata (seen 1회, last QA-20260418-0304)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] ai-remediation-response-quality: AI Chat 조치 방법 응답 품질 개선 (seen 1회, last QA-20260519-0535)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P4] ai-rewrite-report-style-quality: Formatting-only rewrite works but can return a terse two-line summary instead of polished report prose (seen 1회, last QA-20260504-0404)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-sidebar-answer-details-default-visibility: AI sidebar should show actionable response details inline by default when analysis metadata exists (seen 1회, last QA-20260430-0374)
@@ -173,6 +175,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-trend-formatting-and-issue-ranking-polish: Analyst trend target formatting and issue ranking need polish (seen 1회, last QA-20260427-0352)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] api-system-abort-race-condition: /api/system ERR_ABORTED 경쟁상태 해결 (seen 1회, last QA-20260519-0535)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] landing-tech-stack-version-copy-drift: 기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리 (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -305,6 +309,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-ranking-cpu-live-route: CPU highest-server query returns live top server on production (completed 1회, last QA-20260418-0305)
 - ai-ranking-memory-live-route: Memory top-N ranking uses deterministic live metric path on production (completed 1회, last QA-20260418-0305)
 - ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (completed 1회, last QA-20260423-0339)
+- ai-remediation-advisor-routing-precedence: Explicit remediation queries route to Advisor before anomaly semantic frame (completed 1회, last QA-20260519-0536)
 - ai-reporter-monitoring-rag-control-hidden-v811106: Reporter and monitoring AI surfaces no longer expose RAG toggles (completed 1회, last QA-20260505-0412)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
 - ai-retrieval-actual-use-cleanup-gates: Actual-use cleanup local gates pass (completed 1회, last QA-20260510-0445)
@@ -391,6 +396,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - analyst-full-analysis-v880-recheck-20260309: Analyst 전체 분석 경로 재검증 (completed 4회, last QA-20260309-0068)
 - analyst-fullscreen-single-server-rag: Analyst 단일 서버 + RAG 분석 경로 검증 (completed 1회, last QA-20260318-0126)
 - analyst-instruction-tool-name-exposure: analyst.ts: '분석 과정' 섹션 제거 및 도구명 응답 본문 노출 금지 (completed 1회, last QA-20260408-0252)
+- analyst-lightweight-evidence-contract: Analyst tools expose deterministic evidence contract (completed 1회, last QA-20260519-0536)
 - analyst-nan-prediction-bug: Analyst 상승 추세 예측값 NaN% 표시 (completed 1회, last QA-20260419-0307)
 - analyst-normal-server-empty-state: Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정 (completed 1회, last QA-20260310-0086)
 - analyst-quality-v880-quality-recheck: Analyst 전체 분석 및 드릴다운 품질 재검증 (completed 1회, last QA-20260308-0059)
@@ -544,6 +550,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - incident-report-detail-button-affordance: Incident report detail action is visibly labeled and exposes expanded/collapsed state (completed 1회, last QA-20260519-0530)
 - incident-report-non-degraded-pipeline: Incident report generation returns non-degraded Reporter Pipeline success (completed 1회, last QA-20260519-0529)
+- intelligent-monitoring-analyze-server-normalization: analyze_server responses normalize to frontend artifact shape (completed 1회, last QA-20260519-0536)
 - internal-disclosure-user-mode-v811112: General user-mode internal path disclosure blocked (completed 1회, last QA-20260507-0419)
 - landing-bootstrap-auth-copy-hidden: 랜딩 첫 진입 bootstrap 인증 카피 숨김 (completed 1회, last QA-20260402-0206)
 - landing-bootstrap-copy-hidden: 랜딩 첫 진입 시 bootstrap auth copy 비노출 처리 (completed 2회, last QA-20260408-0250)
@@ -625,6 +632,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - profile-menu: 프로필 메뉴 접근성 이름에 visible user state 포함 (completed 2회, last QA-20260423-0339)
 - profile-system-stop-state-drift-v811161: Profile dropdown system stop does not visibly clear running/dashboard state (completed 1회, last QA-20260517-0511)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
+- provider-fallback-freshness-hardening: OpenRouter vision fallback disabled by default and Cerebras GPT-OSS short-output guard added (completed 1회, last QA-20260519-0536)
 - qa-0346-core-routes-proof-gap: QA-20260424-0346 core-routes-smoke evidence gap closed with follow-up route/API smoke (completed 1회, last QA-20260424-0347)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
@@ -745,6 +753,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - vibe-qa-modal-replaced-with-cicd: Vibe Coding 모달의 QA 탭을 CI/CD 구조 설명으로 교체 (completed 1회, last QA-20260330-0200)
 - vision-production-latency-sample-refresh: Vision 최신 production latency 표본 보강 (completed 1회, last QA-20260421-0322)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
+- weekly-followup-planning-hygiene: Weekly follow-up planning hygiene and data slot policy updated (completed 1회, last QA-20260519-0536)
 - zod-v4-ai-engine-migration: Migrate AI Engine from Zod v3 to Zod v4 (completed 1회, last QA-20260511-0471)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
@@ -796,6 +805,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0536 | 2026-05-19T06:23:47.328Z | targeted | no | no | Weekly follow-up hardening local contract closure | 10 | 5 | 1 | 0 | 0 | 1 |
+| QA-20260519-0535 | 2026-05-19T05:14:14.572Z | broad | yes | yes | v8.11.179 Chrome DevTools MCP QA - AI Assistant 미검증 영역 집중 테스트 | 18 | 0 | 0 | 0 | 3 | 1 |
 | QA-20260519-0534 | 2026-05-19T04:11:01.014Z | targeted | yes | yes | v8.11.179 Vercel Playwright QA - anomaly confidence and AI gradient | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260519-0533 | 2026-05-19T02:49:58.801Z | targeted | no | yes | v8.11.178 내용 충실도 검증 — AI 수치 정합성·응답 경로·신호 강도 | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260519-0532 | 2026-05-19T02:21:04.444Z | targeted | yes | yes | v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -814,5 +825,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0519 | 2026-05-18T00:54:54.418Z | targeted | yes | yes | v8.11.169 Current Vercel Playwright MCP Check | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0518 | 2026-05-18T00:32:15.109Z | targeted | yes | yes | v8.11.169 Production Diagram Regression Closure | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0517 | 2026-05-17T21:57:55.297Z | targeted | yes | yes | v8.11.168 Production Cursor Regression Closure | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260518-0516 | 2026-05-17T18:27:54.947Z | release-gate | yes | yes | Vercel Chrome-DevTools QA - Recent Changes (v8.11.167) | 20 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260518-0515 | 2026-05-17T18:08:49.082Z | targeted | yes | yes | v8.11.167 Vercel Production Post-Deploy Regression Closure | 14 | 3 | 0 | 0 | 0 | 0 |

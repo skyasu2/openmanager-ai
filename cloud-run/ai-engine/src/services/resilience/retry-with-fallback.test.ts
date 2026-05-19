@@ -94,6 +94,7 @@ vi.mock('../ai-sdk/provider-model-policy', async (importOriginal) => {
 
 import {
   __resetRetryBudgetForTests,
+  CEREBRAS_GPT_OSS_MIN_OUTPUT_TOKENS,
   FALLBACK_ERROR_CODES,
   generateTextWithRetry,
 } from './retry-with-fallback';
@@ -261,6 +262,51 @@ describe('generateTextWithRetry', () => {
         modelId: 'llama3.1-8b',
       },
     ]);
+  });
+
+  it('raises low Cerebras GPT-OSS output budgets to the validated minimum', async () => {
+    mockGetCerebrasModelId.mockReturnValue('gpt-oss-120b');
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'ok from gpt-oss',
+      steps: [],
+      usage: { inputTokens: 8, outputTokens: 4, totalTokens: 12 },
+    });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: '짧게 응답해줘' }],
+        maxOutputTokens: 8,
+      },
+      ['cerebras'],
+      { maxRetries: 0, timeoutMs: 3000 }
+    );
+
+    expect(result.success).toBe(true);
+    expect(mockGenerateText.mock.calls[0]?.[0]).toMatchObject({
+      maxOutputTokens: CEREBRAS_GPT_OSS_MIN_OUTPUT_TOKENS,
+    });
+  });
+
+  it('keeps caller output budgets unchanged for non-Cerebras providers', async () => {
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'ok from groq',
+      steps: [],
+      usage: { inputTokens: 8, outputTokens: 4, totalTokens: 12 },
+    });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: '짧게 응답해줘' }],
+        maxOutputTokens: 8,
+      },
+      ['groq'],
+      { maxRetries: 0, timeoutMs: 3000 }
+    );
+
+    expect(result.success).toBe(true);
+    expect(mockGenerateText.mock.calls[0]?.[0]).toMatchObject({
+      maxOutputTokens: 8,
+    });
   });
 
   it('skips short-context Cerebras fallback for long prompt contexts', async () => {

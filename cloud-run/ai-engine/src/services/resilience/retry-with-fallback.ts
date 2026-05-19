@@ -113,6 +113,24 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   timeoutMs: 60000,
 };
 
+export const CEREBRAS_GPT_OSS_MIN_OUTPUT_TOKENS = 128;
+
+export function resolveProviderMaxOutputTokens(
+  provider: ProviderName,
+  modelId: string,
+  requestedTokens: number
+): number {
+  if (
+    provider === 'cerebras' &&
+    modelId.toLowerCase().includes('gpt-oss') &&
+    requestedTokens < CEREBRAS_GPT_OSS_MIN_OUTPUT_TOKENS
+  ) {
+    return CEREBRAS_GPT_OSS_MIN_OUTPUT_TOKENS;
+  }
+
+  return requestedTokens;
+}
+
 // ============================================================================
 // Main Functions
 // ============================================================================
@@ -281,6 +299,11 @@ export async function generateTextWithRetry(
           );
 
           const model = getModel(modelId);
+          const maxOutputTokens = resolveProviderMaxOutputTokens(
+            provider,
+            modelId,
+            options.maxOutputTokens ?? 2048
+          );
 
           const attemptAbort = createAttemptAbortController(
             fullConfig.timeoutMs,
@@ -300,7 +323,7 @@ export async function generateTextWithRetry(
                 ...(options.toolChoice && { toolChoice: options.toolChoice }),
                 temperature: options.temperature ?? 0.2,
                 ...(options.topP !== undefined && { topP: options.topP }),
-                maxOutputTokens: options.maxOutputTokens ?? 2048,
+                maxOutputTokens,
                 maxRetries: 0, // Provider fallback is handled here; avoid retry amplification on 429/queue_exceeded.
                 abortSignal: attemptAbort.signal,
                 timeout: { totalMs: fullConfig.timeoutMs }, // 🎯 P2-2: Native timeout

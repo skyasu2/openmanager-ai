@@ -49,6 +49,7 @@ vi.mock('../../../../lib/config-parser', () => ({
   getOpenRouterVisionModelId: vi.fn(() => 'openrouter-vision-model'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),
+  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
   isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
 }));
 

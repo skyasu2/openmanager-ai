@@ -93,6 +93,7 @@ vi.mock('../../lib/config-parser', () => ({
   ]),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
+  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 
@@ -110,6 +111,7 @@ import {
   invalidateProviderStatusCache,
   toggleProvider,
 } from './model-provider';
+import { isOpenRouterVisionFallbackEnabled } from '../../lib/config-parser';
 import { resetRoundRobinCursor } from './agents/config/round-robin-provider-selector';
 
 describe('model-provider compatibility (SDK upgrades)', () => {
@@ -122,6 +124,7 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     toggleProvider('zai', true);
     toggleProvider('gemini', true);
     toggleProvider('openrouter', true);
+    vi.mocked(isOpenRouterVisionFallbackEnabled).mockReturnValue(false);
   });
 
   it('creates all provider models with LanguageModel shape', () => {
@@ -165,8 +168,20 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(nextVerifier.rotationSlot).toBe(2);
   });
 
-  it('falls back to OpenRouter when Gemini is disabled', () => {
+  it('falls back to Z.AI Vision when Gemini is disabled', () => {
     toggleProvider('gemini', false);
+    invalidateProviderStatusCache();
+
+    const vision = getVisionAgentModel();
+    expect(vision).not.toBeNull();
+    expect(vision?.provider).toBe('zai');
+    expect(vision?.modelId).toBe('glm-4.6v-flash');
+  });
+
+  it('uses opt-in OpenRouter when Gemini and Z.AI are disabled', () => {
+    toggleProvider('gemini', false);
+    toggleProvider('zai', false);
+    vi.mocked(isOpenRouterVisionFallbackEnabled).mockReturnValue(true);
     invalidateProviderStatusCache();
 
     const vision = getVisionAgentModel();
@@ -175,15 +190,13 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(vision?.modelId).toBe('google/gemma-3-27b-it:free');
   });
 
-  it('falls back to Z.AI Vision when Gemini and OpenRouter are disabled', () => {
+  it('returns null when only disabled OpenRouter Vision fallback is configured', () => {
     toggleProvider('gemini', false);
-    toggleProvider('openrouter', false);
+    toggleProvider('zai', false);
     invalidateProviderStatusCache();
 
     const vision = getVisionAgentModel();
-    expect(vision).not.toBeNull();
-    expect(vision?.provider).toBe('zai');
-    expect(vision?.modelId).toBe('glm-4.6v-flash');
+    expect(vision).toBeNull();
   });
 
   it('configures OpenRouter provider with recommended headers and request patching', () => {

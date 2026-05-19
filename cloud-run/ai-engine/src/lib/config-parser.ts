@@ -513,6 +513,15 @@ export function isOpenRouterVisionToolCallingEnabled(): boolean {
 }
 
 /**
+ * OpenRouter vision fallback is opt-in only.
+ * Recent live smoke evidence showed fallback drift, so default runtime should
+ * prefer validated Gemini/Z.AI vision paths and expose OpenRouter as disabled.
+ */
+export function isOpenRouterVisionFallbackEnabled(): boolean {
+  return process.env.OPENROUTER_VISION_FALLBACK_ENABLED === 'true';
+}
+
+/**
  * Get Upstash Redis configuration
  * Priority order:
  * 1. KV_CONFIG (grouped secret - preferred)

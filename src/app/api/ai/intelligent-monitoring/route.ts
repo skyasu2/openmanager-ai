@@ -145,6 +145,127 @@ function omitInternalStatus(data: CacheableAIResponse): CacheableAIResponse {
   return publicData as CacheableAIResponse;
 }
 
+type AnalyzeServerRequestContext = {
+  action: string;
+  serverId: string;
+  analysisType: string;
+};
+
+function parseJsonRecord(value: string): Record<string, unknown> | null {
+  try {
+    const parsed = JSON.parse(value);
+    return isRecord(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function unwrapMonitoringRecord(
+  value: unknown
+): Record<string, unknown> | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  if (isRecord(value.data)) {
+    return value.data;
+  }
+
+  if (typeof value.response === 'string') {
+    const parsed = parseJsonRecord(value.response);
+    if (parsed) {
+      return isRecord(parsed.data) ? parsed.data : parsed;
+    }
+  }
+
+  return value;
+}
+
+function normalizeAnalyzeServerPayload(
+  value: unknown,
+  context: AnalyzeServerRequestContext
+): unknown {
+  if (isBatchAnalysisRequest(context.action, context.serverId)) {
+    return value;
+  }
+
+  const unwrapped = unwrapMonitoringRecord(value);
+  if (!unwrapped) {
+    return value;
+  }
+
+  const serverId = readStringField(unwrapped.serverId, context.serverId);
+  const analysisType = readStringField(
+    unwrapped.analysisType,
+    context.analysisType
+  );
+  const timestamp = readStringField(
+    unwrapped.timestamp,
+    new Date().toISOString()
+  );
+  const existingMetadata = isRecord(unwrapped.metadata)
+    ? unwrapped.metadata
+    : {};
+  const provider = readStringField(existingMetadata.provider, 'deterministic');
+  const modelId = readStringField(
+    existingMetadata.modelId,
+    'monitoring-analyze-server'
+  );
+  const durationMs =
+    typeof unwrapped._durationMs === 'number' &&
+    Number.isFinite(unwrapped._durationMs)
+      ? unwrapped._durationMs
+      : 0;
+
+  return {
+    ...unwrapped,
+    serverId,
+    analysisType,
+    timestamp,
+    metadata: {
+      ...existingMetadata,
+      provider,
+      modelId,
+      providerAttempts: Array.isArray(existingMetadata.providerAttempts)
+        ? existingMetadata.providerAttempts
+        : [
+            {
+              provider,
+              modelId,
+              attempt: 1,
+              durationMs,
+            },
+          ],
+      usedFallback:
+        typeof existingMetadata.usedFallback === 'boolean'
+          ? existingMetadata.usedFallback
+          : false,
+    },
+  };
+}
+
+function readMonitoringProviderHeaders(
+  responseData: CacheableAIResponse
+): Record<string, string> {
+  const payload = isRecord(responseData.data)
+    ? responseData.data
+    : responseData;
+  const metadata = isRecord(payload.metadata) ? payload.metadata : null;
+  if (!metadata) {
+    return {};
+  }
+
+  const headers: Record<string, string> = {};
+  if (typeof metadata.provider === 'string' && metadata.provider.length > 0) {
+    headers['X-AI-Provider'] = metadata.provider;
+  }
+  if (typeof metadata.modelId === 'string' && metadata.modelId.length > 0) {
+    headers['X-AI-Model'] = metadata.modelId;
+  }
+
+  return headers;
+}
+
 // MIGRATED: Removed export const runtime = "nodejs" (default)
 
 // ============================================================================
@@ -246,9 +367,14 @@ async function postHandler(request: NextRequest) {
               );
             }
 
+            const normalizedData = normalizeAnalyzeServerPayload(
+              cloudRunResult.data,
+              { action, serverId, analysisType }
+            );
+
             return {
               success: true,
-              data: cloudRunResult.data,
+              data: normalizedData,
               _source: 'Cloud Run AI Engine',
             };
           },
@@ -270,6 +396,7 @@ async function postHandler(request: NextRequest) {
 
     // 3. 응답 반환
     const responseData = cacheResult.data;
+    const providerHeaders = readMonitoringProviderHeaders(responseData);
     const isFallback = (responseData as Record<string, unknown>)._fallback;
     const passThroughStatus = readPassThroughStatus(responseData);
 
@@ -312,6 +439,7 @@ async function postHandler(request: NextRequest) {
             mode: 'proxy',
             source: 'cache',
           }),
+          ...providerHeaders,
         },
       });
     }
@@ -338,6 +466,7 @@ async function postHandler(request: NextRequest) {
             mode: 'proxy',
             source: 'cloud-run',
           }),
+          ...providerHeaders,
         },
       });
     }
@@ -361,6 +490,7 @@ async function postHandler(request: NextRequest) {
           mode: 'proxy',
           source: 'cloud-run',
         }),
+        ...providerHeaders,
       },
     });
   } catch (error) {

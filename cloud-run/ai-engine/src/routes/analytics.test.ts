@@ -497,9 +497,23 @@ describe('Analytics Routes', () => {
       expect(json.success).toBe(true);
       expect(json.serverId).toBe('web-01');
       expect(json.analysisType).toBe('full');
+      expect(json.timestamp).toEqual(expect.any(String));
       expect(json.anomalyDetection).toBeDefined();
       expect(json.trendPrediction).toBeDefined();
       expect(json.patternAnalysis).toBeDefined();
+      expect(json.metadata).toMatchObject({
+        provider: 'deterministic',
+        modelId: 'monitoring-analyze-server',
+        usedFallback: false,
+        providerAttempts: [
+          {
+            provider: 'deterministic',
+            modelId: 'monitoring-analyze-server',
+            attempt: 1,
+            durationMs: expect.any(Number),
+          },
+        ],
+      });
     });
 
     it('anomaly 분석만 수행한다', async () => {

@@ -83,6 +83,7 @@ vi.mock('../../../../lib/config-parser', () => ({
   getOpenRouterApiKey: vi.fn(() => 'test-openrouter-key'),
   getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   getOpenRouterVisionFallbackModelIds: vi.fn(() => []),
+  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
 }));
 
@@ -107,13 +108,17 @@ import {
   getOpenRouterVisionModel,
   getZaiVisionModel,
 } from '../../model-provider-core';
-import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
+import {
+  getOpenRouterVisionModelId,
+  isOpenRouterVisionFallbackEnabled,
+} from '../../../../lib/config-parser';
 
 describe('agent-configs vision fallback', () => {
   const visionConfig = getAgentConfig('Vision Agent');
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(isOpenRouterVisionFallbackEnabled).mockReturnValue(false);
   });
 
   it('uses Gemini first when Gemini is available', () => {
@@ -137,7 +142,7 @@ describe('agent-configs vision fallback', () => {
     expect(getOpenRouterVisionModel).not.toHaveBeenCalled();
   });
 
-  it('falls back to OpenRouter when Gemini init fails', () => {
+  it('falls back to Z.AI Vision when Gemini init fails', () => {
     vi.mocked(checkProviderStatus).mockReturnValue({
       cerebras: false,
       groq: false,
@@ -149,24 +154,19 @@ describe('agent-configs vision fallback', () => {
     vi.mocked(getGeminiFlashLiteModel).mockImplementation(() => {
       throw new Error('gemini unavailable');
     });
-    vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
-      'google/gemma-3-27b-it:free'
-    );
-    vi.mocked(getOpenRouterVisionModel).mockReturnValue(
-      createMockLanguageModel('google/gemma-3-27b-it:free') as never
+    vi.mocked(getZaiVisionModel).mockReturnValue(
+      createMockLanguageModel('glm-4.6v-flash') as never
     );
 
     const model = visionConfig.getModel();
 
     expect(model).not.toBeNull();
-    expect(model?.provider).toBe('openrouter');
-    expect(model?.modelId).toBe('google/gemma-3-27b-it:free');
-    expect(getOpenRouterVisionModel).toHaveBeenCalledWith(
-      'google/gemma-3-27b-it:free'
-    );
+    expect(model?.provider).toBe('zai');
+    expect(model?.modelId).toBe('glm-4.6v-flash');
+    expect(getOpenRouterVisionModel).not.toHaveBeenCalled();
   });
 
-  it('uses OpenRouter when Gemini key is missing', () => {
+  it('uses Z.AI when Gemini key is missing even if OpenRouter is configured', () => {
     vi.mocked(checkProviderStatus).mockReturnValue({
       cerebras: false,
       groq: false,
@@ -175,17 +175,15 @@ describe('agent-configs vision fallback', () => {
       gemini: false,
       openrouter: true,
     });
-    vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
-      'google/gemma-3-27b-it:free'
-    );
-    vi.mocked(getOpenRouterVisionModel).mockReturnValue(
-      createMockLanguageModel('google/gemma-3-27b-it:free') as never
+    vi.mocked(getZaiVisionModel).mockReturnValue(
+      createMockLanguageModel('glm-4.6v-flash') as never
     );
 
     const model = visionConfig.getModel();
 
     expect(model).not.toBeNull();
-    expect(model?.provider).toBe('openrouter');
+    expect(model?.provider).toBe('zai');
+    expect(getOpenRouterVisionModel).not.toHaveBeenCalled();
   });
 
   it('falls back to Z.AI Vision when Gemini and OpenRouter are unavailable', () => {
@@ -208,7 +206,7 @@ describe('agent-configs vision fallback', () => {
     expect(model?.modelId).toBe('glm-4.6v-flash');
   });
 
-  it('returns null when Gemini unavailable and OpenRouter init throws', () => {
+  it('uses opt-in OpenRouter when Gemini and Z.AI are unavailable', () => {
     vi.mocked(checkProviderStatus).mockReturnValue({
       cerebras: false,
       groq: false,
@@ -217,16 +215,36 @@ describe('agent-configs vision fallback', () => {
       gemini: false,
       openrouter: true,
     });
+    vi.mocked(isOpenRouterVisionFallbackEnabled).mockReturnValue(true);
     vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
       'google/gemma-3-27b-it:free'
     );
-    vi.mocked(getOpenRouterVisionModel).mockImplementation(() => {
-      throw new Error('openrouter init failed');
+    vi.mocked(getOpenRouterVisionModel).mockReturnValue(
+      createMockLanguageModel('google/gemma-3-27b-it:free') as never
+    );
+
+    const model = visionConfig.getModel();
+
+    expect(model).not.toBeNull();
+    expect(model?.provider).toBe('openrouter');
+    expect(model?.modelId).toBe('google/gemma-3-27b-it:free');
+  });
+
+  it('returns null when only disabled OpenRouter fallback is configured', () => {
+    vi.mocked(checkProviderStatus).mockReturnValue({
+      cerebras: false,
+      groq: false,
+      mistral: false,
+      zai: false,
+      gemini: false,
+      openrouter: true,
     });
+    vi.mocked(isOpenRouterVisionFallbackEnabled).mockReturnValue(false);
 
     const model = visionConfig.getModel();
 
     expect(model).toBeNull();
+    expect(getOpenRouterVisionModel).not.toHaveBeenCalled();
   });
 
   it('full chain: all providers fail → getModel returns null', () => {

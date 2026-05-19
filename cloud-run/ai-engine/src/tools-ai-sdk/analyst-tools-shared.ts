@@ -6,6 +6,38 @@ import type { TrendDataPoint } from '../lib/ai/monitoring/TrendPredictor';
 export type ExternalMetricHistory = Record<string, Record<string, number[]>>;
 // 구조: { [serverId]: { cpu, memory, disk, network, load1, load5: number[] } }
 
+export interface LightweightEvidenceContract {
+  contractVersion: 1;
+  mode: 'deterministic_evidence';
+  toolRole: 'extract_metric_signals';
+  llmRole: 'interpret_cause_impact_actions_from_evidence';
+  signalStrengthMeaning: 'evidence_strength_not_incident_probability';
+  limitations: [
+    'not_trained_ml',
+    'threshold_and_short_horizon_signals_only',
+    'requires_llm_interpretation_for_causality'
+  ];
+}
+
+/**
+ * Analyst anomaly/trend tools stay intentionally lightweight.
+ * They produce deterministic metric evidence; causal interpretation belongs to the LLM.
+ */
+export function getLightweightEvidenceContract(): LightweightEvidenceContract {
+  return {
+    contractVersion: 1,
+    mode: 'deterministic_evidence',
+    toolRole: 'extract_metric_signals',
+    llmRole: 'interpret_cause_impact_actions_from_evidence',
+    signalStrengthMeaning: 'evidence_strength_not_incident_probability',
+    limitations: [
+      'not_trained_ml',
+      'threshold_and_short_horizon_signals_only',
+      'requires_llm_interpretation_for_causality',
+    ],
+  };
+}
+
 export interface AnomalyResultItem {
   isAnomaly: boolean;
   severity: string;
@@ -27,6 +59,9 @@ export interface TrendResultItem {
   changePercent: number;
   /** 추세 강도 (0–1): R² 기반 모델 적합도 */
   signalStrength: number;
+  decisionSource?: 'linear_projection' | 'linear_projection+threshold';
+  analysisBasis?: string;
+  rationale?: string[];
 }
 
 export function toTrendDataPoints(metricPoints: MetricDataPoint[]): TrendDataPoint[] {

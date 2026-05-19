@@ -139,9 +139,32 @@ describe('provider model metadata', () => {
       modelId: 'gemini-2.5-flash-lite',
       role: 'vision primary',
     });
+    expect(metadata.find((entry) => entry.provider === 'openrouter')).toMatchObject({
+      role: 'vision fallback',
+      enabled: false,
+      smokeStatus: 'red',
+      smokeEvidence: expect.arrayContaining([
+        expect.stringContaining('disabled by default'),
+      ]),
+    });
     expect(metadata.find((entry) => entry.modelId === 'glm-4.5-flash')).toMatchObject({
       provider: 'zai',
       role: 'free GLM Flash text fallback',
+    });
+  });
+
+  it('marks OpenRouter vision fallback as opt-in unknown when explicitly enabled', () => {
+    process.env.OPENROUTER_VISION_FALLBACK_ENABLED = 'true';
+
+    const metadata = getRuntimeProviderModelMetadata();
+
+    expect(metadata.find((entry) => entry.provider === 'openrouter')).toMatchObject({
+      role: 'vision fallback',
+      enabled: true,
+      smokeStatus: 'unknown',
+      smokeEvidence: expect.arrayContaining([
+        expect.stringContaining('opt-in'),
+      ]),
     });
   });
 

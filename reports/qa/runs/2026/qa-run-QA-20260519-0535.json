@@ -1,0 +1,182 @@
+{
+  "runId": "QA-20260519-0535",
+  "recordedAt": "2026-05-19T05:14:14.572Z",
+  "recordedAtKst": "2026-05-19 14:14:14 KST",
+  "runTitle": "v8.11.179 Chrome DevTools MCP QA - AI Assistant 미검증 영역 집중 테스트",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "icn1::icn1::7hs47-1779167617388-c78b3062ad59",
+    "deploymentUrl": "",
+    "commitSha": "4ce2e3f71"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface",
+    "security-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant (AI Chat 탭)",
+    "/dashboard/ai-assistant (이상감지/추세 탭)",
+    "/dashboard/servers/:id (존재하지 않는 서버)",
+    "/api/ai/intelligent-monitoring",
+    "/api/health",
+    "/api/system",
+    "보안 헤더 점검",
+    "Rate limit 헤더 점검"
+  ],
+  "skippedSurfaces": [
+    "incident reporter generation (보고서 생성 탭)",
+    "vision agent",
+    "rate limit 429 직접 트리거 (일일 한도 보존)"
+  ],
+  "checks": {
+    "total": 18,
+    "passed": 14,
+    "failed": 4
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Chat - CPU 상위 3개 서버",
+      "agent": "Analyst Agent",
+      "provider": "mistral",
+      "model": "mistral-small",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "network response timing",
+      "latencyMs": 6000
+    },
+    {
+      "surface": "AI Chat - 메모리 경고 서버 조치 방법",
+      "agent": "Analyst Agent",
+      "provider": "mistral",
+      "model": "mistral-small",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "network response timing",
+      "latencyMs": 23558
+    },
+    {
+      "surface": "이상감지/추세 전체 분석",
+      "agent": "Analyst Agent",
+      "provider": "deterministic",
+      "model": "monitoring-snapshot-risk-signal",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "x-ai-latency-ms header",
+      "latencyMs": 273
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Conversational AI Q4 응답 품질 저하 확인(23558ms + 이전 요약 반복). Analyst 단일 서버 분석 응답 구조 불일치로 파싱 실패.",
+      "nextAction": "analyze_server 응답 정규화 및 AI 조치 방법 응답 품질 개선 필요"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "이상감지/추세 전체 분석 정상. 신호강도 58%, monitoring-snapshot-risk-signal 알고리즘 정확. capacityAlerts 53분 후 critical 예측 포함.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "보안 헤더 전체 양호. HSTS/CSP/X-Frame-Options/nosniff 확인. /api/system ERR_ABORTED는 클라이언트 사이드 경쟁상태로 보안 이슈 아님.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "manual-dashboard",
+      "status": "checked",
+      "result": "unknown",
+      "checkedAt": "2026-05-19T05:10:00.000Z",
+      "summary": "",
+      "evidence": "",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "QA-20260519-0535 broad AI unverified surfaces evidence summary",
+      "path": "reports/qa/evidence/qa-20260519-v811179-broad-ai-unverified-surfaces.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "analyst-single-server-response-mismatch",
+      "title": "Analyst 단일 서버 분석 응답 구조 불일치 수정",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "analyze_server action이 {success, response: stringified} 반환 → 프론트엔드 {success, data: object} 기대. /api/ai/intelligent-monitoring 응답 정규화 또는 프론트엔드 파서 수정 필요",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "ai-remediation-response-quality",
+      "title": "AI Chat 조치 방법 응답 품질 개선",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "메모리 경고 조치 방법 질의 시 구체적 명령어(redis-cli, MEMORY DOCTOR 등) 미포함. Mistral-small 프롬프트 또는 Advisor 라우팅 검토 필요",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "api-system-abort-race-condition",
+      "title": "/api/system ERR_ABORTED 경쟁상태 해결",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "React 컴포넌트 unmount 시 AbortController 취소로 대시보드 시스템 상태 초기 로딩 실패. React StrictMode double-mount 또는 네비게이션 cleanup 검토",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Chrome DevTools MCP (headed mode)로 진행 - Playwright MCP 대체",
+    "v8.11.179 production 기준",
+    "단일 서버 분석 버그는 새로 발견된 P1 이슈",
+    "conversational AI Q4 응답 품질 저하는 LLM(mistral-small) 한계로 추정",
+    "rate limit 일일 잔여: 93/100 (QA 완료 시점 기준)"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

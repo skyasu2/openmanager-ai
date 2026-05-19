@@ -90,4 +90,27 @@ describe('resolveDirectRoutingTarget', () => {
       source: 'pre_filter',
     });
   });
+
+  it('keeps explicit remediation queries on Advisor before semantic anomaly routing', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          suggestedAgent: 'Advisor Agent',
+          confidence: 0.9,
+        },
+        {
+          intentFrame: frame({
+            capabilityId: 'monitoring.anomaly_detection',
+            intent: 'anomaly_detection',
+            confidence: 0.93,
+          }),
+        }
+      )
+    ).toMatchObject({
+      agentName: 'Advisor Agent',
+      source: 'pre_filter',
+      reason: 'Direct routing (explicit remediation pre-filter)',
+    });
+  });
 });

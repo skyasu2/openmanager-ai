@@ -18,7 +18,12 @@ import { z } from 'zod';
 
 import { getCurrentState } from '../data/precomputed-state';
 import { getDataCache } from '../lib/cache-layer';
-import { getCurrentSlotIndex, getHistoryForMetric, type ExternalMetricHistory } from './analyst-tools-shared';
+import {
+  getCurrentSlotIndex,
+  getHistoryForMetric,
+  getLightweightEvidenceContract,
+  type ExternalMetricHistory,
+} from './analyst-tools-shared';
 import { STATUS_THRESHOLDS } from '../config/status-thresholds';
 
 /** 외부 데이터 소스에서 주입하는 서버 스냅샷 */
@@ -292,6 +297,7 @@ export const detectAnomaliesAllServers = tool({
             algorithmVersion: '2.5.0',
             decisionSource: 'threshold_scan+linear_trend_scan',
             analysisBasis: 'status-thresholds:ssot,history:last90min,horizon:30min',
+            evidenceContract: getLightweightEvidenceContract(),
             risingTrendScan,
             _algorithm: 'All-Server Threshold Scan + 30min Rising Trend Scan (Cached)',
           };

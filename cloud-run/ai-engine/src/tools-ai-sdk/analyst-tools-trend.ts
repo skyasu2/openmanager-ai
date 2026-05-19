@@ -8,6 +8,7 @@ import { buildLoadAverageThresholds } from '../config/status-thresholds';
 import {
   getCurrentSlotIndex,
   getHistoryForMetric,
+  getLightweightEvidenceContract,
   toTrendDataPoints,
   type TrendResultItem,
 } from './analyst-tools-shared';
@@ -223,14 +224,37 @@ export const predictTrends = tool({
             const projectedValue = isPercentMetric(metric)
               ? Math.max(0, Math.min(100, prediction.prediction))
               : Math.max(0, prediction.prediction);
+            const roundedProjectedValue = Math.round(projectedValue * 100) / 100;
+            const signalStrength = Math.round(prediction.confidence * 100) / 100;
+            const hasThresholdSignal =
+              prediction.currentStatus !== 'online' ||
+              prediction.thresholdBreach.willBreachWarning ||
+              prediction.thresholdBreach.willBreachCritical;
 
             results[metric] = {
               trend: prediction.trend,
               currentValue,
-              projectedValue: Math.round(projectedValue * 100) / 100,
+              projectedValue: roundedProjectedValue,
               changePercent:
                 Math.round(prediction.details.predictedChangePercent * 100) / 100,
-              signalStrength: Math.round(prediction.confidence * 100) / 100,
+              signalStrength,
+              decisionSource: hasThresholdSignal
+                ? 'linear_projection+threshold'
+                : 'linear_projection',
+              analysisBasis: [
+                `metric:${metric}`,
+                `historyPoints:${trendHistory.length}`,
+                `horizonHours:${hours}`,
+                `signalStrength=${signalStrength}`,
+                `currentStatus=${prediction.currentStatus}`,
+              ].join(', '),
+              rationale: [
+                `trend:${prediction.trend}`,
+                `projected:${Math.round(currentValue * 100) / 100}->${roundedProjectedValue}`,
+                hasThresholdSignal
+                  ? `threshold-risk:${prediction.thresholdBreach.humanReadable || prediction.currentStatus}`
+                  : 'threshold-risk:none',
+              ],
               currentStatus: prediction.currentStatus,
               thresholdBreach: prediction.thresholdBreach,
               recovery: prediction.recovery,
@@ -276,6 +300,9 @@ export const predictTrends = tool({
             serverId: analyzedServer.id,
             serverName: analyzedServer.name,
             predictionHorizon: `${hours}시간`,
+            decisionSource: 'linear_projection+threshold',
+            analysisBasis: `history:metric-specific,last36slots-or-injected,horizonHours:${hours},thresholds:ssot`,
+            evidenceContract: getLightweightEvidenceContract(),
             results,
             summary: {
               increasingMetrics,

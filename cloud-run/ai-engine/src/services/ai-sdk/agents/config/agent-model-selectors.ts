@@ -7,6 +7,7 @@ import {
   getOpenRouterVisionModelId,
   getZaiModelId,
   getZaiVisionModelId,
+  isOpenRouterVisionFallbackEnabled,
 } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
@@ -249,10 +250,12 @@ export function getSupervisorModel(): ModelResult | null {
 // ============================================================================
 
 /**
- * Get Vision model: Gemini 2.5 Flash-Lite → OpenRouter Gemma → Z.AI GLM-4.6V-Flash
+ * Get Vision model: Gemini 2.5 Flash-Lite → Z.AI GLM-4.6V-Flash.
+ * OpenRouter is opt-in only after live validation.
  */
 export function getVisionModel(): ModelResult | null {
   const status = checkProviderStatus();
+  const openRouterFallbackEnabled = isOpenRouterVisionFallbackEnabled();
 
   if (status.gemini) {
     try {
@@ -264,22 +267,7 @@ export function getVisionModel(): ModelResult | null {
         capabilities: getProviderCapabilities('gemini'),
       };
     } catch (error) {
-      logger.warn('[Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
-    }
-  }
-
-  if (status.openrouter) {
-    try {
-      const modelId = getOpenRouterVisionModelId();
-      logger.info(`[Vision Agent] Using OpenRouter fallback: ${modelId}`);
-      return {
-        model: getOpenRouterVisionModel(modelId),
-        provider: 'openrouter',
-        modelId,
-        capabilities: getProviderCapabilities('openrouter'),
-      };
-    } catch (error) {
-      logger.error('[Vision Agent] OpenRouter initialization failed:', error);
+      logger.warn('[Vision Agent] Gemini initialization failed, trying Z.AI Vision:', error);
     }
   }
 
@@ -295,6 +283,21 @@ export function getVisionModel(): ModelResult | null {
       };
     } catch (error) {
       logger.error('[Vision Agent] Z.AI Vision initialization failed:', error);
+    }
+  }
+
+  if (status.openrouter && openRouterFallbackEnabled) {
+    try {
+      const modelId = getOpenRouterVisionModelId();
+      logger.info(`[Vision Agent] Using opt-in OpenRouter fallback: ${modelId}`);
+      return {
+        model: getOpenRouterVisionModel(modelId),
+        provider: 'openrouter',
+        modelId,
+        capabilities: getProviderCapabilities('openrouter'),
+      };
+    } catch (error) {
+      logger.error('[Vision Agent] OpenRouter initialization failed:', error);
     }
   }
 

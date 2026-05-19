@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-19 KST (Vercel function budget 명시화 완료)
+**Last Updated**: 2026-05-19 KST (주간 개선 후속 안정화 계획 추가)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,6 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| 주간 개선 후속 안정화 (Analyst evidence contract + broad QA + Reporter live closure) | High | In Progress (Codex) | 2026-05-12~19 변경 평가 결과, 추가 구현보다 release confidence 보강이 우선. Analyst 경량 evidence contract 마감, latest skipped QA surface 보강, Reporter live degraded 여부 확인, 장기 session data slot drift 정책화, QA attribution/plan hygiene를 포함한다. 2026-05-19 후속으로 OpenRouter fallback freshness, Cerebras output guard, Advisor routing precedence, `analyze_server` shape normalization을 진행하되 관리자용 live smoke endpoint는 제외한다. 상세: [weekly-followup-hardening-plan.md](weekly-followup-hardening-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -20,6 +21,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| 장기 세션 AI data slot drift 정책 | Low | Fresh load에서는 AI 수치와 dashboard OTel snapshot이 일치한다. 장기 세션에서는 `aiQueryAsOfDataSlot`이 SSR 시점 slot에 고정되어 dashboard 최신 slot과 달라질 수 있으나, free-tier/portfolio 범위에서는 실시간 resync를 도입하지 않는다. 재현 시 새로고침/새 세션으로 최신 slot을 사용하고, 제품 요구로 승격될 때 별도 `data-slot-resync-plan.md`를 작성한다. |
 | Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` 기본값으로 production에서 single mode 실질 비활성. 경량 단순쿼리 경로 설계 시 재검토. |
 
 ---
@@ -151,7 +153,7 @@
   - Cloud Run Reporter fallback 응답에서 raw `fallbackReason`과 legacy `_fallbackReason` 공개를 제거했다.
   - Next API와 artifact 경계에서 `fallbackReasonCode`/`fallbackSource`를 allowlist 기반으로 정규화하고 invalid metadata를 기본값으로 흡수했다.
   - Cloud Run helper, API route, artifact generator, artifact envelope sanitizer 회귀 테스트를 보강했다.
-  - 검증: root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine full test, docs checks PASS. GitLab main pipeline `2533242669` success. 상세: [reporter-degraded-metadata-contract-plan.md](reporter-degraded-metadata-contract-plan.md)
+  - 검증: root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine full test, docs checks PASS. GitLab main pipeline `2533242669` success. 상세: [archive/reporter-degraded-metadata-contract-plan.md](archive/reporter-degraded-metadata-contract-plan.md)
 
 ### Completed (2026-05-17) — Codex (AI Assistant Portability)
 - [x] AI 어시스턴트 이식성 개선 T1~T4 완료
@@ -166,7 +168,7 @@
   - 태그 파이프라인 `2531547712` success: `deploy`, `deploy_ai_engine`, `post_deploy_ai_engine_smoke`, `post_deploy_smoke` 모두 성공.
   - `deploy_ai_engine`에서 `decision=deploy reason=ai_engine_version_metadata_release_tag` 확인, Cloud Run `/health.version=8.11.166` 확인.
   - Vercel `/api/version`은 `overall/frontend=8.11.166`과 `pipelineUrl=https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2531547712`를 반환.
-  - 참고: branch validate pipeline `2531547704`는 전체 `success`이나, warn-first `validate_bundle_budget` job은 `BUNDLEMON_PROJECT_ID` 누락으로 allow-failure 실패했다. 상세: [ai-engine-release-version-sync-plan.md](ai-engine-release-version-sync-plan.md)
+  - 참고: branch validate pipeline `2531547704`는 전체 `success`이나, warn-first `validate_bundle_budget` job은 `BUNDLEMON_PROJECT_ID` 누락으로 allow-failure 실패했다. 상세: [archive/ai-engine-release-version-sync-plan.md](archive/ai-engine-release-version-sync-plan.md)
 
 ### Completed (2026-05-17) — Codex (Frontend UI)
 - [x] Frontend UI 개선 T1/T2 완료

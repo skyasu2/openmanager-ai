@@ -248,4 +248,86 @@ describe('/api/ai/intelligent-monitoring POST', () => {
     await expect(response.json()).resolves.toMatchObject(errorPayload);
     expect(mockCreateFallbackResponse).not.toHaveBeenCalled();
   });
+
+  it('analyze_server 응답에 timestamp와 provider metadata를 보강한다', async () => {
+    mockProxyToCloudRun.mockResolvedValueOnce({
+      success: true,
+      data: {
+        success: true,
+        serverId: 'web-01',
+        analysisType: 'full',
+        anomalyDetection: { results: [] },
+        _durationMs: 17,
+      },
+    });
+
+    const response = await POST(
+      createPostRequest({
+        action: 'analyze_server',
+        serverId: 'web-01',
+        analysisType: 'full',
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-AI-Provider')).toBe('deterministic');
+    expect(response.headers.get('X-AI-Model')).toBe(
+      'monitoring-analyze-server'
+    );
+    await expect(response.json()).resolves.toMatchObject({
+      success: true,
+      data: {
+        serverId: 'web-01',
+        analysisType: 'full',
+        timestamp: expect.any(String),
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'monitoring-analyze-server',
+          providerAttempts: [
+            {
+              provider: 'deterministic',
+              modelId: 'monitoring-analyze-server',
+              attempt: 1,
+              durationMs: 17,
+            },
+          ],
+          usedFallback: false,
+        },
+      },
+    });
+  });
+
+  it('legacy stringified Cloud Run analyze_server response를 data shape로 정규화한다', async () => {
+    mockProxyToCloudRun.mockResolvedValueOnce({
+      success: true,
+      data: {
+        success: true,
+        response: JSON.stringify({
+          success: true,
+          serverId: 'db-01',
+          analysisType: 'trend',
+          trendPrediction: { results: [] },
+        }),
+      },
+    });
+
+    const response = await POST(
+      createPostRequest({
+        action: 'analyze_server',
+        serverId: 'db-01',
+        analysisType: 'trend',
+      })
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      success: true,
+      data: {
+        serverId: 'db-01',
+        analysisType: 'trend',
+        timestamp: expect.any(String),
+        trendPrediction: { results: [] },
+      },
+    });
+  });
 });

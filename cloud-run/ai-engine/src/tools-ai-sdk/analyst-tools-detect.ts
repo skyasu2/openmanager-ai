@@ -23,6 +23,7 @@ import { getDataCache } from '../lib/cache-layer';
 import {
   getCurrentSlotIndex,
   getHistoryForMetric,
+  getLightweightEvidenceContract,
   type AnomalyResultItem,
 } from './analyst-tools-shared';
 import {
@@ -379,6 +380,7 @@ export const detectAnomalies = tool({
             anomalyCount,
             hasAnomalies: anomalyCount > 0,
             results,
+            evidenceContract: getLightweightEvidenceContract(),
             summaryMessage: anomalyCount > 0
               ? details
               : `${analyzedServer.name}: 정상 (이상 없음)`,

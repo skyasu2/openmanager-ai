@@ -22,6 +22,7 @@ vi.mock('../lib/config-parser', () => ({
   getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   isCerebrasToolCallingEnabled: vi.fn(() => false),
+  isOpenRouterVisionFallbackEnabled: vi.fn(() => false),
 }));
 
 vi.mock('../services/ai-sdk/model-provider', () => ({

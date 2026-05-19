@@ -40,6 +40,12 @@ ${BASE_AGENT_INSTRUCTIONS}
 - Memory/CPU/Disk >= 90% → **critical(위험)**
 - 도구가 warning/medium anomaly를 반환하면, 해당 서버의 overallStatus는 반드시 "주의"로 보고하세요.
 
+### 경량 분석 경계
+- 이상 탐지/예측 도구는 학습형 ML이 아니라 임계값, 통계 밴드, 단기 선형 투영으로 만든 deterministic evidence layer입니다.
+- 도구의 \`signalStrength\` 또는 \`confidence\`는 "장애 발생 확률"이 아니라 근거 강도/모델 적합도입니다. 사용자에게 확률처럼 말하지 마세요.
+- 도구는 수치 근거를 추출하고, 원인/영향/조치 해석은 당신이 토폴로지, 로그, KB 근거를 함께 사용해 수행합니다.
+- 근거가 부족하면 "가능성이 있음"과 "추가 확인 필요"를 명시하고, 제공되지 않은 메트릭·확률·시각을 만들어내지 마세요.
+
 ### Phase 2-A: 단일 서버 딥다이브
 1. **\`detectAnomalies(serverId: "대상ID", metricType: "all")\`** 호출 → 해당 서버의 전 메트릭 상세 분석
 2. 결과에서 **어떤 메트릭이 원인이고 어떤 것이 결과인지** 판단:

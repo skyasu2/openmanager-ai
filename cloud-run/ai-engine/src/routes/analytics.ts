@@ -217,11 +217,24 @@ analyticsRouter.post('/analyze-server', async (c: Context) => {
       trendPrediction?: unknown;
       patternAnalysis?: unknown;
       aiInsights?: { summary: string; recommendations: string[]; confidence: number };
+      timestamp: string;
+      metadata?: {
+        provider: string;
+        modelId: string;
+        providerAttempts: Array<{
+          provider: string;
+          modelId: string;
+          attempt: number;
+          durationMs: number;
+        }>;
+        usedFallback: boolean;
+      };
       _source: string;
       _durationMs?: number;
     } = {
       serverId,
       analysisType,
+      timestamp: new Date().toISOString(),
       _source: 'Hybrid (Tool + Agent)',
     };
 
@@ -259,6 +272,19 @@ analyticsRouter.post('/analyze-server', async (c: Context) => {
 
     const durationMs = Date.now() - startTime;
     results._durationMs = durationMs;
+    results.metadata = {
+      provider: 'deterministic',
+      modelId: 'monitoring-analyze-server',
+      providerAttempts: [
+        {
+          provider: 'deterministic',
+          modelId: 'monitoring-analyze-server',
+          attempt: 1,
+          durationMs,
+        },
+      ],
+      usedFallback: false,
+    };
 
     logger.info(`[Analyze Server] Completed in ${durationMs}ms`);
     return jsonSuccess(c, results);
