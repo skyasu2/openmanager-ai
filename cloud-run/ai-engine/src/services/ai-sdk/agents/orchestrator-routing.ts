@@ -10,10 +10,8 @@ import { generateText } from 'ai';
 import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
-import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import {
   AGENT_NAMES,
-  getAgentEvidenceBudget,
   getAgentMaxSteps as getRuntimeAgentMaxSteps,
   getAgentConfig as getNamedAgentConfig,
   getAgentProviderOrder as getRuntimeAgentProviderOrder,
@@ -32,31 +30,20 @@ import {
 } from './config/agent-loop-settings';
 
 import type { MultiAgentResponse } from './orchestrator-types';
-import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 import { evaluateAgentResponseQuality } from './response-quality';
-import { FORCE_KB_QUERY_PATTERN } from '../routing/query-routing-signals';
 import {
   buildDeterministicSummaryFallback,
   buildDeterministicSummaryFromCurrentState,
 } from './orchestrator-summary-fallback';
 import { logger } from '../../../lib/logger';
-import {
-  createRetrievalMetadata,
-  legacyRagSourcesToEvidenceCards,
-  type EvidenceCard,
-  type RetrievalMetadata,
-} from '../../../lib/retrieval-contract';
+import { createRetrievalMetadata } from '../../../lib/retrieval-contract';
 import type { InternalDisclosureMode } from '../internal-disclosure-policy';
 import {
   createAgentDataSourceContext,
   resolveDomainSnapshot,
 } from './domain-data-source';
-import {
-  asEvidenceCard,
-  asRetrievalMetadata,
-} from './orchestrator-routing-direct-knowledge';
 import { executeForcedKnowledgePath } from './orchestrator-forced-knowledge-path';
 import {
   buildContextAwarePrompt,
@@ -64,10 +51,12 @@ import {
   getForcedRoutingCapabilityRequirements,
 } from './orchestrator-prompt-helpers';
 import { summarizeToolResultsIfEmpty } from './orchestrator-summarization-fallback';
+import { resolveForcedRoutingPolicy } from './orchestrator-routing-policy';
 import {
   resolveFallbackReason,
   toProviderAttemptTelemetry,
 } from './orchestrator-routing-telemetry';
+import { collectForcedRoutingToolObservations } from './orchestrator-routing-telemetry-helpers';
 import { enrichResponseWithToolResults } from '../supervisor-response-enrichment';
 export { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
@@ -165,25 +154,27 @@ export async function executeForcedRouting(
     logger.info(`[Forced Routing] Pipeline failed, falling back to direct Reporter Agent`);
   }
 
-  const agentConfig = getNamedAgentConfig(suggestedAgentName);
+  const routingPolicy = resolveForcedRoutingPolicy({
+    query,
+    suggestedAgentName,
+    webSearchEnabled,
+    ragEnabled,
+  });
 
-  if (!agentConfig) {
+  if (!routingPolicy) {
     logger.warn(`⚠️ [Forced Routing] No config for "${suggestedAgentName}"`);
     return null;
   }
 
-  const providerOrder = getAgentProviderOrder(suggestedAgentName);
-  const evidenceBudget = getAgentEvidenceBudget(suggestedAgentName);
+  const {
+    agentConfig,
+    providerOrder,
+    evidenceBudget,
+    filteredTools,
+    forceKnowledgeBaseTool,
+    isForceKnowledgeBaseQuery,
+  } = routingPolicy;
   logger.info(`[Forced Routing] Using retry with fallback: [${providerOrder.join(' → ')}]`);
-
-  let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
-  filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
-  const isForceKnowledgeBaseQuery = FORCE_KB_QUERY_PATTERN.test(query);
-  const forceKnowledgeBaseTool =
-    ragEnabled &&
-    suggestedAgentName === 'Advisor Agent' &&
-    isForceKnowledgeBaseQuery &&
-    'searchKnowledgeBase' in filteredTools;
 
   const forcedKnowledgePathResult = await executeForcedKnowledgePath({
     query,
@@ -251,105 +242,15 @@ export async function executeForcedRouting(
     const providerAttempts = toProviderAttemptTelemetry(attempts);
     const fallbackReason = resolveFallbackReason(attempts, usedFallback);
 
-    const toolsCalled: string[] = [];
-    const collectedToolResults: Array<{ toolName: string; result: unknown }> = [];
-    let finalAnswerResult: { answer: string } | null = null;
-    const ragSources: Array<{
-      title: string;
-      similarity: number;
-      sourceType: string;
-      category?: string;
-      url?: string;
-    }> = [];
-    const evidenceCards: EvidenceCard[] = [];
-    let retrievalMetadata: RetrievalMetadata | undefined;
-    let knowledgeRetrievalAttempted = false;
-    const pushRagSource = (source: (typeof ragSources)[number]) => {
-      if (ragSources.length < evidenceBudget) {
-        ragSources.push(source);
-      }
-    };
-    const pushEvidenceCard = (card: EvidenceCard) => {
-      if (evidenceCards.length < evidenceBudget) {
-        evidenceCards.push(card);
-      }
-    };
-
-    for (const step of result.steps) {
-      for (const toolCall of step.toolCalls) {
-        toolsCalled.push(toolCall.toolName);
-      }
-      if (step.toolResults) {
-        for (const tr of step.toolResults) {
-          const trOutput = extractToolResultOutput(tr);
-          collectedToolResults.push({
-            toolName: tr.toolName,
-            result: trOutput,
-          });
-
-          if (tr.toolName === 'finalAnswer' && trOutput && typeof trOutput === 'object') {
-            finalAnswerResult = trOutput as { answer: string };
-          }
-
-          if (tr.toolName === 'searchKnowledgeBase' && trOutput && typeof trOutput === 'object') {
-            knowledgeRetrievalAttempted = true;
-            const kbResult = trOutput as Record<string, unknown>;
-            if (Array.isArray(kbResult.evidenceCards)) {
-              for (const card of kbResult.evidenceCards) {
-                const parsedCard = asEvidenceCard(card);
-                if (parsedCard) {
-                  pushEvidenceCard(parsedCard);
-                }
-              }
-            }
-            retrievalMetadata = asRetrievalMetadata(kbResult.retrieval) ?? retrievalMetadata;
-            const similarCases = (kbResult.similarCases ?? kbResult.results) as Array<Record<string, unknown>> | undefined;
-            if (evidenceCards.length === 0 && Array.isArray(similarCases)) {
-              const legacyEvidenceCards = legacyRagSourcesToEvidenceCards(
-                similarCases.map((doc) => ({
-                  title: String(doc.title ?? doc.name ?? 'Unknown'),
-                  similarity: Number(doc.similarity ?? doc.score ?? 0),
-                  sourceType: String(doc.sourceType ?? doc.type ?? 'knowledge'),
-                  category: doc.category ? String(doc.category) : undefined,
-                  url: doc.url ? String(doc.url) : undefined,
-                }))
-              );
-              for (const card of legacyEvidenceCards) {
-                pushEvidenceCard(card);
-              }
-            }
-          }
-
-          if (tr.toolName === 'searchWeb' && trOutput && typeof trOutput === 'object') {
-            const webResult = trOutput as Record<string, unknown>;
-            const webResults = webResult.results as Array<Record<string, unknown>> | undefined;
-            if (Array.isArray(webResults)) {
-              for (const doc of webResults) {
-                const title = String(doc.title ?? 'Web Result');
-                const score = Number(doc.score ?? 0);
-                const url = doc.url ? String(doc.url) : undefined;
-                pushRagSource({
-                  title,
-                  similarity: score,
-                  sourceType: 'web',
-                  category: 'web-search',
-                  url,
-                });
-                pushEvidenceCard({
-                  id: `web-${evidenceCards.length}-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64) || 'source'}`,
-                  title,
-                  summary: title,
-                  sourceType: 'web',
-                  score: Number.isFinite(score) ? Math.min(1, Math.max(0, score)) : 0,
-                  category: 'web-search',
-                  ...(url && { url }),
-                });
-              }
-            }
-          }
-        }
-      }
-    }
+    const {
+      toolsCalled,
+      collectedToolResults,
+      finalAnswerResult,
+      ragSources,
+      evidenceCards,
+      retrievalMetadata,
+      knowledgeRetrievalAttempted,
+    } = collectForcedRoutingToolObservations(result.steps, evidenceBudget);
 
     let response = finalAnswerResult?.answer ?? result.text;
     const deterministicSummary = buildDeterministicSummaryFallback(

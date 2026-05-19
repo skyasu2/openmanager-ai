@@ -39,7 +39,8 @@ vi.mock('../../../lib/text-sanitizer', () => ({
   sanitizeChineseCharacters: vi.fn((text: string) => text),
 }));
 
-vi.mock('../../../lib/ai-sdk-utils', () => ({
+vi.mock('../../../lib/ai-sdk-utils', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../lib/ai-sdk-utils')>()),
   extractToolResultOutput: vi.fn(
     (toolResult: { result?: unknown; output?: unknown }) =>
       toolResult.result ?? toolResult.output
