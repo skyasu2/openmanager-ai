@@ -172,9 +172,10 @@ Vision Agent의 실제 이미지/스크린샷 판독은 표준 5문항 대화형
 - 금지: 매 QA마다 Gemini/GLM Vision 실이미지 호출을 반복하거나 provider matrix로 확장
 - 기록: 실호출을 했다면 `reports/qa`에 수동 QA로 기록하고, 사용한 이미지 수·provider·model·응답 성공 여부만 남긴다
 
-현재 운영 원칙:
-- Gemini Vision primary는 `v8.11.184`에서 Playwright PNG 1장으로 production 수동 smoke를 확인했다.
-- Z.AI `glm-4.6v-flash` Vision fallback은 코드상 fallback selection 계약과 provider availability만 검증한다. 실제 이미지 판독 live smoke는 명시 요청이 있을 때만 별도 수동 실행한다.
+현재 검증 이력:
+- Gemini Vision primary는 `v8.11.184` / `QA-20260519-0538`에서 Playwright PNG 1장으로 production 수동 smoke를 확인했다.
+- Z.AI `glm-4.6v-flash` Vision fallback은 `QA-20260519-0539`에서 Gemini를 일시 비활성화한 뒤 같은 Playwright PNG 1장으로 production 수동 smoke를 확인했다. 응답 metadata는 `provider=zai`, `modelId=glm-4.6v-flash`, `finalAgent=Vision Agent`, `modeSelectionSource=vision_input`이었다.
+- 위 확인 이후에도 Vision 실이미지 호출은 manual-only 원칙을 유지한다. 같은 provider를 반복 확인하거나 provider matrix를 확장하지 않는다.
 
 ---
 
