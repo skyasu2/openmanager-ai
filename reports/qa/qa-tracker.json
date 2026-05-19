@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-19T00:09:51.939Z"
+    "updatedAt": "2026-05-19T00:36:38.886Z"
   },
   "sequence": {
-    "nextRunNumber": 530
+    "nextRunNumber": 531
   },
   "summary": {
-    "totalRecordedRuns": 527,
-    "totalRuns": 421,
+    "totalRecordedRuns": 528,
+    "totalRuns": 422,
     "excludedRuns": 106,
-    "totalChecks": 3836,
-    "totalPassed": 3689,
+    "totalChecks": 3844,
+    "totalPassed": 3697,
     "totalFailed": 136,
     "completionRate": 100,
-    "completedItems": 602,
+    "completedItems": 603,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 15,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260519-0529",
-    "lastRecordedAt": "2026-05-19T00:09:51.939Z",
-    "latestRecordedRunId": "QA-20260519-0529",
-    "latestRecordedAt": "2026-05-19T00:09:51.939Z"
+    "lastRunId": "QA-20260519-0530",
+    "lastRecordedAt": "2026-05-19T00:36:38.886Z",
+    "latestRecordedRunId": "QA-20260519-0530",
+    "latestRecordedAt": "2026-05-19T00:36:38.886Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14753,6 +14753,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-19T00:09:51.939Z"
+    },
+    "incident-report-detail-button-affordance": {
+      "id": "incident-report-detail-button-affordance",
+      "title": "Incident report detail action is visibly labeled and exposes expanded/collapsed state",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260519-0530",
+      "firstSeenAt": "2026-05-19T00:36:38.886Z",
+      "lastSeenRunId": "QA-20260519-0530",
+      "lastSeenAt": "2026-05-19T00:36:38.886Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production v8.11.177 shows `보고서 상세 보기`; after click it changes to `상세 접기`, sets `aria-expanded=true`, and renders the controlled details section.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-19T00:36:38.886Z"
     }
   },
   "runs": [
@@ -59904,6 +59928,110 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260519-0530",
+      "recordedAt": "2026-05-19T00:36:38.886Z",
+      "recordedAtKst": "2026-05-19 09:36:38 KST",
+      "title": "v8.11.177 Vercel Playwright MCP Incident Detail Button QA",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260519-0530.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_HchB1A2K6muUo2LM1DMpdLfhXE9e",
+        "deploymentUrl": "https://openmanager-dku44jlwk-skyasus-projects.vercel.app",
+        "commitSha": "3594949608cb110413ddd86f90d56cc06ceb385c"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /dashboard serves v8.11.177",
+        "AI assistant sidebar opens and engine indicator reports Ready",
+        "Auto incident report tab renders on production",
+        "Incident report generation returns HTTP 200",
+        "Incident report card displays a visible `보고서 상세 보기` action",
+        "Detail action expands to `상세 접기` and exposes aria-expanded=true",
+        "Detail action controls the rendered detail section via aria-controls",
+        "Expanded detail section renders anomaly, recommendations, pattern, postmortem, and log timeline headings",
+        "Browser console warnings/errors were zero"
+      ],
+      "skippedSurfaces": [
+        "Full conversational AI five-question pack; change scope is report-card UI affordance only",
+        "Mobile responsive pack",
+        "Full visual regression pack"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-accessibility",
+          "domainName": "Frontend UX & Accessibility Reviewer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The former icon-only report detail action is now a visible text button with expand/collapse semantics and an accessible controlled details region.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The targeted Playwright MCP run covered production rendering, report generation, button state transition, aria attributes, detail content, console state, and a screenshot artifact.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-19T09:34:31+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.177 targeted production QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Incident report detail button expanded on v8.11.177 production",
+          "path": "reports/qa/evidence/qa-20260519-v811177-incident-detail-button.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Incident report detail button QA notes",
+          "path": "reports/qa/evidence/qa-20260519-v811177-incident-detail-button.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline 2535652127",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535652127"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -59980,16 +60108,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 233,
-      "appropriateCount": 213,
+      "seenCount": 234,
+      "appropriateCount": 214,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260519-0529",
-      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "lastRunId": "QA-20260519-0530",
+      "lastSeenAt": "2026-05-19T00:36:38.886Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP covered rendered UI, conversational AI flow, anomaly/trend tab, incident report artifact generation, direct API metadata, screenshots, network requests, and console checks.",
+      "lastRationale": "The targeted Playwright MCP run covered production rendering, report generation, button state transition, aria attributes, detail content, console state, and a screenshot artifact.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -60065,16 +60193,16 @@
       "domainName": "Frontend UX & Accessibility Reviewer",
       "firstSeenRunId": "QA-20260424-0346",
       "firstSeenAt": "2026-04-24T09:25:23.818Z",
-      "seenCount": 1,
-      "appropriateCount": 1,
+      "seenCount": 2,
+      "appropriateCount": 2,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260424-0346",
-      "lastSeenAt": "2026-04-24T09:25:23.818Z",
+      "lastRunId": "QA-20260519-0530",
+      "lastSeenAt": "2026-05-19T00:36:38.886Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Checked accessible button/dialog names, modal close behavior, desktop visual hierarchy, and mobile interaction. Only low-priority mobile header density polish was observed, not a release blocker.",
+      "lastRationale": "The former icon-only report detail action is now a visible text button with expand/collapse semantics and an accessible controlled details region.",
       "lastNextAction": ""
     },
     "frontend-ux-quality": {

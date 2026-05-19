@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 09:09:54 KST
+> Generated at: 2026-05-19 09:36:41 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 527 |
-| Total Runs (Counted) | 421 |
+| Total Recorded Runs | 528 |
+| Total Runs (Counted) | 422 |
 | Non-counted Runs | 106 |
-| Total Checks | 3836 |
-| Passed | 3689 |
+| Total Checks | 3844 |
+| Passed | 3697 |
 | Failed | 136 |
-| Completed Items | 602 |
+| Completed Items | 603 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
 | Expert Domains Tracked | 15 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260519-0529 (2026-05-19T00:09:51.939Z) |
-| Latest Recorded Run | QA-20260519-0529 (2026-05-19T00:09:51.939Z) |
+| Last Counted Run | QA-20260519-0530 (2026-05-19T00:36:38.886Z) |
+| Latest Recorded Run | QA-20260519-0530 (2026-05-19T00:36:38.886Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,25 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0529 (2026-05-19T00:09:51.939Z)
+Latest run: QA-20260519-0530 (2026-05-19T00:36:38.886Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| Frontend UX & Accessibility Reviewer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.176 production QA. |
+| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.177 targeted production QA. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T00:09:51.939Z -> 2026-05-19T00:09:51.939Z (24h)
+- Window: 2026-05-18T00:36:38.886Z -> 2026-05-19T00:36:38.886Z (24h)
 - Runs with observations: 2 recorded / 2 counted
 - Samples: 4
 
@@ -63,7 +60,7 @@ Latest run: QA-20260519-0529 (2026-05-19T00:09:51.939Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T00:09:51.939Z -> 2026-05-19T00:09:51.939Z (24h)
+- Window: 2026-05-18T00:36:38.886Z -> 2026-05-19T00:36:38.886Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,31 +71,26 @@ Latest run: QA-20260519-0529 (2026-05-19T00:09:51.939Z)
 
 ## Coverage (Latest Run)
 
-- Scope: release-gate
+- Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ / SHA 55af9601
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ is READY, Vercel production /api/version reports v8.11.176 and commit 55af9601bead10653e713f602c328de703de813c, GitLab main pipeline 2535579211 succeeded, GitLab tag pipeline 2535579215 succeeded for v8.11.176, Dashboard route /dashboard renders 18-server OTel snapshot at 08:30 KST slot 51/143, AI assistant sidebar opens and engine indicator reports Ready, AI immediate-action query separates no immediate critical action from one warning server, Network-only conversational follow-up returns a scoped network filter result instead of generic system summary, Network follow-up explicitly uses network >= 70% warning threshold basis, AI anomaly/trend tab renders full-system analysis and one warning server, AI anomaly/trend tab displays 신호 강도 and no longer displays 신뢰도, Incident report UI generates one warning report, Incident report API returns HTTP 200 with _fallback=false, no X-Fallback-Response, and no X-AI-Degraded header, Incident report response includes reporterPipeline.success=true and a time-ordered 6-event timeline, Browser console warnings/errors were zero, AI network requests returned HTTP 200/201 for wake-up, health, supervisor stream, NLQ extraction, async jobs, intelligent monitoring, and incident report, Vercel usage post-QA check
-- Skipped Surfaces: Full visual regression pack, Mobile responsive pack, Public GitHub snapshot sync; canonical release path is GitLab CI only
+- Deployment: dpl_HchB1A2K6muUo2LM1DMpdLfhXE9e / SHA 35949496
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: Vercel production /dashboard serves v8.11.177, AI assistant sidebar opens and engine indicator reports Ready, Auto incident report tab renders on production, Incident report generation returns HTTP 200, Incident report card displays a visible `보고서 상세 보기` action, Detail action expands to `상세 접기` and exposes aria-expanded=true, Detail action controls the rendered detail section via aria-controls, Expanded detail section renders anomaly, recommendations, pattern, postmortem, and log timeline headings, Browser console warnings/errors were zero
+- Skipped Surfaces: Full conversational AI five-question pack; change scope is report-card UI affordance only, Mobile responsive pack, Full visual regression pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main pipeline 2535579211 | [GitLab main pipeline 2535579211](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535579211) | - |
-| general | GitLab tag pipeline 2535579215 | [GitLab tag pipeline 2535579215](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535579215) | - |
-| vercel-deployment | Vercel production deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ | [Vercel production deployment dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ](https://vercel.com/skyasus-projects/openmanager-ai/BdrMbVYEqzZb7vBE9Px2ukpswKpZ) | - |
+| general | GitLab tag pipeline 2535652127 | [GitLab tag pipeline 2535652127](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2535652127) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.176 AI release QA notes | `reports/qa/evidence/qa-20260519-v811176-ai-release-qa.md` | - |
-| playwright-screenshot | Dashboard render on v8.11.176 production | `reports/qa/evidence/qa-20260519-v811176-dashboard.png` | - |
-| playwright-screenshot | AI network follow-up filter result | `reports/qa/evidence/qa-20260519-v811176-ai-network-filter.png` | - |
-| playwright-screenshot | Anomaly tab signal strength wording | `reports/qa/evidence/qa-20260519-v811176-anomaly-tab-signal-strength.png` | - |
-| playwright-screenshot | Incident report generated on v8.11.176 production | `reports/qa/evidence/qa-20260519-v811176-incident-report.png` | - |
+| playwright-screenshot | Incident report detail button expanded on v8.11.177 production | `reports/qa/evidence/qa-20260519-v811177-incident-detail-button.png` | - |
+| playwright-console | Incident report detail button QA notes | `reports/qa/evidence/qa-20260519-v811177-incident-detail-button.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -540,6 +532,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - health-route-envelope-test-alignment: Health route envelope/cache typing 정렬 (completed 1회, last QA-20260325-0184)
 - health-route-supabase-session-timeout: 헬스체크 Supabase 세션 프로브 타임아웃 강제 (completed 1회, last QA-20260325-0183)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
+- incident-report-detail-button-affordance: Incident report detail action is visibly labeled and exposes expanded/collapsed state (completed 1회, last QA-20260519-0530)
 - incident-report-non-degraded-pipeline: Incident report generation returns non-degraded Reporter Pipeline success (completed 1회, last QA-20260519-0529)
 - internal-disclosure-user-mode-v811112: General user-mode internal path disclosure blocked (completed 1회, last QA-20260507-0419)
 - landing-bootstrap-auth-copy-hidden: 랜딩 첫 진입 bootstrap 인증 카피 숨김 (completed 1회, last QA-20260402-0206)
@@ -793,6 +786,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0530 | 2026-05-19T00:36:38.886Z | targeted | yes | yes | v8.11.177 Vercel Playwright MCP Incident Detail Button QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0529 | 2026-05-19T00:09:51.939Z | release-gate | yes | yes | v8.11.176 Vercel Playwright MCP AI Release QA | 15 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260519-0528 | 2026-05-18T19:14:20.082Z | targeted | no | yes | v8.11.175 Vercel Playwright MCP AI NLQ/Anomaly Drift Check | 13 | 0 | 2 | 0 | 1 | 3 |
 | QA-20260518-0527 | 2026-05-18T14:49:19.097Z | targeted | yes | yes | v8.11.175 Vercel Playwright MCP Reporter Fallback Evidence Fix | 20 | 1 | 0 | 0 | 0 | 0 |
@@ -812,4 +806,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0513 | 2026-05-17T16:04:28.616Z | targeted | no | yes | AI Env Disclosure Guard Targeted QA | 7 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260517-0512 | 2026-05-17T08:57:50.648Z | targeted | yes | yes | v8.11.165 Vercel Production AI Assistant Live Smoke | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260517-0511 | 2026-05-16T18:51:23.923Z | targeted | yes | yes | v8.11.165 Production Chrome DevTools MCP - System Start/Stop State Contract | 10 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260517-0510 | 2026-05-16T16:03:37.386Z | targeted | yes | yes | v8.11.161 Production Playwright MCP - Dashboard Cards, Profile State, System Controls | 10 | 2 | 2 | 0 | 0 | 1 |
