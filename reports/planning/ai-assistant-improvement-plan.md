@@ -15,7 +15,7 @@
 
 OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/components + Supervisor proxy)의 코드 위생과 canonical 문서 정합성을 다음 한 사이클 안에 끌어올린다.
 
-- 코드: hot file 재팽창(`orchestrator-routing.ts`, `useAIChatCore.ts`) 추가 분리. 신규 abstraction 추가 금지.
+- 코드: hot file 재팽창(`orchestrator-routing.ts`, `useAIChatCore.ts`, `useHybridAIQuery.ts`) 1차 분리 완료. 신규 abstraction 추가 금지.
 - 문서: `ai-engine-architecture.md`, `frontend-backend-comparison.md`, `01-ai-agent-design.md`, `02-runtime-architecture.md`의 stale 수치/표현 갱신. 신규 진입 맵 1장 추가.
 - 다이어그램: Vision provider 체인은 `Gemini -> Z.AI Vision` 기준으로 갱신 완료. 남은 작업은 hot file 분리와 hook map 작성이다.
 
@@ -35,7 +35,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 |------|-----:|-----:|------|
 | `cloud-run/.../orchestrator-routing.ts` | 384 | 완료 | `orchestrator-routing-policy.ts`/`orchestrator-routing-telemetry-helpers.ts` 추출로 483→384. C1 완료 |
 | `src/hooks/ai/useAIChatCore.ts` | 578 | 완료 | `chat-core-send-plan.ts` 추출로 607→578. C2 완료 |
-| `src/hooks/ai/useHybridAIQuery.ts` | 704 | ≤600 (1차), ≤500 (2차) | `frontend-backend-comparison.md`의 잔여 909줄/~844줄 표기를 704줄 기준으로 정정. F2-r 후속 작업 명확화 필요 |
+| `src/hooks/ai/useHybridAIQuery.ts` | 523 | 완료 (1차) | `async-result-message.ts` 추출로 704→523. ≤500은 2차 후속 후보 |
 | `src/stores/useAISidebarStore.ts` | 674 | 후속 후보 | comparison 문서의 551줄 기록은 stale였으며, 현재 plan의 구현 task 범위에는 포함하지 않음 |
 | `cloud-run/.../reporter-pipeline-report.ts` | 673 | ≤600 | report schema/format/score가 한 파일에 혼재. 정상 범주이나 단일 모듈 확장 시 분리 후보 |
 
@@ -44,7 +44,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 | 위치 | 항목 | 현재 표기 | 실제 | 처리 |
 |------|------|-----------|------|------|
 | `frontend-backend-comparison.md` | useAIChatCore LOC | 426 | 607 | 갱신 완료 |
-| `frontend-backend-comparison.md` | useHybridAIQuery LOC / F2-r 잔여량 | 909 / ~844 | 704 | 갱신 완료. C3은 ≤600 1차, ≤500 2차 후속 |
+| `frontend-backend-comparison.md` | useHybridAIQuery LOC / F2-r 잔여량 | 909 / ~844 | 523 | 갱신 완료. C3 1차 완료, ≤500은 2차 후속 후보 |
 | `frontend-backend-comparison.md` | useAISidebarStore LOC | 551 | 674 | 갱신 완료. 구현 task는 후속 후보로만 유지 |
 | `ai-engine-architecture.md` provider mesh | stale Vision provider chain | `Gemini -> Z.AI Vision` | 완료 | provider removal follow-up에서 반영 |
 | `02-runtime-architecture.md:98` | Mermaid LLM 박스 | `Gemini -> Z.AI Vision` | 완료 | provider removal follow-up에서 반영 |
@@ -65,7 +65,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 |------|---------|---------|
 | `orchestrator-routing.ts` LOC | 483 | 384 (routing policy/tool observation helper 추출 완료) |
 | `useAIChatCore.ts` LOC | 607 | 578 (send plan/helper 추출 완료) |
-| `useHybridAIQuery.ts` LOC | 704 | ≤600 (1차), ≤500 (2차 후속) |
+| `useHybridAIQuery.ts` LOC | 704 | 523 (1차 완료, ≤500 2차 후속 후보) |
 | AI hook 진입 맵 | 없음 | `docs/reference/architecture/ai/ai-hooks-map.md` 1페이지 |
 | Orchestrator LLM routing 복원 | 금지 | 금지 유지 |
 
@@ -79,7 +79,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 
 - [x] `orchestrator-routing.ts` 추출 후 `targeted Vitest` (orchestrator routing test suite) PASS
 - [x] `useAIChatCore.ts` 추출 후 `useAIChatCore.test.ts` + `useEnhancedChatMessages.test.ts` PASS
-- [ ] `useHybridAIQuery.ts` 추출 후 `useHybridAIQuery.test.ts` PASS
+- [x] `useHybridAIQuery.ts` 추출 후 `useHybridAIQuery.test.ts` PASS
 - [ ] AI hook map 문서가 9개 hook 모두를 1줄 이상 설명한다
 - [ ] `npm run docs:budget:strict` 통과 (활성 문서 한도 90 유지)
 - [ ] `npm run line-guard` 통과
@@ -90,7 +90,7 @@ OpenManager AI Assistant 스택(Cloud Run AI Engine + Vercel frontend hooks/comp
 |----|------|------|------|
 | C1 | `orchestrator-routing.ts` → `orchestrator-routing-policy.ts`/`orchestrator-routing-telemetry-helpers.ts` 추출 (≤450) | completed | 483→384. SDD failing spec 커밋 `1371c7fd8` 선행 |
 | C2 | `useAIChatCore.ts` → hybrid 분기 헬퍼 추출 (≤580) | completed | 607→578. SDD failing spec 커밋 `76988f50d` 선행 |
-| C3 | `useHybridAIQuery.ts` 1차 분할 (≤600) | pending | 904→704 부분 진척 반영, 잔여 분할 우선순위 재산정 |
+| C3 | `useHybridAIQuery.ts` 1차 분할 (≤600) | completed | 704→523. SDD failing spec 커밋 `d9ccf06fa` 선행. ≤500은 2차 후속 후보 |
 | D1 | `frontend-backend-comparison.md` LOC/표 갱신 | completed | 현재 LOC drift 정리 완료. C1~C3 적용 후 각 task에서 재측정 |
 | D2 | Vision provider chain 문서 정리 | completed | `Gemini -> Z.AI Vision` 기준 반영 |
 | D3 | `01-ai-agent-design.md` NLQ ↔ Metrics Query 별칭 명시 | completed | 2026-05-19 문서 확인 |
