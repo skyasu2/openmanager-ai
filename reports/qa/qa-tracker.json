@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-19T02:21:04.444Z"
+    "updatedAt": "2026-05-19T02:49:58.801Z"
   },
   "sequence": {
-    "nextRunNumber": 533
+    "nextRunNumber": 534
   },
   "summary": {
-    "totalRecordedRuns": 530,
-    "totalRuns": 424,
+    "totalRecordedRuns": 531,
+    "totalRuns": 425,
     "excludedRuns": 106,
-    "totalChecks": 3861,
-    "totalPassed": 3714,
-    "totalFailed": 136,
+    "totalChecks": 3867,
+    "totalPassed": 3718,
+    "totalFailed": 138,
     "completionRate": 100,
     "completedItems": 604,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
-    "expertDomainsTracked": 15,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260519-0532",
-    "lastRecordedAt": "2026-05-19T02:21:04.444Z",
-    "latestRecordedRunId": "QA-20260519-0532",
-    "latestRecordedAt": "2026-05-19T02:21:04.444Z"
+    "expertDomainsTracked": 17,
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260519-0533",
+    "lastRecordedAt": "2026-05-19T02:49:58.801Z",
+    "latestRecordedRunId": "QA-20260519-0533",
+    "latestRecordedAt": "2026-05-19T02:49:58.801Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -60270,6 +60270,109 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "release-facing-run-without-durable-artifact",
+        "reason": "QA-20260519-0532 was recorded from an already completed Chrome DevTools MCP targeted verification without contemporaneous durable artifact capture. Later QA-20260519-0533 and implementation follow-up preserve the actionable findings.",
+        "recordedAt": "2026-05-19T03:43:00.000Z",
+        "recordedBy": "codex"
+      }
+    },
+    {
+      "runId": "QA-20260519-0533",
+      "recordedAt": "2026-05-19T02:49:58.801Z",
+      "recordedAtKst": "2026-05-19 11:49:58 KST",
+      "title": "v8.11.178 내용 충실도 검증 — AI 수치 정합성·응답 경로·신호 강도",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260519-0533.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1",
+        "deploymentUrl": "https://openmanager-ja5xj0cfi-skyasus-projects.vercel.app",
+        "commitSha": "5801a008e37f60d2159b5bac1399a598614142db"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production v8.11.178 content-fidelity check",
+        "NLQ direct Cloud Run stream response path",
+        "Fresh page AI/dashboard metric parity",
+        "Long-session aiQueryAsOfDataSlot frozen-slot mismatch observation",
+        "Anomaly/trend static signal-strength observation"
+      ],
+      "skippedSurfaces": [
+        "Full release gate; this run is a targeted quality observation",
+        "Cloud Run admin observability pack"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "NLQ CPU top3",
+          "agent": "NLQ",
+          "provider": "deterministic",
+          "latencyMs": 310
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-data-integrity",
+          "domainName": "AI 데이터 정합성",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Fresh page load values matched dashboard metrics exactly and NLQ was served by Cloud Run direct stream.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "anomaly-detection",
+          "domainName": "이상감지 알고리즘",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Snapshot anomaly confidence was static at 0.9 and did not reflect threshold distance or severity.",
+          "nextAction": "Replace static snapshot confidence with severity and threshold-distance based signal strength."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-19T12:38:31+09:00",
+          "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after QA-20260519-0533.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "AI content fidelity and anomaly signal-strength notes",
+          "path": "reports/qa/evidence/qa-20260519-v811178-ai-content-fidelity.md"
+        }
+      ],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
       "wontFixCount": 0
     }
   ],
@@ -60528,6 +60631,40 @@
       "lastImprovementNeeded": false,
       "lastRationale": "Cloud Run remains at 1 CPU / 512Mi with max scale 1, and the last 200 Cloud Build rows have empty machineType values.",
       "lastNextAction": ""
+    },
+    "ai-data-integrity": {
+      "domainId": "ai-data-integrity",
+      "domainName": "AI 데이터 정합성",
+      "firstSeenRunId": "QA-20260519-0533",
+      "firstSeenAt": "2026-05-19T02:49:58.801Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260519-0533",
+      "lastSeenAt": "2026-05-19T02:49:58.801Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Fresh page load values matched dashboard metrics exactly and NLQ was served by Cloud Run direct stream.",
+      "lastNextAction": ""
+    },
+    "anomaly-detection": {
+      "domainId": "anomaly-detection",
+      "domainName": "이상감지 알고리즘",
+      "firstSeenRunId": "QA-20260519-0533",
+      "firstSeenAt": "2026-05-19T02:49:58.801Z",
+      "seenCount": 1,
+      "appropriateCount": 0,
+      "partialCount": 1,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 1,
+      "lastRunId": "QA-20260519-0533",
+      "lastSeenAt": "2026-05-19T02:49:58.801Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Snapshot anomaly confidence was static at 0.9 and did not reflect threshold distance or severity.",
+      "lastNextAction": "Replace static snapshot confidence with severity and threshold-distance based signal strength."
     }
   }
 }

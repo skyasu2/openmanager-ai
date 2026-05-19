@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 11:21:04 KST
+> Generated at: 2026-05-19 12:43:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 530 |
-| Total Runs (Counted) | 424 |
+| Total Recorded Runs | 531 |
+| Total Runs (Counted) | 425 |
 | Non-counted Runs | 106 |
-| Total Checks | 3861 |
-| Passed | 3714 |
-| Failed | 136 |
+| Total Checks | 3867 |
+| Passed | 3718 |
+| Failed | 138 |
 | Completed Items | 604 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 24 |
-| Expert Domains Tracked | 15 |
-| Expert Open Gaps | 0 |
+| Expert Domains Tracked | 17 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260519-0532 (2026-05-19T02:21:04.444Z) |
-| Latest Recorded Run | QA-20260519-0532 (2026-05-19T02:21:04.444Z) |
+| Last Counted Run | QA-20260519-0533 (2026-05-19T02:49:58.801Z) |
+| Latest Recorded Run | QA-20260519-0533 (2026-05-19T02:49:58.801Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,35 +34,36 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0532 (2026-05-19T02:21:04.444Z)
+Latest run: QA-20260519-0533 (2026-05-19T02:49:58.801Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Frontend UX & Accessibility Reviewer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| AI 데이터 정합성 | appropriate | no | - |
+| 이상감지 알고리즘 | partially-appropriate | yes | Replace static snapshot confidence with severity and threshold-distance based signal strength. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after v8.11.177 targeted production QA. |
+| vercel | cli | checked | normal | Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after QA-20260519-0533. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T02:21:04.444Z -> 2026-05-19T02:21:04.444Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 6
+- Window: 2026-05-18T02:49:58.801Z -> 2026-05-19T02:49:58.801Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Reporter Agent | cloud-run | 3 | 11609ms | 30498ms | - | - | 11264ms | 29753ms | QA-20260518-0523 |
 | NLQ Agent | unknown | 1 | 14000ms | 14000ms | - | - | - | - | QA-20260519-0532 |
 | Reporter Agent | unknown | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260519-0532 |
+| NLQ | deterministic | 1 | 310ms | 310ms | - | - | - | - | QA-20260519-0533 |
 | Health Check | cloud-run | 1 | 129ms | 129ms | - | - | - | - | QA-20260518-0522 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T02:21:04.444Z -> 2026-05-19T02:21:04.444Z (24h)
+- Window: 2026-05-18T02:49:58.801Z -> 2026-05-19T02:49:58.801Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,12 +75,12 @@ Latest run: QA-20260519-0532 (2026-05-19T02:21:04.444Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1 / SHA ae9d7cd6
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: /dashboard, ai-sidebar, auto-report, anomaly-trend, nlq-chat
-- Skipped Surfaces: observability-pack, auth-flow
+- Deployment: dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1 / SHA 5801a008
+- Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: Vercel production v8.11.178 content-fidelity check, NLQ direct Cloud Run stream response path, Fresh page AI/dashboard metric parity, Long-session aiQueryAsOfDataSlot frozen-slot mismatch observation, Anomaly/trend static signal-strength observation
+- Skipped Surfaces: Full release gate; this run is a targeted quality observation, Cloud Run admin observability pack
 
 ## Links (Latest Run)
 
@@ -91,11 +92,12 @@ Latest run: QA-20260519-0532 (2026-05-19T02:21:04.444Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-console | AI content fidelity and anomaly signal-strength notes | `reports/qa/evidence/qa-20260519-v811178-ai-content-fidelity.md` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- anomaly-detection: 이상감지 알고리즘 (last QA-20260519-0533)
+  next: Replace static snapshot confidence with severity and threshold-distance based signal strength.
 
 ## Pending Improvements
 
@@ -788,6 +790,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260519-0533 | 2026-05-19T02:49:58.801Z | targeted | no | yes | v8.11.178 내용 충실도 검증 — AI 수치 정합성·응답 경로·신호 강도 | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260519-0532 | 2026-05-19T02:21:04.444Z | targeted | yes | yes | v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260519-0531 | 2026-05-19T02:09:49.493Z | targeted | yes | yes | v8.11.178 Vercel Playwright MCP AI Gradient Restoration QA | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0530 | 2026-05-19T00:36:38.886Z | targeted | yes | yes | v8.11.177 Vercel Playwright MCP Incident Detail Button QA | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -807,4 +810,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0516 | 2026-05-17T18:27:54.947Z | release-gate | yes | yes | Vercel Chrome-DevTools QA - Recent Changes (v8.11.167) | 20 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0515 | 2026-05-17T18:08:49.082Z | targeted | yes | yes | v8.11.167 Vercel Production Post-Deploy Regression Closure | 14 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260518-0514 | 2026-05-17T16:45:19.291Z | targeted | no | yes | Vercel Playwright MCP - Recent Regression Check | 14 | 2 | 3 | 0 | 0 | 3 |
-| QA-20260518-0513 | 2026-05-17T16:04:28.616Z | targeted | no | yes | AI Env Disclosure Guard Targeted QA | 7 | 0 | 0 | 0 | 0 | 1 |

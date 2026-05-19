@@ -1,0 +1,94 @@
+{
+  "runId": "QA-20260519-0533",
+  "recordedAt": "2026-05-19T02:49:58.801Z",
+  "recordedAtKst": "2026-05-19 11:49:58 KST",
+  "runTitle": "v8.11.178 내용 충실도 검증 — AI 수치 정합성·응답 경로·신호 강도",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1",
+    "deploymentUrl": "https://openmanager-ja5xj0cfi-skyasus-projects.vercel.app",
+    "commitSha": "5801a008e37f60d2159b5bac1399a598614142db"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "Vercel production v8.11.178 content-fidelity check",
+    "NLQ direct Cloud Run stream response path",
+    "Fresh page AI/dashboard metric parity",
+    "Long-session aiQueryAsOfDataSlot frozen-slot mismatch observation",
+    "Anomaly/trend static signal-strength observation"
+  ],
+  "skippedSurfaces": [
+    "Full release gate; this run is a targeted quality observation",
+    "Cloud Run admin observability pack"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 4,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "NLQ CPU top3",
+      "agent": "NLQ",
+      "provider": "deterministic",
+      "latencyMs": 310
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-data-integrity",
+      "domainName": "AI 데이터 정합성",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Fresh page load values matched dashboard metrics exactly and NLQ was served by Cloud Run direct stream.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "anomaly-detection",
+      "domainName": "이상감지 알고리즘",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Snapshot anomaly confidence was static at 0.9 and did not reflect threshold distance or severity.",
+      "nextAction": "Replace static snapshot confidence with severity and threshold-distance based signal strength."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-19T12:38:31+09:00",
+      "summary": "Current billing period effective $11.4422, billed $0.0000; no unexpected billed usage observed after QA-20260519-0533.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "AI content fidelity and anomaly signal-strength notes",
+      "path": "reports/qa/evidence/qa-20260519-v811178-ai-content-fidelity.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Long-session aiQueryAsOfDataSlot freeze is a WONT-FIX candidate unless live per-session slot resync becomes a product requirement.",
+    "Full real-time dashboard/AI slot synchronization is a WONT-FIX candidate for the current portfolio/free-tier scope.",
+    "Static anomaly confidence is not accepted as WONT-FIX; it is tracked as the next implementation quality fix."
+  ],
+  "links": []
+}

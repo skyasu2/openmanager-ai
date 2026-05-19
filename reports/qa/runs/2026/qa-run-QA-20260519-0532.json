@@ -84,6 +84,13 @@
     }
   ],
   "artifacts": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "release-facing-run-without-durable-artifact",
+    "reason": "QA-20260519-0532 was recorded from an already completed Chrome DevTools MCP targeted verification without contemporaneous durable artifact capture. Later QA-20260519-0533 and implementation follow-up preserve the actionable findings.",
+    "recordedAt": "2026-05-19T03:43:00.000Z",
+    "recordedBy": "codex"
+  },
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],
