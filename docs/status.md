@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-19 | **현재 버전 스냅샷**: v8.11.179
+**상태 스냅샷 기준일**: 2026-05-19 | **현재 버전 스냅샷**: v8.11.180
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.180** (2026-05-19) — Bug Fixes: ai: harden weekly follow-up contracts; Tests: qa: record v8.11.179 anomaly confidence qa
 - **v8.11.179** (2026-05-19) — Tests: qa: correct ai content fidelity metadata; Tests: qa: record v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback; Tests: qa: record v8.11.178 ai gradient qa
 - **v8.11.178** (2026-05-19) — Bug Fixes: ui: restore ai gradient motion; Tests: qa: record v8.11.177 incident detail button qa
 - **v8.11.177** (2026-05-19) — Bug Fixes: ui: clarify incident report detail action; Tests: qa: record v8.11.176 ai release qa
 - **v8.11.176** (2026-05-19) — Bug Fixes: ai: stabilize nlq anomaly reporting flows; Bug Fixes: ai: improve reporter incident analysis path; Tests: qa: record reporter fallback evidence QA
-- **v8.11.175** (2026-05-18) — Bug Fixes: ai: include monitoring evidence in reporter fallback
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
