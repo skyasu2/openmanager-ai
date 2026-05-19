@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 16:40:23 KST
+> Generated at: 2026-05-19 16:44:03 KST
 
 ## Summary
 
@@ -98,6 +98,7 @@ Latest run: QA-20260519-0537 (2026-05-19T07:40:00.196Z)
 | Type | Label | Location | Viewer |
 |---|---|---|---|
 | playwright-console | v8.11.181 weekly hardening post-deploy evidence | `reports/qa/evidence/qa-20260519-v811181-weekly-hardening-post-deploy.md` | - |
+| playwright-screenshot | v8.11.181 analyze_server cache HIT UI pass screenshot | `reports/qa/evidence/qa-20260519-v811181-analyze-server-cache-hit-pass.png` | - |
 
 ## Expert Domain Open Gaps
 

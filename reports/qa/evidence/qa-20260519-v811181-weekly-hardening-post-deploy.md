@@ -24,6 +24,7 @@ source: playwright-mcp
 - The cached response shape was normalized: `success=true`, `data` object present, legacy top-level `response` absent, `data.serverId=cache-redis-dc1-01`, and `data.metadata.usedFallback=false`.
 - The `/dashboard/ai-assistant` 이상감지/추세 tab selected `cache-redis-dc1-01` and completed single-server analysis without the previous `분석 실패` state.
 - UI result displayed current status with 2 anomalies, CPU 71%, memory 92%, disk normal, and trend/insight sections.
+- Screenshot evidence: `reports/qa/evidence/qa-20260519-v811181-analyze-server-cache-hit-pass.png`.
 - Vercel usage check: `npm run check:usage:vercel` passed via `vercel usage --format json --non-interactive`; effective usage `12.6977 USD`, billed `0.0000 USD`.
 
 ## Notes

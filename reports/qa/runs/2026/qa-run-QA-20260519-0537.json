@@ -108,6 +108,11 @@
       "type": "playwright-console",
       "label": "v8.11.181 weekly hardening post-deploy evidence",
       "path": "reports/qa/evidence/qa-20260519-v811181-weekly-hardening-post-deploy.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.181 analyze_server cache HIT UI pass screenshot",
+      "path": "reports/qa/evidence/qa-20260519-v811181-analyze-server-cache-hit-pass.png"
     }
   ],
   "completedImprovements": [
