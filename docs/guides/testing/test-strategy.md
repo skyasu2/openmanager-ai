@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-05-19
 > Canonical: docs/guides/testing/test-strategy.md
 > Tags: testing,strategy,quality,conversational-qa
 
@@ -162,6 +162,19 @@ AI 관련 릴리즈 QA(broad/release-gate scope)에는 대화형 QA 결과를 `q
   ]
 }
 ```
+
+### Vision Agent 실이미지 QA 예외
+
+Vision Agent의 실제 이미지/스크린샷 판독은 표준 5문항 대화형 QA나 일반 release gate에 자동 포함하지 않는다.
+
+- 실행 조건: 사용자가 명시적으로 Vision 실이미지 확인을 요청하거나, Vision routing/provider 계약을 직접 수정한 경우에만 수동 smoke로 1회 실행
+- 기본 검증: `Vitest` 계약 테스트와 provider selection mock으로 routing/fallback을 검증
+- 금지: 매 QA마다 Gemini/GLM Vision 실이미지 호출을 반복하거나 provider matrix로 확장
+- 기록: 실호출을 했다면 `reports/qa`에 수동 QA로 기록하고, 사용한 이미지 수·provider·model·응답 성공 여부만 남긴다
+
+현재 운영 원칙:
+- Gemini Vision primary는 `v8.11.184`에서 Playwright PNG 1장으로 production 수동 smoke를 확인했다.
+- Z.AI `glm-4.6v-flash` Vision fallback은 코드상 fallback selection 계약과 provider availability만 검증한다. 실제 이미지 판독 live smoke는 명시 요청이 있을 때만 별도 수동 실행한다.
 
 ---
 

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-19 KST (Vision attachment routing hotfix)
+**Last Updated**: 2026-05-19 KST (Vision real-image QA manual-only policy)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -123,6 +123,12 @@
   - 서버 키워드가 없는 "첨부된 Playwright 스크린샷" 질의도 Vision Agent pre-filter로 분류한다.
   - Vision Agent 이미지/파일 입력은 범용 tool loop 대신 Gemini/Z.AI 네이티브 멀티모달 호출을 사용해 빈 응답을 방지한다.
   - 검증: AI Engine targeted tests 97 PASS, AI Engine `type-check`, AI Engine full test 1345 PASS, 실제 Playwright PNG 로컬 Vision smoke PASS.
+
+### Completed (2026-05-19) — Codex (Vision QA Cost Guardrail)
+- [x] Vision Agent 실이미지 QA manual-only 정책 반영
+  - Gemini/GLM Vision 실제 이미지 호출은 일반 release QA/표준 5문항에 포함하지 않고, 사용자가 명시 요청하거나 Vision routing/provider 계약이 변경된 경우에만 수동 smoke 1회로 제한한다.
+  - Gemini Vision primary는 `v8.11.184`에서 Playwright PNG production smoke로 확인 완료.
+  - Z.AI `glm-4.6v-flash` Vision fallback은 모델 선택/availability 계약만 확인된 상태이며, 실제 이미지 판독 live smoke는 명시 요청 시 별도 수동 실행 대상으로 남긴다.
 
 ### Completed (2026-05-19) — Codex (OpenRouter Removal)
 - [x] OpenRouter provider runtime code path 제거 완료

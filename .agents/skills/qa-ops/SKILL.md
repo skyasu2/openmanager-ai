@@ -1,7 +1,7 @@
 ---
 name: qa-ops
 description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, record every run into reports/qa tracker, and include conversational AI QA for AI-related changes.
-version: v1.5.1
+version: v1.5.2
 ---
 
 # OpenManager QA Ops
@@ -66,6 +66,13 @@ Final QA operation workflow with cumulative tracking.
 - Judge each answer as Pass (specific metrics/context), Warn (vague but usable), or Fail (empty/error/wrong).
 - Warn/Fail means fix prompt/routing/data grounding and rerun the failed question before recording a passing release-facing run.
 - Record the result with `coveredSurfaces: ["conversational-ai-qa"]` and an `expertAssessments` entry.
+
+3.6. Treat Vision real-image QA as manual-only.
+- Do not include Gemini Vision or Z.AI GLM Vision live image calls in routine release QA, standard five-question QA, or repeated provider matrices.
+- Run one real-image Vision smoke only when the user explicitly asks for it or when Vision routing/provider behavior is the changed surface.
+- Prefer deterministic routing/provider-selection tests for routine validation. Live Vision calls spend deployed provider quota and can quickly exhaust Gemini/GLM free-tier limits.
+- When a Vision live smoke is executed, record provider, model, image count, and pass/fail in `reports/qa`; do not rerun just to collect extra samples.
+- Z.AI GLM Vision fallback live smoke is not assumed from selection tests. Mark it as unverified unless a manual image call explicitly exercised `provider=zai`, `modelId=glm-4.6v-flash`.
 
 4. Run QA scenarios and record coverage explicitly.
 - Broad QA must list which route/feature packs were covered.
@@ -215,3 +222,4 @@ Close with one short operator note that explains the highest remaining risk or s
 - 2026-04-28: v1.4.0 - Added Async Job + SSE Probing Playbook for Cloud Tasks dispatch QA, including EventSource Performance API capture, CSRF-safe UI flow, reconnect interpretation, and health badge separation.
 - 2026-05-07: v1.5.0 - Added conversational AI QA for AI-related changes with the standard five-question set and tracker recording guidance.
 - 2026-05-07: v1.5.1 - Aligned QA selection with risk-based test methodology, cost guardrails, and representative live-run limits.
+- 2026-05-19: v1.5.2 - Made Vision real-image Gemini/GLM smoke manual-only and documented GLM fallback live-smoke evidence requirements.

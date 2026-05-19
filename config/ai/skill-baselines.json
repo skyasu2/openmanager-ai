@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewed": "2026-05-13",
+  "lastReviewed": "2026-05-19",
   "policy": {
     "standardsDoc": "docs/guides/ai/skill-standards.md",
     "geminiSameNameOverlay": "forbidden",
@@ -107,6 +107,7 @@
         "Record QA evidence through qa:record and status commands.",
         "Keep release-facing QA risk-based and representative; avoid repeated live runs, broad matrix expansion, or coverage-percentage chasing.",
         "For AI-related prompt, routing, knowledge base, precomputed-state/data source, response parsing, or output formatting changes, include conversational AI QA with the standard five-question set and record the result.",
+        "Run Vision Agent real-image Gemini/GLM calls only as an explicit manual smoke when Vision routing/provider behavior is in scope; default QA must rely on deterministic contracts and must not repeatedly spend Vision provider quota.",
         "For async AI Job + SSE QA, use the UI flow instead of CSRF-bypassing direct fetches, inspect EventSource streams through the Performance API, and report health probe failures separately from successful query execution."
       ],
       "adapters": {
