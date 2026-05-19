@@ -8,6 +8,11 @@ import {
   isQAThinkingVisualizerPrompt,
 } from './routing-debug-messages';
 
+export const CHAT_CORE_SEND_MESSAGES = {
+  artifactBusy:
+    '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.',
+} as const;
+
 export type ChatCoreSendPlan =
   | { kind: 'noop' }
   | { kind: 'session-limit'; messageCount: number }
@@ -53,6 +58,8 @@ export function resolveChatCoreSendPlan({
 
   const effectiveText = hasText ? textInput : '[이미지/파일 분석 요청]';
 
+  // Preserve user intent while a stream/job is active. The queued query is
+  // replayed after the active generation, even if an artifact request is also busy.
   if (hybridIsLoading) {
     return { kind: 'queue', effectiveText, attachments };
   }
@@ -113,9 +120,7 @@ export function executeLocalChatCoreSendPlan(
       context.setInput('');
       return { handled: true };
     case 'artifact-busy':
-      context.setError(
-        '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
-      );
+      context.setError(CHAT_CORE_SEND_MESSAGES.artifactBusy);
       return { handled: true };
     case 'qa-thinking': {
       context.resetRequestState(plan.effectiveText, plan.attachments || null);

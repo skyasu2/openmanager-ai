@@ -6,6 +6,33 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+function areJsonLikeValuesEqual(left: unknown, right: unknown): boolean {
+  if (Object.is(left, right)) return true;
+
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right)) return false;
+    if (left.length !== right.length) return false;
+
+    return left.every((item, index) =>
+      areJsonLikeValuesEqual(item, right[index])
+    );
+  }
+
+  if (isRecord(left) || isRecord(right)) {
+    if (!isRecord(left) || !isRecord(right)) return false;
+
+    const leftKeys = Object.keys(left).sort();
+    const rightKeys = Object.keys(right).sort();
+    if (!areJsonLikeValuesEqual(leftKeys, rightKeys)) return false;
+
+    return leftKeys.every((key) =>
+      areJsonLikeValuesEqual(left[key], right[key])
+    );
+  }
+
+  return false;
+}
+
 export function buildAssistantMessageFromAsyncResult(
   result: AsyncQueryResult,
   createMessageId: (prefix: string) => string = generateMessageId
@@ -145,10 +172,10 @@ export function mergeFinishedAssistantIntoMessages(
     const mergedParts = nextParts ?? targetMessage.parts;
     const metadataChanged =
       mergedMetadata !== targetMessage.metadata &&
-      JSON.stringify(mergedMetadata) !== JSON.stringify(targetMessage.metadata);
+      !areJsonLikeValuesEqual(mergedMetadata, targetMessage.metadata);
     const partsChanged =
       mergedParts !== targetMessage.parts &&
-      JSON.stringify(mergedParts) !== JSON.stringify(targetMessage.parts);
+      !areJsonLikeValuesEqual(mergedParts, targetMessage.parts);
 
     if (!metadataChanged && !partsChanged) {
       return targetMessage;
