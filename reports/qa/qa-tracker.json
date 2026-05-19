@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-19T02:49:58.801Z"
+    "updatedAt": "2026-05-19T04:11:01.014Z"
   },
   "sequence": {
-    "nextRunNumber": 534
+    "nextRunNumber": 535
   },
   "summary": {
-    "totalRecordedRuns": 531,
-    "totalRuns": 425,
+    "totalRecordedRuns": 532,
+    "totalRuns": 426,
     "excludedRuns": 106,
-    "totalChecks": 3867,
-    "totalPassed": 3718,
+    "totalChecks": 3873,
+    "totalPassed": 3724,
     "totalFailed": 138,
     "completionRate": 100,
-    "completedItems": 604,
+    "completedItems": 606,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 24,
     "expertDomainsTracked": 17,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260519-0533",
-    "lastRecordedAt": "2026-05-19T02:49:58.801Z",
-    "latestRecordedRunId": "QA-20260519-0533",
-    "latestRecordedAt": "2026-05-19T02:49:58.801Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260519-0534",
+    "lastRecordedAt": "2026-05-19T04:11:01.014Z",
+    "latestRecordedRunId": "QA-20260519-0534",
+    "latestRecordedAt": "2026-05-19T04:11:01.014Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14801,6 +14801,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-19T02:09:49.493Z"
+    },
+    "anomaly-detection-static-confidence": {
+      "id": "anomaly-detection-static-confidence",
+      "title": "Replace static anomaly/trend snapshot confidence with severity and threshold-distance scoring",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260519-0534",
+      "firstSeenAt": "2026-05-19T04:11:01.014Z",
+      "lastSeenRunId": "QA-20260519-0534",
+      "lastSeenAt": "2026-05-19T04:11:01.014Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Production Playwright MCP showed memory 82% >= 80% with signal strength 64%, not the previous fixed 90%.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-19T04:11:01.014Z"
+    },
+    "ai-gradient-motion-restore": {
+      "id": "ai-gradient-motion-restore",
+      "title": "Restore animated AI text gradient effect on production",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260519-0534",
+      "firstSeenAt": "2026-05-19T04:11:01.014Z",
+      "lastSeenRunId": "QA-20260519-0534",
+      "lastSeenAt": "2026-05-19T04:11:01.014Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Production computed style for header AI text uses gradient-diagonal, 200% 200%, 3s animation.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-19T04:11:01.014Z"
     }
   },
   "runs": [
@@ -60374,6 +60422,133 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260519-0534",
+      "recordedAt": "2026-05-19T04:11:01.014Z",
+      "recordedAtKst": "2026-05-19 13:11:01 KST",
+      "title": "v8.11.179 Vercel Playwright QA - anomaly confidence and AI gradient",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260519-0534.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_clytpcga8",
+        "deploymentUrl": "https://openmanager-clytpcga8-skyasus-projects.vercel.app",
+        "commitSha": "870fb39a02ac21073fdedbd114dbfced6fa8de0c"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant",
+        "AI Assistant anomaly/trend tab",
+        "snapshot anomaly confidence",
+        "AI gradient header"
+      ],
+      "skippedSurfaces": [
+        "conversational-ai-qa",
+        "incident reporter generation",
+        "core route pack",
+        "observability/security pack"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI assistant anomaly/trend surface rendered the revised confidence value from production data instead of a fixed 90% signal.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Monitoring snapshot risk signal is now severity and threshold-distance aware in the tested production scope.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2535911663, Vercel production smoke, and usage guard all passed for v8.11.179.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Regression coverage includes targeted Vitest assertions for scaled confidence plus Playwright MCP production verification.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Displayed signal strength reflects the current metric value and configured threshold instead of a static placeholder.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "anomaly-detection",
+          "domainName": "이상감지 알고리즘",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production Playwright MCP confirmed snapshot confidence is no longer hardcoded: memory 82% over 80% threshold displayed signal strength 64%.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-19T13:09:10+09:00",
+          "summary": "Current billing period reviewed after v8.11.179 production QA; effective $11.4422, billed $0.0000.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.11.179 anomaly confidence Playwright evidence",
+          "path": "reports/qa/evidence/qa-20260519-v811179-anomaly-confidence.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.179 anomaly confidence production screenshot",
+          "path": "reports/qa/evidence/qa-20260519-v811179-anomaly-confidence.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -60382,16 +60557,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 264,
-      "appropriateCount": 226,
+      "seenCount": 265,
+      "appropriateCount": 227,
       "partialCount": 38,
       "inappropriateCount": 0,
       "improvementNeededCount": 48,
-      "lastRunId": "QA-20260519-0529",
-      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "lastRunId": "QA-20260519-0534",
+      "lastSeenAt": "2026-05-19T04:11:01.014Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The regression targets from QA-20260519-0528 were rechecked on production v8.11.176: network follow-up filtering now returns a scoped network result, anomaly wording is corrected, and incident report generation returns non-degraded success.",
+      "lastRationale": "AI assistant anomaly/trend surface rendered the revised confidence value from production data instead of a fixed 90% signal.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -60399,16 +60574,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 130,
-      "appropriateCount": 98,
+      "seenCount": 131,
+      "appropriateCount": 99,
       "partialCount": 32,
       "inappropriateCount": 0,
       "improvementNeededCount": 33,
-      "lastRunId": "QA-20260519-0529",
-      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "lastRunId": "QA-20260519-0534",
+      "lastSeenAt": "2026-05-19T04:11:01.014Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard, anomaly/trend, network follow-up, and incident report outputs are grounded in the 08:30 KST OTel snapshot and expose thresholds, affected servers, and time-ordered evidence.",
+      "lastRationale": "Monitoring snapshot risk signal is now severity and threshold-distance aware in the tested production scope.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -60433,16 +60608,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 201,
-      "appropriateCount": 181,
+      "seenCount": 202,
+      "appropriateCount": 182,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260519-0529",
-      "lastSeenAt": "2026-05-19T00:09:51.939Z",
+      "lastRunId": "QA-20260519-0534",
+      "lastSeenAt": "2026-05-19T04:11:01.014Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main and semver tag pipelines both succeeded, Vercel production serves v8.11.176, Cloud Run AI Engine deploy/smoke completed, and Vercel usage remains normal.",
+      "lastRationale": "GitLab tag pipeline 2535911663, Vercel production smoke, and usage guard all passed for v8.11.179.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -60450,16 +60625,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 236,
-      "appropriateCount": 216,
+      "seenCount": 237,
+      "appropriateCount": 217,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260519-0532",
-      "lastSeenAt": "2026-05-19T02:21:04.444Z",
+      "lastRunId": "QA-20260519-0534",
+      "lastSeenAt": "2026-05-19T04:11:01.014Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "chrome-devtools MCP로 핵심 변경 3개 릴리즈(v8.11.175-177) 검증 완료",
+      "lastRationale": "Regression coverage includes targeted Vitest assertions for scaled confidence plus Playwright MCP production verification.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -60467,16 +60642,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 66,
-      "appropriateCount": 45,
+      "seenCount": 67,
+      "appropriateCount": 46,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260515-0506",
-      "lastSeenAt": "2026-05-15T07:20:51.624Z",
+      "lastRunId": "QA-20260519-0534",
+      "lastSeenAt": "2026-05-19T04:11:01.014Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Answers preserved concrete monitoring values and correctly reported no network servers over the threshold in the final filter query.",
+      "lastRationale": "Displayed signal strength reflects the current metric value and configured threshold instead of a static placeholder.",
       "lastNextAction": ""
     },
     "infra-reliability": {
@@ -60654,17 +60829,17 @@
       "domainName": "이상감지 알고리즘",
       "firstSeenRunId": "QA-20260519-0533",
       "firstSeenAt": "2026-05-19T02:49:58.801Z",
-      "seenCount": 1,
-      "appropriateCount": 0,
+      "seenCount": 2,
+      "appropriateCount": 1,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 1,
-      "lastRunId": "QA-20260519-0533",
-      "lastSeenAt": "2026-05-19T02:49:58.801Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Snapshot anomaly confidence was static at 0.9 and did not reflect threshold distance or severity.",
-      "lastNextAction": "Replace static snapshot confidence with severity and threshold-distance based signal strength."
+      "lastRunId": "QA-20260519-0534",
+      "lastSeenAt": "2026-05-19T04:11:01.014Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Production Playwright MCP confirmed snapshot confidence is no longer hardcoded: memory 82% over 80% threshold displayed signal strength 64%.",
+      "lastNextAction": ""
     }
   }
 }

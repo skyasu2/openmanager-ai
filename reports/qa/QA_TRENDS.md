@@ -1,24 +1,24 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-19 12:43:46 KST
+> Generated at: 2026-05-19 13:15:06 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 531 |
-| Counted Runs | 425 |
-| Total Checks | 3867 |
-| Total Passed | 3718 |
+| Recorded Runs | 532 |
+| Counted Runs | 426 |
+| Total Checks | 3873 |
+| Total Passed | 3724 |
 | Total Failed | 138 |
 | Overall Pass Rate | 96.15% |
-| Latest Recorded Run | QA-20260519-0533 |
-| Last Counted Run | QA-20260519-0533 |
+| Latest Recorded Run | QA-20260519-0534 |
+| Last Counted Run | QA-20260519-0534 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T02:49:58.801Z -> 2026-05-19T02:49:58.801Z (24h)
+- Window: 2026-05-18T04:11:01.014Z -> 2026-05-19T04:11:01.014Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 7
 
@@ -32,7 +32,7 @@
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T02:49:58.801Z -> 2026-05-19T02:49:58.801Z (24h)
+- Window: 2026-05-18T04:11:01.014Z -> 2026-05-19T04:11:01.014Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -51,9 +51,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 425 | 3867 | 96.15% | 77 | 18.12% | 85 | 20% |
-| Last 30 Counted Runs | 30 | 366 | 96.17% | 6 | 20% | 6 | 20% |
-| Last 10 Counted Runs | 10 | 119 | 96.64% | 2 | 20% | 2 | 20% |
+| All Counted Runs | 426 | 3873 | 96.15% | 77 | 18.08% | 85 | 19.95% |
+| Last 30 Counted Runs | 30 | 362 | 96.69% | 5 | 16.67% | 5 | 16.67% |
+| Last 10 Counted Runs | 10 | 110 | 96.36% | 2 | 20% | 2 | 20% |
 
 ## Gate Run Windows
 
@@ -73,7 +73,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 346 | 241 |
+| targeted | 347 | 242 |
 | legacy | 137 | 137 |
 | broad | 34 | 33 |
 | release-gate | 9 | 9 |
@@ -84,8 +84,8 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 46 | 9 | 19.57% | 0 | 0 | 0% | 46 | 0 |
-| P1 | 268 | 102 | 38.06% | 0 | 0 | 0% | 263 | 5 |
-| P2 | 274 | 59 | 21.53% | 0 | 0 | 0% | 257 | 17 |
+| P1 | 269 | 102 | 37.92% | 0 | 0 | 0% | 264 | 5 |
+| P2 | 275 | 59 | 21.45% | 0 | 0 | 0% | 258 | 17 |
 | P3 | 39 | 14 | 35.9% | 0 | 0 | 0% | 38 | 1 |
 | P4 | 1 | 0 | 0% | 0 | 0 | 0% | 0 | 1 |
 
@@ -93,6 +93,7 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| dpl_clytpcga8 | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260519-0534 | 870fb39a |
 | dpl_FjCHCyinMqvvzeNR2THJtcUCzRZ1 | vercel-production | 3 | 23 | 91.3% | 1 | 33.33% | QA-20260519-0533 | 5801a008 |
 | dpl_HchB1A2K6muUo2LM1DMpdLfhXE9e | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260519-0530 | 35949496 |
 | dpl_BdrMbVYEqzZb7vBE9Px2ukpswKpZ | vercel-production | 1 | 15 | 100% | 0 | 0% | QA-20260519-0529 | 55af9601 |
@@ -104,7 +105,6 @@
 | v8.11.168-gitlab-pipeline-2531890112 | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260518-0517 | f6fe6632 |
 | dpl_5Tn7eRynsx1aP6cnVWipELbfDE5G | vercel-production | 2 | 34 | 100% | 0 | 0% | QA-20260518-0516 | 125fcbaf |
 | dpl_EG1U8xTdXAvgrhLTLnW5NQmoznt5 | vercel-production | 2 | 19 | 100% | 0 | 0% | QA-20260517-0512 | 798de818 |
-| dpl_Dc4NxBLzxn5aNi7wSQtw8xWzTWM5 | vercel-production | 1 | 10 | 80% | 1 | 100% | QA-20260517-0510 | ee1f1451 |
 
 ## Recent Daily Trend (KST)
 
@@ -123,7 +123,7 @@
 | 2026-05-15 | 4 | 63 | 100% | 0 | 0 | 0% |
 | 2026-05-17 | 3 | 29 | 93.1% | 1 | 1 | 33.33% |
 | 2026-05-18 | 13 | 173 | 96.53% | 2 | 2 | 15.38% |
-| 2026-05-19 | 6 | 59 | 93.22% | 2 | 2 | 33.33% |
+| 2026-05-19 | 7 | 65 | 93.85% | 2 | 2 | 28.57% |
 
 ## Recent Regression Runs
 
