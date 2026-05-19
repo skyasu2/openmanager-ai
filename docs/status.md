@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-19 | **현재 버전 스냅샷**: v8.11.181
+**상태 스냅샷 기준일**: 2026-05-19 | **현재 버전 스냅샷**: v8.11.182
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.182** (2026-05-19) — Code Refactoring: ai: remove openrouter provider path; Tests: qa: attach weekly hardening screenshot evidence; Tests: qa: close weekly hardening post-deploy QA
 - **v8.11.181** (2026-05-19) — Bug Fixes: ai: normalize cached monitoring analysis responses
 - **v8.11.180** (2026-05-19) — Bug Fixes: ai: harden weekly follow-up contracts; Tests: qa: record v8.11.179 anomaly confidence qa
 - **v8.11.179** (2026-05-19) — Tests: qa: correct ai content fidelity metadata; Tests: qa: record v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback; Tests: qa: record v8.11.178 ai gradient qa
 - **v8.11.178** (2026-05-19) — Bug Fixes: ui: restore ai gradient motion; Tests: qa: record v8.11.177 incident detail button qa
-- **v8.11.177** (2026-05-19) — Bug Fixes: ui: clarify incident report detail action; Tests: qa: record v8.11.176 ai release qa
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
