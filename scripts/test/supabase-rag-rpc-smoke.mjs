@@ -182,11 +182,33 @@ const checks = [
     label: 'search_knowledge_text:category-security',
     minRows: 1,
     expectedCategory: 'security',
-    expectedTopTitleIncludesAny: ['보안 인시던트'],
+    expectedTopTitleIncludesAny: ['보안 인시던트', 'SSH 인증 실패'],
     args: {
       p_query_text: '보안 인시던트 ssh 접근 인증 실패',
       p_max_results: 3,
       p_filter_category: 'security',
+    },
+  },
+  {
+    label: 'search_knowledge_text:security-token-rotation',
+    minRows: 1,
+    expectedCategory: 'security',
+    expectedTopTitleIncludesAny: ['API 키/토큰 노출'],
+    args: {
+      p_query_text: 'API 키 토큰 노출 rotate 점검',
+      p_max_results: 3,
+      p_filter_category: 'security',
+    },
+  },
+  {
+    label: 'search_knowledge_text:architecture-vercel-cloud-run-boundary',
+    minRows: 1,
+    expectedCategory: 'architecture',
+    expectedTopTitleIncludesAny: ['Vercel BFF와 Cloud Run AI Engine'],
+    args: {
+      p_query_text: 'Vercel BFF Cloud Run AI Engine 책임 경계',
+      p_max_results: 3,
+      p_filter_category: 'architecture',
     },
   },
   {

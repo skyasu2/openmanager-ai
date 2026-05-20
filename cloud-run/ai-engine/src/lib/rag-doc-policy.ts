@@ -1,13 +1,13 @@
 export const TARGET_DOC_CHAR_MIN = 280;
 export const TARGET_DOC_CHAR_MAX = 520;
 export const HARD_DOC_CHAR_MAX = 600;
-export const DEFAULT_TARGET_TOTAL_DOCS = 60;
-export const HARD_MAX_TOTAL_DOCS = 64;
+export const DEFAULT_TARGET_TOTAL_DOCS = 72;
+export const HARD_MAX_TOTAL_DOCS = 80;
 
 // Governance SLOs for RAG corpus quality.
 export const MAX_BELOW_TARGET_RATIO = 0.15;
 export const MAX_OVER_LIMIT_RATIO = 0.08;
-export const MAX_COMMAND_DOC_RATIO = 0.42;
+export const MAX_COMMAND_DOC_RATIO = 0.4;
 export const MAX_AUTO_GENERATED_DOCS = 1;
 export const MAX_PLACEHOLDER_TITLE_DOCS = 0;
 
@@ -27,8 +27,8 @@ export const CATEGORY_TARGET_RANGES: Record<string, { min: number; max: number }
   incident: { min: 8, max: 12 },
   best_practice: { min: 8, max: 12 },
   troubleshooting: { min: 8, max: 12 },
-  architecture: { min: 2, max: 5 },
-  security: { min: 1, max: 2 },
+  architecture: { min: 2, max: 8 },
+  security: { min: 2, max: 5 },
 };
 
 export const SOURCE_PRIORITY: Record<string, number> = {

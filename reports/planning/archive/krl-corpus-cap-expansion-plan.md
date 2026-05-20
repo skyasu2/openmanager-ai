@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-20
 > Tags: rag, supabase, krl, corpus-policy
@@ -38,17 +38,28 @@ security=5     -> target max
 
 ## 테스트 시나리오
 
-- [ ] 정책 상수 테스트: target/hard/category range가 상향 계약과 일치한다.
-- [ ] 계획 분포 테스트: 67건, command 25건, architecture 8건, security 5건이 governance PASS 범위다.
-- [ ] seed dry-run: 7건 모두 target length band이고 warning이 없다.
-- [ ] live smoke: security/architecture 신규 query가 기대 title을 반환한다.
-- [ ] live governance: `rag:analyze` 전체 PASS.
+- [x] 정책 상수 테스트: target/hard/category range가 상향 계약과 일치한다.
+- [x] 계획 분포 테스트: 67건, command 25건, architecture 8건, security 5건이 governance PASS 범위다.
+- [x] seed dry-run: 7건 모두 target length band이고 warning이 없다.
+- [x] live smoke: security/architecture 신규 query가 기대 title을 반환한다.
+- [x] live governance: `rag:analyze` 전체 PASS.
 
 ## 구현 범위
 
-- [ ] T0: failing policy spec 커밋
-- [ ] T1: `rag-doc-policy.ts` governance 상수 상향
-- [ ] T2: security/architecture seed JSON 7건 추가
-- [ ] T3: `supabase:rag:smoke`에 신규 security/architecture query 추가
-- [ ] T4: live Supabase upsert 적용
-- [ ] T5: smoke/analyze/docs 검증 후 plan archive
+- [x] T0: failing policy spec 커밋
+- [x] T1: `rag-doc-policy.ts` governance 상수 상향
+- [x] T2: security/architecture seed JSON 7건 추가
+- [x] T3: `supabase:rag:smoke`에 신규 security/architecture query 추가
+- [x] T4: live Supabase upsert 적용
+- [x] T5: smoke/analyze/docs 검증 후 plan archive
+
+## 완료 검증
+
+- Supabase live upsert: 7건 추가, 총 67건
+- Seed dry-run: 7건 모두 280~520자 target band, warning 없음
+- `npm run supabase:rag:smoke`: 19/19 PASS
+- `cd cloud-run/ai-engine && npm run rag:analyze`: 전체 governance PASS
+  - total: 67 / target 72 / hard 80
+  - command ratio: 25/67 = 37.3% / max 40%
+  - architecture: 8 / target 2-8
+  - security: 5 / target 2-5
