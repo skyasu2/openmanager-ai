@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-20 KST (AI 어시스턴트 개선 완료)
+**Last Updated**: 2026-05-20 KST (KRL corpus cap 상향 진행)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,6 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| KRL corpus cap 상향 및 security/architecture seed 보강 | Medium | In Progress (Codex) | Supabase Free DB 500MB 한도 대비 7건 텍스트 seed 증가는 사용량 문제가 없다고 판단. target 72 / hard 80으로 policy 상향 후 security +4, architecture +3을 live 적용한다. 상세: [krl-corpus-cap-expansion-plan.md](krl-corpus-cap-expansion-plan.md) |
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | Draft | 2026-05-20 코드 전수 조사. Redis는 과거 long-running Job Queue 용도만 남은 상태가 아니며 Vercel/Cloud Run rate limit, Guest PIN 방어, `system:running`, Cloud Run quota/cache, Langfuse usage guard에도 사용 중이다. R-0은 옵션 A(Job Queue 유지)로 결정했다. R-3 Job Queue 503 보강, R-6 Cloud Run Redis SDK 정렬은 완료됐고, R-1 resumable stream Redis 코드와 R-2 Circuit Breaker Redis store는 AI plan Task 1-C/3-C로 제거 완료했다. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). 2026-05-19 중간 sanity check도 동일 기준 PASS. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
