@@ -204,9 +204,14 @@ describe('QueryClassifier', () => {
 });
 
 describe('classifyQuery', () => {
-  it('delegates to QueryClassifier singleton', async () => {
-    const result = await classifyQuery('cpu usage');
-    expect(result.intent).toBe('monitoring');
-    expect(result.complexity).toBe(2);
+  it('returns classification synchronously without source metadata', () => {
+    const result = classifyQuery('cpu usage');
+
+    expect(result).not.toBeInstanceOf(Promise);
+    expect(result).toMatchObject({
+      intent: 'monitoring',
+      complexity: 2,
+    });
+    expect(result).not.toHaveProperty('source');
   });
 });
