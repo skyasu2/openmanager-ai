@@ -138,6 +138,8 @@ if (response.status === 202) {
 - 202가 테스트 double이나 잔여 경로에서 들어와도 local dev fallback은 빈 응답 오류를 만들지 않는다.
 - 로컬 환경(`npm run dev:network`)에서 "보고서" 키워드 포함 쿼리 전송 시 정상 처리된다.
 
+**구현 상태 (2026-05-20)**: 완료. Task 2-B와 같은 SDD 묶음으로 처리했다. local dev legacy JSON fallback은 202 response를 명시 안내 메시지로 종료하고, 빈 응답 오류로 변환하지 않는다.
+
 ---
 
 ### Task 1-B: Primary Streaming 경로 Circuit Breaker 누락 (🟠 — 2026-05-20 Critical→Major 재분류)
@@ -257,6 +259,8 @@ if (shouldUseJobQueue) { return NextResponse.json({ redirect: 'job-queue' }, { s
 이 제거로 **Task 1-A**의 202 미처리 문제도 동시에 해소된다.
 
 **전제**: 레거시 `supervisor/route.ts` 경로를 계속 유지할 이유가 없다면 경로 자체 제거를 검토한다.
+
+**구현 상태 (2026-05-20)**: 완료. legacy `supervisor/route.ts`의 독립 job-queue redirect 분기를 제거해 복잡 쿼리도 202 redirect 없이 Cloud Run JSON/stream 또는 fallback 계약으로 처리한다. Job Queue 선택은 frontend `useQueryExecution` 경계의 단일 routing decision에 둔다.
 
 ---
 
@@ -391,8 +395,8 @@ useLayoutEffect(() => {
 - [x] `stream/v2` route test: UIMessageStream headers 유지 (`x-vercel-ai-ui-message-stream: v1`)
 - [x] `stream/v2` route test: `AI_RESUMABLE_STREAMS_ENABLED=true`가 있어도 Redis stream 생성/active stream 저장을 수행하지 않음
 - [x] `useHybridAIQuery` test: `useChat` 호출에서 `resume` 활성화 계약 제거 또는 false 유지 확인
-- [ ] `supervisor/route.ts` test: 복잡한 "보고서/근본 원인" query가 202 redirect를 반환하지 않음
-- [ ] `useQueryExecution` test: local dev JSON fallback에서 202 response가 빈 응답 오류로 변환되지 않음
+- [x] `supervisor/route.ts` test: 복잡한 "보고서/근본 원인" query가 202 redirect를 반환하지 않음
+- [x] `useQueryExecution` test: local dev JSON fallback에서 202 response가 빈 응답 오류로 변환되지 않음
 - [ ] `off-domain-guard` test: `"서버 장애 알림 Slack으로 공유해줘"`는 `null`, `"팀 회의 일정 잡아줘"`는 `external_action`
 - [ ] `query-classifier` test: `classifyQuery()`가 동기 순수 함수로 동일 classification을 반환하고 `source: 'llm'`을 노출하지 않음
 - [ ] circuit breaker tests: distributed state store 제거 후 status summary가 `in-memory` 기준으로 안정 동작
@@ -425,8 +429,8 @@ useLayoutEffect(() => {
 
 ## SDD 게이트
 
-- [ ] **P0 Task 1-C**: `test(spec):` commit — server resumable 비활성/제거, 클라이언트 resume 없이 정상 스트리밍 확인
-- [ ] **P1 Task 2-B + 1-A**: `test(spec):` commit — 202 redirect 미발생, local dev fallback 202 방어 처리, 동일 쿼리 routing 결과 일관성 확인
+- [x] **P0 Task 1-C**: `test(spec):` commit — server resumable 비활성/제거, 클라이언트 resume 없이 정상 스트리밍 확인
+- [x] **P1 Task 2-B + 1-A**: `test(spec):` commit — 202 redirect 미발생, local dev fallback 202 방어 처리, 동일 쿼리 routing 결과 일관성 확인
 - [ ] **P2 Task 1-B**: `test(spec):` commit — stream/v2 Cloud Run failure가 CB fallback으로 전환되고 OPEN 상태에서 upstream fetch를 생략
 - [ ] **P1 Task 2-A**: `test(spec):` commit — 서버 컨텍스트 + 외부액션 쿼리 통과 확인
 

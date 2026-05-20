@@ -44,10 +44,7 @@ import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
-import {
-  analyzeQueryComplexity,
-  calculateDynamicTimeout,
-} from '@/lib/ai/utils/query-complexity';
+import { calculateDynamicTimeout } from '@/lib/ai/utils/query-complexity';
 import { isCloudRunEnabled } from '@/lib/ai-proxy/proxy';
 import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
@@ -193,38 +190,7 @@ export const POST = withRateLimit(
         );
         logger.info(`⏱️ [Supervisor] Dynamic timeout: ${dynamicTimeout}ms`);
 
-        // 5. 복잡도 기반 Job Queue 리다이렉트
-        const complexity = analyzeQueryComplexity(userQuery);
-        const shouldUseJobQueue =
-          complexity.level === 'very_complex' ||
-          (complexity.level === 'complex' &&
-            /보고서|리포트|근본.*원인|장애.*분석/i.test(userQuery));
-
-        if (shouldUseJobQueue) {
-          logger.info(
-            `🔀 [Supervisor] Redirecting to Job Queue (complexity: ${complexity.level})`
-          );
-          return NextResponse.json(
-            {
-              success: true,
-              redirect: 'job-queue',
-              complexity: complexity.level,
-              estimatedTime: Math.round(complexity.recommendedTimeout / 1000),
-              message: '복잡한 분석 요청입니다. 비동기 처리로 전환합니다.',
-              traceId,
-            },
-            {
-              status: 202,
-              headers: {
-                'X-Session-Id': sessionId,
-                'X-Redirect-Mode': 'job-queue',
-                [observabilityConfig.traceIdHeader]: traceId,
-              },
-            }
-          );
-        }
-
-        // 6. 캐시 조회
+        // 5. 캐시 조회
         const skipCache = shouldSkipCache(userQuery, messages.length);
         const cacheEndpoint: AIEndpoint = isStatusQuery(userQuery)
           ? 'supervisor-status'
@@ -277,11 +243,11 @@ export const POST = withRateLimit(
           logger.info(`📦 [Supervisor] Cache SKIP (context or realtime query)`);
         }
 
-        // 7. Accept 헤더 → stream/json 분기
+        // 6. Accept 헤더 → stream/json 분기
         const acceptHeaderFinal = req.headers.get('accept') || '';
         const wantsStream = acceptHeaderFinal !== 'application/json';
 
-        // 8. Cloud Run 프록시
+        // 7. Cloud Run 프록시
         const aiTimer = startAITimer();
 
         if (isCloudRunEnabled()) {
@@ -365,14 +331,13 @@ export const POST = withRateLimit(
             model: 'multi-agent',
             latencyMs: aiTimer.elapsed(),
             success: response.ok || response.status < 400,
-            agent: complexity.level,
             traceId,
           });
 
           return response;
         }
 
-        // 9. Fallback: Cloud Run 비활성화
+        // 8. Fallback: Cloud Run 비활성화
         logger.warn(`⚠️ [Supervisor] Cloud Run disabled, returning fallback`);
         const fallback = createFallbackResponse('supervisor', {
           query: userQuery,

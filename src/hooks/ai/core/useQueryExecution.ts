@@ -481,6 +481,34 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             }),
           })
             .then(async (response) => {
+              if (response.status === 202) {
+                const data = (await response.json().catch(() => ({}))) as {
+                  message?: string;
+                };
+                const responseText =
+                  data.message?.trim() ||
+                  '복잡한 분석 요청입니다. 비동기 처리 경로에서 다시 시도해주세요.';
+
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: generateMessageId('assistant'),
+                    role: 'assistant',
+                    parts: [{ type: 'text', text: responseText }],
+                  },
+                ]);
+
+                setState((prev) => ({
+                  ...prev,
+                  isLoading: false,
+                  warning: null,
+                  processingTime: 0,
+                  warmingUp: false,
+                  estimatedWaitSeconds: 0,
+                }));
+                return;
+              }
+
               if (!response.ok) {
                 throw new Error(`로컬 AI 응답 실패 (${response.status})`);
               }
