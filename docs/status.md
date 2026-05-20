@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-20 | **현재 버전 스냅샷**: v8.11.185
+**상태 스냅샷 기준일**: 2026-05-20 | **현재 버전 스냅샷**: v8.11.186
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.186** (2026-05-20) — Bug Fixes: ai: sanitize stream artifacts and route KRL boundary; Tests: qa: record v8.11.185 visual status validation
 - **v8.11.185** (2026-05-20) — Bug Fixes: dashboard: align server status displays; Bug Fixes: landing: sharpen hero ai text; Bug Fixes: ai-engine: apply semantic intent policy signals
 - **v8.11.184** (2026-05-19) — Bug Fixes: ai: route vision attachments through native multimodal path
 - **v8.11.183** (2026-05-19) — Bug Fixes: ai: include gemini in provider management
 - **v8.11.182** (2026-05-19) — Code Refactoring: ai: remove openrouter provider path; Tests: qa: attach weekly hardening screenshot evidence; Tests: qa: close weekly hardening post-deploy QA
-- **v8.11.181** (2026-05-19) — Bug Fixes: ai: normalize cached monitoring analysis responses
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
