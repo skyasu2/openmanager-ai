@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-05-20
 > Tags: ai,cleanup,refactor,circuit-breaker,routing,security,dead-code
 
 # AI 어시스턴트 설계 정비 계획
 
-**작성 배경**: 2026-05-20 정적 코드 분석(테스트 미실행)으로 발견한 결함·불일치·사문화 코드를 정비한다.
+**작성 배경**: 2026-05-20 정적 코드 분석으로 발견한 결함·불일치·사문화 코드를 정비한다.
 **분석 범위**: `src/hooks/ai/`, `src/app/api/ai/`, `src/lib/ai/`, `cloud-run/ai-engine/src/`
 **TODO.md 연결**: Active → 본 계획서 완료 후 Completed로 기록
 **연관 계획서**: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) — Redis 사문화 코드(Task 1-C·3-C)와 Job Queue 503 개선(Task R-3)을 함께 추적한다.
@@ -395,11 +395,11 @@ useLayoutEffect(() => {
 - [ ] `query-classifier` test: `classifyQuery()`가 동기 순수 함수로 동일 classification을 반환하고 `source: 'llm'`을 노출하지 않음
 - [ ] circuit breaker tests: distributed state store 제거 후 status summary가 `in-memory` 기준으로 안정 동작
 
-### Open Decisions
+### Resolved Decisions
 
-- [ ] `stream/v2` GET 제거 후 관측 status를 405로 고정할지, 명시 `GET` handler로 404/204를 반환할지 결정
-- [ ] `IDistributedStateStore` public re-export 제거가 외부 import를 깨지 않는지 `rg`와 type-check로 확인
-- [ ] `QueryClassifier` class export 제거가 테스트/문서 외 사용처를 깨지 않는지 확인
+- [x] `stream/v2` GET은 explicit 405 handler로 고정한다. Redis resume은 제거하지만 클라이언트/테스트가 status를 예측할 수 있게 한다.
+- [x] `IDistributedStateStore` public re-export는 제거한다. 구현 시 `rg`와 type-check로 외부 import 파손 여부를 확인하고, 테스트는 in-memory status 계약으로 갱신한다.
+- [x] `QueryClassifier` class export 제거는 Task 3-E에서 별도 `rg` 확인 후 진행한다. `classifyQuery()` 함수 export는 유지한다.
 
 ---
 
