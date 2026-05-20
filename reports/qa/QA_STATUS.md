@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-19 20:41:06 KST
+> Generated at: 2026-05-20 11:11:54 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 537 |
+| Total Recorded Runs | 538 |
 | Total Runs (Counted) | 429 |
-| Non-counted Runs | 108 |
+| Non-counted Runs | 109 |
 | Total Checks | 3912 |
 | Passed | 3759 |
 | Failed | 142 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260519-0538 (2026-05-19T11:08:35.867Z) |
-| Latest Recorded Run | QA-20260519-0539 (2026-05-19T11:41:05.468Z) |
+| Latest Recorded Run | QA-20260520-0540 (2026-05-20T02:11:54.045Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260519-0539 (2026-05-19T11:41:05.468Z)
+Latest run: QA-20260520-0540 (2026-05-20T02:11:54.045Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -45,11 +45,11 @@ Latest run: QA-20260519-0539 (2026-05-19T11:41:05.468Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | not-applicable | skipped | unknown | Local dev curl smoke only; no Vercel production function/build usage was generated. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-18T11:41:05.468Z -> 2026-05-19T11:41:05.468Z (24h)
+- Window: 2026-05-19T02:11:54.045Z -> 2026-05-20T02:11:54.045Z (24h)
 - Runs with observations: 6 recorded / 5 counted
 - Samples: 11
 
@@ -67,7 +67,7 @@ Latest run: QA-20260519-0539 (2026-05-19T11:41:05.468Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-18T11:41:05.468Z -> 2026-05-19T11:41:05.468Z (24h)
+- Window: 2026-05-19T02:11:54.045Z -> 2026-05-20T02:11:54.045Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -81,23 +81,22 @@ Latest run: QA-20260519-0539 (2026-05-19T11:41:05.468Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 02a05eba
+- Deployment: SHA 3f5c5a63
 - Coverage Packs: ai-core
-- Covered Surfaces: Cloud Run /api/ai/providers runtime toggle, Cloud Run /api/ai/supervisor Vision image attachment, Vision Agent Z.AI GLM fallback with one real Playwright PNG input, Provider restoration after manual smoke
-- Skipped Surfaces: Gemini Vision primary retest (already verified in QA-20260519-0538), Repeated Vision provider matrix (manual-only quota guardrail), Authenticated frontend image upload UI E2E
+- Covered Surfaces: local dev /api/ai/supervisor JSON fallback, report keyword query does not return 202 job-queue redirect, legacy supervisor route contract headers
+- Skipped Surfaces: Vercel production conversational AI QA, Cloud Run live provider call, browser UI send flow
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel production version | [Vercel production version](https://openmanager-ai.vercel.app/api/version) | - |
-| monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-490817238363.asia-northeast1.run.app/health) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Vision smoke input: existing Playwright QA screenshot | `reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -826,6 +825,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260520-0540 | 2026-05-20T02:11:54.045Z | targeted | no | no | AI Assistant cleanup local dev supervisor report smoke | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260519-0539 | 2026-05-19T11:41:05.468Z | targeted | no | no | Manual Cloud Run QA - Z.AI GLM Vision fallback live smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0538 | 2026-05-19T11:08:35.867Z | targeted | yes | yes | Production Vision Attachment Routing QA - v8.11.184 | 14 | 2 | 0 | 0 | 7 | 1 |
 | QA-20260519-0537 | 2026-05-19T07:40:00.196Z | targeted | yes | yes | v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure | 7 | 1 | 0 | 0 | 0 | 0 |
@@ -845,4 +845,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0523 | 2026-05-18T06:32:08.153Z | targeted | yes | yes | v8.11.172 Reporter Degraded Metadata Production Verification | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0522 | 2026-05-18T04:12:29.303Z | release-gate | yes | yes | v8.11.171 Reporter Cloud Run Production Verification | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0521 | 2026-05-18T01:37:12.860Z | targeted | no | no | Cloud Run Weekly Operational Check | 14 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260518-0520 | 2026-05-18T01:15:27.412Z | targeted | no | no | v8.11.169 Current Vercel Playwright MCP Rerun | 20 | 0 | 0 | 0 | 0 | 0 |

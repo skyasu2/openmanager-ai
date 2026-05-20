@@ -454,7 +454,7 @@ useLayoutEffect(() => {
 
 ## 완료 기준
 
-- [ ] 로컬 개발 환경에서 "보고서" 쿼리 오류 없음
+- [x] 로컬 개발 환경에서 "보고서" 쿼리 오류 없음 (`QA-20260520-0540`)
 - [x] `stream/v2` 경로 Circuit Breaker fallback 확인
 - [x] `resumeEnabled = false` + 서버 resumable 코드 일치 (또는 양쪽 제거)
 - [x] `getOffDomainGuardrail` 테스트: "서버 장애 슬랙 공유" → `null` (통과)

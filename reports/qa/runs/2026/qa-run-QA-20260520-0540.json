@@ -1,0 +1,79 @@
+{
+  "runId": "QA-20260520-0540",
+  "recordedAt": "2026-05-20T02:11:54.045Z",
+  "recordedAtKst": "2026-05-20 11:11:54 KST",
+  "runTitle": "AI Assistant cleanup local dev supervisor report smoke",
+  "owner": "codex",
+  "source": "local-dev-curl",
+  "environment": {
+    "target": "local",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js local dev server",
+    "backend": "Cloud Run disabled; local fallback JSON",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "3f5c5a63f66a74140a8408f2abf3b127e4f0f5be"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "local dev /api/ai/supervisor JSON fallback",
+    "report keyword query does not return 202 job-queue redirect",
+    "legacy supervisor route contract headers"
+  ],
+  "skippedSurfaces": [
+    "Vercel production conversational AI QA",
+    "Cloud Run live provider call",
+    "browser UI send flow"
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Local runtime smoke verified the previously failing report-keyword fallback path without spending live LLM/Cloud Run quota.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The smoke used Cloud Run disabled mode and confirmed the legacy route returns HTTP 200 JSON fallback with no job-queue redirect.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "not-applicable",
+      "status": "skipped",
+      "result": "unknown",
+      "checkedAt": "2026-05-20T11:12:00+09:00",
+      "summary": "Local dev curl smoke only; no Vercel production function/build usage was generated.",
+      "evidence": "curl POST http://localhost:3000/api/ai/supervisor with CLOUD_RUN_ENABLED=false",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Request: POST /api/ai/supervisor, Accept: application/json, query: 현재 위험 서버 근본 원인 보고서를 만들어줘.",
+    "Observed: HTTP 200, x-ai-route-contract=legacy-supervisor, x-ai-transport=json, no redirect field, fallback backend."
+  ],
+  "links": []
+}

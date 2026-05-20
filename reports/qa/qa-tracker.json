@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-19T11:41:05.468Z"
+    "updatedAt": "2026-05-20T02:11:54.045Z"
   },
   "sequence": {
-    "nextRunNumber": 540
+    "nextRunNumber": 541
   },
   "summary": {
-    "totalRecordedRuns": 537,
+    "totalRecordedRuns": 538,
     "totalRuns": 429,
-    "excludedRuns": 108,
+    "excludedRuns": 109,
     "totalChecks": 3912,
     "totalPassed": 3759,
     "totalFailed": 142,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260519-0538",
     "lastRecordedAt": "2026-05-19T11:08:35.867Z",
-    "latestRecordedRunId": "QA-20260519-0539",
-    "latestRecordedAt": "2026-05-19T11:41:05.468Z"
+    "latestRecordedRunId": "QA-20260520-0540",
+    "latestRecordedAt": "2026-05-20T02:11:54.045Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -61617,6 +61617,86 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260520-0540",
+      "recordedAt": "2026-05-20T02:11:54.045Z",
+      "recordedAtKst": "2026-05-20 11:11:54 KST",
+      "title": "AI Assistant cleanup local dev supervisor report smoke",
+      "owner": "codex",
+      "source": "local-dev-curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260520-0540.json",
+      "environment": {
+        "target": "local",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js local dev server",
+        "backend": "Cloud Run disabled; local fallback JSON",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "3f5c5a63f66a74140a8408f2abf3b127e4f0f5be"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "local dev /api/ai/supervisor JSON fallback",
+        "report keyword query does not return 202 job-queue redirect",
+        "legacy supervisor route contract headers"
+      ],
+      "skippedSurfaces": [
+        "Vercel production conversational AI QA",
+        "Cloud Run live provider call",
+        "browser UI send flow"
+      ],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local runtime smoke verified the previously failing report-keyword fallback path without spending live LLM/Cloud Run quota.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The smoke used Cloud Run disabled mode and confirmed the legacy route returns HTTP 200 JSON fallback with no job-queue redirect.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "not-applicable",
+          "status": "skipped",
+          "result": "unknown",
+          "checkedAt": "2026-05-20T11:12:00+09:00",
+          "summary": "Local dev curl smoke only; no Vercel production function/build usage was generated.",
+          "evidence": "curl POST http://localhost:3000/api/ai/supervisor with CLOUD_RUN_ENABLED=false",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -61625,16 +61705,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 270,
-      "appropriateCount": 230,
+      "seenCount": 271,
+      "appropriateCount": 231,
       "partialCount": 40,
       "inappropriateCount": 0,
       "improvementNeededCount": 50,
-      "lastRunId": "QA-20260519-0539",
-      "lastSeenAt": "2026-05-19T11:41:05.468Z",
+      "lastRunId": "QA-20260520-0540",
+      "lastSeenAt": "2026-05-20T02:11:54.045Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "사용자 명시 요청에 따라 Vision 실이미지 live smoke를 1회만 실행했고 provider/model metadata로 fallback 동작을 검증했다.",
+      "lastRationale": "Local runtime smoke verified the previously failing report-keyword fallback path without spending live LLM/Cloud Run quota.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -61676,16 +61756,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 205,
-      "appropriateCount": 185,
+      "seenCount": 206,
+      "appropriateCount": 186,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260519-0539",
-      "lastSeenAt": "2026-05-19T11:41:05.468Z",
+      "lastRunId": "QA-20260520-0540",
+      "lastSeenAt": "2026-05-20T02:11:54.045Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "runtime provider toggle 전후 상태를 확인했고 smoke 후 모든 provider toggle과 availability가 원복되었다.",
+      "lastRationale": "The smoke used Cloud Run disabled mode and confirmed the legacy route returns HTTP 200 JSON fallback with no job-queue redirect.",
       "lastNextAction": ""
     },
     "test-automation": {
