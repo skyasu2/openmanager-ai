@@ -190,22 +190,23 @@ Upstash 전체 제거 판단은 별도:
 **목표**: Redis client 미초기화뿐 아니라 write/read 실패도 명시적 503 + 사용자 안내로 정렬한다.
 
 ```ts
-// job 생성 전 Redis health check (또는 try-catch에서 503)
-const isRedisUp = await checkRedisHealth();
-if (!isRedisUp) {
-  return NextResponse.json(
-    { error: 'Job queue temporarily unavailable. Please try again.' },
-    { status: 503 }
-  );
-}
+return NextResponse.json(
+  {
+    error: 'Job queue unavailable',
+    reason: 'redis_unavailable', // or 'redis_write_failed'
+    fallback: 'Use /api/ai/supervisor directly',
+  },
+  { status: 503 }
+);
 ```
 
 **수용 기준**:
 - Redis 연결 실패 또는 `redisSet()` 실패 시 `/api/ai/jobs POST`가 503을 반환하고 클라이언트가 적절한 안내를 받음
 - 기존 정상 경로에 영향 없음
 
-- [ ] 구현
-- [ ] 테스트: Redis client 없음 / `redisSet()` false 시 503 반환 확인
+- [x] 구현
+- [x] 테스트: Redis client 없음 / `redisSet()` false 시 503 반환 확인
+- [x] 검증: targeted route tests, root `type-check`, `lint`, `test:quick`, `test:contract`
 
 ---
 
@@ -268,7 +269,7 @@ if (!isRedisUp) {
 | R-0 Redis 유지/축소 판단 | 🔴 High | Pending | 독립 |
 | R-1 Resumable 제거 | 🔴 High | → Task 1-C에 통합 | ai-assistant-design-cleanup-plan.md |
 | R-2 CB Store 제거 | 🔴 High | → Task 3-C에 통합 | ai-assistant-design-cleanup-plan.md |
-| R-3 Job Queue 503 | 🟠 Medium | Backlog | 독립. R-0 옵션 B 확정 시 제거 작업으로 대체 |
+| R-3 Job Queue 503 | 🟢 Done | 완료 | 독립 안전망 구현 완료 |
 | R-4 문서 정정 | 🟡 Low | 초안 완료, 최종 정렬 대기 | R-1, R-2 완료 후 최종 확정 |
 | R-5 예산 문서화 | 🟡 Low | 초안 완료, 실측 보정 대기 | R-4 |
 
@@ -278,6 +279,6 @@ if (!isRedisUp) {
 
 - R-0에서 Redis 유지/축소 옵션이 명시적으로 결정됨
 - `ai-assistant-design-cleanup-plan.md` Task 1-C, 3-C 완료
-- Job Queue 유지 시 Redis 오류 503 반환, Job Queue 제거 시 `job:*` 관련 route/worker/UI 표면 정리 범위 확정
+- Job Queue Redis 오류 503 반환 완료. Job Queue 제거 선택 시 `job:*` 관련 route/worker/UI 표면 정리 범위 확정
 - `redis-usage.md` 키 네임스페이스 테이블 작성 완료
 - `01-system-overview.md` Redis 설명이 실제 사용 현황과 일치

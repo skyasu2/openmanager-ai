@@ -107,6 +107,62 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     process.env.AI_JOB_TRIGGER_MODE = originalTriggerMode;
   });
 
+  it('Redis client가 없으면 job 생성을 503으로 거부한다', async () => {
+    mockGetRedisClient.mockReturnValue(null);
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: 'server health',
+        options: { sessionId: 'session-1234' },
+      }),
+    });
+
+    const response = await POST(request);
+    const body = (await response.json()) as {
+      error: string;
+      reason: string;
+    };
+
+    expect(response.status).toBe(503);
+    expect(body).toMatchObject({
+      error: 'Job queue unavailable',
+      reason: 'redis_unavailable',
+    });
+    expect(mockRedisSet).not.toHaveBeenCalled();
+    expect(mockAfter).not.toHaveBeenCalled();
+  });
+
+  it('primary job 저장 실패 시 500 대신 503을 반환한다', async () => {
+    mockRedisSet.mockResolvedValueOnce(false);
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: 'server health',
+        options: { sessionId: 'session-1234' },
+      }),
+    });
+
+    const response = await POST(request);
+    const body = (await response.json()) as {
+      error: string;
+      reason: string;
+    };
+
+    expect(response.status).toBe(503);
+    expect(body).toMatchObject({
+      error: 'Job queue unavailable',
+      reason: 'redis_write_failed',
+    });
+    expect(mockRedisSet).toHaveBeenCalledTimes(1);
+    expect(mockAfter).not.toHaveBeenCalled();
+  });
+
   it('Cloud Run readiness가 false면 초기 triggerStatus를 skipped로 반환한다', async () => {
     const { POST } = await importRoute();
     const request = new NextRequest('http://localhost/api/ai/jobs', {

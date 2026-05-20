@@ -58,6 +58,17 @@ import {
   shouldFailCompletedJobResult,
 } from './job-result-quality';
 
+function createJobQueueUnavailableResponse(reason: string) {
+  return NextResponse.json(
+    {
+      error: 'Job queue unavailable',
+      reason,
+      fallback: 'Use /api/ai/supervisor directly',
+    },
+    { status: 503 }
+  );
+}
+
 // ============================================
 // 상수 정의
 // ============================================
@@ -170,13 +181,7 @@ async function handlePOST(request: NextRequest) {
     // Redis 가용성 확인
     const redis = getRedisClient();
     if (!redis) {
-      return NextResponse.json(
-        {
-          error: 'Job queue unavailable',
-          fallback: 'Use /api/ai/supervisor directly',
-        },
-        { status: 503 }
-      );
+      return createJobQueueUnavailableResponse('redis_unavailable');
     }
 
     // 복잡도 분석
@@ -244,10 +249,7 @@ async function handlePOST(request: NextRequest) {
 
     if (!saved) {
       logger.error('[AI Jobs] Failed to save job to Redis');
-      return NextResponse.json(
-        { error: 'Failed to create job' },
-        { status: 500 }
-      );
+      return createJobQueueUnavailableResponse('redis_write_failed');
     }
 
     // 초기 진행률 저장
@@ -360,6 +362,11 @@ async function handleGET(request: NextRequest) {
         { error: 'limit must be an integer between 1 and 50' },
         { status: 400 }
       );
+    }
+
+    const redis = getRedisClient();
+    if (!redis) {
+      return createJobQueueUnavailableResponse('redis_unavailable');
     }
 
     // Session의 Job 목록 조회

@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockRedisGet, mockRedisMGet } = vi.hoisted(() => ({
+const { mockGetRedisClient, mockRedisGet, mockRedisMGet } = vi.hoisted(() => ({
+  mockGetRedisClient: vi.fn(),
   mockRedisGet: vi.fn(),
   mockRedisMGet: vi.fn(),
 }));
@@ -29,6 +30,7 @@ vi.mock('@/lib/auth/api-auth', () => ({
 }));
 
 vi.mock('@/lib/redis', () => ({
+  getRedisClient: mockGetRedisClient,
   redisGet: mockRedisGet,
   redisMGet: mockRedisMGet,
 }));
@@ -45,6 +47,7 @@ describe('GET /api/ai/jobs', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetRedisClient.mockReturnValue({});
   });
 
   afterEach(() => {
@@ -146,6 +149,26 @@ describe('GET /api/ai/jobs', () => {
       'session-1'
     );
     expect(mockRedisGet).toHaveBeenCalledWith('job:list:owner-key-1:session-1');
+  });
+
+  it('Redis client가 없으면 빈 목록 대신 503을 반환한다', async () => {
+    mockGetRedisClient.mockReturnValue(null);
+
+    const request = new NextRequest(
+      'http://localhost/api/ai/jobs?sessionId=session-1'
+    );
+    const response = await GET(request);
+    const payload = (await response.json()) as {
+      error: string;
+      reason: string;
+    };
+
+    expect(response.status).toBe(503);
+    expect(payload).toMatchObject({
+      error: 'Job queue unavailable',
+      reason: 'redis_unavailable',
+    });
+    expect(mockRedisGet).not.toHaveBeenCalled();
   });
 });
 
