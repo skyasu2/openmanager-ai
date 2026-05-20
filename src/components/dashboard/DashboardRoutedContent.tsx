@@ -124,6 +124,11 @@ export default function DashboardRoutedContent({
   onStatusFilterChange: _onStatusFilterChange,
 }: DashboardRoutedContentProps) {
   const searchParams = useSearchParams();
+  const currentPageServers = servers;
+  const fleetServers = allServers?.length ? allServers : currentPageServers;
+  const cardSourceServers = displayServers?.length
+    ? displayServers
+    : fleetServers;
   const aiQueryAsOfDataSlot = toJobDataSlot(dataSlotInfo);
   const initialLogServerId =
     view === 'logs'
@@ -134,7 +139,6 @@ export default function DashboardRoutedContent({
       ? (searchParams.get('server') ?? searchParams.get('serverId'))
       : null;
 
-  const sourceServers = allServers?.length ? allServers : servers;
   const {
     data: monitoringReport,
     error: monitoringError,
@@ -155,8 +159,8 @@ export default function DashboardRoutedContent({
         description="18대 관측 서버 상태, 리소스 사용률, 더 보기 목록"
       >
         <ServerDashboard
-          servers={servers}
-          allServers={displayServers?.length ? displayServers : allServers}
+          servers={currentPageServers}
+          allServers={cardSourceServers}
           totalServers={totalServers}
           currentPage={currentPage}
           totalPages={totalPages}
@@ -172,7 +176,7 @@ export default function DashboardRoutedContent({
 
   if (view === 'server-detail') {
     const server =
-      sourceServers.find(
+      fleetServers.find(
         (item) => (item.id ?? item.name) === initialFocusServerId
       ) ?? null;
 
@@ -208,7 +212,7 @@ export default function DashboardRoutedContent({
           </div>
           <div className="flex min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <AlertHistoryPanel
-              serverIds={sourceServers.map((server) => server.id)}
+              serverIds={fleetServers.map((server) => server.id)}
               initialServerId={initialAlertServerId}
             />
           </div>
@@ -236,7 +240,7 @@ export default function DashboardRoutedContent({
         title="토폴로지"
         description="18대 관측 서버의 계층 구조와 의존성 흐름"
       >
-        <TopologyView servers={sourceServers} />
+        <TopologyView servers={fleetServers} />
       </PageFrame>
     );
   }

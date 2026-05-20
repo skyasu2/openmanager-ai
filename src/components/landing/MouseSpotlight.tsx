@@ -9,6 +9,7 @@ const MOUSE_STRENGTH = 0.14;
 const SPRING = 0.055;
 const DAMPING = 0.87;
 
+// White is repeated intentionally so colored particles stay as accents.
 const TINTS = [
   '255,255,255',
   '255,255,255',

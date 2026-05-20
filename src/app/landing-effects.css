@@ -134,9 +134,6 @@
     opacity: 0.6;
   }
 
-  .mouse-spotlight__fragment {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -96,6 +96,11 @@ export default memo(function DashboardContent({
   onStatusFilterChange,
 }: DashboardContentProps) {
   const router = useRouter();
+  const currentPageServers = servers;
+  const fleetServers = allServers?.length ? allServers : currentPageServers;
+  const cardSourceServers = displayServers?.length
+    ? displayServers
+    : fleetServers;
   // 🛡️ P1-8 Fix: onStatsUpdate를 ref에 저장하여 useEffect 무한 루프 방지
   const onStatsUpdateRef = useRef(onStatsUpdate);
   onStatsUpdateRef.current = onStatsUpdate;
@@ -105,7 +110,7 @@ export default memo(function DashboardContent({
   useEffect(() => {
     debug.log('🔍 DashboardContent 초기 렌더링:', {
       showSequentialGeneration,
-      serversCount: servers?.length,
+      serversCount: currentPageServers.length,
       status: status?.type,
       timestamp: new Date().toISOString(),
     });
@@ -130,17 +135,15 @@ export default memo(function DashboardContent({
   // 🛡️ currentTime 제거: 미사용 상태에서 불필요한 interval 실행 (v5.83.13)
 
   // 🚀 리팩토링: Custom Hook으로 통계 계산 로직 분리
-  const serverStats = useDashboardStats(servers, allServers, statsLoading);
-  const systemOverviewServers = allServers?.length ? allServers : servers;
-  const serverDashboardSource = displayServers?.length
-    ? displayServers
-    : allServers?.length
-      ? allServers
-      : servers;
+  const serverStats = useDashboardStats(
+    currentPageServers,
+    fleetServers,
+    statsLoading
+  );
   const overallServerCount =
-    allServers?.length ?? Math.max(totalServers, servers.length);
+    allServers?.length ?? Math.max(totalServers, currentPageServers.length);
   const emptyStateMode = resolveDashboardEmptyState({
-    visibleServersCount: servers.length,
+    visibleServersCount: currentPageServers.length,
     totalServersCount: overallServerCount,
     hasActiveFilter: Boolean(statusFilter),
   });
@@ -214,18 +217,18 @@ export default memo(function DashboardContent({
         />
 
         {/* 🎯 메인 컨텐츠 영역 */}
-        {servers.length > 0 ? (
+        {currentPageServers.length > 0 ? (
           <>
             {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
-            <SystemOverviewSection servers={systemOverviewServers} />
+            <SystemOverviewSection servers={fleetServers} />
 
             {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
                   - DashboardClient → DashboardContent → ServerDashboard로 전달
                   - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화)
                   - ServerDashboard 그래프는 client-only lazy chunk로 분리 */}
             <ServerDashboard
-              servers={servers}
-              allServers={serverDashboardSource}
+              servers={currentPageServers}
+              allServers={cardSourceServers}
               totalServers={totalServers}
               currentPage={currentPage}
               totalPages={totalPages}
