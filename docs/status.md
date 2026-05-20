@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-20 | **현재 버전 스냅샷**: v8.11.189
+**상태 스냅샷 기준일**: 2026-05-21 | **현재 버전 스냅샷**: v8.11.190
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
