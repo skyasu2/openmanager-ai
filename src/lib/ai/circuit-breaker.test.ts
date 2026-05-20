@@ -24,13 +24,6 @@ vi.mock('@/lib/logging', () => ({
   },
 }));
 
-vi.mock('./circuit-breaker/state-store', () => ({
-  ensureRedisStateStore: vi.fn().mockResolvedValue(undefined),
-  isRedisStateStoreInitialized: vi.fn().mockReturnValue(false),
-  setDistributedStateStore: vi.fn(),
-  InMemoryStateStore: vi.fn(),
-}));
-
 import * as circuitBreakerModule from './circuit-breaker';
 import {
   AIServiceCircuitBreaker,
@@ -38,7 +31,6 @@ import {
   executeWithCircuitBreakerAndFallback,
   getAIStatusSummary,
 } from './circuit-breaker';
-import { ensureRedisStateStore } from './circuit-breaker/state-store';
 
 describe('AIServiceCircuitBreaker', () => {
   let breaker: AIServiceCircuitBreaker;
@@ -244,7 +236,7 @@ describe('executeWithCircuitBreakerAndFallback', () => {
     vi.clearAllMocks();
   });
 
-  it('요청 경로에서 Redis state store를 자동 초기화하지 않는다', async () => {
+  it('요청 경로에서 in-memory circuit breaker로 primary를 실행한다', async () => {
     // When
     const result = await executeWithCircuitBreakerAndFallback(
       'in-memory-only-test',
@@ -254,7 +246,6 @@ describe('executeWithCircuitBreakerAndFallback', () => {
 
     // Then
     expect(result.source).toBe('primary');
-    expect(ensureRedisStateStore).not.toHaveBeenCalled();
   });
 
   it('primary 성공 시 primary 소스를 반환한다', async () => {
@@ -467,6 +458,7 @@ describe('getAIStatusSummary', () => {
     expect(summary).toHaveProperty('circuitBreakers');
     expect(summary).toHaveProperty('recentEvents');
     expect(summary).toHaveProperty('stateStore');
+    expect(summary.stateStore).toBe('in-memory');
     expect(summary).toHaveProperty('stats');
     expect(summary.stats).toHaveProperty('totalBreakers');
     expect(summary.stats).toHaveProperty('openBreakers');
@@ -495,6 +487,7 @@ describe('public circuit breaker surface', () => {
   it('does not expose unused distributed Redis state-store APIs', () => {
     expect(circuitBreakerModule).not.toHaveProperty('ensureRedisStateStore');
     expect(circuitBreakerModule).not.toHaveProperty('setDistributedStateStore');
+    expect(circuitBreakerModule).not.toHaveProperty('InMemoryStateStore');
     expect(circuitBreakerModule).not.toHaveProperty('IDistributedStateStore');
   });
 });

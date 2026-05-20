@@ -172,7 +172,7 @@ const cbResult = await executeWithCircuitBreakerAndFallback(
 다만 CB fallback 응답에는 `reason: 'circuit_breaker_open' | 'cloud_run_*'`처럼 원인 구분 가능한 metadata/header를 남긴다.
 
 **제약**: Vercel 서버리스 환경에서는 인스턴스 간 상태 공유 불가. in-memory CB는 단일 인스턴스 보호만 가능하다.
-`IDistributedStateStore` 인터페이스는 이미 정의되어 있으나 현재 request path와 연결이 없다.
+기존 `IDistributedStateStore` 인터페이스는 request path와 연결되지 않아 Task 3-C에서 제거됐다.
 
 **구현 상태 (2026-05-20)**: 완료. `stream/v2` Cloud Run fetch loop를 `executeWithCircuitBreakerAndFallback('cloud-run-supervisor-stream', ...)`으로 감쌌다. retry budget 이후 5xx/fetch failure는 CB failure로 기록되고 fallback stream을 반환하며, CB OPEN 상태에서는 upstream fetch를 생략한다. fallback stream은 UIMessageStream header, `X-Session-Id`, `X-Stream-Id`, timing headers, `X-Fallback-Response`를 유지하고 `cloud_run_*` 또는 `circuit_breaker_open` reason을 stream data에 남긴다.
 
@@ -341,15 +341,17 @@ export function classifyQuery(query: string): QueryClassification {
 **파일**: `src/lib/ai/circuit-breaker/state-store.ts`, `src/lib/ai/circuit-breaker.ts`
 
 **상황**
-`IDistributedStateStore` 인터페이스와 `setDistributedStateStore()` 함수가 정의되어 있으나,
-실제 request path에서 호출하는 코드가 없다(테스트 mock만 존재).
-Circuit Breaker는 항상 `InMemoryStateStore`만 사용한다.
+`IDistributedStateStore` 인터페이스와 `setDistributedStateStore()` 함수가 정의되어 있었으나,
+실제 request path에서 호출하는 코드가 없었다(테스트 mock만 존재).
+Circuit Breaker는 항상 in-memory 상태만 사용한다.
 
 **옵션 A — 코드 보존**: 주석에 "연결점 미완성" 명시 유지 (현재 상태와 동일)
-**옵션 B — 인터페이스 제거**: `IDistributedStateStore`, `ensureRedisStateStore`, `setDistributedStateStore`를 제거하고 `InMemoryStateStore`만 유지
+**옵션 B — 인터페이스 제거**: `IDistributedStateStore`, `ensureRedisStateStore`, `setDistributedStateStore`를 제거하고 in-memory CB만 유지
 **옵션 C — 연결 완성**: Redis Upstash를 CB 상태 저장소로 실제 연결 (비용 발생 가능)
 
 Free Tier 원칙상 **옵션 B** 권장 (Upstash 비용 없음, 코드 명확화).
+
+**구현 상태 (2026-05-20)**: 완료. `IDistributedStateStore`, `ensureRedisStateStore`, `setDistributedStateStore`와 `src/lib/redis/circuit-breaker-store.ts`를 제거했다. `getAIStatusSummary().stateStore`는 항상 `in-memory`를 반환하며, public `circuit-breaker` surface에서 Redis/distributed store API가 노출되지 않는 테스트로 고정했다.
 
 ---
 
@@ -411,7 +413,7 @@ useLayoutEffect(() => {
 - [x] `useQueryExecution` test: local dev JSON fallback에서 202 response가 빈 응답 오류로 변환되지 않음
 - [x] `off-domain-guard` test: `"서버 장애 알림 Slack으로 공유해줘"`는 `null`, `"팀 회의 일정 잡아줘"`는 `external_action`
 - [x] `query-classifier` test: `classifyQuery()`가 동기 순수 함수로 동일 classification을 반환하고 `source: 'llm'`을 노출하지 않음
-- [ ] circuit breaker tests: distributed state store 제거 후 status summary가 `in-memory` 기준으로 안정 동작
+- [x] circuit breaker tests: distributed state store 제거 후 status summary가 `in-memory` 기준으로 안정 동작
 
 ### Resolved Decisions
 
@@ -432,7 +434,7 @@ useLayoutEffect(() => {
 | Done | 2-C (아키텍처 주석 업데이트) | XS | 2026-05-20 완료 |
 | Done | 3-A (_filterMaliciousOutput 제거) | S | 2026-05-20 완료 |
 | Done | 3-B (QueryClassifier → 순수 함수) | S | 2026-05-20 완료 |
-| P3 | 3-C (IDistributedStateStore 제거) | S | |
+| Done | 3-C (IDistributedStateStore 제거) | S | 2026-05-20 완료 |
 | Done | 3-D (warmingUpRef useLayoutEffect) | XS | 2026-05-20 완료 |
 
 **규모**: XS=1시간, S=2-4시간, M=반나절
@@ -446,15 +448,16 @@ useLayoutEffect(() => {
 - [x] **P2 Task 1-B**: `test(spec):` commit — stream/v2 Cloud Run failure가 CB fallback으로 전환되고 OPEN 상태에서 upstream fetch를 생략
 - [x] **P1 Task 2-A**: `test(spec):` commit — 서버 컨텍스트 + 외부액션 쿼리 통과 확인
 - [x] **P3 Task 3-B**: `test(spec):` commit — `classifyQuery()` 동기 순수 함수 계약과 `source` metadata 미노출 확인
+- [x] **P3 Task 3-C**: `test(spec):` commit — Redis/distributed CB store public API 미노출과 in-memory status summary 확인
 
 ---
 
 ## 완료 기준
 
 - [ ] 로컬 개발 환경에서 "보고서" 쿼리 오류 없음
-- [ ] `stream/v2` 경로 Circuit Breaker fallback 확인
-- [ ] `resumeEnabled = false` + 서버 resumable 코드 일치 (또는 양쪽 제거)
-- [ ] `getOffDomainGuardrail` 테스트: "서버 장애 슬랙 공유" → `null` (통과)
-- [ ] 아키텍처 주석이 현재 agent/provider 구성과 일치
-- [ ] TypeScript 오류 없음 (`npm run type-check`)
-- [ ] 테스트 통과 (`npm run test:quick`)
+- [x] `stream/v2` 경로 Circuit Breaker fallback 확인
+- [x] `resumeEnabled = false` + 서버 resumable 코드 일치 (또는 양쪽 제거)
+- [x] `getOffDomainGuardrail` 테스트: "서버 장애 슬랙 공유" → `null` (통과)
+- [x] 아키텍처 주석이 현재 agent/provider 구성과 일치
+- [x] TypeScript 오류 없음 (`npm run type-check`)
+- [x] 테스트 통과 (`npm run test:quick`)

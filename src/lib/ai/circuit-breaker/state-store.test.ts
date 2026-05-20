@@ -1,17 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-const mockLogger = vi.hoisted(() => ({
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-  debug: vi.fn(),
-}));
-
-vi.mock('@/lib/logging', () => ({
-  logger: mockLogger,
-}));
-
-import type { CircuitState, IDistributedStateStore } from './state-store';
+import type { CircuitState } from './state-store';
 import { InMemoryStateStore } from './state-store';
 
 function makeState(overrides: Partial<CircuitState> = {}): CircuitState {
@@ -76,45 +65,5 @@ describe('InMemoryStateStore', () => {
 
     const result = await store.getState('api-server');
     expect(result).toBeNull();
-  });
-});
-
-describe('Module-level singleton functions', () => {
-  beforeEach(() => {
-    vi.resetModules();
-  });
-
-  async function importModule() {
-    const mod = await import('./state-store');
-    return mod;
-  }
-
-  it('isRedisStateStoreInitialized returns false initially', async () => {
-    const { isRedisStateStoreInitialized } = await importModule();
-    expect(isRedisStateStoreInitialized()).toBe(false);
-  });
-
-  it('setDistributedStateStore marks redis initialized', async () => {
-    const { setDistributedStateStore, isRedisStateStoreInitialized } =
-      await importModule();
-
-    const customStore: IDistributedStateStore = {
-      getState: vi.fn() as (
-        ...args: never
-      ) => unknown as IDistributedStateStore['getState'],
-      setState: vi.fn() as (
-        ...args: never
-      ) => unknown as IDistributedStateStore['setState'],
-      incrementFailures: vi.fn() as (
-        ...args: never
-      ) => unknown as IDistributedStateStore['incrementFailures'],
-      resetState: vi.fn() as (
-        ...args: never
-      ) => unknown as IDistributedStateStore['resetState'],
-    };
-
-    setDistributedStateStore(customStore);
-
-    expect(isRedisStateStoreInitialized()).toBe(true);
   });
 });

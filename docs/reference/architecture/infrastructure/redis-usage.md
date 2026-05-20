@@ -151,7 +151,7 @@
 | 기능 | 파일 | 상태 | 메모 |
 |------|------|------|------|
 | Resumable Stream 상태 저장 | `stream/v2/stream-state.ts`, `upstash-resumable.ts` | ✅ 제거 완료 | 2026-05-20 Task 1-C로 파일과 Redis 저장 분기 제거. `stream/v2` GET은 405 |
-| Circuit Breaker 분산 저장소 | `src/lib/redis/circuit-breaker-store.ts` | ❌ 제거 예정 | `initializeRedisCircuitBreaker()` request path 미연결. Task 3-C |
+| Circuit Breaker 분산 저장소 | `src/lib/redis/circuit-breaker-store.ts` | ✅ 제거 완료 | 2026-05-20 Task 3-C로 미연결 Redis CB store와 `circuit:*` 사용 가능성을 제거. Vercel CB는 in-memory only |
 
 ---
 

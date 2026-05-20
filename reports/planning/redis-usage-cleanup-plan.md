@@ -28,7 +28,7 @@ Upstash 전체 제거 판단은 별도:
 **R-0 결정 (2026-05-20)**: **옵션 A — Job Queue 유지**.
 이유: `/api/ai/jobs*`가 현재 사용자 경로와 Cloud Run job worker에 연결된 활성 경로이며, 제거는 라우팅/UI/worker를 함께 정리하는 별도 리팩터다. Upstash 전체 제거(옵션 C)는 비-Job Redis 사용처 대체 설계가 없어 채택하지 않는다.
 
-**현재 결론**: 사문화된 `ai:stream:v2:*`, `circuit:*`는 제거 대상이다. Job Queue는 유지하며, Upstash 인스턴스 자체도 즉시 제거 대상이 아니다.
+**현재 결론**: 사문화된 `ai:stream:v2:*`, `circuit:*`는 제거 완료됐다. Job Queue는 유지하며, Upstash 인스턴스 자체도 즉시 제거 대상이 아니다.
 
 | 범주 | R-0 판단 기준 | 근거 |
 |------|---------------|------|
@@ -55,7 +55,7 @@ Upstash 전체 제거 판단은 별도:
 | Guest PIN 방어 | `src/app/api/auth/guest-login/route.ts` | `auth:guest:pin:fail:*`, `auth:guest:pin:lock:*` | 900s / 60s | ✅ 실사용 (in-memory fallback 있음) |
 | 시스템 실행 플래그 | `src/lib/redis/client.ts` | `system:running` | 영속 | ✅ 실사용 |
 | Resumable 스트림 상태 | `src/app/api/ai/supervisor/stream/v2/stream-state.ts` | `ai:stream:v2:{ownerKey}:{sessionId}` | 600s | ✅ 제거 완료 (2026-05-20 Task 1-C) |
-| Circuit Breaker 분산 저장소 | `src/lib/redis/circuit-breaker-store.ts` | `circuit:{serviceName}` | 300s | ❌ 사문화 (request path 연결 없음) |
+| Circuit Breaker 분산 저장소 | `src/lib/redis/circuit-breaker-store.ts` | `circuit:{serviceName}` | 300s | ✅ 제거 완료 (2026-05-20 Task 3-C) |
 
 ### Cloud Run AI Engine 사이드 (자체 HTTP 클라이언트)
 
@@ -82,11 +82,11 @@ Upstash 전체 제거 판단은 별도:
 
 ### 🔴 문제 2: Circuit Breaker Redis Store — 구현됐으나 연결 없음 (사문화)
 
-- `src/lib/redis/circuit-breaker-store.ts`: `RedisCircuitBreakerStore`, `initializeRedisCircuitBreaker()` 구현 완성
-- `src/lib/ai/circuit-breaker.ts`: `IDistributedStateStore` 인터페이스 있음
-- 실제 request path에서 `initializeRedisCircuitBreaker()` 호출 없음 → 항상 InMemory만 사용
+- 기존 `src/lib/redis/circuit-breaker-store.ts`: `RedisCircuitBreakerStore`, `initializeRedisCircuitBreaker()` 구현이 있었으나 제거 완료
+- 기존 `src/lib/ai/circuit-breaker.ts`: `IDistributedStateStore` public surface가 있었으나 제거 완료
+- 실제 request path에서 `initializeRedisCircuitBreaker()` 호출이 없었고, Task 3-C 이후 해당 연결점 자체가 제거됨 → 항상 in-memory만 사용
 - **추가 맥락 (2026-05-20)**: Cloud Run AI Engine이 multi-provider key rotation으로 provider 장애를 흡수하므로, Vercel BFF level CB의 필요성이 당초보다 낮음. Vercel CB는 Cloud Run 서비스 **전체 다운**에만 의미가 있으며 개별 provider 실패는 Cloud Run이 이미 처리함
-- **처리 방침**: ai-assistant-design-cleanup-plan.md Task 3-C에서 인터페이스 제거 (옵션 B)
+- **처리 결과**: ai-assistant-design-cleanup-plan.md Task 3-C에서 인터페이스와 Redis CB store 파일 제거 완료 (옵션 B)
 
 ### 🟠 문제 3: Job Queue — Redis 단독 의존, 장애 시 전체 불능
 
@@ -175,11 +175,11 @@ Upstash 전체 제거 판단은 별도:
 
 → **ai-assistant-design-cleanup-plan.md Task 3-C에 통합 실행**
 
-별도 실행 없음. Task 3-C 옵션 B 선택 시 `IDistributedStateStore`, `ensureRedisStateStore`, `setDistributedStateStore`가 제거되고, `circuit-breaker-store.ts`의 실용 가치가 사라지므로 파일 자체 제거도 검토.
+완료됨. Task 3-C 옵션 B에 따라 `IDistributedStateStore`, `ensureRedisStateStore`, `setDistributedStateStore`와 `src/lib/redis/circuit-breaker-store.ts`를 제거했다. `getAIStatusSummary().stateStore`는 `in-memory`로 고정된다.
 
 **2026-05-20 추가 판단**: Cloud Run multi-provider rotation이 실질적 fault tolerance를 담당하므로 Vercel BFF Circuit Breaker는 Cloud Run 전체 다운 시나리오만 커버하면 충분. in-memory CB 유지 + Redis 분산 CB 미연결 결정은 합리적이며 Task 3-C 완료로 정리된다.
 
-- [ ] Task 3-C 완료 확인 후 체크
+- [x] Task 3-C 완료 확인 후 체크
 
 ---
 
@@ -221,7 +221,7 @@ return NextResponse.json(
 5. `docs/reference/architecture/system/system-architecture-current.md` — stream resume 상태 정정
 6. `docs/reference/architecture/ai/frontend-backend-comparison.md` — cache/Redis state 비교 정정
 
-**현재 상태 (2026-05-20)**: 문서 초안은 생성/연결 완료. R-1 관련 "제거 예정" 표현은 "제거 완료"로 정렬했다. R-2(CB store)는 Task 3-C 구현 후 최종 정렬한다.
+**현재 상태 (2026-05-20)**: 문서 초안은 생성/연결 완료. R-1/R-2 관련 "제거 예정" 표현은 "제거 완료"로 최종 정렬했다.
 
 **수용 기준**:
 - 사문화된 resumable stream과 CB Redis store가 "미사용/제거됨"으로 표시됨
@@ -233,7 +233,7 @@ return NextResponse.json(
 - [x] free-tier-optimization.md 수정 초안
 - [x] system-architecture-current.md 수정 초안
 - [x] frontend-backend-comparison.md 수정 초안
-- [ ] R-1/R-2 구현 후 최종 표현 정렬
+- [x] R-1/R-2 구현 후 최종 표현 정렬
 
 ---
 
@@ -268,10 +268,10 @@ return NextResponse.json(
 | Task | 우선순위 | 상태 | 의존성 |
 |------|:------:|------|--------|
 | R-0 Redis 유지/축소 판단 | 🟢 Done | 옵션 A(Job Queue 유지) | 독립 |
-| R-1 Resumable 제거 | 🔴 High | → Task 1-C에 통합 | ai-assistant-design-cleanup-plan.md |
-| R-2 CB Store 제거 | 🔴 High | → Task 3-C에 통합 | ai-assistant-design-cleanup-plan.md |
+| R-1 Resumable 제거 | 🟢 Done | 완료 | ai-assistant-design-cleanup-plan.md |
+| R-2 CB Store 제거 | 🟢 Done | 완료 | ai-assistant-design-cleanup-plan.md |
 | R-3 Job Queue 503 | 🟢 Done | 완료 | 독립 안전망 구현 완료 |
-| R-4 문서 정정 | 🟡 Low | 초안 완료, 최종 정렬 대기 | R-1, R-2 완료 후 최종 확정 |
+| R-4 문서 정정 | 🟢 Done | 완료 | R-1, R-2 완료 후 최종 확정 |
 | R-5 예산 문서화 | 🟡 Low | 초안 완료, 실측 보정 대기 | R-4 |
 
 ---
