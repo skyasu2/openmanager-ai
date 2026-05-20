@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-20 KST (KRL corpus cap 상향 완료)
+**Last Updated**: 2026-05-21 KST (AI 품질 개선 계획 추가)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,8 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | Draft | 2026-05-20 코드 전수 조사. Redis는 과거 long-running Job Queue 용도만 남은 상태가 아니며 Vercel/Cloud Run rate limit, Guest PIN 방어, `system:running`, Cloud Run quota/cache, Langfuse usage guard에도 사용 중이다. R-0은 옵션 A(Job Queue 유지)로 결정했다. R-3 Job Queue 503 보강, R-6 Cloud Run Redis SDK 정렬은 완료됐고, R-1 resumable stream Redis 코드와 R-2 Circuit Breaker Redis store는 AI plan Task 1-C/3-C로 제거 완료했다. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
+| AI 품질 개선 (grounded KRL QA·corpus 보강·intentFrame 교정·Z.AI 안정성) | High | Draft | 2026-05-21 v8.11.192 기준 분석. Task A(grounded KRL production QA) 즉시 착수, Task B(Redis R-5 완결), Task C(KRL corpus 보강), Task D(intentFrame 신뢰도 측정), Task F(Z.AI 안정성 관찰 마감 2026-05-23). 세션 메모리 확장(Task E)은 Backlog. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
+| Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | In Progress | R-0~R-4, R-6 완료. R-5(Upstash 실측 소비 보정)만 잔여. AI 품질 개선 Task B에서 동시 처리. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). 2026-05-19 중간 sanity check도 동일 기준 PASS. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -21,6 +22,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| 세션 메모리 확장 (Supabase 기반, 로그인 사용자 한정) | Medium | session-memory.ts 71줄, Redis TTL 1시간 기반. 로그인 사용자 대상 Supabase chat_sessions/chat_messages 테이블로 세션 간 대화 맥락 보존. guest는 현행 Redis 유지. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) Task E |
 | 장기 세션 AI data slot drift 정책 | Low | Fresh load에서는 AI 수치와 dashboard OTel snapshot이 일치한다. 장기 세션에서는 `aiQueryAsOfDataSlot`이 SSR 시점 slot에 고정되어 dashboard 최신 slot과 달라질 수 있으나, free-tier/portfolio 범위에서는 실시간 resync를 도입하지 않는다. 재현 시 새로고침/새 세션으로 최신 slot을 사용하고, 제품 요구로 승격될 때 별도 `data-slot-resync-plan.md`를 작성한다. |
 | Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` 기본값으로 production에서 single mode 실질 비활성. 경량 단순쿼리 경로 설계 시 재검토. |
 
