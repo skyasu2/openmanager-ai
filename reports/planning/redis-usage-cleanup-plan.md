@@ -57,7 +57,7 @@ Upstash 전체 제거 판단은 별도:
 | Resumable 스트림 상태 | `src/app/api/ai/supervisor/stream/v2/stream-state.ts` | `ai:stream:v2:{ownerKey}:{sessionId}` | 600s | ✅ 제거 완료 (2026-05-20 Task 1-C) |
 | Circuit Breaker 분산 저장소 | `src/lib/redis/circuit-breaker-store.ts` | `circuit:{serviceName}` | 300s | ✅ 제거 완료 (2026-05-20 Task 3-C) |
 
-### Cloud Run AI Engine 사이드 (자체 HTTP 클라이언트)
+### Cloud Run AI Engine 사이드 (`@upstash/redis` SDK + compatibility wrapper)
 
 | 용도 | 파일 | 키 패턴 | TTL | 상태 |
 |------|------|---------|-----|------|
@@ -88,20 +88,20 @@ Upstash 전체 제거 판단은 별도:
 - **추가 맥락 (2026-05-20)**: Cloud Run AI Engine이 multi-provider key rotation으로 provider 장애를 흡수하므로, Vercel BFF level CB의 필요성이 당초보다 낮음. Vercel CB는 Cloud Run 서비스 **전체 다운**에만 의미가 있으며 개별 provider 실패는 Cloud Run이 이미 처리함
 - **처리 결과**: `archive/ai-assistant-design-cleanup-plan.md` Task 3-C에서 인터페이스와 Redis CB store 파일 제거 완료 (옵션 B)
 
-### 🟠 문제 3: Job Queue — Redis 단독 의존, 장애 시 전체 불능
+### 🟢 문제 3: Job Queue — Redis 단독 의존, 장애 시 fail-fast 보강 완료
 
 - `src/app/api/ai/jobs/route.ts`: Supabase 제거(v2.0) 이후 Redis가 유일한 저장소
 - Rate Limiting과 달리 Job Queue에는 in-memory fallback이 없음
-- Redis 장애 시 job 생성/조회 모두 불가능하다. 현재 client 미초기화는 일부 503으로 처리되지만 `redisSet()` 실패 등 write 실패는 500으로 남아 있다.
-- **처리 방침**: R-3는 R-0 결정 전에도 실행 가능한 안전망이다. Job Queue 유지 결정이면 그대로 운영성 보강이 되고, 제거 결정이면 route 제거 작업이 R-3를 대체한다.
+- Redis 장애 시 job 생성/조회 모두 불가능하다. 2026-05-20 Task R-3에서 client 미초기화와 `redisSet()` write 실패를 명시적 503 fail-fast로 정렬했다.
+- **처리 결과**: Job Queue 유지 결정(옵션 A)과 무관하게 운영성 안전망을 먼저 보강했다.
 
-### 🟠 문제 4: Vercel vs Cloud Run 별도 Redis 클라이언트 — 키 네임스페이스 문서 없음
+### 🟢 문제 4: Vercel vs Cloud Run Redis 클라이언트 — SDK 정렬 및 키 네임스페이스 문서화 완료
 
 - Vercel: `@upstash/redis` SDK (`src/lib/redis/client.ts`)
-- Cloud Run: 자체 HTTP `RedisClient` 클래스 (`cloud-run/ai-engine/src/lib/redis-client.ts`)
+- Cloud Run: `@upstash/redis` SDK + 기존 `RedisClient` compatibility wrapper (`cloud-run/ai-engine/src/lib/redis-client.ts`)
 - 동일한 Upstash 인스턴스를 공유하므로 키 충돌 가능성 있음
-- 현재는 prefix 패턴으로 격리되어 있으나 공식 네임스페이스 정책 문서가 없음
-- **처리 방침**: 현재 사용 중인 모든 키 prefix를 문서화하고, 신규 기능 추가 시 소유권 명시 규칙 제정
+- 현재는 prefix 패턴으로 격리되어 있으며 `docs/reference/architecture/infrastructure/redis-usage.md`에 공식 네임스페이스 정책을 문서화했다.
+- **처리 결과**: 2026-05-20 follow-up에서 Cloud Run 직접 fetch HTTP 클라이언트를 SDK 기반으로 교체했다. 공개 API(`getRedisClient`, `redisGet`/`redisSet`/`redisDel`, `RedisClient` 등)는 유지해 기존 importers 수정은 필요 없다.
 
 ### 🟡 문제 5: 아키텍처 문서 불일치
 
@@ -263,6 +263,22 @@ return NextResponse.json(
 
 ---
 
+### Task R-6: Cloud Run Redis 클라이언트 SDK 정렬 (🟢)
+
+**목표**: Cloud Run AI Engine의 직접 fetch 기반 Upstash REST 호출을 공식 `@upstash/redis` SDK로 정렬하고, 기존 공개 API와 Circuit Breaker 동작은 유지한다.
+
+**처리 결과**:
+- `cloud-run/ai-engine/package.json`에 `@upstash/redis ^1.38.0` 추가
+- `cloud-run/ai-engine/src/lib/redis-client.ts` 내부 구현을 SDK 기반으로 교체
+- Circuit Breaker, per-call timeout, `eval` Lua script 경계 유지
+- `cloud-run/ai-engine/src/lib/redis-client.test.ts`를 SDK mock 기준으로 전환
+- 기존 importers(`server.ts`, `cache-layer.ts`, `job-notifier.ts` 등)는 공개 API 유지로 수정 불필요
+
+- [x] 구현
+- [x] 테스트: AI Engine full test 기준 1348/1348 PASS 확인
+
+---
+
 ## 실행 우선순위
 
 | Task | 우선순위 | 상태 | 의존성 |
@@ -273,6 +289,7 @@ return NextResponse.json(
 | R-3 Job Queue 503 | 🟢 Done | 완료 | 독립 안전망 구현 완료 |
 | R-4 문서 정정 | 🟢 Done | 완료 | R-1, R-2 완료 후 최종 확정 |
 | R-5 예산 문서화 | 🟡 Low | 초안 완료, 실측 보정 대기 | R-4 |
+| R-6 Cloud Run Redis SDK 정렬 | 🟢 Done | 완료 | R-0 옵션 A 유지 결정 |
 
 ---
 
@@ -283,3 +300,4 @@ return NextResponse.json(
 - Job Queue Redis 오류 503 반환 완료. Job Queue 제거 선택 시 `job:*` 관련 route/worker/UI 표면 정리 범위 확정
 - `redis-usage.md` 키 네임스페이스 테이블 작성 완료
 - `01-system-overview.md` Redis 설명이 실제 사용 현황과 일치
+- Cloud Run Redis 클라이언트가 SDK 기반으로 정렬되고 기존 공개 API 호환성을 유지

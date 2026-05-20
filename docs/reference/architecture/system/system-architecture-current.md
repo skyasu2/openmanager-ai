@@ -54,7 +54,7 @@ graph TB
 
     subgraph External["External Services"]
         Supabase["Supabase<br/>(PostgreSQL + Auth/RLS)"]
-        Redis["Upstash Redis<br/>(Cache, Optional Stream State,<br/>Job State)"]
+        Redis["Upstash Redis<br/>(Cache, Job State,<br/>Quota/Session)"]
         CloudTasks["Cloud Tasks<br/>(Async Job Dispatch)"]
         LLM["LLM Providers<br/>(Groq, Z.AI, Mistral,<br/>Cerebras, Gemini)"]
     end
@@ -80,7 +80,7 @@ graph TB
     API -->|Short Job Dispatch| Hono
     Hono -->|CreateTask| CloudTasks
     CloudTasks -->|POST /api/jobs/process| Hono
-    Hono -->|Job Result + Optional Stream State| Redis
+    Hono -->|Job Result + Quota/Session/Cache| Redis
     NextJS --> Providers
 ```
 
@@ -522,7 +522,7 @@ Reference (checked: 2026-05-20):
 ### AI Chat State
 
 - localStorage 기반 대화 이력 (`src/hooks/ai/utils/chat-history-storage.ts`)
-- AI SDK stream proxy: Cloud Run UIMessage stream을 Vercel BFF가 브라우저로 전달하며, Upstash 기반 resume state는 optional/비활성 기본값입니다. 상세: [7. AI SDK Stream Proxy and Optional Resume State](#7-ai-sdk-stream-proxy-and-optional-resume-state)
+- AI SDK stream proxy: Cloud Run UIMessage stream을 Vercel BFF가 브라우저로 전달합니다. Upstash 기반 resume state는 2026-05-20 제거됐고, `GET /stream/v2`는 405 계약을 반환합니다. 상세: [7. AI SDK Stream Proxy and Resumable State Cleanup](#7-ai-sdk-stream-proxy-and-resumable-state-cleanup)
 
 ---
 

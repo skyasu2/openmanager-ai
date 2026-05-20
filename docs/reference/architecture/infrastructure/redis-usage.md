@@ -18,9 +18,9 @@
 | 사이드 | 클라이언트 | 위치 |
 |--------|-----------|------|
 | Vercel / Next.js | `@upstash/redis` SDK | `src/lib/redis/client.ts` |
-| Cloud Run AI Engine | 자체 HTTP `RedisClient` | `cloud-run/ai-engine/src/lib/redis-client.ts` |
+| Cloud Run AI Engine | `@upstash/redis` SDK + `RedisClient` compatibility wrapper | `cloud-run/ai-engine/src/lib/redis-client.ts` |
 
-두 클라이언트가 동일한 Upstash 인스턴스에 연결된다. 환경변수는 Vercel과 Cloud Run 모두 `KV_REST_API_URL`/`UPSTASH_REDIS_REST_URL` + 대응 토큰을 사용한다. 키 충돌 방지는 아래 네임스페이스 prefix 규칙으로 관리한다.
+두 클라이언트가 동일한 Upstash 인스턴스에 연결된다. Cloud Run의 공개 `RedisClient`/`redisGet`/`redisSet`/`redisDel` API는 기존 import 경계를 유지하지만 내부 HTTP 호출은 SDK로 위임한다. 환경변수는 Vercel과 Cloud Run 모두 `KV_REST_API_URL`/`UPSTASH_REDIS_REST_URL` + 대응 토큰을 사용한다. 키 충돌 방지는 아래 네임스페이스 prefix 규칙으로 관리한다.
 
 ---
 
@@ -52,12 +52,12 @@
 
 > **신규 기능 추가 시 규칙**: 위 테이블에 없는 prefix를 사용할 경우 이 문서에 먼저 추가한다. Vercel과 Cloud Run이 동일한 prefix를 사용하면 충돌이 발생한다.
 
-### 정리 예정 prefix
+### 제거 완료 prefix
 
 | Prefix | 현재 상태 | 정리 기준 |
 |--------|-----------|-----------|
-| `ai:stream:v2:` | 서버 측 resumable stream state. client auto-resume 미사용 | ai-assistant-design-cleanup-plan Task 1-C에서 제거 |
-| `circuit:` | Redis-backed Vercel Circuit Breaker store. request path 미연결 | ai-assistant-design-cleanup-plan Task 3-C에서 제거 또는 내부 future hook으로 축소 |
+| `ai:stream:v2:` | 서버 측 resumable stream state 제거 완료 | ai-assistant-design-cleanup-plan Task 1-C에서 제거 |
+| `circuit:` | Redis-backed Vercel Circuit Breaker store 제거 완료 | ai-assistant-design-cleanup-plan Task 3-C에서 제거 |
 
 ---
 
@@ -94,7 +94,7 @@
 
 - v2.0 이후 Supabase 제거, Redis 단독 저장소
 - `job:{jobId}` 키: status, result, error, metadata
-- **⚠️ 단일 의존성**: Redis 장애 시 fallback 없음. 오류 처리 강화 예정 (Task R-3)
+- **⚠️ 단일 의존성**: Redis 장애 시 fallback 없음. Redis client 미초기화와 write 실패는 2026-05-20 Task R-3에서 503 fail-fast로 정렬했다.
 - **현재 연결 상태**: `useHybridAIQuery`/`useQueryExecution`은 복잡도·강제 키워드 기준으로 Job Queue를 선택하고, `useAsyncAIQuery`가 `POST /api/ai/jobs`와 `/api/ai/jobs/{id}/stream`을 호출한다. Cloud Run `routes/jobs.ts`, `routes/jobs-processor.ts`, `job-notifier.ts`도 실제 처리 경로로 남아 있다.
 - **도입 배경**: 과거 Vercel 장기 실행 timeout 회피를 위해 도입된 경로다. 관련 정리 작업은 Redis 정비 계획에서 추적한다.
 
