@@ -286,6 +286,8 @@ provider mesh 재조정(NLQ=Groq, Analyst=Mistral, Reporter=Z.AI/Mistral, Adviso
 **수정**: 현재 실제 라우팅 구조를 반영하도록 주석 업데이트.
 또는 외부 문서를 참조하는 한 줄 링크로 대체한다.
 
+**구현 상태 (2026-05-20)**: 완료. legacy route가 JSON/text compatibility proxy이고, primary streaming은 `stream/v2`, agent routing/provider mesh/tool execution은 Cloud Run ai-engine ownership이라는 현재 경계를 주석에 반영했다.
+
 ---
 
 ## Phase 3 — 사문화 코드 정리
@@ -419,7 +421,7 @@ useLayoutEffect(() => {
 | P1 | 2-B (라우팅 일원화) + 1-A 방어 처리 | M | 2-B가 root cause, 1-A는 잔여 202 안전망. 같은 커밋 묶음 권장 |
 | P1 | 2-A (Off-domain guard 순서) | S | 운영 컨텍스트 우선 + 테스트 |
 | P2 | 1-B (stream/v2 CB 적용) | M | ~~P1~~ → P2 재분류 (2026-05-20): Cloud Run multi-provider rotation이 provider 실패를 흡수하므로 Vercel CB는 Cloud Run 전체 다운 시나리오만 커버. stream fallback/header/OPEN-state test 포함 필요, 로그만으로 완료 처리 금지 |
-| P2 | 2-C (아키텍처 주석 업데이트) | XS | 주석 수정 |
+| Done | 2-C (아키텍처 주석 업데이트) | XS | 2026-05-20 완료 |
 | P3 | 3-A (_filterMaliciousOutput 제거) | S | |
 | P3 | 3-B (QueryClassifier → 순수 함수) | S | |
 | P3 | 3-C (IDistributedStateStore 제거) | S | |

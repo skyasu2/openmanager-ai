@@ -368,12 +368,11 @@ export const POST = withRateLimit(
 // 📊 Architecture Note
 // ============================================================================
 //
-// All AI agents run on Cloud Run ai-engine:
-// - Supervisor (Groq Llama-8b): Intent classification & routing
-// - Metrics Query Agent (Groq Llama-70b): Server metrics queries
-// - Analyst Agent (Mistral): Pattern analysis & anomaly detection
-// - Reporter Agent (Cerebras): Incident reports & RAG
+// This legacy route is a JSON/text compatibility proxy.
+// Primary chat streaming uses /api/ai/supervisor/stream/v2.
 //
-// This proxy forwards all requests to Cloud Run.
+// Agent routing, provider mesh, tool execution, and long-running AI compute
+// are owned by Cloud Run ai-engine. Frontend routing decisions should not be
+// re-derived here.
 //
 // ============================================================================
