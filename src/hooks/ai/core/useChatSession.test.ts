@@ -9,6 +9,7 @@ import { useChatSession } from './useChatSession';
 describe('useChatSession', () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
   });
 
   it('초기 세션 ID를 자동 생성한다', () => {
@@ -48,17 +49,18 @@ describe('useChatSession', () => {
     expect(result.current.sessionIdRef.current).toBe('custom-session-id');
   });
 
-  it('세션 ID를 localStorage에 저장한다', () => {
+  it('세션 ID를 sessionStorage에 저장하고 localStorage는 사용하지 않는다', () => {
     renderHook(() => useChatSession('persist-test'));
 
     const stored = JSON.parse(
-      localStorage.getItem('openmanager-ai-session-id') || '{}'
+      sessionStorage.getItem('openmanager-ai-session-id') || '{}'
     );
     expect(stored.sessionId).toBe('persist-test');
     expect(stored.savedAt).toBeGreaterThan(0);
+    expect(localStorage.getItem('openmanager-ai-session-id')).toBeNull();
   });
 
-  it('refreshSessionId 후 localStorage가 새 세션으로 업데이트된다', () => {
+  it('refreshSessionId 후 sessionStorage가 새 세션으로 업데이트된다', () => {
     const { result } = renderHook(() => useChatSession());
 
     act(() => {
@@ -66,8 +68,23 @@ describe('useChatSession', () => {
     });
 
     const stored = JSON.parse(
-      localStorage.getItem('openmanager-ai-session-id') || '{}'
+      sessionStorage.getItem('openmanager-ai-session-id') || '{}'
     );
     expect(stored.sessionId).toBe(result.current.sessionId);
+  });
+
+  it('다른 탭처럼 sessionStorage가 비어 있으면 localStorage의 이전 세션을 재사용하지 않는다', () => {
+    localStorage.setItem(
+      'openmanager-ai-session-id',
+      JSON.stringify({
+        sessionId: 'session-other-tab-1234',
+        savedAt: Date.now(),
+      })
+    );
+
+    const { result } = renderHook(() => useChatSession());
+
+    expect(result.current.sessionId).toMatch(/^session-/);
+    expect(result.current.sessionId).not.toBe('session-other-tab-1234');
   });
 });

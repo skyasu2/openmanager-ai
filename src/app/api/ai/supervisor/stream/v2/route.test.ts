@@ -377,6 +377,28 @@ describe('Supervisor Stream V2 Route', () => {
       expect(mockCreateNewResumableStream).not.toHaveBeenCalled();
     });
 
+    it('AI SDK 기본 POST body id를 sessionId fallback으로 사용해야 함', async () => {
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: 'session-aisdk-1234',
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('X-Session-Id')).toBe('session-aisdk-1234');
+      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      const body = JSON.parse(String(fetchOptions.body));
+      expect(body.sessionId).toBe('session-aisdk-1234');
+    });
+
     it('pass-through Cloud Run stream 출력은 클라이언트 반환 전에 필터링해야 함', async () => {
       mockFetch.mockResolvedValueOnce(
         new Response(createSseStream('data: <script>alert(1)</script>\n\n'), {

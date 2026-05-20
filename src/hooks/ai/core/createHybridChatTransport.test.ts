@@ -32,6 +32,34 @@ function ref<T>(current: T): MutableRefObject<T> {
 }
 
 describe('createHybridChatTransport', () => {
+  it('includes the latest sessionId in initial streaming request bodies', () => {
+    const sessionIdRef = ref('session-initial-1234');
+
+    createHybridChatTransport({
+      apiEndpoint: '/api/ai/supervisor/stream/v2',
+      traceIdRef: ref('trace-session-id'),
+      traceIdHeader: 'X-Trace-Id',
+      webSearchEnabledRef: ref(undefined),
+      ragEnabledRef: ref(undefined),
+      analysisModeRef: ref('auto'),
+      sessionIdRef,
+    });
+
+    const transportConfig = mockDefaultChatTransport.mock.calls.at(-1)?.[0] as {
+      body: () => Record<string, unknown>;
+    };
+
+    expect(transportConfig.body()).toMatchObject({
+      sessionId: 'session-initial-1234',
+    });
+
+    sessionIdRef.current = 'session-next-1234';
+
+    expect(transportConfig.body()).toMatchObject({
+      sessionId: 'session-next-1234',
+    });
+  });
+
   it('includes the latest local route decision in streaming request bodies', () => {
     createHybridChatTransport({
       apiEndpoint: '/api/ai/supervisor/stream/v2',
@@ -50,7 +78,7 @@ describe('createHybridChatTransport', () => {
       }),
     });
 
-    const transportConfig = mockDefaultChatTransport.mock.calls[0]?.[0] as {
+    const transportConfig = mockDefaultChatTransport.mock.calls.at(-1)?.[0] as {
       body: () => Record<string, unknown>;
     };
 
