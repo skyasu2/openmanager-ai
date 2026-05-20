@@ -788,6 +788,63 @@ describe('supervisor domain wiring contract', () => {
     });
   });
 
+  it('returns a safe deterministic warning when forced KRL direct knowledge search fails', async () => {
+    mockSelectExecutionMode.mockReturnValue('multi');
+    vi.mocked(resolveRAGSetting).mockReturnValue(true);
+    vi.mocked(searchKnowledgeBase.execute).mockRejectedValue(
+      new Error('knowledge search unavailable')
+    );
+
+    const runtimeHost = createMonitoringAssistantRuntimeHost();
+    const events = [];
+
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content:
+            'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
+        },
+      ],
+      sessionId: 'session-krl-ssot-direct-failure',
+      enableRAG: 'auto',
+      enableWebSearch: false,
+      runtimeHost,
+    })) {
+      events.push(event);
+    }
+
+    const streamedText = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+    const warningEvent = events.find((event) => event.type === 'warning');
+    const doneEvent = events.find((event) => event.type === 'done');
+
+    expect(mockExecuteMultiAgentStream).not.toHaveBeenCalled();
+    expect(streamedText).toContain('내부 지식 검색을 실행하지 못했습니다.');
+    expect(streamedText).toContain('검색 근거 없이');
+    expect(warningEvent).toMatchObject({
+      type: 'warning',
+      data: { code: 'RAG_SEARCH_FAILED' },
+    });
+    expect(doneEvent).toMatchObject({
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: ['searchKnowledgeBase'],
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'knowledge-search-direct',
+        },
+        warning: {
+          code: 'RAG_SEARCH_FAILED',
+        },
+      },
+    });
+  });
+
   it('keeps monitoring compatibility tools available through the default monitoring domain pack', () => {
     const host = createMonitoringAssistantRuntimeHost();
     const context: AssistantRequestContext = {

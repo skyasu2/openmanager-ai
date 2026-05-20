@@ -210,15 +210,25 @@ function buildOTelStatusCriteriaLines(query: string): string[] {
   const asksAboutStatusCriteria = /18대|서버|상태|판단|판정|기준/i.test(query);
   if (!asksAboutOTel || !asksAboutStatusCriteria) return [];
 
+  const { cpu, memory, disk } = THRESHOLDS;
+  const criticalThresholds =
+    `CPU ${cpu.critical}% / Memory ${memory.critical}% / ` +
+    `Disk ${disk.critical}%`;
+  const warningThresholds =
+    `CPU ${cpu.warning}%, Memory ${memory.warning}%, Disk ${disk.warning}%`;
+
   return [
     '',
     'OTel 상태 판단 기준',
     `- 18대 서버 inventory와 현재 메트릭은 pre-generated OTel data slot을 SSOT로 봅니다.`,
     '- 현재 CPU/Memory/Disk 값은 KRL에서 추정하지 않고 monitoring data tool 또는 OTel slot 결과를 우선합니다.',
     '- P0 offline: CPU, Memory, Disk가 모두 0인 경우',
-    `- P1/P2 critical: CPU와 Memory가 모두 ${THRESHOLDS.cpu.critical}% 이상이거나, CPU/Memory/Disk 중 하나가 critical 임계값 이상인 경우`,
-    `- P3/P4 warning: CPU/Memory/Disk 중 2개 이상이 warning 임계값 이상이거나, 하나라도 warning 임계값 이상인 경우`,
-    '- P99 online: 모든 지표가 warning 임계값 미만인 경우',
+    '- P1/P2 critical: CPU와 Memory가 모두 critical 임계값' +
+      `(CPU ${cpu.critical}%, Memory ${memory.critical}%) 이상이거나, ` +
+      `${criticalThresholds} 중 하나가 critical 임계값 이상인 경우`,
+    '- P3/P4 warning: CPU/Memory/Disk 중 2개 이상이 warning 임계값' +
+      `(${warningThresholds}) 이상이거나, 하나라도 warning 임계값 이상인 경우`,
+    `- P99 online: ${warningThresholds} warning 임계값 미만인 경우`,
   ];
 }
 

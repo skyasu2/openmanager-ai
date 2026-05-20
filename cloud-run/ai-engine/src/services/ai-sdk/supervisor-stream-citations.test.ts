@@ -6,6 +6,7 @@ import {
   hasWebSearchFallbackAnswer,
 } from './supervisor-stream-citations';
 import type { RagSource } from '../../lib/ai-sdk-utils';
+import { THRESHOLDS } from '../../data/precomputed-state-core';
 
 describe('buildWebCitationAppendix', () => {
   it('appends web source links when the answer has no citation URL', () => {
@@ -258,5 +259,11 @@ describe('buildWebSearchFallbackAnswer', () => {
     expect(answer).toContain('P1/P2 critical');
     expect(answer).toContain('P3/P4 warning');
     expect(answer).toContain('P99 online');
+    expect(answer).toContain(`CPU ${THRESHOLDS.cpu.critical}%`);
+    expect(answer).toContain(`Memory ${THRESHOLDS.memory.critical}%`);
+    expect(answer).toContain(`Disk ${THRESHOLDS.disk.critical}%`);
+    expect(answer).toContain(`CPU ${THRESHOLDS.cpu.warning}%`);
+    expect(answer).toContain(`Memory ${THRESHOLDS.memory.warning}%`);
+    expect(answer).toContain(`Disk ${THRESHOLDS.disk.warning}%`);
   });
 });

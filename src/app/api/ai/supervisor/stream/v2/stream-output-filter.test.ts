@@ -58,7 +58,7 @@ describe('createOutputFilterStream', () => {
       `data: ${JSON.stringify({
         type: 'text-delta',
         delta:
-          'Vercel BFF 설명\n<|tool_call_begin|>\nNothing to process.\n{"reasoning":"hidden","tool":"searchKnowledgeBase"}\n<|tool_call_end|>\nCloud Run 설명',
+          'Vercel BFF 설명\n<|tool_call_begin|>\nNothing to process.\n{"tool":"searchKnowledgeBase","reasoning":"hidden"}\n<|tool_call_end|>\nCloud Run 설명',
       })}\n\n`,
     ]);
 

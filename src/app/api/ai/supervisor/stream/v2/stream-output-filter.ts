@@ -10,7 +10,7 @@ const RAW_MODEL_MARKER_PATTERN =
 const STANDALONE_NOTHING_TO_PROCESS_PATTERN =
   /^\s*Nothing to process\.?\s*$/gim;
 const REASONING_JSON_OBJECT_PATTERN =
-  /\{\s*"reasoning"\s*:\s*"(?:(?:\\.)|[^"\\])*"(?:\s*,\s*"[^"]+"\s*:\s*(?:"(?:(?:\\.)|[^"\\])*"|[^,{}\n]+))*\s*\}/gi;
+  /\{(?=[^{}\n]*"reasoning"\s*:)[^{}\n]*\}/gi;
 
 function containsMaliciousOutput(text: string): boolean {
   for (const { pattern } of MALICIOUS_OUTPUT_PATTERNS) {

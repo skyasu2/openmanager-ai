@@ -144,7 +144,7 @@ describe('sanitizeUserFacingResponse', () => {
         'Vercel BFF는 Next.js API 경계입니다.',
         '<|tool_call_begin|>',
         'Nothing to process.',
-        '{"reasoning":"internal chain of thought","tool":"searchKnowledgeBase"}',
+        '{"tool":"searchKnowledgeBase","reasoning":"internal chain of thought"}',
         '<|tool_call_end|>',
         'Cloud Run AI Engine은 AI 실행 경계입니다.',
       ].join('\n')
