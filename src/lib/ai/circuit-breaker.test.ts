@@ -31,6 +31,7 @@ vi.mock('./circuit-breaker/state-store', () => ({
   InMemoryStateStore: vi.fn(),
 }));
 
+import * as circuitBreakerModule from './circuit-breaker';
 import {
   AIServiceCircuitBreaker,
   aiCircuitBreaker,
@@ -487,6 +488,14 @@ describe('getAIStatusSummary', () => {
     // Then
     expect(summary.stats.openBreakers).toBeGreaterThanOrEqual(1);
     expect(summary.stats.totalFailures).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('public circuit breaker surface', () => {
+  it('does not expose unused distributed Redis state-store APIs', () => {
+    expect(circuitBreakerModule).not.toHaveProperty('ensureRedisStateStore');
+    expect(circuitBreakerModule).not.toHaveProperty('setDistributedStateStore');
+    expect(circuitBreakerModule).not.toHaveProperty('IDistributedStateStore');
   });
 });
 
