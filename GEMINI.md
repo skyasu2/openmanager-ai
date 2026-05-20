@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.11.184 | Last reviewed: 2026-05-20 -->
+<!-- Last reviewed: 2026-05-20 | 버전 SSOT: docs/status.md (package.json) -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -234,4 +234,4 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
 
 ---
 
-_Gemini Agent Configuration for OpenManager AI v8.11.184 | Last reviewed: 2026-05-20_
+_Gemini Agent Configuration for OpenManager AI | Last reviewed: 2026-05-20 | 버전: [`docs/status.md`](docs/status.md)_
