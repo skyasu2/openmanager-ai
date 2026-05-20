@@ -1,0 +1,143 @@
+{
+  "runTitle": "Vercel Playwright QA - v8.11.185 Landing AI Text and Dashboard Status",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.11.185 completed successfully after retrying one transient Vercel API deploy upload failure",
+    "Production /api/version returned version 8.11.185, release tag v8.11.185, commit 5dc589362a921687b1f51bdd0c8f30ea3a6bb564, and pipeline 2540065960",
+    "Landing page rendered on Vercel production and the hero OpenManager AI title was visible",
+    "Landing hero AI span used landing-title-ai with filter none, transform none, opacity 1, text-rendering geometricprecision, and antialiased font smoothing",
+    "Dashboard opened from the landing CTA using the guest session route",
+    "Dashboard summary displayed total 18, online 17, warning 1, risk 0, offline 0",
+    "Dashboard system resources displayed CPU 31%, Memory 44%, Disk 37%",
+    "Dashboard server list displayed '상위 알림 서버 8개 표시 (전체 18대)' with no 0 remaining pagination artifact",
+    "Dashboard warning label used '경고' on lb-haproxy-dc1-01 with CPU 62.0%, MEM 36.0%, Disk 24.0%",
+    "/api/servers-unified?limit=18 returned 18 servers with online 17, warning 1 and averages CPU 31, Memory 44, Disk 37",
+    "Resource warning top list remained aligned with full-source data, including db-mysql-dc1-backup DISK 72 and db-mysql-dc1-primary DISK 66",
+    "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571"
+  ],
+  "skippedSurfaces": [
+    "AI Assistant conversational QA was intentionally skipped because this release changed landing/dashboard display state only, not AI prompt routing, stream contracts, model behavior, provider selection, or Vision routing",
+    "Mobile viewport, modal-detail pack, auth provider callback, Reporter/Analyst advanced surfaces, and Vision image upload UI were not included in this targeted verification",
+    "Cloud Run admin monitoring endpoints were not called directly; GitLab AI Engine deploy and post-deploy smoke were used as deployment evidence"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5ViT7mQKcqXoWjn3DZK8anmXenRp",
+    "deploymentUrl": "https://openmanager-c81liohe9-skyasus-projects.vercel.app",
+    "commitSha": "5dc589362a921687b1f51bdd0c8f30ea3a6bb564"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-20T19:27:20+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.11.185 production QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.11.185 landing and dashboard state evidence",
+      "path": "reports/qa/evidence/qa-20260520-v811185-landing-dashboard-state.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing hero AI text",
+      "path": "reports/qa/evidence/qa-20260520-v811185-landing-ai.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard server status summary",
+      "path": "reports/qa/evidence/qa-20260520-v811185-dashboard-status.png"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "visual-ui-quality",
+      "domainName": "Visual UI Quality Reviewer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Landing AI title production styling was checked with both screenshot and computed style; no CSS blur/filter was present.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard totals, status counts, and system resource averages were compared against /api/servers-unified?limit=18 and matched the full 18-server source.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "devops-sre",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, frontend deploy smoke, AI Engine deploy smoke, and post-deploy version smoke all passed for v8.11.185.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Risk-based Playwright MCP verification covered the changed landing and dashboard surfaces and recorded durable evidence under reports/qa/evidence.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-ai-title-crisp-v811185",
+      "title": "Landing hero AI text no longer uses blur-like filter/shadow intensity",
+      "priority": "P1",
+      "evidence": "Production computed style: filter none, transform none, opacity 1, text-rendering geometricprecision; screenshot captured."
+    },
+    {
+      "id": "dashboard-full-source-status-parity-v811185",
+      "title": "Dashboard server status and resource overview use the full 18-server source",
+      "priority": "P1",
+      "evidence": "Dashboard totals and averages matched /api/servers-unified?limit=18 values: 18 total, 17 online, 1 warning, CPU 31, Memory 44, Disk 37."
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [
+    "Vercel deploy initially failed on a transient API upload response: invalid JSON from api.vercel.com/v2/files with Internal Server Error body. The failed deploy job was retried and then passed.",
+    "The dashboard API default page still returns 10 servers, but the dashboard display now uses the fetched full 18-server source for summary parity.",
+    "AI Assistant QA debt from QA-20260520-0544 remains separate and was not retested in this non-AI UI/state release."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.185",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540065960"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-c81liohe9-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

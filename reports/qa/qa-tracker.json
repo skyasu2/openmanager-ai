@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-20T08:08:43.778Z"
+    "updatedAt": "2026-05-20T10:33:17.738Z"
   },
   "sequence": {
-    "nextRunNumber": 545
+    "nextRunNumber": 546
   },
   "summary": {
-    "totalRecordedRuns": 542,
-    "totalRuns": 430,
+    "totalRecordedRuns": 543,
+    "totalRuns": 431,
     "excludedRuns": 112,
-    "totalChecks": 3924,
-    "totalPassed": 3768,
+    "totalChecks": 3936,
+    "totalPassed": 3780,
     "totalFailed": 145,
     "completionRate": 99.68,
-    "completedItems": 618,
+    "completedItems": 620,
     "pendingItems": 2,
     "deferredItems": 0,
     "wontFixItems": 35,
-    "expertDomainsTracked": 17,
-    "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260520-0544",
-    "lastRecordedAt": "2026-05-20T08:08:43.778Z",
-    "latestRecordedRunId": "QA-20260520-0544",
-    "latestRecordedAt": "2026-05-20T08:08:43.778Z"
+    "expertDomainsTracked": 19,
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260520-0545",
+    "lastRecordedAt": "2026-05-20T10:33:17.738Z",
+    "latestRecordedRunId": "QA-20260520-0545",
+    "latestRecordedAt": "2026-05-20T10:33:17.738Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15449,6 +15449,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-20T08:08:43.778Z"
+    },
+    "landing-ai-title-crisp-v811185": {
+      "id": "landing-ai-title-crisp-v811185",
+      "title": "Landing hero AI text no longer uses blur-like filter/shadow intensity",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260520-0545",
+      "firstSeenAt": "2026-05-20T10:33:17.738Z",
+      "lastSeenRunId": "QA-20260520-0545",
+      "lastSeenAt": "2026-05-20T10:33:17.738Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production computed style: filter none, transform none, opacity 1, text-rendering geometricprecision; screenshot captured.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-20T10:33:17.738Z"
+    },
+    "dashboard-full-source-status-parity-v811185": {
+      "id": "dashboard-full-source-status-parity-v811185",
+      "title": "Dashboard server status and resource overview use the full 18-server source",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260520-0545",
+      "firstSeenAt": "2026-05-20T10:33:17.738Z",
+      "lastSeenRunId": "QA-20260520-0545",
+      "lastSeenAt": "2026-05-20T10:33:17.738Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Dashboard totals and averages matched /api/servers-unified?limit=18 values: 18 total, 17 online, 1 warning, CPU 31, Memory 44, Disk 37.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-20T10:33:17.738Z"
     }
   },
   "runs": [
@@ -62273,6 +62321,144 @@
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260520-0545",
+      "recordedAt": "2026-05-20T10:33:17.738Z",
+      "recordedAtKst": "2026-05-20 19:33:17 KST",
+      "title": "Vercel Playwright QA - v8.11.185 Landing AI Text and Dashboard Status",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260520-0545.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5ViT7mQKcqXoWjn3DZK8anmXenRp",
+        "deploymentUrl": "https://openmanager-c81liohe9-skyasus-projects.vercel.app",
+        "commitSha": "5dc589362a921687b1f51bdd0c8f30ea3a6bb564"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.11.185 completed successfully after retrying one transient Vercel API deploy upload failure",
+        "Production /api/version returned version 8.11.185, release tag v8.11.185, commit 5dc589362a921687b1f51bdd0c8f30ea3a6bb564, and pipeline 2540065960",
+        "Landing page rendered on Vercel production and the hero OpenManager AI title was visible",
+        "Landing hero AI span used landing-title-ai with filter none, transform none, opacity 1, text-rendering geometricprecision, and antialiased font smoothing",
+        "Dashboard opened from the landing CTA using the guest session route",
+        "Dashboard summary displayed total 18, online 17, warning 1, risk 0, offline 0",
+        "Dashboard system resources displayed CPU 31%, Memory 44%, Disk 37%",
+        "Dashboard server list displayed '상위 알림 서버 8개 표시 (전체 18대)' with no 0 remaining pagination artifact",
+        "Dashboard warning label used '경고' on lb-haproxy-dc1-01 with CPU 62.0%, MEM 36.0%, Disk 24.0%",
+        "/api/servers-unified?limit=18 returned 18 servers with online 17, warning 1 and averages CPU 31, Memory 44, Disk 37",
+        "Resource warning top list remained aligned with full-source data, including db-mysql-dc1-backup DISK 72 and db-mysql-dc1-primary DISK 66",
+        "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571"
+      ],
+      "skippedSurfaces": [
+        "AI Assistant conversational QA was intentionally skipped because this release changed landing/dashboard display state only, not AI prompt routing, stream contracts, model behavior, provider selection, or Vision routing",
+        "Mobile viewport, modal-detail pack, auth provider callback, Reporter/Analyst advanced surfaces, and Vision image upload UI were not included in this targeted verification",
+        "Cloud Run admin monitoring endpoints were not called directly; GitLab AI Engine deploy and post-deploy smoke were used as deployment evidence"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "visual-ui-quality",
+          "domainName": "Visual UI Quality Reviewer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Landing AI title production styling was checked with both screenshot and computed style; no CSS blur/filter was present.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard totals, status counts, and system resource averages were compared against /api/servers-unified?limit=18 and matched the full 18-server source.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "devops-sre",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, frontend deploy smoke, AI Engine deploy smoke, and post-deploy version smoke all passed for v8.11.185.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Risk-based Playwright MCP verification covered the changed landing and dashboard surfaces and recorded durable evidence under reports/qa/evidence.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-20T19:27:20+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.11.185 production QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.11.185 landing and dashboard state evidence",
+          "path": "reports/qa/evidence/qa-20260520-v811185-landing-dashboard-state.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing hero AI text",
+          "path": "reports/qa/evidence/qa-20260520-v811185-landing-ai.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard server status summary",
+          "path": "reports/qa/evidence/qa-20260520-v811185-dashboard-status.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.11.185",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540065960"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-c81liohe9-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -62349,34 +62535,34 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 240,
-      "appropriateCount": 219,
+      "seenCount": 241,
+      "appropriateCount": 220,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260520-0544",
-      "lastSeenAt": "2026-05-20T08:08:43.778Z",
+      "lastRunId": "QA-20260520-0545",
+      "lastSeenAt": "2026-05-20T10:33:17.738Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The run used real browser rendering, Vercel MCP deployment lookup, network evidence, and durable QA artifacts; a follow-up should convert these prompts into locator-based Playwright regression coverage.",
-      "lastNextAction": "Add user-like Playwright regression prompts for KRL platform-boundary routing and raw marker sanitization."
+      "lastImprovementNeeded": false,
+      "lastRationale": "Risk-based Playwright MCP verification covered the changed landing and dashboard surfaces and recorded durable evidence under reports/qa/evidence.",
+      "lastNextAction": ""
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 68,
-      "appropriateCount": 46,
+      "seenCount": 69,
+      "appropriateCount": 47,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260520-0544",
-      "lastSeenAt": "2026-05-20T08:08:43.778Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "AI status counts and top risk servers matched the dashboard, but aggregate CPU/Memory/Disk values differed from the visible dashboard resources in both sampled status prompts.",
-      "lastNextAction": "Define whether dashboard and AI use the same aggregation source. If yes, fix parity; if not, expose the aggregation semantics in assistant metadata."
+      "lastRunId": "QA-20260520-0545",
+      "lastSeenAt": "2026-05-20T10:33:17.738Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Dashboard totals, status counts, and system resource averages were compared against /api/servers-unified?limit=18 and matched the full 18-server source.",
+      "lastNextAction": ""
     },
     "infra-reliability": {
       "domainId": "infra-reliability",
@@ -62563,6 +62749,40 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "Production Playwright MCP confirmed snapshot confidence is no longer hardcoded: memory 82% over 80% threshold displayed signal strength 64%.",
+      "lastNextAction": ""
+    },
+    "visual-ui-quality": {
+      "domainId": "visual-ui-quality",
+      "domainName": "Visual UI Quality Reviewer",
+      "firstSeenRunId": "QA-20260520-0545",
+      "firstSeenAt": "2026-05-20T10:33:17.738Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260520-0545",
+      "lastSeenAt": "2026-05-20T10:33:17.738Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Landing AI title production styling was checked with both screenshot and computed style; no CSS blur/filter was present.",
+      "lastNextAction": ""
+    },
+    "devops-sre": {
+      "domainId": "devops-sre",
+      "domainName": "DevOps / SRE Engineer",
+      "firstSeenRunId": "QA-20260520-0545",
+      "firstSeenAt": "2026-05-20T10:33:17.738Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260520-0545",
+      "lastSeenAt": "2026-05-20T10:33:17.738Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "GitLab tag pipeline, frontend deploy smoke, AI Engine deploy smoke, and post-deploy version smoke all passed for v8.11.185.",
       "lastNextAction": ""
     }
   }
