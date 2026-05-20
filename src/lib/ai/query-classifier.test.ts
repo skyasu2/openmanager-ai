@@ -102,6 +102,8 @@ describe('QueryClassifier', () => {
       '서버 점검 일정 알려줘',
       'Redis 공식 문서 번역해줘',
       '인프라 아키텍처 일정 정리해줘',
+      '서버 장애 알림 Slack으로 공유해줘',
+      'CPU 80% 이상 서버를 팀에 메일로 보내는 초안 만들어줘',
     ])('does not classify "%s" as off-domain when infra context exists', async (query) => {
       const result = await classifier.classify(query);
       expect(result.intent).not.toBe('off-domain');

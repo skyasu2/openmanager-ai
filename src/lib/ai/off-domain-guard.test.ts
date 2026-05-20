@@ -22,7 +22,7 @@ describe('getOffDomainGuardrail', () => {
   it.each([
     '내일 오후 3시에 팀 회의 일정 잡아줘',
     '오늘 저녁 7시 식당 예약해줘',
-    '장애 보고서를 팀에 메일로 보내줘',
+    '행사 안내를 팀에 메일로 보내줘',
   ])('blocks external action claim query "%s"', (query) => {
     const result = getOffDomainGuardrail(query);
 
@@ -65,6 +65,8 @@ describe('getOffDomainGuardrail', () => {
     'db-mysql-dc1-primary 디스크 용량 확보 명령어 알려줘',
     '오늘 시스템 요약 보고서 만들어줘',
     '장애 대응 runbook 알려줘',
+    '서버 장애 알림 Slack으로 공유해줘',
+    'CPU 80% 이상 서버를 팀에 메일로 보내는 초안 만들어줘',
   ])('does not block infra-scoped query "%s"', (query) => {
     expect(getOffDomainGuardrail(query)).toBeNull();
   });
