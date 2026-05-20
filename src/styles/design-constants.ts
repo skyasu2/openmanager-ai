@@ -281,6 +281,17 @@ export const AI_TEXT_GRADIENT_ANIMATED_STYLE = {
   color: 'transparent',
 } as const;
 
+// Landing hero H1 uses a static clipped gradient to avoid subpixel shimmer on
+// very large text over a dark animated background.
+export const AI_TEXT_GRADIENT_CRISP_STYLE = {
+  background: 'linear-gradient(135deg, #f472b6 0%, #a78bfa 48%, #67e8f9 100%)',
+  backgroundSize: '100% 100%',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  color: 'transparent',
+} as const;
+
 export const AI_ICON_GRADIENT_ID = 'ai-icon-gradient';
 export const AI_ICON_GRADIENT_COLORS = {
   start: '#ec4899', // pink-500

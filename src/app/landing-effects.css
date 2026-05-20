@@ -39,10 +39,11 @@
 }
 
 .landing-title-ai {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
   text-shadow:
-    0 0 18px rgba(125, 211, 252, 0.34),
-    0 0 46px rgba(167, 139, 250, 0.24),
-    0 3px 14px rgba(0, 0, 0, 0.82);
+    0 2px 9px rgba(0, 0, 0, 0.76),
+    0 0 14px rgba(125, 211, 252, 0.18);
 }
 
 .landing-hero-subtitle,

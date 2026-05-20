@@ -22,7 +22,7 @@ import {
   APP_VERSION,
   TECH_STACK_DISPLAY,
 } from '@/config/app-meta';
-import { AI_TEXT_GRADIENT_ANIMATED_STYLE } from '@/styles/design-constants';
+import { AI_TEXT_GRADIENT_CRISP_STYLE } from '@/styles/design-constants';
 import { envLabel } from '@/utils/vercel-env-utils';
 
 const UnifiedProfileHeader = dynamic(
@@ -115,7 +115,7 @@ function Home() {
             <span className="landing-title-main">OpenManager</span>{' '}
             <span
               className="landing-title-ai"
-              style={AI_TEXT_GRADIENT_ANIMATED_STYLE}
+              style={AI_TEXT_GRADIENT_CRISP_STYLE}
             >
               AI
             </span>
