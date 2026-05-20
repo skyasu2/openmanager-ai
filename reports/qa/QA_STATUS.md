@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-20 19:33:21 KST
+> Generated at: 2026-05-20 21:57:50 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 543 |
-| Total Runs (Counted) | 431 |
+| Total Recorded Runs | 544 |
+| Total Runs (Counted) | 432 |
 | Non-counted Runs | 112 |
-| Total Checks | 3936 |
-| Passed | 3780 |
+| Total Checks | 3948 |
+| Passed | 3792 |
 | Failed | 145 |
-| Completed Items | 620 |
-| Pending Items | 2 |
+| Completed Items | 622 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 19 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.68% |
-| Last Counted Run | QA-20260520-0545 (2026-05-20T10:33:17.738Z) |
-| Latest Recorded Run | QA-20260520-0545 (2026-05-20T10:33:17.738Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260520-0546 (2026-05-20T12:57:49.227Z) |
+| Latest Recorded Run | QA-20260520-0546 (2026-05-20T12:57:49.227Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,12 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260520-0545 (2026-05-20T10:33:17.738Z)
+Latest run: QA-20260520-0546 (2026-05-20T12:57:49.227Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Visual UI Quality Reviewer | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
@@ -47,24 +48,23 @@ Latest run: QA-20260520-0545 (2026-05-20T10:33:17.738Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.185 production QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.189 production QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-19T10:33:17.738Z -> 2026-05-20T10:33:17.738Z (24h)
-- Runs with observations: 5 recorded / 2 counted
-- Samples: 10
+- Window: 2026-05-19T12:57:49.227Z -> 2026-05-20T12:57:49.227Z (24h)
+- Runs with observations: 3 recorded / 1 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Metrics Query Agent / Supervisor | groq/mistral/zai | 1 | 28809ms | 28809ms | 0ms | 0ms | 28809ms | 28809ms | QA-20260519-0538 |
 | Supervisor | cloud-run-ai-engine | 4 | 6852ms | 18767ms | - | - | 6852ms | 18767ms | QA-20260520-0544 |
-| Vision Agent | gemini | 3 | 10809ms | 11774ms | 0ms | 0ms | 10809ms | 11774ms | QA-20260520-0542 |
-| Vision Agent | zai | 2 | 5560ms | 6704ms | 0ms | 0ms | 5560ms | 6704ms | QA-20260520-0541 |
+| Vision Agent | gemini | 2 | 10327ms | 11278ms | - | - | 10327ms | 11278ms | QA-20260520-0542 |
+| Vision Agent | zai | 1 | 4416ms | 4416ms | - | - | 4416ms | 4416ms | QA-20260520-0541 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-19T10:33:17.738Z -> 2026-05-20T10:33:17.738Z (24h)
+- Window: 2026-05-19T12:57:49.227Z -> 2026-05-20T12:57:49.227Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 - Drift rate: 66.67%
@@ -79,36 +79,35 @@ Latest run: QA-20260520-0545 (2026-05-20T10:33:17.738Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_5ViT7mQKcqXoWjn3DZK8anmXenRp / SHA 5dc58936
-- Coverage Packs: core-routes-smoke, dashboard-core
-- Covered Surfaces: GitLab tag pipeline v8.11.185 completed successfully after retrying one transient Vercel API deploy upload failure, Production /api/version returned version 8.11.185, release tag v8.11.185, commit 5dc589362a921687b1f51bdd0c8f30ea3a6bb564, and pipeline 2540065960, Landing page rendered on Vercel production and the hero OpenManager AI title was visible, Landing hero AI span used landing-title-ai with filter none, transform none, opacity 1, text-rendering geometricprecision, and antialiased font smoothing, Dashboard opened from the landing CTA using the guest session route, Dashboard summary displayed total 18, online 17, warning 1, risk 0, offline 0, Dashboard system resources displayed CPU 31%, Memory 44%, Disk 37%, Dashboard server list displayed '상위 알림 서버 8개 표시 (전체 18대)' with no 0 remaining pagination artifact, Dashboard warning label used '경고' on lb-haproxy-dc1-01 with CPU 62.0%, MEM 36.0%, Disk 24.0%, /api/servers-unified?limit=18 returned 18 servers with online 17, warning 1 and averages CPU 31, Memory 44, Disk 37, Resource warning top list remained aligned with full-source data, including db-mysql-dc1-backup DISK 72 and db-mysql-dc1-primary DISK 66, Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571
-- Skipped Surfaces: AI Assistant conversational QA was intentionally skipped because this release changed landing/dashboard display state only, not AI prompt routing, stream contracts, model behavior, provider selection, or Vision routing, Mobile viewport, modal-detail pack, auth provider callback, Reporter/Analyst advanced surfaces, and Vision image upload UI were not included in this targeted verification, Cloud Run admin monitoring endpoints were not called directly; GitLab AI Engine deploy and post-deploy smoke were used as deployment evidence
+- Deployment: vercel-production-v8.11.189 / SHA 41c9bb7f
+- Coverage Packs: ai-core, observability-pack, core-routes-smoke
+- Covered Surfaces: GitLab tag pipeline v8.11.189 completed successfully with frontend deploy/smoke, AI Engine deploy, and AI Engine post-deploy smoke, GitLab main pipeline 2540461832 completed successfully after retrying one transient npm/esbuild ETXTBSY validate job, Production /api/version returned version 8.11.189, release tag v8.11.189, commit 41c9bb7ffb903768f0e5df3de4bad8526808c1d3, and tag pipeline 2540461831, AI assistant sidebar opened on Vercel production dashboard and showed AI Engine Ready, Prompt 'Vercel BFF와 Cloud Run AI Engine 책임 경계를 알려줘. KRL 근거가 있으면 함께 알려줘.' returned internal knowledge / KRL evidence for Vercel BFF and Cloud Run AI Engine responsibility boundaries, The Vercel BFF / Cloud Run boundary response showed metadata '지식 근거 검색 (5건)' and '도구: 내부 지식 검색 · 모드: 오토', The Vercel BFF / Cloud Run boundary response did not expose <|tool_call_begin|>, <|tool_call_end|>, 'Nothing to process.', or reasoning JSON, Prompt 'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.' returned internal knowledge / KRL evidence instead of monitoring-server-health current status summary, The OTel SSOT response included pre-generated OTel data slot, 18대 서버 inventory, and explicit OTel 상태 판단 기준 with P0 offline, P1/P2 critical, P3/P4 warning, and P99 online rules, The OTel SSOT response did not expose <|tool_call_begin|>, <|tool_call_end|>, 'Nothing to process.', or reasoning JSON, Playwright screenshot evidence was captured after scrolling the AI conversation to the OTel status criteria section, Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571
+- Skipped Surfaces: OAuth provider callback, mobile viewport, Reporter Agent, Analyst Agent advanced tabs, and Vision image upload UI were not included because this targeted run closes AI stream sanitizer and KRL routing regressions only, Cloud Run admin monitoring endpoints were not called directly; GitLab AI Engine deploy and post-deploy smoke were used as deployment evidence, A broad dashboard visual QA pack was not rerun because v8.11.189 changed AI Engine direct knowledge answer content only
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab tag pipeline v8.11.185 | [GitLab tag pipeline v8.11.185](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540065960) | - |
+| general | GitLab main pipeline v8.11.189 | [GitLab main pipeline v8.11.189](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540461832) | - |
+| general | GitLab tag pipeline v8.11.189 | [GitLab tag pipeline v8.11.189](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540461831) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-c81liohe9-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-dqldf49ty-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.185 landing and dashboard state evidence | `reports/qa/evidence/qa-20260520-v811185-landing-dashboard-state.md` | - |
-| playwright-screenshot | Landing hero AI text | `reports/qa/evidence/qa-20260520-v811185-landing-ai.png` | - |
-| playwright-screenshot | Dashboard server status summary | `reports/qa/evidence/qa-20260520-v811185-dashboard-status.png` | - |
+| playwright-report | v8.11.189 KRL AI closure evidence | `reports/qa/evidence/qa-20260520-v811189-krl-ai-closure.md` | - |
+| playwright-screenshot | KRL boundary answer | `reports/qa/evidence/qa-20260520-v811189-krl-ai-pass.png` | - |
+| playwright-screenshot | OTel status criteria answer | `reports/qa/evidence/qa-20260520-v811189-krl-ai-status-criteria-pass.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260520-0544)
-  next: Add/adjust routing tests for Vercel BFF/Cloud Run and OTel SSOT KRL prompts, then sanitize streamed model text before rendering.
+- None
 
 ## Pending Improvements
 
-- [P1] ai-krl-platform-boundary-routing-v811184: Production AI Assistant should route Vercel BFF / Cloud Run boundary questions to internal KRL evidence (seen 1회, last QA-20260520-0544)
-- [P1] ai-stream-raw-tool-marker-leak-v811184: Production AI Assistant leaked raw tool-call markers and reasoning JSON in visible response (seen 1회, last QA-20260520-0544)
+- None
 
 ## Deferred Improvements
 
@@ -301,6 +300,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-hardening-production-verification: Verify production AI hardening release on v8.11.20 (completed 1회, last QA-20260418-0303)
 - ai-health-soft-polling-local: AI health UI polling uses soft responses (completed 1회, last QA-20260503-0396)
 - ai-incident-artifact-render-v81181: Incident report artifact renders from production AI sidebar (completed 1회, last QA-20260502-0390)
+- ai-krl-platform-boundary-routing-v811184: Production AI Assistant routes Vercel BFF / Cloud Run and OTel SSOT KRL questions to internal evidence (completed 1회, last QA-20260520-0546)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-memory-topn-broad-ranking-korean-response: AI memory TOP-N broad ranking should answer in Korean without server_id clarification (completed 1회, last QA-20260510-0440)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
@@ -384,6 +384,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-starter-summary-parity-guard-final-hardening: AI parity guard dynamic total and label-boundary hardening (completed 1회, last QA-20260424-0345)
 - ai-status-diagnostic-commands: AI status answers include read-only diagnostic commands when commands are requested (completed 1회, last QA-20260514-0501)
 - ai-stream-fallback-evidence-metadata: AI stream fallback metadata is preserved (completed 1회, last QA-20260503-0396)
+- ai-stream-raw-tool-marker-leak-v811184: Production AI Assistant no longer leaks raw tool-call markers or reasoning JSON for the KRL prompts (completed 1회, last QA-20260520-0546)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-streaming-ui-s1-fullscreen-direct-stream-v81188: Fullscreen AI workspace production stream path verified (completed 1회, last QA-20260503-0400)
 - ai-streaming-ui-s3-agent-step-events-v81188: AI Streaming UI S3 agent-step stream contract deployed (completed 1회, last QA-20260503-0399)
@@ -835,6 +836,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260520-0546 | 2026-05-20T12:57:49.227Z | targeted | yes | yes | Vercel Playwright QA - v8.11.189 KRL Routing and Stream Sanitizer Closure | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260520-0545 | 2026-05-20T10:33:17.738Z | targeted | yes | yes | Vercel Playwright QA - v8.11.185 Landing AI Text and Dashboard Status | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260520-0544 | 2026-05-20T08:08:43.778Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.184 dashboard and AI state | 12 | 0 | 2 | 0 | 0 | 3 |
 | QA-20260520-0543 | 2026-05-20T04:10:25.196Z | targeted | no | no | Vision GLM Fallback Removal Closure | 1 | 1 | 0 | 0 | 0 | 0 |
@@ -854,4 +856,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260519-0529 | 2026-05-19T00:09:51.939Z | release-gate | yes | yes | v8.11.176 Vercel Playwright MCP AI Release QA | 15 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260519-0528 | 2026-05-18T19:14:20.082Z | targeted | no | yes | v8.11.175 Vercel Playwright MCP AI NLQ/Anomaly Drift Check | 13 | 0 | 2 | 0 | 1 | 3 |
 | QA-20260518-0527 | 2026-05-18T14:49:19.097Z | targeted | yes | yes | v8.11.175 Vercel Playwright MCP Reporter Fallback Evidence Fix | 20 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260518-0526 | 2026-05-18T12:23:32.919Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Today Reporter Change Check | 13 | 0 | 0 | 0 | 0 | 0 |

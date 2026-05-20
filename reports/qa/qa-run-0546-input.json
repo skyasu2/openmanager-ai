@@ -1,0 +1,160 @@
+{
+  "runTitle": "Vercel Playwright QA - v8.11.189 KRL Routing and Stream Sanitizer Closure",
+  "owner": "codex",
+  "source": "playwright-mcp+gitlab-ci+vercel-usage",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack",
+    "core-routes-smoke"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.11.189 completed successfully with frontend deploy/smoke, AI Engine deploy, and AI Engine post-deploy smoke",
+    "GitLab main pipeline 2540461832 completed successfully after retrying one transient npm/esbuild ETXTBSY validate job",
+    "Production /api/version returned version 8.11.189, release tag v8.11.189, commit 41c9bb7ffb903768f0e5df3de4bad8526808c1d3, and tag pipeline 2540461831",
+    "AI assistant sidebar opened on Vercel production dashboard and showed AI Engine Ready",
+    "Prompt 'Vercel BFF와 Cloud Run AI Engine 책임 경계를 알려줘. KRL 근거가 있으면 함께 알려줘.' returned internal knowledge / KRL evidence for Vercel BFF and Cloud Run AI Engine responsibility boundaries",
+    "The Vercel BFF / Cloud Run boundary response showed metadata '지식 근거 검색 (5건)' and '도구: 내부 지식 검색 · 모드: 오토'",
+    "The Vercel BFF / Cloud Run boundary response did not expose <|tool_call_begin|>, <|tool_call_end|>, 'Nothing to process.', or reasoning JSON",
+    "Prompt 'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.' returned internal knowledge / KRL evidence instead of monitoring-server-health current status summary",
+    "The OTel SSOT response included pre-generated OTel data slot, 18대 서버 inventory, and explicit OTel 상태 판단 기준 with P0 offline, P1/P2 critical, P3/P4 warning, and P99 online rules",
+    "The OTel SSOT response did not expose <|tool_call_begin|>, <|tool_call_end|>, 'Nothing to process.', or reasoning JSON",
+    "Playwright screenshot evidence was captured after scrolling the AI conversation to the OTel status criteria section",
+    "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571"
+  ],
+  "skippedSurfaces": [
+    "OAuth provider callback, mobile viewport, Reporter Agent, Analyst Agent advanced tabs, and Vision image upload UI were not included because this targeted run closes AI stream sanitizer and KRL routing regressions only",
+    "Cloud Run admin monitoring endpoints were not called directly; GitLab AI Engine deploy and post-deploy smoke were used as deployment evidence",
+    "A broad dashboard visual QA pack was not rerun because v8.11.189 changed AI Engine direct knowledge answer content only"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "vercel-production-v8.11.189",
+    "deploymentUrl": "https://openmanager-dqldf49ty-skyasus-projects.vercel.app",
+    "commitSha": "41c9bb7ffb903768f0e5df3de4bad8526808c1d3"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-20T21:50:39+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.11.189 production QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.11.189 KRL AI closure evidence",
+      "path": "reports/qa/evidence/qa-20260520-v811189-krl-ai-closure.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "KRL boundary answer",
+      "path": "reports/qa/evidence/qa-20260520-v811189-krl-ai-pass.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "OTel status criteria answer",
+      "path": "reports/qa/evidence/qa-20260520-v811189-krl-ai-status-criteria-pass.png"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The two production regression prompts now route to internal knowledge evidence, include the expected KRL/SSOT content, and do not expose raw tool markers or reasoning JSON.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Visible assistant output was checked for raw tool-call markers, 'Nothing to process.', and reasoning JSON leakage after the stream sanitizer and direct knowledge path fixes.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The OTel response explicitly distinguishes KRL evidence from current metric values and states that the 18-server inventory/current metrics use pre-generated OTel data slot as SSOT.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "devops-sre",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag deploy pipeline completed all frontend and AI Engine deployment/smoke jobs, production version is coherent, and Vercel usage is within guardrail.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production regression prompts were exercised through a real browser session and backed by durable screenshot and markdown evidence.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-krl-platform-boundary-routing-v811184",
+      "title": "Production AI Assistant routes Vercel BFF / Cloud Run and OTel SSOT KRL questions to internal evidence",
+      "priority": "P1",
+      "evidence": "Production v8.11.189 Playwright QA showed both KRL prompts using internal knowledge search. The OTel prompt included pre-generated OTel data slot, 18-server inventory, and explicit status criteria."
+    },
+    {
+      "id": "ai-stream-raw-tool-marker-leak-v811184",
+      "title": "Production AI Assistant no longer leaks raw tool-call markers or reasoning JSON for the KRL prompts",
+      "priority": "P1",
+      "evidence": "Programmatic DOM checks returned false for <|tool_call_begin|>, <|tool_call_end|>, 'Nothing to process.', and reasoning JSON after both production prompts."
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [
+    "v8.11.189 includes an additional direct-knowledge answer guard so KRL/OTel status questions explicitly surface OTel status criteria, not only top knowledge document titles.",
+    "The first v8.11.189 main validate job failed on a transient npm/esbuild ETXTBSY during npm ci; retry job 14464551732 passed and main pipeline 2540461832 finished success.",
+    "The QA browser initially restored old conversation history, so a fresh conversation was started before recording the final v8.11.189 assertions."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.189",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540461831"
+    },
+    {
+      "type": "general",
+      "label": "GitLab main pipeline v8.11.189",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540461832"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-dqldf49ty-skyasus-projects.vercel.app"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
