@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-20
+> Last reviewed: 2026-05-21
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-21 | **현재 버전 스냅샷**: v8.11.190
+**상태 스냅샷 기준일**: 2026-05-21 | **현재 버전 스냅샷**: v8.11.191
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.11.191** (2026-05-21) — Features: ai: grounded LLM synthesis for direct KRL knowledge path; Bug Fixes: landing: sharpen hero ai title rendering
 - **v8.11.189** (2026-05-20) — Bug Fixes: ai: include OTel status criteria in KRL answers
 - **v8.11.188** (2026-05-20) — Bug Fixes: ai: answer forced KRL queries from direct knowledge
 - **v8.11.187** (2026-05-20) — Bug Fixes: ai: keep KRL SSOT queries on knowledge path
 - **v8.11.186** (2026-05-20) — Bug Fixes: ai: sanitize stream artifacts and route KRL boundary; Tests: qa: record v8.11.185 visual status validation
-- **v8.11.185** (2026-05-20) — Bug Fixes: dashboard: align server status displays; Bug Fixes: landing: sharpen hero ai text; Bug Fixes: ai-engine: apply semantic intent policy signals
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
