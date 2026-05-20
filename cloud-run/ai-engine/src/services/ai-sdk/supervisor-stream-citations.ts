@@ -4,6 +4,7 @@ import {
   shouldRefuseInternalImplementationPathRequest,
   type InternalDisclosureMode,
 } from './internal-disclosure-policy';
+import { THRESHOLDS } from '../../data/precomputed-state-core';
 
 const URL_PATTERN = /https?:\/\//i;
 
@@ -204,6 +205,23 @@ function buildKnowledgeEvidenceSummaries(
   });
 }
 
+function buildOTelStatusCriteriaLines(query: string): string[] {
+  const asksAboutOTel = /otel|opentelemetry|ssot|pre[-\s]?generated/i.test(query);
+  const asksAboutStatusCriteria = /18대|서버|상태|판단|판정|기준/i.test(query);
+  if (!asksAboutOTel || !asksAboutStatusCriteria) return [];
+
+  return [
+    '',
+    'OTel 상태 판단 기준',
+    `- 18대 서버 inventory와 현재 메트릭은 pre-generated OTel data slot을 SSOT로 봅니다.`,
+    '- 현재 CPU/Memory/Disk 값은 KRL에서 추정하지 않고 monitoring data tool 또는 OTel slot 결과를 우선합니다.',
+    '- P0 offline: CPU, Memory, Disk가 모두 0인 경우',
+    `- P1/P2 critical: CPU와 Memory가 모두 ${THRESHOLDS.cpu.critical}% 이상이거나, CPU/Memory/Disk 중 하나가 critical 임계값 이상인 경우`,
+    `- P3/P4 warning: CPU/Memory/Disk 중 2개 이상이 warning 임계값 이상이거나, 하나라도 warning 임계값 이상인 경우`,
+    '- P99 online: 모든 지표가 warning 임계값 미만인 경우',
+  ];
+}
+
 export function buildKnowledgeBaseGroundedAnswer(
   query: string,
   toolResults: ToolResultLike[],
@@ -251,6 +269,7 @@ export function buildKnowledgeBaseGroundedAnswer(
     return `${index + 1}. ${title} (${source}${scoreText})`;
   });
   const summaryLines = buildKnowledgeEvidenceSummaries(topResults);
+  const otelStatusCriteriaLines = buildOTelStatusCriteriaLines(query);
 
   return [
     '내부 지식 검색 결과 기준으로만 답합니다.',
@@ -262,6 +281,7 @@ export function buildKnowledgeBaseGroundedAnswer(
     '근거 문서',
     ...evidenceLines,
     ...(summaryLines.length > 0 ? ['', '근거 요약', ...summaryLines] : []),
+    ...otelStatusCriteriaLines,
     '',
     '근거에 없는 경로는 추정하지 않았습니다.',
   ].join('\n');

@@ -229,4 +229,34 @@ describe('buildWebSearchFallbackAnswer', () => {
     expect(answer).toContain('`src/data/otel-data/index.ts`');
     expect(answer).not.toContain('/path/to/OpenManager/config.yaml');
   });
+
+  it('adds OTel derived status criteria for KRL SSOT status questions', () => {
+    const answer = buildKnowledgeBaseGroundedAnswer(
+      'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
+      [
+        {
+          toolName: 'searchKnowledgeBase',
+          result: {
+            results: [
+              {
+                title: 'OTel 데이터와 Supabase KRL 책임 경계',
+                content:
+                  '대시보드 수치와 AI의 현재 메트릭 판단은 pre-generated OTel data slot을 SSOT로 사용한다.',
+                similarity: 0.91,
+                sourceType: 'knowledge',
+              },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(answer).toContain('OTel 상태 판단 기준');
+    expect(answer).toContain('18대 서버 inventory');
+    expect(answer).toContain('pre-generated OTel data slot');
+    expect(answer).toContain('P0 offline');
+    expect(answer).toContain('P1/P2 critical');
+    expect(answer).toContain('P3/P4 warning');
+    expect(answer).toContain('P99 online');
+  });
 });
