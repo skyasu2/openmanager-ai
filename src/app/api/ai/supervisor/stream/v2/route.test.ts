@@ -143,10 +143,24 @@ describe('Supervisor Stream V2 Route', () => {
     mockGetFunctionTimeoutReserveMs.mockReturnValue(1_500);
     mockGetMaxTimeout.mockReturnValue(1000);
     mockExecuteWithCircuitBreakerAndFallback.mockImplementation(
-      async (_serviceName: string, primaryFn: () => Promise<unknown>) => ({
-        data: await primaryFn(),
-        source: 'primary',
-      })
+      async (
+        _serviceName: string,
+        primaryFn: () => Promise<unknown>,
+        fallbackFn: () => Promise<unknown> | unknown
+      ) => {
+        try {
+          return {
+            data: await primaryFn(),
+            source: 'primary',
+          };
+        } catch (error) {
+          return {
+            data: await fallbackFn(),
+            source: 'fallback',
+            originalError: error instanceof Error ? error : new Error('error'),
+          };
+        }
+      }
     );
     mockFetch.mockResolvedValue(
       new Response(createSseStream(), {

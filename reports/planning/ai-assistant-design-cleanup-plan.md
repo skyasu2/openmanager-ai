@@ -174,6 +174,8 @@ const cbResult = await executeWithCircuitBreakerAndFallback(
 **제약**: Vercel 서버리스 환경에서는 인스턴스 간 상태 공유 불가. in-memory CB는 단일 인스턴스 보호만 가능하다.
 `IDistributedStateStore` 인터페이스는 이미 정의되어 있으나 현재 request path와 연결이 없다.
 
+**구현 상태 (2026-05-20)**: 완료. `stream/v2` Cloud Run fetch loop를 `executeWithCircuitBreakerAndFallback('cloud-run-supervisor-stream', ...)`으로 감쌌다. retry budget 이후 5xx/fetch failure는 CB failure로 기록되고 fallback stream을 반환하며, CB OPEN 상태에서는 upstream fetch를 생략한다. fallback stream은 UIMessageStream header, `X-Session-Id`, `X-Stream-Id`, timing headers, `X-Fallback-Response`를 유지하고 `cloud_run_*` 또는 `circuit_breaker_open` reason을 stream data에 남긴다.
+
 ---
 
 ### Task 1-C: 서버-클라이언트 Resume Stream 불일치 해소 (🔴)
@@ -395,7 +397,7 @@ useLayoutEffect(() => {
 
 ### 테스트 시나리오
 
-- [ ] `stream/v2` route test: Cloud Run 5xx/timeout 반복 후 CB fallback stream 반환, 이후 OPEN 상태에서 upstream `fetch` 미호출
+- [x] `stream/v2` route test: Cloud Run 5xx/timeout 반복 후 CB fallback stream 반환, 이후 OPEN 상태에서 upstream `fetch` 미호출
 - [x] `stream/v2` route test: UIMessageStream headers 유지 (`x-vercel-ai-ui-message-stream: v1`)
 - [x] `stream/v2` route test: `AI_RESUMABLE_STREAMS_ENABLED=true`가 있어도 Redis stream 생성/active stream 저장을 수행하지 않음
 - [x] `useHybridAIQuery` test: `useChat` 호출에서 `resume` 활성화 계약 제거 또는 false 유지 확인
@@ -420,7 +422,7 @@ useLayoutEffect(() => {
 | P0 | 1-C (Resume 불일치 — server resumable 제거) | M | Redis/Upstash 운영 의존 제거, client resume 비활성 계약 정리 |
 | P1 | 2-B (라우팅 일원화) + 1-A 방어 처리 | M | 2-B가 root cause, 1-A는 잔여 202 안전망. 같은 커밋 묶음 권장 |
 | P1 | 2-A (Off-domain guard 순서) | S | 운영 컨텍스트 우선 + 테스트 |
-| P2 | 1-B (stream/v2 CB 적용) | M | ~~P1~~ → P2 재분류 (2026-05-20): Cloud Run multi-provider rotation이 provider 실패를 흡수하므로 Vercel CB는 Cloud Run 전체 다운 시나리오만 커버. stream fallback/header/OPEN-state test 포함 필요, 로그만으로 완료 처리 금지 |
+| Done | 1-B (stream/v2 CB 적용) | M | 2026-05-20 완료. in-memory CB, fallback/header/OPEN-state test 포함 |
 | Done | 2-C (아키텍처 주석 업데이트) | XS | 2026-05-20 완료 |
 | P3 | 3-A (_filterMaliciousOutput 제거) | S | |
 | P3 | 3-B (QueryClassifier → 순수 함수) | S | |
@@ -435,7 +437,7 @@ useLayoutEffect(() => {
 
 - [x] **P0 Task 1-C**: `test(spec):` commit — server resumable 비활성/제거, 클라이언트 resume 없이 정상 스트리밍 확인
 - [x] **P1 Task 2-B + 1-A**: `test(spec):` commit — 202 redirect 미발생, local dev fallback 202 방어 처리, 동일 쿼리 routing 결과 일관성 확인
-- [ ] **P2 Task 1-B**: `test(spec):` commit — stream/v2 Cloud Run failure가 CB fallback으로 전환되고 OPEN 상태에서 upstream fetch를 생략
+- [x] **P2 Task 1-B**: `test(spec):` commit — stream/v2 Cloud Run failure가 CB fallback으로 전환되고 OPEN 상태에서 upstream fetch를 생략
 - [x] **P1 Task 2-A**: `test(spec):` commit — 서버 컨텍스트 + 외부액션 쿼리 통과 확인
 
 ---

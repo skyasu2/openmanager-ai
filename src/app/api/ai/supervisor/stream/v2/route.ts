@@ -18,6 +18,7 @@
 import { generateId } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
@@ -74,6 +75,12 @@ import {
 // @see src/config/ai-proxy.config.ts (런타임 타임아웃 설정)
 // ============================================================================
 export const maxDuration = 60;
+
+const STREAM_CIRCUIT_BREAKER_SERVICE = 'cloud-run-supervisor-stream';
+
+type CloudRunStreamFetchResult =
+  | { type: 'upstream'; response: Response }
+  | { type: 'terminal'; response: Response };
 
 export const GET = withRateLimit(
   rateLimiters.aiAnalysis,
@@ -248,160 +255,165 @@ export const POST = withRateLimit(
         ...(retryTimeoutMs ? [retryTimeoutMs] : []),
       ];
 
-      let cloudRunResponse: Response | null = null;
-      let lastError: unknown = null;
-
-      for (const [i, timeoutMs] of attemptTimeouts.entries()) {
-        const attempt = i + 1;
-        const hasNextAttempt = i < attemptTimeouts.length - 1;
-
-        try {
-          logger.info(
-            `[SupervisorStreamV2] Cloud Run attempt ${attempt}/${attemptTimeouts.length} (timeout=${timeoutMs}ms)`
-          );
-          const response = await fetch(streamUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'text/event-stream',
-              // NOTE: API secret in header is safe in transit (HTTPS) but may appear
-              // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
-              'X-API-Key': cloudRunConfig.apiSecret,
-              [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity,
-            },
-            body: JSON.stringify({
-              messages: normalizedMessages,
-              sessionId,
-              deviceType,
-              enableWebSearch,
-              enableRAG,
-              analysisMode,
-              queryAsOf,
-              ...(internalDisclosureMode && { internalDisclosureMode }),
-              ...(localRouteDecision && { localRouteDecision }),
-              ...(metadata && { metadata }),
-              ...(semanticQueryTrace !== undefined &&
-              semanticQueryTrace !== null
-                ? { semanticQueryTrace }
-                : {}),
-            }),
-            signal: AbortSignal.timeout(timeoutMs),
-          });
-
-          if (response.ok) {
-            cloudRunResponse = response;
-            break;
-          }
-
-          const errorText = await response.text();
-          const status = response.status;
-          const isRetryableStatus =
-            status >= 500 || status === 408 || status === 504;
-
-          logger.error(
-            `❌ [SupervisorStreamV2] Cloud Run error (attempt ${attempt}): ${status} - ${errorText}`
-          );
-
-          if (isRetryableStatus && hasNextAttempt) {
-            logger.warn(
-              `[SupervisorStreamV2] Retrying after upstream ${status} (attempt ${attempt + 1}/${attemptTimeouts.length})`
-            );
-            continue;
-          }
-
-          if (isRetryableStatus) {
-            return createStreamFallbackResponse({
-              message: fallbackText,
-              reason: `cloud_run_${status}`,
-              retryAfterMs: fallback.retryAfter,
-              headers: buildAITimingHeaders({
-                latencyMs: aiTimer.elapsed(),
-                cacheStatus: 'BYPASS',
-                mode: 'streaming',
-                source: 'fallback',
-              }),
-              dataParts: createDeveloperContextDataParts(false),
-            });
-          }
-
-          return createStreamErrorResponse(
-            `AI 엔진 오류 (${status}). 잠시 후 다시 시도해주세요.`
-          );
-        } catch (error) {
-          lastError = error;
-          // AbortError: 수동 abort | TimeoutError: AbortSignal.timeout() 만료
-          const isAbortError =
-            error instanceof Error &&
-            (error.name === 'AbortError' || error.name === 'TimeoutError');
-
-          if (isAbortError && hasNextAttempt) {
-            logger.warn(
-              `[SupervisorStreamV2] Attempt ${attempt} timeout; retrying (${attempt + 1}/${attemptTimeouts.length})`
-            );
-            continue;
-          }
-
-          if (!isAbortError && hasNextAttempt) {
-            logger.warn(
-              `[SupervisorStreamV2] Attempt ${attempt} failed; retrying (${attempt + 1}/${attemptTimeouts.length})`
-            );
-            continue;
-          }
-
-          if (isAbortError) {
-            logger.error(
-              '❌ [SupervisorStreamV2] Request timeout, using fallback'
-            );
-            return createStreamFallbackResponse({
-              message: fallbackText,
-              reason: 'cloud_run_timeout',
-              retryAfterMs: fallback.retryAfter,
-              headers: buildAITimingHeaders({
-                latencyMs: aiTimer.elapsed(),
-                cacheStatus: 'BYPASS',
-                mode: 'streaming',
-                source: 'fallback',
-              }),
-              dataParts: createDeveloperContextDataParts(false),
-            });
-          }
-
-          logger.error(
-            '❌ [SupervisorStreamV2] Upstream fetch failed, using fallback'
-          );
-          return createStreamFallbackResponse({
-            message: fallbackText,
-            reason: 'cloud_run_fetch_failed',
-            retryAfterMs: fallback.retryAfter,
-            headers: buildAITimingHeaders({
+      const createFallbackStreamResponse = (reason: string) =>
+        createStreamFallbackResponse({
+          message: fallbackText,
+          reason,
+          retryAfterMs: fallback.retryAfter,
+          headers: createSupervisorStreamHeaders({
+            sessionId,
+            streamId,
+            resumable: false,
+            timingHeaders: buildAITimingHeaders({
               latencyMs: aiTimer.elapsed(),
               cacheStatus: 'BYPASS',
               mode: 'streaming',
               source: 'fallback',
             }),
-            dataParts: createDeveloperContextDataParts(false),
-          });
-        }
-      }
-
-      if (!cloudRunResponse) {
-        logger.error(
-          '[SupervisorStreamV2] No Cloud Run response after retries, using fallback',
-          lastError
-        );
-        return createStreamFallbackResponse({
-          message: fallbackText,
-          reason: 'cloud_run_unavailable',
-          retryAfterMs: fallback.retryAfter,
-          headers: buildAITimingHeaders({
-            latencyMs: aiTimer.elapsed(),
-            cacheStatus: 'BYPASS',
-            mode: 'streaming',
-            source: 'fallback',
-          }),
+          }) as Record<string, string>,
           dataParts: createDeveloperContextDataParts(false),
         });
+
+      let fallbackReason = 'circuit_breaker_open';
+      const fetchResult =
+        await executeWithCircuitBreakerAndFallback<CloudRunStreamFetchResult>(
+          STREAM_CIRCUIT_BREAKER_SERVICE,
+          async () => {
+            for (const [i, timeoutMs] of attemptTimeouts.entries()) {
+              const attempt = i + 1;
+              const hasNextAttempt = i < attemptTimeouts.length - 1;
+
+              try {
+                logger.info(
+                  `[SupervisorStreamV2] Cloud Run attempt ${attempt}/${attemptTimeouts.length} (timeout=${timeoutMs}ms)`
+                );
+                const response = await fetch(streamUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'text/event-stream',
+                    // NOTE: API secret in header is safe in transit (HTTPS) but may appear
+                    // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
+                    'X-API-Key': cloudRunConfig.apiSecret,
+                    [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity,
+                  },
+                  body: JSON.stringify({
+                    messages: normalizedMessages,
+                    sessionId,
+                    deviceType,
+                    enableWebSearch,
+                    enableRAG,
+                    analysisMode,
+                    queryAsOf,
+                    ...(internalDisclosureMode && { internalDisclosureMode }),
+                    ...(localRouteDecision && { localRouteDecision }),
+                    ...(metadata && { metadata }),
+                    ...(semanticQueryTrace !== undefined &&
+                    semanticQueryTrace !== null
+                      ? { semanticQueryTrace }
+                      : {}),
+                  }),
+                  signal: AbortSignal.timeout(timeoutMs),
+                });
+
+                if (response.ok) {
+                  return { type: 'upstream', response };
+                }
+
+                const errorText = await response.text();
+                const status = response.status;
+                const isRetryableStatus =
+                  status >= 500 || status === 408 || status === 504;
+
+                logger.error(
+                  `❌ [SupervisorStreamV2] Cloud Run error (attempt ${attempt}): ${status} - ${errorText}`
+                );
+
+                if (isRetryableStatus && hasNextAttempt) {
+                  logger.warn(
+                    `[SupervisorStreamV2] Retrying after upstream ${status} (attempt ${attempt + 1}/${attemptTimeouts.length})`
+                  );
+                  continue;
+                }
+
+                if (isRetryableStatus) {
+                  fallbackReason = `cloud_run_${status}`;
+                  throw new Error(
+                    `Cloud Run retryable status ${status}: ${errorText}`
+                  );
+                }
+
+                return {
+                  type: 'terminal',
+                  response: createStreamErrorResponse(
+                    `AI 엔진 오류 (${status}). 잠시 후 다시 시도해주세요.`
+                  ),
+                };
+              } catch (error) {
+                if (
+                  error instanceof Error &&
+                  error.message.startsWith('Cloud Run retryable status')
+                ) {
+                  throw error;
+                }
+
+                // AbortError: 수동 abort | TimeoutError: AbortSignal.timeout() 만료
+                const isAbortError =
+                  error instanceof Error &&
+                  (error.name === 'AbortError' ||
+                    error.name === 'TimeoutError');
+
+                if (isAbortError && hasNextAttempt) {
+                  logger.warn(
+                    `[SupervisorStreamV2] Attempt ${attempt} timeout; retrying (${attempt + 1}/${attemptTimeouts.length})`
+                  );
+                  continue;
+                }
+
+                if (!isAbortError && hasNextAttempt) {
+                  logger.warn(
+                    `[SupervisorStreamV2] Attempt ${attempt} failed; retrying (${attempt + 1}/${attemptTimeouts.length})`
+                  );
+                  continue;
+                }
+
+                if (isAbortError) {
+                  logger.error(
+                    '❌ [SupervisorStreamV2] Request timeout, using fallback'
+                  );
+                  fallbackReason = 'cloud_run_timeout';
+                  throw error;
+                }
+
+                logger.error(
+                  '❌ [SupervisorStreamV2] Upstream fetch failed, using fallback'
+                );
+                fallbackReason = 'cloud_run_fetch_failed';
+                throw error;
+              }
+            }
+
+            fallbackReason = 'cloud_run_unavailable';
+            throw new Error('No Cloud Run response after retries');
+          },
+          async () => ({
+            type: 'terminal',
+            response: createFallbackStreamResponse(fallbackReason),
+          })
+        );
+
+      if (fetchResult.source === 'fallback') {
+        logger.info(
+          `[SupervisorStreamV2] Circuit breaker fallback response (${fallbackReason})`
+        );
+        return fetchResult.data.response;
       }
+
+      if (fetchResult.data.type === 'terminal') {
+        return fetchResult.data.response;
+      }
+
+      const cloudRunResponse = fetchResult.data.response;
 
       if (!cloudRunResponse.body) {
         return NextResponse.json(
