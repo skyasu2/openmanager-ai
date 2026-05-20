@@ -24,6 +24,7 @@ import {
 import { executeSupervisorStream } from './supervisor-single-agent';
 import { getPublicErrorResponse, sanitizeErrorData } from '../../lib/error-handler';
 import { logger } from '../../lib/logger';
+import { sanitizeUserFacingResponse } from '../../lib/text-sanitizer';
 import { flushLangfuseBestEffort } from '../observability/langfuse-flush';
 
 // ============================================================================
@@ -225,7 +226,15 @@ export function createSupervisorStreamResponse(
 
         for await (const event of executeSupervisorStream(request)) {
           switch (event.type) {
-            case 'text_delta':
+            case 'text_delta': {
+              const textDelta =
+                typeof event.data === 'string'
+                  ? sanitizeUserFacingResponse(event.data)
+                  : '';
+              if (textDelta.length === 0) {
+                break;
+              }
+
               if (!textPartStarted) {
                 writer.write({
                   type: 'text-start',
@@ -236,13 +245,12 @@ export function createSupervisorStreamResponse(
 
               writer.write({
                 type: 'text-delta',
-                delta: event.data as string,
+                delta: textDelta,
                 id: currentMessageId,
               });
-              if (typeof event.data === 'string') {
-                responseText += event.data;
-              }
+              responseText += textDelta;
               break;
+            }
 
             case 'handoff':
               if (textPartStarted) {

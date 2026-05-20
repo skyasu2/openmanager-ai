@@ -53,6 +53,23 @@ describe('createOutputFilterStream', () => {
     expect(output).not.toContain('당신은 서버 모니터링 AI 어시스턴트');
   });
 
+  it('removes raw tool-call markers and reasoning JSON before client rendering', async () => {
+    const output = await filterChunks([
+      `data: ${JSON.stringify({
+        type: 'text-delta',
+        delta:
+          'Vercel BFF 설명\n<|tool_call_begin|>\nNothing to process.\n{"reasoning":"hidden","tool":"searchKnowledgeBase"}\n<|tool_call_end|>\nCloud Run 설명',
+      })}\n\n`,
+    ]);
+
+    const dataPart = parseFirstDataPart(output);
+    expect(dataPart.delta).toContain('Vercel BFF 설명');
+    expect(dataPart.delta).toContain('Cloud Run 설명');
+    expect(output).not.toContain('<|tool_call_begin|>');
+    expect(output).not.toContain('Nothing to process');
+    expect(output).not.toContain('"reasoning"');
+  });
+
   it('passes through safe chunks without modification', async () => {
     const input = `data: ${JSON.stringify({
       type: 'text-delta',

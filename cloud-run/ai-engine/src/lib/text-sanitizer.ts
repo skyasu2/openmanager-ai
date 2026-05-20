@@ -98,6 +98,24 @@ const FOREIGN_TO_KOREAN_MAP: Record<string, string> = {
 // Sanitization Functions
 // ============================================================================
 
+const RAW_MODEL_MARKER_PATTERN =
+  /<\|(?:tool_call_begin|tool_call_end|tool_call|tool_result|tool_sep|assistant|system|user|end)[^|]*\|>/gi;
+const STANDALONE_NOTHING_TO_PROCESS_PATTERN =
+  /^\s*Nothing to process\.?\s*$/gim;
+const REASONING_JSON_OBJECT_PATTERN =
+  /\{\s*"reasoning"\s*:\s*"(?:(?:\\.)|[^"\\])*"(?:\s*,\s*"[^"]+"\s*:\s*(?:"(?:(?:\\.)|[^"\\])*"|[^,{}\n]+))*\s*\}/gi;
+
+function stripRawModelArtifacts(text: string): string {
+  const stripped = text
+    .replace(RAW_MODEL_MARKER_PATTERN, '')
+    .replace(REASONING_JSON_OBJECT_PATTERN, '')
+    .replace(STANDALONE_NOTHING_TO_PROCESS_PATTERN, '')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n');
+
+  return stripped === text ? text : stripped.trim();
+}
+
 /**
  * Check if text contains Chinese characters (CJK Unified Ideographs)
  * Range: U+4E00 to U+9FFF
@@ -134,8 +152,11 @@ export function sanitizeChineseCharacters(text: string): string {
     return text;
   }
 
-  let result = text;
-  let needsSanitization = containsChineseCharacters(text) || containsForeignCharacters(text);
+  let result = stripRawModelArtifacts(text);
+  let needsSanitization =
+    result !== text ||
+    containsChineseCharacters(result) ||
+    containsForeignCharacters(result);
 
   // Also check for known foreign words that might not trigger character detection
   for (const foreignWord of Object.keys(FOREIGN_TO_KOREAN_MAP)) {
@@ -146,7 +167,7 @@ export function sanitizeChineseCharacters(text: string): string {
   }
 
   if (!needsSanitization) {
-    return text;
+    return result;
   }
 
   // 1. Replace known Chinese phrases first (preserves meaning)

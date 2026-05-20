@@ -17,7 +17,10 @@ import type {
   SupervisorRouteDecisionMode,
 } from './supervisor-types';
 import { selectExecutionMode } from '../../domains/monitoring/routing-policy';
-import { isFormattingOnlyReportRequest } from './routing/query-routing-signals';
+import {
+  FORCE_KB_QUERY_PATTERN,
+  isFormattingOnlyReportRequest,
+} from './routing/query-routing-signals';
 import {
   normalizeSupervisorInputType,
   normalizeSupervisorIntentFrame,
@@ -371,6 +374,10 @@ function hasRcaIntent(query: string): boolean {
 }
 
 function hasAdvisorIntent(query: string): boolean {
+  if (FORCE_KB_QUERY_PATTERN.test(query)) {
+    return true;
+  }
+
   return includesPattern(
     query,
     /(조치|해결|권장|추천|최적화|remediation|advisor|runbook|how\s+to\s+fix|명령어)/iu

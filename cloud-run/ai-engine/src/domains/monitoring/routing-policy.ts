@@ -90,17 +90,17 @@ export function selectExecutionMode(
     return 'single';
   }
 
-  const frameMode = resolveIntentFrameExecutionMode(intentFrame);
-  if (frameMode) {
-    return frameMode;
-  }
-
   if (analysisMode === 'thinking' && hasInfraContext) {
     return 'multi';
   }
 
   if (FORCE_KB_QUERY_PATTERN.test(q)) {
     return 'multi';
+  }
+
+  const frameMode = resolveIntentFrameExecutionMode(intentFrame);
+  if (frameMode) {
+    return frameMode;
   }
 
   const fallbackMultiPatterns = [
@@ -201,10 +201,11 @@ export function getIntentCategory(
 ): IntentCategory {
   void createRoutingDecisionTrace(extractQueryRoutingSignals(query));
 
+  const q = query.toLowerCase();
+  if (FORCE_KB_QUERY_PATTERN.test(q)) return 'advisor';
+
   const semanticCategory = resolveIntentFrameCategory(intentFrame);
   if (semanticCategory) return semanticCategory;
-
-  const q = query.toLowerCase();
 
   if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) return 'anomaly';
   if (TOOL_ROUTING_PATTERNS.prediction.test(q)) return 'prediction';

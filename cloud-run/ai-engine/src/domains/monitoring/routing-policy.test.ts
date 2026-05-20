@@ -204,6 +204,29 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode('현재 인프라 아키텍처와 트래픽 경로를 사내 지식베이스 기준으로 짧게 정리해줘.'),
       ).toBe('multi');
+      expect(
+        selectExecutionMode(
+          'Vercel BFF와 Cloud Run AI Engine 책임 경계를 알려줘. KRL 근거가 있으면 함께 알려줘.'
+        )
+      ).toBe('multi');
+    });
+
+    it('lets explicit KRL/SSOT wording override high-confidence metric intent frames', () => {
+      const metricFrame = buildIntentFrame('single', 0.95);
+
+      expect(
+        selectExecutionMode(
+          'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
+          undefined,
+          metricFrame
+        )
+      ).toBe('multi');
+      expect(
+        getIntentCategory(
+          'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
+          metricFrame
+        )
+      ).toBe('advisor');
     });
 
     it('should use thinking mode or intentFrame for analysis with infra context', () => {

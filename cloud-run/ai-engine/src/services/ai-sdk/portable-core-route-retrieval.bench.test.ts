@@ -128,9 +128,9 @@ describe('portable core route/tool trace replay benchmark', () => {
         candidate: {
           kind: 'chat',
           executionPath: 'stream',
-          executionMode: 'single-agent',
-          reasonCodes: ['single_agent_default'],
-          escalationReasonCodes: undefined,
+          executionMode: 'multi-agent',
+          reasonCodes: ['advisor_request'],
+          escalationReasonCodes: ['advisor_requested'],
         },
         activeTools: ['recommendCommands', 'searchKnowledgeBase', 'finalAnswer'],
         toolChoice: {

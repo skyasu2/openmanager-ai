@@ -86,6 +86,18 @@ describe('extractQueryRoutingSignals', () => {
     );
   });
 
+  it('routes Vercel BFF and Cloud Run boundary KRL questions to knowledge', () => {
+    const signals = extractQueryRoutingSignals(
+      'Vercel BFF와 Cloud Run AI Engine 책임 경계를 알려줘. KRL 근거가 있으면 함께 알려줘.'
+    );
+
+    expect(signals.intent).toBe('knowledge');
+    expect(signals.modeHint).toBe('multi');
+    expect(signals.reasonCodes).toContain('mode_multi_knowledge');
+    expect(signals.preFilter.action).toBe('suggest_agent');
+    expect(signals.preFilter.suggestedAgent).toBe('Advisor Agent');
+  });
+
   it('keeps deterministic extraction under the p50 latency budget', () => {
     const query =
       '서버 상태와 원인 분석을 비교하고 해결 방법도 알려줘. 지난 24시간 load1 피크도 같이 확인해줘';

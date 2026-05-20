@@ -37,7 +37,7 @@ export const ADVISOR_QUERY_PATTERN =
   /해결|방법|명령어|가이드|어떻게|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|how\s+to\s+(fix|resolve|solve)|troubleshoot|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
 
 export const FORCE_KB_QUERY_PATTERN =
-  /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)|ssot|single\s*source\s*of\s*truth|pre-generated|(?:프로젝트|저장소|repo|repository|코드|문서|내부).*(?:파일|경로|위치|path|문서)|(?:otel|데이터).*(?:파일|경로|위치|path|ssot)/i;
+  /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)|ssot|single\s*source\s*of\s*truth|pre-generated|krl|knowledge\s*retrieval|책임\s*경계|플랫폼\s*경계|platform\s*boundary|(?:vercel|bff|cloud\s*run|ai\s*engine).*(?:책임|경계|boundary|bff|cloud\s*run|ai\s*engine)|(?:프로젝트|저장소|repo|repository|코드|문서|내부).*(?:파일|경로|위치|path|문서)|(?:otel|데이터).*(?:파일|경로|위치|path|ssot)/i;
 
 export const COMPOSITE_QUERY_PATTERNS = [
   /그리고|또한|동시에|함께|및|plus|and|then/i,

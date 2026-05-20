@@ -137,6 +137,25 @@ describe('sanitizeUserFacingResponse', () => {
     expect(result).not.toContain('[응답 가이드]');
     expect(result).not.toContain('이 값을 사용자에게 전달하세요');
   });
+
+  it('strips raw tool-call markers and reasoning JSON from visible text', () => {
+    const result = sanitizeUserFacingResponse(
+      [
+        'Vercel BFF는 Next.js API 경계입니다.',
+        '<|tool_call_begin|>',
+        'Nothing to process.',
+        '{"reasoning":"internal chain of thought","tool":"searchKnowledgeBase"}',
+        '<|tool_call_end|>',
+        'Cloud Run AI Engine은 AI 실행 경계입니다.',
+      ].join('\n')
+    );
+
+    expect(result).toContain('Vercel BFF는 Next.js API 경계입니다.');
+    expect(result).toContain('Cloud Run AI Engine은 AI 실행 경계입니다.');
+    expect(result).not.toContain('<|tool_call_begin|>');
+    expect(result).not.toContain('Nothing to process');
+    expect(result).not.toContain('"reasoning"');
+  });
 });
 
 // ============================================================================
