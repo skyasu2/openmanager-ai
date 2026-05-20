@@ -1,3 +1,13 @@
+---
+paths:
+  - "tests/**"
+  - "src/**"
+  - "cloud-run/**"
+  - "vitest.config.*"
+  - "playwright.config.*"
+  - "scripts/test*"
+---
+
 # Testing Rules
 
 ## Test Commands

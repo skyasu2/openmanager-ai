@@ -1,3 +1,14 @@
+---
+paths:
+  - ".env*"
+  - "src/config/**"
+  - "src/lib/env/**"
+  - "cloud-run/**"
+  - "scripts/env/**"
+  - "scripts/mcp/**"
+  - "docs/operations/**"
+---
+
 # Environment Variable Sync Rules
 
 ## 환경변수 변경 시 체크리스트

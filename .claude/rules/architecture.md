@@ -1,3 +1,11 @@
+---
+paths:
+  - "src/**"
+  - "cloud-run/**"
+  - "docs/architecture/**"
+  - "docs/reference/architecture/**"
+---
+
 # Architecture Rules
 
 ## Quick Reference

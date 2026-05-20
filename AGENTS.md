@@ -65,6 +65,7 @@
 ### 2.3 MCP 운영 규칙 (Codex)
 - MCP 서버 목록 SSOT는 `.codex/config.toml`의 `[mcp_servers.*]`입니다.
 - 상태 점검 스크립트는 하드코딩 목록이 아닌 설정 파일 파싱 기반으로 동작해야 합니다.
+- OpenAI API, ChatGPT Apps SDK, Codex 또는 OpenAI 공식 문서 기준 확인이 필요한 작업은 먼저 `openaiDeveloperDocs` MCP 서버를 사용합니다. 해당 MCP가 사용할 수 없을 때만 `developers.openai.com`, `platform.openai.com`, `help.openai.com` 같은 공식 OpenAI 도메인으로 폴백합니다.
 - 변경/배포 전 최소 점검:
   - `bash scripts/mcp/codex-local.sh mcp list`
   - `bash scripts/mcp/mcp-health-check-codex.sh`
@@ -162,7 +163,7 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
 상세 규칙: `reports/planning/README.md`
 
 <!-- OPENMANAGER_SUBAGENTS_GUIDANCE_BEGIN
-Rollback: 이 블록 전체를 삭제하고 문서 상단 Version을 6.1.3, Last reviewed를 2026-04-25로 되돌리면 적용 전 AGENTS.md 상태로 복구됩니다.
+Rollback: 이 블록 전체를 삭제하고 `.codex/backups/subagents-20260430-before.md`의 해당 내용을 참고하면 적용 전 subagent guidance 상태로 복구됩니다. 문서 버전은 `docs/status.md` / `package.json` SSOT를 따르며, 이 파일에 고정 버전을 재도입하지 않습니다.
 Backup note: .codex/backups/subagents-20260430-before.md
 -->
 ## 2.8 서브 에이전트 활용 규칙 (Codex)

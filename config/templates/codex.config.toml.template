@@ -157,6 +157,12 @@ startup_timeout_sec = 120
 tool_timeout_sec = 120
 required = false
 
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+startup_timeout_sec = 60
+tool_timeout_sec = 120
+required = false
+
 [mcp_servers.vercel]
 command = "bash"
 args = ["__REPO_ROOT__/scripts/mcp/start-vercel-mcp.sh"]

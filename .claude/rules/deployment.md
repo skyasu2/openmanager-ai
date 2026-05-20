@@ -1,3 +1,15 @@
+---
+paths:
+  - ".gitlab-ci.yml"
+  - "deploy.sh"
+  - "vercel.json"
+  - "cloud-run/**"
+  - "scripts/ci/**"
+  - "scripts/release/**"
+  - "scripts/sync/**"
+  - "docs/operations/**"
+---
+
 # Deployment Rules
 
 ## Version Management (Lock-Step)

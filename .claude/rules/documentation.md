@@ -1,3 +1,14 @@
+---
+paths:
+  - "docs/**"
+  - "reports/**"
+  - "AGENTS.md"
+  - "CLAUDE.md"
+  - "GEMINI.md"
+  - ".claude/rules/**"
+  - ".agents/skills/**"
+---
+
 # Documentation Rules (SSOT)
 
 > 문서 정책의 단일 기준은 이 파일이다. `AGENTS.md`와 Skill 문서는 이 규칙을 따라 동기화한다.

@@ -1,3 +1,15 @@
+---
+paths:
+  - "src/**"
+  - "cloud-run/**"
+  - "tests/**"
+  - "scripts/**"
+  - "*.ts"
+  - "*.tsx"
+  - "*.js"
+  - "*.jsx"
+---
+
 # Code Style Rules
 
 ## TypeScript Strict Mode

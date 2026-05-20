@@ -1,3 +1,9 @@
+---
+paths:
+  - "reports/planning/**"
+  - "reports/planning/TODO.md"
+---
+
 # Planning Rules
 
 ## 작업 시작 전 필수 확인 (모든 AI 공통)

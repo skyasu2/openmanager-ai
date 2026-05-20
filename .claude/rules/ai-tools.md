@@ -1,3 +1,16 @@
+---
+paths:
+  - ".claude/**"
+  - ".agents/**"
+  - ".gemini/**"
+  - ".codex/**"
+  - "scripts/ai/**"
+  - "scripts/mcp/**"
+  - "config/ai/**"
+  - "docs/development/vibe-coding/**"
+  - "docs/guides/ai/**"
+---
+
 # AI Tools Usage Rules
 
 ## MCP Servers (7개 상시 + 1개 온디맨드)
