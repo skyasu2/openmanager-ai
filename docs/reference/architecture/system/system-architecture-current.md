@@ -418,7 +418,7 @@ Vision: Gemini Flash-Lite → Z.AI Vision
 
 ## 7. AI SDK Stream Proxy and Resumable State Cleanup
 
-기본 채팅 경로는 Vercel BFF가 Cloud Run `UIMessageStream`을 브라우저 `useChat` 경계로 전달하는 AI SDK stream proxy입니다. 서버 측 Upstash Redis 기반 resume state와 `GET /stream/v2` handler는 남아 있지만, 현재 client auto-resume는 `resume: false`로 고정되어 있습니다. 따라서 resumable state는 지원 기능이 아니라 **제거 예정인 비용/복잡도 항목**으로 취급합니다.
+기본 채팅 경로는 Vercel BFF가 Cloud Run `UIMessageStream`을 브라우저 `useChat` 경계로 전달하는 AI SDK stream proxy입니다. 서버 측 Upstash Redis 기반 resume state는 2026-05-20 제거됐고, `GET /stream/v2`는 Redis 조회 없이 405를 반환합니다. 따라서 현재 지원되는 계약은 POST pass-through stream + UIMessageStream protocol header 유지입니다.
 
 ### Flow
 
@@ -436,17 +436,13 @@ Client                     Vercel                     Cloud Run
 | 컴포넌트 | 파일 | 역할 |
 |---------|------|------|
 | **POST Handler** | `stream/v2/route.ts` | 새 stream proxy 생성, Cloud Run 호출 |
-| **GET Handler** | `stream/v2/route.ts` | legacy/manual resume 경로. client auto-resume 미사용, 제거 예정 |
-| **Stream State** | `stream/v2/stream-state.ts` | Redis 세션-스트림 매핑. 제거 예정 |
-| **Upstash Context** | `stream/v2/upstash-resumable.ts` | Redis List 기반 chunk 저장. 제거 예정 |
+| **GET Handler** | `stream/v2/route.ts` | Redis resume 미지원 계약을 explicit 405로 반환 |
+
+2026-05-20 기준 Redis-backed resumable stream 구현(`stream-state.ts`, `upstash-resumable.ts`)은 제거됐다. AI SDK UIMessageStream protocol proxy와 `x-vercel-ai-ui-message-stream: v1` header 계약은 유지한다.
 
 ### Redis State 관리
 
-| 항목 | 값 | 설명 |
-|------|-----|------|
-| **Stream TTL** | 10분 | legacy Redis 자동 만료 |
-| **Chunk Storage** | Redis List (RPUSH) | client가 읽지 않으므로 제거 예정 |
-| **Resume API** | GET + skip 파라미터 | client auto-resume 미사용. 재활성화가 아니라 제거가 현재 계획 |
+Stream proxy는 더 이상 Redis state를 만들지 않습니다. Redis는 Job Queue, rate limit, cache, provider quota/session/cache 같은 별도 경로에서만 사용합니다.
 
 ---
 
@@ -455,7 +451,7 @@ Client                     Vercel                     Cloud Run
 | Layer | 기술 | 위치 | TTL | 용도 |
 |-------|------|------|-----|------|
 | **L1: In-Memory** | MetricsProvider cache | Vercel Runtime | 동일 hour/minute | 메트릭 변환 재계산 방지 |
-| **L2: Redis** | Upstash Redis | External | 다양 (10s~10m) | AI 응답 캐시, Rate Limit, Job State, quota/session/cache. Stream State는 제거 예정 |
+| **L2: Redis** | Upstash Redis | External | 다양 (10s~10m) | AI 응답 캐시, Rate Limit, Job State, quota/session/cache. Stream State는 제거 완료 |
 | **L3: Client** | TanStack Query | Browser | staleTime 기반 | API 응답 캐시, 중복 요청 방지 |
 | **L4: AI Engine** | DataCacheLayer | Cloud Run Memory | metrics 1m, RAG 5m, analysis 10m | 에이전트 데이터 접근 캐시 |
 

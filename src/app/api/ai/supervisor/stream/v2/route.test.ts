@@ -5,7 +5,6 @@ const {
   mockGetActiveStreamId,
   mockClearActiveStreamId,
   mockSaveActiveStreamId,
-  mockHasExistingStream,
   mockResumeExistingStream,
   mockCreateNewResumableStream,
   mockClearStream,
@@ -22,7 +21,6 @@ const {
   mockGetActiveStreamId: vi.fn(),
   mockClearActiveStreamId: vi.fn(),
   mockSaveActiveStreamId: vi.fn(),
-  mockHasExistingStream: vi.fn(),
   mockResumeExistingStream: vi.fn(),
   mockCreateNewResumableStream: vi.fn(),
   mockClearStream: vi.fn(),
@@ -82,21 +80,6 @@ vi.mock('@/config/ai-proxy.config', () => ({
   getMaxTimeout: mockGetMaxTimeout,
   getRouteMaxExecutionMs: mockGetRouteMaxExecutionMs,
   getFunctionTimeoutReserveMs: mockGetFunctionTimeoutReserveMs,
-}));
-
-vi.mock('./stream-state', () => ({
-  getActiveStreamId: mockGetActiveStreamId,
-  clearActiveStreamId: mockClearActiveStreamId,
-  saveActiveStreamId: mockSaveActiveStreamId,
-}));
-
-vi.mock('./upstash-resumable', () => ({
-  createUpstashResumableContext: () => ({
-    hasExistingStream: mockHasExistingStream,
-    resumeExistingStream: mockResumeExistingStream,
-    createNewResumableStream: mockCreateNewResumableStream,
-    clearStream: mockClearStream,
-  }),
 }));
 
 import { GET, POST } from './route';

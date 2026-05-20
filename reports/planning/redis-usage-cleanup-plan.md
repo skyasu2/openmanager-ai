@@ -54,7 +54,7 @@ Upstash 전체 제거 판단은 별도:
 | Job Queue progress/list/trigger | `src/app/api/ai/jobs/**` | `job:progress:*`, `job:list:*`, `job:trigger:*` | 설정됨 | ✅ 실사용 |
 | Guest PIN 방어 | `src/app/api/auth/guest-login/route.ts` | `auth:guest:pin:fail:*`, `auth:guest:pin:lock:*` | 900s / 60s | ✅ 실사용 (in-memory fallback 있음) |
 | 시스템 실행 플래그 | `src/lib/redis/client.ts` | `system:running` | 영속 | ✅ 실사용 |
-| Resumable 스트림 상태 | `src/app/api/ai/supervisor/stream/v2/stream-state.ts` | `ai:stream:v2:{ownerKey}:{sessionId}` | 600s | ❌ 사문화 (서버 저장 후 클라이언트 미연결) |
+| Resumable 스트림 상태 | `src/app/api/ai/supervisor/stream/v2/stream-state.ts` | `ai:stream:v2:{ownerKey}:{sessionId}` | 600s | ✅ 제거 완료 (2026-05-20 Task 1-C) |
 | Circuit Breaker 분산 저장소 | `src/lib/redis/circuit-breaker-store.ts` | `circuit:{serviceName}` | 300s | ❌ 사문화 (request path 연결 없음) |
 
 ### Cloud Run AI Engine 사이드 (자체 HTTP 클라이언트)
@@ -75,10 +75,10 @@ Upstash 전체 제거 판단은 별도:
 
 ### 🔴 문제 1: Resumable 스트림 — 서버 저장, 클라이언트 미연결 (사문화)
 
-- `src/app/api/ai/supervisor/stream/v2/route.ts`: `AI_RESUMABLE_STREAMS_ENABLED=true`이면 Redis에 스트림 상태 저장
-- `src/hooks/ai/useHybridAIQuery.ts:204`: `const resumeEnabled = false;` 하드코딩 — 클라이언트는 절대 resume 시도 안 함
-- 결과: 서버는 Upstash 커맨드를 소비하지만 그 데이터는 읽히지 않음
-- **처리 방침**: ai-assistant-design-cleanup-plan.md Task 1-C에서 제거 (서버 resumable 코드 전체 제거, Free Tier 원칙)
+- 기존 `stream/v2/route.ts`는 `AI_RESUMABLE_STREAMS_ENABLED=true`이면 Redis에 스트림 상태를 저장했다.
+- 기존 `useHybridAIQuery.ts`는 `resume: false`로 고정되어 클라이언트가 resume을 시도하지 않았다.
+- 결과: 서버는 Upstash 커맨드를 소비하지만 그 데이터는 읽히지 않았다.
+- **처리 결과**: ai-assistant-design-cleanup-plan.md Task 1-C에서 서버 resumable 코드 전체 제거 완료. `stream/v2` GET은 405를 반환한다.
 
 ### 🔴 문제 2: Circuit Breaker Redis Store — 구현됐으나 연결 없음 (사문화)
 
@@ -108,7 +108,7 @@ Upstash 전체 제거 판단은 별도:
 - `docs/architecture/01-system-overview.md`: 과거에는 "Redis는 job state, progress, resumable stream state를 저장"한다고 설명해 사문화된 resumable stream을 active 기능처럼 보이게 했다.
 - `docs/reference/architecture/infrastructure/resilience.md`: Frontend CB가 "Redis 분산"을 사용한다고 표시되어 있었으나 실제로는 연결 안 됐다.
 - `docs/reference/architecture/infrastructure/free-tier-optimization.md`, `docs/reference/architecture/system/system-architecture-current.md`: resumable stream과 Redis CB를 지원 기능처럼 설명한 문구가 남아 있었다.
-- **처리 방침**: 본 계획서의 Task R-4로 처리. 2026-05-20 초안에서 위 문서들은 현재 상태/제거 예정 표현으로 정렬했다.
+- **처리 방침**: 본 계획서의 Task R-4로 처리. 2026-05-20 초안에서 문서 관계를 정렬했고, Task 1-C 구현 후 resumable stream 관련 표현은 제거 완료 상태로 갱신했다.
 
 ### 🟡 문제 6: Upstash Free Tier 소비 예산 미추적
 
@@ -165,11 +165,9 @@ Upstash 전체 제거 판단은 별도:
 
 → **ai-assistant-design-cleanup-plan.md Task 1-C에 통합 실행**
 
-별도 실행 없음. Task 1-C가 완료되면 `stream-state.ts`의 `saveActiveStreamId`/`clearActiveStreamId`, `upstash-resumable.ts`, `stream/v2/route.ts`의 resumable 분기가 제거됨.
+완료됨. Task 1-C 구현으로 `stream-state.ts`, `upstash-resumable.ts`, `stream/v2/route.ts`의 resumable 분기와 `useHybridAIQuery`의 `resume` prop이 제거됐다. `stream/v2` GET은 Redis resume 대신 explicit 405를 반환한다.
 
-완료 후 이 항목 `[x]` 처리.
-
-- [ ] Task 1-C 완료 확인 후 체크
+- [x] Task 1-C 완료 확인 후 체크
 
 ---
 
@@ -223,7 +221,7 @@ return NextResponse.json(
 5. `docs/reference/architecture/system/system-architecture-current.md` — stream resume 상태 정정
 6. `docs/reference/architecture/ai/frontend-backend-comparison.md` — cache/Redis state 비교 정정
 
-**현재 상태 (2026-05-20)**: 문서 초안은 생성/연결 완료. R-1/R-2 구현 후 "제거 예정" 표현을 "제거 완료"로 최종 정렬한다.
+**현재 상태 (2026-05-20)**: 문서 초안은 생성/연결 완료. R-1 관련 "제거 예정" 표현은 "제거 완료"로 정렬했다. R-2(CB store)는 Task 3-C 구현 후 최종 정렬한다.
 
 **수용 기준**:
 - 사문화된 resumable stream과 CB Redis store가 "미사용/제거됨"으로 표시됨

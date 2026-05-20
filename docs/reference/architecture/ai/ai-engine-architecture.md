@@ -1348,7 +1348,7 @@ cloud-run/ai-engine/src/
 | **DefaultChatTransport** | 커스텀 transport로 warmup 추적, 디바이스/trace 헤더, reconnect hook 주입 |
 | **UIMessageStream** | Vercel/Cloud Run 양쪽에서 사용하는 native streaming protocol |
 | **Hybrid runtime boundary** | Vercel은 `useChat`/UIMessage protocol과 BFF guard를 맡고, Cloud Run은 agent compute/runtime ownership을 맡음 |
-| **Resumable Stream 인프라** | 서버 측 optional Upstash Redis wrapper + `prepareReconnectToStreamRequest` 준비는 남아 있으나, 클라이언트 auto-resume는 기본 비활성 |
+| **Resumable Stream 인프라** | 2026-05-20 서버 측 Upstash Redis wrapper/state 제거. `stream/v2` GET은 Redis 조회 없이 405 |
 | **Tool loop + finalAnswer** | 작업 에이전트 내부 루프 패턴 (`stopWhen`) |
 | **Structured Output Fallback** | `generateText + Output.object` 구조화 라우팅, incident report typed output, text+JSON fallback (Orchestrator compatibility path) |
 | **Mode audit metadata** | `requestedMode`, `resolvedMode`, `modeSelectionSource`, `handoffCount` 기록 |
@@ -1493,7 +1493,7 @@ POST /api/ai/jobs
 <summary>v6.1.0 (2026-01-25) - AI SDK v6 Native Protocol</summary>
 
 - **UIMessageStream**: Native streaming protocol
-- **Resumable Stream v2**: 당시 Redis 기반 자동 재연결 목표로 도입. 현재 기준은 서버 측 optional resume state이며 client auto-resume는 기본 비활성
+- **Resumable Stream v2**: 당시 Redis 기반 자동 재연결 목표로 도입. 2026-05-20 기준 서버 측 optional resume state를 제거하고 GET 405 계약으로 정렬
 - **finalAnswer Pattern**: 에이전트 종료 일관성
 - **prepareStep Optimization**: 의도 기반 도구 필터링
 </details>

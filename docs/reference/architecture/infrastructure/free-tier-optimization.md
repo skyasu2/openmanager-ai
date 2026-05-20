@@ -226,13 +226,13 @@ Redis 장애 시 async Job Queue는 결과를 보존할 수 없으므로 fail-fa
 
 ### Stream 저장/재개 비용 경고
 
-Streaming resume chunk 저장은 `AI_RESUMABLE_STREAMS_ENABLED=true`일 때 서버에서 활성화될 수 있으나, 현재 클라이언트는 `resume: false`로 고정되어 resume을 시도하지 않습니다. 따라서 이 Redis 사용은 비용 대비 제품 효과가 없는 제거 대상이며, `ai-assistant-design-cleanup-plan.md` Task 1-C에서 정리합니다. async Job Queue 경로는 별도이며 job 상태/진행률/결과 저장을 위해 Redis를 사용합니다.
+Streaming resume chunk 저장은 2026-05-20 `ai-assistant-design-cleanup-plan.md` Task 1-C에서 제거했습니다. `stream/v2` POST는 pass-through UIMessageStream만 반환하고, GET resume 요청은 Redis 조회 없이 405로 종료합니다. async Job Queue 경로는 별도이며 job 상태/진행률/결과 저장을 위해 Redis를 계속 사용합니다.
 
 | 경로 | Redis 동작 | 현재 판단 |
 |------|-----------|-----------|
-| resumable 스트림 시작 (`AI_RESUMABLE_STREAMS_ENABLED=true`) | session `SET` + meta `SET` + chunk마다 `RPUSH`/`EXPIRE` | client resume 미사용, 제거 예정 |
-| 재개 조회 | session `GET` + meta `GET` + `LRANGE` (반복 가능) | client 호출 없음 |
-| 종료/정리 | session `DEL` + data/meta `DEL` | 제거 예정 |
+| resumable 스트림 시작 | 없음 | 제거 완료 |
+| 재개 조회 | 없음 | GET 405 |
+| 종료/정리 | 없음 | 제거 완료 |
 | async Job Queue | job `SET`, progress `SET`, SSE stream `MGET` polling | R-0에서 유지/제거 결정 |
 
 > **포트폴리오 제약**: 명령 수는 청크 수와 resume/cleanup 경로에 따라 달라집니다. 응답 청크 증가, 재시도 확대, 재개 polling 증가는 모두 Redis 사용량 증가로 직결됩니다.
@@ -263,7 +263,7 @@ await pipeline.exec();
 |------|----------|----------|
 | Circuit Breaker | 현재 Vercel request path 미연결 | InMemory 전용 동작 유지 |
 | Job Queue | Redis 상태/결과 저장 + Cloud Tasks worker delivery | job 생성/조회 503, Cloud Tasks 단독 복구 불가 |
-| Stream 재개 | 서버 저장 가능하지만 client resume 미사용 | 제품 영향 없음, 제거 대상 |
+| Stream 재개 | 제거 완료. GET은 Redis 조회 없이 405 | 제품 영향 없음 |
 | AI Cache | Redis L2 캐시 | Memory LRU만 사용 |
 | Rate Limit / Guest PIN | 서버리스 인스턴스 간 공유 | in-memory fallback, 인스턴스 간 공유 약화 |
 | Cloud Run quota / Langfuse usage | 재시작 후 카운터 복원 | in-memory fallback, 재시작 후 카운터 기억 약화 |

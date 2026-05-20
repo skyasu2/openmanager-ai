@@ -201,6 +201,8 @@ Free Tier 원칙과 현재 `stopChat` 경로를 고려하면 **옵션 B (Server 
 **검증**: 스트리밍 정상 동작, GET `/api/ai/supervisor/stream/v2`가 더 이상 Redis resume을 수행하지 않음.
 route 파일은 POST를 계속 제공하므로 framework 동작에 따라 404가 아니라 405가 될 수 있다. 테스트는 "resumable GET handler 미노출/미동작"을 기준으로 작성한다.
 
+**구현 상태 (2026-05-20)**: 완료. SDD 순서로 failing test 커밋 후 구현했으며, `stream-state.ts`/`upstash-resumable.ts`와 관련 tests를 삭제했다. `stream/v2` POST는 항상 pass-through `X-Resumable: false`를 반환하고, GET은 Redis 조회 없이 405를 반환한다. `useHybridAIQuery`는 `useChat`에 `resume` prop을 전달하지 않는다.
+
 ---
 
 ## Phase 2 — 아키텍처 불일치 정비
@@ -386,9 +388,9 @@ useLayoutEffect(() => {
 ### 테스트 시나리오
 
 - [ ] `stream/v2` route test: Cloud Run 5xx/timeout 반복 후 CB fallback stream 반환, 이후 OPEN 상태에서 upstream `fetch` 미호출
-- [ ] `stream/v2` route test: UIMessageStream headers 유지 (`x-vercel-ai-ui-message-stream: v1`)
-- [ ] `stream/v2` route test: `AI_RESUMABLE_STREAMS_ENABLED=true`가 있어도 Redis stream 생성/active stream 저장을 수행하지 않음
-- [ ] `useHybridAIQuery` test: `useChat` 호출에서 `resume` 활성화 계약 제거 또는 false 유지 확인
+- [x] `stream/v2` route test: UIMessageStream headers 유지 (`x-vercel-ai-ui-message-stream: v1`)
+- [x] `stream/v2` route test: `AI_RESUMABLE_STREAMS_ENABLED=true`가 있어도 Redis stream 생성/active stream 저장을 수행하지 않음
+- [x] `useHybridAIQuery` test: `useChat` 호출에서 `resume` 활성화 계약 제거 또는 false 유지 확인
 - [ ] `supervisor/route.ts` test: 복잡한 "보고서/근본 원인" query가 202 redirect를 반환하지 않음
 - [ ] `useQueryExecution` test: local dev JSON fallback에서 202 response가 빈 응답 오류로 변환되지 않음
 - [ ] `off-domain-guard` test: `"서버 장애 알림 Slack으로 공유해줘"`는 `null`, `"팀 회의 일정 잡아줘"`는 `external_action`

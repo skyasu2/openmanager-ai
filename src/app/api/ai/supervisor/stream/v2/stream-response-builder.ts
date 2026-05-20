@@ -1,23 +1,11 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
 import { createDeveloperContextStreamPayload } from '@/lib/ai/developer-panel';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
-import {
-  INVALID_SESSION_ID_MESSAGE,
-  normalizeSupervisorSessionId,
-} from '@/lib/ai/supervisor/request-contracts';
 import { logger } from '@/lib/logging';
-import { getStreamOwnerKey, UI_MESSAGE_STREAM_HEADERS } from './route-utils';
-import { clearActiveStreamId, getActiveStreamId } from './stream-state';
-import { createUpstashResumableContext } from './upstash-resumable';
+import { UI_MESSAGE_STREAM_HEADERS } from './route-utils';
 
 export const AI_WARMUP_STARTED_AT_HEADER = 'x-ai-warmup-started-at';
 export const AI_FIRST_QUERY_HEADER = 'x-ai-first-query';
 const DEVELOPER_CONTEXT_STREAM_PART_TYPE = 'data-developer-context';
-
-export function isResumableStreamsEnabled(): boolean {
-  return process.env.AI_RESUMABLE_STREAMS_ENABLED === 'true';
-}
 
 export function normalizeFrontendLocalRouteDecision(value: unknown) {
   const decision = normalizeRouteDecision(value);
@@ -105,29 +93,6 @@ export function trackFirstQueryLatency(params: {
   );
 }
 
-export async function cleanupStaleStreamMapping(params: {
-  sessionId: string;
-  ownerKey: string;
-  streamId: string;
-}): Promise<void> {
-  try {
-    const staleStreamId = await getActiveStreamId(
-      params.sessionId,
-      params.ownerKey
-    );
-    if (staleStreamId && staleStreamId !== params.streamId) {
-      const cleanupContext = createUpstashResumableContext();
-      await cleanupContext.clearStream(staleStreamId);
-      await clearActiveStreamId(params.sessionId, params.ownerKey);
-    }
-  } catch (cleanupError) {
-    logger.warn(
-      { err: cleanupError },
-      '[SupervisorStreamV2] Stale stream cleanup failed'
-    );
-  }
-}
-
 export function prependStreamDataPart(
   body: ReadableStream<Uint8Array>,
   dataPart: { type: `data-${string}`; data: unknown }
@@ -158,97 +123,3 @@ export function prependStreamDataPart(
     },
   });
 }
-
-export const resumeStreamHandler = async (req: NextRequest) => {
-  const url = new URL(req.url);
-  const rawSessionId = url.searchParams.get('sessionId');
-  const skipParam = url.searchParams.get('skip');
-
-  const skipChunks = skipParam ? Number(skipParam) : 0;
-  if (!Number.isInteger(skipChunks) || skipChunks < 0) {
-    return NextResponse.json(
-      { error: 'skip must be a non-negative integer' },
-      { status: 400 }
-    );
-  }
-
-  const sessionId = normalizeSupervisorSessionId(rawSessionId);
-  if (!sessionId) {
-    return NextResponse.json(
-      { error: INVALID_SESSION_ID_MESSAGE },
-      { status: 400 }
-    );
-  }
-
-  if (!isResumableStreamsEnabled()) {
-    logger.debug('[SupervisorStreamV2] Resume requested while disabled');
-    return new Response(null, {
-      status: 204,
-      headers: { 'X-Resumable': 'false' },
-    });
-  }
-
-  const ownerKey = getStreamOwnerKey(req);
-
-  logger.info(
-    `🔄 [SupervisorStreamV2] Resume request for session: ${sessionId}, skip: ${skipChunks}`
-  );
-
-  const activeStreamId = await getActiveStreamId(sessionId, ownerKey);
-
-  if (!activeStreamId) {
-    logger.debug(
-      `[SupervisorStreamV2] No active stream for session: ${sessionId}`
-    );
-    return new Response(null, { status: 204 });
-  }
-
-  const resumableContext = createUpstashResumableContext();
-  const streamStatus = await resumableContext.hasExistingStream(activeStreamId);
-
-  if (!streamStatus) {
-    logger.debug(
-      `[SupervisorStreamV2] Stream not found in Redis: ${activeStreamId}`
-    );
-    await clearActiveStreamId(sessionId, ownerKey);
-    return new Response(null, { status: 204 });
-  }
-
-  if (streamStatus === 'completed') {
-    logger.info(
-      `[SupervisorStreamV2] Stream completed, attempting resume for remaining chunks: ${activeStreamId}`
-    );
-  }
-
-  const resumedStream = await resumableContext.resumeExistingStream(
-    activeStreamId,
-    skipChunks
-  );
-
-  if (!resumedStream) {
-    logger.warn(
-      `[SupervisorStreamV2] Failed to resume stream: ${activeStreamId}`
-    );
-    await clearActiveStreamId(sessionId, ownerKey);
-    return new Response(null, { status: 204 });
-  }
-
-  if (streamStatus === 'completed') {
-    await clearActiveStreamId(sessionId, ownerKey);
-    logger.info(
-      `[SupervisorStreamV2] Cleared session mapping for completed stream: ${activeStreamId}`
-    );
-  }
-
-  logger.info(`✅ [SupervisorStreamV2] Stream resumed: ${activeStreamId}`);
-
-  return new Response(resumedStream, {
-    headers: {
-      ...UI_MESSAGE_STREAM_HEADERS,
-      'X-Session-Id': sessionId,
-      'X-Stream-Id': activeStreamId,
-      'X-Resumed': 'true',
-      'X-Skip-Chunks': String(skipChunks),
-    },
-  });
-};

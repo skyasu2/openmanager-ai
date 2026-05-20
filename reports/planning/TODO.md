@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-20 KST (Redis retention decision gate added)
+**Last Updated**: 2026-05-20 KST (resume Redis cleanup implemented)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,8 +13,8 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | Draft | 2026-05-20 코드 전수 조사. Redis는 과거 long-running Job Queue 용도만 남은 상태가 아니며 Vercel/Cloud Run rate limit, Guest PIN 방어, `system:running`, Cloud Run quota/cache, Langfuse usage guard에도 사용 중이다. R-0은 옵션 A(Job Queue 유지)로 결정했다. R-3 Job Queue 503 보강은 완료되어 Redis client 없음/primary write 실패가 503으로 정렬됐다. 남은 사문화 2건(resumable/CB store)은 ai-assistant-design-cleanup-plan Task 1-C·3-C에 통합한다. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
-| AI 어시스턴트 설계 정비 (resume 불일치·CB 누락·라우팅 중복 등) | High | Approved | 정적 분석으로 발견한 Critical 2건·Major 4건·Minor 4건. 2026-05-20 Task 1-B를 Critical→Major/P2로 재분류(Cloud Run multi-provider rotation이 실질 fault tolerance 담당). Vercel AI SDK v6 공식 기준과 프로젝트 Free Tier 원칙에 맞춰 계약/테스트 시나리오를 보강했고, `stream/v2` GET은 explicit 405, distributed CB export 제거, QueryClassifier class export 별도 확인으로 결정을 닫았다. 다음 구현은 SDD 순서로 P0 Task 1-C failing test commit부터 진행한다. 상세: [ai-assistant-design-cleanup-plan.md](ai-assistant-design-cleanup-plan.md) |
+| Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | Draft | 2026-05-20 코드 전수 조사. Redis는 과거 long-running Job Queue 용도만 남은 상태가 아니며 Vercel/Cloud Run rate limit, Guest PIN 방어, `system:running`, Cloud Run quota/cache, Langfuse usage guard에도 사용 중이다. R-0은 옵션 A(Job Queue 유지)로 결정했다. R-3 Job Queue 503 보강은 완료됐고, R-1 resumable stream Redis 코드는 AI plan Task 1-C로 제거 완료했다. 남은 사문화 항목은 CB store(Task 3-C)다. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
+| AI 어시스턴트 설계 정비 (resume 불일치·CB 누락·라우팅 중복 등) | High | Approved | 정적 분석으로 발견한 Critical 2건·Major 4건·Minor 4건. 2026-05-20 Task 1-B를 Critical→Major/P2로 재분류(Cloud Run multi-provider rotation이 실질 fault tolerance 담당). Vercel AI SDK v6 공식 기준과 프로젝트 Free Tier 원칙에 맞춰 계약/테스트 시나리오를 보강했고, `stream/v2` GET explicit 405와 server resumable 제거(Task 1-C)를 SDD 순서로 구현했다. 다음 P0 흐름은 Task 2-B → 1-A다. 상세: [ai-assistant-design-cleanup-plan.md](ai-assistant-design-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). 2026-05-19 중간 sanity check도 동일 기준 PASS. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 

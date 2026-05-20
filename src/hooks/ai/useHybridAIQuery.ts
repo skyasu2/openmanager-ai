@@ -201,7 +201,6 @@ export function useHybridAIQuery(
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
   );
-  const resumeEnabled = false;
   const [state, setState] = useState<HybridQueryState>({
     mode: 'streaming',
     complexity: null,
@@ -338,7 +337,6 @@ export function useHybridAIQuery(
   } = useChat({
     id: sessionIdRef.current,
     transport,
-    resume: resumeEnabled,
     experimental_throttle: 50,
     onFinish: streamCallbacks.onFinish,
     onData: streamCallbacks.onData,

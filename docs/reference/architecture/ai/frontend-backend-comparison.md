@@ -97,7 +97,7 @@ graph LR
 |------|:--------:|:-------:|:----:|
 | 메시지 송수신 | useAIChatCore (578줄, 2026-05-19 측정) | Supervisor Stream V2 + legacy JSON/text route | 역할 분리 |
 | 스트리밍 응답 | `useChat` + UIMessage stream proxy | AI SDK `streamText`/`createUIMessageStreamResponse` | 프로토콜 호환 |
-| Resumable Stream | client auto-resume 기본 비활성, optional reconnect hook만 보유 | 서버 측 optional Upstash wrapper/state 존재 | 부분/정렬 필요 |
+| Resumable Stream | client auto-resume 미사용 | 서버 측 Upstash wrapper/state 제거, GET 405 | 정렬 완료 |
 | 세션 관리 | sessionId + localStorage + owner metadata | Redis context/job state + in-memory fallback | 역할 분리 |
 | 에러 복구 | Fallback UI + 재시도 + Vercel stream fallback | provider fallback mesh + circuit breaker | 역할 분리 |
 
@@ -186,7 +186,7 @@ graph LR
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
 | 서버 메트릭 데이터 | hourly-data SSOT | precomputed-state (853줄) | 상태 정합성 완벽 (online/warning/critical/offline) |
-| 캐시 전략 | legacy `/api/ai/supervisor` 응답 캐시 + `/stream/v2` resumable state 제거 예정 (Chat History만 localStorage) | precomputed-state + Redis session/job/quota/cache state | Redis 사용처 분리 완료 |
+| 캐시 전략 | legacy `/api/ai/supervisor` 응답 캐시 + Chat History localStorage | precomputed-state + Redis session/job/quota/cache state. `/stream/v2` resumable state 제거 완료 | Redis 사용처 분리 완료 |
 | 쿼리 정규화 | - | Cache Normalization | Backend 전담 |
 | 토큰 최적화 | - | 144슬롯 ~100토큰 압축 | Backend 전담 |
 

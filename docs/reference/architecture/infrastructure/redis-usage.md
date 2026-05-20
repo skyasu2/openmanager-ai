@@ -150,7 +150,7 @@
 
 | 기능 | 파일 | 상태 | 메모 |
 |------|------|------|------|
-| Resumable Stream 상태 저장 | `stream/v2/stream-state.ts`, `upstash-resumable.ts` | ❌ 제거 예정 | 서버 저장하지만 클라이언트 `resume: false` 하드코딩. ai-assistant-design-cleanup-plan Task 1-C |
+| Resumable Stream 상태 저장 | `stream/v2/stream-state.ts`, `upstash-resumable.ts` | ✅ 제거 완료 | 2026-05-20 Task 1-C로 파일과 Redis 저장 분기 제거. `stream/v2` GET은 405 |
 | Circuit Breaker 분산 저장소 | `src/lib/redis/circuit-breaker-store.ts` | ❌ 제거 예정 | `initializeRedisCircuitBreaker()` request path 미연결. Task 3-C |
 
 ---
