@@ -226,7 +226,7 @@ Redis 장애 시 async Job Queue는 결과를 보존할 수 없으므로 fail-fa
 
 ### Stream 저장/재개 비용 경고
 
-Streaming resume chunk 저장은 2026-05-20 `ai-assistant-design-cleanup-plan.md` Task 1-C에서 제거했습니다. `stream/v2` POST는 pass-through UIMessageStream만 반환하고, GET resume 요청은 Redis 조회 없이 405로 종료합니다. async Job Queue 경로는 별도이며 job 상태/진행률/결과 저장을 위해 Redis를 계속 사용합니다.
+Streaming resume chunk 저장은 2026-05-20 `archive/ai-assistant-design-cleanup-plan.md` Task 1-C에서 제거했습니다. `stream/v2` POST는 pass-through UIMessageStream만 반환하고, GET resume 요청은 Redis 조회 없이 405로 종료합니다. async Job Queue 경로는 별도이며 job 상태/진행률/결과 저장을 위해 Redis를 계속 사용합니다.
 
 | 경로 | Redis 동작 | 현재 판단 |
 |------|-----------|-----------|
@@ -240,7 +240,7 @@ Streaming resume chunk 저장은 2026-05-20 `ai-assistant-design-cleanup-plan.md
 
 ### Redis Circuit Breaker 저장소 주의
 
-Vercel Redis-backed Circuit Breaker store는 구현돼 있지만 request path에 연결되어 있지 않습니다. 현재는 InMemory Circuit Breaker만 동작하며, Redis 분산 CB는 `ai-assistant-design-cleanup-plan.md` Task 3-C에서 제거 또는 내부 future hook으로 축소할 예정입니다.
+Vercel Redis-backed Circuit Breaker store는 2026-05-20 `archive/ai-assistant-design-cleanup-plan.md` Task 3-C에서 제거했습니다. 현재 Vercel Circuit Breaker는 InMemory 상태만 사용하며, `getAIStatusSummary().stateStore`는 `in-memory`로 고정됩니다.
 
 향후 분산 CB를 다시 연결한다면 개별 호출을 pipeline으로 묶어 네트워크 왕복을 줄입니다. command 과금 집계는 Upstash dashboard 기준으로 확인합니다.
 

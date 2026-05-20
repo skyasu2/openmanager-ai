@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-20 KST (circuit breaker store cleanup implemented)
+**Last Updated**: 2026-05-20 KST (AI assistant cleanup archived)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -14,7 +14,6 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | Draft | 2026-05-20 코드 전수 조사. Redis는 과거 long-running Job Queue 용도만 남은 상태가 아니며 Vercel/Cloud Run rate limit, Guest PIN 방어, `system:running`, Cloud Run quota/cache, Langfuse usage guard에도 사용 중이다. R-0은 옵션 A(Job Queue 유지)로 결정했다. R-3 Job Queue 503 보강은 완료됐고, R-1 resumable stream Redis 코드와 R-2 Circuit Breaker Redis store는 AI plan Task 1-C/3-C로 제거 완료했다. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
-| AI 어시스턴트 설계 정비 (resume 불일치·CB 누락·라우팅 중복 등) | High | Approved | 정적 분석으로 발견한 Critical 2건·Major 4건·Minor 4건. 2026-05-20 Task 1-C, Task 2-B+1-A, Task 2-A, Task 2-C, Task 1-B, Task 3-A, Task 3-B, Task 3-C, Task 3-D를 구현했고 root type/lint/quick/contract/docs 게이트와 local dev report smoke `QA-20260520-0540`을 통과했다. 상세: [ai-assistant-design-cleanup-plan.md](ai-assistant-design-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). 2026-05-19 중간 sanity check도 동일 기준 PASS. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
@@ -39,6 +38,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~AI 어시스턴트 설계 정비 (resume 불일치·CB 누락·라우팅 중복 등)~~ | — | **완료** — 2026-05-20 Task 1-C, Task 2-B+1-A, Task 2-A, Task 2-C, Task 1-B, Task 3-A, Task 3-B, Task 3-C, Task 3-D 완료. Server resumable Redis 제거, legacy 202 redirect 제거/방어, stream/v2 CB fallback, off-domain guard 순서, QueryClassifier sync cleanup, Redis CB store 제거를 반영했다. 검증: root `type-check`/`lint`/`test:quick`/`test:contract`, docs checks, local dev report smoke `QA-20260520-0540`. 상세: [archive/ai-assistant-design-cleanup-plan.md](archive/ai-assistant-design-cleanup-plan.md) |
 | ~~Routing & UX 개선 — 오프도메인 경고 위임 + 보안 riskLevel 분화~~ | — | **완료** — `767acd026`로 high-only 차단, medium/low 경고 통과, off-domain 경고 위임을 구현하고 GitLab pipeline `2530042325` success 확인. 이어서 Direct Router/5 specialist agents, request guard 정책, Round-Robin provider flow를 아키텍처 문서와 ADR에 반영했다. `v8.11.160` release/tag pipeline `2530076991` success로 Vercel production과 Cloud Run `ai-engine-00477-fxw` 100% traffic 배포 완료. 상세: [archive/routing-ux-improvement-plan.md](archive/routing-ux-improvement-plan.md) |
 | ~~Provider runtime env sync — Z.AI/GLM 활성화 + Cerebras env drift 제거~~ | — | **완료** — Secret Manager `ai-providers-config` version 8에 `zai`를 안전 병합하고 Cloud Run `ai-engine-00476-hz2` revision을 100% traffic으로 적용했다. `/health.config.zai=true`, `CEREBRAS_MODEL_ID=gpt-oss-120b`, `ZAI_DEFAULT_MODEL=glm-4.5-flash` 확인. 재발 방지를 위해 `deploy.sh`/`cloudbuild.yaml` 기본값과 env 문서를 갱신했다. GitLab main pipeline `2530020344` success. 상세: [archive/provider-runtime-env-sync-plan.md](archive/provider-runtime-env-sync-plan.md) |
 | ~~NLQ EntitySchema provider compatibility fix~~ | — | **완료** — `/api/ai/nlq/extract-entities` structured-output schema를 required nullable 계약으로 정렬하고 top-level `metric/timeRange` provider drift를 normalizer 경계에서 흡수하도록 완충했다. `QA-20260516-0508`에서 Groq `llama-4-scout` 4/4 schema_valid·intent_accuracy·executionMode_accuracy 회복, Mistral `ministral-3b`는 4/4 schema_valid·intent_accuracy 및 3/4 executionMode_accuracy로 비교 기록. |

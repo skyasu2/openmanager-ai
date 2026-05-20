@@ -8,7 +8,7 @@
 
 **작성 배경**: 2026-05-20 정적 코드 분석으로 Redis 사용 현황을 전수 조사한 결과, 사문화된 기능 2건과 운영 위험 2건, 문서 불일치 다수를 발견했다.  
 **분석 범위**: `src/` (Vercel/Next.js), `cloud-run/ai-engine/src/` (Cloud Run AI Engine)  
-**연관 계획서**: [ai-assistant-design-cleanup-plan.md](ai-assistant-design-cleanup-plan.md) — Task 1-C(resumable 제거), Task 3-C(CB store 정리)와 겹치는 항목은 해당 계획서 기준으로 실행한다.
+**연관 계획서**: [ai-assistant-design-cleanup-plan.md](archive/ai-assistant-design-cleanup-plan.md) — Task 1-C(resumable 제거), Task 3-C(CB store 정리)와 겹치는 항목은 해당 계획서 기준으로 실행했다.
 
 ---
 
@@ -78,7 +78,7 @@ Upstash 전체 제거 판단은 별도:
 - 기존 `stream/v2/route.ts`는 `AI_RESUMABLE_STREAMS_ENABLED=true`이면 Redis에 스트림 상태를 저장했다.
 - 기존 `useHybridAIQuery.ts`는 `resume: false`로 고정되어 클라이언트가 resume을 시도하지 않았다.
 - 결과: 서버는 Upstash 커맨드를 소비하지만 그 데이터는 읽히지 않았다.
-- **처리 결과**: ai-assistant-design-cleanup-plan.md Task 1-C에서 서버 resumable 코드 전체 제거 완료. `stream/v2` GET은 405를 반환한다.
+- **처리 결과**: `archive/ai-assistant-design-cleanup-plan.md` Task 1-C에서 서버 resumable 코드 전체 제거 완료. `stream/v2` GET은 405를 반환한다.
 
 ### 🔴 문제 2: Circuit Breaker Redis Store — 구현됐으나 연결 없음 (사문화)
 
@@ -86,7 +86,7 @@ Upstash 전체 제거 판단은 별도:
 - 기존 `src/lib/ai/circuit-breaker.ts`: `IDistributedStateStore` public surface가 있었으나 제거 완료
 - 실제 request path에서 `initializeRedisCircuitBreaker()` 호출이 없었고, Task 3-C 이후 해당 연결점 자체가 제거됨 → 항상 in-memory만 사용
 - **추가 맥락 (2026-05-20)**: Cloud Run AI Engine이 multi-provider key rotation으로 provider 장애를 흡수하므로, Vercel BFF level CB의 필요성이 당초보다 낮음. Vercel CB는 Cloud Run 서비스 **전체 다운**에만 의미가 있으며 개별 provider 실패는 Cloud Run이 이미 처리함
-- **처리 결과**: ai-assistant-design-cleanup-plan.md Task 3-C에서 인터페이스와 Redis CB store 파일 제거 완료 (옵션 B)
+- **처리 결과**: `archive/ai-assistant-design-cleanup-plan.md` Task 3-C에서 인터페이스와 Redis CB store 파일 제거 완료 (옵션 B)
 
 ### 🟠 문제 3: Job Queue — Redis 단독 의존, 장애 시 전체 불능
 
@@ -138,7 +138,7 @@ Upstash 전체 제거 판단은 별도:
 
 **사전 inventory (2026-05-20)**:
 - `/api/ai/jobs*`는 현재 dead path가 아니다. `useHybridAIQuery`/`useQueryExecution`은 복잡도 기준과 강제 키워드 기준으로 Job Queue를 선택하고, `useAsyncAIQuery`가 `POST /api/ai/jobs`와 `/api/ai/jobs/{id}/stream`을 호출한다.
-- `/api/ai/supervisor` legacy route도 복잡한 요청에 대해 202 `redirect: "job-queue"`를 반환한다. 다만 `ai-assistant-design-cleanup-plan.md` Task 2-B에서 이 legacy redirect 제거가 별도 계획되어 있다.
+- `/api/ai/supervisor` legacy route도 복잡한 요청에 대해 202 `redirect: "job-queue"`를 반환했으나, `archive/ai-assistant-design-cleanup-plan.md` Task 2-B에서 이 legacy redirect를 제거했다.
 - Cloud Run `routes/jobs.ts`, `routes/jobs-processor.ts`, `lib/job-notifier.ts`가 Redis `job:*`/`job:progress:*`를 실제 처리 경로로 사용한다.
 - 따라서 현재 코드 기준으로는 "예전 Queue라서 이미 없어도 됨"이 아니라 "아직 제품 경로에 연결되어 있으므로 제거하려면 라우팅/UI/worker 제거 결정이 선행"이다.
 
@@ -163,7 +163,7 @@ Upstash 전체 제거 판단은 별도:
 
 ### Task R-1: Resumable Stream Redis 코드 제거 (🔴)
 
-→ **ai-assistant-design-cleanup-plan.md Task 1-C에 통합 실행**
+→ **archive/ai-assistant-design-cleanup-plan.md Task 1-C에 통합 실행**
 
 완료됨. Task 1-C 구현으로 `stream-state.ts`, `upstash-resumable.ts`, `stream/v2/route.ts`의 resumable 분기와 `useHybridAIQuery`의 `resume` prop이 제거됐다. `stream/v2` GET은 Redis resume 대신 explicit 405를 반환한다.
 
@@ -173,7 +173,7 @@ Upstash 전체 제거 판단은 별도:
 
 ### Task R-2: Circuit Breaker Redis Store 인터페이스 제거 (🔴)
 
-→ **ai-assistant-design-cleanup-plan.md Task 3-C에 통합 실행**
+→ **archive/ai-assistant-design-cleanup-plan.md Task 3-C에 통합 실행**
 
 완료됨. Task 3-C 옵션 B에 따라 `IDistributedStateStore`, `ensureRedisStateStore`, `setDistributedStateStore`와 `src/lib/redis/circuit-breaker-store.ts`를 제거했다. `getAIStatusSummary().stateStore`는 `in-memory`로 고정된다.
 
@@ -268,8 +268,8 @@ return NextResponse.json(
 | Task | 우선순위 | 상태 | 의존성 |
 |------|:------:|------|--------|
 | R-0 Redis 유지/축소 판단 | 🟢 Done | 옵션 A(Job Queue 유지) | 독립 |
-| R-1 Resumable 제거 | 🟢 Done | 완료 | ai-assistant-design-cleanup-plan.md |
-| R-2 CB Store 제거 | 🟢 Done | 완료 | ai-assistant-design-cleanup-plan.md |
+| R-1 Resumable 제거 | 🟢 Done | 완료 | archive/ai-assistant-design-cleanup-plan.md |
+| R-2 CB Store 제거 | 🟢 Done | 완료 | archive/ai-assistant-design-cleanup-plan.md |
 | R-3 Job Queue 503 | 🟢 Done | 완료 | 독립 안전망 구현 완료 |
 | R-4 문서 정정 | 🟢 Done | 완료 | R-1, R-2 완료 후 최종 확정 |
 | R-5 예산 문서화 | 🟡 Low | 초안 완료, 실측 보정 대기 | R-4 |
@@ -279,7 +279,7 @@ return NextResponse.json(
 ## 완료 기준
 
 - R-0에서 Redis 유지/축소 옵션 A(Job Queue 유지) 결정 완료
-- `ai-assistant-design-cleanup-plan.md` Task 1-C, 3-C 완료
+- `archive/ai-assistant-design-cleanup-plan.md` Task 1-C, 3-C 완료
 - Job Queue Redis 오류 503 반환 완료. Job Queue 제거 선택 시 `job:*` 관련 route/worker/UI 표면 정리 범위 확정
 - `redis-usage.md` 키 네임스페이스 테이블 작성 완료
 - `01-system-overview.md` Redis 설명이 실제 사용 현황과 일치
