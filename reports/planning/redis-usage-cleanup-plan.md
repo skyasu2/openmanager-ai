@@ -25,7 +25,10 @@ Upstash 전체 제거 판단은 별도:
   rate limit / Guest PIN / system:running / Cloud Run quota/rate limit / Langfuse usage guard 대체 설계가 필요
 ```
 
-**현재 결론**: 사문화된 `ai:stream:v2:*`, `circuit:*`는 제거 대상이다. 하지만 Upstash 인스턴스 자체는 Job Queue 유지 여부와 무관하게 즉시 제거 대상이 아니다.
+**R-0 결정 (2026-05-20)**: **옵션 A — Job Queue 유지**.
+이유: `/api/ai/jobs*`가 현재 사용자 경로와 Cloud Run job worker에 연결된 활성 경로이며, 제거는 라우팅/UI/worker를 함께 정리하는 별도 리팩터다. Upstash 전체 제거(옵션 C)는 비-Job Redis 사용처 대체 설계가 없어 채택하지 않는다.
+
+**현재 결론**: 사문화된 `ai:stream:v2:*`, `circuit:*`는 제거 대상이다. Job Queue는 유지하며, Upstash 인스턴스 자체도 즉시 제거 대상이 아니다.
 
 | 범주 | R-0 판단 기준 | 근거 |
 |------|---------------|------|
@@ -143,7 +146,7 @@ Upstash 전체 제거 판단은 별도:
 
 | 옵션 | 의미 | 후속 작업 |
 |------|------|-----------|
-| A. Job Queue 유지 | Redis는 AI async job path 필수 저장소로 유지 | R-3에서 503/health check 보강, budget 추적 유지 |
+| A. Job Queue 유지 | Redis는 AI async job path 필수 저장소로 유지 | R-3 완료 상태 유지, budget 추적 유지 |
 | B. Job Queue 제거/비활성 | old Vercel timeout 회피용 queue path를 제품 표면에서 제거 | `/api/ai/jobs*`, `job-notifier`, `job:*` prefix 정리 계획 추가 |
 | C. Upstash 전체 제거 검토 | Queue 외 사용처까지 Redis 제거 | Rate Limit, Guest PIN, `system:running`, Cloud Run quota/rate limit, Langfuse usage guard 대체 설계가 선행 조건 |
 
@@ -153,8 +156,8 @@ Upstash 전체 제거 판단은 별도:
 - Upstash 전체 제거를 선택하지 않는 경우에도 "왜 유지하는지"가 기능별로 문서화됨
 
 - [x] 현재 `/api/ai/jobs*` 호출자 inventory 확인
-- [ ] 옵션 A/B/C 중 결정 기록
-- [ ] 결정 결과를 TODO/Redis 문서에 반영
+- [x] 옵션 A/B/C 중 결정 기록 — 옵션 A(Job Queue 유지)
+- [x] 결정 결과를 TODO/Redis 문서에 반영
 
 ---
 
@@ -266,7 +269,7 @@ return NextResponse.json(
 
 | Task | 우선순위 | 상태 | 의존성 |
 |------|:------:|------|--------|
-| R-0 Redis 유지/축소 판단 | 🔴 High | Pending | 독립 |
+| R-0 Redis 유지/축소 판단 | 🟢 Done | 옵션 A(Job Queue 유지) | 독립 |
 | R-1 Resumable 제거 | 🔴 High | → Task 1-C에 통합 | ai-assistant-design-cleanup-plan.md |
 | R-2 CB Store 제거 | 🔴 High | → Task 3-C에 통합 | ai-assistant-design-cleanup-plan.md |
 | R-3 Job Queue 503 | 🟢 Done | 완료 | 독립 안전망 구현 완료 |
@@ -277,7 +280,7 @@ return NextResponse.json(
 
 ## 완료 기준
 
-- R-0에서 Redis 유지/축소 옵션이 명시적으로 결정됨
+- R-0에서 Redis 유지/축소 옵션 A(Job Queue 유지) 결정 완료
 - `ai-assistant-design-cleanup-plan.md` Task 1-C, 3-C 완료
 - Job Queue Redis 오류 503 반환 완료. Job Queue 제거 선택 시 `job:*` 관련 route/worker/UI 표면 정리 범위 확정
 - `redis-usage.md` 키 네임스페이스 테이블 작성 완료
