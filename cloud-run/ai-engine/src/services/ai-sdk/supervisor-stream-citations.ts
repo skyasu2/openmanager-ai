@@ -184,6 +184,26 @@ export function hasWebSearchFallbackAnswer(
   });
 }
 
+function buildKnowledgeEvidenceSummaries(
+  results: Array<Record<string, unknown>>,
+  maxItems = 2
+): string[] {
+  return results.slice(0, maxItems).flatMap((result) => {
+    const content = readKnowledgeResultText(result)
+      .replace(/`[^`]*\/[^`]*`/g, '')
+      .replace(/\b(?:[\w.-]+\/){1,}[\w./-]+/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!content) return [];
+
+    const title = readKnowledgeResultTitle(result);
+    const summary =
+      content.length > 260 ? `${content.slice(0, 257).trim()}...` : content;
+
+    return [`- ${title}: ${summary}`];
+  });
+}
+
 export function buildKnowledgeBaseGroundedAnswer(
   query: string,
   toolResults: ToolResultLike[],
@@ -230,6 +250,7 @@ export function buildKnowledgeBaseGroundedAnswer(
     const scoreText = score > 0 ? `, score ${score.toFixed(2)}` : '';
     return `${index + 1}. ${title} (${source}${scoreText})`;
   });
+  const summaryLines = buildKnowledgeEvidenceSummaries(topResults);
 
   return [
     '내부 지식 검색 결과 기준으로만 답합니다.',
@@ -240,6 +261,7 @@ export function buildKnowledgeBaseGroundedAnswer(
     '',
     '근거 문서',
     ...evidenceLines,
+    ...(summaryLines.length > 0 ? ['', '근거 요약', ...summaryLines] : []),
     '',
     '근거에 없는 경로는 추정하지 않았습니다.',
   ].join('\n');

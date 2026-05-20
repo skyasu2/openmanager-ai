@@ -13,6 +13,7 @@ const {
   mockCreateSupervisorTrace,
   mockSelectExecutionMode,
   mockLegacyMonitoringToolExecute,
+  mockSearchKnowledgeBaseExecute,
   mockMarkProviderQuotaCooldown,
   mockReconcileProviderQuotaReservation,
   mockReserveProviderQuota,
@@ -40,6 +41,7 @@ const {
   mockLegacyMonitoringToolExecute: vi.fn(async () => ({
     source: 'legacy-all-tools',
   })),
+  mockSearchKnowledgeBaseExecute: vi.fn(),
   mockMarkProviderQuotaCooldown: vi.fn(async () => undefined),
   mockReconcileProviderQuotaReservation: vi.fn(async () => undefined),
   mockReserveProviderQuota: vi.fn(
@@ -87,7 +89,7 @@ vi.mock('../../tools-ai-sdk', () => ({
   recommendCommands: { execute: vi.fn() },
   refineRootCauseAnalysis: { execute: vi.fn() },
   scoreRootCauseConfidence: { execute: vi.fn() },
-  searchKnowledgeBase: { execute: vi.fn() },
+  searchKnowledgeBase: { execute: mockSearchKnowledgeBaseExecute },
   searchWeb: { execute: vi.fn() },
   searchWithGrounding: { execute: vi.fn() },
   extendServerCorrelation: { execute: vi.fn() },
@@ -96,6 +98,7 @@ vi.mock('../../tools-ai-sdk', () => ({
     legacyMonitoringOnly: {
       execute: mockLegacyMonitoringToolExecute,
     },
+    searchKnowledgeBase: { execute: mockSearchKnowledgeBaseExecute },
   },
 }));
 
@@ -247,6 +250,8 @@ import {
   type ToolDefinition,
 } from '../../core/assistant-runtime';
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
+import { searchKnowledgeBase } from '../../tools-ai-sdk';
+import { resolveRAGSetting } from './agents/orchestrator-web-search';
 import { createAssistantRuntimeHost } from './assistant-runtime-host';
 import { createMonitoringAssistantRuntimeHost } from './monitoring-runtime-host';
 import { normalizeSupervisorLocalRouteDecision } from './supervisor-mode';
@@ -718,6 +723,70 @@ describe('supervisor domain wiring contract', () => {
       });
     }
   );
+
+  it('short-circuits forced KRL SSOT queries to direct knowledge search before multi-agent routing', async () => {
+    mockSelectExecutionMode.mockReturnValue('multi');
+    vi.mocked(resolveRAGSetting).mockReturnValue(true);
+    vi.mocked(searchKnowledgeBase.execute).mockResolvedValue({
+      results: [
+        {
+          id: 'otel-ssot-krl',
+          title: 'OpenManager OTel 데이터 SSOT 경로',
+          content:
+            'OpenManager는 pre-generated OTel data slot을 SSOT로 사용합니다. 18대 서버 상태 판단은 OTel 현재 슬롯의 warning, critical, offline 집계 기준을 따르고 KRL은 절차/설명 근거를 제공합니다.',
+          sourceType: 'knowledge',
+          score: 0.91,
+        },
+      ],
+    });
+
+    const runtimeHost = createMonitoringAssistantRuntimeHost();
+    const events = [];
+
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content:
+            'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
+        },
+      ],
+      sessionId: 'session-krl-ssot-direct',
+      enableRAG: 'auto',
+      enableWebSearch: false,
+      runtimeHost,
+    })) {
+      events.push(event);
+    }
+
+    const streamedText = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+    const doneEvent = events.find((event) => event.type === 'done');
+
+    expect(mockExecuteMultiAgentStream).not.toHaveBeenCalled();
+    expect(searchKnowledgeBase.execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fastMode: true,
+        includeWebSearch: false,
+      })
+    );
+    expect(streamedText).toContain('OpenManager OTel 데이터 SSOT 경로');
+    expect(streamedText).toContain('pre-generated OTel');
+    expect(doneEvent).toMatchObject({
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: ['searchKnowledgeBase'],
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'knowledge-search-direct',
+        },
+      },
+    });
+  });
 
   it('keeps monitoring compatibility tools available through the default monitoring domain pack', () => {
     const host = createMonitoringAssistantRuntimeHost();

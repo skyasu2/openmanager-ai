@@ -32,6 +32,13 @@ import {
 import { streamSingleAgent } from './supervisor-single-agent-stream';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 import { getOffDomainGuardrail } from '../../lib/off-domain-guard';
+import {
+  filterToolsByRAG,
+  filterToolsByWebSearch,
+  resolveRAGSetting,
+  resolveWebSearchSetting,
+} from './agents/orchestrator-web-search';
+import { streamDirectKnowledgeSearchIfMatched } from './supervisor-direct-knowledge-stream';
 
 async function* appendSuffixBeforeDone(
   source: AsyncIterable<StreamEvent>,
@@ -124,6 +131,28 @@ export async function* executeSupervisorStream(
       },
     };
     return;
+  }
+
+  if (resolveRAGSetting(runtimeRequest.enableRAG, queryText)) {
+    const webSearchEnabled = resolveWebSearchSetting(
+      runtimeRequest.enableWebSearch,
+      queryText
+    );
+    const filteredTools = filterToolsByRAG(
+      filterToolsByWebSearch(runtimeTools, webSearchEnabled),
+      true
+    );
+    const handledDirectKnowledgeSearch =
+      yield* streamDirectKnowledgeSearchIfMatched({
+        request: runtimeRequest,
+        queryText,
+        filteredTools,
+        modeDecision,
+        routeDecision,
+        assistantPlan,
+        runtimeMetadata,
+      });
+    if (handledDirectKnowledgeSearch) return;
   }
 
   if (
