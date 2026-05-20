@@ -98,6 +98,8 @@ function getServerCardGapPx(viewMode: ServerViewMode, width: number): number {
 interface ServerDashboardProps {
   /** 페이지네이션된 서버 목록 (DashboardClient에서 전달) */
   servers: Server[];
+  /** 현재 화면에서 표시 대상이 되는 전체 서버 목록. 정렬은 이 배열 기준으로 수행한다. */
+  allServers?: Server[];
   /** 전체 서버 수 (페이지네이션 계산용) */
   totalServers: number;
   /** 현재 페이지 */
@@ -127,6 +129,7 @@ interface ServerDashboardProps {
 
 export default function ServerDashboard({
   servers,
+  allServers,
   totalServers,
   currentPage,
   totalPages,
@@ -175,25 +178,28 @@ export default function ServerDashboard({
     setIsClient(true);
   }, []);
 
+  const serverSource = allServers?.length ? allServers : servers;
+  const hasCompleteServerSource = serverSource.length >= (totalServers || 0);
+
   const validatedServers = useMemo(() => {
     // 🛡️ AI 교차검증: servers 다층 안전성 검증 (Codex 94.1% 개선)
-    if (!servers) {
+    if (!serverSource) {
       logger.warn('⚠️ ServerDashboard: servers가 undefined입니다.');
       return [];
     }
-    if (!Array.isArray(servers)) {
+    if (!Array.isArray(serverSource)) {
       logger.error(
         '⚠️ ServerDashboard: servers가 배열이 아닙니다:',
-        typeof servers
+        typeof serverSource
       );
       return [];
     }
-    if (servers.length === 0) {
+    if (serverSource.length === 0) {
       logger.info('ℹ️ ServerDashboard: 표시할 서버가 없습니다.');
       return [];
     }
 
-    const validServers = servers.filter((server, index) => {
+    const validServers = serverSource.filter((server, index) => {
       if (!server || typeof server !== 'object') {
         logger.warn(
           `⚠️ ServerDashboard: 서버[${index}]가 유효하지 않음:`,
@@ -211,14 +217,14 @@ export default function ServerDashboard({
       return true;
     });
 
-    if (validServers.length !== servers.length) {
+    if (validServers.length !== serverSource.length) {
       logger.warn(
-        `⚠️ ServerDashboard: ${servers.length - validServers.length}개 서버가 유효하지 않아 제외되었습니다.`
+        `⚠️ ServerDashboard: ${serverSource.length - validServers.length}개 서버가 유효하지 않아 제외되었습니다.`
       );
     }
 
     return validServers;
-  }, [servers]);
+  }, [serverSource]);
 
   // 🚀 서버 정렬 최적화: 외부 상수와 최적화된 함수 사용
   // 🔧 Phase 4: paginatedServers → servers (props로 전달받음)
@@ -333,8 +339,9 @@ export default function ServerDashboard({
 
   const hasMoreLoadedServers = visibleLimit < sortedServers.length;
   const hasMorePagedServers =
-    paginationInfo.pageSize < paginationInfo.totalServers ||
-    currentPage < totalPages;
+    !hasCompleteServerSource &&
+    (paginationInfo.pageSize < paginationInfo.totalServers ||
+      currentPage < totalPages);
   const canShowMoreServers = hasMoreLoadedServers || hasMorePagedServers;
   const hiddenServerCount = Math.max(
     0,
@@ -376,7 +383,10 @@ export default function ServerDashboard({
       return;
     }
 
-    if (paginationInfo.pageSize < paginationInfo.totalServers) {
+    if (
+      !hasCompleteServerSource &&
+      paginationInfo.pageSize < paginationInfo.totalServers
+    ) {
       const nextPageSize = Math.min(
         paginationInfo.totalServers,
         paginationInfo.pageSize + rowStep * cardsPerRow
@@ -393,6 +403,7 @@ export default function ServerDashboard({
   }, [
     cardsPerRow,
     currentPage,
+    hasCompleteServerSource,
     onPageChange,
     onPageSizeChange,
     paginationInfo.pageSize,

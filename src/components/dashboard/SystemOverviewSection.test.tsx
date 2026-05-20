@@ -85,4 +85,34 @@ describe('SystemOverviewSection', () => {
     expect(screen.getByText('60%')).toBeInTheDocument();
     expect(screen.getByText('40%')).toBeInTheDocument();
   });
+
+  it('리소스 경고 색상은 system-rules 임계값을 따른다', () => {
+    render(
+      <SystemOverviewSection
+        servers={
+          [
+            {
+              id: 'cpu-normal',
+              name: 'cpu-normal',
+              cpu: 75,
+              memory: 20,
+              disk: 20,
+              status: 'online',
+            },
+            {
+              id: 'cpu-warning',
+              name: 'cpu-warning',
+              cpu: 85,
+              memory: 20,
+              disk: 20,
+              status: 'warning',
+            },
+          ] as Server[]
+        }
+      />
+    );
+
+    expect(screen.getByText('CPU 75%')).toHaveClass('bg-slate-100');
+    expect(screen.getByText('CPU 85%')).toHaveClass('bg-amber-50');
+  });
 });

@@ -244,14 +244,15 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
 
     // 시스템 상태에 따른 그라데이션 결정
     const systemHealthGradient =
-      safeStats.critical > 0
+      safeStats.critical > 0 || safeStats.offline > 0
         ? statusGradients.critical
         : safeStats.warning > 0
           ? statusGradients.warning
           : statusGradients.online;
 
     // 위험/경고 상태일 때 펄스 활성화
-    const showPulse = safeStats.critical > 0 || safeStats.warning > 0;
+    const showPulse =
+      safeStats.critical > 0 || safeStats.warning > 0 || safeStats.offline > 0;
 
     return (
       <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">

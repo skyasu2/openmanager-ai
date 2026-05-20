@@ -49,6 +49,8 @@ interface DashboardContentProps {
   servers: Server[];
   /** 전체 서버 목록 (통계 계산용) */
   allServers?: Server[];
+  /** 현재 필터가 반영된 전체 서버 목록 (카드 정렬/표시용) */
+  displayServers?: Server[];
   /** 현재 synthetic OTel 데이터 슬롯 메타데이터 */
   dataSlotInfo?: DashboardTimeInfo;
   /** 현재 synthetic OTel 데이터 소스 메타데이터 */
@@ -78,6 +80,7 @@ export default memo(function DashboardContent({
   showSequentialGeneration,
   servers,
   allServers,
+  displayServers,
   dataSlotInfo,
   dataSourceInfo,
   totalServers,
@@ -128,6 +131,12 @@ export default memo(function DashboardContent({
 
   // 🚀 리팩토링: Custom Hook으로 통계 계산 로직 분리
   const serverStats = useDashboardStats(servers, allServers, statsLoading);
+  const systemOverviewServers = allServers?.length ? allServers : servers;
+  const serverDashboardSource = displayServers?.length
+    ? displayServers
+    : allServers?.length
+      ? allServers
+      : servers;
   const overallServerCount =
     allServers?.length ?? Math.max(totalServers, servers.length);
   const emptyStateMode = resolveDashboardEmptyState({
@@ -208,7 +217,7 @@ export default memo(function DashboardContent({
         {servers.length > 0 ? (
           <>
             {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
-            <SystemOverviewSection servers={servers} />
+            <SystemOverviewSection servers={systemOverviewServers} />
 
             {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
                   - DashboardClient → DashboardContent → ServerDashboard로 전달
@@ -216,6 +225,7 @@ export default memo(function DashboardContent({
                   - ServerDashboard 그래프는 client-only lazy chunk로 분리 */}
             <ServerDashboard
               servers={servers}
+              allServers={serverDashboardSource}
               totalServers={totalServers}
               currentPage={currentPage}
               totalPages={totalPages}

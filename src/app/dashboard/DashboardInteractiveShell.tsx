@@ -216,6 +216,7 @@ export default function DashboardInteractiveShell({
   const {
     paginatedServers: realServers,
     servers: allServers,
+    filteredServers,
     filteredTotal,
     currentPage,
     totalPages,
@@ -382,6 +383,7 @@ export default function DashboardInteractiveShell({
                   showSequentialGeneration={false}
                   servers={realServers}
                   allServers={allServers}
+                  displayServers={filteredServers}
                   dataSlotInfo={initialTimeInfo}
                   dataSourceInfo={initialDataSourceInfo}
                   totalServers={filteredTotal}
@@ -401,6 +403,7 @@ export default function DashboardInteractiveShell({
                   view={dashboardView}
                   servers={realServers}
                   allServers={allServers}
+                  displayServers={filteredServers}
                   dataSlotInfo={initialTimeInfo}
                   dataSourceInfo={initialDataSourceInfo}
                   initialFocusServerId={initialFocusServerId}

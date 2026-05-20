@@ -176,6 +176,26 @@ describe('DashboardSummary status filter cards', () => {
     expect(screen.getAllByText('오프라인').length).toBeGreaterThanOrEqual(2);
   });
 
+  it('오프라인 서버만 있어도 시스템 상태 카드는 문제 상태 색상을 사용한다', () => {
+    render(
+      <DashboardSummary
+        stats={{
+          total: 1,
+          online: 0,
+          warning: 0,
+          critical: 0,
+          offline: 1,
+          unknown: 0,
+        }}
+      />
+    );
+
+    expect(screen.getByTestId('dashboard-system-status-card')).toHaveClass(
+      'border-rose-200/50'
+    );
+    expect(screen.getByText('문제 발생')).toBeInTheDocument();
+  });
+
   it('OpenTelemetry snapshot data slot 메타데이터를 표시한다', () => {
     render(
       <DashboardSummary

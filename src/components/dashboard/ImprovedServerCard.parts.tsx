@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { getThreshold } from '@/config/rules';
 import type { Server as ServerType, Service } from '@/types/server';
 import { formatMetricValue } from '@/utils/metric-formatters';
 import { SvgSparkline } from '../shared/SvgSparkline';
@@ -18,32 +19,15 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
   };
 
   const getMetricSeverity = (val: number) => {
-    if (type === 'network') {
-      if (val >= 85) {
-        return {
-          chartColor: '#ef4444',
-          textClass: 'text-red-700 font-semibold',
-        };
-      }
-      if (val >= 70) {
-        return {
-          chartColor: '#f97316',
-          textClass: 'text-amber-700 font-medium',
-        };
-      }
-      return {
-        chartColor: '#10b981',
-        textClass: 'text-slate-600 font-medium',
-      };
-    }
+    const threshold = getThreshold(type);
 
-    if (val >= 85) {
+    if (val >= threshold.critical) {
       return {
         chartColor: '#ef4444',
         textClass: 'text-red-700 font-semibold',
       };
     }
-    if (val >= 70) {
+    if (val >= threshold.warning) {
       return {
         chartColor: '#f97316',
         textClass: 'text-amber-700 font-medium',

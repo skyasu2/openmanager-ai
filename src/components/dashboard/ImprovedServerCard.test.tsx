@@ -119,11 +119,20 @@ vi.mock('../shared/ServerMetricsChart', () => ({
 
 vi.mock('../shared/SvgSparkline', () => ({
   SvgSparkline: vi.fn(
-    ({ data, height }: { data?: number[]; height?: number }) => (
+    ({
+      data,
+      height,
+      color,
+    }: {
+      data?: number[];
+      height?: number;
+      color?: string;
+    }) => (
       <div
         data-testid="mock-mini-chart"
         data-points={data?.join(',') ?? ''}
         data-height={height}
+        data-color={color}
       >
         Mini Chart
       </div>
@@ -365,23 +374,23 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(screen.queryByText('192.168.1.100')).not.toBeInTheDocument();
     });
 
-    it('임계치 70% 이상 핵심 메트릭 수치를 텍스트 색상과 weight로 강조한다', () => {
+    it('system-rules 임계치 이상 핵심 메트릭 수치를 텍스트 색상과 weight로 강조한다', () => {
       const stressedServer = {
         ...mockServer,
-        cpu: 74,
-        memory: 86,
-        disk: 91,
+        cpu: 85,
+        memory: 91,
+        disk: 92,
       };
 
       render(
         <ImprovedServerCard server={stressedServer} onClick={mockOnClick} />
       );
 
-      expect(screen.getByText('74.0%')).toHaveClass(
+      expect(screen.getByText('85.0%')).toHaveClass(
         'text-amber-700',
         'font-medium'
       );
-      expect(screen.getByText('86.0%')).toHaveClass(
+      expect(screen.getByText('92.0%')).toHaveClass(
         'text-red-700',
         'font-semibold'
       );
@@ -747,6 +756,25 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(charts[0]).toHaveAttribute('data-points', '10,45.2');
       expect(charts[1]).toHaveAttribute('data-points', '20,62.8');
       expect(charts[2]).toHaveAttribute('data-points', '30,73.5');
+    });
+
+    it('메트릭 색상은 system-rules 임계값과 동일하게 판단한다', () => {
+      render(
+        <ImprovedServerCard
+          server={{
+            ...mockServer,
+            cpu: 85,
+            memory: 70,
+            disk: 70,
+          }}
+          onClick={mockOnClick}
+        />
+      );
+
+      const charts = screen.getAllByTestId('mock-mini-chart');
+      expect(charts[0]).toHaveAttribute('data-color', '#f97316');
+      expect(charts[1]).toHaveAttribute('data-color', '#10b981');
+      expect(charts[2]).toHaveAttribute('data-color', '#10b981');
     });
 
     it('호버나 펼치기 버튼 없이 보조 서비스 정보를 노출하지 않는다', () => {

@@ -424,6 +424,40 @@ describe('ServerDashboard', () => {
     ).toEqual(['API Server', 'Cache Server', 'DB Server']);
   });
 
+  it('페이지네이션된 일부 서버가 아니라 전체 표시 대상 기준으로 상태 우선 정렬한다', () => {
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('online-1', 'Online 1', { status: 'online' }),
+          createServer('online-2', 'Online 2', { status: 'online' }),
+        ]}
+        allServers={[
+          createServer('online-1', 'Online 1', { status: 'online' }),
+          createServer('online-2', 'Online 2', { status: 'online' }),
+          createServer('warning-1', 'Warning 1', { status: 'warning' }),
+          createServer('critical-1', 'Critical 1', { status: 'critical' }),
+        ]}
+        totalServers={4}
+        currentPage={1}
+        totalPages={2}
+        pageSize={2}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    expect(
+      screen
+        .getAllByTestId(/^server-card-/)
+        .map(
+          (node) => node.querySelector('[data-server-card-name]')?.textContent
+        )
+    ).toEqual(['Critical 1', 'Warning 1', 'Online 1', 'Online 2']);
+    expect(
+      screen.queryByRole('button', { name: /0대 남음/ })
+    ).not.toBeInTheDocument();
+  });
+
   it('서버 카드의 로그 버튼은 서버 필터가 포함된 로그 페이지로 이동한다', () => {
     routerPush.mockClear();
 

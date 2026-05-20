@@ -88,7 +88,7 @@ const statusAccentBorderClasses: Record<string, string> = {
 
 const statusLabels: Record<string, string> = {
   critical: '위험',
-  warning: '주의',
+  warning: '경고',
   online: '정상',
   offline: '오프라인',
   maintenance: '점검',

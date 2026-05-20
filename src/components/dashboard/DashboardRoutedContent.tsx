@@ -33,6 +33,7 @@ interface DashboardRoutedContentProps {
   view: DashboardView;
   servers: Server[];
   allServers?: Server[];
+  displayServers?: Server[];
   dataSlotInfo?: DashboardTimeInfo;
   dataSourceInfo?: DashboardDataSourceInfo | null;
   initialFocusServerId?: string | null;
@@ -108,6 +109,7 @@ export default function DashboardRoutedContent({
   view,
   servers,
   allServers,
+  displayServers,
   dataSlotInfo,
   dataSourceInfo: _dataSourceInfo,
   initialFocusServerId,
@@ -154,6 +156,7 @@ export default function DashboardRoutedContent({
       >
         <ServerDashboard
           servers={servers}
+          allServers={displayServers?.length ? displayServers : allServers}
           totalServers={totalServers}
           currentPage={currentPage}
           totalPages={totalPages}

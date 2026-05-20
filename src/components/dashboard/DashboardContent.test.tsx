@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import type { Server } from '@/types/server';
 import DashboardContent from './DashboardContent';
+import { SystemOverviewSection } from './SystemOverviewSection';
 
 const { routerPush, serverDashboardMock } = vi.hoisted(() => ({
   routerPush: vi.fn(),
@@ -131,10 +132,12 @@ vi.mock('./ServerDashboard', () => ({
 }));
 
 const mockedUseDashboardStats = vi.mocked(useDashboardStats);
+const mockedSystemOverviewSection = vi.mocked(SystemOverviewSection);
 
 beforeEach(() => {
   routerPush.mockClear();
   serverDashboardMock.mockClear();
+  mockedSystemOverviewSection.mockClear();
   mockedUseDashboardStats.mockReturnValue({
     total: 15,
     online: 15,
@@ -269,6 +272,76 @@ describe('DashboardContent empty state', () => {
         expect.objectContaining({
           initialVisibleRows: 2,
           surface: 'overview',
+        })
+      );
+    });
+  });
+
+  it('시스템 리소스 평균은 현재 페이지가 아니라 전체 서버 목록 기준으로 표시한다', () => {
+    const visibleServers = [
+      {
+        id: 'page-1',
+        name: 'page-server-1',
+        status: 'online',
+        cpu: 90,
+        memory: 90,
+        disk: 90,
+      } as Server,
+    ];
+    const allServers = [
+      ...visibleServers,
+      {
+        id: 'page-2',
+        name: 'page-server-2',
+        status: 'online',
+        cpu: 10,
+        memory: 10,
+        disk: 10,
+      } as Server,
+    ];
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: visibleServers,
+          allServers,
+          totalServers: allServers.length,
+        })}
+      />
+    );
+
+    expect(mockedSystemOverviewSection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        servers: allServers,
+      }),
+      undefined
+    );
+  });
+
+  it('서버 카드는 필터가 반영된 전체 목록을 기준으로 정렬할 수 있게 전달한다', async () => {
+    const visibleServers = [
+      { id: 'warning-1', name: 'warning-1', status: 'warning' } as Server,
+    ];
+    const allServers = [
+      { id: 'online-1', name: 'online-1', status: 'online' } as Server,
+      ...visibleServers,
+    ];
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: visibleServers,
+          allServers,
+          displayServers: visibleServers,
+          totalServers: visibleServers.length,
+        })}
+      />
+    );
+
+    await waitFor(() => {
+      expect(serverDashboardMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          allServers: visibleServers,
         })
       );
     });
