@@ -1,12 +1,12 @@
-# 시스템 개요 아키텍처
+# 시스템 설계 가이드 — 경계·DO/DON'T
 
-> Browser, Vercel BFF, Cloud Run AI Engine, 외부 서비스 경계를 설명하는 구현 기준 아키텍처
+> Vercel BFF ↔ Cloud Run AI Engine 경계와 설계 원칙 빠른 참조 (상세 기준: [System Architecture](../reference/architecture/system/system-architecture-current.md))
 > Owner: platform-architecture
-> Status: Active
-> Doc type: Reference
+> Status: Active Supporting
+> Doc type: How-to
 > Last reviewed: 2026-05-20
-> Canonical: docs/architecture/01-system-overview.md
-> Tags: architecture,system,hybrid,vercel,cloud-run
+> Canonical: docs/reference/architecture/system/system-architecture-current.md
+> Tags: architecture,system,hybrid,vercel,cloud-run,design-guide
 
 ---
 

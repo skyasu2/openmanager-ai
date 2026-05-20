@@ -136,7 +136,7 @@ const status = AgentFactory.getAvailabilityStatus();
 
 ### Vision Agent
 
-Gemini Flash Primary + Z.AI Vision fallback:
+Gemini Flash Primary only:
 
 | Feature | Capability |
 |---------|------------|
@@ -145,7 +145,7 @@ Gemini Flash Primary + Z.AI Vision fallback:
 | **Google Search** | Grounding 지원 |
 | **URL Context** | 웹 페이지 분석 |
 
-**Graceful Degradation**: Gemini/Z.AI Vision 모두 미구성 시 → Analyst Agent로 폴백 (제한된 분석)
+**Graceful Degradation**: Gemini Vision 미구성/사용 불가 시 → Analyst Agent로 폴백 (제한된 분석)
 
 ```typescript
 import { getVisionAgentOrFallback, isVisionQuery } from './vision-agent';
@@ -167,7 +167,7 @@ if (isVisionQuery(query)) {
 | Analyst/Reporter/Advisor/Verifier | Groq long-context path; Cerebras `llama3.1-8b` only when context permits | → Mistral | Free-tier constrained; quota guarded |
 | Orchestrator | Groq primary; Cerebras `llama3.1-8b` short-context fallback | → Mistral | Free-tier constrained; quota guarded |
 | Summarization fallback | Mistral `mistral-small-latest` | → Groq → Cerebras | Workspace-tier dependent; low RPM |
-| **Vision Agent** | **Gemini `gemini-2.5-flash-lite`** | **→ Z.AI GLM-4.6V-Flash** | **15 RPM, 1K RPD primary; fallback quota guarded** |
+| **Vision Agent** | **Gemini `gemini-2.5-flash-lite`** | **Analyst Agent when Gemini unavailable** | **15 RPM, 1K RPD primary; no Z.AI Vision fallback** |
 
 ### Agent Usage by Feature
 

@@ -118,6 +118,13 @@
 
 ## Recent Completed
 
+### Completed (2026-05-20) — Codex (Vision Gemini-only Runtime)
+- [x] GLM Vision fallback 제거 및 Gemini Vision 응답 품질 재확인
+  - `QA-20260520-0541`에서 Z.AI GLM Vision fallback이 upstream overload로 HTTP 500을 반환해 답변 품질 검증 전 단계에서 실패한 것을 근거로, Vision runtime fallback 후보에서 제거했다.
+  - Vision Agent는 Gemini `gemini-2.5-flash-lite` 단일 provider로 실행하고, Gemini 미가용 시 텍스트 기반 Analyst Agent로 degradation한다.
+  - Z.AI는 Reporter/text fallback 전용으로 유지하고, Vision capability/metadata/provider docs/env 표면에서는 제거했다.
+  - Gemini 단일 실이미지 smoke `QA-20260520-0542` 결과: 라우팅/현재 수치 판독은 정상이나 forecast delta 일부를 오인식했다. Vision instruction에 OpenManager 카드 현재값/예측 변화율 분리 판독 규칙을 추가했고, 정확한 수치 답변은 metric data tool/evidence 우선 원칙으로 기록했다.
+
 ### Completed (2026-05-19) — Codex (AI Assistant Code/Docs Improvement)
 - [x] AI Assistant 코드/문서 개선 C1~C3/D4 완료
   - C1: `orchestrator-routing.ts` 483→384 (`orchestrator-routing-policy.ts`, `orchestrator-routing-telemetry-helpers.ts` 추출)
@@ -135,18 +142,18 @@
 - [x] Playwright screenshot 등 실제 이미지 첨부가 Vision Agent로 라우팅되지 않던 문제 수정
   - 이미지/파일 첨부가 있으면 auto mode가 `vision_input` 근거로 multi-agent 경로를 선택하도록 정렬했다.
   - 서버 키워드가 없는 "첨부된 Playwright 스크린샷" 질의도 Vision Agent pre-filter로 분류한다.
-  - Vision Agent 이미지/파일 입력은 범용 tool loop 대신 Gemini/Z.AI 네이티브 멀티모달 호출을 사용해 빈 응답을 방지한다.
+  - Vision Agent 이미지/파일 입력은 범용 tool loop 대신 Gemini 네이티브 멀티모달 호출을 사용해 빈 응답을 방지한다.
   - 검증: AI Engine targeted tests 97 PASS, AI Engine `type-check`, AI Engine full test 1345 PASS, 실제 Playwright PNG 로컬 Vision smoke PASS.
 
 ### Completed (2026-05-19) — Codex (Vision QA Cost Guardrail)
 - [x] Vision Agent 실이미지 QA manual-only 정책 반영
   - Gemini/GLM Vision 실제 이미지 호출은 일반 release QA/표준 5문항에 포함하지 않고, 사용자가 명시 요청하거나 Vision routing/provider 계약이 변경된 경우에만 수동 smoke 1회로 제한한다.
   - Gemini Vision primary는 `v8.11.184` / `QA-20260519-0538`에서 Playwright PNG production smoke로 확인 완료.
-  - Z.AI `glm-4.6v-flash` Vision fallback은 `QA-20260519-0539`에서 Gemini를 일시 비활성화한 수동 smoke로 확인 완료. 결과: `provider=zai`, `modelId=glm-4.6v-flash`, `finalAgent=Vision Agent`, `modeSelectionSource=vision_input`.
+  - Z.AI `glm-4.6v-flash` Vision fallback은 `QA-20260519-0539`에서 Gemini를 일시 비활성화한 수동 smoke를 한 차례 통과했으나, `QA-20260520-0541`에서 upstream overload로 실패해 2026-05-20 current runtime 계약에서 제거했다.
 
 ### Completed (2026-05-19) — Codex (OpenRouter Removal)
 - [x] OpenRouter provider runtime code path 제거 완료
-  - Vision fallback은 `Gemini -> Z.AI Vision`만 유지하고, OpenRouter provider factory/status/metadata/env/docs/test 경로를 제거했다.
+  - 당시 Vision fallback은 `Gemini -> Z.AI Vision`만 유지하고, OpenRouter provider factory/status/metadata/env/docs/test 경로를 제거했다. 2026-05-20 current runtime에서는 Z.AI Vision fallback도 제거되어 Gemini-only다.
   - 실환경 provider precheck에서 Gemini/Groq/Cerebras/Mistral/Z.AI는 available 및 metadata green, OpenRouter는 disabled/red로 확인되어 제거 대상임을 확정했다.
   - 검증: AI Engine `type-check`/targeted tests/full tests, root `type-check`/`lint`/`test:quick`/`test:contract`, docs checks, `git diff --check` PASS. 상세: [archive/openrouter-code-removal-plan.md](archive/openrouter-code-removal-plan.md)
 
@@ -400,7 +407,7 @@
 
 - [x] AI Provider Fallback Mesh
   - Z.AI 무료 Flash 모델을 AI Engine provider mesh에 추가하고 text chain을 Groq/Z.AI/Mistral/Cerebras 축으로 분산했다.
-  - Vision fallback은 Gemini → OpenRouter → Z.AI Vision 순서로 확장했고, Z.AI request body에는 `thinking: { type: "disabled" }`를 주입해 tool-calling smoke 기준을 반영했다.
+  - 당시 Vision fallback은 Gemini → OpenRouter → Z.AI Vision 순서로 확장했고, Z.AI request body에는 `thinking: { type: "disabled" }`를 주입해 tool-calling smoke 기준을 반영했다. 2026-05-20 current runtime에서는 Vision을 Gemini-only로 축소했다.
   - Cerebras `llama3.1-8b`는 2026-05-27 종료 전까지 short-context fallback으로 유지하되, 2026-05-16 계정 header 기준 quota를 5 RPM / 30K TPM / 2.4K RPD / 1M TPD로 갱신했다.
   - 검증: Z.AI live text/tool smoke, AI Engine `type-check`/full test, root `type-check`/`lint`/`test:quick`/`test:contract`, docs checks, `git diff --check` 통과.
   - 상세: [archive/ai-provider-fallback-mesh-plan.md](archive/ai-provider-fallback-mesh-plan.md)

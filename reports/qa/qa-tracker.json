@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-20T02:11:54.045Z"
+    "updatedAt": "2026-05-20T04:10:25.196Z"
   },
   "sequence": {
-    "nextRunNumber": 541
+    "nextRunNumber": 544
   },
   "summary": {
-    "totalRecordedRuns": 538,
+    "totalRecordedRuns": 541,
     "totalRuns": 429,
-    "excludedRuns": 109,
+    "excludedRuns": 112,
     "totalChecks": 3912,
     "totalPassed": 3759,
     "totalFailed": 142,
     "completionRate": 100,
-    "completedItems": 615,
+    "completedItems": 618,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 34,
+    "wontFixItems": 35,
     "expertDomainsTracked": 17,
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260519-0538",
     "lastRecordedAt": "2026-05-19T11:08:35.867Z",
-    "latestRecordedRunId": "QA-20260520-0540",
-    "latestRecordedAt": "2026-05-20T02:11:54.045Z"
+    "latestRecordedRunId": "QA-20260520-0543",
+    "latestRecordedAt": "2026-05-20T04:10:25.196Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15305,6 +15305,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-19T11:41:05.468Z"
+    },
+    "vision-gemini-primary-image-answer-quality": {
+      "id": "vision-gemini-primary-image-answer-quality",
+      "title": "Gemini primary vision image answer quality verified for dashboard screenshot",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260520-0541",
+      "firstSeenAt": "2026-05-20T03:16:25.342Z",
+      "lastSeenRunId": "QA-20260520-0541",
+      "lastSeenAt": "2026-05-20T03:16:25.342Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Gemini returned HTTP 200 through Vision Agent with provider=gemini, model=gemini-2.5-flash-lite, latencyMs=9375, and 8/8 scripted visual grounding checks.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-20T03:16:25.342Z"
+    },
+    "vision-glm-fallback-http-500-quality": {
+      "id": "vision-glm-fallback-http-500-quality",
+      "title": "GLM vision fallback HTTP 500 resolved by removing GLM from Vision runtime",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260520-0541",
+      "firstSeenAt": "2026-05-20T03:16:25.342Z",
+      "lastSeenRunId": "QA-20260520-0543",
+      "lastSeenAt": "2026-05-20T04:10:25.196Z",
+      "seenCount": 2,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Runtime model selectors, provider metadata, capability gate, /api/ai/providers response, runtime policy, tests, and docs now define Vision as Gemini-only. When Gemini is unavailable, the route degrades to Analyst Agent instead of trying Z.AI GLM Vision.",
+      "lastNote": "Fallback-only path, but it must be root-caused before relying on Z.AI GLM for vision resilience when Gemini is disabled or unavailable.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-20T04:10:25.196Z"
+    },
+    "vision-gemini-routing-and-current-values": {
+      "id": "vision-gemini-routing-and-current-values",
+      "title": "Gemini Vision routes correctly and reads current dashboard values",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260520-0542",
+      "firstSeenAt": "2026-05-20T04:05:02.782Z",
+      "lastSeenRunId": "QA-20260520-0542",
+      "lastSeenAt": "2026-05-20T04:05:02.782Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "HTTP 200, success=true, finalAgent=Vision Agent, provider=gemini, model=gemini-2.5-flash-lite. Response identified cache-redis-dc1-01, CPU 71%, memory 92%, disk 21%, CPU/memory high, disk normal, and actionable memory remediation.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-20T04:05:02.782Z"
+    },
+    "vision-gemini-exact-forecast-delta-attribution": {
+      "id": "vision-gemini-exact-forecast-delta-attribution",
+      "title": "Gemini Vision misattributes exact forecast delta values in the screenshot",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260520-0542",
+      "firstSeenAt": "2026-05-20T04:05:02.782Z",
+      "lastSeenRunId": "QA-20260520-0542",
+      "lastSeenAt": "2026-05-20T04:05:02.782Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "The screenshot shows CPU +9.7%, memory +6.6%, disk +3.3%. Gemini returned CPU 71% unchanged, memory +9.7%, disk +3.3%, so exact forecast-delta attribution is not reliable from OCR alone.",
+      "lastNote": "For exact numeric forecast answers, route to deterministic metric data/tool evidence instead of relying on image OCR.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-20T04:05:02.782Z"
     }
   },
   "runs": [
@@ -61694,6 +61790,234 @@
       "expertCount": 2,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260520-0541",
+      "recordedAt": "2026-05-20T03:16:25.342Z",
+      "recordedAtKst": "2026-05-20 12:16:25 KST",
+      "title": "Cloud Run Vision Provider Answer Quality Smoke",
+      "owner": "codex",
+      "source": "script",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260520-0541.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "frontend": "not exercised",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "db427c87e3dd9c5fe4d2cacaef593c82c25518a8"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Cloud Run direct /api/ai/supervisor vision image analysis",
+        "Gemini primary vision answer quality for dashboard screenshot",
+        "GLM fallback vision routing and answer availability with Gemini disabled",
+        "Provider toggle restore after targeted fallback smoke"
+      ],
+      "skippedSurfaces": [
+        "Vercel browser UI integration",
+        "Repeated provider matrix",
+        "GLM fallback rerun after HTTP 500, to keep this as a single manual-only sample"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 1,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Vision screenshot analysis - Gemini primary",
+          "agent": "Vision Agent",
+          "provider": "gemini",
+          "model": "gemini-2.5-flash-lite",
+          "route": "/api/ai/supervisor",
+          "source": "direct Cloud Run script elapsedMs",
+          "latencyMs": 9375,
+          "processingTimeMs": 9375
+        },
+        {
+          "surface": "Vision screenshot analysis - GLM fallback",
+          "agent": "Vision Agent",
+          "provider": "zai",
+          "model": "glm-4.6v-flash",
+          "route": "/api/ai/supervisor",
+          "source": "direct Cloud Run script elapsedMs; HTTP 500 before answer body",
+          "latencyMs": 4416,
+          "processingTimeMs": 4416
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Vision smoke input screenshot",
+          "path": "reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png",
+          "note": "Existing dashboard screenshot reused for non-counting targeted vision quality smoke."
+        },
+        {
+          "type": "playwright-console",
+          "label": "Vision quality smoke JSON result",
+          "path": "reports/qa/evidence/qa-20260520-vision-quality-smoke-result.json",
+          "note": "Direct Cloud Run script result containing provider, latency, quality-score, and restore status."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run AI Engine",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260520-0542",
+      "recordedAt": "2026-05-20T04:05:02.782Z",
+      "recordedAtKst": "2026-05-20 13:05:02 KST",
+      "title": "Cloud Run Gemini Vision Answer Quality Smoke",
+      "owner": "codex",
+      "source": "script",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260520-0542.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "frontend": "not exercised",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "db427c87e3dd9c5fe4d2cacaef593c82c25518a8"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Cloud Run direct /api/ai/supervisor vision image analysis",
+        "Gemini-only Vision Agent routing",
+        "Gemini answer grounding for dashboard screenshot current values and forecast deltas"
+      ],
+      "skippedSurfaces": [
+        "Vercel browser UI integration",
+        "GLM/Z.AI fallback call",
+        "Repeated provider matrix"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Vision screenshot analysis - Gemini only",
+          "agent": "Vision Agent",
+          "provider": "gemini",
+          "model": "gemini-2.5-flash-lite",
+          "route": "/api/ai/supervisor",
+          "source": "direct Cloud Run script elapsedMs",
+          "latencyMs": 11278,
+          "processingTimeMs": 11278
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Vision smoke input screenshot",
+          "path": "reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png",
+          "note": "Existing dashboard screenshot reused for non-counting targeted Gemini-only vision quality smoke."
+        },
+        {
+          "type": "playwright-console",
+          "label": "Gemini vision quality smoke JSON result",
+          "path": "reports/qa/evidence/qa-20260520-gemini-vision-quality-smoke-result.json",
+          "note": "Direct Cloud Run script result containing provider, latency, response preview, and exact-value quality checks."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run AI Engine",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260520-0543",
+      "recordedAt": "2026-05-20T04:10:25.196Z",
+      "recordedAtKst": "2026-05-20 13:10:25 KST",
+      "title": "Vision GLM Fallback Removal Closure",
+      "owner": "codex",
+      "source": "script",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260520-0543.json",
+      "environment": {
+        "target": "local-code-validation",
+        "url": "not-applicable",
+        "frontend": "not exercised",
+        "backend": "Cloud Run AI Engine",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "db427c87e3dd9c5fe4d2cacaef593c82c25518a8"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vision provider selection contract",
+        "Z.AI GLM Vision fallback removal",
+        "QA pending item closure"
+      ],
+      "skippedSurfaces": [
+        "Additional live provider calls",
+        "Vercel browser UI integration"
+      ],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

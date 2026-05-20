@@ -192,13 +192,13 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
   },
 
   // =========================================================================
-  // Vision Agent (Gemini Flash → Z.AI Vision fallback)
+  // Vision Agent (Gemini Flash only)
   // =========================================================================
 
   'Vision Agent': {
     name: 'Vision Agent',
     description: getDomainAgentRole('Vision Agent').description,
-    getModel: getVisionModel, // Gemini → Z.AI Vision fallback
+    getModel: getVisionModel,
     instructions: VISION_INSTRUCTIONS,
     tools: buildAgentTools('Vision Agent'),
     visibility: 'routable',

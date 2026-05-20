@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # State Triage
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 최근 QA/런타임/배포 증거를 바탕으로 다음 액션을 좁힙니다.
 

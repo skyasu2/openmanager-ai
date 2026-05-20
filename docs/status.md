@@ -3,7 +3,7 @@
 > 프로젝트 버전별 변경 이력과 운영 상태 요약
 > Owner: documentation
 > Status: Active
-> Doc type: Status
+> Doc type: Reference
 > Last reviewed: 2026-05-19
 > Canonical: docs/status.md
 > Tags: status,changelog,release

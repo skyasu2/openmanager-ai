@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # Env Sync
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 runtime env drift를 먼저 해결하고 그 다음에 제품 코드 변경 여부를 판단합니다.
 

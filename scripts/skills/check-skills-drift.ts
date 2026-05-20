@@ -31,7 +31,7 @@ interface DirectoryEntry {
 }
 
 const requiredRefs: string[] = [
-  'docs/guides/ai/skill-standards.md',
+  'docs/development/vibe-coding/skills.md',
   'config/ai/skill-baselines.json'
 ];
 

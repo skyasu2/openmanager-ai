@@ -39,6 +39,8 @@ import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 // MIGRATED: Removed export const runtime = "nodejs" (default)
 export const maxDuration = 10;
 
+const GROQ_TIMEOUT_MS = 3000;
+
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
 const SemanticIntentFrameSchema = z.object({
@@ -100,6 +102,18 @@ async function postHandler(request: NextRequest) {
       ? buildLogSummaryPrompt(guard.logExtract ?? '', guard.sanitizedQuery)
       : guard.sanitizedQuery;
 
+  if (!process.env.GROQ_API_KEY) {
+    return NextResponse.json(
+      {
+        confidence: 0,
+        inputType: guard.inputType,
+        ...(guard.logExtract && { logExtract: guard.logExtract }),
+        ...(guard.truncated && { truncated: true }),
+      },
+      { status: 200 }
+    );
+  }
+
   try {
     const { output } = await generateText({
       model: groq(GROQ_TEXT_MODEL_ID),
@@ -107,6 +121,7 @@ async function postHandler(request: NextRequest) {
       prompt: queryForLLM,
       temperature: 0,
       maxOutputTokens: 320,
+      timeout: GROQ_TIMEOUT_MS,
       output: Output.object({
         schema: EntitySchema,
         name: 'nlq_entities',

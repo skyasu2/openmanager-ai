@@ -1,4 +1,4 @@
-# AI Hooks Map
+# AI 훅 맵
 
 > AI Assistant frontend hook entry map
 > Owner: platform-architecture

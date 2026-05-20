@@ -1,11 +1,11 @@
+# ADR-005: Routing Pattern 전환 (Orchestrator LLM 제거)
+
 > Owner: platform-architecture
-> Status: Accepted
-> Doc type: Decision
+> Status: Active Canonical
+> Doc type: Reference
 > Last reviewed: 2026-05-16
 > Canonical: docs/adr/adr-005-routing-pattern-over-orchestrator-worker.md
 > Tags: adr,ai,routing,multi-agent,orchestrator,free-tier,nlq
-
-# ADR-005: Routing Pattern 전환 (Orchestrator LLM 제거)
 
 ## 상태 판정
 

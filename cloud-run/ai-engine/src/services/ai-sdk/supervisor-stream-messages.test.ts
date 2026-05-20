@@ -76,9 +76,9 @@ describe('buildSupervisorStreamMessages', () => {
     });
     expect(Array.isArray(finalContent)).toBe(true);
     expect(finalContent).toEqual([
-      { type: 'text', text: 'analyze this image' },
       { type: 'image', image: 'base64-image', mimeType: 'image/png' },
       { type: 'file', data: 'base64-pdf', mimeType: 'application/pdf' },
+      { type: 'text', text: 'analyze this image' },
     ]);
   });
 

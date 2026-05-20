@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "lastReviewed": "2026-05-19",
+  "lastReviewed": "2026-05-20",
   "policy": {
-    "standardsDoc": "docs/guides/ai/skill-standards.md",
+    "standardsDoc": "docs/development/vibe-coding/skills.md",
     "geminiSameNameOverlay": "forbidden",
     "nativeAdapters": {
       "codex": ".agents/skills",

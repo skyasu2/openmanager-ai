@@ -5,16 +5,12 @@
  * - Dashboard screenshot analysis (Grafana, CloudWatch, Datadog)
  * - Uploaded image attachment analysis
  *
- * Model: Gemini Flash (Primary) + Z.AI Vision (Fallback)
+ * Model: Gemini Flash
  *
  * Primary: Gemini 2.5 Flash-Lite
  * - 1M token context
  *
- * Fallback: Z.AI GLM-4.6V-Flash
- * - Used when Gemini quota is unavailable
- * - Basic vision capabilities maintained
- *
- * Graceful Degradation: When both unavailable, Vision features are disabled
+ * Graceful Degradation: When Gemini is unavailable, Vision features are disabled
  * and queries are routed to Analyst Agent as fallback.
  *
  * @version 1.0.0
@@ -189,7 +185,7 @@ export function getVisionAgentOrFallback(query: string): {
     return {
       agent: AgentFactory.create('analyst'),
       isFallback: true,
-      fallbackReason: 'Vision providers unavailable (Gemini/Z.AI) - using Analyst Agent as fallback (limited visual analysis)',
+      fallbackReason: 'Gemini vision provider unavailable - using Analyst Agent as fallback (limited visual analysis)',
     };
   }
 

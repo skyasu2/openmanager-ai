@@ -5,7 +5,7 @@ description: Thin wrapper for running OpenManager state triage followed by QA op
 
 # OpenManager QA State
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 Use this skill only when the request needs both current-state triage and QA execution/reporting. It is intentionally a wrapper; keep detailed diagnostic rules in `$state-triage` and detailed QA execution rules in `$qa-ops`.
 

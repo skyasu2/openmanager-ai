@@ -109,7 +109,6 @@ describe('provider model metadata', () => {
       'mistral',
       'zai',
       'gemini',
-      'zai',
     ]);
     expect(getDeprecatedRuntimeProviderModels(metadata)).toEqual([]);
     expect(metadata.find((entry) => entry.provider === 'groq')).toMatchObject({
@@ -136,18 +135,13 @@ describe('provider model metadata', () => {
     });
     expect(metadata.find((entry) => entry.provider === 'gemini')).toMatchObject({
       modelId: 'gemini-2.5-flash-lite',
-      role: 'vision primary',
+      role: 'vision primary and only runtime vision provider',
     });
     expect(metadata.find((entry) => entry.modelId === 'glm-4.5-flash')).toMatchObject({
       provider: 'zai',
       role: 'free GLM Flash text fallback',
     });
-    expect(metadata.find((entry) => entry.modelId === 'glm-4.6v-flash')).toMatchObject({
-      provider: 'zai',
-      role: 'vision fallback',
-      enabled: true,
-      smokeStatus: 'green',
-    });
+    expect(metadata.find((entry) => entry.modelId === 'glm-4.6v-flash')).toBeUndefined();
   });
 
   it('flags Qwen as deprecated only after the scheduled deprecation date', () => {

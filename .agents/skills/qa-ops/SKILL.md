@@ -6,7 +6,7 @@ version: v1.5.2
 
 # OpenManager QA Ops
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 Final QA operation workflow with cumulative tracking.
 

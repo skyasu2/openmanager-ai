@@ -21,19 +21,20 @@
 
 ## 1-1) 파일 길이 기준
 
-> 기준: Diataxis 완결성 원칙 + Google/Microsoft/MDN 실제 운영 관행
+> 근거: **"Lost in the Middle" (Liu et al., TACL 2024)** — LLM은 긴 문서에서 관련 정보가 중간에 있을 때 성능이 떨어질 수 있다. 줄 수 제한은 코드 품질 규칙(ESLint max-lines)이 아니라 AI 인지 손실 방지 기준이다.
 
-| 기준 | 줄 수 | 처리 |
-|------|------:|------|
-| 정상 | ≤ 800 | 무조건 허용 |
-| 경고 | 801 ~ 1500 | 허용. 단 단일 주제인지 확인 |
-| 분할 검토 | > 1500 | 독자·작업 단위가 다르면 분할, 같으면 유지 |
+| 구간 | 처리 | AI 인지 영향 |
+|------|------|-------------|
+| ≤ 600줄 | 무조건 허용 | 손실 없음 |
+| 601 ~ 1200줄 | 허용. 중요 내용을 **앞부분에 배치** | 중간 손실 시작 구간 |
+| > 1200줄 | **분할 권고** — 별개 참조 단위인지 확인 | "Lost in the Middle" 실질 위험 |
 
-**분할 판단 기준**: 줄 수가 아니라 **별개 독자 또는 별개 작업** 여부.
-- Tutorial/How-to: 400줄 이하 권장. 401~800줄은 같은 작업 흐름이면 허용
-- Reference/Architecture: 줄 수 제한보다 완결성이 우선. 1500줄 초과 시 독자·작업 단위만 재검토
-- Explanation: 300~800줄 권장. 하나의 Why 질문을 벗어나면 분할 검토
-- 분할 시 기존 파일에 링크 유지 필수
+**분할 판단 기준**: 줄 수가 아니라 **별개 독자, 별개 작업, 또는 별개 참조 단위** 여부.
+- Tutorial/How-to: 400줄 이하 권장. 401~600줄은 같은 작업 흐름이면 허용
+- Reference/Architecture: 완결성 우선. 1200줄 초과 시 섹션별 별도 파일 검토
+- Explanation: 300~600줄 권장. 하나의 Why 질문을 벗어나면 분할
+- **AI가 읽는 문서 공통**: 핵심 내용(요약·결론·금지사항)은 항상 문서 **앞 1/3** 에 배치
+- 분할 시 원본 파일에 링크 유지 필수
 
 ## 2) Metadata Schema (Changed Docs Hard Gate)
 
@@ -70,7 +71,30 @@
 | Tutorial | 학습(따라하기) | QUICK-START.md |
 | How-to | 문제 해결 절차 | docker.md, git-hooks-workflow.md |
 | Reference | 사실/명세 조회 | endpoints.md, architecture docs |
-| Explanation | 배경/설계 맥락 | coding-standards.md |
+| Explanation | 배경/설계 맥락 | coding-standards.md, project-evolution.md |
+
+## 4-1) 제목 규칙
+
+### 파일명 (kebab-case)
+- 동사 금지: `how-to-deploy.md` ❌ → `deployment-guide.md` ✅
+- 번호 접두사는 순서가 중요한 경우만: `01-system-overview.md`
+- 타입 접미사 불필요: `api-reference-doc.md` ❌ → `api-reference.md` ✅
+- ADR: 반드시 `adr-NNN-kebab-title.md` 형식
+
+### 문서 H1 제목 (Diataxis 유형별 패턴)
+
+| 유형 | 패턴 | 예시 |
+|------|------|------|
+| Tutorial | `X 시작 가이드` / `X 빠른 시작` | `OpenManager AI 빠른 시작 가이드` |
+| How-to | `X 가이드` / `X 운영` | `Docker 개발 환경 가이드` |
+| Reference | `X 레퍼런스` / `X 아키텍처` / `X 설계` | `AI Engine Architecture` |
+| Explanation | `X — Y` (주제 — 부제) | `프로젝트 변천사 — 테세우스의 배` |
+| ADR | `ADR-NNN: 결정 한 줄 요약` | `ADR-004: Vercel AI SDK — LangChain 대신 선택한 이유` |
+
+### 금지 패턴
+- 모호한 제목: `Overview.md`, `Notes.md`, `Misc.md`
+- 날짜 접두사 파일명: `2026-05-20-analysis.md` → `reports/` 에 넣거나 ADR로
+- 영어/한국어 혼용 제목: H1은 단일 언어로 (한국어 우선, 고유명사 영어 허용)
 
 ## 5) 자동화 계약
 
@@ -93,6 +117,7 @@
 - Docs-as-Code (Write the Docs): https://www.writethedocs.org/guide/docs-as-code/
 - Google Developer Documentation Style Guide: https://developers.google.com/style
 - Microsoft Docs metadata guidance: https://review.learn.microsoft.com/en-us/help/platform/metadata
+- "Lost in the Middle" — AI 문서 크기 기준 근거 (TACL 2024): https://arxiv.org/abs/2307.03172
 
 ---
 

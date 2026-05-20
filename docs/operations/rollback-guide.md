@@ -1,9 +1,9 @@
-# Rollback Guide
+# 롤백 가이드
 
 > OpenManager production rollback 판단과 실행 기준
 > Owner: platform-devops
 > Status: Active Canonical
-> Doc type: Runbook
+> Doc type: How-to
 > Last reviewed: 2026-05-05
 > Canonical: docs/operations/rollback-guide.md
 > Tags: operations,rollback,incident,vercel,cloud-run

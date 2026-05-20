@@ -1,0 +1,64 @@
+{
+  "runId": "QA-20260520-0543",
+  "recordedAt": "2026-05-20T04:10:25.196Z",
+  "recordedAtKst": "2026-05-20 13:10:25 KST",
+  "runTitle": "Vision GLM Fallback Removal Closure",
+  "owner": "codex",
+  "source": "script",
+  "environment": {
+    "target": "local-code-validation",
+    "url": "not-applicable",
+    "frontend": "not exercised",
+    "backend": "Cloud Run AI Engine",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "db427c87e3dd9c5fe4d2cacaef593c82c25518a8"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Vision provider selection contract",
+    "Z.AI GLM Vision fallback removal",
+    "QA pending item closure"
+  ],
+  "skippedSurfaces": [
+    "Additional live provider calls",
+    "Vercel browser UI integration"
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "vision-glm-fallback-http-500-quality",
+      "title": "GLM vision fallback HTTP 500 resolved by removing GLM from Vision runtime",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Runtime model selectors, provider metadata, capability gate, /api/ai/providers response, runtime policy, tests, and docs now define Vision as Gemini-only. When Gemini is unavailable, the route degrades to Analyst Agent instead of trying Z.AI GLM Vision.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "No extra live GLM call was made. The closure is based on code removal and passing contract tests.",
+    "Validation already completed in the same work session: targeted provider tests, AI Engine type-check, and full AI Engine test suite."
+  ],
+  "links": []
+}

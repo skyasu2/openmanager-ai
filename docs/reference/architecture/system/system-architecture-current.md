@@ -1,8 +1,8 @@
-# System Architecture (Current v8)
+# 시스템 아키텍처 (Current v8)
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Status: Active Canonical (hybrid-split.md 통합됨)
+> Status: Active Canonical
 > Doc type: Explanation
 > Last reviewed: 2026-05-20
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
@@ -349,7 +349,7 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 | **Analyst** | Round-Robin text mesh, min context 32K | 이상 감지, RCA, 추세·로그 분석 | 외부 |
 | **Reporter** | Round-Robin text mesh, min context 32K | 장애 보고서, 타임라인, 요약 | 외부 |
 | **Advisor** | Round-Robin text mesh, min context 32K | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
-| **Vision** | Gemini 2.5 Flash-Lite → Z.AI Vision | 스크린샷/로그 이미지 분석, 웹 검색 보조 | 외부 |
+| **Vision** | Gemini 2.5 Flash-Lite only | 스크린샷/로그 이미지 분석, 웹 검색 보조 | 외부 |
 
 Evaluator/Optimizer는 Reporter 품질 보정용 deterministic pipeline stage이며 독립 실행 에이전트로 노출하지 않습니다.
 
@@ -392,7 +392,7 @@ CLOSED (정상) ──5회 실패──► OPEN (차단) ──30초──► HA
 Text specialist agents: Round-Robin + Context Guard (Groq, Mistral, Z.AI, Cerebras)
 Direct Router: deterministic routing, no LLM call
 Structured-output compatibility helper: provider capability gate + fallback
-Vision: Gemini Flash-Lite → Z.AI Vision
+Vision: Gemini Flash-Lite only; Gemini unavailable → Analyst fallback
 모두 실패 → Static Fallback Response
 ```
 
@@ -591,7 +591,7 @@ Reference (checked: 2026-05-20):
 
 - [Data Architecture](../data/data-architecture.md) - 2-Tier 데이터 구조, 서버 구성
 - [OTel Data Architecture](../data/otel-data-architecture.md) - Prometheus→OTel 변환, 소비자 매핑, 전환 준비
-- [Data Consistency](../design/consistency.md) - Dashboard-AI 데이터 일관성
+- [Data Architecture](../data/data-architecture.md) — 데이터 일관성 계약 포함
 
 ### Infrastructure
 

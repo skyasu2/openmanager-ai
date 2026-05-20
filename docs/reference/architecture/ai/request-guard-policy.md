@@ -1,4 +1,4 @@
-# AI Request Guard Policy
+# AI 요청 가드 정책
 
 > Cloud Run AI request guard의 차단, 경고, 위임 정책
 > Owner: platform-architecture

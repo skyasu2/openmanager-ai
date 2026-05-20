@@ -14,7 +14,6 @@ const {
   mockGetGroqModel,
   mockGetMistralModel,
   mockGetZaiModel,
-  mockGetZaiVisionModel,
   mockGetGeminiFlashLiteModel,
   mockGetCerebrasModelId,
   mockGetCerebrasFallbackModelIds,
@@ -36,10 +35,6 @@ const {
     modelId,
   })),
   mockGetZaiModel: vi.fn((modelId: string) => ({ provider: 'zai', modelId })),
-  mockGetZaiVisionModel: vi.fn((modelId: string) => ({
-    provider: 'zai',
-    modelId,
-  })),
   mockGetGeminiFlashLiteModel: vi.fn((modelId: string) => ({
     provider: 'gemini',
     modelId,
@@ -55,7 +50,6 @@ vi.mock('../model-provider', () => ({
   getGroqModel: mockGetGroqModel,
   getMistralModel: mockGetMistralModel,
   getZaiModel: mockGetZaiModel,
-  getZaiVisionModel: mockGetZaiVisionModel,
   getGeminiFlashLiteModel: mockGetGeminiFlashLiteModel,
   getVisionAgentModel: vi.fn(() => ({
     model: { modelId: 'gemini-2.5-flash-lite' },
@@ -71,7 +65,6 @@ vi.mock('../model-provider-core', () => ({
   getGroqModel: mockGetGroqModel,
   getMistralModel: mockGetMistralModel,
   getZaiModel: mockGetZaiModel,
-  getZaiVisionModel: mockGetZaiVisionModel,
 }));
 
 vi.mock('../model-provider-status', () => ({
@@ -86,7 +79,6 @@ vi.mock('../../../lib/config-parser', async (importOriginal) => {
     getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
     getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
     getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
-    getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
     isCerebrasToolCallingEnabled: vi.fn(() => true),
   };
 });

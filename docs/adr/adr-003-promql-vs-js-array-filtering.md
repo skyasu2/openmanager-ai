@@ -3,7 +3,7 @@
 > PromQL 엔진과 JS 필터링 병행 전략을 정리한 ADR
 > Owner: platform-architecture
 > Status: Active
-> Doc type: Decision
+> Doc type: Reference
 > Last reviewed: 2026-05-05
 > Canonical: docs/adr/adr-003-promql-vs-js-array-filtering.md
 > Tags: adr,promql,query,metrics

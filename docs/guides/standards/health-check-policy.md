@@ -1,9 +1,9 @@
-# 🏥 헬스체크 정책
+# 헬스체크 정책
 
 > 수동 테스트 전용 헬스체크 운영 원칙과 금지사항
 > Owner: documentation
 > Status: Active
-> Doc type: Policy
+> Doc type: Reference
 > Last reviewed: 2026-05-05
 > Canonical: docs/guides/standards/health-check-policy.md
 > Tags: health-check,policy,operations
@@ -160,4 +160,4 @@ Vercel Dashboard > Settings > Notifications
 
 - [Operations](../../operations/README.md)
 - [Deployment Architecture](../../architecture/03-deployment-architecture.md)
-- [API Contracts](../../reference/api/contracts.md)
+- [API Endpoints](../../reference/api/endpoints.md)

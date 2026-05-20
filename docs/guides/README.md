@@ -1,4 +1,4 @@
-# Guides
+# 가이드 허브
 
 > 실행 중심 How-to 문서 인덱스
 > Owner: documentation

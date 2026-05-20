@@ -2,7 +2,7 @@
 
 > Owner: platform-architecture
 > Status: Active
-> Doc type: Decision
+> Doc type: Reference
 > Last reviewed: 2026-05-06
 > Canonical: docs/adr/adr-004-vercel-ai-sdk-over-langchain.md
 > Tags: adr,ai-engine,vercel-ai-sdk,langchain,langgraph,architecture

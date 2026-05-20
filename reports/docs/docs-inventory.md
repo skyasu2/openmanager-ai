@@ -4,32 +4,33 @@
 > Owner: docs-platform
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-20
 > Canonical: reports/docs/docs-inventory.md
 > Tags: docs,inventory,report
 >
-> Auto-generated: 2026-05-05
+> Auto-generated: 2026-05-20
 > Source: `docs/`
 
-- Total files in docs: **94**
-- Total markdown docs: **79**
-- Total markdown lines: **17754**
+- Total files in docs: **103**
+- Total markdown docs: **88**
+- Total markdown lines: **20289**
 
 ## Markdown Distribution
 
 | Scope | Count |
 |---|---:|
-| reference | 24 |
+| reference | 26 |
 | development | 18 |
 | guides | 8 |
+| design | 7 |
+| adr | 6 |
 | architecture | 6 |
-| design | 6 |
-| archived | 5 |
-| adr | 3 |
+| archived | 6 |
 | operations | 3 |
-| troubleshooting | 2 |
+| troubleshooting | 3 |
 | QUICK-START.md | 1 |
 | README.md | 1 |
+| history | 1 |
 | llms.md | 1 |
 | status.md | 1 |
 

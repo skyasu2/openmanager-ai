@@ -2,7 +2,7 @@
 
 > 5분 내 로컬 개발 환경 구성과 실행을 위한 빠른 시작 문서
 > Owner: dev-experience
-> Status: Active
+> Status: Active Canonical
 > Doc type: Tutorial
 > Last reviewed: 2026-05-16
 > Canonical: docs/QUICK-START.md

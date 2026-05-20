@@ -4,8 +4,8 @@
  * Vercel AI SDK 6 based model provider with tri-provider architecture:
  * - Text mesh: Groq, Z.AI, Mistral, Cerebras are rotated by agent role.
  * - Cerebras: llama3.1-8b only when context permits; blocked after 2026-05-27.
- * - Z.AI: free GLM Flash text/vision fallback with thinking disabled by request patch.
- * - Vision: Gemini 2.5 Flash-Lite → Z.AI GLM-4.6V-Flash.
+ * - Z.AI: free GLM Flash text fallback with thinking disabled by request patch.
+ * - Vision: Gemini 2.5 Flash-Lite only.
  *
  * @version 4.2.0
  * @updated 2026-05-16 - SambaNova 제거 유지, Cerebras short-context fallback 보수화
@@ -21,7 +21,6 @@ import {
   getGroqModelId,
   getMistralModelId,
   getZaiModelId,
-  getZaiVisionModelId,
 } from '../../lib/config-parser';
 import {
   type LLMProviderName as QuotaProviderName,
@@ -39,7 +38,6 @@ import {
   getGroqModel,
   getMistralModel,
   getZaiModel,
-  getZaiVisionModel,
 } from './model-provider-core';
 import {
   checkProviderStatus,
@@ -60,7 +58,6 @@ export {
   getGroqModel,
   getMistralModel,
   getZaiModel,
-  getZaiVisionModel,
 } from './model-provider-core';
 export {
   checkProviderStatus,
@@ -125,19 +122,18 @@ export function getVerifierModel(): {
 export { getAdvisorModel } from './agents/config/agent-model-selectors';
 
 /**
- * Get Vision Agent model (Gemini Flash-Lite with Z.AI fallback)
+ * Get Vision Agent model (Gemini Flash-Lite only)
  *
  * @note Actual agent execution uses agent-configs.ts getVisionModel().
  *       This function is a low-level utility for direct model access.
  *
  * Primary: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
- * Fallback: Z.AI GLM-4.6V-Flash.
  *
  * @returns Model info or null (graceful degradation)
  */
 export function getVisionAgentModel(): {
   model: LanguageModel;
-  provider: 'gemini' | 'zai';
+  provider: 'gemini';
   modelId: string;
 } | null {
   const status = checkProviderStatus();
@@ -152,36 +148,21 @@ export function getVisionAgentModel(): {
         modelId: geminiModelId,
       };
     } catch (error) {
-      logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying Z.AI Vision:', error);
+      logger.warn('⚠️ [Vision Agent] Gemini initialization failed:', error);
     }
   }
 
-  // 2. Try Z.AI Vision (Fallback)
-  if (status.zai) {
-    try {
-      const modelId = getZaiVisionModelId();
-      logger.info(`[Vision Agent] Using Z.AI fallback: ${modelId}`);
-      return {
-        model: getZaiVisionModel(modelId),
-        provider: 'zai',
-        modelId,
-      };
-    } catch (error) {
-      logger.error('❌ [Vision Agent] Z.AI initialization failed:', error);
-    }
-  }
-
-  logger.warn('⚠️ [Vision Agent] No vision provider available - Vision features disabled');
+  logger.warn('⚠️ [Vision Agent] Gemini vision provider unavailable - Vision features disabled');
   return null;
 }
 
 /**
  * Check if Vision Agent is available
- * @returns true if Gemini or Z.AI provider is configured and enabled
+ * @returns true if Gemini provider is configured and enabled
  */
 export function isVisionAgentAvailable(): boolean {
   const status = checkProviderStatus();
-  return status.gemini || !!status.zai;
+  return status.gemini;
 }
 
 // ============================================================================

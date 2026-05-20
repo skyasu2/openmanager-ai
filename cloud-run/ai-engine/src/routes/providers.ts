@@ -14,7 +14,6 @@ import {
   getGroqModelId,
   getMistralModelId,
   getZaiModelId,
-  getZaiVisionModelId,
   isCerebrasToolCallingEnabled,
 } from '../lib/config-parser';
 import {
@@ -57,9 +56,8 @@ providersRouter.get('/', (c: Context) => {
         model: getGroqModelId(),
       },
       zai: {
-        role: 'Free GLM Flash text fallback + vision fallback',
+        role: 'Free GLM Flash text fallback',
         model: getZaiModelId(),
-        visionModel: getZaiVisionModelId(),
       },
       mistral: { role: 'Distributed text fallback', model: getMistralModelId() },
       gemini: {

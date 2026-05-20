@@ -2,7 +2,7 @@
 
 > 수동 교차 사용형 멀티 AI 운영으로 코드 품질 향상
 > Owner: dev-experience
-> Status: Active
+> Status: Active Supporting
 > Doc type: How-to
 > Last reviewed: 2026-05-05
 > Canonical: docs/development/vibe-coding/multi-agent-tools.md
@@ -35,69 +35,7 @@
 └─────────────────────────────────────────────────────────┘
 ```
 
-## Claude Code
-
-### 역할
-- **독립형 개발 AI**: 기획·아키텍처·구현·리팩토링·배포 전 작업을 단독 수행 가능
-- **대화형 인터페이스**: 자연어로 요청
-- **도구 통합**: MCP, Skills, Subagents
-
-### 사용법
-
-```bash
-# 기본 실행
-claude
-
-# 모델 선택
-claude --model opus    # 복잡한 작업
-claude --model sonnet  # 일반 작업 (기본)
-claude --model haiku   # 빠른 작업
-```
-
-### 강점
-- 긴 컨텍스트 (200k 토큰)
-- 정밀한 코드 수정
-- 멀티스텝 추론
-
-## Codex (OpenAI)
-
-### 역할
-- **구현·리팩토링 보조**: v8.10.x 이후 bounded refactor, 테스트 보완, 배포 전 정리 중심
-- **개발/개선 + 리뷰**: 구현과 품질 검토를 함께 수행
-- **보안 취약점 탐지**
-- **베스트 프랙티스 검증**
-
-### 실행 방식
-
-```bash
-# 브리지 스크립트 협업 실행
-bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "현재 변경분 리뷰해줘"
-```
-
-### 리뷰 항목
-- 버그 가능성
-- 보안 취약점
-- 성능 이슈
-- 코드 스타일
-
-## Gemini (Google)
-
-### 역할
-- **로직 검증**: 비즈니스 로직 정확성
-- **아키텍처 분석**
-- **대안 제시**
-
-### 실행 방식
-
-```bash
-# 브리지 스크립트 협업 실행
-bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "이 알고리즘 검증해줘"
-```
-
-### 리뷰 항목
-- 로직 정확성
-- 엣지 케이스
-- 테스트 커버리지
+각 도구의 역할·구독 플랜·위임 정책은 [AI Standards](../../guides/ai/ai-standards.md)를 참조합니다.
 
 ## 협업 검증 정책
 

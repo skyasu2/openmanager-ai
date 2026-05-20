@@ -314,7 +314,6 @@ export function getCerebrasApiKey(): string | null {
 const DEFAULT_GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 const DEFAULT_ZAI_BASE_URL = 'https://api.z.ai/api/paas/v4';
 const DEFAULT_ZAI_TEXT_MODEL = 'glm-4.5-flash';
-const DEFAULT_ZAI_VISION_MODEL = 'glm-4.6v-flash';
 
 /**
  * Get default Cerebras text model id.
@@ -387,13 +386,6 @@ export function getZaiBaseUrl(): string {
  */
 export function getZaiModelId(): string {
   return process.env.ZAI_DEFAULT_MODEL || DEFAULT_ZAI_TEXT_MODEL;
-}
-
-/**
- * Get default Z.AI free vision model id.
- */
-export function getZaiVisionModelId(): string {
-  return process.env.ZAI_VISION_MODEL || DEFAULT_ZAI_VISION_MODEL;
 }
 
 const DEFAULT_MISTRAL_MODEL = 'mistral-small-latest';

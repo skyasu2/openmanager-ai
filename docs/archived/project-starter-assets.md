@@ -2,10 +2,10 @@
 
 > OpenManager에서 검증된 운영 자산을 새 프로젝트 시작 시 재사용하기 위한 기준 문서
 > Owner: dev-experience
-> Status: Active
+> Status: Archived
 > Doc type: Reference
-> Last reviewed: 2026-03-28
-> Canonical: docs/development/project-starter-assets.md
+> Last reviewed: 2026-05-20
+> Canonical: n/a
 > Tags: development,starter,template,reuse
 
 ## 목적
@@ -123,8 +123,8 @@ renovate.json
 
 ## 관련 문서
 
-- [개발 환경 가이드](./README.md)
-- [CI/CD 파이프라인](./ci-cd.md)
-- [프로젝트 설정](./project-setup.md)
-- [환경 변수 관리](./environment-variables.md)
-- [문서 관리](./documentation-management.md)
+- [개발 환경 가이드](../development/README.md)
+- [CI/CD 파이프라인](../development/ci-cd.md)
+- [프로젝트 설정](../development/project-setup.md)
+- [환경 변수 관리](../development/environment-variables.md)
+- [문서 관리](../development/documentation-management.md)

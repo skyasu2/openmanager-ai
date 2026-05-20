@@ -280,12 +280,11 @@ CEREBRAS_FALLBACK_MODEL_IDS=  # same-provider fallback은 production smoke 확�
 CEREBRAS_TOOL_CALLING_ENABLED=true  # tool-calling fallback 활성화
 CEREBRAS_LONG_CONTEXT_ENABLED=true  # gpt-oss-120b 65K context 기준. 긴 컨텍스트 비상 차단 시 false
 GROQ_API_KEY=gsk_xxx     # Supervisor/Metrics Query/Orchestrator primary
-ZAI_API_KEY=xxx          # Reporter primary + text/vision fallback (Flash 모델)
+ZAI_API_KEY=xxx          # Reporter primary + text fallback (Flash 모델)
 ZAI_BASE_URL=https://api.z.ai/api/paas/v4
 ZAI_DEFAULT_MODEL=glm-4.5-flash
-ZAI_VISION_MODEL_ID=glm-4.6v-flash
 MISTRAL_API_KEY=xxx      # Analyst/Advisor primary + distributed text fallback
-GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash-lite)
+GEMINI_API_KEY=xxx       # Vision 주력 (gemini-2.5-flash-lite)
 
 # 시크릿 설정 주의사항:
 # 1. API 키 값 양끝에 큰따옴표(")가 포함된 경우 일부 파싱 로직에서 에러(Unauthorized/Leaked)가 발생할 수 있습니다. 

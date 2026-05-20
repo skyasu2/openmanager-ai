@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # QA State
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 이 스킬은 `state-triage` 후 `qa-ops`를 바로 이어야 할 때만 사용합니다. 상세 진단 규칙은 `state-triage`, QA 실행/기록 규칙은 `qa-ops`에 둡니다.
 

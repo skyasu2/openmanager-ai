@@ -5,7 +5,7 @@ description: Deploy ai-engine to Cloud Run, check GCP cost risk, and verify CLI 
 
 # OpenManager Cloud Run
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 Deploy, cost-check, and CLI-access verification for Cloud Run ai-engine.
 Production deployment authority is GitLab CI. Direct `cloud-run/ai-engine/deploy.sh` is a fallback for explicit manual deploys, runner outage, or emergency recovery.

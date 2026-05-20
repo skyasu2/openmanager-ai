@@ -11,7 +11,7 @@
 
 Skills는 각 AI CLI가 재사용 가능한 워크플로우를 실행하는 자동화 레이어입니다. 기본 형식은 `SKILL.md` 기반 Agent Skills 패턴을 따르며, 이 저장소는 각 도구의 native discovery 경로를 유지하면서 공통 기준은 별도 baseline으로 관리합니다.
 
-공통 운영 기준은 [AI Skill 운영 표준](../../guides/ai/skill-standards.md)과 `config/ai/skill-baselines.json`이 담당합니다.
+공통 운영 기준과 baseline 파일(`config/ai/skill-baselines.json`)이 skill별 의도·불변조건·adapter 경로를 관리합니다.
 
 ## 경로별 역할
 
@@ -105,7 +105,7 @@ Claude adapter는 Claude Code 전용 권한/호출 제어를 유지합니다. Co
 | Gemini-only skill 추가 | `.gemini/skills/gemini-<name>/SKILL.md` 추가 |
 | drift 검사 | `npm run skills:check` |
 
-모든 native `SKILL.md`는 `docs/guides/ai/skill-standards.md`와 `config/ai/skill-baselines.json`을 참조해야 합니다.
+모든 native `SKILL.md`는 이 문서와 `config/ai/skill-baselines.json`을 참조해야 합니다.
 
 ## 검증
 
@@ -135,6 +135,29 @@ npm run skills:check
 
 `~/.gemini/skills`에 OpenManager skill 복사본이 남아 있으면 프로젝트 `.agents/skills`와 같은 이름 충돌 경고가 발생합니다. `bash scripts/ai/setup-gemini-global.sh`는 이 user-scope 복사본을 백업 위치로 격리하고, 프로젝트 공통 skill 정본은 `.agents/skills`에만 둡니다. Gemini CLI 0.39.x의 headless skills-list subcommand는 trust/relaunch 차이로 타임아웃되거나 workspace skills를 누락할 수 있으므로 health gate로 쓰지 않습니다.
 
+## Baseline과 Adapter의 책임 분리
+
+- `config/ai/skill-baselines.json`: 무엇을 해야 하는지, 어떤 불변조건을 지켜야 하는지 정의합니다.
+- `.agents/skills`: Codex와 Gemini가 실제로 쓰는 공통 adapter입니다.
+- `.claude/skills`: Claude Code의 도구 권한과 invocation 제어를 포함하는 Claude adapter입니다.
+- `.gemini/skills`: Gemini만 필요한 추가 skill을 위한 overlay입니다.
+
+## Drift 방지
+
+다음 변경은 같은 PR/커밋에서 함께 확인해야 합니다.
+
+- skill 이름 추가/삭제
+- 공통 workflow 순서 변경
+- 검증 명령 변경
+- 배포, QA, Git, 환경변수, 비용 정책 변경
+- AI별 native frontmatter 변경
+
+## 외부 도구 사용 기준
+
+- `skills-ref`나 `agentskills validate`는 보조 validator로 사용할 수 있습니다.
+- 현재 OpenManager에는 legacy 호환을 위해 `git-clean-gone`의 frontmatter name alias가 남아 있으므로, 외부 validator 결과는 바로 hard gate로 쓰지 않고 `npm run skills:check`를 우선 gate로 사용합니다.
+- 외부 skill installer를 사용할 때는 symlink보다 copy 또는 reviewed import를 선호합니다. 설치 후 baseline과 native adapter를 프로젝트 기준에 맞게 정리합니다.
+
 ## 운영 원칙
 
 - 공통 기준은 baseline JSON에 둡니다.
@@ -145,7 +168,6 @@ npm run skills:check
 
 ## 관련 문서
 
-- [AI Skill 운영 표준](../../guides/ai/skill-standards.md)
 - [MCP 서버](./mcp-servers.md)
 - [개발 워크플로우](./workflows.md)
 - [개발 환경 허브](../README.md)

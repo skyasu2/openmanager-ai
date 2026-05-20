@@ -74,7 +74,6 @@ vi.mock('../../lib/config-parser', () => ({
   getZaiApiKey: vi.fn(() => 'test-zai-key'),
   getZaiBaseUrl: vi.fn(() => 'https://api.z.ai/api/paas/v4'),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
-  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getGeminiApiKey: vi.fn(() => 'test-gemini-key'),

@@ -456,12 +456,12 @@ describe('BaseAgent', { timeout: 15000 }, () => {
       expect(callArgs.tools).toBeUndefined();
       expect(callArgs.stopWhen).toBeUndefined();
       expect(callArgs.messages.at(-1).content).toEqual([
-        { type: 'text', text: '첨부된 Playwright 스크린샷을 분석해줘' },
         {
           type: 'image',
           image: 'data:image/png;base64,abc',
           mimeType: 'image/png',
         },
+        { type: 'text', text: '첨부된 Playwright 스크린샷을 분석해줘' },
       ]);
       expect(events.some((event) => event.type === 'text_delta')).toBe(true);
     });

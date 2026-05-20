@@ -1,4 +1,4 @@
-# OpenManager AI — Definition of Done
+# OpenManager AI — 완료 기준 (Definition of Done)
 
 > Owner: project-lead
 > Status: Active Canonical

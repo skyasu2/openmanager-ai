@@ -1,4 +1,4 @@
-# Folder Structure (Current v8)
+# 폴더 구조 레퍼런스 (Current v8)
 
 > 코드베이스 현재 폴더 구조와 책임 범위를 정리한 레퍼런스
 > Owner: platform-architecture

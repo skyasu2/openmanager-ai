@@ -4,7 +4,6 @@ import {
   getGroqModelId,
   getMistralModelId,
   getZaiModelId,
-  getZaiVisionModelId,
 } from '../../lib/config-parser';
 import type { ProviderName } from './model-provider.types';
 import {
@@ -202,7 +201,7 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
     },
     {
       provider: 'gemini',
-      role: 'vision primary',
+      role: 'vision primary and only runtime vision provider',
       modelId: geminiVisionModelId,
       lifecycle: 'production',
       productionModel: true,
@@ -225,34 +224,6 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
       sourceUrls: [
         'https://ai.google.dev/gemini-api/docs/pricing',
         'https://ai.google.dev/gemini-api/docs/rate-limits',
-      ],
-    },
-    {
-      provider: 'zai',
-      role: 'vision fallback',
-      modelId: getZaiVisionModelId(),
-      lifecycle: 'production',
-      productionModel: true,
-      preview: false,
-      deprecated: false,
-      contextWindowTokens: 128000,
-      enabled: true,
-      toolCallingEnabled: true,
-      structuredOutputEnabled: true,
-      blockAfterDeprecation: false,
-      smokeStatus: 'green',
-      smokeEvidence: ['2026-05-16 glm-4.6v-flash chat completion HTTP 200'],
-      quota: {
-        requestsPerMinute: 5,
-        tokensPerMinute: 30_000,
-        requestsPerDay: 500,
-        tokensPerDay: 1_000_000,
-      },
-      freeTierLimitSummary:
-        'glm-4.6v-flash is officially free; runtime guard mirrors Z.AI text fallback',
-      sourceUrls: [
-        'https://docs.z.ai/guides/overview/pricing',
-        'https://docs.z.ai/guides/vlm/glm-4.6v',
       ],
     },
   ];

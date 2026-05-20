@@ -5,7 +5,6 @@ import {
   getGroqModelId,
   getMistralModelId,
   getZaiModelId,
-  getZaiVisionModelId,
 } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
@@ -21,7 +20,6 @@ import {
   getGroqModel,
   getMistralModel,
   getZaiModel,
-  getZaiVisionModel,
 } from '../../model-provider-core';
 import { checkProviderStatus } from '../../model-provider-status';
 import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
@@ -247,7 +245,11 @@ export function getSupervisorModel(): ModelResult | null {
 // ============================================================================
 
 /**
- * Get Vision model: Gemini 2.5 Flash-Lite → Z.AI GLM-4.6V-Flash.
+ * Get Vision model: Gemini 2.5 Flash-Lite only.
+ *
+ * Z.AI GLM Vision is intentionally not used as a runtime fallback because
+ * live image-answer QA showed provider overload and inconsistent answer
+ * availability on the fallback path. Text agents still use Z.AI Flash.
  */
 export function getVisionModel(): ModelResult | null {
   const status = checkProviderStatus();
@@ -262,25 +264,10 @@ export function getVisionModel(): ModelResult | null {
         capabilities: getProviderCapabilities('gemini'),
       };
     } catch (error) {
-      logger.warn('[Vision Agent] Gemini initialization failed, trying Z.AI Vision:', error);
+      logger.warn('[Vision Agent] Gemini initialization failed:', error);
     }
   }
 
-  if (status.zai) {
-    try {
-      const modelId = getZaiVisionModelId();
-      logger.info(`[Vision Agent] Using Z.AI Vision fallback: ${modelId}`);
-      return {
-        model: getZaiVisionModel(modelId),
-        provider: 'zai',
-        modelId,
-        capabilities: getProviderCapabilities('zai', modelId),
-      };
-    } catch (error) {
-      logger.error('[Vision Agent] Z.AI Vision initialization failed:', error);
-    }
-  }
-
-  logger.warn('[Vision Agent] No vision provider available - Vision features disabled');
+  logger.warn('[Vision Agent] Gemini vision provider unavailable - Vision features disabled');
   return null;
 }

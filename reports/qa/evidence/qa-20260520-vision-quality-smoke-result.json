@@ -1,0 +1,586 @@
+{
+  "startedAt": "2026-05-20T03:13:26.894Z",
+  "target": "https://ai-engine-490817238363.asia-northeast1.run.app",
+  "imagePath": "/mnt/d/dev/openmanager-ai/reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png",
+  "beforeProviders": {
+    "success": true,
+    "toggle": {
+      "cerebras": true,
+      "groq": true,
+      "mistral": true,
+      "zai": true,
+      "gemini": true
+    },
+    "available": {
+      "cerebras": true,
+      "groq": true,
+      "mistral": true,
+      "zai": true,
+      "gemini": true
+    },
+    "modelMetadata": [
+      {
+        "provider": "groq",
+        "role": "Supervisor/Metrics Query primary + long-context fallback",
+        "modelId": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "lifecycle": "preview",
+        "productionModel": false,
+        "preview": true,
+        "deprecated": false,
+        "contextWindowTokens": 131072,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": ["provider model drift guard current"],
+        "quota": {
+          "requestsPerMinute": 30,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 1000,
+          "tokensPerDay": 500000
+        },
+        "freeTierLimitSummary": "30 RPM / 30K TPM / 1K RPD / 500K TPD",
+        "sourceUrls": [
+          "https://console.groq.com/docs/models",
+          "https://console.groq.com/docs/rate-limits"
+        ]
+      },
+      {
+        "provider": "cerebras",
+        "role": "short-context Cerebras fallback model",
+        "modelId": "gpt-oss-120b",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "recommendedReplacement": "mistral:mistral-small-latest",
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": [
+          "2026-05-13 current account chat completions smoke returned 404",
+          "2026-05-16 live smoke HTTP 200 OK, 23ms",
+          "2026-05-16 account response headers: 5 RPM / 150 RPH / 2400 RPD / 30K TPM / 1M TPD",
+          "2026-05-16 reasoning model: content field requires max_tokens >= 100",
+          "tool calling smoke: to be confirmed"
+        ],
+        "quota": {
+          "requestsPerMinute": 5,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 2400,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "Free account headers: 5 RPM / 30K TPM / 2.4K RPD / 1M TPD; reasoning model requires max_tokens >= 100",
+        "sourceUrls": [
+          "https://inference-docs.cerebras.ai/models/overview",
+          "https://inference-docs.cerebras.ai/support/rate-limits",
+          "https://inference-docs.cerebras.ai/capabilities/tool-use",
+          "https://inference-docs.cerebras.ai/capabilities/reasoning"
+        ]
+      },
+      {
+        "provider": "cerebras",
+        "role": "short-context Cerebras fallback model",
+        "modelId": "llama3.1-8b",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "deprecationDate": "2026-05-27",
+        "recommendedReplacement": "cerebras:gpt-oss-120b",
+        "contextWindowTokens": 8192,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": true,
+        "smokeStatus": "green",
+        "smokeEvidence": [
+          "2026-05-13 current account chat completion HTTP 200",
+          "2026-05-16 account response headers: 5 RPM / 150 RPH / 2400 RPD / 30K TPM / 1M TPD",
+          "2026-05-16 retained as short-context fallback only; not evidence for any 16K/32K primary promotion",
+          "tool calling and structured output smoke previously passed"
+        ],
+        "quota": {
+          "requestsPerMinute": 5,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 2400,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "Free account headers: 5 RPM / 30K TPM / 2.4K RPD / 1M TPD; deprecated 2026-05-27",
+        "sourceUrls": [
+          "https://inference-docs.cerebras.ai/models/overview",
+          "https://inference-docs.cerebras.ai/support/rate-limits",
+          "https://inference-docs.cerebras.ai/capabilities/tool-use",
+          "https://inference-docs.cerebras.ai/capabilities/reasoning"
+        ]
+      },
+      {
+        "provider": "mistral",
+        "role": "Analyst/Advisor primary + distributed text fallback",
+        "modelId": "mistral-small-latest",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": ["last-resort fallback path configured"],
+        "quota": {
+          "requestsPerMinute": 50,
+          "tokensPerMinute": 50000,
+          "requestsPerDay": 500,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "workspace-tier dependent; current account smoke observed 50 RPM / 50K TPM",
+        "sourceUrls": [
+          "https://docs.mistral.ai/admin/user-management-finops/tier",
+          "https://docs.mistral.ai/models/model-cards/mistral-small-4-0-26-03"
+        ]
+      },
+      {
+        "provider": "zai",
+        "role": "free GLM Flash text fallback",
+        "modelId": "glm-4.5-flash",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "contextWindowTokens": 128000,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": [
+          "2026-05-16 glm-4.5-flash chat completion HTTP 200",
+          "2026-05-16 glm-4.5-flash tool-call smoke passed with thinking disabled"
+        ],
+        "quota": {
+          "requestsPerMinute": 5,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 500,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "glm-4.5-flash is officially free; rate limits are account/concurrency based, so runtime guard is 5 RPM / 500 RPD",
+        "sourceUrls": [
+          "https://docs.z.ai/guides/overview/pricing",
+          "https://docs.z.ai/api-reference/llm/chat-completion",
+          "https://docs.z.ai/guides/capabilities/struct-output"
+        ]
+      },
+      {
+        "provider": "gemini",
+        "role": "vision primary",
+        "modelId": "gemini-2.5-flash-lite",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "contextWindowTokens": 1000000,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": ["vision primary path configured"],
+        "quota": {
+          "requestsPerMinute": 15,
+          "tokensPerMinute": 250000,
+          "requestsPerDay": 1000,
+          "tokensPerDay": 360000000
+        },
+        "freeTierLimitSummary": "15 RPM / 1,000 RPD for Gemini 2.5 Flash-Lite free tier",
+        "sourceUrls": [
+          "https://ai.google.dev/gemini-api/docs/pricing",
+          "https://ai.google.dev/gemini-api/docs/rate-limits"
+        ]
+      },
+      {
+        "provider": "zai",
+        "role": "vision fallback",
+        "modelId": "glm-4.6v-flash",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "contextWindowTokens": 128000,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": ["2026-05-16 glm-4.6v-flash chat completion HTTP 200"],
+        "quota": {
+          "requestsPerMinute": 5,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 500,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "glm-4.6v-flash is officially free; runtime guard mirrors Z.AI text fallback",
+        "sourceUrls": [
+          "https://docs.z.ai/guides/overview/pricing",
+          "https://docs.z.ai/guides/vlm/glm-4.6v"
+        ]
+      }
+    ],
+    "modelDrift": [],
+    "info": {
+      "cerebras": {
+        "role": "Short-context text runtime + fallback for Groq-first agents",
+        "model": "gpt-oss-120b",
+        "toolCallingEnabled": true
+      },
+      "groq": {
+        "role": "Text mesh primary for Groq-first paths",
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct"
+      },
+      "zai": {
+        "role": "Free GLM Flash text fallback + vision fallback",
+        "model": "glm-4.5-flash",
+        "visionModel": "glm-4.6v-flash"
+      },
+      "mistral": {
+        "role": "Distributed text fallback",
+        "model": "mistral-small-latest"
+      },
+      "gemini": {
+        "role": "Vision primary",
+        "model": "gemini-2.5-flash-lite"
+      }
+    },
+    "timestamp": "2026-05-20T03:13:31.433Z"
+  },
+  "afterProviders": {
+    "success": true,
+    "toggle": {
+      "cerebras": true,
+      "groq": true,
+      "mistral": true,
+      "zai": true,
+      "gemini": true
+    },
+    "available": {
+      "cerebras": true,
+      "groq": true,
+      "mistral": true,
+      "zai": true,
+      "gemini": true
+    },
+    "modelMetadata": [
+      {
+        "provider": "groq",
+        "role": "Supervisor/Metrics Query primary + long-context fallback",
+        "modelId": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "lifecycle": "preview",
+        "productionModel": false,
+        "preview": true,
+        "deprecated": false,
+        "contextWindowTokens": 131072,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": ["provider model drift guard current"],
+        "quota": {
+          "requestsPerMinute": 30,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 1000,
+          "tokensPerDay": 500000
+        },
+        "freeTierLimitSummary": "30 RPM / 30K TPM / 1K RPD / 500K TPD",
+        "sourceUrls": [
+          "https://console.groq.com/docs/models",
+          "https://console.groq.com/docs/rate-limits"
+        ]
+      },
+      {
+        "provider": "cerebras",
+        "role": "short-context Cerebras fallback model",
+        "modelId": "gpt-oss-120b",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "recommendedReplacement": "mistral:mistral-small-latest",
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": [
+          "2026-05-13 current account chat completions smoke returned 404",
+          "2026-05-16 live smoke HTTP 200 OK, 23ms",
+          "2026-05-16 account response headers: 5 RPM / 150 RPH / 2400 RPD / 30K TPM / 1M TPD",
+          "2026-05-16 reasoning model: content field requires max_tokens >= 100",
+          "tool calling smoke: to be confirmed"
+        ],
+        "quota": {
+          "requestsPerMinute": 5,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 2400,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "Free account headers: 5 RPM / 30K TPM / 2.4K RPD / 1M TPD; reasoning model requires max_tokens >= 100",
+        "sourceUrls": [
+          "https://inference-docs.cerebras.ai/models/overview",
+          "https://inference-docs.cerebras.ai/support/rate-limits",
+          "https://inference-docs.cerebras.ai/capabilities/tool-use",
+          "https://inference-docs.cerebras.ai/capabilities/reasoning"
+        ]
+      },
+      {
+        "provider": "cerebras",
+        "role": "short-context Cerebras fallback model",
+        "modelId": "llama3.1-8b",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "deprecationDate": "2026-05-27",
+        "recommendedReplacement": "cerebras:gpt-oss-120b",
+        "contextWindowTokens": 8192,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": true,
+        "smokeStatus": "green",
+        "smokeEvidence": [
+          "2026-05-13 current account chat completion HTTP 200",
+          "2026-05-16 account response headers: 5 RPM / 150 RPH / 2400 RPD / 30K TPM / 1M TPD",
+          "2026-05-16 retained as short-context fallback only; not evidence for any 16K/32K primary promotion",
+          "tool calling and structured output smoke previously passed"
+        ],
+        "quota": {
+          "requestsPerMinute": 5,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 2400,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "Free account headers: 5 RPM / 30K TPM / 2.4K RPD / 1M TPD; deprecated 2026-05-27",
+        "sourceUrls": [
+          "https://inference-docs.cerebras.ai/models/overview",
+          "https://inference-docs.cerebras.ai/support/rate-limits",
+          "https://inference-docs.cerebras.ai/capabilities/tool-use",
+          "https://inference-docs.cerebras.ai/capabilities/reasoning"
+        ]
+      },
+      {
+        "provider": "mistral",
+        "role": "Analyst/Advisor primary + distributed text fallback",
+        "modelId": "mistral-small-latest",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": ["last-resort fallback path configured"],
+        "quota": {
+          "requestsPerMinute": 50,
+          "tokensPerMinute": 50000,
+          "requestsPerDay": 500,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "workspace-tier dependent; current account smoke observed 50 RPM / 50K TPM",
+        "sourceUrls": [
+          "https://docs.mistral.ai/admin/user-management-finops/tier",
+          "https://docs.mistral.ai/models/model-cards/mistral-small-4-0-26-03"
+        ]
+      },
+      {
+        "provider": "zai",
+        "role": "free GLM Flash text fallback",
+        "modelId": "glm-4.5-flash",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "contextWindowTokens": 128000,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": [
+          "2026-05-16 glm-4.5-flash chat completion HTTP 200",
+          "2026-05-16 glm-4.5-flash tool-call smoke passed with thinking disabled"
+        ],
+        "quota": {
+          "requestsPerMinute": 5,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 500,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "glm-4.5-flash is officially free; rate limits are account/concurrency based, so runtime guard is 5 RPM / 500 RPD",
+        "sourceUrls": [
+          "https://docs.z.ai/guides/overview/pricing",
+          "https://docs.z.ai/api-reference/llm/chat-completion",
+          "https://docs.z.ai/guides/capabilities/struct-output"
+        ]
+      },
+      {
+        "provider": "gemini",
+        "role": "vision primary",
+        "modelId": "gemini-2.5-flash-lite",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "contextWindowTokens": 1000000,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": ["vision primary path configured"],
+        "quota": {
+          "requestsPerMinute": 15,
+          "tokensPerMinute": 250000,
+          "requestsPerDay": 1000,
+          "tokensPerDay": 360000000
+        },
+        "freeTierLimitSummary": "15 RPM / 1,000 RPD for Gemini 2.5 Flash-Lite free tier",
+        "sourceUrls": [
+          "https://ai.google.dev/gemini-api/docs/pricing",
+          "https://ai.google.dev/gemini-api/docs/rate-limits"
+        ]
+      },
+      {
+        "provider": "zai",
+        "role": "vision fallback",
+        "modelId": "glm-4.6v-flash",
+        "lifecycle": "production",
+        "productionModel": true,
+        "preview": false,
+        "deprecated": false,
+        "contextWindowTokens": 128000,
+        "enabled": true,
+        "toolCallingEnabled": true,
+        "structuredOutputEnabled": true,
+        "blockAfterDeprecation": false,
+        "smokeStatus": "green",
+        "smokeEvidence": ["2026-05-16 glm-4.6v-flash chat completion HTTP 200"],
+        "quota": {
+          "requestsPerMinute": 5,
+          "tokensPerMinute": 30000,
+          "requestsPerDay": 500,
+          "tokensPerDay": 1000000
+        },
+        "freeTierLimitSummary": "glm-4.6v-flash is officially free; runtime guard mirrors Z.AI text fallback",
+        "sourceUrls": [
+          "https://docs.z.ai/guides/overview/pricing",
+          "https://docs.z.ai/guides/vlm/glm-4.6v"
+        ]
+      }
+    ],
+    "modelDrift": [],
+    "info": {
+      "cerebras": {
+        "role": "Short-context text runtime + fallback for Groq-first agents",
+        "model": "gpt-oss-120b",
+        "toolCallingEnabled": true
+      },
+      "groq": {
+        "role": "Text mesh primary for Groq-first paths",
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct"
+      },
+      "zai": {
+        "role": "Free GLM Flash text fallback + vision fallback",
+        "model": "glm-4.5-flash",
+        "visionModel": "glm-4.6v-flash"
+      },
+      "mistral": {
+        "role": "Distributed text fallback",
+        "model": "mistral-small-latest"
+      },
+      "gemini": {
+        "role": "Vision primary",
+        "model": "gemini-2.5-flash-lite"
+      }
+    },
+    "timestamp": "2026-05-20T03:13:44.612Z"
+  },
+  "gemini": {
+    "label": "gemini-primary",
+    "httpStatus": 200,
+    "elapsedMs": 9375,
+    "success": true,
+    "finalAgent": "Vision Agent",
+    "provider": "gemini",
+    "modelId": "gemini-2.5-flash-lite",
+    "mode": "multi",
+    "modeSelectionSource": "vision_input",
+    "responseChars": 718,
+    "responsePreview": "📊 **OpenManager 대시보드 분석 결과**\n\n## 주요 발견사항\n• 분석 대상 서버는 `cache-redis-dc1-01` 입니다.\n• 현재 CPU는 71%, 메모리는 92%, 디스크는 21%를 사용 중입니다. CPU와 메모리 사용량이 높습니다.\n• 1시간 후 CPU 사용량은 예측되지 않으나, 메모리 사용량은 9.7% 증가하여 92%를 초과할 것으로 예상됩니다. 디스크 사용량은 6.6% 증가할 것으로 보입니다.\n\n## 상세 분석\n- **현재 상태**: CPU (71%)와 메모리 (92%) 모두 'high' 이상 감지 상태이며, 특히 메모리 사용률이 80% 임계값을 초과했습니다. 디스크 사용률은 21%로 정상 범위입니다.\n- **1시간 후 예측**: CPU 사용량에 대한 예측값은 없으나, 메모리 사용량은 9.7% 증가하여 92%에 도달할 것으로 예측됩니다. 디스크 사용량은 6.6% 증가할 것으로 보입니다. 메모리 사용량 증가 추세는 'Critical' 상태 도달 가능성을 시사합니다.\n\n## 권장 조치\n1. **메모리 사용량 급증 원인 분석**: `cache-redis-dc1-01` 서버의 메모리 사용량이 92%로 높고 1시간 후 9.7% 증가가 예상되므로, 메모리 누수 또는 과도한 데이터 적재 등 원인 파악이 시급합니다.\n2. **CPU 사용량 모니터링 강화**: CPU 사용률 71%도 높은 편이므로, 추가적인 상승이 있는지 지속적으로 모니터링해야 합니다.",
+    "quality": {
+      "score": 8,
+      "maxScore": 8,
+      "verdict": "pass",
+      "checks": {
+        "serverId": true,
+        "cpu71": true,
+        "memory92": true,
+        "disk21": true,
+        "highStatus": true,
+        "normalDisk": true,
+        "futureTrend": true,
+        "actionable": true
+      }
+    }
+  },
+  "glmFallback": {
+    "label": "zai-glm-fallback",
+    "httpStatus": 500,
+    "elapsedMs": 4416,
+    "success": false,
+    "finalAgent": null,
+    "provider": null,
+    "modelId": null,
+    "mode": null,
+    "modeSelectionSource": null,
+    "responseChars": 0,
+    "responsePreview": "",
+    "quality": {
+      "score": 0,
+      "maxScore": 8,
+      "verdict": "fail",
+      "checks": {
+        "serverId": false,
+        "cpu71": false,
+        "memory92": false,
+        "disk21": false,
+        "highStatus": false,
+        "normalDisk": false,
+        "futureTrend": false,
+        "actionable": false
+      }
+    }
+  },
+  "restore": {
+    "status": 200,
+    "elapsedMs": 162,
+    "json": {
+      "success": true,
+      "message": "All providers reset to enabled",
+      "currentStatus": {
+        "cerebras": true,
+        "groq": true,
+        "mistral": true,
+        "zai": true,
+        "gemini": true
+      },
+      "timestamp": "2026-05-20T03:13:44.557Z"
+    }
+  },
+  "finishedAt": "2026-05-20T03:13:46.246Z"
+}

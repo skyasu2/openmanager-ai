@@ -1,11 +1,11 @@
+# Redis (Upstash) 사용 현황
+
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
 > Last reviewed: 2026-05-20
 > Canonical: docs/reference/architecture/infrastructure/redis-usage.md
 > Tags: redis,upstash,cache,rate-limit,job-queue,infrastructure
-
-# Redis (Upstash) 사용 현황
 
 **분석 시점**: 2026-05-20 (v8.11.x 기준 코드 전수 조사)  
 **인스턴스**: Upstash Redis (REST API, 동일 인스턴스를 Vercel과 Cloud Run이 공유)  

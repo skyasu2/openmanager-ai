@@ -1,6 +1,5 @@
 import {
   getCerebrasModelId,
-  getZaiModelId,
   isCerebrasLongContextEnabled,
   isCerebrasToolCallingEnabled,
 } from '../../lib/config-parser';
@@ -40,10 +39,6 @@ function getCerebrasContextWindowTokens(modelId = getCerebrasModelId()): number 
     : 0;
 }
 
-function zaiSupportsVision(modelId = getZaiModelId()): boolean {
-  return /\bglm-\d+(?:\.\d+)?v/i.test(modelId) || modelId.toLowerCase().includes('v-flash');
-}
-
 export function getProviderCapabilities(
   provider: ProviderName,
   modelId?: string
@@ -74,11 +69,10 @@ export function getProviderCapabilities(
         contextWindowTokens: 32_000,
       };
     case 'zai': {
-      const supportsVision = zaiSupportsVision(modelId);
       return {
         supportsToolCalling: true,
         supportsStructuredOutput: true,
-        supportsVision,
+        supportsVision: false,
         supportsLongContext: true,
         contextWindowTokens: 128_000,
       };

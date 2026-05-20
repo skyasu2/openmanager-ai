@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-20 11:11:54 KST
+> Generated at: 2026-05-20 13:10:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 538 |
+| Total Recorded Runs | 541 |
 | Total Runs (Counted) | 429 |
-| Non-counted Runs | 109 |
+| Non-counted Runs | 112 |
 | Total Checks | 3912 |
 | Passed | 3759 |
 | Failed | 142 |
-| Completed Items | 615 |
+| Completed Items | 618 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 34 |
+| Wont-Fix Items | 35 |
 | Expert Domains Tracked | 17 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260519-0538 (2026-05-19T11:08:35.867Z) |
-| Latest Recorded Run | QA-20260520-0540 (2026-05-20T02:11:54.045Z) |
+| Latest Recorded Run | QA-20260520-0543 (2026-05-20T04:10:25.196Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,40 +34,36 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260520-0540 (2026-05-20T02:11:54.045Z)
+Latest run: QA-20260520-0543 (2026-05-20T04:10:25.196Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | not-applicable | skipped | unknown | Local dev curl smoke only; no Vercel production function/build usage was generated. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-19T02:11:54.045Z -> 2026-05-20T02:11:54.045Z (24h)
-- Runs with observations: 6 recorded / 5 counted
+- Window: 2026-05-19T04:10:25.196Z -> 2026-05-20T04:10:25.196Z (24h)
+- Runs with observations: 6 recorded / 3 counted
 - Samples: 11
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Metrics Query Agent / Supervisor | groq/mistral/zai | 1 | 28809ms | 28809ms | 0ms | 0ms | 28809ms | 28809ms | QA-20260519-0538 |
 | Analyst Agent | mistral | 2 | 14779ms | 23558ms | - | - | - | - | QA-20260519-0535 |
-| NLQ Agent | unknown | 1 | 14000ms | 14000ms | - | - | - | - | QA-20260519-0532 |
-| Vision Agent | gemini | 1 | 11774ms | 11774ms | 0ms | 0ms | 11774ms | 11774ms | QA-20260519-0538 |
-| Vision Agent | zai | 1 | 6704ms | 6704ms | 0ms | 0ms | 6704ms | 6704ms | QA-20260519-0539 |
-| Reporter Agent | unknown | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260519-0532 |
-| NLQ | deterministic | 1 | 310ms | 310ms | - | - | - | - | QA-20260519-0533 |
+| Vision Agent | gemini | 3 | 10809ms | 11774ms | 0ms | 0ms | 10809ms | 11774ms | QA-20260520-0542 |
+| Vision Agent | zai | 2 | 5560ms | 6704ms | 0ms | 0ms | 5560ms | 6704ms | QA-20260520-0541 |
 | Analyst Agent | deterministic | 2 | 137ms | 273ms | - | - | - | - | QA-20260519-0537 |
 | Advisor Agent | deterministic | 1 | 0ms | 0ms | - | - | - | - | QA-20260519-0537 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-19T02:11:54.045Z -> 2026-05-20T02:11:54.045Z (24h)
+- Window: 2026-05-19T04:10:25.196Z -> 2026-05-20T04:10:25.196Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -81,10 +77,10 @@ Latest run: QA-20260520-0540 (2026-05-20T02:11:54.045Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 3f5c5a63
+- Deployment: SHA db427c87
 - Coverage Packs: ai-core
-- Covered Surfaces: local dev /api/ai/supervisor JSON fallback, report keyword query does not return 202 job-queue redirect, legacy supervisor route contract headers
-- Skipped Surfaces: Vercel production conversational AI QA, Cloud Run live provider call, browser UI send flow
+- Covered Surfaces: Vision provider selection contract, Z.AI GLM Vision fallback removal, QA pending item closure
+- Skipped Surfaces: Additional live provider calls, Vercel browser UI integration
 
 ## Links (Latest Run)
 
@@ -113,7 +109,7 @@ Latest run: QA-20260520-0540 (2026-05-20T02:11:54.045Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 23
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 24
 
 ### Platform Constraint
 
@@ -197,6 +193,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] release-dod-gitlab-tag-pipeline: GitLab v8.11.184 tag pipeline (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] release-dod-production-version: Vercel and Cloud Run production version (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] vision-gemini-exact-forecast-delta-attribution: Gemini Vision misattributes exact forecast delta values in the screenshot (seen 1회, last QA-20260520-0542)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] action-needed-transient-500-observation: One transient 500 on standard question 4 before immediate retry success (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -768,6 +766,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - vibe-hybrid-delivery-wording: Vibe Coding 모달의 배포 설명을 하이브리드 전달 구조 기준으로 정정 (completed 1회, last QA-20260330-0200)
 - vibe-qa-modal-replaced-with-cicd: Vibe Coding 모달의 QA 탭을 CI/CD 구조 설명으로 교체 (completed 1회, last QA-20260330-0200)
 - vision-attachment-routing: Image/file attachments force Vision multi-agent route (completed 1회, last QA-20260519-0538)
+- vision-gemini-primary-image-answer-quality: Gemini primary vision image answer quality verified for dashboard screenshot (completed 1회, last QA-20260520-0541)
+- vision-gemini-routing-and-current-values: Gemini Vision routes correctly and reads current dashboard values (completed 1회, last QA-20260520-0542)
+- vision-glm-fallback-http-500-quality: GLM vision fallback HTTP 500 resolved by removing GLM from Vision runtime (completed 1회, last QA-20260520-0543)
 - vision-native-multimodal: Vision Agent image/file path uses native multimodal model call (completed 1회, last QA-20260519-0538)
 - vision-production-latency-sample-refresh: Vision 최신 production latency 표본 보강 (completed 1회, last QA-20260421-0322)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
@@ -825,6 +826,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260520-0543 | 2026-05-20T04:10:25.196Z | targeted | no | no | Vision GLM Fallback Removal Closure | 1 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260520-0542 | 2026-05-20T04:05:02.782Z | targeted | no | no | Cloud Run Gemini Vision Answer Quality Smoke | 3 | 1 | 0 | 0 | 1 | 0 |
+| QA-20260520-0541 | 2026-05-20T03:16:25.342Z | targeted | no | no | Cloud Run Vision Provider Answer Quality Smoke | 2 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260520-0540 | 2026-05-20T02:11:54.045Z | targeted | no | no | AI Assistant cleanup local dev supervisor report smoke | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260519-0539 | 2026-05-19T11:41:05.468Z | targeted | no | no | Manual Cloud Run QA - Z.AI GLM Vision fallback live smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0538 | 2026-05-19T11:08:35.867Z | targeted | yes | yes | Production Vision Attachment Routing QA - v8.11.184 | 14 | 2 | 0 | 0 | 7 | 1 |
@@ -842,6 +846,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0526 | 2026-05-18T12:23:32.919Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Today Reporter Change Check | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0525 | 2026-05-18T11:57:44.191Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Reporter Review Fixes | 12 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260518-0524 | 2026-05-18T10:16:53.509Z | targeted | yes | yes | v8.11.172 Vercel Playwright MCP Reporter Metadata Boundary Check | 15 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260518-0523 | 2026-05-18T06:32:08.153Z | targeted | yes | yes | v8.11.172 Reporter Degraded Metadata Production Verification | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260518-0522 | 2026-05-18T04:12:29.303Z | release-gate | yes | yes | v8.11.171 Reporter Cloud Run Production Verification | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260518-0521 | 2026-05-18T01:37:12.860Z | targeted | no | no | Cloud Run Weekly Operational Check | 14 | 0 | 0 | 0 | 0 | 0 |

@@ -1,9 +1,9 @@
-# ADR-002: Server Card Rendering Strategy
+# ADR-002: 서버 카드 렌더링 전략
 
 > 서버 카드 렌더링 전략 진화와 최종 의사결정 ADR
 > Owner: platform-architecture
 > Status: Active
-> Doc type: Decision
+> Doc type: Reference
 > Last reviewed: 2026-05-06
 > Canonical: docs/adr/adr-002-server-card-rendering-strategy.md
 > Tags: adr,rendering,dashboard,performance

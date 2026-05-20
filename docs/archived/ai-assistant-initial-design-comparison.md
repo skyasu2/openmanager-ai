@@ -20,7 +20,7 @@
 
 **AI 작업용 사용 기준**:
 
-- 현재 AI runtime의 정본은 [ai-engine-architecture.md](../reference/architecture/ai/ai-engine-architecture.md)와 [01-ai-agent-design.md](../design/01-ai-agent-design.md)입니다.
+- 현재 AI runtime의 정본은 [ai-engine-architecture.md](../reference/architecture/ai/ai-engine-architecture.md)와 [AI Agent 설계 경계](../design/README.md#ai-agent-설계-경계)입니다.
 - 이 문서는 route, provider, tool/result schema의 즉시 구현 기준이 아니라, 현재 Option A를 다른 설계안과 비교할 때 쓰는 진화 판단 문서입니다.
 - planner shadow, `MonitoringFactPack`, provider freshness 같은 구현 세부 변경은 먼저 정본 문서에 반영하고, 장기 방향성이 바뀔 때만 이 문서의 비교 결론을 갱신합니다.
 - 2026-05-07 dead-code cleanup 이후 `/api/ai/ask` facade와 `NEXT_PUBLIC_AI_ASK_FACADE_ENABLED` opt-in 분기는 제거됐습니다. 아래 M6 언급은 당시 진화 단계의 역사적 기록으로 봅니다.

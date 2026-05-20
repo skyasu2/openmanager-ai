@@ -5,7 +5,7 @@ description: Safe GitLab-canonical git commit, push, MR/PR, and public snapshot 
 
 # OpenManager Git Workflow
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 Use a deterministic commit/push/PR flow with safety checks.
 

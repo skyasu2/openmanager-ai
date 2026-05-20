@@ -250,6 +250,8 @@ type MultimodalContentPart =
 /**
  * 텍스트 + 이미지 + 파일을 multimodal content 배열로 빌드.
  * 첨부파일이 없으면 원본 텍스트를 그대로 반환.
+ * Google Gemini multimodal guidance에 맞춰 첨부 파트를 텍스트보다
+ * 먼저 배치하고 원문 요청을 마지막에 둔다.
  */
 export function buildMultimodalContent(
   text: string,
@@ -261,19 +263,29 @@ export function buildMultimodalContent(
 
   if (!hasImages && !hasFiles) return text;
 
-  const parts: MultimodalContentPart[] = [{ type: 'text', text }];
+  const parts: MultimodalContentPart[] = [];
 
   if (hasImages) {
-    for (const img of images) {
+    const imageCount = images.length;
+    images.forEach((img, index) => {
+      if (imageCount > 1) {
+        parts.push({ type: 'text', text: `image ${index + 1}` });
+      }
       parts.push({ type: 'image', image: img.data, mimeType: img.mimeType });
-    }
+    });
   }
 
   if (hasFiles) {
-    for (const file of files) {
+    const fileCount = files.length;
+    files.forEach((file, index) => {
+      if (fileCount > 1) {
+        parts.push({ type: 'text', text: `file ${index + 1}` });
+      }
       parts.push({ type: 'file', data: file.data, mimeType: file.mimeType });
-    }
+    });
   }
+
+  parts.push({ type: 'text', text });
 
   return parts;
 }

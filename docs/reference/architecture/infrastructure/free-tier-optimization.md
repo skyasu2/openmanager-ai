@@ -368,11 +368,11 @@ LLM 429 응답
   → 90초 후 cooldown 자동 만료, 정상 rotation 복귀
 ```
 
-**Vision Agent** (round-robin 미적용, 고정 순서 유지):
+**Vision Agent** (round-robin 미적용, Gemini-only):
 
-| 1st | 2nd |
-|-----|-----|
-| Gemini | Z.AI Vision |
+| Provider | Degradation |
+|----------|-------------|
+| Gemini | Gemini 미가용 시 Analyst Agent 텍스트 폴백 |
 
 ### 모델 ID 환경변수 (즉시 교체 가능)
 
@@ -382,10 +382,9 @@ LLM 429 응답
 | `GROQ_MODEL_ID` | `meta-llama/llama-4-scout-17b-16e-instruct` | Groq |
 | `MISTRAL_MODEL_ID` | `mistral-small-latest` | Mistral |
 | `ZAI_DEFAULT_MODEL` | `glm-4.5-flash` | Z.AI text |
-| `ZAI_VISION_MODEL_ID` | `glm-4.6v-flash` | Z.AI Vision |
 | `GEMINI_VISION_MODEL_ID` | `gemini-2.5-flash-lite` | Gemini Vision |
 
-> 코드 수정 없이 환경변수만 변경하면 모델이 즉시 교체됩니다. 2026-05-16 기준: Z.AI `glm-4.5-flash` text/tool smoke ✅, `glm-4.6v-flash` simple smoke ✅, `glm-4.7-flash` 429/timeout 표본으로 제외. 2026-05-19 `QA-20260519-0539`에서 `glm-4.6v-flash` Vision fallback 실이미지 smoke도 확인했습니다. Cerebras `gpt-oss-120b` 65K context로 전환 완료, Cerebras tool-calling은 `CEREBRAS_TOOL_CALLING_ENABLED=false` 기본값 유지.
+> 코드 수정 없이 환경변수만 변경하면 text 모델은 즉시 교체됩니다. 2026-05-16 기준: Z.AI `glm-4.5-flash` text/tool smoke ✅, `glm-4.6v-flash` simple smoke ✅, `glm-4.7-flash` 429/timeout 표본으로 제외. 2026-05-20 기준 `glm-4.6v-flash` Vision fallback은 `QA-20260520-0541` upstream overload 실패로 runtime에서 제거했습니다. Cerebras `gpt-oss-120b` 65K context로 전환 완료, Cerebras tool-calling은 `CEREBRAS_TOOL_CALLING_ENABLED=false` 기본값 유지.
 
 ### RPM 자동 대응 (Quota Admission Gate)
 

@@ -6,7 +6,6 @@ const {
   mockGetGroqModel,
   mockGetMistralModel,
   mockGetZaiModel,
-  mockGetZaiVisionModel,
   mockGetGeminiFlashLiteModel,
   mockGetCerebrasModelId,
   mockGetCerebrasFallbackModelIds,
@@ -24,7 +23,6 @@ const {
   mockGetGroqModel: vi.fn((modelId: string) => ({ provider: 'groq', modelId })),
   mockGetMistralModel: vi.fn((modelId: string) => ({ provider: 'mistral', modelId })),
   mockGetZaiModel: vi.fn((modelId: string) => ({ provider: 'zai', modelId })),
-  mockGetZaiVisionModel: vi.fn((modelId: string) => ({ provider: 'zai', modelId })),
   mockGetGeminiFlashLiteModel: vi.fn((modelId: string) => ({ provider: 'gemini', modelId })),
   mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   mockGetCerebrasFallbackModelIds: vi.fn((): string[] => []),
@@ -40,7 +38,6 @@ vi.mock('../../../../lib/config-parser', () => ({
   getGroqModelId: vi.fn(() => 'groq-model'),
   getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
-  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),
 }));
@@ -64,7 +61,6 @@ vi.mock('../../model-provider-core', () => ({
   getGroqModel: mockGetGroqModel,
   getMistralModel: mockGetMistralModel,
   getZaiModel: mockGetZaiModel,
-  getZaiVisionModel: mockGetZaiVisionModel,
 }));
 
 vi.mock('../../model-provider-status', () => ({

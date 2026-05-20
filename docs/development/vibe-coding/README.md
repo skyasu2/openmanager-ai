@@ -3,7 +3,7 @@
 > AI와 함께하는 새로운 개발 패러다임
 > Owner: dev-experience
 > Status: Active Canonical
-> Doc type: Overview
+> Doc type: Reference
 > Last reviewed: 2026-04-24
 > Canonical: docs/development/vibe-coding/README.md
 > Tags: vibe-coding,ai-workflow

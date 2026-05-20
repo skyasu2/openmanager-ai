@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
 const { mockCreateGroq, mockGenerateText, mockOutputObject } = vi.hoisted(
@@ -61,7 +61,10 @@ function buildRequest(body: unknown, headers?: Record<string, string>) {
 }
 
 describe('POST /api/ai/nlq/extract-entities', () => {
+  const originalGroqApiKey = process.env.GROQ_API_KEY;
+
   beforeEach(() => {
+    process.env.GROQ_API_KEY = 'test-groq-key';
     vi.clearAllMocks();
     mockCreateGroq.mockReturnValue((modelId: string) => ({ modelId }));
     mockOutputObject.mockImplementation((config: unknown) => ({
@@ -76,6 +79,14 @@ describe('POST /api/ai/nlq/extract-entities', () => {
         confidence: 93,
       },
     });
+  });
+
+  afterEach(() => {
+    if (originalGroqApiKey === undefined) {
+      delete process.env.GROQ_API_KEY;
+    } else {
+      process.env.GROQ_API_KEY = originalGroqApiKey;
+    }
   });
 
   it('is protected by auth before invoking Groq', async () => {
@@ -120,6 +131,7 @@ describe('POST /api/ai/nlq/extract-entities', () => {
         prompt: 'api-was-dc1-01 CPU 어때?',
         temperature: 0,
         maxOutputTokens: 320,
+        timeout: 3000,
         output: expect.objectContaining({ kind: 'object-output' }),
       })
     );
@@ -403,6 +415,21 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     const response = await POST(buildRequest({ query: '   ' }));
 
     expect(response.status).toBe(400);
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
+  it('returns confidence 0 without invoking Groq when API key is missing', async () => {
+    delete process.env.GROQ_API_KEY;
+
+    const response = await POST(
+      buildRequest({ query: 'api-was-dc1-01 CPU 어때?' })
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      confidence: 0,
+      inputType: 'natural_query',
+    });
     expect(mockGenerateText).not.toHaveBeenCalled();
   });
 

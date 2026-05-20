@@ -73,6 +73,6 @@
 ## 상세 문서
 
 - [Resilience](../reference/architecture/infrastructure/resilience.md)
-- [API Contracts](../reference/api/contracts.md)
+- [API Endpoints](../reference/api/endpoints.md)
 - [AI Engine Architecture](../reference/architecture/ai/ai-engine-architecture.md)
 - [Monitoring AI Data Source Plan](../../reports/planning/archive/monitoring-ai-data-source-plan.md)

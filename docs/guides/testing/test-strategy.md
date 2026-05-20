@@ -1,4 +1,4 @@
-# Test Strategy Guide
+# 테스트 전략 가이드
 
 > OpenManager 테스트 전략과 우선순위를 정의한 가이드
 > Owner: documentation
@@ -169,13 +169,13 @@ Vision Agent의 실제 이미지/스크린샷 판독은 표준 5문항 대화형
 
 - 실행 조건: 사용자가 명시적으로 Vision 실이미지 확인을 요청하거나, Vision routing/provider 계약을 직접 수정한 경우에만 수동 smoke로 1회 실행
 - 기본 검증: `Vitest` 계약 테스트와 provider selection mock으로 routing/fallback을 검증
-- 금지: 매 QA마다 Gemini/GLM Vision 실이미지 호출을 반복하거나 provider matrix로 확장
+- 금지: 매 QA마다 Gemini Vision 실이미지 호출을 반복하거나 provider matrix로 확장
 - 기록: 실호출을 했다면 `reports/qa`에 수동 QA로 기록하고, 사용한 이미지 수·provider·model·응답 성공 여부만 남긴다
 
 현재 검증 이력:
 - Gemini Vision primary는 `v8.11.184` / `QA-20260519-0538`에서 Playwright PNG 1장으로 production 수동 smoke를 확인했다.
-- Z.AI `glm-4.6v-flash` Vision fallback은 `QA-20260519-0539`에서 Gemini를 일시 비활성화한 뒤 같은 Playwright PNG 1장으로 production 수동 smoke를 확인했다. 응답 metadata는 `provider=zai`, `modelId=glm-4.6v-flash`, `finalAgent=Vision Agent`, `modeSelectionSource=vision_input`이었다.
-- 위 확인 이후에도 Vision 실이미지 호출은 manual-only 원칙을 유지한다. 같은 provider를 반복 확인하거나 provider matrix를 확장하지 않는다.
+- Z.AI `glm-4.6v-flash` Vision fallback은 `QA-20260519-0539`에서 한 차례 historical smoke를 통과했지만, `QA-20260520-0541`에서 upstream overload로 HTTP 500이 재현되어 2026-05-20 runtime fallback 계약에서 제거했다.
+- 위 확인 이후에도 Vision 실이미지 호출은 manual-only 원칙을 유지한다. 같은 provider를 반복 확인하거나 provider matrix를 확장하지 않는다. 현재 runtime Vision provider는 Gemini 하나뿐이다.
 
 ---
 

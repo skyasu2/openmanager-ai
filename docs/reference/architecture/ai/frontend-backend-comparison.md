@@ -298,7 +298,7 @@ Supervisor (deterministic/single-first)
 
 Provider Mesh Fallback:
   Text: Groq/Z.AI/Mistral/Cerebras를 agent 역할별로 회전
-  Vision: Gemini → Z.AI Vision
+  Vision: Gemini only; Gemini unavailable → Analyst Agent
 ```
 
 ---
@@ -316,7 +316,7 @@ Provider Mesh Fallback:
 ### Backend 강점
 
 1. **Modular Split Architecture**: Supervisor 5파일, Orchestrator 6파일 분할로 유지보수성 확보
-2. **Provider Mesh Resilience**: Groq, Z.AI, Mistral, Cerebras text mesh와 Gemini/Z.AI Vision fallback
+2. **Provider Mesh Resilience**: Groq, Z.AI, Mistral, Cerebras text mesh와 Gemini-only Vision degradation
 3. **전문 도구 세트**: 서버 메트릭, RCA 분석, 이상치 탐지, 웹 검색, 계산 도구를 모듈 단위로 제공
 4. **Pre-computed State**: 144슬롯 10분 간격 사전 계산으로 ~100토큰 압축 (O(1) 조회)
 5. **Langfuse Observability**: 전체 AI 호출 추적 + 비용 자동 제어

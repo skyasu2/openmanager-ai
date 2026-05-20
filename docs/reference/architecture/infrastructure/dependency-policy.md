@@ -1,4 +1,4 @@
-# Dependency Policy
+# 의존성 정책
 
 > Owner: documentation
 > Status: Active

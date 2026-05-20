@@ -75,7 +75,6 @@ vi.mock('../../../../lib/config-parser', () => ({
   getCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
-  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getTavilyApiKey: vi.fn(() => null),
   getTavilyApiKeyBackup: vi.fn(() => null),
@@ -92,17 +91,13 @@ vi.mock('../../model-provider-core', () => ({
   getMistralModel: vi.fn(),
   getZaiModel: vi.fn(),
   getGeminiFlashLiteModel: vi.fn(),
-  getZaiVisionModel: vi.fn(),
 }));
 
 import { getAgentConfig } from './agent-configs';
 import { checkProviderStatus } from '../../model-provider-status';
-import {
-  getGeminiFlashLiteModel,
-  getZaiVisionModel,
-} from '../../model-provider-core';
+import { getGeminiFlashLiteModel } from '../../model-provider-core';
 
-describe('agent-configs vision fallback', () => {
+describe('agent-configs vision provider selection', () => {
   const visionConfig = getAgentConfig('Vision Agent');
 
   beforeEach(() => {
@@ -126,10 +121,9 @@ describe('agent-configs vision fallback', () => {
     expect(model).not.toBeNull();
     expect(model?.provider).toBe('gemini');
     expect(model?.modelId).toBe('gemini-2.5-flash-lite');
-    expect(getZaiVisionModel).not.toHaveBeenCalled();
   });
 
-  it('falls back to Z.AI Vision when Gemini init fails', () => {
+  it('does not fall back to Z.AI Vision when Gemini init fails', () => {
     vi.mocked(checkProviderStatus).mockReturnValue({
       cerebras: false,
       groq: false,
@@ -140,18 +134,13 @@ describe('agent-configs vision fallback', () => {
     vi.mocked(getGeminiFlashLiteModel).mockImplementation(() => {
       throw new Error('gemini unavailable');
     });
-    vi.mocked(getZaiVisionModel).mockReturnValue(
-      createMockLanguageModel('glm-4.6v-flash') as never
-    );
 
     const model = visionConfig.getModel();
 
-    expect(model).not.toBeNull();
-    expect(model?.provider).toBe('zai');
-    expect(model?.modelId).toBe('glm-4.6v-flash');
+    expect(model).toBeNull();
   });
 
-  it('uses Z.AI when Gemini key is missing', () => {
+  it('returns null when Gemini key is missing even if Z.AI is available', () => {
     vi.mocked(checkProviderStatus).mockReturnValue({
       cerebras: false,
       groq: false,
@@ -159,17 +148,13 @@ describe('agent-configs vision fallback', () => {
       zai: true,
       gemini: false,
     });
-    vi.mocked(getZaiVisionModel).mockReturnValue(
-      createMockLanguageModel('glm-4.6v-flash') as never
-    );
 
     const model = visionConfig.getModel();
 
-    expect(model).not.toBeNull();
-    expect(model?.provider).toBe('zai');
+    expect(model).toBeNull();
   });
 
-  it('falls back to Z.AI Vision when Gemini is unavailable', () => {
+  it('returns null when Gemini is unavailable even if text providers are available', () => {
     vi.mocked(checkProviderStatus).mockReturnValue({
       cerebras: true,
       groq: true,
@@ -177,18 +162,13 @@ describe('agent-configs vision fallback', () => {
       zai: true,
       gemini: false,
     });
-    vi.mocked(getZaiVisionModel).mockReturnValue(
-      createMockLanguageModel('glm-4.6v-flash') as never
-    );
 
     const model = visionConfig.getModel();
 
-    expect(model).not.toBeNull();
-    expect(model?.provider).toBe('zai');
-    expect(model?.modelId).toBe('glm-4.6v-flash');
+    expect(model).toBeNull();
   });
 
-  it('returns null when Gemini and Z.AI are unavailable', () => {
+  it('returns null when Gemini is unavailable', () => {
     vi.mocked(checkProviderStatus).mockReturnValue({
       cerebras: false,
       groq: false,
@@ -215,6 +195,5 @@ describe('agent-configs vision fallback', () => {
 
     expect(visionConfig.getModel()).toBeNull();
     expect(getGeminiFlashLiteModel).not.toHaveBeenCalled();
-    expect(getZaiVisionModel).not.toHaveBeenCalled();
   });
 });

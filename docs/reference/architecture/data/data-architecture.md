@@ -241,8 +241,42 @@ const hourlyData = JSON.parse(
 
 ---
 
-## 📖 관련 문서
+## 데이터 일관성 계약
+
+Dashboard/AI 응답 간 데이터 일관성 보장을 위한 설계 원칙입니다. 현재 기준 SSOT는 [OTel Data Architecture](./otel-data-architecture.md)입니다.
+
+### 현재 일관성 계약
+
+| 계약 | 현재 기준 |
+|---|---|
+| Runtime data SSOT | `public/data/otel-data/*` |
+| 데이터셋 | 18대 서버, 24시간, 10분 슬롯, 144 slots/day |
+| Dashboard consumer | `src/services/metrics/MetricsProvider.ts` |
+| Cloud Run consumer | `cloud-run/ai-engine/src/data/precomputed-state.ts` + `MonitoringDataSource` |
+| AI fact boundary | `MonitoringFactPack` deterministic severity/evidence refs |
+| 기본 source mode | `replay-json` |
+| 비목표 | runtime live Prometheus/OTLP/Loki 수집을 기본 경로로 추가하지 않음 |
+
+### 일관성 규칙
+
+1. **같은 원본을 본다** — Dashboard와 AI Engine은 모두 `public/data/otel-data`에서 파생된 데이터를 봅니다.
+2. **같은 시점을 본다** — AI 응답과 Dashboard는 10분 슬롯 기준의 `queryAsOf`/slot metadata를 유지해야 합니다.
+3. **상태 판정은 deterministic rule이 맡는다** — LLM이 metric severity를 독자 판단하지 않습니다. OTel loader와 Cloud Run fact pack이 담당합니다.
+4. **증거를 남긴다** — AI 응답은 server id, metric value, source mode, evidence refs, provider/model metadata를 남깁니다.
+5. **fallback은 값 조작이 아니다** — 동일 snapshot을 다른 경로로 읽는 보정이어야 합니다. 서버 수/metric severity를 임의 생성하지 않습니다.
+
+### 하면 안 되는 것
+
+- Dashboard는 OTel을 보고 AI는 별도 랜덤/Mock 데이터를 보게 만들지 않습니다.
+- 서버 수, topology, metric threshold를 UI copy와 AI prompt에 하드코딩하지 않습니다.
+- LLM에게 metric severity 판단 권한을 넘기지 않습니다.
+- live Prometheus/OTLP/Loki 수집을 비용/계약 검토 없이 기본 runtime path로 켜지 않습니다.
+
+---
+
+## 관련 문서
 
 - **데이터 접근 SSOT**: `src/services/metrics/MetricsProvider.ts`
 - **데이터 보정/검증 스크립트**: `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts`
-- **OTel 파이프라인**: `docs/reference/architecture/data/otel-data-architecture.md`
+- **OTel 파이프라인**: [OTel Data Architecture](./otel-data-architecture.md)
+- **데이터 흐름**: [Data Flow](../../../architecture/04-data-flow.md)

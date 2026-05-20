@@ -15,7 +15,6 @@ import {
   getZaiApiKey,
   getZaiBaseUrl,
   getZaiModelId,
-  getZaiVisionModelId,
 } from '../../lib/config-parser';
 
 // P-1: Lazy singleton — 동일 프로세스 내 provider 재생성 방지
@@ -152,10 +151,4 @@ export function getGeminiFlashLiteModel(
 ): LanguageModel {
   const gemini = getGeminiProvider();
   return asLanguageModel(gemini(modelId));
-}
-
-export function getZaiVisionModel(
-  modelId: string = getZaiVisionModelId()
-): LanguageModel {
-  return getZaiModel(modelId);
 }

@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # Cloud Run
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 Cloud Run 배포와 GCP 비용 점검을 수행합니다. Production 배포 권한은 GitLab CI `deploy_ai_engine`가 가지며, 직접 `deploy.sh` 실행은 명시 요청, runner 장애, 긴급 복구 시 fallback으로만 사용합니다.
 

@@ -1,7 +1,7 @@
 import { normalizeAgentRuntimeName } from '../../../../core/assistant-runtime/agent-name-compat';
 
 export type TextRuntimeProvider = 'groq' | 'zai' | 'mistral' | 'cerebras';
-export type NativeRuntimeProvider = 'gemini' | 'zai';
+export type NativeRuntimeProvider = 'gemini';
 
 export type AgentToolName =
   | 'getServerMetrics'
@@ -208,7 +208,7 @@ export const AGENT_RUNTIME_POLICIES = {
   },
   'Vision Agent': {
     providerOrder: [],
-    nativeProviderOrder: ['gemini', 'zai'],
+    nativeProviderOrder: ['gemini'],
     maxSteps: 2,
     evidenceBudget: 0,
     toolAllowlist: ['analyzeScreenshot', 'finalAnswer'],

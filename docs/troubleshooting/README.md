@@ -1,4 +1,4 @@
-# Troubleshooting Guide
+# 트러블슈팅 가이드
 
 > 공통 장애 대응 절차와 진입점을 제공하는 트러블슈팅 인덱스
 > Owner: documentation

@@ -354,11 +354,11 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(Array.isArray(result)).toBe(true);
       const parts = result as Array<{ type: string }>;
       expect(parts).toHaveLength(2);
-      expect(parts[0].type).toBe('text');
-      expect(parts[1].type).toBe('image');
+      expect(parts[0].type).toBe('image');
+      expect(parts[1].type).toBe('text');
 
       // Check ImagePart structure
-      const imagePart = parts[1] as { type: string; image: string; mimeType: string };
+      const imagePart = parts[0] as { type: string; image: string; mimeType: string };
       expect(imagePart.image).toBe('data:image/png;base64,abc123');
       expect(imagePart.mimeType).toBe('image/png');
     });
@@ -390,11 +390,11 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(Array.isArray(result)).toBe(true);
       const parts = result as Array<{ type: string }>;
       expect(parts).toHaveLength(2);
-      expect(parts[0].type).toBe('text');
-      expect(parts[1].type).toBe('file');
+      expect(parts[0].type).toBe('file');
+      expect(parts[1].type).toBe('text');
 
       // Check FilePart structure - AI SDK uses 'mediaType' not 'mimeType'
-      const filePart = parts[1] as { type: string; data: string; mediaType: string };
+      const filePart = parts[0] as { type: string; data: string; mediaType: string };
       expect(filePart.data).toBe('data:application/pdf;base64,xyz789');
       expect(filePart.mediaType).toBe('application/pdf'); // AI SDK uses mediaType
     });
@@ -429,12 +429,14 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(Array.isArray(result)).toBe(true);
       const parts = result as Array<{ type: string }>;
 
-      // 1 text + 2 images + 1 file = 4 parts
-      expect(parts).toHaveLength(4);
+      // 2 image index labels + 2 images + 1 file + 1 text prompt = 6 parts
+      expect(parts).toHaveLength(6);
       expect(parts[0].type).toBe('text');
       expect(parts[1].type).toBe('image');
-      expect(parts[2].type).toBe('image');
-      expect(parts[3].type).toBe('file');
+      expect(parts[2].type).toBe('text');
+      expect(parts[3].type).toBe('image');
+      expect(parts[4].type).toBe('file');
+      expect(parts[5].type).toBe('text');
     });
 
     it('should handle empty images array as text-only', async () => {

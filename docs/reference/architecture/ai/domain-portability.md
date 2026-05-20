@@ -1,4 +1,4 @@
-# AI Domain Portability Guide
+# AI 도메인 이식성 가이드
 
 > OpenManager AI Assistant를 다른 도메인으로 이식할 때의 구현 기준
 > Owner: platform-architecture

@@ -1,10 +1,11 @@
+# 랜딩 페이지 시각 회귀 방지 가이드
+
 > Owner: project
 > Status: Active Supporting
 > Doc type: How-to
 > Last reviewed: 2026-05-18
+> Canonical: docs/troubleshooting/landing-visual-regression.md
 > Tags: regression, font, landing, ai-agent, scope-contamination
-
-# 랜딩 페이지 시각 회귀 방지 가이드
 
 ## 발생한 회귀 (2026-05-17)
 

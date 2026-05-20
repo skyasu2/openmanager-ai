@@ -1,4 +1,4 @@
-# Monitoring & ML Engine
+# 모니터링 & ML 엔진 아키텍처
 
 > OpenManager AI Engine 이상탐지/예측 로직의 현재 배포 기준 아키텍처
 > Owner: platform-architecture

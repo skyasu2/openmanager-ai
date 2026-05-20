@@ -244,12 +244,12 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(callArgs.stopWhen).toBeUndefined();
       expect(callArgs.system).toBe('You are a test agent.');
       expect(callArgs.messages.at(-1).content).toEqual([
-        { type: 'text', text: '첨부된 Playwright 스크린샷을 분석해줘' },
         {
           type: 'image',
           image: 'data:image/png;base64,abc',
           mimeType: 'image/png',
         },
+        { type: 'text', text: '첨부된 Playwright 스크린샷을 분석해줘' },
       ]);
     });
 

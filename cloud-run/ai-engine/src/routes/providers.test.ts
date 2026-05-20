@@ -19,7 +19,6 @@ vi.mock('../lib/config-parser', () => ({
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
-  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   isCerebrasToolCallingEnabled: vi.fn(() => false),
 }));
 
@@ -73,7 +72,7 @@ describe('Provider Routes', () => {
       expect(json.available).toBeDefined();
       expect(json.info).toBeDefined();
       expect(json.modelDrift).toEqual([]);
-      expect(json.modelMetadata).toHaveLength(7);
+      expect(json.modelMetadata).toHaveLength(6);
       expect(json.info.cerebras.model).toBe('llama3.1-8b');
       expect(json.info.cerebras.toolCallingEnabled).toBe(false);
       expect(json.info.groq.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
@@ -81,7 +80,7 @@ describe('Provider Routes', () => {
       expect(json.info.groq.role).toContain('Groq-first');
       expect(json.info.groq.role).not.toContain('Advisor');
       expect(json.info.zai.model).toBe('glm-4.5-flash');
-      expect(json.info.zai.visionModel).toBe('glm-4.6v-flash');
+      expect(json.info.zai.visionModel).toBeUndefined();
       expect(json.info.mistral.role).toBe('Distributed text fallback');
       expect(json.info.mistral.model).toBe('mistral-small-latest');
       expect(json.info.mistral.role).not.toContain('RAG');

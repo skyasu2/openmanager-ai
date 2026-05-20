@@ -2,7 +2,7 @@
 
 > GitLab CI, Vercel/Cloud Run 배포 권위, Free Tier, QA 기록, 금지 사항을 설명하는 구현 기준 아키텍처
 > Owner: platform-architecture
-> Status: Active
+> Status: Active Canonical
 > Doc type: Reference
 > Last reviewed: 2026-05-07
 > Canonical: docs/architecture/03-deployment-architecture.md

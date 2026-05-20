@@ -1,0 +1,112 @@
+{
+  "runId": "QA-20260520-0542",
+  "recordedAt": "2026-05-20T04:05:02.782Z",
+  "recordedAtKst": "2026-05-20 13:05:02 KST",
+  "runTitle": "Cloud Run Gemini Vision Answer Quality Smoke",
+  "owner": "codex",
+  "source": "script",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+    "frontend": "not exercised",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "db427c87e3dd9c5fe4d2cacaef593c82c25518a8"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "Cloud Run direct /api/ai/supervisor vision image analysis",
+    "Gemini-only Vision Agent routing",
+    "Gemini answer grounding for dashboard screenshot current values and forecast deltas"
+  ],
+  "skippedSurfaces": [
+    "Vercel browser UI integration",
+    "GLM/Z.AI fallback call",
+    "Repeated provider matrix"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Vision screenshot analysis - Gemini only",
+      "agent": "Vision Agent",
+      "provider": "gemini",
+      "model": "gemini-2.5-flash-lite",
+      "route": "/api/ai/supervisor",
+      "source": "direct Cloud Run script elapsedMs",
+      "latencyMs": 11278,
+      "processingTimeMs": 11278
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Vision smoke input screenshot",
+      "path": "reports/qa/evidence/qa-20260519-v811184-vision-routing-input.png",
+      "note": "Existing dashboard screenshot reused for non-counting targeted Gemini-only vision quality smoke."
+    },
+    {
+      "type": "playwright-console",
+      "label": "Gemini vision quality smoke JSON result",
+      "path": "reports/qa/evidence/qa-20260520-gemini-vision-quality-smoke-result.json",
+      "note": "Direct Cloud Run script result containing provider, latency, response preview, and exact-value quality checks."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "vision-gemini-routing-and-current-values",
+      "title": "Gemini Vision routes correctly and reads current dashboard values",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "HTTP 200, success=true, finalAgent=Vision Agent, provider=gemini, model=gemini-2.5-flash-lite. Response identified cache-redis-dc1-01, CPU 71%, memory 92%, disk 21%, CPU/memory high, disk normal, and actionable memory remediation.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "vision-gemini-exact-forecast-delta-attribution",
+      "title": "Gemini Vision misattributes exact forecast delta values in the screenshot",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "The screenshot shows CPU +9.7%, memory +6.6%, disk +3.3%. Gemini returned CPU 71% unchanged, memory +9.7%, disk +3.3%, so exact forecast-delta attribution is not reliable from OCR alone.",
+      "note": "For exact numeric forecast answers, route to deterministic metric data/tool evidence instead of relying on image OCR.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Manual-only Vision QA: one Gemini call only, no GLM fallback call and no provider matrix.",
+    "Gemini runtime routing is healthy in the current production deployment: finalAgent=Vision Agent, mode=multi, modeSelectionSource=vision_input.",
+    "Current values are grounded correctly: cache-redis-dc1-01, CPU 71%, memory 92%, disk 21%, CPU/memory high, disk normal.",
+    "Exact forecast-delta attribution is partially wrong. This is a Vision answer-quality limitation, not a routing failure.",
+    "The providers endpoint in current production still lists Z.AI Vision fallback because the Gemini-only code change has not been deployed yet. Local code/tests remove that metadata and runtime path."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run AI Engine",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/"
+    }
+  ]
+}

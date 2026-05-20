@@ -208,6 +208,6 @@ ArtifactRendererHost         ← metadata unknown 입력, 멀티 entry 지원
 
 ## 상세 문서
 
-- [AI Agent 설계](01-ai-agent-design.md)
+- [AI Agent 설계 경계](./README.md#ai-agent-설계-경계)
 - [프론트엔드 경험 설계](05-ui-design.md)
 - [Runtime Architecture](../architecture/02-runtime-architecture.md)

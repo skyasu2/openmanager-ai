@@ -1,10 +1,10 @@
-# Reference
+# 레퍼런스 허브
 
 > 기술 레퍼런스 문서 인덱스
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-08
+> Last reviewed: 2026-05-20
 > Canonical: docs/reference/README.md
 > Tags: reference,index,architecture
 
@@ -13,7 +13,7 @@
 포트폴리오나 신규 작업자가 빠르게 구조를 파악할 때는 `architecture/`와 `design/`을 먼저 보고, 구현 근거가 필요할 때 이 `reference/` 문서를 봅니다.
 
 - [API Endpoints](./api/endpoints.md)
-- [API Contracts](./api/contracts.md)
+- [API 계약 거버넌스](./api/endpoints.md#api-계약-거버넌스)
 - [System Architecture (Hybrid 포함)](./architecture/system/system-architecture-current.md)
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
 - [OTel Data Architecture](./architecture/data/otel-data-architecture.md)
@@ -31,7 +31,7 @@
 ### AI
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
 - [API Endpoints](./api/endpoints.md)
-- [API Contracts](./api/contracts.md)
+- [API 계약 거버넌스](./api/endpoints.md#api-계약-거버넌스)
 - [Frontend/Backend Comparison](./architecture/ai/frontend-backend-comparison.md)
 - [Monitoring ML](./architecture/ai/monitoring-ml.md)
 - [RAG Knowledge Engine](./architecture/ai/rag-knowledge-engine.md)
@@ -54,7 +54,7 @@
 - [System Architecture (Current)](./architecture/system/system-architecture-current.md)
 - [Frontend Component Dependency Map](./architecture/system/component-dependency-map.md)
 - [Folder Structure](./architecture/folder-structure.md)
-- [Design Consistency](./architecture/design/consistency.md)
+- [Data Architecture (일관성 계약 포함)](./architecture/data/data-architecture.md)
 
 ### Decisions (ADR)
 - [ADR Index](../adr/README.md)
@@ -64,7 +64,7 @@
 ### Historical / Archived
 
 - [AI Assistant Initial Design Comparison](../archived/ai-assistant-initial-design-comparison.md) — 초기 대안 비교와 의사결정 이력. 현재 AI runtime 기준은 [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)를 사용합니다.
-- [Server Metadata Comparison](../archived/server-metadata-comparison.md) — v8.0.0 기준 비교 기록. 현재 데이터 SSOT는 [OTel Data Architecture](./architecture/data/otel-data-architecture.md)를 사용합니다.
+- [프로젝트 변천사](../history/project-evolution.md) — 주요 아키텍처 전환 이력. 현재 데이터 SSOT는 [OTel Data Architecture](./architecture/data/otel-data-architecture.md)를 사용합니다.
 
 ## Related
 

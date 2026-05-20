@@ -1,4 +1,4 @@
-# Common Issues
+# 자주 발생하는 문제
 
 > 자주 발생하는 빌드/API/CI 문제의 증상별 해결 가이드
 > Owner: documentation

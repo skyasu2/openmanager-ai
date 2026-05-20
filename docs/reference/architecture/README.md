@@ -1,4 +1,4 @@
-# Architecture Design Index
+# 아키텍처 설계 인덱스
 
 > 현재 구현 기준 설계도와 아키텍처 SSOT를 찾기 위한 중앙 인덱스
 > Owner: platform-architecture
@@ -29,7 +29,7 @@ OpenManager의 설계도는 초기 upfront design 산출물이 아니라, 실제
 3. 이 문서에서 상세 SSOT 위치와 갱신 트리거를 확인합니다.
 4. [system/system-architecture-current.md](./system/system-architecture-current.md)에서 전체 런타임 경계를 봅니다.
 5. AI 변경이면 [ai/ai-engine-architecture.md](./ai/ai-engine-architecture.md), 데이터/모니터링 변경이면 [data/otel-data-architecture.md](./data/otel-data-architecture.md)를 먼저 봅니다.
-6. API surface나 route 변경이면 [../api/endpoints.md](../api/endpoints.md)와 [../api/contracts.md](../api/contracts.md)를 같이 봅니다.
+6. API surface나 route 변경이면 [../api/endpoints.md](../api/endpoints.md)를 봅니다 (계약 거버넌스 포함).
 7. 배포/비용/AI 운영 규칙은 [../../guides/ai/ai-standards.md](../../guides/ai/ai-standards.md)를 최종 정책 기준으로 봅니다.
 
 ## 설계도 인벤토리
@@ -56,7 +56,7 @@ OpenManager의 설계도는 초기 upfront design 산출물이 아니라, 실제
 | AI Runtime | [ai/ai-engine-architecture.md](./ai/ai-engine-architecture.md), [ai/frontend-backend-comparison.md](./ai/frontend-backend-comparison.md), [ai/domain-portability.md](./ai/domain-portability.md), [ai/request-guard-policy.md](./ai/request-guard-policy.md) | stream/job/facade route, Supervisor/Direct Router/Agents, request guard, provider gate, deterministic fallback, 새 도메인 포팅 경계가 어떻게 연결되는가. 초기 설계 비교 기록은 [archived 문서](../../archived/ai-assistant-initial-design-comparison.md)에서만 historical evidence로 확인한다. |
 | 데이터/모니터링 | [data/otel-data-architecture.md](./data/otel-data-architecture.md), [data/data-architecture.md](./data/data-architecture.md), [ai/rag-knowledge-engine.md](./ai/rag-knowledge-engine.md) | 18대 synthetic OTel 데이터와 Knowledge Retrieval Lite가 Dashboard/AI에 어떻게 공급되는가 |
 | 인프라/제약 | [infrastructure/free-tier-optimization.md](./infrastructure/free-tier-optimization.md), [infrastructure/resilience.md](./infrastructure/resilience.md), [infrastructure/security.md](./infrastructure/security.md) | 무료 티어, fallback, circuit breaker, 보안 경계가 무엇을 제한하는가 |
-| API/계약 | [../api/endpoints.md](../api/endpoints.md), [../api/contracts.md](../api/contracts.md) | route가 실제로 존재하는가, 요청/응답 계약이 무엇인가 |
+| API/계약 | [../api/endpoints.md](../api/endpoints.md) | route가 실제로 존재하는가, 요청/응답 계약이 무엇인가 |
 | 제품 화면용 설계도 | [../../../src/data/architecture-diagrams.data.ts](../../../src/data/architecture-diagrams.data.ts), [../../../src/data/architecture-diagrams/](../../../src/data/architecture-diagrams/) | 사용자가 모달/토폴로지 화면에서 보는 설명이 현재 구현과 맞는가 |
 | 계획/QA | [../../../reports/planning/TODO.md](../../../reports/planning/TODO.md), [../../../reports/planning/README.md](../../../reports/planning/README.md), [../../../reports/qa/qa-tracker.json](../../../reports/qa/qa-tracker.json) | 어떤 개선이 남았고, 어떤 QA evidence로 운영 판단을 했는가 |
 
@@ -107,7 +107,7 @@ OpenManager의 설계도는 초기 upfront design 산출물이 아니라, 실제
 |---|---|
 | `src/app/api/**/route.ts(x)` 추가/삭제 | `system-architecture-current.md`, `folder-structure.md`, 필요 시 `docs/reference/api/endpoints.md` |
 | AI stream/job/facade route 변경 | `ai-engine-architecture.md`, `frontend-backend-comparison.md`, `request-guard-policy.md`, `src/data/architecture-diagrams/ai-assistant.ts` |
-| planner, provider, tool/result schema 변경 | `ai-engine-architecture.md`, `../../design/01-ai-agent-design.md`; 장기 방향 재평가 시 archived `ai-assistant-initial-design-comparison.md`는 historical evidence로만 확인 |
+| planner, provider, tool/result schema 변경 | `ai-engine-architecture.md`, [AI Agent 설계 경계](../../design/README.md#ai-agent-설계-경계); 장기 방향 재평가 시 archived `ai-assistant-initial-design-comparison.md`는 historical evidence로만 확인 |
 | OTel 서버 인벤토리/메트릭 schema 변경 | `otel-data-architecture.md`, `src/data/architecture-diagrams/infrastructure-topology.ts` |
 | 컴포넌트 graph 갱신 | `npm run docs:components:map` 후 `npm run docs:components:verify` |
 | 문서 추가/정리 | `npm run docs:budget`, `npm run docs:ai-consistency` |

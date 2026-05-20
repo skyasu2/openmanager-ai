@@ -1,9 +1,9 @@
-# Deployment Guide
+# 배포 가이드
 
 > OpenManager production 배포 절차 runbook
 > Owner: platform-devops
 > Status: Active Canonical
-> Doc type: Runbook
+> Doc type: How-to
 > Last reviewed: 2026-05-13
 > Canonical: docs/operations/deployment-guide.md
 > Tags: operations,deployment,gitlab,vercel,cloud-run

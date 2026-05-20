@@ -80,7 +80,6 @@ vi.mock('../../lib/config-parser', () => ({
   getZaiApiKey: vi.fn(() => 'test-zai-key'),
   getZaiBaseUrl: vi.fn(() => 'https://api.z.ai/api/paas/v4'),
   getZaiModelId: vi.fn(() => 'glm-4.5-flash'),
-  getZaiVisionModelId: vi.fn(() => 'glm-4.6v-flash'),
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getGeminiApiKey: vi.fn(() => 'test-gemini-key'),
@@ -95,7 +94,6 @@ import {
   getGroqModel,
   getMistralModel,
   getZaiModel,
-  getZaiVisionModel,
   getSupervisorModel,
   getVerifierModel,
   getVisionAgentModel,
@@ -121,7 +119,6 @@ describe('model-provider compatibility (SDK upgrades)', () => {
       getGroqModel('meta-llama/llama-4-scout-17b-16e-instruct'),
       getMistralModel('mistral-large-latest'),
       getZaiModel('glm-4.5-flash'),
-      getZaiVisionModel('glm-4.6v-flash'),
       getGeminiFlashLiteModel('gemini-2.5-flash-lite'),
     ];
 
@@ -155,19 +152,16 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(nextVerifier.rotationSlot).toBe(2);
   });
 
-  it('falls back to Z.AI Vision when Gemini is disabled', () => {
+  it('returns null for Vision when Gemini is disabled even if Z.AI is available', () => {
     toggleProvider('gemini', false);
     invalidateProviderStatusCache();
 
     const vision = getVisionAgentModel();
-    expect(vision).not.toBeNull();
-    expect(vision?.provider).toBe('zai');
-    expect(vision?.modelId).toBe('glm-4.6v-flash');
+    expect(vision).toBeNull();
   });
 
-  it('returns null when Gemini and Z.AI Vision are disabled', () => {
+  it('returns null when Gemini is disabled', () => {
     toggleProvider('gemini', false);
-    toggleProvider('zai', false);
     invalidateProviderStatusCache();
 
     const vision = getVisionAgentModel();

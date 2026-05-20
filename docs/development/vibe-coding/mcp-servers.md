@@ -283,4 +283,4 @@ curl -I http://127.0.0.1:6006
 - [Skills](./skills.md)
 - [AI 도구들](./multi-agent-tools.md)
 - [설치 가이드](./setup.md)
-- [AI Skill 운영 표준](../../guides/ai/skill-standards.md)
+- [Skills 레퍼런스](./skills.md)

@@ -3,7 +3,7 @@
 > 프로젝트의 코드 스타일, 아키텍처 패턴, 개발 원칙 (typescript-rules.md 통합됨)
 > Owner: engineering
 > Status: Active
-> Doc type: Standard
+> Doc type: Reference
 > Last reviewed: 2026-05-05
 > Canonical: docs/development/coding-standards.md
 > Tags: coding,standards,typescript,javascript

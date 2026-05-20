@@ -1,11 +1,11 @@
+# ADR-006: LLM Provider Load Balancing 전략 — Round-Robin + Context Guard + 429 Cooldown
+
 > Owner: platform-architecture
-> Status: Accepted
-> Doc type: Decision
+> Status: Active Canonical
+> Doc type: Reference
 > Last reviewed: 2026-05-16
 > Canonical: docs/adr/adr-006-llm-provider-load-balancing.md
 > Tags: adr,ai,provider,load-balancing,round-robin,free-tier,quota
-
-# ADR-006: LLM Provider Load Balancing 전략 — Round-Robin + Context Guard + 429 Cooldown
 
 ## 상태
 

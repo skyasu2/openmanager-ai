@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # Lint Smoke
 
-> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+> Common baseline: before editing this skill, review `docs/development/vibe-coding/skills.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 빠른 품질 확인용 스모크 체크입니다. 리뷰를 대체하지 않으며, 실행 증거 수집이 목적입니다.
 
