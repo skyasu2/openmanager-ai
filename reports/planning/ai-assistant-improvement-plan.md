@@ -168,14 +168,19 @@ describe('sessionId strategy', () => {
 
 ### 구현 범위
 
-- [ ] T1: `useChatSession.ts` 저장소를 `sessionStorage` 기반 탭-고유 ID로 전환할지 확정
-- [ ] T2: `createHybridChatTransport` 또는 `useHybridAIQuery`에서 primary POST body에 `sessionId` 명시
-- [ ] T3: `useHybridAIQuery` 내부 session ref를 prop 변경에 동기화하거나 remount key 전략 적용
-- [ ] T4: `stream/v2/route.ts` 테스트에 AI SDK 기본 `id`와 명시 `sessionId` 케이스 추가
-- [ ] T5: Cloud Run `SessionMemoryService.getHistory/saveHistory` graceful empty/write-fail 동작 유지 확인
+- [x] T1: `useChatSession.ts` 저장소를 `sessionStorage` 기반 탭-고유 ID로 전환
+- [x] T2: `createHybridChatTransport`/`useHybridAIQuery`에서 primary POST body에 `sessionId` 명시
+- [x] T3: `useHybridAIQuery` 내부 session ref를 prop 변경에 동기화
+- [x] T4: `stream/v2/route.ts` 테스트에 AI SDK 기본 `id`와 명시 `sessionId` 케이스 추가
+- [x] T5: Cloud Run `SessionMemoryService.getHistory/saveHistory` graceful empty/write-fail 동작 유지 확인
 
 **예상 공수**: 2~4시간 (계약 테스트 포함)
 **영향 범위**: Vercel 프론트엔드 + Cloud Run (transport 계층)
+
+**완료 검증 (2026-05-20)**:
+- targeted DOM: `createHybridChatTransport.test.ts`, `useChatSession.test.ts` — 12 PASS
+- targeted Node: supervisor stream/legacy/schema tests — 70 PASS
+- root: `type-check`, `lint`, `test:quick`, `test:contract` PASS
 
 ---
 

@@ -208,6 +208,8 @@ export function useHybridAIQuery(
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
   );
+  const effectiveSessionId = initialSessionId || sessionIdRef.current;
+  sessionIdRef.current = effectiveSessionId;
   const [state, setState] = useState<HybridQueryState>({
     mode: 'streaming',
     complexity: null,
@@ -255,6 +257,7 @@ export function useHybridAIQuery(
         webSearchEnabledRef,
         ragEnabledRef,
         analysisModeRef,
+        sessionIdRef,
         queryAsOfDataSlotRef,
         localRouteDecisionRef: currentRouteDecisionRef,
         currentQueryRef,
@@ -342,7 +345,7 @@ export function useHybridAIQuery(
     setMessages,
     stop: stopChat,
   } = useChat({
-    id: sessionIdRef.current,
+    id: effectiveSessionId,
     transport,
     experimental_throttle: 50,
     onFinish: streamCallbacks.onFinish,
@@ -364,7 +367,7 @@ export function useHybridAIQuery(
   };
 
   const asyncQuery = useAsyncAIQuery({
-    sessionId: sessionIdRef.current,
+    sessionId: effectiveSessionId,
     timeout: 120_000,
     onProgress: (progress) => {
       setState((prev) => ({ ...prev, progress }));

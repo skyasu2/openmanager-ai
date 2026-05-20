@@ -121,6 +121,7 @@ export const POST = withRateLimit(
         }
 
         const {
+          id: chatSessionId,
           messages,
           sessionId: bodySessionId,
           enableWebSearch,
@@ -133,7 +134,7 @@ export const POST = withRateLimit(
         // 2. sessionId를 owner 스코프와 분리해 정규화
         const { sessionId, cacheSessionId, ownerKey } = resolveScopedSessionIds(
           req,
-          bodySessionId
+          bodySessionId ?? chatSessionId
         );
 
         // 3. 사용자 쿼리 추출 + 보안 검사

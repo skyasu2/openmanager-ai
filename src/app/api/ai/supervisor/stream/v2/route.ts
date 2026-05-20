@@ -118,6 +118,7 @@ export const POST = withRateLimit(
       }
 
       const {
+        id: chatSessionId,
         messages,
         sessionId: bodySessionId,
         enableWebSearch,
@@ -141,7 +142,10 @@ export const POST = withRateLimit(
         );
       }
 
-      const { sessionId } = resolveScopedSessionIds(req, bodySessionId);
+      const { sessionId } = resolveScopedSessionIds(
+        req,
+        bodySessionId ?? chatSessionId
+      );
       const deviceType = normalizeSupervisorDeviceType(
         req.headers.get('X-Device-Type')
       );
