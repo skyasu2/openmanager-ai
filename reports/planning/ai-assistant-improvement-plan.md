@@ -109,14 +109,19 @@ describe('getIntentCategory with intentFrame', () => {
 
 ### 구현 범위
 
-- [ ] T1: 기존 `DomainIntentFrame.intent`/`capabilityId` 값과 `orchestrator-direct-routing.ts` semantic mapping 재사용 여부 확인
-- [ ] T2: `getIntentCategory()` 시그니처 확장 + semantic frame→category 매핑
-- [ ] T3: `supervisor-single-agent*.ts`에서 normalized intentFrame을 `getIntentCategory`/`createPrepareStep` 정책 경로에 전달
-- [ ] T4: `AssistantRuntimePrepareStepOptions`에 intentFrame 옵션 추가 여부 검토
-- [ ] T5: 회귀 테스트 — regex fallback 경로 기존 동작 보존 확인
+- [x] T1: 기존 `DomainIntentFrame.intent`/`capabilityId` 값과 `orchestrator-direct-routing.ts` semantic mapping 재사용 여부 확인
+- [x] T2: `getIntentCategory()` 시그니처 확장 + semantic frame→category 매핑
+- [x] T3: `supervisor-single-agent*.ts`에서 normalized intentFrame을 `getIntentCategory`/`createPrepareStep` 정책 경로에 전달
+- [x] T4: `AssistantRuntimePrepareStepOptions`에 intentFrame 옵션 추가
+- [x] T5: 회귀 테스트 — regex fallback 경로 기존 동작 보존 확인
 
 **예상 공수**: 2~3시간 (Codex 위임 가능)
 **영향 범위**: Cloud Run AI Engine only (Vercel 변경 없음)
+
+**완료 검증 (2026-05-20)**:
+- targeted: `routing-policy.test.ts` — 77 PASS
+- targeted: `supervisor-domain-wiring.contract.test.ts` — 13 PASS
+- AI Engine: `type-check`, full `npm run test` — 136 files / 1354 tests PASS
 
 ---
 

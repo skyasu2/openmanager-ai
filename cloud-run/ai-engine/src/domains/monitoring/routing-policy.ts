@@ -51,6 +51,7 @@ export const RETRY_CONFIG = {
 // ============================================================================
 
 const INTENT_FRAME_EXECUTION_MODE_CONFIDENCE = 0.8;
+const INTENT_FRAME_CATEGORY_CONFIDENCE = 0.75;
 
 function normalizeIntentFrameConfidence(confidence: number): number {
   if (!Number.isFinite(confidence)) return 0;
@@ -134,8 +135,74 @@ const TOOL_ROUTING_PATTERNS = {
   metrics: /cpu|메모리|디스크|서버|상태|memory|disk/i,
 } as const;
 
-export function getIntentCategory(query: string): IntentCategory {
+function resolveIntentFrameCategory(
+  intentFrame?: DomainIntentFrame
+): IntentCategory | undefined {
+  if (!intentFrame) return undefined;
+
+  const confidence = normalizeIntentFrameConfidence(intentFrame.confidence);
+  if (confidence < INTENT_FRAME_CATEGORY_CONFIDENCE) return undefined;
+
+  const capabilityId = intentFrame.capabilityId ?? '';
+  const intent = intentFrame.intent;
+  const semanticKey = `${capabilityId} ${intent}`.toLowerCase();
+
+  if (semanticKey.includes('log_analysis')) return 'logs';
+
+  if (
+    semanticKey.includes('root_cause') ||
+    semanticKey.includes('incident_report') ||
+    semanticKey.includes('incident-report')
+  ) {
+    return 'rca';
+  }
+
+  if (
+    semanticKey.includes('ops_advice') ||
+    semanticKey.includes('advisor') ||
+    semanticKey.includes('runbook')
+  ) {
+    return 'advisor';
+  }
+
+  if (
+    semanticKey.includes('anomaly_prediction') ||
+    semanticKey.includes('capacity_forecast') ||
+    semanticKey.includes('metric_trend')
+  ) {
+    return 'prediction';
+  }
+
+  if (
+    semanticKey.includes('anomaly_detection') ||
+    semanticKey.includes('failure_risk')
+  ) {
+    return 'anomaly';
+  }
+
+  if (semanticKey.includes('server_health')) {
+    return intentFrame.scope === 'group' ? 'serverGroup' : 'metrics';
+  }
+
+  if (
+    semanticKey.includes('metric_current') ||
+    semanticKey.includes('metric_peak') ||
+    semanticKey.includes('metric_ranking')
+  ) {
+    return 'metrics';
+  }
+
+  return undefined;
+}
+
+export function getIntentCategory(
+  query: string,
+  intentFrame?: DomainIntentFrame
+): IntentCategory {
   void createRoutingDecisionTrace(extractQueryRoutingSignals(query));
+
+  const semanticCategory = resolveIntentFrameCategory(intentFrame);
+  if (semanticCategory) return semanticCategory;
 
   const q = query.toLowerCase();
 
@@ -283,11 +350,17 @@ function shouldForceKnowledgeBaseTool(query: string): boolean {
   return FORCE_KB_QUERY_PATTERN.test(query.toLowerCase());
 }
 
-function isBestEffortGeneralQuery(query: string): boolean {
+function isBestEffortGeneralQuery(
+  query: string,
+  intentFrame?: DomainIntentFrame
+): boolean {
   const q = query.toLowerCase();
   if (INFRA_CONTEXT_PATTERN.test(q)) return false;
   if (FORCE_KB_QUERY_PATTERN.test(q)) return false;
-  return getIntentCategory(q) === 'general' || BEST_EFFORT_GENERAL_PATTERNS.test(q);
+  return (
+    getIntentCategory(q, intentFrame) === 'general' ||
+    BEST_EFFORT_GENERAL_PATTERNS.test(q)
+  );
 }
 
 export function createPrepareStep(
@@ -295,6 +368,7 @@ export function createPrepareStep(
   options?: {
     enableWebSearch?: boolean;
     enableRAG?: boolean;
+    intentFrame?: DomainIntentFrame;
   }
 ) {
   const routingTrace = createRoutingDecisionTrace(
@@ -305,6 +379,7 @@ export function createPrepareStep(
   const q = query.toLowerCase();
   const webSearchEnabled = options?.enableWebSearch === true;
   const ragEnabled = options?.enableRAG === true;
+  const intentCategory = getIntentCategory(q, options?.intentFrame);
 
   return async ({ stepNumber }: { stepNumber: number }) => {
     if (SIMPLE_CONVERSATION_PATTERNS.test(query.trim())) {
@@ -320,7 +395,10 @@ export function createPrepareStep(
     const shouldForceMetricRanking = shouldForceMetricRankingTool(q);
     const shouldForceKnowledgeBase = ragEnabled && shouldForceKnowledgeBaseTool(q);
     const shouldForceWeb = webSearchEnabled && shouldForceWebSearch(q);
-    const isGeneralBestEffort = isBestEffortGeneralQuery(q);
+    const isGeneralBestEffort = isBestEffortGeneralQuery(
+      q,
+      options?.intentFrame
+    );
 
     if (shouldForceMetricRanking) {
       logger.debug(
@@ -356,19 +434,19 @@ export function createPrepareStep(
 
     let policyIntent: MonitoringToolIntent;
 
-    if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) {
+    if (intentCategory === 'anomaly') {
       policyIntent = 'anomaly';
-    } else if (TOOL_ROUTING_PATTERNS.math.test(q)) {
+    } else if (intentCategory === 'math') {
       policyIntent = 'math';
-    } else if (TOOL_ROUTING_PATTERNS.prediction.test(q)) {
+    } else if (intentCategory === 'prediction') {
       policyIntent = 'prediction';
-    } else if (TOOL_ROUTING_PATTERNS.rca.test(q)) {
+    } else if (intentCategory === 'rca') {
       policyIntent = 'rca';
-    } else if (TOOL_ROUTING_PATTERNS.advisor.test(q)) {
+    } else if (intentCategory === 'advisor') {
       policyIntent = 'advisor';
-    } else if (TOOL_ROUTING_PATTERNS.logs.test(q)) {
+    } else if (intentCategory === 'logs') {
       policyIntent = 'logs';
-    } else if (TOOL_ROUTING_PATTERNS.serverGroup.test(q)) {
+    } else if (intentCategory === 'serverGroup') {
       policyIntent = 'serverGroup';
     } else {
       policyIntent = 'metrics';

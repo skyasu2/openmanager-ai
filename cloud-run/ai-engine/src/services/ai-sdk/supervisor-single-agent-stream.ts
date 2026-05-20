@@ -46,6 +46,7 @@ import {
   appendSupervisorContextPrompt,
   buildSupervisorLogContextPrompt,
 } from './supervisor-log-context';
+import { normalizeSupervisorIntentFrame } from './supervisor-semantic-metadata';
 import {
   buildCircuitOpenErrorEvent,
   buildHardTimeoutErrorEvent,
@@ -289,9 +290,13 @@ export async function* streamSingleAgent(
       const abortController = new AbortController();
       const textDeltaGuard = createStructuredTextDeltaGuard();
 
+      const intentFrame = normalizeSupervisorIntentFrame(
+        request.metadata?.intentFrame
+      );
       const prepareStep = runtimeHost.createPrepareStep(queryText, {
         enableWebSearch: webSearchEnabled,
         enableRAG: ragEnabled,
+        ...(intentFrame && { intentFrame }),
       });
 
       if (!runtimeHost.executeLLMStream) {

@@ -6,6 +6,7 @@ import {
   type AssistantRuntime,
   type AssistantRuntimeAdapters,
   type AssistantRuntimeResult,
+  type DomainIntentFrame,
   type ToolDefinition,
 } from '../../core/assistant-runtime';
 import type {
@@ -85,6 +86,7 @@ export interface AssistantRuntimePromptOptions {
 export interface AssistantRuntimePrepareStepOptions {
   enableWebSearch?: boolean;
   enableRAG?: boolean;
+  intentFrame?: DomainIntentFrame;
 }
 
 export type AssistantRuntimePrepareStep = PrepareStepFunction<ToolSet>;

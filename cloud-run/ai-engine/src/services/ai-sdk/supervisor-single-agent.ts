@@ -85,6 +85,7 @@ import {
   appendSupervisorContextPrompt,
   buildSupervisorLogContextPrompt,
 } from './supervisor-log-context';
+import { normalizeSupervisorIntentFrame } from './supervisor-semantic-metadata';
 import { buildToolResultSummary } from './supervisor-tool-results';
 import { enrichResponseWithToolResults } from './supervisor-response-enrichment';
 
@@ -334,7 +335,10 @@ async function executeSingleAgentMode(
   let lastError: SupervisorError | null = null;
   const failedProviders: ProviderName[] = [];
   const queryText = request.messages.filter((m) => m.role === 'user').pop()?.content ?? '';
-  const queryIntent = getIntentCategory(queryText);
+  const intentFrame = normalizeSupervisorIntentFrame(
+    request.metadata?.intentFrame
+  );
+  const queryIntent = getIntentCategory(queryText, intentFrame);
 
   for (let attempt = 0; attempt <= RETRY_CONFIG.maxRetries; attempt++) {
     if (attempt > 0) {
@@ -475,7 +479,10 @@ async function executeSupervisorAttempt(
       logger.info(`[Supervisor] Using ${provider}/${modelId}`);
 
       const queryText = lastUserMessage?.content || '';
-      const intentCategory = getIntentCategory(queryText);
+      const intentFrame = normalizeSupervisorIntentFrame(
+        request.metadata?.intentFrame
+      );
+      const intentCategory = getIntentCategory(queryText, intentFrame);
 
       let webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
       if (webSearchEnabled && !isTavilyAvailable()) {
@@ -497,6 +504,7 @@ async function executeSupervisorAttempt(
       const prepareStep = runtimeHost.createPrepareStep(queryText, {
         enableWebSearch: webSearchEnabled,
         enableRAG: ragEnabled,
+        ...(intentFrame && { intentFrame }),
       });
       let filteredTools = filterToolsByWebSearch(
         runtimeTools ?? {},
