@@ -251,6 +251,19 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('does not let KRL/SSOT wording collapse into current server health evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query:
+        'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
+      domain: monitoringDomainPack,
+      sessionId: 'session-krl-ssot-boundary',
+      traceId: 'trace-krl-ssot-boundary',
+    });
+
+    expect(support?.id).not.toBe('monitoring-server-health');
+    expect(support).toBeNull();
+  });
+
   it('keeps natural load phrasing on the load peak evidence path instead of generic CPU metrics', async () => {
     const queries = [
       '서버명은 일부러 안 줄게. 전체 기준으로 최근 하루 중 1분 load가 제일 튄 시각이 언제야? 근거 숫자도.',
