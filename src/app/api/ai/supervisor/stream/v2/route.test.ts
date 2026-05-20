@@ -17,6 +17,7 @@ const {
   mockGetAPIAuthContext,
   mockGetRouteMaxExecutionMs,
   mockGetFunctionTimeoutReserveMs,
+  mockExecuteWithCircuitBreakerAndFallback,
 } = vi.hoisted(() => ({
   mockGetActiveStreamId: vi.fn(),
   mockClearActiveStreamId: vi.fn(),
@@ -33,6 +34,7 @@ const {
   mockGetAPIAuthContext: vi.fn(() => null),
   mockGetRouteMaxExecutionMs: vi.fn(),
   mockGetFunctionTimeoutReserveMs: vi.fn(),
+  mockExecuteWithCircuitBreakerAndFallback: vi.fn(),
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
@@ -80,6 +82,11 @@ vi.mock('@/config/ai-proxy.config', () => ({
   getMaxTimeout: mockGetMaxTimeout,
   getRouteMaxExecutionMs: mockGetRouteMaxExecutionMs,
   getFunctionTimeoutReserveMs: mockGetFunctionTimeoutReserveMs,
+}));
+
+vi.mock('@/lib/ai/circuit-breaker', () => ({
+  executeWithCircuitBreakerAndFallback:
+    mockExecuteWithCircuitBreakerAndFallback,
 }));
 
 import { GET, POST } from './route';
@@ -135,6 +142,12 @@ describe('Supervisor Stream V2 Route', () => {
     mockGetRouteMaxExecutionMs.mockReturnValue(60_000);
     mockGetFunctionTimeoutReserveMs.mockReturnValue(1_500);
     mockGetMaxTimeout.mockReturnValue(1000);
+    mockExecuteWithCircuitBreakerAndFallback.mockImplementation(
+      async (_serviceName: string, primaryFn: () => Promise<unknown>) => ({
+        data: await primaryFn(),
+        source: 'primary',
+      })
+    );
     mockFetch.mockResolvedValue(
       new Response(createSseStream(), {
         status: 200,
@@ -1048,13 +1061,65 @@ describe('Supervisor Stream V2 Route', () => {
 
       expect(response.status).toBe(200);
       expect(response.headers.get('X-Fallback-Response')).toBe('true');
+      expect(response.headers.get('x-vercel-ai-ui-message-stream')).toBe('v1');
       expect(response.headers.get('X-AI-Source')).toBe('fallback');
       expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
+      expect(mockExecuteWithCircuitBreakerAndFallback).toHaveBeenCalledWith(
+        'cloud-run-supervisor-stream',
+        expect.any(Function),
+        expect.any(Function)
+      );
       expect(mockFetch).toHaveBeenCalledTimes(1);
 
       const streamText = await response.text();
       expect(streamText).toContain('AI 분석 서비스가 일시적으로 불안정합니다');
+      expect(streamText).toContain('cloud_run_500');
       expect(streamText).not.toContain('⚠️ 오류:');
+    });
+
+    it('Circuit Breaker OPEN 상태면 Cloud Run fetch를 생략하고 fallback 스트림을 반환해야 함', async () => {
+      mockExecuteWithCircuitBreakerAndFallback.mockImplementationOnce(
+        async (
+          _serviceName: string,
+          _primaryFn: () => Promise<unknown>,
+          fallbackFn: () => Promise<unknown> | unknown
+        ) => ({
+          data: await fallbackFn(),
+          source: 'fallback',
+        })
+      );
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-cb-open',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '장애 원인 분석' }],
+            sessionId: 'session-cb-open',
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('X-Fallback-Response')).toBe('true');
+      expect(response.headers.get('x-vercel-ai-ui-message-stream')).toBe('v1');
+      expect(response.headers.get('X-AI-Source')).toBe('fallback');
+      expect(mockExecuteWithCircuitBreakerAndFallback).toHaveBeenCalledWith(
+        'cloud-run-supervisor-stream',
+        expect.any(Function),
+        expect.any(Function)
+      );
+      expect(mockFetch).not.toHaveBeenCalled();
+
+      const streamText = await response.text();
+      expect(streamText).toContain('circuit_breaker_open');
+      expect(streamText).toContain('AI 분석 서비스가 일시적으로 불안정합니다');
     });
 
     it('첫 질의(warmup 헤더)에서 Cloud Run 5xx면 1회 재시도 후 성공할 수 있어야 함', async () => {
