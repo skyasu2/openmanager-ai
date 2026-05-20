@@ -1,0 +1,224 @@
+{
+  "runTitle": "Vercel Playwright MCP Targeted QA - v8.11.184 dashboard and AI state",
+  "owner": "codex",
+  "source": "playwright-mcp+vercel-mcp+curl",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Vercel production deployment dpl_EAfnBF9W49oPUsAVn1cWwz8TAYZw was READY for alias https://openmanager-ai.vercel.app",
+    "/api/version returned version 8.11.184, Next.js 16.1.6, release tag v8.11.184, commit 02a05eba19b7be4d9cc1d19bc9af015d53c6cdce, and GitLab pipeline 2536955714",
+    "/api/health returned success=true with database, cache, and ai services connected",
+    "Landing page rendered and the dashboard CTA opened /dashboard",
+    "Dashboard rendered OTel snapshot state for 18 servers, including total/online/warning/risk/offline counts, system resources, and resource warning top list",
+    "AI assistant sidebar opened from the dashboard and showed AI Engine Ready",
+    "AI prompt '현재 서버 전체 상태를 요약해줘' returned a monitoring-grounded summary through /api/ai/supervisor/stream/v2 with correct total/status counts and the key cache-redis/api-was risk servers",
+    "AI prompt 'Vercel BFF와 Cloud Run AI Engine 책임 경계를 알려줘. KRL 근거가 있으면 함께 알려줘.' returned a visible response, but it used the general conversation path instead of internal KRL evidence and leaked raw tool-call/reasoning markers",
+    "AI prompt 'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.' returned a monitoring-server-health response with correct live status counts, but did not surface the requested KRL/SSOT basis",
+    "AI-related network requests returned HTTP 200 for wake-up, health, and /api/ai/supervisor/stream/v2",
+    "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, and chargeCount 11571 for the current billing period"
+  ],
+  "skippedSurfaces": [
+    "Full release route pack, OAuth provider callback, mobile viewport, Reporter Agent, Analyst Agent advanced tabs, and Vision image upload UI were not included in this targeted state run",
+    "Cloud Run admin monitoring endpoints were not called directly; Vercel /api/health and AI assistant network traffic were used as production-path evidence",
+    "Normal locator-based typing/clicking for the third AI prompt was not available in the active Playwright MCP namespace, so a scripted DOM submit was used and its console side-effect was recorded separately"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EAfnBF9W49oPUsAVn1cWwz8TAYZw",
+    "deploymentUrl": "https://openmanager-8s0qbrpuy-skyasus-projects.vercel.app",
+    "commitSha": "02a05eba19b7be4d9cc1d19bc9af015d53c6cdce"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 9,
+    "failed": 3
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar wake-up",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/wake-up",
+      "source": "Performance API resource timing",
+      "latencyMs": 6284,
+      "processingTimeMs": 6284
+    },
+    {
+      "surface": "AI sidebar overall server summary",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Performance API resource timing and visible assistant footer",
+      "latencyMs": 1354,
+      "processingTimeMs": 1354
+    },
+    {
+      "surface": "AI sidebar Vercel BFF and Cloud Run boundary KRL query",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Performance API resource timing and visible assistant footer",
+      "latencyMs": 18767,
+      "processingTimeMs": 18767
+    },
+    {
+      "surface": "AI sidebar OTel SSOT and KRL follow-up",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP visible response polling",
+      "latencyMs": 1001,
+      "processingTimeMs": 1001
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI assistant overall server summary",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 1354,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "visible assistant metadata: monitoring-server-health"
+    },
+    {
+      "surface": "AI assistant Vercel BFF and Cloud Run boundary KRL query",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 18767,
+      "classification": "drift",
+      "driftReasonCodes": [
+        "krl_evidence_route_missing",
+        "raw_tool_marker_leak"
+      ],
+      "source": "visible assistant metadata: general conversation response"
+    },
+    {
+      "surface": "AI assistant OTel SSOT and KRL follow-up",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 1001,
+      "classification": "drift",
+      "driftReasonCodes": [
+        "requested_krl_context_not_used",
+        "aggregate_metric_parity_warning"
+      ],
+      "source": "visible assistant metadata: monitoring-server-health"
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-20T17:05:30+09:00",
+      "summary": "Current Vercel billing period reviewed after production state QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "Vercel Playwright MCP AI state evidence",
+      "path": "reports/qa/evidence/qa-20260520-v811184-vercel-ai-state.md"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Production AI network requests",
+      "path": "reports/qa/evidence/qa-20260520-v811184-vercel-ai-network.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production console observation",
+      "path": "reports/qa/evidence/qa-20260520-v811184-vercel-ai-console.txt"
+    }
+  ],
+  "playwrightArtifacts": false,
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production deployment is READY, version/health endpoints are coherent, database/cache/ai health checks are connected, AI network responses were 200, and Vercel usage remains within guardrail.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Core AI sidebar status summary works, but project architecture/KRL questions can fall into a general route and the visible answer leaked raw tool-call/reasoning artifacts.",
+      "nextAction": "Add/adjust routing tests for Vercel BFF/Cloud Run and OTel SSOT KRL prompts, then sanitize streamed model text before rendering."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI status counts and top risk servers matched the dashboard, but aggregate CPU/Memory/Disk values differed from the visible dashboard resources in both sampled status prompts.",
+      "nextAction": "Define whether dashboard and AI use the same aggregation source. If yes, fix parity; if not, expose the aggregation semantics in assistant metadata."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "The run used real browser rendering, Vercel MCP deployment lookup, network evidence, and durable QA artifacts; a follow-up should convert these prompts into locator-based Playwright regression coverage.",
+      "nextAction": "Add user-like Playwright regression prompts for KRL platform-boundary routing and raw marker sanitization."
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-krl-platform-boundary-routing-v811184",
+      "title": "Production AI Assistant should route Vercel BFF / Cloud Run boundary questions to internal KRL evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "note": "Playwright MCP production QA showed the platform-boundary prompt was handled as a general conversation/web-style answer, not internal KRL evidence. The OTel SSOT/KRL follow-up also collapsed to monitoring-server-health without surfacing the requested KRL basis."
+    },
+    {
+      "id": "ai-stream-raw-tool-marker-leak-v811184",
+      "title": "Production AI Assistant leaked raw tool-call markers and reasoning JSON in visible response",
+      "priority": "P1",
+      "isBlocking": true,
+      "note": "The visible answer contained <|tool_call_begin|>, 'Nothing to process.', and a reasoning JSON block. Streamed assistant text must be sanitized before rendering."
+    }
+  ],
+  "notes": [
+    "This run validates the deployed production state, not the newest local HEAD. Production is v8.11.184 / 02a05eba19b7be4d9cc1d19bc9af015d53c6cdce, while local HEAD at QA time was 760ca1e0370aa2fcc019abd844137316c945d312.",
+    "Platform-level state is healthy: Vercel READY, /api/version coherent, /api/health connected, AI stream network calls 200, and Vercel usage billed 0.0000 USD.",
+    "Dashboard state and AI count/status summaries are usable. Initial observed state was total 18 / online 16 / warning 1 / risk 1 / offline 0; refreshed state was total 18 / online 17 / warning 1 / risk 0 / offline 0.",
+    "AI aggregate resource values differed from visible dashboard values: 45/54/36 vs AI 39/49/38 on the first prompt, then 41/53/33 vs AI 36/47/35 on the follow-up. This is a state-parity warning unless different aggregation semantics are intentionally used.",
+    "A console TypeError was captured during scripted DOM submit for the third prompt; because it followed a non-standard DOM submit workaround, it is recorded as evidence but not promoted as the primary user-flow failure in this run."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-8s0qbrpuy-skyasus-projects.vercel.app"
+    },
+    {
+      "type": "general",
+      "label": "GitLab release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536955714"
+    }
+  ]
+}

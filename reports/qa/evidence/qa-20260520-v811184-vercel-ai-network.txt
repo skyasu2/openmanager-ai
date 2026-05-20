@@ -1,0 +1,19 @@
+Playwright MCP network evidence - 2026-05-20 KST
+
+[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200]
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+
+Performance API observations:
+
+- /api/ai/wake-up: duration 6284ms, transferSize 328
+- /api/health?service=ai&soft=true: duration 270ms, transferSize 457
+- /api/ai/supervisor/stream/v2 status summary: duration 1354ms, transferSize 6674
+- /api/ai/supervisor/stream/v2 platform-boundary KRL query: duration 18767ms, transferSize 74472
+- OTel/KRL follow-up rendered in about 1001ms through the visible assistant footer.
+
+No non-200 AI network response was observed in the captured Playwright MCP network list.

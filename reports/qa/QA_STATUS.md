@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-20 13:10:25 KST
+> Generated at: 2026-05-20 17:08:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 541 |
-| Total Runs (Counted) | 429 |
+| Total Recorded Runs | 542 |
+| Total Runs (Counted) | 430 |
 | Non-counted Runs | 112 |
-| Total Checks | 3912 |
-| Passed | 3759 |
-| Failed | 142 |
+| Total Checks | 3924 |
+| Passed | 3768 |
+| Failed | 145 |
 | Completed Items | 618 |
-| Pending Items | 0 |
+| Pending Items | 2 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 17 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260519-0538 (2026-05-19T11:08:35.867Z) |
-| Latest Recorded Run | QA-20260520-0543 (2026-05-20T04:10:25.196Z) |
+| Expert Open Gaps | 3 |
+| Completion Rate | 99.68% |
+| Last Counted Run | QA-20260520-0544 (2026-05-20T08:08:43.778Z) |
+| Latest Recorded Run | QA-20260520-0544 (2026-05-20T08:08:43.778Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,74 +34,85 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260520-0543 (2026-05-20T04:10:25.196Z)
+Latest run: QA-20260520-0544 (2026-05-20T08:08:43.778Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Add/adjust routing tests for Vercel BFF/Cloud Run and OTel SSOT KRL prompts, then sanitize streamed model text before rendering. |
+| Data Quality & Metrics Analyst | partially-appropriate | yes | Define whether dashboard and AI use the same aggregation source. If yes, fix parity; if not, expose the aggregation semantics in assistant metadata. |
+| Test Automation Architect | appropriate | yes | Add user-like Playwright regression prompts for KRL platform-boundary routing and raw marker sanitization. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after production state QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-19T04:10:25.196Z -> 2026-05-20T04:10:25.196Z (24h)
-- Runs with observations: 6 recorded / 3 counted
-- Samples: 11
+- Window: 2026-05-19T08:08:43.778Z -> 2026-05-20T08:08:43.778Z (24h)
+- Runs with observations: 5 recorded / 2 counted
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Metrics Query Agent / Supervisor | groq/mistral/zai | 1 | 28809ms | 28809ms | 0ms | 0ms | 28809ms | 28809ms | QA-20260519-0538 |
-| Analyst Agent | mistral | 2 | 14779ms | 23558ms | - | - | - | - | QA-20260519-0535 |
+| Supervisor | cloud-run-ai-engine | 4 | 6852ms | 18767ms | - | - | 6852ms | 18767ms | QA-20260520-0544 |
 | Vision Agent | gemini | 3 | 10809ms | 11774ms | 0ms | 0ms | 10809ms | 11774ms | QA-20260520-0542 |
 | Vision Agent | zai | 2 | 5560ms | 6704ms | 0ms | 0ms | 5560ms | 6704ms | QA-20260520-0541 |
-| Analyst Agent | deterministic | 2 | 137ms | 273ms | - | - | - | - | QA-20260519-0537 |
-| Advisor Agent | deterministic | 1 | 0ms | 0ms | - | - | - | - | QA-20260519-0537 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-19T04:10:25.196Z -> 2026-05-20T04:10:25.196Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
-- Drift rate: 0%
+- Window: 2026-05-19T08:08:43.778Z -> 2026-05-20T08:08:43.778Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 3
+- Drift rate: 66.67%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| - | - | 0 | 0% | - | - | - |
+| /api/ai/supervisor/stream/v2 | single-agent | 1 | 100% | 18767ms | 18767ms | QA-20260520-0544 |
+| /api/ai/supervisor/stream/v2 | deterministic | 2 | 50% | 1178ms | 1354ms | QA-20260520-0544 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA db427c87
-- Coverage Packs: ai-core
-- Covered Surfaces: Vision provider selection contract, Z.AI GLM Vision fallback removal, QA pending item closure
-- Skipped Surfaces: Additional live provider calls, Vercel browser UI integration
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_EAfnBF9W49oPUsAVn1cWwz8TAYZw / SHA 02a05eba
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
+- Covered Surfaces: Vercel production deployment dpl_EAfnBF9W49oPUsAVn1cWwz8TAYZw was READY for alias https://openmanager-ai.vercel.app, /api/version returned version 8.11.184, Next.js 16.1.6, release tag v8.11.184, commit 02a05eba19b7be4d9cc1d19bc9af015d53c6cdce, and GitLab pipeline 2536955714, /api/health returned success=true with database, cache, and ai services connected, Landing page rendered and the dashboard CTA opened /dashboard, Dashboard rendered OTel snapshot state for 18 servers, including total/online/warning/risk/offline counts, system resources, and resource warning top list, AI assistant sidebar opened from the dashboard and showed AI Engine Ready, AI prompt '현재 서버 전체 상태를 요약해줘' returned a monitoring-grounded summary through /api/ai/supervisor/stream/v2 with correct total/status counts and the key cache-redis/api-was risk servers, AI prompt 'Vercel BFF와 Cloud Run AI Engine 책임 경계를 알려줘. KRL 근거가 있으면 함께 알려줘.' returned a visible response, but it used the general conversation path instead of internal KRL evidence and leaked raw tool-call/reasoning markers, AI prompt 'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.' returned a monitoring-server-health response with correct live status counts, but did not surface the requested KRL/SSOT basis, AI-related network requests returned HTTP 200 for wake-up, health, and /api/ai/supervisor/stream/v2, Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, and chargeCount 11571 for the current billing period
+- Skipped Surfaces: Full release route pack, OAuth provider callback, mobile viewport, Reporter Agent, Analyst Agent advanced tabs, and Vision image upload UI were not included in this targeted state run, Cloud Run admin monitoring endpoints were not called directly; Vercel /api/health and AI assistant network traffic were used as production-path evidence, Normal locator-based typing/clicking for the third AI prompt was not available in the active Playwright MCP namespace, so a scripted DOM submit was used and its console side-effect was recorded separately
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab release pipeline | [GitLab release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536955714) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-8s0qbrpuy-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-report | Vercel Playwright MCP AI state evidence | `reports/qa/evidence/qa-20260520-v811184-vercel-ai-state.md` | - |
+| playwright-network | Production AI network requests | `reports/qa/evidence/qa-20260520-v811184-vercel-ai-network.txt` | - |
+| playwright-console | Production console observation | `reports/qa/evidence/qa-20260520-v811184-vercel-ai-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- test-automation: Test Automation Architect (last QA-20260519-0538)
-  next: Add or document a CSRF-safe authenticated Playwright UI flow for image attachment upload when the frontend exposes that control.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260520-0544)
+  next: Add/adjust routing tests for Vercel BFF/Cloud Run and OTel SSOT KRL prompts, then sanitize streamed model text before rendering.
+- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260520-0544)
+  next: Define whether dashboard and AI use the same aggregation source. If yes, fix parity; if not, expose the aggregation semantics in assistant metadata.
+- test-automation: Test Automation Architect (last QA-20260520-0544)
+  next: Add user-like Playwright regression prompts for KRL platform-boundary routing and raw marker sanitization.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-krl-platform-boundary-routing-v811184: Production AI Assistant should route Vercel BFF / Cloud Run boundary questions to internal KRL evidence (seen 1회, last QA-20260520-0544)
+- [P1] ai-stream-raw-tool-marker-leak-v811184: Production AI Assistant leaked raw tool-call markers and reasoning JSON in visible response (seen 1회, last QA-20260520-0544)
 
 ## Deferred Improvements
 
@@ -826,6 +837,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260520-0544 | 2026-05-20T08:08:43.778Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.184 dashboard and AI state | 12 | 0 | 2 | 0 | 0 | 3 |
 | QA-20260520-0543 | 2026-05-20T04:10:25.196Z | targeted | no | no | Vision GLM Fallback Removal Closure | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260520-0542 | 2026-05-20T04:05:02.782Z | targeted | no | no | Cloud Run Gemini Vision Answer Quality Smoke | 3 | 1 | 0 | 0 | 1 | 0 |
 | QA-20260520-0541 | 2026-05-20T03:16:25.342Z | targeted | no | no | Cloud Run Vision Provider Answer Quality Smoke | 2 | 1 | 1 | 0 | 0 | 0 |
@@ -845,4 +857,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260518-0527 | 2026-05-18T14:49:19.097Z | targeted | yes | yes | v8.11.175 Vercel Playwright MCP Reporter Fallback Evidence Fix | 20 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260518-0526 | 2026-05-18T12:23:32.919Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Today Reporter Change Check | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260518-0525 | 2026-05-18T11:57:44.191Z | targeted | yes | yes | v8.11.173 Vercel Playwright MCP Reporter Review Fixes | 12 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260518-0524 | 2026-05-18T10:16:53.509Z | targeted | yes | yes | v8.11.172 Vercel Playwright MCP Reporter Metadata Boundary Check | 15 | 1 | 0 | 0 | 0 | 0 |

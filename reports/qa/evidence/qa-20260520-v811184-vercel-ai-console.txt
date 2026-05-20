@@ -1,0 +1,13 @@
+Playwright MCP console evidence - 2026-05-20 KST
+
+Observed console log:
+
+[ERROR] TypeError: Cannot read properties of undefined (reading 'state')
+    at lR.makeRequest (https://openmanager-ai.vercel.app/_next/static/chunks/600d6b6f988dd8a7.js:1:214293)
+    at async sendMessage (https://openmanager-ai.vercel.app/_next/static/chunks/600d6b6f988dd8a7.js:1:215830)
+
+Context:
+
+- The error appeared during a scripted Playwright DOM submit follow-up used to send the third AI prompt because the MCP session did not expose normal locator typing/click tools in the active namespace.
+- It is recorded as evidence, but not promoted as the primary user-flow failure without a separate user-like reproduction.
+- The primary production failures from this run are visible-response issues: KRL/platform-boundary routing missed internal evidence and raw tool-call/reasoning markers leaked into the AI response.
