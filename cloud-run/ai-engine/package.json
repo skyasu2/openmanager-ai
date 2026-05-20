@@ -44,6 +44,7 @@
     "@opentelemetry/api": "^1.9.1",
     "@supabase/supabase-js": "^2.105.3",
     "@tavily/core": "^0.6.0",
+    "@upstash/redis": "^1.38.0",
     "ai": "6.0.175",
     "dotenv": "^16.4.7",
     "hono": "^4.12.18",
