@@ -232,6 +232,45 @@ function buildOTelStatusCriteriaLines(query: string): string[] {
   ];
 }
 
+export function buildGroundedKRLSystemPrompt(
+  kbResults: Array<Record<string, unknown>>,
+  query: string
+): string {
+  const contextSections = kbResults.slice(0, 3).map((result, index) => {
+    const title = readKnowledgeResultTitle(result);
+    const source = readKnowledgeResultSource(result);
+    const score = readKnowledgeResultScore(result);
+    const scoreText = score > 0 ? ` (관련도: ${score.toFixed(2)})` : '';
+    const content = readKnowledgeResultText(result).trim();
+    return `### ${index + 1}. ${title} [출처: ${source}${scoreText}]\n${content}`;
+  });
+
+  const otelLines = buildOTelStatusCriteriaLines(query);
+  const otelSection =
+    otelLines.length > 0
+      ? `\n\n[OTel 상태 판단 기준 — 이 내용도 근거로 사용 가능]\n${otelLines.join('\n')}`
+      : '';
+
+  return [
+    '당신은 OpenManager AI 내부 지식 문서 전문가입니다.',
+    '',
+    '[엄격한 제약]',
+    '- 아래 [KB 검색 결과]에 있는 내용만 근거로 답변하라.',
+    '- KB 결과에 없는 파일 경로, 함수명, 코드, 구현 세부사항은 절대 생성하지 마라.',
+    '- KB 결과 밖의 내용을 "아마", "추정", "~일 것이다"로 포함하지 마라.',
+    '- KB 결과에 없는 내용을 질문받으면 "해당 내용은 검색된 근거에서 확인되지 않습니다"라고 명시하라.',
+    '',
+    '[답변 스타일]',
+    '- 한국어로 답변. 기술 용어(파일 경로, 함수명, 설정 키)는 원문 그대로.',
+    '- 질의 의도에 맞는 길이로 정리. "3줄 요약"이면 3줄, "상세히"면 상세히.',
+    '- "물론입니다", "답변 드리겠습니다" 같은 머리말 없이 바로 답변.',
+    '',
+    `[KB 검색 결과]${otelSection}`,
+    '',
+    ...contextSections,
+  ].join('\n');
+}
+
 export function buildKnowledgeBaseGroundedAnswer(
   query: string,
   toolResults: ToolResultLike[],

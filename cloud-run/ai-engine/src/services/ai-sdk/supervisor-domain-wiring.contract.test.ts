@@ -8,6 +8,7 @@ const {
   mockExecuteMultiAgent,
   mockExecuteMultiAgentStream,
   mockGetSupervisorModel,
+  mockGetAdvisorModel,
   mockRecordModelUsage,
   mockIsSingleModeAllowed,
   mockCreateSupervisorTrace,
@@ -26,6 +27,11 @@ const {
     model: { modelId: 'groq-model' },
     provider: 'groq',
     modelId: 'groq-model',
+  })),
+  mockGetAdvisorModel: vi.fn(() => ({
+    model: { modelId: 'mistral-medium' },
+    provider: 'mistral',
+    modelId: 'mistral-medium',
   })),
   mockRecordModelUsage: vi.fn(async () => undefined),
   mockIsSingleModeAllowed: vi.fn(() => false),
@@ -112,6 +118,10 @@ vi.mock('./model-provider', () => ({
   getVisionAgentModel: vi.fn(() => null),
   recordModelUsage: mockRecordModelUsage,
   logProviderStatus: vi.fn(),
+}));
+
+vi.mock('./agents/config/agent-model-selectors', () => ({
+  getAdvisorModel: mockGetAdvisorModel,
 }));
 
 vi.mock('../../config/timeout-config', () => ({
@@ -739,6 +749,11 @@ describe('supervisor domain wiring contract', () => {
         },
       ],
     });
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'OpenManager OTel 데이터 SSOT 경로는 pre-generated OTel data slot을 SSOT로 사용합니다.',
+      steps: [],
+      usage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+    });
 
     const runtimeHost = createMonitoringAssistantRuntimeHost();
     const events = [];
@@ -781,8 +796,10 @@ describe('supervisor domain wiring contract', () => {
         success: true,
         toolsCalled: ['searchKnowledgeBase'],
         metadata: {
-          provider: 'deterministic',
-          modelId: 'knowledge-search-direct',
+          provider: 'mistral',
+          modelId: 'mistral-medium',
+          groundingMode: 'llm-synthesized',
+          kbSourceCount: 1,
         },
       },
     });
