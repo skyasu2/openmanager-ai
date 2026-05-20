@@ -62,52 +62,8 @@
   position: fixed;
   inset: 0;
   z-index: 2;
-  contain: paint;
-  overflow: hidden;
   pointer-events: none;
-}
-
-.mouse-spotlight::before {
-  content: none;
-}
-
-.mouse-spotlight__fragment {
-  position: absolute;
-  left: var(--anchor-x, 50vw);
-  top: var(--anchor-y, 42vh);
-  width: var(--fragment-w);
-  height: var(--fragment-h);
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  border-radius: 1px;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow:
-    0 0 10px rgba(255, 255, 255, 0.18),
-    0 0 22px rgba(255, 255, 255, 0.08);
-  opacity: var(--fragment-opacity, 0.34);
-  transform: translate3d(
-      calc(var(--fragment-x) + var(--react-x, 0px)),
-      calc(var(--fragment-y) + var(--react-y, 0px)),
-      0
-    )
-    rotate(calc(var(--fragment-rotate) + var(--react-rotate, 0deg)))
-    scale(var(--react-scale, 1));
-  transition:
-    opacity 160ms ease,
-    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
-  animation: mouse-fragment-idle 5.6s ease-in-out infinite;
-  animation-delay: var(--fragment-delay);
-  will-change: transform, opacity;
-}
-
-@keyframes mouse-fragment-idle {
-  0%,
-  100% {
-    filter: brightness(0.92);
-  }
-
-  50% {
-    filter: brightness(1.18);
-  }
+  display: block;
 }
 
 .finger-pointer-primary {
@@ -185,7 +141,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .landing-visual-surface .wave-particles,
-  .mouse-spotlight__fragment,
   .finger-pointer-primary,
   .finger-pointer-dashboard,
   .finger-pointer-ai {
@@ -196,7 +151,7 @@
     opacity: 0.5;
   }
 
-  .mouse-spotlight__fragment {
-    opacity: 0.28;
+  .mouse-spotlight {
+    display: none;
   }
 }

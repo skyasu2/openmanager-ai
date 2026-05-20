@@ -2,18 +2,64 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MouseSpotlight } from './MouseSpotlight';
 
+const mockCtx = {
+  clearRect: vi.fn(),
+  beginPath: vi.fn(),
+  arc: vi.fn(),
+  fill: vi.fn(),
+  moveTo: vi.fn(),
+  lineTo: vi.fn(),
+  stroke: vi.fn(),
+  setTransform: vi.fn(),
+  fillStyle: '',
+  strokeStyle: '',
+  lineWidth: 0,
+};
+
+let frameCallback: FrameRequestCallback | undefined;
+let cancelAnimationFrameMock = vi.fn();
+
+function mockMatchMedia(matches: boolean) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
+
 describe('MouseSpotlight', () => {
   beforeEach(() => {
-    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
-      window.setTimeout(() => callback(performance.now()), 0)
+    vi.clearAllMocks();
+    frameCallback = undefined;
+    let frameId = 0;
+
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn((callback: FrameRequestCallback) => {
+        frameCallback = callback;
+        return ++frameId;
+      })
     );
-    vi.stubGlobal('cancelAnimationFrame', (id: number) =>
-      window.clearTimeout(id)
+    cancelAnimationFrameMock = vi.fn();
+    vi.stubGlobal('cancelAnimationFrame', cancelAnimationFrameMock);
+
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      mockCtx as unknown as CanvasRenderingContext2D
     );
+
+    mockMatchMedia(false);
   });
 
   afterEach(() => {
@@ -21,98 +67,48 @@ describe('MouseSpotlight', () => {
     vi.restoreAllMocks();
   });
 
-  it('시스템 시작 버튼을 기준점으로 삼고 조각을 마우스 방향에 반응시킨다', async () => {
-    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
-      function getMockRect() {
-        if (
-          (this as HTMLElement).getAttribute('data-spotlight-anchor') ===
-          'system-start'
-        ) {
-          return {
-            x: 100,
-            y: 200,
-            left: 100,
-            top: 200,
-            right: 260,
-            bottom: 264,
-            width: 160,
-            height: 64,
-            toJSON: () => ({}),
-          };
-        }
-
-        return {
-          x: 0,
-          y: 0,
-          left: 0,
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: 0,
-          height: 0,
-          toJSON: () => ({}),
-        };
-      }
-    );
-
-    const { container } = render(
-      <>
-        <button type="button" data-spotlight-anchor="system-start">
-          시스템 시작
-        </button>
-        <MouseSpotlight />
-      </>
-    );
-
-    const spotlight = screen.getByTestId('mouse-spotlight');
-    const firstFragment = container.querySelector<HTMLElement>(
-      '.mouse-spotlight__fragment'
-    );
-
-    await waitFor(() => {
-      expect(spotlight.style.getPropertyValue('--anchor-x')).toBe('180px');
-      expect(spotlight.style.getPropertyValue('--anchor-y')).toBe('232px');
-    });
-
-    fireEvent.mouseMove(window, { clientX: 260, clientY: 320 });
-
-    await waitFor(() => {
-      expect(firstFragment?.style.getPropertyValue('--react-x')).not.toBe(
-        '0.00px'
-      );
-      expect(firstFragment?.style.getPropertyValue('--react-y')).not.toBe(
-        '0.00px'
-      );
-      expect(firstFragment?.style.getPropertyValue('--react-rotate')).not.toBe(
-        '0.00deg'
-      );
-      expect(
-        Number(firstFragment?.style.getPropertyValue('--react-scale'))
-      ).toBeGreaterThan(1);
-      expect(
-        Number(firstFragment?.style.getPropertyValue('--fragment-opacity'))
-      ).toBeGreaterThan(0.28);
-      expect(
-        Number(firstFragment?.style.getPropertyValue('--fragment-opacity'))
-      ).toBeLessThanOrEqual(0.62);
-    });
+  it('renders a canvas with the mouse spotlight test id', () => {
+    render(<MouseSpotlight />);
+    const el = screen.getByTestId('mouse-spotlight');
+    expect(el.tagName).toBe('CANVAS');
+    expect(el).toHaveClass('mouse-spotlight');
+    expect(mockCtx.setTransform).toHaveBeenCalled();
   });
 
-  it('오비트 링 없이 반응 조각만 렌더링한다', () => {
-    const { container } = render(<MouseSpotlight />);
-    const fragments = Array.from(
-      container.querySelectorAll<HTMLElement>('.mouse-spotlight__fragment')
-    );
+  it('does not draw the canvas when reduced motion is enabled', () => {
+    mockMatchMedia(true);
 
-    expect(fragments).toHaveLength(24);
-    fragments.forEach((fragment) => {
-      const width = fragment.style.getPropertyValue('--fragment-w');
-      const height = fragment.style.getPropertyValue('--fragment-h');
+    render(<MouseSpotlight />);
+    expect(mockCtx.clearRect).not.toHaveBeenCalled();
+  });
 
-      expect(width).toBe(height);
-      expect(Number(width.replace('px', ''))).toBeLessThanOrEqual(5);
-    });
-    expect(container.querySelector('.mouse-spotlight__orbit')).toBeNull();
-    expect(container.querySelector('.mouse-spotlight__signal')).toBeNull();
+  it('subscribes to mousemove events', () => {
+    const addSpy = vi.spyOn(window, 'addEventListener');
+    render(<MouseSpotlight />);
+    const calls = addSpy.mock.calls.map(([event]) => event);
+    expect(calls).toContain('mousemove');
+  });
+
+  it('cleans up event listeners and rAF on unmount', () => {
+    const removeSpy = vi.spyOn(window, 'removeEventListener');
+    const { unmount } = render(<MouseSpotlight />);
+    unmount();
+    expect(removeSpy).toHaveBeenCalledWith('mousemove', expect.any(Function));
+    expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+    expect(cancelAnimationFrameMock).toHaveBeenCalled();
+  });
+
+  it('draws on the canvas after a mousemove event', () => {
+    render(<MouseSpotlight />);
+    mockCtx.clearRect.mockClear();
+    mockCtx.arc.mockClear();
+    mockCtx.fill.mockClear();
+
+    fireEvent.mouseMove(window, { clientX: 300, clientY: 400 });
+    frameCallback?.(performance.now());
+
+    expect(mockCtx.clearRect).toHaveBeenCalled();
+    expect(mockCtx.arc).toHaveBeenCalled();
+    expect(mockCtx.fill).toHaveBeenCalled();
   });
 });
