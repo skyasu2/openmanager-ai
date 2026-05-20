@@ -34,6 +34,22 @@ function buildIntentFrame(
   };
 }
 
+function buildSemanticIntentFrame(
+  overrides: Partial<DomainIntentFrame> = {}
+): DomainIntentFrame {
+  return {
+    domainId: 'openmanager-monitoring',
+    intent: 'anomaly_detection',
+    capabilityId: 'monitoring.anomaly_detection',
+    scope: 'whole_fleet',
+    targets: [],
+    ambiguity: 'low',
+    executionMode: 'multi',
+    confidence: 0.91,
+    ...overrides,
+  };
+}
+
 describe('createSystemPrompt', () => {
   it('should include answer quality rules for exact counts and free-tier aligned recommendations', () => {
     const prompt = createSystemPrompt('desktop');
@@ -348,6 +364,54 @@ describe('getIntentCategory', () => {
     // "이상" matches anomaly before "서버" matches metrics
     expect(getIntentCategory('서버 이상 탐지')).toBe('anomaly');
   });
+
+  it('should prefer high-confidence semantic intentFrame over regex fallback', () => {
+    expect(
+      getIntentCategory(
+        '서버 상태 알려줘',
+        buildSemanticIntentFrame({
+          intent: 'anomaly_detection',
+          capabilityId: 'monitoring.anomaly_detection',
+          confidence: 0.91,
+        })
+      )
+    ).toBe('anomaly');
+
+    expect(
+      getIntentCategory(
+        '서버 상태 알려줘',
+        buildSemanticIntentFrame({
+          intent: 'ops_advice',
+          capabilityId: 'monitoring.ops_advice',
+          confidence: 0.8,
+        })
+      )
+    ).toBe('advisor');
+
+    expect(
+      getIntentCategory(
+        '서버 상태 알려줘',
+        buildSemanticIntentFrame({
+          intent: 'metric_trend',
+          capabilityId: 'monitoring.metric_trend',
+          confidence: 0.86,
+        })
+      )
+    ).toBe('prediction');
+  });
+
+  it('should keep regex fallback for low-confidence semantic intentFrame', () => {
+    expect(
+      getIntentCategory(
+        '서버 상태 알려줘',
+        buildSemanticIntentFrame({
+          intent: 'anomaly_detection',
+          capabilityId: 'monitoring.anomaly_detection',
+          confidence: 0.7,
+        })
+      )
+    ).toBe('metrics');
+  });
 });
 
 describe('getLLMParamsForIntent', () => {
@@ -399,6 +463,38 @@ describe('createPrepareStep', () => {
     expect(result.activeTools).toContain('detectAnomaliesAllServers');
     expect(result.activeTools).toContain('detectAnomalies');
     expect(result.toolChoice).toBe('required');
+  });
+
+  it('should route semantic anomaly intentFrame to anomaly tools even when regex reads as metrics', async () => {
+    const prepare = createPrepareStep('서버 상태 알려줘', {
+      intentFrame: buildSemanticIntentFrame({
+        intent: 'anomaly_detection',
+        capabilityId: 'monitoring.anomaly_detection',
+        confidence: 0.91,
+      }),
+    });
+
+    const result = await prepare({ stepNumber: 0 });
+
+    expect(result.activeTools).toContain('detectAnomaliesAllServers');
+    expect(result.activeTools).toContain('detectAnomalies');
+    expect(result.toolChoice).toBe('required');
+  });
+
+  it('should keep regex tool policy for low-confidence semantic intentFrame', async () => {
+    const prepare = createPrepareStep('서버 상태 알려줘', {
+      intentFrame: buildSemanticIntentFrame({
+        intent: 'anomaly_detection',
+        capabilityId: 'monitoring.anomaly_detection',
+        confidence: 0.7,
+      }),
+    });
+
+    const result = await prepare({ stepNumber: 0 });
+
+    expect(result.activeTools).toContain('getServerMetrics');
+    expect(result.activeTools).not.toContain('detectAnomalies');
+    expect(result.toolChoice).toBe('auto');
   });
 
   it('should route math queries to math tools', async () => {

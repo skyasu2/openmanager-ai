@@ -243,6 +243,7 @@ import {
   type AssistantDomain,
   type AssistantRequestContext,
   type DomainEvidenceProvider,
+  type DomainIntentFrame,
   type ToolDefinition,
 } from '../../core/assistant-runtime';
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
@@ -301,7 +302,17 @@ function createSampleDomain(
   return domain as AssistantDomain;
 }
 
-function createSampleRuntimeHost(evidenceProviders?: DomainEvidenceProvider[]) {
+function createSampleRuntimeHost(
+  evidenceProviders?: DomainEvidenceProvider[],
+  createPrepareStep?: (
+    query: string,
+    options?: {
+      enableWebSearch?: boolean;
+      enableRAG?: boolean;
+      intentFrame?: DomainIntentFrame;
+    }
+  ) => undefined
+) {
   const sampleTool: ToolDefinition = {
     name: SAMPLE_TOOL_NAME,
     description: 'Returns deterministic sample account health.',
@@ -329,6 +340,7 @@ function createSampleRuntimeHost(evidenceProviders?: DomainEvidenceProvider[]) {
       jobQueue: 'in-memory',
     },
     executionAdapter: {
+      ...(createPrepareStep && { createPrepareStep }),
       executeLLMStream(params) {
         return mockStreamText(params);
       },
@@ -365,6 +377,17 @@ function readSystemPrompt(value: unknown): string | undefined {
     ? firstMessage.content
     : undefined;
 }
+
+const sampleIntentFrame: DomainIntentFrame = {
+  domainId: 'openmanager-monitoring',
+  intent: 'anomaly_detection',
+  capabilityId: 'monitoring.anomaly_detection',
+  scope: 'whole_fleet',
+  targets: [],
+  ambiguity: 'low',
+  executionMode: 'single',
+  confidence: 0.91,
+};
 
 describe('supervisor domain wiring contract', () => {
   beforeEach(() => {
@@ -429,6 +452,57 @@ describe('supervisor domain wiring contract', () => {
     expect(readToolNames(tools)).toContain(SAMPLE_TOOL_NAME);
     expect(readToolNames(tools)).not.toContain('legacyMonitoringOnly');
     expect(systemPrompt).toBe('Sample support domain.');
+  });
+
+  it('passes semantic intentFrame into single-agent prepareStep options', async () => {
+    const createPrepareStep = vi.fn(() => undefined);
+    const runtimeHost = createSampleRuntimeHost(undefined, createPrepareStep);
+
+    await executeSupervisor({
+      ...createSupervisorRequest(runtimeHost),
+      metadata: { intentFrame: sampleIntentFrame },
+    });
+
+    expect(createPrepareStep).toHaveBeenCalledWith(
+      'account health please',
+      expect.objectContaining({
+        enableWebSearch: false,
+        enableRAG: false,
+        intentFrame: expect.objectContaining({
+          capabilityId: 'monitoring.anomaly_detection',
+          confidence: 0.91,
+        }),
+      })
+    );
+  });
+
+  it('passes semantic intentFrame into stream prepareStep options', async () => {
+    const createPrepareStep = vi.fn(() => undefined);
+    const runtimeHost = createSampleRuntimeHost(undefined, createPrepareStep);
+    const events = [];
+
+    for await (const event of executeSupervisorStream({
+      ...createSupervisorRequest(runtimeHost),
+      metadata: { intentFrame: sampleIntentFrame },
+    })) {
+      events.push(event);
+    }
+
+    expect(events.at(-1)).toMatchObject({
+      type: 'done',
+      data: { success: true },
+    });
+    expect(createPrepareStep).toHaveBeenCalledWith(
+      'account health please',
+      expect.objectContaining({
+        enableWebSearch: false,
+        enableRAG: false,
+        intentFrame: expect.objectContaining({
+          capabilityId: 'monitoring.anomaly_detection',
+          confidence: 0.91,
+        }),
+      })
+    );
   });
 
   it('passes the injected runtime host domain data source to multi-agent execution', async () => {
