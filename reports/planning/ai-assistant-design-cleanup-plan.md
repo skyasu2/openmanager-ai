@@ -233,6 +233,8 @@ export function getOffDomainGuardrail(query: string): OffDomainGuardrailResult |
 
 **예외 고려**: 순수 외부 액션(캘린더 잡아줘, 이메일 보내줘)은 서버 컨텍스트가 없으므로 여전히 차단된다.
 
+**구현 상태 (2026-05-20)**: 완료. `hasOperationalContext()`를 external action guard보다 먼저 평가하도록 정렬했다. 운영 컨텍스트가 있는 Slack/메일 초안 요청은 통과하고, 순수 일정/예약/메일 실행 요청은 계속 external action으로 차단한다.
+
 ---
 
 ### Task 2-B: 라우팅 결정 로직 단순화 (🟠)
@@ -397,7 +399,7 @@ useLayoutEffect(() => {
 - [x] `useHybridAIQuery` test: `useChat` 호출에서 `resume` 활성화 계약 제거 또는 false 유지 확인
 - [x] `supervisor/route.ts` test: 복잡한 "보고서/근본 원인" query가 202 redirect를 반환하지 않음
 - [x] `useQueryExecution` test: local dev JSON fallback에서 202 response가 빈 응답 오류로 변환되지 않음
-- [ ] `off-domain-guard` test: `"서버 장애 알림 Slack으로 공유해줘"`는 `null`, `"팀 회의 일정 잡아줘"`는 `external_action`
+- [x] `off-domain-guard` test: `"서버 장애 알림 Slack으로 공유해줘"`는 `null`, `"팀 회의 일정 잡아줘"`는 `external_action`
 - [ ] `query-classifier` test: `classifyQuery()`가 동기 순수 함수로 동일 classification을 반환하고 `source: 'llm'`을 노출하지 않음
 - [ ] circuit breaker tests: distributed state store 제거 후 status summary가 `in-memory` 기준으로 안정 동작
 
@@ -432,7 +434,7 @@ useLayoutEffect(() => {
 - [x] **P0 Task 1-C**: `test(spec):` commit — server resumable 비활성/제거, 클라이언트 resume 없이 정상 스트리밍 확인
 - [x] **P1 Task 2-B + 1-A**: `test(spec):` commit — 202 redirect 미발생, local dev fallback 202 방어 처리, 동일 쿼리 routing 결과 일관성 확인
 - [ ] **P2 Task 1-B**: `test(spec):` commit — stream/v2 Cloud Run failure가 CB fallback으로 전환되고 OPEN 상태에서 upstream fetch를 생략
-- [ ] **P1 Task 2-A**: `test(spec):` commit — 서버 컨텍스트 + 외부액션 쿼리 통과 확인
+- [x] **P1 Task 2-A**: `test(spec):` commit — 서버 컨텍스트 + 외부액션 쿼리 통과 확인
 
 ---
 
