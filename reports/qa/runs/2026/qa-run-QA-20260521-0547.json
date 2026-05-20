@@ -1,0 +1,174 @@
+{
+  "runId": "QA-20260521-0547",
+  "recordedAt": "2026-05-20T23:37:20.403Z",
+  "recordedAtKst": "2026-05-21 08:37:20 KST",
+  "runTitle": "Vercel Playwright QA - v8.11.192 Grounded KRL OTel Criteria",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8WCBUoDexHcw36bifUAUdHb6S5aN",
+    "deploymentUrl": "https://openmanager-9tidb1ua7-skyasus-projects.vercel.app",
+    "commitSha": "edb28d016186c801b85c6f23a4fe9267f7656442"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.11.192 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke",
+    "Production /api/version returned version 8.11.192, release tag v8.11.192, commit edb28d016186c801b85c6f23a4fe9267f7656442, and pipeline 2541915101",
+    "Production /api/health?service=ai returned healthy Cloud Run AI Engine version 8.11.192",
+    "Landing page rendered on Vercel production and the hero OpenManager AI title was visible",
+    "Landing hero AI span used landing-title-ai with filter none, mix-blend-mode normal, opacity 1, text-rendering geometricprecision, and text-shadow none",
+    "Guest login succeeded and returned to the landing route without exposing the guest PIN in evidence",
+    "Dashboard opened from the landing CTA using the guest session route",
+    "Dashboard summary displayed total 18, online 17, warning 1, risk 0, offline 0",
+    "AI Assistant opened from dashboard and submitted the KRL/OTel status criteria prompt through the visible UI",
+    "AI stream endpoint /api/ai/supervisor/stream/v2 returned 200 with X-AI-Latency-Ms 4201",
+    "AI answer displayed KRL/OTel grounding and included OTel status criteria: P0 offline, P1/P2 critical, P3/P4 warning, P99 online",
+    "AI answer did not expose raw tool markers or reasoning JSON",
+    "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571"
+  ],
+  "skippedSurfaces": [
+    "Mobile viewport, Reporter/Analyst advanced surfaces, Vision image upload, OAuth provider callbacks, and long-running job stream QA were not included in this targeted release verification",
+    "Playwright MCP navigation was attempted first but the MCP Chrome profile was locked by another session; the same production URL was validated with an isolated Playwright Chromium runtime instead of killing the existing MCP process"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Assistant KRL/OTel status criteria",
+      "agent": "Supervisor direct knowledge path",
+      "provider": "grounded llm synthesis",
+      "model": "advisor model",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright UI stopwatch + X-AI-Latency-Ms header",
+      "latencyMs": 10695,
+      "ttfbMs": 4201,
+      "processingTimeMs": 4201
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The KRL/OTel prompt used the production chat UI and verified grounding evidence, status criteria coverage, and raw marker sanitization.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The dashboard counts matched the 18-server OTel snapshot and the AI answer included the OTel SSOT status criteria.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "devops-sre",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Vercel production deploy, Cloud Run AI Engine deploy, and post-deploy smoke all passed for v8.11.192.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP profile lock was handled without terminating another session; isolated Playwright produced durable screenshots and evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-21T08:35:36+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.11.192 production QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.11.192 production Playwright evidence",
+      "path": "reports/qa/evidence/qa-20260521-v811192-production-playwright.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing hero AI text",
+      "path": "reports/qa/evidence/qa-20260521-v811192-landing-ai.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard status summary",
+      "path": "reports/qa/evidence/qa-20260521-v811192-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI KRL OTel status criteria answer",
+      "path": "reports/qa/evidence/qa-20260521-v811192-ai-krl.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-krl-otel-status-criteria-llm-v811192",
+      "title": "Grounded LLM KRL answers now deterministically include OTel status criteria when asked",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production AI answer included P0 offline, P1/P2 critical, P3/P4 warning, and P99 online; targeted and full AI Engine tests passed.",
+      "note": "A pre-fix v8.11.191 production run showed that LLM synthesis could omit explicit threshold lines even when the system prompt made them available.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Initial deployment check found v8.11.191 production healthy before this fix: GitLab tag pipeline 2541129177 success, Vercel deployment READY, /api/version 8.11.191, AI health ok.",
+    "A live v8.11.191 Playwright run exposed a nondeterministic gap: grounded LLM synthesis could answer the SSOT/KRL boundary without enumerating P0/P1/P3/P99 criteria. The fix appends the deterministic OTel criteria when the LLM omits them.",
+    "Local verification before release: targeted AI Engine tests 34/34 PASS, AI Engine type-check PASS, AI Engine full test 138 files / 1370 tests PASS, git diff --check PASS.",
+    "Console captured one expected 401 resource message during unauthenticated/background API access; it did not affect login, dashboard, or AI chat flow.",
+    "Request failures were limited to aborted background/navigation requests during route changes and were not user-visible blocking failures."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.192",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2541915101"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-9tidb1ua7-skyasus-projects.vercel.app/"
+    }
+  ]
+}
