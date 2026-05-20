@@ -18,6 +18,9 @@ vi.mock('./routing/query-routing-signals', () => ({
 }));
 
 vi.mock('./supervisor-stream-citations', () => ({
+  appendOTelStatusCriteriaIfMissing: vi.fn(
+    (_query: string, answer: string) => answer
+  ),
   buildGroundedKRLSystemPrompt: vi.fn(() => 'mock-grounded-system-prompt'),
   buildKnowledgeBaseGroundedAnswer: vi.fn(
     (_query: string) => '템플릿 답변: 내부 근거 기반'

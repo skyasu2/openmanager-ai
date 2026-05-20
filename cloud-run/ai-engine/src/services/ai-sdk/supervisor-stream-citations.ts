@@ -232,6 +232,26 @@ function buildOTelStatusCriteriaLines(query: string): string[] {
   ];
 }
 
+export function appendOTelStatusCriteriaIfMissing(
+  query: string,
+  answer: string
+): string {
+  const criteriaLines = buildOTelStatusCriteriaLines(query);
+  if (criteriaLines.length === 0) return answer;
+
+  const hasCompleteCriteria =
+    answer.includes('OTel 상태 판단 기준') &&
+    answer.includes('P0 offline') &&
+    answer.includes('P1/P2 critical') &&
+    answer.includes('P3/P4 warning') &&
+    answer.includes('P99 online');
+  if (hasCompleteCriteria) return answer;
+
+  const trimmedAnswer = answer.trim();
+  const criteriaText = criteriaLines.join('\n').trim();
+  return [trimmedAnswer, criteriaText].filter(Boolean).join('\n\n');
+}
+
 export function buildGroundedKRLSystemPrompt(
   kbResults: Array<Record<string, unknown>>,
   query: string
@@ -248,7 +268,7 @@ export function buildGroundedKRLSystemPrompt(
   const otelLines = buildOTelStatusCriteriaLines(query);
   const otelSection =
     otelLines.length > 0
-      ? `\n\n[OTel 상태 판단 기준 — 이 내용도 근거로 사용 가능]\n${otelLines.join('\n')}`
+      ? `\n\n[OTel 상태 판단 기준 — 이 질문에는 답변에 반드시 포함]\n${otelLines.join('\n')}`
       : '';
 
   return [

@@ -15,6 +15,7 @@ import {
   type SupervisorRouteDecision,
 } from './supervisor-mode';
 import {
+  appendOTelStatusCriteriaIfMissing,
   buildGroundedKRLSystemPrompt,
   buildKnowledgeBaseGroundedAnswer,
 } from './supervisor-stream-citations';
@@ -199,7 +200,7 @@ export async function* streamDirectKnowledgeSearchIfMatched({
       const llmResult = await tryGroundedLLMSynthesis(systemPrompt, queryText);
 
       if (llmResult.ok) {
-        answer = llmResult.text;
+        answer = appendOTelStatusCriteriaIfMissing(queryText, llmResult.text);
         groundingMode = 'llm-synthesized';
         resolvedProvider = llmResult.provider;
         resolvedModelId = llmResult.modelId;

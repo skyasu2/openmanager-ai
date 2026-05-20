@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  appendOTelStatusCriteriaIfMissing,
   buildKnowledgeBaseGroundedAnswer,
   buildWebCitationAppendix,
   buildWebSearchFallbackAnswer,
@@ -265,5 +266,36 @@ describe('buildWebSearchFallbackAnswer', () => {
     expect(answer).toContain(`CPU ${THRESHOLDS.cpu.warning}%`);
     expect(answer).toContain(`Memory ${THRESHOLDS.memory.warning}%`);
     expect(answer).toContain(`Disk ${THRESHOLDS.disk.warning}%`);
+  });
+
+  it('appends OTel status criteria to LLM synthesized answers when omitted', () => {
+    const answer = appendOTelStatusCriteriaIfMissing(
+      'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
+      'KRL은 절차적 근거를 제공하고 OTel slot이 현재 메트릭 SSOT입니다.'
+    );
+
+    expect(answer).toContain('KRL은 절차적 근거를 제공');
+    expect(answer).toContain('OTel 상태 판단 기준');
+    expect(answer).toContain('P0 offline');
+    expect(answer).toContain('P1/P2 critical');
+    expect(answer).toContain('P3/P4 warning');
+    expect(answer).toContain('P99 online');
+  });
+
+  it('does not append OTel status criteria when already complete', () => {
+    const completeAnswer = [
+      'OTel 상태 판단 기준',
+      '- P0 offline: CPU, Memory, Disk가 모두 0인 경우',
+      '- P1/P2 critical: 임계값 이상인 경우',
+      '- P3/P4 warning: 경고 임계값 이상인 경우',
+      '- P99 online: warning 임계값 미만인 경우',
+    ].join('\n');
+
+    expect(
+      appendOTelStatusCriteriaIfMissing(
+        'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
+        completeAnswer
+      )
+    ).toBe(completeAnswer);
   });
 });

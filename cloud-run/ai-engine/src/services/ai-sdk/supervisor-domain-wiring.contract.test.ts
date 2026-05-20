@@ -790,6 +790,11 @@ describe('supervisor domain wiring contract', () => {
     );
     expect(streamedText).toContain('OpenManager OTel 데이터 SSOT 경로');
     expect(streamedText).toContain('pre-generated OTel');
+    expect(streamedText).toContain('OTel 상태 판단 기준');
+    expect(streamedText).toContain('P0 offline');
+    expect(streamedText).toContain('P1/P2 critical');
+    expect(streamedText).toContain('P3/P4 warning');
+    expect(streamedText).toContain('P99 online');
     expect(doneEvent).toMatchObject({
       type: 'done',
       data: {
