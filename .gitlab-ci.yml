@@ -26,6 +26,7 @@
   - supabase/config.toml
   - package.json
   - package-lock.json
+  - biome.json
   - next.config.mjs
   - tsconfig.json
   - vercel.json
@@ -54,6 +55,7 @@
   - supabase/config.toml
   - package.json
   - package-lock.json
+  - biome.json
   - next.config.mjs
   - tsconfig.json
   - vercel.json
