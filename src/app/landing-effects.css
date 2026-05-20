@@ -41,9 +41,10 @@
 .landing-title-ai {
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
-  text-shadow:
-    0 2px 9px rgba(0, 0, 0, 0.76),
-    0 0 14px rgba(125, 211, 252, 0.18);
+  filter: none;
+  mix-blend-mode: normal;
+  opacity: 1;
+  text-shadow: none;
 }
 
 .landing-hero-subtitle,
