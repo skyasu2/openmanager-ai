@@ -653,7 +653,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         }
 
         // 1. 쿼리 분류
-        const classification = await classifyQuery(query);
+        const classification = classifyQuery(query);
 
         if (process.env.NODE_ENV === 'development') {
           logger.info(

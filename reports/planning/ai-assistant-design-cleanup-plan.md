@@ -332,6 +332,8 @@ export function classifyQuery(query: string): QueryClassification {
 
 `useQueryExecution.ts`의 `await classifyQuery(query)` → `classifyQuery(query)` (동기 호출)
 
+**구현 상태 (2026-05-20)**: 완료. 상태 없는 `QueryClassifier` singleton/class export를 제거하고 `classifyQuery(query)`를 동기 순수 함수로 전환했다. `QueryClassification.source?: 'llm' | 'fallback'` 필드도 제거해 실제 LLM 호출이 없는 classifier 표면과 타입을 일치시켰다. `useQueryExecution.ts`는 `await` 없이 동기 classification 결과를 사용한다.
+
 ---
 
 ### Task 3-C: `IDistributedStateStore` 연결점 정리 (🟡)
@@ -408,14 +410,14 @@ useLayoutEffect(() => {
 - [x] `supervisor/route.ts` test: 복잡한 "보고서/근본 원인" query가 202 redirect를 반환하지 않음
 - [x] `useQueryExecution` test: local dev JSON fallback에서 202 response가 빈 응답 오류로 변환되지 않음
 - [x] `off-domain-guard` test: `"서버 장애 알림 Slack으로 공유해줘"`는 `null`, `"팀 회의 일정 잡아줘"`는 `external_action`
-- [ ] `query-classifier` test: `classifyQuery()`가 동기 순수 함수로 동일 classification을 반환하고 `source: 'llm'`을 노출하지 않음
+- [x] `query-classifier` test: `classifyQuery()`가 동기 순수 함수로 동일 classification을 반환하고 `source: 'llm'`을 노출하지 않음
 - [ ] circuit breaker tests: distributed state store 제거 후 status summary가 `in-memory` 기준으로 안정 동작
 
 ### Resolved Decisions
 
 - [x] `stream/v2` GET은 explicit 405 handler로 고정한다. Redis resume은 제거하지만 클라이언트/테스트가 status를 예측할 수 있게 한다.
 - [x] `IDistributedStateStore` public re-export는 제거한다. 구현 시 `rg`와 type-check로 외부 import 파손 여부를 확인하고, 테스트는 in-memory status 계약으로 갱신한다.
-- [x] `QueryClassifier` class export 제거는 Task 3-E에서 별도 `rg` 확인 후 진행한다. `classifyQuery()` 함수 export는 유지한다.
+- [x] `QueryClassifier` class export 제거는 Task 3-B에서 별도 `rg` 확인 후 진행한다. `classifyQuery()` 함수 export는 유지한다.
 
 ---
 
@@ -429,7 +431,7 @@ useLayoutEffect(() => {
 | Done | 1-B (stream/v2 CB 적용) | M | 2026-05-20 완료. in-memory CB, fallback/header/OPEN-state test 포함 |
 | Done | 2-C (아키텍처 주석 업데이트) | XS | 2026-05-20 완료 |
 | Done | 3-A (_filterMaliciousOutput 제거) | S | 2026-05-20 완료 |
-| P3 | 3-B (QueryClassifier → 순수 함수) | S | |
+| Done | 3-B (QueryClassifier → 순수 함수) | S | 2026-05-20 완료 |
 | P3 | 3-C (IDistributedStateStore 제거) | S | |
 | Done | 3-D (warmingUpRef useLayoutEffect) | XS | 2026-05-20 완료 |
 
@@ -443,6 +445,7 @@ useLayoutEffect(() => {
 - [x] **P1 Task 2-B + 1-A**: `test(spec):` commit — 202 redirect 미발생, local dev fallback 202 방어 처리, 동일 쿼리 routing 결과 일관성 확인
 - [x] **P2 Task 1-B**: `test(spec):` commit — stream/v2 Cloud Run failure가 CB fallback으로 전환되고 OPEN 상태에서 upstream fetch를 생략
 - [x] **P1 Task 2-A**: `test(spec):` commit — 서버 컨텍스트 + 외부액션 쿼리 통과 확인
+- [x] **P3 Task 3-B**: `test(spec):` commit — `classifyQuery()` 동기 순수 함수 계약과 `source` metadata 미노출 확인
 
 ---
 
