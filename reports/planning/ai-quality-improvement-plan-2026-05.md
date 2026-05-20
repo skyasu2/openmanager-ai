@@ -12,8 +12,9 @@
 
 **전제 제약**:
 - Free Tier 한도: Upstash 500K 커맨드/월, Supabase Free Tier, Groq RPD 1,000
-- KB hard max: 64건 (현재 60건 → 여유 4건)
+- KB governance: target 72건, hard max 80건. 2026-05-21 `cloud-run/ai-engine` `npm run rag:analyze` 기준 현재 67건이며 전체 PASS.
 - Cloud Run: 1 vCPU, 512Mi
+- 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
 ---
 
@@ -21,57 +22,77 @@
 
 | 항목 | 현재 상태 | 목표 |
 |------|-----------|------|
-| KRL grounded synthesis | v8.11.191~192 신규 도입, v8.11.192 OTel criteria production QA 완료 | 잔여 QA 시나리오 완료 |
-| KB corpus | 60건 (hard max 64) | 우선순위 카테고리 보강 |
+| KRL grounded synthesis | v8.11.191~192 신규 도입, v8.11.192 OTel criteria production QA 완료 | production 추가 호출은 변경 발생 시만 수행 |
+| KB corpus | 67건 (target 72, hard max 80), governance PASS | 현 상태 유지 |
 | 세션 메모리 | session-memory.ts 71줄, 최대 20메시지 | Supabase 기반 지속 (P3) |
 | Z.AI 안정성 | Reporter primary 편입 5일차 | 안정성 관찰 게이트 통과 |
 | intentFrame 신뢰도 | 0.8 임계값, 실제 적중률 미측정 | 실측 후 임계값 교정 |
-| Redis R-5 | 예산 초안 완료, 실측 보정 대기 | Upstash 대시보드 확인 |
+| Redis R-5 | 예산 초안 완료, 실측 보정 대기 | dashboard/management API 접근 가능 시만 보정 |
 | bundlemon | warn-first 관찰 중 (2026-05-30 마일스톤) | blocking 승격 여부 결정 |
 
 ---
 
-## Task A: grounded KRL production QA (🔴 즉시)
+## 2026-05-21 실행 판단
+
+이번 계획 정정의 목적은 **할 일을 늘리는 것**이 아니라, stale 전제와 과잉 QA를 제거하는 것이다.
+
+| 항목 | 판단 | 근거 |
+|------|------|------|
+| Task A 추가 production LLM QA | 기본 보류 | v8.11.192 OTel criteria production QA가 최고위험 회귀를 이미 확인했다. command/script와 metadata 확인은 다음 KRL 변경 시 targeted로 수행한다. |
+| Task A KB 실패 fallback production 재현 | 미진행 | 운영 KB/도구 실패를 인위적으로 만들면 production 안정성 검증이 아니라 장애 주입이 된다. unit/contract test로만 검증한다. |
+| Task B Upstash 실측 보정 | 사용자 액션 필요 | 소비량은 Upstash dashboard 또는 management API 권한이 있어야 확인 가능하다. Redis data REST credential만으로 billing/usage metric을 조회하지 않는다. |
+| Task C KRL corpus 보강 | 미진행 | 현재 67건, target 72/hard 80, `security=5`, `incident=9`, governance PASS. 추가 seed는 필요성이 없다. |
+| Task D intentFrame 10회 live sampling | 보류 | 실 LLM 호출과 Langfuse trace 접근이 필요하다. 임계값 변경 근거가 생길 때 별도 측정한다. |
+| Task E Supabase session memory | Backlog 유지 | 신규 기능/DB schema 변경이므로 별도 Approved plan과 failing test 선행 커밋 전에는 착수하지 않는다. |
+| Task F Z.AI 안정성 | 관찰 지속 | 마감일은 2026-05-23. 현재는 코드 작업 대상이 아니다. |
+
+---
+
+## Task A: grounded KRL production QA (부분 완료, 추가 호출 보류)
 
 **근거**: v8.11.191(`feat(ai): grounded LLM synthesis for direct KRL knowledge path`)과
 v8.11.192(`fix(ai): keep otel criteria in grounded krl answers`)는 FORCE_KB_QUERY_PATTERN
 경로 전체를 변경했다. unit test 5개가 추가됐으나 production end-to-end QA가 없다.
 
-**대상 시나리오**:
-1. `명령어 알려줘` / `스크립트 보여줘` 류 → grounded LLM synthesis 경로 확인
-2. OTel criteria(cpu/memory/disk 임계값) 포함 KRL 답변 반환 확인
-3. KB 검색 실패 시 template fallback 동작 확인
-4. `groundingMode: llm-synthesized` vs `template-fallback` 메타데이터 반환 확인
+**대상 시나리오와 현재 판단**:
+1. `명령어 알려줘` / `스크립트 보여줘` 류 → 다음 KRL command/script 경로 변경 시 targeted QA로 수행
+2. OTel criteria(cpu/memory/disk 임계값) 포함 KRL 답변 반환 확인 → `QA-20260521-0547` 완료
+3. KB 검색 실패 시 template fallback 동작 확인 → production 인위 재현 금지, unit/contract test로 검증
+4. `groundingMode: llm-synthesized` vs `template-fallback` 메타데이터 반환 확인 → UI 노출 계약이 아니므로 unit/contract test 우선
 
 **수용 기준**:
-- Vercel production 대상 Playwright MCP QA 4개 시나리오 PASS
-- `groundingMode` 메타데이터 응답에 포함 확인
-- OTel 기반 수치(임계값, 서버 상태)가 KRL 답변 안에 보존됨 확인
+- Vercel production 대상 OTel criteria QA PASS (`QA-20260521-0547`)
+- `groundingMode` metadata는 supervisor direct-knowledge unit/contract test에서 확인
+- KB failure fallback은 production 장애 주입 없이 deterministic test로만 확인
+- 추가 KRL command/script runtime 변경이 발생하면 1회 targeted production QA를 별도 기록
 
 **2026-05-21 진행 상태**:
 - 완료: `QA-20260521-0547`에서 v8.11.192 production 대상 OTel criteria UI QA 통과.
   - `/api/version=8.11.192`, Cloud Run AI Engine health `8.11.192`.
   - Dashboard 18대 OTel summary와 AI KRL/OTel 답변의 `P0/P1/P3/P99` 기준 포함 확인.
   - Playwright MCP 프로필 잠금으로 기존 세션을 종료하지 않고 isolated Playwright로 동일 production URL을 검증.
-- 잔여: command/script, KB 실패 fallback, `groundingMode` 메타데이터 직접 확인 시나리오.
+- 잔여 처리:
+  - command/script production QA는 현재 릴리스 차단 항목이 아니다.
+  - KB 실패 fallback production 재현은 하지 않는다.
+  - `groundingMode` metadata 직접 확인은 UI/API 계약 변경 시 재평가한다.
 
-**예상 소요**: 30분 (QA 실행 + 기록)
+**예상 소요**: 현재 추가 작업 없음. 변경 발생 시 targeted QA 15~30분.
 
 - [x] OTel criteria production UI QA 실행
 - [x] `npm run qa:record` 로 결과 기록 (`QA-20260521-0547`)
-- [ ] command/script 시나리오 Playwright MCP QA 실행
-- [ ] KB 실패 fallback 시나리오 확인
-- [ ] `groundingMode` 메타데이터 확인
-- [ ] 회귀 발견 시 즉시 hotfix 커밋
+- [ ] command/script 경로가 변경될 때 targeted QA 실행
+- [x] KB 실패 fallback은 production 재현 대상에서 제외
+- [x] `groundingMode` 메타데이터는 contract/unit test 검증 대상으로 분류
+- [ ] 회귀 발견 시 별도 hotfix 커밋
 
 ---
 
-## Task B: Redis R-5 완결 (🟡 간단)
+## Task B: Redis R-5 완결 (사용자 액션 필요)
 
 **근거**: `redis-usage-cleanup-plan.md` R-5 체크리스트에 실측 보정 항목이 미완 상태.
 
 **작업**:
-- Upstash 대시보드 접속 → 일간/월간 커맨드 소비 실측치 확인
+- Upstash 대시보드 또는 management API 권한으로 일간/월간 커맨드 소비 실측치 확인
 - `docs/reference/architecture/infrastructure/redis-usage.md` 내 예산 섹션 수치 보정
 - redis-usage-cleanup-plan.md R-5 `[x]` 체크 완료 후 archive 이동 판단
 
@@ -79,49 +100,54 @@ v8.11.192(`fix(ai): keep otel criteria in grounded krl answers`)는 FORCE_KB_QUE
 - 실측 커맨드 소비량 기록됨
 - 문서 예상치와 실측치 간 괴리가 20% 초과 시 소비원 재분석
 
-**예상 소요**: 15분
+**현재 판단**:
+- 로컬 Redis data REST credential은 key/value 접근용이며, billing/usage metric 확인 권한으로 사용하지 않는다.
+- dashboard/management API 접근이 확보되기 전까지 문서 수치 보정은 진행하지 않는다.
 
-- [ ] Upstash 대시보드 소비 확인
+**예상 소요**: dashboard 접근 확보 후 15분
+
+- [ ] Upstash 대시보드 또는 management API로 소비 확인
 - [ ] redis-usage.md 수치 보정
 - [ ] redis-usage-cleanup-plan.md R-5 최종 체크
 - [ ] 모든 Task 완료 시 plan 파일 archive 이동
 
 ---
 
-## Task C: KRL corpus 보강 (🟠 중간)
+## Task C: KRL corpus 보강 (현시점 불필요)
 
-**근거**: 현재 KB 60건(`architecture=5`, `command=25`, `incident=9`, `best_practice=9`, `security=1`).
-hard max 64 기준 4건 추가 여지. `security` 카테고리가 1건으로 지나치게 얕다.
+**기존 근거의 폐기 사유**: 이 계획 초안은 과거 KB 60건, hard max 64 전제를 사용했다.
+2026-05-20 KRL corpus cap expansion 이후 live KB는 이미 67건이고 target/hard cap은 72/80이다.
 
-**우선 보강 대상** (hard max 64 엄수, 초과 시 rollback):
-- `security` 카테고리: +2건 (보안 강화 절차, 접근 제어 점검 명령어)
-- `incident` 카테고리: +2건 (스토리지 장애 대응, 네트워크 지연 RCA 시나리오)
+**2026-05-21 live inventory** (`cloud-run/ai-engine` `npm run rag:analyze`):
+- `total_docs=67`
+- target max `72`, hard max `80`
+- `architecture=8`, `best_practice=9`, `command=25`, `incident=9`, `security=5`, `troubleshooting=11`
+- governance checks PASS
 
-**작업 순서**:
-1. `npm run rag:analyze` → 현재 60건, 관계 참조 0건 확인
-2. seed SQL 작성 → `supabase/seeds/kb-security-incident.sql`
-3. `npx supabase db push` 또는 직접 SQL 실행
-4. `npm run rag:analyze` → 64건 이하 확인
-5. `npm run supabase:rag:smoke` → 16/16 PASS 확인
+**판단**:
+- `security=5`는 현재 target 범위 상단에 도달했다.
+- `incident=9`도 기존 목표 범위 안이다.
+- 추가 seed 작성, Supabase 적용, smoke/QA record는 지금 수행하지 않는다.
 
-**SDD 게이트**: corpus 변경은 SQL seed 파일이 구현체. 별도 failing test 불필요(smoke로 대체).
+**재개 조건**:
+- `npm run rag:analyze`에서 category coverage FAIL 발생
+- production KRL QA에서 특정 운영 질문의 top result 누락 재현
+- 신규 정책/운영 문서가 실제 런타임 답변에 반드시 필요해짐
 
 **수용 기준**:
-- KB 총계 ≤ 64건
-- `npm run supabase:rag:smoke` 16/16 PASS
-- 신규 security/incident 항목이 smoke 쿼리에서 top result로 반환
+- 현 상태 유지. 별도 DB/seed 변경 없음.
+- 재개 조건 발생 시 별도 plan update 후 진행.
 
-**예상 소요**: 45분
+**예상 소요**: 0분 (no-op)
 
-- [ ] `npm run rag:analyze` 현재 상태 확인
-- [ ] seed SQL 작성 (security ×2, incident ×2)
-- [ ] Supabase 적용
-- [ ] smoke 검증 (16/16 PASS)
-- [ ] `npm run qa:record` 기록
+- [x] `npm run rag:analyze` 현재 상태 확인
+- [x] seed SQL 작성 미진행 결정
+- [x] Supabase 적용 미진행 결정
+- [x] smoke/QA record 미진행 결정
 
 ---
 
-## Task D: intentFrame 신뢰도 실측 (🟡 관찰)
+## Task D: intentFrame 신뢰도 실측 (관찰, 보류)
 
 **근거**: `selectExecutionMode()`에서 intentFrame은 confidence ≥ 0.8 이상일 때만 routing primary signal로 채택된다(`INTENT_FRAME_EXECUTION_MODE_CONFIDENCE = 0.8`). 실제 production에서 이 임계값을 충족하는 비율이 얼마인지 측정된 적이 없다.
 
@@ -140,6 +166,11 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - 실측 신뢰도 분포: 0.8 초과 비율이 50% 미만이면 임계값 0.7 하향 검토
 - Groq `llama-4-scout` NLQ 추출 품질 및 정확도 확인
 
+**현재 판단**:
+- 10회 live sampling은 실 LLM 호출과 Langfuse trace 접근이 필요하므로 일반 계획 정리 작업에서 실행하지 않는다.
+- routing 회귀 또는 confidence 임계값 관련 production 증상이 재현될 때 별도 측정한다.
+- 임계값 변경은 계약 변경에 해당하므로 Approved plan + failing test 선행 후 진행한다.
+
 **수용 기준**:
 - 10회 샘플에서 confidence 분포 기록
 - 0.8 임계값 적합성 판단 보고서 (유지/하향/상향)
@@ -147,7 +178,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 **예상 소요**: 30분 (관찰) + 필요시 30분 (임계값 조정)
 
-- [ ] Langfuse 또는 로컬 dev 서버로 10회 쿼리 confidence 샘플링
+- [ ] 필요성 재확인 후 Langfuse 또는 로컬 dev 서버로 10회 쿼리 confidence 샘플링
 - [ ] 분포 결과 기록
 - [ ] 임계값 유지 / 조정 결정
 
@@ -211,19 +242,21 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 | Task | 우선순위 | 상태 | 예상 소요 | 마감 기준 |
 |------|:------:|------|:---------:|-----------|
-| A: grounded KRL production QA | 🔴 즉시 | Draft | 30분 | v8.11.192 이후 즉시 |
-| B: Redis R-5 완결 | 🟡 쉬움 | Draft | 15분 | 언제든 |
-| C: KRL corpus 보강 | 🟠 중간 | Draft | 45분 | 이번 주 내 |
-| F: Z.AI 안정성 관찰 | 🟡 추적 | Draft | 관찰 | 마감: 2026-05-23 |
-| D: intentFrame 신뢰도 측정 | 🟡 관찰 | Draft | 30분 | A/C 완료 후 |
+| A: grounded KRL production QA | 🟡 조건부 | 부분 완료, 추가 호출 보류 | 변경 시 15~30분 | KRL runtime 변경 시 |
+| B: Redis R-5 완결 | 🟡 사용자 액션 | 접근 권한 대기 | 접근 후 15분 | dashboard/API 가능 시 |
+| C: KRL corpus 보강 | — | No-op | 0분 | coverage FAIL 발생 시 재개 |
+| F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
+| D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |
 | E: 세션 메모리 확장 | 🟢 중장기 | Draft | 2~3시간 | Backlog |
 
 ---
 
 ## 완료 기준
 
-모든 Task A~D가 완료되면 이 계획서를 `archive/`로 이동한다.
-Task E는 완료 시 별도 TODO.md 항목으로 격상하거나 완료 처리한다.
+- Task A 추가 QA, Task B 실측, Task D 측정은 조건 충족 시만 수행한다.
+- Task C는 현재 no-op으로 닫고, 재개 조건 발생 전까지 DB/seed 변경을 금지한다.
+- Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
+- Task E는 별도 Approved plan 없이는 구현하지 않는다.
 
 ---
 
