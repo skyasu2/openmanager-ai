@@ -228,28 +228,25 @@ describe('/api/ai/supervisor legacy route contract', () => {
     });
   });
 
-  it('복잡한 보고서 요청은 job queue redirect로 전환한다', async () => {
+  it('복잡한 보고서 요청도 legacy route에서 202 job queue redirect를 반환하지 않는다', async () => {
     mockAnalyzeQueryComplexity.mockReturnValueOnce({
       level: 'very_complex',
       recommendedTimeout: 120_000,
     });
+    mockIsCloudRunEnabled.mockReturnValue(true);
 
     const response = await POST(
       createSupervisorRequest(
-        validSupervisorBody('지난 7일 장애 근본 원인 보고서 작성해줘')
+        validSupervisorBody('지난 7일 장애 근본 원인 보고서 작성해줘'),
+        { accept: 'application/json' }
       )
     );
     const payload = await response.json();
 
-    expect(response.status).toBe(202);
-    expect(response.headers.get('X-Redirect-Mode')).toBe('job-queue');
-    expect(payload).toMatchObject({
-      success: true,
-      redirect: 'job-queue',
-      complexity: 'very_complex',
-      estimatedTime: 120,
-    });
-    expect(mockHandleCloudRunJson).not.toHaveBeenCalled();
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-Redirect-Mode')).toBeNull();
+    expect(payload).not.toHaveProperty('redirect');
+    expect(mockHandleCloudRunJson).toHaveBeenCalledTimes(1);
   });
 
   it('Cloud Run 비활성화 시 legacy fallback JSON과 route contract headers를 반환한다', async () => {

@@ -40,6 +40,7 @@ describe('useQueryExecution', () => {
   afterEach(() => {
     process.env.NODE_ENV = originalNodeEnv;
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   beforeEach(() => {
@@ -242,6 +243,58 @@ describe('useQueryExecution', () => {
       text: 'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
     });
     expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+  });
+
+  it('local dev legacy fallback은 202 job queue redirect를 빈 응답 오류로 바꾸지 않는다', async () => {
+    process.env.NODE_ENV = 'development';
+    const fetchMock = vi.fn(async () =>
+      Response.json(
+        {
+          success: true,
+          redirect: 'job-queue',
+        },
+        { status: 202 }
+      )
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const deps = createDeps();
+    const query = '서버 상태 알려줘';
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery(query);
+    });
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/ai/supervisor',
+        expect.objectContaining({ method: 'POST' })
+      );
+    });
+
+    const assistantUpdater = deps.setMessages.mock.calls
+      .map(([updater]) => updater)
+      .find((updater) => typeof updater === 'function') as
+      | ((prev: UIMessage[]) => UIMessage[])
+      | undefined;
+    expect(assistantUpdater).toBeDefined();
+
+    const nextMessages = assistantUpdater?.([]);
+    const assistantText =
+      nextMessages?.at(-1)?.parts?.[0]?.type === 'text'
+        ? nextMessages.at(-1)?.parts?.[0]?.text
+        : '';
+    expect(assistantText).toContain('비동기');
+
+    const finalStateUpdater = deps.setState.mock.calls.at(-1)?.[0];
+    expect(typeof finalStateUpdater).toBe('function');
+    const finalState = (
+      finalStateUpdater as (prev: HybridQueryState) => HybridQueryState
+    )(createBaseState());
+    expect(finalState.isLoading).toBe(false);
+    expect(finalState.error).toBeNull();
+    expect(finalState.warmingUp).toBe(false);
   });
 
   it('off-domain live fact query는 LLM 전송 없이 deterministic guard 응답을 남긴다', async () => {
