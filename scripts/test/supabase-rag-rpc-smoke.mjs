@@ -179,6 +179,17 @@ const checks = [
     },
   },
   {
+    label: 'search_knowledge_text:category-security',
+    minRows: 1,
+    expectedCategory: 'security',
+    expectedTopTitleIncludesAny: ['보안 인시던트'],
+    args: {
+      p_query_text: '보안 인시던트 ssh 접근 인증 실패',
+      p_max_results: 3,
+      p_filter_category: 'security',
+    },
+  },
+  {
     label: 'search_knowledge_text:mysql-connection-alias',
     minRows: 1,
     expectedTopCategoryIn: ['incident', 'troubleshooting'],

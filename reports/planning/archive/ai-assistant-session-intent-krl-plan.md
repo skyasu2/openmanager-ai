@@ -1,5 +1,5 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-20
 > Tags: ai-engine, routing, session-memory, rag
@@ -45,7 +45,7 @@ useAIChatCore.sessionId
 - category: `command=25`, `troubleshooting=11`, `incident=9`, `best_practice=9`, `architecture=5`, `security=1`
 - source: `command_vectors_migration=25`, `seed_script=30`, `imported=3`, `manual=2`
 - 길이: 60/60건 모두 target band, 중복 title 0건
-- `npm run supabase:rag:smoke`: 16/16 PASS
+- `npm run supabase:rag:smoke`: 17/17 PASS (`security` category smoke 추가 후 재확인)
 - `npm run rag:analyze`: RAG-GOV 전체 PASS
 
 결론: Supabase/RAG는 현재 장애 상태가 아니다. 다만 `command` 비율이 25/60 = 41.7%로 정책 상한 42%에 거의 도달했고, `architecture=5`는 현재 target max다. 기존 계획의 hard max 80 상향 또는 `security +4`, `architecture +3` 직접 추가는 현 거버넌스와 충돌한다.
@@ -221,12 +221,17 @@ architecture 보강은 이미 max=5이므로 기존 항목 개선/교체 우선
 - [x] T1: live Supabase KB/RPC 상태 확인
 - [x] T2: `npm run supabase:rag:smoke` 확인 — 16/16 PASS
 - [x] T3: `npm run rag:analyze` 확인 — RAG-GOV 전체 PASS
-- [ ] T4: security 보강이 필요하면 +1 또는 기존 문서 교체 방식으로 seed SQL 작성
-- [ ] T5: architecture 보강은 신규 추가보다 기존 5건의 content 품질 개선/교체 우선
-- [ ] T6: hard max 80 상향은 별도 policy 변경 PR과 테스트 없이는 진행하지 않음
+- [x] T4: security 보강 필요성 판단 — 현재 `security=1`은 정책 범위 안이며 직접 seed 추가는 보류. 대신 `search_knowledge_text:category-security` live smoke를 추가해 기존 보안 문서 검색 회귀를 고정
+- [x] T5: architecture 보강 판단 — `architecture=5`가 현 target max이므로 신규 추가 없음. topology/OTel SSOT smoke와 `rag:analyze` coverage guard로 기존 5건 유지 확인
+- [x] T6: hard max 80 상향 보류 — `HARD_MAX_TOTAL_DOCS=64`, target 60 정책 유지. 별도 policy/test 변경 없이 상향하지 않음
 
 **예상 공수**: 1~2시간
 **영향 범위**: Supabase KB 테이블 only (코드 변경 없음)
+
+**완료 검증 (2026-05-20)**:
+- live smoke: `npm run supabase:rag:smoke` — 17/17 PASS
+- live governance: `cd cloud-run/ai-engine && npm run rag:analyze` — 60 docs, command 25/60=41.7%, category coverage 전체 PASS
+- DB write: 없음. 현재 corpus는 목표치 안에 있으므로 replacement-only seed도 불필요
 
 ---
 
@@ -243,9 +248,10 @@ A1 (P2, Codex 위임 가능)
   → feat: getIntentCategory intentFrame 후속 정책 연결 커밋
   → AI Engine type-check + full test 통과
 
-A3 (P3, 사용자 확인 후 / 현재 write 보류)
-  → 필요 시 replacement-only seed SQL 준비
-  → 적용 후 supabase:rag:smoke + rag:analyze PASS
+A3 (P3, 완료 / 현재 write 보류)
+  → replacement-only seed 불필요로 판단
+  → security category smoke 추가
+  → supabase:rag:smoke + rag:analyze PASS
 ```
 
 **병렬 가능**: A1 테스트 설계와 A2 구현 설계는 병렬 가능.
