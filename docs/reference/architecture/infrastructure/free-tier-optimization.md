@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-20
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.11.156+ | **Updated**: 2026-05-16
+> **프로젝트 버전**: v8.11.184+ | **Updated**: 2026-05-20
 
 ## 개요
 
@@ -214,6 +214,7 @@ Supabase 무료 티어는 **1주일 미사용 시 자동 일시 정지**.
 ### Job Queue 상태 저장 경계
 
 현재 async Job Queue는 **Redis와 Cloud Tasks를 함께 사용**합니다. Redis는 queue worker가 아니라 상태 저장소이며, Cloud Tasks가 실제 worker HTTP delivery를 담당합니다.
+이 경로는 과거 Vercel timeout 회피를 위해 도입됐고, 현재도 `useHybridAIQuery`/`useAsyncAIQuery`와 Cloud Run job worker에 연결되어 있습니다. 유지/제거 결정은 [Redis 정비 계획](../../../../reports/planning/redis-usage-cleanup-plan.md) R-0에서 별도로 확정합니다.
 
 | 계층 | 역할 | 비용/한도 관점 |
 |------|------|---------------|
@@ -225,21 +226,23 @@ Redis 장애 시 async Job Queue는 결과를 보존할 수 없으므로 fail-fa
 
 ### Stream 저장/재개 비용 경고
 
-Streaming resume chunk 저장은 `AI_RESUMABLE_STREAMS_ENABLED=true`일 때만 활성화됩니다. 기본값은 비활성이라 일반 streaming 응답은 Redis chunk 저장 비용을 만들지 않습니다. 단, async Job Queue 경로는 별도이며 job 상태/진행률/결과 저장을 위해 Redis를 계속 사용합니다.
+Streaming resume chunk 저장은 `AI_RESUMABLE_STREAMS_ENABLED=true`일 때 서버에서 활성화될 수 있으나, 현재 클라이언트는 `resume: false`로 고정되어 resume을 시도하지 않습니다. 따라서 이 Redis 사용은 비용 대비 제품 효과가 없는 제거 대상이며, `ai-assistant-design-cleanup-plan.md` Task 1-C에서 정리합니다. async Job Queue 경로는 별도이며 job 상태/진행률/결과 저장을 위해 Redis를 사용합니다.
 
-| 경로 | Redis 동작 |
-|------|-----------|
-| resumable 스트림 시작 (`AI_RESUMABLE_STREAMS_ENABLED=true`) | session `SET` + meta `SET` + chunk마다 `RPUSH`/`EXPIRE` |
-| 재개 조회 | session `GET` + meta `GET` + `LRANGE` (반복 가능) |
-| 종료/정리 | session `DEL` + data/meta `DEL` |
-| async Job Queue | job `SET`, progress `SET`, SSE stream `MGET` polling |
+| 경로 | Redis 동작 | 현재 판단 |
+|------|-----------|-----------|
+| resumable 스트림 시작 (`AI_RESUMABLE_STREAMS_ENABLED=true`) | session `SET` + meta `SET` + chunk마다 `RPUSH`/`EXPIRE` | client resume 미사용, 제거 예정 |
+| 재개 조회 | session `GET` + meta `GET` + `LRANGE` (반복 가능) | client 호출 없음 |
+| 종료/정리 | session `DEL` + data/meta `DEL` | 제거 예정 |
+| async Job Queue | job `SET`, progress `SET`, SSE stream `MGET` polling | R-0에서 유지/제거 결정 |
 
 > **포트폴리오 제약**: 명령 수는 청크 수와 resume/cleanup 경로에 따라 달라집니다. 응답 청크 증가, 재시도 확대, 재개 polling 증가는 모두 Redis 사용량 증가로 직결됩니다.
 > 동시 사용자가 늘어나면 500K commands/월 한도가 빠르게 병목이 될 수 있습니다.
 
-### Pipeline 배칭
+### Redis Circuit Breaker 저장소 주의
 
-Circuit Breaker 상태 저장 시 개별 호출 대신 Pipeline으로 묶어 커맨드 수를 절약:
+Vercel Redis-backed Circuit Breaker store는 구현돼 있지만 request path에 연결되어 있지 않습니다. 현재는 InMemory Circuit Breaker만 동작하며, Redis 분산 CB는 `ai-assistant-design-cleanup-plan.md` Task 3-C에서 제거 또는 내부 future hook으로 축소할 예정입니다.
+
+향후 분산 CB를 다시 연결한다면 개별 호출을 pipeline으로 묶어 네트워크 왕복을 줄입니다. command 과금 집계는 Upstash dashboard 기준으로 확인합니다.
 
 ```typescript
 // ❌ Bad: 3 커맨드
@@ -247,7 +250,7 @@ await redis.hset(key, data);
 await redis.expire(key, ttl);
 await redis.hgetall(key);
 
-// ✅ Good: 1 Pipeline = 1 커맨드로 집계
+// ✅ Good: 네트워크 왕복 감소
 const pipeline = redis.pipeline();
 pipeline.hset(key, data);
 pipeline.expire(key, ttl);
@@ -258,10 +261,12 @@ await pipeline.exec();
 
 | 기능 | Redis 정상 | Redis 장애 |
 |------|----------|----------|
-| Circuit Breaker | 분산 상태 (인스턴스 간 공유) | InMemory 폴백 (인스턴스 독립) |
+| Circuit Breaker | 현재 Vercel request path 미연결 | InMemory 전용 동작 유지 |
 | Job Queue | Redis 상태/결과 저장 + Cloud Tasks worker delivery | job 생성/조회 503, Cloud Tasks 단독 복구 불가 |
-| Stream 재개 | 세션/청크 Redis 저장 | 신규 세션으로 시작 |
+| Stream 재개 | 서버 저장 가능하지만 client resume 미사용 | 제품 영향 없음, 제거 대상 |
 | AI Cache | Redis L2 캐시 | Memory LRU만 사용 |
+| Rate Limit / Guest PIN | 서버리스 인스턴스 간 공유 | in-memory fallback, 인스턴스 간 공유 약화 |
+| Cloud Run quota / Langfuse usage | 재시작 후 카운터 복원 | in-memory fallback, 재시작 후 카운터 기억 약화 |
 
 ---
 

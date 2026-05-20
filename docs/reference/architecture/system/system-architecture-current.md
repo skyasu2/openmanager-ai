@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-20
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -12,7 +12,9 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.11.159+ 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
+**OpenManager AI v8.11.184+ 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
+
+관계 기준은 **Vercel BFF/protocol boundary + Cloud Run AI runtime ownership**입니다. Vercel은 browser-facing UI, auth/session, guard, rate-limit, AI SDK UIMessage stream proxy를 맡고, Cloud Run은 Hono 기반 Supervisor, Direct Router, specialist agent, provider mesh, long-running AI compute를 맡습니다.
 
 | 항목 | 수치 |
 |------|------|
@@ -52,7 +54,7 @@ graph TB
 
     subgraph External["External Services"]
         Supabase["Supabase<br/>(PostgreSQL + Auth/RLS)"]
-        Redis["Upstash Redis<br/>(Cache, Stream, Job State)"]
+        Redis["Upstash Redis<br/>(Cache, Optional Stream State,<br/>Job State)"]
         CloudTasks["Cloud Tasks<br/>(Async Job Dispatch)"]
         LLM["LLM Providers<br/>(Groq, Z.AI, Mistral,<br/>Cerebras, Gemini)"]
     end
@@ -78,7 +80,7 @@ graph TB
     API -->|Short Job Dispatch| Hono
     Hono -->|CreateTask| CloudTasks
     CloudTasks -->|POST /api/jobs/process| Hono
-    Hono -->|Stream Resume, Job Result| Redis
+    Hono -->|Job Result + Optional Stream State| Redis
     NextJS --> Providers
 ```
 
@@ -414,43 +416,37 @@ Vision: Gemini Flash-Lite → Z.AI Vision
 
 ---
 
-## 7. Resumable Stream v2 (AI SDK v6)
+## 7. AI SDK Stream Proxy and Resumable State Cleanup
 
-네트워크 단절 시 스트림을 자동으로 복구하는 Upstash Redis 기반 Resumable Stream 패턴입니다.
+기본 채팅 경로는 Vercel BFF가 Cloud Run `UIMessageStream`을 브라우저 `useChat` 경계로 전달하는 AI SDK stream proxy입니다. 서버 측 Upstash Redis 기반 resume state와 `GET /stream/v2` handler는 남아 있지만, 현재 client auto-resume는 `resume: false`로 고정되어 있습니다. 따라서 resumable state는 지원 기능이 아니라 **제거 예정인 비용/복잡도 항목**으로 취급합니다.
 
 ### Flow
 
 ```
 Client                     Vercel                     Cloud Run
-  │  1. POST /stream/v2     │  2. Proxy + Redis Save    │
+  │  1. POST /stream/v2     │  2. Proxy UIMessageStream │
   │  ─────────────────────►  │  ──────────────────────►  │
   │                          │     + X-Stream-Id header  │
-  │  [네트워크 단절]          │                          │
-  │  ─────────────────────►  │                          │
-  │                          │                          │
-  │  3. GET /stream/v2?sessionId=xxx&skip=N             │
-  │  ─────────────────────►  │  4. Redis에서 남은 chunk  │
-  │                          │  ──────────────────────►  │
-  │  5. 이어서 수신           │  ◄──────────────────────  │
-  │  ◄───────────────────── │     (skip 이후 chunk)     │
+  │  3. chunk 수신           │  ◄──────────────────────  │
+  │  ◄───────────────────── │                          │
 ```
 
 ### 주요 컴포넌트
 
 | 컴포넌트 | 파일 | 역할 |
 |---------|------|------|
-| **POST Handler** | `stream/v2/route.ts` | 새 스트림 생성, Redis 저장 |
-| **GET Handler** | `stream/v2/route.ts` | 스트림 재개 (skip 파라미터) |
-| **Stream State** | `stream/v2/stream-state.ts` | Redis 세션-스트림 매핑 |
-| **Upstash Context** | `stream/v2/upstash-resumable.ts` | Redis List 기반 chunk 저장 |
+| **POST Handler** | `stream/v2/route.ts` | 새 stream proxy 생성, Cloud Run 호출 |
+| **GET Handler** | `stream/v2/route.ts` | legacy/manual resume 경로. client auto-resume 미사용, 제거 예정 |
+| **Stream State** | `stream/v2/stream-state.ts` | Redis 세션-스트림 매핑. 제거 예정 |
+| **Upstash Context** | `stream/v2/upstash-resumable.ts` | Redis List 기반 chunk 저장. 제거 예정 |
 
 ### Redis State 관리
 
 | 항목 | 값 | 설명 |
 |------|-----|------|
-| **Stream TTL** | 10분 | Redis 자동 만료 |
-| **Chunk Storage** | Redis List (RPUSH) | 순서 보장 |
-| **Resume API** | GET + skip 파라미터 | 마지막 수신 chunk 이후부터 재개 |
+| **Stream TTL** | 10분 | legacy Redis 자동 만료 |
+| **Chunk Storage** | Redis List (RPUSH) | client가 읽지 않으므로 제거 예정 |
+| **Resume API** | GET + skip 파라미터 | client auto-resume 미사용. 재활성화가 아니라 제거가 현재 계획 |
 
 ---
 
@@ -459,7 +455,7 @@ Client                     Vercel                     Cloud Run
 | Layer | 기술 | 위치 | TTL | 용도 |
 |-------|------|------|-----|------|
 | **L1: In-Memory** | MetricsProvider cache | Vercel Runtime | 동일 hour/minute | 메트릭 변환 재계산 방지 |
-| **L2: Redis** | Upstash Redis | External | 다양 (10s~10m) | AI 응답 캐시, Rate Limit, Stream Resume |
+| **L2: Redis** | Upstash Redis | External | 다양 (10s~10m) | AI 응답 캐시, Rate Limit, Job State, quota/session/cache. Stream State는 제거 예정 |
 | **L3: Client** | TanStack Query | Browser | staleTime 기반 | API 응답 캐시, 중복 요청 방지 |
 | **L4: AI Engine** | DataCacheLayer | Cloud Run Memory | metrics 1m, RAG 5m, analysis 10m | 에이전트 데이터 접근 캐시 |
 
@@ -492,13 +488,15 @@ Client                     Vercel                     Cloud Run
 | 항목 | 값 |
 |------|-----|
 | Build Machine | Standard ($0.014/min) |
-| `maxDuration` | Legacy: Hobby 10s default/60s max, Pro 15s default/300s max |
-| Fluid Compute | Hobby/Pro 기본 300s, Pro/Enterprise 최대 800s |
+| `maxDuration` | Fluid Compute 기본 300s. Hobby 최대 300s, Pro/Enterprise 최대 800s |
+| Fluid Compute | 기본 활성. 비활성 시 legacy limits는 더 짧으므로 long-running AI compute는 Cloud Run으로 유지 |
 | Turbopack | 빌드 시 사용 |
 
-Reference (checked: 2026-02-20):
+Reference (checked: 2026-05-20):
 - https://vercel.com/pricing
-- https://vercel.com/docs/limits/overview
+- https://vercel.com/docs/functions/configuring-functions/duration
+- https://vercel.com/docs/functions/limitations
+- https://cloud.google.com/run/docs/overview/what-is-cloud-run
 
 ---
 
@@ -528,7 +526,7 @@ Reference (checked: 2026-02-20):
 ### AI Chat State
 
 - localStorage 기반 대화 이력 (`src/hooks/ai/utils/chat-history-storage.ts`)
-- Resumable Stream v2: Upstash Redis로 스트림 복구 (상세: [7. Resumable Stream v2](#7-resumable-stream-v2-ai-sdk-v6))
+- AI SDK stream proxy: Cloud Run UIMessage stream을 Vercel BFF가 브라우저로 전달하며, Upstash 기반 resume state는 optional/비활성 기본값입니다. 상세: [7. AI SDK Stream Proxy and Optional Resume State](#7-ai-sdk-stream-proxy-and-optional-resume-state)
 
 ---
 
@@ -614,6 +612,7 @@ Reference (checked: 2026-02-20):
 - 실제 운영 서버 대신 시뮬레이션/사전 계산 데이터 중심 설계
 - OTel 데이터는 런타임 수집이 아닌 synthetic Prometheus 데이터의 빌드 타임 파생(derived) 포맷
 - 무료 티어 운영 비용을 고려한 캐시/프록시/폴백 전략 우선
+- Vercel은 browser-facing BFF/protocol boundary이며, 장시간 AI compute와 provider/tool loop ownership은 Cloud Run에 둠
 - Cloud Run 장애 시에도 UI는 graceful degradation 유지
 
 ## Non-Goals

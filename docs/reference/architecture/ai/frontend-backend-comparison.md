@@ -4,12 +4,12 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-19
+> Last reviewed: 2026-05-20
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
-**분석 일시**: 2026-05-19 (LOC drift and routing alignment)
-**버전**: v8.11.156+
+**분석 일시**: 2026-05-20 (Vercel/Cloud Run runtime boundary alignment)
+**버전**: v8.11.184+
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)
 
 **문서 관계**: 이 문서는 Vercel frontend와 Cloud Run AI Engine의 책임 경계, 파일 매핑, 완성도 비교를 다룹니다. Cloud Run 내부 provider, tool, fallback, FactPack, endpoint 상세 기준은 [AI Engine Architecture](./ai-engine-architecture.md)를 우선합니다.
@@ -29,7 +29,7 @@ graph LR
         Hook["useAIChatCore"]
         Router["Hybrid Query Router"]
         Security["Security (52패턴)"]
-        Stream["Resumable Stream"]
+        Stream["AI SDK Stream Proxy"]
     end
 
     subgraph CloudRun["Cloud Run AI Engine"]
@@ -66,12 +66,26 @@ graph LR
          - useAIChatCore                        - Orchestrator (모듈 분할)
          - Hybrid Query Router                  - 7 Execution Agents
          - Security (52패턴 방어)               - Provider Mesh LLM
-         - Resumable Stream                     - Pre-computed 144슬롯
+         - AI SDK Stream Proxy                  - Pre-computed 144슬롯
 
 부가 경로: `/api/ai/supervisor`는 legacy JSON/text proxy이며 cache/plain callers와 local dev fallback을 담당합니다.
 ```
 
-> Source of truth (2026-05-07): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs), `src/app/api/**/route.ts(x)`, `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `tests/intent-classifier/intent-classifier.eval.test.ts`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 8), `cloud-run/ai-engine/src/routes/*.ts` (12 non-test route/helper modules), `cloud-run/ai-engine/src/lib/cloud-tasks.ts`.
+### Vercel ↔ Cloud Run 책임 경계
+
+이 프로젝트의 현재 방향은 “Vercel만으로 AI runtime을 수렴”이 아니라 **Vercel AI SDK UI/protocol 호환성을 유지하면서 Cloud Run에 AI compute를 분산**하는 것입니다.
+
+| 구분 | Vercel / Next.js | Cloud Run AI Engine |
+|---|---|---|
+| 제품 표면 | AI Sidebar, `/dashboard/ai-assistant`, artifact UI | 사용자에게 직접 노출되지 않는 AI runtime |
+| 요청 경계 | auth/session, rate-limit, CSRF, prompt guard, stream proxy | API key 검증, supervisor mode 결정, domain evidence, agent 실행 |
+| AI SDK 표면 | `useChat`, `DefaultChatTransport`, UIMessage stream 소비/전달 | `createUIMessageStreamResponse`, `streamText`, `generateText`, `Output.object`, `ToolLoopAgent` |
+| 장시간 실행 | job record 생성, 짧은 dispatch, Redis polling/SSE | Cloud Tasks worker, `/api/jobs/process`, provider/tool loop |
+| 비용 원칙 | Vercel Pro 허용 예외지만 long-running compute 집중 금지 | Cloud Run 1vCPU/512Mi + scale-to-zero + Free Tier guard |
+
+따라서 Vercel은 “절반만 쓰는 플랫폼”이라기보다 **브라우저와 Cloud Run 사이의 안전한 BFF/protocol boundary**입니다. Cloud Run은 이 boundary 뒤에서 장시간 AI 실행과 provider mesh를 소유합니다.
+
+> Source of truth (2026-05-20): `src/hooks/ai/useHybridAIQuery.ts`, `src/app/api/ai/supervisor/stream/v2/route.ts`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/base-agent.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`.
 
 ---
 
@@ -81,11 +95,11 @@ graph LR
 
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
-| 메시지 송수신 | useAIChatCore (578줄, 2026-05-19 측정) | Supervisor Stream V2 + legacy JSON/text route | 양쪽 완벽 |
-| 스트리밍 응답 | UIMessageStream | AI SDK streamText | 양쪽 완벽 |
-| Resumable Stream | Upstash Redis List | appendResponseMessages | 양쪽 완벽 |
-| 세션 관리 | sessionId + localStorage | Redis 기반 | 양쪽 완벽 |
-| 에러 복구 | Fallback UI + 재시도 | Circuit Breaker | 양쪽 완벽 |
+| 메시지 송수신 | useAIChatCore (578줄, 2026-05-19 측정) | Supervisor Stream V2 + legacy JSON/text route | 역할 분리 |
+| 스트리밍 응답 | `useChat` + UIMessage stream proxy | AI SDK `streamText`/`createUIMessageStreamResponse` | 프로토콜 호환 |
+| Resumable Stream | client auto-resume 기본 비활성, optional reconnect hook만 보유 | 서버 측 optional Upstash wrapper/state 존재 | 부분/정렬 필요 |
+| 세션 관리 | sessionId + localStorage + owner metadata | Redis context/job state + in-memory fallback | 역할 분리 |
+| 에러 복구 | Fallback UI + 재시도 + Vercel stream fallback | provider fallback mesh + circuit breaker | 역할 분리 |
 
 ### 2.2 에이전트 시스템
 
@@ -172,7 +186,7 @@ graph LR
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
 | 서버 메트릭 데이터 | hourly-data SSOT | precomputed-state (853줄) | 상태 정합성 완벽 (online/warning/critical/offline) |
-| 캐시 전략 | legacy `/api/ai/supervisor` 응답 캐시 + `/stream/v2` optional resumable stream state (Chat History만 localStorage) | precomputed-state + Redis session/job state | 설명 분리 완료 |
+| 캐시 전략 | legacy `/api/ai/supervisor` 응답 캐시 + `/stream/v2` resumable state 제거 예정 (Chat History만 localStorage) | precomputed-state + Redis session/job/quota/cache state | Redis 사용처 분리 완료 |
 | 쿼리 정규화 | - | Cache Normalization | Backend 전담 |
 | 토큰 최적화 | - | 144슬롯 ~100토큰 압축 | Backend 전담 |
 
@@ -295,7 +309,7 @@ Provider Mesh Fallback:
 
 1. **Hybrid Query Router (523줄, 2026-05-19 측정)**: 복잡도 점수 기반 자동 분기 (simple/moderate/complex/very_complex)
 2. **Prompt Injection 방어 (596줄)**: OWASP LLM Top 10 기반 52개 패턴 + ReDoS 방지
-3. **Resumable Streaming**: Upstash Redis 기반 스트림 복구로 네트워크 끊김 대응
+3. **AI SDK Stream Proxy**: Vercel BFF가 Cloud Run UIMessage stream을 브라우저 `useChat` 경계로 전달. Resumable state는 서버 optional 경로로 남아 있지만 client auto-resume는 기본 비활성
 4. **Clarification Dialog**: 모호한 쿼리에 대한 사전 해소 (confidence < 0.6)
 5. **반응형 UX**: 드래그 리사이즈 + 모바일 스와이프 + ESC 키보드 단축키
 
@@ -357,12 +371,14 @@ Provider Mesh Fallback:
 
 ## 8. 결론
 
-OpenManager AI v8.11.156+ 기준 AI Assistant는 **Frontend-Backend 양쪽 모두 높은 완성도**를 보입니다.
+OpenManager AI v8.11.184+ 기준 AI Assistant는 **Frontend-Backend 양쪽 모두 높은 완성도**를 보입니다.
 
 - **Backend (95%)**: Modular Split Architecture, provider mesh 폴백, 전문 도구 세트, Pre-computed Data, Circuit Breaker (Orchestrator 포함), Rate Limiting 등 AI 처리의 핵심이 모두 구현됨
-- **Frontend (93%)**: Hybrid Query Router, Resumable Streaming, Clarification Dialog, 52패턴 보안 방어, Memory+Redis 다층 캐시, AI 에러 컨텍스트 로그 등 사용자 경험 관련 기능이 잘 구현됨
+- **Frontend (93%)**: Hybrid Query Router, AI SDK stream proxy, Clarification Dialog, 52패턴 보안 방어, Memory+Redis 다층 캐시, AI 에러 컨텍스트 로그 등 사용자 경험 관련 기능이 잘 구현됨
 
 **양쪽 완성도가 거의 동등합니다.** 초기 분석 이후 Rate Limiting, CB Orchestrator 통합, AI 에러 컨텍스트 로그, 대용량 파일 분할, planner shadow metadata, deterministic recovery/formatting guard가 누적되어 종합 94% 수준을 유지합니다. AI hooks 진입 맵은 [ai-hooks-map.md](./ai-hooks-map.md)에 정리되었고, 잔여 과제는 route catalog 정리입니다.
+
+핵심 판단은 **Vercel-only 수렴이 아니라 Vercel BFF/protocol + Cloud Run AI runtime 분리 유지**입니다. AI SDK 호환성은 프론트엔드와 스트림 계약에서 유지하고, agent/tool/provider 실행은 Cloud Run에 둡니다.
 
 ### 코드 규모 비교
 

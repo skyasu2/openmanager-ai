@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-20
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
-> **v8.11.156+** | Updated 2026-05-16
+> **v8.11.184+** | Updated 2026-05-20
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -28,6 +28,27 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **deterministi
 제품 경계는 **advisory assistant**입니다. 범용 분류로는 **운영 의사결정 AI 어시스턴트**이고, 구현 분류로는 **tool-augmented LLM + deterministic decision layer**입니다. AI Engine은 실제 서버를 직접 변경하지 않고, 운영 수치·근거·보고서·조치안 초안을 생성합니다. 자율 remediation은 승인, dry-run, rollback, audit, 권한 계약이 갖춰진 별도 요구사항으로 분리합니다.
 
 > **As-built note (2026-05-16)**: 이 문서는 초기 설계도가 아니라 실제 구현을 역추적한 현재 아키텍처 기준입니다. 기본 채팅 transport는 `/api/ai/supervisor/stream/v2`입니다. 최근 안정화는 **Round-Robin + Context Guard provider selection** (4개 provider 균등 순환, `rotationSlot` UI attribution), **Cerebras `gpt-oss-120b` 전환** (65K context, llama3.1-8b 교체 완료), Orchestrator LLM routing 제거 → deterministic Direct Router 전환, Z.AI GLM Flash provider mesh 편입, NLQ 전처리 파이프라인 (N0~N2/N4 완료: QueryGuard, intentFrame 신뢰 경로, streaming output filter), intent별 LLM parameter, tool-result response enrichment, deterministic ranking/recovery fallback을 중심으로 이루어졌습니다.
+
+### Vercel ↔ Cloud Run Runtime Boundary (2026-05-20)
+
+OpenManager는 **Vercel-only AI SDK 앱이 아닙니다.** Vercel AI SDK v6는 UI와 stream protocol의 표준 계약으로 사용하고, 장시간 AI 실행과 provider/tool loop ownership은 Cloud Run `ai-engine`으로 분산합니다.
+
+```text
+Browser useChat
+  -> Vercel Next.js BFF
+     auth · session · rate-limit · guard · AI SDK UIMessage proxy
+  -> Cloud Run AI Engine
+     Hono · Supervisor · Direct Router · specialist ToolLoopAgent · provider mesh
+```
+
+| 경계 | Vercel / Next.js | Cloud Run AI Engine |
+|---|---|---|
+| 주 역할 | 사용자 UI, BFF, auth/session, request guard, stream proxy | AI compute runtime, agent routing, tool execution, provider fallback |
+| AI SDK 사용 | `@ai-sdk/react` `useChat`, `DefaultChatTransport`, UIMessage protocol | `ai` core `createUIMessageStreamResponse`, `streamText`, `generateText`, `Output.object`, `ToolLoopAgent` |
+| 장시간 작업 | Redis job 생성, 짧은 dispatch 호출, SSE polling | Cloud Tasks worker, `/api/jobs/process`, agent 실행, result/progress 저장 |
+| 비용/한도 기준 | Vercel Pro는 허용하되 Free 수준 사용량 유지, long-running AI compute 고정 금지 | Cloud Run 1vCPU/512Mi, scale-to-zero, Free Tier guard |
+
+따라서 “Vercel 공식 기능을 절반만 쓴다”는 표현은 방향상 맞지만 더 정확히는 **AI SDK UI/protocol compatibility는 유지하고, AI runtime ownership을 Cloud Run에 둔다**입니다. Vercel은 AI 실행을 포기한 계층이 아니라 브라우저와 Cloud Run 사이의 안전한 protocol boundary입니다.
 
 ## AI 작업용 빠른 참조
 
@@ -185,6 +206,8 @@ Near-term priority is the destructive T5 only after user approval, followed by T
 ### 2.4. Next.js ↔ Cloud Run 분리와 BFF 적용
 - Vercel Functions는 최대 실행 시간(max duration) 제한이 있고, 제한을 초과하면 함수가 종료됩니다.
 - Cloud Run 서비스 요청 timeout은 기본 5분이며, 최대 60분까지 확장할 수 있습니다.
+- AI SDK UI stream protocol은 커스텀 백엔드가 SSE 기반 UIMessage stream을 제공할 수 있는 계약을 정의합니다. 즉 backend가 반드시 Vercel Function이어야 하는 것은 아니며, OpenManager는 Cloud Run 응답을 Vercel BFF가 protocol-compatible stream으로 전달합니다.
+- Cloud Run은 컨테이너 기반 HTTPS 서비스와 AI inference workload를 지원하므로, agent runtime과 provider mesh를 별도 서비스로 분리하기에 적합합니다.
 - BFF(Backends for Frontends) 패턴은 프런트엔드별 요구사항에 맞게 백엔드를 분리하는 접근입니다.
 - OpenManager는 이 원칙에 따라 Next.js를 BFF/API 프록시 계층으로 두고, 장시간 AI 실행(예: 내부 지식 검색, 다단계 라우팅)은 Cloud Run `ai-engine`으로 분리합니다.
 - AI Assistant artifact fast path도 Next.js BFF 경계를 우회하지 않습니다. LLM artifact classifier, incident report, monitoring analysis POST route는 auth와 `aiAnalysis` rate-limit를 적용하고, server snapshot/ops procedure는 Cloud Run 직접 호출 없이 로컬 deterministic generator를 사용합니다.
@@ -195,7 +218,10 @@ Near-term priority is the destructive T5 only after user approval, followed by T
 - AutoGen docs: https://microsoft.github.io/autogen/stable/
 - OpenAI Swarm repo: https://github.com/openai/swarm
 - OpenAI Agents SDK docs: https://openai.github.io/openai-agents-python/
+- AI SDK stream protocol: https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol
+- AI SDK agents overview: https://ai-sdk.dev/docs/agents/overview
 - Vercel Function duration: https://vercel.com/docs/functions/configuring-functions/duration
+- Cloud Run overview: https://cloud.google.com/run/docs/overview/what-is-cloud-run
 - Cloud Run request timeout: https://cloud.google.com/run/docs/configuring/request-timeout
 - BFF pattern (Microsoft Learn): https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends
 
@@ -1321,7 +1347,8 @@ cloud-run/ai-engine/src/
 | **useChat + UIMessage** | 프론트엔드 표준 메시지 모델 |
 | **DefaultChatTransport** | 커스텀 transport로 warmup 추적, 디바이스/trace 헤더, reconnect hook 주입 |
 | **UIMessageStream** | Vercel/Cloud Run 양쪽에서 사용하는 native streaming protocol |
-| **Resumable Stream 인프라** | 서버 측 Upstash Redis wrapper + `prepareReconnectToStreamRequest` 준비, 클라이언트 auto-resume는 기본 비활성 |
+| **Hybrid runtime boundary** | Vercel은 `useChat`/UIMessage protocol과 BFF guard를 맡고, Cloud Run은 agent compute/runtime ownership을 맡음 |
+| **Resumable Stream 인프라** | 서버 측 optional Upstash Redis wrapper + `prepareReconnectToStreamRequest` 준비는 남아 있으나, 클라이언트 auto-resume는 기본 비활성 |
 | **Tool loop + finalAnswer** | 작업 에이전트 내부 루프 패턴 (`stopWhen`) |
 | **Structured Output Fallback** | `generateText + Output.object` 구조화 라우팅, incident report typed output, text+JSON fallback (Orchestrator compatibility path) |
 | **Mode audit metadata** | `requestedMode`, `resolvedMode`, `modeSelectionSource`, `handoffCount` 기록 |
@@ -1466,7 +1493,7 @@ POST /api/ai/jobs
 <summary>v6.1.0 (2026-01-25) - AI SDK v6 Native Protocol</summary>
 
 - **UIMessageStream**: Native streaming protocol
-- **Resumable Stream v2**: Redis 기반 자동 재연결
+- **Resumable Stream v2**: 당시 Redis 기반 자동 재연결 목표로 도입. 현재 기준은 서버 측 optional resume state이며 client auto-resume는 기본 비활성
 - **finalAnswer Pattern**: 에이전트 종료 일관성
 - **prepareStep Optimization**: 의도 기반 도구 필터링
 </details>
