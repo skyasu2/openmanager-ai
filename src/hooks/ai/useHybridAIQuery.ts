@@ -31,7 +31,14 @@
 
 import type { UIMessage } from '@ai-sdk/react';
 import { useChat } from '@ai-sdk/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   generateTraceId,
   getComplexityThreshold,
@@ -216,7 +223,7 @@ export function useHybridAIQuery(
     estimatedWaitSeconds: 0,
   });
   // warmingUpRef: onData/transport body 콜백에서 stale closure 방지
-  useEffect(() => {
+  useLayoutEffect(() => {
     warmingUpRef.current = state.warmingUp;
   }, [state.warmingUp]);
   const pendingQueryRef = useRef<string | null>(null);

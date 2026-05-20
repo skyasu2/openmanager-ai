@@ -308,6 +308,8 @@ function _filterMaliciousOutput(text: string): MaliciousOutputResult { ... }
 **결정**: 출력 필터링이 실제로 필요하다면 연결하고, 아니면 제거한다.
 `stream-output-filter.ts`에서 AI 내부 도구 결과만 필터링하므로 이 함수의 역할이 중복일 수 있다.
 
+**구현 상태 (2026-05-20)**: 완료. 호출 없는 `_filterMaliciousOutput`와 전용 `MaliciousOutputResult` export를 제거했다. 활성 stream 출력 방어는 `stream-output-filter.ts` 경로에 유지한다.
+
 ---
 
 ### Task 3-B: `QueryClassifier` 싱글톤 → 순수 함수 전환 (🟡)
@@ -367,6 +369,8 @@ useLayoutEffect(() => {
 
 또는 `setState` 내에서 ref를 직접 동기 업데이트한다.
 
+**구현 상태 (2026-05-20)**: 완료. `warmingUpRef` 동기화를 `useEffect`에서 `useLayoutEffect`로 전환했다.
+
 ---
 
 ## 계약 (Contract) — Approved 전 완료 대상
@@ -424,10 +428,10 @@ useLayoutEffect(() => {
 | P1 | 2-A (Off-domain guard 순서) | S | 운영 컨텍스트 우선 + 테스트 |
 | Done | 1-B (stream/v2 CB 적용) | M | 2026-05-20 완료. in-memory CB, fallback/header/OPEN-state test 포함 |
 | Done | 2-C (아키텍처 주석 업데이트) | XS | 2026-05-20 완료 |
-| P3 | 3-A (_filterMaliciousOutput 제거) | S | |
+| Done | 3-A (_filterMaliciousOutput 제거) | S | 2026-05-20 완료 |
 | P3 | 3-B (QueryClassifier → 순수 함수) | S | |
 | P3 | 3-C (IDistributedStateStore 제거) | S | |
-| P3 | 3-D (warmingUpRef useLayoutEffect) | XS | |
+| Done | 3-D (warmingUpRef useLayoutEffect) | XS | 2026-05-20 완료 |
 
 **규모**: XS=1시간, S=2-4시간, M=반나절
 
