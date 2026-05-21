@@ -21,6 +21,15 @@ export interface ServerSnapshot {
     memory?: { avg?: number };
     disk?: { avg?: number };
   };
+  trends?: Record<
+    string,
+    {
+      direction?: string;
+      current?: number;
+      avg24h?: number;
+      deltaPercentPoints?: number;
+    }
+  >;
 }
 
 export interface AlertServerSnapshot {
@@ -98,6 +107,9 @@ function toAdvancedServerSnapshot(value: unknown): ServerSnapshot | null {
     memory: toNumber(value.metrics.memory) ?? undefined,
     disk: toNumber(value.metrics.disk) ?? undefined,
     network: toNumber(value.metrics.network) ?? undefined,
+    trends: isRecord(value.trends)
+      ? (value.trends as ServerSnapshot['trends'])
+      : undefined,
   };
 }
 

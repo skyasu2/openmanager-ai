@@ -14,6 +14,26 @@ function roundPercent(value: number | null): string {
   return value === null ? 'N/A' : `${Math.round(value)}%`;
 }
 
+function formatTrendForMetric(server: ServerSnapshot, metric: QueryMetric): string {
+  if (metric === 'status') return '';
+  const trend = server.trends?.[metric];
+  if (!trend) return '';
+  const direction =
+    trend.direction === 'rising'
+      ? '상승'
+      : trend.direction === 'falling'
+        ? '하락'
+        : '안정';
+  const avg =
+    typeof trend.avg24h === 'number' ? `24h 평균 ${roundPercent(trend.avg24h)}` : '';
+  const delta =
+    typeof trend.deltaPercentPoints === 'number'
+      ? `Δ ${trend.deltaPercentPoints}%p`
+      : '';
+  const details = [avg, delta].filter(Boolean).join(', ');
+  return details ? ` (${direction} 추세, ${details})` : ` (${direction} 추세)`;
+}
+
 function buildCpuCheckItem(server: ServerSnapshot): string {
   if (server.id.includes('lb-')) {
     return 'HAProxy worker CPU, active connection, backend 분산 편차를 확인하세요.';
@@ -377,7 +397,9 @@ export function buildMetricRankingFromPayload(
     `📊 **${label} 사용률 ${order === 'asc' ? '하위' : '상위'} ${requestedCount}대**`,
   ];
   rankedServers.forEach(({ server, value }, index) => {
-    lines.push(`${index + 1}. ${server.id}: ${label} ${roundPercent(value)}`);
+    lines.push(
+      `${index + 1}. ${server.id}: ${label} ${roundPercent(value)}${formatTrendForMetric(server, metric)}`
+    );
   });
 
   lines.push('', '💡 **서버별 확인 항목**');

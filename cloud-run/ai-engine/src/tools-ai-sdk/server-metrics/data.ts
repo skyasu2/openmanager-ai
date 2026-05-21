@@ -16,6 +16,7 @@ import {
   type ServerSnapshot,
   type PrecomputedSlot,
 } from '../../data/precomputed-state';
+import { getResourceCatalog } from '../../data/precomputed-state-core';
 import { getDataCache } from '../../lib/cache-layer';
 import {
   SERVER_TYPE_MAP,
@@ -67,8 +68,15 @@ export function getCurrentMinuteOfDay(): number {
  * Calculate aggregation over time series data
  */
 export function calculateAggregation(
-  dataPoints: Array<{ cpu: number; memory: number; disk: number }>,
-  metric: 'cpu' | 'memory' | 'disk' | 'network' | 'all',
+  dataPoints: Array<{
+    cpu: number;
+    memory: number;
+    disk: number;
+    network: number;
+    load1?: number;
+    load5?: number;
+  }>,
+  metric: 'cpu' | 'memory' | 'disk' | 'network' | 'load1' | 'load5' | 'all',
   func: 'avg' | 'max' | 'min' | 'count'
 ): Record<string, number> {
   if (func === 'count') {
@@ -112,7 +120,14 @@ export function calculateAggregation(
 export function getTimeRangeData(
   serverId: string,
   timeRange: string
-): Array<{ cpu: number; memory: number; disk: number; network: number }> {
+): Array<{
+  cpu: number;
+  memory: number;
+  disk: number;
+  network: number;
+  load1?: number;
+  load5?: number;
+}> {
   const currentSlot = getCurrentState().slotIndex;
 
   let slotsBack = 0;
@@ -130,17 +145,42 @@ export function getTimeRangeData(
     default: {
       const slot = getStateBySlot(currentSlot);
       const server = slot?.servers.find((s) => s.id === serverId);
-      return server ? [{ cpu: server.cpu, memory: server.memory, disk: server.disk, network: server.network }] : [];
+      return server
+        ? [
+            {
+              cpu: server.cpu,
+              memory: server.memory,
+              disk: server.disk,
+              network: server.network,
+              load1: server.load1,
+              load5: server.load5,
+            },
+          ]
+        : [];
     }
   }
 
-  const points: Array<{ cpu: number; memory: number; disk: number; network: number }> = [];
+  const points: Array<{
+    cpu: number;
+    memory: number;
+    disk: number;
+    network: number;
+    load1?: number;
+    load5?: number;
+  }> = [];
   for (let i = slotsBack - 1; i >= 0; i--) {
     const slotIdx = ((currentSlot - i) % 144 + 144) % 144;
     const slot = getStateBySlot(slotIdx);
     const server = slot?.servers.find((s) => s.id === serverId);
     if (server) {
-      points.push({ cpu: server.cpu, memory: server.memory, disk: server.disk, network: server.network });
+      points.push({
+        cpu: server.cpu,
+        memory: server.memory,
+        disk: server.disk,
+        network: server.network,
+        load1: server.load1,
+        load5: server.load5,
+      });
     }
   }
   return points;
@@ -228,10 +268,14 @@ export function getAllServerEntries(): Array<{
 
   // Use the latest slot to get server list
   const latestSlot = slots[slots.length - 1];
+  const resources = getResourceCatalog()?.resources ?? {};
   return latestSlot.servers.map((s) => ({
     serverId: s.id,
     serverType: s.type,
-    location: '',
+    location:
+      typeof resources[s.id]?.['cloud.availability_zone'] === 'string'
+        ? resources[s.id]['cloud.availability_zone']
+        : 'unknown',
   }));
 }
 

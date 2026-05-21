@@ -348,11 +348,11 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 #### 테스트 시나리오 (구현 전 확정)
 
-- [ ] `routing-policy.test`: `DC1-AZ1/AZ2/AZ3 구역별 부하 균형`은 step 0에서 `getServerMetricsAdvanced`를 강제한다.
-- [ ] `routing-policy.test`: `메모리 사용률 상위 3개 서버와 추세`는 current ranking path에서 `getServerMetricsAdvanced`를 강제한다.
-- [ ] `server-metrics.test`: `getServerMetricsAdvanced(groupBy:"location")`는 AZ별 serverCount와 평균 CPU/MEM/DISK를 반환한다.
-- [ ] `server-metrics.test`: current memory Top-3 응답의 각 서버에 trend direction/avg/delta가 포함되고 `answer`가 추세 라벨을 포함한다.
-- [ ] `nlq.test` / `routing-policy.test`: 순위+추세 및 AZ load-balance 예시가 프롬프트/지침에 포함된다.
+- [x] `routing-policy.test`: `DC1-AZ1/AZ2/AZ3 구역별 부하 균형`은 step 0에서 `getServerMetricsAdvanced`를 강제한다.
+- [x] `routing-policy.test`: `메모리 사용률 상위 3개 서버와 추세`는 current ranking path에서 `getServerMetricsAdvanced`를 강제한다.
+- [x] `server-metrics.test`: `getServerMetricsAdvanced(groupBy:"location")`는 AZ별 serverCount와 평균 CPU/MEM/DISK를 반환한다.
+- [x] `server-metrics.test`: current memory Top-3 응답의 각 서버에 trend direction/avg/delta가 포함되고 `answer`가 추세 라벨을 포함한다.
+- [x] `nlq.test` / `routing-policy.test`: 순위+추세 및 AZ load-balance 예시가 프롬프트/지침에 포함된다.
 
 **SDD 게이트**: 이 Task는 AI tool response schema와 routing contract 변경이므로 failing test 선행 커밋이 필요하다.
 
@@ -366,9 +366,9 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 - [x] v8.12.0 production QA 증상 분석
 - [x] 계약 승인
-- [ ] failing regression test 선행 커밋
-- [ ] 구현 커밋
-- [ ] AI Engine targeted tests/type-check
+- [x] failing regression test 선행 커밋 (`4924039d0`)
+- [x] 구현 커밋
+- [x] AI Engine targeted tests/type-check
 - [ ] 필요 시 targeted QA 기록
 
 ---

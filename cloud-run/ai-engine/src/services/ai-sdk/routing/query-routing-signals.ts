@@ -9,7 +9,7 @@ export const MONITORING_RUNTIME_ROUTING_SOURCE =
   'query-routing-signals' as const;
 
 export const INFRA_CONTEXT_PATTERN =
-  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|당직|알림|알람|로그|마운트|백엔드|로드\s*밸런서|캐시|스토리지|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|haproxy|nginx|mysql|redis|nfs|primary|replica|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load|backend|mount/i;
+  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|당직|알림|알람|로그|마운트|백엔드|로드\s*밸런서|캐시|스토리지|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|부하|로드|구역|영역|위치|az|zone|haproxy|nginx|mysql|redis|nfs|primary|replica|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load|backend|mount/i;
 
 export const ANALYST_QUERY_PATTERN =
   /이상|비정상|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca|고장|느려|다운|안\s*됨|안됨|장애/i;
@@ -134,7 +134,7 @@ const TOOL_ROUTING_PATTERNS = {
   serverGroup:
     /(db|web|cache|lb|api|storage|haproxy|nginx|mysql|redis|nfs|backend|백엔드|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
   logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
-  metrics: /cpu|메모리|디스크|서버|상태|memory|disk/i,
+  metrics: /cpu|메모리|디스크|서버|상태|memory|disk|부하|로드|load|az|구역|zone|location|위치|균형|balance/i,
 } as const;
 
 const GREETING_PATTERNS = [
@@ -515,6 +515,7 @@ export function extractQueryRoutingSignals(
 
   if (hasInfraContext) appendUnique(reasonCodes, 'infra_context_present');
   if (hasCompositeSignal(normalizedQuery)) appendUnique(reasonCodes, 'composite_query');
+  if (metric) appendUnique(reasonCodes, `metric_detected_${metric}`);
   if (scope === 'whole_fleet' && metric) {
     appendUnique(reasonCodes, 'whole_fleet_metric');
   }

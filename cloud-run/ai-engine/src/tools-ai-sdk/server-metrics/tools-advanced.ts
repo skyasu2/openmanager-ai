@@ -7,13 +7,30 @@ import {
   getTimeRangeData,
   getCurrentState,
   getAllServerEntries,
+  get24hTrendSummaries,
   getDataCache,
   SERVER_GROUP_INPUT_DESCRIPTION,
   SERVER_GROUP_DESCRIPTION_LIST,
   normalizeServerType,
 } from './data';
 
-function getMetricLabel(metric: 'cpu' | 'memory' | 'disk' | 'network' | 'all'): string {
+type MetricName = 'cpu' | 'memory' | 'disk' | 'network' | 'load1' | 'load5' | 'all';
+type SortableMetricName = Exclude<MetricName, 'all'>;
+type TrendMetricName = 'cpu' | 'memory' | 'disk';
+type TrendDirection = 'rising' | 'falling' | 'stable';
+
+interface TrendEvidence {
+  direction: TrendDirection;
+  current: number;
+  avg24h: number;
+  deltaPercentPoints: number;
+}
+
+function round1(value: number): number {
+  return Math.round(value * 10) / 10;
+}
+
+function getMetricLabel(metric: MetricName): string {
   switch (metric) {
     case 'cpu':
       return 'CPU 사용률';
@@ -23,9 +40,52 @@ function getMetricLabel(metric: 'cpu' | 'memory' | 'disk' | 'network' | 'all'): 
       return '디스크 사용률';
     case 'network':
       return '네트워크 사용량';
+    case 'load1':
+      return '1분 평균 부하';
+    case 'load5':
+      return '5분 평균 부하';
     default:
       return '메트릭';
   }
+}
+
+function getMetricUnit(metric: MetricName): string {
+  return metric === 'load1' || metric === 'load5' ? '' : '%';
+}
+
+function formatMetricValue(metric: MetricName, value: number): string {
+  return `${value}${getMetricUnit(metric)}`;
+}
+
+function buildTrendEvidence(
+  current: number | undefined,
+  avg24h: number | undefined
+): TrendEvidence | undefined {
+  if (current === undefined || avg24h === undefined) return undefined;
+  const direction: TrendDirection =
+    current > avg24h * 1.1
+      ? 'rising'
+      : current < avg24h * 0.9
+        ? 'falling'
+        : 'stable';
+
+  return {
+    direction,
+    current,
+    avg24h,
+    deltaPercentPoints: round1(current - avg24h),
+  };
+}
+
+function formatTrendEvidence(metric: MetricName, trend?: TrendEvidence): string {
+  if (!trend) return '추세 없음';
+  const label =
+    trend.direction === 'rising'
+      ? '상승'
+      : trend.direction === 'falling'
+        ? '하락'
+        : '안정';
+  return `추세 ${label} (24h 평균 ${formatMetricValue(metric, trend.avg24h)}, Δ ${trend.deltaPercentPoints}%p)`;
 }
 
 /**
@@ -47,9 +107,9 @@ export const getServerMetricsAdvanced = tool({
       .optional()
       .describe('조회할 서버 ID. 예: "db-server-01". 생략하면 모든 서버 대상. 절대 "all" 문자열을 넣지 마세요.'),
     metric: z
-      .enum(['cpu', 'memory', 'disk', 'network', 'all'])
+      .enum(['cpu', 'memory', 'disk', 'network', 'load1', 'load5', 'all'])
       .default('all')
-      .describe('조회할 메트릭. cpu/memory/disk/network 중 선택 또는 all(전체)'),
+      .describe('조회할 메트릭. cpu/memory/disk/network/load1/load5 중 선택 또는 all(전체)'),
     timeRange: z
       .enum(['current', 'last1h', 'last6h', 'last24h'])
       .default('current')
@@ -57,7 +117,7 @@ export const getServerMetricsAdvanced = tool({
     filters: z
       .array(
         z.object({
-          field: z.enum(['cpu', 'memory', 'disk', 'network', 'status']).describe('필터 대상 필드'),
+          field: z.enum(['cpu', 'memory', 'disk', 'network', 'load1', 'load5', 'status']).describe('필터 대상 필드'),
           operator: z.enum(['>', '<', '>=', '<=', '==', '!=']).describe('비교 연산자'),
           value: z.union([z.number(), z.string()]).describe('비교할 값 (숫자 또는 문자열)'),
         })
@@ -69,10 +129,14 @@ export const getServerMetricsAdvanced = tool({
       .default('none')
       .describe('집계 함수. avg=평균, max=최대값, min=최소값, count=개수, none=집계안함'),
     sortBy: z
-      .enum(['cpu', 'memory', 'disk', 'network', 'name'])
+      .enum(['cpu', 'memory', 'disk', 'network', 'load1', 'load5', 'name'])
       .optional()
       .describe('정렬 기준 필드'),
     sortOrder: z.enum(['asc', 'desc']).default('desc').describe('정렬 순서. asc=오름차순, desc=내림차순'),
+    groupBy: z
+      .enum(['location'])
+      .optional()
+      .describe('location=cloud.availability_zone(AZ) 기준 그룹 집계'),
     limit: z.number().optional().describe('반환할 최대 서버 수. 예: 5면 TOP 5'),
   }),
   execute: async ({
@@ -83,24 +147,26 @@ export const getServerMetricsAdvanced = tool({
     aggregation,
     sortBy,
     sortOrder,
+    groupBy,
     limit,
   }: {
     serverId?: string;
-    metric: 'cpu' | 'memory' | 'disk' | 'network' | 'all';
+    metric: MetricName;
     timeRange: 'current' | 'last1h' | 'last6h' | 'last24h';
     filters?: Array<{
-      field: 'cpu' | 'memory' | 'disk' | 'network' | 'status';
+      field: SortableMetricName | 'status';
       operator: '>' | '<' | '>=' | '<=' | '==' | '!=';
       value: number | string;
     }>;
     aggregation: 'avg' | 'max' | 'min' | 'count' | 'none';
-    sortBy?: 'cpu' | 'memory' | 'disk' | 'network' | 'name';
+    sortBy?: SortableMetricName | 'name';
     sortOrder: 'asc' | 'desc';
+    groupBy?: 'location';
     limit?: number;
   }) => {
     const cache = getDataCache();
     const state = getCurrentState();
-    const cacheKey = `adv:${state.slotIndex}:${serverId || 'all'}:${timeRange}:${metric}:${aggregation}:${sortBy || 'none'}:${sortOrder}:${limit || 0}:${stableStringify(filters)}`;
+    const cacheKey = `adv:${state.slotIndex}:${serverId || 'all'}:${timeRange}:${metric}:${aggregation}:${sortBy || 'none'}:${sortOrder}:${groupBy || 'none'}:${limit || 0}:${stableStringify(filters)}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
       logger.info(`[getServerMetricsAdvanced] Computing for ${cacheKey} (cache miss)`);
@@ -125,12 +191,18 @@ export const getServerMetricsAdvanced = tool({
           type: string;
           location: string;
           metrics: Record<string, number>;
+          status: string;
+          trends?: Partial<Record<TrendMetricName, TrendEvidence>>;
           dataPoints?: number;
         }> = [];
+        const trendMap = new Map(
+          get24hTrendSummaries().map((trend) => [trend.serverId, trend])
+        );
 
         for (const entry of targetEntries) {
           const dataPoints = getTimeRangeData(entry.serverId, timeRange);
           if (dataPoints.length === 0) continue;
+          const currentServer = state.servers.find((server) => server.id === entry.serverId);
 
           let metrics: Record<string, number>;
           if (aggregation && aggregation !== 'none') {
@@ -144,8 +216,23 @@ export const getServerMetricsAdvanced = tool({
                     memory: latest.memory,
                     disk: latest.disk,
                     network: latest.network,
+                    ...(latest.load1 !== undefined && { load1: latest.load1 }),
+                    ...(latest.load5 !== undefined && { load5: latest.load5 }),
                   }
-                : { [metric]: latest[metric] };
+                : latest[metric] === undefined
+                  ? {}
+                  : { [metric]: latest[metric] };
+          }
+
+          const trend = trendMap.get(entry.serverId);
+          const trends: Partial<Record<TrendMetricName, TrendEvidence>> = {};
+          if (trend) {
+            const cpuTrend = buildTrendEvidence(metrics.cpu, trend.cpu.avg);
+            const memoryTrend = buildTrendEvidence(metrics.memory, trend.memory.avg);
+            const diskTrend = buildTrendEvidence(metrics.disk, trend.disk.avg);
+            if (cpuTrend) trends.cpu = cpuTrend;
+            if (memoryTrend) trends.memory = memoryTrend;
+            if (diskTrend) trends.disk = diskTrend;
           }
 
           serverResults.push({
@@ -154,6 +241,8 @@ export const getServerMetricsAdvanced = tool({
             type: entry.serverType,
             location: entry.location,
             metrics,
+            status: currentServer?.status ?? 'unknown',
+            ...(Object.keys(trends).length > 0 && { trends }),
             dataPoints: dataPoints.length,
           });
         }
@@ -200,6 +289,100 @@ export const getServerMetricsAdvanced = tool({
           });
         }
 
+        if (groupBy === 'location') {
+          const groups = new Map<
+            string,
+            {
+              location: string;
+              servers: typeof filteredResults;
+            }
+          >();
+
+          for (const server of filteredResults) {
+            const location = server.location || 'unknown';
+            const group = groups.get(location) ?? { location, servers: [] };
+            group.servers.push(server);
+            groups.set(location, group);
+          }
+
+          const metricsToSummarize: SortableMetricName[] =
+            metric === 'all' ? ['cpu', 'memory', 'disk'] : [metric];
+          const groupSummary = [...groups.values()]
+            .map((group) => {
+              const metricsSummary: Record<string, number> = {};
+              for (const metricName of metricsToSummarize) {
+                const values = group.servers
+                  .map((server) => server.metrics[metricName])
+                  .filter((value): value is number => value !== undefined);
+                if (values.length > 0) {
+                  metricsSummary[`${metricName}_avg`] = round1(
+                    values.reduce((sum, value) => sum + value, 0) / values.length
+                  );
+                  metricsSummary[`${metricName}_max`] = Math.max(...values);
+                  metricsSummary[`${metricName}_min`] = Math.min(...values);
+                }
+              }
+
+              const statusCounts = group.servers.reduce<Record<string, number>>(
+                (acc, server) => {
+                  acc[server.status] = (acc[server.status] ?? 0) + 1;
+                  return acc;
+                },
+                {}
+              );
+
+              return {
+                location: group.location,
+                serverCount: group.servers.length,
+                metrics: metricsSummary,
+                statusCounts,
+                serverIds: group.servers
+                  .map((server) => server.id)
+                  .sort((left, right) => left.localeCompare(right)),
+              };
+            })
+            .sort((left, right) => left.location.localeCompare(right.location));
+
+          const answer =
+            'AZ별 현재 부하 집계: ' +
+            groupSummary
+              .map((group) => {
+                const cpuAvg = group.metrics.cpu_avg;
+                const memoryAvg = group.metrics.memory_avg;
+                const diskAvg = group.metrics.disk_avg;
+                return `${group.location} ${group.serverCount}대` +
+                  (cpuAvg !== undefined
+                    ? `, CPU ${cpuAvg}%`
+                    : '') +
+                  (memoryAvg !== undefined
+                    ? `, MEM ${memoryAvg}%`
+                    : '') +
+                  (diskAvg !== undefined
+                    ? `, DISK ${diskAvg}%`
+                    : '');
+              })
+              .join(' / ') +
+            '.';
+
+          return {
+            success: true,
+            responseKind: 'location_group_summary' as const,
+            answer,
+            globalSummary: {},
+            groupSummary,
+            serverCount: filteredResults.length,
+            query: { timeRange, metric, aggregation, sortBy, limit, groupBy },
+            servers: filteredResults.slice(0, 5),
+            hasMore: filteredResults.length > 5,
+            dataSlot: {
+              slotIndex: state.slotIndex,
+              minuteOfDay: state.minuteOfDay,
+              timeLabel: `${state.timeLabel} KST`,
+            },
+            timestamp: new Date().toISOString(),
+          };
+        }
+
         if (limit && limit > 0) {
           filteredResults = filteredResults.slice(0, limit);
         }
@@ -235,7 +418,7 @@ export const getServerMetricsAdvanced = tool({
           Boolean(limit) &&
           filteredResults.length > 0;
 
-        const rankingMetric: 'cpu' | 'memory' | 'disk' | 'network' | 'all' =
+        const rankingMetric: MetricName =
           sortBy && sortBy !== 'name'
             ? sortBy
             : metric !== 'all'
@@ -247,7 +430,13 @@ export const getServerMetricsAdvanced = tool({
             filteredResults
               .map((server, index) => {
                 const metricValue = server.metrics[rankingMetric] ?? 0;
-                return `${index + 1}. ${server.name} ${metricValue}%`;
+                const trend =
+                  rankingMetric === 'cpu' ||
+                  rankingMetric === 'memory' ||
+                  rankingMetric === 'disk'
+                    ? server.trends?.[rankingMetric]
+                    : undefined;
+                return `${index + 1}. ${server.name} ${formatMetricValue(rankingMetric, metricValue)} (${formatTrendEvidence(rankingMetric, trend)})`;
               })
               .join(', ') +
             '입니다.'

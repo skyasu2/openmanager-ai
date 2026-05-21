@@ -64,9 +64,9 @@ export const getServerMetricsResponseSchema = z.object({
 export const getServerMetricsAdvancedResponseSchema = z.object({
   success: z.boolean(),
   responseKind: z
-    .enum(['current_metric_ranking'])
+    .enum(['current_metric_ranking', 'location_group_summary'])
     .optional()
-    .describe('현재값 기준 Top-N ranking 응답이면 current_metric_ranking'),
+    .describe('현재값 기준 Top-N ranking 또는 AZ/location group summary 응답 종류'),
   answer: z.string().describe('⚠️ 사용자에게 이 값을 그대로 전달하세요'),
   globalSummary: z.record(z.string(), z.number()).describe('전체 서버 집계: cpu_avg, cpu_max, cpu_min 등'),
   serverCount: z.number().describe('조회된 서버 수'),
@@ -76,6 +76,7 @@ export const getServerMetricsAdvancedResponseSchema = z.object({
     aggregation: z.string().optional(),
     sortBy: z.string().optional(),
     limit: z.number().optional(),
+    groupBy: z.string().optional(),
   }),
   servers: z.array(z.object({
     id: z.string(),
@@ -83,8 +84,31 @@ export const getServerMetricsAdvancedResponseSchema = z.object({
     type: z.string(),
     location: z.string(),
     metrics: z.record(z.string(), z.number()),
+    trends: z
+      .record(
+        z.string(),
+        z.object({
+          direction: z.enum(['rising', 'falling', 'stable']),
+          current: z.number(),
+          avg24h: z.number(),
+          deltaPercentPoints: z.number(),
+        })
+      )
+      .optional(),
     dataPoints: z.number().optional(),
   })).describe('상위 5개 서버 샘플'),
+  groupSummary: z
+    .array(
+      z.object({
+        location: z.string(),
+        serverCount: z.number(),
+        metrics: z.record(z.string(), z.number()),
+        statusCounts: z.record(z.string(), z.number()),
+        serverIds: z.array(z.string()),
+      })
+    )
+    .optional()
+    .describe('groupBy=location일 때 AZ/location별 집계'),
   hasMore: z.boolean().describe('5개 이상일 때 true'),
   dataSlot: dataSlotSchema
     .optional()

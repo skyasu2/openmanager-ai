@@ -22,6 +22,8 @@ ${BASE_AGENT_INSTRUCTIONS}
 - 현재 상태/단일 서버 조회: getServerMetrics()
 - 시간 범위 평균/최대/최소: getServerMetricsAdvanced()
 - 현재 값 기준 순위/Top N: getServerMetricsAdvanced({ timeRange: "current", aggregation: "none", sortBy, sortOrder, limit })
+- 순위 + 추세: getServerMetricsAdvanced()의 servers[].trends 값을 함께 인용
+- AZ별/구역별 부하 균형: getServerMetricsAdvanced({ groupBy: "location", timeRange: "current", aggregation: "avg", metric: "all" })
 - 명시적 임계값 조건: filterServers()
 - 서버 그룹 조회: getServerByGroup()
 - 그룹 + 필터/정렬: getServerByGroupAdvanced()
@@ -32,6 +34,8 @@ ${BASE_AGENT_INSTRUCTIONS}
 - "cache-redis-dc1-01 메모리 몇 %야?" -> getServerMetrics()
 - "지난 6시간 CPU 평균" -> getServerMetricsAdvanced({ timeRange: "last6h", metric: "cpu", aggregation: "avg" })
 - "CPU가 가장 높은 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "desc", limit: 3 })
+- "메모리 상위 3대와 추세" -> getServerMetricsAdvanced({ timeRange: "current", metric: "memory", aggregation: "none", sortBy: "memory", sortOrder: "desc", limit: 3 })
+- "AZ별 부하 균형" -> getServerMetricsAdvanced({ groupBy: "location", timeRange: "current", metric: "all", aggregation: "avg" })
 - "CPU 80% 이상" -> filterServers({ field: "cpu", operator: ">", value: 80 })
 - "DB 서버 상태" -> getServerByGroup({ group: "db" })
 - "DB 서버 중 CPU 80% 이상" -> getServerByGroupAdvanced({ group: "db", filters: { cpuMin: 80 } })
@@ -77,7 +81,8 @@ export const NLQ_RANK_CONTEXT = `## 순위 조회 지침
 - getServerMetricsAdvanced를 사용하고 timeRange는 "current", aggregation은 "none"으로 둡니다.
 - sortBy는 요청 메트릭(cpu, memory, disk, network)에 맞추고 sortOrder는 desc/asc를 명확히 지정합니다.
 - 도구가 반환한 servers 순서와 답변 순서를 그대로 유지합니다.
-- "가장 높은 서버"는 첫 번째 항목을 그대로 인용합니다.`;
+- "가장 높은 서버"는 첫 번째 항목을 그대로 인용합니다.
+- "추세"가 함께 요청되면 servers[].trends.<metric>의 direction, avg24h, deltaPercentPoints를 함께 인용합니다.`;
 
 export const NLQ_THRESHOLD_CONTEXT = `## 임계값 조건 조회 지침
 - "% 이상", "초과", "미만", "임계값" 같은 명시적 비교 조건은 filterServers를 우선 사용합니다.

@@ -147,6 +147,7 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
 - getServerMetricsAdvanced가 현재값 기준 정렬 결과를 반환하면 \`servers\` 순서와 \`answer\`의 순서를 **절대 바꾸지 마세요**
 - "가장 높은 서버"는 반드시 첫 번째 서버를 그대로 인용하세요
 - "상위 3대", "Top 5" 질의는 정렬된 순서를 유지한 번호 목록으로 답하세요
+- "추세"가 함께 요청되면 \`servers[].trends.<metric>\`의 direction/avg24h/deltaPercentPoints를 함께 인용하세요
 
 ## 예시 질문과 도구 매핑
 
@@ -156,6 +157,8 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
   → 응답의 globalSummary.cpu_avg 값이 전체 서버 평균
 - "최근 1시간 메모리 최대값" → getServerMetricsAdvanced(timeRange: "last1h", metric: "memory", aggregation: "max")
 - "메모리 추세 분석해줘" → predictTrends(metricType: "memory")
+- "메모리 사용률 상위 3대와 추세" → getServerMetricsAdvanced(timeRange: "current", metric: "memory", aggregation: "none", sortBy: "memory", sortOrder: "desc", limit: 3)
+- "AZ별 부하 균형" → getServerMetricsAdvanced(timeRange: "current", metric: "all", aggregation: "avg", groupBy: "location")
 - "장애 원인 분석해줘" → findRootCause() + buildIncidentTimeline()
 - "메모리 부족 해결 방법" → searchKnowledgeBase(query: "메모리 부족")
 - "현재 구성 토폴로지 알려줘" → searchKnowledgeBase(query: "현재 인프라 토폴로지")
@@ -170,7 +173,7 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
 
 ### 예시 1: 메트릭 순위 조회
 **질문**: "현재 CPU가 가장 높은 서버 3대 알려줘"
-**도구 호출**: getServerMetricsAdvanced({ metric: "cpu", aggregation: "current", limit: 3, sortOrder: "desc" })
+**도구 호출**: getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "desc", limit: 3 })
 **이상적 응답**:
 현재 CPU 사용률 상위 3대입니다:
 1. **api-was-dc1-01** — CPU 92% ⚠️ (임계 90% 초과)

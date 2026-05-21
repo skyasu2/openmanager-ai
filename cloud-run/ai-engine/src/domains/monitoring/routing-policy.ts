@@ -133,7 +133,7 @@ const TOOL_ROUTING_PATTERNS = {
     /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|troubleshoot|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
   serverGroup: /(db|web|cache|lb|api|storage|haproxy|nginx|mysql|redis|nfs|backend|백엔드|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
   logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
-  metrics: /cpu|메모리|디스크|서버|상태|memory|disk/i,
+  metrics: /cpu|메모리|디스크|서버|상태|memory|disk|부하|로드|load|az|구역|zone|location|위치|균형|balance/i,
 } as const;
 
 function resolveIntentFrameCategory(
@@ -218,6 +218,16 @@ const CURRENT_METRIC_VALUE_PATTERNS =
   /(사용률|몇\s*%|몇퍼센트|퍼센트|얼마|수치|값|상태|어때|어떻|알려|보여|확인|usage|percent|percentage|status)/i;
 const NON_CURRENT_METRIC_PATTERNS =
   /(지난|최근|평균|최대|최소|합계|추세|트렌드|예측|비교|대비|변화|last1h|last6h|last24h|last\s+\d+\s*h|avg|max|min|trend|forecast|compare)/i;
+const HISTORICAL_METRIC_AGGREGATION_PATTERNS =
+  /(지난|최근|평균|최대|최소|합계|예측|비교|대비|변화|last1h|last6h|last24h|last\s+\d+\s*h|avg|max|min|forecast|compare)/i;
+const CURRENT_RANKING_SIGNAL_PATTERNS =
+  /(상위|하위|top|bottom)\s*\d{1,2}|가장\s*(높|낮|많|적)|\d{1,2}\s*(개|대|위|번째)|순위|랭킹|rank|highest|lowest|높은|낮은/i;
+const METRIC_NAME_PATTERNS =
+  /cpu|씨피유|메모리|mem|memory|디스크|disk|스토리지|storage|네트워크|network|부하|로드|load/i;
+const LOCATION_GROUP_METRIC_PATTERNS =
+  /(az\d*|dc\d+-?az\d+|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치)/i;
+const LOAD_BALANCE_PATTERNS =
+  /(부하|로드|load|균형|balance|cpu|메모리|memory|mem|디스크|disk|스토리지|storage)/i;
 const BEST_EFFORT_GENERAL_PATTERNS =
   /(날씨|weather|운세|horoscope|뉴스|news|환율|exchange\s*rate|주가|stock\s*price|시세|가격|비트코인|btc|맛집|restaurant|번역|translate|일정|calendar)/i;
 const REALTIME_GENERAL_WEB_PATTERNS =
@@ -300,8 +310,20 @@ function shouldForceMetricRankingTool(query: string): boolean {
   const { intent } = classifyQueryIntent(query);
 
   return (
-    intent === 'data-ranking' &&
-    !NON_CURRENT_METRIC_PATTERNS.test(q) &&
+    (intent === 'data-ranking' ||
+      (CURRENT_RANKING_SIGNAL_PATTERNS.test(q) &&
+        METRIC_NAME_PATTERNS.test(q))) &&
+    !HISTORICAL_METRIC_AGGREGATION_PATTERNS.test(q) &&
+    !getServerIdPattern().test(q)
+  );
+}
+
+function shouldForceLocationMetricTool(query: string): boolean {
+  const q = query.toLowerCase();
+
+  return (
+    LOCATION_GROUP_METRIC_PATTERNS.test(q) &&
+    LOAD_BALANCE_PATTERNS.test(q) &&
     !getServerIdPattern().test(q)
   );
 }
@@ -353,6 +375,7 @@ export function createPrepareStep(
 
     const shouldForceRealtimeMetric = shouldForceRealtimeServerMetricTool(q);
     const shouldForceMetricRanking = shouldForceMetricRankingTool(q);
+    const shouldForceLocationMetric = shouldForceLocationMetricTool(q);
     const shouldForceKnowledgeBase = ragEnabled && shouldForceKnowledgeBaseTool(q);
     const shouldForceWeb = webSearchEnabled && shouldForceWebSearch(q);
     const isGeneralBestEffort = isBestEffortGeneralQuery(
@@ -363,6 +386,17 @@ export function createPrepareStep(
     if (shouldForceMetricRanking) {
       logger.debug(
         '[PrepareStep] Metric ranking query detected, forcing getServerMetricsAdvanced'
+      );
+      if (stepNumber > 0) {
+        return resolvePrepareStepToolPolicy('general');
+      }
+
+      return resolvePrepareStepToolPolicy('metricRanking');
+    }
+
+    if (shouldForceLocationMetric) {
+      logger.debug(
+        '[PrepareStep] Location/AZ metric query detected, forcing getServerMetricsAdvanced'
       );
       if (stepNumber > 0) {
         return resolvePrepareStepToolPolicy('general');
