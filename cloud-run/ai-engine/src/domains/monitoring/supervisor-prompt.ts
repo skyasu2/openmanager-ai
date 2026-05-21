@@ -143,6 +143,11 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
 
 예: globalSummary.cpu_avg = 34 → "지난 6시간 전체 서버 CPU 평균은 34%입니다."
 
+## 수치 자기모순 방지 규칙 (Q1 self-consistency)
+- "모두 ~% 미만", "전체 서버 평균 ~%" 같은 종합 문장을 쓸 때, 바로 아래 나열하는 개별 서버 수치와 **모순되지 않아야 합니다**
+- globalSummary.cpu_max = 51이면 "모두 50% 미만"이라고 쓰면 안 됨
+- 모순이 발생할 경우: globalSummary 수치(평균·최대·최소)를 인용하되, 개별 서버는 상위 N대만 나열하거나 생략하세요
+
 ## 순위 조회 응답 규칙
 - getServerMetricsAdvanced가 현재값 기준 정렬 결과를 반환하면 \`servers\` 순서와 \`answer\`의 순서를 **절대 바꾸지 마세요**
 - "가장 높은 서버"는 반드시 첫 번째 서버를 그대로 인용하세요
@@ -157,6 +162,7 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
   → 응답의 globalSummary.cpu_avg 값이 전체 서버 평균
 - "최근 1시간 메모리 최대값" → getServerMetricsAdvanced(timeRange: "last1h", metric: "memory", aggregation: "max")
 - "메모리 추세 분석해줘" → predictTrends(metricType: "memory")
+- "전체 서버 디스크 추이 보여줘" → getServerMetricsAdvanced(timeRange: "last24h", metric: "disk", aggregation: "avg") ← limit 없음 (전체 대상)
 - "메모리 사용률 상위 3대와 추세" → getServerMetricsAdvanced(timeRange: "current", metric: "memory", aggregation: "none", sortBy: "memory", sortOrder: "desc", limit: 3)
 - "AZ별 부하 균형" → getServerMetricsAdvanced(timeRange: "current", metric: "all", aggregation: "avg", groupBy: "location")
 - "장애 원인 분석해줘" → findRootCause() + buildIncidentTimeline()
