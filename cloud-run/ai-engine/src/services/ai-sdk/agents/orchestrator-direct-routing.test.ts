@@ -91,6 +91,21 @@ describe('resolveDirectRoutingTarget', () => {
     });
   });
 
+  it('ignores semantic keys that only contain a known intent as a substring', () => {
+    expect(
+      resolveDirectRoutingTarget(fallbackPreFilter, {
+        intentFrame: frame({
+          capabilityId: 'monitoring.not_incident_report',
+          intent: 'incident_report_bypass',
+          confidence: 0.93,
+        }),
+      })
+    ).toMatchObject({
+      agentName: DEFAULT_DIRECT_ROUTING_AGENT,
+      source: 'pre_filter',
+    });
+  });
+
   it('keeps explicit remediation queries on Advisor before semantic anomaly routing', () => {
     expect(
       resolveDirectRoutingTarget(

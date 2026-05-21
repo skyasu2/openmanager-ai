@@ -435,6 +435,19 @@ describe('getIntentCategory', () => {
       )
     ).toBe('metrics');
   });
+
+  it('should ignore semantic categories that only contain known intents as substrings', () => {
+    expect(
+      getIntentCategory(
+        '안녕하세요',
+        buildSemanticIntentFrame({
+          capabilityId: 'monitoring.not_incident_report',
+          intent: 'incident_report_bypass',
+          confidence: 0.94,
+        })
+      )
+    ).toBe('general');
+  });
 });
 
 describe('getLLMParamsForIntent', () => {

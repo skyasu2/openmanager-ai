@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  normalizeSupervisorIntentFrame,
   normalizeSupervisorSemanticMetadata,
   type SemanticQueryTrace,
 } from './supervisor-semantic-metadata';
@@ -55,6 +56,26 @@ describe('normalizeSupervisorSemanticMetadata', () => {
     ).toEqual({
       reasonCodes: ['semantic_frame_invalid'],
     });
+  });
+
+  it('rejects unknown monitoring semantic intents instead of forwarding them', () => {
+    expect(
+      normalizeSupervisorIntentFrame({
+        ...validIntentFrame,
+        intent: 'incident_report_bypass',
+        capabilityId: 'monitoring.incident_report',
+      })
+    ).toBeUndefined();
+  });
+
+  it('rejects mismatched monitoring intent and capability pairs', () => {
+    expect(
+      normalizeSupervisorIntentFrame({
+        ...validIntentFrame,
+        intent: 'metric_peak',
+        capabilityId: 'monitoring.incident_report',
+      })
+    ).toBeUndefined();
   });
 
   it('ignores invalid executionMode values without dropping the frame', () => {
