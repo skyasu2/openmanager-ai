@@ -30,7 +30,7 @@ describe('classifyQuery local rules', () => {
       'why is it slow',
     ])('classifies "%s" as analysis', (query) => {
       const result = classifyQuery(query);
-      expect(result.intent).toBe('analysis');
+      expect(result.localIntent).toBe('analysis');
       expect(result.complexity).toBe(4);
     });
   });
@@ -46,7 +46,7 @@ describe('classifyQuery local rules', () => {
       'check now',
     ])('classifies "%s" as monitoring', (query) => {
       const result = classifyQuery(query);
-      expect(result.intent).toBe('monitoring');
+      expect(result.localIntent).toBe('monitoring');
       expect(result.complexity).toBe(2);
     });
   });
@@ -60,7 +60,7 @@ describe('classifyQuery local rules', () => {
       'problem detected',
     ])('classifies "%s" as monitoring with problem reasoning', (query) => {
       const result = classifyQuery(query);
-      expect(result.intent).toBe('monitoring');
+      expect(result.localIntent).toBe('monitoring');
       expect(result.reasoning).toContain('Problem detection');
     });
   });
@@ -68,24 +68,25 @@ describe('classifyQuery local rules', () => {
   describe('default fallback', () => {
     it('returns general intent for unrecognized queries', () => {
       const result = classifyQuery('hello world');
-      expect(result.intent).toBe('general');
+      expect(result.localIntent).toBe('general');
       expect(result.complexity).toBe(1);
       expect(result.reasoning).toBe('Fallback default');
     });
   });
 
-  describe('off-domain intent', () => {
+  describe('off-domain guard boundary', () => {
     it.each([
       '오늘 서울 날씨 알려줘',
       '환율 알려줘',
       '뉴스 요약해줘',
       '번역해줘',
       '일정 정리해줘',
-    ])('classifies "%s" as off-domain best-effort', (query) => {
+      '비트코인 가격 알려줘',
+    ])('keeps "%s" inside local classification only', (query) => {
       const result = classifyQuery(query);
-      expect(result.intent).toBe('off-domain');
-      expect(result.isOffDomain).toBe(true);
-      expect(result.complexity).toBe(1);
+      expect(result.localIntent).toBe('general');
+      expect(result.isOffDomain).toBeUndefined();
+      expect(result.offDomainCategory).toBeUndefined();
     });
 
     it.each([
@@ -96,20 +97,19 @@ describe('classifyQuery local rules', () => {
       'CPU 80% 이상 서버를 팀에 메일로 보내는 초안 만들어줘',
     ])('does not classify "%s" as off-domain when infra context exists', (query) => {
       const result = classifyQuery(query);
-      expect(result.intent).not.toBe('off-domain');
-      expect(result.isOffDomain).not.toBe(true);
+      expect(result.localIntent).not.toBe('off-domain');
+      expect(result.isOffDomain).toBeUndefined();
     });
 
     it.each([
       '파이썬 피보나치 코드 짜줘',
       'leetcode two sum 풀어줘',
-    ])('classifies general coding query "%s" as off-domain', (query) => {
+    ])('keeps general coding query "%s" inside local classification only', (query) => {
       const result = classifyQuery(query);
 
-      expect(result.intent).toBe('off-domain');
-      expect(result.isOffDomain).toBe(true);
-      expect(result.offDomainCategory).toBe('general_coding');
-      expect(result.reasoning).toContain('general_coding');
+      expect(result.localIntent).toBe('general');
+      expect(result.isOffDomain).toBeUndefined();
+      expect(result.offDomainCategory).toBeUndefined();
     });
 
     it.each([
@@ -119,8 +119,8 @@ describe('classifyQuery local rules', () => {
     ])('does not classify ops coding query "%s" as off-domain', (query) => {
       const result = classifyQuery(query);
 
-      expect(result.intent).not.toBe('off-domain');
-      expect(result.isOffDomain).not.toBe(true);
+      expect(result.localIntent).not.toBe('off-domain');
+      expect(result.isOffDomain).toBeUndefined();
     });
   });
 
@@ -147,7 +147,7 @@ describe('classifyQuery local rules', () => {
     it('treats registered server IDs as explicit scope signals', () => {
       const result = classifyQuery('api-was-dc1-01 CPU 상태 분석해줘');
 
-      expect(result.intent).toBe('analysis');
+      expect(result.localIntent).toBe('analysis');
       expect(result.confidence).toBeGreaterThanOrEqual(85);
     });
 
@@ -197,9 +197,10 @@ describe('classifyQuery', () => {
 
     expect(result).not.toBeInstanceOf(Promise);
     expect(result).toMatchObject({
-      intent: 'monitoring',
+      localIntent: 'monitoring',
       complexity: 2,
     });
+    expect(result).not.toHaveProperty('intent');
     expect(result).not.toHaveProperty('source');
   });
 });

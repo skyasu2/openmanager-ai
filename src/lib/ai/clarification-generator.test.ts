@@ -9,7 +9,7 @@ import type { QueryClassification } from './query-classifier';
 // 명확화가 발생하는 기본 classification (confidence < 85, complexity >= 2)
 const lowConfidence: QueryClassification = {
   complexity: 3,
-  intent: 'monitoring',
+  localIntent: 'monitoring',
   reasoning: 'test',
   confidence: 60,
 };
@@ -17,7 +17,7 @@ const lowConfidence: QueryClassification = {
 // 명확화가 발생하지 않는 classification (confidence >= 85)
 const highConfidence: QueryClassification = {
   complexity: 3,
-  intent: 'monitoring',
+  localIntent: 'monitoring',
   reasoning: 'test',
   confidence: 90,
 };
@@ -25,7 +25,7 @@ const highConfidence: QueryClassification = {
 // 명확화가 발생하지 않는 classification (complexity < 2)
 const lowComplexity: QueryClassification = {
   complexity: 1,
-  intent: 'general',
+  localIntent: 'general',
   reasoning: 'test',
   confidence: 60,
 };
@@ -152,7 +152,7 @@ describe('generateClarification', () => {
           'Nginx 액세스 로그에서 5xx 에러가 많이 나는 경로 분석하는 방법 알려줘',
           {
             complexity: 4,
-            intent: 'analysis',
+            localIntent: 'analysis',
             reasoning: 'Keyword match: Analysis/Coding',
             confidence: 80,
           }
@@ -170,7 +170,7 @@ describe('generateClarification', () => {
       expect(
         generateClarification('api-was-dc1-01 CPU 상태 분석해줘', {
           complexity: 4,
-          intent: 'analysis',
+          localIntent: 'analysis',
           reasoning: 'Keyword match: Analysis/Coding',
           confidence: 60,
         })
@@ -183,7 +183,7 @@ describe('generateClarification', () => {
           'db-mysql-dc1-primary 상세 분석, 위험한지 판단해줘',
           {
             complexity: 4,
-            intent: 'analysis',
+            localIntent: 'analysis',
             reasoning: 'Keyword match: Analysis/Coding',
             confidence: 60,
           }
