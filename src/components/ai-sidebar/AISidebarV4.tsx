@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import AIAssistantIconPanel from '@/components/ai/AIAssistantIconPanel';
 import AIContentArea from '@/components/ai/AIContentArea';
 // Components
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
@@ -235,21 +234,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     selectedFunction,
   ]);
 
-  const renderMobileFunctionNav = () => (
-    <div
-      className="block shrink-0 border-b border-slate-200 bg-white px-4 pt-3 sm:hidden"
-      data-testid="ai-mobile-function-nav"
-    >
-      <AIAssistantIconPanel
-        selectedFunction={selectedFunction}
-        onFunctionChange={setSelectedFunction}
-        onOpenFullscreen={handleOpenFullscreen}
-        isMobile={true}
-        showFullscreenButton={false}
-      />
-    </div>
-  );
-
   // ESC 키로 사이드바 닫기
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -302,7 +286,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   const renderFunctionPage = () => {
     return (
       <div className="flex h-full flex-col" data-testid="ai-function-page">
-        {renderMobileFunctionNav()}
         <div
           className="min-h-0 flex-1 overflow-hidden"
           data-testid="ai-function-content"
@@ -417,6 +400,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         <div className="flex min-w-0 flex-1 flex-col">
           <AISidebarHeader
             activeFunction={selectedFunction}
+            onFunctionChange={setSelectedFunction}
             onClose={onClose}
             onNewSession={handleNewSession}
             onOpenFullscreen={handleOpenFullscreen}
@@ -433,15 +417,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               {renderFunctionPage()}
             </AIErrorBoundary>
           </div>
-        </div>
-
-        <div className="hidden sm:block">
-          <AIAssistantIconPanel
-            selectedFunction={selectedFunction}
-            onFunctionChange={setSelectedFunction}
-            onOpenFullscreen={handleOpenFullscreen}
-            className="w-16 sm:w-20"
-          />
         </div>
       </div>
     </>

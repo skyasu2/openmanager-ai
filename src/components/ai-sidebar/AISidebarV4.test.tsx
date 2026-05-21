@@ -107,14 +107,21 @@ vi.mock('@/components/ai-sidebar/AISidebarHeader', () => ({
   AISidebarHeader: ({
     activeFunction = 'chat',
     onFunctionChange,
+    onOpenFullscreen,
   }: {
     activeFunction?: 'chat' | 'auto-report' | 'intelligent-monitoring';
     onFunctionChange?: (
       value: 'chat' | 'auto-report' | 'intelligent-monitoring'
     ) => void;
+    onOpenFullscreen?: () => void;
   }) => (
     <div data-testid="sidebar-header">
       Header
+      {onOpenFullscreen && (
+        <button type="button" onClick={onOpenFullscreen}>
+          open-fullscreen
+        </button>
+      )}
       {onFunctionChange && (
         <div data-testid="header-function-tabs">
           <button
