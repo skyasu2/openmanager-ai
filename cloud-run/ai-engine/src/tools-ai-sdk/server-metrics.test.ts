@@ -183,6 +183,22 @@ vi.mock('../data/precomputed-state', () => {
   };
 });
 
+vi.mock('../data/precomputed-state-core', () => ({
+  getResourceCatalog: vi.fn(() => ({
+    resources: {
+      'web-nginx-dc1-01': { 'cloud.availability_zone': 'DC1-AZ1' },
+      'cache-redis-dc1-01': { 'cloud.availability_zone': 'DC1-AZ1' },
+      'storage-nfs-dc1-01': { 'cloud.availability_zone': 'DC1-AZ1' },
+      'lb-haproxy-dc1-01': { 'cloud.availability_zone': 'DC1-AZ1' },
+      'web-nginx-dc1-02': { 'cloud.availability_zone': 'DC1-AZ2' },
+      'cache-redis-dc1-02': { 'cloud.availability_zone': 'DC1-AZ2' },
+      'db-mysql-dc1-01': { 'cloud.availability_zone': 'DC1-AZ3' },
+      'db-mysql-dc1-02': { 'cloud.availability_zone': 'DC1-AZ3' },
+      'api-node-dc1-01': { 'cloud.availability_zone': 'DC1-AZ3' },
+    },
+  })),
+}));
+
 // Mock cache-layer
 vi.mock('../lib/cache-layer', () => ({
   getDataCache: vi.fn(() => ({
