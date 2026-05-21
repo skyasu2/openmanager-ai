@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { AISidebarHeader } from './AISidebarHeader';
 
@@ -14,9 +14,9 @@ vi.mock('@/components/ui/BasicTyping', () => ({
 
 vi.mock('@/components/ai-sidebar/CloudRunStatusIndicator', () => ({
   CloudRunStatusIndicator: (props: { enabled?: boolean }) => (
-    <div data-enabled={String(props.enabled)} data-testid="cloud-run-status">
+    <span data-enabled={String(props.enabled)} data-testid="cloud-run-status">
       Cloud Run
-    </div>
+    </span>
   ),
 }));
 
@@ -70,7 +70,7 @@ describe('AISidebarHeader', () => {
     expect(mockClearMessages).toHaveBeenCalledTimes(1);
   });
 
-  it('헤더에서 전체화면 전환 버튼을 노출한다', () => {
+  it('헤더에서 전체화면 전환 버튼을 icon-only로 노출한다', () => {
     const onOpenFullscreen = vi.fn();
 
     render(
@@ -81,9 +81,14 @@ describe('AISidebarHeader', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '전체화면으로 보기' }));
+    const fullscreenButton = screen.getByRole('button', {
+      name: '전체화면으로 보기',
+    });
 
-    expect(screen.getByText('전체화면')).toBeInTheDocument();
+    fireEvent.click(fullscreenButton);
+
+    expect(fullscreenButton).toHaveAttribute('title', '전체화면으로 보기');
+    expect(screen.queryByText('전체화면')).not.toBeInTheDocument();
     expect(onOpenFullscreen).toHaveBeenCalledTimes(1);
   });
 
@@ -108,5 +113,44 @@ describe('AISidebarHeader', () => {
     expect(header).not.toHaveClass('from-purple-50');
     expect(header).not.toHaveClass('to-blue-50');
     expect(pointIcon).toHaveClass('to-blue-600');
+  });
+
+  it('renders horizontal function tabs with selected purple accent', () => {
+    const onFunctionChange = vi.fn();
+
+    render(
+      <AISidebarHeader
+        activeFunction="chat"
+        onClose={vi.fn()}
+        onFunctionChange={onFunctionChange}
+      />
+    );
+
+    const tabList = screen.getByRole('tablist', { name: 'AI 기능' });
+    const chatTab = within(tabList).getByRole('button', { name: 'AI Chat' });
+    const reportTab = within(tabList).getByRole('button', {
+      name: '자동 보고서',
+    });
+
+    expect(chatTab).toHaveAttribute('aria-pressed', 'true');
+    expect(chatTab).toHaveClass('border-purple-600');
+    expect(chatTab).toHaveClass('text-purple-700');
+
+    fireEvent.click(reportTab);
+
+    expect(onFunctionChange).toHaveBeenCalledWith('auto-report');
+  });
+
+  it('keeps Cloud Run status inline with the subtitle instead of the action group', () => {
+    render(<AISidebarHeader onClose={vi.fn()} />);
+
+    const subtitle = screen
+      .getByText('서버 상태·로그·메트릭을 자연어로 질의')
+      .closest('[data-testid="ai-sidebar-subtitle-row"]');
+    const actionGroup = screen.getByTestId('ai-sidebar-header-actions');
+    const cloudRunStatus = screen.getByTestId('cloud-run-status');
+
+    expect(subtitle).toContainElement(cloudRunStatus);
+    expect(actionGroup).not.toContainElement(cloudRunStatus);
   });
 });

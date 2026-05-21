@@ -4,6 +4,7 @@
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import {
+  type ComponentProps,
   createRef,
   forwardRef,
   type ImgHTMLAttributes,
@@ -74,7 +75,9 @@ describe('ChatInputArea popover', () => {
     globalThis.requestAnimationFrame = originalRequestAnimationFrame;
   });
 
-  const renderComponent = () =>
+  const renderComponent = (
+    overrides: Partial<ComponentProps<typeof ChatInputArea>> = {}
+  ) =>
     render(
       <ChatInputArea
         textareaRef={createRef<HTMLTextAreaElement>()}
@@ -98,46 +101,45 @@ describe('ChatInputArea popover', () => {
         onPaste={vi.fn()}
         onToggleWebSearch={vi.fn()}
         onSelectAnalysisMode={vi.fn()}
+        {...overrides}
       />
     );
 
-  it('closes the tool popover on outside touch interaction', () => {
+  it('closes the response mode popover on outside touch interaction', () => {
     renderComponent();
 
-    const toggle = screen.getByRole('button', { name: '도구 메뉴 열기' });
+    const toggle = screen.getByRole('button', { name: '응답 모드 선택' });
     fireEvent.click(toggle);
 
-    expect(screen.getByText('Web 검색 (외부 웹)')).toBeInTheDocument();
+    expect(screen.getByText('응답 모드')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '오토' })).toBeInTheDocument();
     expect(
-      screen.getByText('최신 문서/CVE는 보수적 자동 판단')
+      screen.getByRole('button', { name: '심층 분석' })
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: 'Auto' })).toHaveLength(1);
-    expect(screen.getAllByRole('button', { name: 'On' })).toHaveLength(1);
-    expect(screen.queryByText('RAG 검색 (내부 지식)')).not.toBeInTheDocument();
 
     fireEvent.touchStart(document.body);
 
-    expect(screen.queryByText('Web 검색 (외부 웹)')).not.toBeInTheDocument();
+    expect(screen.queryByText('응답 모드')).not.toBeInTheDocument();
   });
 
-  it('closes the tool popover on Escape and restores focus to the toggle button', () => {
+  it('closes the response mode popover on Escape and restores focus to the toggle button', () => {
     renderComponent();
 
-    const toggle = screen.getByRole('button', { name: '도구 메뉴 열기' });
+    const toggle = screen.getByRole('button', { name: '응답 모드 선택' });
     fireEvent.click(toggle);
 
-    expect(screen.getByText('Web 검색 (외부 웹)')).toBeInTheDocument();
+    expect(screen.getByText('응답 모드')).toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: 'Escape' });
 
-    expect(screen.queryByText('Web 검색 (외부 웹)')).not.toBeInTheDocument();
+    expect(screen.queryByText('응답 모드')).not.toBeInTheDocument();
     expect(toggle).toHaveFocus();
   });
 
-  it('keeps Escape inside the tool popover from reaching later document handlers', () => {
+  it('keeps Escape inside the response mode popover from reaching later document handlers', () => {
     renderComponent();
 
-    const toggle = screen.getByRole('button', { name: '도구 메뉴 열기' });
+    const toggle = screen.getByRole('button', { name: '응답 모드 선택' });
     fireEvent.click(toggle);
 
     const documentEscapeHandler = vi.fn();
@@ -155,10 +157,12 @@ describe('ChatInputArea popover', () => {
   it('keeps input action buttons at 44px on mobile and compact on desktop', () => {
     renderComponent();
 
-    const toggle = screen.getByRole('button', { name: '도구 메뉴 열기' });
+    const attach = screen.getByRole('button', { name: '파일 첨부' });
+    const web = screen.getByRole('button', { name: 'Web 검색' });
+    const mode = screen.getByRole('button', { name: '응답 모드 선택' });
     const send = screen.getByRole('button', { name: '메시지 전송' });
 
-    for (const button of [toggle, send]) {
+    for (const button of [attach, web, mode, send]) {
       expect(button).toHaveClass('h-11');
       expect(button).toHaveClass('w-11');
       expect(button).toHaveClass('md:h-9');
@@ -169,15 +173,44 @@ describe('ChatInputArea popover', () => {
   it('anchors the tool popover to the input area with bounded height', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByRole('button', { name: '도구 메뉴 열기' }));
+    fireEvent.click(screen.getByRole('button', { name: '응답 모드 선택' }));
 
-    const popover = screen
-      .getByText('Web 검색 (외부 웹)')
-      .closest('[role="dialog"]');
+    const popover = screen.getByText('응답 모드').closest('[role="dialog"]');
 
     expect(popover).toHaveClass('bottom-12');
     expect(popover).toHaveClass('max-h-[min(70vh,28rem)]');
     expect(popover).toHaveClass('overflow-y-auto');
+  });
+
+  it('exposes file attachment and Web search directly without the plus tool menu', () => {
+    const onOpenFileDialog = vi.fn();
+    const onToggleWebSearch = vi.fn();
+
+    renderComponent({ onOpenFileDialog, onToggleWebSearch });
+
+    expect(
+      screen.queryByRole('button', { name: '도구 메뉴 열기' })
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '파일 첨부' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Web 검색' }));
+
+    expect(onOpenFileDialog).toHaveBeenCalledTimes(1);
+    expect(onToggleWebSearch).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('RAG 검색 (내부 지식)')).not.toBeInTheDocument();
+  });
+
+  it('keeps the default footer hint minimal', () => {
+    renderComponent({
+      sessionState: undefined,
+      inputValue: 'CPU 상태 알려줘',
+      attachments: [],
+    });
+
+    expect(screen.getByText('Shift+Enter로 줄바꿈')).toBeInTheDocument();
+    expect(screen.queryByText('서버 운영 중심')).not.toBeInTheDocument();
+    expect(screen.queryByText(/대화 \d+\/50/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/입력 \d/)).not.toBeInTheDocument();
   });
 
   it('uses the unified white input surface with subtle purple border', () => {
@@ -452,9 +485,9 @@ describe('ChatInputArea popover', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '도구 메뉴 열기' }));
-
-    expect(screen.getByText('Web 검색 (외부 웹)')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Web 검색' })
+    ).toBeInTheDocument();
     expect(screen.queryByText('RAG 검색 (내부 지식)')).not.toBeInTheDocument();
     expect(screen.queryByText('외부 웹')).not.toBeInTheDocument();
   });
@@ -486,7 +519,12 @@ describe('ChatInputArea popover', () => {
       />
     );
 
-    expect(screen.getByText('Web On')).toBeInTheDocument();
+    const webButton = screen.getByRole('button', { name: 'Web 검색' });
+
+    expect(webButton).toHaveAttribute('aria-pressed', 'true');
+    expect(webButton).toHaveClass('bg-blue-50');
+    expect(webButton).toHaveClass('text-blue-600');
+    expect(screen.queryByText('Web On')).not.toBeInTheDocument();
     expect(screen.queryByText('RAG On')).not.toBeInTheDocument();
     expect(screen.queryByText('지식 검색 사용됨')).not.toBeInTheDocument();
     expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
@@ -521,7 +559,7 @@ describe('ChatInputArea popover', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '도구 메뉴 열기' }));
+    fireEvent.click(screen.getByRole('button', { name: '응답 모드 선택' }));
 
     expect(screen.queryByRole('button', { name: 'Thinking' })).toBeNull();
     expect(

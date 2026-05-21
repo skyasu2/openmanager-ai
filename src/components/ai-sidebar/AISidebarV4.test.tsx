@@ -2,13 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AISidebarV4 from '@/components/ai-sidebar/AISidebarV4';
@@ -110,7 +104,44 @@ vi.mock('@/stores/useAISidebarStore', () => ({
 
 // Mock child components
 vi.mock('@/components/ai-sidebar/AISidebarHeader', () => ({
-  AISidebarHeader: () => <div data-testid="sidebar-header">Header</div>,
+  AISidebarHeader: ({
+    activeFunction = 'chat',
+    onFunctionChange,
+  }: {
+    activeFunction?: 'chat' | 'auto-report' | 'intelligent-monitoring';
+    onFunctionChange?: (
+      value: 'chat' | 'auto-report' | 'intelligent-monitoring'
+    ) => void;
+  }) => (
+    <div data-testid="sidebar-header">
+      Header
+      {onFunctionChange && (
+        <div data-testid="header-function-tabs">
+          <button
+            type="button"
+            aria-pressed={activeFunction === 'chat'}
+            onClick={() => onFunctionChange('chat')}
+          >
+            switch-chat
+          </button>
+          <button
+            type="button"
+            aria-pressed={activeFunction === 'auto-report'}
+            onClick={() => onFunctionChange('auto-report')}
+          >
+            switch-reporter
+          </button>
+          <button
+            type="button"
+            aria-pressed={activeFunction === 'intelligent-monitoring'}
+            onClick={() => onFunctionChange('intelligent-monitoring')}
+          >
+            switch-analyst
+          </button>
+        </div>
+      )}
+    </div>
+  ),
 }));
 
 vi.mock('@/components/ai-sidebar/EnhancedAIChat', () => ({
@@ -316,6 +347,19 @@ describe('AISidebarV4', () => {
     );
   });
 
+  it('moves desktop function switching into header tabs and removes the icon rail', () => {
+    render(<AISidebarV4 {...defaultProps} />);
+
+    expect(screen.getByTestId('header-function-tabs')).toBeInTheDocument();
+    expect(screen.queryByTestId('ai-icon-panel')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'switch-reporter' }));
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'auto-report'
+    );
+  });
+
   it('consumes pending prefill message when sidebar opens', async () => {
     mockPendingPrefillMessage =
       'storage-nfs-dc1-01 서버의 디스크 사용률이 85%입니다.';
@@ -455,13 +499,14 @@ describe('AISidebarV4', () => {
     expect(sidebar).toHaveClass('w-screen');
   });
 
-  it('keeps mobile function switching available above the chat surface', () => {
+  it('keeps mobile function switching in the header tabs without a separate icon nav', () => {
     setViewportWidth(375);
     render(<AISidebarV4 {...defaultProps} />);
 
-    expect(screen.getByTestId('ai-mobile-function-nav')).toHaveClass(
-      'shrink-0'
-    );
+    expect(
+      screen.queryByTestId('ai-mobile-function-nav')
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('header-function-tabs')).toBeInTheDocument();
     expect(screen.getByTestId('ai-function-page')).toHaveClass(
       'flex',
       'h-full',
@@ -472,17 +517,12 @@ describe('AISidebarV4', () => {
       'flex-1',
       'overflow-hidden'
     );
-    expect(screen.getByTestId('ai-mobile-icon-panel')).toBeInTheDocument();
     expect(
-      within(screen.getByTestId('ai-mobile-icon-panel')).queryByRole('button', {
-        name: 'open-fullscreen',
-      })
+      screen.queryByTestId('ai-mobile-icon-panel')
     ).not.toBeInTheDocument();
     expect(screen.getByTestId('enhanced-ai-chat')).toBeInTheDocument();
 
-    fireEvent.click(
-      screen.getAllByRole('button', { name: 'switch-reporter' })[0]
-    );
+    fireEvent.click(screen.getByRole('button', { name: 'switch-reporter' }));
 
     expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
       'auto-report'

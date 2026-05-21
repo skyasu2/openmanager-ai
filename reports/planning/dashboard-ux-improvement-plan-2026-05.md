@@ -236,6 +236,34 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 - [x] 입력창 표면은 `bg-white border-purple-100`을 사용하고 `bg-white/80` translucent 톤을 렌더링하지 않는다.
 - [x] 데스크톱 아이콘 패널은 `bg-gray-50/50 border-gray-100`을 사용하고 선택 탭은 purple accent로 표시된다.
 
+### T-4-B~F AI 사이드바 잔여 UX 계약
+
+| 항목 | 계약 |
+|------|------|
+| 기능 탭 위치 | 기능 전환은 `AISidebarHeader` 하단의 수평 탭 바가 담당한다. 데스크톱 우측 `AIAssistantIconPanel`은 사이드바 shell에서 렌더링하지 않는다 |
+| 기능 탭 접근성 | 탭 버튼은 `AI Chat`, `자동 보고서`, `이상감지` 레이블과 `aria-pressed` 상태를 제공하고, 선택 탭은 `border-purple-600 text-purple-700` 액센트를 사용한다 |
+| 모바일 탭 | 모바일도 헤더 하단 수평 스크롤 탭을 사용하고 별도 모바일 icon-only function nav를 렌더링하지 않는다 |
+| 배너 우선순위 | 메시지 영역과 입력창 사이의 상태 배너는 `error > warmup > job progress > agent status > session limit` 순서로 최대 1개만 렌더링한다 |
+| 대기열 | `queuedQueries`는 배너 우선순위 시스템 밖에 유지해 답변 대기 메시지를 계속 표시한다 |
+| 입력 도구 | 파일 첨부와 Web 검색은 입력창 왼쪽에 직접 노출하고, `+` 도구 메뉴 트리거는 제거한다 |
+| 응답 모드 | `auto/thinking` 응답 모드는 별도 compact popover로 유지한다 |
+| 하단 힌트 | 기본 상태는 `Shift+Enter로 줄바꿈`만 표시한다. 세션 카운터는 warning/limit 조건에서만, 입력 길이 카운터는 warning threshold 이상에서만 표시한다 |
+| 헤더 액션 | 헤더 우측은 아이콘 버튼 `전체화면`, `새 대화`, `닫기`만 표시한다. 전체화면 버튼의 visible text는 제거하고 `aria-label`/`title`은 유지한다 |
+| Cloud Run 상태 | Cloud Run 상태는 헤더 subtitle 영역에 인라인으로 배치하고, 헤더 우측 액션 그룹과 분리한다 |
+| 비용/외부 호출 | 없음. 클라이언트 UI 구조와 className 정렬만 수행한다 |
+
+### T-4-B~F 테스트 시나리오
+
+- [ ] 헤더는 기능 탭 버튼 3개를 렌더링하고 선택 탭을 `aria-pressed=true`와 purple accent로 표시한다.
+- [ ] 기능 탭 클릭은 `onFunctionChange`로 해당 기능 값을 전달한다.
+- [ ] 사이드바 데스크톱 shell은 우측 icon-only panel을 렌더링하지 않고, 헤더 탭으로 기능 전환을 유지한다.
+- [ ] 모바일 사이드바는 별도 `ai-mobile-function-nav`를 렌더링하지 않고 헤더 탭만 사용한다.
+- [ ] 오류와 warmup/agent/session 상태가 동시에 있어도 error 배너만 렌더링한다.
+- [ ] 대기열 메시지는 우선순위 배너와 별도로 계속 렌더링한다.
+- [ ] 파일 첨부와 Web 검색 버튼은 입력창에 직접 표시되고 `+` 도구 메뉴 트리거는 렌더링하지 않는다.
+- [ ] 기본 하단 힌트는 `Shift+Enter로 줄바꿈`만 표시하고 `서버 운영 중심`/상시 대화 카운터는 렌더링하지 않는다.
+- [ ] 헤더 전체화면 버튼은 visible text 없이 icon-only로 렌더링되며 Cloud Run 상태는 subtitle 라인에 인라인 배치된다.
+
 ---
 
 ## Phase 1 — 내부 코드 품질 정리 (무중단, 리스크 최소)

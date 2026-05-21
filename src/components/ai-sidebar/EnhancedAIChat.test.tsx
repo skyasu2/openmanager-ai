@@ -59,6 +59,30 @@ vi.mock('@/components/ai-sidebar/ChatInputArea', () => ({
   ChatInputArea: () => <div data-testid="chat-input-area" />,
 }));
 
+vi.mock('@/components/ai-sidebar/chat/ColdStartErrorBanner', () => ({
+  ColdStartErrorBanner: ({ error }: { error: string }) => (
+    <div data-testid="cold-start-error-banner">{error}</div>
+  ),
+}));
+
+vi.mock('@/components/ai-sidebar/StreamingWarmupIndicator', () => ({
+  StreamingWarmupIndicator: () => (
+    <div data-testid="streaming-warmup-indicator" />
+  ),
+}));
+
+vi.mock('@/components/ai-sidebar/JobProgressIndicator', () => ({
+  JobProgressIndicator: () => <div data-testid="job-progress-indicator" />,
+}));
+
+vi.mock('@/components/ai/AgentStatusIndicator', () => ({
+  AgentStatusIndicator: () => <div data-testid="agent-status-indicator" />,
+}));
+
+vi.mock('@/components/ai/AgentHandoffBadge', () => ({
+  AgentHandoffBadge: () => <div data-testid="agent-handoff-badge" />,
+}));
+
 type EnhancedAIChatProps = ComponentProps<typeof EnhancedAIChat>;
 
 const baseProps = (): EnhancedAIChatProps => ({
@@ -113,5 +137,50 @@ describe('EnhancedAIChat', () => {
     expect(root).not.toHaveClass('bg-linear-to-br');
     expect(root).not.toHaveClass('from-slate-50');
     expect(root).not.toHaveClass('to-blue-50');
+  });
+
+  it('renders only the highest-priority banner when states overlap', () => {
+    renderChat({
+      isGenerating: true,
+      queryMode: 'streaming',
+      warmingUp: true,
+      error: 'AI Engine 연결 실패',
+      onClearError: vi.fn(),
+      onRetry: vi.fn(),
+      currentAgentStatus: {
+        agent: 'Advisor Agent',
+        status: 'processing',
+        message: '분석 중',
+      },
+      sessionState: {
+        count: 50,
+        remaining: 0,
+        isWarning: true,
+        isLimitReached: true,
+      },
+    });
+
+    expect(screen.getByTestId('cold-start-error-banner')).toHaveTextContent(
+      'AI Engine 연결 실패'
+    );
+    expect(
+      screen.queryByTestId('streaming-warmup-indicator')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('agent-status-indicator')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('대화가 길어졌습니다')).not.toBeInTheDocument();
+  });
+
+  it('keeps queued queries outside the banner priority system', () => {
+    renderChat({
+      error: 'AI Engine 연결 실패',
+      onClearError: vi.fn(),
+      onRetry: vi.fn(),
+      queuedQueries: [{ id: 1, text: '대기 중인 후속 질문' }],
+    });
+
+    expect(screen.getByTestId('cold-start-error-banner')).toBeInTheDocument();
+    expect(screen.getByText('대기 중인 후속 질문')).toBeInTheDocument();
   });
 });
