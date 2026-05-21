@@ -661,9 +661,11 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           );
         }
 
+        const needsRoutingHint = shouldExtractSemanticIntentFrame(query);
         let clarificationRequest = generateClarification(query, classification);
+        const needsClarificationCheck = clarificationRequest !== null;
 
-        if (clarificationRequest || shouldExtractSemanticIntentFrame(query)) {
+        if (needsRoutingHint || needsClarificationCheck) {
           const entities = await extractEntitiesCached(query);
           if (entities.blocked) {
             setState((prev) => ({
@@ -680,7 +682,11 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             return;
           }
 
-          if (refs.semanticIntentFrame) {
+          if (
+            needsRoutingHint &&
+            entities.intentFrame &&
+            refs.semanticIntentFrame
+          ) {
             refs.semanticIntentFrame.current = entities.intentFrame;
           }
           if (refs.semanticPreprocessing) {
@@ -694,7 +700,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             );
           }
 
-          if (clarificationRequest) {
+          if (needsClarificationCheck) {
             clarificationRequest = generateClarification(
               query,
               classification,
