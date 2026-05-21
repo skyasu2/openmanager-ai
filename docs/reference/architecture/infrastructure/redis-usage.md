@@ -3,13 +3,15 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-20
+> Last reviewed: 2026-05-21
 > Canonical: docs/reference/architecture/infrastructure/redis-usage.md
 > Tags: redis,upstash,cache,rate-limit,job-queue,infrastructure
 
-**분석 시점**: 2026-05-20 (v8.11.x 기준 코드 전수 조사)  
+**분석 시점**: 2026-05-20 (v8.11.x 기준 코드 전수 조사), 2026-05-21 data-plane INFO 스냅샷 추가
 **인스턴스**: Upstash Redis (REST API, 동일 인스턴스를 Vercel과 Cloud Run이 공유)  
 **Free Tier 한도**: 월 500K 커맨드 (Upstash pricing, 2026-05-20 확인)
+
+**운영 스냅샷 (2026-05-21, Upstash REST `INFO`/`DBSIZE`)**: `keys=32`, `total_data_size=15.895KB`, `total_commands_processed=60,495`, `instantaneous_ops_per_sec=1`, `keyspace_hits=63,875`, `keyspace_misses=16,729`, `expired_keys=4,247`, `evicted_keys=0`. 이 값은 Redis data-plane의 누적/현재 상태이며 Upstash 월간 billing command usage가 아니다. R-5 월간 소비량 보정은 Upstash dashboard 또는 management API 지표 기준으로만 확정한다.
 
 ---
 
@@ -175,6 +177,7 @@
 
 > 월 30K 요청 기준으로 Free Tier 한도(500K)에 근접하거나 초과할 수 있다. 요청량이 증가하면 Job Queue 유지 여부, AI 캐시 히트율, Cloud Run L2 캐시 TTL, Langfuse sample rate가 1차 최적화 대상이다.
 > Job Queue를 제품 경로에서 제거하면 월 30K 요청 기준 `job:*` 계열 약 90K~120K 커맨드를 줄일 수 있으나, 공통 보안과 Cloud Run quota 계층의 Redis 사용은 별도 판단 대상이다.
+> 2026-05-21 data-plane INFO 스냅샷은 총 키 32개, 데이터 15.895KB, 누적 명령 60,495개로 현재 저장 용량과 순간 부하는 낮음을 보여준다. 다만 월간 Free Tier command 사용량 카운터가 아니므로 billing 기준 보정값으로 사용하지 않는다.
 
 ---
 

@@ -10,7 +10,7 @@
 **분석 범위**: `src/` (Vercel/Next.js), `cloud-run/ai-engine/src/` (Cloud Run AI Engine)  
 **연관 계획서**: [ai-assistant-design-cleanup-plan.md](archive/ai-assistant-design-cleanup-plan.md) — Task 1-C(resumable 제거), Task 3-C(CB store 정리)와 겹치는 항목은 해당 계획서 기준으로 실행했다.
 
-**현재 실행 상태**: R-0~R-4, R-6 완료. 남은 R-5는 Upstash dashboard 또는 management API 사용량 접근이 필요한 사용자 액션으로, 로컬 코드 변경만으로 완료할 수 없다.
+**현재 실행 상태**: R-0~R-4, R-6 완료. R-5는 2026-05-21 data-plane INFO/DBSIZE 스냅샷을 기록했지만, 월간 command usage 보정은 Upstash dashboard 또는 management API 사용량 접근이 필요한 사용자 액션으로 남아 있다.
 
 ---
 
@@ -260,7 +260,14 @@ return NextResponse.json(
 
 누적 예상: 요청당 12~19 커맨드 → 월 30K 요청이면 378K~528K 커맨드 (500K 한도 근접/초과 가능)
 
+**2026-05-21 data-plane 스냅샷**:
+- Upstash REST `INFO`: `total_commands_processed=60,495`, `instantaneous_ops_per_sec=1`, `keyspace_hits=63,875`, `keyspace_misses=16,729`, `expired_keys=4,247`, `evicted_keys=0`
+- Upstash REST `DBSIZE`: `32`
+- 저장 데이터: `total_data_size=15.895KB`
+- 판단: 현재 키 수와 저장 용량은 낮고 eviction은 없다. 단, 이 값은 Redis INFO 누적/현재 상태이며 Upstash 월간 billing command usage가 아니므로 R-5의 월간 소비량 보정 완료 근거로 사용하지 않는다.
+
 - [x] redis-usage.md 내 예산 섹션 초안 작성
+- [x] data-plane INFO/DBSIZE 스냅샷 기록
 - [ ] 실제 Upstash dashboard 확인값이 생기면 예상치 보정
 
 ---
