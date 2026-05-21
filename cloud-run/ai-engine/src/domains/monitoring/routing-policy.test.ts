@@ -731,6 +731,34 @@ describe('createPrepareStep', () => {
     });
   });
 
+  it('should force getServerMetricsAdvanced for ranking plus trend queries', async () => {
+    const prepare = createPrepareStep('메모리 사용률 상위 3개 서버와 추세를 봐줘');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toEqual([
+      'getServerMetricsAdvanced',
+      'finalAnswer',
+    ]);
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'getServerMetricsAdvanced',
+    });
+  });
+
+  it('should force getServerMetricsAdvanced for AZ load-balance queries', async () => {
+    const prepare = createPrepareStep(
+      'DC1-AZ1/AZ2/AZ3 구역별 부하 균형이 잡혀 있어?'
+    );
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toEqual([
+      'getServerMetricsAdvanced',
+      'finalAnswer',
+    ]);
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'getServerMetricsAdvanced',
+    });
+  });
+
   it('should finalize metric ranking queries after the forced advanced lookup step', async () => {
     const prepare = createPrepareStep('메모리 상위 3대 알려줘');
     const result = await prepare({ stepNumber: 1 });

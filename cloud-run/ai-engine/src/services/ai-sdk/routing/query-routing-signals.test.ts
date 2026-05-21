@@ -43,6 +43,18 @@ describe('extractQueryRoutingSignals', () => {
     expect(signals.reasonCodes).toContain('whole_fleet_metric');
   });
 
+  it('extracts AZ load-balance queries as monitoring metric signals', () => {
+    const signals = extractQueryRoutingSignals(
+      'DC1-AZ1/AZ2/AZ3 구역별 부하 균형이 잡혀 있어?'
+    );
+
+    expect(signals.intent).toBe('metrics');
+    expect(signals.toolIntentCategory).toBe('metrics');
+    expect(signals.metric).toBe('load1');
+    expect(signals.hasInfraContext).toBe(true);
+    expect(signals.reasonCodes).toContain('metric_detected_load1');
+  });
+
   it.each([
     '안녕하세요',
     'CPU 알려줘',

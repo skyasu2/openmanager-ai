@@ -38,6 +38,14 @@ describe('Metrics Query instruction layering', () => {
     expect(instructions).not.toContain('서버 현황 응답 필수 포맷');
   });
 
+  it('documents ranking plus trend and AZ grouping tool usage', () => {
+    const instructions = getNlqInstructions('메모리 사용률 상위 3개 서버와 추세를 봐줘');
+
+    expect(instructions).toContain('순위 + 추세');
+    expect(instructions).toContain('groupBy: "location"');
+    expect(instructions).toContain('AZ별');
+  });
+
   it('injects threshold context for explicit comparison filters', () => {
     const instructions = getNlqInstructions('CPU 80% 이상인 서버');
 

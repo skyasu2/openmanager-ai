@@ -528,6 +528,74 @@ describe('getServerMetricsAdvanced', () => {
     expect(result.answer).not.toContain('순서를 바꾸지 말고 그대로 사용자에게 전달하세요.');
   });
 
+  it('should include trend evidence for current metric ranking queries', async () => {
+    const result = await getServerMetricsAdvanced.execute(
+      {
+        timeRange: 'current',
+        metric: 'memory',
+        aggregation: 'none',
+        sortBy: 'memory',
+        sortOrder: 'desc',
+        limit: 3,
+      },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.servers).toHaveLength(3);
+    expect(result.servers[0].trends.memory).toEqual(
+      expect.objectContaining({
+        direction: 'stable',
+        current: 88,
+        avg24h: 88,
+        deltaPercentPoints: 0,
+      })
+    );
+    expect(result.answer).toContain('추세');
+  });
+
+  it('should group current metrics by availability zone', async () => {
+    const result = await getServerMetricsAdvanced.execute(
+      {
+        timeRange: 'current',
+        metric: 'all',
+        aggregation: 'avg',
+        groupBy: 'location',
+      },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.responseKind).toBe('location_group_summary');
+    expect(result.groupSummary).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          location: 'DC1-AZ1',
+          serverCount: 4,
+          metrics: expect.objectContaining({
+            cpu_avg: 30,
+            memory_avg: 54.3,
+            disk_avg: 49.3,
+          }),
+          statusCounts: expect.objectContaining({
+            online: 3,
+            critical: 1,
+          }),
+          serverIds: expect.arrayContaining([
+            'web-nginx-dc1-01',
+            'cache-redis-dc1-01',
+            'storage-nfs-dc1-01',
+          ]),
+        }),
+        expect.objectContaining({
+          location: 'DC1-AZ2',
+          serverCount: 2,
+        }),
+      ])
+    );
+    expect(result.answer).toContain('AZ별 현재 부하 집계');
+  });
+
   it('uses query-as-of slot for current range lookups', async () => {
     const queryAsOf: QueryAsOf = {
       createdAt: '2026-04-29T05:55:00.000Z',
