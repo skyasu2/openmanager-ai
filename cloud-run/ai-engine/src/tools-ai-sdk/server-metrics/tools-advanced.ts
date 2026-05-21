@@ -57,6 +57,43 @@ function formatMetricValue(metric: MetricName, value: number): string {
   return `${value}${getMetricUnit(metric)}`;
 }
 
+function getMetricShortLabel(metric: SortableMetricName): string {
+  switch (metric) {
+    case 'cpu':
+      return 'CPU';
+    case 'memory':
+      return 'MEM';
+    case 'disk':
+      return 'DISK';
+    case 'network':
+      return 'network';
+    case 'load1':
+      return 'load1';
+    case 'load5':
+      return 'load5';
+  }
+}
+
+function metricFromSummaryKey(key: string): MetricName | undefined {
+  const metricName = key.split('_')[0];
+  if (
+    metricName === 'cpu' ||
+    metricName === 'memory' ||
+    metricName === 'disk' ||
+    metricName === 'network' ||
+    metricName === 'load1' ||
+    metricName === 'load5'
+  ) {
+    return metricName;
+  }
+  return undefined;
+}
+
+function formatSummaryMetricEntry(key: string, value: number): string {
+  const metricName = metricFromSummaryKey(key);
+  return `${key}=${metricName ? formatMetricValue(metricName, value) : value}`;
+}
+
 function buildTrendEvidence(
   current: number | undefined,
   avg24h: number | undefined
@@ -347,19 +384,16 @@ export const getServerMetricsAdvanced = tool({
             'AZ별 현재 부하 집계: ' +
             groupSummary
               .map((group) => {
-                const cpuAvg = group.metrics.cpu_avg;
-                const memoryAvg = group.metrics.memory_avg;
-                const diskAvg = group.metrics.disk_avg;
+                const metricsText = metricsToSummarize
+                  .map((metricName) => {
+                    const avg = group.metrics[`${metricName}_avg`];
+                    if (avg === undefined) return null;
+                    return `${getMetricShortLabel(metricName)} ${formatMetricValue(metricName, avg)}`;
+                  })
+                  .filter((entry): entry is string => entry !== null)
+                  .join(', ');
                 return `${group.location} ${group.serverCount}대` +
-                  (cpuAvg !== undefined
-                    ? `, CPU ${cpuAvg}%`
-                    : '') +
-                  (memoryAvg !== undefined
-                    ? `, MEM ${memoryAvg}%`
-                    : '') +
-                  (diskAvg !== undefined
-                    ? `, DISK ${diskAvg}%`
-                    : '');
+                  (metricsText ? `, ${metricsText}` : '');
               })
               .join(' / ') +
             '.';
@@ -446,7 +480,7 @@ export const getServerMetricsAdvanced = tool({
           (Object.keys(globalSummary).length > 0
             ? `${timeRangeKr} 전체 ${filteredResults.length}대 서버 집계: ` +
               Object.entries(globalSummary)
-                .map(([k, v]) => `${k}=${v}%`)
+                .map(([k, v]) => formatSummaryMetricEntry(k, v))
                 .join(', ') +
               '.'
             : null);

@@ -52,6 +52,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 62,
       disk: 55,
       network: 120,
+      load1: 1.2,
+      load5: 1.1,
     },
     {
       id: 'web-nginx-dc1-02',
@@ -62,6 +64,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 82,
       disk: 60,
       network: 150,
+      load1: 2.4,
+      load5: 2.2,
     },
     {
       id: 'db-mysql-dc1-01',
@@ -72,6 +76,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 70,
       disk: 65,
       network: 200,
+      load1: 1.8,
+      load5: 1.6,
     },
     {
       id: 'db-mysql-dc1-02',
@@ -82,6 +88,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 55,
       disk: 60,
       network: 180,
+      load1: 1,
+      load5: 0.9,
     },
     {
       id: 'lb-haproxy-dc1-01',
@@ -92,6 +100,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 40,
       disk: 30,
       network: 500,
+      load1: 0.7,
+      load5: 0.6,
     },
     {
       id: 'cache-redis-dc1-01',
@@ -102,6 +112,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 85,
       disk: 20,
       network: 300,
+      load1: 0.9,
+      load5: 0.8,
     },
     {
       id: 'cache-redis-dc1-02',
@@ -112,6 +124,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 88,
       disk: 25,
       network: 280,
+      load1: 1.6,
+      load5: 1.4,
     },
     {
       id: 'api-node-dc1-01',
@@ -122,6 +136,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 60,
       disk: 40,
       network: 150,
+      load1: 1.3,
+      load5: 1.2,
     },
     {
       id: 'storage-nfs-dc1-01',
@@ -132,6 +148,8 @@ vi.mock('../data/precomputed-state', () => {
       memory: 30,
       disk: 92,
       network: 100,
+      load1: 0.4,
+      load5: 0.4,
     },
   ];
 
@@ -610,6 +628,40 @@ describe('getServerMetricsAdvanced', () => {
       ])
     );
     expect(result.answer).toContain('AZ별 현재 부하 집계');
+  });
+
+  it('should include requested load metrics in availability zone answer', async () => {
+    const result = await getServerMetricsAdvanced.execute(
+      {
+        timeRange: 'current',
+        metric: 'load1',
+        aggregation: 'avg',
+        groupBy: 'location',
+      },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.responseKind).toBe('location_group_summary');
+    expect(result.groupSummary).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          location: 'DC1-AZ1',
+          metrics: expect.objectContaining({
+            load1_avg: 0.8,
+          }),
+        }),
+        expect.objectContaining({
+          location: 'DC1-AZ2',
+          metrics: expect.objectContaining({
+            load1_avg: 2,
+          }),
+        }),
+      ])
+    );
+    expect(result.answer).toContain('DC1-AZ1 4대, load1 0.8');
+    expect(result.answer).toContain('DC1-AZ2 2대, load1 2');
+    expect(result.answer).not.toContain('load1 2%');
   });
 
   it('uses query-as-of slot for current range lookups', async () => {
