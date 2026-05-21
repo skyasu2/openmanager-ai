@@ -36,7 +36,7 @@
 
 ## 현재 진행 상태 (2026-05-21)
 
-Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 서버 검색과 T-2-B 서버 카드 트렌드 인디케이터는 클라이언트 표시 로직만 추가했으며 API, 데이터 계약, 라우팅 동작은 변경하지 않았다. 로컬 브라우저 QA에서 dev 서버 stale bundle 오류와 compact 카드 delta 겹침을 확인해, dev 서버 재기동 검증과 2줄 메트릭 레이아웃으로 수정했다.
+Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 서버 검색, T-2-B 서버 카드 트렌드 인디케이터, T-2-C 서버 카드 가동률 표시는 클라이언트 표시 로직만 추가했으며 API, 데이터 계약, 라우팅 동작은 변경하지 않았다. 로컬 브라우저 QA에서 dev 서버 stale bundle 오류와 compact 카드 delta 겹침을 확인해, dev 서버 재기동 검증과 2줄 메트릭 레이아웃으로 수정했다.
 
 **완료 변경 계약**
 
@@ -48,6 +48,7 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 | 툴바/카운트 바 | 서버 목록 조작 영역은 기존 기능 유지, 시각 톤만 `white/neutral + backdrop blur`로 통일 |
 | 서버 검색 | `server.name`, `server.id`, `server.hostname`, `server.location`, `server.ip` 기준 client-side 검색. 검색 중에는 unloaded page 확장을 시도하지 않고 현재 보유 서버 집합 안에서 정렬/더보기/empty state를 처리 |
 | 메트릭 트렌드 | `MetricItem`에서 현재값과 최근 최대 5개 히스토리 평균을 비교해 `↑ +N%` / `↓ -N%` / `—` 표시. `withCurrentMetricPoint()`가 마지막 포인트를 현재값으로 정렬하므로 baseline 계산에서는 마지막 포인트를 제외. compact 카드에서는 값과 delta를 2줄로 분리해 텍스트 겹침을 방지 |
+| 서버 가동률 | standard/detailed 서버 카드의 `SecondaryMetrics`에 `가동률 N.N% / 24h` 행을 표시. `uptimePercent`가 있으면 우선 사용하고, 없으면 기존 `uptime` 초/문자열을 24h 기준으로 환산. 유효 데이터가 없으면 `— / 24h` 표시. compact 카드에서는 숨김 |
 | 통계 업데이트 루프 방어 | `DashboardInteractiveShell`은 동일한 `DashboardStats`가 반복 전달되면 state update를 생략해 dev runtime maximum update depth 경고를 방지 |
 
 **검증**
@@ -56,7 +57,8 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 - `npm run lint` — PASS
 - `npm run test:quick` — PASS
 - `npm run test:dom -- src/components/dashboard/ServerDashboard.test.tsx` — PASS (1 file / 16 tests, T-2-A targeted)
-- `npm run test:dom -- src/components/dashboard/ImprovedServerCard.test.tsx` — PASS (1 file / 53 tests, T-2-B targeted)
+- `npm run test:dom -- src/components/dashboard/ImprovedServerCard.test.tsx` — PASS (1 file / 57 tests, T-2-B/T-2-C targeted)
+- `npm run test:dom -- src/components/dashboard/ImprovedServerCard.test.tsx src/hooks/useSafeServer.test.tsx` — PASS (2 files / 61 tests, T-2-C targeted)
 - Local Playwright/Next DevTools `/dashboard` targeted QA — PASS: 검색 필터/empty/복구, 그리드 카드 trend delta, 콘솔 warning/error 0, Next runtime errors 0
 
 **Task 상태**
@@ -66,7 +68,8 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 - [x] T-1-D: 툴바 스타일 통일
 - [x] T-2-A: 서버 검색바 추가
 - [x] T-2-B: 트렌드 방향 인디케이터 추가
-- [ ] T-2-C 이후: 별도 세부 계약/테스트 시나리오 확정 후 진행
+- [x] T-2-C: 서버 카드 Uptime 표시 추가
+- [ ] T-2-D 이후: 별도 세부 계약/테스트 시나리오 확정 후 진행
 
 ## SDD 게이트 (Phase 2+ 착수 전)
 
@@ -119,10 +122,10 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 
 ### T-2-C 테스트 시나리오
 
-- [ ] explicit `uptimePercent`가 있으면 standard 카드에 `가동률 N.N% / 24h`를 표시한다.
-- [ ] `uptimePercent`가 없고 `uptime`이 24h 이상이면 `100.0% / 24h`를 표시한다.
-- [ ] 유효한 uptime 데이터가 없으면 `가동률 — / 24h`를 표시한다.
-- [ ] compact variant에서는 uptime 행을 렌더링하지 않는다.
+- [x] explicit `uptimePercent`가 있으면 standard 카드에 `가동률 N.N% / 24h`를 표시한다.
+- [x] `uptimePercent`가 없고 `uptime`이 24h 이상이면 `100.0% / 24h`를 표시한다.
+- [x] 유효한 uptime 데이터가 없으면 `가동률 — / 24h`를 표시한다.
+- [x] compact variant에서는 uptime 행을 렌더링하지 않는다.
 
 ---
 

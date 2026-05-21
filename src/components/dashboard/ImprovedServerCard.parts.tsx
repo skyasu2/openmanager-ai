@@ -188,6 +188,63 @@ export const DetailRow = ({ icon, label, value }: DetailRowProps) => (
   </div>
 );
 
+const UPTIME_WINDOW_SECONDS = 24 * 60 * 60;
+
+function clampPercent(value: number): number {
+  return Math.min(100, Math.max(0, value));
+}
+
+function parseUptimeSeconds(uptime: ServerType['uptime']): number | null {
+  if (typeof uptime === 'number') {
+    return Number.isFinite(uptime) && uptime >= 0 ? uptime : null;
+  }
+
+  const normalized = uptime.trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+
+  const numericValue = Number.parseFloat(normalized);
+  if (/^\d+(\.\d+)?$/.test(normalized) && Number.isFinite(numericValue)) {
+    return numericValue;
+  }
+
+  const days = Number.parseFloat(
+    normalized.match(/(\d+(?:\.\d+)?)\s*(?:d|day|days|일)/)?.[1] ?? '0'
+  );
+  const hours = Number.parseFloat(
+    normalized.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours|시간)/)?.[1] ??
+      '0'
+  );
+  const minutes = Number.parseFloat(
+    normalized.match(
+      /(\d+(?:\.\d+)?)\s*(?:m|min|mins|minute|minutes|분)/
+    )?.[1] ?? '0'
+  );
+
+  const seconds = days * 86400 + hours * 3600 + minutes * 60;
+  return seconds > 0 ? seconds : null;
+}
+
+function formatUptimePercent(server: ServerType): string {
+  if (
+    typeof server.uptimePercent === 'number' &&
+    Number.isFinite(server.uptimePercent)
+  ) {
+    return `${clampPercent(server.uptimePercent).toFixed(1)}%`;
+  }
+
+  const uptimeSeconds = parseUptimeSeconds(server.uptime);
+  if (uptimeSeconds === null) {
+    return '—';
+  }
+
+  const uptimePercent = clampPercent(
+    (uptimeSeconds / UPTIME_WINDOW_SECONDS) * 100
+  );
+  return `${uptimePercent.toFixed(1)}%`;
+}
+
 export const SecondaryMetrics = ({
   server,
   compact = false,
@@ -198,8 +255,9 @@ export const SecondaryMetrics = ({
   const hasLoad = server.load1 !== undefined && server.cpuCores !== undefined;
   const hasResponse =
     server.responseTime !== undefined && server.responseTime > 0;
+  const uptimePercentLabel = formatUptimePercent(server);
 
-  if (!hasLoad && !hasResponse) {
+  if (!hasLoad && !hasResponse && compact) {
     return null;
   }
 
@@ -217,7 +275,7 @@ export const SecondaryMetrics = ({
 
   return (
     <div
-      className={`mt-2 items-center gap-3 border-t border-gray-200/50 pt-2 text-xs ${compact ? 'hidden sm:flex' : 'flex'}`}
+      className={`mt-2 items-center gap-3 border-t border-gray-200/50 pt-2 text-xs ${compact ? 'hidden sm:flex' : 'flex flex-wrap'}`}
     >
       {hasLoad && (
         <span
@@ -231,6 +289,17 @@ export const SecondaryMetrics = ({
         <span className={respColor} title={`응답 시간: ${respMs}ms`}>
           Resp:{' '}
           {respMs >= 1000 ? `${(respMs / 1000).toFixed(1)}s` : `${respMs}ms`}
+        </span>
+      )}
+      {!compact && (
+        <span
+          className="inline-flex items-center gap-1 text-gray-500"
+          title={`최근 24시간 가동률: ${uptimePercentLabel}`}
+        >
+          <span>가동률</span>
+          <span className="font-medium tabular-nums text-gray-700">
+            {uptimePercentLabel} / 24h
+          </span>
         </span>
       )}
     </div>
