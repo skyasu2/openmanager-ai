@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { GROQ_TEXT_MODEL_ID } from '@/config/ai-providers';
 import {
   KNOWN_ENTITY_SERVER_IDS,
-  normalizeExtractedEntities,
+  normalizeExtractedEntitiesForQuery,
   SEMANTIC_AGGREGATIONS,
   SEMANTIC_AMBIGUITIES,
   SEMANTIC_DOMAINS,
@@ -131,7 +131,7 @@ async function postHandler(request: NextRequest) {
     });
 
     return NextResponse.json({
-      ...normalizeExtractedEntities(output),
+      ...normalizeExtractedEntitiesForQuery(output, queryForLLM),
       inputType: guard.inputType,
       ...(guard.logExtract && { logExtract: guard.logExtract }),
       ...(guard.truncated && { truncated: true }),

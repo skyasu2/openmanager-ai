@@ -4,6 +4,7 @@ import {
   extractEntities,
   KNOWN_ENTITY_SERVER_IDS,
   normalizeExtractedEntities,
+  normalizeExtractedEntitiesForQuery,
 } from './entity-extractor';
 
 describe('KNOWN_ENTITY_SERVER_IDS', () => {
@@ -184,6 +185,79 @@ describe('normalizeExtractedEntities', () => {
         },
       })
     ).toEqual({ confidence: 80 });
+  });
+
+  it('corrects group wording that providers over-normalize to one cache server', () => {
+    expect(
+      normalizeExtractedEntitiesForQuery(
+        {
+          server: 'cache-redis-dc1-01',
+          metric: 'memory',
+          confidence: 80,
+          intentFrame: {
+            domain: 'monitoring',
+            intent: 'metric_current',
+            scope: 'server',
+            targets: ['cache-redis-dc1-01'],
+            metric: 'memory',
+            timeWindow: 'current',
+            aggregation: 'summary',
+            topN: null,
+            ambiguity: 'low',
+            executionMode: 'single',
+            confidence: 80,
+          },
+        },
+        '캐시 서버 메모리 현황'
+      )
+    ).toEqual({
+      metric: 'memory',
+      confidence: 80,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'metric_current',
+        scope: 'group',
+        targets: ['cache'],
+        metric: 'memory',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        executionMode: 'single',
+        confidence: 80,
+      },
+    });
+  });
+
+  it('keeps explicit server IDs even when the server type is also named', () => {
+    expect(
+      normalizeExtractedEntitiesForQuery(
+        {
+          server: 'cache-redis-dc1-01',
+          metric: 'memory',
+          confidence: 85,
+          intentFrame: {
+            domain: 'monitoring',
+            intent: 'metric_current',
+            scope: 'server',
+            targets: ['cache-redis-dc1-01'],
+            metric: 'memory',
+            timeWindow: 'current',
+            aggregation: 'summary',
+            topN: null,
+            ambiguity: 'low',
+            executionMode: 'single',
+            confidence: 85,
+          },
+        },
+        'cache-redis-dc1-01 캐시 서버 메모리 현황'
+      )
+    ).toMatchObject({
+      server: 'cache-redis-dc1-01',
+      intentFrame: {
+        scope: 'server',
+        targets: ['cache-redis-dc1-01'],
+      },
+    });
   });
 });
 

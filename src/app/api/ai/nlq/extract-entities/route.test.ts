@@ -142,6 +142,45 @@ describe('POST /api/ai/nlq/extract-entities', () => {
     );
   });
 
+  it('returns cache group scope when provider over-normalizes group wording to one server', async () => {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
+        server: 'cache-redis-dc1-01',
+        metric: 'memory',
+        timeRange: null,
+        confidence: 80,
+        intentFrame: {
+          domain: 'monitoring',
+          intent: 'metric_current',
+          scope: 'server',
+          targets: ['cache-redis-dc1-01'],
+          metric: 'memory',
+          timeWindow: 'current',
+          aggregation: 'summary',
+          topN: null,
+          ambiguity: 'low',
+          executionMode: 'single',
+          confidence: 80,
+        },
+      },
+    });
+
+    const response = await POST(
+      buildRequest({ query: '캐시 서버 메모리 현황' })
+    );
+
+    await expect(response.json()).resolves.toMatchObject({
+      metric: 'memory',
+      confidence: 80,
+      inputType: 'natural_query',
+      intentFrame: {
+        scope: 'group',
+        targets: ['cache'],
+        metric: 'memory',
+      },
+    });
+  });
+
   it('uses provider-compatible required nullable structured output schema', async () => {
     const response = await POST(
       buildRequest({

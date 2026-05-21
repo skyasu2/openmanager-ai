@@ -69,6 +69,28 @@ const ACTION_NEEDED_PATTERN =
 const CURRENT_METRIC_GROUP_PATTERN =
   /(db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN = /추이|추세|trend|변화|변동/i;
+const GROUP_TARGET_HINTS = [
+  {
+    target: 'cache',
+    pattern: /(?:캐시|cache|redis)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'storage',
+    pattern: /(?:스토리지|저장소|storage|nfs|s3gw)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'web',
+    pattern: /(?:웹|web|nginx)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'database',
+    pattern: /(?:db|database|mysql|디비|데이터베이스)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'loadbalancer',
+    pattern: /(?:로드\s*밸런서|로드밸런서|load\s*balancer|loadbalancer|lb)\s*(?:서버|그룹)?/i,
+  },
+] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -227,6 +249,27 @@ function normalizeTargets(value: unknown): string[] {
     .filter((target) => target.length > 0);
 }
 
+function messageMentionsTarget(message: string, target: string): boolean {
+  return message.toLowerCase().includes(target.toLowerCase());
+}
+
+function inferGroupTargetFromMessage(message: string): string | undefined {
+  return GROUP_TARGET_HINTS.find((hint) => hint.pattern.test(message))?.target;
+}
+
+function reconcileTargetsWithMessage(
+  targets: string[],
+  message: string
+): string[] {
+  const groupTarget = inferGroupTargetFromMessage(message);
+  if (!groupTarget) return targets;
+
+  const hasExplicitTargetMention = targets.some((target) =>
+    messageMentionsTarget(message, target)
+  );
+  return hasExplicitTargetMention ? targets : [groupTarget];
+}
+
 function isMetricRankingFrame(frame: DomainIntentFrame): boolean {
   return (
     frame.intent === 'metric_ranking' ||
@@ -267,7 +310,10 @@ function parseCurrentMetricsFrame(
   }
 
   const metric = normalizeSupportedMetric(frame.metric);
-  const targets = normalizeTargets(frame.targets);
+  const targets = reconcileTargetsWithMessage(
+    normalizeTargets(frame.targets),
+    request.message
+  );
   if (
     metric &&
     frame.intent === 'metric_current' &&

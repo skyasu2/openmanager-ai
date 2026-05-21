@@ -144,6 +144,30 @@ export interface SemanticIntentFrame {
   confidence: number;
 }
 
+const GROUP_TARGET_HINTS = [
+  {
+    target: 'cache',
+    pattern: /(?:캐시|cache|redis)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'storage',
+    pattern: /(?:스토리지|저장소|storage|nfs|s3gw)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'web',
+    pattern: /(?:웹|web|nginx)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'database',
+    pattern: /(?:db|database|mysql|디비|데이터베이스)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'loadbalancer',
+    pattern:
+      /(?:로드\s*밸런서|로드밸런서|load\s*balancer|loadbalancer|lb)\s*(?:서버|그룹)?/i,
+  },
+] as const;
+
 const SYSTEM_PROMPT = `You are an entity extractor for a server monitoring system.
 Extract entities from the user query and return ONLY valid JSON.
 You are a semantic parser, not an answer generator.
@@ -300,6 +324,47 @@ function normalizeTargets(value: unknown): string[] {
     .map((target) => target.trim())
     .filter((target) => target.length > 0 && target.length <= 80)
     .slice(0, 10);
+}
+
+function queryMentionsKnownServerId(query: string): boolean {
+  const normalizedQuery = query.toLowerCase();
+  return (KNOWN_ENTITY_SERVER_IDS as readonly string[]).some((serverId) =>
+    normalizedQuery.includes(serverId.toLowerCase())
+  );
+}
+
+function inferGroupTargetFromQuery(query: string): string | undefined {
+  return GROUP_TARGET_HINTS.find((hint) => hint.pattern.test(query))?.target;
+}
+
+export function normalizeExtractedEntitiesForQuery(
+  data: unknown,
+  query: string
+): ExtractedEntities {
+  const entities = normalizeExtractedEntities(data);
+  const groupTarget = inferGroupTargetFromQuery(query);
+  if (!groupTarget || queryMentionsKnownServerId(query)) {
+    return entities;
+  }
+
+  const correctedFrame =
+    entities.intentFrame && entities.intentFrame.domain === 'monitoring'
+      ? {
+          ...entities.intentFrame,
+          scope: 'group' as const,
+          targets: [groupTarget],
+          confidence: Math.max(
+            entities.intentFrame.confidence,
+            entities.confidence
+          ),
+        }
+      : undefined;
+
+  const { server: _server, intentFrame: _intentFrame, ...rest } = entities;
+  return {
+    ...rest,
+    ...(correctedFrame && { intentFrame: correctedFrame }),
+  };
 }
 
 export function normalizeSemanticIntentFrame(

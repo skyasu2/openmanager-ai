@@ -152,11 +152,7 @@ describe('current metrics domain evidence providers', () => {
         intent: 'metric_current',
         capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
         scope: 'whole_fleet',
-        targets: [
-          'cache-redis-dc1-01',
-          'cache-redis-dc1-02',
-          'cache-redis-dc1-03',
-        ],
+        targets: ['cache-redis-dc1-01'],
         metric: 'memory',
         timeWindow: 'current',
         aggregation: 'summary',
@@ -177,6 +173,50 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('캐시 서버 3대 메모리 현황');
     expect(evidence?.fallback).toContain('cache-redis-dc1-01 61%');
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
+  it('keeps exact cache server frames when the user names the server ID', async () => {
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve({
+      ...createEvidenceRequest('cache-redis-dc1-01 캐시 서버 메모리 현황', {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'online',
+            cpu: 22,
+            memory: 61,
+            disk: 31,
+            network: 10,
+          },
+          {
+            id: 'cache-redis-dc1-02',
+            type: 'cache',
+            status: 'online',
+            cpu: 18,
+            memory: 55,
+            disk: 29,
+            network: 11,
+          },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        scope: 'server',
+        targets: ['cache-redis-dc1-01'],
+        metric: 'memory',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.8,
+      },
+    });
+
+    expect(evidence?.fallback).toContain('캐시 서버 1대 메모리 현황');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-01 61%');
+    expect(evidence?.fallback).not.toContain('cache-redis-dc1-02');
   });
 
   it('resolves whole-fleet disk trend frame without drifting to CPU summary', async () => {
