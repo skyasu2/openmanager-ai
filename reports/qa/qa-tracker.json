@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-21T04:10:30.110Z"
+    "updatedAt": "2026-05-21T05:23:03.217Z"
   },
   "sequence": {
-    "nextRunNumber": 550
+    "nextRunNumber": 551
   },
   "summary": {
-    "totalRecordedRuns": 547,
-    "totalRuns": 435,
+    "totalRecordedRuns": 548,
+    "totalRuns": 436,
     "excludedRuns": 112,
-    "totalChecks": 3977,
-    "totalPassed": 3821,
+    "totalChecks": 3989,
+    "totalPassed": 3833,
     "totalFailed": 145,
     "completionRate": 100,
     "completedItems": 626,
@@ -21,10 +21,10 @@
     "wontFixItems": 35,
     "expertDomainsTracked": 20,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260521-0549",
-    "lastRecordedAt": "2026-05-21T04:10:30.110Z",
-    "latestRecordedRunId": "QA-20260521-0549",
-    "latestRecordedAt": "2026-05-21T04:10:30.110Z"
+    "lastRunId": "QA-20260521-0550",
+    "lastRecordedAt": "2026-05-21T05:23:03.217Z",
+    "latestRecordedRunId": "QA-20260521-0550",
+    "latestRecordedAt": "2026-05-21T05:23:03.217Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -24748,11 +24748,6 @@
         },
         {
           "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
-          "type": "general",
           "label": "Vercel deployment inspector",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/9F5TfqNdton6T8usg9P7XzH2m1nA"
         }
@@ -26133,11 +26128,6 @@
           "type": "general",
           "label": "Deployment Inspector",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/6RS9B6xFu2sRSsixpNgMvgt8y39i"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 0,
@@ -26248,11 +26238,6 @@
           "type": "general",
           "label": "Deployment Inspector",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/38iFjC3qf9zfBV2SkbofH9X2tY73"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 0,
@@ -26344,11 +26329,6 @@
           "type": "general",
           "label": "Deployment Inspector",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 0,
@@ -26428,11 +26408,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "vercel-deployment",
           "label": "Deployment Inspector",
@@ -26627,13 +26602,7 @@
       "expertAssessments": [],
       "usageChecks": [],
       "artifacts": [],
-      "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        }
-      ],
+      "links": [],
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
@@ -26756,11 +26725,6 @@
       "artifacts": [],
       "links": [
         {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
           "type": "vercel-deployment",
           "label": "Production deployment dpl_HRmGRVPmk9YEZn7WPxs58PZndtKE",
           "url": "https://openmanager-ep3iwwwmk-skyasus-projects.vercel.app/"
@@ -26881,11 +26845,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "vercel-deployment",
           "label": "Production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv",
@@ -27032,11 +26991,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "vercel-deployment",
           "label": "Production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv",
@@ -27190,11 +27144,6 @@
       ],
       "links": [
         {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
           "type": "vercel-deployment",
           "label": "Production deployment dpl_5FCMoSTAs2NBcKjVNrvzWaJhK2Vf",
           "url": "https://openmanager-56ekc9sba-skyasus-projects.vercel.app/"
@@ -27277,11 +27226,6 @@
       ],
       "artifacts": [],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "general",
           "label": "Vercel Deployment",
@@ -31304,11 +31248,6 @@
           "type": "general",
           "label": "Active production deployment",
           "url": "https://openmanager-jc49472pn-skyasus-projects.vercel.app/"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 1,
@@ -31393,11 +31332,6 @@
           "type": "general",
           "label": "Active production deployment",
           "url": "https://openmanager-jc49472pn-skyasus-projects.vercel.app/"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 1,
@@ -31481,11 +31415,6 @@
           "type": "general",
           "label": "Active production deployment",
           "url": "https://openmanager-jc49472pn-skyasus-projects.vercel.app/"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 1,
@@ -31567,11 +31496,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "general",
           "label": "Recovery deployment",
@@ -31660,11 +31584,6 @@
           "type": "general",
           "label": "Canonical deployment",
           "url": "https://openmanager-d30ys163z-skyasus-projects.vercel.app/"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 1,
@@ -31801,11 +31720,6 @@
       ],
       "links": [
         {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
           "type": "vercel-deployment",
           "label": "Latest production deployment",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/FnzN8yJFRkS5TUkvQYWREJwtJGh2"
@@ -31916,11 +31830,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "vercel-deployment",
           "label": "Latest production deployment",
@@ -35506,11 +35415,6 @@
       ],
       "links": [
         {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
           "type": "vercel-deployment",
           "label": "Active production deployment dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/7g1jwikybsmVbh2u8SgHDoGhTfPr"
@@ -35593,11 +35497,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "vercel-deployment",
           "label": "Production deployment dpl_optoHir793ZW8PGSyP6Abghmedg1",
@@ -38599,11 +38498,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "vercel-deployment",
           "label": "Vercel production deployment",
@@ -42426,11 +42320,6 @@
         },
         {
           "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
-          "type": "general",
           "label": "Vercel deployment",
           "url": "https://openmanager-bpm41tlhi-skyasus-projects.vercel.app/"
         }
@@ -42577,11 +42466,6 @@
         },
         {
           "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
-          "type": "general",
           "label": "Vercel deployment",
           "url": "https://openmanager-qkz5q3fpu-skyasus-projects.vercel.app/"
         }
@@ -42719,11 +42603,6 @@
           "type": "general",
           "label": "GitLab v8.11.62 tag pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488354879"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 4,
@@ -42860,11 +42739,6 @@
           "type": "general",
           "label": "GitLab v8.11.63 tag pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488611542"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 4,
@@ -43001,11 +42875,6 @@
           "type": "general",
           "label": "GitLab v8.11.64 tag pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488706817"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 4,
@@ -43153,11 +43022,6 @@
           "type": "general",
           "label": "GitLab v8.11.64 tag pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488706817"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 4,
@@ -45471,11 +45335,6 @@
           "type": "general",
           "label": "Production version endpoint",
           "url": "https://openmanager-ai.vercel.app/api/version"
-        },
-        {
-          "type": "vercel-deployment",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 2,
@@ -52423,11 +52282,6 @@
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959"
         },
         {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
           "type": "vercel-deployment",
           "label": "Vercel production deployment",
           "url": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app/"
@@ -53223,11 +53077,6 @@
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959"
         },
         {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
           "type": "vercel-deployment",
           "label": "Vercel production deployment",
           "url": "https://openmanager-qt46mwbes-skyasus-projects.vercel.app/"
@@ -53376,11 +53225,6 @@
           "type": "general",
           "label": "Post-push validate pipeline for undeployed commit c933dc7eb",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2515354490"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         },
         {
           "type": "vercel-deployment",
@@ -53532,11 +53376,6 @@
           "type": "general",
           "label": "Current production release pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2513741959"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 2,
@@ -53636,11 +53475,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "general",
           "label": "v8.11.127 release pipeline",
@@ -53768,11 +53602,6 @@
           "type": "general",
           "label": "Frontend deploy job",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14310099787"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         },
         {
           "type": "general",
@@ -53936,11 +53765,6 @@
       "links": [
         {
           "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
-          "type": "general",
           "label": "v8.11.128 release pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2516275363"
         },
@@ -54081,11 +53905,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "general",
           "label": "v8.11.128 release pipeline",
@@ -54247,11 +54066,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "general",
           "label": "v8.11.129 release pipeline",
@@ -54449,11 +54263,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "general",
           "label": "v8.11.131 release pipeline",
@@ -54673,11 +54482,6 @@
         }
       ],
       "links": [
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
         {
           "type": "general",
           "label": "v8.11.132 release pipeline",
@@ -58236,11 +58040,6 @@
           "type": "general",
           "label": "GitLab v8.11.158 tag pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2529915217"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 2,
@@ -58337,11 +58136,6 @@
           "type": "general",
           "label": "GitLab v8.11.161 tag pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530237045"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 2,
@@ -58439,11 +58233,6 @@
           "type": "general",
           "label": "GitLab v8.11.165 tag pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         },
         {
           "type": "vercel-deployment",
@@ -58590,11 +58379,6 @@
           "type": "general",
           "label": "GitLab v8.11.165 tag pipeline",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2530528415"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         },
         {
           "type": "vercel-deployment",
@@ -62401,11 +62185,6 @@
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2536955714"
         },
         {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
           "type": "vercel-deployment",
           "label": "Vercel production deployment",
           "url": "https://openmanager-8s0qbrpuy-skyasus-projects.vercel.app/"
@@ -62537,11 +62316,6 @@
           "type": "general",
           "label": "GitLab tag pipeline v8.11.185",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540065960"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         },
         {
           "type": "vercel-deployment",
@@ -62689,11 +62463,6 @@
           "type": "general",
           "label": "GitLab tag pipeline v8.11.189",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2540461831"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         },
         {
           "type": "vercel-deployment",
@@ -62847,11 +62616,6 @@
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2541915101"
         },
         {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
-        },
-        {
           "type": "vercel-deployment",
           "label": "Vercel production deployment",
           "url": "https://openmanager-9tidb1ua7-skyasus-projects.vercel.app/"
@@ -62968,11 +62732,6 @@
           "type": "general",
           "label": "GitLab tag pipeline v8.11.193",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542047885"
-        },
-        {
-          "type": "general",
-          "label": "Production URL",
-          "url": "https://openmanager-ai.vercel.app/"
         }
       ],
       "expertCount": 4,
@@ -63161,7 +62920,173 @@
           "type": "general",
           "label": "GitLab tag pipeline v8.11.194",
           "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542261926"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260521-0550",
+      "recordedAt": "2026-05-21T05:23:03.217Z",
+      "recordedAtKst": "2026-05-21 14:23:03 KST",
+      "title": "이번주 변경사항 집중 QA — v8.11.194 (grounded KRL / clarification split / session freeze / Cerebras)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260521-0550.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7xf2j9vHZkGBYwdk71i4vdy4pNXq",
+        "deploymentUrl": "https://openmanager-7x1doek0n-skyasus-projects.vercel.app/",
+        "commitSha": "562ada666ad1b36bc12c81300fb8cea026fd1e1c"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Landing page hero AI title rendering (fix(landing))",
+        "Version API v8.11.194 / commit 562ada666a confirmed",
+        "AI Engine health check (healthy, 89-128ms)",
+        "Dashboard server summary: 18대/17온라인/1경고/0위험/0오프라인, CPU 28%/MEM 45%/Disk 35%",
+        "Session server data freeze: reload 후 OTel slot 84/143 (14:00 KST) 유지 — fix(dashboard): freeze server data for session",
+        "AI 어시스턴트 패널 열기, AI Engine Ready 상태 확인",
+        "Clarification trigger split: 서버 토폴로지 질문 → 명확화 다이얼로그 발동 (전체/Web/DB/로드밸런서 옵션) — refactor(ai): split clarification and routing extraction triggers",
+        "KRL grounded synthesis: 서버 토폴로지 구성 → searchKnowledgeBase 5건 반환, Z.AI glm-4.5-flash 합성, OTel 18대/6역할×3 서버명 보존 — feat(ai): grounded LLM synthesis for direct KRL knowledge path",
+        "Off-domain guardrail: 날씨 질문 → 외부조회 불가 경고 통과, 도메인 범위 재안내 — fix(ai): harden semantic frame routing trust boundary",
+        "whole_fleet scope 직접 응답: 전체 서버 상태 → clarification 없이 monitoring-server-health 직접 조회 — refactor(ai): separate local classification from guardrails",
+        "Cerebras gpt-oss-120b DEFAULT_CEREBRAS_MODEL 코드 확인 — feat(ai): switch Cerebras default to gpt-oss-120b",
+        "Semantic frame trust boundary: db-mysql-dc1-primary 숨은 위험 → 실측 OTel 데이터 기반 (Disk 60%→88%, MEM 55%→90%) 위험 탐지 — fix(ai): harden semantic frame routing trust boundary"
+      ],
+      "skippedSurfaces": [
+        "groundingMode: llm-synthesized UI 노출 검증 — Task A 잔여, KRL runtime 변경 시만 재테스트",
+        "Vision image upload QA",
+        "Reporter/Analyst advanced tabs",
+        "Mobile viewport",
+        "OAuth provider callbacks"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI chat — mysql 접속 실패 명령어",
+          "agent": "Advisor Agent",
+          "provider": "deterministic",
+          "model": "service-command-catalog",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "debug panel latency",
+          "latencyMs": 26,
+          "ttfbMs": 26,
+          "processingTimeMs": 0
         },
+        {
+          "surface": "AI chat — 서버 토폴로지 KRL grounded synthesis",
+          "agent": "Reporter Agent",
+          "provider": "zai",
+          "model": "glm-4.5-flash",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "debug panel latency",
+          "latencyMs": 7021,
+          "ttfbMs": 1200,
+          "processingTimeMs": 5821
+        },
+        {
+          "surface": "AI chat — db-mysql-dc1-primary 숨은 위험 (서버 메트릭 조회)",
+          "agent": "Analyst Agent",
+          "provider": "streaming",
+          "model": "unknown",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "timestamp diff (2:14:42 → 2:14:53)",
+          "latencyMs": 11000,
+          "ttfbMs": 2000,
+          "processingTimeMs": 9000
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "devops-sre",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.11.194 deployed and running. Dashboard OTel slot, server counts, and resource alerts match expected values. Session data freeze confirmed after reload.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "KRL grounded synthesis confirmed (searchKnowledgeBase 5건, OTel 18대 서버명 보존). Clarification trigger split verified (topology → 명확화, whole_fleet → direct). Off-domain guard working.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Semantic frame routing trust boundary confirmed: off-domain query gracefully deflected; positive framing on server query did not bypass real data analysis.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI responses cited correct OTel values (CPU 28%/MEM 45-46%/Disk 35%, cache-redis-dc1-01 MEM 80-81%, db-mysql-dc1-primary Disk 60%). KRL topology answer preserved 18대/6역할 구조.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Chrome DevTools MCP used for all 12 test cases covering this week's commits. Screenshot and debug panel evidence captured.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "cost-operations",
+          "domainName": "Cost / Free Tier Operations",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel usage carried from same billing period (effective 13.3467 USD, billed 0.0000 USD). No incremental cost from targeted QA session.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-21T14:20:00+09:00",
+          "summary": "Vercel usage carried over from QA-20260521-0549 same billing period; effective 13.3467 USD, billed 0.0000 USD, chargeCount ~11571. No additional usage from this targeted QA session.",
+          "evidence": "QA-20260521-0549 usageCheck + same session",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.11.194 weekly focused QA evidence",
+          "path": "reports/qa/evidence/qa-20260521-v811194-weekly-focused.md"
+        }
+      ],
+      "links": [
         {
           "type": "general",
           "label": "Production URL",
@@ -63175,7 +63100,7 @@
       ],
       "expertCount": 6,
       "expertNeedsImprovementCount": 0,
-      "completedCount": 2,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
@@ -63187,16 +63112,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 276,
-      "appropriateCount": 235,
+      "seenCount": 277,
+      "appropriateCount": 236,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 51,
-      "lastRunId": "QA-20260521-0549",
-      "lastSeenAt": "2026-05-21T04:10:30.110Z",
+      "lastRunId": "QA-20260521-0550",
+      "lastSeenAt": "2026-05-21T05:23:03.217Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production AI sidebar passed the standard five-question conversational QA with specific metrics, alias resolution, peak-load evidence, action guidance, and network filtering.",
+      "lastRationale": "KRL grounded synthesis confirmed (searchKnowledgeBase 5건, OTel 18대 서버명 보존). Clarification trigger split verified (topology → 명확화, whole_fleet → direct). Off-domain guard working.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -63221,16 +63146,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 94,
-      "appropriateCount": 75,
+      "seenCount": 95,
+      "appropriateCount": 76,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260521-0549",
-      "lastSeenAt": "2026-05-21T04:10:30.110Z",
+      "lastRunId": "QA-20260521-0550",
+      "lastSeenAt": "2026-05-21T05:23:03.217Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The routing trust-boundary changes were covered by CI/local contract tests and the production UI did not expose raw tool markers, reasoning JSON, or transport errors in the tested responses.",
+      "lastRationale": "Semantic frame routing trust boundary confirmed: off-domain query gracefully deflected; positive framing on server query did not bypass real data analysis.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -63255,16 +63180,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 244,
-      "appropriateCount": 223,
+      "seenCount": 245,
+      "appropriateCount": 224,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260521-0549",
-      "lastSeenAt": "2026-05-21T04:10:30.110Z",
+      "lastRunId": "QA-20260521-0550",
+      "lastSeenAt": "2026-05-21T05:23:03.217Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run used GitLab CI gates plus Playwright MCP production UI evidence with durable screenshot and markdown artifacts.",
+      "lastRationale": "Chrome DevTools MCP used for all 12 test cases covering this week's commits. Screenshot and debug panel evidence captured.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -63272,16 +63197,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 71,
-      "appropriateCount": 49,
+      "seenCount": 72,
+      "appropriateCount": 50,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260521-0549",
-      "lastSeenAt": "2026-05-21T04:10:30.110Z",
+      "lastRunId": "QA-20260521-0550",
+      "lastSeenAt": "2026-05-21T05:23:03.217Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard OTel snapshot counts and AI responses agreed on the current data shape and returned concrete metric values for status, server detail, peak load, and network filtering.",
+      "lastRationale": "AI responses cited correct OTel values (CPU 28%/MEM 45-46%/Disk 35%, cache-redis-dc1-01 MEM 80-81%, db-mysql-dc1-primary Disk 60%). KRL topology answer preserved 18대/6역할 구조.",
       "lastNextAction": ""
     },
     "infra-reliability": {
@@ -63493,16 +63418,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260520-0545",
       "firstSeenAt": "2026-05-20T10:33:17.738Z",
-      "seenCount": 5,
-      "appropriateCount": 5,
+      "seenCount": 6,
+      "appropriateCount": 6,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0549",
-      "lastSeenAt": "2026-05-21T04:10:30.110Z",
+      "lastRunId": "QA-20260521-0550",
+      "lastSeenAt": "2026-05-21T05:23:03.217Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag deploy pipeline and main validate pipeline both completed successfully; production version and AI health endpoints are coherent at 8.11.194.",
+      "lastRationale": "v8.11.194 deployed and running. Dashboard OTel slot, server counts, and resource alerts match expected values. Session data freeze confirmed after reload.",
       "lastNextAction": ""
     },
     "cost-operations": {
@@ -63510,16 +63435,16 @@
       "domainName": "Cost / Free Tier Operations",
       "firstSeenRunId": "QA-20260521-0548",
       "firstSeenAt": "2026-05-21T01:20:42.196Z",
-      "seenCount": 2,
-      "appropriateCount": 2,
+      "seenCount": 3,
+      "appropriateCount": 3,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0549",
-      "lastSeenAt": "2026-05-21T04:10:30.110Z",
+      "lastRunId": "QA-20260521-0550",
+      "lastSeenAt": "2026-05-21T05:23:03.217Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Run deploy guardrails passed in CI and Vercel usage remained normal with billed 0.0000 USD.",
+      "lastRationale": "Vercel usage carried from same billing period (effective 13.3467 USD, billed 0.0000 USD). No incremental cost from targeted QA session.",
       "lastNextAction": ""
     }
   }

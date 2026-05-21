@@ -73,6 +73,9 @@ v8.11.192(`fix(ai): keep otel criteria in grounded krl answers`)는 FORCE_KB_QUE
   - `/api/version=8.11.192`, Cloud Run AI Engine health `8.11.192`.
   - Dashboard 18대 OTel summary와 AI KRL/OTel 답변의 `P0/P1/P3/P99` 기준 포함 확인.
   - Playwright MCP 프로필 잠금으로 기존 세션을 종료하지 않고 isolated Playwright로 동일 production URL을 검증.
+- 추가 확인: `QA-20260521-0550`에서 v8.11.194 weekly focused QA 기준 KRL grounded synthesis가 PASS.
+  - `searchKnowledgeBase` 5건 반환, Z.AI `glm-4.5-flash` 합성, OTel 18대/6역할 서버명 보존을 확인했다.
+  - UI debug view의 `groundingMode: llm-synthesized` 미노출은 기존 Task A 메타데이터 관찰 항목으로 유지하며, 사용자-facing 회귀나 release blocker로 보지 않는다.
 - 잔여 처리:
   - command/script production QA는 현재 릴리스 차단 항목이 아니다.
   - KB 실패 fallback production 재현은 하지 않는다.
