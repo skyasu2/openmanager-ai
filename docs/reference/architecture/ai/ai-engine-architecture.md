@@ -27,7 +27,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **deterministi
 
 제품 경계는 **advisory assistant**입니다. 범용 분류로는 **운영 의사결정 AI 어시스턴트**이고, 구현 분류로는 **tool-augmented LLM + deterministic decision layer**입니다. AI Engine은 실제 서버를 직접 변경하지 않고, 운영 수치·근거·보고서·조치안 초안을 생성합니다. 자율 remediation은 승인, dry-run, rollback, audit, 권한 계약이 갖춰진 별도 요구사항으로 분리합니다.
 
-> **As-built note (2026-05-16)**: 이 문서는 초기 설계도가 아니라 실제 구현을 역추적한 현재 아키텍처 기준입니다. 기본 채팅 transport는 `/api/ai/supervisor/stream/v2`입니다. 최근 안정화는 **Round-Robin + Context Guard provider selection** (4개 provider 균등 순환, `rotationSlot` UI attribution), **Cerebras `gpt-oss-120b` 전환** (65K context, llama3.1-8b 교체 완료), Orchestrator LLM routing 제거 → deterministic Direct Router 전환, Z.AI GLM Flash provider mesh 편입, NLQ 전처리 파이프라인 (N0~N2/N4 완료: QueryGuard, intentFrame 신뢰 경로, streaming output filter), intent별 LLM parameter, tool-result response enrichment, deterministic ranking/recovery fallback을 중심으로 이루어졌습니다.
+> **As-built note (2026-05-21)**: 이 문서는 초기 설계도가 아니라 실제 구현을 역추적한 현재 아키텍처 기준입니다. 기본 채팅 transport는 `/api/ai/supervisor/stream/v2`입니다. 최근 안정화는 **Round-Robin + Context Guard provider selection** (4개 provider 균등 순환, `rotationSlot` UI attribution), **Cerebras `gpt-oss-120b` 전환** (65K context, llama3.1-8b 2026-05-27 deprecated 선제 대응), **KRL 직접 경로 grounded LLM synthesis** (`FORCE_KB_QUERY_PATTERN` 경로에서 KB 결과를 closed-context로 LLM 합성, `groundingMode` 메타데이터 도입), Orchestrator LLM routing 제거 → deterministic Direct Router 전환, Z.AI GLM Flash provider mesh 편입, NLQ 전처리 파이프라인 (N0~N2/N4 완료: QueryGuard, intentFrame 신뢰 경로, streaming output filter), intent별 LLM parameter, tool-result response enrichment, deterministic ranking/recovery fallback을 중심으로 이루어졌습니다.
 
 ### Vercel ↔ Cloud Run Runtime Boundary (2026-05-20)
 

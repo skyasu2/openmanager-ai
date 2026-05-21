@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-15
+> Last reviewed: 2026-05-21
 > Canonical: docs/reference/architecture/ai/rag-knowledge-engine.md
 > Tags: ai,rag,knowledge-engine,architecture
 >
-> **v1.11.0** | Updated 2026-05-15
+> **v1.12.0** | Updated 2026-05-21
 >
 > 내부 지식 검색 및 근거 주입 아키텍처 상세 문서입니다.
 
@@ -22,7 +22,10 @@ OpenManager AI의 내부 지식 검색은 **Knowledge Retrieval Lite** 기반입
 
 현재 런타임은 무료 티어와 Cloud Run request path 제약을 우선합니다. 따라서 내부 지식 검색 단계에서 외부 embedding, graph expansion, query-expansion LLM, reranking LLM, 자동 web-search fallback을 호출하지 않습니다. 외부 웹 검색은 별도 `searchWeb` 도구와 quota 정책으로 분리합니다.
 
-즉, retrieval 단계는 deterministic search/metadata boost이고, LLM은 최종 agent 답변 생성 단계에서 `EvidenceCard[]`를 참고할 때만 사용됩니다.
+retrieval 단계는 deterministic search/metadata boost입니다. LLM은 두 가지 시점에서 사용됩니다.
+
+- **일반 경로**: 최종 agent 답변 생성 단계에서 `EvidenceCard[]`를 참고할 때
+- **KRL 직접 경로** (`FORCE_KB_QUERY_PATTERN`): KB 검색 결과를 closed-context 시스템 프롬프트에 주입한 뒤 LLM이 자연어로 합성. LLM 실패 시 template fallback으로 자동 전환. `groundingMode: llm-synthesized | template-fallback` 메타데이터로 경로 추적 가능 (v8.11.191, 2026-05-21)
 
 ## Storage And Serving Decision
 
@@ -146,7 +149,12 @@ Supabase smoke
 
 ```mermaid
 graph TD
-    Query["User Query"] --> Policy{"Retrieval policy"}
+    Query["User Query"] --> ForcedKB{"FORCE_KB_QUERY_PATTERN?"}
+    ForcedKB -->|"Yes"| DirectKB["Supabase RPC<br/>search_knowledge_text"]
+    DirectKB --> GroundedLLM["Grounded LLM synthesis<br/>(closed-context prompt)"]
+    GroundedLLM -->|"LLM success"| LLMAnswer["llm-synthesized response"]
+    GroundedLLM -->|"LLM fail"| TemplateFallback["template-fallback response"]
+    ForcedKB -->|"No"| Policy{"Retrieval policy"}
     Policy -->|"Retrieval off / suppressed"| NoRetrieval["No retrieval context"]
     Policy -->|"Retrieval on"| RPC["Supabase RPC<br/>search_knowledge_text"]
     RPC --> Normalize["Normalize rows"]
@@ -323,6 +331,7 @@ SELECT * FROM search_knowledge_text(
 
 | 버전 | 날짜 | 변경 내용 |
 |------|------|----------|
+| v1.12.0 | 2026-05-21 | KRL 직접 경로(`FORCE_KB_QUERY_PATTERN`)에 grounded LLM synthesis 추가. retrieval pipeline 다이어그램 갱신. `groundingMode: llm-synthesized \| template-fallback` 메타데이터 필드 도입 (v8.11.191-192) |
 | v1.11.0 | 2026-05-15 | `useGraphRAG` active schema/legacy registry 제거 반영. `ragSources`를 legacy response/history bridge로 축소하고 신규 frontend/backend retrieval 표면을 `EvidenceCard[]` + `RetrievalMetadata` 기준으로 정렬 |
 | v1.10.0 | 2026-05-10 | `command_vectors`에만 남은 legacy command text를 `knowledge_base` KRL corpus로 backfill하는 migration 추가. 루트 embedding seed script 제거, drift guard 확장, full command inventory 기준 governance threshold 재조정 |
 | v1.9.0 | 2026-05-10 | 남은 legacy graph/command-vector helper RPC와 unused `idx_kr_weight` 제거. KRL RPC 및 search_vector trigger helper는 유지 |
