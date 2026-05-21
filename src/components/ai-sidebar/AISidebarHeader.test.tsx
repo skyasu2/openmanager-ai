@@ -95,4 +95,18 @@ describe('AISidebarHeader', () => {
       'undefined'
     );
   });
+
+  it('uses the unified white surface while keeping the AI point gradient', () => {
+    const { container } = render(<AISidebarHeader onClose={vi.fn()} />);
+
+    const header = container.querySelector('header');
+    const pointIcon = header?.querySelector('.from-purple-500');
+
+    expect(header).toHaveClass('bg-white');
+    expect(header).toHaveClass('border-purple-100');
+    expect(header).not.toHaveClass('bg-linear-to-r');
+    expect(header).not.toHaveClass('from-purple-50');
+    expect(header).not.toHaveClass('to-blue-50');
+    expect(pointIcon).toHaveClass('to-blue-600');
+  });
 });

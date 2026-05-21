@@ -213,6 +213,26 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 - [x] CPU/이름 세그먼트 클릭 시 기존 정렬 순서가 바뀐다.
 - [x] 검색 결과에도 세그먼트 정렬 기준을 적용한다.
 
+### T-4-A AI 사이드바 색상 시스템 계약
+
+| 항목 | 계약 |
+|------|------|
+| 헤더 표면 | `AISidebarHeader`는 그라데이션을 제거하고 `bg-white border-b border-purple-100` 톤을 사용한다 |
+| 채팅 본체 | `EnhancedAIChat` 최상위 표면은 `bg-gray-50/50` 단일 톤을 사용하고 slate-blue 그라데이션을 사용하지 않는다 |
+| 입력창 표면 | `ChatInputArea` 입력 영역 래퍼는 `bg-white border-t border-purple-100`으로 헤더의 subtle purple accent와 맞춘다 |
+| 우측 아이콘 패널 | 데스크톱 `AIAssistantIconPanel`은 채팅 본체와 같은 `bg-gray-50/50` 및 `border-l border-gray-100`을 사용한다 |
+| 포인트 색상 | Brain/Bot 아이콘 박스의 `from-purple-500 to-blue-600` 그라데이션은 유지한다 |
+| 선택 탭 액센트 | 선택된 기능 탭과 선택 표시 bar는 `bg-purple-600` 계열을 사용하고 `bg-slate-900`을 사용하지 않는다 |
+| 비용/외부 호출 | 없음. className 기반 UI 톤 정렬만 수행한다 |
+
+### T-4-A 테스트 시나리오
+
+- [ ] 헤더는 `bg-white border-purple-100`을 사용하고 기존 purple-blue 배경 그라데이션을 렌더링하지 않는다.
+- [ ] Brain/Bot 아이콘 포인트 그라데이션은 유지된다.
+- [ ] 채팅 본체는 `bg-gray-50/50` 단일 표면을 사용하고 slate-blue 그라데이션을 렌더링하지 않는다.
+- [ ] 입력창 표면은 `bg-white border-purple-100`을 사용하고 `bg-white/80` translucent 톤을 렌더링하지 않는다.
+- [ ] 데스크톱 아이콘 패널은 `bg-gray-50/50 border-gray-100`을 사용하고 선택 탭은 purple accent로 표시된다.
+
 ---
 
 ## Phase 1 — 내부 코드 품질 정리 (무중단, 리스크 최소)

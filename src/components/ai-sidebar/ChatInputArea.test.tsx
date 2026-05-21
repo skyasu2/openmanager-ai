@@ -180,6 +180,17 @@ describe('ChatInputArea popover', () => {
     expect(popover).toHaveClass('overflow-y-auto');
   });
 
+  it('uses the unified white input surface with subtle purple border', () => {
+    const { container } = renderComponent();
+
+    const root = container.firstElementChild;
+
+    expect(root).toHaveClass('bg-white');
+    expect(root).toHaveClass('border-purple-100');
+    expect(root).not.toHaveClass('bg-white/80');
+    expect(root).not.toHaveClass('border-gray-200');
+  });
+
   it('shows an explicit warning near the session limit', () => {
     render(
       <ChatInputArea

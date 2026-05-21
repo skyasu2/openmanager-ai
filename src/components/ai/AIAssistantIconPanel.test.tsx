@@ -51,6 +51,27 @@ describe('AIAssistantIconPanel', () => {
     );
   });
 
+  it('uses the unified sidebar rail surface and purple selected accent', () => {
+    const { container } = render(
+      <AIAssistantIconPanel
+        selectedFunction="chat"
+        onFunctionChange={vi.fn()}
+      />
+    );
+
+    const rail = container.firstElementChild;
+    const chatButton = screen.getByTestId('ai-function-chat');
+    const selectedMarker = container.querySelector('.rounded-r-full');
+
+    expect(rail).toHaveClass('bg-gray-50/50');
+    expect(rail).toHaveClass('border-gray-100');
+    expect(rail).not.toHaveClass('bg-white');
+    expect(rail).not.toHaveClass('border-gray-200');
+    expect(chatButton).toHaveClass('bg-purple-600');
+    expect(chatButton).not.toHaveClass('bg-slate-900');
+    expect(selectedMarker).toHaveClass('bg-purple-600');
+  });
+
   it('keeps feature switching and fullscreen handoff behavior', () => {
     const onFunctionChange = vi.fn();
     const onOpenFullscreen = vi.fn();

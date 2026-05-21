@@ -103,4 +103,15 @@ describe('EnhancedAIChat', () => {
     expect(screen.getByTestId('chat-message-list')).toBeInTheDocument();
     expect(screen.getByTestId('chat-input-area')).toBeInTheDocument();
   });
+
+  it('uses the unified neutral sidebar surface instead of slate-blue gradients', () => {
+    const { container } = renderChat();
+
+    const root = container.firstElementChild;
+
+    expect(root).toHaveClass('bg-gray-50/50');
+    expect(root).not.toHaveClass('bg-linear-to-br');
+    expect(root).not.toHaveClass('from-slate-50');
+    expect(root).not.toHaveClass('to-blue-50');
+  });
 });
