@@ -36,7 +36,7 @@
 
 ## 현재 진행 상태 (2026-05-21)
 
-Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 서버 검색, T-2-B 서버 카드 트렌드 인디케이터, T-2-C 서버 카드 가동률 표시, T-2-D 모바일 헤더 sub-bar 통합, T-3-A 알림 인시던트 인라인 피드, T-3-B 시간 범위 Quick Picker를 반영했다. T-3-B는 기존 OTel timeseries tail slice와 서버 상세 API fallback range 파라미터를 재사용하며 신규 API/AI 계약은 만들지 않았다. 로컬 브라우저 QA에서 dev 서버 stale bundle 오류와 compact 카드 delta 겹침을 확인해, dev 서버 재기동 검증과 2줄 메트릭 레이아웃으로 수정했다.
+Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 서버 검색, T-2-B 서버 카드 트렌드 인디케이터, T-2-C 서버 카드 가동률 표시, T-2-D 모바일 헤더 sub-bar 통합, T-3-A 알림 인시던트 인라인 피드, T-3-B 시간 범위 Quick Picker, T-3-C 정렬 세그먼트 버튼을 반영했다. T-3-B는 기존 OTel timeseries tail slice와 서버 상세 API fallback range 파라미터를 재사용하며 신규 API/AI 계약은 만들지 않았다. T-3-C는 기존 client-side 정렬 키와 정렬 파이프라인을 유지하고 UI만 native select에서 세그먼트 버튼으로 교체했다. 로컬 브라우저 QA에서 dev 서버 stale bundle 오류와 compact 카드 delta 겹침을 확인해, dev 서버 재기동 검증과 2줄 메트릭 레이아웃으로 수정했다.
 
 **완료 변경 계약**
 
@@ -52,6 +52,7 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 | 모바일 헤더 | `lg` 미만에서 헤더 하단 sub-bar를 제거하고, primary row 안에 compact `RealTimeDisplay`를 인라인 표시. `SessionCountdown`은 모바일 헤더 직접 렌더에서 제거하고 기존 프로필 드롭다운 시스템 상태 섹션에서 확인 |
 | 인시던트 피드 | overview 화면 서버 카드 영역 오른쪽에 `AlertFeedPanel`을 추가해 기존 `useMonitoringReport().data.firingAlerts`를 최대 5건 preview로 표시. `xl` 미만에서는 숨기고, row 클릭은 서버 상세 route로 이동 |
 | 시간 범위 Quick Picker | `DashboardSummary` 전역 조작 영역에 `2h/6h/12h/24h` 세그먼트 컨트롤을 표시하고, `DashboardContent → ServerDashboard → ImprovedServerCard`로 선택 범위를 전달해 카드 스파크라인 history loader range를 즉시 갱신 |
+| 정렬 세그먼트 | `ServerDashboard`의 native sort select를 제거하고 `상태/CPU/MEM/이름` 세그먼트 버튼으로 교체. 기존 `serverSortKey` 정렬 파이프라인과 검색 조합은 유지 |
 | 통계 업데이트 루프 방어 | `DashboardInteractiveShell`은 동일한 `DashboardStats`가 반복 전달되면 state update를 생략해 dev runtime maximum update depth 경고를 방지 |
 
 **검증**
@@ -65,6 +66,7 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 - `npm run test:dom -- src/components/dashboard/DashboardHeader.test.tsx src/components/dashboard/RealTimeDisplay.test.tsx` — PASS (2 files / 4 tests, T-2-D targeted)
 - `npm run test:dom -- src/components/dashboard/DashboardContent.test.tsx` — PASS (1 file / 11 tests, T-3-A targeted)
 - `npm run test:dom -- src/components/dashboard/DashboardSummary.test.tsx src/components/dashboard/DashboardContent.test.tsx src/components/dashboard/ServerDashboard.test.tsx src/components/dashboard/ImprovedServerCard.test.tsx src/hooks/useServerMetrics.test.ts` — PASS (5 files / 106 tests, T-3-B targeted)
+- `npm run test:dom -- src/components/dashboard/ServerDashboard.test.tsx` — PASS (1 file / 18 tests, T-3-C targeted)
 - Local Playwright/Next DevTools `/dashboard` targeted QA — PASS: 검색 필터/empty/복구, 그리드 카드 trend delta, 콘솔 warning/error 0, Next runtime errors 0
 
 **Task 상태**
@@ -78,7 +80,8 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 - [x] T-2-D: 모바일 헤더 sub-bar 통합
 - [x] T-3-A: 알림 인시던트 인라인 피드
 - [x] T-3-B: 시간 범위 Quick Picker
-- [ ] T-3-C 이후: 별도 세부 계약/테스트 시나리오 확정 후 진행
+- [x] T-3-C: 정렬 `<select>` → 세그먼트 버튼 교체
+- [ ] T-4-A 이후: 별도 세부 계약/테스트 시나리오 확정 후 진행
 
 ## SDD 게이트 (Phase 2+ 착수 전)
 
@@ -205,10 +208,10 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 
 ### T-3-C 테스트 시나리오
 
-- [ ] 정렬 UI는 `서버 정렬` 그룹과 `상태/CPU/MEM/이름` 세그먼트 버튼을 렌더링하고 native combobox를 렌더링하지 않는다.
-- [ ] 기본 상태 정렬 버튼은 `aria-pressed=true`로 표시된다.
-- [ ] CPU/이름 세그먼트 클릭 시 기존 정렬 순서가 바뀐다.
-- [ ] 검색 결과에도 세그먼트 정렬 기준을 적용한다.
+- [x] 정렬 UI는 `서버 정렬` 그룹과 `상태/CPU/MEM/이름` 세그먼트 버튼을 렌더링하고 native combobox를 렌더링하지 않는다.
+- [x] 기본 상태 정렬 버튼은 `aria-pressed=true`로 표시된다.
+- [x] CPU/이름 세그먼트 클릭 시 기존 정렬 순서가 바뀐다.
+- [x] 검색 결과에도 세그먼트 정렬 기준을 적용한다.
 
 ---
 

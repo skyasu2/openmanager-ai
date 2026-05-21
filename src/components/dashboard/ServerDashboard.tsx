@@ -527,28 +527,29 @@ export default function ServerDashboard({
               </fieldset>
 
               <div className="flex w-full items-center gap-2 sm:w-auto">
-                <label
-                  htmlFor="server-sort"
-                  className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600"
-                >
+                <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600">
                   <ArrowUpDown className="h-3.5 w-3.5" />
                   정렬
-                </label>
-                <select
-                  id="server-sort"
-                  aria-label="서버 정렬"
-                  value={serverSortKey}
-                  onChange={(event) =>
-                    setServerSortKey(event.target.value as ServerSortKey)
-                  }
-                  className="touch-text-safe-xs min-h-9 w-full rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 focus:border-blue-400 focus:outline-none sm:w-36"
-                >
+                </span>
+                <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
+                  <legend className="sr-only">서버 정렬</legend>
                   {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <button
+                      key={option.value}
+                      type="button"
+                      aria-label={`${option.label} 정렬`}
+                      aria-pressed={serverSortKey === option.value}
+                      onClick={() => setServerSortKey(option.value)}
+                      className={`inline-flex min-h-9 flex-1 items-center justify-center rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                        serverSortKey === option.value
+                          ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                          : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                      }`}
+                    >
                       {option.label}
-                    </option>
+                    </button>
                   ))}
-                </select>
+                </fieldset>
               </div>
             </div>
           </div>
