@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
@@ -390,7 +390,42 @@ describe('ServerDashboard', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('서버 정렬 셀렉트로 CPU, 메모리, 이름 기준 순서를 바꿀 수 있다', () => {
+  it('서버 정렬 세그먼트 버튼은 선택 상태를 표시하고 native select를 렌더링하지 않는다', () => {
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('server-1', 'API Server'),
+          createServer('server-2', 'DB Server'),
+        ]}
+        totalServers={2}
+        currentPage={1}
+        totalPages={1}
+        pageSize={2}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    const sortGroup = screen.getByRole('group', { name: '서버 정렬' });
+
+    expect(
+      within(sortGroup).getByRole('button', { name: '상태 정렬' })
+    ).toHaveAttribute('aria-pressed', 'true');
+    expect(
+      within(sortGroup).getByRole('button', { name: 'CPU 정렬' })
+    ).toHaveAttribute('aria-pressed', 'false');
+    expect(
+      within(sortGroup).getByRole('button', { name: 'MEM 정렬' })
+    ).toBeInTheDocument();
+    expect(
+      within(sortGroup).getByRole('button', { name: '이름 정렬' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('combobox', { name: '서버 정렬' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('서버 정렬 세그먼트 버튼으로 CPU, 메모리, 이름 기준 순서를 바꿀 수 있다', () => {
     render(
       <ServerDashboard
         servers={[
@@ -407,9 +442,7 @@ describe('ServerDashboard', () => {
       />
     );
 
-    fireEvent.change(screen.getByLabelText('서버 정렬'), {
-      target: { value: 'cpu' },
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'CPU 정렬' }));
 
     expect(
       screen
@@ -419,9 +452,12 @@ describe('ServerDashboard', () => {
         )
     ).toEqual(['DB Server', 'Cache Server', 'API Server']);
 
-    fireEvent.change(screen.getByLabelText('서버 정렬'), {
-      target: { value: 'name' },
-    });
+    expect(screen.getByRole('button', { name: 'CPU 정렬' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '이름 정렬' }));
 
     expect(
       screen
@@ -539,9 +575,7 @@ describe('ServerDashboard', () => {
     fireEvent.change(screen.getByLabelText('서버 검색'), {
       target: { value: 'Seoul' },
     });
-    fireEvent.change(screen.getByLabelText('서버 정렬'), {
-      target: { value: 'cpu' },
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'CPU 정렬' }));
 
     expect(
       screen

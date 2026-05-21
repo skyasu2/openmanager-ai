@@ -192,6 +192,24 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 - [x] `ImprovedServerCard`는 전달된 범위로 `loadMetricsHistory(serverId, range)`를 호출한다.
 - [x] `useServerMetrics`는 `2h/12h`를 168h fallback이 아니라 실제 hour 값으로 OTel loader에 전달한다.
 
+### T-3-C 정렬 세그먼트 버튼 계약
+
+| 항목 | 계약 |
+|------|------|
+| 옵션 | 기존 정렬 키 `status`, `cpu`, `memory`, `name`을 유지하고 사용자 노출 라벨은 `상태`, `CPU`, `MEM`, `이름`으로 표시한다 |
+| UI 형태 | native `<select>`를 제거하고 뷰 모드 토글과 같은 fieldset 기반 세그먼트 버튼 그룹으로 표시한다 |
+| 기본값 | 초기 선택은 기존과 같은 `status` |
+| 접근성 | 그룹 이름은 `서버 정렬`, 각 버튼은 `{라벨} 정렬` aria-label과 `aria-pressed` 상태를 제공한다 |
+| 동작 | 버튼 클릭 시 기존 `serverSortKey` 정렬 파이프라인만 갱신하고 검색/상태 필터/visible row 계산은 유지한다 |
+| 비용/외부 호출 | 없음. 클라이언트 정렬 UI만 변경한다 |
+
+### T-3-C 테스트 시나리오
+
+- [ ] 정렬 UI는 `서버 정렬` 그룹과 `상태/CPU/MEM/이름` 세그먼트 버튼을 렌더링하고 native combobox를 렌더링하지 않는다.
+- [ ] 기본 상태 정렬 버튼은 `aria-pressed=true`로 표시된다.
+- [ ] CPU/이름 세그먼트 클릭 시 기존 정렬 순서가 바뀐다.
+- [ ] 검색 결과에도 세그먼트 정렬 기준을 적용한다.
+
 ---
 
 ## Phase 1 — 내부 코드 품질 정리 (무중단, 리스크 최소)
