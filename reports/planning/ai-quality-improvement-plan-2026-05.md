@@ -234,9 +234,17 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 **2026-05-21 중간 관찰**:
 - Cloud Run `/health`: `status=ok`, `version=8.11.194`, `config.zai=true`, Redis `state=closed`, routes ready.
 - 인증된 `/api/ai/providers`: Z.AI `enabled=true`, `available=true`, model `glm-4.5-flash`, `smokeStatus=green`, `modelDrift=[]`.
-- Cloud Run 로그(2026-05-16 이후): `RetryWithFallback`/`fallback` 검색 결과 0건. Z.AI provider 실패로 식별되는 로그 없음.
+- Cloud Run 로그(2026-05-16 이후): provider가 `zai`로 기록된 실패 로그는 확인되지 않았다. 광범위한 `fallback` 문자열 검색에는 2026-05-18~19 Incident Report tool-based fallback 경고가 잡히지만, provider metadata가 `zai`인 오류는 아니다.
 - 같은 기간 ERROR/500 중 incident-report 오류는 v8.11.167~170의 structured output/schema parse 계열, Vision 오류는 2026-05-20 Z.AI Vision overload 재현으로 현재 runtime에서는 Gemini-only 전환 완료. Reporter/Z.AI text primary 불안정 근거로 보지 않는다.
 - Cloud Run free-tier guard: 최근 Cloud Build 30건 explicit `machineType` 없음, live service limit `cpu=1;memory=512Mi`.
+
+**2026-05-22 pre-final 관찰**:
+- Cloud Run `/health`: `status=ok`, `version=8.11.194`, `config.zai=true`, Redis `state=closed`, routes ready (`2026-05-21T19:11:42Z` / `2026-05-22 04:11 KST` 확인).
+- Cloud Run stdout 로그(2026-05-16 이후): `jsonPayload.extra.provider="zai"` 검색 결과 0건, `severity>=ERROR AND provider="zai"` 검색 결과 0건.
+- `fallback` 문자열은 2026-05-18~19 Incident Report tool-based fallback 경고 14건이 마지막으로 확인된다. 2026-05-21 이후 fallback 경고는 확인되지 않았고, provider field가 `zai`로 기록된 Z.AI text fallback은 없다.
+- 2026-05-21 ERROR 로그 3건은 Groq/Cerebras streamText 오류이며 Z.AI provider 오류가 아니다.
+- Cloud Run free-tier guard 재확인: live service limit `cpu=1;memory=512Mi`, 최근 Cloud Build 30건 `options.machineType` 공란.
+- 기록된 Z.AI Reporter latency 표본은 `QA-20260521-0550`에서 7021ms(TTFB 1200ms, processing 5821ms)로 목표 P95 <3s에는 못 미친다. 다만 현재 증거는 availability/fallback 안정성 이슈가 아니라 latency 추적 이슈로 분리해 보는 것이 맞다.
 
 **판단 기준**:
 - 7일 연속 Z.AI 실패율 < 5% → 안정 판정, 이 Task 완료
@@ -246,6 +254,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 - [ ] 7일 관찰 완료 (마감: 2026-05-23)
 - [x] 2026-05-21 중간 관찰 기록
+- [x] 2026-05-22 pre-final 관찰 기록
 - [ ] 안정/불안정 판정 기록
 - [ ] 불안정 시 reporter provider order 복귀 hotfix
 
