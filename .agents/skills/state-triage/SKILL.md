@@ -29,6 +29,7 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - `logic-or-quality`: network `200` but wrong text, fallback message, wrong UI state
 - `data-or-ssot`: dashboard and AI disagree, OTel dataset mismatch
 - `latency-or-cold-start`: first request slow, retry heals it, timeouts/fallback headers appear
+- `ai-provider-quota`: empty or missing AI response → rate limit or model inaccessible. Key limits: Groq RPD 1,000/day (max 7 RPD per complex multi-agent request). If Z.AI is down, Reporter falls back to Mistral — check `zai: true` in `/health` response.
 - `observability-monitoring`: timing header, `/monitoring`, trace, Langfuse, sampled traceId visibility
 - `security-regression`: blocked prompt UX, raw JSON leakage, auth hardening, CSP/security contract regression
 - `observability-gap`: behavior works but automation or accessibility cannot observe it well
@@ -56,6 +57,7 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 1. Check free-tier fit before suggesting a fix.
 - Re-check `docs/guides/ai/ai-standards.md`.
 - Re-check `cloud-run/ai-engine/deploy.sh` and `cloud-run/ai-engine/cloudbuild.yaml` for guardrails.
+- For AI provider symptoms, check current provider metadata before assuming an infra issue. Z.AI GLM Flash is Reporter primary from v8.11.156; missing `zai` health should route attention to Reporter fallback and Mistral behavior.
 - Prefer routing, fallback, caching, prompt, contract-test, and deterministic-summary fixes.
 - Do not propose `--machine-type`, `>1 vCPU`, `>512Mi`, build machine upgrades, or always-on runtime as the first fix.
 - Treat “optimization” as code or cache improvement unless the user explicitly asks for cost tradeoffs.

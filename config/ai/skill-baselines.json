@@ -47,6 +47,7 @@
         "Confirm the symptom is actually environment drift before changing code.",
         "Use project sync scripts over ad hoc CLI updates.",
         "Resolve Cloud Run service URLs from CLOUD_RUN_AI_URL or gcloud instead of hardcoding a live URL.",
+        "For Cloud Run AI env drift, verify provider and bridge variables including Z.AI and Upstash Redis.",
         "Do not expose secret values in output or committed files."
       ],
       "adapters": {
@@ -89,7 +90,7 @@
       "purpose": "Run fast local quality checks and report pass/fail evidence for changed OpenManager code.",
       "invariants": [
         "Use scope to choose lightweight versus full smoke checks.",
-        "Run contract tests when API, auth, environment, or runtime contracts change.",
+        "Run contract tests when API, auth, environment, runtime contracts, or AI-related code change.",
         "Prefer the smallest high-signal local gate and do not add Large/live/external tests to default smoke validation.",
         "Report skipped checks with a concrete reason."
       ],
@@ -135,7 +136,8 @@
       "invariants": [
         "Load current policy and recent evidence before proposing fixes.",
         "Classify the failure type before editing code.",
-        "Prefer the smallest code path or config path that explains the symptom."
+        "Prefer the smallest code path or config path that explains the symptom.",
+        "For provider symptoms, consider current provider metadata, quota limits, and Reporter Z.AI fallback before infra changes."
       ],
       "adapters": {
         "codex": ".agents/skills/state-triage/SKILL.md",

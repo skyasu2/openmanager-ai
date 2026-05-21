@@ -1,7 +1,7 @@
 ---
 name: qa-ops
 description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, mandatory cumulative logging to reports/qa, and conversational AI QA for AI-related changes.
-version: v1.5.1
+version: v1.5.2
 user-invocable: true
 allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_fill_form, mcp__playwright__browser_evaluate, mcp__playwright__browser_close
 disable-model-invocation: true
@@ -73,6 +73,13 @@ disable-model-invocation: true
 - 판정: Pass(구체적 수치/맥락 있음) / Warn(모호) / Fail(빈 응답/오류)
 - Fail/Warn → 프롬프트·라우팅 즉시 수정 후 재질의. 전체 Pass 후에만 기록 단계로 진행.
 - 결과는 `coveredSurfaces: ["conversational-ai-qa"]` + `expertAssessments`에 포함.
+
+3.6 Vision 실사진 QA는 수동 전용으로 처리.
+- 정기 릴리즈 QA, 표준 5문항 QA, provider matrix 반복 실행에 Gemini Vision 또는 Z.AI GLM Vision 라이브 이미지 호출을 포함하지 않는다.
+- 사용자가 명시적으로 요청하거나 Vision routing/provider 동작이 변경된 표면일 때만 실사진 smoke를 1회 실행한다.
+- 일상 검증에는 결정적 routing/provider-selection 테스트를 사용한다. 라이브 Vision 호출은 배포된 provider quota를 소모하며 Gemini/GLM 무료 한도를 빠르게 고갈시킨다.
+- Vision 라이브 smoke를 실행했을 때는 provider, model, 이미지 수, 합격/불합격을 `reports/qa`에 기록하고 추가 샘플 수집을 위해 재실행하지 않는다.
+- Z.AI GLM Vision fallback 라이브 smoke는 선택 테스트에서 가정하지 않는다. 실제 이미지 호출에서 `provider=zai`, `modelId=glm-4.6v-flash`가 명시적으로 실행된 경우에만 검증됨으로 표시한다.
 
 4. 결과 기록(필수).
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
@@ -174,4 +181,5 @@ End with one short operator note for the highest remaining risk or `none in test
 - 2026-04-03: v1.3.0 - 날짜 박힌 baseline 참조 제거, scope 승격 규칙 명시, Playwright 도구 추가
 - 2026-04-28: v1.4.0 - Async Job + SSE Probing Playbook 추가 (EventSource Performance API 우회, CSRF 우회 금지, reconnect 정상 신호, 함정 모음)
 - 2026-05-07: v1.5.0 - 대화형 AI QA 단계(3.5) 추가 — AI 관련 변경 시 표준 5개 질의로 유용성 검증
+- 2026-05-21: v1.5.2 - Vision 실사진 QA manual-only 정책 및 Z.AI GLM Vision fallback 증거 요건 추가 (Codex v1.5.2 동기화)
 - 2026-05-07: v1.5.1 - risk-based 테스트 방법론, 비용 guardrail, 대표 live-run 제한 기준 반영

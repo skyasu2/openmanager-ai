@@ -1,7 +1,7 @@
 ---
 name: state-triage
 description: Analyze current OpenManager QA, runtime, deployment, and AI-path state; identify the primary symptom, root cause, free-tier fit, and next action.
-version: v2.1.0
+version: v2.2.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep
 disable-model-invocation: true
@@ -46,13 +46,14 @@ curl -s "$CLOUD_RUN_AI_URL/api/ai/providers" -H "X-API-Key: $CLOUD_RUN_API_SECRE
 
 - provider/model availability는 계정·날짜에 따라 변할 수 있으므로 `/api/ai/providers`의 `modelMetadata`/`modelDrift`와 `cloud-run/ai-engine` 설정을 근거로 판단한다.
 - 하드코딩된 모델 무료 여부를 사실처럼 단정하지 않는다.
+- Z.AI(GLM Flash)는 v8.11.156부터 Reporter primary provider임. `zai: true` 부재 시 Reporter 에이전트가 Mistral fallback으로 전환됨.
 
 1. 실패 유형 분류.
 - `availability`: health fail, 5xx, auth break, env drift
 - `logic-or-quality`: network `200`인데 UI/응답 품질이 잘못됨
 - `data-or-ssot`: dashboard와 AI가 다른 사실을 말함
 - `latency-or-cold-start`: 첫 호출 지연, retry 후 회복
-- `ai-provider-quota`: AI 응답 없음/빈 응답 → rate limit 또는 model 접근 불가
+- `ai-provider-quota`: AI 응답 없음/빈 응답 → rate limit 또는 model 접근 불가 (Groq RPD 1,000/일, Z.AI 장애 시 Reporter fallback 경로 확인)
 - `observability-gap`: 기능은 되지만 자동화 관측이 약함
 
 1. 최소 코드 경로로 축소.
@@ -97,6 +98,7 @@ State Triage
 
 ## Changelog
 
+- 2026-05-21: v2.2.0 - Z.AI Reporter primary 맥락 추가, Groq RPD 병목 ai-provider-quota 분류에 명시
 - 2026-04-25: v2.1.0 - Cloud Run URL 하드코딩 제거, provider/model 무료 여부 단정 제거
 - 2026-03-14: v1.0.0 - QA 이후 원인 분류/다음 액션 결정용 스킬 추가
 - 2026-04-03: v2.0.0 - 하드코딩 날짜 파일 경로 제거, AI provider 상태 체크 추가, Cerebras 제약 명시, sed 패턴 → npm run qa:status 전환

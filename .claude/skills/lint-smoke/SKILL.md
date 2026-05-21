@@ -1,7 +1,7 @@
 ---
 name: lint-smoke
 description: Run fast quality smoke checks for OpenManager before commit or deploy. Use when validating changed code quickly.
-version: v1.6.1
+version: v1.6.2
 user-invocable: true
 allowed-tools: Bash, Read, Grep
 disable-model-invocation: true
@@ -44,6 +44,11 @@ disable-model-invocation: true
 - 대상: `scripts/qa/**`, `tests/unit/qa/**` 변경 시
 - `npm run test:node` — node 전용 suite (build-validation-evidence 등)
 
+1. AI 관련 코드 변경 시 contract 체크 추가.
+- 대상: `src/lib/ai/**`, `src/app/api/ai/**`, `cloud-run/ai-engine/src/**` 변경 시
+- `npm run test:contract` — API/AI 계약 테스트 (CI gate와 동일 기준)
+- 계약 실패는 commit 전 즉시 수정 대상
+
 1. `cloud-run/ai-engine` 변경 시 추가 체크.
 - `cd cloud-run/ai-engine && npm run type-check`
 - `cd cloud-run/ai-engine && npm run test`
@@ -62,6 +67,7 @@ Lint Smoke Summary
 - test:quick: pass | fail
 - type-check: pass | fail
 - lint: pass | fail
+- test:contract: skipped | pass | fail (AI 코드 변경 시)
 - test:node: skipped | pass | fail (QA script 변경 시)
 - ai-engine checks: skipped | pass | fail
 - ready to commit: yes | no
@@ -77,4 +83,5 @@ Lint Smoke Summary
 - 2026-02-16: v1.4.0 - v1.1.0에서 전면 재작성, 공개용 톤 정리, 리뷰 스킬 연계 명시
 - 2026-02-26: v1.5.0 - 최종 QA는 `qa-ops` 스킬로 누적 추적 원칙 추가
 - 2026-04-03: v1.6.0 - QA 스크립트 변경 시 `npm run test:node` 추가, 변경 파일 확인 단계 보강
+- 2026-05-21: v1.6.2 - AI 코드 변경 시 test:contract 추가 체크 단계 명시 (CI gate 기준 동기화)
 - 2026-05-07: v1.6.1 - Risk-Based Local-First smoke 기준과 external/live 테스트 제외 원칙 반영

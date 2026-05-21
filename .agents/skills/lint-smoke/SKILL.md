@@ -28,7 +28,7 @@ Run quick validation in a fixed order and report pass/fail with next actions.
 - `npm run test:quick`
 - `npm run type-check`
 - `npm run lint`
-- Add `npm run test:contract` when the scope includes server/API/auth/env contract risk.
+- Add `npm run test:contract` when the scope includes server/API/auth/env contract risk **or AI-related code** (`src/lib/ai/`, `src/app/api/ai/`, `cloud-run/ai-engine/src/`). This matches the CI gate exactly.
 - If the required confidence would need Large/live tests, report that as a separate opt-in QA need instead of folding it into smoke validation.
 
 1. If `cloud-run/ai-engine` files changed, run additional checks there.
@@ -58,6 +58,7 @@ Lint Smoke Summary
 - test:quick: pass|fail
 - type-check: pass|fail
 - lint: pass|fail
+- test:contract: skipped|pass|fail (AI/API contract 변경 시)
 - ai-engine checks: skipped|pass|fail
 - ready to commit: yes|no
 ```

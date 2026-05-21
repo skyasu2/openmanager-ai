@@ -29,6 +29,13 @@ Resolve runtime env drift before changing product code.
 - Check `.env.local` for the exact variables the failing path needs.
 - Strip quotes when manually reading values.
 - Prefer the project's sync script over ad hoc one-off CLI commands.
+- Cloud Run env checklist (AI Engine side):
+  - `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`
+  - `ZAI_API_KEY`, `ZAI_DEFAULT_MODEL` (Z.AI GLM Flash — Reporter primary since v8.11.156)
+  - `GOOGLE_AI_API_KEY` (Gemini Vision), `OPENROUTER_API_KEY`, `TAVILY_API_KEY`
+  - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+  - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CLOUD_RUN_API_SECRET`
+  - Z.AI 없으면 Reporter agent가 Mistral fallback으로 전환됨 — health 응답의 `zai: true` 확인
 
 4. Verify Vercel target state explicitly.
 - `vercel env ls preview`
@@ -43,6 +50,7 @@ Resolve runtime env drift before changing product code.
 6. Verify behavior after sync.
 - `curl -s https://openmanager-ai.vercel.app/api/health`
 - If AI path changed, also verify `curl -s https://openmanager-ai.vercel.app/api/health?service=ai`
+- If Cloud Run provider drift changed, verify Cloud Run `/health` reports the expected provider flags, including `zai` for Reporter fallback health.
 - If the issue was preview-only, verify the preview URL directly before declaring success.
 
 7. Choose the next action.
