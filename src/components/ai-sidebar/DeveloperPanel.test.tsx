@@ -19,6 +19,7 @@ const developerPanelData: DeveloperPanelData = {
     analysisBasis: 'multi-agent',
     stepsExecuted: 2,
     tokensUsed: 512,
+    groundingMode: 'llm-synthesized',
   },
   system: {
     cloudRunHealthy: true,
@@ -55,6 +56,9 @@ describe('DeveloperPanel', () => {
       rag: {
         ragType: 'lite',
         hitCount: 3,
+      },
+      stream: {
+        groundingMode: 'llm-synthesized',
       },
     });
   });

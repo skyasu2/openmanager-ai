@@ -845,6 +845,7 @@ describe('handleStreamDataPart', () => {
               provider: 'groq',
               modelId: 'llama-3.3-70b-versatile',
               handoffCount: 2,
+              groundingMode: 'llm-synthesized',
               retrieval: {
                 retrievalEnabled: true,
                 retrievalUsed: true,
@@ -870,6 +871,7 @@ describe('handleStreamDataPart', () => {
           stream: {
             analysisBasis: 'multi-agent',
             stepsExecuted: 2,
+            groundingMode: 'llm-synthesized',
           },
           rag: {
             ragType: 'lite',
