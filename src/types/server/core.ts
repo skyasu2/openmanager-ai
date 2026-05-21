@@ -37,6 +37,7 @@ export interface Server {
   disk: number;
   network?: number;
   responseTime?: number;
+  uptimePercent?: number;
   uptime: string | number;
   location: string;
   alerts?: number | ServerAlert[];

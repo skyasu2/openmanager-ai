@@ -63,6 +63,10 @@ vi.mock('../../hooks/useSafeServer', () => ({
           typeof server?.responseTime === 'number'
             ? Number(server.responseTime)
             : undefined,
+        uptimePercent:
+          typeof server?.uptimePercent === 'number'
+            ? Number(server.uptimePercent)
+            : undefined,
         lastUpdate: server?.lastUpdate || new Date(),
       },
       statusTheme: {
@@ -759,6 +763,53 @@ describe('ImprovedServerCard - User Event 테스트', () => {
   });
 
   describe('추가 메트릭 표시', () => {
+    it('explicit uptimePercent가 있으면 standard 카드에 24h 가동률을 표시한다', () => {
+      render(
+        <ImprovedServerCard
+          server={{ ...mockServer, uptimePercent: 99.84 }}
+          onClick={mockOnClick}
+        />
+      );
+
+      expect(screen.getByText('가동률')).toBeInTheDocument();
+      expect(screen.getByText('99.8% / 24h')).toBeInTheDocument();
+    });
+
+    it('uptimePercent가 없고 uptime이 24h 이상이면 100.0% / 24h를 표시한다', () => {
+      render(
+        <ImprovedServerCard
+          server={{ ...mockServer, uptime: 172800 }}
+          onClick={mockOnClick}
+        />
+      );
+
+      expect(screen.getByText('100.0% / 24h')).toBeInTheDocument();
+    });
+
+    it('유효한 uptime 데이터가 없으면 가동률 fallback dash를 표시한다', () => {
+      render(
+        <ImprovedServerCard
+          server={{ ...mockServer, uptime: 'unknown' }}
+          onClick={mockOnClick}
+        />
+      );
+
+      expect(screen.getByText('— / 24h')).toBeInTheDocument();
+    });
+
+    it('compact variant에서는 uptime 행을 렌더링하지 않는다', () => {
+      render(
+        <ImprovedServerCard
+          server={{ ...mockServer, uptimePercent: 99.84 }}
+          onClick={mockOnClick}
+          variant="compact"
+        />
+      );
+
+      expect(screen.queryByText('가동률')).not.toBeInTheDocument();
+      expect(screen.queryByText('99.8% / 24h')).not.toBeInTheDocument();
+    });
+
     it('서버 메트릭 데이터가 올바르게 전달된다', () => {
       const { container } = render(
         <ImprovedServerCard server={mockServer} onClick={mockOnClick} />

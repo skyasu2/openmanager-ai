@@ -106,6 +106,24 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 - [x] current 값이 최근 평균보다 낮으면 수치 옆에 하락 delta를 표시한다.
 - [x] current 값과 최근 평균 차이가 없으면 `—`를 표시한다.
 
+### T-2-C 서버 카드 Uptime 표시 계약
+
+| 항목 | 계약 |
+|------|------|
+| 우선 데이터 | `server.uptimePercent`가 유효 숫자이면 이를 0~100 범위로 clamp해 사용 |
+| fallback 데이터 | `uptimePercent`가 없으면 숫자형 `server.uptime` 또는 파싱 가능한 uptime 문자열을 최근 24h 대비 가동 시간으로 환산 |
+| 표시 방식 | standard/detailed 카드의 `SecondaryMetrics` 하단에 `가동률 N.N% / 24h` 표시 |
+| 데이터 없음 | 유효한 `uptimePercent`와 파싱 가능한 `uptime`이 모두 없으면 `가동률 — / 24h` 표시 |
+| compact variant | compact 카드에서는 uptime 표시를 숨겨 모바일/조밀 카드 높이를 유지 |
+| 비용/외부 호출 | 없음. 기존 서버 객체 필드만 사용 |
+
+### T-2-C 테스트 시나리오
+
+- [ ] explicit `uptimePercent`가 있으면 standard 카드에 `가동률 N.N% / 24h`를 표시한다.
+- [ ] `uptimePercent`가 없고 `uptime`이 24h 이상이면 `100.0% / 24h`를 표시한다.
+- [ ] 유효한 uptime 데이터가 없으면 `가동률 — / 24h`를 표시한다.
+- [ ] compact variant에서는 uptime 행을 렌더링하지 않는다.
+
 ---
 
 ## Phase 1 — 내부 코드 품질 정리 (무중단, 리스크 최소)
