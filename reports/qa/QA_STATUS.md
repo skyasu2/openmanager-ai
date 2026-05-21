@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-21 08:37:23 KST
+> Generated at: 2026-05-21 10:20:42 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 545 |
-| Total Runs (Counted) | 433 |
+| Total Recorded Runs | 546 |
+| Total Runs (Counted) | 434 |
 | Non-counted Runs | 112 |
-| Total Checks | 3954 |
-| Passed | 3798 |
+| Total Checks | 3963 |
+| Passed | 3807 |
 | Failed | 145 |
-| Completed Items | 623 |
+| Completed Items | 624 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 35 |
-| Expert Domains Tracked | 19 |
+| Expert Domains Tracked | 20 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260521-0547 (2026-05-20T23:37:20.403Z) |
-| Latest Recorded Run | QA-20260521-0547 (2026-05-20T23:37:20.403Z) |
+| Last Counted Run | QA-20260521-0548 (2026-05-21T01:20:42.196Z) |
+| Latest Recorded Run | QA-20260521-0548 (2026-05-21T01:20:42.196Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260521-0547 (2026-05-20T23:37:20.403Z)
+Latest run: QA-20260521-0548 (2026-05-21T01:20:42.196Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
+| Cost / Free Tier Operations | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.192 production QA; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.193 release verification; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-19T23:37:20.403Z -> 2026-05-20T23:37:20.403Z (24h)
+- Window: 2026-05-20T01:20:42.196Z -> 2026-05-21T01:20:42.196Z (24h)
 - Runs with observations: 4 recorded / 2 counted
 - Samples: 8
 
@@ -64,7 +64,7 @@ Latest run: QA-20260521-0547 (2026-05-20T23:37:20.403Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-19T23:37:20.403Z -> 2026-05-20T23:37:20.403Z (24h)
+- Window: 2026-05-20T01:20:42.196Z -> 2026-05-21T01:20:42.196Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 - Drift rate: 66.67%
@@ -79,27 +79,23 @@ Latest run: QA-20260521-0547 (2026-05-20T23:37:20.403Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_8WCBUoDexHcw36bifUAUdHb6S5aN / SHA edb28d01
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: GitLab tag pipeline v8.11.192 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke, Production /api/version returned version 8.11.192, release tag v8.11.192, commit edb28d016186c801b85c6f23a4fe9267f7656442, and pipeline 2541915101, Production /api/health?service=ai returned healthy Cloud Run AI Engine version 8.11.192, Landing page rendered on Vercel production and the hero OpenManager AI title was visible, Landing hero AI span used landing-title-ai with filter none, mix-blend-mode normal, opacity 1, text-rendering geometricprecision, and text-shadow none, Guest login succeeded and returned to the landing route without exposing the guest PIN in evidence, Dashboard opened from the landing CTA using the guest session route, Dashboard summary displayed total 18, online 17, warning 1, risk 0, offline 0, AI Assistant opened from dashboard and submitted the KRL/OTel status criteria prompt through the visible UI, AI stream endpoint /api/ai/supervisor/stream/v2 returned 200 with X-AI-Latency-Ms 4201, AI answer displayed KRL/OTel grounding and included OTel status criteria: P0 offline, P1/P2 critical, P3/P4 warning, P99 online, AI answer did not expose raw tool markers or reasoning JSON, Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571
-- Skipped Surfaces: Mobile viewport, Reporter/Analyst advanced surfaces, Vision image upload, OAuth provider callbacks, and long-running job stream QA were not included in this targeted release verification, Playwright MCP navigation was attempted first but the MCP Chrome profile was locked by another session; the same production URL was validated with an isolated Playwright Chromium runtime instead of killing the existing MCP process
+- Deployment: dpl_9bYYW82UPUbGRuBTcqFHvQniCW5V / SHA 02d08f22
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: GitLab tag pipeline v8.11.193 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke, Production /api/version returned version 8.11.193, release tag v8.11.193, commit 02d08f22c6c428c51902ffb79c5febb45de471e9, and pipeline 2542047885, Cloud Run AI Engine post-deploy smoke passed for expected version 8.11.193, Cloud Run /health returned status ok, version 8.11.193, and required provider/config flags enabled, Cloud Run /api/ai/providers exposed Cerebras primary model metadata as gpt-oss-120b, production lifecycle, enabled, and not deprecated, Cloud Run /api/ai/providers retained llama3.1-8b only as a bounded legacy Cerebras entry with deprecationDate 2026-05-27, recommendedReplacement cerebras:gpt-oss-120b, and blockAfterDeprecation true, Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571
+- Skipped Surfaces: Playwright UI regression was not rerun because this release changes AI Engine provider/model policy rather than frontend UI behavior, Live LLM conversational QA was not repeated; provider metadata, local AI Engine tests, root contract tests, and GitLab post-deploy smoke cover this model-policy deployment while preserving provider quota, Vision real-image QA was not in scope
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab tag pipeline v8.11.192 | [GitLab tag pipeline v8.11.192](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2541915101) | - |
+| general | GitLab tag pipeline v8.11.193 | [GitLab tag pipeline v8.11.193](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542047885) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-9tidb1ua7-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.192 production Playwright evidence | `reports/qa/evidence/qa-20260521-v811192-production-playwright.md` | - |
-| playwright-screenshot | Landing hero AI text | `reports/qa/evidence/qa-20260521-v811192-landing-ai.png` | - |
-| playwright-screenshot | Dashboard status summary | `reports/qa/evidence/qa-20260521-v811192-dashboard.png` | - |
-| playwright-screenshot | AI KRL OTel status criteria answer | `reports/qa/evidence/qa-20260521-v811192-ai-krl.png` | - |
+| playwright-report | v8.11.193 release verification evidence | `reports/qa/evidence/qa-20260521-v811193-release-verification.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -248,6 +244,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-vercel-production-core-pass: AI Assistant production browser smoke passes (completed 1회, last QA-20260428-0357)
 - ai-assistant-web-server-detail-v811146: Standard conversational Q2 should answer web-server-01 detail instead of whole-fleet summary (completed 1회, last QA-20260514-0499)
 - ai-assistant-whole-fleet-load1-empty-summary-v811132: Whole-fleet load1 spike phrasing should route to metric_peak evidence instead of empty-summary fallback (completed 1회, last QA-20260512-0488)
+- ai-cerebras-gpt-oss-default-v811193: Cerebras production default model switched to gpt-oss-120b before llama3.1-8b deprecation (completed 1회, last QA-20260521-0548)
 - ai-cerebras-single-attempt-check: Cerebras Qwen executes once per UI question without fallback (completed 1회, last QA-20260430-0376)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
 - ai-chat-cloud-run-rate-limit-production: Complex Cloud Run AI verification path should complete without rate-limit failure in production (completed 2회, last QA-20260408-0250)
@@ -837,6 +834,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260521-0548 | 2026-05-21T01:20:42.196Z | targeted | yes | yes | Release Verification - v8.11.193 Cerebras gpt-oss-120b | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0547 | 2026-05-20T23:37:20.403Z | targeted | yes | yes | Vercel Playwright QA - v8.11.192 Grounded KRL OTel Criteria | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260520-0546 | 2026-05-20T12:57:49.227Z | targeted | yes | yes | Vercel Playwright QA - v8.11.189 KRL Routing and Stream Sanitizer Closure | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260520-0545 | 2026-05-20T10:33:17.738Z | targeted | yes | yes | Vercel Playwright QA - v8.11.185 Landing AI Text and Dashboard Status | 12 | 2 | 0 | 0 | 0 | 0 |
@@ -856,4 +854,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260519-0531 | 2026-05-19T02:09:49.493Z | targeted | yes | yes | v8.11.178 Vercel Playwright MCP AI Gradient Restoration QA | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0530 | 2026-05-19T00:36:38.886Z | targeted | yes | yes | v8.11.177 Vercel Playwright MCP Incident Detail Button QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0529 | 2026-05-19T00:09:51.939Z | release-gate | yes | yes | v8.11.176 Vercel Playwright MCP AI Release QA | 15 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260519-0528 | 2026-05-18T19:14:20.082Z | targeted | no | yes | v8.11.175 Vercel Playwright MCP AI NLQ/Anomaly Drift Check | 13 | 0 | 2 | 0 | 1 | 3 |

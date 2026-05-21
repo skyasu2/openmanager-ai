@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-20T23:37:20.403Z"
+    "updatedAt": "2026-05-21T01:20:42.196Z"
   },
   "sequence": {
-    "nextRunNumber": 548
+    "nextRunNumber": 549
   },
   "summary": {
-    "totalRecordedRuns": 545,
-    "totalRuns": 433,
+    "totalRecordedRuns": 546,
+    "totalRuns": 434,
     "excludedRuns": 112,
-    "totalChecks": 3954,
-    "totalPassed": 3798,
+    "totalChecks": 3963,
+    "totalPassed": 3807,
     "totalFailed": 145,
     "completionRate": 100,
-    "completedItems": 623,
+    "completedItems": 624,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 35,
-    "expertDomainsTracked": 19,
+    "expertDomainsTracked": 20,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260521-0547",
-    "lastRecordedAt": "2026-05-20T23:37:20.403Z",
-    "latestRecordedRunId": "QA-20260521-0547",
-    "latestRecordedAt": "2026-05-20T23:37:20.403Z"
+    "lastRunId": "QA-20260521-0548",
+    "lastRecordedAt": "2026-05-21T01:20:42.196Z",
+    "latestRecordedRunId": "QA-20260521-0548",
+    "latestRecordedAt": "2026-05-21T01:20:42.196Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15521,6 +15521,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-20T23:37:20.403Z"
+    },
+    "ai-cerebras-gpt-oss-default-v811193": {
+      "id": "ai-cerebras-gpt-oss-default-v811193",
+      "title": "Cerebras production default model switched to gpt-oss-120b before llama3.1-8b deprecation",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260521-0548",
+      "firstSeenAt": "2026-05-21T01:20:42.196Z",
+      "lastSeenRunId": "QA-20260521-0548",
+      "lastSeenAt": "2026-05-21T01:20:42.196Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Cloud Run provider metadata shows Cerebras primary modelId gpt-oss-120b, version 8.11.193, and GitLab tag pipeline 2542047885 success.",
+      "lastNote": "llama3.1-8b remains documented as a legacy bounded entry with deprecationDate 2026-05-27 and blockAfterDeprecation true.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-21T01:20:42.196Z"
     }
   },
   "runs": [
@@ -62791,6 +62815,124 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260521-0548",
+      "recordedAt": "2026-05-21T01:20:42.196Z",
+      "recordedAtKst": "2026-05-21 10:20:42 KST",
+      "title": "Release Verification - v8.11.193 Cerebras gpt-oss-120b",
+      "owner": "codex",
+      "source": "gitlab-ci-cli-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260521-0548.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_9bYYW82UPUbGRuBTcqFHvQniCW5V",
+        "deploymentUrl": "https://openmanager-8t2inc2do-skyasus-projects.vercel.app",
+        "commitSha": "02d08f22c6c428c51902ffb79c5febb45de471e9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.11.193 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke",
+        "Production /api/version returned version 8.11.193, release tag v8.11.193, commit 02d08f22c6c428c51902ffb79c5febb45de471e9, and pipeline 2542047885",
+        "Cloud Run AI Engine post-deploy smoke passed for expected version 8.11.193",
+        "Cloud Run /health returned status ok, version 8.11.193, and required provider/config flags enabled",
+        "Cloud Run /api/ai/providers exposed Cerebras primary model metadata as gpt-oss-120b, production lifecycle, enabled, and not deprecated",
+        "Cloud Run /api/ai/providers retained llama3.1-8b only as a bounded legacy Cerebras entry with deprecationDate 2026-05-27, recommendedReplacement cerebras:gpt-oss-120b, and blockAfterDeprecation true",
+        "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571"
+      ],
+      "skippedSurfaces": [
+        "Playwright UI regression was not rerun because this release changes AI Engine provider/model policy rather than frontend UI behavior",
+        "Live LLM conversational QA was not repeated; provider metadata, local AI Engine tests, root contract tests, and GitLab post-deploy smoke cover this model-policy deployment while preserving provider quota",
+        "Vision real-image QA was not in scope"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "devops-sre",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab semver tag pipeline completed deploy and smoke stages for both Vercel frontend and Cloud Run AI Engine.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The changed AI provider/model policy was verified through local AI Engine tests, root contract tests, production Cloud Run health, and provider metadata showing Cerebras gpt-oss-120b as primary.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The deprecated llama3.1-8b metadata remains bounded with a 2026-05-27 deprecation date, recommended gpt-oss replacement, and blockAfterDeprecation guard.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "cost-operations",
+          "domainName": "Cost / Free Tier Operations",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release used standard GitLab/Vercel/Cloud Run deployment paths and Vercel usage remained normal with billed 0.0000 USD.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-21T10:16:19+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.11.193 release verification; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.11.193 release verification evidence",
+          "path": "reports/qa/evidence/qa-20260521-v811193-release-verification.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.11.193",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542047885"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -62799,16 +62941,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 274,
-      "appropriateCount": 233,
+      "seenCount": 275,
+      "appropriateCount": 234,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 51,
-      "lastRunId": "QA-20260521-0547",
-      "lastSeenAt": "2026-05-20T23:37:20.403Z",
+      "lastRunId": "QA-20260521-0548",
+      "lastSeenAt": "2026-05-21T01:20:42.196Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The KRL/OTel prompt used the production chat UI and verified grounding evidence, status criteria coverage, and raw marker sanitization.",
+      "lastRationale": "The changed AI provider/model policy was verified through local AI Engine tests, root contract tests, production Cloud Run health, and provider metadata showing Cerebras gpt-oss-120b as primary.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -62833,16 +62975,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 92,
-      "appropriateCount": 73,
+      "seenCount": 93,
+      "appropriateCount": 74,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260520-0546",
-      "lastSeenAt": "2026-05-20T12:57:49.227Z",
+      "lastRunId": "QA-20260521-0548",
+      "lastSeenAt": "2026-05-21T01:20:42.196Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Visible assistant output was checked for raw tool-call markers, 'Nothing to process.', and reasoning JSON leakage after the stream sanitizer and direct knowledge path fixes.",
+      "lastRationale": "The deprecated llama3.1-8b metadata remains bounded with a 2026-05-27 deprecation date, recommended gpt-oss replacement, and blockAfterDeprecation guard.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -63105,16 +63247,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260520-0545",
       "firstSeenAt": "2026-05-20T10:33:17.738Z",
-      "seenCount": 3,
-      "appropriateCount": 3,
+      "seenCount": 4,
+      "appropriateCount": 4,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0547",
-      "lastSeenAt": "2026-05-20T23:37:20.403Z",
+      "lastRunId": "QA-20260521-0548",
+      "lastSeenAt": "2026-05-21T01:20:42.196Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel production deploy, Cloud Run AI Engine deploy, and post-deploy smoke all passed for v8.11.192.",
+      "lastRationale": "GitLab semver tag pipeline completed deploy and smoke stages for both Vercel frontend and Cloud Run AI Engine.",
+      "lastNextAction": ""
+    },
+    "cost-operations": {
+      "domainId": "cost-operations",
+      "domainName": "Cost / Free Tier Operations",
+      "firstSeenRunId": "QA-20260521-0548",
+      "firstSeenAt": "2026-05-21T01:20:42.196Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260521-0548",
+      "lastSeenAt": "2026-05-21T01:20:42.196Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The release used standard GitLab/Vercel/Cloud Run deployment paths and Vercel usage remained normal with billed 0.0000 USD.",
       "lastNextAction": ""
     }
   }

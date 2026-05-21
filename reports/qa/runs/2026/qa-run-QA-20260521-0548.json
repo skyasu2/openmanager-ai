@@ -1,0 +1,134 @@
+{
+  "runId": "QA-20260521-0548",
+  "recordedAt": "2026-05-21T01:20:42.196Z",
+  "recordedAtKst": "2026-05-21 10:20:42 KST",
+  "runTitle": "Release Verification - v8.11.193 Cerebras gpt-oss-120b",
+  "owner": "codex",
+  "source": "gitlab-ci-cli-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_9bYYW82UPUbGRuBTcqFHvQniCW5V",
+    "deploymentUrl": "https://openmanager-8t2inc2do-skyasus-projects.vercel.app",
+    "commitSha": "02d08f22c6c428c51902ffb79c5febb45de471e9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.11.193 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke",
+    "Production /api/version returned version 8.11.193, release tag v8.11.193, commit 02d08f22c6c428c51902ffb79c5febb45de471e9, and pipeline 2542047885",
+    "Cloud Run AI Engine post-deploy smoke passed for expected version 8.11.193",
+    "Cloud Run /health returned status ok, version 8.11.193, and required provider/config flags enabled",
+    "Cloud Run /api/ai/providers exposed Cerebras primary model metadata as gpt-oss-120b, production lifecycle, enabled, and not deprecated",
+    "Cloud Run /api/ai/providers retained llama3.1-8b only as a bounded legacy Cerebras entry with deprecationDate 2026-05-27, recommendedReplacement cerebras:gpt-oss-120b, and blockAfterDeprecation true",
+    "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571"
+  ],
+  "skippedSurfaces": [
+    "Playwright UI regression was not rerun because this release changes AI Engine provider/model policy rather than frontend UI behavior",
+    "Live LLM conversational QA was not repeated; provider metadata, local AI Engine tests, root contract tests, and GitLab post-deploy smoke cover this model-policy deployment while preserving provider quota",
+    "Vision real-image QA was not in scope"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "devops-sre",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab semver tag pipeline completed deploy and smoke stages for both Vercel frontend and Cloud Run AI Engine.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed AI provider/model policy was verified through local AI Engine tests, root contract tests, production Cloud Run health, and provider metadata showing Cerebras gpt-oss-120b as primary.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The deprecated llama3.1-8b metadata remains bounded with a 2026-05-27 deprecation date, recommended gpt-oss replacement, and blockAfterDeprecation guard.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "cost-operations",
+      "domainName": "Cost / Free Tier Operations",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The release used standard GitLab/Vercel/Cloud Run deployment paths and Vercel usage remained normal with billed 0.0000 USD.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-21T10:16:19+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.11.193 release verification; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.11.193 release verification evidence",
+      "path": "reports/qa/evidence/qa-20260521-v811193-release-verification.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-cerebras-gpt-oss-default-v811193",
+      "title": "Cerebras production default model switched to gpt-oss-120b before llama3.1-8b deprecation",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production Cloud Run provider metadata shows Cerebras primary modelId gpt-oss-120b, version 8.11.193, and GitLab tag pipeline 2542047885 success.",
+      "note": "llama3.1-8b remains documented as a legacy bounded entry with deprecationDate 2026-05-27 and blockAfterDeprecation true.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Pre-release validation: AI Engine type-check PASS; AI Engine full test PASS, 138 files / 1370 tests; root test:contract PASS, 3 files / 24 tests.",
+    "Release script production verification passed on attempt 41/81 after the Vercel deployment propagated.",
+    "AI Engine post-deploy smoke required loading local env variables because GCP_PROJECT_ID was not exported in the shell environment."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.193",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542047885"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
