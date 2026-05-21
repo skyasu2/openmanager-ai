@@ -176,7 +176,7 @@ export const ChatInputArea = memo(function ChatInputArea({
   return (
     <>
       <div
-        className="relative shrink-0 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
+        className="relative shrink-0 border-t border-purple-100 bg-white"
         {...dragHandlers}
       >
         {/* 드래그앤드롭 오버레이 */}

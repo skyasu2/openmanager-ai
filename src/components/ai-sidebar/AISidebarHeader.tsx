@@ -46,7 +46,7 @@ export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center justify-between border-b border-gray-200 bg-linear-to-r from-purple-50 to-blue-50 p-3 sm:p-4">
+    <header className="flex items-center justify-between border-b border-purple-100 bg-white p-3 sm:p-4">
       <div className="flex min-w-0 items-center space-x-2 sm:space-x-3">
         {/* AI 아이콘 - 반응형 크기 */}
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-purple-500 to-blue-600 sm:h-10 sm:w-10">

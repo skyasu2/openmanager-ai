@@ -212,10 +212,10 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-linear-to-br from-slate-50 to-blue-50">
+    <div className="flex h-full min-h-0 flex-col bg-gray-50/50">
       {/* 헤더 */}
       {showInternalHeader && (
-        <div className="border-b border-gray-200 bg-white/80 p-4 backdrop-blur-sm">
+        <div className="border-b border-purple-100 bg-white p-4">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-purple-500 to-blue-600">
