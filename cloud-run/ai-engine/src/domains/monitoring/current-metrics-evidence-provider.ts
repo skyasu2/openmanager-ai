@@ -17,12 +17,33 @@ import { FORCE_KB_QUERY_PATTERN } from '../../services/ai-sdk/routing/query-rout
 import { isServiceCommandGuidanceQuery } from '../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 import {
   MONITORING_DOMAIN_ID,
+  MONITORING_METRIC_CURRENT_CAPABILITY_ID,
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
+  MONITORING_METRIC_TREND_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
+import {
+  get24hTrendSummaries,
+  normalizeServerType,
+} from '../../tools-ai-sdk/server-metrics/data';
 
-type CurrentMetricsEvidenceIntent = 'metric_ranking' | 'server_health';
+type CurrentMetricsEvidenceIntent =
+  | 'metric_current'
+  | 'metric_ranking'
+  | 'metric_trend'
+  | 'server_health';
 type SupportedMetric = Exclude<QueryMetric, 'status'>;
+
+type SnapshotServer = {
+  id: string;
+  name?: string;
+  type?: string;
+  status?: string;
+  cpu?: number;
+  memory?: number;
+  disk?: number;
+  network?: number;
+};
 
 export interface ParsedCurrentMetricsEvidenceRequest {
   intent: CurrentMetricsEvidenceIntent;
@@ -45,6 +66,9 @@ const SERVER_DETAIL_PATTERN =
   /\b[a-z0-9]+(?:-[a-z0-9]+){1,}\b.{0,24}(상태|현황|자세|상세|health|status|detail|어때|알려)/i;
 const ACTION_NEEDED_PATTERN =
   /(?:지금|현재|당장|즉시).{0,24}(?:조치|대응).{0,24}(?:필요|해야|대상|있)|(?:조치|대응).{0,12}(?:필요한|필요|대상).{0,12}서버|immediate\s+action|action\s+needed/i;
+const CURRENT_METRIC_GROUP_PATTERN =
+  /(db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스)\s*(서버|그룹)?/i;
+const METRIC_TREND_PATTERN = /추이|추세|trend|변화|변동/i;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -68,6 +92,114 @@ function normalizeSupportedMetric(metric: string | undefined): SupportedMetric |
   return ['cpu', 'memory', 'disk', 'network'].includes(normalized)
     ? (normalized as SupportedMetric)
     : null;
+}
+
+function round1(value: number): number {
+  return Math.round(value * 10) / 10;
+}
+
+function getMetricLabel(metric: SupportedMetric): string {
+  switch (metric) {
+    case 'cpu':
+      return 'CPU';
+    case 'memory':
+      return '메모리';
+    case 'disk':
+      return '디스크';
+    case 'network':
+      return '네트워크';
+  }
+}
+
+function getMetricValue(server: SnapshotServer, metric: SupportedMetric): number | null {
+  const value = server[metric];
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function readSnapshotServers(snapshot: DomainSnapshot): SnapshotServer[] {
+  const servers = isRecord(snapshot.data) ? snapshot.data.servers : undefined;
+  if (!Array.isArray(servers)) return [];
+
+  return servers.filter((server): server is SnapshotServer => {
+    return isRecord(server) && typeof server.id === 'string';
+  });
+}
+
+function inferTargetType(targets: string[]): string | null {
+  for (const target of targets) {
+    const normalized = normalizeServerType(target);
+    if (normalized !== 'unknown') return normalized;
+  }
+  return null;
+}
+
+function filterSnapshotServers(
+  servers: SnapshotServer[],
+  targets: string[] | undefined
+): { servers: SnapshotServer[]; targetLabel: string } {
+  const normalizedTargets = targets ?? [];
+  if (normalizedTargets.length === 0) {
+    return { servers, targetLabel: '전체 서버' };
+  }
+
+  const targetIds = new Set(normalizedTargets);
+  const exactMatches = servers.filter((server) => targetIds.has(server.id));
+  if (exactMatches.length > 0) {
+    const uniqueTypes = Array.from(
+      new Set(exactMatches.map((server) => normalizeServerType(server.type ?? '')))
+    ).filter((type) => type !== 'unknown');
+    return {
+      servers: exactMatches,
+      targetLabel:
+        uniqueTypes.length === 1
+          ? `${getServerTypeKoreanLabel(uniqueTypes[0])} ${exactMatches.length}대`
+          : `지정 서버 ${exactMatches.length}대`,
+    };
+  }
+
+  const targetType = inferTargetType(normalizedTargets);
+  if (targetType) {
+    const groupMatches = servers.filter(
+      (server) => normalizeServerType(server.type ?? '') === targetType
+    );
+    if (groupMatches.length > 0) {
+      return {
+        servers: groupMatches,
+        targetLabel: `${getServerTypeKoreanLabel(targetType)} ${groupMatches.length}대`,
+      };
+    }
+  }
+
+  return { servers: [], targetLabel: '지정 서버 0대' };
+}
+
+function getServerTypeKoreanLabel(type: string): string {
+  switch (normalizeServerType(type)) {
+    case 'cache':
+      return '캐시 서버';
+    case 'database':
+      return 'DB 서버';
+    case 'loadbalancer':
+      return '로드밸런서';
+    case 'storage':
+      return '스토리지 서버';
+    case 'web':
+      return '웹 서버';
+    case 'application':
+      return '애플리케이션 서버';
+    default:
+      return '서버';
+  }
+}
+
+function formatMetricPercent(value: number): string {
+  return `${round1(value)}%`;
+}
+
+function formatTrendDirection(delta: number): string {
+  if (delta > 3) return '상승';
+  if (delta < -3) return '하락';
+  return '안정';
 }
 
 function normalizeRankCount(value: number | undefined): number {
@@ -135,6 +267,41 @@ function parseCurrentMetricsFrame(
   }
 
   const metric = normalizeSupportedMetric(frame.metric);
+  const targets = normalizeTargets(frame.targets);
+  if (
+    metric &&
+    frame.intent === 'metric_current' &&
+    !isMetricRankingFrame(frame) &&
+    (capabilityId === undefined ||
+      capabilityId === MONITORING_METRIC_CURRENT_CAPABILITY_ID ||
+      capabilityId === MONITORING_METRIC_RANKING_CAPABILITY_ID)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: frame.intent,
+      answerQuery: request.message,
+      metric,
+      ...(targets.length > 0 && { targets }),
+    };
+  }
+
+  if (
+    metric &&
+    frame.intent === 'metric_trend' &&
+    (capabilityId === undefined ||
+      capabilityId === MONITORING_METRIC_TREND_CAPABILITY_ID)
+  ) {
+    return {
+      intent: 'metric_trend',
+      capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+      sourceIntent: frame.intent,
+      answerQuery: request.message,
+      metric,
+      ...(targets.length > 0 && { targets }),
+    };
+  }
+
   if (
     metric &&
     isMetricRankingFrame(frame) &&
@@ -186,6 +353,35 @@ function parseCurrentMetricsMessage(
 
   if (
     classification.intent === 'data-lookup' &&
+    metric &&
+    CURRENT_METRIC_GROUP_PATTERN.test(message) &&
+    !HISTORICAL_OR_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: classification.intent,
+      answerQuery: message,
+      metric,
+    };
+  }
+
+  if (
+    classification.intent === 'data-lookup' &&
+    metric &&
+    METRIC_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_trend',
+      capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+      sourceIntent: classification.intent,
+      answerQuery: message,
+      metric,
+    };
+  }
+
+  if (
+    classification.intent === 'data-lookup' &&
     SERVER_HEALTH_PATTERN.test(message) &&
     !SERVER_HEALTH_EXCLUSION_PATTERN.test(message)
   ) {
@@ -207,6 +403,114 @@ function parseCurrentMetricsMessage(
   }
 
   return null;
+}
+
+function buildMetricCurrentAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  const metric = params.parsed.metric;
+  if (!metric) return null;
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const { servers, targetLabel } = filterSnapshotServers(
+    allServers,
+    params.parsed.targets
+  );
+  if (servers.length === 0) return null;
+
+  const rows = servers
+    .map((server) => ({
+      server,
+      value: getMetricValue(server, metric),
+    }))
+    .filter((row): row is { server: SnapshotServer; value: number } => row.value !== null)
+    .sort((left, right) => right.value - left.value);
+  if (rows.length === 0) return null;
+
+  const values = rows.map((row) => row.value);
+  const avg = round1(values.reduce((sum, value) => sum + value, 0) / values.length);
+  const max = rows[0];
+  const min = rows[rows.length - 1];
+  const metricLabel = getMetricLabel(metric);
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+
+  return [
+    `📊 **${targetLabel} ${metricLabel} 현황**`,
+    `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 평균 ${metricLabel}: ${formatMetricPercent(avg)} · 최고 ${max.server.id} ${formatMetricPercent(max.value)} · 최저 ${min.server.id} ${formatMetricPercent(min.value)}`,
+    `• 서버별: ${rows
+      .map(
+        (row) =>
+          `${row.server.id} ${formatMetricPercent(row.value)} (${row.server.status ?? 'unknown'})`
+      )
+      .join(', ')}`,
+  ].join('\n');
+}
+
+function buildMetricTrendAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  const metric = params.parsed.metric;
+  if (!metric || metric === 'network') return null;
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const { servers, targetLabel } = filterSnapshotServers(
+    allServers,
+    params.parsed.targets
+  );
+  if (servers.length === 0) return null;
+
+  const trendMap = new Map(
+    get24hTrendSummaries().map((trend) => [trend.serverId, trend])
+  );
+  const rows = servers
+    .map((server) => {
+      const current = getMetricValue(server, metric);
+      const trend = trendMap.get(server.id)?.[metric];
+      if (current === null || !trend) return null;
+      const delta = round1(current - trend.avg);
+      return {
+        server,
+        current,
+        avg24h: trend.avg,
+        max24h: trend.max,
+        min24h: trend.min,
+        delta,
+        direction: formatTrendDirection(delta),
+      };
+    })
+    .filter((row): row is NonNullable<typeof row> => row !== null)
+    .sort((left, right) => right.current - left.current);
+  if (rows.length === 0) return null;
+
+  const metricLabel = getMetricLabel(metric);
+  const avgCurrent = round1(
+    rows.reduce((sum, row) => sum + row.current, 0) / rows.length
+  );
+  const avg24h = round1(
+    rows.reduce((sum, row) => sum + row.avg24h, 0) / rows.length
+  );
+  const directionCounts = rows.reduce<Record<string, number>>((acc, row) => {
+    acc[row.direction] = (acc[row.direction] ?? 0) + 1;
+    return acc;
+  }, {});
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+  const topRows = rows.slice(0, 5);
+
+  return [
+    `📈 **${targetLabel} ${metricLabel} 추이**`,
+    `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 현재 평균 ${metricLabel}: ${formatMetricPercent(avgCurrent)} · 24h 평균 ${formatMetricPercent(avg24h)} · 전체 ${formatTrendDirection(avgCurrent - avg24h)}`,
+    `• 추세 분포: 상승 ${directionCounts['상승'] ?? 0}대, 안정 ${directionCounts['안정'] ?? 0}대, 하락 ${directionCounts['하락'] ?? 0}대`,
+    `• 현재 ${metricLabel} 상위: ${topRows
+      .map(
+        (row) =>
+          `${row.server.id} ${formatMetricPercent(row.current)} (24h 평균 ${formatMetricPercent(row.avg24h)}, ${row.direction} ${row.delta >= 0 ? '+' : ''}${row.delta}%p)`
+      )
+      .join(', ')}`,
+  ].join('\n');
 }
 
 export function parseCurrentMetricsEvidenceRequest(
@@ -266,16 +570,20 @@ async function resolveCurrentMetricsEvidence(
   if (!snapshot) return null;
 
   const answer =
-    buildDeterministicSummaryFromCurrentState(
-      parsed.answerQuery,
-      METRICS_QUERY_AGENT_NAME,
-      snapshot.data
-    ) ??
-    buildDeterministicSummaryFromCurrentState(
-      request.message,
-      METRICS_QUERY_AGENT_NAME,
-      snapshot.data
-    );
+    parsed.intent === 'metric_current'
+      ? buildMetricCurrentAnswer({ parsed, snapshot })
+      : parsed.intent === 'metric_trend'
+        ? buildMetricTrendAnswer({ parsed, snapshot })
+        : buildDeterministicSummaryFromCurrentState(
+            parsed.answerQuery,
+            METRICS_QUERY_AGENT_NAME,
+            snapshot.data
+          ) ??
+          buildDeterministicSummaryFromCurrentState(
+            request.message,
+            METRICS_QUERY_AGENT_NAME,
+            snapshot.data
+          );
 
   if (!answer) return null;
 
@@ -322,6 +630,18 @@ export const monitoringMetricRankingEvidenceProvider =
   createCurrentMetricsEvidenceProvider({
     id: 'monitoring-metric-ranking',
     intent: 'metric_ranking',
+  });
+
+export const monitoringMetricCurrentEvidenceProvider =
+  createCurrentMetricsEvidenceProvider({
+    id: 'monitoring-metric-current',
+    intent: 'metric_current',
+  });
+
+export const monitoringMetricTrendEvidenceProvider =
+  createCurrentMetricsEvidenceProvider({
+    id: 'monitoring-metric-trend',
+    intent: 'metric_trend',
   });
 
 export const monitoringServerHealthEvidenceProvider =

@@ -35,7 +35,9 @@ import {
 } from '../../services/ai-sdk/supervisor-semantic-metadata';
 import { monitoringAgentRoleRegistry } from './agent-roles';
 import {
+  monitoringMetricCurrentEvidenceProvider,
   monitoringMetricRankingEvidenceProvider,
+  monitoringMetricTrendEvidenceProvider,
   monitoringServerHealthEvidenceProvider,
   parseCurrentMetricsEvidenceRequest,
 } from './current-metrics-evidence-provider';
@@ -48,7 +50,9 @@ import {
   MONITORING_ANOMALY_PREDICTION_CAPABILITY_ID,
   MONITORING_CAPACITY_FORECAST_CAPABILITY_ID,
   MONITORING_FAILURE_RISK_CAPABILITY_ID,
+  MONITORING_METRIC_CURRENT_CAPABILITY_ID,
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
+  MONITORING_METRIC_TREND_CAPABILITY_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
@@ -59,7 +63,9 @@ export {
   MONITORING_ANOMALY_PREDICTION_CAPABILITY_ID,
   MONITORING_CAPACITY_FORECAST_CAPABILITY_ID,
   MONITORING_FAILURE_RISK_CAPABILITY_ID,
+  MONITORING_METRIC_CURRENT_CAPABILITY_ID,
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
+  MONITORING_METRIC_TREND_CAPABILITY_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
@@ -244,12 +250,28 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       optionalSlots: ['topN', 'targets', 'scope'],
     },
     {
+      id: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      description:
+        'Resolve current metric summaries for whole-fleet, entity, or server group scopes directly from monitoring snapshots.',
+      intents: ['metric_current'],
+      requiredSlots: ['metric'],
+      optionalSlots: ['targets', 'scope'],
+    },
+    {
       id: MONITORING_METRIC_RANKING_CAPABILITY_ID,
       description:
         'Resolve current metric Top-N rankings directly from monitoring snapshots.',
       intents: ['metric_ranking', 'metric_current'],
       requiredSlots: ['metric', 'aggregation'],
       optionalSlots: ['topN', 'rankOrder', 'scope'],
+    },
+    {
+      id: MONITORING_METRIC_TREND_CAPABILITY_ID,
+      description:
+        'Resolve current-vs-24h metric trend summaries directly from monitoring snapshots.',
+      intents: ['metric_trend'],
+      requiredSlots: ['metric'],
+      optionalSlots: ['targets', 'scope', 'timeWindow'],
     },
     {
       id: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
@@ -340,7 +362,9 @@ export const monitoringDomainPack: AssistantDomain = {
   intentParser: monitoringIntentParser,
   evidenceProviders: [
     monitoringPeakMetricEvidenceProvider,
+    monitoringMetricCurrentEvidenceProvider,
     monitoringMetricRankingEvidenceProvider,
+    monitoringMetricTrendEvidenceProvider,
     monitoringServerHealthEvidenceProvider,
   ],
 };

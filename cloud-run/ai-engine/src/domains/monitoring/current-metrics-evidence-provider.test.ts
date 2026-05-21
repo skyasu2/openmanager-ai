@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   MONITORING_DOMAIN_ID,
+  MONITORING_METRIC_CURRENT_CAPABILITY_ID,
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
+  MONITORING_METRIC_TREND_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
 import {
+  monitoringMetricCurrentEvidenceProvider,
   monitoringMetricRankingEvidenceProvider,
+  monitoringMetricTrendEvidenceProvider,
   monitoringServerHealthEvidenceProvider,
   parseCurrentMetricsEvidenceRequest,
 } from './current-metrics-evidence-provider';
@@ -98,6 +102,135 @@ describe('current metrics domain evidence providers', () => {
       metric: 'memory',
       rankCount: 2,
     });
+  });
+
+  it('resolves cache current memory frame as deterministic group metric evidence', async () => {
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve({
+      ...createEvidenceRequest('캐시 서버 메모리 현황', {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'online',
+            cpu: 22,
+            memory: 61,
+            disk: 31,
+            network: 10,
+          },
+          {
+            id: 'cache-redis-dc1-02',
+            type: 'cache',
+            status: 'online',
+            cpu: 18,
+            memory: 55,
+            disk: 29,
+            network: 11,
+          },
+          {
+            id: 'cache-redis-dc1-03',
+            type: 'cache',
+            status: 'online',
+            cpu: 20,
+            memory: 49,
+            disk: 33,
+            network: 12,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 30,
+            memory: 40,
+            disk: 25,
+            network: 13,
+          },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [
+          'cache-redis-dc1-01',
+          'cache-redis-dc1-02',
+          'cache-redis-dc1-03',
+        ],
+        metric: 'memory',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.8,
+      },
+    });
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        metric: 'memory',
+      },
+    });
+    expect(evidence?.fallback).toContain('캐시 서버 3대 메모리 현황');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-01 61%');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
+  it('resolves whole-fleet disk trend frame without drifting to CPU summary', async () => {
+    const evidence = await monitoringMetricTrendEvidenceProvider.resolve({
+      ...createEvidenceRequest('전체 서버 디스크 추이', {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'online',
+            cpu: 22,
+            memory: 61,
+            disk: 31,
+            network: 10,
+          },
+          {
+            id: 'storage-nfs-dc1-01',
+            type: 'storage',
+            status: 'warning',
+            cpu: 18,
+            memory: 55,
+            disk: 82,
+            network: 11,
+          },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_trend',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'disk',
+        timeWindow: 'unknown',
+        aggregation: 'unknown',
+        ambiguity: 'low',
+        confidence: 0.8,
+      },
+    });
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-trend',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        intent: 'metric_trend',
+        metric: 'disk',
+      },
+    });
+    expect(evidence?.fallback).toContain('전체 서버 디스크 추이');
+    expect(evidence?.fallback).toContain('대상: 2대');
+    expect(evidence?.fallback).toContain('현재 디스크 상위');
+    expect(evidence?.fallback).not.toContain('CPU 평균');
   });
 
   it('resolves current server health summaries as deterministic evidence', async () => {
