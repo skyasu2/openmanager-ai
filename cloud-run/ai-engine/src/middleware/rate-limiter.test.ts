@@ -44,6 +44,10 @@ describe('cloud run rate limiter identity', () => {
 
 describe('cloud run jobs limiter policy', () => {
   it('keeps POST /api/jobs/process on the strict 5/min write bucket', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-22T00:00:00.000Z'));
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+
     const app = new Hono();
     app.use('/api/*', rateLimitMiddleware);
     app.post('/api/jobs/process', (c) => c.json({ ok: true }));
