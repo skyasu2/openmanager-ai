@@ -12,6 +12,7 @@ import type {
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
+import { AlertFeedPanel } from './AlertFeedPanel';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
 import { SystemOverviewSection } from './SystemOverviewSection';
@@ -120,6 +121,7 @@ export default memo(function DashboardContent({
   const {
     data: monitoringReport,
     error: monitoringError,
+    isLoading: isMonitoringLoading,
     isError: isMonitoringError,
   } = useMonitoringReport();
   const monitoringErrorMessage = isMonitoringError
@@ -222,23 +224,33 @@ export default memo(function DashboardContent({
             {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
             <SystemOverviewSection servers={fleetServers} />
 
-            {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
-                  - DashboardClient → DashboardContent → ServerDashboard로 전달
-                  - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화)
-                  - ServerDashboard 그래프는 client-only lazy chunk로 분리 */}
-            <ServerDashboard
-              servers={currentPageServers}
-              allServers={cardSourceServers}
-              totalServers={totalServers}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              onPageChange={onPageChange}
-              onPageSizeChange={onPageSizeChange}
-              onStatsUpdate={onStatsUpdate}
-              initialVisibleRows={2}
-              surface="overview"
-            />
+            <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
+              <div className="min-w-0">
+                {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
+                      - DashboardClient → DashboardContent → ServerDashboard로 전달
+                      - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화)
+                      - ServerDashboard 그래프는 client-only lazy chunk로 분리 */}
+                <ServerDashboard
+                  servers={currentPageServers}
+                  allServers={cardSourceServers}
+                  totalServers={totalServers}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={onPageChange}
+                  onPageSizeChange={onPageSizeChange}
+                  onStatsUpdate={onStatsUpdate}
+                  initialVisibleRows={2}
+                  surface="overview"
+                />
+              </div>
+              <AlertFeedPanel
+                alerts={monitoringReport?.firingAlerts ?? []}
+                isLoading={isMonitoringLoading}
+                isError={isMonitoringError}
+                errorMessage={monitoringErrorMessage}
+              />
+            </div>
           </>
         ) : (
           <div className="rounded-xl border border-slate-200/60 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
