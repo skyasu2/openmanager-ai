@@ -67,6 +67,12 @@
   display: block;
 }
 
+/* Shared visual surfaces: fade particles before dense lower sections. */
+.landing-visual-surface .mouse-spotlight {
+  -webkit-mask-image: linear-gradient(to bottom, black 58%, transparent 74%);
+  mask-image: linear-gradient(to bottom, black 58%, transparent 74%);
+}
+
 .finger-pointer-primary {
   animation: finger-bounce-primary 2s ease-in-out infinite;
 }

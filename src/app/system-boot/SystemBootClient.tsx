@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { MouseSpotlight } from '@/components/landing/MouseSpotlight';
 import { clearChatHistory } from '@/hooks/ai/utils/chat-history-storage';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
@@ -202,7 +203,8 @@ export default function SystemBootClient() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black">
+    <div className="landing-visual-surface relative min-h-screen overflow-hidden bg-black">
+      <MouseSpotlight />
       {/* 첫페이지와 동일한 웨이브 파티클 배경 효과 */}
       <div className="wave-particles"></div>
 

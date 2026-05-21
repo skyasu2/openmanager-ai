@@ -11,6 +11,7 @@
 // MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 import type { Metadata } from 'next';
+import '../landing-effects.css';
 import SystemBootClient from './SystemBootClient';
 
 export const metadata: Metadata = {
