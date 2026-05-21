@@ -1,0 +1,228 @@
+{
+  "runId": "QA-20260521-0549",
+  "recordedAt": "2026-05-21T04:10:30.110Z",
+  "recordedAtKst": "2026-05-21 13:10:30 KST",
+  "runTitle": "Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release",
+  "owner": "codex",
+  "source": "playwright-mcp+gitlab-ci+vercel-usage",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7xf2j9vHZkGBYwdk71i4vdy4pNXq",
+    "deploymentUrl": "https://openmanager-7x1doek0n-skyasus-projects.vercel.app",
+    "commitSha": "562ada666ad1b36bc12c81300fb8cea026fd1e1c"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.11.194 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke",
+    "GitLab main validate pipeline for commit 562ada666 completed successfully",
+    "Production /api/version returned version 8.11.194, release tag v8.11.194, commit 562ada666ad1b36bc12c81300fb8cea026fd1e1c, and pipeline 2542261926",
+    "Production /api/health?service=ai returned healthy Cloud Run AI Engine version 8.11.194",
+    "Landing page served v8.11.194 and guest session opened /dashboard",
+    "Dashboard summary displayed total 18, online 17, warning 1, risk 0, offline 0, with OpenTelemetry slot 13:00 KST",
+    "Dashboard system resources displayed CPU 30%, Memory 47%, Disk 35%",
+    "AI Assistant sidebar opened and showed AI Engine Ready",
+    "Conversational AI QA question 1 passed: overall status answer included 18 total, 17 normal, 1 warning, 0 risk, 0 offline, average CPU 30%, memory 47%, disk 35%, and cache-redis-dc1-01 memory 82%",
+    "Conversational AI QA question 2 passed: web-server-01 resolved to web-nginx-dc1-01 and returned online, CPU 32%, memory 43%, disk 30%, network 1%, load, and response-time details",
+    "Conversational AI QA question 3 passed: 24h peak load answer returned 2026-05-21 03:50, load1 16.58, attributed to db-mysql-dc1-primary",
+    "Conversational AI QA question 4 passed: immediate-action answer said no immediate-action server and provided cache-redis-dc1-01 memory check commands",
+    "Conversational AI QA question 5 passed: network issue filter returned network >= 70% servers 0, with server metric tool evidence",
+    "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571"
+  ],
+  "skippedSurfaces": [
+    "Mobile viewport, OAuth provider callbacks, Reporter/Analyst advanced tabs, Vision image upload UI, and Cloud Run admin monitoring endpoints were not included because this targeted run validates the v8.11.194 AI routing/dashboard release path",
+    "Vision real-image QA was not in scope; this release did not change Vision routing/provider behavior",
+    "Broad modal/detail and security prompt-injection packs were not rerun because local/CI contract tests and the targeted production conversational pack cover the changed risk"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar standard question 1 overall status",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Production AI sidebar response badge",
+      "latencyMs": 78
+    },
+    {
+      "surface": "AI sidebar standard question 2 web-server-01 detail",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Production AI sidebar response badge",
+      "latencyMs": 5
+    },
+    {
+      "surface": "AI sidebar standard question 3 24h peak load",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Production AI sidebar response badge",
+      "latencyMs": 1567
+    },
+    {
+      "surface": "AI sidebar standard question 4 immediate action",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Production AI sidebar response badge",
+      "latencyMs": 3
+    },
+    {
+      "surface": "AI sidebar standard question 5 network filter",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Production AI sidebar response badge",
+      "latencyMs": 6120
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "devops-sre",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag deploy pipeline and main validate pipeline both completed successfully; production version and AI health endpoints are coherent at 8.11.194.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production AI sidebar passed the standard five-question conversational QA with specific metrics, alias resolution, peak-load evidence, action guidance, and network filtering.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The routing trust-boundary changes were covered by CI/local contract tests and the production UI did not expose raw tool markers, reasoning JSON, or transport errors in the tested responses.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard OTel snapshot counts and AI responses agreed on the current data shape and returned concrete metric values for status, server detail, peak load, and network filtering.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run used GitLab CI gates plus Playwright MCP production UI evidence with durable screenshot and markdown artifacts.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "cost-operations",
+      "domainName": "Cost / Free Tier Operations",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run deploy guardrails passed in CI and Vercel usage remained normal with billed 0.0000 USD.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-21T12:58:28+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.11.194 release verification; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.11.194 release QA evidence",
+      "path": "reports/qa/evidence/qa-20260521-v811194-ai-five-question.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI standard five-question final answer",
+      "path": "reports/qa/evidence/qa-20260521-v811194-ai-five-question.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-routing-trust-boundary-v811194",
+      "title": "AI routing trust boundary and local classifier cleanup deployed to production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.194 tag pipeline 2542261926 and main validate pipeline 2542261925 succeeded; production five-question AI QA passed.",
+      "note": "Release includes exact semantic intent/capability validation, off-domain guard boundary cleanup, and split entity extraction triggers.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-session-data-freeze-v811194",
+      "title": "Dashboard session data freeze deployed with dashboard summary parity intact",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production dashboard displayed total 18, online 17, warning 1, risk 0, offline 0, CPU 30%, memory 47%, disk 35%.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release script created commit 562ada666 and tag v8.11.194, pushed to gitlab, and production version verification passed on attempt 12/81.",
+    "GitLab tag pipeline 2542261926 success included frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke.",
+    "GitLab main validate pipeline 2542261925 success included validate, validate_ai_engine, validate_ai_sdk_registry, validate_storybook_smoke, and validate_bundle_budget.",
+    "The fifth AI question was slower than the others at 6120ms but returned a correct network filter answer and remained within the tested release scope."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main validate pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542261925"
+    },
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.194",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542261926"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-7x1doek0n-skyasus-projects.vercel.app/"
+    }
+  ]
+}

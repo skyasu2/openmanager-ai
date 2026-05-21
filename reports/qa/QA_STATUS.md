@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-21 10:20:42 KST
+> Generated at: 2026-05-21 13:10:33 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 546 |
-| Total Runs (Counted) | 434 |
+| Total Recorded Runs | 547 |
+| Total Runs (Counted) | 435 |
 | Non-counted Runs | 112 |
-| Total Checks | 3963 |
-| Passed | 3807 |
+| Total Checks | 3977 |
+| Passed | 3821 |
 | Failed | 145 |
-| Completed Items | 624 |
+| Completed Items | 626 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 20 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260521-0548 (2026-05-21T01:20:42.196Z) |
-| Latest Recorded Run | QA-20260521-0548 (2026-05-21T01:20:42.196Z) |
+| Last Counted Run | QA-20260521-0549 (2026-05-21T04:10:30.110Z) |
+| Latest Recorded Run | QA-20260521-0549 (2026-05-21T04:10:30.110Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,37 +34,38 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260521-0548 (2026-05-21T01:20:42.196Z)
+Latest run: QA-20260521-0549 (2026-05-21T04:10:30.110Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | DevOps / SRE Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 | Cost / Free Tier Operations | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.193 release verification; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.11.194 release verification; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-20T01:20:42.196Z -> 2026-05-21T01:20:42.196Z (24h)
-- Runs with observations: 4 recorded / 2 counted
-- Samples: 8
+- Window: 2026-05-20T04:10:30.110Z -> 2026-05-21T04:10:30.110Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor | cloud-run-ai-engine | 4 | 6852ms | 18767ms | - | - | 6852ms | 18767ms | QA-20260520-0544 |
-| Vision Agent | gemini | 2 | 10327ms | 11278ms | - | - | 10327ms | 11278ms | QA-20260520-0542 |
 | Supervisor direct knowledge path | grounded llm synthesis | 1 | 10695ms | 10695ms | 4201ms | 4201ms | 4201ms | 4201ms | QA-20260521-0547 |
-| Vision Agent | zai | 1 | 4416ms | 4416ms | - | - | 4416ms | 4416ms | QA-20260520-0541 |
+| Cloud Run AI | cloud-run-ai-engine | 5 | 1555ms | 6120ms | - | - | - | - | QA-20260521-0549 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-20T01:20:42.196Z -> 2026-05-21T01:20:42.196Z (24h)
+- Window: 2026-05-20T04:10:30.110Z -> 2026-05-21T04:10:30.110Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 - Drift rate: 66.67%
@@ -79,23 +80,26 @@ Latest run: QA-20260521-0548 (2026-05-21T01:20:42.196Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_9bYYW82UPUbGRuBTcqFHvQniCW5V / SHA 02d08f22
-- Coverage Packs: core-routes-smoke, ai-core
-- Covered Surfaces: GitLab tag pipeline v8.11.193 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke, Production /api/version returned version 8.11.193, release tag v8.11.193, commit 02d08f22c6c428c51902ffb79c5febb45de471e9, and pipeline 2542047885, Cloud Run AI Engine post-deploy smoke passed for expected version 8.11.193, Cloud Run /health returned status ok, version 8.11.193, and required provider/config flags enabled, Cloud Run /api/ai/providers exposed Cerebras primary model metadata as gpt-oss-120b, production lifecycle, enabled, and not deprecated, Cloud Run /api/ai/providers retained llama3.1-8b only as a bounded legacy Cerebras entry with deprecationDate 2026-05-27, recommendedReplacement cerebras:gpt-oss-120b, and blockAfterDeprecation true, Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571
-- Skipped Surfaces: Playwright UI regression was not rerun because this release changes AI Engine provider/model policy rather than frontend UI behavior, Live LLM conversational QA was not repeated; provider metadata, local AI Engine tests, root contract tests, and GitLab post-deploy smoke cover this model-policy deployment while preserving provider quota, Vision real-image QA was not in scope
+- Deployment: dpl_7xf2j9vHZkGBYwdk71i4vdy4pNXq / SHA 562ada66
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: GitLab tag pipeline v8.11.194 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke, GitLab main validate pipeline for commit 562ada666 completed successfully, Production /api/version returned version 8.11.194, release tag v8.11.194, commit 562ada666ad1b36bc12c81300fb8cea026fd1e1c, and pipeline 2542261926, Production /api/health?service=ai returned healthy Cloud Run AI Engine version 8.11.194, Landing page served v8.11.194 and guest session opened /dashboard, Dashboard summary displayed total 18, online 17, warning 1, risk 0, offline 0, with OpenTelemetry slot 13:00 KST, Dashboard system resources displayed CPU 30%, Memory 47%, Disk 35%, AI Assistant sidebar opened and showed AI Engine Ready, Conversational AI QA question 1 passed: overall status answer included 18 total, 17 normal, 1 warning, 0 risk, 0 offline, average CPU 30%, memory 47%, disk 35%, and cache-redis-dc1-01 memory 82%, Conversational AI QA question 2 passed: web-server-01 resolved to web-nginx-dc1-01 and returned online, CPU 32%, memory 43%, disk 30%, network 1%, load, and response-time details, Conversational AI QA question 3 passed: 24h peak load answer returned 2026-05-21 03:50, load1 16.58, attributed to db-mysql-dc1-primary, Conversational AI QA question 4 passed: immediate-action answer said no immediate-action server and provided cache-redis-dc1-01 memory check commands, Conversational AI QA question 5 passed: network issue filter returned network >= 70% servers 0, with server metric tool evidence, Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571
+- Skipped Surfaces: Mobile viewport, OAuth provider callbacks, Reporter/Analyst advanced tabs, Vision image upload UI, and Cloud Run admin monitoring endpoints were not included because this targeted run validates the v8.11.194 AI routing/dashboard release path, Vision real-image QA was not in scope; this release did not change Vision routing/provider behavior, Broad modal/detail and security prompt-injection packs were not rerun because local/CI contract tests and the targeted production conversational pack cover the changed risk
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab tag pipeline v8.11.193 | [GitLab tag pipeline v8.11.193](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542047885) | - |
+| general | GitLab main validate pipeline | [GitLab main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542261925) | - |
+| general | GitLab tag pipeline v8.11.194 | [GitLab tag pipeline v8.11.194](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542261926) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-7x1doek0n-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.193 release verification evidence | `reports/qa/evidence/qa-20260521-v811193-release-verification.md` | - |
+| playwright-report | v8.11.194 release QA evidence | `reports/qa/evidence/qa-20260521-v811194-ai-five-question.md` | - |
+| playwright-screenshot | AI standard five-question final answer | `reports/qa/evidence/qa-20260521-v811194-ai-five-question.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -362,6 +366,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-retrieval-representative-rag-smoke-expanded: Expand Supabase RAG smoke beyond two happy-path keywords (completed 1회, last QA-20260510-0449)
 - ai-retrieval-stale-test-mock-cleanup: Remove stale query-expansion/reranker mocks from searchKnowledgeBase tests (completed 1회, last QA-20260510-0444)
 - ai-retrieval-unused-graph-weight-index-removed: Remove unused legacy graph weight index (completed 1회, last QA-20260510-0451)
+- ai-routing-trust-boundary-v811194: AI routing trust boundary and local classifier cleanup deployed to production (completed 1회, last QA-20260521-0549)
 - ai-sdk-v6-engine-output-object-migration: Migrate Cloud Run orchestrator structured output helper to generateText + Output.object (completed 1회, last QA-20260510-0462)
 - ai-sdk-v6-root-output-object-migration: Migrate Root App structured output routes to generateText + Output.object (completed 1회, last QA-20260510-0462)
 - ai-sdk-v6-structured-output-doc-alignment: Align active architecture copy with AI SDK v6 structured output best practice (completed 1회, last QA-20260510-0462)
@@ -513,6 +518,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - dashboard-server-detail-metrics-tab-slot-drift-v81197: Server detail performance tab current metrics align with same-page overview values (completed 2회, last QA-20260505-0411)
 - dashboard-server-log-cross-link: 서버 카드 로그 바로가기 cross-link (completed 1회, last QA-20260501-0386)
+- dashboard-session-data-freeze-v811194: Dashboard session data freeze deployed with dashboard summary parity intact (completed 1회, last QA-20260521-0549)
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
 - dashboard-telemetry-copy-v811106: Dashboard telemetry copy uses OpenTelemetry snapshot/catalog language (completed 1회, last QA-20260505-0412)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
@@ -834,6 +840,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260521-0549 | 2026-05-21T04:10:30.110Z | targeted | yes | yes | Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260521-0548 | 2026-05-21T01:20:42.196Z | targeted | yes | yes | Release Verification - v8.11.193 Cerebras gpt-oss-120b | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0547 | 2026-05-20T23:37:20.403Z | targeted | yes | yes | Vercel Playwright QA - v8.11.192 Grounded KRL OTel Criteria | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260520-0546 | 2026-05-20T12:57:49.227Z | targeted | yes | yes | Vercel Playwright QA - v8.11.189 KRL Routing and Stream Sanitizer Closure | 12 | 2 | 0 | 0 | 0 | 0 |
@@ -853,4 +860,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260519-0532 | 2026-05-19T02:21:04.444Z | targeted | yes | yes | v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260519-0531 | 2026-05-19T02:09:49.493Z | targeted | yes | yes | v8.11.178 Vercel Playwright MCP AI Gradient Restoration QA | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0530 | 2026-05-19T00:36:38.886Z | targeted | yes | yes | v8.11.177 Vercel Playwright MCP Incident Detail Button QA | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260519-0529 | 2026-05-19T00:09:51.939Z | release-gate | yes | yes | v8.11.176 Vercel Playwright MCP AI Release QA | 15 | 4 | 0 | 0 | 0 | 0 |

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-21T01:20:42.196Z"
+    "updatedAt": "2026-05-21T04:10:30.110Z"
   },
   "sequence": {
-    "nextRunNumber": 549
+    "nextRunNumber": 550
   },
   "summary": {
-    "totalRecordedRuns": 546,
-    "totalRuns": 434,
+    "totalRecordedRuns": 547,
+    "totalRuns": 435,
     "excludedRuns": 112,
-    "totalChecks": 3963,
-    "totalPassed": 3807,
+    "totalChecks": 3977,
+    "totalPassed": 3821,
     "totalFailed": 145,
     "completionRate": 100,
-    "completedItems": 624,
+    "completedItems": 626,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 35,
     "expertDomainsTracked": 20,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260521-0548",
-    "lastRecordedAt": "2026-05-21T01:20:42.196Z",
-    "latestRecordedRunId": "QA-20260521-0548",
-    "latestRecordedAt": "2026-05-21T01:20:42.196Z"
+    "lastRunId": "QA-20260521-0549",
+    "lastRecordedAt": "2026-05-21T04:10:30.110Z",
+    "latestRecordedRunId": "QA-20260521-0549",
+    "latestRecordedAt": "2026-05-21T04:10:30.110Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15545,6 +15545,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-21T01:20:42.196Z"
+    },
+    "ai-routing-trust-boundary-v811194": {
+      "id": "ai-routing-trust-boundary-v811194",
+      "title": "AI routing trust boundary and local classifier cleanup deployed to production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260521-0549",
+      "firstSeenAt": "2026-05-21T04:10:30.110Z",
+      "lastSeenRunId": "QA-20260521-0549",
+      "lastSeenAt": "2026-05-21T04:10:30.110Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.194 tag pipeline 2542261926 and main validate pipeline 2542261925 succeeded; production five-question AI QA passed.",
+      "lastNote": "Release includes exact semantic intent/capability validation, off-domain guard boundary cleanup, and split entity extraction triggers.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-21T04:10:30.110Z"
+    },
+    "dashboard-session-data-freeze-v811194": {
+      "id": "dashboard-session-data-freeze-v811194",
+      "title": "Dashboard session data freeze deployed with dashboard summary parity intact",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260521-0549",
+      "firstSeenAt": "2026-05-21T04:10:30.110Z",
+      "lastSeenRunId": "QA-20260521-0549",
+      "lastSeenAt": "2026-05-21T04:10:30.110Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production dashboard displayed total 18, online 17, warning 1, risk 0, offline 0, CPU 30%, memory 47%, disk 35%.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-21T04:10:30.110Z"
     }
   },
   "runs": [
@@ -62933,6 +62981,204 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260521-0549",
+      "recordedAt": "2026-05-21T04:10:30.110Z",
+      "recordedAtKst": "2026-05-21 13:10:30 KST",
+      "title": "Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release",
+      "owner": "codex",
+      "source": "playwright-mcp+gitlab-ci+vercel-usage",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260521-0549.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7xf2j9vHZkGBYwdk71i4vdy4pNXq",
+        "deploymentUrl": "https://openmanager-7x1doek0n-skyasus-projects.vercel.app",
+        "commitSha": "562ada666ad1b36bc12c81300fb8cea026fd1e1c"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.11.194 completed successfully with frontend deploy, AI Engine deploy, frontend smoke, and AI Engine smoke",
+        "GitLab main validate pipeline for commit 562ada666 completed successfully",
+        "Production /api/version returned version 8.11.194, release tag v8.11.194, commit 562ada666ad1b36bc12c81300fb8cea026fd1e1c, and pipeline 2542261926",
+        "Production /api/health?service=ai returned healthy Cloud Run AI Engine version 8.11.194",
+        "Landing page served v8.11.194 and guest session opened /dashboard",
+        "Dashboard summary displayed total 18, online 17, warning 1, risk 0, offline 0, with OpenTelemetry slot 13:00 KST",
+        "Dashboard system resources displayed CPU 30%, Memory 47%, Disk 35%",
+        "AI Assistant sidebar opened and showed AI Engine Ready",
+        "Conversational AI QA question 1 passed: overall status answer included 18 total, 17 normal, 1 warning, 0 risk, 0 offline, average CPU 30%, memory 47%, disk 35%, and cache-redis-dc1-01 memory 82%",
+        "Conversational AI QA question 2 passed: web-server-01 resolved to web-nginx-dc1-01 and returned online, CPU 32%, memory 43%, disk 30%, network 1%, load, and response-time details",
+        "Conversational AI QA question 3 passed: 24h peak load answer returned 2026-05-21 03:50, load1 16.58, attributed to db-mysql-dc1-primary",
+        "Conversational AI QA question 4 passed: immediate-action answer said no immediate-action server and provided cache-redis-dc1-01 memory check commands",
+        "Conversational AI QA question 5 passed: network issue filter returned network >= 70% servers 0, with server metric tool evidence",
+        "Vercel usage check passed with effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571"
+      ],
+      "skippedSurfaces": [
+        "Mobile viewport, OAuth provider callbacks, Reporter/Analyst advanced tabs, Vision image upload UI, and Cloud Run admin monitoring endpoints were not included because this targeted run validates the v8.11.194 AI routing/dashboard release path",
+        "Vision real-image QA was not in scope; this release did not change Vision routing/provider behavior",
+        "Broad modal/detail and security prompt-injection packs were not rerun because local/CI contract tests and the targeted production conversational pack cover the changed risk"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar standard question 1 overall status",
+          "agent": "Cloud Run AI",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Production AI sidebar response badge",
+          "latencyMs": 78
+        },
+        {
+          "surface": "AI sidebar standard question 2 web-server-01 detail",
+          "agent": "Cloud Run AI",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Production AI sidebar response badge",
+          "latencyMs": 5
+        },
+        {
+          "surface": "AI sidebar standard question 3 24h peak load",
+          "agent": "Cloud Run AI",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Production AI sidebar response badge",
+          "latencyMs": 1567
+        },
+        {
+          "surface": "AI sidebar standard question 4 immediate action",
+          "agent": "Cloud Run AI",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Production AI sidebar response badge",
+          "latencyMs": 3
+        },
+        {
+          "surface": "AI sidebar standard question 5 network filter",
+          "agent": "Cloud Run AI",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Production AI sidebar response badge",
+          "latencyMs": 6120
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "devops-sre",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag deploy pipeline and main validate pipeline both completed successfully; production version and AI health endpoints are coherent at 8.11.194.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production AI sidebar passed the standard five-question conversational QA with specific metrics, alias resolution, peak-load evidence, action guidance, and network filtering.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The routing trust-boundary changes were covered by CI/local contract tests and the production UI did not expose raw tool markers, reasoning JSON, or transport errors in the tested responses.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard OTel snapshot counts and AI responses agreed on the current data shape and returned concrete metric values for status, server detail, peak load, and network filtering.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run used GitLab CI gates plus Playwright MCP production UI evidence with durable screenshot and markdown artifacts.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "cost-operations",
+          "domainName": "Cost / Free Tier Operations",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run deploy guardrails passed in CI and Vercel usage remained normal with billed 0.0000 USD.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-21T12:58:28+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.11.194 release verification; effective 13.3467 USD, billed 0.0000 USD, chargeCount 11571.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.11.194 release QA evidence",
+          "path": "reports/qa/evidence/qa-20260521-v811194-ai-five-question.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI standard five-question final answer",
+          "path": "reports/qa/evidence/qa-20260521-v811194-ai-five-question.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542261925"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.11.194",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542261926"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-7x1doek0n-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -62941,16 +63187,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 275,
-      "appropriateCount": 234,
+      "seenCount": 276,
+      "appropriateCount": 235,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 51,
-      "lastRunId": "QA-20260521-0548",
-      "lastSeenAt": "2026-05-21T01:20:42.196Z",
+      "lastRunId": "QA-20260521-0549",
+      "lastSeenAt": "2026-05-21T04:10:30.110Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The changed AI provider/model policy was verified through local AI Engine tests, root contract tests, production Cloud Run health, and provider metadata showing Cerebras gpt-oss-120b as primary.",
+      "lastRationale": "The production AI sidebar passed the standard five-question conversational QA with specific metrics, alias resolution, peak-load evidence, action guidance, and network filtering.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -62975,16 +63221,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 93,
-      "appropriateCount": 74,
+      "seenCount": 94,
+      "appropriateCount": 75,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260521-0548",
-      "lastSeenAt": "2026-05-21T01:20:42.196Z",
+      "lastRunId": "QA-20260521-0549",
+      "lastSeenAt": "2026-05-21T04:10:30.110Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The deprecated llama3.1-8b metadata remains bounded with a 2026-05-27 deprecation date, recommended gpt-oss replacement, and blockAfterDeprecation guard.",
+      "lastRationale": "The routing trust-boundary changes were covered by CI/local contract tests and the production UI did not expose raw tool markers, reasoning JSON, or transport errors in the tested responses.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -63009,16 +63255,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 243,
-      "appropriateCount": 222,
+      "seenCount": 244,
+      "appropriateCount": 223,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260521-0547",
-      "lastSeenAt": "2026-05-20T23:37:20.403Z",
+      "lastRunId": "QA-20260521-0549",
+      "lastSeenAt": "2026-05-21T04:10:30.110Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP profile lock was handled without terminating another session; isolated Playwright produced durable screenshots and evidence.",
+      "lastRationale": "The run used GitLab CI gates plus Playwright MCP production UI evidence with durable screenshot and markdown artifacts.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -63026,16 +63272,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 70,
-      "appropriateCount": 48,
+      "seenCount": 71,
+      "appropriateCount": 49,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260520-0546",
-      "lastSeenAt": "2026-05-20T12:57:49.227Z",
+      "lastRunId": "QA-20260521-0549",
+      "lastSeenAt": "2026-05-21T04:10:30.110Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The OTel response explicitly distinguishes KRL evidence from current metric values and states that the 18-server inventory/current metrics use pre-generated OTel data slot as SSOT.",
+      "lastRationale": "Dashboard OTel snapshot counts and AI responses agreed on the current data shape and returned concrete metric values for status, server detail, peak load, and network filtering.",
       "lastNextAction": ""
     },
     "infra-reliability": {
@@ -63247,16 +63493,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260520-0545",
       "firstSeenAt": "2026-05-20T10:33:17.738Z",
-      "seenCount": 4,
-      "appropriateCount": 4,
+      "seenCount": 5,
+      "appropriateCount": 5,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0548",
-      "lastSeenAt": "2026-05-21T01:20:42.196Z",
+      "lastRunId": "QA-20260521-0549",
+      "lastSeenAt": "2026-05-21T04:10:30.110Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab semver tag pipeline completed deploy and smoke stages for both Vercel frontend and Cloud Run AI Engine.",
+      "lastRationale": "GitLab tag deploy pipeline and main validate pipeline both completed successfully; production version and AI health endpoints are coherent at 8.11.194.",
       "lastNextAction": ""
     },
     "cost-operations": {
@@ -63264,16 +63510,16 @@
       "domainName": "Cost / Free Tier Operations",
       "firstSeenRunId": "QA-20260521-0548",
       "firstSeenAt": "2026-05-21T01:20:42.196Z",
-      "seenCount": 1,
-      "appropriateCount": 1,
+      "seenCount": 2,
+      "appropriateCount": 2,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0548",
-      "lastSeenAt": "2026-05-21T01:20:42.196Z",
+      "lastRunId": "QA-20260521-0549",
+      "lastSeenAt": "2026-05-21T04:10:30.110Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The release used standard GitLab/Vercel/Cloud Run deployment paths and Vercel usage remained normal with billed 0.0000 USD.",
+      "lastRationale": "Cloud Run deploy guardrails passed in CI and Vercel usage remained normal with billed 0.0000 USD.",
       "lastNextAction": ""
     }
   }
