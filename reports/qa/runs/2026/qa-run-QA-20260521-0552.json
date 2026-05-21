@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260521-0552",
+  "recordedAt": "2026-05-21T08:50:59.688Z",
+  "recordedAtKst": "2026-05-21 17:50:59 KST",
+  "runTitle": "Local Playwright QA - Dashboard UX Search and Metric Trends",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000/dashboard",
+    "frontend": "Next.js local dev",
+    "backend": "local/dev configured services",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "e89b92dcb7a64c267f1b1f1e4fb1612e47c7006a"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "dashboard-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard local render",
+    "server list search input",
+    "server search empty state",
+    "server search clear and restore",
+    "list/grid view mode controls",
+    "server card metric trend delta layout",
+    "Next.js runtime diagnostics",
+    "browser console cleanliness"
+  ],
+  "skippedSurfaces": [
+    "Vercel production QA - skipped because changes are uncommitted local work",
+    "Conversational AI QA - no AI prompt/routing/tool/provider/response contract changed",
+    "Cloud Run observability/admin checks - frontend dashboard UX change only"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux-engineer",
+      "domainName": "Frontend UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard search, view controls, and compact metric trend layout were verified in local browser QA.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Targeted DOM tests, type-check, lint, test:quick, and Playwright MCP runtime checks covered the changed frontend surface.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "Dashboard UX local targeted QA evidence",
+      "path": "reports/qa/evidence/qa-20260521-dashboard-ux-local.md",
+      "note": "Manual Playwright MCP evidence with Next DevTools runtime diagnostics and interaction results"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-ux-search-and-trends-local-qa",
+      "title": "Dashboard UX search and metric trend local QA",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

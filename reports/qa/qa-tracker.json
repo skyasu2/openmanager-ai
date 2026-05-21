@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-21T07:05:41.434Z"
+    "updatedAt": "2026-05-21T08:50:59.688Z"
   },
   "sequence": {
-    "nextRunNumber": 552
+    "nextRunNumber": 553
   },
   "summary": {
-    "totalRecordedRuns": 549,
-    "totalRuns": 437,
+    "totalRecordedRuns": 550,
+    "totalRuns": 438,
     "excludedRuns": 112,
-    "totalChecks": 4001,
-    "totalPassed": 3845,
+    "totalChecks": 4009,
+    "totalPassed": 3853,
     "totalFailed": 145,
     "completionRate": 100,
-    "completedItems": 626,
+    "completedItems": 627,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 35,
-    "expertDomainsTracked": 20,
+    "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260521-0551",
-    "lastRecordedAt": "2026-05-21T07:05:41.434Z",
-    "latestRecordedRunId": "QA-20260521-0551",
-    "latestRecordedAt": "2026-05-21T07:05:41.434Z"
+    "lastRunId": "QA-20260521-0552",
+    "lastRecordedAt": "2026-05-21T08:50:59.688Z",
+    "latestRecordedRunId": "QA-20260521-0552",
+    "latestRecordedAt": "2026-05-21T08:50:59.688Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15593,6 +15593,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-21T04:10:30.110Z"
+    },
+    "dashboard-ux-search-and-trends-local-qa": {
+      "id": "dashboard-ux-search-and-trends-local-qa",
+      "title": "Dashboard UX search and metric trend local QA",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260521-0552",
+      "firstSeenAt": "2026-05-21T08:50:59.688Z",
+      "lastSeenRunId": "QA-20260521-0552",
+      "lastSeenAt": "2026-05-21T08:50:59.688Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-21T08:50:59.688Z"
     }
   },
   "runs": [
@@ -63231,6 +63255,87 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260521-0552",
+      "recordedAt": "2026-05-21T08:50:59.688Z",
+      "recordedAtKst": "2026-05-21 17:50:59 KST",
+      "title": "Local Playwright QA - Dashboard UX Search and Metric Trends",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260521-0552.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000/dashboard",
+        "frontend": "Next.js local dev",
+        "backend": "local/dev configured services",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "e89b92dcb7a64c267f1b1f1e4fb1612e47c7006a"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard local render",
+        "server list search input",
+        "server search empty state",
+        "server search clear and restore",
+        "list/grid view mode controls",
+        "server card metric trend delta layout",
+        "Next.js runtime diagnostics",
+        "browser console cleanliness"
+      ],
+      "skippedSurfaces": [
+        "Vercel production QA - skipped because changes are uncommitted local work",
+        "Conversational AI QA - no AI prompt/routing/tool/provider/response contract changed",
+        "Cloud Run observability/admin checks - frontend dashboard UX change only"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-engineer",
+          "domainName": "Frontend UX Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard search, view controls, and compact metric trend layout were verified in local browser QA.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted DOM tests, type-check, lint, test:quick, and Playwright MCP runtime checks covered the changed frontend surface.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Dashboard UX local targeted QA evidence",
+          "path": "reports/qa/evidence/qa-20260521-dashboard-ux-local.md",
+          "note": "Manual Playwright MCP evidence with Next DevTools runtime diagnostics and interaction results"
+        }
+      ],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -63307,16 +63412,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 246,
-      "appropriateCount": 225,
+      "seenCount": 247,
+      "appropriateCount": 226,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260521-0551",
-      "lastSeenAt": "2026-05-21T07:05:41.434Z",
+      "lastRunId": "QA-20260521-0552",
+      "lastSeenAt": "2026-05-21T08:50:59.688Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Targeted DOM/node tests, root smoke gates, Storybook smoke, production build, and post-deploy smoke all passed.",
+      "lastRationale": "Targeted DOM tests, type-check, lint, test:quick, and Playwright MCP runtime checks covered the changed frontend surface.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -63572,6 +63677,23 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "Vercel usage check reported billed 0.0000 USD for the current period after deployment.",
+      "lastNextAction": ""
+    },
+    "frontend-ux-engineer": {
+      "domainId": "frontend-ux-engineer",
+      "domainName": "Frontend UX Engineer",
+      "firstSeenRunId": "QA-20260521-0552",
+      "firstSeenAt": "2026-05-21T08:50:59.688Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260521-0552",
+      "lastSeenAt": "2026-05-21T08:50:59.688Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Dashboard search, view controls, and compact metric trend layout were verified in local browser QA.",
       "lastNextAction": ""
     }
   }

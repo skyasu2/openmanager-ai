@@ -6,6 +6,8 @@ import {
   LayoutGrid,
   List,
   Loader2,
+  Search,
+  X,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -71,6 +73,20 @@ const compareByStatusPriority = (a: Server, b: Server): number => {
     sensitivity: 'base',
   });
 };
+
+function normalizeServerSearchValue(value: unknown): string {
+  return String(value ?? '')
+    .trim()
+    .toLocaleLowerCase('ko-KR');
+}
+
+function matchesServerSearch(server: Server, normalizedQuery: string): boolean {
+  if (!normalizedQuery) return true;
+
+  return [server.name, server.id, server.hostname, server.location, server.ip]
+    .map(normalizeServerSearchValue)
+    .some((value) => value.includes(normalizedQuery));
+}
 
 function getServerCardColumns(viewMode: ServerViewMode, width: number): number {
   if (width < 640) return 1;
@@ -146,6 +162,7 @@ export default function ServerDashboard({
 
   const [viewMode, setViewMode] = useState<ServerViewMode>('list');
   const [serverSortKey, setServerSortKey] = useState<ServerSortKey>('status');
+  const [searchQuery, setSearchQuery] = useState('');
   const [visibleRows, setVisibleRows] = useState(initialVisibleRows);
   const [serverGridWidth, setServerGridWidth] = useState(1280);
   const [serverGridElement, setServerGridElement] =
@@ -226,10 +243,23 @@ export default function ServerDashboard({
     return validServers;
   }, [serverSource]);
 
+  const normalizedSearchQuery = useMemo(
+    () => normalizeServerSearchValue(searchQuery),
+    [searchQuery]
+  );
+  const isSearching = normalizedSearchQuery.length > 0;
+  const filteredServers = useMemo(
+    () =>
+      validatedServers.filter((server) =>
+        matchesServerSearch(server, normalizedSearchQuery)
+      ),
+    [normalizedSearchQuery, validatedServers]
+  );
+
   // 🚀 서버 정렬 최적화: 외부 상수와 최적화된 함수 사용
   // 🔧 Phase 4: paginatedServers → servers (props로 전달받음)
   const sortedServers = useMemo(() => {
-    return [...validatedServers].sort((a, b) => {
+    return [...filteredServers].sort((a, b) => {
       if (serverSortKey === 'cpu') {
         const cpuDiff = (b.cpu ?? 0) - (a.cpu ?? 0);
         return cpuDiff || compareByStatusPriority(a, b);
@@ -249,7 +279,7 @@ export default function ServerDashboard({
 
       return compareByStatusPriority(a, b);
     });
-  }, [serverSortKey, validatedServers]);
+  }, [filteredServers, serverSortKey]);
 
   const cardsPerRow = useMemo(
     () => getServerCardColumns(viewMode, serverGridWidth),
@@ -339,13 +369,17 @@ export default function ServerDashboard({
 
   const hasMoreLoadedServers = visibleLimit < sortedServers.length;
   const hasMorePagedServers =
+    !isSearching &&
     !hasCompleteServerSource &&
     (paginationInfo.pageSize < paginationInfo.totalServers ||
       currentPage < totalPages);
+  const effectiveTotalServers = isSearching
+    ? sortedServers.length
+    : paginationInfo.totalServers;
   const canShowMoreServers = hasMoreLoadedServers || hasMorePagedServers;
   const hiddenServerCount = Math.max(
     0,
-    paginationInfo.totalServers - displayedServers.length
+    effectiveTotalServers - displayedServers.length
   );
   const isOverviewSurface = surface === 'overview';
   const nextVisibleServerLimit = (visibleRows + rowStep) * cardsPerRow;
@@ -360,7 +394,7 @@ export default function ServerDashboard({
   const willShowAllServersOnNextClick =
     hiddenServerCount > 0 &&
     (hasMoreLoadedServers
-      ? nextLoadedVisibleCount >= paginationInfo.totalServers
+      ? nextLoadedVisibleCount >= effectiveTotalServers
       : paginationInfo.pageSize < paginationInfo.totalServers
         ? nextPagedServerCount >= paginationInfo.totalServers
         : false);
@@ -428,75 +462,113 @@ export default function ServerDashboard({
     <div>
       <div>
         <div className="space-y-4">
-          <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white px-3 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-4">
-            <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
-              <legend className="sr-only">서버 보기 방식</legend>
-              <button
-                type="button"
-                aria-label="촘촘히 보기"
-                aria-pressed={viewMode === 'list'}
-                onClick={() => setViewMode('list')}
-                className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                  viewMode === 'list'
-                    ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                    : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                }`}
-              >
-                <List className="h-3.5 w-3.5" />
-                <span>촘촘히</span>
-              </button>
-              <button
-                type="button"
-                aria-label="넓게 보기"
-                aria-pressed={viewMode === 'grid'}
-                onClick={() => setViewMode('grid')}
-                className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                  viewMode === 'grid'
-                    ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                    : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                }`}
-              >
-                <LayoutGrid className="h-3.5 w-3.5" />
-                <span>넓게</span>
-              </button>
-            </fieldset>
+          <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white/80 px-3 py-3 shadow-sm backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-4">
+            <div className="relative min-w-0 flex-1">
+              <Search
+                aria-hidden="true"
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                id="server-search"
+                type="search"
+                aria-label="서버 검색"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="서버 이름, ID, IP, 위치 검색"
+                className="min-h-10 w-full rounded-md border border-gray-200 bg-white py-2 pl-9 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  aria-label="서버 검색어 지우기"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
 
-            <div className="flex w-full items-center gap-2 sm:w-auto">
-              <label
-                htmlFor="server-sort"
-                className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600"
-              >
-                <ArrowUpDown className="h-3.5 w-3.5" />
-                정렬
-              </label>
-              <select
-                id="server-sort"
-                aria-label="서버 정렬"
-                value={serverSortKey}
-                onChange={(event) =>
-                  setServerSortKey(event.target.value as ServerSortKey)
-                }
-                className="touch-text-safe-xs min-h-9 w-full rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 focus:border-blue-400 focus:outline-none sm:w-36"
-              >
-                {SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+              <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
+                <legend className="sr-only">서버 보기 방식</legend>
+                <button
+                  type="button"
+                  aria-label="목록 보기"
+                  aria-pressed={viewMode === 'list'}
+                  onClick={() => setViewMode('list')}
+                  className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                    viewMode === 'list'
+                      ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                      : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                  }`}
+                >
+                  <List className="h-3.5 w-3.5" />
+                  <span>목록</span>
+                </button>
+                <button
+                  type="button"
+                  aria-label="그리드 보기"
+                  aria-pressed={viewMode === 'grid'}
+                  onClick={() => setViewMode('grid')}
+                  className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                    viewMode === 'grid'
+                      ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                      : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                  }`}
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  <span>그리드</span>
+                </button>
+              </fieldset>
+
+              <div className="flex w-full items-center gap-2 sm:w-auto">
+                <label
+                  htmlFor="server-sort"
+                  className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600"
+                >
+                  <ArrowUpDown className="h-3.5 w-3.5" />
+                  정렬
+                </label>
+                <select
+                  id="server-sort"
+                  aria-label="서버 정렬"
+                  value={serverSortKey}
+                  onChange={(event) =>
+                    setServerSortKey(event.target.value as ServerSortKey)
+                  }
+                  className="touch-text-safe-xs min-h-9 w-full rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 focus:border-blue-400 focus:outline-none sm:w-36"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
           {/* 📊 서버 노출 정보 헤더 */}
           {paginationInfo.totalServers > 0 && (
-            <div className="mb-4 flex items-center justify-between rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2">
-              <p className="text-sm text-blue-800">
-                {isOverviewSurface ? (
+            <div className="mb-4 flex items-center justify-between rounded-lg border border-slate-200 bg-white/70 px-4 py-2 backdrop-blur-sm">
+              <p className="text-sm text-slate-700">
+                {isSearching ? (
+                  <>
+                    검색 결과{' '}
+                    <span className="font-mono">{displayedServers.length}</span>
+                    대 표시
+                    <span className="ml-1 text-slate-500">
+                      (전체 {paginationInfo.totalServers}대 중{' '}
+                      {sortedServers.length}대)
+                    </span>
+                  </>
+                ) : isOverviewSurface ? (
                   <>
                     상위 알림 서버{' '}
                     <span className="font-mono">{displayedServers.length}</span>
                     개 표시
-                    <span className="ml-1 text-blue-700">
+                    <span className="ml-1 text-slate-500">
                       (전체 {paginationInfo.totalServers}대)
                     </span>
                   </>
@@ -512,12 +584,18 @@ export default function ServerDashboard({
                   </>
                 )}
               </p>
-              <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                {isOverviewSurface
-                  ? '위험도 우선'
-                  : displayedServers.length === paginationInfo.totalServers
-                    ? '모든 서버 표시'
-                    : `${hiddenServerCount}대 남음`}
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                {isSearching
+                  ? sortedServers.length === 0
+                    ? '결과 없음'
+                    : displayedServers.length === effectiveTotalServers
+                      ? '검색 결과 전체'
+                      : `${hiddenServerCount}대 남음`
+                  : isOverviewSurface
+                    ? '위험도 우선'
+                    : displayedServers.length === effectiveTotalServers
+                      ? '모든 서버 표시'
+                      : `${hiddenServerCount}대 남음`}
               </span>
             </div>
           )}
@@ -582,9 +660,13 @@ export default function ServerDashboard({
                   </svg>
                 </div>
                 <h3 className="mb-1 text-sm font-medium text-gray-900">
-                  서버 정보 없음
+                  {isSearching ? '검색 결과 없음' : '서버 정보 없음'}
                 </h3>
-                <p className="text-sm text-gray-500">표시할 서버가 없습니다.</p>
+                <p className="text-sm text-gray-500">
+                  {isSearching
+                    ? '검색어를 지우거나 다른 서버 이름, ID, IP, 위치를 입력하세요.'
+                    : '표시할 서버가 없습니다.'}
+                </p>
               </div>
             </div>
           )}

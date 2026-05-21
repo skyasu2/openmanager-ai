@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-21 KST (잔여 planning 상태 정리)
+**Last Updated**: 2026-05-21 KST (dashboard UX T-2-B 반영)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -16,6 +16,7 @@
 | AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-21 `groundingMode` developer-panel 노출 보강 완료(`b5a41e161`, pipeline `2542433001` success). Cloud Run health/provider metadata는 green이고 Z.AI text failure/fallback 로그는 확인되지 않았다. Task A 추가 live QA는 KRL runtime 변경 시만, Task B는 Upstash dashboard/management API 사용자 액션, Task C는 no-op, Task D는 routing 증상 재현 시 측정, Task F 최종 판정은 2026-05-23. 세션 메모리 확장(Task E)은 Backlog. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | 사용자 액션 필요 | R-0~R-4, R-6 완료. 2026-05-21 data-plane INFO/DBSIZE 스냅샷은 keys 32, data 15.895KB, 누적 명령 60,495로 기록했다. 남은 R-5 월간 소비량 보정은 Upstash dashboard 또는 management API 접근이 있어야 확정 가능. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P1~P5 완료. 2026-05-21 `npm run bundle:budget` PASS(JS 1.45MB < 2MB, CSS 61.69KB < 250KB). P0은 warn-first 관찰 중이며 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
+| 대시보드 UX 개선 (서버 목록·AI 사이드바 단계 개선) | Medium | In Progress (Codex) | 2026-05-21 Phase 1, T-2-A 서버 검색, T-2-B 서버 카드 트렌드 delta 표시 완료: dashboard status token 공유, 목록/그리드 레이블, 시스템 상태 중복 숫자 제거, 서버 목록 검색/empty state, 서버 카드 메트릭 `↑/↓/—` 추세 인디케이터를 추가했다. 로컬 브라우저 QA에서 compact 카드 delta 겹침과 dev runtime stats update loop를 수정했다. Phase 2 잔여는 T-2-C부터 별도 계약/테스트 시나리오 확정 후 진행. 상세: [dashboard-ux-improvement-plan-2026-05.md](dashboard-ux-improvement-plan-2026-05.md) |
 ---
 
 ## Backlog

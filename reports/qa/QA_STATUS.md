@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-21 16:06:52 KST
+> Generated at: 2026-05-21 17:51:02 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 549 |
-| Total Runs (Counted) | 437 |
+| Total Recorded Runs | 550 |
+| Total Runs (Counted) | 438 |
 | Non-counted Runs | 112 |
-| Total Checks | 4001 |
-| Passed | 3845 |
+| Total Checks | 4009 |
+| Passed | 3853 |
 | Failed | 145 |
-| Completed Items | 626 |
+| Completed Items | 627 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 35 |
-| Expert Domains Tracked | 20 |
+| Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260521-0551 (2026-05-21T07:05:41.434Z) |
-| Latest Recorded Run | QA-20260521-0551 (2026-05-21T07:05:41.434Z) |
+| Last Counted Run | QA-20260521-0552 (2026-05-21T08:50:59.688Z) |
+| Latest Recorded Run | QA-20260521-0552 (2026-05-21T08:50:59.688Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,30 +34,27 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260521-0551 (2026-05-21T07:05:41.434Z)
+Latest run: QA-20260521-0552 (2026-05-21T08:50:59.688Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | Frontend UX Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Cost / Free Tier Operations | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.195 production deploy; effective 13.9998 USD, billed 0.0000 USD, chargeCount 12180. No unexpected billed usage. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-20T07:05:41.434Z -> 2026-05-21T07:05:41.434Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 13
+- Window: 2026-05-20T08:50:59.688Z -> 2026-05-21T08:50:59.688Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 9
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 4 | 6852ms | 18767ms | - | - | 6852ms | 18767ms | QA-20260520-0544 |
 | Analyst Agent | streaming | 1 | 11000ms | 11000ms | 2000ms | 2000ms | 9000ms | 9000ms | QA-20260521-0550 |
 | Supervisor direct knowledge path | grounded llm synthesis | 1 | 10695ms | 10695ms | 4201ms | 4201ms | 4201ms | 4201ms | QA-20260521-0547 |
 | Reporter Agent | zai | 1 | 7021ms | 7021ms | 1200ms | 1200ms | 5821ms | 5821ms | QA-20260521-0550 |
@@ -66,40 +63,36 @@ Latest run: QA-20260521-0551 (2026-05-21T07:05:41.434Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-20T07:05:41.434Z -> 2026-05-21T07:05:41.434Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 3
-- Drift rate: 66.67%
+- Window: 2026-05-20T08:50:59.688Z -> 2026-05-21T08:50:59.688Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
+- Drift rate: 0%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | single-agent | 1 | 100% | 18767ms | 18767ms | QA-20260520-0544 |
-| /api/ai/supervisor/stream/v2 | deterministic | 2 | 50% | 1178ms | 1354ms | QA-20260520-0544 |
+| - | - | 0 | 0% | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_8ciG6QnRbVu5zh95pJWwF16vibKG / SHA c989e47d
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: Landing animated particle canvas, Login route smoke and shared visual background, System boot route build coverage and shared visual background, Feature card provider copy update, Vercel production version and commit propagation, GitLab main validate pipeline, GitLab semver tag deploy pipeline
-- Skipped Surfaces: AI conversational QA - no AI routing, prompt, data, or response behavior changed, Dashboard authenticated E2E - visual change limited to public/login/system-boot surfaces, Mobile viewport screenshots - covered by build and component tests only
+- Deployment: SHA e89b92dc
+- Coverage Packs: dashboard-core
+- Covered Surfaces: /dashboard local render, server list search input, server search empty state, server search clear and restore, list/grid view mode controls, server card metric trend delta layout, Next.js runtime diagnostics, browser console cleanliness
+- Skipped Surfaces: Vercel production QA - skipped because changes are uncommitted local work, Conversational AI QA - no AI prompt/routing/tool/provider/response contract changed, Cloud Run observability/admin checks - frontend dashboard UX change only
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main validate pipeline | [GitLab main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542527886) | - |
-| general | GitLab release tag pipeline | [GitLab release tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542542939) | - |
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-qx09jbi8w-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.195 UI release smoke evidence | `reports/qa/evidence/qa-20260521-v811195-ui-release-smoke.md` | - |
+| playwright-report | Dashboard UX local targeted QA evidence | `reports/qa/evidence/qa-20260521-dashboard-ux-local.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -522,6 +515,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
 - dashboard-telemetry-copy-v811106: Dashboard telemetry copy uses OpenTelemetry snapshot/catalog language (completed 1회, last QA-20260505-0412)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
+- dashboard-ux-search-and-trends-local-qa: Dashboard UX search and metric trend local QA (completed 1회, last QA-20260521-0552)
 - dashboard-worker-console-error-on-ai-workspace-return: Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace (completed 1회, last QA-20260423-0332)
 - data-metrics-quality-slot-provenance: AI parity QA evidence includes dashboard snapshot slot/source metadata (completed 1회, last QA-20260424-0348)
 - deploy-query-as-of-fix-to-production: Deploy query-as-of metric slot fix to Vercel production (completed 1회, last QA-20260429-0370)
@@ -840,6 +834,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260521-0552 | 2026-05-21T08:50:59.688Z | targeted | no | yes | Local Playwright QA - Dashboard UX Search and Metric Trends | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0551 | 2026-05-21T07:05:41.434Z | targeted | yes | yes | Release Smoke - v8.11.195 UI animated visual surfaces | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260521-0550 | 2026-05-21T05:23:03.217Z | targeted | yes | yes | 이번주 변경사항 집중 QA — v8.11.194 (grounded KRL / clarification split / session freeze / Cerebras) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260521-0549 | 2026-05-21T04:10:30.110Z | targeted | yes | yes | Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release | 14 | 2 | 0 | 0 | 0 | 0 |
@@ -859,4 +854,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260519-0535 | 2026-05-19T05:14:14.572Z | broad | yes | yes | v8.11.179 Chrome DevTools MCP QA - AI Assistant 미검증 영역 집중 테스트 | 18 | 0 | 0 | 0 | 3 | 1 |
 | QA-20260519-0534 | 2026-05-19T04:11:01.014Z | targeted | yes | yes | v8.11.179 Vercel Playwright QA - anomaly confidence and AI gradient | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260519-0533 | 2026-05-19T02:49:58.801Z | targeted | no | yes | v8.11.178 내용 충실도 검증 — AI 수치 정합성·응답 경로·신호 강도 | 6 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260519-0532 | 2026-05-19T02:21:04.444Z | targeted | yes | yes | v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback | 5 | 0 | 0 | 0 | 0 | 0 |

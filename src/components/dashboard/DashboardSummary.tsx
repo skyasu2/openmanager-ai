@@ -15,6 +15,10 @@ import type {
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
+import {
+  DASHBOARD_STATUS_GRADIENTS,
+  DASHBOARD_STATUS_RING_CLASSES,
+} from '@/styles/design-constants';
 import type { DashboardStats } from './types/dashboard.types';
 
 interface DashboardSummaryProps {
@@ -47,54 +51,6 @@ function formatDataSourceLabel(
   return `Telemetry catalog v${dataSourceInfo.scopeVersion} · updated ${generatedAt}`;
 }
 
-// TODO: dashboard-status-tokens — 향후 공유 디자인 토큰으로 통합 예정
-// 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
-const statusGradients = {
-  online: {
-    gradient: 'from-emerald-500 via-green-500 to-emerald-600',
-    border: 'border-emerald-200/50',
-    bg: 'bg-emerald-50/30',
-    text: 'text-emerald-600',
-    glow: 'hover:shadow-emerald-200/50',
-  },
-  warning: {
-    gradient: 'from-amber-500 via-orange-500 to-amber-600',
-    border: 'border-amber-200/50',
-    bg: 'bg-amber-50/30',
-    text: 'text-amber-600',
-    glow: 'hover:shadow-amber-200/50',
-  },
-  critical: {
-    gradient: 'from-red-500 via-rose-500 to-red-600',
-    border: 'border-rose-200/50',
-    bg: 'bg-rose-50/30',
-    text: 'text-rose-600',
-    glow: 'hover:shadow-rose-200/50',
-  },
-  offline: {
-    gradient: 'from-gray-500 via-slate-500 to-gray-600',
-    border: 'border-slate-200/60',
-    bg: 'bg-slate-50/50',
-    text: 'text-slate-600',
-    glow: 'hover:shadow-slate-200/50',
-  },
-  total: {
-    gradient: 'from-blue-500 via-indigo-500 to-blue-600',
-    border: 'border-blue-200/50',
-    bg: 'bg-blue-50/30',
-    text: 'text-blue-600',
-    glow: 'hover:shadow-blue-200/50',
-  },
-};
-
-// 링 색상 매핑
-const ringColors: Record<string, string> = {
-  online: 'ring-emerald-500',
-  warning: 'ring-amber-500',
-  critical: 'ring-rose-500',
-  offline: 'ring-slate-500',
-};
-
 // 상태 카드 컴포넌트 (4개 반복 패턴 추출)
 function StatusCard({
   status,
@@ -118,8 +74,9 @@ function StatusCard({
   className?: string;
 }) {
   const gradient =
-    statusGradients[status as keyof typeof statusGradients] ??
-    statusGradients.online;
+    DASHBOARD_STATUS_GRADIENTS[
+      status as keyof typeof DASHBOARD_STATUS_GRADIENTS
+    ] ?? DASHBOARD_STATUS_GRADIENTS.online;
 
   const handleClick = () => {
     if (!onFilterChange) return;
@@ -144,7 +101,7 @@ function StatusCard({
         !onFilterChange &&
           'disabled:cursor-default disabled:hover:scale-100 disabled:hover:shadow-none',
         activeFilter === status &&
-          `ring-1 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`,
+          `ring-1 ${DASHBOARD_STATUS_RING_CLASSES[status] ?? 'ring-blue-500'} ring-offset-1`,
         className
       )}
     >
@@ -245,10 +202,10 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
     // 시스템 상태에 따른 그라데이션 결정
     const systemHealthGradient =
       safeStats.critical > 0 || safeStats.offline > 0
-        ? statusGradients.critical
+        ? DASHBOARD_STATUS_GRADIENTS.critical
         : safeStats.warning > 0
-          ? statusGradients.warning
-          : statusGradients.online;
+          ? DASHBOARD_STATUS_GRADIENTS.warning
+          : DASHBOARD_STATUS_GRADIENTS.online;
 
     // 위험/경고 상태일 때 펄스 활성화
     const showPulse =
@@ -263,7 +220,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         >
           {/* 그라데이션 배경 */}
           <div
-            className={`absolute inset-0 bg-linear-to-br ${statusGradients.total.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
+            className={`absolute inset-0 bg-linear-to-br ${DASHBOARD_STATUS_GRADIENTS.total.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
           />
           <div className="relative z-10">
             <div className="flex items-center gap-1.5 text-gray-500 mb-1.5">
@@ -291,7 +248,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
           </div>
           {/* 그라데이션 아이콘 박스 */}
           <div
-            className={`relative h-10 w-10 rounded-full bg-linear-to-br ${statusGradients.total.gradient} flex items-center justify-center text-white shadow-md`}
+            className={`relative h-10 w-10 rounded-full bg-linear-to-br ${DASHBOARD_STATUS_GRADIENTS.total.gradient} flex items-center justify-center text-white shadow-md`}
           >
             <Activity size={18} />
           </div>
@@ -420,42 +377,6 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                   />
                 )}
               </StatusHeaderActionGroup>
-            </div>
-
-            {/* 오른쪽: 위험/경고 카운트 */}
-            <div className="flex flex-1 shrink-0 flex-wrap items-center justify-end gap-3 text-center pr-1 sm:gap-4 sm:pr-4">
-              <div className="flex flex-col items-center">
-                <div
-                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.critical > 0 ? 'text-rose-500' : 'text-slate-300'}`}
-                >
-                  {safeStats.critical}
-                </div>
-                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
-                  위험
-                </div>
-              </div>
-              <div className="h-10 w-px bg-slate-100" />
-              <div className="flex flex-col items-center">
-                <div
-                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.warning > 0 ? 'text-amber-500' : 'text-slate-300'}`}
-                >
-                  {safeStats.warning}
-                </div>
-                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
-                  경고
-                </div>
-              </div>
-              <div className="h-10 w-px bg-slate-100" />
-              <div className="flex flex-col items-center">
-                <div
-                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.offline > 0 ? 'text-slate-500' : 'text-slate-300'}`}
-                >
-                  {safeStats.offline}
-                </div>
-                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
-                  오프라인
-                </div>
-              </div>
             </div>
           </div>
         </div>
