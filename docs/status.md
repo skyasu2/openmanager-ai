@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-21 | **현재 버전 스냅샷**: v8.11.195
+**상태 스냅샷 기준일**: 2026-05-21 | **현재 버전 스냅샷**: v8.12.0
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.0** (2026-05-21) — Features: dashboard: implement UX search and metric trends; Tests: spec: dashboard UX add failing tests before implementation; Tests: qa: record v8.11.195 release smoke
 - **v8.11.195** (2026-05-21) — Features: ui: extend animated visual surfaces; Bug Fixes: ai: expose grounding mode in developer panel; Tests: qa: record v8.11.194 weekly focused QA
 - **v8.11.194** (2026-05-21) — Code Refactoring: ai: split clarification and routing extraction triggers; Code Refactoring: ai: separate local classification from guardrails; Tests: spec: add entity extraction trigger split specs
 - **v8.11.193** (2026-05-21) — Features: ai: switch Cerebras default to gpt-oss-120b ahead of llama3.1-8b deprecation (2026-05-27); Tests: qa: record v8.11.192 production validation
 - **v8.11.192** (2026-05-21) — Bug Fixes: ai: keep otel criteria in grounded krl answers
-- **v8.11.191** (2026-05-21) — Features: ai: grounded LLM synthesis for direct KRL knowledge path; Bug Fixes: landing: sharpen hero ai title rendering
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
