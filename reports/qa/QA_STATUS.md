@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-21 22:59:37 KST
+> Generated at: 2026-05-22 06:21:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 552 |
-| Total Runs (Counted) | 440 |
+| Total Recorded Runs | 553 |
+| Total Runs (Counted) | 441 |
 | Non-counted Runs | 112 |
-| Total Checks | 4026 |
-| Passed | 3870 |
+| Total Checks | 4038 |
+| Passed | 3882 |
 | Failed | 145 |
-| Completed Items | 629 |
+| Completed Items | 630 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260521-0554 (2026-05-21T13:59:34.965Z) |
-| Latest Recorded Run | QA-20260521-0554 (2026-05-21T13:59:34.965Z) |
+| Last Counted Run | QA-20260522-0555 (2026-05-21T21:20:59.747Z) |
+| Latest Recorded Run | QA-20260522-0555 (2026-05-21T21:20:59.747Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,22 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260521-0554 (2026-05-21T13:59:34.965Z)
+Latest run: QA-20260522-0555 (2026-05-21T21:20:59.747Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Frontend UX Engineer | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.12.1 production release smoke; effective 14.0014 USD, billed 0.0000 USD, chargeCount 12180. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-20T13:59:34.965Z -> 2026-05-21T13:59:34.965Z (24h)
+- Window: 2026-05-20T21:20:59.747Z -> 2026-05-21T21:20:59.747Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 9
 
@@ -63,7 +64,7 @@ Latest run: QA-20260521-0554 (2026-05-21T13:59:34.965Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-20T13:59:34.965Z -> 2026-05-21T13:59:34.965Z (24h)
+- Window: 2026-05-20T21:20:59.747Z -> 2026-05-21T21:20:59.747Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,25 +76,27 @@ Latest run: QA-20260521-0554 (2026-05-21T13:59:34.965Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA e8ce96f8
-- Coverage Packs: ai-core, dashboard-core
-- Covered Surfaces: Local /dashboard/ai-assistant route rendered with title AI Assistant | OpenManager AI, AI workspace header and function tabs visible: AI Chat, 장애 보고서, 이상감지/추세, Desktop server context panel rendered with hidden lg:flex responsive classes, Server context empty state visible before a server is mentioned, Browser console reported 0 errors and 0 warnings, Next.js runtime diagnostics reported no errors in the active browser session, No chat/job/stream AI request was triggered; only the existing /api/ai/wake-up prewarm request appeared
-- Skipped Surfaces: Conversational AI QA was skipped because this Phase 5 follow-up changed local UI layout and message presentation, not prompts, routing, provider selection, tool schemas, response parsing, or output contracts, Vercel production QA was skipped because this is a post-main local verification run before any semver tag deployment, Cloud Run admin observability endpoints were not in scope for this local UI verification
+- Deployment: dpl_FrMjb4v1eLLxXCYTAToTunPivZWf / SHA 3c4df7a6
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: GitLab tag pipeline v8.12.1 completed successfully with frontend deploy, AI Engine deploy, frontend post-deploy smoke, and AI Engine post-deploy smoke, Vercel production deployment dpl_FrMjb4v1eLLxXCYTAToTunPivZWf was Ready for alias https://openmanager-ai.vercel.app, Production GET / returned the OpenManager AI landing page during release script smoke, Production GET /login returned the login page during release script smoke, Production /api/version returned version 8.12.1 and commit 3c4df7a68c7b9931f32ba838faa027ebc75fb625, Production /api/health returned healthy with database, cache, and AI connected, Cloud Run /health returned status ok and version 8.12.1, Cloud Run revision ai-engine-00503-sq8 is serving 100% traffic, Vercel usage check passed with effective 14.0014 USD, billed 0.0000 USD, chargeCount 12180
+- Skipped Surfaces: Broad browser matrix was not rerun because this was a release deployment smoke focused on version propagation, health, and CI smoke closure, Production conversational AI QA was not rerun in this release-smoke record to avoid repeated live LLM usage; AI grounding behavior was covered by local contract/unit gates before deploy, Vision real-image QA was not in scope because this release did not change Vision routing or provider behavior
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Cloud Run service URL | [Cloud Run service URL](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
+| general | GitLab tag pipeline v8.12.1 | [GitLab tag pipeline v8.12.1](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2544691552) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-21z0a7nlc-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | AI workspace local QA evidence | `reports/qa/evidence/qa-20260521-ai-workspace-local.md` | - |
-| playwright-screenshot | AI workspace server context panel screenshot | `reports/qa/evidence/qa-20260521-ai-workspace-local.png` | - |
+| playwright-report | v8.12.1 release smoke evidence | `reports/qa/evidence/qa-20260522-v8121-release-smoke.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -292,6 +295,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-fullscreen-cpu-ranking-v81189: Fullscreen AI Chat CPU top-3 answer remains grounded to dashboard OTel values (completed 1회, last QA-20260504-0402)
 - ai-gradient-motion-restore: Restore animated AI text gradient effect on production (completed 1회, last QA-20260519-0534)
 - ai-gradient-motion-restored-v811178: AI text and shared diagonal gradient motion restored (completed 1회, last QA-20260519-0531)
+- ai-grounding-v8121-production-release-smoke: v8.12.1 AI grounding release deployed and smoke verified on production (completed 1회, last QA-20260522-0555)
 - ai-hardening-production-verification: Verify production AI hardening release on v8.11.20 (completed 1회, last QA-20260418-0303)
 - ai-health-soft-polling-local: AI health UI polling uses soft responses (completed 1회, last QA-20260503-0396)
 - ai-incident-artifact-render-v81181: Incident report artifact renders from production AI sidebar (completed 1회, last QA-20260502-0390)
@@ -837,6 +841,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260522-0555 | 2026-05-21T21:20:59.747Z | targeted | yes | yes | Vercel Release Smoke - v8.12.1 AI Grounding Release | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0554 | 2026-05-21T13:59:34.965Z | targeted | no | yes | Local Playwright QA - AI Workspace Phase 5 Layout | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0553 | 2026-05-21T09:57:07.056Z | targeted | yes | yes | Vercel Release Smoke - v8.12.0 Dashboard UX Release | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0552 | 2026-05-21T08:50:59.688Z | targeted | no | yes | Local Playwright QA - Dashboard UX Search and Metric Trends | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -856,4 +861,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260519-0538 | 2026-05-19T11:08:35.867Z | targeted | yes | yes | Production Vision Attachment Routing QA - v8.11.184 | 14 | 2 | 0 | 0 | 7 | 1 |
 | QA-20260519-0537 | 2026-05-19T07:40:00.196Z | targeted | yes | yes | v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0536 | 2026-05-19T06:23:47.328Z | targeted | no | no | Weekly follow-up hardening local contract closure | 10 | 5 | 1 | 0 | 0 | 1 |
-| QA-20260519-0535 | 2026-05-19T05:14:14.572Z | broad | yes | yes | v8.11.179 Chrome DevTools MCP QA - AI Assistant 미검증 영역 집중 테스트 | 18 | 0 | 0 | 0 | 3 | 1 |

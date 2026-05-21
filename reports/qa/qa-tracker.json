@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-21T13:59:34.965Z"
+    "updatedAt": "2026-05-21T21:20:59.747Z"
   },
   "sequence": {
-    "nextRunNumber": 555
+    "nextRunNumber": 556
   },
   "summary": {
-    "totalRecordedRuns": 552,
-    "totalRuns": 440,
+    "totalRecordedRuns": 553,
+    "totalRuns": 441,
     "excludedRuns": 112,
-    "totalChecks": 4026,
-    "totalPassed": 3870,
+    "totalChecks": 4038,
+    "totalPassed": 3882,
     "totalFailed": 145,
     "completionRate": 100,
-    "completedItems": 629,
+    "completedItems": 630,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 35,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260521-0554",
-    "lastRecordedAt": "2026-05-21T13:59:34.965Z",
-    "latestRecordedRunId": "QA-20260521-0554",
-    "latestRecordedAt": "2026-05-21T13:59:34.965Z"
+    "lastRunId": "QA-20260522-0555",
+    "lastRecordedAt": "2026-05-21T21:20:59.747Z",
+    "latestRecordedRunId": "QA-20260522-0555",
+    "latestRecordedAt": "2026-05-21T21:20:59.747Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15665,6 +15665,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-21T13:59:34.965Z"
+    },
+    "ai-grounding-v8121-production-release-smoke": {
+      "id": "ai-grounding-v8121-production-release-smoke",
+      "title": "v8.12.1 AI grounding release deployed and smoke verified on production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260522-0555",
+      "firstSeenAt": "2026-05-21T21:20:59.747Z",
+      "lastSeenRunId": "QA-20260522-0555",
+      "lastSeenAt": "2026-05-21T21:20:59.747Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "GitLab tag pipeline 2544691552 succeeded; Vercel deployment dpl_FrMjb4v1eLLxXCYTAToTunPivZWf is Ready; Cloud Run revision ai-engine-00503-sq8 serves 100% traffic; production /api/version and health checks passed.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-21T21:20:59.747Z"
     }
   },
   "runs": [
@@ -63582,6 +63606,128 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260522-0555",
+      "recordedAt": "2026-05-21T21:20:59.747Z",
+      "recordedAtKst": "2026-05-22 06:20:59 KST",
+      "title": "Vercel Release Smoke - v8.12.1 AI Grounding Release",
+      "owner": "codex",
+      "source": "gitlab-ci+vercel-cli+cloud-run-health",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260522-0555.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FrMjb4v1eLLxXCYTAToTunPivZWf",
+        "deploymentUrl": "https://openmanager-21z0a7nlc-skyasus-projects.vercel.app",
+        "commitSha": "3c4df7a68c7b9931f32ba838faa027ebc75fb625"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.12.1 completed successfully with frontend deploy, AI Engine deploy, frontend post-deploy smoke, and AI Engine post-deploy smoke",
+        "Vercel production deployment dpl_FrMjb4v1eLLxXCYTAToTunPivZWf was Ready for alias https://openmanager-ai.vercel.app",
+        "Production GET / returned the OpenManager AI landing page during release script smoke",
+        "Production GET /login returned the login page during release script smoke",
+        "Production /api/version returned version 8.12.1 and commit 3c4df7a68c7b9931f32ba838faa027ebc75fb625",
+        "Production /api/health returned healthy with database, cache, and AI connected",
+        "Cloud Run /health returned status ok and version 8.12.1",
+        "Cloud Run revision ai-engine-00503-sq8 is serving 100% traffic",
+        "Vercel usage check passed with effective 14.0014 USD, billed 0.0000 USD, chargeCount 12180"
+      ],
+      "skippedSurfaces": [
+        "Broad browser matrix was not rerun because this was a release deployment smoke focused on version propagation, health, and CI smoke closure",
+        "Production conversational AI QA was not rerun in this release-smoke record to avoid repeated live LLM usage; AI grounding behavior was covered by local contract/unit gates before deploy",
+        "Vision real-image QA was not in scope because this release did not change Vision routing or provider behavior"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "devops-sre",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag deploy pipeline completed all frontend and AI Engine deployment/smoke jobs, Vercel production is Ready, Cloud Run serves ai-engine-00503-sq8 at 100% traffic, and both production health endpoints are green.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release-facing smoke covered production route/version propagation and backend health while the AI grounding change had already passed targeted/full AI Engine tests and root contract/lint gates.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The AI grounding release reached production with CI smoke closure; behavior-specific grounding regressions were covered by deterministic tool/routing tests before deployment.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-22T06:18:29+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.12.1 production release smoke; effective 14.0014 USD, billed 0.0000 USD, chargeCount 12180.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.1 release smoke evidence",
+          "path": "reports/qa/evidence/qa-20260522-v8121-release-smoke.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run service URL",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.12.1",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2544691552"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-21z0a7nlc-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -63590,16 +63736,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 277,
-      "appropriateCount": 236,
+      "seenCount": 278,
+      "appropriateCount": 237,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 51,
-      "lastRunId": "QA-20260521-0550",
-      "lastSeenAt": "2026-05-21T05:23:03.217Z",
+      "lastRunId": "QA-20260522-0555",
+      "lastSeenAt": "2026-05-21T21:20:59.747Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "KRL grounded synthesis confirmed (searchKnowledgeBase 5건, OTel 18대 서버명 보존). Clarification trigger split verified (topology → 명확화, whole_fleet → direct). Off-domain guard working.",
+      "lastRationale": "The AI grounding release reached production with CI smoke closure; behavior-specific grounding regressions were covered by deterministic tool/routing tests before deployment.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -63658,16 +63804,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 249,
-      "appropriateCount": 228,
+      "seenCount": 250,
+      "appropriateCount": 229,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260521-0554",
-      "lastSeenAt": "2026-05-21T13:59:34.965Z",
+      "lastRunId": "QA-20260522-0555",
+      "lastSeenAt": "2026-05-21T21:20:59.747Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run combined real browser rendering, console checks, and Next.js runtime diagnostics for the changed surface while avoiding unnecessary live LLM validation.",
+      "lastRationale": "The release-facing smoke covered production route/version propagation and backend health while the AI grounding change had already passed targeted/full AI Engine tests and root contract/lint gates.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -63896,16 +64042,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260520-0545",
       "firstSeenAt": "2026-05-20T10:33:17.738Z",
-      "seenCount": 8,
-      "appropriateCount": 8,
+      "seenCount": 9,
+      "appropriateCount": 9,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0553",
-      "lastSeenAt": "2026-05-21T09:57:07.056Z",
+      "lastRunId": "QA-20260522-0555",
+      "lastSeenAt": "2026-05-21T21:20:59.747Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag deploy pipeline completed all frontend and AI Engine deployment/smoke jobs, the Vercel production deployment is Ready, and version smoke matched v8.12.0 at the release commit.",
+      "lastRationale": "GitLab tag deploy pipeline completed all frontend and AI Engine deployment/smoke jobs, Vercel production is Ready, Cloud Run serves ai-engine-00503-sq8 at 100% traffic, and both production health endpoints are green.",
       "lastNextAction": ""
     },
     "cost-operations": {
