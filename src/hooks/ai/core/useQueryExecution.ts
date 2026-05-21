@@ -657,7 +657,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
 
         if (process.env.NODE_ENV === 'development') {
           logger.info(
-            `[HybridAI] Classification: intent=${classification.intent}, complexity=${classification.complexity}, confidence=${classification.confidence}%`
+            `[HybridAI] Classification: localIntent=${classification.localIntent}, complexity=${classification.complexity}, confidence=${classification.confidence}%`
           );
         }
 

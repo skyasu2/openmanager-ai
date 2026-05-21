@@ -302,7 +302,7 @@ export function generateClarification(
   }
 
   // 4. 인텐트별 추가 명확화
-  if (classification.intent === 'analysis' && options.length < 2) {
+  if (classification.localIntent === 'analysis' && options.length < 2) {
     options.push({
       id: 'analysis-root-cause',
       text: '근본 원인 분석',

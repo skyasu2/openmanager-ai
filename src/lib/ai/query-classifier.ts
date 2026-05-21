@@ -7,25 +7,14 @@
  * - Cloud Run Supervisor가 고급 분류 담당
  */
 
-import type { OffDomainGuardCategory } from './off-domain-guard';
-import { getOffDomainGuardrail } from './off-domain-guard';
 import { hasExplicitServerReference } from './server-scope-detection';
 
 export interface QueryClassification {
   complexity: number; // 1-5
-  intent:
-    | 'general'
-    | 'monitoring'
-    | 'analysis'
-    | 'guide'
-    | 'coding'
-    | 'off-domain';
+  localIntent: 'general' | 'monitoring' | 'analysis';
   reasoning: string;
   confidence: number; // 0-100
   latency?: number;
-  /** off-domain 감지 시 true. best-effort 응답 + disclaimer 표시 트리거 */
-  isOffDomain?: boolean;
-  offDomainCategory?: OffDomainGuardCategory;
 }
 
 /**
@@ -48,18 +37,6 @@ export function needsClarification(
  */
 export function classifyQuery(query: string): QueryClassification {
   const q = query.toLowerCase();
-  const offDomainGuardrail = getOffDomainGuardrail(query);
-
-  if (offDomainGuardrail) {
-    return {
-      complexity: 1,
-      intent: 'off-domain',
-      reasoning: `Off-domain guardrail: ${offDomainGuardrail.category}`,
-      confidence: 90,
-      isOffDomain: true,
-      offDomainCategory: offDomainGuardrail.category,
-    };
-  }
   let confidence = 70; // 기본 신뢰도
 
   // 쿼리 길이에 따른 신뢰도 조정
@@ -103,17 +80,13 @@ export function classifyQuery(query: string): QueryClassification {
 
   // Coding/Analysis -> High complexity
   if (
-    q.includes('code') ||
-    q.includes('script') ||
-    q.includes('analysis') ||
-    q.includes('why') ||
-    q.includes('fix') ||
+    /\b(?:code|script|analysis|why|fix)\b/.test(q) ||
     q.includes('분석') ||
     q.includes('원인')
   ) {
     return {
       complexity: 4,
-      intent: 'analysis',
+      localIntent: 'analysis',
       reasoning: 'Keyword match: Analysis/Coding',
       confidence: Math.min(100, Math.max(0, confidence - 5)), // 복잡한 쿼리는 더 모호할 수 있음
     };
@@ -133,7 +106,7 @@ export function classifyQuery(query: string): QueryClassification {
   ) {
     return {
       complexity: 2,
-      intent: 'monitoring',
+      localIntent: 'monitoring',
       reasoning: 'Keyword match: Monitoring',
       confidence: Math.min(100, Math.max(0, confidence)),
     };
@@ -151,7 +124,7 @@ export function classifyQuery(query: string): QueryClassification {
   ) {
     return {
       complexity: 2,
-      intent: 'monitoring',
+      localIntent: 'monitoring',
       reasoning: 'Keyword match: Problem detection',
       confidence: Math.min(100, Math.max(0, confidence - 10)), // 문제 관련은 더 모호할 수 있음
     };
@@ -160,7 +133,7 @@ export function classifyQuery(query: string): QueryClassification {
   // Default -> Simple (낮은 신뢰도)
   return {
     complexity: 1,
-    intent: 'general',
+    localIntent: 'general',
     reasoning: 'Fallback default',
     confidence: Math.min(100, Math.max(0, confidence - 15)),
   };
