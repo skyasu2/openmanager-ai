@@ -2,7 +2,7 @@
 > Status: In Progress
 > Doc type: Plan
 > Last reviewed: 2026-05-22
-> Tags: ai,krl,session-memory,intentframe,quality,z.ai
+> Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
 
@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. 같은 날 v8.12.0 production QA에서 AZ별 부하 균형 쿼리 grounding 실패와 Top-N+추세 누락이 재현되어 Task G를 기존 AI 품질 계획 안에서 SDD Approved로 추가한다.
 
 ---
 
@@ -34,7 +34,7 @@
 
 ---
 
-## 2026-05-21 실행 판단
+## 2026-05-21~22 실행 판단
 
 이번 계획 정정의 목적은 **할 일을 늘리는 것**이 아니라, stale 전제와 과잉 QA를 제거하는 것이다.
 
@@ -47,6 +47,7 @@
 | Task D intentFrame 10회 live sampling | 보류 | 실 LLM 호출과 Langfuse trace 접근이 필요하다. 임계값 변경 근거가 생길 때 별도 측정한다. |
 | Task E Supabase session memory | SDD 계약 Approved | 신규 기능/DB schema 변경이므로 구현 전 failing test 선행 커밋이 필요하다. 신규 plan 파일은 TODO Backlog와 이 plan Task E가 이미 존재하므로 만들지 않는다. |
 | Task F Z.AI 안정성 | 관찰 지속 | 마감일은 2026-05-23. 현재는 코드 작업 대상이 아니다. |
+| Task G AZ 집계·Top-N 추세 grounding | SDD 계약 Approved | v8.12.0 production QA에서 실제 품질 갭이 확인됐다. 기존 AI 품질/intentFrame 계획과 중복되므로 신규 plan 파일 없이 이 계획에 계약을 추가하고, failing regression test 선행 커밋 후 구현한다. |
 
 ---
 
@@ -308,6 +309,70 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 ---
 
+## Task G: AZ 집계·Top-N 추세 grounding 회귀 수정 (🔴 SDD Approved)
+
+**근거**: v8.12.0 production QA에서 프론트엔드 UX는 정상이나 AI 응답 품질에서 두 가지 데이터 grounding gap이 확인됐다.
+
+| QA 항목 | 현상 | 판단 |
+|---------|------|------|
+| AZ별 부하 균형 | `DC1-AZ1/AZ2/AZ3 구역별 부하 균형` 질문이 OTel 도구 없이 일반 응답으로 처리되어 33대 같은 hallucinated count를 반환 | 라우팅/도구 계약 gap |
+| Top-N+추세 | `메모리 사용률 상위 3개 서버와 추세`에서 상위 서버와 현재 수치는 맞지만 추세 방향/증감폭 누락 | `getServerMetricsAdvanced` 응답 계약 gap |
+| Provider fallback | Q2에서 Groq fallback 1건 관찰 | fallback 자체는 정상이나 grounding 실패를 증폭한 보조 증상 |
+
+**코드 분석 결과**:
+- `orchestrator-routing-topology.ts`의 boundary regex에는 이미 `az`가 포함되어 있어 `DC1-AZ1` 문자열 미감지만으로 단정하지 않는다.
+- 현재 structured topology path는 서버 수/역할/AZ 분포/count 중심이며, **AZ별 CPU/MEM/DISK 부하 집계**를 답하는 계약이 없다.
+- `routing-policy.ts`의 prepare step은 AZ/구역별 load-balance 질문을 `getServerMetricsAdvanced`로 강제하지 못한다.
+- `getServerMetricsAdvanced`는 Top-N ranking 결과에 24h 평균 대비 trend direction/delta를 포함하지 않는다.
+- `supervisor-prompt.ts`와 `NLQ_BASE_INSTRUCTIONS`에는 `순위 + 추세`, `AZ별/구역별 부하 균형` composite 예시가 없다.
+
+### 계약 (Contract)
+
+#### 변경 대상 파일
+
+| 영역 | 파일 |
+|------|------|
+| AI Engine 메트릭 도구 | `cloud-run/ai-engine/src/tools-ai-sdk/server-metrics/tools-advanced.ts`, `cloud-run/ai-engine/src/tools-ai-sdk/server-metrics/data.ts`, `cloud-run/ai-engine/src/tools-ai-sdk/server-metrics/schemas.ts` |
+| 라우팅 정책 | `cloud-run/ai-engine/src/domains/monitoring/routing-policy.ts` |
+| 프롬프트/에이전트 지침 | `cloud-run/ai-engine/src/domains/monitoring/supervisor-prompt.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/instructions/nlq.ts` |
+| 회귀 테스트 | adjacent `*.test.ts` |
+
+#### 입출력 계약
+
+| 기능 | 입력 | 출력 |
+|------|------|------|
+| AZ/location group summary | `getServerMetricsAdvanced({ groupBy: "location", metric: "all", timeRange: "current", aggregation: "avg" })` | `groupSummary[]`에 `location`, `serverCount`, `metrics.cpu_avg/memory_avg/disk_avg`, `statusCounts`, `serverIds` 포함 |
+| AZ load-balance routing | `AZ`, `DC1-AZ1`, `구역별`, `zone`, `부하 균형`, `balance`가 포함된 fleet query | step 0에서 `getServerMetricsAdvanced` 강제, step 1은 `finalAnswer` |
+| Top-N trend | current ranking query with `sortBy`/`limit` | `servers[].trends.<metric>`에 `direction: rising|falling|stable`, `current`, `avg24h`, `deltaPercentPoints` 포함. `answer`에도 요청 metric의 추세 라벨을 포함 |
+| Prompt mapping | `메모리 상위 3대와 추세`, `AZ별 부하 균형` | 도구 없는 일반 응답을 금지하고 위 계약의 tool result만 인용 |
+
+#### 테스트 시나리오 (구현 전 확정)
+
+- [ ] `routing-policy.test`: `DC1-AZ1/AZ2/AZ3 구역별 부하 균형`은 step 0에서 `getServerMetricsAdvanced`를 강제한다.
+- [ ] `routing-policy.test`: `메모리 사용률 상위 3개 서버와 추세`는 current ranking path에서 `getServerMetricsAdvanced`를 강제한다.
+- [ ] `server-metrics.test`: `getServerMetricsAdvanced(groupBy:"location")`는 AZ별 serverCount와 평균 CPU/MEM/DISK를 반환한다.
+- [ ] `server-metrics.test`: current memory Top-3 응답의 각 서버에 trend direction/avg/delta가 포함되고 `answer`가 추세 라벨을 포함한다.
+- [ ] `nlq.test` / `routing-policy.test`: 순위+추세 및 AZ load-balance 예시가 프롬프트/지침에 포함된다.
+
+**SDD 게이트**: 이 Task는 AI tool response schema와 routing contract 변경이므로 failing test 선행 커밋이 필요하다.
+
+**수용 기준**:
+- production과 동일한 query class에서 도구 없는 일반 응답으로 빠지지 않는다.
+- AZ별 서버 수는 OTel resource catalog 기준 실제 18대와 일치한다.
+- Top-N 결과는 현재 수치와 24h 평균 대비 방향/증감폭을 함께 제공한다.
+- 기존 단일 서버 current metric, historical aggregation, group-by-role query 회귀 없음.
+
+**예상 소요**: 60~90분
+
+- [x] v8.12.0 production QA 증상 분석
+- [x] 계약 승인
+- [ ] failing regression test 선행 커밋
+- [ ] 구현 커밋
+- [ ] AI Engine targeted tests/type-check
+- [ ] 필요 시 targeted QA 기록
+
+---
+
 ## 실행 우선순위
 
 | Task | 우선순위 | 상태 | 예상 소요 | 마감 기준 |
@@ -316,6 +381,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | B: Redis R-5 완결 | 🟡 사용자 액션 | 접근 권한 대기 | 접근 후 15분 | dashboard/API 가능 시 |
 | C: KRL corpus 보강 | — | No-op | 0분 | coverage FAIL 발생 시 재개 |
 | F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
+| G: AZ 집계·Top-N 추세 grounding | 🔴 High | SDD Approved | 60~90분 | production QA 회귀 수정 |
 | D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |
 | E: 세션 메모리 확장 | 🟢 중장기 | Draft | 2~3시간 | Backlog |
 
@@ -327,6 +393,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - Task C는 현재 no-op으로 닫고, 재개 조건 발생 전까지 DB/seed 변경을 금지한다.
 - Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
 - Task E는 별도 Approved plan 없이는 구현하지 않는다.
+- Task G는 failing regression test와 구현 커밋을 분리하고, AI Engine targeted tests/type-check를 통과한다.
 
 ---
 

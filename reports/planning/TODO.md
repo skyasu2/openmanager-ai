@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-22 KST (session memory SDD 계약 승인 반영)
+**Last Updated**: 2026-05-22 KST (v8.12.0 production AI QA 회귀 반영)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-22 Task F pre-final 관찰 완료: Cloud Run `/health`는 `status=ok`, `version=8.11.194`, `config.zai=true`, Redis `state=closed`이고 2026-05-16 이후 `jsonPayload.extra.provider="zai"` 및 Z.AI ERROR 로그는 0건이다. Task E 세션 메모리 확장은 신규 plan 없이 기존 plan 안에서 SDD 계약을 Approved로 승격했다. 구현 착수 전 failing test 선행 커밋이 필요하며, Supabase 로그인 사용자만 `sessionOwnerKey`를 전달하고 guest/API key/dev/test는 기존 Redis 경로를 유지하는 계약이다. Task A 추가 live QA는 KRL runtime 변경 시만, Task B는 Upstash dashboard/management API 사용자 액션, Task C는 no-op, Task D는 routing 증상 재현 시 측정. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
+| AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-22 v8.12.0 production QA에서 AZ별 부하 균형 질문이 도구 없이 일반 응답으로 빠져 33대 같은 hallucinated count를 반환하고, 메모리 Top-3+추세 질문에서 추세 방향/증감폭이 누락되는 회귀가 확인됐다. Task G를 기존 plan 안에서 SDD Approved로 추가했으며 구현 착수 전 failing regression test 선행 커밋이 필요하다. Task F pre-final 관찰은 Cloud Run `/health` `status=ok`, `version=8.11.194`, `config.zai=true`, Z.AI ERROR 0건이다. Task E 세션 메모리 확장은 Supabase 로그인 사용자만 `sessionOwnerKey`를 전달하고 guest/API key/dev/test는 기존 Redis 경로를 유지하는 계약으로 Approved 상태다. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | 사용자 액션 필요 | R-0~R-4, R-6 완료. 2026-05-21 data-plane INFO/DBSIZE 스냅샷은 keys 32, data 15.895KB, 누적 명령 60,495로 기록했다. 남은 R-5 월간 소비량 보정은 Upstash dashboard 또는 management API 접근이 있어야 확정 가능. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P1~P5 완료. 2026-05-21 `npm run bundle:budget` PASS(JS 1.45MB < 2MB, CSS 61.69KB < 250KB). P0은 warn-first 관찰 중이며 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 | 대시보드 UX 개선 (서버 목록·AI 사이드바 단계 개선) | Medium | In Progress (tracking) | 2026-05-21 Phase 1~5 완료: dashboard status token 공유, 목록/그리드 레이블, 시스템 상태 중복 숫자 제거, 서버 목록 검색/empty state, 서버 카드 메트릭 `↑/↓/—` 추세 인디케이터, standard/detailed 카드 `가동률 N.N% / 24h` 행, 모바일 헤더 compact 실시간 표시와 sub-bar 제거, overview 우측 인시던트 피드, `2h/6h/12h/24h` 시간 범위 Quick Picker와 카드 스파크라인 range 연동, 정렬 `상태/CPU/MEM/이름` 세그먼트 버튼, AI 사이드바 색상/탭/배너/입력창/헤더 UX, AI 전체 페이지 서버 컨텍스트 패널과 메시지 시각 구분을 반영했다. 로컬 브라우저 QA에서 compact 카드 delta 겹침과 dev runtime stats update loop를 수정했다. Phase 6은 낮은 우선순위의 선택적 백로그이며 별도 기획 필요. 상세: [dashboard-ux-improvement-plan-2026-05.md](dashboard-ux-improvement-plan-2026-05.md) |
