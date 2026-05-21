@@ -23,7 +23,9 @@ vi.mock('./AILoginRequiredModal', () => ({
 }));
 
 vi.mock('./RealTimeDisplay', () => ({
-  RealTimeDisplay: () => <div data-testid="realtime-display" />,
+  RealTimeDisplay: ({ variant = 'default' }: { variant?: string }) => (
+    <div data-testid="realtime-display" data-variant={variant} />
+  ),
 }));
 
 vi.mock('./SessionCountdown', () => ({
@@ -77,21 +79,32 @@ describe('DashboardHeader', () => {
     vi.clearAllMocks();
   });
 
-  it('데스크톱에서는 실시간 정보와 세션 카운트다운을 한 번만 마운트해야 한다', () => {
+  it('데스크톱에서는 실시간 정보와 세션 카운트다운을 한 번만 마운트해야 한다', async () => {
     mockMatchMedia(true);
 
     render(<DashboardHeader />);
 
-    expect(screen.getAllByTestId('realtime-display')).toHaveLength(1);
+    const realtimeDisplay = await screen.findByTestId('realtime-display');
+
+    expect(realtimeDisplay).toHaveAttribute('data-variant', 'default');
     expect(screen.getAllByTestId('session-countdown')).toHaveLength(1);
   });
 
-  it('모바일에서는 실시간 정보와 세션 카운트다운을 한 번만 마운트해야 한다', () => {
+  it('모바일에서는 sub-bar 없이 헤더 primary row에 compact 실시간 정보만 표시한다', async () => {
     mockMatchMedia(false);
 
     render(<DashboardHeader />);
 
-    expect(screen.getAllByTestId('realtime-display')).toHaveLength(1);
-    expect(screen.getAllByTestId('session-countdown')).toHaveLength(1);
+    const primaryRow = await screen.findByTestId(
+      'dashboard-header-primary-row'
+    );
+    const realtimeDisplay = screen.getByTestId('realtime-display');
+
+    expect(primaryRow).toContainElement(realtimeDisplay);
+    expect(realtimeDisplay).toHaveAttribute('data-variant', 'compact');
+    expect(
+      screen.queryByTestId('dashboard-header-mobile-subbar')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('session-countdown')).not.toBeInTheDocument();
   });
 });

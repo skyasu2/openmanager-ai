@@ -127,6 +127,23 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 - [x] 유효한 uptime 데이터가 없으면 `가동률 — / 24h`를 표시한다.
 - [x] compact variant에서는 uptime 행을 렌더링하지 않는다.
 
+### T-2-D 모바일 헤더 sub-bar 통합 계약
+
+| 항목 | 계약 |
+|------|------|
+| 모바일 레이아웃 | `lg` 미만에서는 헤더 아래 별도 sub-bar를 렌더링하지 않고, 헤더 primary row 안에서 단일 줄을 유지 |
+| 실시간 표시 | 모바일에서는 `RealTimeDisplay`를 compact variant로 헤더 primary row에 인라인 표시 |
+| 세션 타이머 | 모바일 헤더 primary row에는 `SessionCountdown`을 렌더링하지 않는다. 세션 남은 시간은 기존 프로필 드롭다운의 시스템 상태 섹션에서 확인 |
+| 데스크톱 유지 | `lg` 이상에서는 기존 중앙 영역의 `RealTimeDisplay` + `SessionCountdown` 표시를 유지 |
+| 비용/외부 호출 | 없음. 클라이언트 렌더링 위치와 표시 variant만 변경 |
+
+### T-2-D 테스트 시나리오
+
+- [ ] 데스크톱에서는 실시간 정보와 세션 카운트다운을 기존처럼 한 번씩 표시한다.
+- [ ] 모바일에서는 헤더 primary row 안에 compact `RealTimeDisplay`를 표시한다.
+- [ ] 모바일에서는 헤더 하단 sub-bar를 렌더링하지 않는다.
+- [ ] 모바일에서는 `SessionCountdown`을 헤더에 직접 렌더링하지 않는다.
+
 ---
 
 ## Phase 1 — 내부 코드 품질 정리 (무중단, 리스크 최소)
