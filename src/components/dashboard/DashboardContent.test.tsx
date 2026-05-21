@@ -10,6 +10,7 @@ import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import type { Server } from '@/types/server';
 import DashboardContent from './DashboardContent';
 import { SystemOverviewSection } from './SystemOverviewSection';
+import type { DashboardTimeRange } from './types/dashboard.types';
 
 const { routerPush, serverDashboardMock, monitoringReportMock } = vi.hoisted(
   () => ({
@@ -96,11 +97,16 @@ vi.mock('./DashboardSummary', () => ({
     ({
       onOpenAlertHistory,
       onOpenLogExplorer,
+      timeRange,
+      onTimeRangeChange,
     }: {
       onOpenAlertHistory?: () => void;
       onOpenLogExplorer?: () => void;
+      timeRange?: DashboardTimeRange;
+      onTimeRangeChange?: (range: DashboardTimeRange) => void;
     }) => (
       <div data-testid="dashboard-summary">
+        <span data-testid="summary-time-range">{timeRange}</span>
         <button
           type="button"
           aria-label="open alert history"
@@ -114,6 +120,13 @@ vi.mock('./DashboardSummary', () => ({
           onClick={onOpenLogExplorer}
         >
           log explorer
+        </button>
+        <button
+          type="button"
+          aria-label="select 6 hour metric range"
+          onClick={() => onTimeRangeChange?.('6h')}
+        >
+          6h
         </button>
       </div>
     )
@@ -505,5 +518,39 @@ describe('DashboardContent empty state', () => {
     );
 
     expect(await screen.findByText('모든 시스템 정상')).toBeInTheDocument();
+  });
+
+  it('시간 범위 변경을 서버 카드 히스토리 범위로 전달한다', async () => {
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [{ id: 's1', name: 'server-1', status: 'online' } as Server],
+          allServers: [
+            { id: 's1', name: 'server-1', status: 'online' } as Server,
+          ],
+          totalServers: 1,
+        })}
+      />
+    );
+
+    await waitFor(() => {
+      expect(serverDashboardMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metricsTimeRange: '24h',
+        })
+      );
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'select 6 hour metric range' })
+    );
+
+    await waitFor(() => {
+      expect(serverDashboardMock).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          metricsTimeRange: '6h',
+        })
+      );
+    });
   });
 });

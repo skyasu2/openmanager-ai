@@ -5,7 +5,10 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { DashboardSummary } from './DashboardSummary';
-import type { DashboardStats } from './types/dashboard.types';
+import type {
+  DashboardStats,
+  DashboardTimeRange,
+} from './types/dashboard.types';
 
 vi.mock('lucide-react', () => {
   const MockIcon = () => <svg aria-hidden="true" />;
@@ -250,5 +253,38 @@ describe('DashboardSummary status filter cards', () => {
     expect(
       screen.queryByText('OpenTelemetry snapshot · 17:30 KST (slot 105/143)')
     ).not.toBeInTheDocument();
+  });
+
+  it('시간 범위 Quick Picker 옵션과 활성 상태를 표시하고 변경을 호출한다', () => {
+    const onTimeRangeChange = vi.fn<[DashboardTimeRange], void>();
+
+    render(
+      <DashboardSummary
+        stats={mockStats}
+        timeRange="24h"
+        onTimeRangeChange={onTimeRangeChange}
+      />
+    );
+
+    const picker = screen.getByRole('group', {
+      name: '스파크라인 시간 범위',
+    });
+
+    expect(
+      within(picker).getByRole('button', { name: '2시간' })
+    ).toBeInTheDocument();
+    expect(
+      within(picker).getByRole('button', { name: '6시간' })
+    ).toBeInTheDocument();
+    expect(
+      within(picker).getByRole('button', { name: '12시간' })
+    ).toBeInTheDocument();
+    expect(
+      within(picker).getByRole('button', { name: '24시간' })
+    ).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(within(picker).getByRole('button', { name: '6시간' }));
+
+    expect(onTimeRangeChange).toHaveBeenCalledWith('6h');
   });
 });

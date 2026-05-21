@@ -1,8 +1,30 @@
-import { describe, expect, it } from 'vitest';
+/**
+ * @vitest-environment jsdom
+ */
+
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { otelTimeSeriesToHistory } from '@/services/metrics/otel-direct-transform';
 import {
   generateChartPointsFromData,
   parseMetricsHistoryFromResponse,
+  useServerMetrics,
 } from './useServerMetrics';
+
+vi.mock('@/services/metrics/otel-direct-transform', () => ({
+  otelTimeSeriesToHistory: vi.fn(async () => []),
+}));
+
+vi.mock('@/lib/logging', () => ({
+  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
+}));
+
+const mockedOtelTimeSeriesToHistory = vi.mocked(otelTimeSeriesToHistory);
+
+beforeEach(() => {
+  mockedOtelTimeSeriesToHistory.mockClear();
+  mockedOtelTimeSeriesToHistory.mockResolvedValue([]);
+});
 
 describe('parseMetricsHistoryFromResponse', () => {
   it('parses standard data.history.data_points response', () => {
@@ -79,5 +101,31 @@ describe('generateChartPointsFromData', () => {
 
   it('returns empty string for empty data', () => {
     expect(generateChartPointsFromData([])).toBe('');
+  });
+});
+
+describe('useServerMetrics', () => {
+  it('maps dashboard quick picker ranges to OTel history hours', async () => {
+    const { result } = renderHook(() => useServerMetrics());
+
+    await act(async () => {
+      await result.current.loadMetricsHistory('server-1', '2h', {
+        apiFallback: false,
+      });
+      await result.current.loadMetricsHistory('server-1', '12h', {
+        apiFallback: false,
+      });
+    });
+
+    expect(mockedOtelTimeSeriesToHistory).toHaveBeenNthCalledWith(
+      1,
+      'server-1',
+      2
+    );
+    expect(mockedOtelTimeSeriesToHistory).toHaveBeenNthCalledWith(
+      2,
+      'server-1',
+      12
+    );
   });
 });

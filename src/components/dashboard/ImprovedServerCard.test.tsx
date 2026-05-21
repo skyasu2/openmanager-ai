@@ -11,7 +11,13 @@
  * @updated 2026-02-05 - worker timeout 수정: resolve.alias로 heavy deps stub, vi.mock 충돌 제거
  */
 
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Server } from '../../types/server';
@@ -379,6 +385,23 @@ describe('ImprovedServerCard - User Event 테스트', () => {
   });
 
   describe('메트릭 표시', () => {
+    it('전달된 스파크라인 시간 범위로 히스토리를 로드한다', async () => {
+      render(
+        <ImprovedServerCard
+          server={mockServer}
+          onClick={mockOnClick}
+          metricsTimeRange="6h"
+        />
+      );
+
+      await waitFor(() => {
+        expect(serverMetricsMock.loadMetricsHistory).toHaveBeenCalledWith(
+          'server-1',
+          '6h'
+        );
+      });
+    });
+
     it('CPU 메트릭 레이블이 표시된다', () => {
       render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
       expect(screen.getByText('CPU')).toBeInTheDocument();

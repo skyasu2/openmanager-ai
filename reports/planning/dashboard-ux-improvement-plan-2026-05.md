@@ -169,6 +169,26 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 - [x] alert row 클릭 시 해당 서버 상세 route로 이동한다.
 - [x] firing alert가 없으면 `모든 시스템 정상` empty state를 표시한다.
 
+### T-3-B 시간 범위 Quick Picker 계약
+
+| 항목 | 계약 |
+|------|------|
+| 범위 옵션 | `2h`, `6h`, `12h`, `24h` 네 가지 고정 옵션만 노출한다 |
+| 기본값 | 초기 선택은 기존 동작과 같은 `24h` |
+| UI 위치 | `DashboardSummary` 상단 시스템 상태 카드의 전역 조작 영역에 세그먼트 버튼 그룹으로 표시한다 |
+| 상태 소유 | `DashboardContent`가 선택 상태를 소유하고 `DashboardSummary` 변경 이벤트를 받아 갱신한다 |
+| 히스토리 전달 | 선택된 범위는 `ServerDashboard`를 거쳐 모든 `ImprovedServerCard`의 `loadMetricsHistory(serverId, range)` 인자로 전달한다 |
+| OTel 변환 | `useServerMetrics`는 `2h`, `6h`, `12h`, `24h`를 각각 `otelTimeSeriesToHistory(serverId, 2/6/12/24)`로 매핑한다 |
+| 비용/외부 호출 | 신규 API 호출 없음. 기존 OTel timeseries tail slice와 기존 API fallback `range` 파라미터만 사용 |
+
+### T-3-B 테스트 시나리오
+
+- [ ] Quick Picker는 `2h/6h/12h/24h` 옵션을 렌더링하고 활성 범위를 `aria-pressed`로 표시한다.
+- [ ] Quick Picker 변경 시 `DashboardContent`가 `ServerDashboard`에 선택 범위를 전달한다.
+- [ ] `ServerDashboard`는 선택 범위를 각 `ImprovedServerCard`에 전달한다.
+- [ ] `ImprovedServerCard`는 전달된 범위로 `loadMetricsHistory(serverId, range)`를 호출한다.
+- [ ] `useServerMetrics`는 `2h/12h`를 168h fallback이 아니라 실제 hour 값으로 OTel loader에 전달한다.
+
 ---
 
 ## Phase 1 — 내부 코드 품질 정리 (무중단, 리스크 최소)

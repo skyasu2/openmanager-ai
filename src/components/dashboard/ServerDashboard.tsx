@@ -16,6 +16,7 @@ import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary'
 import { logger } from '@/lib/logging';
 import type { Server } from '@/types/server';
 import { usePerformanceTracking } from '@/utils/performance';
+import type { DashboardTimeRange } from './types/dashboard.types';
 
 // 🚀 성능 최적화: statusPriority를 컴포넌트 외부로 이동 (매번 새로 생성 방지)
 const STATUS_PRIORITY = {
@@ -141,6 +142,8 @@ interface ServerDashboardProps {
   initialVisibleRows?: number;
   /** 서버 카드가 놓인 화면 맥락. 개요와 전체 서버 목록의 카운트 문구를 분리한다. */
   surface?: 'overview' | 'server-list';
+  /** 서버 카드 스파크라인 히스토리 범위 */
+  metricsTimeRange?: DashboardTimeRange;
 }
 
 export default function ServerDashboard({

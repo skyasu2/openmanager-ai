@@ -16,6 +16,7 @@ import {
   MetricItem,
   SecondaryMetrics,
 } from './ImprovedServerCard.parts';
+import type { DashboardTimeRange } from './types/dashboard.types';
 
 /**
  * 🎨 Premium Server Card v2.2
@@ -35,6 +36,7 @@ export interface ImprovedServerCardProps {
   showRealTimeUpdates?: boolean;
   index?: number;
   enableProgressiveDisclosure?: boolean;
+  metricsTimeRange?: DashboardTimeRange;
 }
 
 const statusLabels: Record<string, string> = {

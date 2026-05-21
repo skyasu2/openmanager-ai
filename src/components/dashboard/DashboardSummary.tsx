@@ -19,7 +19,10 @@ import {
   DASHBOARD_STATUS_GRADIENTS,
   DASHBOARD_STATUS_RING_CLASSES,
 } from '@/styles/design-constants';
-import type { DashboardStats } from './types/dashboard.types';
+import type {
+  DashboardStats,
+  DashboardTimeRange,
+} from './types/dashboard.types';
 
 interface DashboardSummaryProps {
   stats: DashboardStats;
@@ -31,6 +34,9 @@ interface DashboardSummaryProps {
   onOpenLogExplorer?: () => void;
   /** 현재 활성 알림 건수 */
   activeAlertsCount?: number;
+  /** 서버 카드 스파크라인 히스토리 범위 */
+  timeRange?: DashboardTimeRange;
+  onTimeRangeChange?: (range: DashboardTimeRange) => void;
 }
 
 function formatSlotLabel(dataSlotInfo: DashboardTimeInfo): string {

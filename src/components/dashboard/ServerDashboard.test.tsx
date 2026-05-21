@@ -7,9 +7,11 @@ import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
 import ServerDashboard from './ServerDashboard';
+import type { DashboardTimeRange } from './types/dashboard.types';
 
-const { routerPush } = vi.hoisted(() => ({
+const { routerPush, improvedServerCardMock } = vi.hoisted(() => ({
   routerPush: vi.fn(),
+  improvedServerCardMock: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -23,28 +25,34 @@ vi.mock('@/components/dashboard/ImprovedServerCard', () => ({
     server,
     onClick,
     onOpenLogs,
+    metricsTimeRange,
   }: {
     server: Server;
     onClick?: (server: Server) => void;
     onOpenLogs?: (server: Server) => void;
-  }) => (
-    <div data-testid={`server-card-${server.id}`}>
-      <button
-        type="button"
-        aria-label={`${server.name} 상세 보기`}
-        onClick={() => onClick?.(server)}
-      >
-        <span data-server-card-name>{server.name}</span>
-      </button>
-      <button
-        type="button"
-        aria-label={`${server.name} 로그 보기`}
-        onClick={() => onOpenLogs?.(server)}
-      >
-        로그
-      </button>
-    </div>
-  ),
+    metricsTimeRange?: DashboardTimeRange;
+  }) =>
+    (() => {
+      improvedServerCardMock({ server, onClick, onOpenLogs, metricsTimeRange });
+      return (
+        <div data-testid={`server-card-${server.id}`}>
+          <button
+            type="button"
+            aria-label={`${server.name} 상세 보기`}
+            onClick={() => onClick?.(server)}
+          >
+            <span data-server-card-name>{server.name}</span>
+          </button>
+          <button
+            type="button"
+            aria-label={`${server.name} 로그 보기`}
+            onClick={() => onOpenLogs?.(server)}
+          >
+            로그
+          </button>
+        </div>
+      );
+    })(),
 }));
 
 vi.mock('@/components/error/ServerCardErrorBoundary', () => ({
@@ -598,5 +606,28 @@ describe('ServerDashboard', () => {
     );
 
     expect(routerPush).toHaveBeenCalledWith('/dashboard/logs?server=server-1');
+  });
+
+  it('선택된 스파크라인 시간 범위를 서버 카드에 전달한다', () => {
+    improvedServerCardMock.mockClear();
+
+    render(
+      <ServerDashboard
+        servers={[createServer('server-1', 'API Server')]}
+        totalServers={1}
+        currentPage={1}
+        totalPages={1}
+        pageSize={1}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        metricsTimeRange="12h"
+      />
+    );
+
+    expect(improvedServerCardMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metricsTimeRange: '12h',
+      })
+    );
   });
 });
