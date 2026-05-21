@@ -228,6 +228,13 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - Z.AI → Mistral fallback 발생 빈도
 - 응답 레이턴시 (목표 <3s P95)
 
+**2026-05-21 중간 관찰**:
+- Cloud Run `/health`: `status=ok`, `version=8.11.194`, `config.zai=true`, Redis `state=closed`, routes ready.
+- 인증된 `/api/ai/providers`: Z.AI `enabled=true`, `available=true`, model `glm-4.5-flash`, `smokeStatus=green`, `modelDrift=[]`.
+- Cloud Run 로그(2026-05-16 이후): `RetryWithFallback`/`fallback` 검색 결과 0건. Z.AI provider 실패로 식별되는 로그 없음.
+- 같은 기간 ERROR/500 중 incident-report 오류는 v8.11.167~170의 structured output/schema parse 계열, Vision 오류는 2026-05-20 Z.AI Vision overload 재현으로 현재 runtime에서는 Gemini-only 전환 완료. Reporter/Z.AI text primary 불안정 근거로 보지 않는다.
+- Cloud Run free-tier guard: 최근 Cloud Build 30건 explicit `machineType` 없음, live service limit `cpu=1;memory=512Mi`.
+
 **판단 기준**:
 - 7일 연속 Z.AI 실패율 < 5% → 안정 판정, 이 Task 완료
 - 실패율 ≥ 5% → Reporter primary를 Mistral로 복귀하는 hotfix
@@ -235,6 +242,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 **예상 소요**: 관찰만 (코드 작업 없음)
 
 - [ ] 7일 관찰 완료 (마감: 2026-05-23)
+- [x] 2026-05-21 중간 관찰 기록
 - [ ] 안정/불안정 판정 기록
 - [ ] 불안정 시 reporter provider order 복귀 hotfix
 
