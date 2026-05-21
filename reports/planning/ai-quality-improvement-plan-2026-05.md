@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-21 기준 즉시 구현할 항목은 없으며, 사용자 액션 또는 재개 조건이 충족될 때만 각 Task를 진행한다.
+**현재 실행 상태**: tracking/conditional. 2026-05-21 기준 `groundingMode` developer-panel 노출 보강은 완료됐으며, 남은 항목은 사용자 액션 또는 재개 조건이 충족될 때만 진행한다.
 
 ---
 
@@ -40,7 +40,7 @@
 
 | 항목 | 판단 | 근거 |
 |------|------|------|
-| Task A 추가 production LLM QA | 기본 보류 | v8.11.192 OTel criteria production QA가 최고위험 회귀를 이미 확인했다. command/script와 metadata 확인은 다음 KRL 변경 시 targeted로 수행한다. |
+| Task A 추가 production LLM QA | 기본 보류 | v8.11.192 OTel criteria production QA가 최고위험 회귀를 이미 확인했다. command/script 확인은 다음 KRL 변경 시 targeted로 수행한다. `groundingMode` developer-panel 노출은 `b5a41e161`에서 보강했다. |
 | Task A KB 실패 fallback production 재현 | 미진행 | 운영 KB/도구 실패를 인위적으로 만들면 production 안정성 검증이 아니라 장애 주입이 된다. unit/contract test로만 검증한다. |
 | Task B Upstash 실측 보정 | 사용자 액션 필요 | 소비량은 Upstash dashboard 또는 management API 권한이 있어야 확인 가능하다. Redis data REST credential만으로 billing/usage metric을 조회하지 않는다. |
 | Task C KRL corpus 보강 | 미진행 | 현재 67건, target 72/hard 80, `security=5`, `incident=9`, governance PASS. 추가 seed는 필요성이 없다. |
@@ -60,11 +60,11 @@ v8.11.192(`fix(ai): keep otel criteria in grounded krl answers`)는 FORCE_KB_QUE
 1. `명령어 알려줘` / `스크립트 보여줘` 류 → 다음 KRL command/script 경로 변경 시 targeted QA로 수행
 2. OTel criteria(cpu/memory/disk 임계값) 포함 KRL 답변 반환 확인 → `QA-20260521-0547` 완료
 3. KB 검색 실패 시 template fallback 동작 확인 → production 인위 재현 금지, unit/contract test로 검증
-4. `groundingMode: llm-synthesized` vs `template-fallback` 메타데이터 반환 확인 → UI 노출 계약이 아니므로 unit/contract test 우선
+4. `groundingMode: llm-synthesized` vs `template-fallback` 메타데이터 반환 확인 → backend metadata와 developer-panel JSON 노출을 unit/DOM test로 검증
 
 **수용 기준**:
 - Vercel production 대상 OTel criteria QA PASS (`QA-20260521-0547`)
-- `groundingMode` metadata는 supervisor direct-knowledge unit/contract test에서 확인
+- `groundingMode` metadata는 supervisor direct-knowledge unit/contract test와 frontend developer-panel DOM test에서 확인
 - KB failure fallback은 production 장애 주입 없이 deterministic test로만 확인
 - 추가 KRL command/script runtime 변경이 발생하면 1회 targeted production QA를 별도 기록
 
@@ -75,11 +75,11 @@ v8.11.192(`fix(ai): keep otel criteria in grounded krl answers`)는 FORCE_KB_QUE
   - Playwright MCP 프로필 잠금으로 기존 세션을 종료하지 않고 isolated Playwright로 동일 production URL을 검증.
 - 추가 확인: `QA-20260521-0550`에서 v8.11.194 weekly focused QA 기준 KRL grounded synthesis가 PASS.
   - `searchKnowledgeBase` 5건 반환, Z.AI `glm-4.5-flash` 합성, OTel 18대/6역할 서버명 보존을 확인했다.
-  - UI debug view의 `groundingMode: llm-synthesized` 미노출은 기존 Task A 메타데이터 관찰 항목으로 유지하며, 사용자-facing 회귀나 release blocker로 보지 않는다.
+  - UI debug view의 `groundingMode: llm-synthesized` 미노출은 사용자-facing 회귀나 release blocker는 아니었으나, `b5a41e161`에서 developer-panel JSON 정규화 경계를 보강해 노출되도록 수정했다.
 - 잔여 처리:
   - command/script production QA는 현재 릴리스 차단 항목이 아니다.
   - KB 실패 fallback production 재현은 하지 않는다.
-  - `groundingMode` metadata 직접 확인은 UI/API 계약 변경 시 재평가한다.
+  - `groundingMode` metadata는 UI/API 계약 변경 시 회귀 테스트를 유지한다.
 
 **예상 소요**: 현재 추가 작업 없음. 변경 발생 시 targeted QA 15~30분.
 
@@ -87,7 +87,7 @@ v8.11.192(`fix(ai): keep otel criteria in grounded krl answers`)는 FORCE_KB_QUE
 - [x] `npm run qa:record` 로 결과 기록 (`QA-20260521-0547`)
 - [ ] command/script 경로가 변경될 때 targeted QA 실행
 - [x] KB 실패 fallback은 production 재현 대상에서 제외
-- [x] `groundingMode` 메타데이터는 contract/unit test 검증 대상으로 분류
+- [x] `groundingMode` 메타데이터 developer-panel 노출 보강 (`b5a41e161`)
 - [ ] 회귀 발견 시 별도 hotfix 커밋
 
 ---
