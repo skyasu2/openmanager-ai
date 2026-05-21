@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-21T05:23:03.217Z"
+    "updatedAt": "2026-05-21T07:05:41.434Z"
   },
   "sequence": {
-    "nextRunNumber": 551
+    "nextRunNumber": 552
   },
   "summary": {
-    "totalRecordedRuns": 548,
-    "totalRuns": 436,
+    "totalRecordedRuns": 549,
+    "totalRuns": 437,
     "excludedRuns": 112,
-    "totalChecks": 3989,
-    "totalPassed": 3833,
+    "totalChecks": 4001,
+    "totalPassed": 3845,
     "totalFailed": 145,
     "completionRate": 100,
     "completedItems": 626,
@@ -21,10 +21,10 @@
     "wontFixItems": 35,
     "expertDomainsTracked": 20,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260521-0550",
-    "lastRecordedAt": "2026-05-21T05:23:03.217Z",
-    "latestRecordedRunId": "QA-20260521-0550",
-    "latestRecordedAt": "2026-05-21T05:23:03.217Z"
+    "lastRunId": "QA-20260521-0551",
+    "lastRecordedAt": "2026-05-21T07:05:41.434Z",
+    "latestRecordedRunId": "QA-20260521-0551",
+    "latestRecordedAt": "2026-05-21T07:05:41.434Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -63104,6 +63104,133 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260521-0551",
+      "recordedAt": "2026-05-21T07:05:41.434Z",
+      "recordedAtKst": "2026-05-21 16:05:41 KST",
+      "title": "Release Smoke - v8.11.195 UI animated visual surfaces",
+      "owner": "codex",
+      "source": "vercel-post-deploy-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260521-0551.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8ciG6QnRbVu5zh95pJWwF16vibKG",
+        "deploymentUrl": "https://openmanager-qx09jbi8w-skyasus-projects.vercel.app",
+        "commitSha": "c989e47df4c8c577022ab73b5069e63705b0d9b1"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "Landing animated particle canvas",
+        "Login route smoke and shared visual background",
+        "System boot route build coverage and shared visual background",
+        "Feature card provider copy update",
+        "Vercel production version and commit propagation",
+        "GitLab main validate pipeline",
+        "GitLab semver tag deploy pipeline"
+      ],
+      "skippedSurfaces": [
+        "AI conversational QA - no AI routing, prompt, data, or response behavior changed",
+        "Dashboard authenticated E2E - visual change limited to public/login/system-boot surfaces",
+        "Mobile viewport screenshots - covered by build and component tests only"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux",
+          "domainName": "Frontend UX Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Changed visual surfaces were reviewed, built, and smoke-tested. System boot now uses the shared visual surface class consistently.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted DOM/node tests, root smoke gates, Storybook smoke, production build, and post-deploy smoke all passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "devops-sre",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Main validate pipeline and v8.11.195 tag deploy pipeline both completed successfully, and production /api/version matches the release commit.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "cost-operations",
+          "domainName": "Cost / Free Tier Operations",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel usage check reported billed 0.0000 USD for the current period after deployment.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-21T16:02:53+09:00",
+          "summary": "Current billing period reviewed after v8.11.195 production deploy; effective 13.9998 USD, billed 0.0000 USD, chargeCount 12180. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.11.195 UI release smoke evidence",
+          "path": "reports/qa/evidence/qa-20260521-v811195-ui-release-smoke.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542527886"
+        },
+        {
+          "type": "general",
+          "label": "GitLab release tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542542939"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-qx09jbi8w-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -63180,16 +63307,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 245,
-      "appropriateCount": 224,
+      "seenCount": 246,
+      "appropriateCount": 225,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260521-0550",
-      "lastSeenAt": "2026-05-21T05:23:03.217Z",
+      "lastRunId": "QA-20260521-0551",
+      "lastSeenAt": "2026-05-21T07:05:41.434Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Chrome DevTools MCP used for all 12 test cases covering this week's commits. Screenshot and debug panel evidence captured.",
+      "lastRationale": "Targeted DOM/node tests, root smoke gates, Storybook smoke, production build, and post-deploy smoke all passed.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -63313,19 +63440,19 @@
     },
     "frontend-ux": {
       "domainId": "frontend-ux",
-      "domainName": "Frontend UI/UX Engineer",
+      "domainName": "Frontend UX Engineer",
       "firstSeenRunId": "QA-20260507-0419",
       "firstSeenAt": "2026-05-07T01:09:27.132Z",
-      "seenCount": 4,
-      "appropriateCount": 4,
+      "seenCount": 5,
+      "appropriateCount": 5,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260513-0494",
-      "lastSeenAt": "2026-05-13T04:07:53.842Z",
+      "lastRunId": "QA-20260521-0551",
+      "lastSeenAt": "2026-05-21T07:05:41.434Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Mobile /privacy, /login, and custom 404 recheck showed no horizontal overflow, no small tap-target findings, and no visible layout regression after the link target adjustments.",
+      "lastRationale": "Changed visual surfaces were reviewed, built, and smoke-tested. System boot now uses the shared visual surface class consistently.",
       "lastNextAction": ""
     },
     "frontend-platform": {
@@ -63418,16 +63545,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260520-0545",
       "firstSeenAt": "2026-05-20T10:33:17.738Z",
-      "seenCount": 6,
-      "appropriateCount": 6,
+      "seenCount": 7,
+      "appropriateCount": 7,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0550",
-      "lastSeenAt": "2026-05-21T05:23:03.217Z",
+      "lastRunId": "QA-20260521-0551",
+      "lastSeenAt": "2026-05-21T07:05:41.434Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.11.194 deployed and running. Dashboard OTel slot, server counts, and resource alerts match expected values. Session data freeze confirmed after reload.",
+      "lastRationale": "Main validate pipeline and v8.11.195 tag deploy pipeline both completed successfully, and production /api/version matches the release commit.",
       "lastNextAction": ""
     },
     "cost-operations": {
@@ -63435,16 +63562,16 @@
       "domainName": "Cost / Free Tier Operations",
       "firstSeenRunId": "QA-20260521-0548",
       "firstSeenAt": "2026-05-21T01:20:42.196Z",
-      "seenCount": 3,
-      "appropriateCount": 3,
+      "seenCount": 4,
+      "appropriateCount": 4,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0550",
-      "lastSeenAt": "2026-05-21T05:23:03.217Z",
+      "lastRunId": "QA-20260521-0551",
+      "lastSeenAt": "2026-05-21T07:05:41.434Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel usage carried from same billing period (effective 13.3467 USD, billed 0.0000 USD). No incremental cost from targeted QA session.",
+      "lastRationale": "Vercel usage check reported billed 0.0000 USD for the current period after deployment.",
       "lastNextAction": ""
     }
   }

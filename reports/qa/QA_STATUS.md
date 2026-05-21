@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-21 14:28:04 KST
+> Generated at: 2026-05-21 16:06:52 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 548 |
-| Total Runs (Counted) | 436 |
+| Total Recorded Runs | 549 |
+| Total Runs (Counted) | 437 |
 | Non-counted Runs | 112 |
-| Total Checks | 3989 |
-| Passed | 3833 |
+| Total Checks | 4001 |
+| Passed | 3845 |
 | Failed | 145 |
 | Completed Items | 626 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 20 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260521-0550 (2026-05-21T05:23:03.217Z) |
-| Latest Recorded Run | QA-20260521-0550 (2026-05-21T05:23:03.217Z) |
+| Last Counted Run | QA-20260521-0551 (2026-05-21T07:05:41.434Z) |
+| Latest Recorded Run | QA-20260521-0551 (2026-05-21T07:05:41.434Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,26 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260521-0550 (2026-05-21T05:23:03.217Z)
+Latest run: QA-20260521-0551 (2026-05-21T07:05:41.434Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
+| Frontend UX Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Cost / Free Tier Operations | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage carried over from QA-20260521-0549 same billing period; effective 13.3467 USD, billed 0.0000 USD, chargeCount ~11571. No additional usage from this targeted QA session. |
+| vercel | cli | checked | normal | Current billing period reviewed after v8.11.195 production deploy; effective 13.9998 USD, billed 0.0000 USD, chargeCount 12180. No unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-20T05:23:03.217Z -> 2026-05-21T05:23:03.217Z (24h)
+- Window: 2026-05-20T07:05:41.434Z -> 2026-05-21T07:05:41.434Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 13
 
@@ -68,7 +66,7 @@ Latest run: QA-20260521-0550 (2026-05-21T05:23:03.217Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-20T05:23:03.217Z -> 2026-05-21T05:23:03.217Z (24h)
+- Window: 2026-05-20T07:05:41.434Z -> 2026-05-21T07:05:41.434Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 3
 - Drift rate: 66.67%
@@ -83,23 +81,25 @@ Latest run: QA-20260521-0550 (2026-05-21T05:23:03.217Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_7xf2j9vHZkGBYwdk71i4vdy4pNXq / SHA 562ada66
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Landing page hero AI title rendering (fix(landing)), Version API v8.11.194 / commit 562ada666a confirmed, AI Engine health check (healthy, 89-128ms), Dashboard server summary: 18대/17온라인/1경고/0위험/0오프라인, CPU 28%/MEM 45%/Disk 35%, Session server data freeze: reload 후 OTel slot 84/143 (14:00 KST) 유지 — fix(dashboard): freeze server data for session, AI 어시스턴트 패널 열기, AI Engine Ready 상태 확인, Clarification trigger split: 서버 토폴로지 질문 → 명확화 다이얼로그 발동 (전체/Web/DB/로드밸런서 옵션) — refactor(ai): split clarification and routing extraction triggers, KRL grounded synthesis: 서버 토폴로지 구성 → searchKnowledgeBase 5건 반환, Z.AI glm-4.5-flash 합성, OTel 18대/6역할×3 서버명 보존 — feat(ai): grounded LLM synthesis for direct KRL knowledge path, Off-domain guardrail: 날씨 질문 → 외부조회 불가 경고 통과, 도메인 범위 재안내 — fix(ai): harden semantic frame routing trust boundary, whole_fleet scope 직접 응답: 전체 서버 상태 → clarification 없이 monitoring-server-health 직접 조회 — refactor(ai): separate local classification from guardrails, Cerebras gpt-oss-120b DEFAULT_CEREBRAS_MODEL 코드 확인 — feat(ai): switch Cerebras default to gpt-oss-120b, Semantic frame trust boundary: db-mysql-dc1-primary 숨은 위험 → 실측 OTel 데이터 기반 (Disk 60%→88%, MEM 55%→90%) 위험 탐지 — fix(ai): harden semantic frame routing trust boundary
-- Skipped Surfaces: groundingMode: llm-synthesized UI 노출 검증 — Task A 잔여, KRL runtime 변경 시만 재테스트, Vision image upload QA, Reporter/Analyst advanced tabs, Mobile viewport, OAuth provider callbacks
+- Deployment: dpl_8ciG6QnRbVu5zh95pJWwF16vibKG / SHA c989e47d
+- Coverage Packs: core-routes-smoke
+- Covered Surfaces: Landing animated particle canvas, Login route smoke and shared visual background, System boot route build coverage and shared visual background, Feature card provider copy update, Vercel production version and commit propagation, GitLab main validate pipeline, GitLab semver tag deploy pipeline
+- Skipped Surfaces: AI conversational QA - no AI routing, prompt, data, or response behavior changed, Dashboard authenticated E2E - visual change limited to public/login/system-boot surfaces, Mobile viewport screenshots - covered by build and component tests only
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
+| general | GitLab main validate pipeline | [GitLab main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542527886) | - |
+| general | GitLab release tag pipeline | [GitLab release tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542542939) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-7x1doek0n-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-qx09jbi8w-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.194 weekly focused QA evidence | `reports/qa/evidence/qa-20260521-v811194-weekly-focused.md` | - |
+| playwright-report | v8.11.195 UI release smoke evidence | `reports/qa/evidence/qa-20260521-v811195-ui-release-smoke.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -840,6 +840,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260521-0551 | 2026-05-21T07:05:41.434Z | targeted | yes | yes | Release Smoke - v8.11.195 UI animated visual surfaces | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260521-0550 | 2026-05-21T05:23:03.217Z | targeted | yes | yes | 이번주 변경사항 집중 QA — v8.11.194 (grounded KRL / clarification split / session freeze / Cerebras) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260521-0549 | 2026-05-21T04:10:30.110Z | targeted | yes | yes | Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260521-0548 | 2026-05-21T01:20:42.196Z | targeted | yes | yes | Release Verification - v8.11.193 Cerebras gpt-oss-120b | 9 | 1 | 0 | 0 | 0 | 0 |
@@ -859,4 +860,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260519-0534 | 2026-05-19T04:11:01.014Z | targeted | yes | yes | v8.11.179 Vercel Playwright QA - anomaly confidence and AI gradient | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260519-0533 | 2026-05-19T02:49:58.801Z | targeted | no | yes | v8.11.178 내용 충실도 검증 — AI 수치 정합성·응답 경로·신호 강도 | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260519-0532 | 2026-05-19T02:21:04.444Z | targeted | yes | yes | v8.11.177 targeted QA - incident detail / NLQ anomaly / reporter fallback | 5 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260519-0531 | 2026-05-19T02:09:49.493Z | targeted | yes | yes | v8.11.178 Vercel Playwright MCP AI Gradient Restoration QA | 12 | 1 | 0 | 0 | 0 | 0 |

@@ -1,0 +1,127 @@
+{
+  "runId": "QA-20260521-0551",
+  "recordedAt": "2026-05-21T07:05:41.434Z",
+  "recordedAtKst": "2026-05-21 16:05:41 KST",
+  "runTitle": "Release Smoke - v8.11.195 UI animated visual surfaces",
+  "owner": "codex",
+  "source": "vercel-post-deploy-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8ciG6QnRbVu5zh95pJWwF16vibKG",
+    "deploymentUrl": "https://openmanager-qx09jbi8w-skyasus-projects.vercel.app",
+    "commitSha": "c989e47df4c8c577022ab73b5069e63705b0d9b1"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke"
+  ],
+  "coveredSurfaces": [
+    "Landing animated particle canvas",
+    "Login route smoke and shared visual background",
+    "System boot route build coverage and shared visual background",
+    "Feature card provider copy update",
+    "Vercel production version and commit propagation",
+    "GitLab main validate pipeline",
+    "GitLab semver tag deploy pipeline"
+  ],
+  "skippedSurfaces": [
+    "AI conversational QA - no AI routing, prompt, data, or response behavior changed",
+    "Dashboard authenticated E2E - visual change limited to public/login/system-boot surfaces",
+    "Mobile viewport screenshots - covered by build and component tests only"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux",
+      "domainName": "Frontend UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Changed visual surfaces were reviewed, built, and smoke-tested. System boot now uses the shared visual surface class consistently.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Targeted DOM/node tests, root smoke gates, Storybook smoke, production build, and post-deploy smoke all passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "devops-sre",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Main validate pipeline and v8.11.195 tag deploy pipeline both completed successfully, and production /api/version matches the release commit.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "cost-operations",
+      "domainName": "Cost / Free Tier Operations",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel usage check reported billed 0.0000 USD for the current period after deployment.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-21T16:02:53+09:00",
+      "summary": "Current billing period reviewed after v8.11.195 production deploy; effective 13.9998 USD, billed 0.0000 USD, chargeCount 12180. No unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.11.195 UI release smoke evidence",
+      "path": "reports/qa/evidence/qa-20260521-v811195-ui-release-smoke.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release decision is go for v8.11.195. Live AI conversational QA was skipped because this release did not alter AI runtime behavior."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main validate pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542527886"
+    },
+    {
+      "type": "general",
+      "label": "GitLab release tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2542542939"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-qx09jbi8w-skyasus-projects.vercel.app/"
+    }
+  ]
+}
