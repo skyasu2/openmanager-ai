@@ -250,7 +250,11 @@ export default function DashboardRoutedContent({
       <main className="flex h-full min-h-0 w-full min-w-0 overflow-hidden px-4 pt-1 pb-6 sm:px-6 lg:px-8">
         <div className="mx-auto flex h-full min-h-0 w-full min-w-0 max-w-none 2xl:max-w-[1800px]">
           <div className="flex min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            <AIWorkspace embedded queryAsOfDataSlot={aiQueryAsOfDataSlot} />
+            <AIWorkspace
+              embedded
+              queryAsOfDataSlot={aiQueryAsOfDataSlot}
+              serverContextServers={allServers ?? displayServers ?? servers}
+            />
           </div>
         </div>
       </main>

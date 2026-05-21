@@ -36,7 +36,7 @@
 
 ## 현재 진행 상태 (2026-05-21)
 
-Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 서버 검색, T-2-B 서버 카드 트렌드 인디케이터, T-2-C 서버 카드 가동률 표시, T-2-D 모바일 헤더 sub-bar 통합, T-3-A 알림 인시던트 인라인 피드, T-3-B 시간 범위 Quick Picker, T-3-C 정렬 세그먼트 버튼, T-4-A AI 사이드바 색상 시스템 통일, T-4-B~F AI 사이드바 잔여 UX 정리를 반영했다. T-3-B는 기존 OTel timeseries tail slice와 서버 상세 API fallback range 파라미터를 재사용하며 신규 API/AI 계약은 만들지 않았다. T-3-C는 기존 client-side 정렬 키와 정렬 파이프라인을 유지하고 UI만 native select에서 세그먼트 버튼으로 교체했다. T-4-A~F는 사이드바/입력창 UI 구조와 className만 정렬하고 신규 API/AI 계약을 만들지 않았다. 로컬 브라우저 QA에서 dev 서버 stale bundle 오류와 compact 카드 delta 겹침을 확인해, dev 서버 재기동 검증과 2줄 메트릭 레이아웃으로 수정했다.
+Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 서버 검색, T-2-B 서버 카드 트렌드 인디케이터, T-2-C 서버 카드 가동률 표시, T-2-D 모바일 헤더 sub-bar 통합, T-3-A 알림 인시던트 인라인 피드, T-3-B 시간 범위 Quick Picker, T-3-C 정렬 세그먼트 버튼, T-4-A AI 사이드바 색상 시스템 통일, T-4-B~F AI 사이드바 잔여 UX 정리, T-5-A~B AI 전체 페이지 서버 컨텍스트와 메시지 시각 구분을 반영했다. T-3-B는 기존 OTel timeseries tail slice와 서버 상세 API fallback range 파라미터를 재사용하며 신규 API/AI 계약은 만들지 않았다. T-3-C는 기존 client-side 정렬 키와 정렬 파이프라인을 유지하고 UI만 native select에서 세그먼트 버튼으로 교체했다. T-4-A~F는 사이드바/입력창 UI 구조와 className만 정렬하고 신규 API/AI 계약을 만들지 않았다. T-5-A~B는 기존 dashboard 서버 배열과 메시지만 read-only로 사용하며 외부 호출을 추가하지 않았다. 로컬 브라우저 QA에서 dev 서버 stale bundle 오류와 compact 카드 delta 겹침을 확인해, dev 서버 재기동 검증과 2줄 메트릭 레이아웃으로 수정했다.
 
 **완료 변경 계약**
 
@@ -55,6 +55,7 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 | 정렬 세그먼트 | `ServerDashboard`의 native sort select를 제거하고 `상태/CPU/MEM/이름` 세그먼트 버튼으로 교체. 기존 `serverSortKey` 정렬 파이프라인과 검색 조합은 유지 |
 | AI 사이드바 색상 시스템 | `AISidebarHeader`, `EnhancedAIChat`, `ChatInputArea`, 데스크톱 `AIAssistantIconPanel` 표면을 `white + gray-50/50 + subtle purple border/accent`로 통일. Brain/Bot 포인트 그라데이션은 유지하고 선택 기능 탭은 `bg-purple-600`으로 정렬 |
 | AI 사이드바 잔여 UX | 기능 전환을 헤더 수평 탭으로 이전하고 우측 icon-only rail/모바일 별도 nav를 제거. 상태 배너는 우선순위 단일 렌더로 제한하고, 파일/Web 검색은 입력창에 직접 노출. 기본 하단 힌트는 단축키만 표시하고 헤더 액션은 icon-only로 정리 |
+| AI 전체 페이지 고도화 | `/dashboard/ai-assistant`의 실제 렌더 경로(`DashboardRoutedContent → AIWorkspace → AIWorkspaceEmbeddedLayout`)에 dashboard 서버 배열을 전달하고, 데스크톱 우측 `ServerContextPanel`에서 메시지에 언급된 서버 요약을 표시. full-page 메시지는 slate 사용자 버블, Brain AI 응답, streaming `•••`, hover/focus timestamp로 구분 |
 | 통계 업데이트 루프 방어 | `DashboardInteractiveShell`은 동일한 `DashboardStats`가 반복 전달되면 state update를 생략해 dev runtime maximum update depth 경고를 방지 |
 
 **검증**
@@ -71,6 +72,7 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 - `npm run test:dom -- src/components/dashboard/ServerDashboard.test.tsx` — PASS (1 file / 18 tests, T-3-C targeted)
 - `npm run test:dom -- src/components/ai-sidebar/AISidebarHeader.test.tsx src/components/ai-sidebar/EnhancedAIChat.test.tsx src/components/ai-sidebar/ChatInputArea.test.tsx src/components/ai/AIAssistantIconPanel.test.tsx` — PASS (4 files / 30 tests, T-4-A targeted)
 - `npm run test:dom -- src/components/ai-sidebar/AISidebarHeader.test.tsx src/components/ai-sidebar/AISidebarV4.test.tsx src/components/ai-sidebar/EnhancedAIChat.test.tsx src/components/ai-sidebar/ChatInputArea.test.tsx` — PASS (4 files / 47 tests, T-4-B~F targeted)
+- `npm run test:dom -- src/components/dashboard/DashboardRoutedContent.test.tsx src/components/ai/AIWorkspace.test.tsx src/components/ai/AIWorkspaceMessage.detail.test.tsx` — PASS (3 files / 46 tests, T-5-A~B targeted)
 - Local Playwright/Next DevTools `/dashboard` targeted QA — PASS: 검색 필터/empty/복구, 그리드 카드 trend delta, 콘솔 warning/error 0, Next runtime errors 0
 
 **Task 상태**
@@ -91,7 +93,9 @@ Phase 1은 소규모 리팩터/copy/UI 톤 정리 범위로 완료했다. T-2-A 
 - [x] T-4-D: 입력창 도구 직접 노출
 - [x] T-4-E: 입력창 하단 힌트 영역 정리
 - [x] T-4-F: 헤더 버튼 레이아웃 정리
-- [ ] T-5-A 이후: 별도 세부 계약/테스트 시나리오 확정 후 진행
+- [x] T-5-A: 전체 페이지 2단 레이아웃
+- [x] T-5-B: 메시지 버블 시각 구분 강화
+- [ ] T-6 이후: 낮은 우선순위 선택적 백로그로 별도 기획 후 진행
 
 ## SDD 게이트 (Phase 2+ 착수 전)
 
@@ -287,12 +291,12 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 
 ### T-5-A~B 테스트 시나리오
 
-- [ ] `DashboardRoutedContent`는 AI assistant route에서 `AIWorkspace`에 서버 컨텍스트 배열을 전달한다.
-- [ ] embedded `AIWorkspace`는 데스크톱 서버 컨텍스트 패널을 렌더링하고 메시지에 언급된 서버를 표시한다.
-- [ ] 관련 서버가 없으면 서버 컨텍스트 패널은 빈 상태를 표시한다.
-- [ ] AI workspace 메시지는 사용자/AI 시각 스타일을 slate 사용자 버블과 배경 없는 Brain AI 응답으로 구분한다.
-- [ ] 스트리밍 AI 메시지는 `•••` pulse 표시를 렌더링한다.
-- [ ] 타임스탬프는 기본 숨김이며 hover/focus 상태에서 표시 가능한 class를 가진다.
+- [x] `DashboardRoutedContent`는 AI assistant route에서 `AIWorkspace`에 서버 컨텍스트 배열을 전달한다.
+- [x] embedded `AIWorkspace`는 데스크톱 서버 컨텍스트 패널을 렌더링하고 메시지에 언급된 서버를 표시한다.
+- [x] 관련 서버가 없으면 서버 컨텍스트 패널은 빈 상태를 표시한다.
+- [x] AI workspace 메시지는 사용자/AI 시각 스타일을 slate 사용자 버블과 배경 없는 Brain AI 응답으로 구분한다.
+- [x] 스트리밍 AI 메시지는 `•••` pulse 표시를 렌더링한다.
+- [x] 타임스탬프는 기본 숨김이며 hover/focus 상태에서 표시 가능한 class를 가진다.
 
 ---
 
@@ -624,7 +628,7 @@ AgentStatusIndicator / ColdStartErrorBanner / 세션한도 배너 / 세션경고
 
 ---
 
-## Phase 5 — AI 어시스턴트 고도화 (설계 필요)
+## Phase 5 — AI 어시스턴트 고도화 (완료)
 
 > 예상 소요: 3~5일 | 리스크: 중간~높음
 
@@ -646,8 +650,8 @@ AgentStatusIndicator / ColdStartErrorBanner / 세션한도 배너 / 세션경고
 ```
 
 **작업**:
-1. `src/app/dashboard/ai-assistant/layout.tsx` 수정
-2. 우측 `ContextPanel` 컴포넌트 신규 작성
+1. 실제 렌더 경로인 `DashboardRoutedContent → AIWorkspace → AIWorkspaceEmbeddedLayout` 수정
+2. 우측 `ServerContextPanel` 컴포넌트 신규 작성
    - 대화에서 언급된 서버 ID 추출 → 메트릭 미니 카드 표시
    - 빈 상태: "대화 시작 후 관련 서버가 여기 표시됩니다"
 3. 반응형: `lg:` 이하에서 우측 패널 숨김 (사이드바와 동일 단일 컬럼)

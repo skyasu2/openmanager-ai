@@ -26,6 +26,7 @@ import {
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
 import type { JobDataSlot } from '@/types/ai-jobs';
+import type { Server } from '@/types/server';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
 import {
@@ -47,6 +48,8 @@ interface AIWorkspaceProps {
   embedded?: boolean;
   /** Dashboard data slot used to keep AI pages aligned with visible metrics. */
   queryAsOfDataSlot?: JobDataSlot;
+  /** Dashboard servers used for read-only contextual matching in embedded mode. */
+  serverContextServers?: Server[];
   /** @deprecated kept for older stories/tests; sidebar uses AISidebarV4. */
   mode?: 'fullscreen';
 }
@@ -61,6 +64,7 @@ interface AIWorkspaceProps {
 export default function AIWorkspace({
   embedded = false,
   queryAsOfDataSlot,
+  serverContextServers,
 }: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
@@ -415,6 +419,9 @@ export default function AIWorkspace({
         finalProvider={latestAssistantRuntime?.provider}
         artifactWorkspaceId={artifactWorkspaceId}
         messages={enhancedMessages}
+        queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
+        serverContextMessages={enhancedMessages}
+        serverContextServers={serverContextServers}
         onFunctionSelect={handleFunctionSelect}
         onToggleRightPanel={handleToggleRightPanel}
       />
