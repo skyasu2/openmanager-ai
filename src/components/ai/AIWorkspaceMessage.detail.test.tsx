@@ -70,7 +70,7 @@ describe('AIWorkspaceMessage detail affordance', () => {
     expect(screen.getByText('순환 3번')).toBeInTheDocument();
   });
 
-  it('distinguishes assistant responses with a soft bubble and handoff target badge', () => {
+  it('distinguishes assistant responses with Brain avatar and no assistant bubble background', () => {
     const message: EnhancedChatMessage = {
       id: 'assistant-workspace-bubble-agent',
       role: 'assistant',
@@ -84,13 +84,55 @@ describe('AIWorkspaceMessage detail affordance', () => {
 
     render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
 
-    expect(screen.getByTestId('ai-response')).toHaveClass(
-      'bg-gradient-to-br',
-      'from-slate-50',
-      'border-slate-200'
+    expect(screen.getByTestId('assistant-avatar')).toBeInTheDocument();
+    expect(screen.getByTestId('ai-response')).not.toHaveClass(
+      'bg-gradient-to-br'
     );
+    expect(screen.getByTestId('ai-response')).not.toHaveClass('border');
     expect(screen.getByTestId('assistant-agent-badge')).toHaveTextContent(
       '심층 분석'
+    );
+  });
+
+  it('uses a slate user bubble and hover-revealed timestamp', () => {
+    const message: EnhancedChatMessage = {
+      id: 'user-workspace-bubble',
+      role: 'user',
+      content: 'CPU 높은 서버 보여줘',
+      timestamp: new Date('2026-05-17T08:05:00.000Z'),
+      isStreaming: false,
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={false} />);
+
+    expect(screen.getByTestId('user-response')).toHaveClass(
+      'bg-slate-100',
+      'text-slate-900',
+      'rounded-tr-sm'
+    );
+    expect(screen.getByTestId('message-timestamp')).toHaveClass(
+      'opacity-0',
+      'group-hover:opacity-100',
+      'group-focus-within:opacity-100'
+    );
+  });
+
+  it('shows pulse typing dots while an assistant response is streaming', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-streaming-dots',
+      role: 'assistant',
+      content: '분석 중',
+      timestamp: new Date('2026-05-17T08:06:00.000Z'),
+      isStreaming: true,
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    expect(screen.getByTestId('assistant-typing-dots')).toHaveTextContent(
+      '•••'
+    );
+    expect(screen.getByTestId('assistant-typing-dots')).toHaveClass(
+      'animate-pulse'
     );
   });
 

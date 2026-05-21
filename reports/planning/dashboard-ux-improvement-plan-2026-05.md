@@ -271,6 +271,29 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 - [x] 기본 하단 힌트는 `Shift+Enter로 줄바꿈`만 표시하고 `서버 운영 중심`/상시 대화 카운터는 렌더링하지 않는다.
 - [x] 헤더 전체화면 버튼은 visible text 없이 icon-only로 렌더링되며 Cloud Run 상태는 subtitle 라인에 인라인 배치된다.
 
+### T-5-A~B AI 전체 페이지 고도화 계약
+
+| 항목 | 계약 |
+|------|------|
+| 실제 구현 표면 | `/dashboard/ai-assistant`는 route `layout.tsx`가 아니라 `DashboardRoutedContent → AIWorkspace → AIWorkspaceEmbeddedLayout` 경로에서 렌더링되므로 해당 경로를 기준으로 수정한다 |
+| 서버 컨텍스트 데이터 | `DashboardRoutedContent`는 현재 dashboard가 보유한 서버 배열을 `AIWorkspace`에 read-only prop으로 전달한다. 우선순위는 `allServers ?? displayServers ?? servers` |
+| 데스크톱 2단 레이아웃 | embedded AI workspace는 `lg` 이상에서 우측 `ServerContextPanel`을 표시하고, `lg` 미만에서는 숨긴다 |
+| 서버 추출 | `ServerContextPanel`은 메시지 본문에서 server `id/name/hostname/ip`를 단순 매칭해 관련 서버를 최대 3개 표시한다. 매칭 결과가 없으면 빈 상태를 표시한다 |
+| 데이터 표시 | 관련 서버 row는 서버명, 상태, CPU/MEM/DISK 요약, 서버 상세 링크를 제공한다 |
+| 메시지 시각 구분 | 사용자 메시지는 우측 정렬 `bg-slate-100 text-slate-900 rounded-tr-sm` 버블을 사용한다. AI 메시지는 `Brain` 아바타와 배경 없는 본문으로 표시한다 |
+| 스트리밍 표시 | AI 스트리밍 중에는 세 점 `•••` pulse 표시를 제공한다 |
+| 타임스탬프 | 메시지 타임스탬프는 기본 숨김, `group-hover`/`group-focus-within` 시 표시한다 |
+| 비용/외부 호출 | 없음. 기존 메시지와 dashboard 서버 배열만 사용한다 |
+
+### T-5-A~B 테스트 시나리오
+
+- [ ] `DashboardRoutedContent`는 AI assistant route에서 `AIWorkspace`에 서버 컨텍스트 배열을 전달한다.
+- [ ] embedded `AIWorkspace`는 데스크톱 서버 컨텍스트 패널을 렌더링하고 메시지에 언급된 서버를 표시한다.
+- [ ] 관련 서버가 없으면 서버 컨텍스트 패널은 빈 상태를 표시한다.
+- [ ] AI workspace 메시지는 사용자/AI 시각 스타일을 slate 사용자 버블과 배경 없는 Brain AI 응답으로 구분한다.
+- [ ] 스트리밍 AI 메시지는 `•••` pulse 표시를 렌더링한다.
+- [ ] 타임스탬프는 기본 숨김이며 hover/focus 상태에서 표시 가능한 class를 가진다.
+
 ---
 
 ## Phase 1 — 내부 코드 품질 정리 (무중단, 리스크 최소)

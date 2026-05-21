@@ -6,6 +6,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AIWorkspace from '@/components/ai/AIWorkspace';
+import type { Server } from '@/types/server';
 
 const mockEnhancedAIChat = vi.fn(() => (
   <div data-testid="enhanced-ai-chat">AI Chat</div>
@@ -289,7 +290,7 @@ describe('AIWorkspace', () => {
   it('displays loading state correctly', async () => {
     const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
 
-    vi.mocked(useAIChatCore).mockReturnValue({
+    vi.mocked(useAIChatCore).mockReturnValueOnce({
       input: '',
       setInput: vi.fn(),
       messages: [],
@@ -390,6 +391,78 @@ describe('AIWorkspace', () => {
 
     expect(embeddedRoot).toHaveClass('h-full', 'min-h-0', 'overflow-hidden');
     expect(embeddedRoot?.className).not.toContain('min-h-[680px]');
+  });
+
+  it('renders a desktop server context panel from mentioned dashboard servers', async () => {
+    const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
+    const server = {
+      id: 'web-nginx-dc1-01',
+      name: 'web-nginx-dc1-01',
+      hostname: 'web-server-01',
+      status: 'warning',
+      cpu: 82,
+      memory: 71,
+      disk: 64,
+      uptime: 86400,
+      location: 'KR-DC1',
+    } as Server;
+
+    vi.mocked(useAIChatCore).mockReturnValue({
+      input: '',
+      setInput: vi.fn(),
+      messages: [
+        {
+          id: 'user-server-context',
+          role: 'user',
+          content: 'web-nginx-dc1-01 상태를 확인해줘',
+          timestamp: new Date('2026-05-21T09:00:00.000Z'),
+        },
+      ],
+      isLoading: false,
+      hybridState: { progress: null, jobId: null },
+      currentMode: 'fast',
+      streamStatus: undefined,
+      error: null,
+      clearError: vi.fn(),
+      sessionState: undefined,
+      handleNewSession: vi.fn(),
+      regenerateLastResponse: vi.fn(),
+      retryLastQuery: vi.fn(),
+      stop: vi.fn(),
+      cancel: vi.fn(),
+      handleSendInput: vi.fn(),
+      clarification: null,
+      selectClarification: vi.fn(),
+      submitCustomClarification: vi.fn(),
+      skipClarification: vi.fn(),
+      dismissClarification: vi.fn(),
+      currentAgentStatus: null,
+      currentHandoff: null,
+      warmingUp: false,
+      estimatedWaitSeconds: 0,
+      queuedQueries: [],
+      removeQueuedQuery: vi.fn(),
+    } as unknown as ReturnType<typeof useAIChatCore>);
+
+    render(<AIWorkspace embedded serverContextServers={[server]} />);
+
+    expect(await screen.findByTestId('server-context-panel')).toHaveClass(
+      'hidden',
+      'lg:flex'
+    );
+    expect(screen.getByText('web-nginx-dc1-01')).toBeInTheDocument();
+    expect(screen.getByText('CPU 82%')).toBeInTheDocument();
+  });
+
+  it('shows an empty server context state before messages mention a server', async () => {
+    render(<AIWorkspace embedded serverContextServers={[]} />);
+
+    expect(
+      await screen.findByTestId('server-context-panel')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('대화 시작 후 관련 서버가 여기 표시됩니다')
+    ).toBeInTheDocument();
   });
 
   it('keeps system context collapsed by default and opens it on request', () => {

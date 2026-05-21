@@ -283,6 +283,7 @@ describe('DashboardRoutedContent route query contracts', () => {
     expect(aiWorkspaceMock).toHaveBeenCalledWith(
       expect.objectContaining({
         embedded: true,
+        serverContextServers: servers,
         queryAsOfDataSlot: {
           slotIndex: 42,
           minuteOfDay: 420,
