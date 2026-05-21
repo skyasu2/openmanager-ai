@@ -21,6 +21,7 @@ const notoSansKR = Noto_Sans_KR({
   weight: 'variable',
   variable: '--font-noto-sans-kr',
   display: 'swap',
+  preload: false,
 });
 
 export const metadata: Metadata = {

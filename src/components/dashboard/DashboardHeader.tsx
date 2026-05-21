@@ -151,6 +151,7 @@ const DashboardHeader = memo(function DashboardHeader({
             compactOnMobile
             href="/"
             titleWeight="semibold"
+            showSubtitle={false}
           />
         </div>
 
