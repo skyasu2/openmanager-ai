@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-22 KST (Z.AI Task F pre-final 관찰 반영)
+**Last Updated**: 2026-05-22 KST (session memory SDD 계약 승인 반영)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-22 Task F pre-final 관찰 완료: Cloud Run `/health`는 `status=ok`, `version=8.11.194`, `config.zai=true`, Redis `state=closed`이고 2026-05-16 이후 `jsonPayload.extra.provider="zai"` 및 Z.AI ERROR 로그는 0건이다. 2026-05-18~19 Incident Report tool-based fallback 경고는 Z.AI provider 실패로 보지 않는다. 기록된 Z.AI Reporter latency 표본(`QA-20260521-0550`)은 7021ms라 availability/fallback 안정성과 latency 추적을 분리해 2026-05-23 최종 판정한다. Task A 추가 live QA는 KRL runtime 변경 시만, Task B는 Upstash dashboard/management API 사용자 액션, Task C는 no-op, Task D는 routing 증상 재현 시 측정. 세션 메모리 확장(Task E)은 Backlog. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
+| AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-22 Task F pre-final 관찰 완료: Cloud Run `/health`는 `status=ok`, `version=8.11.194`, `config.zai=true`, Redis `state=closed`이고 2026-05-16 이후 `jsonPayload.extra.provider="zai"` 및 Z.AI ERROR 로그는 0건이다. Task E 세션 메모리 확장은 신규 plan 없이 기존 plan 안에서 SDD 계약을 Approved로 승격했다. 구현 착수 전 failing test 선행 커밋이 필요하며, Supabase 로그인 사용자만 `sessionOwnerKey`를 전달하고 guest/API key/dev/test는 기존 Redis 경로를 유지하는 계약이다. Task A 추가 live QA는 KRL runtime 변경 시만, Task B는 Upstash dashboard/management API 사용자 액션, Task C는 no-op, Task D는 routing 증상 재현 시 측정. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | 사용자 액션 필요 | R-0~R-4, R-6 완료. 2026-05-21 data-plane INFO/DBSIZE 스냅샷은 keys 32, data 15.895KB, 누적 명령 60,495로 기록했다. 남은 R-5 월간 소비량 보정은 Upstash dashboard 또는 management API 접근이 있어야 확정 가능. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P1~P5 완료. 2026-05-21 `npm run bundle:budget` PASS(JS 1.45MB < 2MB, CSS 61.69KB < 250KB). P0은 warn-first 관찰 중이며 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 | 대시보드 UX 개선 (서버 목록·AI 사이드바 단계 개선) | Medium | In Progress (tracking) | 2026-05-21 Phase 1~5 완료: dashboard status token 공유, 목록/그리드 레이블, 시스템 상태 중복 숫자 제거, 서버 목록 검색/empty state, 서버 카드 메트릭 `↑/↓/—` 추세 인디케이터, standard/detailed 카드 `가동률 N.N% / 24h` 행, 모바일 헤더 compact 실시간 표시와 sub-bar 제거, overview 우측 인시던트 피드, `2h/6h/12h/24h` 시간 범위 Quick Picker와 카드 스파크라인 range 연동, 정렬 `상태/CPU/MEM/이름` 세그먼트 버튼, AI 사이드바 색상/탭/배너/입력창/헤더 UX, AI 전체 페이지 서버 컨텍스트 패널과 메시지 시각 구분을 반영했다. 로컬 브라우저 QA에서 compact 카드 delta 겹침과 dev runtime stats update loop를 수정했다. Phase 6은 낮은 우선순위의 선택적 백로그이며 별도 기획 필요. 상세: [dashboard-ux-improvement-plan-2026-05.md](dashboard-ux-improvement-plan-2026-05.md) |
@@ -23,7 +23,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| 세션 메모리 확장 (Supabase 기반, 로그인 사용자 한정) | Medium | session-memory.ts 71줄, Redis TTL 1시간 기반. 로그인 사용자 대상 Supabase chat_sessions/chat_messages 테이블로 세션 간 대화 맥락 보존. guest는 현행 Redis 유지. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) Task E |
+| 세션 메모리 확장 (Supabase 기반, 로그인 사용자 한정) | Medium | 2026-05-22 SDD 계약 Approved. 구현 전 `test(spec):` failing test 선행 커밋 필요. 로그인 사용자만 Supabase `chat_sessions`/`chat_messages`, guest는 현행 Redis 유지. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) Task E |
 | 장기 세션 AI data slot drift 정책 | Low | Fresh load에서는 AI 수치와 dashboard OTel snapshot이 일치한다. 장기 세션에서는 `aiQueryAsOfDataSlot`이 SSR 시점 slot에 고정되어 dashboard 최신 slot과 달라질 수 있으나, free-tier/portfolio 범위에서는 실시간 resync를 도입하지 않는다. 재현 시 새로고침/새 세션으로 최신 slot을 사용하고, 제품 요구로 승격될 때 별도 `data-slot-resync-plan.md`를 작성한다. |
 | Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` 기본값으로 production에서 single mode 실질 비활성. 경량 단순쿼리 경로 설계 시 재검토. |
 

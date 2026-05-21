@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-21
+> Last reviewed: 2026-05-22
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-21 기준 `groundingMode` developer-panel 노출 보강은 완료됐으며, 남은 항목은 사용자 액션 또는 재개 조건이 충족될 때만 진행한다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다.
 
 ---
 
@@ -45,7 +45,7 @@
 | Task B Upstash 실측 보정 | 사용자 액션 필요 | 소비량은 Upstash dashboard 또는 management API 권한이 있어야 확인 가능하다. Redis data REST credential만으로 billing/usage metric을 조회하지 않는다. |
 | Task C KRL corpus 보강 | 미진행 | 현재 67건, target 72/hard 80, `security=5`, `incident=9`, governance PASS. 추가 seed는 필요성이 없다. |
 | Task D intentFrame 10회 live sampling | 보류 | 실 LLM 호출과 Langfuse trace 접근이 필요하다. 임계값 변경 근거가 생길 때 별도 측정한다. |
-| Task E Supabase session memory | Backlog 유지 | 신규 기능/DB schema 변경이므로 별도 Approved plan과 failing test 선행 커밋 전에는 착수하지 않는다. |
+| Task E Supabase session memory | SDD 계약 Approved | 신규 기능/DB schema 변경이므로 구현 전 failing test 선행 커밋이 필요하다. 신규 plan 파일은 TODO Backlog와 이 plan Task E가 이미 존재하므로 만들지 않는다. |
 | Task F Z.AI 안정성 | 관찰 지속 | 마감일은 2026-05-23. 현재는 코드 작업 대상이 아니다. |
 
 ---
@@ -193,32 +193,80 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 **근거**: `session-memory.ts` 71줄, Redis 기반 최대 20메시지(TTL 1시간). 세션 재시작 시 대화 맥락이 단절된다.
 
+**SDD 상태**: Approved (2026-05-22). 계약 섹션을 이 Task 안에 확정했으며, TODO.md Backlog와 이 plan의 중복 주제이므로 신규 plan 파일을 만들지 않는다. 구현 착수 전 `test(spec):` failing test 커밋이 먼저 필요하다.
+
 **현재 한계**:
 - Redis TTL 1시간 후 대화 히스토리 소멸
 - 세션 ID 기반 일시적 저장만 가능
 - 사용자 식별 없이 anonymous 세션만 지원
 
-**설계 방향** (Free Tier 준수):
+### 계약 (Contract)
+
+#### 변경 대상 파일
+
+| 영역 | 파일 |
+|------|------|
+| Supabase schema/RPC | `supabase/migrations/<timestamp>_create_chat_session_memory.sql` |
+| Cloud Run session memory | `cloud-run/ai-engine/src/services/ai-sdk/session-memory.ts` |
+| Cloud Run Supabase store | `cloud-run/ai-engine/src/services/ai-sdk/session-memory-supabase.ts` |
+| Cloud Run agent context | `cloud-run/ai-engine/src/services/ai-sdk/agents/base-agent-session.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/base-agent-types.ts` |
+| Cloud Run supervisor request | `cloud-run/ai-engine/src/routes/supervisor.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-types.ts` |
+| Root BFF owner propagation | `src/app/api/ai/supervisor/session-owner.ts`, `src/app/api/ai/supervisor/route.ts`, `src/app/api/ai/supervisor/stream/v2/route.ts` |
+| Root/Cloud Run tests | adjacent `*.test.ts`, plus SQL contract test near existing Supabase SQL contract coverage |
+
+#### 입출력 계약
+
+| 함수/API | 입력 | 출력 | 에러/거부 케이스 |
+|----------|------|------|------------------|
+| `resolveScopedSessionIds(req, bodySessionId)` | authenticated `NextRequest` + optional session id | `{ sessionId, cacheSessionId, ownerKey, persistentOwnerKey? }` | `persistentOwnerKey`는 `authType='supabase' && userId`일 때만 반환. guest/API key/dev/test는 반환하지 않는다. |
+| Root `/api/ai/supervisor/stream/v2` and JSON proxy | normalized messages + session id + auth context | Cloud Run request body에 `sessionOwnerKey`를 조건부 포함 | Supabase 로그인 사용자가 아니면 `sessionOwnerKey`를 전송하지 않는다. raw `userId`는 전송하지 않는다. |
+| Cloud Run `streamRequestSchema` | optional `sessionOwnerKey` | sanitized `sessionOwnerKey?: user:<sha256-prefix>` | 패턴 불일치, 128자 초과, non-user prefix는 validation error. |
+| `SessionMemoryService.getHistory(sessionId, { ownerKey? })` | `sessionId`, optional persistent owner key | `ModelMessage[]` | owner key가 없으면 기존 Redis key만 조회. Supabase 실패/미구성 시 Redis fallback + warning. |
+| `SessionMemoryService.saveHistory(sessionId, messages, { ownerKey? })` | `sessionId`, messages, optional persistent owner key | `void` | owner key가 없으면 기존 Redis TTL 저장. owner key가 있으면 Supabase에 최대 50개 메시지를 저장하고 실패 시 Redis fallback. |
+| Supabase RPC `get_chat_session_messages` | `p_owner_key`, `p_session_id`, `p_limit` | ordered JSONB message rows | owner/session 불일치 시 빈 배열. service role 전용. |
+| Supabase RPC `upsert_chat_session_history` | `p_owner_key`, `p_session_id`, `p_messages` JSONB | persisted message count | session당 50개 초과 저장 금지, owner당 최신 10세션 초과분 pruning, 7일 경과 세션 pruning. |
+
+#### Supabase 스키마 계약
+
 - Supabase `chat_sessions` / `chat_messages` 테이블 추가
 - 로그인 사용자 기준 세션 지속 (guest는 현행 Redis 유지)
 - 최대 저장: 10 세션 × 50 메시지 (Supabase free row limit 고려)
-- 오래된 세션 자동 만료: DB 레벨 `created_at < now() - interval '7 days'`
+- 오래된 세션 만료: `expires_at` 컬럼 + RPC 실행 시 `expires_at < now()` pruning
+- RLS: 두 테이블 모두 RLS enabled. public/authenticated broad read policy 금지, `TO service_role` full access policy만 허용
+- 저장 값: raw Supabase `user.id` 저장 금지. `persistentOwnerKey`는 `user:<sha256-prefix>` 형태만 저장
 
-**SDD 게이트**: 이 Task는 상당 규모 — 별도 failing test 선행 커밋 필요.
+#### 테스트 시나리오 (구현 전 확정)
+
+- [ ] Root `session-owner.test`: Supabase auth context는 raw user id 없는 `persistentOwnerKey`를 반환한다.
+- [ ] Root `session-owner.test`: guest/API key/dev/test auth context는 `persistentOwnerKey`를 반환하지 않는다.
+- [ ] Root stream route test: Supabase 로그인 요청만 Cloud Run body에 `sessionOwnerKey`를 포함한다.
+- [ ] Root stream route test: guest 요청은 기존 Redis session id 경로만 유지하고 `sessionOwnerKey`를 포함하지 않는다.
+- [ ] Cloud Run route/schema test: valid `user:<hash>` owner key를 수용하고 invalid owner key를 400으로 거부한다.
+- [ ] Cloud Run `session-memory.test`: owner key가 있으면 Supabase history를 우선 복원한다.
+- [ ] Cloud Run `session-memory.test`: Supabase 미구성/실패 시 Redis fallback으로 복원한다.
+- [ ] Cloud Run `session-memory.test`: owner key가 없으면 기존 Redis TTL 저장/조회 경로만 사용한다.
+- [ ] Cloud Run `session-memory.test`: Supabase 저장은 최대 50개 메시지만 전달하고 raw user id를 저장하지 않는다.
+- [ ] SQL contract test: migration이 `chat_sessions`, `chat_messages`, service-role-only RLS, pruning RPC, owner/session indexes를 포함한다.
+
+**SDD 게이트**: 이 Task는 상당 규모 — 위 테스트 시나리오의 failing test 선행 커밋 필요.
 
 **수용 기준**:
 - 로그인 사용자가 세션 재시작 후 이전 대화 컨텍스트 복원
 - Supabase free tier row 한도 미초과
 - 기존 Redis-based anonymous 경로 유지
+- raw 사용자 식별자와 시크릿이 Cloud Run request/log/DB에 저장되지 않음
+- Supabase 장애가 AI 응답 실패로 전파되지 않고 Redis fallback 또는 빈 history로 degraded 처리
 
 **예상 소요**: 2~3시간 (설계 + 구현 + 테스트)
 
-**우선순위**: P3 (Backlog — A/B/C/D 완료 후 착수)
+**우선순위**: P3 (Backlog에서 SDD ready로 승격 — 구현은 Task F 최종 판정 또는 사용자 명시 지시 후 착수)
 
-- [ ] Supabase migration 설계 (테이블 스키마)
+- [x] Supabase migration/RPC 계약 설계
 - [ ] failing test 선행 커밋
 - [ ] session-memory.ts 확장 구현
-- [ ] 세션 복원 E2E 확인
+- [ ] Root BFF `sessionOwnerKey` 전달 구현
+- [ ] Cloud Run schema/agent option 전달 구현
+- [ ] 세션 복원 local/contract 확인
 
 ---
 
