@@ -5,6 +5,7 @@ import type {
   DomainIntentFrame,
   DomainIntentScope,
 } from '../../core/assistant-runtime';
+import { isValidMonitoringSemanticFrameReference } from './routing/semantic-frame-policy';
 
 export type SupervisorSemanticMetadataReasonCode = 'semantic_frame_invalid';
 
@@ -113,6 +114,16 @@ export function normalizeSupervisorIntentFrame(
     !ambiguity ||
     !isDomainIntentAmbiguity(ambiguity) ||
     confidence === undefined
+  ) {
+    return undefined;
+  }
+
+  if (
+    !isValidMonitoringSemanticFrameReference({
+      domainId,
+      intent,
+      capabilityId,
+    })
   ) {
     return undefined;
   }

@@ -10,6 +10,7 @@ import {
   createAgentDecisionFromSemanticFrame,
   type RoutingDecisionTrace,
 } from '../routing/routing-decision-trace';
+import { resolveMonitoringSemanticFrameRoute } from '../routing/semantic-frame-policy';
 
 export const DEFAULT_DIRECT_ROUTING_AGENT = 'Metrics Query Agent' as const;
 
@@ -49,56 +50,7 @@ function resolveSemanticFrameAgent(
     return undefined;
   }
 
-  const capabilityId = intentFrame.capabilityId ?? '';
-  const intent = intentFrame.intent;
-  const semanticKey = capabilityId || intent;
-
-  if (
-    semanticKey.includes('incident_report') ||
-    semanticKey.includes('incident-report')
-  ) {
-    return 'Reporter Agent';
-  }
-
-  if (
-    semanticKey.includes('ops_advice') ||
-    semanticKey.includes('advisor') ||
-    semanticKey.includes('runbook')
-  ) {
-    return 'Advisor Agent';
-  }
-
-  if (
-    semanticKey.includes('root_cause') ||
-    semanticKey.includes('log_analysis') ||
-    semanticKey.includes('metric_trend') ||
-    semanticKey.includes('anomaly_detection') ||
-    semanticKey.includes('anomaly_prediction') ||
-    semanticKey.includes('capacity_forecast') ||
-    semanticKey.includes('failure_risk') ||
-    intent === 'root_cause' ||
-    intent === 'log_analysis' ||
-    intent === 'metric_trend' ||
-    intent === 'anomaly_detection' ||
-    intent === 'anomaly_prediction' ||
-    intent === 'capacity_forecast' ||
-    intent === 'failure_risk'
-  ) {
-    return 'Analyst Agent';
-  }
-
-  if (
-    semanticKey.includes('metric_current') ||
-    semanticKey.includes('metric_peak') ||
-    semanticKey.includes('server_health') ||
-    intent === 'metric_current' ||
-    intent === 'metric_peak' ||
-    intent === 'server_health'
-  ) {
-    return DEFAULT_DIRECT_ROUTING_AGENT;
-  }
-
-  return undefined;
+  return resolveMonitoringSemanticFrameRoute(intentFrame)?.agentName;
 }
 
 function isExplicitAdvisorPreFilter(preFilterResult: PreFilterResult): boolean {

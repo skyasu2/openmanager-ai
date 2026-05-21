@@ -31,6 +31,7 @@ import {
   extractQueryRoutingSignals,
 } from '../../services/ai-sdk/routing/query-routing-signals';
 import { createRoutingDecisionTrace } from '../../services/ai-sdk/routing/routing-decision-trace';
+import { resolveMonitoringSemanticFrameRoute } from '../../services/ai-sdk/routing/semantic-frame-policy';
 
 export function createSystemPrompt(deviceType?: string): string {
   return createMonitoringSystemPrompt(deviceType);
@@ -143,56 +144,14 @@ function resolveIntentFrameCategory(
   const confidence = normalizeIntentFrameConfidence(intentFrame.confidence);
   if (confidence < INTENT_FRAME_CATEGORY_CONFIDENCE) return undefined;
 
-  const capabilityId = intentFrame.capabilityId ?? '';
-  const intent = intentFrame.intent;
-  const semanticKey = `${capabilityId} ${intent}`.toLowerCase();
+  const semanticRoute = resolveMonitoringSemanticFrameRoute(intentFrame);
+  if (!semanticRoute) return undefined;
 
-  if (semanticKey.includes('log_analysis')) return 'logs';
-
-  if (
-    semanticKey.includes('root_cause') ||
-    semanticKey.includes('incident_report') ||
-    semanticKey.includes('incident-report')
-  ) {
-    return 'rca';
-  }
-
-  if (
-    semanticKey.includes('ops_advice') ||
-    semanticKey.includes('advisor') ||
-    semanticKey.includes('runbook')
-  ) {
-    return 'advisor';
-  }
-
-  if (
-    semanticKey.includes('anomaly_prediction') ||
-    semanticKey.includes('capacity_forecast') ||
-    semanticKey.includes('metric_trend')
-  ) {
-    return 'prediction';
-  }
-
-  if (
-    semanticKey.includes('anomaly_detection') ||
-    semanticKey.includes('failure_risk')
-  ) {
-    return 'anomaly';
-  }
-
-  if (semanticKey.includes('server_health')) {
+  if (semanticRoute.category === 'server_health') {
     return intentFrame.scope === 'group' ? 'serverGroup' : 'metrics';
   }
 
-  if (
-    semanticKey.includes('metric_current') ||
-    semanticKey.includes('metric_peak') ||
-    semanticKey.includes('metric_ranking')
-  ) {
-    return 'metrics';
-  }
-
-  return undefined;
+  return semanticRoute.category;
 }
 
 export function getIntentCategory(
