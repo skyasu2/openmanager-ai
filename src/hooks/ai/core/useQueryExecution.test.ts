@@ -440,6 +440,38 @@ describe('useQueryExecution', () => {
     expect(clarificationStates).toHaveLength(0);
   });
 
+  it('clarification-only extraction does not store a routing intent frame', async () => {
+    process.env.NODE_ENV = 'production';
+    mockExtractEntities.mockResolvedValue({
+      confidence: 92,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'server_health',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'unknown',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        executionMode: 'single',
+        confidence: 92,
+      },
+    });
+    const deps = createDeps();
+    deps.refs.semanticIntentFrame = { current: null };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery('서버 상태 확인');
+    });
+    await Promise.resolve();
+
+    expect(shouldExtractSemanticIntentFrame('서버 상태 확인')).toBe(false);
+    expect(mockExtractEntities).toHaveBeenCalledWith('서버 상태 확인');
+    expect(deps.refs.semanticIntentFrame.current).toBeUndefined();
+  });
+
   it('blocked NLQ guard result stops clarification and supervisor send', async () => {
     process.env.NODE_ENV = 'production';
     mockExtractEntities.mockResolvedValue({
