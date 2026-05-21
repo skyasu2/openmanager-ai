@@ -304,6 +304,14 @@ describe('getServerByGroup', () => {
       expect(result.group).toBe('cache');
     });
 
+    it('should map Korean cache group names to "cache"', async () => {
+      const result = await getServerByGroup.execute({ group: '캐시 서버' }, {} as never);
+
+      expect(result.success).toBe(true);
+      expect(result.group).toBe('cache');
+      expect(result.servers).toHaveLength(2);
+    });
+
     // Storage technology stacks
     it('should map "s3" to "storage"', async () => {
       const result = await getServerByGroup.execute({ group: 's3' }, {} as never);
@@ -313,6 +321,14 @@ describe('getServerByGroup', () => {
     it('should map "nas" to "storage"', async () => {
       const result = await getServerByGroup.execute({ group: 'nas' }, {} as never);
       expect(result.group).toBe('storage');
+    });
+
+    it('should map Korean storage group names to "storage"', async () => {
+      const result = await getServerByGroup.execute({ group: '스토리지 서버' }, {} as never);
+
+      expect(result.success).toBe(true);
+      expect(result.group).toBe('storage');
+      expect(result.servers).toHaveLength(1);
     });
 
     // Application technology stacks

@@ -31,8 +31,10 @@ export interface ClarificationRequest {
 const SERVER_PATTERNS = {
   missing: /서버|server|상태|status|확인|check/i,
   hasSpecific:
-    /web-\d+|db-\d+|api-\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i,
+    /web-\d+|db-\d+|api-\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|캐시|cache|스토리지|저장소|storage|nfs|s3/i,
 };
+
+const MAX_CLARIFICATION_OPTIONS = 6;
 
 // 구체적 조건 패턴 (숫자 조건, 정렬, 필터링이 있으면 이미 구체적)
 const SPECIFIC_CONDITION_PATTERNS = {
@@ -51,7 +53,7 @@ const SPECIFIC_CONDITION_PATTERNS = {
     /(?:cpu|메모리|디스크|memory|disk).+(?:찾아|알려|보여|목록)|(?:찾아|알려|보여).+(?:cpu|메모리|디스크|memory|disk)/i,
   // 명확화 선택으로 생성된 쿼리 접미사 (재명확화 방지)
   clarifiedSuffix:
-    /\(전체 서버\)|\(web-server 그룹\)|\(db-server 그룹\)|\(loadbalancer 그룹\)|\(cache 그룹\)|\(최근 \d+시간\)|\(최근 24시간\)|\(지난 7일\)/i,
+    /\(전체 서버\)|\(web-server 그룹\)|\(db-server 그룹\)|\(loadbalancer 그룹\)|\(cache 그룹\)|\(storage 그룹\)|\(최근 \d+시간\)|\(최근 24시간\)|\(지난 7일\)/i,
   // 명시적 스코프: "모든 서버", "전체 서버" 등 스코프가 명확한 쿼리
   explicitScope:
     /모든\s*(서버|server)|전체\s*(서버|server|시스템|system)|서버명\s*없이|전부|all\s*(서버|server|systems?)|whole\s*(fleet|system)/i,
@@ -237,6 +239,12 @@ export function generateClarification(
         text: '캐시 서버만',
         suggestedQuery: `${query} (cache 그룹)`,
         category: 'specificity',
+      },
+      {
+        id: 'server-storage',
+        text: '스토리지 서버만',
+        suggestedQuery: `${query} (storage 그룹)`,
+        category: 'specificity',
       }
     );
   }
@@ -341,8 +349,7 @@ export function generateClarification(
     return null;
   }
 
-  // 최대 4개 옵션으로 제한
-  const limitedOptions = options.slice(0, 4);
+  const limitedOptions = options.slice(0, MAX_CLARIFICATION_OPTIONS);
 
   return {
     originalQuery: query,

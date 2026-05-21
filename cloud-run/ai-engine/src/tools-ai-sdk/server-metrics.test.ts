@@ -664,6 +664,24 @@ describe('getServerMetricsAdvanced', () => {
     expect(result.answer).not.toContain('load1 2%');
   });
 
+  it('should return every queried server when no limit is requested', async () => {
+    const result = await getServerMetricsAdvanced.execute(
+      {
+        timeRange: 'last24h',
+        metric: 'disk',
+        aggregation: 'avg',
+        sortOrder: 'desc',
+      },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.serverCount).toBe(9);
+    expect(result.servers).toHaveLength(9);
+    expect(result.hasMore).toBe(false);
+    expect(result.answer).toContain('지난 24시간 전체 9대 서버 집계');
+  });
+
   it('uses query-as-of slot for current range lookups', async () => {
     const queryAsOf: QueryAsOf = {
       createdAt: '2026-04-29T05:55:00.000Z',

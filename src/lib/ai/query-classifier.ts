@@ -47,7 +47,7 @@ export function classifyQuery(query: string): QueryClassification {
   if (hasExplicitServerReference(query)) {
     confidence += 25;
   } else if (
-    /mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i.test(
+    /mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|캐시|cache|스토리지|저장소|storage|nfs/i.test(
       query
     )
   ) {

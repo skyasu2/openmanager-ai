@@ -125,6 +125,24 @@ function formatTrendEvidence(metric: MetricName, trend?: TrendEvidence): string 
   return `추세 ${label} (24h 평균 ${formatMetricValue(metric, trend.avg24h)}, Δ ${trend.deltaPercentPoints}%p)`;
 }
 
+function selectServerPayload<T>(
+  servers: T[],
+  limit?: number
+): { servers: T[]; hasMore: boolean } {
+  if (limit && limit > 0) {
+    const limitedServers = servers.slice(0, limit);
+    return {
+      servers: limitedServers,
+      hasMore: servers.length > limitedServers.length,
+    };
+  }
+
+  return {
+    servers,
+    hasMore: false,
+  };
+}
+
 /**
  * Advanced Server Metrics Tool
  * Supports time range, filtering, aggregation
@@ -398,6 +416,8 @@ export const getServerMetricsAdvanced = tool({
               .join(' / ') +
             '.';
 
+          const serverPayload = selectServerPayload(filteredResults, limit);
+
           return {
             success: true,
             responseKind: 'location_group_summary' as const,
@@ -406,8 +426,8 @@ export const getServerMetricsAdvanced = tool({
             groupSummary,
             serverCount: filteredResults.length,
             query: { timeRange, metric, aggregation, sortBy, limit, groupBy },
-            servers: filteredResults.slice(0, 5),
-            hasMore: filteredResults.length > 5,
+            servers: serverPayload.servers,
+            hasMore: serverPayload.hasMore,
             dataSlot: {
               slotIndex: state.slotIndex,
               minuteOfDay: state.minuteOfDay,
@@ -485,6 +505,8 @@ export const getServerMetricsAdvanced = tool({
               '.'
             : null);
 
+        const serverPayload = selectServerPayload(filteredResults, limit);
+
         return {
           success: true,
           ...(isCurrentRankingQuery && {
@@ -494,8 +516,8 @@ export const getServerMetricsAdvanced = tool({
           globalSummary,
           serverCount: filteredResults.length,
           query: { timeRange, metric, aggregation, sortBy, limit },
-          servers: filteredResults.slice(0, 5),
-          hasMore: filteredResults.length > 5,
+          servers: serverPayload.servers,
+          hasMore: serverPayload.hasMore,
           dataSlot: {
             slotIndex: state.slotIndex,
             minuteOfDay: state.minuteOfDay,

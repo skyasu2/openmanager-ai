@@ -144,6 +144,15 @@ describe('classifyQuery local rules', () => {
       expect(withServer.confidence).toBeGreaterThan(base.confidence);
     });
 
+    it('boosts confidence for Korean cache/storage group names', () => {
+      const base = classifyQuery('서버 메모리 현황');
+      const withCache = classifyQuery('캐시 서버 메모리 현황');
+      const withStorage = classifyQuery('스토리지 서버 디스크 현황');
+
+      expect(withCache.confidence).toBeGreaterThan(base.confidence);
+      expect(withStorage.confidence).toBeGreaterThan(base.confidence);
+    });
+
     it('treats registered server IDs as explicit scope signals', () => {
       const result = classifyQuery('api-was-dc1-01 CPU 상태 분석해줘');
 

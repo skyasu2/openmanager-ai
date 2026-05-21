@@ -96,7 +96,7 @@ export const getServerMetricsAdvancedResponseSchema = z.object({
       )
       .optional(),
     dataPoints: z.number().optional(),
-  })).describe('상위 5개 서버 샘플'),
+  })).describe('조회된 서버 목록. limit가 있으면 제한된 결과만 포함'),
   groupSummary: z
     .array(
       z.object({
@@ -109,7 +109,7 @@ export const getServerMetricsAdvancedResponseSchema = z.object({
     )
     .optional()
     .describe('groupBy=location일 때 AZ/location별 집계'),
-  hasMore: z.boolean().describe('5개 이상일 때 true'),
+  hasMore: z.boolean().describe('limit 때문에 일부 서버가 생략되면 true'),
   dataSlot: dataSlotSchema
     .optional()
     .describe('대시보드와 AI가 함께 참조하는 현재 synthetic OTel 데이터 슬롯'),

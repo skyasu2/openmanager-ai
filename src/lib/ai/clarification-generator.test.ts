@@ -358,6 +358,26 @@ describe('generateClarification', () => {
       expect(result!.options.some((o) => o.id === 'server-all')).toBe(true);
     });
 
+    it('서버 clarification 옵션에 cache/storage 그룹을 포함한다', () => {
+      const result = generateClarification('서버 상태 확인', lowConfidence);
+
+      expect(result?.options.map((option) => option.id)).toEqual(
+        expect.arrayContaining(['server-cache', 'server-storage'])
+      );
+      expect(
+        result?.options.find((option) => option.id === 'server-cache')
+      ).toMatchObject({
+        text: '캐시 서버만',
+        suggestedQuery: '서버 상태 확인 (cache 그룹)',
+      });
+      expect(
+        result?.options.find((option) => option.id === 'server-storage')
+      ).toMatchObject({
+        text: '스토리지 서버만',
+        suggestedQuery: '서버 상태 확인 (storage 그룹)',
+      });
+    });
+
     it('서버 제품명(mysql)이 있으면 서버 clarification 스킵', () => {
       const result = generateClarification(
         'mysql 서버 상태 확인',
@@ -384,6 +404,18 @@ describe('generateClarification', () => {
       expect(
         result === null || !result.options.some((o) => o.id === 'server-all')
       ).toBe(true);
+    });
+
+    it('캐시/스토리지 그룹이 명시된 쿼리는 원본 그룹 컨텍스트를 유지하도록 clarification을 스킵', () => {
+      expect(
+        generateClarification('캐시 서버 메모리 현황', lowConfidence)
+      ).toBeNull();
+      expect(
+        generateClarification('스토리지 서버 디스크 현황', lowConfidence)
+      ).toBeNull();
+      expect(
+        generateClarification('storage 서버 상태 확인', lowConfidence)
+      ).toBeNull();
     });
   });
 
@@ -451,13 +483,13 @@ describe('generateClarification', () => {
   });
 
   describe('옵션 제한', () => {
-    it('최대 4개 옵션만 반환', () => {
+    it('최대 6개 옵션만 반환', () => {
       const result = generateClarification(
         '서버 추이 성능 이상',
         lowConfidence
       );
       if (result) {
-        expect(result.options.length).toBeLessThanOrEqual(4);
+        expect(result.options.length).toBeLessThanOrEqual(6);
       }
     });
   });

@@ -86,6 +86,7 @@ export const ALL_SERVER_KEYWORDS = [
 
 export const SERVER_TYPE_MAP: Record<string, string> = {
   // Database variants
+  database: 'database',
   db: 'database',
   mysql: 'database',
   postgres: 'database',
@@ -93,33 +94,60 @@ export const SERVER_TYPE_MAP: Record<string, string> = {
   mongodb: 'database',
   oracle: 'database',
   mariadb: 'database',
+  디비: 'database',
+  데이터베이스: 'database',
+  db서버: 'database',
+  디비서버: 'database',
+  데이터베이스서버: 'database',
   // Load Balancer variants
+  loadbalancer: 'loadbalancer',
+  loadbalancers: 'loadbalancer',
+  'load-balancer': 'loadbalancer',
+  'load-balancers': 'loadbalancer',
   lb: 'loadbalancer',
   haproxy: 'loadbalancer',
   f5: 'loadbalancer',
   elb: 'loadbalancer',
   alb: 'loadbalancer',
+  로드밸런서: 'loadbalancer',
+  로드밸런서서버: 'loadbalancer',
   // Web server variants
+  web: 'web',
   nginx: 'web',
   apache: 'web',
   httpd: 'web',
   frontend: 'web',
+  웹: 'web',
+  웹서버: 'web',
   // Cache variants
+  cache: 'cache',
   redis: 'cache',
   memcached: 'cache',
   varnish: 'cache',
   elasticache: 'cache',
+  캐시: 'cache',
+  캐시서버: 'cache',
+  레디스: 'cache',
+  레디스서버: 'cache',
   // Storage variants
+  storage: 'storage',
   nas: 'storage',
   s3: 'storage',
   minio: 'storage',
   nfs: 'storage',
   efs: 'storage',
+  스토리지: 'storage',
+  저장소: 'storage',
+  스토리지서버: 'storage',
+  저장소서버: 'storage',
   // Application variants
+  application: 'application',
   api: 'application',
   app: 'application',
   backend: 'application',
   server: 'application',
+  애플리케이션: 'application',
+  애플리케이션서버: 'application',
 };
 
 // ============================================================================
@@ -182,7 +210,18 @@ export type CanonicalServerType = 'database' | 'loadbalancer' | 'web' | 'cache' 
  */
 export function normalizeServerType(input: string): string {
   const normalized = input.toLowerCase().trim();
-  return SERVER_TYPE_MAP[normalized] || normalized;
+  const compact = normalized.replace(/[\s_-]+/g, '');
+  const withoutGroupSuffix = compact.replace(
+    /(?:서버|server|그룹|group|만)$/i,
+    ''
+  );
+
+  return (
+    SERVER_TYPE_MAP[normalized] ||
+    SERVER_TYPE_MAP[compact] ||
+    SERVER_TYPE_MAP[withoutGroupSuffix] ||
+    normalized
+  );
 }
 
 /**
