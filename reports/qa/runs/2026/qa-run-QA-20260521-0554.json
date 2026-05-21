@@ -1,0 +1,99 @@
+{
+  "runId": "QA-20260521-0554",
+  "recordedAt": "2026-05-21T13:59:34.965Z",
+  "recordedAtKst": "2026-05-21 22:59:34 KST",
+  "runTitle": "Local Playwright QA - AI Workspace Phase 5 Layout",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000/dashboard/ai-assistant",
+    "frontend": "Next.js dev server",
+    "backend": "local mocked/static dashboard data plus existing dev prewarm",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "e8ce96f8809211b7972dec425a83eceaa80072a2"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "dashboard-core"
+  ],
+  "coveredSurfaces": [
+    "Local /dashboard/ai-assistant route rendered with title AI Assistant | OpenManager AI",
+    "AI workspace header and function tabs visible: AI Chat, 장애 보고서, 이상감지/추세",
+    "Desktop server context panel rendered with hidden lg:flex responsive classes",
+    "Server context empty state visible before a server is mentioned",
+    "Browser console reported 0 errors and 0 warnings",
+    "Next.js runtime diagnostics reported no errors in the active browser session",
+    "No chat/job/stream AI request was triggered; only the existing /api/ai/wake-up prewarm request appeared"
+  ],
+  "skippedSurfaces": [
+    "Conversational AI QA was skipped because this Phase 5 follow-up changed local UI layout and message presentation, not prompts, routing, provider selection, tool schemas, response parsing, or output contracts",
+    "Vercel production QA was skipped because this is a post-main local verification run before any semver tag deployment",
+    "Cloud Run admin observability endpoints were not in scope for this local UI verification"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "frontend-ux-engineer",
+      "domainName": "Frontend UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed AI workspace route rendered the desktop server context panel, empty state, and header function tabs without visual/runtime errors in local browser automation.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run combined real browser rendering, console checks, and Next.js runtime diagnostics for the changed surface while avoiding unnecessary live LLM validation.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "AI workspace local QA evidence",
+      "path": "reports/qa/evidence/qa-20260521-ai-workspace-local.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI workspace server context panel screenshot",
+      "path": "reports/qa/evidence/qa-20260521-ai-workspace-local.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-ux-phase5-ai-workspace-local-qa",
+      "title": "Dashboard UX Phase 5 AI workspace layout verified on local browser QA",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Local Playwright/Next DevTools QA verified /dashboard/ai-assistant server context panel, empty state, function tabs, console cleanliness, and Next.js runtime diagnostics.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This was a local UI QA because Phase 5 changed layout/message presentation only. The app still emitted the existing /api/ai/wake-up prewarm request, but no chat/job/stream AI execution path was triggered."
+  ],
+  "links": []
+}
