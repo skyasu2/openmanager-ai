@@ -6,17 +6,17 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
-    "sharedComponentNodes": 149,
+    "sharedComponentNodes": 150,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 156
+    "totalComponentNodes": 157
   },
   "metrics": {
-    "componentSourceLines": 31706,
-    "componentNodes": 149,
+    "componentSourceLines": 31853,
+    "componentNodes": 150,
     "componentEdges": 149,
-    "graphDensity": 0.006757,
-    "aliasEdges": 42,
-    "relativeEdges": 107,
+    "graphDensity": 0.006667,
+    "aliasEdges": 41,
+    "relativeEdges": 108,
     "isolatedComponents": 23,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
@@ -24,7 +24,7 @@
   "topInDegree": [
     {
       "component": "ai/AIAssistantIconPanel",
-      "inDegree": 7
+      "inDegree": 6
     },
     {
       "component": "ai/analysis/constants",
@@ -81,12 +81,12 @@
       "outDegree": 9
     },
     {
-      "component": "ai-sidebar/AISidebarV4",
+      "component": "ai-sidebar/SidebarMessage",
       "outDegree": 8
     },
     {
-      "component": "ai-sidebar/SidebarMessage",
-      "outDegree": 8
+      "component": "ai-sidebar/AISidebarV4",
+      "outDegree": 7
     },
     {
       "component": "ai/AIWorkspaceMessage",
@@ -109,23 +109,23 @@
       "outDegree": 5
     },
     {
+      "component": "ai/AIWorkspaceEmbeddedLayout",
+      "outDegree": 4
+    },
+    {
       "component": "ai/analysis/ServerResultCard",
       "outDegree": 4
     },
     {
       "component": "dashboard/DashboardHeader",
       "outDegree": 4
-    },
-    {
-      "component": "ai-sidebar/AISidebarHeader",
-      "outDegree": 3
     }
   ],
   "topDomainEdges": [
     {
       "fromDomain": "ai",
       "toDomain": "ai",
-      "count": 44
+      "count": 45
     },
     {
       "fromDomain": "dashboard",
@@ -140,7 +140,7 @@
     {
       "fromDomain": "ai-sidebar",
       "toDomain": "ai",
-      "count": 13
+      "count": 12
     },
     {
       "fromDomain": "shared",

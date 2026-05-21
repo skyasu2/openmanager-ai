@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 149 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 150 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 156 |
+| Total TSX component inventory | 157 |
 
 ## App Route-Local Component Distribution
 
@@ -51,12 +51,12 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 31706 |
-| Component nodes | 149 |
+| Component source lines | 31853 |
+| Component nodes | 150 |
 | Component edges | 149 |
-| Graph density | 0.68% |
-| Alias edges (`@/components/*`) | 42 |
-| Relative edges (`./`, `../`) | 107 |
+| Graph density | 0.67% |
+| Alias edges (`@/components/*`) | 41 |
+| Relative edges (`./`, `../`) | 108 |
 | Isolated components | 23 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
@@ -65,7 +65,7 @@ Route-local component files:
 
 ```mermaid
 flowchart LR
-  d0["ai (45)"]
+  d0["ai (46)"]
   d1["ai-sidebar (16)"]
   d2["auth (1)"]
   d3["charts (2)"]
@@ -79,10 +79,10 @@ flowchart LR
   d11["system (2)"]
   d12["ui (9)"]
   d13["unified-profile (3)"]
-  d0 -->|44| d0
+  d0 -->|45| d0
   d4 -->|33| d4
   d1 -->|14| d1
-  d1 -->|13| d0
+  d1 -->|12| d0
   d10 -->|11| d10
   d4 -->|6| d12
   d0 -->|3| d1
@@ -107,7 +107,7 @@ flowchart LR
 
 | Domain | Node Count |
 | --- | --- |
-| ai | 45 |
+| ai | 46 |
 | dashboard | 35 |
 | shared | 25 |
 | ai-sidebar | 16 |
@@ -126,10 +126,10 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
-| ai | ai | 44 |
+| ai | ai | 45 |
 | dashboard | dashboard | 33 |
 | ai-sidebar | ai-sidebar | 14 |
-| ai-sidebar | ai | 13 |
+| ai-sidebar | ai | 12 |
 | shared | shared | 11 |
 | dashboard | ui | 6 |
 | ai | ai-sidebar | 3 |
@@ -153,7 +153,7 @@ flowchart LR
 
 | Component | In-Degree |
 | --- | --- |
-| ai/AIAssistantIconPanel | 7 |
+| ai/AIAssistantIconPanel | 6 |
 | ai/analysis/constants | 4 |
 | ui/dialog | 4 |
 | dashboard/EnhancedServerModal.components | 3 |
@@ -172,16 +172,16 @@ flowchart LR
 | --- | --- |
 | ai/AIWorkspace | 10 |
 | ai-sidebar/EnhancedAIChat | 9 |
-| ai-sidebar/AISidebarV4 | 8 |
 | ai-sidebar/SidebarMessage | 8 |
+| ai-sidebar/AISidebarV4 | 7 |
 | ai/AIWorkspaceMessage | 7 |
 | dashboard/DashboardRoutedContent | 6 |
 | dashboard/ServerDetailView | 6 |
 | shared/FeatureCardModal | 6 |
 | ai/domain-renderers/monitoring-artifact-renderers | 5 |
+| ai/AIWorkspaceEmbeddedLayout | 4 |
 | ai/analysis/ServerResultCard | 4 |
 | dashboard/DashboardHeader | 4 |
-| ai-sidebar/AISidebarHeader | 3 |
 
 ## Cycle Risk (SCC Top 10)
 
@@ -193,8 +193,8 @@ flowchart LR
 [Top Outgoing Dependency Samples]
 ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, ai/AIAssistantIconPanel, ai/AIContentArea, ai/AIWorkspaceEmbeddedLayout, ai/AIWorkspaceFullscreenHeader
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
-ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/DeveloperPanel, ai-sidebar/EnhancedAIChat
 ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/AssistantAgentBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard
+ai-sidebar/AISidebarV4 -> ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/DeveloperPanel, ai-sidebar/EnhancedAIChat, ai-sidebar/ResizeHandle
 ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/AssistantAgentBadge, ai/analysis-basis/ProviderAttributionChip, ai/domain-renderers/ArtifactRendererHost, ai/MarkdownRenderer, ai/MessageActions
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
