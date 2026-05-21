@@ -13,7 +13,6 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 라우팅 아키텍처 개선 (intent whitelist·off-domain 중복·트리거 분리·타입 정렬) | Medium | Approved | Contract와 테스트 시나리오 정리 완료. SDD 순서: P1 failing tests → P1 구현 → P2/P4 failing tests → P2/P4 구현 → P3 failing tests → P3 구현. 상세: [ai-routing-improvement-plan.md](ai-routing-improvement-plan.md) |
 | AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 즉시 구현 항목 없음. Task A 추가 live QA는 KRL runtime 변경 시만, Task B는 Upstash dashboard/management API 사용자 액션, Task C는 no-op, Task D는 routing 증상 재현 시 측정, Task F는 2026-05-23까지 관찰. 세션 메모리 확장(Task E)은 Backlog. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | 사용자 액션 필요 | R-0~R-4, R-6 완료. 남은 R-5는 Upstash dashboard 또는 management API 접근으로 실측 소비량을 확인해야 보정 가능. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P1~P5 완료. P0은 warn-first 관찰 중이며 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
@@ -120,6 +119,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-21) — Codex (AI Routing Architecture Improvement)
+- [x] AI 라우팅 아키텍처 개선 완료
+  - P1: Cloud Run semantic intentFrame validation을 known monitoring intent/capability exact match로 고정하고 substring 기반 direct/category routing을 제거했다.
+  - P2/P4: local `classifyQuery()`에서 off-domain guard 호출을 제거하고 `QueryClassification.intent`를 `localIntent`로 정렬했다. off-domain 차단은 `useQueryExecution` 입력 경계에서 유지한다.
+  - P3: entity extraction trigger를 routing hint와 clarification check로 분리하고, clarification-only extraction의 intentFrame이 supervisor routing metadata로 누수되지 않도록 막았다.
+  - 검증: AI Engine targeted/full tests, AI Engine type-check, root targeted tests, `type-check`, `lint`, `test:quick`, `test:contract` PASS. 상세: [ai-routing-improvement-plan.md](ai-routing-improvement-plan.md)
 
 ### Completed (2026-05-20) — Codex (KRL Corpus Cap Expansion)
 - [x] KRL corpus cap 상향 및 security/architecture seed 보강

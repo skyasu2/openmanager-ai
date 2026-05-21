@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-21
 > Tags: ai,routing,semantic-intent,security,clarification
 
 # AI 라우팅 아키텍처 개선 계획
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-21
-- TODO.md 연결: Active Tasks > AI 라우팅 아키텍처 개선
+- TODO.md 연결: Recent Completed > AI 라우팅 아키텍처 개선
 - 배경: 기존 설계 분석에서 식별된 신뢰 경계, 중복 호출, 책임 분산 문제 해소
 
 ---
@@ -156,62 +156,82 @@ Required behavior:
 
 ### P1
 
-- [ ] `normalizeSupervisorIntentFrame()` rejects unknown monitoring intent such as `incident_report_bypass`.
-- [ ] `normalizeSupervisorIntentFrame()` rejects mismatched monitoring capability such as `intent=metric_peak`, `capabilityId=monitoring.incident_report`.
-- [ ] `resolveDirectRoutingTarget()` routes exact `monitoring.incident_report` to Reporter.
-- [ ] `resolveDirectRoutingTarget()` ignores `monitoring.not_incident_report` and falls back to pre-filter.
-- [ ] `getIntentCategory()` no longer treats `monitoring.not_incident_report` as RCA.
-- [ ] Existing sample/portable domain contract tests continue to pass.
+- [x] `normalizeSupervisorIntentFrame()` rejects unknown monitoring intent such as `incident_report_bypass`.
+- [x] `normalizeSupervisorIntentFrame()` rejects mismatched monitoring capability such as `intent=metric_peak`, `capabilityId=monitoring.incident_report`.
+- [x] `resolveDirectRoutingTarget()` routes exact `monitoring.incident_report` to Reporter.
+- [x] `resolveDirectRoutingTarget()` ignores `monitoring.not_incident_report` and falls back to pre-filter.
+- [x] `getIntentCategory()` no longer treats `monitoring.not_incident_report` as RCA.
+- [x] Existing sample/portable domain contract tests continue to pass.
 
 ### P2
 
-- [ ] `classifyQuery('비트코인 가격 알려줘')` no longer returns off-domain classification.
-- [ ] `sendQuery('비트코인 가격 알려줘')` exits before entity extraction and LLM transport.
-- [ ] `executeQuery('파이썬 피보나치 코드 짜줘')` still returns deterministic guard response before LLM transport.
-- [ ] Infra-context coding query remains allowed by `getOffDomainGuardrail()` and classifies as local analysis/monitoring as appropriate.
+- [x] `classifyQuery('비트코인 가격 알려줘')` no longer returns off-domain classification.
+- [x] `sendQuery('비트코인 가격 알려줘')` exits before entity extraction and LLM transport.
+- [x] `executeQuery('파이썬 피보나치 코드 짜줘')` still returns deterministic guard response before LLM transport.
+- [x] Infra-context coding query remains allowed by `getOffDomainGuardrail()` and classifies as local analysis/monitoring as appropriate.
 
 ### P4
 
-- [ ] TypeScript rejects `classification.intent` references.
-- [ ] `generateClarification()` uses `classification.localIntent === 'analysis'`.
-- [ ] Development log prints `localIntent`.
-- [ ] Existing clarification tests pass after fixture rename.
+- [x] TypeScript rejects `classification.intent` references.
+- [x] `generateClarification()` uses `classification.localIntent === 'analysis'`.
+- [x] Development log prints `localIntent`.
+- [x] Existing clarification tests pass after fixture rename.
 
 ### P3
 
-- [ ] Routing-only semantic query calls `extractEntitiesCached()` once and does not create clarification when none was initially needed.
-- [ ] Clarification-only query calls `extractEntitiesCached()` once and re-runs clarification with entities.
-- [ ] Query needing both routing hint and clarification calls extraction once.
-- [ ] Attachment queries still skip clarification/entity extraction and execute directly.
-- [ ] `entities.blocked` still surfaces the existing user-facing error and stops execution.
+- [x] Routing-only semantic query calls `extractEntitiesCached()` once and does not create clarification when none was initially needed.
+- [x] Clarification-only query calls `extractEntitiesCached()` once and re-runs clarification with entities.
+- [x] Query needing both routing hint and clarification calls extraction once.
+- [x] Attachment queries still skip clarification/entity extraction and execute directly.
+- [x] `entities.blocked` still surfaces the existing user-facing error and stops execution.
 
 ---
 
 ## Task 목록
 
-구현 착수 전 이 plan의 Status가 `Approved`인지 확인한다.
+구현 착수 전 이 plan의 Status가 `Approved`였음을 확인했다.
 
-- [ ] Task 0 — P1 failing tests
+- [x] Task 0 — P1 failing tests
   - 커밋: `test(spec): add semantic frame trust boundary specs`
   - 완료 기준: P1 테스트가 현재 코드에서 실패함
-- [ ] Task 1 — P1 implementation
+- [x] Task 1 — P1 implementation
   - 커밋: `fix(ai): harden semantic frame routing trust boundary`
   - 완료 기준: Cloud Run targeted tests, AI Engine type-check pass
-- [ ] Task 2 — P2/P4 failing tests
+- [x] Task 2 — P2/P4 failing tests
   - 커밋: `test(spec): add local classifier boundary specs`
   - 완료 기준: off-domain/classification rename tests가 현재 코드에서 실패함
-- [ ] Task 3 — P2/P4 implementation
+- [x] Task 3 — P2/P4 implementation
   - 커밋: `refactor(ai): separate local classification from guardrails`
   - 완료 기준: root targeted tests, `type-check`, `lint` pass
-- [ ] Task 4 — P3 failing tests
+- [x] Task 4 — P3 failing tests
   - 커밋: `test(spec): add entity extraction trigger split specs`
   - 완료 기준: trigger split tests가 현재 코드에서 실패함
-- [ ] Task 5 — P3 implementation
+- [x] Task 5 — P3 implementation
   - 커밋: `refactor(ai): split clarification and routing extraction triggers`
   - 완료 기준: root targeted tests, `type-check`, `lint`, `test:quick`, `test:contract` pass
-- [ ] Task 6 — plan/TODO completion update
+- [x] Task 6 — plan/TODO completion update
   - 커밋: `docs(planning): close ai routing improvement plan`
   - 완료 기준: TODO status와 plan status가 실제 완료 상태와 일치
+
+---
+
+## 완료 기록
+
+- 완료일: 2026-05-21
+- 완료 커밋:
+  - `2b6e286e2 test(spec): add semantic frame trust boundary specs`
+  - `ce45998f3 fix(ai): harden semantic frame routing trust boundary`
+  - `08071a9e5 test(spec): add local classifier boundary specs`
+  - `30cabcf16 refactor(ai): separate local classification from guardrails`
+  - `833151e80 test(spec): add entity extraction trigger split specs`
+  - `2a9566f25 refactor(ai): split clarification and routing extraction triggers`
+- 검증:
+  - AI Engine targeted P1 tests: 3 files / 100 tests PASS
+  - AI Engine `npx tsc --noEmit` PASS
+  - AI Engine full tests: 138 files / 1374 tests PASS
+  - Root P2/P4 targeted tests: 3 files / 130 tests PASS
+  - Root P3 targeted tests: 3 files / 44 tests PASS
+  - Root `type-check`, `lint`, `test:quick`, `test:contract` PASS
 
 ---
 
