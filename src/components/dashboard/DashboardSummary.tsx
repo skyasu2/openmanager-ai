@@ -19,9 +19,10 @@ import {
   DASHBOARD_STATUS_GRADIENTS,
   DASHBOARD_STATUS_RING_CLASSES,
 } from '@/styles/design-constants';
-import type {
-  DashboardStats,
-  DashboardTimeRange,
+import {
+  DASHBOARD_TIME_RANGE_OPTIONS,
+  type DashboardStats,
+  type DashboardTimeRange,
 } from './types/dashboard.types';
 
 interface DashboardSummaryProps {
@@ -184,6 +185,41 @@ function StatusHeaderActionButton({
   );
 }
 
+function TimeRangePicker({
+  value,
+  onChange,
+}: {
+  value: DashboardTimeRange;
+  onChange: (range: DashboardTimeRange) => void;
+}) {
+  return (
+    <fieldset className="inline-flex shrink-0 overflow-hidden rounded-xl border border-white/80 bg-white/90 p-1 shadow-xs ring-1 ring-slate-200/70 backdrop-blur-sm">
+      <legend className="sr-only">스파크라인 시간 범위</legend>
+      {DASHBOARD_TIME_RANGE_OPTIONS.map((option) => {
+        const isActive = option.value === value;
+
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-label={option.ariaLabel}
+            aria-pressed={isActive}
+            onClick={() => onChange(option.value)}
+            className={cn(
+              'min-h-8 min-w-10 rounded-lg px-2.5 text-xs font-semibold tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-300',
+              isActive
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            )}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </fieldset>
+  );
+}
+
 export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
   function DashboardSummary({
     stats,
@@ -194,6 +230,8 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
     onOpenAlertHistory,
     onOpenLogExplorer,
     activeAlertsCount = 0,
+    timeRange = '24h',
+    onTimeRangeChange,
   }) {
     // Null-safe 처리
     const safeStats = {
@@ -384,6 +422,9 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                 )}
               </StatusHeaderActionGroup>
             </div>
+            {onTimeRangeChange && (
+              <TimeRangePicker value={timeRange} onChange={onTimeRangeChange} />
+            )}
           </div>
         </div>
       </div>

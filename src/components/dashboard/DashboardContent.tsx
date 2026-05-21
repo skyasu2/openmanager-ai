@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type {
@@ -16,7 +16,10 @@ import { AlertFeedPanel } from './AlertFeedPanel';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
 import { SystemOverviewSection } from './SystemOverviewSection';
-import type { DashboardStats } from './types/dashboard.types';
+import type {
+  DashboardStats,
+  DashboardTimeRange,
+} from './types/dashboard.types';
 
 const ServerDashboard = dynamic(() => import('./ServerDashboard'), {
   ssr: false,
@@ -97,6 +100,8 @@ export default memo(function DashboardContent({
   onStatusFilterChange,
 }: DashboardContentProps) {
   const router = useRouter();
+  const [metricsTimeRange, setMetricsTimeRange] =
+    useState<DashboardTimeRange>('24h');
   const currentPageServers = servers;
   const fleetServers = allServers?.length ? allServers : currentPageServers;
   const cardSourceServers = displayServers?.length
@@ -216,6 +221,8 @@ export default memo(function DashboardContent({
           onOpenAlertHistory={() => router.push('/dashboard/alerts')}
           onOpenLogExplorer={() => router.push('/dashboard/logs')}
           activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
+          timeRange={metricsTimeRange}
+          onTimeRangeChange={setMetricsTimeRange}
         />
 
         {/* 🎯 메인 컨텐츠 영역 */}
@@ -242,6 +249,7 @@ export default memo(function DashboardContent({
                   onStatsUpdate={onStatsUpdate}
                   initialVisibleRows={2}
                   surface="overview"
+                  metricsTimeRange={metricsTimeRange}
                 />
               </div>
               <AlertFeedPanel

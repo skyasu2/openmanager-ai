@@ -55,6 +55,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     onOpenLogs,
     variant = 'standard',
     showRealTimeUpdates = true,
+    metricsTimeRange = '24h',
   }) => {
     // Basic data preparation
     const { safeServer, serverIcon, serverTypeLabel, osIcon, osShortName } =
@@ -72,9 +73,8 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     const { metricsHistory, loadMetricsHistory } = useServerMetrics();
 
     useEffect(() => {
-      // 컴포넌트 마운트 시 24시간 히스토리 로드
-      loadMetricsHistory(safeServer.id, '24h');
-    }, [safeServer.id, loadMetricsHistory]);
+      loadMetricsHistory(safeServer.id, metricsTimeRange);
+    }, [metricsTimeRange, safeServer.id, loadMetricsHistory]);
 
     // 실시간 메트릭 (Props 기반 SSOT)
     const realtimeMetrics = useMemo(

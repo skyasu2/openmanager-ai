@@ -158,6 +158,7 @@ export default function ServerDashboard({
   onStatsUpdate: _onStatsUpdate, // Reserved for future stats callback
   initialVisibleRows = DEFAULT_VISIBLE_ROWS,
   surface = 'server-list',
+  metricsTimeRange = '24h',
 }: ServerDashboardProps) {
   const router = useRouter();
   // 🚀 성능 추적 활성화
@@ -637,6 +638,7 @@ export default function ServerDashboard({
                         index={index}
                         onClick={handleServerSelect}
                         onOpenLogs={handleOpenLogs}
+                        metricsTimeRange={metricsTimeRange}
                       />
                     </ServerCardErrorBoundary>
                   );
