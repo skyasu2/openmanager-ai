@@ -143,9 +143,12 @@ const DashboardHeader = memo(function DashboardHeader({
     >
       {/* 브랜드 액센트 라인 */}
       <div className="absolute inset-x-0 top-0 h-[2px] bg-linear-to-r from-blue-500 via-indigo-500 to-violet-500" />
-      <div className="flex min-w-0 items-center justify-between gap-3 py-4 pr-4 pl-16 sm:gap-4 sm:pr-6 lg:px-6">
+      <div
+        data-testid="dashboard-header-primary-row"
+        className="flex min-w-0 items-center justify-between gap-2 py-4 pr-3 pl-14 sm:gap-4 sm:pr-6 sm:pl-16 lg:px-6"
+      >
         {/* 왼쪽: 브랜드 로고 */}
-        <div className="flex min-w-0 flex-1 basis-0 items-center gap-4 overflow-hidden">
+        <div className="flex min-w-0 flex-1 basis-0 items-center gap-2 overflow-hidden sm:gap-4">
           <OpenManagerLogo
             variant="light"
             compactOnMobile
@@ -153,6 +156,11 @@ const DashboardHeader = memo(function DashboardHeader({
             titleWeight="semibold"
             showSubtitle={false}
           />
+          {!isDesktopLayout && (
+            <div className="ml-auto flex shrink-0 lg:hidden">
+              <RealTimeDisplay variant="compact" />
+            </div>
+          )}
         </div>
 
         {/* 중앙: 실시간 정보 + 세션 카운트다운 */}
@@ -186,16 +194,6 @@ const DashboardHeader = memo(function DashboardHeader({
         open={showLoginModal}
         onClose={() => setShowLoginModal(false)}
       />
-
-      {/* 모바일용 실시간 정보 + 세션 카운트다운 */}
-      {!isDesktopLayout && (
-        <div className="border-t border-slate-200/60 bg-slate-50/80 px-4 py-2 lg:hidden">
-          <div className="flex flex-nowrap items-center justify-center gap-2 text-xs">
-            <RealTimeDisplay />
-            <SessionCountdown />
-          </div>
-        </div>
-      )}
     </header>
   );
 });
