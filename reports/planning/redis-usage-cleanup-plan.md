@@ -1,7 +1,7 @@
 > Owner: project
-> Status: Draft
+> Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-20
+> Last reviewed: 2026-05-21
 > Tags: redis,upstash,cleanup,dead-code,documentation
 
 # Redis 사용 현황 정비 계획
@@ -9,6 +9,8 @@
 **작성 배경**: 2026-05-20 정적 코드 분석으로 Redis 사용 현황을 전수 조사한 결과, 사문화된 기능 2건과 운영 위험 2건, 문서 불일치 다수를 발견했다.  
 **분석 범위**: `src/` (Vercel/Next.js), `cloud-run/ai-engine/src/` (Cloud Run AI Engine)  
 **연관 계획서**: [ai-assistant-design-cleanup-plan.md](archive/ai-assistant-design-cleanup-plan.md) — Task 1-C(resumable 제거), Task 3-C(CB store 정리)와 겹치는 항목은 해당 계획서 기준으로 실행했다.
+
+**현재 실행 상태**: R-0~R-4, R-6 완료. 남은 R-5는 Upstash dashboard 또는 management API 사용량 접근이 필요한 사용자 액션으로, 로컬 코드 변경만으로 완료할 수 없다.
 
 ---
 

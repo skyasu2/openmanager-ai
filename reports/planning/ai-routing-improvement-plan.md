@@ -1,197 +1,238 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
+> Doc type: Plan
 > Last reviewed: 2026-05-21
+> Tags: ai,routing,semantic-intent,security,clarification
 
 # AI 라우팅 아키텍처 개선 계획
 
-- 상태: Draft
+- 상태: Approved
 - 작성일: 2026-05-21
 - TODO.md 연결: Active Tasks > AI 라우팅 아키텍처 개선
-- 배경: 기존 설계 분석에서 식별된 신뢰 경계·중복·책임 분산 문제 해소
+- 배경: 기존 설계 분석에서 식별된 신뢰 경계, 중복 호출, 책임 분산 문제 해소
 
 ---
 
-## 컨텍스트
+## 목표
 
-현재 AI 라우팅 흐름:
+AI 라우팅 경계의 신뢰도를 높이되, 기존 portable domain 구조와 사용자-facing AI 동작을 깨뜨리지 않는다.
 
 ```
-클라이언트
-  ├─ classifyQuery()                  # 키워드 매칭 (로컬)
-  ├─ shouldExtractSemanticIntentFrame()  # 패턴 매칭 (로컬)
-  └─ [조건부] POST /api/ai/nlq/extract-entities
-       └─ Groq Llama 4 Scout → intentFrame { intent, confidence }
-
-Vercel BFF (/api/ai/supervisor)
-  └─ Auth / Cache / Rate-limit → Cloud Run 프록시 (intentFrame 포함)
-
-Cloud Run (orchestrator-direct-routing.ts)
-  └─ intentFrame.confidence ≥ 0.8 → 에이전트 결정론적 선택
+클라이언트 local guard/classifier
+  -> 선택적 NLQ entity extraction
+  -> Vercel BFF supervisor proxy
+  -> Cloud Run semantic metadata normalization
+  -> domain routing policy / direct agent routing
 ```
+
+핵심 정리:
+- Cloud Run이 신뢰할 수 없는 `intentFrame` 문자열을 그대로 routing signal로 쓰지 않는다.
+- local `classifyQuery()`는 clarification/complexity 판단용임을 타입 이름으로 드러낸다.
+- off-domain guard는 `useQueryExecution` 입력 경계에서만 실행한다.
+- entity extraction 호출은 routing hint와 clarification 목적을 분리해 판단한다.
+
+## 범위
+
+포함:
+- Cloud Run semantic intentFrame validation과 direct routing exact match hardening
+- Root App local query classification 타입 명확화
+- Root App off-domain guard 중복 제거
+- Root App clarification/routing entity extraction trigger 분리
+- 위 변경을 고정하는 unit/contract tests
+
+제외:
+- live LLM sampling, confidence threshold 변경, provider 변경
+- Supabase schema 변경
+- 세션 메모리 확장
+- KRL corpus seed 변경
+- production QA 강제 실행. 라우팅 runtime 변경이 배포될 때만 별도 QA 기록
 
 ---
 
-## 개선 항목
+## 현재 코드 사실
 
-### P1 — Cloud Run intent 화이트리스트 검증 (보안)
+| 항목 | 현재 상태 | 판단 |
+|------|-----------|------|
+| Cloud Run intent normalization | `normalizeSupervisorIntentFrame()`이 `intent`/`domainId`를 non-empty string으로만 검증 | whitelist 또는 registry-aware validation 필요 |
+| Direct routing semantic key | `semanticKey.includes(...)` 기반 | prefix/suffix injection에 약함 |
+| Off-domain guard | `useQueryExecution.sendQuery()`와 `classifyQuery()`에서 중복 호출 | 입력 경계 단일화 필요 |
+| Local classification field | `QueryClassification.intent`와 Cloud Run `intentFrame.intent` 이름 충돌 | `localIntent`로 리네임 |
+| Entity extraction trigger | `clarificationRequest || shouldExtractSemanticIntentFrame(query)` 단일 조건 | 목적별 boolean 분리 필요 |
 
-**파일**: `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.ts`  
-**파일**: `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-direct-routing.ts`
-
-**문제**:  
-`normalizeSupervisorIntentFrame()`이 `intent` 필드를 `readString()`으로만 검증 — 어떤 문자열이든 통과.  
-`resolveSemanticFrameAgent()`의 `capabilityId.includes('incident_report')` 패턴은 prefix injection에 취약.
-
-**변경**:
-
-```typescript
-// supervisor-semantic-metadata.ts 상단에 추가
-const VALID_DOMAIN_INTENTS = new Set([
-  'metric_peak', 'metric_current', 'metric_trend',
-  'anomaly_detection', 'anomaly_prediction', 'capacity_forecast',
-  'failure_risk', 'server_health', 'root_cause',
-  'incident_report', 'ops_advice', 'log_analysis', 'unknown',
-]);
-
-const VALID_DOMAIN_IDS = new Set(['openmanager-monitoring']);
-
-// normalizeSupervisorIntentFrame 내부:
-if (!VALID_DOMAIN_INTENTS.has(intent)) return undefined;
-if (domainId && !VALID_DOMAIN_IDS.has(domainId)) return undefined;
-const clampedConfidence = Math.max(0, Math.min(100, confidence));
-```
-
-```typescript
-// orchestrator-direct-routing.ts — includes → exact match
-// Before
-semanticKey.includes('incident_report')
-// After
-semanticKey === 'incident_report' || semanticKey === 'monitoring.incident_report'
-```
-
-**검증**: AI Engine targeted Vitest, `type-check`
+주의:
+- Cloud Run assistant runtime에는 sample/portable domain 테스트가 있다. 따라서 `domainId`를 `openmanager-monitoring` 하나로만 하드코딩해 reject하면 안 된다.
+- production Root App이 생성하는 semantic frame은 현재 `openmanager-monitoring`만 사용한다.
 
 ---
 
-### P2 — `getOffDomainGuardrail` 이중 호출 제거 (중복 코드)
+## 계약 (Contract)
 
-**파일**: `src/lib/ai/query-classifier.ts`
+### 변경 대상 파일
 
-**문제**:  
-`useQueryExecution.ts`가 `getOffDomainGuardrail()`을 먼저 호출해 조기 종료하지만,  
-이후 호출되는 `classifyQuery()` 내부에서도 동일 함수를 다시 호출.
+| 영역 | 파일 |
+|------|------|
+| Cloud Run metadata normalization | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.ts` |
+| Cloud Run direct routing | `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-direct-routing.ts` |
+| Monitoring routing policy follow-up | `cloud-run/ai-engine/src/domains/monitoring/routing-policy.ts` |
+| Root local classifier | `src/lib/ai/query-classifier.ts` |
+| Root clarification generator | `src/lib/ai/clarification-generator.ts` |
+| Root query execution | `src/hooks/ai/core/useQueryExecution.ts` |
+| Root classifier tests | `src/lib/ai/query-classifier.test.ts` |
+| Root clarification tests | `src/lib/ai/clarification-generator.test.ts` |
+| Root query execution tests | `src/hooks/ai/core/useQueryExecution.test.ts` |
+| Cloud Run targeted tests | existing tests adjacent to changed files |
 
-**변경**:  
-`classifyQuery()`에서 `getOffDomainGuardrail()` 호출 및 `off-domain` 분기 제거.  
-`useQueryExecution`의 조기 종료가 유일한 오프도메인 게이트임을 명확히.
+### P1: Semantic Frame Trust Boundary
 
-```typescript
-// query-classifier.ts — 제거 대상
-// const offDomainGuardrail = getOffDomainGuardrail(query);
-// if (offDomainGuardrail) { return { intent: 'off-domain', ... }; }
-```
+| 함수/API | 입력 | 출력 | 에러/거부 케이스 |
+|----------|------|------|------------------|
+| `normalizeSupervisorIntentFrame(value)` | unknown metadata intentFrame | `DomainIntentFrame | undefined` | 구조 불일치, unknown monitoring intent/capability, invalid domain/capability pairing |
+| `resolveDirectRoutingTarget(preFilter, context)` | pre-filter result + optional intentFrame/inputType | deterministic routing target | low confidence frame ignored; unknown semantic key ignored |
+| `getIntentCategory(query, intentFrame)` | query + optional intentFrame | monitoring intent category | low confidence/unknown semantic key falls back to regex |
 
-**검증**: `query-classifier` 관련 Vitest, `type-check`, `lint`
+Required behavior:
+- Monitoring semantic keys are matched by exact known values, not substring search.
+- Valid examples remain accepted:
+  - `intent=incident_report`, `capabilityId=monitoring.incident_report`
+  - `intent=metric_peak`, `capabilityId=monitoring.metric_peak`
+  - `intent=ops_advice`, `capabilityId=monitoring.ops_advice`
+- Injection-like examples are rejected or ignored as semantic signals:
+  - `capabilityId=monitoring.not_incident_report`
+  - `capabilityId=monitoring.incident_report_extra`
+  - `intent=incident_report_bypass`
+- Registered/portable non-monitoring domain frames used by existing runtime tests must not be broken. If a generic whitelist is introduced, it must be registry-aware or explicitly allow current test fixture domains.
+- Confidence normalization remains compatible with `0.92` and `92` inputs.
 
----
+### P2: Off-domain Guard Single Boundary
 
-### P3 — clarification·routing 트리거 분리 (아키텍처)
+| 함수/API | 입력 | 출력 | 에러/거부 케이스 |
+|----------|------|------|------------------|
+| `classifyQuery(query)` | user query | local classification | no direct off-domain guard call |
+| `useQueryExecution.sendQuery(query)` | user query | deterministic guard exit or query execution | off-domain exits before entity extraction |
+| `useQueryExecution.executeQuery(query)` | user query | deterministic guard exit or transport call | off-domain exits before LLM/async path |
 
-**파일**: `src/hooks/ai/core/useQueryExecution.ts`
+Required behavior:
+- `getOffDomainGuardrail()` remains the source of truth for off-domain detection.
+- `useQueryExecution` remains the input boundary that blocks/downgrades off-domain requests.
+- `classifyQuery()` no longer returns off-domain because it no longer runs the guard.
+- Existing infra-context coding queries remain allowed by `getOffDomainGuardrail()` rules.
 
-**문제**:  
-엔티티 추출(Groq, ~200ms)이 두 가지 다른 목적으로 단일 조건에 묶임:
-- `shouldExtractSemanticIntentFrame()` → Cloud Run 에이전트 선택 힌트
-- `generateClarification()` 결과 있음 → 사용자에게 명확화 질문
+### P4: Local Intent Rename
 
-두 목적이 섞여 있어 명확화 불필요한 복잡 쿼리도 Groq를 호출하고,  
-라우팅 힌트 불필요한 단순 쿼리도 엔티티를 추출하는 경우 발생.
+| 타입/API | 변경 전 | 변경 후 |
+|----------|---------|---------|
+| `QueryClassification.intent` | local clarification/complexity intent | removed |
+| `QueryClassification.localIntent` | absent | local clarification/complexity intent |
 
-**변경**:
+Required behavior:
+- `localIntent` union must match the actual classifier surface. Current valid values are `general`, `monitoring`, and `analysis` after P2 removes `off-domain`.
+- Do not add unused `guide` or `coding` values unless tests prove active return paths.
+- `clarification-generator.ts` must read `classification.localIntent`.
+- Development logging in `useQueryExecution.ts` must use `localIntent`.
+- No Cloud Run request payload field is renamed by this task.
 
-```typescript
-// 목적을 명시적으로 분리
-const needsRoutingHint = shouldExtractSemanticIntentFrame(query);
-const needsClarificationCheck = !!generateClarification(query, classification);
+### P3: Entity Extraction Trigger Split
 
-if (needsRoutingHint || needsClarificationCheck) {
-  const entities = await extractEntitiesCached(query);
+| 함수/API | 입력 | 출력 | 에러/거부 케이스 |
+|----------|------|------|------------------|
+| `sendQuery()` clarification flow | query + classification | optional clarification or execution | entity extraction blocked result surfaces user error |
+| `shouldExtractSemanticIntentFrame(query)` | query | boolean routing hint need | no side effect |
+| `generateClarification(query, classification, entities?)` | query + local classification + optional entities | clarification request or null | no extraction side effect |
 
-  // 라우팅 힌트 — Cloud Run으로 전달
-  if (needsRoutingHint && entities.intentFrame) {
-    refs.semanticIntentFrame.current = entities.intentFrame;
-  }
-
-  // 명확화 — 유효 엔티티 있으면 skip, 없으면 질문 표시
-  if (needsClarificationCheck) {
-    const hasEntities =
-      entities.server !== undefined ||
-      entities.metric !== undefined ||
-      entities.intentFrame !== undefined;
-    if (!hasEntities) {
-      // clarification 표시 로직
-    }
-  }
-}
-```
-
-**검증**: `useQueryExecution` 관련 Vitest, 통합 smoke
-
----
-
-### P4 — `classifyQuery().intent` 필드 범위 명확화 (기술 부채)
-
-**파일**: `src/lib/ai/query-classifier.ts`
-
-**문제**:  
-`intent: 'monitoring' | 'analysis' | 'general' | 'off-domain'` 필드가  
-Cloud Run의 `intentFrame.intent`(`'anomaly_detection'` 등)와 이름이 동일해 혼동 유발.  
-실제로는 로컬 clarification 판단용으로만 사용되며 Cloud Run으로 전달되지 않음.
-
-**변경**:
-
-```typescript
-export interface QueryClassification {
-  complexity: number;
-  /** @internal Cloud Run으로 전달되지 않음. clarification + complexity 판단 전용 */
-  localIntent: 'general' | 'monitoring' | 'analysis' | 'off-domain';
-  reasoning: string;
-  confidence: number;
-  isOffDomain?: boolean;
-  offDomainCategory?: OffDomainGuardCategory;
-}
-```
-
-`intent` → `localIntent` 리네임 후 참조 전체 교체.
-
-**검증**: `type-check`, 참조처(`clarification-generator.ts`, `useQueryExecution.ts`) 컴파일
+Required behavior:
+- Compute:
+  - `needsRoutingHint = shouldExtractSemanticIntentFrame(query)`
+  - `initialClarificationRequest = generateClarification(query, classification)`
+  - `needsClarificationCheck = initialClarificationRequest !== null`
+- Call `extractEntitiesCached(query)` only when `needsRoutingHint || needsClarificationCheck`.
+- Populate `refs.semanticIntentFrame.current` only when `needsRoutingHint` and `entities.intentFrame` exists.
+- Populate `refs.semanticPreprocessing.current` only when extraction actually ran.
+- Re-run clarification only when `needsClarificationCheck` was true.
+- Do not let a routing-only intentFrame automatically suppress a clarification unless the existing `generateClarification(..., entities)` contract says so.
 
 ---
 
-## 실행 순서
+## 테스트 시나리오 (구현 전 확정)
 
-```
-P1 (Cloud Run whitelist)  →  P2 (off-domain dedup)  →  P4 (rename)  →  P3 (trigger split)
-  보안 우선                    단순 제거                  타입 정렬          구조 개선
-```
+### P1
 
-P1·P2·P4는 각각 독립 커밋.  
-P3는 `useQueryExecution` 변경 범위가 크므로 SDD 선행 커밋 후 구현.
+- [ ] `normalizeSupervisorIntentFrame()` rejects unknown monitoring intent such as `incident_report_bypass`.
+- [ ] `normalizeSupervisorIntentFrame()` rejects mismatched monitoring capability such as `intent=metric_peak`, `capabilityId=monitoring.incident_report`.
+- [ ] `resolveDirectRoutingTarget()` routes exact `monitoring.incident_report` to Reporter.
+- [ ] `resolveDirectRoutingTarget()` ignores `monitoring.not_incident_report` and falls back to pre-filter.
+- [ ] `getIntentCategory()` no longer treats `monitoring.not_incident_report` as RCA.
+- [ ] Existing sample/portable domain contract tests continue to pass.
+
+### P2
+
+- [ ] `classifyQuery('비트코인 가격 알려줘')` no longer returns off-domain classification.
+- [ ] `sendQuery('비트코인 가격 알려줘')` exits before entity extraction and LLM transport.
+- [ ] `executeQuery('파이썬 피보나치 코드 짜줘')` still returns deterministic guard response before LLM transport.
+- [ ] Infra-context coding query remains allowed by `getOffDomainGuardrail()` and classifies as local analysis/monitoring as appropriate.
+
+### P4
+
+- [ ] TypeScript rejects `classification.intent` references.
+- [ ] `generateClarification()` uses `classification.localIntent === 'analysis'`.
+- [ ] Development log prints `localIntent`.
+- [ ] Existing clarification tests pass after fixture rename.
+
+### P3
+
+- [ ] Routing-only semantic query calls `extractEntitiesCached()` once and does not create clarification when none was initially needed.
+- [ ] Clarification-only query calls `extractEntitiesCached()` once and re-runs clarification with entities.
+- [ ] Query needing both routing hint and clarification calls extraction once.
+- [ ] Attachment queries still skip clarification/entity extraction and execute directly.
+- [ ] `entities.blocked` still surfaces the existing user-facing error and stops execution.
 
 ---
 
-## 검증 게이트 (전체)
+## Task 목록
 
-```bash
-npm run type-check
-npm run lint
-npm run test:quick
-npm run test:contract
-```
+구현 착수 전 이 plan의 Status가 `Approved`인지 확인한다.
 
-AI Engine 변경(P1) 시 추가:
-```bash
-# cloud-run/ai-engine 디렉토리 기준
-npx tsc --noEmit
-npx vitest run
-```
+- [ ] Task 0 — P1 failing tests
+  - 커밋: `test(spec): add semantic frame trust boundary specs`
+  - 완료 기준: P1 테스트가 현재 코드에서 실패함
+- [ ] Task 1 — P1 implementation
+  - 커밋: `fix(ai): harden semantic frame routing trust boundary`
+  - 완료 기준: Cloud Run targeted tests, AI Engine type-check pass
+- [ ] Task 2 — P2/P4 failing tests
+  - 커밋: `test(spec): add local classifier boundary specs`
+  - 완료 기준: off-domain/classification rename tests가 현재 코드에서 실패함
+- [ ] Task 3 — P2/P4 implementation
+  - 커밋: `refactor(ai): separate local classification from guardrails`
+  - 완료 기준: root targeted tests, `type-check`, `lint` pass
+- [ ] Task 4 — P3 failing tests
+  - 커밋: `test(spec): add entity extraction trigger split specs`
+  - 완료 기준: trigger split tests가 현재 코드에서 실패함
+- [ ] Task 5 — P3 implementation
+  - 커밋: `refactor(ai): split clarification and routing extraction triggers`
+  - 완료 기준: root targeted tests, `type-check`, `lint`, `test:quick`, `test:contract` pass
+- [ ] Task 6 — plan/TODO completion update
+  - 커밋: `docs(planning): close ai routing improvement plan`
+  - 완료 기준: TODO status와 plan status가 실제 완료 상태와 일치
+
+---
+
+## 단계별 검증 게이트
+
+| Task | 필수 검증 | 추가 검증 |
+|------|-----------|-----------|
+| P1 tests/implementation | `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-semantic-metadata.test.ts src/services/ai-sdk/agents/orchestrator-direct-routing.test.ts src/domains/monitoring/routing-policy.test.ts` | `cd cloud-run/ai-engine && npx tsc --noEmit` |
+| P2/P4 tests/implementation | `npx vitest run src/lib/ai/query-classifier.test.ts src/lib/ai/clarification-generator.test.ts src/hooks/ai/core/useQueryExecution.test.ts` | `npm run type-check`, `npm run lint` |
+| P3 tests/implementation | `npx vitest run src/hooks/ai/core/useQueryExecution.test.ts tests/ai-sidebar/useHybridAIQuery.clarification.test.ts tests/ai-sidebar/useHybridAIQuery.contract.test.ts` | `npm run test:quick`, `npm run test:contract` |
+| Final | `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `git diff --check` | AI Engine full tests if P1 blast radius grows |
+
+실 LLM 호출 또는 production QA는 이 plan의 local/contract 검증으로 대체한다. 라우팅 runtime 변경이 release에 포함될 때만 별도 Vercel + Playwright MCP QA를 기록한다.
+
+---
+
+## 완료 기준
+
+- P1 semantic frame trust boundary가 exact/registered validation으로 고정됨
+- P2 off-domain guard가 `useQueryExecution` 입력 경계로 단일화됨
+- P4 local classification 타입명이 `localIntent`로 정렬됨
+- P3 entity extraction trigger가 routing/clarification 목적별로 분리됨
+- 모든 테스트 시나리오가 통과함
+- TODO.md Active Task가 완료 또는 다음 조건부 상태로 갱신됨

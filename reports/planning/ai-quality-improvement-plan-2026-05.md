@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Draft
+> Status: In Progress
 > Doc type: Plan
 > Last reviewed: 2026-05-21
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai
@@ -15,6 +15,8 @@
 - KB governance: target 72건, hard max 80건. 2026-05-21 `cloud-run/ai-engine` `npm run rag:analyze` 기준 현재 67건이며 전체 PASS.
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
+
+**현재 실행 상태**: tracking/conditional. 2026-05-21 기준 즉시 구현할 항목은 없으며, 사용자 액션 또는 재개 조건이 충족될 때만 각 Task를 진행한다.
 
 ---
 

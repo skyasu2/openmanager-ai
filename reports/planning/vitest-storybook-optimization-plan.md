@@ -3,7 +3,8 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-21
+> Tags: testing,storybook,vitest,bundle,budget
 
 ---
 

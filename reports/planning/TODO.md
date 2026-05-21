@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-21 KST (AI 라우팅 아키텍처 개선 계획 추가)
+**Last Updated**: 2026-05-21 KST (잔여 planning 상태 정리)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,10 +13,10 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 라우팅 아키텍처 개선 (intent whitelist·off-domain 중복·트리거 분리·타입 정렬) | Medium | Draft | P1 Cloud Run intent 화이트리스트+exact match(보안), P2 off-domain 이중 호출 제거, P3 clarification·routing 트리거 분리, P4 classifyQuery().intent → localIntent 리네임. P1>P2>P4>P3 순서로 진행. 상세: [ai-routing-improvement-plan.md](ai-routing-improvement-plan.md) |
-| AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | Draft | 2026-05-21 실행 판단 정리 완료. Task A는 OTel production QA 완료 후 추가 live LLM QA 보류, Task C(KRL corpus 보강)는 현재 67건/target 72/hard 80/governance PASS로 no-op, Task D는 routing 증상 재현 시 측정, Task F는 2026-05-23까지 관찰. 세션 메모리 확장(Task E)은 Backlog. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
-| Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | In Progress | R-0~R-4, R-6 완료. R-5(Upstash 실측 소비 보정)는 dashboard 또는 management API 접근이 필요한 사용자 액션으로 유지. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
-| Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P0/P1/P2/P3/P4 완료. Storybook interaction runner는 안정 스토리 4개/5 tests bounded 실행으로 확정(`npm run test:storybook:interaction` PASS, 207.51s). `npm run bundle:budget` 첫 관측 PASS(JS group 1.37MB/2MB, CSS group 34.94KB/250KB). 2026-05-18 조기 관측에서 Noto Sans KR static weight 중복으로 단일 CSS chunk 예산 초과를 확인했고 `weight: 'variable'` 전환 후 PASS(JS group 1.38MB/2MB, CSS group 61.94KB/250KB, max CSS 30.89KB/120KB). 2026-05-19 중간 sanity check도 동일 기준 PASS. P0 bundlemon은 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
+| AI 라우팅 아키텍처 개선 (intent whitelist·off-domain 중복·트리거 분리·타입 정렬) | Medium | Approved | Contract와 테스트 시나리오 정리 완료. SDD 순서: P1 failing tests → P1 구현 → P2/P4 failing tests → P2/P4 구현 → P3 failing tests → P3 구현. 상세: [ai-routing-improvement-plan.md](ai-routing-improvement-plan.md) |
+| AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 즉시 구현 항목 없음. Task A 추가 live QA는 KRL runtime 변경 시만, Task B는 Upstash dashboard/management API 사용자 액션, Task C는 no-op, Task D는 routing 증상 재현 시 측정, Task F는 2026-05-23까지 관찰. 세션 메모리 확장(Task E)은 Backlog. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
+| Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | 사용자 액션 필요 | R-0~R-4, R-6 완료. 남은 R-5는 Upstash dashboard 또는 management API 접근으로 실측 소비량을 확인해야 보정 가능. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
+| Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P1~P5 완료. P0은 warn-first 관찰 중이며 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 ---
 
 ## Backlog
