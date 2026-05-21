@@ -104,6 +104,7 @@ describe('useMonitoringReport', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -125,6 +126,36 @@ describe('useMonitoringReport', () => {
 
     expect(result.current.data?.success).toBe(true);
     expect(result.current.data?.health.score).toBe(89);
+
+    unmount();
+    queryClient.clear();
+  });
+
+  it('마운트 이후 자동 refetch를 예약하지 않도록 query 옵션을 고정한다', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => createValidMonitoringResponse(),
+    });
+
+    const { queryClient, Wrapper } = createWrapper();
+    const { result, unmount } = renderHook(() => useMonitoringReport(), {
+      wrapper: Wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    const query = queryClient.getQueryCache().find({
+      queryKey: ['monitoring-report'],
+    });
+
+    expect(query?.options.refetchInterval).toBe(false);
+    expect(query?.options.staleTime).toBe(Infinity);
+    expect(query?.options.gcTime).toBe(Infinity);
 
     unmount();
     queryClient.clear();

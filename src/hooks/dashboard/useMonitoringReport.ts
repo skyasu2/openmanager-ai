@@ -2,11 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import {
-  getMsUntilNextServerDataSlot,
-  SERVER_DATA_GC_TIME_MS,
-  SERVER_DATA_STALE_TIME_MS,
-} from '@/config/server-data-polling';
-import {
   type MonitoringReportApiResponse,
   MonitoringReportApiResponseSchema,
   type MonitoringReportErrorResponse,
@@ -73,12 +68,10 @@ export function useMonitoringReport() {
   return useQuery({
     queryKey: ['monitoring-report'],
     queryFn: fetchMonitoringReport,
-    refetchInterval: () => getMsUntilNextServerDataSlot(),
-    refetchIntervalInBackground: false,
-    staleTime: SERVER_DATA_STALE_TIME_MS,
-    gcTime: SERVER_DATA_GC_TIME_MS,
+    staleTime: Infinity, // 접속 시각 슬롯 고정 — 세션 내 갱신 없음
+    gcTime: Infinity,
+    refetchInterval: false,
     refetchOnWindowFocus: false,
-    // 오류 시 즉시 상태를 노출하고 다음 polling 주기에서 재시도한다.
     retry: false,
   });
 }

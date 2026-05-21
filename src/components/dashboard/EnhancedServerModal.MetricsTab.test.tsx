@@ -3,21 +3,25 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MetricsTab } from './EnhancedServerModal.MetricsTab';
 import type { RealtimeData, ServerData } from './EnhancedServerModal.types';
+
+const mockUseTimeSeriesMetrics = vi.hoisted(() =>
+  vi.fn(() => ({
+    data: null,
+    isLoading: false,
+    error: null,
+    refetch: vi.fn(),
+  }))
+);
 
 vi.mock('@/components/charts/NivoTimeSeriesChart', () => ({
   NivoTimeSeriesChart: () => <div data-testid="nivo-time-series-chart" />,
 }));
 
 vi.mock('@/hooks/useTimeSeriesMetrics', () => ({
-  useTimeSeriesMetrics: () => ({
-    data: null,
-    isLoading: false,
-    error: null,
-    refetch: vi.fn(),
-  }),
+  useTimeSeriesMetrics: (options: unknown) => mockUseTimeSeriesMetrics(options),
 }));
 
 vi.mock('./EnhancedServerModal.components', () => ({
@@ -54,6 +58,10 @@ const realtimeData: RealtimeData = {
 };
 
 describe('MetricsTab', () => {
+  beforeEach(() => {
+    mockUseTimeSeriesMetrics.mockClear();
+  });
+
   it('성능 분석 서브모드는 활성 상태를 aria-pressed와 강한 배경으로 표시한다', () => {
     render(
       <MetricsTab
@@ -107,5 +115,20 @@ describe('MetricsTab', () => {
     expect(
       screen.getByRole('button', { name: '실시간 메트릭 시작' })
     ).toBeInTheDocument();
+  });
+
+  it('실시간 모드에서도 시계열 자동 갱신 interval을 전달하지 않는다', () => {
+    render(
+      <MetricsTab
+        server={server}
+        realtimeData={realtimeData}
+        isRealtime
+        onToggleRealtime={vi.fn()}
+      />
+    );
+
+    expect(mockUseTimeSeriesMetrics).toHaveBeenCalledWith(
+      expect.objectContaining({ refreshInterval: 0 })
+    );
   });
 });
