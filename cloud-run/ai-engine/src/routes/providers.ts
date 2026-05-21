@@ -47,7 +47,7 @@ providersRouter.get('/', (c: Context) => {
     modelDrift: getDeprecatedRuntimeProviderModels(modelMetadata),
     info: {
       cerebras: {
-        role: 'Short-context text runtime + fallback for Groq-first agents',
+        role: 'Text fallback runtime (gpt-oss-120b primary; llama3.1-8b deprecated 2026-05-27)',
         model: getCerebrasModelId(),
         toolCallingEnabled: isCerebrasToolCallingEnabled(),
       },

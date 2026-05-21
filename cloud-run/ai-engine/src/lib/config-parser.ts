@@ -326,8 +326,8 @@ export function getCerebrasModelId(): string {
 }
 
 /**
- * Intra-provider fallback models for Cerebras. The default model is already
- * llama3.1-8b, so gpt-oss-120b is the built-in replacement fallback unless
+ * Intra-provider fallback models for Cerebras. The default model is gpt-oss-120b
+ * (switched 2026-05-21), so no built-in intra-Cerebras fallback is needed unless
  * CEREBRAS_FALLBACK_MODEL_IDS is explicitly set.
  */
 export function getCerebrasFallbackModelIds(): string[] {

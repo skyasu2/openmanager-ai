@@ -81,8 +81,8 @@ const ORCHESTRATOR_TEXT_PROVIDER_ORDER = [
 //   Groq:     30 RPM / 1K RPD / 30K TPM / 500K TPD.
 //   Z.AI:     free Flash models, concurrency/rate limits are account-specific.
 //   Mistral:  workspace-tier dependent; current account smoke: 50 RPM / 50K TPM.
-//   Cerebras: short-context fallback only. Current account smoke: 5 RPM / 2.4K RPD.
-//             llama3.1-8b has an 8K context window and deprecates on 2026-05-27.
+//   Cerebras: gpt-oss-120b primary (2026-05-21 switchover). Current account smoke: 5 RPM / 2.4K RPD.
+//             llama3.1-8b deprecated 2026-05-27; no context window specified for gpt-oss-120b yet.
 //
 // maxSteps cap rationale (one LLM call per step):
 //   Metrics Query:       4 steps → up to 4 Groq calls  → 6 users/min headroom

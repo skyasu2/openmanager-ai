@@ -22,6 +22,7 @@ import {
   getAIProvidersConfig,
   DEFAULT_CEREBRAS_MODEL,
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+  CEREBRAS_GPT_OSS_MODEL_ID,
   getCerebrasFallbackModelIds,
 } from './config-parser';
 
@@ -179,11 +180,11 @@ describe('Config Parser', () => {
   });
 
   describe('getCerebrasModelId', () => {
-    it('should use llama3.1-8b as the default Cerebras production model when env is missing', () => {
+    it('should use gpt-oss-120b as the default Cerebras production model when env is missing', () => {
       delete process.env.CEREBRAS_MODEL_ID;
 
-      expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
-      expect(getCerebrasModelId()).toBe('llama3.1-8b');
+      expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_GPT_OSS_MODEL_ID);
+      expect(getCerebrasModelId()).toBe('gpt-oss-120b');
     });
 
     it('should use CEREBRAS_MODEL_ID when configured', () => {
@@ -192,9 +193,10 @@ describe('Config Parser', () => {
       expect(getCerebrasModelId()).toBe('custom-cerebras-model');
     });
 
-    it('should add gpt-oss-120b as the built-in Cerebras replacement fallback', () => {
+    it('should return no intra-Cerebras fallback when default is gpt-oss-120b', () => {
       expect(CEREBRAS_LLAMA_FALLBACK_MODEL_ID).toBe('llama3.1-8b');
-      expect(getCerebrasFallbackModelIds()).toEqual(['gpt-oss-120b']);
+      expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_GPT_OSS_MODEL_ID);
+      expect(getCerebrasFallbackModelIds()).toEqual([]);
     });
 
     it('should disable Cerebras tool-calling by default', () => {

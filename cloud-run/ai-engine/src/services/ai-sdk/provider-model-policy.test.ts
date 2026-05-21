@@ -49,8 +49,8 @@ const providerReasoningPolicyModule = providerModelPolicy as typeof providerMode
 };
 
 describe('provider model policy SSOT', () => {
-  it('uses llama3.1-8b as the default and keeps gpt-oss-120b as enabled fallback', () => {
-    expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
+  it('uses gpt-oss-120b as the default primary and keeps llama3.1-8b as deprecated fallback', () => {
+    expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_GPT_OSS_MODEL_ID);
     expect(getCerebrasRuntimeModelIds()).toEqual([
       CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
       CEREBRAS_GPT_OSS_MODEL_ID,
@@ -92,12 +92,12 @@ describe('provider model policy SSOT', () => {
     });
   });
 
-  it('enables gpt-oss-120b as the confirmed Cerebras replacement candidate', () => {
+  it('gpt-oss-120b is now the Cerebras primary model (switchover 2026-05-21)', () => {
     expect(getCerebrasRuntimeModelIds()).toContain(CEREBRAS_GPT_OSS_MODEL_ID);
     expect(getCerebrasModelPolicy(CEREBRAS_GPT_OSS_MODEL_ID)).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_GPT_OSS_MODEL_ID,
-      role: 'fallback',
+      role: 'primary',
       enabled: true,
       smokeStatus: 'green',
       quota: {

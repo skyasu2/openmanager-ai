@@ -45,7 +45,7 @@ const TEXT_PROVIDER_MODELS: Record<TextProvider, {
   capabilities: ModelCapabilities | ((modelId?: string) => ModelCapabilities);
 }> = {
   // Cerebras runtime candidates are config-driven. The default list is
-  // llama3.1-8b only; long-context callers skip it by capability.
+  // gpt-oss-120b primary (2026-05-21); context window unconfirmed → long-context callers skip by capability.
   cerebras: {
     factory: getCerebrasModel,
     modelIds: () => [

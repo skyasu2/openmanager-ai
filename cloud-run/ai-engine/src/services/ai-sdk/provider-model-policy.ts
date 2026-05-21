@@ -7,7 +7,7 @@ export const CEREBRAS_GPT_OSS_MODEL_ID = 'gpt-oss-120b';
 export const CEREBRAS_LLAMA_FALLBACK_MODEL_ID = 'llama3.1-8b';
 export const CEREBRAS_LLAMA_DEPRECATION_DATE = '2026-05-27';
 export const CEREBRAS_ZAI_GLM_MODEL_ID = 'zai-glm-4.7';
-export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
+export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_GPT_OSS_MODEL_ID;
 export const CEREBRAS_DEPRECATION_REPLACEMENT =
   `cerebras:${CEREBRAS_GPT_OSS_MODEL_ID}`;
 export const CEREBRAS_DEPRECATION_CONTINGENCY = {
@@ -21,7 +21,7 @@ export const CEREBRAS_DEPRECATION_CONTINGENCY = {
   ],
   visibleButExcludedModels: [CEREBRAS_ZAI_GLM_MODEL_ID],
   action:
-    'Cerebras llama3.1-8b remains the default until switchover, while gpt-oss-120b is enabled as the confirmed Cerebras replacement candidate.',
+    'Switchover complete (2026-05-21): gpt-oss-120b is now the default Cerebras model. llama3.1-8b remains available until 2026-05-27 deprecation.',
 } as const;
 
 export type ProviderModelRole = 'primary' | 'fallback' | 'vision' | 'excluded';
@@ -237,7 +237,7 @@ export const CEREBRAS_MODEL_POLICIES = {
   [CEREBRAS_GPT_OSS_MODEL_ID]: {
     provider: 'cerebras',
     modelId: CEREBRAS_GPT_OSS_MODEL_ID,
-    role: 'fallback',
+    role: 'primary',
     lifecycle: 'production',
     enabled: true,
     toolCallingEnabled: true,

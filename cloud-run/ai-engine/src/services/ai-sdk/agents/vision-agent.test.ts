@@ -252,7 +252,7 @@ describe('VisionAgent', { timeout: 15000 }, () => {
       expect(result.agent).not.toBeNull();
       expect(result.agent!.getName()).toBe('Analyst Agent');
       expect(result.isFallback).toBe(true);
-      expect(result.fallbackReason).toContain('Vision providers unavailable');
+      expect(result.fallbackReason).toContain('vision provider unavailable');
     });
 
     it('should return null agent when vision is unavailable for a non-vision query', () => {

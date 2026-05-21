@@ -23,20 +23,18 @@ describe('provider model metadata', () => {
     process.env = { ...originalEnv };
   });
 
-  it('treats the default Cerebras model as llama3.1-8b production runtime', () => {
+  it('treats the default Cerebras model as gpt-oss-120b primary (2026-05-21 switchover)', () => {
     delete process.env.CEREBRAS_MODEL_ID;
 
     const metadata = getCerebrasModelMetadata();
 
     expect(metadata.modelId).toBe(DEFAULT_CEREBRAS_MODEL);
-    expect(metadata.modelId).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
-    expect(metadata.role).toContain('fallback');
+    expect(metadata.modelId).toBe(CEREBRAS_GPT_OSS_MODEL_ID);
+    expect(metadata.role).toContain('primary');
     expect(metadata.lifecycle).toBe('production');
     expect(metadata.productionModel).toBe(true);
     expect(metadata.preview).toBe(false);
     expect(metadata.deprecated).toBe(false);
-    expect(metadata.deprecationDate).toBe(CEREBRAS_LLAMA_DEPRECATION_DATE);
-    expect(metadata.contextWindowTokens).toBe(8_192);
     expect(metadata.enabled).toBe(true);
     expect(metadata.toolCallingEnabled).toBe(true);
     expect(metadata.structuredOutputEnabled).toBe(true);
@@ -86,10 +84,10 @@ describe('provider model metadata', () => {
     expect(metadata.quota.tokensPerMinute).toBe(30_000);
   });
 
-  it('marks GPT-OSS as enabled Cerebras fallback metadata', () => {
+  it('marks GPT-OSS as enabled Cerebras primary metadata', () => {
     const metadata = getCerebrasModelMetadata(CEREBRAS_GPT_OSS_MODEL_ID);
 
-    expect(metadata.role).toContain('fallback');
+    expect(metadata.role).toContain('primary');
     expect(metadata.lifecycle).toBe('production');
     expect(metadata.productionModel).toBe(true);
     expect(metadata.enabled).toBe(true);
@@ -129,7 +127,7 @@ describe('provider model metadata', () => {
       metadata.find((entry) => entry.modelId === CEREBRAS_GPT_OSS_MODEL_ID)
     ).toMatchObject({
       modelId: CEREBRAS_GPT_OSS_MODEL_ID,
-      role: expect.stringContaining('fallback'),
+      role: expect.stringContaining('primary'),
       lifecycle: 'production',
       smokeStatus: 'green',
     });

@@ -3,13 +3,12 @@
  *
  * Vercel AI SDK 6 based model provider with tri-provider architecture:
  * - Text mesh: Groq, Z.AI, Mistral, Cerebras are rotated by agent role.
- * - Cerebras: llama3.1-8b only when context permits; blocked after 2026-05-27.
+ * - Cerebras: gpt-oss-120b primary (switched 2026-05-21); llama3.1-8b deprecated 2026-05-27.
  * - Z.AI: free GLM Flash text fallback with thinking disabled by request patch.
  * - Vision: Gemini 2.5 Flash-Lite only.
  *
  * @version 4.2.0
- * @updated 2026-05-16 - SambaNova 제거 유지, Cerebras short-context fallback 보수화
- *                       (account guard: 5 RPM / 2.4K RPD, deprecation 2026-05-27)
+ * @updated 2026-05-21 - Cerebras 기본 모델 gpt-oss-120b로 전환 (llama3.1-8b 2026-05-27 종료 대응)
  */
 
 import type { LanguageModel } from 'ai';

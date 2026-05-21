@@ -533,15 +533,14 @@ describe('QuotaTracker — selectAvailableProvider', () => {
     expect(result!.isPreemptiveFallback).toBe(false);
   });
 
-  it('Cerebras 기본 모델 quota 초과 시 gpt-oss 모델 quota로 전환한다', async () => {
+  it('gpt-oss-120b(기본 모델) quota 초과 시 inter-provider fallback(mistral)으로 전환한다', async () => {
     const limit = PROVIDER_QUOTAS.cerebras.dailyTokenLimit;
     await recordProviderUsage('cerebras', Math.ceil(limit * 0.96));
 
     const result = await selectAvailableProvider(['cerebras', 'mistral', 'groq']);
 
     expect(result).not.toBeNull();
-    expect(result!.provider).toBe('cerebras');
-    expect(result!.modelId).toBe('gpt-oss-120b');
+    expect(result!.provider).toBe('mistral');
     expect(result!.isPreemptiveFallback).toBe(true);
   });
 
