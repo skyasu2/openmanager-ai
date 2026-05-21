@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-21T08:50:59.688Z"
+    "updatedAt": "2026-05-21T09:57:07.056Z"
   },
   "sequence": {
-    "nextRunNumber": 553
+    "nextRunNumber": 554
   },
   "summary": {
-    "totalRecordedRuns": 550,
-    "totalRuns": 438,
+    "totalRecordedRuns": 551,
+    "totalRuns": 439,
     "excludedRuns": 112,
-    "totalChecks": 4009,
-    "totalPassed": 3853,
+    "totalChecks": 4019,
+    "totalPassed": 3863,
     "totalFailed": 145,
     "completionRate": 100,
-    "completedItems": 627,
+    "completedItems": 628,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 35,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260521-0552",
-    "lastRecordedAt": "2026-05-21T08:50:59.688Z",
-    "latestRecordedRunId": "QA-20260521-0552",
-    "latestRecordedAt": "2026-05-21T08:50:59.688Z"
+    "lastRunId": "QA-20260521-0553",
+    "lastRecordedAt": "2026-05-21T09:57:07.056Z",
+    "latestRecordedRunId": "QA-20260521-0553",
+    "latestRecordedAt": "2026-05-21T09:57:07.056Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15617,6 +15617,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-21T08:50:59.688Z"
+    },
+    "dashboard-ux-v8120-production-release-smoke": {
+      "id": "dashboard-ux-v8120-production-release-smoke",
+      "title": "v8.12.0 dashboard UX release deployed and smoke verified on production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260521-0553",
+      "firstSeenAt": "2026-05-21T09:57:07.056Z",
+      "lastSeenRunId": "QA-20260521-0553",
+      "lastSeenAt": "2026-05-21T09:57:07.056Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "GitLab tag pipeline 2543011513 succeeded; Vercel deployment dpl_9tVqnvdBXyaHqEAiXNHgnYrEmnLp is Ready; production /, /login, and /api/version smoke checks passed.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-21T09:57:07.056Z"
     }
   },
   "runs": [
@@ -63336,6 +63360,119 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260521-0553",
+      "recordedAt": "2026-05-21T09:57:07.056Z",
+      "recordedAtKst": "2026-05-21 18:57:07 KST",
+      "title": "Vercel Release Smoke - v8.12.0 Dashboard UX Release",
+      "owner": "codex",
+      "source": "gitlab-ci+vercel-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260521-0553.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_9tVqnvdBXyaHqEAiXNHgnYrEmnLp",
+        "deploymentUrl": "https://openmanager-8db89na7g-skyasus-projects.vercel.app",
+        "commitSha": "b21e0aff5091c3420b40322b24a9a11b7908f7d8"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.12.0 completed successfully with frontend deploy, AI Engine deploy, frontend post-deploy smoke, and AI Engine post-deploy smoke",
+        "Vercel production deployment dpl_9tVqnvdBXyaHqEAiXNHgnYrEmnLp was Ready for alias https://openmanager-ai.vercel.app",
+        "Production GET / returned the OpenManager AI landing page",
+        "Production GET /login returned the login page",
+        "Production /api/version returned version 8.12.0 and commit b21e0aff5091c3420b40322b24a9a11b7908f7d8",
+        "Vercel usage check passed with effective 13.9999 USD, billed 0.0000 USD, chargeCount 12180"
+      ],
+      "skippedSurfaces": [
+        "Broad dashboard browser matrix was not rerun in production because the changed dashboard UX was already covered by local Playwright QA run QA-20260521-0552 before release",
+        "Conversational AI QA was skipped because this release did not change AI prompt routing, model/provider selection, tool schemas, response contracts, or Vision routing",
+        "Cloud Run admin monitoring endpoints were not called directly; GitLab AI Engine deploy and post-deploy smoke were used as deployment evidence"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "devops-sre",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag deploy pipeline completed all frontend and AI Engine deployment/smoke jobs, the Vercel production deployment is Ready, and version smoke matched v8.12.0 at the release commit.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Release-facing smoke covered production landing, login, and version endpoints, while the dashboard UX-specific browser behavior remains linked to the prior targeted Playwright QA run.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "frontend-ux-engineer",
+          "domainName": "Frontend UX Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production release smoke confirmed the deployed frontend is serving the v8.12.0 build; dashboard search and trend interactions were already verified in QA-20260521-0552.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-21T18:54:26+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.12.0 production release smoke; effective 13.9999 USD, billed 0.0000 USD, chargeCount 12180.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.0 release smoke evidence",
+          "path": "reports/qa/evidence/qa-20260521-v8120-release-smoke.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.12.0",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2543011513"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-8db89na7g-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -63412,16 +63549,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 247,
-      "appropriateCount": 226,
+      "seenCount": 248,
+      "appropriateCount": 227,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260521-0552",
-      "lastSeenAt": "2026-05-21T08:50:59.688Z",
+      "lastRunId": "QA-20260521-0553",
+      "lastSeenAt": "2026-05-21T09:57:07.056Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Targeted DOM tests, type-check, lint, test:quick, and Playwright MCP runtime checks covered the changed frontend surface.",
+      "lastRationale": "Release-facing smoke covered production landing, login, and version endpoints, while the dashboard UX-specific browser behavior remains linked to the prior targeted Playwright QA run.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -63650,16 +63787,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260520-0545",
       "firstSeenAt": "2026-05-20T10:33:17.738Z",
-      "seenCount": 7,
-      "appropriateCount": 7,
+      "seenCount": 8,
+      "appropriateCount": 8,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0551",
-      "lastSeenAt": "2026-05-21T07:05:41.434Z",
+      "lastRunId": "QA-20260521-0553",
+      "lastSeenAt": "2026-05-21T09:57:07.056Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Main validate pipeline and v8.11.195 tag deploy pipeline both completed successfully, and production /api/version matches the release commit.",
+      "lastRationale": "GitLab tag deploy pipeline completed all frontend and AI Engine deployment/smoke jobs, the Vercel production deployment is Ready, and version smoke matched v8.12.0 at the release commit.",
       "lastNextAction": ""
     },
     "cost-operations": {
@@ -63684,16 +63821,16 @@
       "domainName": "Frontend UX Engineer",
       "firstSeenRunId": "QA-20260521-0552",
       "firstSeenAt": "2026-05-21T08:50:59.688Z",
-      "seenCount": 1,
-      "appropriateCount": 1,
+      "seenCount": 2,
+      "appropriateCount": 2,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0552",
-      "lastSeenAt": "2026-05-21T08:50:59.688Z",
+      "lastRunId": "QA-20260521-0553",
+      "lastSeenAt": "2026-05-21T09:57:07.056Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard search, view controls, and compact metric trend layout were verified in local browser QA.",
+      "lastRationale": "The production release smoke confirmed the deployed frontend is serving the v8.12.0 build; dashboard search and trend interactions were already verified in QA-20260521-0552.",
       "lastNextAction": ""
     }
   }
