@@ -6,14 +6,18 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
+import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import type { Server } from '@/types/server';
 import DashboardContent from './DashboardContent';
 import { SystemOverviewSection } from './SystemOverviewSection';
 
-const { routerPush, serverDashboardMock } = vi.hoisted(() => ({
-  routerPush: vi.fn(),
-  serverDashboardMock: vi.fn(),
-}));
+const { routerPush, serverDashboardMock, monitoringReportMock } = vi.hoisted(
+  () => ({
+    routerPush: vi.fn(),
+    serverDashboardMock: vi.fn(),
+    monitoringReportMock: vi.fn(),
+  })
+);
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -84,11 +88,7 @@ vi.mock('@/hooks/dashboard/useDashboardStats', () => ({
 }));
 
 vi.mock('@/hooks/dashboard/useMonitoringReport', () => ({
-  useMonitoringReport: vi.fn(() => ({
-    data: null,
-    error: null,
-    isError: false,
-  })),
+  useMonitoringReport: () => monitoringReportMock(),
 }));
 
 vi.mock('./DashboardSummary', () => ({
@@ -138,6 +138,12 @@ beforeEach(() => {
   routerPush.mockClear();
   serverDashboardMock.mockClear();
   mockedSystemOverviewSection.mockClear();
+  monitoringReportMock.mockReturnValue({
+    data: null,
+    error: null,
+    isLoading: false,
+    isError: false,
+  });
   mockedUseDashboardStats.mockReturnValue({
     total: 15,
     online: 15,
@@ -167,6 +173,25 @@ const createProps = (
   onStatusFilterChange: vi.fn(),
   ...overrides,
 });
+
+function createAlert(
+  overrides: Partial<MonitoringAlert> = {}
+): MonitoringAlert {
+  return {
+    id: 'alert-1',
+    serverId: 'web-nginx-dc1-01',
+    instance: 'web-nginx-dc1-01',
+    labels: {},
+    metric: 'cpu',
+    value: 94,
+    threshold: 85,
+    severity: 'critical',
+    state: 'firing',
+    firedAt: '2026-05-21T10:20:00.000Z',
+    duration: 900,
+    ...overrides,
+  };
+}
 
 describe('DashboardContent empty state', () => {
   it('필터 결과 0건이어도 요약 카드와 필터 초기화 버튼을 유지한다', () => {
@@ -370,5 +395,115 @@ describe('DashboardContent empty state', () => {
         onAskAI: expect.any(Function),
       })
     );
+  });
+
+  it('overview 서버 목록 오른쪽에 활성 알림 인라인 피드를 렌더링한다', async () => {
+    monitoringReportMock.mockReturnValue({
+      data: {
+        firingAlerts: [createAlert()],
+      },
+      error: null,
+      isLoading: false,
+      isError: false,
+    });
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [
+            {
+              id: 'web-nginx-dc1-01',
+              name: 'web-nginx-dc1-01',
+              status: 'critical',
+            } as Server,
+          ],
+          allServers: [
+            {
+              id: 'web-nginx-dc1-01',
+              name: 'web-nginx-dc1-01',
+              status: 'critical',
+            } as Server,
+          ],
+          totalServers: 1,
+        })}
+      />
+    );
+
+    const feed = await screen.findByTestId('dashboard-alert-feed');
+
+    expect(feed).toHaveClass('hidden');
+    expect(feed).toHaveClass('xl:flex');
+    expect(screen.getByText('인시던트 피드')).toBeInTheDocument();
+    expect(screen.getByText('위험')).toBeInTheDocument();
+    expect(screen.getByText('web-nginx-dc1-01')).toBeInTheDocument();
+    expect(screen.getByText('CPU = 94.0%')).toBeInTheDocument();
+  });
+
+  it('인라인 알림 row 클릭 시 해당 서버 상세 route로 이동한다', async () => {
+    monitoringReportMock.mockReturnValue({
+      data: {
+        firingAlerts: [createAlert()],
+      },
+      error: null,
+      isLoading: false,
+      isError: false,
+    });
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [
+            {
+              id: 'web-nginx-dc1-01',
+              name: 'web-nginx-dc1-01',
+              status: 'critical',
+            } as Server,
+          ],
+          allServers: [
+            {
+              id: 'web-nginx-dc1-01',
+              name: 'web-nginx-dc1-01',
+              status: 'critical',
+            } as Server,
+          ],
+          totalServers: 1,
+        })}
+      />
+    );
+
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'web-nginx-dc1-01 서버 상세 보기',
+      })
+    );
+
+    expect(routerPush).toHaveBeenCalledWith(
+      '/dashboard/servers/web-nginx-dc1-01'
+    );
+  });
+
+  it('활성 알림이 없으면 인라인 피드에 정상 empty state를 표시한다', async () => {
+    monitoringReportMock.mockReturnValue({
+      data: {
+        firingAlerts: [],
+      },
+      error: null,
+      isLoading: false,
+      isError: false,
+    });
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [{ id: 's1', name: 'server-1', status: 'online' } as Server],
+          allServers: [
+            { id: 's1', name: 'server-1', status: 'online' } as Server,
+          ],
+          totalServers: 1,
+        })}
+      />
+    );
+
+    expect(await screen.findByText('모든 시스템 정상')).toBeInTheDocument();
   });
 });

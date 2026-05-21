@@ -147,6 +147,25 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 - [x] 모바일에서는 헤더 하단 sub-bar를 렌더링하지 않는다.
 - [x] 모바일에서는 `SessionCountdown`을 헤더에 직접 렌더링하지 않는다.
 
+### T-3-A 알림 인시던트 인라인 피드 계약
+
+| 항목 | 계약 |
+|------|------|
+| 데이터 소스 | 기존 `useMonitoringReport().data.firingAlerts`를 재사용하고 신규 API 호출은 만들지 않는다 |
+| 데스크톱 레이아웃 | overview 화면에서 서버 카드 영역 오른쪽에 `AlertFeedPanel`을 상시 표시한다 |
+| 모바일/좁은 화면 | `xl` 미만에서는 인라인 피드를 접어 숨기고 기존 `/dashboard/alerts` route를 유지한다 |
+| 정렬/표시 | critical 알림을 warning보다 우선하고, 같은 severity에서는 오래 진행 중인 알림을 먼저 표시한다 |
+| 알림 클릭 | 알림 row 클릭 시 해당 서버 상세 `/dashboard/servers/{serverId}`로 이동한다 |
+| 빈 상태 | firing 알림이 없으면 `모든 시스템 정상` empty state를 표시한다 |
+| 비용/외부 호출 | 없음. 기존 monitoring report query 결과만 사용 |
+
+### T-3-A 테스트 시나리오
+
+- [ ] overview 서버 목록이 있을 때 데스크톱 인라인 알림 피드를 렌더링한다.
+- [ ] firing alert row는 severity, 서버, 메트릭 값을 표시한다.
+- [ ] alert row 클릭 시 해당 서버 상세 route로 이동한다.
+- [ ] firing alert가 없으면 `모든 시스템 정상` empty state를 표시한다.
+
 ---
 
 ## Phase 1 — 내부 코드 품질 정리 (무중단, 리스크 최소)
