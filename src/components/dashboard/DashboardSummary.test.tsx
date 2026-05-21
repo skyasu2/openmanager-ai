@@ -171,9 +171,17 @@ describe('DashboardSummary status filter cards', () => {
     ).toHaveClass('hidden');
   });
 
-  it('시스템 상태 카드에 오프라인 카운트를 표시한다', () => {
+  it('시스템 상태 카드에는 중복 상태 카운트 열을 표시하지 않는다', () => {
     render(<DashboardSummary stats={mockStats} />);
-    expect(screen.getAllByText('오프라인').length).toBeGreaterThanOrEqual(2);
+
+    const systemStatusCard = screen.getByTestId('dashboard-system-status-card');
+    expect(
+      within(systemStatusCard).queryByText('위험')
+    ).not.toBeInTheDocument();
+    expect(
+      within(systemStatusCard).queryByText('오프라인')
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByText('오프라인')).toHaveLength(1);
   });
 
   it('오프라인 서버만 있어도 시스템 상태 카드는 문제 상태 색상을 사용한다', () => {

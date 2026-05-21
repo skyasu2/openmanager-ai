@@ -96,6 +96,32 @@ vi.mock('../../hooks/useSafeServer', () => ({
 
 // Mock design-constants to prevent transitive imports
 vi.mock('../../styles/design-constants', () => ({
+  DASHBOARD_STATUS_GRADIENTS: {
+    online: {
+      gradient: 'from-emerald-500 via-green-500 to-emerald-600',
+      inlineGlow: 'rgba(16, 185, 129, 0.3)',
+    },
+    warning: {
+      gradient: 'from-amber-500 via-orange-500 to-amber-600',
+      inlineGlow: 'rgba(245, 158, 11, 0.4)',
+    },
+    critical: {
+      gradient: 'from-red-500 via-rose-500 to-red-600',
+      inlineGlow: 'rgba(239, 68, 68, 0.4)',
+    },
+    offline: {
+      gradient: 'from-gray-500 via-slate-500 to-gray-600',
+      inlineGlow: 'rgba(107, 114, 128, 0.3)',
+    },
+    maintenance: {
+      gradient: 'from-blue-500 via-indigo-500 to-blue-600',
+      inlineGlow: 'rgba(59, 130, 246, 0.3)',
+    },
+    unknown: {
+      gradient: 'from-purple-500 via-violet-500 to-purple-600',
+      inlineGlow: 'rgba(139, 92, 246, 0.3)',
+    },
+  },
   getServerStatusTheme: vi.fn(() => ({
     background: 'bg-white',
     border: 'border-emerald-200/50',
@@ -108,6 +134,22 @@ vi.mock('../../styles/design-constants', () => ({
       color: 'inherit',
     },
   })),
+  SERVER_CARD_HOVER_SHADOW_CLASSES: {
+    critical: 'hover:shadow-red-500/30',
+    warning: 'hover:shadow-amber-500/30',
+    online: 'hover:shadow-emerald-500/30',
+    offline: 'hover:shadow-gray-500/20',
+    maintenance: 'hover:shadow-blue-500/30',
+    unknown: 'hover:shadow-purple-500/20',
+  },
+  SERVER_CARD_STATUS_ACCENT_BORDER_CLASSES: {
+    critical: 'border-l-4 border-l-red-500',
+    warning: 'border-l-4 border-l-orange-500',
+    online: 'border-l-4 border-l-green-500',
+    offline: 'border-l-4 border-l-slate-400',
+    maintenance: 'border-l-4 border-l-blue-500',
+    unknown: 'border-l-4 border-l-purple-500',
+  },
   SERVER_STATUS_COLORS: {},
 }));
 
@@ -542,12 +584,12 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(getCardContainer(container)).toBeInTheDocument();
     });
 
-    it('미니 차트는 카드 안에서 더 큰 세로 공간을 사용한다', () => {
+    it('미니 차트는 트렌드 delta와 함께 카드 안에서 안정적인 세로 공간을 사용한다', () => {
       render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
 
       const charts = screen.getAllByTestId('mock-mini-chart');
-      expect(charts[0]).toHaveAttribute('data-height', '48');
-      expect(charts[0].parentElement).toHaveClass('h-14');
+      expect(charts[0]).toHaveAttribute('data-height', '42');
+      expect(charts[0].parentElement).toHaveClass('h-12');
     });
 
     it('compact variant에서 모바일 숨김 클래스를 유지한다', () => {
@@ -756,6 +798,69 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(charts[0]).toHaveAttribute('data-points', '10,45.2');
       expect(charts[1]).toHaveAttribute('data-points', '20,62.8');
       expect(charts[2]).toHaveAttribute('data-points', '30,73.5');
+    });
+
+    it('최근 히스토리 평균 대비 메트릭 트렌드 방향과 delta를 표시한다', () => {
+      serverMetricsMock.metricsHistory = [
+        {
+          timestamp: '2026-05-05T00:00:00Z',
+          cpu: 50,
+          memory: 80,
+          disk: 70,
+        },
+        {
+          timestamp: '2026-05-05T00:10:00Z',
+          cpu: 50,
+          memory: 80,
+          disk: 70,
+        },
+        {
+          timestamp: '2026-05-05T00:20:00Z',
+          cpu: 50,
+          memory: 80,
+          disk: 70,
+        },
+        {
+          timestamp: '2026-05-05T00:30:00Z',
+          cpu: 50,
+          memory: 80,
+          disk: 70,
+        },
+        {
+          timestamp: '2026-05-05T00:40:00Z',
+          cpu: 50,
+          memory: 80,
+          disk: 70,
+        },
+        {
+          timestamp: '2026-05-05T00:50:00Z',
+          cpu: 0,
+          memory: 0,
+          disk: 0,
+        },
+      ];
+
+      render(
+        <ImprovedServerCard
+          server={{
+            ...mockServer,
+            cpu: 70,
+            memory: 60,
+            disk: 70,
+          }}
+          onClick={mockOnClick}
+        />
+      );
+
+      expect(screen.getByLabelText('CPU 추세 상승 +20.0%')).toHaveTextContent(
+        '↑ +20%'
+      );
+      expect(screen.getByLabelText('MEM 추세 하락 -20.0%')).toHaveTextContent(
+        '↓ -20%'
+      );
+      expect(screen.getByLabelText('Disk 추세 변화 없음')).toHaveTextContent(
+        '—'
+      );
     });
 
     it('메트릭 색상은 system-rules 임계값과 동일하게 판단한다', () => {

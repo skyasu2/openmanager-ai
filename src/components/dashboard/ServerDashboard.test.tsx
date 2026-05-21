@@ -112,7 +112,7 @@ describe('ServerDashboard', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('서버 목록은 촘촘히/넓게 보기 토글을 제공하고 넓게 보기는 와이드 화면에서 과확장을 막는다', () => {
+  it('서버 목록은 목록/그리드 보기 토글을 제공하고 그리드 보기는 와이드 화면에서 과확장을 막는다', () => {
     render(
       <ServerDashboard
         servers={[
@@ -128,15 +128,15 @@ describe('ServerDashboard', () => {
       />
     );
 
-    expect(screen.getByRole('button', { name: '촘촘히 보기' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: '목록 보기' })).toHaveAttribute(
       'aria-pressed',
       'true'
     );
     expect(screen.getByTestId('server-dashboard-list')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '넓게 보기' }));
+    fireEvent.click(screen.getByRole('button', { name: '그리드 보기' }));
 
-    expect(screen.getByRole('button', { name: '넓게 보기' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: '그리드 보기' })).toHaveAttribute(
       'aria-pressed',
       'true'
     );
@@ -148,7 +148,7 @@ describe('ServerDashboard', () => {
     );
   });
 
-  it('넓게 보기의 표시 개수는 xl 3열 레이아웃과 일치한다', () => {
+  it('그리드 보기의 표시 개수는 xl 3열 레이아웃과 일치한다', () => {
     setViewportWidth(1280);
 
     render(
@@ -170,7 +170,7 @@ describe('ServerDashboard', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '넓게 보기' }));
+    fireEvent.click(screen.getByRole('button', { name: '그리드 보기' }));
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(3);
     expect(screen.getByText('3/5대 서버 표시')).toBeInTheDocument();
@@ -237,7 +237,7 @@ describe('ServerDashboard', () => {
       screen.queryByTestId('server-dashboard-peek-fade')
     ).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '넓게 보기' }));
+    fireEvent.click(screen.getByRole('button', { name: '그리드 보기' }));
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(6);
     expect(
@@ -422,6 +422,126 @@ describe('ServerDashboard', () => {
           (node) => node.querySelector('[data-server-card-name]')?.textContent
         )
     ).toEqual(['API Server', 'Cache Server', 'DB Server']);
+  });
+
+  it('서버 검색은 이름, ID, 위치, IP로 목록을 필터링하고 지우면 전체를 복구한다', () => {
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('api-was-dc1-01', 'API Server', {
+            location: 'Seoul DC1',
+            ip: '10.0.1.10',
+          }),
+          createServer('db-postgres-dc2-01', 'Postgres DB', {
+            location: 'Busan DC2',
+            ip: '10.0.2.20',
+          }),
+          createServer('cache-redis-dc1-01', 'Redis Cache', {
+            location: 'Seoul DC1',
+            ip: '10.0.3.30',
+          }),
+        ]}
+        totalServers={3}
+        currentPage={1}
+        totalPages={1}
+        pageSize={3}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    const searchInput = screen.getByLabelText('서버 검색');
+
+    fireEvent.change(searchInput, { target: { value: 'postgres' } });
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(1);
+    expect(screen.getByText('Postgres DB')).toBeInTheDocument();
+
+    fireEvent.change(searchInput, { target: { value: 'cache-redis' } });
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(1);
+    expect(screen.getByText('Redis Cache')).toBeInTheDocument();
+
+    fireEvent.change(searchInput, { target: { value: 'Seoul DC1' } });
+    expect(
+      screen
+        .getAllByTestId(/^server-card-/)
+        .map(
+          (node) => node.querySelector('[data-server-card-name]')?.textContent
+        )
+    ).toEqual(['API Server', 'Redis Cache']);
+
+    fireEvent.change(searchInput, { target: { value: '10.0.2.20' } });
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(1);
+    expect(screen.getByText('Postgres DB')).toBeInTheDocument();
+
+    fireEvent.change(searchInput, { target: { value: '' } });
+    expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(3);
+  });
+
+  it('서버 검색 결과가 없으면 일반 no-data와 다른 empty state를 표시한다', () => {
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('server-1', 'API Server'),
+          createServer('server-2', 'DB Server'),
+        ]}
+        totalServers={2}
+        currentPage={1}
+        totalPages={1}
+        pageSize={2}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText('서버 검색'), {
+      target: { value: 'not-found' },
+    });
+
+    expect(screen.queryAllByTestId(/^server-card-/)).toHaveLength(0);
+    expect(screen.getByText('검색 결과 없음')).toBeInTheDocument();
+    expect(screen.queryByText('서버 정보 없음')).not.toBeInTheDocument();
+  });
+
+  it('서버 검색 결과에도 기존 정렬 기준을 적용한다', () => {
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('server-1', 'Seoul API', {
+            cpu: 20,
+            location: 'Seoul DC1',
+          }),
+          createServer('server-2', 'Seoul DB', {
+            cpu: 91,
+            location: 'Seoul DC1',
+          }),
+          createServer('server-3', 'Busan Cache', {
+            cpu: 54,
+            location: 'Busan DC2',
+          }),
+        ]}
+        totalServers={3}
+        currentPage={1}
+        totalPages={1}
+        pageSize={3}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText('서버 검색'), {
+      target: { value: 'Seoul' },
+    });
+    fireEvent.change(screen.getByLabelText('서버 정렬'), {
+      target: { value: 'cpu' },
+    });
+
+    expect(
+      screen
+        .getAllByTestId(/^server-card-/)
+        .map(
+          (node) => node.querySelector('[data-server-card-name]')?.textContent
+        )
+    ).toEqual(['Seoul DB', 'Seoul API']);
   });
 
   it('페이지네이션된 일부 서버가 아니라 전체 표시 대상 기준으로 상태 우선 정렬한다', () => {
