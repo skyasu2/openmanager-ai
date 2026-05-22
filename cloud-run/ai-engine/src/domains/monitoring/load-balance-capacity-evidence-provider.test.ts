@@ -44,6 +44,9 @@ describe('monitoring capacity forecast evidence provider', () => {
       '디스크는 언제 90%를 넘을까?',
       'db-mysql-dc1-backup 용량 예측해줘',
       '임계치 도달 시점 알려줘',
+      'cache-redis-dc1-01 메모리가 100%에 도달하는 시점 예측해줘',
+      'cache-redis-dc1-01 메모리 포화 예측해줘',
+      'capacity-test-01 memori when will it exceed 90%',
     ];
 
     for (const query of queries) {
@@ -53,6 +56,21 @@ describe('monitoring capacity forecast evidence provider', () => {
         )
       ).toBe(true);
     }
+  });
+
+  it('resolves English threshold wording and memory typos to deterministic evidence', async () => {
+    const result = await monitoringCapacityForecastEvidenceProvider.resolve(
+      createRequest('capacity-test-01 memori when will it exceed 90%')
+    );
+
+    expect(result?.id).toBe('monitoring-capacity-forecast');
+    expect(result?.metadata).toMatchObject({
+      metric: 'memory',
+      threshold: 90,
+      responsePolicy: 'deterministic_answer',
+    });
+    expect(result?.fallback).toContain('메모리 90% 도달 예측');
+    expect(result?.fallback).toContain('대상: 지정 서버 1대');
   });
 
   it('uses the requested future threshold instead of the current metric value', async () => {

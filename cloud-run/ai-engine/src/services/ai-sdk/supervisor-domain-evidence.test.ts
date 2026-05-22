@@ -345,6 +345,26 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('resolves English capacity forecast wording with metric typos as deterministic evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: 'cache-redis-dc1-01 memori when will it exceed 90%',
+      domain: monitoringDomainPack,
+      sessionId: 'session-capacity-forecast-english-typo',
+      traceId: 'trace-capacity-forecast-english-typo',
+    });
+
+    expect(support?.id).toBe('monitoring-capacity-forecast');
+    expect(support?.fallback).toContain('메모리 90% 도달 예측');
+    expect(support?.fallback).toContain('cache-redis-dc1-01');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.capacity_forecast',
+      intent: 'capacity_forecast',
+      metric: 'memory',
+      threshold: 90,
+    });
+  });
+
   it('does not let KRL/SSOT wording collapse into current server health evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query:

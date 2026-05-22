@@ -111,6 +111,26 @@ describe('extractQueryRoutingSignals', () => {
     expect(signals.preFilter.suggestedAgent).toBe('Advisor Agent');
   });
 
+  it('routes Redis configuration guide requests to direct knowledge without catching immediate mitigation commands', () => {
+    const guideSignals = extractQueryRoutingSignals(
+      'Redis maxmemory 설정 가이드와 redis.conf 영속화 방법 알려줘'
+    );
+
+    expect(guideSignals.intent).toBe('knowledge');
+    expect(guideSignals.modeHint).toBe('multi');
+    expect(guideSignals.reasonCodes).toContain('mode_multi_knowledge');
+    expect(guideSignals.preFilter.suggestedAgent).toBe('Advisor Agent');
+
+    const immediateCommandSignals = extractQueryRoutingSignals(
+      'Redis 메모리 즉시 완화 명령어 정리해줘'
+    );
+
+    expect(immediateCommandSignals.intent).not.toBe('knowledge');
+    expect(immediateCommandSignals.reasonCodes).not.toContain(
+      'mode_multi_knowledge'
+    );
+  });
+
   it('keeps retired analysis-mode reason labels out of the routing source', () => {
     const source = readFileSync(
       new URL('./query-routing-signals.ts', import.meta.url),

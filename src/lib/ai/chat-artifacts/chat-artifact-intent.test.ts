@@ -95,13 +95,19 @@ describe('classifyChatArtifactIntent', () => {
   });
 
   it('keeps server capacity forecasts on the normal AI path without monitoring artifacts', () => {
-    const query =
-      'db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘';
+    const queries = [
+      'db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘',
+      'cache-redis-dc1-01 메모리가 100%에 도달하는 시점 예측해줘',
+      'cache-redis-dc1-01 메모리 포화 예측해줘',
+      'storage-nfs-dc1-01 디스크가 가득 찰 때 알려줘',
+    ];
 
-    expect(classifyChatArtifactIntent(query)).toMatchObject({
-      kind: 'none',
-    });
-    expect(shouldUseLLMChatArtifactIntent(query)).toBe(false);
+    for (const query of queries) {
+      expect(classifyChatArtifactIntent(query)).toMatchObject({
+        kind: 'none',
+      });
+      expect(shouldUseLLMChatArtifactIntent(query)).toBe(false);
+    }
   });
 
   it('keeps ambiguous feature questions as local guidance without API execution', () => {

@@ -298,6 +298,26 @@ describe('normalizeExtractedEntities', () => {
         confidence: 82,
       },
     });
+
+    expect(
+      normalizeExtractedEntitiesForQuery(
+        {
+          metric: null,
+          confidence: 78,
+          intentFrame: null,
+        },
+        'cache-redis-dc1-01 memori when will it exceed 90%'
+      )
+    ).toMatchObject({
+      server: 'cache-redis-dc1-01',
+      intentFrame: {
+        intent: 'capacity_forecast',
+        scope: 'server',
+        targets: ['cache-redis-dc1-01'],
+        metric: 'memory',
+        executionMode: 'multi',
+      },
+    });
   });
 });
 
