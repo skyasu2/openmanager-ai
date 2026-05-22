@@ -45,7 +45,7 @@ const CAUSAL_SIGNALS =
 
 // Predictive: "will", "forecast", "predict", "future", "going to", trend projection
 const PREDICTIVE_SIGNALS =
-  /예측|전망|언제\s*(쯤|까지|부터)|언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|앞으로|미래|될\s*(것|거|듯)|임계(?:치|값)?.*(?:전|넘|초과|도달)|넘기\s*전|미리\s*알|고갈|포화|will\s+\w+|forecast|predict|going\s+to|future|projection|when\s+will|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?/i;
+  /예측|전망|언제\s*(쯤|까지|부터)|언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|앞으로|미래|될\s*(것|거|듯)|임계(?:치|값)?.*(?:전|넘|초과|도달)|넘기\s*전|미리\s*알|고갈|포화|will\s+\w+|forecast|predict|going\s+to|future|projection|when\s+will|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?/i;
 
 // Advisory: "should", "recommend", "what to do", "advice", "suggest", "how to"
 const ADVISORY_SIGNALS =

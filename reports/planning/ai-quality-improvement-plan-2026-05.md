@@ -516,9 +516,9 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - [x] v8.12.7 release/tag pipeline `2545712930` success, Cloud Run `ai-engine-00509-pgh` 100% traffic, production `/api/version` 및 AI Engine `/health` 8.12.7 확인
 - [x] QA-20260522-0562에서 "포화 예측", "가득 찰까", 영어 `how soon will disk hit 80%` capacity forecast PASS 및 `monitoring-metric-trend` PASS 확인
 
-### H-4: QA-20260522-0562 residual deterministic routing 후보
+### H-4: QA-20260522-0562 residual deterministic routing
 
-**Status**: Tracking (구현 미착수, SDD 필요)
+**Status**: Implemented locally, 검증 완료. 커밋/배포/production QA 대기.
 
 **근거**: v8.12.7 Playwright MCP 7문항 평가(`QA-20260522-0562`)에서 H-3 개선은 확인됐지만, 일반 대화 경로로 빠질 때 OTel 없는 수치 창작 위험이 다시 확인됐다. 특히 Q5의 `api-was-dc1-01 CPU 92%`는 Q7의 OTel 실측 43%와 충돌했다.
 
@@ -528,7 +528,46 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 | 운영 우선순위 | "지금 당장 조치 시급한 서버 순위"가 일반 대화로 빠져 수치 hallucination 발생 | snapshot/risk signal 기반 deterministic ranking 경로 연결 |
 | CPU 위험 수준 | "api-was-dc1-01 CPU 언제 위험 수준 도달해"가 capacity forecast에 미진입 | "위험 수준 도달"을 임계치 기반 capacity forecast 표현으로 해석 |
 
-**판단**: P2/P3 후보. 모두 새 runtime behavior 변경이므로 구현 시 failing regression test 선행이 필요하다. Supabase/DB 변경 없이 regex/routing/evidence provider 표면에서 처리 가능할 때만 진행한다.
+**판단**: Supabase/DB 변경 없이 regex/routing/evidence provider 표면에서 처리했다. 단, 문장별 패턴 누적은 장기 해법이 아니므로 H-5 구조 개선을 별도 후속으로 둔다.
+
+**테스트 시나리오**:
+- [x] `load-balance-capacity-evidence-provider.test`: DC1/DC2 데이터센터 비교 표현이 `monitoring-location-load-balance`로 resolve
+- [x] `current-metrics-evidence-provider.test`: "조치 시급한 서버 순위"가 deterministic server-health action-needed 답변으로 resolve
+- [x] `supervisor-domain-evidence.test`: 위 3개 QA 문장이 supervisor evidence support에서 deterministic provider로 resolve
+- [x] `entity-extractor.test`: CPU "위험 수준 도달"이 `capacity_forecast` semantic frame으로 보정
+- [x] `chat-artifact-intent.test`: CPU "위험 수준 도달" capacity forecast가 artifact path로 빠지지 않음
+
+**검증**:
+- [x] Root targeted `test:node` 26/26 PASS
+- [x] Root `test:quick`, `type-check`, `lint`, `test:contract` PASS
+- [x] AI Engine targeted 82/82 PASS
+- [x] AI Engine `type-check`, full `test` 1410/1410 PASS
+- [x] `git diff --check` PASS
+
+### H-5: Semantic router v2 / monitoring evidence fail-closed 후속
+
+**Status**: Backlog 후보 (신규 runtime contract 변경이므로 SDD 필요)
+
+**근거**: H-3/H-4에서 확인된 공통 원인은 개별 문장 표현이 아니라 `intentFrame trust gap`이다. LLM 또는 local semantic frame이 의도를 맞혀도 최종 provider 선택이 raw regex miss에 좌우되면 OTel 없는 일반 LLM 응답으로 빠져 수치 hallucination이 발생한다.
+
+```text
+사용자 문장
+  -> 정규화/슬롯 추출(server, metric, threshold, timeWindow)
+  -> intentFrame(capabilityId, intent, scope, aggregation)
+  -> evidence provider 선택
+  -> monitoring 수치 근거 없으면 수치 답변 금지
+```
+
+**계약 후보**:
+- Monitoring 수치 질의는 `intentFrame.capabilityId + slots`를 provider 선택의 1차 신호로 사용하고, raw regex는 보조 fallback으로 제한한다.
+- `capacity_forecast`, `location_load_balance`, `server_health_action_priority`, `metric_current`, `metric_trend` 의도군별 seed corpus를 parameterized regression으로 관리한다.
+- monitoring 수치/순위/예측 질의가 evidence provider를 얻지 못하면 일반 LLM이 임의 수치를 만들지 않고, 근거 부족 또는 명확화 요청으로 fail-closed한다.
+- Supabase/DB나 live LLM 추가 호출 없이 기존 root semantic extractor, Cloud Run normalized metadata, domain evidence provider 계약 안에서 먼저 설계한다.
+
+**다음 단계**:
+- [ ] SDD 계약 작성: intentFrame → capability routing 우선순위, confidence 기준, fail-closed 응답 계약
+- [ ] failing regression seed corpus 구성: 한국어/영어/오타/역문장 표현을 문장별 hardcode가 아닌 intent class별로 묶음
+- [ ] 구현 범위 판단: 기존 `supervisor-semantic-metadata`, `domain-pack`, provider `canHandle` 계약으로 해결 가능한지 확인
 
 ---
 

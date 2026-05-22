@@ -65,7 +65,7 @@ const SERVER_HEALTH_EXCLUSION_PATTERN =
 const SERVER_DETAIL_PATTERN =
   /\b[a-z0-9]+(?:-[a-z0-9]+){1,}\b.{0,24}(상태|현황|자세|상세|health|status|detail|어때|알려)/i;
 const ACTION_NEEDED_PATTERN =
-  /(?:지금|현재|당장|즉시).{0,24}(?:조치|대응).{0,24}(?:필요|해야|대상|있)|(?:조치|대응).{0,12}(?:필요한|필요|대상).{0,12}서버|immediate\s+action|action\s+needed/i;
+  /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응).{0,32}(?:필요|해야|대상|있|시급).{0,16}(?:서버|대상|순위)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|immediate\s+action|urgent\s+action|action\s+needed/i;
 const CURRENT_METRIC_GROUP_PATTERN =
   /(db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN = /추이|추세|trend|변화|변동/i;

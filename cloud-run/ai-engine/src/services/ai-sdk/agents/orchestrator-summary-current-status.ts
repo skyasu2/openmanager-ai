@@ -285,9 +285,11 @@ function isServerDetailStatusQuery(query: string): boolean {
 
 function isActionNeededQuery(query: string): boolean {
   return (
-    /(?:지금|현재|당장|즉시).{0,24}(?:조치|대응).{0,24}(?:필요|해야|대상|있)/i.test(query) ||
-    /(?:조치|대응).{0,12}(?:필요한|필요|대상).{0,12}서버/i.test(query) ||
-    /immediate\s+action|action\s+needed/i.test(query)
+    /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응).{0,32}(?:필요|해야|대상|있|시급).{0,16}(?:서버|대상|순위)/i.test(query) ||
+    /(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)/i.test(query) ||
+    /(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|immediate\s+action|urgent\s+action|action\s+needed/i.test(
+      query
+    )
   );
 }
 

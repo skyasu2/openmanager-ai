@@ -35,6 +35,8 @@ interface LocationSummary {
   serverIds: string[];
 }
 
+type LocationGrouping = 'availability_zone' | 'data_center';
+
 interface CapacityRiskRow {
   server: SnapshotServer;
   metric: PercentMetric;
@@ -46,9 +48,9 @@ interface CapacityRiskRow {
 }
 
 const LOCATION_LOAD_BALANCE_PATTERN =
-  /(?:az\d*|dc\d+-?az\d+|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치).{0,32}(?:부하|로드|load|균형|balance|비교|분산)|(?:부하|로드|load|균형|balance|비교|분산).{0,32}(?:az\d*|dc\d+-?az\d+|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치)/i;
+  /(?:az\d*|dc\d+-?az\d+|dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치).{0,40}(?:부하|로드|load|균형|balance|비교|분산|높|낮|어느)|(?:부하|로드|load|균형|balance|비교|분산|높|낮|어느).{0,40}(?:az\d*|dc\d+-?az\d+|dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치)/i;
 const CAPACITY_FORECAST_PATTERN =
-  /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
+  /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -124,10 +126,41 @@ function average(values: number[]): number | null {
   return round1(values.reduce((sum, value) => sum + value, 0) / values.length);
 }
 
-function buildLocationSummaries(servers: SnapshotServer[]): LocationSummary[] {
+function extractDataCenterLabel(server: SnapshotServer): string {
+  const raw = `${server.location ?? ''} ${server.id}`;
+  const match = raw.match(/\bdc\d+\b/i);
+  return match?.[0].toUpperCase() ?? server.location ?? 'unknown';
+}
+
+function getLocationGroup(
+  server: SnapshotServer,
+  grouping: LocationGrouping
+): string {
+  if (grouping === 'data_center') return extractDataCenterLabel(server);
+  return server.location ?? 'unknown';
+}
+
+function isDataCenterLoadBalanceQuery(message: string): boolean {
+  if (/데이터\s*센터|데이터센터|data\s*center|datacenter/i.test(message)) {
+    return true;
+  }
+  if (/dc\d+\s*-?\s*az\d+/i.test(message)) return false;
+
+  const dcTokens = new Set(
+    Array.from(message.matchAll(/\bdc\d+\b/gi)).map((match) =>
+      match[0].toUpperCase()
+    )
+  );
+  return dcTokens.size >= 2;
+}
+
+function buildLocationSummaries(
+  servers: SnapshotServer[],
+  grouping: LocationGrouping
+): LocationSummary[] {
   const groups = new Map<string, SnapshotServer[]>();
   for (const server of servers) {
-    const location = server.location ?? 'unknown';
+    const location = getLocationGroup(server, grouping);
     groups.set(location, [...(groups.get(location) ?? []), server]);
   }
 
@@ -196,12 +229,16 @@ function getHighestSummary(
 }
 
 function buildLocationLoadBalanceAnswer(
-  snapshot: DomainSnapshot
+  snapshot: DomainSnapshot,
+  message: string
 ): string | null {
   const servers = enrichLocations(readSnapshotServers(snapshot));
   if (servers.length === 0) return null;
 
-  const summaries = buildLocationSummaries(servers);
+  const grouping: LocationGrouping = isDataCenterLoadBalanceQuery(message)
+    ? 'data_center'
+    : 'availability_zone';
+  const summaries = buildLocationSummaries(servers, grouping);
   if (summaries.length === 0) return null;
 
   const countValues = summaries.map((summary) => summary.serverCount);
@@ -222,15 +259,22 @@ function buildLocationLoadBalanceAnswer(
     )
     .join(' / ');
 
+  const heading =
+    grouping === 'data_center'
+      ? '🧭 **데이터센터별 부하 균형**'
+      : '🧭 **AZ별 부하 균형**';
+  const highestLabel =
+    grouping === 'data_center' ? '최고 CPU 평균 데이터센터' : '최고 CPU 평균 AZ';
+
   return [
-    '🧭 **AZ별 부하 균형**',
+    heading,
     `• 대상: 전체 ${servers.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''} · ${countLine}`,
     `• 평균 부하: ${metricsLine}`,
     `• 균형 판단: 서버 수 편차 ${countSpread}대, CPU 평균 편차 ${formatSignedPercentPoints(cpuSpread)}, MEM 편차 ${formatSignedPercentPoints(memorySpread)}, DISK 편차 ${formatSignedPercentPoints(diskSpread)}`,
     highestCpu
-      ? `• 최고 CPU 평균 AZ: ${highestCpu.location} ${formatPercent(highestCpu.metrics.cpu_avg)} (${highestCpu.serverCount}대)`
-      : '• 최고 CPU 평균 AZ: 데이터 없음',
-    '• 권고: 서버 수는 AZ별 count와 평균 부하를 함께 보고, CPU/MEM 편차가 10%p 이상 지속되면 트래픽 분산 정책과 배치 작업 위치를 우선 점검하세요.',
+      ? `• ${highestLabel}: ${highestCpu.location} ${formatPercent(highestCpu.metrics.cpu_avg)} (${highestCpu.serverCount}대)`
+      : `• ${highestLabel}: 데이터 없음`,
+    '• 권고: 서버 수는 위치별 count와 평균 부하를 함께 보고, CPU/MEM 편차가 10%p 이상 지속되면 트래픽 분산 정책과 배치 작업 위치를 우선 점검하세요.',
   ].join('\n');
 }
 
@@ -482,14 +526,14 @@ export const monitoringLocationLoadBalanceEvidenceProvider: DomainEvidenceProvid
     async resolve(request) {
       const snapshot = await resolveSnapshot(request);
       if (!snapshot) return null;
-      const answer = buildLocationLoadBalanceAnswer(snapshot);
+      const answer = buildLocationLoadBalanceAnswer(snapshot, request.message);
       if (!answer) return null;
 
       return {
         id: 'monitoring-location-load-balance',
         prompt: [
-          '[결정적 monitoring AZ 부하 균형 근거]',
-          '아래 AZ별 서버 수와 평균 CPU/MEM/DISK 수치를 바꾸지 말고 그대로 답하세요.',
+          '[결정적 monitoring 위치 부하 균형 근거]',
+          '아래 위치별 서버 수와 평균 CPU/MEM/DISK 수치를 바꾸지 말고 그대로 답하세요.',
           '',
           answer,
         ].join('\n'),

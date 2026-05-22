@@ -124,7 +124,7 @@ export interface QueryRoutingSignals {
 const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
   prediction:
-    /예측|트렌드|추이|전망|forecast|추세|임계치.*전|넘기\s*전|미리.*알|고갈|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?/i,
+    /예측|트렌드|추이|전망|forecast|추세|임계치.*전|넘기\s*전|미리.*알|고갈|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?/i,
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
   math:
     /(?:계산|연산|수식|중앙값|표준편차|percentile|p\d{2}|증가율|성장률|지수|루트|\d+(?:\.\d+)?\s*(?:[+*\/\^]|\s-\s)\s*\d+)/i,
@@ -133,7 +133,7 @@ const TOOL_ROUTING_PATTERNS = {
   serverGroup:
     /(db|web|cache|lb|api|storage|haproxy|nginx|mysql|redis|nfs|backend|백엔드|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
   logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
-  metrics: /cpu|메모리|디스크|서버|상태|memory|memori|memroy|disk|부하|로드|load|az|구역|zone|location|위치|균형|balance/i,
+  metrics: /cpu|메모리|디스크|서버|상태|memory|memori|memroy|disk|부하|로드|load|az|dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|구역|zone|location|위치|균형|balance/i,
 } as const;
 
 const GREETING_PATTERNS = [
