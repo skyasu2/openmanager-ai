@@ -3,7 +3,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-21
+> Last reviewed: 2026-05-22 (AI response mode removal alignment)
 > Tags: dashboard,ux,ai-sidebar,frontend
 
 > 작성일: 2026-05-21
@@ -257,7 +257,7 @@ Phase 2부터는 사용자-facing 신규 기능이므로 구현 전에 계약과
 | 배너 우선순위 | 메시지 영역과 입력창 사이의 상태 배너는 `error > warmup > job progress > agent status > session limit` 순서로 최대 1개만 렌더링한다 |
 | 대기열 | `queuedQueries`는 배너 우선순위 시스템 밖에 유지해 답변 대기 메시지를 계속 표시한다 |
 | 입력 도구 | 파일 첨부와 Web 검색은 입력창 왼쪽에 직접 노출하고, `+` 도구 메뉴 트리거는 제거한다 |
-| 응답 모드 | `auto/thinking` 응답 모드는 별도 compact popover로 유지한다 |
+| 응답 모드 | 응답/분석 모드 selector는 제거하고 파일 첨부, Web 검색, 전송/중지만 직접 노출한다 |
 | 하단 힌트 | 기본 상태는 `Shift+Enter로 줄바꿈`만 표시한다. 세션 카운터는 warning/limit 조건에서만, 입력 길이 카운터는 warning threshold 이상에서만 표시한다 |
 | 헤더 액션 | 헤더 우측은 아이콘 버튼 `전체화면`, `새 대화`, `닫기`만 표시한다. 전체화면 버튼의 visible text는 제거하고 `aria-label`/`title`은 유지한다 |
 | Cloud Run 상태 | Cloud Run 상태는 헤더 subtitle 영역에 인라인으로 배치하고, 헤더 우측 액션 그룹과 분리한다 |

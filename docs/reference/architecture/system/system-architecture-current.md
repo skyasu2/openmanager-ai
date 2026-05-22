@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-05-20
+> Last reviewed: 2026-05-22
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -12,7 +12,7 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.11.184+ 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
+**OpenManager AI v8.12.6 기준** synthetic 서버 모니터링 제품에 운영 의사결정 AI 어시스턴트 모듈을 결합한 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다. Dashboard/server/log/alert/topology는 core monitoring surface로 유지하고, AI 실행 UI는 전역 sidebar와 `/dashboard/ai-assistant`에 집중합니다.
 
 관계 기준은 **Vercel BFF/protocol boundary + Cloud Run AI runtime ownership**입니다. Vercel은 browser-facing UI, auth/session, guard, rate-limit, AI SDK UIMessage stream proxy를 맡고, Cloud Run은 Hono 기반 Supervisor, Direct Router, specialist agent, provider mesh, long-running AI compute를 맡습니다.
 
@@ -123,7 +123,7 @@ graph TB
                                    │ Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-05-16): `src/app/api/**/route.ts(x)`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs).
+> Source of truth (2026-05-22): `src/app/api/**/route.ts(x)`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs), `cloud-run/ai-engine/src/domains/monitoring/*evidence-provider.ts`.
 
 ---
 
@@ -178,7 +178,7 @@ graph TB
 > 참고: `/api/ai/supervisor`는 아직 삭제되지 않았지만, 현재는 local dev JSON fallback 및 plain/cache caller용 legacy proxy로 유지됩니다.
 ```
 
-현재 peak-load 질의는 다음 구조로 처리됩니다. LLM은 내부 provider 구현체 이름을 알지 못하고, provider 선택과 수치 계산은 domain resolver와 deterministic provider가 담당합니다.
+현재 monitoring deterministic evidence 질의는 다음 구조로 처리됩니다. LLM은 내부 provider 구현체 이름을 알지 못하고, provider 선택과 수치 계산은 domain resolver와 deterministic provider가 담당합니다. `responsePolicy=deterministic_answer`가 붙은 경로는 evidence provider의 검증된 답변을 우선 반환합니다.
 
 ```
 User Query
@@ -187,15 +187,18 @@ User Query
   │    ├─ off-domain guard
   │    └─ general coding guard
   │
-  ├─ Front semantic parser (/api/ai/nlq/extract-entities)  ← URL의 nlq는 feature slug, 에이전트 이름 아님
+  ├─ Front semantic parser (/api/ai/nlq/extract-entities)  <- URL의 nlq는 feature slug, 에이전트 이름 아님
   │    └─ SemanticIntentFrame?
   │       {
   │         domain: "monitoring",
-  │         intent: "metric_peak",
-  │         scope: "whole_fleet",
-  │         metric: "load1",
-  │         timeWindow: "24h",
-  │         aggregation: "peak"
+  │         intent: "metric_current" | "metric_ranking" | "metric_trend" |
+  │                 "server_health" | "capacity_forecast" |
+  │                 "location_load_balance" | "metric_peak",
+  │         scope: "server" | "comparison" | "whole_fleet",
+  │         metric: "cpu" | "memory" | "disk" | "load1" | "all",
+  │         targets?: ["api-was-dc1-01", "api-was-dc1-02"],
+  │         timeWindow?: "current" | "24h",
+  │         aggregation?: "current" | "rank" | "trend" | "peak"
   │       }
   │
   ├─ Vercel BFF
@@ -211,11 +214,20 @@ User Query
        │    └─ monitoringDomainPack.intentParser fallback
        │
        ├─ monitoring DomainCapabilityManifest
-       │    └─ capabilityId: monitoring.metric_peak
+       │    └─ capabilityId:
+       │       - monitoring.metric_current / metric_ranking / metric_trend
+       │       - monitoring.server_health
+       │       - monitoring.capacity_forecast / location_load_balance
+       │       - monitoring.metric_peak
        │
-       ├─ monitoringPeakMetricEvidenceProvider
+       ├─ Monitoring Evidence Providers
        │    ├─ canHandle(frame or concept-level parser)
-       │    ├─ getMonitoringPeakMetric()
+       │    ├─ current-metrics-evidence-provider.ts
+       │    │   current/ranking/trend/server-health, server id exact match
+       │    ├─ load-balance-capacity-evidence-provider.ts
+       │    │   capacity forecast, AZ/location load-balance
+       │    ├─ peak-metric-evidence-provider.ts
+       │    │   24h peak slot scan
        │    └─ validate evidence / build fallback answer
        │
        └─ Final Answer Generator
@@ -234,6 +246,8 @@ User Query
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.ts`
 - `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`
 - `cloud-run/ai-engine/src/domains/monitoring/peak-metric-intent.ts`
+- `cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-provider.ts`
+- `cloud-run/ai-engine/src/domains/monitoring/load-balance-capacity-evidence-provider.ts`
 - `cloud-run/ai-engine/src/domains/monitoring/peak-metric-evidence-provider.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator.ts`

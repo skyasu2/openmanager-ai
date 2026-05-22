@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-20
+> Last reviewed: 2026-05-22
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
-> **v8.11.184+** | Updated 2026-05-20
+> **v8.12.6** | Updated 2026-05-22
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -27,7 +27,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **deterministi
 
 제품 경계는 **advisory assistant**입니다. 범용 분류로는 **운영 의사결정 AI 어시스턴트**이고, 구현 분류로는 **tool-augmented LLM + deterministic decision layer**입니다. AI Engine은 실제 서버를 직접 변경하지 않고, 운영 수치·근거·보고서·조치안 초안을 생성합니다. 자율 remediation은 승인, dry-run, rollback, audit, 권한 계약이 갖춰진 별도 요구사항으로 분리합니다.
 
-> **As-built note (2026-05-21)**: 이 문서는 초기 설계도가 아니라 실제 구현을 역추적한 현재 아키텍처 기준입니다. 기본 채팅 transport는 `/api/ai/supervisor/stream/v2`입니다. 최근 안정화는 **Round-Robin + Context Guard provider selection** (4개 provider 균등 순환, `rotationSlot` UI attribution), **Cerebras `gpt-oss-120b` 전환** (65K context, llama3.1-8b 2026-05-27 deprecated 선제 대응), **KRL 직접 경로 grounded LLM synthesis** (`FORCE_KB_QUERY_PATTERN` 경로에서 KB 결과를 closed-context로 LLM 합성, `groundingMode` 메타데이터 도입), Orchestrator LLM routing 제거 → deterministic Direct Router 전환, Z.AI GLM Flash provider mesh 편입, NLQ 전처리 파이프라인 (N0~N2/N4 완료: QueryGuard, intentFrame 신뢰 경로, streaming output filter), intent별 LLM parameter, tool-result response enrichment, deterministic ranking/recovery fallback을 중심으로 이루어졌습니다.
+> **As-built note (2026-05-22)**: 이 문서는 초기 설계도가 아니라 실제 구현을 역추적한 현재 아키텍처 기준입니다. 기본 채팅 transport는 `/api/ai/supervisor/stream/v2`입니다. 최근 안정화는 **Round-Robin + Context Guard provider selection** (4개 provider 균등 순환, `rotationSlot` UI attribution), **Cerebras `gpt-oss-120b` 전환** (65K context, llama3.1-8b 2026-05-27 deprecated 선제 대응), **KRL 직접 경로 grounded LLM synthesis** (`FORCE_KB_QUERY_PATTERN` 경로에서 KB 결과를 closed-context로 LLM 합성, `groundingMode` 메타데이터 도입), Orchestrator LLM routing 제거 → deterministic Direct Router 전환, Z.AI GLM Flash provider mesh 편입, NLQ 전처리 파이프라인 (N0~N2/N4 완료: QueryGuard, intentFrame 신뢰 경로, streaming output filter), intent별 LLM parameter, tool-result response enrichment, deterministic ranking/recovery fallback, 사용자 노출 응답/분석 모드 제거, monitoring current/capacity/peak evidence provider의 deterministic answer 고정을 중심으로 이루어졌습니다.
 
 ### Vercel ↔ Cloud Run Runtime Boundary (2026-05-20)
 
@@ -137,7 +137,7 @@ LLM path
 | Source or mechanism | Current use | Runtime owner | User-facing evidence |
 |---|---|---|---|
 | Synthetic OTel data | Dashboard and AI monitoring facts: current state, metric rankings, anomaly detection, incident timelines, artifact generation | `src/data/otel-data/index.ts`, `cloud-run/ai-engine/src/data/precomputed-state.ts`, monitoring tools | Analysis basis, artifacts, deterministic summaries |
-| Monitoring domain evidence | `metric_peak`, current metric ranking, server health queries can become deterministic evidence before the LLM path | `cloud-run/ai-engine/src/domains/monitoring/*-evidence-provider.ts` | `semanticQueryTrace`, route metadata, deterministic answer |
+| Monitoring domain evidence | `metric_current`, `metric_ranking`, `metric_trend`, `server_health`, `capacity_forecast`, `location_load_balance`, `metric_peak` queries can become deterministic evidence before the LLM path | `cloud-run/ai-engine/src/domains/monitoring/*-evidence-provider.ts` | `semanticQueryTrace`, route metadata, deterministic answer |
 | Knowledge Retrieval Lite | Internal runbooks, incident history, topology and operational documents | `knowledge_base`, `search_knowledge_text`, `knowledge-retrieval-lite.ts`, `searchKnowledgeBase` | `EvidenceCard[]`, `RetrievalMetadata`; `ragSources` only as legacy bridge |
 | External web search | Latest external docs, security issues, release/version checks, web-only troubleshooting | `searchWeb`, Tavily client, quota tracker | Web source cards, tool summaries |
 | Agent tool registry | Controlled access to metrics, logs, RCA, math, commands, vision and final answer tools | `agent-runtime-policy.ts`, `tools-ai-sdk/index.ts` | Tool result summaries and handoff badges |
@@ -257,8 +257,8 @@ flowchart TB
     ArtifactTier -->|guidance match| Guidance["Local guidance message\n(no Supervisor call)"]
     Guidance --> User
 
-    ArtifactTier -->|none| SemanticGate["Semantic extraction gate\nmetric/peak patterns -> extractEntitiesCached()"]
-    SemanticGate -->|accepted monitoring.metric_peak frame\nconfidence >= 80\nambiguity != high| Frame["intentFrame + semanticQueryTrace\nsemantic-intent-frame.ts"]
+    ArtifactTier -->|none| SemanticGate["Semantic extraction gate\nmonitoring patterns -> extractEntitiesCached()"]
+    SemanticGate -->|accepted monitoring frame\nconfidence >= 80\nambiguity != high| Frame["intentFrame + semanticQueryTrace\nsemantic-intent-frame.ts"]
     SemanticGate -->|no frame / low confidence| NoFrame["no semantic metadata"]
     Frame --> Vercel["Next.js BFF\nauth · rate-limit · prompt-injection guard\nDefaultChatTransport / job request"]
     NoFrame --> Vercel
@@ -270,8 +270,8 @@ flowchart TB
         RequestGuard["Request Guard\nprompt high block\nmedium/low + off-domain warning delegation"]
         Mode{"resolveSupervisorModeDecision()"}
         DomEvidence["Domain Evidence Resolution\nmetadata intentFrame first\ndomain parser fallback\nsupervisor-domain-evidence.ts"]
-        Evidence["DomainEvidenceResult\nprompt + fallback + semantic trace\nmonitoring-peak-metric"]
-        Determ["Cloud Run zero-token deterministic answer\nonly when responsePolicy = deterministic_read_only_advice"]
+        Evidence["DomainEvidenceResult\nprompt + fallback + semantic trace\nmonitoring evidence provider"]
+        Determ["Cloud Run zero-token deterministic answer\nwhen responsePolicy is deterministic"]
         Single["Single path\nstreamText + prepareStep + stopWhen"]
         Multi["Multi path\nexecuteMultiAgent / executeMultiAgentStream"]
         Prefilter["preFilterQuery()\nfast path / direct specialist routing"]
@@ -354,7 +354,7 @@ Browser / useChat
      |     `-- none -> semantic extraction gate
      |
      `-- Semantic extraction gate
-           +-- accepted monitoring.metric_peak frame
+           +-- accepted monitoring frame
            |     confidence >= 80 and ambiguity != high
            |     session-scoped extractEntitiesCached()
            |     -> intentFrame + semanticQueryTrace
@@ -373,8 +373,8 @@ Cloud Run AI Engine
      `-- resolveDomainEvidenceForStream()
            +-- metadata intentFrame
            `-- monitoring domain parser fallback
-           -> monitoring-peak-metric provider
-              +-- responsePolicy=deterministic_read_only_advice
+           -> monitoring evidence provider
+              +-- responsePolicy=deterministic_answer or read-only advice
               |     -> Cloud Run zero-token deterministic answer
               `-- otherwise
                     -> domainEvidencePrompt/fallback available to LLM path
@@ -450,7 +450,7 @@ flowchart LR
                      │ to Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-05-13): `src/hooks/ai/useHybridAIQuery.ts`, `src/hooks/ai/useAIChatCore.ts`, `src/app/api/ai/supervisor/stream/v2/route.ts`, `src/lib/ai/entity-extractor.ts`, `src/lib/ai/semantic-intent-frame.ts`, `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `src/lib/ai/chat-artifacts/artifact-execution.ts`, `src/lib/ai/chat-artifacts/monitoring-analysis-artifact.ts`, `src/lib/ai/chat-artifacts/artifact-workspace-registry.ts`, `src/app/api/ai/artifact-intent/route.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-messages.ts`, `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-intent.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-evidence-provider.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-summary-fallback.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/analytics.ts`, `cloud-run/ai-engine/src/routes/analytics-report-utils.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
+> Source of truth (2026-05-22): `src/hooks/ai/useHybridAIQuery.ts`, `src/hooks/ai/useAIChatCore.ts`, `src/app/api/ai/supervisor/stream/v2/route.ts`, `src/lib/ai/entity-extractor.ts`, `src/lib/ai/semantic-intent-frame.ts`, `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `src/lib/ai/chat-artifacts/artifact-execution.ts`, `src/lib/ai/chat-artifacts/monitoring-analysis-artifact.ts`, `src/lib/ai/chat-artifacts/artifact-workspace-registry.ts`, `src/app/api/ai/artifact-intent/route.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-semantic-metadata.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-messages.ts`, `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`, `cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-provider.ts`, `cloud-run/ai-engine/src/domains/monitoring/load-balance-capacity-evidence-provider.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-intent.ts`, `cloud-run/ai-engine/src/domains/monitoring/peak-metric-evidence-provider.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-summary-fallback.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/analytics.ts`, `cloud-run/ai-engine/src/routes/analytics-report-utils.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
 
 ### Semantic Query Routing 상세
 
@@ -499,25 +499,26 @@ Browser Query
 |     - metadata frame 우선                                    |
 |     - domain.intentParser fallback                           |
 |  3. domain capability lookup                                 |
-|     - e.g. monitoring.metric_peak                            |
+|     - e.g. monitoring.metric_current / capacity / peak       |
 +---------------------------+----------------------------------+
                             |
                             v
 +--------------------------------------------------------------+
 | Monitoring Domain Pack                                       |
 | domain-pack.ts                                               |
-| peak-metric-intent.ts                                        |
+| current-metrics-evidence-provider.ts                         |
+| load-balance-capacity-evidence-provider.ts                   |
 | peak-metric-evidence-provider.ts                             |
 |                                                              |
 |  canHandle(frame or concept-level parser)                    |
 |       |                                                      |
 |       v                                                      |
-|  getMonitoringPeakMetric()                                   |
+|  current/ranking/trend/server-health/capacity/AZ/peak        |
 |       |                                                      |
 |       v                                                      |
 |  deterministic evidence                                      |
-|  - slotIndex / timestamp / sourceMetric / windowHours        |
-|  - top servers / max value / average top value               |
+|  - current values / ranking / trend / target servers         |
+|  - capacity forecast / AZ load balance / peak slot           |
 +---------------------------+----------------------------------+
                             |
                             v
@@ -530,7 +531,7 @@ Browser Query
 +--------------------------------------------------------------+
 ```
 
-Peak metric 예시는 다음처럼 해석됩니다.
+Monitoring evidence 예시는 다음처럼 해석됩니다.
 
 ```
 "최근 하루 부하 최고점 top server"
@@ -545,6 +546,20 @@ Peak metric 예시는 다음처럼 해석됩니다.
   -> monitoringPeakMetricEvidenceProvider
   -> deterministic OTel slot scan
   -> evidence-grounded final answer
+
+"api-was-dc1-01 과 api-was-dc1-02 CPU 비교"
+  -> intent=metric_current
+  -> capabilityId=monitoring.metric_current
+  -> currentMetricsEvidenceProvider
+  -> target server id를 case-insensitive exact match로 정규화
+  -> deterministic comparison answer
+
+"현재 서버의 CPU 사용률이 45%인데 언제 90%를 넘을까?"
+  -> intent=capacity_forecast
+  -> capabilityId=monitoring.capacity_forecast
+  -> monitoringCapacityForecastEvidenceProvider
+  -> current/past percentage는 threshold로 오인하지 않음
+  -> deterministic capacity answer or no-reach fallback
 ```
 
 ### 기능 모듈 ASCII 맵
@@ -804,9 +819,9 @@ POST /api/ai/supervisor/stream/v2
     +-- explicit multi --------------------> multi
     +-- explicit single + allowed ---------> single
     +-- explicit single + not allowed -----> multi
-    +-- auto + simple ---------------------> single
-    +-- auto + complex --------------------> multi
-    `-- analysisMode=thinking + infra ----> multi
+    +-- auto + current/ranking/snapshot ---> single or deterministic evidence
+    +-- auto + RCA/report/advisor/vision --> multi
+    `-- auto + ambiguous complex ----------> multi
 
 single
     |
@@ -859,31 +874,19 @@ Degraded fallback
     `-- retry single path with degradedMetadata
 ```
 
-#### `analysisMode=thinking`의 현재 의미
+#### 사용자 노출 응답/분석 모드 제거
 
-`analysisMode=thinking`은 provider-native hidden reasoning을 켜는 플래그가 아니라, OpenManager 애플리케이션 레벨의 **심층 분석 요청 모드**입니다. 현재 구현은 다음 동작만 보장합니다.
+2026-05-22 기준 AI Assistant input은 사용자에게 응답 모드 또는 심층 분석 모드 selector를 노출하지 않습니다. 이전 `analysisMode=thinking`은 provider-native hidden reasoning이 아니라 애플리케이션 라우팅 강도 신호였고, 실제 제품 품질 차이를 크게 만들지 못했으므로 UI와 runtime 계약에서 제거했습니다.
 
-| Surface | 현재 동작 | 근거 |
-|---------|-----------|------|
-| Input UI | 사용자에게 `심층 분석`으로 표시하고, "숨겨진 모델 추론이 아니라 더 긴 분석/라우팅 경로"라고 설명 | `src/types/ai/analysis-mode.ts`, `src/components/ai-sidebar/ChatInputArea.tsx` |
-| Frontend routing | 복잡도 threshold를 낮춰 job queue 경로를 더 적극적으로 선택. 기본 threshold `19`, thinking threshold `11` | `src/hooks/ai/core/query-routing.ts`, `src/hooks/ai/core/useQueryExecution.ts` |
-| Cloud Run routing | `auto` 기준 single인 infra-context `thinking` 요청만 `multi`로 승격하고, 원래도 multi인 요청은 `auto_complexity`로 유지 | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts`, `supervisor-mode.ts` |
-| Processing UI | `ThinkingProcessVisualizer`는 모델 내부 reasoning trace가 아니라 tool call / tool result summary 기반 `AI 처리 과정`을 표시 | `src/hooks/ai/utils/message-helpers.ts`, `src/components/ai/AIWorkspaceMessage.tsx` |
-| LLM call options | `streamText()` / `generateTextWithRetry()` 호출에 `reasoningEffort`, `reasoningFormat`, `thinkingConfig`, `providerOptions`를 전달하지 않음 | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`, `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts` |
+| Surface | 현재 계약 |
+|---------|-----------|
+| Input UI | 파일 첨부, Web 검색, 전송/중지 같은 직접 동작만 노출한다. 응답/분석 모드 선택 UI는 없다. |
+| Frontend routing | 메시지, 첨부, semantic intent, query complexity를 기준으로 stream/job 경로를 결정한다. 사용자 선택 `analysisMode` 입력은 없다. |
+| Cloud Run routing | `mode`는 내부 실행 계약(`auto`/`single`/`multi`)으로만 유지한다. 기본 `auto`에서 current/ranking/snapshot 계열은 single 또는 deterministic evidence, RCA/report/advisor/vision 계열은 multi로 승격한다. |
+| Processing UI | tool call / tool result summary 기반 `AI 처리 과정`을 표시할 수 있으나 모델 내부 reasoning trace를 뜻하지 않는다. |
+| LLM call options | production 기본 경로는 `reasoningEffort`, `reasoningFormat`, `thinkingConfig`, `providerOptions`를 전달하지 않는다. |
 
-제품 결정은 `Thinking` 버튼을 유지하는 것입니다. 다만 의미는 "provider-native reasoning"이 아니라 **사용자가 더 긴 분석 경로를 요청했다는 라우팅 신호**입니다. Native reasoning을 별도 기능으로 도입하려면 모델 entitlement smoke, provider option wiring, reasoning token quota accounting, 사용자 노출 정책을 별도 계약으로 추가해야 합니다.
-
-#### Thinking 버튼 On/Off 측정 기준
-
-`analysisMode=thinking`의 차이는 추정이 아니라 deterministic corpus로 고정합니다.
-
-| 계층 | Off (`auto`) | On (`thinking`) | 측정된 차이 | 회귀 가드 |
-|------|--------------|-----------------|-------------|-----------|
-| Frontend stream/job | corpus 6개 중 job queue `2/6` | corpus 6개 중 job queue `4/6` | borderline `streaming → job-queue` 2건 증가 | `src/hooks/ai/core/query-routing.test.ts` |
-| Cloud Run single/multi | corpus 6개 중 multi `2/6` | corpus 6개 중 multi `4/6` | infra-context `single → multi` 2건 증가 | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.test.ts` |
-| Provider-native reasoning | 미사용 | 미사용 | reasoning token / raw reasoning trace 증가 없음 | `streamText()` / fallback 호출 옵션 검토 |
-
-운영 표본에서 On/Off 차이를 볼 때는 최소한 `analysisMode`, `routeDecision.executionPath`, `resolvedMode`, `modeSelectionSource`, `assistantPlan.plannerShadow.candidate.executionMode`, `ttfbMs`, `durationMs`, `toolsCalled`, `handoffs`, `fallback`을 함께 비교합니다. UI의 `AI 처리 과정`은 사용자가 경로를 이해하는 보조 정보이고, 버튼 효과의 정량 판단은 위 metadata와 trace/log 표본을 기준으로 합니다.
+Native reasoning을 별도 기능으로 도입하려면 모델 entitlement smoke, provider option wiring, reasoning token quota accounting, 사용자 노출 정책을 별도 계약으로 추가해야 합니다. 현재는 provider/model별 `reasoningCapability`를 capability metadata로만 보존하고, 사용자-facing 토글이나 비용 발생 경로로 연결하지 않습니다.
 
 ### Portable Assistant Runtime Adoption
 
@@ -899,7 +902,7 @@ Minimal wiring checklist:
 - persistence, queue, trace는 `AssistantRuntimeAdapters`로 교체하고 core runtime 파일에서 직접 infra client를 import하지 않는다.
 - public response metadata에는 `assistantRuntime` 요약과 `reasoningCapability` 요약만 노출하고 raw provider payload, secret-like value, 내부 stack trace를 넣지 않는다.
 
-Provider-native reasoning은 adoption 기본값이 아닙니다. `analysisMode=thinking`은 위 섹션처럼 app-level routing intensity이고, provider/model별 native reasoning은 `cloud-run/ai-engine/src/services/ai-sdk/provider-model-policy.ts`의 `reasoningCapability`에서만 표현합니다. Capability가 `provider-native`여도 `defaultEnabled=false`, `requiresOptIn=true`, `expiresAt` 만료 시 disabled가 기본 계약입니다.
+Provider-native reasoning은 adoption 기본값이 아닙니다. 사용자 노출 `analysisMode`/응답 모드 selector는 제거되었고, provider/model별 native reasoning은 `cloud-run/ai-engine/src/services/ai-sdk/provider-model-policy.ts`의 `reasoningCapability`에서만 표현합니다. Capability가 `provider-native`여도 `defaultEnabled=false`, `requiresOptIn=true`, `expiresAt` 만료 시 disabled가 기본 계약입니다.
 
 ### Async Job Queue Boundary
 

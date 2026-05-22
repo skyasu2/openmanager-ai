@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-22 (Task I-3 Reporter 기준 명시 local implementation 반영)
+> Last reviewed: 2026-05-22 (v8.12.6 monitoring evidence review fixes deployed)
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. 같은 날 v8.12.0 production QA에서 AZ별 부하 균형 쿼리 grounding 실패와 Top-N+추세 누락이 재현되어 Task G를 기존 AI 품질 계획 안에서 SDD Approved로 추가한다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했고, 잔여는 Task F 최종 관찰과 조건부 production QA 판정이다.
 
 ---
 
@@ -161,7 +161,7 @@ v8.11.192(`fix(ai): keep otel criteria in grounded krl answers`)는 FORCE_KB_QUE
 ```
 Vercel: extractEntitiesCached() → intentFrame (SemanticIntentFrame)
        ↓ toDomainIntentFrame() 변환
-Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
+Cloud Run: selectExecutionMode(query, intentFrame, inputType)
          → resolveIntentFrameExecutionMode(intentFrame)
          → confidence < 0.8 → undefined (regex fallback으로 계속 진행)
          → confidence ≥ 0.8 → intentFrame.executionMode 반환
@@ -380,7 +380,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 ### H-1: monitoringCapacityForecastEvidenceProvider 불일치 라우팅
 
-**Status**: Implemented(local) (2026-05-22)
+**Status**: Released(v8.12.6) (2026-05-22)
 
 **증상**: `QA-20260522-0558 Q1` — "db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘"
 → 이상감지/추세 분석 artifact 카드 출력 (응답 근거: "일반 대화 응답", 도구: "이상감지/추세 분석")
@@ -419,15 +419,15 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - `buildCapacityForecastAnswer` slope≈0 케이스도 "현재 추세상 N시간 내 도달 없음"을 명시한 답변을 반환해야 한다 (null 반환 금지).
 
 **테스트 시나리오**:
-- [ ] `chat-artifact-intent.test`: "언제 90%를 넘을까? 용량 예측해줘" → `isServerMonitoringArtifactRequest=false`
-- [ ] `load-balance-capacity-evidence-provider.test`: CAPACITY_FORECAST_PATTERN이 "언제 90%를 넘을까", "용량 예측해줘", "임계치 도달 시점" 쿼리를 모두 매칭한다
-- [ ] `load-balance-capacity-evidence-provider.test`: slope≈0 서버에서 `buildCapacityForecastAnswer`가 null이 아닌 "현재 추세상 90% 도달 없음" 답변을 반환한다
+- [x] `chat-artifact-intent.test`: "언제 90%를 넘을까? 용량 예측해줘" → `isServerMonitoringArtifactRequest=false`
+- [x] `load-balance-capacity-evidence-provider.test`: CAPACITY_FORECAST_PATTERN이 "언제 90%를 넘을까", "용량 예측해줘", "임계치 도달 시점" 쿼리를 모두 매칭한다
+- [x] `load-balance-capacity-evidence-provider.test`: slope≈0 서버에서 `buildCapacityForecastAnswer`가 null이 아닌 "현재 추세상 90% 도달 없음" 답변을 반환한다
 
 ---
 
 ### H-2: monitoringPeakMetricEvidenceProvider 응답 내용 부실
 
-**Status**: Implemented(local) (2026-05-22)
+**Status**: Released(v8.12.6) (2026-05-22)
 
 **증상**: `QA-20260522-0558 Q3` — "지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대는 언제야?"
 → "모니터링 피크 지표 근거" 확인 (provider 트리거됨), 그러나 응답은 섹션 제목만 반환, 기간 표시 "최근 1시간"
@@ -470,7 +470,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 **우선순위**: P2 (non-blocking, QA tracker auto WONT-FIX. 재현 빈도 증가 시 P1 승격)
 **SDD 게이트**: 진단 → failing test 선행 커밋 → 구현 순서 준수
-**현재 판단**: H-1/H-2 모두 local implementation 완료. 최종 판정은 다음 production QA에서 재확인한다.
+**현재 판단**: H-1/H-2 및 review follow-up 모두 v8.12.6으로 배포 완료. 최종 사용자 품질 판정은 다음 production QA에서 재확인한다.
 
 **예상 소요**: 진단 30분 + 구현/테스트 60분
 
@@ -481,6 +481,8 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - [x] H-1 AI Engine targeted/full tests, root targeted/test:quick/type-check/lint/test:contract 통과
 - [x] H-2 failing test 선행 커밋 (`d09af3f46`)
 - [x] H-2 구현 완료(local)
+- [x] Review follow-up: `parseThreshold` 현재/과거 퍼센트 guard 보강, 서버 ID case-insensitive exact match, retired `mode_multi_analysis_mode` label 제거 (`06309822c`)
+- [x] v8.12.6 release/tag pipeline `2545506889` success, Cloud Run `ai-engine-00508-4bv` 100% traffic
 
 ---
 
@@ -585,11 +587,11 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | B: Redis R-5 완결 | 🟡 사용자 액션 | 접근 권한 대기 | 접근 후 15분 | dashboard/API 가능 시 |
 | C: KRL corpus 보강 | — | No-op | 0분 | coverage FAIL 발생 시 재개 |
 | F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
-| G: AZ 집계·Top-N 추세 grounding | 🔴 High | Implemented (local) | 60~90분 | production QA 회귀 수정 |
-| H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Backlog | 진단 30 + 구현 60분 | 재현 빈도 증가 또는 다음 AI Engine 변경 시 |
-| **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Implemented (local)** | 진단 30 + 구현 60분 | `710c6165d` failing test 선행, local AI Engine type-check/full test PASS |
-| **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Implemented (local) | prompt 30 + 검증 30분 | prompt/instruction 힌트 반영 |
-| **I-3: Reporter 기준 명시** | 🟢 P3 | **Implemented (local)** | 30분 | Reporter UI/다운로드 기준 구분 반영 |
+| G: AZ 집계·Top-N 추세 grounding | 🔴 High | Released (v8.12.5) | 60~90분 | production QA 회귀 수정 |
+| H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Released (v8.12.6) | 완료 | review follow-up 포함 배포 완료 |
+| **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Released (v8.12.6)** | 완료 | `710c6165d` failing test 선행, AI Engine type-check/full test PASS |
+| **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Released (v8.12.6) | 완료 | prompt/instruction 힌트 반영 |
+| **I-3: Reporter 기준 명시** | 🟢 P3 | **Released (v8.12.6)** | 완료 | Reporter UI/다운로드 기준 구분 반영 |
 | D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |
 | E: 세션 메모리 확장 | 🟢 중장기 | Approved (Backlog) | 2~3시간 | failing test 선행 필요 |
 
@@ -602,10 +604,10 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
 - Task E는 failing test 선행 커밋 없이는 구현하지 않는다.
 - Task G는 failing regression test와 구현 커밋을 분리하고, AI Engine targeted tests/type-check를 통과한다.
-- Task H는 진단 후 근본 원인이 특정되면 failing test → 구현 순서로 진행하고, 재현 조건이 불안정한 동안은 Backlog에 유지한다.
-- Task I-1은 서버 비교 쿼리 수치 오류가 재현되거나 다음 AI Engine 변경 시 failing test → 구현 순서로 진행한다.
-- Task I-2는 다음 KRL seed 변경 시 함께 처리하고, rag:analyze governance PASS를 검증한다.
-- Task I-3은 레이블/텍스트 변경 수준으로 SDD 게이트 불필요, 단독 착수 가능.
+- Task H는 v8.12.6 배포 완료 상태로 유지하고, 다음 production QA에서 사용자-facing 품질을 재확인한다.
+- Task I-1은 v8.12.6 배포 완료 상태로 유지하고, 서버 비교 쿼리 수치 오류 재현 시 새 회귀 테스트로 재개한다.
+- Task I-2는 prompt/instruction 힌트는 v8.12.6 배포 완료. KRL seed 변경으로 확장할 때만 `rag:analyze` governance PASS를 검증한다.
+- Task I-3은 v8.12.6 배포 완료. 레이블/텍스트 변경 수준이므로 추가 SDD 게이트는 없다.
 
 ---
 

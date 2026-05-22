@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-20
+> Last reviewed: 2026-05-22
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.11.184+ | **Updated**: 2026-05-20
+> **프로젝트 버전**: v8.12.6 | **Updated**: 2026-05-22
 
 ## 개요
 
@@ -299,11 +299,11 @@ await pipeline.exec();
 > 성능 개선은 반드시 **캐싱 강화, 응답 재사용, 라우팅 최적화** 방향으로만 진행해야 합니다.
 > LLM 모델 업그레이드, 에이전트 추가 호출, 병렬 실행 확대는 모두 **무료 한도 영향 검토 후** 결정합니다.
 
-### Native reasoning / thinking 비용 계약
+### Native reasoning 비용 계약
 
-현재 제품 UI의 `심층 분석`(`analysisMode=thinking`)은 provider-native reasoning token을 켜지 않습니다. 이 모드는 frontend 복잡도 threshold를 낮추고 Cloud Run에서 infra-context 요청을 multi-agent 후보로 승격하는 **애플리케이션 라우팅 모드**입니다.
+현재 제품 UI는 응답 모드 또는 심층 분석 모드 selector를 노출하지 않습니다. 이전 `analysisMode=thinking`은 provider-native reasoning token을 켜지 않는 애플리케이션 라우팅 신호였고, 2026-05-22 기준 UI/runtime 계약에서 제거했습니다.
 
-2026-05-03 deterministic corpus 기준으로 thinking ON은 frontend job queue 비율을 `2/6 → 4/6`, Cloud Run multi 비율을 `2/6 → 4/6`로 올립니다. 이는 reasoning token 비용은 만들지 않지만, 더 긴 job/agent 경로를 선택할 가능성을 높이므로 latency와 provider 호출 수 표본을 별도로 추적해야 합니다.
+따라서 production 기본 경로에서는 사용자 선택값으로 job/agent 경로를 늘리지 않습니다. stream/job, single/multi, deterministic evidence 선택은 메시지 내용, 첨부, semantic intent, query complexity, 내부 `mode` 계약으로만 결정합니다.
 
 공식 API 기준으로 Groq reasoning 모델, Mistral `mistral-small-latest` adjustable reasoning, Gemini 2.5 Flash-Lite `thinkingBudget`는 후보가 될 수 있습니다. 그러나 production runtime에서는 아직 `reasoningEffort`, `reasoningFormat`, `thinkingConfig`, `providerOptions`를 전달하지 않습니다. Native reasoning을 도입하려면 다음 조건을 먼저 충족해야 합니다.
 

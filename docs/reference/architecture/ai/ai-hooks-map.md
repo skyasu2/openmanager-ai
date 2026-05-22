@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-19
+> Last reviewed: 2026-05-22
 > Canonical: docs/reference/architecture/ai/ai-hooks-map.md
 > Tags: ai,frontend,hooks,architecture
 
@@ -34,7 +34,7 @@ DeveloperPanel
 | Hook | Primary caller | Owns | Does not own |
 |------|----------------|------|--------------|
 | `useAIChatCore` | `AISidebarV4`, `AIWorkspace` | session id, local input/error, queue handoff, artifact pre-routing, shared return contract | sidebar chrome, fullscreen routing, file selection UI |
-| `useAIChatSurface` | `AISidebarV4`, `AIWorkspace` | selected function, web search toggle, analysis mode, pending entry/prefill store slice | chat message state, transport, artifact execution |
+| `useAIChatSurface` | `AISidebarV4`, `AIWorkspace` | selected function, web search toggle, pending entry/prefill store slice | chat message state, transport, artifact execution |
 | `useAIEntryController` | sidebar/workspace entry buttons, artifact cards | sidebar open/close, fullscreen navigation, pending entry target handoff | chat generation, selected function state |
 | `useHybridAIQuery` | `useAIChatCore` | streaming/job routing, AI SDK `useChat`, stream callbacks, rate-limit cooldown, clarification bridge | input validation, artifact intent routing, rendered message enrichment |
 | `useAsyncAIQuery` | `useHybridAIQuery` | `/api/ai/jobs` request, `/api/ai/jobs/:id/stream` SSE, progress/result/error settlement | streaming `useChat`, UI message transformation |
@@ -58,12 +58,12 @@ DeveloperPanel
 
 ## Current LOC Snapshot
 
-Measured with `wc -l` on 2026-05-19.
+Measured with `wc -l` on 2026-05-22.
 
 | Hook file | Lines |
 |-----------|------:|
 | `src/hooks/ai/useAIChatCore.ts` | 578 |
-| `src/hooks/ai/useAIChatSurface.ts` | 77 |
+| `src/hooks/ai/useAIChatSurface.ts` | 63 |
 | `src/hooks/ai/useAIEntryController.ts` | 62 |
 | `src/hooks/ai/useHybridAIQuery.ts` | 523 |
 | `src/hooks/ai/useAsyncAIQuery.ts` | 599 |
