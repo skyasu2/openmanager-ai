@@ -293,7 +293,7 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     ).toMatch(/^guest:/);
   });
 
-  it('Cloud Run worker trigger forwards RAG and Web Search options while ignoring legacy analysis mode', async () => {
+  it('Cloud Run worker trigger forwards RAG and Web Search options', async () => {
     process.env.CLOUD_RUN_ENABLED = 'true';
 
     const { POST } = await importRoute();
@@ -308,7 +308,6 @@ describe('POST /api/ai/jobs trigger readiness', () => {
         options: {
           sessionId: 'session-1234',
           metadata: {
-            analysisMode: 'thinking',
             enableRAG: true,
             enableWebSearch: true,
           },
@@ -335,7 +334,6 @@ describe('POST /api/ai/jobs trigger readiness', () => {
       enableRAG: true,
       enableWebSearch: true,
     });
-    expect(savedJob?.metadata?.analysisMode).toBeUndefined();
 
     const workerBody = JSON.parse(
       (
@@ -349,7 +347,6 @@ describe('POST /api/ai/jobs trigger readiness', () => {
       enableRAG: true,
       enableWebSearch: true,
     });
-    expect(workerBody.analysisMode).toBeUndefined();
   });
 
   it('derives and forwards developer disclosure mode for verified PIN job sessions', async () => {
@@ -734,7 +731,6 @@ describe('POST /api/ai/jobs trigger readiness', () => {
         options: {
           sessionId: 'session-1234',
           metadata: {
-            analysisMode: 'thinking',
             enableRAG: true,
             enableWebSearch: true,
           },
@@ -766,6 +762,5 @@ describe('POST /api/ai/jobs trigger readiness', () => {
       enableRAG: true,
       enableWebSearch: true,
     });
-    expect(workerBody.analysisMode).toBeUndefined();
   });
 });

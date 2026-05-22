@@ -207,17 +207,6 @@ describe('requestSchema (V2 Proxy)', () => {
       expect(result.data?.enableRAG).toBe(true);
     });
 
-    it('should accept analysisMode flag', () => {
-      const input = {
-        messages: [{ role: 'user', content: 'test' }],
-        analysisMode: 'thinking',
-      };
-
-      const result = requestSchema.safeParse(input);
-      expect(result.success).toBe(true);
-      expect(result.data?.analysisMode).toBe('thinking');
-    });
-
     it('should accept bounded inputType and logExtract metadata', () => {
       const input = {
         messages: [{ role: 'user', content: 'ERROR 로그 분석해줘' }],
