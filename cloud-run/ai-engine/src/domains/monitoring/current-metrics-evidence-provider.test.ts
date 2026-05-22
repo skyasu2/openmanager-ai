@@ -486,6 +486,49 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toMatch(/즉시 조치[^\n]+없(?:습니다|음)/);
   });
 
+  it('resolves urgent action ranking wording with a deterministic priority summary', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+      createEvidenceRequest('지금 당장 조치 시급한 서버 순위', {
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            status: 'critical',
+            cpu: 45,
+            memory: 91,
+            disk: 44,
+          },
+          {
+            id: 'api-was-dc1-01',
+            status: 'warning',
+            cpu: 43,
+            memory: 66,
+            disk: 44,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            status: 'online',
+            cpu: 41,
+            memory: 52,
+            disk: 31,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+      },
+    });
+    expect(evidence?.fallback).toContain('즉시 조치 대상은 1대입니다');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).toContain('주의 관찰 대상은 1대입니다');
+    expect(evidence?.fallback).not.toContain('CPU 92%');
+  });
+
   it('preserves raw action-needed intent when metadata frame is whole-fleet server health', async () => {
     const evidence = await monitoringServerHealthEvidenceProvider.resolve({
       ...createEvidenceRequest('지금 당장 조치가 필요한 서버가 있어?', {

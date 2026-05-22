@@ -279,6 +279,27 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('resolves urgent action ranking prompts as deterministic server health evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '지금 당장 조치 시급한 서버 순위',
+      domain: monitoringDomainPack,
+      sessionId: 'session-urgent-action-ranking',
+      traceId: 'trace-urgent-action-ranking',
+    });
+
+    expect(support?.id).toBe('monitoring-server-health');
+    expect(support?.fallback).toContain('즉시 조치');
+    expect(support?.fallback).toMatch(
+      /(?:즉시 조치 대상은 \d+대입니다|즉시 조치 대상은 없습니다)/
+    );
+    expect(support?.fallback).toContain('우선순위');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.server_health',
+      intent: 'server_health',
+    });
+  });
+
   it('resolves availability-zone load balance as deterministic domain evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query: '가용 영역별 부하 균형을 비교해줘',
@@ -293,6 +314,24 @@ describe('supervisor domain evidence support', () => {
     expect(support?.fallback).toContain('DC1-AZ2');
     expect(support?.fallback).toContain('DC1-AZ3');
     expect(support?.fallback).toContain('전체 18대');
+    expect(support?.fallback.trim().length).toBeGreaterThan(80);
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.location_load_balance',
+      intent: 'location_load_balance',
+    });
+  });
+
+  it('resolves data-center load comparison as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: 'DC1과 DC2 어느 데이터센터 부하 높아',
+      domain: monitoringDomainPack,
+      sessionId: 'session-dc-load-balance',
+      traceId: 'trace-dc-load-balance',
+    });
+
+    expect(support?.id).toBe('monitoring-location-load-balance');
+    expect(support?.fallback).toContain('부하 균형');
     expect(support?.fallback.trim().length).toBeGreaterThan(80);
     expect(support?.metadata).toMatchObject({
       responsePolicy: 'deterministic_answer',
@@ -319,6 +358,26 @@ describe('supervisor domain evidence support', () => {
       capabilityId: 'monitoring.capacity_forecast',
       intent: 'capacity_forecast',
       metric: 'disk',
+      threshold: 90,
+    });
+  });
+
+  it('resolves danger-level capacity forecast wording as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: 'api-was-dc1-01 CPU 언제 위험 수준 도달해',
+      domain: monitoringDomainPack,
+      sessionId: 'session-capacity-danger-level',
+      traceId: 'trace-capacity-danger-level',
+    });
+
+    expect(support?.id).toBe('monitoring-capacity-forecast');
+    expect(support?.fallback).toContain('CPU 90% 도달 예측');
+    expect(support?.fallback).toContain('api-was-dc1-01');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.capacity_forecast',
+      intent: 'capacity_forecast',
+      metric: 'cpu',
       threshold: 90,
     });
   });

@@ -318,6 +318,26 @@ describe('normalizeExtractedEntities', () => {
         executionMode: 'multi',
       },
     });
+
+    expect(
+      normalizeExtractedEntitiesForQuery(
+        {
+          metric: null,
+          confidence: 81,
+          intentFrame: null,
+        },
+        'api-was-dc1-01 CPU 언제 위험 수준 도달해'
+      )
+    ).toMatchObject({
+      server: 'api-was-dc1-01',
+      intentFrame: {
+        intent: 'capacity_forecast',
+        scope: 'server',
+        targets: ['api-was-dc1-01'],
+        metric: 'cpu',
+        executionMode: 'multi',
+      },
+    });
   });
 });
 

@@ -4,7 +4,10 @@ import type {
   DomainSnapshot,
 } from '../../core/assistant-runtime';
 import { MONITORING_DOMAIN_ID } from './constants';
-import { monitoringCapacityForecastEvidenceProvider } from './load-balance-capacity-evidence-provider';
+import {
+  monitoringCapacityForecastEvidenceProvider,
+  monitoringLocationLoadBalanceEvidenceProvider,
+} from './load-balance-capacity-evidence-provider';
 
 const snapshot: DomainSnapshot = {
   timestamp: '2026-05-22T14:20:00+09:00',
@@ -25,6 +28,37 @@ const snapshot: DomainSnapshot = {
   },
 };
 
+const locationSnapshot: DomainSnapshot = {
+  timestamp: '2026-05-22T14:20:00+09:00',
+  data: {
+    timeLabel: '14:20',
+    servers: [
+      {
+        id: 'web-dc1-01',
+        name: 'web-dc1-01',
+        type: 'web',
+        status: 'online',
+        cpu: 36,
+        memory: 52,
+        disk: 34,
+        network: 11,
+        location: 'DC1',
+      },
+      {
+        id: 'api-dc2-01',
+        name: 'api-dc2-01',
+        type: 'application',
+        status: 'warning',
+        cpu: 61,
+        memory: 68,
+        disk: 41,
+        network: 18,
+        location: 'DC2',
+      },
+    ],
+  },
+};
+
 function createRequest(message: string): DomainEvidenceRequest {
   return {
     requestId: 'capacity-forecast-test',
@@ -38,6 +72,45 @@ function createRequest(message: string): DomainEvidenceRequest {
   };
 }
 
+function createLocationRequest(message: string): DomainEvidenceRequest {
+  return {
+    requestId: 'location-load-balance-test',
+    domainId: MONITORING_DOMAIN_ID,
+    message,
+    messages: [{ role: 'user', content: message }],
+    dataSource: {
+      snapshot: async () => locationSnapshot,
+      history: async () => [],
+    },
+  };
+}
+
+describe('monitoring location load balance evidence provider', () => {
+  it('matches data-center load comparison phrasing', async () => {
+    const request = createLocationRequest(
+      'DC1과 DC2 어느 데이터센터 부하 높아?'
+    );
+
+    expect(
+      monitoringLocationLoadBalanceEvidenceProvider.canHandle(request)
+    ).toBe(true);
+
+    const result = await monitoringLocationLoadBalanceEvidenceProvider.resolve(
+      request
+    );
+
+    expect(result?.id).toBe('monitoring-location-load-balance');
+    expect(result?.fallback).toContain('부하 균형');
+    expect(result?.fallback).toContain('DC1');
+    expect(result?.fallback).toContain('DC2');
+    expect(result?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.location_load_balance',
+      intent: 'location_load_balance',
+    });
+  });
+});
+
 describe('monitoring capacity forecast evidence provider', () => {
   it('matches Korean capacity forecast and threshold crossing phrases', () => {
     const queries = [
@@ -46,6 +119,7 @@ describe('monitoring capacity forecast evidence provider', () => {
       '임계치 도달 시점 알려줘',
       'cache-redis-dc1-01 메모리가 100%에 도달하는 시점 예측해줘',
       'cache-redis-dc1-01 메모리 포화 예측해줘',
+      'api-was-dc1-01 CPU 언제 위험 수준 도달해',
       'capacity-test-01 memori when will it exceed 90%',
     ];
 
@@ -70,6 +144,21 @@ describe('monitoring capacity forecast evidence provider', () => {
       responsePolicy: 'deterministic_answer',
     });
     expect(result?.fallback).toContain('메모리 90% 도달 예측');
+    expect(result?.fallback).toContain('대상: 지정 서버 1대');
+  });
+
+  it('resolves danger-level wording to the default forecast threshold', async () => {
+    const result = await monitoringCapacityForecastEvidenceProvider.resolve(
+      createRequest('capacity-test-01 CPU 언제 위험 수준 도달해')
+    );
+
+    expect(result?.id).toBe('monitoring-capacity-forecast');
+    expect(result?.metadata).toMatchObject({
+      metric: 'cpu',
+      threshold: 90,
+      responsePolicy: 'deterministic_answer',
+    });
+    expect(result?.fallback).toContain('CPU 90% 도달 예측');
     expect(result?.fallback).toContain('대상: 지정 서버 1대');
   });
 

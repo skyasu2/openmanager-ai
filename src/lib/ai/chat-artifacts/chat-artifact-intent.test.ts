@@ -100,6 +100,7 @@ describe('classifyChatArtifactIntent', () => {
       'cache-redis-dc1-01 메모리가 100%에 도달하는 시점 예측해줘',
       'cache-redis-dc1-01 메모리 포화 예측해줘',
       'storage-nfs-dc1-01 디스크가 가득 찰 때 알려줘',
+      'api-was-dc1-01 CPU 언제 위험 수준 도달해',
     ];
 
     for (const query of queries) {
