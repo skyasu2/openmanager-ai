@@ -380,7 +380,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 ### H-1: monitoringCapacityForecastEvidenceProvider 불일치 라우팅
 
-**Status**: Approved (2026-05-22)
+**Status**: Implemented(local) (2026-05-22)
 
 **증상**: `QA-20260522-0558 Q1` — "db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘"
 → 이상감지/추세 분석 artifact 카드 출력 (응답 근거: "일반 대화 응답", 도구: "이상감지/추세 분석")
@@ -427,7 +427,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 ### H-2: monitoringPeakMetricEvidenceProvider 응답 내용 부실
 
-**Status**: Approved (2026-05-22)
+**Status**: Implemented(local) (2026-05-22)
 
 **증상**: `QA-20260522-0558 Q3` — "지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대는 언제야?"
 → "모니터링 피크 지표 근거" 확인 (provider 트리거됨), 그러나 응답은 섹션 제목만 반환, 기간 표시 "최근 1시간"
@@ -462,23 +462,25 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - `answer`가 섹션 제목만 포함하는 경우 테스트로 차단해야 한다.
 
 **테스트 시나리오**:
-- [ ] `peak-metric-intent.test`: "지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대" → `parseWindowHours=24`, metric=`load` 또는 `cpu`
-- [ ] `peak-metric-evidence-provider.test`: 24h 히스토리 슬롯이 있을 때 `resolve` 결과의 `answer`에 피크 서버명과 수치가 포함된다
-- [ ] `peak-metric-evidence-provider.test`: `answer`가 섹션 제목만("CPU 사용률 상위 3대") 반환하는 경우 테스트 실패
+- [x] `peak-metric-intent.test`: "지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대" → `parseWindowHours=24`, metric=`load`
+- [x] `peak-metric-evidence-provider.test`: 24h 히스토리 슬롯이 있을 때 `resolve` 결과의 `answer`에 피크 서버명과 수치가 포함된다
+- [x] `peak-metric-evidence-provider.test`: `answer`가 섹션 제목만("CPU 사용률 상위 3대") 반환하는 경우 테스트 실패
 
 ---
 
 **우선순위**: P2 (non-blocking, QA tracker auto WONT-FIX. 재현 빈도 증가 시 P1 승격)
 **SDD 게이트**: 진단 → failing test 선행 커밋 → 구현 순서 준수
-**현재 판단**: H-1은 local implementation 완료. H-2는 재현 조건과 응답 부실 원인을 별도 진단해야 하므로 Backlog에 유지한다.
+**현재 판단**: H-1/H-2 모두 local implementation 완료. 최종 판정은 다음 production QA에서 재확인한다.
 
 **예상 소요**: 진단 30분 + 구현/테스트 60분
 
 - [x] H-1 `isServerMonitoringArtifactRequest` + `buildCapacityForecastAnswer` slope=0 케이스 진단 (`8f12a0b30`)
-- [ ] H-2 `monitoringPeakMetricEvidenceProvider.resolve` answer 내용 진단
+- [x] H-2 `monitoringPeakMetricEvidenceProvider.resolve` answer 내용 진단 (`d09af3f46`)
 - [x] H-1 failing test 선행 커밋 (`8f12a0b30`)
 - [x] H-1 구현 완료(local)
 - [x] H-1 AI Engine targeted/full tests, root targeted/test:quick/type-check/lint/test:contract 통과
+- [x] H-2 failing test 선행 커밋 (`d09af3f46`)
+- [x] H-2 구현 완료(local)
 
 ---
 

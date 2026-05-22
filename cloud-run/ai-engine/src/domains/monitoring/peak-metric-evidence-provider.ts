@@ -105,7 +105,7 @@ export const monitoringPeakMetricEvidenceProvider: DomainEvidenceProvider = {
 
     const responsePolicy = parsed.responseGuidanceRequested
       ? 'deterministic_read_only_advice'
-      : undefined;
+      : 'deterministic_answer';
 
     return {
       id: 'monitoring-peak-metric',
