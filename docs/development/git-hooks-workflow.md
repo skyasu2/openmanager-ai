@@ -332,7 +332,7 @@ SKIP_NODE_CHECK=true git push
 |------|------|
 | `.husky/pre-commit` | Pre-commit Hook |
 | `scripts/hooks/pre-push.js` | Pre-push Hook |
-| `scripts/ci/local-docker-ci.sh` | 로컬 Docker 기반 전체 CI |
+| `scripts/ci/local-ci.sh` | 로컬 전체 CI (GitLab shell executor 동등) |
 | `scripts/env/precommit-check-secrets.cjs` | Secret Scanner |
 | `scripts/hooks/post-commit.js` | 커밋 완료 알림 출력 |
 | `.gitlab-ci.yml` | canonical validate/deploy/smoke pipeline |

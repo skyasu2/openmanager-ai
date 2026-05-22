@@ -241,8 +241,8 @@ bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "대안 
 ### Vercel (Frontend)
 
 ```bash
-# broad/deploy-sensitive 변경이면 로컬 Docker CI 먼저
-npm run ci:local:docker
+# broad/deploy-sensitive 변경이면 로컬 CI 먼저
+npm run ci:local
 
 # canonical 배포
 git push gitlab main

@@ -287,7 +287,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       stage4: {
         title: '현재 단계',
         description:
-          'GitLab canonical 전환 → Claude Code 메인 + 구현·리팩토링 단계 Codex 비중 증가 → GitLab CI + 로컬 Docker CI 병행 → Cloud Run AI Engine 운영',
+          'GitLab canonical 전환 → Claude Code 메인 + 구현·리팩토링 단계 Codex 비중 증가 → GitLab CI + ci:local 직접 검증 → Cloud Run AI Engine 운영',
       },
     },
 
@@ -339,7 +339,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         importance: 'critical',
         description: '4단계 핵심 - canonical 저장소를 GitLab으로 전환',
         implementation:
-          'GitHub에서 GitLab으로 canonical 역할 이전. git push gitlab main → GitLab CI validate/deploy/smoke → Vercel production 배포 체계 확립. GitHub는 공개 코드 스냅샷(npm run sync:github)으로 역할 분리하고, 로컬 Docker CI는 전체 검증 표준 경로로 병행 운영',
+          'GitHub에서 GitLab으로 canonical 역할 이전. git push gitlab main → GitLab CI validate/deploy/smoke → Vercel production 배포 체계 확립. GitHub는 공개 코드 스냅샷(npm run sync:github)으로 역할 분리하고, ci:local(shell 직접 실행)이 전체 검증 표준 경로',
         status: 'active',
         icon: '🦊',
         tags: ['4단계', 'GitLab', 'canonical', 'Vercel연동'],
@@ -358,15 +358,16 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         type: 'commercial',
       },
       {
-        name: '로컬 Docker CI',
+        name: 'ci:local (Shell CI)',
         category: 'tooling',
         importance: 'high',
-        description: '로컬 전체 검증 표준 - Docker 기반 회귀 점검',
+        description:
+          '로컬 전체 검증 표준 - GitLab shell executor 동등 직접 실행',
         implementation:
-          'npm run ci:local:docker로 로컬 전체 검증을 수동 실행합니다. GitLab CI는 canonical validate/deploy/smoke를 담당하고, pre-push hook은 Docker 없이 Node.js로 빠른 변경 범위 검증만 수행합니다.',
+          'npm run ci:local로 로컬 전체 검증을 수동 실행합니다. GitLab CI는 wsl2-docker tag의 shell executor로 WSL2에서 직접 실행하므로, 로컬 개발 환경과 동일 — Docker 컨테이너 불필요. pre-push hook은 빠른 변경 범위 검증만 수행합니다.',
         status: 'active',
-        icon: '🐋',
-        tags: ['로컬CI', 'Docker', 'pre-push', 'GitLab-CI-Active'],
+        icon: '🖥️',
+        tags: ['로컬CI', 'pre-push', 'GitLab-CI-Active'],
         type: 'custom',
       },
       {

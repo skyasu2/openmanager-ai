@@ -68,13 +68,13 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     type: 'opensource',
   },
   {
-    name: 'GitLab + Local Docker CI',
+    name: 'GitLab + ci:local',
     category: 'deployment',
     importance: 'medium',
     description:
-      'GitLab canonical 저장소와 로컬 Docker 기반 검증 경로를 결합한 운영 워크플로우. 외부 SaaS CI 의존을 줄이고 배포 권위와 공개 저장소를 분리',
+      'GitLab canonical 저장소와 로컬 shell 직접 검증을 결합한 운영 워크플로우. 외부 SaaS CI 의존을 줄이고 배포 권위와 공개 저장소를 분리',
     implementation:
-      '→ git push gitlab main 이후 GitLab CI가 배포를 이어받고, npm run ci:local:docker 로 로컬 사전 검증 수행',
+      '→ git push gitlab main 이후 GitLab CI(shell executor)가 배포를 이어받고, npm run ci:local 로 로컬 사전 검증 수행 (동일 WSL2 환경 직접 실행)',
     status: 'active',
     icon: '🦊',
     tags: ['GitLab', 'Local CI', 'Vercel'],

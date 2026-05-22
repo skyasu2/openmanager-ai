@@ -92,8 +92,8 @@ npm run test:e2e:critical
 # 전체 검증
 npm run validate:all
 
-# 로컬 Docker CI (외부 CI 최소화)
-npm run ci:local:docker
+# 로컬 전체 검증 (GitLab shell executor 동등)
+npm run ci:local
 ```
 
 ## 📊 무료 티어 최적화

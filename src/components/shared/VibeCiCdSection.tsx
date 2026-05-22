@@ -162,7 +162,7 @@ const SCENARIOS = [
     bg: 'bg-purple-500/5',
     steps: [
       { id: 'pre-hooks', label: 'pre-hooks', icon: MonitorCheck },
-      { id: 'docker-ci', label: 'Docker CI', icon: Box },
+      { id: 'local-ci', label: 'ci:local', icon: Box },
       { id: 'push', label: 'push', icon: Send },
       { id: 'validate', label: '검사', icon: ShieldCheck },
       { id: 'deploy', label: '배포', icon: Rocket },
