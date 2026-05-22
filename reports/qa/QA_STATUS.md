@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-22 13:13:32 KST
+> Generated at: 2026-05-22 20:14:45 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 557 |
-| Total Runs (Counted) | 443 |
-| Non-counted Runs | 114 |
-| Total Checks | 4055 |
-| Passed | 3897 |
+| Total Recorded Runs | 561 |
+| Total Runs (Counted) | 446 |
+| Non-counted Runs | 115 |
+| Total Checks | 4068 |
+| Passed | 3906 |
 | Failed | 145 |
 | Completed Items | 632 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260522-0558 (2026-05-22T02:32:10.298Z) |
-| Latest Recorded Run | QA-20260522-0559 (2026-05-22T04:13:27.604Z) |
+| Last Counted Run | QA-20260522-0563 (2026-05-22T11:14:44.822Z) |
+| Latest Recorded Run | QA-20260522-0563 (2026-05-22T11:14:44.822Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,43 +34,40 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260522-0559 (2026-05-22T04:13:27.604Z)
+Latest run: QA-20260522-0563 (2026-05-22T11:14:44.822Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | 서버 1:1 비교 쿼리용 evidence provider 또는 supervisor 라우팅 규칙 추가 검토. 서버 도메인 특성(backup=binlog/dump) KB 시드 보강. |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | playwright-mcp | checked | normal | Playwright MCP로 Vercel production 직접 접속. 대시보드 정상 로드, AI 어시스턴트 응답 6건 정상 수신. |
+| vercel | production-api-supervisor-stream | checked | normal | v8.12.9 targeted production QA executed through CSRF-safe supervisor stream API. Frontend /api/version and Cloud Run /health both reported 8.12.9; no Supabase write path used. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-21T04:13:27.604Z -> 2026-05-22T04:13:27.604Z (24h)
+- Window: 2026-05-21T11:14:44.822Z -> 2026-05-22T11:14:44.822Z (24h)
 - Runs with observations: 2 recorded / 2 counted
 - Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Analyst Agent | streaming | 1 | 11000ms | 11000ms | 2000ms | 2000ms | 9000ms | 9000ms | QA-20260521-0550 |
-| Reporter Agent | zai | 1 | 7021ms | 7021ms | 1200ms | 1200ms | 5821ms | 5821ms | QA-20260521-0550 |
-| Metrics Query Agent | cloud-run-deterministic | 2 | 836ms | 1434ms | - | - | - | - | QA-20260522-0556 |
-| Advisor Agent | deterministic | 1 | 26ms | 26ms | 26ms | 26ms | 0ms | 0ms | QA-20260521-0550 |
+| Metrics Query Agent | cloud-run-deterministic | 5 | 797ms | 1662ms | - | - | - | - | QA-20260522-0563 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-21T04:13:27.604Z -> 2026-05-22T04:13:27.604Z (24h)
-- Runs with observations: 3 recorded / 2 counted
-- Samples: 13
-- Drift rate: 7.69%
+- Window: 2026-05-21T11:14:44.822Z -> 2026-05-22T11:14:44.822Z (24h)
+- Runs with observations: 7 recorded / 5 counted
+- Samples: 31
+- Drift rate: 19.35%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
 | reporter-agent | single-agent | 1 | 0% | 30000ms | 30000ms | QA-20260522-0559 |
-| /api/ai/supervisor/stream/v2 | deterministic | 7 | 0% | 0ms | 2ms | QA-20260522-0559 |
-| /api/ai/supervisor/stream/v2 | single-agent | 3 | 33.33% | 0ms | 0ms | QA-20260522-0559 |
+| /api/ai/supervisor/stream/v2 | single-agent | 9 | 66.67% | 3556ms | 25000ms | QA-20260522-0562 |
+| /api/ai/supervisor/stream/v2 | deterministic | 19 | 0% | 131ms | 1662ms | QA-20260522-0563 |
 | /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 | anomaly-detection | deterministic | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 
@@ -78,38 +75,30 @@ Latest run: QA-20260522-0559 (2026-05-22T04:13:27.604Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: dpl_EfWEBPcgUWKRjCh29WZfbSNypakd / SHA 1b0b329b
-- Coverage Packs: ai-core
-- Covered Surfaces: AI sidebar chat - DISK metric ranking, AI sidebar chat - server-to-server comparison, AI sidebar chat - Korean typo handling, 자동 보고서 탭 - Reporter agent, 이상감지 탭 - Anomaly Detection, AI sidebar chat - root cause analysis
-- Skipped Surfaces: dashboard overview UI, 서버 목록 페이지, topology 페이지
+- Counts Toward Summary: yes
+- Deployment: gitlab-pipeline-2546072069 / SHA eb128e80
+- Coverage Packs: ai-core, observability-pack
+- Covered Surfaces: AI supervisor stream - DC1/DC2 data-center load comparison grounded fallback, AI supervisor stream - urgent action ranking without hallucinated critical servers, AI supervisor stream - CPU danger-level capacity forecast with non-duplicated target label
+- Skipped Surfaces: dashboard visual Playwright flow, reporter tab, anomaly detection tab
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel Production v8.12.5 | [Vercel Production v8.12.5](https://openmanager-ai.vercel.app/) | - |
+| general | GitLab pipeline v8.12.9 release (2546072069) | [GitLab pipeline v8.12.9 release (2546072069)](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2546072069) | - |
+| general | Vercel Production v8.12.9 | [Vercel Production v8.12.9](https://openmanager-ai.vercel.app/) | - |
+| monitoring | Cloud Run AI Engine health v8.12.9 | [Cloud Run AI Engine health v8.12.9](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | page-2026-05-22T03-10-15-214Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-10-15-214Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-10-31-724Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-10-31-724Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-10-42-427Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-10-42-427Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-11-00-053Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-11-00-053Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-11-12-489Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-11-12-489Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-11-52-216Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-11-52-216Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-13-36-316Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-13-36-316Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-13-58-898Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-13-58-898Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-14-32-591Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-14-32-591Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-15-04-876Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-15-04-876Z.png` | - |
-| playwright-screenshot | page-2026-05-22T03-15-34-401Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-15-34-401Z.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260522-0559)
-  next: 서버 1:1 비교 쿼리용 evidence provider 또는 supervisor 라우팅 규칙 추가 검토. 서버 도메인 특성(backup=binlog/dump) KB 시드 보강.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260522-0562)
+  next: 1) 'DC1과 DC2' location-load-balance 패턴 확장. 2) '조치 시급한 서버' monitoring-snapshot-risk-signal 연결. 3) capacity-forecast에 '위험 수준 도달' 패턴 추가.
 
 ## Pending Improvements
 
@@ -864,6 +853,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260522-0563 | 2026-05-22T11:14:44.822Z | targeted | no | yes | v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast | 3 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260522-0562 | 2026-05-22T09:30:00.000Z | targeted | yes | yes | v8.12.7 미테스트 7문항 QA (Playwright MCP) - 신규 패턴·트렌드·운영우선순위·DC비교 | 7 | 0 | 0 | 0 | 0 | 1 |
+| QA-20260522-0561 | 2026-05-22T06:30:00.000Z | regression | yes | yes | v8.12.7 routing regression 재검증 3문항 (Playwright MCP) - 영어+오타·도달시점·Redis가이드 | 3 | 0 | 0 | 0 | 0 | 1 |
+| QA-20260522-0560 | 2026-05-22T05:00:00.000Z | targeted | no | no | v8.12.5 미평가 5문항 QA (Playwright MCP) - AZ비교·capacity-forecast·KRL·Advisor | 5 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260522-0559 | 2026-05-22T04:13:27.604Z | targeted | no | no | v8.12.5 신규 질문 6문항 평가 (Playwright MCP) - 미테스트 영역 집중 | 6 | 0 | 0 | 0 | 3 | 1 |
 | QA-20260522-0558 | 2026-05-22T02:32:10.298Z | targeted | yes | yes | v8.12.5 신규 변경사항 AI 어시스턴트 평가 (5문항) - evidence providers + routing fix | 5 | 0 | 0 | 0 | 2 | 1 |
 | QA-20260522-0557 | 2026-05-22T00:36:19.482Z | targeted | no | no | v8.12.4 AI 어시스턴트 신규 5문항 평가 (Vercel Production) | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -880,7 +873,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260520-0546 | 2026-05-20T12:57:49.227Z | targeted | yes | yes | Vercel Playwright QA - v8.11.189 KRL Routing and Stream Sanitizer Closure | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260520-0545 | 2026-05-20T10:33:17.738Z | targeted | yes | yes | Vercel Playwright QA - v8.11.185 Landing AI Text and Dashboard Status | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260520-0544 | 2026-05-20T08:08:43.778Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.184 dashboard and AI state | 12 | 0 | 2 | 0 | 0 | 3 |
-| QA-20260520-0543 | 2026-05-20T04:10:25.196Z | targeted | no | no | Vision GLM Fallback Removal Closure | 1 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260520-0542 | 2026-05-20T04:05:02.782Z | targeted | no | no | Cloud Run Gemini Vision Answer Quality Smoke | 3 | 1 | 0 | 0 | 1 | 0 |
-| QA-20260520-0541 | 2026-05-20T03:16:25.342Z | targeted | no | no | Cloud Run Vision Provider Answer Quality Smoke | 2 | 1 | 1 | 0 | 0 | 0 |
-| QA-20260520-0540 | 2026-05-20T02:11:54.045Z | targeted | no | no | AI Assistant cleanup local dev supervisor report smoke | 1 | 0 | 0 | 0 | 0 | 0 |

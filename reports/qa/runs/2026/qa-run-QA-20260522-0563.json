@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260522-0563",
+  "recordedAt": "2026-05-22T11:14:44.822Z",
+  "recordedAtKst": "2026-05-22 20:14:44 KST",
+  "runTitle": "v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast",
+  "owner": "codex",
+  "source": "production-api-supervisor-stream",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2546072069",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "eb128e805930b05fba257d8d815ffca054617714"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "AI supervisor stream - DC1/DC2 data-center load comparison grounded fallback",
+    "AI supervisor stream - urgent action ranking without hallucinated critical servers",
+    "AI supervisor stream - CPU danger-level capacity forecast with non-duplicated target label"
+  ],
+  "skippedSurfaces": [
+    "dashboard visual Playwright flow",
+    "reporter tab",
+    "anomaly detection tab"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "DC1/DC2 data-center load comparison",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "production API QA script",
+      "latencyMs": 1662
+    },
+    {
+      "surface": "Urgent action ranking",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "production API QA script",
+      "latencyMs": 427
+    },
+    {
+      "surface": "CPU danger-level capacity forecast",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "production API QA script",
+      "latencyMs": 224
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "DC1/DC2 data-center load comparison",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 1662,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "production API QA script"
+    },
+    {
+      "surface": "Urgent action ranking",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 427,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "production API QA script"
+    },
+    {
+      "surface": "CPU danger-level capacity forecast",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 224,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "production API QA script"
+    }
+  ],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "production-api-supervisor-stream",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-22T20:12:59+09:00",
+      "summary": "v8.12.9 targeted production QA executed through CSRF-safe supervisor stream API. Frontend /api/version and Cloud Run /health both reported 8.12.9; no Supabase write path used.",
+      "evidence": "node /tmp/prod-ai-h4-qa.mjs",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ],
+  "artifacts": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "production-api-supervisor-stream",
+    "reason": "This targeted counted run used live production supervisor stream JSON, deployment links, and Cloud Run health evidence rather than Playwright screenshot artifacts.",
+    "recordedAt": "2026-05-22T11:14:44.822Z",
+    "recordedBy": "codex"
+  },
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.9 release (2546072069)",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2546072069"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Production v8.12.9",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run AI Engine health v8.12.9",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    }
+  ]
+}
