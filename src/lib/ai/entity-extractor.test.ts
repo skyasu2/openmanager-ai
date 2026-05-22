@@ -259,6 +259,46 @@ describe('normalizeExtractedEntities', () => {
       },
     });
   });
+
+  it('corrects threshold crossing wording to capacity forecast intent', () => {
+    expect(
+      normalizeExtractedEntitiesForQuery(
+        {
+          metric: 'disk',
+          confidence: 82,
+          intentFrame: {
+            domain: 'monitoring',
+            intent: 'metric_current',
+            scope: 'whole_fleet',
+            targets: [],
+            metric: 'disk',
+            timeWindow: 'current',
+            aggregation: 'summary',
+            topN: null,
+            ambiguity: 'low',
+            executionMode: 'single',
+            confidence: 82,
+          },
+        },
+        '디스크 사용률 언제 90% 넘을까?'
+      )
+    ).toEqual({
+      metric: 'disk',
+      confidence: 82,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'capacity_forecast',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'disk',
+        timeWindow: '24h',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        executionMode: 'multi',
+        confidence: 82,
+      },
+    });
+  });
 });
 
 describe('extractEntities', () => {

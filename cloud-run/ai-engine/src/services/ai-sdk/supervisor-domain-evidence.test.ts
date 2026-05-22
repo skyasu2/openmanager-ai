@@ -251,6 +251,50 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('resolves availability-zone load balance as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '가용 영역별 부하 균형을 비교해줘',
+      domain: monitoringDomainPack,
+      sessionId: 'session-az-load-balance',
+      traceId: 'trace-az-load-balance',
+    });
+
+    expect(support?.id).toBe('monitoring-location-load-balance');
+    expect(support?.fallback).toContain('AZ별 부하 균형');
+    expect(support?.fallback).toContain('DC1-AZ1');
+    expect(support?.fallback).toContain('DC1-AZ2');
+    expect(support?.fallback).toContain('DC1-AZ3');
+    expect(support?.fallback).toContain('전체 18대');
+    expect(support?.fallback.trim().length).toBeGreaterThan(80);
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.location_load_balance',
+      intent: 'location_load_balance',
+    });
+  });
+
+  it('resolves metric threshold crossing capacity forecasts as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '디스크 사용률 언제 90% 넘을까?',
+      domain: monitoringDomainPack,
+      sessionId: 'session-capacity-forecast',
+      traceId: 'trace-capacity-forecast',
+    });
+
+    expect(support?.id).toBe('monitoring-capacity-forecast');
+    expect(support?.fallback).toContain('디스크');
+    expect(support?.fallback).toContain('90%');
+    expect(support?.fallback).toContain('24h 선형 추세');
+    expect(support?.fallback.trim().length).toBeGreaterThan(80);
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.capacity_forecast',
+      intent: 'capacity_forecast',
+      metric: 'disk',
+      threshold: 90,
+    });
+  });
+
   it('does not let KRL/SSOT wording collapse into current server health evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query:

@@ -185,6 +185,11 @@ describe('selectExecutionMode', () => {
       expect(selectExecutionMode('증설 필요한지 알려줘')).toBe('single');
     });
 
+    it('should select multi for metric threshold capacity forecast questions', () => {
+      expect(selectExecutionMode('디스크 사용률 언제 90% 넘을까?')).toBe('multi');
+      expect(selectExecutionMode('메모리 용량 예측해줘')).toBe('multi');
+    });
+
     it('should use intentFrame for server summary requests instead of typo regex', () => {
       expect(selectExecutionMode('서버 상태 요약해줘')).toBe('single');
       expect(
@@ -326,6 +331,7 @@ describe('getIntentCategory', () => {
     expect(getIntentCategory('트렌드 분석')).toBe('prediction');
     expect(getIntentCategory('추이 예측')).toBe('prediction');
     expect(getIntentCategory('forecast CPU usage')).toBe('prediction');
+    expect(getIntentCategory('디스크 사용률 언제 90% 넘을까?')).toBe('prediction');
   });
 
   it('should classify math queries', () => {
@@ -551,6 +557,14 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toBe('required');
   });
 
+  it('should route threshold crossing questions to prediction tools', async () => {
+    const prepare = createPrepareStep('디스크 사용률 언제 90% 넘을까?');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('predictTrends');
+    expect(result.activeTools).toContain('estimateCapacityProjection');
+    expect(result.toolChoice).toBe('required');
+  });
+
   it('should route RCA queries to incident tools', async () => {
     const prepare = createPrepareStep('장애 원인 분석');
     const result = await prepare({ stepNumber: 0 });
@@ -748,6 +762,19 @@ describe('createPrepareStep', () => {
     const prepare = createPrepareStep(
       'DC1-AZ1/AZ2/AZ3 구역별 부하 균형이 잡혀 있어?'
     );
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toEqual([
+      'getServerMetricsAdvanced',
+      'finalAnswer',
+    ]);
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'getServerMetricsAdvanced',
+    });
+  });
+
+  it('should force getServerMetricsAdvanced for availability-zone load-balance phrasing', async () => {
+    const prepare = createPrepareStep('가용 영역별 부하 균형을 비교해줘');
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toEqual([
       'getServerMetricsAdvanced',
