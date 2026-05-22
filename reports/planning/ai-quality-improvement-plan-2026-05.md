@@ -493,11 +493,11 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 **우선순위**: P1 (수치 오류 직접 발생, intentFrame trust gap 동일 근본 원인)
 **SDD 게이트**: 진단 → failing test → 구현
 
-- [ ] "A vs B" 쿼리 분류 로직 현황 분석
-- [ ] failing test 선행 커밋
-- [ ] `monitoringLocationLoadBalanceEvidenceProvider` 확장 또는 신규 provider 추가
-- [ ] supervisor-prompt에 서버 비교 few-shot 예시 추가
-- [ ] AI Engine targeted tests / type-check 통과
+- [x] "A vs B" 쿼리 분류 로직 현황 분석
+- [x] failing test 선행 커밋 (`710c6165d`)
+- [x] `monitoringMetricCurrentEvidenceProvider` raw-query fallback 확장
+- [x] supervisor-prompt few-shot 추가 없이 deterministic evidence provider에서 직접 처리
+- [x] AI Engine targeted tests / type-check / full test 통과
 
 ---
 
@@ -569,7 +569,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
 | G: AZ 집계·Top-N 추세 grounding | 🔴 High | SDD Approved | 60~90분 | production QA 회귀 수정 |
 | H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Backlog | 진단 30 + 구현 60분 | 재현 빈도 증가 또는 다음 AI Engine 변경 시 |
-| **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Approved** | 진단 30 + 구현 60분 | 수치 오류 재현 시 즉시, 또는 다음 AI Engine 변경 시 |
+| **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Implemented (local)** | 진단 30 + 구현 60분 | `710c6165d` failing test 선행, local AI Engine type-check/full test PASS |
 | **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Backlog (Draft) | KB seed 30 + 검증 30분 | 다음 KRL seed 변경 시 |
 | **I-3: Reporter 기준 명시** | 🟢 P3 | Backlog (Draft) | 30분 | 사용자 혼란 재현 시 |
 | D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |

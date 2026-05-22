@@ -69,6 +69,11 @@ const ACTION_NEEDED_PATTERN =
 const CURRENT_METRIC_GROUP_PATTERN =
   /(db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN = /추이|추세|trend|변화|변동/i;
+const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
+const SERVER_COMPARISON_CONNECTOR_PATTERN =
+  /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
+const TIME_SERIES_COMPARISON_PATTERN =
+  /(지난\s*\d|최근\s*\d|24\s*시간|하루|어제|last\s+\d|last24h|past\s+\d|평균|avg|추세|트렌드|trend|예측|forecast|변화)/i;
 const GROUP_TARGET_HINTS = [
   {
     target: 'cache',
@@ -257,6 +262,22 @@ function inferGroupTargetFromMessage(message: string): string | undefined {
   return GROUP_TARGET_HINTS.find((hint) => hint.pattern.test(message))?.target;
 }
 
+function extractServerIdTargetsFromMessage(message: string): string[] {
+  const targets = new Set<string>();
+  for (const match of message.matchAll(SERVER_ID_PATTERN)) {
+    const serverId = match[0]?.toLowerCase();
+    if (serverId) targets.add(serverId);
+  }
+  return Array.from(targets);
+}
+
+function isCurrentServerComparisonMessage(message: string): boolean {
+  return (
+    SERVER_COMPARISON_CONNECTOR_PATTERN.test(message) &&
+    !TIME_SERIES_COMPARISON_PATTERN.test(message)
+  );
+}
+
 function reconcileTargetsWithMessage(
   targets: string[],
   message: string
@@ -380,6 +401,22 @@ function parseCurrentMetricsMessage(
     classification.metric && classification.metric !== 'status'
       ? classification.metric
       : null;
+  const explicitServerTargets = extractServerIdTargetsFromMessage(message);
+
+  if (
+    metric &&
+    explicitServerTargets.length >= 2 &&
+    isCurrentServerComparisonMessage(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'server-compare',
+      answerQuery: message,
+      metric,
+      targets: explicitServerTargets,
+    };
+  }
 
   if (
     classification.intent === 'data-ranking' &&
