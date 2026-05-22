@@ -61,7 +61,6 @@ export const STORAGE_KEYWORDS = [
 
 export const APPLICATION_KEYWORDS = [
   'application',
-  'was',
   'api',
   'app',
   'backend',

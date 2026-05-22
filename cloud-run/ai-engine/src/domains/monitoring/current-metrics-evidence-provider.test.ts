@@ -335,6 +335,78 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
   });
 
+  it('resolves role group metric comparisons deterministically', async () => {
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      createEvidenceRequest('WAS와 DB 서버 CPU 비교해줘', {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'warning',
+            cpu: 82,
+            memory: 62,
+            disk: 41,
+            network: 18,
+          },
+          {
+            id: 'api-was-dc1-02',
+            type: 'application',
+            status: 'online',
+            cpu: 58,
+            memory: 51,
+            disk: 39,
+            network: 16,
+          },
+          {
+            id: 'db-mysql-dc1-01',
+            type: 'database',
+            status: 'online',
+            cpu: 42,
+            memory: 71,
+            disk: 65,
+            network: 13,
+          },
+          {
+            id: 'db-mysql-dc1-02',
+            type: 'database',
+            status: 'online',
+            cpu: 38,
+            memory: 68,
+            disk: 61,
+            network: 12,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 92,
+            memory: 45,
+            disk: 28,
+            network: 11,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        sourceIntent: 'group-compare',
+        metric: 'cpu',
+        groupTargets: ['application', 'database'],
+      },
+    });
+    expect(evidence?.fallback).toContain('애플리케이션 서버 vs DB 서버 CPU 비교');
+    expect(evidence?.fallback).toContain('애플리케이션 서버 70%');
+    expect(evidence?.fallback).toContain('DB 서버 40%');
+    expect(evidence?.fallback).toContain('평균 CPU 30%p 높습니다');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
   it('resolves multi-metric AND threshold filters deterministically', async () => {
     const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
       createEvidenceRequest('CPU와 메모리 모두 50% 이상인 서버 알려줘', {
@@ -379,6 +451,7 @@ describe('current metrics domain evidence providers', () => {
         intent: 'metric_current',
         metrics: ['cpu', 'memory'],
         threshold: 50,
+        thresholdOperator: '>=',
         filterOperator: 'AND',
       },
     });
@@ -386,6 +459,60 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('api-was-dc1-01');
     expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
+  it('keeps strict greater-than multi-metric filters exclusive', async () => {
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      createEvidenceRequest('CPU와 메모리 모두 50% 초과인 서버 알려줘', {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'warning',
+            cpu: 51,
+            memory: 52,
+            disk: 41,
+            network: 18,
+          },
+          {
+            id: 'api-was-dc1-02',
+            type: 'application',
+            status: 'online',
+            cpu: 50,
+            memory: 60,
+            disk: 39,
+            network: 16,
+          },
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'online',
+            cpu: 44,
+            memory: 91,
+            disk: 40,
+            network: 12,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        metrics: ['cpu', 'memory'],
+        threshold: 50,
+        thresholdOperator: '>',
+        filterOperator: 'AND',
+      },
+    });
+    expect(evidence?.fallback).toContain('CPU + 메모리 50% 초과 서버');
+    expect(evidence?.fallback).toContain('api-was-dc1-01');
+    expect(evidence?.fallback).not.toContain('api-was-dc1-02');
+    expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
   });
 
   it('matches explicit server IDs case-insensitively against snapshot IDs', async () => {

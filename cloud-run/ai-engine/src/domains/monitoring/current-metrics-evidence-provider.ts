@@ -11,6 +11,7 @@ import {
 import {
   classifyQueryIntent,
   type QueryMetric,
+  type QueryOperator,
   type QueryRankOrder,
 } from '../../services/ai-sdk/agents/orchestrator-query-intent';
 import { FORCE_KB_QUERY_PATTERN } from '../../services/ai-sdk/routing/query-routing-signals';
@@ -51,9 +52,11 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   sourceIntent: string;
   answerQuery: string;
   targets?: string[];
+  groupTargets?: string[];
   metric?: SupportedMetric;
   metrics?: SupportedMetric[];
   threshold?: number;
+  thresholdOperator?: QueryOperator;
   filterOperator?: 'AND' | 'OR';
   rankCount?: number;
   rankOrder?: QueryRankOrder;
@@ -70,7 +73,7 @@ const SERVER_DETAIL_PATTERN =
 const ACTION_NEEDED_PATTERN =
   /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응).{0,32}(?:필요|해야|대상|있|시급).{0,16}(?:서버|대상|순위)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|immediate\s+action|urgent\s+action|action\s+needed/i;
 const CURRENT_METRIC_GROUP_PATTERN =
-  /(db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
+  /(?:\b(?:db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend)\b|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN = /추이|추세|trend|변화|변동/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
 const SERVER_COMPARISON_CONNECTOR_PATTERN =
@@ -92,7 +95,7 @@ const GROUP_TARGET_HINTS = [
   },
   {
     target: 'application',
-    pattern: /(?:was|api|app|backend|애플리케이션|application)\s*(?:서버|그룹)?/i,
+    pattern: /(?:\b(?:was|api|app|backend|application)\b|애플리케이션)\s*(?:서버|그룹)?/i,
   },
   {
     target: 'database',
@@ -143,6 +146,54 @@ function extractMentionedMetrics(message: string): SupportedMetric[] {
 
 function isAndMetricFilterMessage(message: string): boolean {
   return /모두|동시에|전부|와|과|및|\band\b|&&|\+/i.test(message);
+}
+
+function compareMetricValue(
+  value: number,
+  operator: QueryOperator | undefined,
+  threshold: number
+): boolean {
+  switch (operator) {
+    case '>':
+      return value > threshold;
+    case '<':
+      return value < threshold;
+    case '<=':
+      return value <= threshold;
+    case '>=':
+    case undefined:
+      return value >= threshold;
+    case '==':
+      return value === threshold;
+    case '!=':
+      return value !== threshold;
+  }
+}
+
+function getThresholdOperatorLabel(
+  operator: QueryOperator | undefined
+): string {
+  switch (operator) {
+    case '>':
+      return '초과';
+    case '<':
+      return '미만';
+    case '<=':
+      return '이하';
+    case '==':
+      return '동일';
+    case '!=':
+      return '제외';
+    case '>=':
+    case undefined:
+      return '이상';
+  }
+}
+
+function getThresholdOperatorSymbol(
+  operator: QueryOperator | undefined
+): string {
+  return operator ?? '>=';
 }
 
 function round1(value: number): number {
@@ -290,6 +341,14 @@ function inferGroupTargetFromMessage(message: string): string | undefined {
   return GROUP_TARGET_HINTS.find((hint) => hint.pattern.test(message))?.target;
 }
 
+function extractGroupTargetsFromMessage(message: string): string[] {
+  const targets = new Set<string>();
+  for (const hint of GROUP_TARGET_HINTS) {
+    if (hint.pattern.test(message)) targets.add(hint.target);
+  }
+  return Array.from(targets);
+}
+
 function extractServerIdTargetsFromMessage(message: string): string[] {
   const targets = new Set<string>();
   for (const match of message.matchAll(SERVER_ID_PATTERN)) {
@@ -430,6 +489,7 @@ function parseCurrentMetricsMessage(
       ? classification.metric
       : null;
   const groupTarget = inferGroupTargetFromMessage(message);
+  const groupTargets = extractGroupTargetsFromMessage(message);
   const mentionedMetrics = extractMentionedMetrics(message);
   const explicitServerTargets = extractServerIdTargetsFromMessage(message);
 
@@ -449,6 +509,21 @@ function parseCurrentMetricsMessage(
   }
 
   if (
+    metric &&
+    groupTargets.length >= 2 &&
+    isCurrentServerComparisonMessage(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'group-compare',
+      answerQuery: message,
+      metric,
+      groupTargets: groupTargets.slice(0, 2),
+    };
+  }
+
+  if (
     classification.intent === 'data-filter' &&
     classification.threshold !== undefined &&
     mentionedMetrics.length >= 2 &&
@@ -464,6 +539,7 @@ function parseCurrentMetricsMessage(
       answerQuery: message,
       metrics: mentionedMetrics,
       threshold: classification.threshold,
+      thresholdOperator: classification.operator ?? '>=',
       filterOperator: 'AND',
       ...(groupTarget && { targets: [groupTarget] }),
     };
@@ -544,6 +620,10 @@ function buildMetricCurrentAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
 }): string | null {
+  if (params.parsed.groupTargets && params.parsed.groupTargets.length >= 2) {
+    return buildGroupMetricCompareAnswer(params);
+  }
+
   if (
     params.parsed.metrics &&
     params.parsed.metrics.length > 0 &&
@@ -591,6 +671,84 @@ function buildMetricCurrentAnswer(params: {
   ].join('\n');
 }
 
+function buildGroupMetricCompareAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  const metric = params.parsed.metric;
+  const groupTargets = params.parsed.groupTargets ?? [];
+  if (!metric || groupTargets.length < 2) return null;
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const summaries = groupTargets
+    .map((target) => {
+      const targetType = normalizeServerType(target);
+      const { servers } = filterSnapshotServers(allServers, [target]);
+      const rows = servers
+        .map((server) => ({
+          server,
+          value: getMetricValue(server, metric),
+        }))
+        .filter(
+          (row): row is { server: SnapshotServer; value: number } =>
+            row.value !== null
+        )
+        .sort((left, right) => right.value - left.value);
+      if (rows.length === 0) return null;
+
+      const values = rows.map((row) => row.value);
+      const avg = round1(
+        values.reduce((sum, value) => sum + value, 0) / values.length
+      );
+      const max = rows[0];
+      const min = rows[rows.length - 1];
+      if (!max || !min) return null;
+
+      return {
+        targetType,
+        label: getServerTypeKoreanLabel(targetType),
+        rows,
+        avg,
+        max,
+        min,
+      };
+    })
+    .filter((summary): summary is NonNullable<typeof summary> => summary !== null);
+  if (summaries.length < 2) return null;
+
+  const sortedByAverage = [...summaries].sort((left, right) => right.avg - left.avg);
+  const leader = sortedByAverage[0];
+  const follower = sortedByAverage[1];
+  if (!leader || !follower) return null;
+
+  const metricLabel = getMetricLabel(metric);
+  const diff = round1(leader.avg - follower.avg);
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+  const conclusion =
+    diff === 0
+      ? `두 그룹의 평균 ${metricLabel}가 동일합니다.`
+      : `${leader.label}가 ${follower.label}보다 평균 ${metricLabel} ${diff}%p 높습니다.`;
+
+  return [
+    `📊 **${summaries.map((summary) => summary.label).join(' vs ')} ${metricLabel} 비교**`,
+    `• 대상: ${summaries
+      .map((summary) => `${summary.label} ${summary.rows.length}대`)
+      .join(' · ')}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 평균: ${summaries
+      .map((summary) => `${summary.label} ${formatMetricPercent(summary.avg)}`)
+      .join(' · ')}`,
+    `• 결론: ${conclusion}`,
+    `• 서버별: ${summaries
+      .map(
+        (summary) =>
+          `${summary.label}: ${summary.rows
+            .map((row) => `${row.server.id} ${formatMetricPercent(row.value)}`)
+            .join(', ')}`
+      )
+      .join(' | ')}`,
+  ].join('\n');
+}
+
 function buildMultiMetricFilterAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
@@ -620,8 +778,20 @@ function buildMultiMetricFilterAnswer(params: {
       }>;
       const matches =
         params.parsed.filterOperator === 'OR'
-          ? numericValues.some((entry) => entry.value >= threshold)
-          : numericValues.every((entry) => entry.value >= threshold);
+          ? numericValues.some((entry) =>
+              compareMetricValue(
+                entry.value,
+                params.parsed.thresholdOperator,
+                threshold
+              )
+            )
+          : numericValues.every((entry) =>
+              compareMetricValue(
+                entry.value,
+                params.parsed.thresholdOperator,
+                threshold
+              )
+            );
       if (!matches) return null;
 
       return {
@@ -635,11 +805,17 @@ function buildMultiMetricFilterAnswer(params: {
 
   const metricLabels = metrics.map(getMetricLabel);
   const conditionJoiner = params.parsed.filterOperator === 'OR' ? ' OR ' : ' AND ';
+  const operatorLabel = getThresholdOperatorLabel(
+    params.parsed.thresholdOperator
+  );
+  const operatorSymbol = getThresholdOperatorSymbol(
+    params.parsed.thresholdOperator
+  );
   const condition = metrics
-    .map((metric) => `${getMetricLabel(metric)} >= ${threshold}%`)
+    .map((metric) => `${getMetricLabel(metric)} ${operatorSymbol} ${threshold}%`)
     .join(conditionJoiner);
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
-  const title = `${metricLabels.join(' + ')} ${threshold}% 이상 서버`;
+  const title = `${metricLabels.join(' + ')} ${threshold}% ${operatorLabel} 서버`;
 
   if (rows.length === 0) {
     return [
@@ -824,9 +1000,13 @@ async function resolveCurrentMetricsEvidence(
         timeLabel: readSnapshotTimeLabel(snapshot),
       }),
       ...(parsed.targets && { targets: parsed.targets }),
+      ...(parsed.groupTargets && { groupTargets: parsed.groupTargets }),
       ...(parsed.metric && { metric: parsed.metric }),
       ...(parsed.metrics && { metrics: parsed.metrics }),
       ...(parsed.threshold !== undefined && { threshold: parsed.threshold }),
+      ...(parsed.thresholdOperator && {
+        thresholdOperator: parsed.thresholdOperator,
+      }),
       ...(parsed.filterOperator && { filterOperator: parsed.filterOperator }),
       ...(parsed.rankCount && { rankCount: parsed.rankCount }),
       ...(parsed.rankOrder && { rankOrder: parsed.rankOrder }),
