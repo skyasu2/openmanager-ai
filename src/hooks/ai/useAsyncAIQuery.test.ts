@@ -83,7 +83,6 @@ function mockJsonResponse(body: unknown, init: ResponseInit = {}) {
 describe('buildAsyncQueryJobRequestBody', () => {
   it('includes source toggles, semantic metadata, and log extract in job metadata', () => {
     const body = buildAsyncQueryJobRequestBody('로그 원인 분석', 'session-1', {
-      analysisMode: 'thinking',
       enableRAG: false,
       enableWebSearch: true,
       queryAsOfDataSlot: {
@@ -118,7 +117,6 @@ describe('buildAsyncQueryJobRequestBody', () => {
       options: {
         sessionId: 'session-1',
         metadata: {
-          analysisMode: 'thinking',
           enableRAG: false,
           enableWebSearch: true,
           queryAsOfDataSlot: {

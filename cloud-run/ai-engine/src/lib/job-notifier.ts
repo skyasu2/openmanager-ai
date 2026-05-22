@@ -45,7 +45,6 @@ export interface JobResult {
   }>;
   evidenceCards?: EvidenceCard[];
   metadata?: {
-    analysisMode?: 'auto' | 'thinking';
     enableRAG?: boolean;
     enableWebSearch?: boolean | 'auto';
     retrieval?: RetrievalMetadata;

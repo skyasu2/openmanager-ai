@@ -89,8 +89,6 @@ export default function AIWorkspace({
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    analysisMode,
-    selectAnalysisMode,
     pendingEntryState,
     consumePendingEntryState,
     pendingPrefillMessage,
@@ -223,7 +221,6 @@ export default function AIWorkspace({
     const sidebarEntry: PendingAIEntryState = {
       ...(pendingEntryState ?? {}),
       selectedFunction: pendingEntryState?.selectedFunction ?? selectedFunction,
-      analysisMode: pendingEntryState?.analysisMode ?? analysisMode,
       target: 'sidebar',
     };
     const handoffQueryAsOfDataSlot =
@@ -246,7 +243,6 @@ export default function AIWorkspace({
     setIsMobileHandoffActive(true);
     router.replace(DASHBOARD_ROUTE);
   }, [
-    analysisMode,
     input,
     openSidebar,
     pendingEntryState,
@@ -274,10 +270,6 @@ export default function AIWorkspace({
 
     setSelectedFunction(entry.selectedFunction ?? 'chat');
 
-    if (entry.analysisMode) {
-      selectAnalysisMode(entry.analysisMode);
-    }
-
     setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot ?? queryAsOfDataSlot);
     setWorkspaceArtifactId(entry.artifactWorkspaceId);
 
@@ -288,7 +280,6 @@ export default function AIWorkspace({
     consumePendingEntryState,
     pendingEntryState,
     queryAsOfDataSlot,
-    selectAnalysisMode,
     setInput,
     setSelectedFunction,
   ]);
@@ -365,8 +356,6 @@ export default function AIWorkspace({
           currentHandoff={currentHandoff}
           webSearchEnabled={webSearchEnabled}
           onToggleWebSearch={toggleWebSearch}
-          analysisMode={analysisMode}
-          onSelectAnalysisMode={selectAnalysisMode}
           warmingUp={warmingUp}
           estimatedWaitSeconds={estimatedWaitSeconds}
           queuedQueries={queuedQueries}

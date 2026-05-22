@@ -235,30 +235,27 @@ describe('AnalysisBasisBadge', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows selected analysis mode in collapsed summary and expanded details', () => {
+  it('omits removed response mode metadata from collapsed summary and expanded details', () => {
     render(
       <AnalysisBasisBadge
         basis={{
           ...basis,
           dataSource: '서버 실시간 데이터 분석',
-          analysisMode: 'thinking',
           timeRange: '최근 1시간',
         }}
       />
     );
 
     expect(
-      screen.getByText(
-        '데이터: 서버 실시간 데이터 분석 · 모드: 심층 분석 · 기간: 최근 1시간'
-      )
+      screen.getByText('데이터: 서버 실시간 데이터 분석 · 기간: 최근 1시간')
     ).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    expect(screen.getByText('분석 강도')).toBeInTheDocument();
-    expect(screen.getByText('심층 분석')).toBeInTheDocument();
+    expect(screen.queryByText('분석 강도')).not.toBeInTheDocument();
+    expect(screen.queryByText('심층 분석')).not.toBeInTheDocument();
   });
 
   it('distinguishes enabled, used, suppressed, and unavailable feature states', () => {
@@ -268,7 +265,6 @@ describe('AnalysisBasisBadge', () => {
           dataSource: '일반 대화 응답 (지식 검색 활성)',
           engine: 'Streaming AI',
           ragUsed: false,
-          analysisMode: 'thinking',
           retrieval: {
             retrievalEnabled: true,
             retrievalUsed: false,
@@ -280,7 +276,6 @@ describe('AnalysisBasisBadge', () => {
           featureStatus: {
             rag: { status: 'suppressed', reason: 'no_results' },
             web: { status: 'enabled' },
-            thinking: { status: 'enabled', reason: 'routing_mode' },
           },
         }}
       />
@@ -292,7 +287,7 @@ describe('AnalysisBasisBadge', () => {
 
     expect(screen.getByText('지식 검색 생략됨')).toBeInTheDocument();
     expect(screen.getByText('Web 허용')).toBeInTheDocument();
-    expect(screen.getByText('심층 분석 요청됨')).toBeInTheDocument();
+    expect(screen.queryByText('심층 분석 요청됨')).not.toBeInTheDocument();
     expect(screen.queryByText('지식 검색 사용됨')).not.toBeInTheDocument();
     expect(
       screen.queryByText('provider-native reasoning')
@@ -548,7 +543,6 @@ describe('AnalysisBasisBadge', () => {
         basis={{
           ...basis,
           dataSource: 'cache-redis-dc1-01 메트릭 분석',
-          analysisMode: 'thinking',
           toolsCalled: ['detectAnomalies', 'detectAnomaliesAllServers'],
           timeRange: '최근 1시간',
           serverCount: 1,

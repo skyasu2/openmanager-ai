@@ -801,7 +801,7 @@ describe('Supervisor Stream V2 Route', () => {
       expect(body.internalDisclosureMode).toBeUndefined();
     });
 
-    it('analysisMode 값도 Cloud Run으로 전달해야 함', async () => {
+    it('accepts legacy analysisMode input but does not forward it to Cloud Run', async () => {
       const request = new NextRequest(
         'http://localhost/api/ai/supervisor/stream/v2',
         {
@@ -824,8 +824,8 @@ describe('Supervisor Stream V2 Route', () => {
       const body = JSON.parse(String(fetchOptions.body));
       expect(body).toMatchObject({
         sessionId: 'session-1234',
-        analysisMode: 'thinking',
       });
+      expect(body.analysisMode).toBeUndefined();
     });
 
     it('localRouteDecision을 Cloud Run으로 안전하게 전달해야 함', async () => {

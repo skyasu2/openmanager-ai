@@ -6,7 +6,6 @@
 
 import type { ImageAttachment, FileAttachment } from './base-agent';
 import type {
-  AnalysisMode,
   SupervisorMode,
   SupervisorModeSelectionSource,
 } from '../supervisor-types';
@@ -50,7 +49,6 @@ export interface MultiAgentRequest {
   resolvedMode?: Exclude<SupervisorMode, 'auto'>;
   modeSelectionSource?: SupervisorModeSelectionSource;
   autoSelectedByComplexity?: Exclude<SupervisorMode, 'auto'>;
-  analysisMode?: AnalysisMode;
   /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
   traceId?: string;
   enableTracing?: boolean;

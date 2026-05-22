@@ -233,7 +233,6 @@ export function buildAssistantAnalysisBasis(params: {
       webSearchEnabled: effectiveWebSearchEnabled,
       hasKnowledgeEvidence: hasKnowledgeSearch,
       hasWebEvidence: hasWebSearch,
-      analysisMode: metadata?.analysisMode,
     });
   const retrievalIndicatesKnowledgeUse = Boolean(retrieval?.retrievalUsed);
   const retrievalIndicatesWebUse = Boolean(retrieval?.webUsed);
@@ -285,6 +284,5 @@ export function buildAssistantAnalysisBasis(params: {
     ...(retrieval && { retrieval }),
     featureStatus,
     sourceGroups: sourceGroups.length > 0 ? sourceGroups : undefined,
-    analysisMode: metadata?.analysisMode,
   };
 }

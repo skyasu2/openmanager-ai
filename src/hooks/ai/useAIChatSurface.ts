@@ -7,15 +7,12 @@ import {
   type PendingAIEntryState,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 
 export interface AIChatSurfaceState {
   selectedFunction: AIAssistantFunction;
   setSelectedFunction: (fn: AIAssistantFunction) => void;
   webSearchEnabled: boolean;
   toggleWebSearch: () => void;
-  analysisMode: AnalysisMode;
-  selectAnalysisMode: (mode: AnalysisMode) => void;
   pendingEntryState: PendingAIEntryState | null;
   consumePendingEntryState: (
     target?: AIEntryTarget
@@ -38,8 +35,6 @@ export function useAIChatSurface(
 
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
   const setWebSearchEnabled = useAISidebarStore((s) => s.setWebSearchEnabled);
-  const analysisMode = useAISidebarStore((s) => s.analysisMode);
-  const setAnalysisMode = useAISidebarStore((s) => s.setAnalysisMode);
   const pendingEntryState = useAISidebarStore((s) => s.pendingEntryState);
   const consumePendingEntryState = useAISidebarStore(
     (s) => s.consumePendingEntryState
@@ -55,20 +50,11 @@ export function useAIChatSurface(
     setWebSearchEnabled((prev) => !prev);
   }, [setWebSearchEnabled]);
 
-  const selectAnalysisMode = useCallback(
-    (mode: AnalysisMode) => {
-      setAnalysisMode(mode);
-    },
-    [setAnalysisMode]
-  );
-
   return {
     selectedFunction,
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    analysisMode,
-    selectAnalysisMode,
     pendingEntryState,
     consumePendingEntryState,
     pendingPrefillMessage,

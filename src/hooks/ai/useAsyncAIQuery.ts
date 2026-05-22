@@ -43,7 +43,6 @@ import type {
 } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   EvidenceCard,
   RetrievalMetadata,
@@ -126,7 +125,6 @@ export interface AsyncQueryResult {
     preview?: string;
     status: 'completed' | 'failed';
   }>;
-  analysisMode?: AnalysisMode;
   /** Job ID (Stale Closure 방지용) */
   jobId?: string;
 }
@@ -155,7 +153,6 @@ export interface UseAsyncAIQueryOptions {
 }
 
 export interface AsyncQueryRequestOptions {
-  analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
@@ -183,9 +180,6 @@ export function buildAsyncQueryJobRequestBody(
     options: {
       sessionId,
       metadata: {
-        ...(requestOptions?.analysisMode && {
-          analysisMode: requestOptions.analysisMode,
-        }),
         ...(typeof requestOptions?.enableRAG === 'boolean' && {
           enableRAG: requestOptions.enableRAG,
         }),

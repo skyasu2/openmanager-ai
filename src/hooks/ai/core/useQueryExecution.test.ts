@@ -575,12 +575,11 @@ describe('useQueryExecution', () => {
     expect(shouldExtractSemanticIntentFrame(query)).toBe(expected);
   });
 
-  it('thinking mode면 streaming 후보 쿼리도 job-queue로 더 적극적으로 보낸다', async () => {
+  it('keeps borderline queries on streaming without response mode override', async () => {
     process.env.NODE_ENV = 'production';
     const deps = {
       ...createDeps(),
       complexityThreshold: 19,
-      analysisMode: 'thinking' as const,
     };
 
     const { result } = renderHook(() => useQueryExecution(deps));
@@ -593,18 +592,17 @@ describe('useQueryExecution', () => {
 
     await Promise.resolve();
 
-    expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(
-      'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
-      { analysisMode: 'thinking' }
-    );
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+    expect(deps.sendMessage).toHaveBeenCalledWith({
+      text: 'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
+    });
   });
 
-  it('job-queue 요청에 RAG/Web/analysisMode 옵션을 함께 전달한다', async () => {
+  it('job-queue 요청에 RAG/Web 옵션을 함께 전달한다', async () => {
     process.env.NODE_ENV = 'production';
     const deps = {
       ...createDeps(),
-      complexityThreshold: 19,
-      analysisMode: 'thinking' as const,
+      complexityThreshold: -1,
       ragEnabled: true,
       webSearchEnabled: true,
     } as QueryExecutionDeps & {
@@ -625,7 +623,6 @@ describe('useQueryExecution', () => {
     expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(
       'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
       {
-        analysisMode: 'thinking',
         enableRAG: true,
         enableWebSearch: true,
       }
@@ -636,8 +633,7 @@ describe('useQueryExecution', () => {
     process.env.NODE_ENV = 'production';
     const deps = {
       ...createDeps(),
-      complexityThreshold: 19,
-      analysisMode: 'thinking' as const,
+      complexityThreshold: -1,
       ragEnabled: false,
       webSearchEnabled: false,
     } as QueryExecutionDeps & {
@@ -656,10 +652,7 @@ describe('useQueryExecution', () => {
     await Promise.resolve();
 
     expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(
-      'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
-      {
-        analysisMode: 'thinking',
-      }
+      'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
     );
   });
 
@@ -756,7 +749,6 @@ describe('useQueryExecution', () => {
     const deps = {
       ...createDeps(),
       complexityThreshold: -1,
-      analysisMode: 'thinking' as const,
       queryAsOfDataSlot,
       onRouteDecision,
     };
@@ -772,7 +764,6 @@ describe('useQueryExecution', () => {
       expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(
         query,
         expect.objectContaining({
-          analysisMode: 'thinking',
           queryAsOfDataSlot,
         })
       );

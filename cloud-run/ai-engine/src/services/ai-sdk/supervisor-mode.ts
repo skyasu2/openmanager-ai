@@ -35,7 +35,6 @@ export interface ResolvedSupervisorModeDecision {
   resolvedMode: ResolvedSupervisorMode;
   modeSelectionSource: SupervisorModeSelectionSource;
   autoSelectedByComplexity?: ResolvedSupervisorMode;
-  analysisMode?: SupervisorRequest['analysisMode'];
 }
 
 const ROUTE_DECISION_RULE_VERSION = '2026-05-03-v1';
@@ -179,7 +178,6 @@ export function resolveSupervisorModeDecision(
     SupervisorRequest,
     | 'mode'
     | 'messages'
-    | 'analysisMode'
     | 'runtimeHost'
     | 'metadata'
     | 'images'
@@ -195,7 +193,6 @@ export function resolveSupervisorModeDecision(
       requestedMode,
       resolvedMode: 'multi',
       modeSelectionSource: 'explicit',
-      ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
     };
   }
 
@@ -207,16 +204,12 @@ export function resolveSupervisorModeDecision(
         requestedMode,
         resolvedMode: 'multi',
         modeSelectionSource: 'single_disallowed_upgrade',
-        ...(request.analysisMode
-          ? { analysisMode: request.analysisMode }
-          : {}),
       };
     }
     return {
       requestedMode,
       resolvedMode: 'single',
       modeSelectionSource: 'explicit',
-      ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
     };
   }
 
@@ -227,7 +220,6 @@ export function resolveSupervisorModeDecision(
       requestedMode,
       resolvedMode: 'multi',
       modeSelectionSource: 'auto_default',
-      ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
     };
   }
 
@@ -237,7 +229,6 @@ export function resolveSupervisorModeDecision(
       resolvedMode: 'multi',
       modeSelectionSource: 'vision_input',
       autoSelectedByComplexity: 'multi',
-      ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
     };
   }
 
@@ -245,33 +236,20 @@ export function resolveSupervisorModeDecision(
     request.metadata?.intentFrame
   );
   const inputType = normalizeSupervisorInputType(request.metadata?.inputType);
-  const baselineMode =
-    selectExecutionMode(lastUserMessage.content, undefined, intentFrame, inputType) === 'multi'
-      ? 'multi'
-      : 'single';
   const resolvedMode =
     selectExecutionMode(
       lastUserMessage.content,
-      request.analysisMode,
       intentFrame,
       inputType
     ) ===
     'multi'
       ? 'multi'
       : 'single';
-  const modeSelectionSource =
-    request.analysisMode === 'thinking' &&
-    resolvedMode === 'multi' &&
-    baselineMode !== 'multi'
-      ? 'analysis_mode_thinking'
-      : 'auto_complexity';
-
   return {
     requestedMode,
     resolvedMode,
-    modeSelectionSource,
+    modeSelectionSource: 'auto_complexity',
     autoSelectedByComplexity: resolvedMode,
-    ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
   };
 }
 
@@ -280,7 +258,6 @@ export function resolveSupervisorMode(
     SupervisorRequest,
     | 'mode'
     | 'messages'
-    | 'analysisMode'
     | 'runtimeHost'
     | 'metadata'
     | 'images'
@@ -292,13 +269,11 @@ export function resolveSupervisorMode(
 
 export function buildSupervisorModeMetadata(
   decision: ResolvedSupervisorModeDecision,
-  analysisMode?: SupervisorRequest['analysisMode'],
 ): {
   requestedMode: SupervisorMode;
   resolvedMode: ResolvedSupervisorMode;
   modeSelectionSource: SupervisorModeSelectionSource;
   autoSelectedByComplexity?: ResolvedSupervisorMode;
-  analysisMode?: SupervisorRequest['analysisMode'];
 } {
   return {
     requestedMode: decision.requestedMode,
@@ -306,9 +281,6 @@ export function buildSupervisorModeMetadata(
     modeSelectionSource: decision.modeSelectionSource,
     ...(decision.autoSelectedByComplexity
       ? { autoSelectedByComplexity: decision.autoSelectedByComplexity }
-      : {}),
-    ...((analysisMode ?? decision.analysisMode)
-      ? { analysisMode: analysisMode ?? decision.analysisMode }
       : {}),
   };
 }
@@ -442,7 +414,6 @@ function detectArtifactKind(
 function buildShadowCandidate(
   request: Pick<
     SupervisorRequest,
-    | 'analysisMode'
     | 'files'
     | 'images'
     | 'messages'
@@ -454,10 +425,6 @@ function buildShadowCandidate(
   >
 ): SupervisorPlannerShadowCandidate {
   const query = getLastUserMessageContent(request);
-  const intentFrame = normalizeSupervisorIntentFrame(
-    request.metadata?.intentFrame
-  );
-  const inputType = normalizeSupervisorInputType(request.metadata?.inputType);
 
   const buildCandidate = (
     executionPath: SupervisorRouteDecisionExecutionPath,
@@ -509,17 +476,6 @@ function buildShadowCandidate(
   if (hasAdvisorIntent(query)) {
     return buildCandidate('stream', 'multi-agent', ['advisor_request'], [
       'advisor_requested',
-    ]);
-  }
-
-  if (
-    request.analysisMode === 'thinking' &&
-    query.length > 0 &&
-    selectExecutionMode(query, 'thinking', intentFrame, inputType) === 'multi' &&
-    selectExecutionMode(query, undefined, intentFrame, inputType) !== 'multi'
-  ) {
-    return buildCandidate('stream', 'multi-agent', ['analysis_mode_thinking'], [
-      'analysis_mode_thinking',
     ]);
   }
 
@@ -613,7 +569,6 @@ export function buildSupervisorPlannerShadow({
 }: {
   request: Pick<
     SupervisorRequest,
-    | 'analysisMode'
     | 'files'
     | 'images'
     | 'messages'

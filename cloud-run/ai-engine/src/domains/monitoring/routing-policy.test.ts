@@ -97,12 +97,11 @@ describe('selectExecutionMode', () => {
   describe('intentFrame trust path', () => {
     it('trusts high-confidence NLQ executionMode before regex fallback', () => {
       expect(
-        selectExecutionMode('CPU 알려줘', undefined, buildIntentFrame('multi'))
+        selectExecutionMode('CPU 알려줘', buildIntentFrame('multi'))
       ).toBe('multi');
       expect(
         selectExecutionMode(
           '장애 보고서 만들어줘',
-          undefined,
           buildIntentFrame('single')
         )
       ).toBe('single');
@@ -112,14 +111,12 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode(
           '장애 보고서 만들어줘',
-          undefined,
           buildIntentFrame('unknown')
         )
       ).toBe('multi');
       expect(
         selectExecutionMode(
           'CPU 알려줘',
-          undefined,
           buildIntentFrame('multi', 0.79)
         )
       ).toBe('single');
@@ -127,7 +124,7 @@ describe('selectExecutionMode', () => {
 
     it('accepts legacy 0-100 confidence frames from older callers', () => {
       expect(
-        selectExecutionMode('CPU 알려줘', undefined, buildIntentFrame('multi', 91))
+        selectExecutionMode('CPU 알려줘', buildIntentFrame('multi', 91))
       ).toBe('multi');
     });
 
@@ -135,7 +132,6 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode(
           'CPU 알려줘',
-          undefined,
           buildIntentFrame('single', 0.99),
           'log_paste'
         )
@@ -156,7 +152,6 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode(
           '원인 분석해줘',
-          undefined,
           buildIntentFrame('multi')
         )
       ).toBe('multi');
@@ -177,7 +172,6 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode(
           '용량 계획 세워줘',
-          undefined,
           buildIntentFrame('multi')
         )
       ).toBe('multi');
@@ -195,7 +189,6 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode(
           '서버 상태 요약해줘',
-          undefined,
           buildIntentFrame('multi')
         )
       ).toBe('multi');
@@ -222,7 +215,6 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode(
           'OpenManager OTel 데이터 SSOT와 18대 서버 상태 판단 기준을 KRL 근거로 요약해줘.',
-          undefined,
           metricFrame
         )
       ).toBe('multi');
@@ -234,13 +226,11 @@ describe('selectExecutionMode', () => {
       ).toBe('advisor');
     });
 
-    it('should use thinking mode or intentFrame for analysis with infra context', () => {
+    it('should use intentFrame for analysis with infra context', () => {
       expect(selectExecutionMode('서버 왜 느려졌어?')).toBe('single');
-      expect(selectExecutionMode('서버 왜 느려졌어?', 'thinking')).toBe('multi');
       expect(
         selectExecutionMode(
           'CPU 왜 높아?',
-          undefined,
           buildIntentFrame('multi')
         )
       ).toBe('multi');
@@ -259,7 +249,6 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode(
           '서벼 요약',
-          undefined,
           buildIntentFrame('multi')
         )
       ).toBe('multi');
@@ -271,7 +260,6 @@ describe('selectExecutionMode', () => {
       expect(
         selectExecutionMode(
           'trubleshoot the issue',
-          undefined,
           buildIntentFrame('multi')
         )
       ).toBe('multi');

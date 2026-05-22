@@ -126,7 +126,6 @@ export const POST = withRateLimit(
           sessionId: bodySessionId,
           enableWebSearch,
           enableRAG,
-          analysisMode,
           metadata,
           semanticQueryTrace,
         } = parseResult.data;
@@ -314,7 +313,6 @@ export const POST = withRateLimit(
             securityWarning: queryResult.ok ? queryResult.warning : undefined,
             enableWebSearch,
             enableRAG,
-            analysisMode,
             deviceType,
             rateLimitIdentity,
             metadata,

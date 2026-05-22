@@ -293,7 +293,7 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     ).toMatch(/^guest:/);
   });
 
-  it('Cloud Run worker trigger forwards RAG, Web Search, and analysis mode options', async () => {
+  it('Cloud Run worker trigger forwards RAG and Web Search options while ignoring legacy analysis mode', async () => {
     process.env.CLOUD_RUN_ENABLED = 'true';
 
     const { POST } = await importRoute();
@@ -332,10 +332,10 @@ describe('POST /api/ai/jobs trigger readiness', () => {
         !key.startsWith('job:trigger:')
     )?.[1] as { metadata?: Record<string, unknown> } | undefined;
     expect(savedJob?.metadata).toMatchObject({
-      analysisMode: 'thinking',
       enableRAG: true,
       enableWebSearch: true,
     });
+    expect(savedJob?.metadata?.analysisMode).toBeUndefined();
 
     const workerBody = JSON.parse(
       (
@@ -346,10 +346,10 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     ) as Record<string, unknown>;
     expect(workerBody).toMatchObject({
       sessionId: 'session-1234',
-      analysisMode: 'thinking',
       enableRAG: true,
       enableWebSearch: true,
     });
+    expect(workerBody.analysisMode).toBeUndefined();
   });
 
   it('derives and forwards developer disclosure mode for verified PIN job sessions', async () => {
@@ -606,7 +606,6 @@ describe('POST /api/ai/jobs trigger readiness', () => {
         options: {
           sessionId: 'session-1234',
           metadata: {
-            analysisMode: 'thinking',
             enableRAG: true,
           },
         },
@@ -669,7 +668,6 @@ describe('POST /api/ai/jobs trigger readiness', () => {
         options: {
           sessionId: 'session-1234',
           metadata: {
-            analysisMode: 'thinking',
             queryAsOfDataSlot: {
               slotIndex: 131,
               minuteOfDay: 1310,
@@ -765,9 +763,9 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     ) as Record<string, unknown>;
     expect(workerBody).toMatchObject({
       sessionId: 'session-1234',
-      analysisMode: 'thinking',
       enableRAG: true,
       enableWebSearch: true,
     });
+    expect(workerBody.analysisMode).toBeUndefined();
   });
 });

@@ -41,7 +41,6 @@ describe('createHybridChatTransport', () => {
       traceIdHeader: 'X-Trace-Id',
       webSearchEnabledRef: ref(undefined),
       ragEnabledRef: ref(undefined),
-      analysisModeRef: ref('auto'),
       sessionIdRef,
     });
 
@@ -67,7 +66,6 @@ describe('createHybridChatTransport', () => {
       traceIdHeader: 'X-Trace-Id',
       webSearchEnabledRef: ref(true),
       ragEnabledRef: ref(false),
-      analysisModeRef: ref('thinking'),
       localRouteDecisionRef: ref({
         intent: 'chat',
         executionPath: 'stream',
@@ -84,7 +82,6 @@ describe('createHybridChatTransport', () => {
 
     expect(transportConfig.body()).toMatchObject({
       enableWebSearch: true,
-      analysisMode: 'thinking',
       localRouteDecision: {
         intent: 'chat',
         executionPath: 'stream',
@@ -117,7 +114,6 @@ describe('createHybridChatTransport', () => {
       traceIdHeader: 'X-Trace-Id',
       webSearchEnabledRef: ref(undefined),
       ragEnabledRef: ref(undefined),
-      analysisModeRef: ref('auto'),
       currentQueryRef: ref('최근 24시간 load1 피크 알려줘'),
       semanticIntentFrameRef: ref(semanticIntentFrame),
     });
@@ -149,7 +145,6 @@ describe('createHybridChatTransport', () => {
       traceIdHeader: 'X-Trace-Id',
       webSearchEnabledRef: ref(undefined),
       ragEnabledRef: ref(undefined),
-      analysisModeRef: ref('auto'),
       currentQueryRef: ref('최근 24시간 load1 피크 알려줘'),
       semanticIntentFrameRef: ref({
         domain: 'monitoring',
@@ -183,7 +178,6 @@ describe('createHybridChatTransport', () => {
       traceIdHeader: 'X-Trace-Id',
       webSearchEnabledRef: ref(undefined),
       ragEnabledRef: ref(undefined),
-      analysisModeRef: ref('auto'),
       currentQueryRef: ref('ERROR 로그 분석해줘'),
       semanticPreprocessingRef: ref({
         inputType: 'log_paste',

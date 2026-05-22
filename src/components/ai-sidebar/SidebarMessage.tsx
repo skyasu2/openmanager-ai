@@ -88,7 +88,6 @@ export const MessageComponent = memo<{
             retrieval: analysisBasis.retrieval,
             hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
             hasWebEvidence,
-            analysisMode: analysisBasis.analysisMode,
           })
         : undefined);
     const featureBadges = buildVisibleFeatureStatusBadges(featureStatus);

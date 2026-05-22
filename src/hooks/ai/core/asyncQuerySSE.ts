@@ -261,10 +261,6 @@ export function connectAsyncQuerySSE(
         ...(assistantPlan && { assistantPlan }),
         ...(assistantResult && { assistantResult }),
         ...(semanticQueryTrace && { semanticQueryTrace }),
-        ...(metadata.analysisMode === 'auto' ||
-        metadata.analysisMode === 'thinking'
-          ? { analysisMode: metadata.analysisMode }
-          : {}),
         handoffHistory: Array.isArray(metadata.handoffs)
           ? (metadata.handoffs as AsyncQueryResult['handoffHistory'])
           : undefined,

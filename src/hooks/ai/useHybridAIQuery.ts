@@ -94,7 +94,6 @@ import {
   buildSemanticIntentRequestMetadata,
   type SemanticPreprocessingMetadata,
 } from '@/lib/ai/semantic-intent-frame';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AIStreamStatus,
@@ -167,7 +166,6 @@ export function useHybridAIQuery(
     onData,
     webSearchEnabled,
     ragEnabled,
-    analysisMode,
     queryAsOfDataSlot,
   } = options;
   const traceIdRef = useRef<string>(generateTraceId());
@@ -178,9 +176,6 @@ export function useHybridAIQuery(
     webSearchEnabled ?? undefined
   );
   const ragEnabledRef = useRef<boolean | undefined>(ragEnabled ?? undefined);
-  const analysisModeRef = useRef<AnalysisMode | undefined>(
-    analysisMode ?? undefined
-  );
   const queryAsOfDataSlotRef = useRef<JobDataSlot | undefined>(
     queryAsOfDataSlot
   );
@@ -198,9 +193,6 @@ export function useHybridAIQuery(
   useEffect(() => {
     ragEnabledRef.current = ragEnabled ?? undefined;
   }, [ragEnabled]);
-  useEffect(() => {
-    analysisModeRef.current = analysisMode ?? undefined;
-  }, [analysisMode]);
   useEffect(() => {
     queryAsOfDataSlotRef.current = queryAsOfDataSlot;
   }, [queryAsOfDataSlot]);
@@ -256,7 +248,6 @@ export function useHybridAIQuery(
         traceIdHeader: observabilityConfig.traceIdHeader,
         webSearchEnabledRef,
         ragEnabledRef,
-        analysisModeRef,
         sessionIdRef,
         queryAsOfDataSlotRef,
         localRouteDecisionRef: currentRouteDecisionRef,
@@ -303,9 +294,6 @@ export function useHybridAIQuery(
             preprocessing: semanticPreprocessingRef.current,
           });
           const jobQueueOptions = {
-            ...(analysisModeRef.current && {
-              analysisMode: analysisModeRef.current,
-            }),
             ...(queryAsOfDataSlotRef.current && {
               queryAsOfDataSlot: queryAsOfDataSlotRef.current,
             }),
@@ -444,7 +432,6 @@ export function useHybridAIQuery(
       semanticIntentFrame: semanticIntentFrameRef,
       semanticPreprocessing: semanticPreprocessingRef,
     },
-    analysisMode,
     ragEnabled,
     webSearchEnabled,
     queryAsOfDataSlot,

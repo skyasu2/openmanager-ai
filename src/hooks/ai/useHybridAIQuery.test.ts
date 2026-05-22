@@ -436,11 +436,10 @@ describe('buildAssistantMessageFromAsyncResult', () => {
     });
   });
 
-  it('preserves retrieval and thinking mode metadata even without sources', () => {
+  it('preserves retrieval metadata even without sources', () => {
     const result: AsyncQueryResult = {
       success: true,
       response: '검색 없이 답변했습니다.',
-      analysisMode: 'thinking',
       retrieval: {
         retrievalEnabled: true,
         retrievalUsed: false,
@@ -457,7 +456,6 @@ describe('buildAssistantMessageFromAsyncResult', () => {
     );
 
     expect(message.metadata).toMatchObject({
-      analysisMode: 'thinking',
       retrieval: {
         retrievalEnabled: true,
         retrievalUsed: false,

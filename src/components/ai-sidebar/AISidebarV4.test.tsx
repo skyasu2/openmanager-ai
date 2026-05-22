@@ -95,8 +95,6 @@ vi.mock('@/stores/useAISidebarStore', () => ({
       addMessage: vi.fn(),
       webSearchEnabled: false,
       setWebSearchEnabled: vi.fn(),
-      analysisMode: 'auto',
-      setAnalysisMode: vi.fn(),
     };
     return selector ? selector(state) : state;
   }),
@@ -431,7 +429,6 @@ describe('AISidebarV4', () => {
     expect(mockOpenFullscreen).toHaveBeenCalledWith({
       draft: 'CPU 경고 서버 원인 분석',
       selectedFunction: 'chat',
-      analysisMode: 'auto',
       queryAsOfDataSlot: {
         slotIndex: 42,
         minuteOfDay: 420,

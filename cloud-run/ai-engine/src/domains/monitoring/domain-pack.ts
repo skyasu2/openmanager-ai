@@ -123,7 +123,6 @@ function createRouteCandidate(
 
   const mode = selectExecutionMode(
     context.message,
-    undefined,
     normalizeSupervisorIntentFrame(context.metadata?.intentFrame),
     normalizeSupervisorInputType(context.metadata?.inputType)
   );

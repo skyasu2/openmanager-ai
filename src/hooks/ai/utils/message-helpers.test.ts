@@ -43,7 +43,6 @@ function createMessage(params: {
     };
     enableRAG?: boolean;
     enableWebSearch?: boolean | 'auto';
-    analysisMode?: 'auto' | 'thinking';
     toolsCalled?: string[];
     provider?: string;
     modelId?: string;
@@ -421,7 +420,6 @@ describe('transformMessages', () => {
           metadata: {
             enableRAG: true,
             enableWebSearch: true,
-            analysisMode: 'thinking',
             retrieval: {
               retrievalEnabled: true,
               retrievalUsed: false,
@@ -455,7 +453,6 @@ describe('transformMessages', () => {
     expect(assistant?.metadata?.analysisBasis?.featureStatus).toEqual({
       rag: { status: 'suppressed', reason: 'not_needed' },
       web: { status: 'enabled' },
-      thinking: { status: 'enabled', reason: 'routing_mode' },
     });
   });
 

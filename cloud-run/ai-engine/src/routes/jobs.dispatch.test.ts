@@ -76,7 +76,6 @@ describe('POST /jobs/dispatch', () => {
       messages: [{ role: 'user', content: 'server health' }],
       sessionId: 'session-1',
       type: 'analysis',
-      analysisMode: 'thinking',
       enableRAG: true,
       enableWebSearch: true,
     };

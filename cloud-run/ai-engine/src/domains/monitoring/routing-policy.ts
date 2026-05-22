@@ -9,10 +9,7 @@ import type {
   AssistantInputType,
   DomainIntentFrame,
 } from '../../core/assistant-runtime';
-import type {
-  AnalysisMode,
-  SupervisorMode,
-} from '../../services/ai-sdk/supervisor-types';
+import type { SupervisorMode } from '../../services/ai-sdk/supervisor-types';
 import { getMonitoringResourceCatalog } from './resource-catalog';
 import { createMonitoringSystemPrompt } from './supervisor-prompt';
 import { isTavilyAvailable } from '../../lib/tavily-web-search-client';
@@ -75,16 +72,12 @@ const CAPACITY_FORECAST_MODE_PATTERNS =
 
 export function selectExecutionMode(
   query: string,
-  analysisMode?: AnalysisMode,
   intentFrame?: DomainIntentFrame,
   inputType?: AssistantInputType
 ): SupervisorMode {
-  void createRoutingDecisionTrace(
-    extractQueryRoutingSignals(query, { analysisMode })
-  );
+  void createRoutingDecisionTrace(extractQueryRoutingSignals(query));
 
   const q = query.toLowerCase();
-  const hasInfraContext = INFRA_CONTEXT_PATTERN.test(q);
 
   if (inputType === 'log_paste') {
     return 'multi';
@@ -92,10 +85,6 @@ export function selectExecutionMode(
 
   if (isFormattingOnlyReportRequest(q)) {
     return 'single';
-  }
-
-  if (analysisMode === 'thinking' && hasInfraContext) {
-    return 'multi';
   }
 
   if (FORCE_KB_QUERY_PATTERN.test(q)) {

@@ -20,7 +20,6 @@ export type { ImageAttachment, FileAttachment };
 // ============================================================================
 
 export type SupervisorMode = 'single' | 'multi' | 'auto';
-export type AnalysisMode = 'auto' | 'thinking';
 export type SupervisorRouteDecisionExecutionPath =
   | 'stream'
   | 'job'
@@ -42,7 +41,6 @@ export type SupervisorPlannerEscalationReasonCode =
   | 'cross_domain_evidence_required'
   | 'advisor_requested'
   | 'vision_input_present'
-  | 'analysis_mode_thinking'
   | 'single_path_low_confidence';
 export type SupervisorPlannerDriftReasonCode =
   | 'execution_path_mismatch'
@@ -56,8 +54,7 @@ export type SupervisorModeSelectionSource =
   | 'auto_complexity'
   | 'auto_default'
   | 'vision_input'
-  | 'single_disallowed_upgrade'
-  | 'analysis_mode_thinking';
+  | 'single_disallowed_upgrade';
 
 export type SupervisorLocalRouteDecision = {
   intent: 'chat' | 'artifact' | 'job' | 'clarification';
@@ -136,8 +133,6 @@ export interface SupervisorRequest {
    * - false: Disable RAG tool (default)
    */
   enableRAG?: boolean;
-  /** 사용자 선택 분석 강도 모드 */
-  analysisMode?: AnalysisMode;
   /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
   traceId?: string;
   /** Job creation time data slot used to answer "current" metric questions. */
@@ -200,7 +195,6 @@ export interface SupervisorResponse {
     resolvedMode?: Exclude<SupervisorMode, 'auto'>;
     modeSelectionSource?: SupervisorModeSelectionSource;
     autoSelectedByComplexity?: Exclude<SupervisorMode, 'auto'>;
-    analysisMode?: AnalysisMode;
     routeDecision?: {
       intent: 'chat';
       executionPath: 'stream';

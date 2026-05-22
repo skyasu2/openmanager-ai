@@ -45,7 +45,7 @@ describe('assistant plan/result facade contract', () => {
       intent: 'chat',
       executionPath: 'stream',
       mode: 'multi',
-      reasonCodes: ['analysis_mode_thinking'],
+      reasonCodes: ['cross_domain_evidence_required'],
       decidedBy: 'cloud-run',
     });
     const jobDecision = buildRouteDecision({

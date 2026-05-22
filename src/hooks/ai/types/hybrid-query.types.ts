@@ -11,7 +11,6 @@ import type {
 } from '@/lib/ai/clarification-generator';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { QueryComplexity } from '@/lib/ai/utils/query-complexity';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
 import type { FileAttachment } from '../useFileAttachments';
@@ -168,8 +167,6 @@ export interface UseHybridAIQueryOptions {
   webSearchEnabled?: boolean;
   /** RAG (Knowledge Base 검색) 활성화 여부 */
   ragEnabled?: boolean;
-  /** 사용자가 선택한 분석 강도 모드 */
-  analysisMode?: AnalysisMode;
   /** Dashboard snapshot data slot to keep AI metric tools aligned with the visible UI. */
   queryAsOfDataSlot?: JobDataSlot;
   /**

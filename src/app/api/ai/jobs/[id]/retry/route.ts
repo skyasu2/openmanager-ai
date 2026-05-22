@@ -20,7 +20,6 @@ import {
   RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { AIJob, TriggerStatus } from '@/types/ai-jobs';
 import { withCSRFProtection } from '@/utils/security/csrf';
 import { isJobOwnedByRequester } from '../../job-ownership';
@@ -50,7 +49,6 @@ function getWorkerTriggerTimeoutMs(mode: JobWorkerTriggerMode): number {
 }
 
 interface RetryToolOptions {
-  analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
 }
@@ -59,9 +57,6 @@ function extractRetryToolOptions(job: AIJob): RetryToolOptions {
   const metadata = job.metadata ?? {};
 
   return {
-    ...(metadata.analysisMode && {
-      analysisMode: metadata.analysisMode,
-    }),
     ...(typeof metadata.enableRAG === 'boolean' && {
       enableRAG: metadata.enableRAG,
     }),

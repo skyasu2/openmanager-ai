@@ -164,6 +164,8 @@ export const requestSchema = z.object({
   sessionId: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),
+  // Backward compatibility only: older clients may still send this field, but
+  // the response mode feature no longer changes backend routing.
   analysisMode: z.enum(['auto', 'thinking']).optional(),
   queryAsOfDataSlot: z.unknown().optional(),
   localRouteDecision: z.unknown().optional(),

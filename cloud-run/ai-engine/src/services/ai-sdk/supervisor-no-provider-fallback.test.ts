@@ -36,7 +36,6 @@ describe('buildNoProviderFallbackResponse', () => {
       requestedMode: 'auto',
       resolvedMode: 'single',
       modeSelectionSource: 'auto_default',
-      analysisMode: 'thinking',
     };
     const runtimeMetadata: AssistantRuntimeMetadata = {
       domainId: 'openmanager-monitoring',
@@ -70,7 +69,6 @@ describe('buildNoProviderFallbackResponse', () => {
       requestedMode: 'auto',
       resolvedMode: 'single',
       modeSelectionSource: 'auto_default',
-      analysisMode: 'thinking',
       assistantRuntime: runtimeMetadata,
       fallback: true,
       degradedFromMode: 'multi',

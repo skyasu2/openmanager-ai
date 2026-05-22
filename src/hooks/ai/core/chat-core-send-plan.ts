@@ -1,5 +1,4 @@
 import type { UIMessage } from '@ai-sdk/react';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { FileAttachment } from '../useFileAttachments';
 import {
   createDebugRoutingMessages,
@@ -81,7 +80,6 @@ export function resolveChatCoreSendPlan({
 
 export interface ExecuteLocalChatCoreSendPlanContext {
   messages: UIMessage[];
-  analysisMode: AnalysisMode;
   addToQueue: (
     query: string,
     attachments: FileAttachment[] | undefined
@@ -133,8 +131,7 @@ export function executeLocalChatCoreSendPlan(
     case 'debug-routing': {
       context.resetRequestState(plan.effectiveText, plan.attachments || null);
       const [userMessage, assistantMessage] = createDebugRoutingMessages(
-        plan.effectiveText,
-        context.analysisMode
+        plan.effectiveText
       );
       context.setMessages([...context.messages, userMessage, assistantMessage]);
       return { handled: true };

@@ -121,7 +121,6 @@ describe('chat-core-send-plan', () => {
     messages: UIMessage[] = []
   ): ExecuteLocalChatCoreSendPlanContext => ({
     messages,
-    analysisMode: 'auto',
     addToQueue: vi.fn(),
     setInput: vi.fn(),
     setError: vi.fn(),

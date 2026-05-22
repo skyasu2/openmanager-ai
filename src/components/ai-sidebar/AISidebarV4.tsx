@@ -60,8 +60,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    analysisMode,
-    selectAnalysisMode,
     pendingEntryState,
     consumePendingEntryState,
     pendingPrefillMessage,
@@ -191,10 +189,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
 
       setSelectedFunction(entry.selectedFunction ?? 'chat');
 
-      if (entry.analysisMode) {
-        selectAnalysisMode(entry.analysisMode);
-      }
-
       if (entry.draft) {
         setInput(entry.draft);
       }
@@ -214,7 +208,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     isOpen,
     pendingEntryState,
     pendingPrefillMessage,
-    selectAnalysisMode,
     setInput,
     setSelectedFunction,
   ]);
@@ -223,16 +216,9 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     openFullscreen({
       draft: selectedFunction === 'chat' && input.trim() ? input : undefined,
       selectedFunction,
-      analysisMode,
       queryAsOfDataSlot,
     });
-  }, [
-    analysisMode,
-    input,
-    openFullscreen,
-    queryAsOfDataSlot,
-    selectedFunction,
-  ]);
+  }, [input, openFullscreen, queryAsOfDataSlot, selectedFunction]);
 
   // ESC 키로 사이드바 닫기
   useEffect(() => {
@@ -329,8 +315,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               currentHandoff={currentHandoff}
               webSearchEnabled={webSearchEnabled}
               onToggleWebSearch={toggleWebSearch}
-              analysisMode={analysisMode}
-              onSelectAnalysisMode={selectAnalysisMode}
               warmingUp={warmingUp}
               estimatedWaitSeconds={estimatedWaitSeconds}
               queuedQueries={queuedQueries}

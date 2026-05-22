@@ -1,4 +1,4 @@
-import type { AnalysisMode, SupervisorMode } from '../supervisor-types';
+import type { SupervisorMode } from '../supervisor-types';
 
 /**
  * Runtime routing SSOT for monitoring query signals.
@@ -97,7 +97,6 @@ export interface QueryRoutingPreFilterSignal {
 }
 
 export interface QueryRoutingSignalOptions {
-  analysisMode?: AnalysisMode;
   hasImageAttachments?: boolean;
   hasFileAttachments?: boolean;
 }
@@ -300,15 +299,10 @@ function hasCompositeSignal(query: string): boolean {
   return COMPOSITE_QUERY_PATTERNS.some((pattern) => pattern.test(query));
 }
 
-function deriveModeHint(
-  query: string,
-  analysisMode?: AnalysisMode
-): Exclude<SupervisorMode, 'auto'> {
+function deriveModeHint(query: string): Exclude<SupervisorMode, 'auto'> {
   const q = query.toLowerCase();
-  const hasInfraContext = INFRA_CONTEXT_PATTERN.test(q);
 
   if (isFormattingOnlyReportRequest(q)) return 'single';
-  if (analysisMode === 'thinking' && hasInfraContext) return 'multi';
   if (FORCE_KB_QUERY_PATTERN.test(q)) return 'multi';
 
   const fallbackMultiPatterns = [
@@ -510,7 +504,7 @@ export function extractQueryRoutingSignals(
   const scope = detectScope(normalizedQuery);
   const metric = detectMetric(normalizedQuery);
   const timeWindow = detectTimeWindow(normalizedQuery);
-  const modeHint = deriveModeHint(normalizedQuery, options.analysisMode);
+  const modeHint = deriveModeHint(normalizedQuery);
   const preFilter = buildPreFilterSignal(query, options);
 
   if (hasInfraContext) appendUnique(reasonCodes, 'infra_context_present');

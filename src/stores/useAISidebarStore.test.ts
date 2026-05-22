@@ -163,7 +163,6 @@ describe('useAISidebarStore', () => {
         result.current.queuePendingEntryState({
           draft: '현재 경고 서버 원인 분석',
           selectedFunction: 'chat',
-          analysisMode: 'thinking',
           target: 'fullscreen',
         });
       });
@@ -171,7 +170,6 @@ describe('useAISidebarStore', () => {
       expect(result.current.pendingEntryState).toEqual({
         draft: '현재 경고 서버 원인 분석',
         selectedFunction: 'chat',
-        analysisMode: 'thinking',
         target: 'fullscreen',
       });
       expect(result.current.pendingPrefillMessage).toBe(

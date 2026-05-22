@@ -160,9 +160,9 @@ describe('POST /api/ai/jobs/[id]/retry trigger readiness', () => {
     ) as Record<string, unknown>;
     expect(body).toMatchObject({
       sessionId: 'session-1234',
-      analysisMode: 'thinking',
       enableRAG: true,
       enableWebSearch: true,
     });
+    expect(body.analysisMode).toBeUndefined();
   });
 });

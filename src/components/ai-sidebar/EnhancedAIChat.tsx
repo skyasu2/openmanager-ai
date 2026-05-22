@@ -20,7 +20,6 @@ import {
   type EnhancedChatMessage,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { SessionState } from '@/types/session';
 import { ChatInputArea } from './ChatInputArea';
 import { ChatMessageList } from './ChatMessageList';
@@ -81,8 +80,6 @@ interface EnhancedAIChatProps {
   currentHandoff?: HandoffEventData | null;
   webSearchEnabled?: boolean;
   onToggleWebSearch?: () => void;
-  analysisMode?: AnalysisMode;
-  onSelectAnalysisMode?: (mode: AnalysisMode) => void;
   /** Cloud Run AI Engine 웜업 중 여부 */
   warmingUp?: boolean;
   /** 웜업 예상 대기 시간 (초) */
@@ -133,8 +130,6 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   currentHandoff,
   webSearchEnabled,
   onToggleWebSearch,
-  analysisMode,
-  onSelectAnalysisMode,
   warmingUp,
   estimatedWaitSeconds,
   queuedQueries,
@@ -424,8 +419,6 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         onStopGeneration={onStopGeneration}
         webSearchEnabled={webSearchEnabled}
         onToggleWebSearch={onToggleWebSearch}
-        analysisMode={analysisMode}
-        onSelectAnalysisMode={onSelectAnalysisMode}
       />
     </div>
   );

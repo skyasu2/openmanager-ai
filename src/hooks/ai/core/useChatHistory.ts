@@ -73,7 +73,6 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !metadata?.traceId &&
         !analysisBasis?.retrieval &&
         !analysisBasis?.featureStatus &&
-        !analysisBasis?.analysisMode &&
         !analysisBasis?.toolsCalled &&
         !analysisBasis?.evidenceCards &&
         !analysisBasis?.ragSources &&
@@ -107,9 +106,6 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(analysisBasis?.featureStatus && {
           featureStatus: analysisBasis.featureStatus,
-        }),
-        ...(analysisBasis?.analysisMode && {
-          analysisMode: analysisBasis.analysisMode,
         }),
         ...(analysisBasis?.toolsCalled && {
           toolsCalled: analysisBasis.toolsCalled,

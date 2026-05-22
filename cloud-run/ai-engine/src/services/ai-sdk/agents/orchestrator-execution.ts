@@ -100,7 +100,6 @@ export async function executeMultiAgent(
   logger.debug(`[RAG] Setting resolved: ${ragEnabled} (request: ${request.enableRAG})`);
   let routingTrace = createRoutingDecisionTrace(
     extractQueryRoutingSignals(query, {
-      analysisMode: request.analysisMode,
       hasImageAttachments: !!(request.images && request.images.length > 0),
       hasFileAttachments: !!(request.files && request.files.length > 0),
     })

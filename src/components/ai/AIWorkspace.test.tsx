@@ -232,8 +232,6 @@ describe('AIWorkspace', () => {
       addMessage: vi.fn(),
       webSearchEnabled: false,
       setWebSearchEnabled: vi.fn(),
-      analysisMode: 'auto',
-      setAnalysisMode: vi.fn(),
     };
   });
 
@@ -526,7 +524,6 @@ describe('AIWorkspace', () => {
         expect.objectContaining({
           target: 'sidebar',
           selectedFunction: 'chat',
-          analysisMode: 'auto',
         })
       );
     });
@@ -551,7 +548,6 @@ describe('AIWorkspace', () => {
       pendingEntryState: {
         draft: '모바일 handoff 초안',
         selectedFunction: 'auto-report',
-        analysisMode: 'thinking',
         target: 'fullscreen',
       },
     };
@@ -562,7 +558,6 @@ describe('AIWorkspace', () => {
       expect(queuePendingEntryState).toHaveBeenCalledWith({
         draft: '모바일 handoff 초안',
         selectedFunction: 'auto-report',
-        analysisMode: 'thinking',
         target: 'sidebar',
       });
     });
@@ -619,13 +614,12 @@ describe('AIWorkspace', () => {
     );
   });
 
-  it('forwards user-facing source and analysis props to fullscreen chat', async () => {
+  it('forwards user-facing source props to fullscreen chat', async () => {
     const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
 
     mockSidebarState = {
       ...mockSidebarState,
       webSearchEnabled: true,
-      analysisMode: 'thinking',
     };
 
     vi.mocked(useAIChatCore).mockReturnValue({
@@ -683,8 +677,8 @@ describe('AIWorkspace', () => {
     expect(lastCall?.estimatedWaitSeconds).toBe(30);
     expect(lastCall?.webSearchEnabled).toBe(true);
     expect(lastCall).not.toHaveProperty('ragEnabled');
-    expect(lastCall?.analysisMode).toBe('thinking');
-    expect(lastCall?.onSelectAnalysisMode).toEqual(expect.any(Function));
+    expect(lastCall).not.toHaveProperty('analysisMode');
+    expect(lastCall).not.toHaveProperty('onSelectAnalysisMode');
     expect(lastCall?.queuedQueries).toEqual([{ id: 1, text: 'queued' }]);
   });
 

@@ -61,7 +61,6 @@ describe('buildCreateTaskRequest', () => {
     const payload = {
       jobId: 'job-123',
       messages: [{ role: 'user', content: 'server health' }],
-      analysisMode: 'thinking',
     };
 
     const request = buildCreateTaskRequest({

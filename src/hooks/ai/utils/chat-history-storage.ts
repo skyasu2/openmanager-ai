@@ -27,7 +27,6 @@ import {
 } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
   EvidenceCard,
@@ -50,7 +49,6 @@ export interface StoredMessageMetadata {
   traceId?: string;
   retrieval?: RetrievalMetadata;
   featureStatus?: AnalysisFeatureStatus;
-  analysisMode?: AnalysisMode;
   routeDecision?: RouteDecision;
   assistantPlan?: AssistantPlan;
   assistantResult?: AssistantResult;
@@ -170,7 +168,6 @@ export function saveChatHistory(
           metadata?.traceId ||
           analysisBasis?.retrieval ||
           analysisBasis?.featureStatus ||
-          analysisBasis?.analysisMode ||
           analysisBasis?.toolsCalled ||
           analysisBasis?.evidenceCards ||
           analysisBasis?.ragSources ||
@@ -196,9 +193,6 @@ export function saveChatHistory(
                 }),
                 ...(analysisBasis?.featureStatus && {
                   featureStatus: analysisBasis.featureStatus,
-                }),
-                ...(analysisBasis?.analysisMode && {
-                  analysisMode: analysisBasis.analysisMode,
                 }),
                 ...(analysisBasis?.toolsCalled && {
                   toolsCalled: analysisBasis.toolsCalled,

@@ -59,8 +59,7 @@ export interface TraceMetadata {
     | 'auto_complexity'
     | 'auto_default'
     | 'vision_input'
-    | 'single_disallowed_upgrade'
-    | 'analysis_mode_thinking';
+    | 'single_disallowed_upgrade';
   autoSelectedByComplexity?: 'single' | 'multi';
   /** Upstream trace ID from Vercel API (W3C traceparent). Links Cloud Run trace to client trace. */
   upstreamTraceId?: string;

@@ -50,7 +50,7 @@ describe('routing policy consistency', () => {
   it('uses NLQ frames for ambiguous summaries and keeps report/advisor regex fallbacks', () => {
     expect(selectExecutionMode('서버 상태 요약해줘')).toBe('single');
     expect(
-      selectExecutionMode('서버 상태 요약해줘', undefined, summaryIntentFrame)
+      selectExecutionMode('서버 상태 요약해줘', summaryIntentFrame)
     ).toBe('multi');
     expect(preFilterQuery('서버 상태 요약해줘')).toMatchObject({
       shouldHandoff: true,

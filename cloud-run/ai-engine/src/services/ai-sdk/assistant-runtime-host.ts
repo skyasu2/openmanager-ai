@@ -152,7 +152,6 @@ function toAssistantRequest(
     sessionId: request.sessionId,
     ...(request.traceId && { traceId: request.traceId }),
     metadata: {
-      ...(request.analysisMode && { analysisMode: request.analysisMode }),
       ...(request.enableWebSearch !== undefined && {
         enableWebSearch: request.enableWebSearch,
       }),

@@ -90,7 +90,6 @@ export function useAIChatCore(
 
   // 웹 검색 UI 상태 (Store에서 읽기). 지식 검색은 서버의 Auto 정책이 결정한다.
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
-  const analysisMode = useAISidebarStore((s) => s.analysisMode);
   const persistedSidebarMessages = useAISidebarStore((s) => s.messages);
   const persistedSidebarSessionId = useAISidebarStore((s) => s.sessionId);
   const syncChatSnapshot = useAISidebarStore((s) => s.syncChatSnapshot);
@@ -206,7 +205,6 @@ export function useAIChatCore(
   } = useHybridAIQuery({
     sessionId,
     webSearchEnabled,
-    analysisMode,
     queryAsOfDataSlot,
     ...hybridCallbacks,
   });
@@ -460,7 +458,6 @@ export function useAIChatCore(
       });
       const localPlanResult = executeLocalChatCoreSendPlan(sendPlan, {
         messages,
-        analysisMode,
         addToQueue,
         setInput,
         setError,
@@ -511,7 +508,6 @@ export function useAIChatCore(
       addToQueue,
       messages,
       setMessages,
-      analysisMode,
       sessionId,
       queryAsOfDataSlot,
       resetOutgoingRequestState,

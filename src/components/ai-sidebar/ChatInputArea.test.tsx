@@ -10,7 +10,7 @@ import {
   type ImgHTMLAttributes,
   type TextareaHTMLAttributes,
 } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ChatInputArea } from './ChatInputArea';
 
 vi.mock('next/image', () => ({
@@ -61,20 +61,7 @@ vi.mock('@/components/ui/ImagePreviewModal', () => ({
   ImagePreviewModal: () => null,
 }));
 
-describe('ChatInputArea popover', () => {
-  const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
-
-  beforeEach(() => {
-    globalThis.requestAnimationFrame = ((callback: FrameRequestCallback) => {
-      callback(0);
-      return 0;
-    }) as typeof requestAnimationFrame;
-  });
-
-  afterEach(() => {
-    globalThis.requestAnimationFrame = originalRequestAnimationFrame;
-  });
-
+describe('ChatInputArea controls', () => {
   const renderComponent = (
     overrides: Partial<ComponentProps<typeof ChatInputArea>> = {}
   ) =>
@@ -100,86 +87,23 @@ describe('ChatInputArea popover', () => {
         onClearFileErrors={vi.fn()}
         onPaste={vi.fn()}
         onToggleWebSearch={vi.fn()}
-        onSelectAnalysisMode={vi.fn()}
         {...overrides}
       />
     );
-
-  it('closes the response mode popover on outside touch interaction', () => {
-    renderComponent();
-
-    const toggle = screen.getByRole('button', { name: '응답 모드 선택' });
-    fireEvent.click(toggle);
-
-    expect(screen.getByText('응답 모드')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '오토' })).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: '심층 분석' })
-    ).toBeInTheDocument();
-
-    fireEvent.touchStart(document.body);
-
-    expect(screen.queryByText('응답 모드')).not.toBeInTheDocument();
-  });
-
-  it('closes the response mode popover on Escape and restores focus to the toggle button', () => {
-    renderComponent();
-
-    const toggle = screen.getByRole('button', { name: '응답 모드 선택' });
-    fireEvent.click(toggle);
-
-    expect(screen.getByText('응답 모드')).toBeInTheDocument();
-
-    fireEvent.keyDown(document, { key: 'Escape' });
-
-    expect(screen.queryByText('응답 모드')).not.toBeInTheDocument();
-    expect(toggle).toHaveFocus();
-  });
-
-  it('keeps Escape inside the response mode popover from reaching later document handlers', () => {
-    renderComponent();
-
-    const toggle = screen.getByRole('button', { name: '응답 모드 선택' });
-    fireEvent.click(toggle);
-
-    const documentEscapeHandler = vi.fn();
-    document.addEventListener('keydown', documentEscapeHandler);
-
-    try {
-      fireEvent.keyDown(document, { key: 'Escape' });
-    } finally {
-      document.removeEventListener('keydown', documentEscapeHandler);
-    }
-
-    expect(documentEscapeHandler).not.toHaveBeenCalled();
-  });
 
   it('keeps input action buttons at 44px on mobile and compact on desktop', () => {
     renderComponent();
 
     const attach = screen.getByRole('button', { name: '파일 첨부' });
     const web = screen.getByRole('button', { name: 'Web 검색' });
-    const mode = screen.getByRole('button', { name: '응답 모드 선택' });
     const send = screen.getByRole('button', { name: '메시지 전송' });
 
-    for (const button of [attach, web, mode, send]) {
+    for (const button of [attach, web, send]) {
       expect(button).toHaveClass('h-11');
       expect(button).toHaveClass('w-11');
       expect(button).toHaveClass('md:h-9');
       expect(button).toHaveClass('md:w-9');
     }
-  });
-
-  it('anchors the tool popover to the input area with bounded height', () => {
-    renderComponent();
-
-    fireEvent.click(screen.getByRole('button', { name: '응답 모드 선택' }));
-
-    const popover = screen.getByText('응답 모드').closest('[role="dialog"]');
-
-    expect(popover).toHaveClass('bottom-12');
-    expect(popover).toHaveClass('max-h-[min(70vh,28rem)]');
-    expect(popover).toHaveClass('overflow-y-auto');
   });
 
   it('exposes file attachment and Web search directly without the plus tool menu', () => {
@@ -452,7 +376,6 @@ describe('ChatInputArea popover', () => {
         onClearFileErrors={vi.fn()}
         onPaste={vi.fn()}
         onToggleWebSearch={vi.fn()}
-        onSelectAnalysisMode={vi.fn()}
       />
     );
 
@@ -530,45 +453,12 @@ describe('ChatInputArea popover', () => {
     expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
   });
 
-  it('shows analysis mode as app-level deep analysis, not provider-native Thinking', () => {
-    const onSelectAnalysisMode = vi.fn();
+  it('does not expose the removed response mode selector', () => {
+    renderComponent();
 
-    render(
-      <ChatInputArea
-        textareaRef={createRef<HTMLTextAreaElement>()}
-        fileInputRef={createRef<HTMLInputElement>()}
-        inputValue=""
-        setInputValue={vi.fn()}
-        isGenerating={false}
-        attachments={[]}
-        isDragging={false}
-        fileErrors={[]}
-        canAddMore={true}
-        previewImage={null}
-        dragHandlers={{}}
-        onSendWithAttachments={vi.fn()}
-        onOpenFileDialog={vi.fn()}
-        onFileSelect={vi.fn()}
-        onImageClick={vi.fn()}
-        onClosePreviewModal={vi.fn()}
-        onRemoveFile={vi.fn()}
-        onClearFileErrors={vi.fn()}
-        onPaste={vi.fn()}
-        onToggleWebSearch={vi.fn()}
-        onSelectAnalysisMode={onSelectAnalysisMode}
-      />
-    );
-
-    fireEvent.click(screen.getByRole('button', { name: '응답 모드 선택' }));
-
-    expect(screen.queryByRole('button', { name: 'Thinking' })).toBeNull();
     expect(
-      screen.getByRole('button', { name: '심층 분석' })
-    ).toBeInTheDocument();
-    expect(screen.getByText(/멀티 에이전트 분석 활성화/)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: '심층 분석' }));
-
-    expect(onSelectAnalysisMode).toHaveBeenCalledWith('thinking');
+      screen.queryByRole('button', { name: '응답 모드 선택' })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('응답 모드')).not.toBeInTheDocument();
   });
 });

@@ -25,7 +25,6 @@ import { proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { logger } from '@/lib/logging';
 import { RATE_LIMIT_IDENTITY_HEADER } from '@/lib/security/rate-limit-identity';
 import { getTraceId } from '@/lib/tracing/async-context';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { SupervisorInternalDisclosureMode } from './internal-disclosure-mode';
 import { applyLegacySupervisorRouteHeaders } from './route-contract';
 import { cloudRunResponseSchema } from './schemas';
@@ -44,7 +43,6 @@ interface CloudRunHandlerParams {
   deviceType?: SupervisorDeviceType;
   enableWebSearch?: boolean;
   enableRAG?: boolean;
-  analysisMode?: AnalysisMode;
   rateLimitIdentity?: string;
   internalDisclosureMode?: SupervisorInternalDisclosureMode;
   metadata?: Record<string, unknown>;
@@ -70,7 +68,6 @@ export async function handleCloudRunStream(
     deviceType,
     enableWebSearch,
     enableRAG,
-    analysisMode,
     rateLimitIdentity,
     internalDisclosureMode,
     metadata,
@@ -110,7 +107,6 @@ export async function handleCloudRunStream(
           deviceType,
           enableWebSearch,
           enableRAG,
-          analysisMode,
           ...(internalDisclosureMode && { internalDisclosureMode }),
           ...(metadata && { metadata }),
           ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
@@ -239,7 +235,6 @@ export async function handleCloudRunJson(
     deviceType,
     enableWebSearch,
     enableRAG,
-    analysisMode,
     rateLimitIdentity,
     internalDisclosureMode,
     metadata,
@@ -279,7 +274,6 @@ export async function handleCloudRunJson(
           deviceType,
           enableWebSearch,
           enableRAG,
-          analysisMode,
           ...(internalDisclosureMode && { internalDisclosureMode }),
           ...(metadata && { metadata }),
           ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null

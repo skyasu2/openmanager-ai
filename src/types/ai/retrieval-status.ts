@@ -38,11 +38,10 @@ export type FeatureExecutionStatus =
 
 export interface FeatureExecutionState {
   status: FeatureExecutionStatus;
-  reason?: RetrievalSuppressedReason | 'routing_mode' | 'auto';
+  reason?: RetrievalSuppressedReason | 'auto';
 }
 
 export interface AnalysisFeatureStatus {
   rag: FeatureExecutionState;
   web: FeatureExecutionState;
-  thinking: FeatureExecutionState;
 }

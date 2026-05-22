@@ -34,7 +34,6 @@ import {
   RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AIJob,
   CreateJobRequest,
@@ -93,7 +92,6 @@ type JobRequestMetadata = NonNullable<
 >;
 
 interface JobToolOptions {
-  analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   internalDisclosureMode?: SupervisorInternalDisclosureMode;
@@ -113,10 +111,6 @@ function mapJobComplexityToRouteDecision(
   return undefined;
 }
 
-function isAnalysisMode(value: unknown): value is AnalysisMode {
-  return value === 'auto' || value === 'thinking';
-}
-
 function isSupervisorInputType(value: unknown): value is string {
   return (
     value === 'natural_query' ||
@@ -127,7 +121,6 @@ function isSupervisorInputType(value: unknown): value is string {
 }
 
 function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
-  const analysisMode = metadata?.analysisMode;
   const enableRAG = metadata?.enableRAG;
   const enableWebSearch = metadata?.enableWebSearch;
   const semanticQueryTrace = normalizeSemanticQueryTrace(
@@ -148,9 +141,6 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
   };
 
   return {
-    ...(isAnalysisMode(analysisMode) && {
-      analysisMode,
-    }),
     ...(typeof enableRAG === 'boolean' && {
       enableRAG,
     }),

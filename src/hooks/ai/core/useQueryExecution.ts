@@ -26,7 +26,6 @@ import {
   type SemanticQueryTrace,
 } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { FileAttachment } from '../useFileAttachments';
@@ -60,7 +59,6 @@ interface AsyncQueryLike {
 }
 
 interface AsyncJobRequestOptions {
-  analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
@@ -128,7 +126,6 @@ export interface QueryExecutionDeps {
       SemanticPreprocessingMetadata | undefined | null
     >;
   };
-  analysisMode?: AnalysisMode;
   ragEnabled?: boolean;
   webSearchEnabled?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
@@ -150,7 +147,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     onRouteDecision,
     chatStatus,
     refs,
-    analysisMode,
     ragEnabled,
     webSearchEnabled,
     queryAsOfDataSlot,
@@ -295,7 +291,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       const routingDecision = buildFrontendQueryRoutingDecision({
         query: trimmedQuery,
         complexityThreshold,
-        analysisMode,
         hasAttachments,
         queryAsOfDataSlot,
       });
@@ -315,7 +310,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           `[HybridAI] Query complexity: ${analysis.level} (score: ${analysis.score}), ` +
             `Force Job Queue: ${forceJobQueue.force}${forceJobQueue.matchedKeyword ? ` (keyword: "${forceJobQueue.matchedKeyword}")` : ''}, ` +
             `Attachments: ${hasAttachments ? attachments!.length : 0}, ` +
-            `AnalysisMode: ${analysisMode ?? 'auto'}, ` +
             `ModeAdjustedThreshold: ${modeAdjustedThreshold}, ` +
             `Mode: ${isComplex ? 'job-queue' : 'streaming'}`
         );
@@ -390,7 +384,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         }));
 
         const jobQueueOptions: AsyncJobRequestOptions = {
-          ...(analysisMode && { analysisMode }),
           ...(queryAsOfDataSlot && { queryAsOfDataSlot }),
           ...buildSourceToolRequestOptions({
             ragEnabled,
@@ -472,7 +465,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             },
             body: JSON.stringify({
               messages: nextMessages,
-              analysisMode,
               ...buildSourceToolRequestOptions({
                 webSearchEnabled,
                 ragEnabled,
@@ -599,7 +591,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       setState,
       chatStatus,
       refs,
-      analysisMode,
       ragEnabled,
       webSearchEnabled,
       queryAsOfDataSlot,

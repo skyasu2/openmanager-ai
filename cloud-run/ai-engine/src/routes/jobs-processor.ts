@@ -18,10 +18,7 @@ import {
   normalizeSemanticQueryTrace,
   type SemanticQueryTrace,
 } from '../services/ai-sdk/supervisor-semantic-metadata';
-import type {
-  AnalysisMode,
-  SupervisorRequest,
-} from '../services/ai-sdk/supervisor-types';
+import type { SupervisorRequest } from '../services/ai-sdk/supervisor-types';
 import type { QueryAsOf } from '../data/query-as-of-context';
 import {
   type JobErrorDetails,
@@ -48,7 +45,6 @@ export async function processJobSynchronously({
   jobId,
   messages,
   sessionId,
-  analysisMode,
   enableRAG,
   enableWebSearch,
   internalDisclosureMode,
@@ -60,7 +56,6 @@ export async function processJobSynchronously({
   jobId: string;
   messages: Array<{ role: string; content: string }>;
   sessionId?: string;
-  analysisMode?: AnalysisMode;
   enableRAG?: SupervisorRequest['enableRAG'];
   enableWebSearch?: SupervisorRequest['enableWebSearch'];
   internalDisclosureMode?: SupervisorRequest['internalDisclosureMode'];
@@ -135,7 +130,6 @@ export async function processJobSynchronously({
         content: m.content,
       })),
       sessionId: sessionId || 'default',
-      analysisMode,
       enableRAG,
       enableWebSearch,
       internalDisclosureMode,
@@ -334,7 +328,6 @@ export async function processJobSynchronously({
       ragSources,
       evidenceCards,
       metadata: {
-        ...(analysisMode && { analysisMode }),
         ...(typeof enableRAG === 'boolean' && { enableRAG }),
         ...(enableWebSearch !== undefined && { enableWebSearch }),
         ...(localRouteDecision && { localRouteDecision }),

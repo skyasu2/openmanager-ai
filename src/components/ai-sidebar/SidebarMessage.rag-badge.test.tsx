@@ -148,11 +148,9 @@ describe('SidebarMessage RAG badge smoke integration', () => {
           dataSource: '일반 대화 응답 (지식 검색 활성)',
           engine: 'Streaming AI',
           ragUsed: false,
-          analysisMode: 'thinking',
           featureStatus: {
             rag: { status: 'suppressed', reason: 'not_needed' },
             web: { status: 'enabled' },
-            thinking: { status: 'enabled', reason: 'routing_mode' },
           },
         },
       },
@@ -164,7 +162,7 @@ describe('SidebarMessage RAG badge smoke integration', () => {
 
     expect(screen.getByText('지식 검색 생략됨')).toBeInTheDocument();
     expect(screen.getByText('Web 허용')).toBeInTheDocument();
-    expect(screen.getByText('심층 분석 요청됨')).toBeInTheDocument();
+    expect(screen.queryByText('심층 분석 요청됨')).not.toBeInTheDocument();
     expect(screen.queryByText('지식 검색 사용됨')).not.toBeInTheDocument();
     expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
   });

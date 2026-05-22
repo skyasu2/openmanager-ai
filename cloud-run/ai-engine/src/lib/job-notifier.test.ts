@@ -39,7 +39,6 @@ describe('job-notifier', () => {
         complexity: 'complex',
         estimatedTime: 60,
         factors: { multiStep: true },
-        analysisMode: 'thinking',
       },
     });
 
@@ -62,7 +61,6 @@ describe('job-notifier', () => {
           complexity: 'complex',
           estimatedTime: 60,
           factors: { multiStep: true },
-          analysisMode: 'thinking',
           traceId: 'trace-1',
           handoffs: [{ from: 'supervisor', to: 'analyst' }],
         }),

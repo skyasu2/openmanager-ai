@@ -2,7 +2,6 @@
 
 import {
   AlertCircle,
-  Brain,
   File,
   FileText,
   Globe,
@@ -14,23 +13,12 @@ import {
   X,
 } from 'lucide-react';
 import Image from 'next/image';
-import React, {
-  memo,
-  type RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { memo, type RefObject, useCallback } from 'react';
 import { AutoResizeTextarea } from '@/components/ui/AutoResizeTextarea';
 import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
 import { formatFileSize } from '@/hooks/ai/useFileAttachments';
 import type { AIStreamStatus } from '@/hooks/ai/useHybridAIQuery';
-import {
-  ANALYSIS_MODE_LABELS,
-  type AnalysisMode,
-} from '@/types/ai/analysis-mode';
 import { SESSION_LIMITS, type SessionState } from '@/types/session';
 
 const CHAT_INPUT_MAX_LENGTH = 10_000;
@@ -66,8 +54,6 @@ interface ChatInputAreaProps {
   onStopGeneration?: () => void;
   webSearchEnabled?: boolean;
   onToggleWebSearch?: () => void;
-  analysisMode?: AnalysisMode;
-  onSelectAnalysisMode?: (mode: AnalysisMode) => void;
 }
 
 export const ChatInputArea = memo(function ChatInputArea({
@@ -95,23 +81,7 @@ export const ChatInputArea = memo(function ChatInputArea({
   onStopGeneration,
   webSearchEnabled,
   onToggleWebSearch,
-  analysisMode = 'auto',
-  onSelectAnalysisMode,
 }: ChatInputAreaProps) {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const toggleButtonRef = useRef<HTMLButtonElement>(null);
-
-  const closePopover = useCallback((restoreFocus: boolean = false) => {
-    setIsPopoverOpen(false);
-    if (restoreFocus) {
-      requestAnimationFrame(() => {
-        toggleButtonRef.current?.focus();
-      });
-    }
-  }, []);
-
-  const showAnalysisModeActive = analysisMode !== 'auto';
   const sessionCount = sessionState?.count ?? 0;
   const showSessionWarning =
     Boolean(sessionState?.isWarning) && !sessionState?.isLimitReached;
@@ -122,48 +92,9 @@ export const ChatInputArea = memo(function ChatInputArea({
   const isInputAtHardCap = inputLength >= CHAT_INPUT_MAX_LENGTH;
   const inputLengthLabel = `입력 ${formatChatInputCount(inputLength)}/${formatChatInputCount(CHAT_INPUT_MAX_LENGTH)}자`;
 
-  // 외부 클릭 시 popover 닫기
-  useEffect(() => {
-    if (!isPopoverOpen) return;
-
-    const handlePointerOutside = (e: MouseEvent | TouchEvent) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(e.target as Node) &&
-        toggleButtonRef.current &&
-        !toggleButtonRef.current.contains(e.target as Node)
-      ) {
-        closePopover();
-      }
-    };
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        closePopover(true);
-      }
-    };
-
-    document.addEventListener('mousedown', handlePointerOutside);
-    document.addEventListener('touchstart', handlePointerOutside);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerOutside);
-      document.removeEventListener('touchstart', handlePointerOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [closePopover, isPopoverOpen]);
-
-  const handleTogglePopover = useCallback(() => {
-    setIsPopoverOpen((prev) => !prev);
-  }, []);
-
   const handleFileAttach = useCallback(() => {
     onOpenFileDialog();
-    closePopover();
-  }, [closePopover, onOpenFileDialog]);
+  }, [onOpenFileDialog]);
 
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
@@ -313,62 +244,6 @@ export const ChatInputArea = memo(function ChatInputArea({
                 >
                   <Globe className="h-5 w-5" aria-hidden="true" />
                 </button>
-              )}
-
-              <button
-                ref={toggleButtonRef}
-                type="button"
-                onClick={handleTogglePopover}
-                disabled={sessionState?.isLimitReached}
-                className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9 ${
-                  isPopoverOpen || showAnalysisModeActive
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-                }`}
-                title="응답 모드 선택"
-                aria-label="응답 모드 선택"
-                aria-expanded={isPopoverOpen}
-                aria-haspopup="dialog"
-              >
-                <Brain className="h-5 w-5" aria-hidden="true" />
-              </button>
-
-              {/* Popover */}
-              {isPopoverOpen && onSelectAnalysisMode && (
-                <div
-                  ref={popoverRef}
-                  role="dialog"
-                  aria-label="응답 모드 선택"
-                  className="absolute bottom-12 left-0 z-50 max-h-[min(70vh,28rem)] w-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
-                >
-                  <div className="px-3 py-2">
-                    <div className="mb-2 text-xs font-medium text-gray-500">
-                      응답 모드
-                    </div>
-                    <div className="grid grid-cols-2 gap-1 rounded-lg bg-gray-100 p-1">
-                      {(['auto', 'thinking'] as AnalysisMode[]).map((mode) => {
-                        const selected = analysisMode === mode;
-                        return (
-                          <button
-                            key={mode}
-                            type="button"
-                            onClick={() => onSelectAnalysisMode(mode)}
-                            className={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
-                              selected
-                                ? 'bg-white text-emerald-700 shadow-xs'
-                                : 'text-gray-600 hover:bg-white/70'
-                            }`}
-                          >
-                            {ANALYSIS_MODE_LABELS[mode]}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <p className="mt-2 text-xs leading-relaxed text-gray-500">
-                      멀티 에이전트 분석 활성화 · 예상 +5~15초
-                    </p>
-                  </div>
-                </div>
               )}
             </div>
 

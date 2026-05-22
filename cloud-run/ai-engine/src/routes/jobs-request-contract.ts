@@ -2,7 +2,6 @@ import { logger } from '../lib/logger';
 import { normalizeSupervisorSemanticMetadata } from '../services/ai-sdk/supervisor-semantic-metadata';
 import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import type {
-  AnalysisMode,
   SupervisorRequest,
 } from '../services/ai-sdk/supervisor-types';
 import {
@@ -12,7 +11,6 @@ import {
 
 export type JobProcessToolOptions = Pick<
   SupervisorRequest,
-  | 'analysisMode'
   | 'enableRAG'
   | 'enableWebSearch'
   | 'internalDisclosureMode'
@@ -58,10 +56,6 @@ export function buildJobProcessTargetUrl(
   return targetUrl.toString();
 }
 
-function isAnalysisMode(value: unknown): value is AnalysisMode {
-  return value === 'auto' || value === 'thinking';
-}
-
 function isWebSearchOption(
   value: unknown
 ): value is SupervisorRequest['enableWebSearch'] {
@@ -95,9 +89,6 @@ export function extractJobProcessToolOptions(
   }
 
   return {
-    ...(isAnalysisMode(payload.analysisMode) && {
-      analysisMode: payload.analysisMode,
-    }),
     ...(typeof payload.enableRAG === 'boolean' && {
       enableRAG: payload.enableRAG,
     }),

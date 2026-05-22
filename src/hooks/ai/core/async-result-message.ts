@@ -56,7 +56,6 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.resolvedMode) ||
     Boolean(result.modeSelectionSource) ||
     Boolean(result.retrieval) ||
-    Boolean(result.analysisMode) ||
     Boolean(result.routeDecision) ||
     Boolean(result.assistantPlan) ||
     Boolean(result.assistantResult) ||
@@ -89,9 +88,6 @@ export function buildAssistantMessageFromAsyncResult(
             result.toolsCalled.length > 0 && {
               toolsCalled: result.toolsCalled,
             }),
-          ...(result.analysisMode && {
-            analysisMode: result.analysisMode,
-          }),
           ...(result.routeDecision && {
             routeDecision: result.routeDecision,
           }),
