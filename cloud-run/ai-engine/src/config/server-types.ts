@@ -61,6 +61,7 @@ export const STORAGE_KEYWORDS = [
 
 export const APPLICATION_KEYWORDS = [
   'application',
+  'was',
   'api',
   'app',
   'backend',
@@ -142,6 +143,8 @@ export const SERVER_TYPE_MAP: Record<string, string> = {
   저장소서버: 'storage',
   // Application variants
   application: 'application',
+  was: 'application',
+  was서버: 'application',
   api: 'application',
   app: 'application',
   backend: 'application',

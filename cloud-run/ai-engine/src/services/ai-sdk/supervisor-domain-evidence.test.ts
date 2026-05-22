@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import * as precomputedState from '../../data/precomputed-state';
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
 import { sampleDomainPack } from '../../test-fixtures/sample-domain-pack';
 import type { SupervisorRequest } from './supervisor-types';
@@ -293,24 +294,65 @@ describe('supervisor domain evidence support', () => {
   });
 
   it('resolves urgent action ranking prompts as deterministic server health evidence', async () => {
-    const support = await resolveDomainEvidenceSupport({
-      query: '지금 당장 조치 시급한 서버 순위',
-      domain: monitoringDomainPack,
-      sessionId: 'session-urgent-action-ranking',
-      traceId: 'trace-urgent-action-ranking',
+    const spy = vi.spyOn(precomputedState, 'getCurrentState').mockReturnValue({
+      slotIndex: 0,
+      timeLabel: '00:00 KST',
+      minuteOfDay: 0,
+      summary: {
+        total: 1,
+        online: 0,
+        warning: 1,
+        critical: 0,
+        offline: 0,
+      },
+      alerts: [
+        {
+          serverId: 'web-nginx-dc1-01',
+          metric: 'cpu',
+          value: 85,
+          level: 'warning',
+          message: 'CPU usage is high',
+          timestamp: '2026-05-22T00:00:00Z',
+        },
+      ],
+      activePatterns: [],
+      servers: [
+        {
+          id: 'web-nginx-dc1-01',
+          name: 'web-nginx-dc1-01',
+          type: 'web',
+          status: 'warning',
+          cpu: 85,
+          memory: 45,
+          disk: 28,
+          network: 11,
+        },
+      ],
+      serverLogs: {},
     });
 
-    expect(support?.id).toBe('monitoring-server-health');
-    expect(support?.fallback).toContain('즉시 조치');
-    expect(support?.fallback).toMatch(
-      /(?:즉시 조치 대상은 \d+대입니다|즉시 조치 대상은 없습니다)/
-    );
-    expect(support?.fallback).toContain('우선순위');
-    expect(support?.metadata).toMatchObject({
-      responsePolicy: 'deterministic_answer',
-      capabilityId: 'monitoring.server_health',
-      intent: 'server_health',
-    });
+    try {
+      const support = await resolveDomainEvidenceSupport({
+        query: '지금 당장 조치 시급한 서버 순위',
+        domain: monitoringDomainPack,
+        sessionId: 'session-urgent-action-ranking',
+        traceId: 'trace-urgent-action-ranking',
+      });
+
+      expect(support?.id).toBe('monitoring-server-health');
+      expect(support?.fallback).toContain('즉시 조치');
+      expect(support?.fallback).toMatch(
+        /(?:즉시 조치 대상은 \d+대입니다|즉시 조치 대상은 없습니다)/
+      );
+      expect(support?.fallback).toContain('우선순위');
+      expect(support?.metadata).toMatchObject({
+        responsePolicy: 'deterministic_answer',
+        capabilityId: 'monitoring.server_health',
+        intent: 'server_health',
+      });
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('resolves availability-zone load balance as deterministic domain evidence', async () => {

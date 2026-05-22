@@ -52,6 +52,9 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   answerQuery: string;
   targets?: string[];
   metric?: SupportedMetric;
+  metrics?: SupportedMetric[];
+  threshold?: number;
+  filterOperator?: 'AND' | 'OR';
   rankCount?: number;
   rankOrder?: QueryRankOrder;
 }
@@ -67,7 +70,7 @@ const SERVER_DETAIL_PATTERN =
 const ACTION_NEEDED_PATTERN =
   /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응).{0,32}(?:필요|해야|대상|있|시급).{0,16}(?:서버|대상|순위)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|immediate\s+action|urgent\s+action|action\s+needed/i;
 const CURRENT_METRIC_GROUP_PATTERN =
-  /(db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스)\s*(서버|그룹)?/i;
+  /(db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN = /추이|추세|trend|변화|변동/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
 const SERVER_COMPARISON_CONNECTOR_PATTERN =
@@ -86,6 +89,10 @@ const GROUP_TARGET_HINTS = [
   {
     target: 'web',
     pattern: /(?:웹|web|nginx)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'application',
+    pattern: /(?:was|api|app|backend|애플리케이션|application)\s*(?:서버|그룹)?/i,
   },
   {
     target: 'database',
@@ -119,6 +126,23 @@ function normalizeSupportedMetric(metric: string | undefined): SupportedMetric |
   return ['cpu', 'memory', 'disk', 'network'].includes(normalized)
     ? (normalized as SupportedMetric)
     : null;
+}
+
+function extractMentionedMetrics(message: string): SupportedMetric[] {
+  const metrics: SupportedMetric[] = [];
+  if (/\bcpu\b|씨피유/i.test(message)) metrics.push('cpu');
+  if (/메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/i.test(message)) {
+    metrics.push('memory');
+  }
+  if (/디스크|\bdisk\b|스토리지|\bstorage\b/i.test(message)) {
+    metrics.push('disk');
+  }
+  if (/네트워크|\bnetwork\b|\bnet\b/i.test(message)) metrics.push('network');
+  return metrics;
+}
+
+function isAndMetricFilterMessage(message: string): boolean {
+  return /모두|동시에|전부|와|과|및|\band\b|&&|\+/i.test(message);
 }
 
 function round1(value: number): number {
@@ -405,6 +429,8 @@ function parseCurrentMetricsMessage(
     classification.metric && classification.metric !== 'status'
       ? classification.metric
       : null;
+  const groupTarget = inferGroupTargetFromMessage(message);
+  const mentionedMetrics = extractMentionedMetrics(message);
   const explicitServerTargets = extractServerIdTargetsFromMessage(message);
 
   if (
@@ -419,6 +445,27 @@ function parseCurrentMetricsMessage(
       answerQuery: message,
       metric,
       targets: explicitServerTargets,
+    };
+  }
+
+  if (
+    classification.intent === 'data-filter' &&
+    classification.threshold !== undefined &&
+    mentionedMetrics.length >= 2 &&
+    isAndMetricFilterMessage(message) &&
+    (classification.operator === undefined ||
+      classification.operator === '>=' ||
+      classification.operator === '>')
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'multi-metric-filter',
+      answerQuery: message,
+      metrics: mentionedMetrics,
+      threshold: classification.threshold,
+      filterOperator: 'AND',
+      ...(groupTarget && { targets: [groupTarget] }),
     };
   }
 
@@ -450,6 +497,7 @@ function parseCurrentMetricsMessage(
       sourceIntent: classification.intent,
       answerQuery: message,
       metric,
+      ...(groupTarget && { targets: [groupTarget] }),
     };
   }
 
@@ -496,6 +544,14 @@ function buildMetricCurrentAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
 }): string | null {
+  if (
+    params.parsed.metrics &&
+    params.parsed.metrics.length > 0 &&
+    params.parsed.threshold !== undefined
+  ) {
+    return buildMultiMetricFilterAnswer(params);
+  }
+
   const metric = params.parsed.metric;
   if (!metric) return null;
 
@@ -531,6 +587,83 @@ function buildMetricCurrentAnswer(params: {
         (row) =>
           `${row.server.id} ${formatMetricPercent(row.value)} (${row.server.status ?? 'unknown'})`
       )
+      .join(', ')}`,
+  ].join('\n');
+}
+
+function buildMultiMetricFilterAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  const metrics = params.parsed.metrics ?? [];
+  const threshold = params.parsed.threshold;
+  if (metrics.length === 0 || threshold === undefined) return null;
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const { servers, targetLabel } = filterSnapshotServers(
+    allServers,
+    params.parsed.targets
+  );
+  if (servers.length === 0) return null;
+
+  const rows = servers
+    .map((server) => {
+      const values = metrics.map((metric) => ({
+        metric,
+        value: getMetricValue(server, metric),
+      }));
+      if (values.some((entry) => entry.value === null)) return null;
+
+      const numericValues = values as Array<{
+        metric: SupportedMetric;
+        value: number;
+      }>;
+      const matches =
+        params.parsed.filterOperator === 'OR'
+          ? numericValues.some((entry) => entry.value >= threshold)
+          : numericValues.every((entry) => entry.value >= threshold);
+      if (!matches) return null;
+
+      return {
+        server,
+        values: numericValues,
+        score: numericValues.reduce((sum, entry) => sum + entry.value, 0),
+      };
+    })
+    .filter((row): row is NonNullable<typeof row> => row !== null)
+    .sort((left, right) => right.score - left.score);
+
+  const metricLabels = metrics.map(getMetricLabel);
+  const conditionJoiner = params.parsed.filterOperator === 'OR' ? ' OR ' : ' AND ';
+  const condition = metrics
+    .map((metric) => `${getMetricLabel(metric)} >= ${threshold}%`)
+    .join(conditionJoiner);
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+  const title = `${metricLabels.join(' + ')} ${threshold}% 이상 서버`;
+
+  if (rows.length === 0) {
+    return [
+      `📊 **${title}**`,
+      `• 조건: ${condition}`,
+      `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+      '• 결과: 현재 조건을 동시에 만족하는 서버는 없습니다.',
+    ].join('\n');
+  }
+
+  return [
+    `📊 **${title}**`,
+    `• 조건: ${condition}`,
+    `• 대상: ${targetLabel} 중 ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 서버별: ${rows
+      .map((row) => {
+        const metricText = row.values
+          .map(
+            (entry) =>
+              `${getMetricLabel(entry.metric)} ${formatMetricPercent(entry.value)}`
+          )
+          .join(', ');
+        return `${row.server.id} ${metricText} (${row.server.status ?? 'unknown'})`;
+      })
       .join(', ')}`,
   ].join('\n');
 }
@@ -692,6 +825,9 @@ async function resolveCurrentMetricsEvidence(
       }),
       ...(parsed.targets && { targets: parsed.targets }),
       ...(parsed.metric && { metric: parsed.metric }),
+      ...(parsed.metrics && { metrics: parsed.metrics }),
+      ...(parsed.threshold !== undefined && { threshold: parsed.threshold }),
+      ...(parsed.filterOperator && { filterOperator: parsed.filterOperator }),
       ...(parsed.rankCount && { rankCount: parsed.rankCount }),
       ...(parsed.rankOrder && { rankOrder: parsed.rankOrder }),
     },

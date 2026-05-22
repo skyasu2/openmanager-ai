@@ -283,6 +283,111 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
   });
 
+  it('resolves WAS group current metric prompts through application group hints', async () => {
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      createEvidenceRequest('WAS 서버 CPU 현황 알려줘', {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'warning',
+            cpu: 82,
+            memory: 62,
+            disk: 41,
+            network: 18,
+          },
+          {
+            id: 'api-was-dc1-02',
+            type: 'application',
+            status: 'online',
+            cpu: 57,
+            memory: 51,
+            disk: 39,
+            network: 16,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 92,
+            memory: 45,
+            disk: 28,
+            network: 11,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        metric: 'cpu',
+        targets: ['application'],
+      },
+    });
+    expect(evidence?.fallback).toContain('애플리케이션 서버 2대 CPU 현황');
+    expect(evidence?.fallback).toContain('api-was-dc1-01 82%');
+    expect(evidence?.fallback).toContain('api-was-dc1-02 57%');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
+  it('resolves multi-metric AND threshold filters deterministically', async () => {
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      createEvidenceRequest('CPU와 메모리 모두 50% 이상인 서버 알려줘', {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'warning',
+            cpu: 82,
+            memory: 62,
+            disk: 41,
+            network: 18,
+          },
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'online',
+            cpu: 44,
+            memory: 91,
+            disk: 40,
+            network: 12,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 55,
+            memory: 45,
+            disk: 28,
+            network: 11,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        metrics: ['cpu', 'memory'],
+        threshold: 50,
+        filterOperator: 'AND',
+      },
+    });
+    expect(evidence?.fallback).toContain('CPU + 메모리 50% 이상 서버');
+    expect(evidence?.fallback).toContain('api-was-dc1-01');
+    expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
   it('matches explicit server IDs case-insensitively against snapshot IDs', async () => {
     const request = createEvidenceRequest(
       'web-dc1-az1 과 web-dc1-az2 의 CPU 사용량을 비교해줘',
