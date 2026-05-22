@@ -102,17 +102,17 @@
     {
       "type": "playwright-screenshot",
       "label": "r1-eng-typo-fixed.png",
-      "path": ".playwright-mcp/screenshots/r1-eng-typo-fixed.png"
+      "path": "reports/qa/evidence/qa-20260522-0561-r1-eng-typo-fixed.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "r2-korean-forecast-fixed.png",
-      "path": ".playwright-mcp/screenshots/r2-korean-forecast-fixed.png"
+      "path": "reports/qa/evidence/qa-20260522-0561-r2-korean-forecast-fixed.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "r3-krl-fixed.png",
-      "path": ".playwright-mcp/screenshots/r3-krl-fixed.png"
+      "path": "reports/qa/evidence/qa-20260522-0561-r3-krl-fixed.png"
     }
   ],
   "links": [
