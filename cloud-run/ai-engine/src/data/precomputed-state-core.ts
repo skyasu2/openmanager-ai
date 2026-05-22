@@ -95,6 +95,8 @@ function getOTelResourceCatalog(): OTelResourceCatalog | null {
   const paths = [
     join(__dirname, '../../data/otel-data/resource-catalog.json'),
     join(process.cwd(), 'data/otel-data/resource-catalog.json'),
+    join(process.cwd(), '../../public/data/otel-data/resource-catalog.json'),
+    join(process.cwd(), 'public/data/otel-data/resource-catalog.json'),
   ];
   for (const p of paths) {
     if (existsSync(p)) {
