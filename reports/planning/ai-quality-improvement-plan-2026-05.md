@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-22 (v8.12.5 2차 QA routing follow-up local implementation 반영)
+> Last reviewed: 2026-05-22 (v8.12.7 H-3 routing follow-up 배포 반영)
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 local implementation 완료했다. 잔여는 Task F 최종 관찰과 조건부 production QA 판정이다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. 잔여는 Task F 최종 관찰과 조건부 production QA 판정이다.
 
 ---
 
@@ -497,7 +497,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 **우선순위**: P2 (non-blocking, QA tracker auto WONT-FIX. 재현 빈도 증가 시 P1 승격)
 **SDD 게이트**: 진단 → failing test 선행 커밋 → 구현 순서 준수
-**현재 판단**: H-1/H-2 및 review follow-up은 v8.12.6으로 배포 완료. H-3은 회귀 테스트 선행 후 local implementation 완료, 배포 후 production QA에서 재확인한다.
+**현재 판단**: H-1/H-2 및 review follow-up은 v8.12.6으로 배포 완료. H-3은 회귀 테스트 선행 후 v8.12.7로 배포 완료했으며, 다음 production QA에서 사용자-facing 품질을 재확인한다.
 
 **예상 소요**: 진단 30분 + 구현/테스트 60분
 
@@ -513,6 +513,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - [x] H-3 failing spec 선행 커밋 (`f5517a0d6`)
 - [x] H-3 구현 완료(local): capacity forecast 표현 확장, 영어 threshold/memory typo deterministic evidence, Redis 설정 가이드 KRL routing
 - [x] H-3 targeted tests, root type-check/lint/test:quick/test:contract, AI Engine type-check/full test 통과
+- [x] v8.12.7 release/tag pipeline `2545712930` success, Cloud Run `ai-engine-00509-pgh` 100% traffic, production `/api/version` 및 AI Engine `/health` 8.12.7 확인
 
 ---
 
@@ -618,7 +619,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 | C: KRL corpus 보강 | — | No-op | 0분 | coverage FAIL 발생 시 재개 |
 | F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
 | G: AZ 집계·Top-N 추세 grounding | 🔴 High | Released (v8.12.5) | 60~90분 | production QA 회귀 수정 |
-| H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | H-3 Implemented (local) | 배포 전 | capacity 표현/영어 오타/KRL Redis 설정 가이드 follow-up |
+| H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Released (v8.12.7) | 완료 | capacity 표현/영어 오타/KRL Redis 설정 가이드 follow-up |
 | **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Released (v8.12.6)** | 완료 | `710c6165d` failing test 선행, AI Engine type-check/full test PASS |
 | **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Released (v8.12.6) | 완료 | prompt/instruction 힌트 반영 |
 | **I-3: Reporter 기준 명시** | 🟢 P3 | **Released (v8.12.6)** | 완료 | Reporter UI/다운로드 기준 구분 반영 |
@@ -634,7 +635,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
 - Task E는 failing test 선행 커밋 없이는 구현하지 않는다.
 - Task G는 failing regression test와 구현 커밋을 분리하고, AI Engine targeted tests/type-check를 통과한다.
-- Task H는 H-1/H-2 v8.12.6 배포 완료, H-3 local implementation 완료 상태다. H-3 배포 후 production QA에서 사용자-facing 품질을 재확인한다.
+- Task H는 H-1/H-2 v8.12.6 배포 완료, H-3 v8.12.7 배포 완료 상태다. 다음 production QA에서 사용자-facing 품질을 재확인한다.
 - Task I-1은 v8.12.6 배포 완료 상태로 유지하고, 서버 비교 쿼리 수치 오류 재현 시 새 회귀 테스트로 재개한다.
 - Task I-2는 prompt/instruction 힌트는 v8.12.6 배포 완료. KRL seed 변경으로 확장할 때만 `rag:analyze` governance PASS를 검증한다.
 - Task I-3은 v8.12.6 배포 완료. 레이블/텍스트 변경 수준이므로 추가 SDD 게이트는 없다.
