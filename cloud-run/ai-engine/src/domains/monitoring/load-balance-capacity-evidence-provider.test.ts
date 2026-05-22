@@ -59,6 +59,26 @@ const locationSnapshot: DomainSnapshot = {
   },
 };
 
+const singleDataCenterSnapshot: DomainSnapshot = {
+  timestamp: '2026-05-22T14:20:00+09:00',
+  data: {
+    timeLabel: '14:20',
+    servers: [
+      {
+        id: 'web-dc1-01',
+        name: 'web-dc1-01',
+        type: 'web',
+        status: 'online',
+        cpu: 36,
+        memory: 52,
+        disk: 34,
+        network: 11,
+        location: 'DC1-AZ1',
+      },
+    ],
+  },
+};
+
 function createRequest(message: string): DomainEvidenceRequest {
   return {
     requestId: 'capacity-forecast-test',
@@ -80,6 +100,21 @@ function createLocationRequest(message: string): DomainEvidenceRequest {
     messages: [{ role: 'user', content: message }],
     dataSource: {
       snapshot: async () => locationSnapshot,
+      history: async () => [],
+    },
+  };
+}
+
+function createSingleDataCenterRequest(
+  message: string
+): DomainEvidenceRequest {
+  return {
+    requestId: 'single-dc-load-balance-test',
+    domainId: MONITORING_DOMAIN_ID,
+    message,
+    messages: [{ role: 'user', content: message }],
+    dataSource: {
+      snapshot: async () => singleDataCenterSnapshot,
       history: async () => [],
     },
   };
@@ -108,6 +143,18 @@ describe('monitoring location load balance evidence provider', () => {
       capabilityId: 'monitoring.location_load_balance',
       intent: 'location_load_balance',
     });
+  });
+
+  it('names requested data centers that are absent from the current snapshot', async () => {
+    const result = await monitoringLocationLoadBalanceEvidenceProvider.resolve(
+      createSingleDataCenterRequest('DC1과 DC2 어느 데이터센터 부하 높아?')
+    );
+
+    expect(result?.id).toBe('monitoring-location-load-balance');
+    expect(result?.fallback).toContain('DC1 1대');
+    expect(result?.fallback).toContain(
+      'DC2는 현재 snapshot에 포함되지 않았습니다'
+    );
   });
 });
 
@@ -160,6 +207,7 @@ describe('monitoring capacity forecast evidence provider', () => {
     });
     expect(result?.fallback).toContain('CPU 90% 도달 예측');
     expect(result?.fallback).toContain('대상: 지정 서버 1대');
+    expect(result?.fallback).not.toContain('지정 서버 1대 1대');
   });
 
   it('uses the requested future threshold instead of the current metric value', async () => {

@@ -154,6 +154,16 @@ function isDataCenterLoadBalanceQuery(message: string): boolean {
   return dcTokens.size >= 2;
 }
 
+function extractRequestedDataCenters(message: string): string[] {
+  return Array.from(
+    new Set(
+      Array.from(message.matchAll(/\bdc\d+\b/gi)).map((match) =>
+        match[0].toUpperCase()
+      )
+    )
+  );
+}
+
 function buildLocationSummaries(
   servers: SnapshotServer[],
   grouping: LocationGrouping
@@ -252,6 +262,15 @@ function buildLocationLoadBalanceAnswer(
   const countLine = summaries
     .map((summary) => `${summary.location} ${summary.serverCount}대`)
     .join(' / ');
+  const summaryLocations = new Set(
+    summaries.map((summary) => summary.location.toUpperCase())
+  );
+  const missingRequestedLocations =
+    grouping === 'data_center'
+      ? extractRequestedDataCenters(message).filter(
+          (location) => !summaryLocations.has(location)
+        )
+      : [];
   const metricsLine = summaries
     .map(
       (summary) =>
@@ -269,6 +288,11 @@ function buildLocationLoadBalanceAnswer(
   return [
     heading,
     `• 대상: 전체 ${servers.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''} · ${countLine}`,
+    ...(missingRequestedLocations.length > 0
+      ? [
+          `• 데이터 범위: ${missingRequestedLocations.join(', ')}는 현재 snapshot에 포함되지 않았습니다.`,
+        ]
+      : []),
     `• 평균 부하: ${metricsLine}`,
     `• 균형 판단: 서버 수 편차 ${countSpread}대, CPU 평균 편차 ${formatSignedPercentPoints(cpuSpread)}, MEM 편차 ${formatSignedPercentPoints(memorySpread)}, DISK 편차 ${formatSignedPercentPoints(diskSpread)}`,
     highestCpu
@@ -482,6 +506,9 @@ function buildCapacityForecastAnswer(params: {
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
   const projectedRows = rows.filter((row) => row.etaHours !== null);
   const topRows = rows.slice(0, 5);
+  const targetLabel = /\d+대$/.test(target.label)
+    ? target.label
+    : `${target.label} ${rows.length}대`;
   const summary =
     projectedRows.length > 0
       ? `${projectedRows[0].server.id}가 가장 먼저 ${threshold}%에 도달할 가능성이 있습니다.`
@@ -493,7 +520,7 @@ function buildCapacityForecastAnswer(params: {
     answer: [
       `📈 **${metricName} ${threshold}% 도달 예측**`,
       `• 결론: ${summary}`,
-      `• 대상: ${target.label} ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+      `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
       '• 기준: 최근 24h 선형 추세 기반 추정이며, 배치/장애/트래픽 급증 같은 비선형 이벤트는 별도 로그 확인이 필요합니다.',
       `• 근접/예상 TOP ${topRows.length}: ${topRows
         .map((row) => {

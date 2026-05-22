@@ -332,6 +332,9 @@ describe('supervisor domain evidence support', () => {
 
     expect(support?.id).toBe('monitoring-location-load-balance');
     expect(support?.fallback).toContain('부하 균형');
+    expect(support?.fallback).toContain(
+      'DC2는 현재 snapshot에 포함되지 않았습니다'
+    );
     expect(support?.fallback.trim().length).toBeGreaterThan(80);
     expect(support?.metadata).toMatchObject({
       responsePolicy: 'deterministic_answer',
@@ -373,6 +376,7 @@ describe('supervisor domain evidence support', () => {
     expect(support?.id).toBe('monitoring-capacity-forecast');
     expect(support?.fallback).toContain('CPU 90% 도달 예측');
     expect(support?.fallback).toContain('api-was-dc1-01');
+    expect(support?.fallback).not.toContain('지정 서버 1대 1대');
     expect(support?.metadata).toMatchObject({
       responsePolicy: 'deterministic_answer',
       capabilityId: 'monitoring.capacity_forecast',
