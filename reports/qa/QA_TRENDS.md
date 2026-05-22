@@ -1,47 +1,47 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-22 09:11:50 KST
+> Generated at: 2026-05-22 21:16:13 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 554 |
-| Counted Runs | 442 |
-| Total Checks | 4050 |
-| Total Passed | 3894 |
+| Recorded Runs | 562 |
+| Counted Runs | 447 |
+| Total Checks | 4069 |
+| Total Passed | 3907 |
 | Total Failed | 145 |
-| Overall Pass Rate | 96.15% |
-| Latest Recorded Run | QA-20260522-0556 |
-| Last Counted Run | QA-20260522-0556 |
+| Overall Pass Rate | 96.02% |
+| Latest Recorded Run | QA-20260522-0564 |
+| Last Counted Run | QA-20260522-0564 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-21T00:09:55.910Z -> 2026-05-22T00:09:55.910Z (24h)
+- Window: 2026-05-21T12:13:39.004Z -> 2026-05-22T12:13:39.004Z (24h)
 - Runs with observations: 3 recorded / 3 counted
-- Samples: 10
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Analyst Agent | streaming | 1 | 11000ms | 11000ms | 2000ms | 2000ms | 9000ms | 9000ms | QA-20260521-0550 |
-| Reporter Agent | zai | 1 | 7021ms | 7021ms | 1200ms | 1200ms | 5821ms | 5821ms | QA-20260521-0550 |
-| Cloud Run AI | cloud-run-ai-engine | 5 | 1555ms | 6120ms | - | - | - | - | QA-20260521-0549 |
-| Metrics Query Agent | cloud-run-deterministic | 2 | 836ms | 1434ms | - | - | - | - | QA-20260522-0556 |
-| Advisor Agent | deterministic | 1 | 26ms | 26ms | 26ms | 26ms | 0ms | 0ms | QA-20260521-0550 |
+| Metrics Query Agent | cloud-run-deterministic | 6 | 711ms | 1662ms | - | - | - | - | QA-20260522-0564 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-21T00:09:55.910Z -> 2026-05-22T00:09:55.910Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 2
-- Drift rate: 0%
-- Classification counts: {"unknown":2}
+- Window: 2026-05-21T12:13:39.004Z -> 2026-05-22T12:13:39.004Z (24h)
+- Runs with observations: 8 recorded / 6 counted
+- Samples: 32
+- Drift rate: 18.75%
+- Classification counts: {"unknown":6,"matched":20,"drift":6}
 - Reason code counts: {}
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | deterministic | 2 | 0% | 2ms | 2ms | QA-20260522-0556 |
+| reporter-agent | single-agent | 1 | 0% | 30000ms | 30000ms | QA-20260522-0559 |
+| /api/ai/supervisor/stream/v2 | single-agent | 9 | 66.67% | 3556ms | 25000ms | QA-20260522-0562 |
+| /api/ai/supervisor/stream/v2 | deterministic | 20 | 0% | 138ms | 1662ms | QA-20260522-0564 |
+| /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
+| anomaly-detection | deterministic | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 
 ## Warnings
 
@@ -51,9 +51,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 442 | 4050 | 96.15% | 79 | 17.87% | 87 | 19.68% |
-| Last 30 Counted Runs | 30 | 340 | 96.76% | 4 | 13.33% | 4 | 13.33% |
-| Last 10 Counted Runs | 10 | 102 | 100% | 0 | 0% | 0 | 0% |
+| All Counted Runs | 447 | 4069 | 96.02% | 79 | 17.67% | 87 | 19.46% |
+| Last 30 Counted Runs | 30 | 294 | 94.22% | 4 | 13.33% | 4 | 13.33% |
+| Last 10 Counted Runs | 10 | 68 | 91.18% | 0 | 0% | 0 | 0% |
 
 ## Gate Run Windows
 
@@ -73,26 +73,30 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 368 | 257 |
+| targeted | 375 | 261 |
 | legacy | 137 | 137 |
 | broad | 35 | 34 |
 | release-gate | 9 | 9 |
 | smoke | 5 | 5 |
+| regression | 1 | 1 |
 
 ## Priority Recurrence
 
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 47 | 10 | 21.28% | 0 | 0 | 0% | 47 | 0 |
-| P1 | 291 | 105 | 36.08% | 0 | 0 | 0% | 285 | 6 |
-| P2 | 286 | 59 | 20.63% | 0 | 0 | 0% | 261 | 25 |
-| P3 | 43 | 14 | 32.56% | 0 | 0 | 0% | 39 | 4 |
+| P1 | 292 | 105 | 35.96% | 0 | 0 | 0% | 285 | 7 |
+| P2 | 289 | 59 | 20.42% | 0 | 0 | 0% | 261 | 28 |
+| P3 | 44 | 14 | 31.82% | 0 | 0 | 0% | 39 | 5 |
 | P4 | 1 | 0 | 0% | 0 | 0 | 0% | 0 | 1 |
 
 ## Deployment Regression Correlation
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| gitlab-pipeline-2546194670 | cloud-run-production | 1 | 1 | 100% | 0 | 0% | QA-20260522-0564 | 2e80bd62 |
+| gitlab-pipeline-2546072069 | vercel-production | 1 | 3 | 100% | 0 | 0% | QA-20260522-0563 | eb128e80 |
+| dpl_EfWEBPcgUWKRjCh29WZfbSNypakd | vercel-production | 1 | 5 | 100% | 0 | 0% | QA-20260522-0558 | 1b0b329b |
 | dpl_3fT6D3HjyvNkoAhu43FN8bGaUu5H | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260522-0556 | 4c79450c |
 | dpl_FrMjb4v1eLLxXCYTAToTunPivZWf | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260522-0555 | 3c4df7a6 |
 | dpl_9tVqnvdBXyaHqEAiXNHgnYrEmnLp | vercel-production | 1 | 10 | 100% | 0 | 0% | QA-20260521-0553 | b21e0aff |
@@ -102,9 +106,6 @@
 | dpl_8WCBUoDexHcw36bifUAUdHb6S5aN | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260521-0547 | edb28d01 |
 | vercel-production-v8.11.189 | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260520-0546 | 41c9bb7f |
 | dpl_5ViT7mQKcqXoWjn3DZK8anmXenRp | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260520-0545 | 5dc58936 |
-| dpl_EAfnBF9W49oPUsAVn1cWwz8TAYZw | vercel-production | 2 | 26 | 88.46% | 1 | 50% | QA-20260520-0544 | 02a05eba |
-| dpl_E5zZztMow1QgjEaSyvPCL1Sj3hqP | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260519-0537 | cb05a58e |
-| icn1::icn1::7hs47-1779167617388-c78b3062ad59 | vercel-production | 1 | 18 | 77.78% | 1 | 100% | QA-20260519-0535 | 4ce2e3f7 |
 
 ## Recent Daily Trend (KST)
 
@@ -123,7 +124,7 @@
 | 2026-05-19 | 10 | 104 | 92.31% | 3 | 3 | 30% |
 | 2026-05-20 | 3 | 36 | 91.67% | 1 | 1 | 33.33% |
 | 2026-05-21 | 8 | 78 | 100% | 0 | 0 | 0% |
-| 2026-05-22 | 2 | 24 | 100% | 0 | 0 | 0% |
+| 2026-05-22 | 7 | 43 | 86.05% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 
@@ -153,7 +154,7 @@
 | analyst-single-server-response-mismatch | P1 | wont-fix | 1 | QA-20260519-0535 | Analyst 단일 서버 분석 응답 구조 불일치 수정 |
 | landing-console-api-system-unauthorized | P1 | wont-fix | 1 | QA-20260330-0195 | 랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling |
 | landing-vibe-content-deployment-drift | P1 | wont-fix | 1 | QA-20260330-0195 | Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 |
-| ai-adversarial-natural-language-qa-pack | P2 | wont-fix | 1 | QA-20260512-0487 | Add QC/security-style natural-language AI regression prompts |
+| server-comparison-deterministic-path | P1 | wont-fix | 1 | QA-20260522-0559 | 서버 1:1 비교 쿼리 deterministic 경로 미확립 |
 
 ## Most Repeated Completed Items
 

@@ -1,0 +1,68 @@
+{
+  "runId": "QA-20260522-0564",
+  "title": "v8.12.10 H-5 semantic router fail-closed production QA",
+  "recordedAt": "2026-05-22T12:13:39.004Z",
+  "target": "cloud-run-production",
+  "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/api/ai/supervisor/stream/v2",
+  "query": "web-dc1-az1 temperature now",
+  "intentFrame": {
+    "domainId": "openmanager-monitoring",
+    "intent": "metric_current",
+    "capabilityId": "monitoring.metric_current",
+    "scope": "entity",
+    "targets": ["web-dc1-az1"],
+    "ambiguity": "low",
+    "metric": "temperature",
+    "confidence": 0.96
+  },
+  "result": {
+    "status": 200,
+    "ok": true,
+    "latencyMs": 278,
+    "contentType": "text/event-stream",
+    "streamProtocol": "ui-message-stream",
+    "eventTypes": [
+      "data-start",
+      "data-mode",
+      "text-start",
+      "text-delta",
+      "text-end",
+      "data-done"
+    ],
+    "responsePreview": "⚠️ **모니터링 근거를 찾지 못했습니다** • 요청 의도: monitoring.metric_current • 현재 OTel snapshot에서 이 질의를 처리할 결정적 evidence provider를 찾지 못했습니다. • 실제 근거 없이 임의 수치, 순위, 예측값을 만들지 않겠습니다. • 다시 요청할 때 필요한 정보를 구체화하세요: metric, targets, scope.",
+    "doneProvider": "deterministic",
+    "doneModelId": "monitoring-evidence-unavailable",
+    "doneToolsCalled": ["monitoring-evidence-unavailable"],
+    "semanticQueryTrace": {
+      "originalQuery": "web-dc1-az1 temperature now",
+      "selectedDomain": "openmanager-monitoring",
+      "selectedCapability": "monitoring.metric_current",
+      "selectedEvidenceProvider": "monitoring-evidence-unavailable",
+      "evidenceAvailable": false,
+      "clarificationRequired": true,
+      "reasonCodes": [
+        "prod_h5_semantic_seed",
+        "semantic_frame_provider_miss",
+        "semantic_frame_fail_closed"
+      ]
+    },
+    "checks": {
+      "statusOk": true,
+      "failClosedText": true,
+      "deterministicProvider": true,
+      "providerId": true,
+      "traceFailClosed": true
+    },
+    "pass": true
+  },
+  "costGuard": {
+    "llmCalls": 0,
+    "supabaseWrites": 0,
+    "redisSessionWrites": 0,
+    "cloudRunLimits": {
+      "cpu": "1",
+      "memory": "512Mi"
+    },
+    "cloudBuildMachineType": null
+  }
+}

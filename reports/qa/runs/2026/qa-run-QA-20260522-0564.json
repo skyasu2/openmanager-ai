@@ -1,0 +1,132 @@
+{
+  "runId": "QA-20260522-0564",
+  "recordedAt": "2026-05-22T12:13:39.004Z",
+  "recordedAtKst": "2026-05-22 21:13:39 KST",
+  "runTitle": "v8.12.10 H-5 semantic router fail-closed production QA",
+  "owner": "codex",
+  "source": "cloud-run-direct-supervisor-stream",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2546194670",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "2e80bd62e600ed6ad501a36d4730b463a5252314"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Cloud Run AI supervisor stream v2 - high-confidence semantic monitoring frame provider miss",
+    "Semantic router v2 - deterministic fail-closed response policy",
+    "Monitoring evidence guard - unsupported metric avoids LLM hallucinated numeric answer"
+  ],
+  "skippedSurfaces": [
+    "dashboard visual Playwright flow",
+    "standard five-question conversational QA pack",
+    "low-confidence fallback live LLM path"
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "H-5 semantic fail-closed unsupported metric",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-deterministic",
+      "model": "monitoring-evidence-unavailable",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "direct Cloud Run smoke script",
+      "latencyMs": 278
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "H-5 semantic fail-closed unsupported metric",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 278,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "direct Cloud Run smoke script; responsePolicy deterministic_fail_closed"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "H-5의 핵심 수용 기준인 high-confidence semantic frame provider miss가 deterministic fail-closed로 처리되고, trace에 semantic_frame_provider_miss 및 semantic_frame_fail_closed가 남는 것을 production Cloud Run에서 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab CI release pipeline과 Cloud Run health/traffic/version 검증이 통과했고 free-tier runtime limits 및 Cloud Build machineType guard가 유지됐다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "gcp-cloud-run",
+      "method": "gitlab-ci-release-and-direct-health-smoke",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-22T21:09:06+09:00",
+      "summary": "v8.12.10 deployed by GitLab pipeline 2546194670. Cloud Run /health reported 8.12.10; revision ai-engine-00512-zwf has 100% traffic and limits cpu=1 memory=512Mi. Latest Cloud Build c33b7a8e-9027-489a-84e5-a5c59ed731fd succeeded with no custom machineType.",
+      "evidence": "gcloud run services describe ai-engine; gcloud builds list --limit=5",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    },
+    {
+      "platform": "ai-provider-quota",
+      "method": "deterministic-fail-closed-smoke",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-22T21:09:06+09:00",
+      "summary": "H-5 production smoke used direct Cloud Run API with injected semantic intentFrame. The response was deterministic provider=monitoring-evidence-unavailable, toolsCalled=monitoring-evidence-unavailable, and did not require LLM retries, Supabase writes, or Redis session storage.",
+      "evidence": "node /tmp/prod-ai-h5-qa.mjs",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/api/ai/supervisor/stream/v2"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "json-evidence",
+      "label": "H-5 fail-closed smoke result",
+      "path": "reports/qa/evidence/qa-20260522-0564-h5-fail-closed-smoke.json",
+      "note": "Direct Cloud Run supervisor stream response with deterministic monitoring-evidence-unavailable fail-closed trace."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.10 release (2546194670)",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2546194670"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Production v8.12.10",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run AI Engine health v8.12.10",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    }
+  ]
+}

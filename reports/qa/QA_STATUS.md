@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-22 20:14:45 KST
+> Generated at: 2026-05-22 21:16:13 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 561 |
-| Total Runs (Counted) | 446 |
+| Total Recorded Runs | 562 |
+| Total Runs (Counted) | 447 |
 | Non-counted Runs | 115 |
-| Total Checks | 4068 |
-| Passed | 3906 |
+| Total Checks | 4069 |
+| Passed | 3907 |
 | Failed | 145 |
 | Completed Items | 632 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 41 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260522-0563 (2026-05-22T11:14:44.822Z) |
-| Latest Recorded Run | QA-20260522-0563 (2026-05-22T11:14:44.822Z) |
+| Last Counted Run | QA-20260522-0564 (2026-05-22T12:13:39.004Z) |
+| Latest Recorded Run | QA-20260522-0564 (2026-05-22T12:13:39.004Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,71 +34,72 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260522-0563 (2026-05-22T11:14:44.822Z)
+Latest run: QA-20260522-0564 (2026-05-22T12:13:39.004Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | production-api-supervisor-stream | checked | normal | v8.12.9 targeted production QA executed through CSRF-safe supervisor stream API. Frontend /api/version and Cloud Run /health both reported 8.12.9; no Supabase write path used. |
+| gcp-cloud-run | gitlab-ci-release-and-direct-health-smoke | checked | normal | v8.12.10 deployed by GitLab pipeline 2546194670. Cloud Run /health reported 8.12.10; revision ai-engine-00512-zwf has 100% traffic and limits cpu=1 memory=512Mi. Latest Cloud Build c33b7a8e-9027-489a-84e5-a5c59ed731fd succeeded with no custom machineType. |
+| ai-provider-quota | deterministic-fail-closed-smoke | checked | normal | H-5 production smoke used direct Cloud Run API with injected semantic intentFrame. The response was deterministic provider=monitoring-evidence-unavailable, toolsCalled=monitoring-evidence-unavailable, and did not require LLM retries, Supabase writes, or Redis session storage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-21T11:14:44.822Z -> 2026-05-22T11:14:44.822Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 5
+- Window: 2026-05-21T12:13:39.004Z -> 2026-05-22T12:13:39.004Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Metrics Query Agent | cloud-run-deterministic | 5 | 797ms | 1662ms | - | - | - | - | QA-20260522-0563 |
+| Metrics Query Agent | cloud-run-deterministic | 6 | 711ms | 1662ms | - | - | - | - | QA-20260522-0564 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-21T11:14:44.822Z -> 2026-05-22T11:14:44.822Z (24h)
-- Runs with observations: 7 recorded / 5 counted
-- Samples: 31
-- Drift rate: 19.35%
+- Window: 2026-05-21T12:13:39.004Z -> 2026-05-22T12:13:39.004Z (24h)
+- Runs with observations: 8 recorded / 6 counted
+- Samples: 32
+- Drift rate: 18.75%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
 | reporter-agent | single-agent | 1 | 0% | 30000ms | 30000ms | QA-20260522-0559 |
 | /api/ai/supervisor/stream/v2 | single-agent | 9 | 66.67% | 3556ms | 25000ms | QA-20260522-0562 |
-| /api/ai/supervisor/stream/v2 | deterministic | 19 | 0% | 131ms | 1662ms | QA-20260522-0563 |
+| /api/ai/supervisor/stream/v2 | deterministic | 20 | 0% | 138ms | 1662ms | QA-20260522-0564 |
 | /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 | anomaly-detection | deterministic | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2546072069 / SHA eb128e80
+- Deployment: gitlab-pipeline-2546194670 / SHA 2e80bd62
 - Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: AI supervisor stream - DC1/DC2 data-center load comparison grounded fallback, AI supervisor stream - urgent action ranking without hallucinated critical servers, AI supervisor stream - CPU danger-level capacity forecast with non-duplicated target label
-- Skipped Surfaces: dashboard visual Playwright flow, reporter tab, anomaly detection tab
+- Covered Surfaces: Cloud Run AI supervisor stream v2 - high-confidence semantic monitoring frame provider miss, Semantic router v2 - deterministic fail-closed response policy, Monitoring evidence guard - unsupported metric avoids LLM hallucinated numeric answer
+- Skipped Surfaces: dashboard visual Playwright flow, standard five-question conversational QA pack, low-confidence fallback live LLM path
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline v8.12.9 release (2546072069) | [GitLab pipeline v8.12.9 release (2546072069)](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2546072069) | - |
-| general | Vercel Production v8.12.9 | [Vercel Production v8.12.9](https://openmanager-ai.vercel.app/) | - |
-| monitoring | Cloud Run AI Engine health v8.12.9 | [Cloud Run AI Engine health v8.12.9](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
+| general | GitLab pipeline v8.12.10 release (2546194670) | [GitLab pipeline v8.12.10 release (2546194670)](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2546194670) | - |
+| general | Vercel Production v8.12.10 | [Vercel Production v8.12.10](https://openmanager-ai.vercel.app/) | - |
+| monitoring | Cloud Run AI Engine health v8.12.10 | [Cloud Run AI Engine health v8.12.10](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| json-evidence | H-5 fail-closed smoke result | `reports/qa/evidence/qa-20260522-0564-h5-fail-closed-smoke.json` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260522-0562)
-  next: 1) 'DC1과 DC2' location-load-balance 패턴 확장. 2) '조치 시급한 서버' monitoring-snapshot-risk-signal 연결. 3) capacity-forecast에 '위험 수준 도달' 패턴 추가.
+- None
 
 ## Pending Improvements
 
@@ -853,6 +854,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260522-0564 | 2026-05-22T12:13:39.004Z | targeted | yes | yes | v8.12.10 H-5 semantic router fail-closed production QA | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0563 | 2026-05-22T11:14:44.822Z | targeted | no | yes | v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0562 | 2026-05-22T09:30:00.000Z | targeted | yes | yes | v8.12.7 미테스트 7문항 QA (Playwright MCP) - 신규 패턴·트렌드·운영우선순위·DC비교 | 7 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260522-0561 | 2026-05-22T06:30:00.000Z | regression | yes | yes | v8.12.7 routing regression 재검증 3문항 (Playwright MCP) - 영어+오타·도달시점·Redis가이드 | 3 | 0 | 0 | 0 | 0 | 1 |
@@ -872,4 +874,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260521-0547 | 2026-05-20T23:37:20.403Z | targeted | yes | yes | Vercel Playwright QA - v8.11.192 Grounded KRL OTel Criteria | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260520-0546 | 2026-05-20T12:57:49.227Z | targeted | yes | yes | Vercel Playwright QA - v8.11.189 KRL Routing and Stream Sanitizer Closure | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260520-0545 | 2026-05-20T10:33:17.738Z | targeted | yes | yes | Vercel Playwright QA - v8.11.185 Landing AI Text and Dashboard Status | 12 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260520-0544 | 2026-05-20T08:08:43.778Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.184 dashboard and AI state | 12 | 0 | 2 | 0 | 0 | 3 |
