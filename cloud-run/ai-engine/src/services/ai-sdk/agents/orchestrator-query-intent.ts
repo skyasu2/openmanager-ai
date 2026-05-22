@@ -45,7 +45,7 @@ const CAUSAL_SIGNALS =
 
 // Predictive: "will", "forecast", "predict", "future", "going to", trend projection
 const PREDICTIVE_SIGNALS =
-  /예측|전망|언제\s*(쯤|까지|부터)|언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}언제|앞으로|미래|될\s*(것|거|듯)|임계(?:치|값)?.*(?:전|넘|초과|도달)|넘기\s*전|미리\s*알|고갈|포화|will\s+\w+|forecast|predict|going\s+to|future|projection|when\s+will/i;
+  /예측|전망|언제\s*(쯤|까지|부터)|언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|앞으로|미래|될\s*(것|거|듯)|임계(?:치|값)?.*(?:전|넘|초과|도달)|넘기\s*전|미리\s*알|고갈|포화|will\s+\w+|forecast|predict|going\s+to|future|projection|when\s+will|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?/i;
 
 // Advisory: "should", "recommend", "what to do", "advice", "suggest", "how to"
 const ADVISORY_SIGNALS =
@@ -89,7 +89,9 @@ function normalizeOperator(raw: string): QueryOperator {
 
 function parseMetric(query: string): QueryMetric | undefined {
   if (/\bcpu\b|씨피유/i.test(query)) return 'cpu';
-  if (/메모리|\bmem\b|\bmemory\b/i.test(query)) return 'memory';
+  if (/메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/i.test(query)) {
+    return 'memory';
+  }
   if (/디스크|\bdisk\b|스토리지|\bstorage\b/i.test(query)) return 'disk';
   if (/네트워크|\bnetwork\b|\bnet\b/i.test(query)) return 'network';
   if (/상태|\bstatus\b|offline|online|warning|critical|오프라인|온라인|정상|경고|위험/i.test(query)) {

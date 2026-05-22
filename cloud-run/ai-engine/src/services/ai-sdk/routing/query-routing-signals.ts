@@ -9,7 +9,7 @@ export const MONITORING_RUNTIME_ROUTING_SOURCE =
   'query-routing-signals' as const;
 
 export const INFRA_CONTEXT_PATTERN =
-  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|당직|알림|알람|로그|마운트|백엔드|로드\s*밸런서|캐시|스토리지|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|부하|로드|구역|영역|위치|az|zone|haproxy|nginx|mysql|redis|nfs|primary|replica|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load|backend|mount/i;
+  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|당직|알림|알람|로그|마운트|백엔드|로드\s*밸런서|캐시|스토리지|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|부하|로드|구역|영역|위치|az|zone|haproxy|nginx|mysql|redis|nfs|primary|replica|server|servr|sever|memory|memori|memroy|disk|traffic|network|latency|response|load|backend|mount/i;
 
 export const ANALYST_QUERY_PATTERN =
   /이상|비정상|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca|고장|느려|다운|안\s*됨|안됨|장애/i;
@@ -37,7 +37,7 @@ export const ADVISOR_QUERY_PATTERN =
   /해결|방법|명령어|가이드|어떻게|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|how\s+to\s+(fix|resolve|solve)|troubleshoot|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
 
 export const FORCE_KB_QUERY_PATTERN =
-  /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)|ssot|single\s*source\s*of\s*truth|pre-generated|krl|knowledge\s*retrieval|책임\s*경계|플랫폼\s*경계|platform\s*boundary|(?:vercel|bff|cloud\s*run|ai\s*engine).*(?:책임|경계|boundary|bff|cloud\s*run|ai\s*engine)|(?:프로젝트|저장소|repo|repository|코드|문서|내부).*(?:파일|경로|위치|path|문서)|(?:otel|데이터).*(?:파일|경로|위치|path|ssot)/i;
+  /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)|ssot|single\s*source\s*of\s*truth|pre-generated|krl|knowledge\s*retrieval|책임\s*경계|플랫폼\s*경계|platform\s*boundary|(?:vercel|bff|cloud\s*run|ai\s*engine).*(?:책임|경계|boundary|bff|cloud\s*run|ai\s*engine)|(?:프로젝트|저장소|repo|repository|코드|문서|내부).*(?:파일|경로|위치|path|문서)|(?:otel|데이터).*(?:파일|경로|위치|path|ssot)|(?:redis|레디스).{0,32}(?:설정|config|redis\.conf|maxmemory|eviction|영속화).{0,32}(?:가이드|방법|문서|guide|how\s+to|설명)|(?:redis|레디스).{0,32}(?:가이드|문서|설명).{0,32}(?:설정|config|redis\.conf|maxmemory|eviction|영속화)/i;
 
 export const COMPOSITE_QUERY_PATTERNS = [
   /그리고|또한|동시에|함께|및|plus|and|then/i,
@@ -124,7 +124,7 @@ export interface QueryRoutingSignals {
 const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
   prediction:
-    /예측|트렌드|추이|전망|forecast|추세|임계치.*전|넘기\s*전|미리.*알|고갈/i,
+    /예측|트렌드|추이|전망|forecast|추세|임계치.*전|넘기\s*전|미리.*알|고갈|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?/i,
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
   math:
     /(?:계산|연산|수식|중앙값|표준편차|percentile|p\d{2}|증가율|성장률|지수|루트|\d+(?:\.\d+)?\s*(?:[+*\/\^]|\s-\s)\s*\d+)/i,
@@ -133,7 +133,7 @@ const TOOL_ROUTING_PATTERNS = {
   serverGroup:
     /(db|web|cache|lb|api|storage|haproxy|nginx|mysql|redis|nfs|backend|백엔드|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
   logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
-  metrics: /cpu|메모리|디스크|서버|상태|memory|disk|부하|로드|load|az|구역|zone|location|위치|균형|balance/i,
+  metrics: /cpu|메모리|디스크|서버|상태|memory|memori|memroy|disk|부하|로드|load|az|구역|zone|location|위치|균형|balance/i,
 } as const;
 
 const GREETING_PATTERNS = [
@@ -275,7 +275,7 @@ function toRoutingIntent(
 function detectMetric(query: string): QueryRoutingMetric | undefined {
   if (/load\s*1|load1|부하/i.test(query)) return 'load1';
   if (/cpu|씨피유/i.test(query)) return 'cpu';
-  if (/메모리|memory|mem/i.test(query)) return 'memory';
+  if (/메모리|memory|memori|memroy|mem/i.test(query)) return 'memory';
   if (/디스크|disk|storage|스토리지/i.test(query)) return 'disk';
   if (/네트워크|network|traffic|latency|대역폭/i.test(query)) return 'network';
   return undefined;
@@ -321,9 +321,9 @@ function buildModeReasonCodes(
 ): string[] {
   if (isFormattingOnlyReportRequest(query)) return ['mode_single_formatting_only'];
   if (modeHint === 'single') return ['mode_single_default'];
+  if (FORCE_KB_QUERY_PATTERN.test(query)) return ['mode_multi_knowledge'];
   if (REPORTER_QUERY_PATTERN.test(query)) return ['mode_multi_report_request'];
   if (ADVISOR_QUERY_PATTERN.test(query)) return ['mode_multi_advisor'];
-  if (FORCE_KB_QUERY_PATTERN.test(query)) return ['mode_multi_knowledge'];
   return ['mode_multi_default'];
 }
 

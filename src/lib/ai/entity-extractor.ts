@@ -326,11 +326,17 @@ function normalizeTargets(value: unknown): string[] {
     .slice(0, 10);
 }
 
-function queryMentionsKnownServerId(query: string): boolean {
+function inferKnownServerIdFromQuery(
+  query: string
+): KnownEntityServerId | undefined {
   const normalizedQuery = query.toLowerCase();
-  return (KNOWN_ENTITY_SERVER_IDS as readonly string[]).some((serverId) =>
-    normalizedQuery.includes(serverId.toLowerCase())
+  return (KNOWN_ENTITY_SERVER_IDS as readonly KnownEntityServerId[]).find(
+    (serverId) => normalizedQuery.includes(serverId.toLowerCase())
   );
+}
+
+function queryMentionsKnownServerId(query: string): boolean {
+  return inferKnownServerIdFromQuery(query) !== undefined;
 }
 
 function inferGroupTargetFromQuery(query: string): string | undefined {
@@ -338,7 +344,7 @@ function inferGroupTargetFromQuery(query: string): string | undefined {
 }
 
 const CAPACITY_FORECAST_QUERY_PATTERN =
-  /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}언제|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘)|고갈|포화)/i;
+  /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
 
 function inferCapacityMetricForQuery(
   query: string,
@@ -355,7 +361,9 @@ function inferCapacityMetricForQuery(
   }
   if (entities.metric) return entities.metric;
   if (/\bcpu\b|씨피유/i.test(query)) return 'cpu';
-  if (/메모리|\bmem\b|\bmemory\b/i.test(query)) return 'memory';
+  if (/메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/i.test(query)) {
+    return 'memory';
+  }
   if (/디스크|\bdisk\b|스토리지|\bstorage\b|용량/i.test(query)) return 'disk';
   if (/네트워크|\bnetwork\b|\bnet\b/i.test(query)) return 'network';
   return 'all';
@@ -368,13 +376,13 @@ function buildCapacityForecastCorrection(
   if (!CAPACITY_FORECAST_QUERY_PATTERN.test(query)) return null;
 
   const groupTarget = inferGroupTargetFromQuery(query);
-  const hasKnownServer = queryMentionsKnownServerId(query);
-  const targets =
-    hasKnownServer && entities.server
-      ? [entities.server]
-      : groupTarget
-        ? [groupTarget]
-        : (entities.intentFrame?.targets ?? []);
+  const inferredServer = entities.server ?? inferKnownServerIdFromQuery(query);
+  const hasKnownServer = Boolean(inferredServer);
+  const targets = inferredServer
+    ? [inferredServer]
+    : groupTarget
+      ? [groupTarget]
+      : (entities.intentFrame?.targets ?? []);
   const scope: SemanticScope = hasKnownServer
     ? 'server'
     : groupTarget
@@ -390,7 +398,7 @@ function buildCapacityForecastCorrection(
   const { intentFrame: _intentFrame, server: _server, ...rest } = entities;
   return {
     ...rest,
-    ...(hasKnownServer && entities.server ? { server: entities.server } : {}),
+    ...(inferredServer ? { server: inferredServer } : {}),
     intentFrame: {
       domain: 'monitoring',
       intent: 'capacity_forecast',

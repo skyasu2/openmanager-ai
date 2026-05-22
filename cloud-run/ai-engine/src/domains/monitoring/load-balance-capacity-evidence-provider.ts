@@ -48,7 +48,7 @@ interface CapacityRiskRow {
 const LOCATION_LOAD_BALANCE_PATTERN =
   /(?:az\d*|dc\d+-?az\d+|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치).{0,32}(?:부하|로드|load|균형|balance|비교|분산)|(?:부하|로드|load|균형|balance|비교|분산).{0,32}(?:az\d*|dc\d+-?az\d+|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치)/i;
 const CAPACITY_FORECAST_PATTERN =
-  /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}언제|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘)|고갈|포화)/i;
+  /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -261,6 +261,7 @@ function isReportedUsagePercent(
 
 function parseThreshold(message: string): number {
   const targetPatterns = [
+    /(?:when|how\s+soon).{0,40}?(?:exceed|reach|hit|breach).{0,16}?(\d{1,3})\s*%?/i,
     /(?:언제|when).{0,32}?(\d{1,3})\s*%?\s*(?:를|을|이|가)?\s*(?:넘|초과|도달|돌파|exceed|reach|breach)/i,
     /(\d{1,3})\s*%?\s*(?:를|을|이|가)?\s*(?:넘|초과|도달|돌파|exceed|reach|breach)/i,
     /(?:임계(?:치|값)?|threshold).{0,32}?(\d{1,3})\s*%?/i,
@@ -270,7 +271,7 @@ function parseThreshold(message: string): number {
   for (const [index, pattern] of targetPatterns.entries()) {
     const match = message.match(pattern);
     if (!match?.[1]) continue;
-    if (index === 1 && isReportedUsagePercent(message, match)) continue;
+    if (index === 2 && isReportedUsagePercent(message, match)) continue;
     return normalizeThreshold(match[1]);
   }
 
@@ -292,7 +293,9 @@ function parseMetric(message: string, request: DomainEvidenceRequest): PercentMe
   }
 
   if (/\bcpu\b|씨피유/i.test(message)) return 'cpu';
-  if (/메모리|\bmem\b|\bmemory\b/i.test(message)) return 'memory';
+  if (/메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/i.test(message)) {
+    return 'memory';
+  }
   if (/디스크|\bdisk\b|스토리지|\bstorage\b|용량/i.test(message)) {
     return 'disk';
   }
