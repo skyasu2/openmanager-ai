@@ -27,7 +27,10 @@
   - `exit 1` → runner 미가동, runner 복구 후 tag pipeline 재시도/재확인
 - **로컬 CI 표준 경로**: `npm run ci:local:docker` / `npm run ci:local:docker:full` (SSOT 유지)
 - **기본 원칙**: `origin/main`을 canonical branch로 가정하지 말고, push/fetch 전 `git remote -v` 확인 후 기본 대상은 `gitlab`
-- **Push 후 확인 규칙**: `GITLAB_TOKEN`이 환경변수 또는 `.env.local`에 있으면 `git push gitlab ...` 직후 `npm run gitlab:pipeline:head -- --wait`를 실행하고, 최종 보고에 `pipeline id/status/url`를 반드시 포함합니다. `status=not_created`면 해당 SHA에 pipeline이 생성되지 않았음을 명시합니다.
+- **Push 후 확인 규칙**: `GITLAB_TOKEN`이 환경변수 또는 `.env.local`에 있으면 `git push gitlab ...` 직후 아래 규칙으로 pipeline을 확인하고, 최종 보고에 `pipeline id/status/url`를 반드시 포함합니다.
+  - **코드/설정 변경 커밋**: `npm run gitlab:pipeline:head -- --wait` (pipeline 생성 대기, 최대 ~10분)
+  - **docs/reports 전용 커밋** (`test(qa):`, `docs:`, `chore(release):` 등 reports/**만 변경): `npm run gitlab:pipeline:head` (대기 없이 단순 조회, CI 스킵 예상 → `status=not_created note=ci_skip_likely` 정상)
+  - `status=not_created note=ci_skip_likely` 시 → workflow rules에 의해 pipeline이 의도적으로 미생성된 것. 추가 대기 불필요.
 
 ## Quick Commands
 ```bash

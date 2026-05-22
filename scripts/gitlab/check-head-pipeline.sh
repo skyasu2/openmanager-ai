@@ -8,6 +8,7 @@ TARGET_SHA=""
 WAIT_FOR_COMPLETION=0
 POLL_INTERVAL_SECONDS=15
 MAX_ATTEMPTS=40
+MAX_NOT_FOUND_ATTEMPTS=4
 GITLAB_API_BASE_URL="${GITLAB_API_BASE_URL:-https://gitlab.com/api/v4}"
 GITLAB_CURL_CONNECT_TIMEOUT_SECONDS="${GITLAB_CURL_CONNECT_TIMEOUT_SECONDS:-10}"
 GITLAB_CURL_MAX_TIME_SECONDS="${GITLAB_CURL_MAX_TIME_SECONDS:-30}"
@@ -23,7 +24,8 @@ Options:
   --sha <commit>       Commit SHA to query (default: git rev-parse HEAD)
   --wait               Poll until the pipeline reaches a terminal status
   --interval <secs>    Poll interval in seconds when --wait is set (default: 15)
-  --attempts <count>   Max polling attempts when --wait is set (default: 40)
+  --attempts <count>      Max polling attempts when --wait is set (default: 40)
+  --max-not-found <count> Exit with ci_skip_likely after N consecutive not_created (default: 4)
   --help               Show this help
 
 Token lookup order:
@@ -43,6 +45,10 @@ reporting not_created.
 
 When --wait is still waiting for GitLab to create a pipeline for the SHA, the
 script prints not_created progress lines with note=waiting_for_pipeline_creation.
+
+When --max-not-found is set (default: 4), the script exits early with
+note=ci_skip_likely after that many consecutive not_created responses. This
+avoids 10-minute waits for docs/reports-only commits that never trigger CI.
 EOF
 }
 
@@ -95,6 +101,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --attempts)
       MAX_ATTEMPTS="${2:?missing attempt count}"
+      shift 2
+      ;;
+    --max-not-found)
+      MAX_NOT_FOUND_ATTEMPTS="${2:?missing not-found count}"
       shift 2
       ;;
     --help|-h)
@@ -229,12 +239,14 @@ fi
 ENCODED_PROJECT_PATH="$(printf '%s' "$PROJECT_PATH" | sed 's#/#%2F#g')"
 
 attempt=1
+not_found_streak=0
 last_pipeline_line=""
 while true; do
   pipeline_json="$(pipeline_request "$ENCODED_PROJECT_PATH" "$TARGET_SHA" "$GITLAB_TOKEN")"
   pipeline_line="$(printf '%s\n' "$pipeline_json" | pipeline_line_from_json)"
 
   if [[ -n "$pipeline_line" ]]; then
+    not_found_streak=0
     last_pipeline_line="$pipeline_line"
     pipeline_status="$(pipeline_status_from_line "$pipeline_line")"
     printf '%s\n' "$pipeline_line"
@@ -262,6 +274,8 @@ while true; do
       exit 0
     fi
 
+    not_found_streak=$((not_found_streak + 1))
+
     print_pipeline_line \
       "none" \
       "not_created" \
@@ -271,6 +285,19 @@ while true; do
       "none" \
       "waiting_for_pipeline_creation" \
       "attempt=$attempt"
+
+    if (( MAX_NOT_FOUND_ATTEMPTS > 0 && not_found_streak >= MAX_NOT_FOUND_ATTEMPTS )); then
+      print_pipeline_line \
+        "none" \
+        "not_created" \
+        "$TARGET_SHA" \
+        "$CURRENT_REF" \
+        "none" \
+        "none" \
+        "ci_skip_likely" \
+        "not_found_streak=$not_found_streak hint=docs_reports_only_commit_or_no_path_match"
+      exit 0
+    fi
   fi
 
   if (( attempt >= MAX_ATTEMPTS )); then
