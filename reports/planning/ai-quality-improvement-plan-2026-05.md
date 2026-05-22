@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-22 (Task I 추가 — Playwright MCP QA-20260522-0559 신규 발견 3개 개선 항목)
+> Last reviewed: 2026-05-22 (Task I-3 Reporter 기준 명시 local implementation 반영)
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -487,8 +487,8 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - 응답의 수치는 현재 OTel 슬롯 데이터와 일치해야 한다.
 
 **테스트 시나리오**:
-- [ ] `load-balance-capacity-evidence-provider.test` 또는 신규 `server-compare-evidence-provider.test`: "api-was-dc1-01 vs api-was-dc1-02 CPU 비교" → deterministic 경로 라우팅 확인
-- [ ] 응답 수치가 현재 슬롯 OTel 데이터와 일치함
+- [x] `current-metrics-evidence-provider.test`: "api-was-dc1-01 vs api-was-dc1-02 CPU 비교" → deterministic 경로 라우팅 확인
+- [x] 응답 수치가 현재 슬롯 OTel 데이터와 일치함
 
 **우선순위**: P1 (수치 오류 직접 발생, intentFrame trust gap 동일 근본 원인)
 **SDD 게이트**: 진단 → failing test → 구현
@@ -553,9 +553,9 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 **우선순위**: P3 (사용자 혼란 유발이나 비차단)
 **SDD 게이트**: 불필요 (단순 레이블/텍스트 변경 수준)
 
-- [ ] Reporter "주의" 기준 코드 확인 (`reporter-agent.ts` 또는 `analytics-report-utils.ts`)
-- [ ] 보고서 UI 레이블에 기준 명시 또는 대시보드 기준과 통일
-- [ ] Reporter targeted tests 통과
+- [x] Reporter "주의" 기준 코드 확인 (`analytics-report-utils.ts`, `ReportCard.tsx`, `formatters.ts`)
+- [x] 보고서 UI/다운로드 레이블에 임계값 초과 서버와 의존성 포함 영향 범위를 구분 표시
+- [x] Reporter targeted tests 통과
 
 ---
 
@@ -567,13 +567,13 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | B: Redis R-5 완결 | 🟡 사용자 액션 | 접근 권한 대기 | 접근 후 15분 | dashboard/API 가능 시 |
 | C: KRL corpus 보강 | — | No-op | 0분 | coverage FAIL 발생 시 재개 |
 | F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
-| G: AZ 집계·Top-N 추세 grounding | 🔴 High | SDD Approved | 60~90분 | production QA 회귀 수정 |
+| G: AZ 집계·Top-N 추세 grounding | 🔴 High | Implemented (local) | 60~90분 | production QA 회귀 수정 |
 | H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Backlog | 진단 30 + 구현 60분 | 재현 빈도 증가 또는 다음 AI Engine 변경 시 |
 | **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Implemented (local)** | 진단 30 + 구현 60분 | `710c6165d` failing test 선행, local AI Engine type-check/full test PASS |
 | **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Backlog (Draft) | KB seed 30 + 검증 30분 | 다음 KRL seed 변경 시 |
-| **I-3: Reporter 기준 명시** | 🟢 P3 | Backlog (Draft) | 30분 | 사용자 혼란 재현 시 |
+| **I-3: Reporter 기준 명시** | 🟢 P3 | **Implemented (local)** | 30분 | Reporter UI/다운로드 기준 구분 반영 |
 | D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |
-| E: 세션 메모리 확장 | 🟢 중장기 | Draft | 2~3시간 | Backlog |
+| E: 세션 메모리 확장 | 🟢 중장기 | Approved (Backlog) | 2~3시간 | failing test 선행 필요 |
 
 ---
 
@@ -582,7 +582,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - Task A 추가 QA, Task B 실측, Task D 측정은 조건 충족 시만 수행한다.
 - Task C는 현재 no-op으로 닫고, 재개 조건 발생 전까지 DB/seed 변경을 금지한다.
 - Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
-- Task E는 별도 Approved plan 없이는 구현하지 않는다.
+- Task E는 failing test 선행 커밋 없이는 구현하지 않는다.
 - Task G는 failing regression test와 구현 커밋을 분리하고, AI Engine targeted tests/type-check를 통과한다.
 - Task H는 진단 후 근본 원인이 특정되면 failing test → 구현 순서로 진행하고, 재현 조건이 불안정한 동안은 Backlog에 유지한다.
 - Task I-1은 서버 비교 쿼리 수치 오류가 재현되거나 다음 AI Engine 변경 시 failing test → 구현 순서로 진행한다.

@@ -97,7 +97,7 @@ function SystemSummarySection({
 function ReportQuickSummary({ report }: { report: IncidentReport }) {
   const nextAction = report.recommendations?.[0]?.action;
   const impact = report.systemSummary
-    ? `주의 ${report.systemSummary.warningServers}대 · 위험 ${report.systemSummary.criticalServers}대`
+    ? `임계값 초과: 주의 ${report.systemSummary.warningServers}대 · 위험 ${report.systemSummary.criticalServers}대`
     : null;
 
   if (!nextAction && !impact) return null;
@@ -105,7 +105,7 @@ function ReportQuickSummary({ report }: { report: IncidentReport }) {
   return (
     <div className="mb-3 space-y-1 rounded-lg bg-white/60 px-3 py-2 text-xs text-gray-600">
       <div>원인: {report.description}</div>
-      {impact && <div>영향: {impact}</div>}
+      {impact && <div>{impact}</div>}
       {nextAction && <div>다음 조치: {nextAction}</div>}
     </div>
   );
@@ -395,7 +395,8 @@ export default function ReportCard({
         <div className="flex min-w-0 items-center gap-2">
           <Server className="h-4 w-4 text-gray-400" />
           <span className="min-w-0 break-words text-xs text-gray-500">
-            영향받는 서버: {report.affectedServers.join(', ') || '없음'}
+            영향 범위(의존 서버 포함):{' '}
+            {report.affectedServers.join(', ') || '없음'}
           </span>
         </div>
 

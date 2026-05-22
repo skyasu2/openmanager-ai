@@ -81,6 +81,9 @@ describe('auto-report formatters', () => {
 
     expect(markdown).toContain('가용률 97.9%');
     expect(markdown).toContain('경고 지속 30분');
+    expect(markdown).toContain('경고(임계값 초과)');
+    expect(markdown).toContain('임계값 초과 비율');
+    expect(markdown).toContain('영향 범위(의존 서버 포함)');
     expect(markdown).toContain('## 반복 로그 패턴');
     expect(markdown).toContain(
       '| WARNING | 23건 | cache-redis-dc1-01 | redis-server[pid]: memory usage <pct>% of maxmemory limit |'

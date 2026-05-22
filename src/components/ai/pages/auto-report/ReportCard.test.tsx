@@ -73,13 +73,51 @@ describe('ReportCard', () => {
     );
 
     expect(screen.getByText('원인: 메모리 사용량 증가')).toBeInTheDocument();
-    expect(screen.getByText('영향: 주의 1대 · 위험 0대')).toBeInTheDocument();
+    expect(
+      screen.getByText('임계값 초과: 주의 1대 · 위험 0대')
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         '다음 조치: Redis 메모리 사용량과 eviction 정책을 점검하세요'
       )
     ).toBeInTheDocument();
     expect(screen.queryByText('메모리 사용량 증가')).not.toBeInTheDocument();
+  });
+
+  it('separates threshold violations from dependency impact scope', () => {
+    render(
+      <ReportCard
+        report={createReport({
+          affectedServers: [
+            'api-was-dc1-01',
+            'web-nginx-dc1-01',
+            'web-nginx-dc1-02',
+            'web-nginx-dc1-03',
+          ],
+          systemSummary: {
+            totalServers: 18,
+            healthyServers: 17,
+            warningServers: 1,
+            criticalServers: 0,
+          },
+        })}
+        index={0}
+        isSelected={false}
+        downloadMenuId={null}
+        onToggleDetail={vi.fn()}
+        onResolve={vi.fn()}
+        onSetDownloadMenuId={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.getByText('임계값 초과: 주의 1대 · 위험 0대')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        '영향 범위(의존 서버 포함): api-was-dc1-01, web-nginx-dc1-01, web-nginx-dc1-02, web-nginx-dc1-03'
+      )
+    ).toBeInTheDocument();
   });
 
   it('exposes visible markdown copy and download actions', () => {

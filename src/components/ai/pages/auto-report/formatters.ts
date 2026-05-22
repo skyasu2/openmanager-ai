@@ -98,10 +98,10 @@ export function formatReportAsMarkdown(report: IncidentReport): string {
 |------|---------|
 | 전체 서버 | ${report.systemSummary.totalServers}대 |
 | 정상 | ${report.systemSummary.healthyServers}대 |
-| 경고 | ${report.systemSummary.warningServers}대 |
-| 위험 | ${report.systemSummary.criticalServers}대 |
+| 경고(임계값 초과) | ${report.systemSummary.warningServers}대 |
+| 위험(임계값 초과) | ${report.systemSummary.criticalServers}대 |
 
-**영향도**: 전체 인프라의 ${report.systemSummary.totalServers > 0 ? Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100) : 0}%가 영향받음
+**임계값 초과 비율**: 전체 인프라의 ${report.systemSummary.totalServers > 0 ? Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100) : 0}%
 ${buildUptimeImpactLine(report)}
 
 `
@@ -209,8 +209,8 @@ ${report.postmortem.prevention.length > 0 ? report.postmortem.prevention.map((en
 | **심각도** | ${severityKo} |
 | **현재 상태** | ${statusKo} |
 | **발생 시간** | ${timestamp} |
-| **영향 서버** | ${report.affectedServers.length}대 |
-| **영향도** | ${report.systemSummary ? `전체 인프라의 ${report.systemSummary.totalServers > 0 ? Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100) : 0}%` : 'N/A'} |
+| **영향 범위(의존 서버 포함)** | ${report.affectedServers.length}대 |
+| **임계값 초과 비율** | ${report.systemSummary ? `전체 인프라의 ${report.systemSummary.totalServers > 0 ? Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100) : 0}%` : 'N/A'} |
 
 ### 상황 개요
 
@@ -220,7 +220,7 @@ ${report.description}
 
 ## 🖥️ 영향 범위
 
-### 영향받는 서버 (${report.affectedServers.length}대)
+### 영향 범위(의존 서버 포함, ${report.affectedServers.length}대)
 
 ${report.affectedServers.length > 0 ? report.affectedServers.map((s) => `- \`${s}\``).join('\n') : '- 없음'}
 
@@ -333,14 +333,14 @@ ${'='.repeat(titleText.length)}
 심각도: ${report.severity}
 상태: ${report.status}
 생성 시간: ${timestamp}
-영향 서버: ${report.affectedServers.length}대
+영향 범위(의존 서버 포함): ${report.affectedServers.length}대
 
 설명
 ----
 ${report.description}
 
-영향받는 서버
-------------
+영향 범위(의존 서버 포함)
+---------------------
 ${report.affectedServers.length > 0 ? report.affectedServers.join(', ') : '없음'}
 ${systemSummaryTxt}${logPatternsTxt}${timelineTxt}${anomaliesTxt}${buildDetectionSectionText(report)}${patternTxt}
 ${recommendationsTxt}${postmortemTxt}${buildResolutionSectionText(report)}${buildTopologyImpactSectionText(report)}
