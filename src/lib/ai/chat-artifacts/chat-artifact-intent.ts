@@ -160,6 +160,8 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   if (!normalized) return withRuleVersion({ kind: 'none' });
 
   const isNegated = ARTIFACT_NEGATION_PATTERN.test(normalized);
+  const isCapacityForecastRequest =
+    CAPACITY_FORECAST_EXCLUSION_PATTERN.test(normalized);
 
   if (isFormattingOnlyRequest(normalized)) {
     return withRuleVersion({ kind: 'none' });
@@ -256,7 +258,7 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
     }
   }
 
-  if (MONITORING_PATTERN.test(normalized)) {
+  if (MONITORING_PATTERN.test(normalized) && !isCapacityForecastRequest) {
     if (ARTIFACT_GUIDANCE_PRIORITY_PATTERN.test(normalized)) {
       return withRuleVersion({
         kind: 'guidance',

@@ -463,15 +463,15 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 **우선순위**: P2 (non-blocking, QA tracker auto WONT-FIX. 재현 빈도 증가 시 P1 승격)
 **SDD 게이트**: 진단 → failing test 선행 커밋 → 구현 순서 준수
-**현재 판단**: H-1과 H-2 모두 재현 조건이 불안정(동일 쿼리 세션 간 차이). 현재 사용자 경험에 직접 차단 영향은 없으므로 Backlog에 두고 다음 AI Engine 변경 시 함께 처리한다.
+**현재 판단**: H-1은 local implementation 완료. H-2는 재현 조건과 응답 부실 원인을 별도 진단해야 하므로 Backlog에 유지한다.
 
 **예상 소요**: 진단 30분 + 구현/테스트 60분
 
-- [ ] H-1 `isServerMonitoringArtifactRequest` + `buildCapacityForecastAnswer` slope=0 케이스 진단
+- [x] H-1 `isServerMonitoringArtifactRequest` + `buildCapacityForecastAnswer` slope=0 케이스 진단 (`8f12a0b30`)
 - [ ] H-2 `monitoringPeakMetricEvidenceProvider.resolve` answer 내용 진단
-- [ ] failing test 선행 커밋
-- [ ] 구현 커밋
-- [ ] AI Engine targeted tests / type-check 통과
+- [x] H-1 failing test 선행 커밋 (`8f12a0b30`)
+- [x] H-1 구현 완료(local)
+- [x] H-1 AI Engine targeted/full tests, root targeted/test:quick/type-check/lint/test:contract 통과
 
 ---
 

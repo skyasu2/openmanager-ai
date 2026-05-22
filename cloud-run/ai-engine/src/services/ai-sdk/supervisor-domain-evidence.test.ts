@@ -307,6 +307,7 @@ describe('supervisor domain evidence support', () => {
     expect(support?.id).toBe('monitoring-capacity-forecast');
     expect(support?.fallback).toContain('디스크 90% 도달 예측');
     expect(support?.fallback).toContain('db-mysql-dc1-backup');
+    expect(support?.fallback).toContain('대상: 지정 서버 1대');
     expect(support?.metadata).toMatchObject({
       responsePolicy: 'deterministic_answer',
       capabilityId: 'monitoring.capacity_forecast',

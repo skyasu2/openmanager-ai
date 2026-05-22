@@ -69,6 +69,7 @@ describe('monitoring capacity forecast evidence provider', () => {
       responsePolicy: 'deterministic_answer',
     });
     expect(result?.fallback).toContain('디스크 90% 도달 예측');
+    expect(result?.fallback).toContain('대상: 지정 서버 1대');
     expect(result?.fallback).toContain(
       '현재 24h 선형 추세로는 90% 초과 예상 서버가 없습니다.'
     );

@@ -234,13 +234,32 @@ function buildLocationLoadBalanceAnswer(
   ].join('\n');
 }
 
-function parseThreshold(message: string): number {
-  const match = message.match(/(\d{1,3})\s*%/);
-  if (!match) return 90;
-  const threshold = Number(match[1]);
+function normalizeThreshold(value: string): number {
+  const threshold = Number(value);
   return Number.isFinite(threshold)
     ? Math.max(1, Math.min(100, threshold))
     : 90;
+}
+
+function parseThreshold(message: string): number {
+  const targetPatterns = [
+    /(?:언제|when).{0,32}?(\d{1,3})\s*%?\s*(?:를|을|이|가)?\s*(?:넘|초과|도달|돌파|exceed|reach|breach)/i,
+    /(\d{1,3})\s*%?\s*(?:를|을|이|가)?\s*(?:넘|초과|도달|돌파|exceed|reach|breach)/i,
+    /(?:임계(?:치|값)?|threshold).{0,32}?(\d{1,3})\s*%?/i,
+    /(\d{1,3})\s*%?\s*(?:기준|까지|임계(?:치|값)?|threshold)/i,
+  ];
+
+  for (const pattern of targetPatterns) {
+    const match = message.match(pattern);
+    if (match?.[1]) return normalizeThreshold(match[1]);
+  }
+
+  const match = message.match(/(\d{1,3})\s*%/);
+  if (!match) return 90;
+  if (/(?:현재|지금|current|now).{0,12}\d{1,3}\s*%/i.test(message)) {
+    return 90;
+  }
+  return normalizeThreshold(match[1]);
 }
 
 function parseMetric(message: string, request: DomainEvidenceRequest): PercentMetric | null {
@@ -284,11 +303,32 @@ function inferTargetType(targets: string[] | undefined): string | null {
   return null;
 }
 
+function inferMentionedServerTargets(
+  servers: SnapshotServer[],
+  message: string
+): string[] {
+  const normalizedMessage = message.toLowerCase();
+  return servers
+    .filter((server) => {
+      const candidates = [server.id, server.name].filter(
+        (value): value is string => typeof value === 'string' && value.length > 0
+      );
+      return candidates.some((candidate) =>
+        normalizedMessage.includes(candidate.toLowerCase())
+      );
+    })
+    .map((server) => server.id);
+}
+
 function filterCapacityTargets(
   servers: SnapshotServer[],
   request: DomainEvidenceRequest
 ): { servers: SnapshotServer[]; label: string } {
-  const targets = request.intentFrame?.targets ?? [];
+  const frameTargets = request.intentFrame?.targets ?? [];
+  const targets =
+    frameTargets.length > 0
+      ? frameTargets
+      : inferMentionedServerTargets(servers, request.message);
   if (targets.length === 0) return { servers, label: '전체 서버' };
 
   const targetIds = new Set(targets);
