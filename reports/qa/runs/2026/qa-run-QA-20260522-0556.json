@@ -1,0 +1,178 @@
+{
+  "runId": "QA-20260522-0556",
+  "recordedAt": "2026-05-22T00:09:55.910Z",
+  "recordedAtKst": "2026-05-22 09:09:55 KST",
+  "runTitle": "Production AI QA - v8.12.4 Cache Scope and Disk Trend",
+  "owner": "codex",
+  "source": "manual-production-stream-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3fT6D3HjyvNkoAhu43FN8bGaUu5H",
+    "deploymentUrl": "https://openmanager-purafi4ho-skyasus-projects.vercel.app",
+    "commitSha": "4c79450c620fc39eefc009c80e7bc8281521d772"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/api/version",
+    "Cloud Run /health",
+    "AI sidebar stream: cache memory current status",
+    "AI sidebar stream: whole-fleet disk trend"
+  ],
+  "skippedSurfaces": [
+    "full dashboard visual regression",
+    "Playwright browser journey"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "캐시 서버 메모리 현황",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "/tmp/prod-ai-qa-v8122.mjs production stream smoke",
+      "latencyMs": 1434
+    },
+    {
+      "surface": "전체 서버 디스크 추이",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "/tmp/prod-ai-qa-v8122.mjs production stream smoke",
+      "latencyMs": 238
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "캐시 서버 메모리 현황",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 2,
+      "classification": "unknown",
+      "driftReasonCodes": [],
+      "source": "assistant plannerShadow metadata"
+    },
+    {
+      "surface": "전체 서버 디스크 추이",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 1,
+      "classification": "unknown",
+      "driftReasonCodes": [],
+      "source": "assistant plannerShadow metadata"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Q3 cache group scope and Q4 disk trend regressions were validated against production stream responses.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab release pipeline, Vercel production smoke, Cloud Run deploy, and service health all passed.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-22T09:08:29+09:00",
+      "summary": "Current billing period checked after production QA; effective 14.0014 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "manual-production-stream-smoke",
+    "reason": "This targeted release-facing run used live production stream JSON and deployment links rather than Playwright artifacts.",
+    "recordedAt": "2026-05-22T00:09:55.910Z",
+    "recordedBy": "codex"
+  },
+  "completedImprovements": [
+    {
+      "id": "ai-cache-server-group-scope",
+      "title": "Cache server group scope preserved for memory current-status queries",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production response: 캐시 서버 3대 메모리 현황 with cache-redis-dc1-01/02/03",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-whole-fleet-disk-trend",
+      "title": "Whole-fleet disk trend uses 18 servers and disk metrics",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production response: 전체 서버 디스크 추이, 대상 18대, 현재 디스크 상위",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "planner-shadow-local-decision-drift",
+      "title": "Planner shadow still reports local_decision_missing for deterministic monitoring evidence",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production stream plannerShadow drift reason local_decision_missing remains metadata-only",
+      "note": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run service",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.12.4 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2544921351"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-purafi4ho-skyasus-projects.vercel.app/"
+    }
+  ]
+}

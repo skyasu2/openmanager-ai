@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-22 06:21:01 KST
+> Generated at: 2026-05-22 09:11:49 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 553 |
-| Total Runs (Counted) | 441 |
+| Total Recorded Runs | 554 |
+| Total Runs (Counted) | 442 |
 | Non-counted Runs | 112 |
-| Total Checks | 4038 |
-| Passed | 3882 |
+| Total Checks | 4050 |
+| Passed | 3894 |
 | Failed | 145 |
-| Completed Items | 630 |
+| Completed Items | 632 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 35 |
+| Wont-Fix Items | 36 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260522-0555 (2026-05-21T21:20:59.747Z) |
-| Latest Recorded Run | QA-20260522-0555 (2026-05-21T21:20:59.747Z) |
+| Last Counted Run | QA-20260522-0556 (2026-05-22T00:09:55.910Z) |
+| Latest Recorded Run | QA-20260522-0556 (2026-05-22T00:09:55.910Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,69 +34,67 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260522-0555 (2026-05-21T21:20:59.747Z)
+Latest run: QA-20260522-0556 (2026-05-22T00:09:55.910Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.12.1 production release smoke; effective 14.0014 USD, billed 0.0000 USD, chargeCount 12180. |
+| vercel | cli | checked | normal | Current billing period checked after production QA; effective 14.0014 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-20T21:20:59.747Z -> 2026-05-21T21:20:59.747Z (24h)
+- Window: 2026-05-21T00:09:55.910Z -> 2026-05-22T00:09:55.910Z (24h)
 - Runs with observations: 3 recorded / 3 counted
-- Samples: 9
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | streaming | 1 | 11000ms | 11000ms | 2000ms | 2000ms | 9000ms | 9000ms | QA-20260521-0550 |
-| Supervisor direct knowledge path | grounded llm synthesis | 1 | 10695ms | 10695ms | 4201ms | 4201ms | 4201ms | 4201ms | QA-20260521-0547 |
 | Reporter Agent | zai | 1 | 7021ms | 7021ms | 1200ms | 1200ms | 5821ms | 5821ms | QA-20260521-0550 |
 | Cloud Run AI | cloud-run-ai-engine | 5 | 1555ms | 6120ms | - | - | - | - | QA-20260521-0549 |
+| Metrics Query Agent | cloud-run-deterministic | 2 | 836ms | 1434ms | - | - | - | - | QA-20260522-0556 |
 | Advisor Agent | deterministic | 1 | 26ms | 26ms | 26ms | 26ms | 0ms | 0ms | QA-20260521-0550 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-20T21:20:59.747Z -> 2026-05-21T21:20:59.747Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
+- Window: 2026-05-21T00:09:55.910Z -> 2026-05-22T00:09:55.910Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 2
 - Drift rate: 0%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| - | - | 0 | 0% | - | - | - |
+| /api/ai/supervisor/stream/v2 | deterministic | 2 | 0% | 2ms | 2ms | QA-20260522-0556 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_FrMjb4v1eLLxXCYTAToTunPivZWf / SHA 3c4df7a6
-- Coverage Packs: core-routes-smoke, ai-core
-- Covered Surfaces: GitLab tag pipeline v8.12.1 completed successfully with frontend deploy, AI Engine deploy, frontend post-deploy smoke, and AI Engine post-deploy smoke, Vercel production deployment dpl_FrMjb4v1eLLxXCYTAToTunPivZWf was Ready for alias https://openmanager-ai.vercel.app, Production GET / returned the OpenManager AI landing page during release script smoke, Production GET /login returned the login page during release script smoke, Production /api/version returned version 8.12.1 and commit 3c4df7a68c7b9931f32ba838faa027ebc75fb625, Production /api/health returned healthy with database, cache, and AI connected, Cloud Run /health returned status ok and version 8.12.1, Cloud Run revision ai-engine-00503-sq8 is serving 100% traffic, Vercel usage check passed with effective 14.0014 USD, billed 0.0000 USD, chargeCount 12180
-- Skipped Surfaces: Broad browser matrix was not rerun because this was a release deployment smoke focused on version propagation, health, and CI smoke closure, Production conversational AI QA was not rerun in this release-smoke record to avoid repeated live LLM usage; AI grounding behavior was covered by local contract/unit gates before deploy, Vision real-image QA was not in scope because this release did not change Vision routing or provider behavior
+- Deployment: dpl_3fT6D3HjyvNkoAhu43FN8bGaUu5H / SHA 4c79450c
+- Coverage Packs: ai-core
+- Covered Surfaces: /api/version, Cloud Run /health, AI sidebar stream: cache memory current status, AI sidebar stream: whole-fleet disk trend
+- Skipped Surfaces: full dashboard visual regression, Playwright browser journey
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run service URL | [Cloud Run service URL](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| general | GitLab tag pipeline v8.12.1 | [GitLab tag pipeline v8.12.1](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2544691552) | - |
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-21z0a7nlc-skyasus-projects.vercel.app/) | - |
+| general | Cloud Run service | [Cloud Run service](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
+| general | GitLab v8.12.4 release pipeline | [GitLab v8.12.4 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2544921351) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-purafi4ho-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.12.1 release smoke evidence | `reports/qa/evidence/qa-20260522-v8121-release-smoke.md` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -112,7 +110,7 @@ Latest run: QA-20260522-0555 (2026-05-21T21:20:59.747Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 24
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 25
 
 ### Platform Constraint
 
@@ -201,6 +199,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] action-needed-transient-500-observation: One transient 500 on standard question 4 before immediate retry success (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] planner-shadow-local-decision-drift: Planner shadow still reports local_decision_missing for deterministic monitoring evidence (seen 1회, last QA-20260522-0556)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] vision-ui-upload-e2e: Authenticated frontend image-upload UI E2E path (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 
@@ -245,6 +245,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-vercel-production-core-pass: AI Assistant production browser smoke passes (completed 1회, last QA-20260428-0357)
 - ai-assistant-web-server-detail-v811146: Standard conversational Q2 should answer web-server-01 detail instead of whole-fleet summary (completed 1회, last QA-20260514-0499)
 - ai-assistant-whole-fleet-load1-empty-summary-v811132: Whole-fleet load1 spike phrasing should route to metric_peak evidence instead of empty-summary fallback (completed 1회, last QA-20260512-0488)
+- ai-cache-server-group-scope: Cache server group scope preserved for memory current-status queries (completed 1회, last QA-20260522-0556)
 - ai-cerebras-gpt-oss-default-v811193: Cerebras production default model switched to gpt-oss-120b before llama3.1-8b deprecation (completed 1회, last QA-20260521-0548)
 - ai-cerebras-single-attempt-check: Cerebras Qwen executes once per UI question without fallback (completed 1회, last QA-20260430-0376)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
@@ -400,6 +401,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-topology-variant-function-call-failure: Advisor Agent latency/format quality stabilization (Task 1-3) (completed 2회, last QA-20260415-0283)
 - ai-topology-variant-schema-validation-failure: searchKnowledgeBase boolean-string tool-call validation failure removed (completed 1회, last QA-20260413-0281)
 - ai-web-search-intent-and-answer-quality-v81197: Web search query returns current sourced answer without clarification/fallback failure (completed 1회, last QA-20260505-0408)
+- ai-whole-fleet-disk-trend: Whole-fleet disk trend uses 18 servers and disk metrics (completed 1회, last QA-20260522-0556)
 - ai-workspace-analysis-basis-hydration-drift: Fullscreen AI workspace should preserve tool-grounded analysis basis metadata (completed 3회, last QA-20260416-0293)
 - ai-workspace-dom-test-runner-hang: AIWorkspace DOM test runner hang 정리 (completed 1회, last QA-20260318-0124)
 - ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
@@ -841,6 +843,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260522-0556 | 2026-05-22T00:09:55.910Z | targeted | yes | yes | Production AI QA - v8.12.4 Cache Scope and Disk Trend | 12 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260522-0555 | 2026-05-21T21:20:59.747Z | targeted | yes | yes | Vercel Release Smoke - v8.12.1 AI Grounding Release | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0554 | 2026-05-21T13:59:34.965Z | targeted | no | yes | Local Playwright QA - AI Workspace Phase 5 Layout | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0553 | 2026-05-21T09:57:07.056Z | targeted | yes | yes | Vercel Release Smoke - v8.12.0 Dashboard UX Release | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -860,4 +863,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260519-0539 | 2026-05-19T11:41:05.468Z | targeted | no | no | Manual Cloud Run QA - Z.AI GLM Vision fallback live smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0538 | 2026-05-19T11:08:35.867Z | targeted | yes | yes | Production Vision Attachment Routing QA - v8.11.184 | 14 | 2 | 0 | 0 | 7 | 1 |
 | QA-20260519-0537 | 2026-05-19T07:40:00.196Z | targeted | yes | yes | v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure | 7 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260519-0536 | 2026-05-19T06:23:47.328Z | targeted | no | no | Weekly follow-up hardening local contract closure | 10 | 5 | 1 | 0 | 0 | 1 |
