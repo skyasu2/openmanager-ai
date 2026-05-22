@@ -20,6 +20,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+const SEMANTIC_EVIDENCE_CONFIDENCE_THRESHOLD = 0.8;
+
 function readString(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim().length > 0
     ? value.trim()
@@ -38,6 +40,11 @@ function readFiniteNumber(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isFinite(value)
     ? value
     : undefined;
+}
+
+function normalizeSemanticConfidence(value: number | undefined): number {
+  if (value === undefined || !Number.isFinite(value)) return 0;
+  return value > 1 ? value / 100 : value;
 }
 
 function isDomainIntentScope(value: string): value is DomainIntentScope {
@@ -263,6 +270,7 @@ function logSemanticProviderMiss(params: {
   context: DomainEvidenceRequest;
   domain: AssistantDomain;
   capability?: DomainCapability;
+  failClosed?: boolean;
 }) {
   const baseTrace = normalizeSemanticQueryTrace(
     params.context.metadata?.semanticQueryTrace
@@ -281,8 +289,121 @@ function logSemanticProviderMiss(params: {
         intentFrame?.capabilityId,
       reasonCodes: ['semantic_frame_provider_miss'],
     },
-    '[DomainEvidence] semantic frame provider miss; continuing with general stream path'
+    params.failClosed === true
+      ? '[DomainEvidence] semantic frame provider miss; fail-closed deterministic response'
+      : '[DomainEvidence] semantic frame provider miss; continuing with general stream path'
   );
+}
+
+function capabilityRequiresEvidence(capability: DomainCapability | undefined): boolean {
+  return capability?.metadata?.evidenceRequired === true;
+}
+
+function shouldFailClosedOnEvidenceMiss(params: {
+  intentFrame?: DomainIntentFrame;
+  capability?: DomainCapability;
+}): boolean {
+  if (!params.intentFrame || !capabilityRequiresEvidence(params.capability)) {
+    return false;
+  }
+
+  return (
+    normalizeSemanticConfidence(params.intentFrame.confidence) >=
+    SEMANTIC_EVIDENCE_CONFIDENCE_THRESHOLD
+  );
+}
+
+function buildFailClosedProviderId(domain: AssistantDomain): string {
+  return domain.id === 'openmanager-monitoring'
+    ? 'monitoring-evidence-unavailable'
+    : `${domain.id}-evidence-unavailable`;
+}
+
+function buildFailClosedAnswer(params: {
+  context: DomainEvidenceRequest;
+  capability: DomainCapability;
+}): string {
+  const requiredSlots = params.capability.requiredSlots ?? [];
+  const optionalSlots = params.capability.optionalSlots ?? [];
+  const slotHints = [...requiredSlots, ...optionalSlots]
+    .filter((slot, index, slots) => slots.indexOf(slot) === index)
+    .join(', ');
+
+  return [
+    '⚠️ **모니터링 근거를 찾지 못했습니다**',
+    `• 요청 의도: ${params.capability.id}`,
+    '• 현재 OTel snapshot에서 이 질의를 처리할 결정적 evidence provider를 찾지 못했습니다.',
+    '• 실제 근거 없이 임의 수치, 순위, 예측값을 만들지 않겠습니다.',
+    slotHints
+      ? `• 다시 요청할 때 필요한 정보를 구체화하세요: ${slotHints}.`
+      : '• 다시 요청할 때 서버 ID, 지표, 시간 범위, 임계치 중 필요한 정보를 구체화하세요.',
+  ].join('\n');
+}
+
+function buildFailClosedSemanticQueryTrace(params: {
+  context: DomainEvidenceRequest;
+  domain: AssistantDomain;
+  capability: DomainCapability;
+  providerId: string;
+}): SemanticQueryTrace {
+  const baseTrace = normalizeSemanticQueryTrace(
+    params.context.metadata?.semanticQueryTrace
+  );
+  const reasonCodes = new Set(baseTrace?.reasonCodes ?? []);
+  reasonCodes.add('semantic_frame_provider_miss');
+  reasonCodes.add('semantic_frame_fail_closed');
+
+  return {
+    originalQuery: baseTrace?.originalQuery ?? params.context.message,
+    selectedDomain:
+      baseTrace?.selectedDomain ??
+      params.context.intentFrame?.domainId ??
+      params.domain.id,
+    selectedCapability:
+      baseTrace?.selectedCapability ??
+      params.context.intentFrame?.capabilityId ??
+      params.capability.id,
+    selectedEvidenceProvider: params.providerId,
+    evidenceAvailable: false,
+    clarificationRequired: true,
+    reasonCodes: Array.from(reasonCodes),
+  };
+}
+
+function buildFailClosedEvidence(params: {
+  context: DomainEvidenceRequest;
+  domain: AssistantDomain;
+  capability: DomainCapability;
+}): DomainEvidenceResult {
+  const providerId = buildFailClosedProviderId(params.domain);
+  const fallback = buildFailClosedAnswer({
+    context: params.context,
+    capability: params.capability,
+  });
+  const semanticQueryTrace = buildFailClosedSemanticQueryTrace({
+    context: params.context,
+    domain: params.domain,
+    capability: params.capability,
+    providerId,
+  });
+
+  return {
+    id: providerId,
+    prompt: [
+      '[결정적 monitoring 근거 부족]',
+      '아래 답변을 그대로 반환하고, 수치/순위/예측값을 추가로 만들지 마세요.',
+      '',
+      fallback,
+    ].join('\n'),
+    fallback,
+    metadata: {
+      responsePolicy: 'deterministic_fail_closed',
+      capabilityId:
+        params.context.intentFrame?.capabilityId ?? params.capability.id,
+      intent: params.context.intentFrame?.intent,
+      semanticQueryTrace,
+    },
+  };
 }
 
 export async function resolveDomainEvidenceSupport(params: {
@@ -330,6 +451,23 @@ export async function resolveDomainEvidenceSupport(params: {
     logSemanticEvidenceValidated({ context, semanticQueryTrace });
 
     return attachSemanticQueryTrace(evidence, semanticQueryTrace);
+  }
+
+  if (
+    capability &&
+    shouldFailClosedOnEvidenceMiss({ intentFrame, capability })
+  ) {
+    logSemanticProviderMiss({
+      context,
+      domain: params.domain,
+      capability,
+      failClosed: true,
+    });
+    return buildFailClosedEvidence({
+      context,
+      domain: params.domain,
+      capability,
+    });
   }
 
   logSemanticProviderMiss({

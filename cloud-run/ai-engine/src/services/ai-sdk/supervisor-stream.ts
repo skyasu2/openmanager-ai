@@ -58,6 +58,7 @@ function shouldUseDeterministicDomainEvidenceAnswer(
   return [
     'deterministic_answer',
     'deterministic_read_only_advice',
+    'deterministic_fail_closed',
   ].includes(String(domainEvidence?.metadata?.responsePolicy ?? ''));
 }
 

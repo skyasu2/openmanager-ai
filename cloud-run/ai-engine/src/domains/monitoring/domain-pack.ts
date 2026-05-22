@@ -253,6 +253,7 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       intents: ['metric_peak'],
       requiredSlots: ['metric', 'timeWindow', 'aggregation'],
       optionalSlots: ['topN', 'targets', 'scope'],
+      metadata: { evidenceRequired: true },
     },
     {
       id: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
@@ -261,6 +262,7 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       intents: ['metric_current'],
       requiredSlots: ['metric'],
       optionalSlots: ['targets', 'scope'],
+      metadata: { evidenceRequired: true },
     },
     {
       id: MONITORING_METRIC_RANKING_CAPABILITY_ID,
@@ -269,6 +271,7 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       intents: ['metric_ranking', 'metric_current'],
       requiredSlots: ['metric', 'aggregation'],
       optionalSlots: ['topN', 'rankOrder', 'scope'],
+      metadata: { evidenceRequired: true },
     },
     {
       id: MONITORING_METRIC_TREND_CAPABILITY_ID,
@@ -277,6 +280,7 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       intents: ['metric_trend'],
       requiredSlots: ['metric'],
       optionalSlots: ['targets', 'scope', 'timeWindow'],
+      metadata: { evidenceRequired: true },
     },
     {
       id: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
@@ -285,6 +289,7 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       intents: ['server_health'],
       requiredSlots: ['aggregation'],
       optionalSlots: ['targets', 'scope'],
+      metadata: { evidenceRequired: true },
     },
     {
       id: MONITORING_ANOMALY_DETECTION_CAPABILITY_ID,
@@ -309,6 +314,7 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       intents: ['capacity_forecast'],
       requiredSlots: ['metric'],
       optionalSlots: ['targets', 'scope', 'timeWindow'],
+      metadata: { evidenceRequired: true },
     },
     {
       id: MONITORING_LOCATION_LOAD_BALANCE_CAPABILITY_ID,
@@ -317,6 +323,7 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       intents: ['location_load_balance'],
       requiredSlots: ['scope'],
       optionalSlots: ['metric', 'targets'],
+      metadata: { evidenceRequired: true },
     },
     {
       id: MONITORING_FAILURE_RISK_CAPABILITY_ID,

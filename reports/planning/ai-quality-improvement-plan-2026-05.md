@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. 잔여는 Task F 최종 관찰과 H-5 semantic-router-v2/fail-closed 구조 개선이다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. H-5 semantic-router-v2/fail-closed는 SDD/failing spec 선행 후 local 구현·검증 완료했다. 잔여는 Task F 최종 관찰과 H-5 배포/production QA 여부 판단이다.
 
 ---
 
@@ -548,7 +548,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 ### H-5: Semantic router v2 / monitoring evidence fail-closed 후속
 
-**Status**: SDD Approved (2026-05-22). 신규 runtime contract 변경이므로 failing regression test 선행 커밋 후 구현한다.
+**Status**: Implemented locally, 검증 완료. 커밋/배포/production QA 대기.
 
 **근거**: H-3/H-4에서 확인된 공통 원인은 개별 문장 표현이 아니라 `intentFrame trust gap`이다. LLM 또는 local semantic frame이 의도를 맞혀도 최종 provider 선택이 raw regex miss에 좌우되면 OTel 없는 일반 LLM 응답으로 빠져 수치 hallucination이 발생한다.
 
@@ -593,11 +593,11 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 #### 테스트 시나리오
 
-- [ ] high-confidence `monitoring.metric_current` frame이 unsupported metric을 담으면 `monitoring-evidence-unavailable` fail-closed evidence를 반환한다.
-- [ ] fail-closed evidence는 `responsePolicy='deterministic_fail_closed'`, `evidenceAvailable=false`, `clarificationRequired=true` trace를 포함한다.
-- [ ] low-confidence evidence-required frame은 fail-closed하지 않고 기존 fallback path를 유지한다.
-- [ ] evidence-required가 아닌 `monitoring.anomaly_detection` frame은 provider miss만으로 fail-closed하지 않는다.
-- [ ] 기존 H-4 seed(DC comparison/action-needed/danger-level forecast)는 계속 deterministic evidence provider로 resolve된다.
+- [x] high-confidence `monitoring.metric_current` frame이 unsupported metric을 담으면 `monitoring-evidence-unavailable` fail-closed evidence를 반환한다.
+- [x] fail-closed evidence는 `responsePolicy='deterministic_fail_closed'`, `evidenceAvailable=false`, `clarificationRequired=true` trace를 포함한다.
+- [x] low-confidence evidence-required frame은 fail-closed하지 않고 기존 fallback path를 유지한다.
+- [x] evidence-required가 아닌 `monitoring.anomaly_detection` frame은 provider miss만으로 fail-closed하지 않는다.
+- [x] 기존 H-4 seed(DC comparison/action-needed/danger-level forecast)는 계속 deterministic evidence provider로 resolve된다.
 
 **수용 기준**:
 - H-5 targeted tests PASS
@@ -607,9 +607,10 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 **다음 단계**:
 - [x] SDD 계약 작성: intentFrame → capability routing 우선순위, confidence 기준, fail-closed 응답 계약
-- [ ] failing regression seed corpus 구성 및 `test(spec):` 커밋
-- [ ] 구현: capability metadata + supervisor fail-closed response policy
-- [ ] targeted/full validation 후 배포 필요성 판단
+- [x] failing regression seed corpus 구성 및 `test(spec):` 커밋 (`6efd2a474`)
+- [x] 구현: capability metadata + supervisor fail-closed response policy
+- [x] targeted/full validation 완료: H-5 targeted 31/31 PASS, domain wiring/stream/domain-pack targeted 58/58 PASS, AI Engine full 1414/1414 PASS, root `test:contract` PASS, docs checks PASS
+- [ ] 배포 및 production QA 여부 판단
 
 ---
 

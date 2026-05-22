@@ -132,6 +132,34 @@ export async function* streamSingleAgent(
       query: queryText,
       domain: runtimeHost.domain,
     }));
+  if (
+    domainEvidence &&
+    String(domainEvidence?.metadata?.responsePolicy ?? '') ===
+    'deterministic_fail_closed'
+  ) {
+    yield { type: 'text_delta', data: domainEvidence.fallback };
+    yield buildSingleAgentDoneEvent({
+      request,
+      modeDecision,
+      routeDecision,
+      assistantPlan,
+      runtimeMetadata,
+      degradedFallbackContext,
+      provider: 'deterministic',
+      modelId: domainEvidence.id,
+      traceId: request.traceId,
+      stepsExecuted: 0,
+      durationMs: Date.now() - startTime,
+      toolsCalled: [domainEvidence.id],
+      totalTokensUsed: 0,
+      attempt: 0,
+      capturedError: null,
+      ragSources: [],
+      evidenceCards: [],
+      semanticQueryTrace: domainEvidence.metadata?.semanticQueryTrace,
+    });
+    return;
+  }
   const systemPrompt = runtimeHost.createSystemPrompt({ deviceType: request.deviceType });
   const modelMessages = buildSupervisorStreamMessages(
     request,
