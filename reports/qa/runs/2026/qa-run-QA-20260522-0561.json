@@ -1,0 +1,139 @@
+{
+  "runId": "QA-20260522-0561",
+  "recordedAt": "2026-05-22T06:30:00.000Z",
+  "recordedAtKst": "2026-05-22 15:30:00 KST",
+  "runTitle": "v8.12.7 routing regression 재검증 3문항 (Playwright MCP) - 영어+오타·도달시점·Redis가이드",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "commitSha": "fd4d4a21b"
+  },
+  "scope": "regression",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI sidebar chat - 영어+오타 capacity forecast (memori when will it exceed 90%)",
+    "AI sidebar chat - 한국어 '도달하는 시점 예측' capacity forecast",
+    "AI sidebar chat - Redis 설정 가이드 KRL grounded 경로"
+  ],
+  "skippedSurfaces": [
+    "dashboard UI",
+    "reporter agent",
+    "AZ load balance"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 2,
+    "partial": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar - 'memori when will it exceed 90%'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 33,
+      "classification": "matched",
+      "evidenceProvider": "monitoring-capacity-forecast",
+      "verdict": "PASS",
+      "note": "memori→memory 보정, 영어 패턴 매칭, OTel '6.7시간 후' 정확 제공",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - '100%에 도달하는 시점 예측'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 26,
+      "classification": "matched",
+      "evidenceProvider": "monitoring-capacity-forecast",
+      "verdict": "PASS",
+      "note": "CAPACITY_FORECAST_EXCLUSION_PATTERN 확장으로 정상 라우팅. OTel '40시간 후' 제공",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - Redis 설정 가이드",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 7000,
+      "classification": "partial",
+      "evidenceProvider": "서버 실시간 데이터 분석 (KRL grounded 미진입)",
+      "verdict": "PARTIAL",
+      "note": "KRL llm-synthesized 미진입이나 OTel 실제 Redis 88% 데이터 포함. 응답 속도 25초→7초 (3.5배 개선)",
+      "driftReasonCodes": [
+        "KRL grounded path 미진입"
+      ],
+      "source": "playwright-mcp"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "v8.12.7 regression 3문항: R1 영어+오타(✅33ms monitoring-capacity-forecast, OTel '6.7시간 후')·R2 '도달시점'(✅26ms, OTel '40시간 후') 2 PASS. R3 Redis가이드(⚠️) KRL grounded 미진입이나 OTel 88% 포함+속도 3.5배 개선. capacity-forecast 패턴 확장(v8.12.7) 효과 검증 완료.",
+      "nextAction": "Redis 가이드 FORCE_KB_QUERY_PATTERN 경로 추가 점검. KRL grounded llm-synthesized 진입 조건 확인."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "playwright-mcp",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-22T15:30:00+09:00",
+      "summary": "v8.12.7 배포 후 regression 3문항 재검증. R1·R2 완전 수정 확인, R3 부분 개선(KRL미진입 잔존, 속도 3.5배 향상).",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "r1-eng-typo-fixed.png",
+      "path": ".playwright-mcp/screenshots/r1-eng-typo-fixed.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "r2-korean-forecast-fixed.png",
+      "path": ".playwright-mcp/screenshots/r2-korean-forecast-fixed.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "r3-krl-fixed.png",
+      "path": ".playwright-mcp/screenshots/r3-krl-fixed.png"
+    }
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.7 validate (2545685200)",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545685200"
+    },
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.7 release (2545712930)",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545712930"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Production v8.12.7",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": []
+}

@@ -1,0 +1,137 @@
+{
+  "runId": "QA-20260522-0560",
+  "recordedAt": "2026-05-22T05:00:00.000Z",
+  "recordedAtKst": "2026-05-22 14:00:00 KST",
+  "runTitle": "v8.12.5 미평가 5문항 QA (Playwright MCP) - AZ비교·capacity-forecast·KRL·Advisor",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "commitSha": "1b0b329b6bdde0df1b0761e1fdd4748104f9f3c5"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI sidebar chat - AZ 가용 영역별 부하 균형 비교 (DC1-AZ1/AZ2/AZ3)",
+    "AI sidebar chat - capacity forecast '100%에 도달하는 시점' 표현",
+    "AI sidebar chat - capacity forecast '언제 90% 넘을까' 정확 표현",
+    "AI sidebar chat - Redis 설정 가이드 KRL grounded 경로 검증",
+    "AI sidebar chat - Redis 즉시 완화 명령어 deterministic 경로"
+  ],
+  "skippedSurfaces": [
+    "dashboard UI",
+    "reporter",
+    "server list"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 3,
+    "partial": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar - DC1-AZ1/AZ2/AZ3 부하 균형 비교",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 96,
+      "classification": "matched",
+      "evidenceProvider": "monitoring-location-load-balance",
+      "verdict": "PASS",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - '100%에 도달하는 시점 예측'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 0,
+      "classification": "drift",
+      "evidenceProvider": "단일 서버 이상감지 분석 (routing miss)",
+      "verdict": "PARTIAL",
+      "driftReasonCodes": [
+        "CAPACITY_FORECAST_EXCLUSION_PATTERN 표현 다양성 부족"
+      ],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - '언제 90% 넘을까'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 9,
+      "classification": "matched",
+      "evidenceProvider": "monitoring-capacity-forecast",
+      "verdict": "PASS",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - Redis 해결 설정 가이드",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 25000,
+      "classification": "drift",
+      "evidenceProvider": "웹 자료 확인 (FORCE_KB_QUERY_PATTERN 미매칭)",
+      "verdict": "PARTIAL",
+      "driftReasonCodes": [
+        "KRL grounded llm-synthesized 경로 미진입",
+        "25초 느린 응답"
+      ],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - Redis 즉시 완화 명령어",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 6,
+      "classification": "matched",
+      "evidenceProvider": "조치 명령어 정리",
+      "verdict": "PASS",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "5문항: AZ비교(✅96ms monitoring-location-load-balance)·언제90%(✅9ms monitoring-capacity-forecast)·Redis명령어(✅6ms) 3 PASS. '도달 시점 예측'(⚠️이상감지 오라우팅)·Redis가이드(⚠️KRL미진입/25초) 2 PARTIAL. CAPACITY_FORECAST_EXCLUSION_PATTERN 표현 한계 확인.",
+      "nextAction": "CAPACITY_FORECAST_EXCLUSION_PATTERN '도달하는 시점 예측' 등 다양한 표현 추가. FORCE_KB_QUERY_PATTERN Redis 가이드 확장."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "playwright-mcp",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-22T14:00:00+09:00",
+      "summary": "Playwright MCP Vercel production 5문항 2차 평가. AZ evidence provider 신규 동작 확인. capacity-forecast 표현 한계 및 KRL grounded 미진입 신규 발견.",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ],
+  "artifacts": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.5",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545042096"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": []
+}

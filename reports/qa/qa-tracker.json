@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-22T04:13:27.604Z"
+    "updatedAt": "2026-05-22T06:30:00.000Z"
   },
   "sequence": {
-    "nextRunNumber": 560
+    "nextRunNumber": 562
   },
   "summary": {
-    "totalRecordedRuns": 557,
-    "totalRuns": 443,
-    "excludedRuns": 114,
-    "totalChecks": 4055,
-    "totalPassed": 3897,
+    "totalRecordedRuns": 559,
+    "totalRuns": 444,
+    "excludedRuns": 115,
+    "totalChecks": 4058,
+    "totalPassed": 3899,
     "totalFailed": 145,
     "completionRate": 100,
     "completedItems": 632,
@@ -21,10 +21,10 @@
     "wontFixItems": 41,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260522-0558",
-    "lastRecordedAt": "2026-05-22T02:32:10.298Z",
-    "latestRecordedRunId": "QA-20260522-0559",
-    "latestRecordedAt": "2026-05-22T04:13:27.604Z"
+    "lastRunId": "QA-20260522-0561",
+    "lastRecordedAt": "2026-05-22T06:30:00.000Z",
+    "latestRecordedRunId": "QA-20260522-0561",
+    "latestRecordedAt": "2026-05-22T06:30:00.000Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -64439,6 +64439,286 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 3
+    },
+    {
+      "runId": "QA-20260522-0560",
+      "recordedAt": "2026-05-22T05:00:00.000Z",
+      "recordedAtKst": "2026-05-22 14:00:00 KST",
+      "title": "v8.12.5 미평가 5문항 QA (Playwright MCP) - AZ비교·capacity-forecast·KRL·Advisor",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260522-0560.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "commitSha": "1b0b329b6bdde0df1b0761e1fdd4748104f9f3c5"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI sidebar chat - AZ 가용 영역별 부하 균형 비교 (DC1-AZ1/AZ2/AZ3)",
+        "AI sidebar chat - capacity forecast '100%에 도달하는 시점' 표현",
+        "AI sidebar chat - capacity forecast '언제 90% 넘을까' 정확 표현",
+        "AI sidebar chat - Redis 설정 가이드 KRL grounded 경로 검증",
+        "AI sidebar chat - Redis 즉시 완화 명령어 deterministic 경로"
+      ],
+      "skippedSurfaces": [
+        "dashboard UI",
+        "reporter",
+        "server list"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 3,
+        "partial": 2,
+        "failed": 0
+      },
+      "plannerShadowObservations": [
+        {
+          "surface": "AI sidebar - DC1-AZ1/AZ2/AZ3 부하 균형 비교",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 96,
+          "classification": "matched",
+          "evidenceProvider": "monitoring-location-load-balance",
+          "verdict": "PASS",
+          "driftReasonCodes": [],
+          "source": "playwright-mcp"
+        },
+        {
+          "surface": "AI sidebar - '100%에 도달하는 시점 예측'",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "single-agent",
+          "latencyMs": 0,
+          "classification": "drift",
+          "evidenceProvider": "단일 서버 이상감지 분석 (routing miss)",
+          "verdict": "PARTIAL",
+          "driftReasonCodes": [
+            "CAPACITY_FORECAST_EXCLUSION_PATTERN 표현 다양성 부족"
+          ],
+          "source": "playwright-mcp"
+        },
+        {
+          "surface": "AI sidebar - '언제 90% 넘을까'",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 9,
+          "classification": "matched",
+          "evidenceProvider": "monitoring-capacity-forecast",
+          "verdict": "PASS",
+          "driftReasonCodes": [],
+          "source": "playwright-mcp"
+        },
+        {
+          "surface": "AI sidebar - Redis 해결 설정 가이드",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "single-agent",
+          "latencyMs": 25000,
+          "classification": "drift",
+          "evidenceProvider": "웹 자료 확인 (FORCE_KB_QUERY_PATTERN 미매칭)",
+          "verdict": "PARTIAL",
+          "driftReasonCodes": [
+            "KRL grounded llm-synthesized 경로 미진입",
+            "25초 느린 응답"
+          ],
+          "source": "playwright-mcp"
+        },
+        {
+          "surface": "AI sidebar - Redis 즉시 완화 명령어",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 6,
+          "classification": "matched",
+          "evidenceProvider": "조치 명령어 정리",
+          "verdict": "PASS",
+          "driftReasonCodes": [],
+          "source": "playwright-mcp"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "5문항: AZ비교(✅96ms monitoring-location-load-balance)·언제90%(✅9ms monitoring-capacity-forecast)·Redis명령어(✅6ms) 3 PASS. '도달 시점 예측'(⚠️이상감지 오라우팅)·Redis가이드(⚠️KRL미진입/25초) 2 PARTIAL. CAPACITY_FORECAST_EXCLUSION_PATTERN 표현 한계 확인.",
+          "nextAction": "CAPACITY_FORECAST_EXCLUSION_PATTERN '도달하는 시점 예측' 등 다양한 표현 추가. FORCE_KB_QUERY_PATTERN Redis 가이드 확장."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "playwright-mcp",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-22T14:00:00+09:00",
+          "summary": "Playwright MCP Vercel production 5문항 2차 평가. AZ evidence provider 신규 동작 확인. capacity-forecast 표현 한계 및 KRL grounded 미진입 신규 발견.",
+          "url": "https://openmanager-ai.vercel.app"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.5",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545042096"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260522-0561",
+      "recordedAt": "2026-05-22T06:30:00.000Z",
+      "recordedAtKst": "2026-05-22 15:30:00 KST",
+      "title": "v8.12.7 routing regression 재검증 3문항 (Playwright MCP) - 영어+오타·도달시점·Redis가이드",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260522-0561.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "commitSha": "fd4d4a21b"
+      },
+      "scope": "regression",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI sidebar chat - 영어+오타 capacity forecast (memori when will it exceed 90%)",
+        "AI sidebar chat - 한국어 '도달하는 시점 예측' capacity forecast",
+        "AI sidebar chat - Redis 설정 가이드 KRL grounded 경로"
+      ],
+      "skippedSurfaces": [
+        "dashboard UI",
+        "reporter agent",
+        "AZ load balance"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 2,
+        "partial": 1,
+        "failed": 0
+      },
+      "plannerShadowObservations": [
+        {
+          "surface": "AI sidebar - 'memori when will it exceed 90%'",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 33,
+          "classification": "matched",
+          "evidenceProvider": "monitoring-capacity-forecast",
+          "verdict": "PASS",
+          "note": "memori→memory 보정, 영어 패턴 매칭, OTel '6.7시간 후' 정확 제공",
+          "driftReasonCodes": [],
+          "source": "playwright-mcp"
+        },
+        {
+          "surface": "AI sidebar - '100%에 도달하는 시점 예측'",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 26,
+          "classification": "matched",
+          "evidenceProvider": "monitoring-capacity-forecast",
+          "verdict": "PASS",
+          "note": "CAPACITY_FORECAST_EXCLUSION_PATTERN 확장으로 정상 라우팅. OTel '40시간 후' 제공",
+          "driftReasonCodes": [],
+          "source": "playwright-mcp"
+        },
+        {
+          "surface": "AI sidebar - Redis 설정 가이드",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "single-agent",
+          "latencyMs": 7000,
+          "classification": "partial",
+          "evidenceProvider": "서버 실시간 데이터 분석 (KRL grounded 미진입)",
+          "verdict": "PARTIAL",
+          "note": "KRL llm-synthesized 미진입이나 OTel 실제 Redis 88% 데이터 포함. 응답 속도 25초→7초 (3.5배 개선)",
+          "driftReasonCodes": [
+            "KRL grounded path 미진입"
+          ],
+          "source": "playwright-mcp"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "v8.12.7 regression 3문항: R1 영어+오타(✅33ms monitoring-capacity-forecast, OTel '6.7시간 후')·R2 '도달시점'(✅26ms, OTel '40시간 후') 2 PASS. R3 Redis가이드(⚠️) KRL grounded 미진입이나 OTel 88% 포함+속도 3.5배 개선. capacity-forecast 패턴 확장(v8.12.7) 효과 검증 완료.",
+          "nextAction": "Redis 가이드 FORCE_KB_QUERY_PATTERN 경로 추가 점검. KRL grounded llm-synthesized 진입 조건 확인."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "playwright-mcp",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-22T15:30:00+09:00",
+          "summary": "v8.12.7 배포 후 regression 3문항 재검증. R1·R2 완전 수정 확인, R3 부분 개선(KRL미진입 잔존, 속도 3.5배 향상).",
+          "url": "https://openmanager-ai.vercel.app"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "r1-eng-typo-fixed.png",
+          "path": ".playwright-mcp/screenshots/r1-eng-typo-fixed.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "r2-korean-forecast-fixed.png",
+          "path": ".playwright-mcp/screenshots/r2-korean-forecast-fixed.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "r3-krl-fixed.png",
+          "path": ".playwright-mcp/screenshots/r3-krl-fixed.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.7 validate (2545685200)",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545685200"
+        },
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.7 release (2545712930)",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545712930"
+        },
+        {
+          "type": "general",
+          "label": "Vercel Production v8.12.7",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -64447,17 +64727,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 281,
-      "appropriateCount": 240,
+      "seenCount": 283,
+      "appropriateCount": 242,
       "partialCount": 41,
       "inappropriateCount": 0,
-      "improvementNeededCount": 53,
-      "lastRunId": "QA-20260522-0559",
-      "lastSeenAt": "2026-05-22T04:13:27.604Z",
+      "improvementNeededCount": 55,
+      "lastRunId": "QA-20260522-0561",
+      "lastSeenAt": "2026-05-22T06:30:00.000Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "6문항 평가: DISK 순위·오탈자·Reporter·이상감지 4개 PASS, 서버 1:1 비교(수치 오류)·원인 분석(generic) 2개 PARTIAL. 서버 비교 쿼리 deterministic 경로 미확립이 가장 중요한 신규 발견.",
-      "lastNextAction": "서버 1:1 비교 쿼리용 evidence provider 또는 supervisor 라우팅 규칙 추가 검토. 서버 도메인 특성(backup=binlog/dump) KB 시드 보강."
+      "lastRationale": "v8.12.7 regression 3문항: R1 영어+오타(✅33ms monitoring-capacity-forecast)·R2 '도달시점'(✅26ms) 2 PASS. R3 Redis가이드(⚠️) KRL grounded 미진입이나 OTel 88% 포함+속도 3.5배 개선. capacity-forecast 패턴 확장(v8.12.7) 효과 검증 완료.",
+      "lastNextAction": "Redis 가이드 FORCE_KB_QUERY_PATTERN 경로 추가 점검. KRL grounded llm-synthesized 진입 조건 확인."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
