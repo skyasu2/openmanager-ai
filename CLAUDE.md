@@ -25,7 +25,8 @@
 - **배포 전 runner 상태 확인**: `bash scripts/ci/runner-health-check.sh`
   - `exit 0` → runner 정상, CI 경유 태그 push로 배포
   - `exit 1` → runner 미가동, runner 복구 후 tag pipeline 재시도/재확인
-- **로컬 CI 표준 경로**: `npm run ci:local:docker` / `npm run ci:local:docker:full` (SSOT 유지)
+- **로컬 CI 표준 경로**: `npm run ci:local` (GitLab shell executor 와 동일 환경 직접 실행, SSOT)
+  - `ci:local:docker`는 Docker 컨테이너 실행으로 **실제 CI(shell executor) 와 다른 환경**이므로 기본 경로에서 제외. 컨테이너 격리 검증이 명시적으로 필요한 경우만 사용.
 - **기본 원칙**: `origin/main`을 canonical branch로 가정하지 말고, push/fetch 전 `git remote -v` 확인 후 기본 대상은 `gitlab`
 - **Push 후 확인 규칙**: `GITLAB_TOKEN`이 환경변수 또는 `.env.local`에 있으면 `git push gitlab ...` 직후 아래 규칙으로 pipeline을 확인하고, 최종 보고에 `pipeline id/status/url`를 반드시 포함합니다.
   - **코드/설정 변경 커밋**: `npm run gitlab:pipeline:head -- --wait` (pipeline 생성 대기, 최대 ~10분)
@@ -36,8 +37,9 @@
 ```bash
 npm run dev:network         # 개발 서버 (0.0.0.0:3000)
 npm run validate:all        # TypeScript + Lint + Test
-npm run ci:local:docker     # 외부 CI 최소화 로컬 Docker 검증
-npm run ci:local:docker:full # AI Engine preflight 포함 로컬 Docker 검증
+npm run ci:local            # GitLab validate job 동등 (shell executor, 표준)
+npm run ci:local:quick      # AI Engine·계약 테스트 제외 빠른 로컬 검증
+npm run ci:local:docker     # [비권장] Docker 컨테이너 격리 검증 (실제 CI 환경 아님)
 npm run gitlab:pipeline:head -- --wait # pushed HEAD 기준 GitLab pipeline 확인
 npm run test:quick          # 최소 테스트
 npm run type-check          # TypeScript 검사

@@ -6,9 +6,11 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 REMOTE_NAME="gitlab"
 TARGET_SHA=""
 WAIT_FOR_COMPLETION=0
-POLL_INTERVAL_SECONDS=15
+POLL_INTERVAL_SECONDS=0  # 0 = use exponential backoff (5s base, 2x, cap 60s)
 MAX_ATTEMPTS=40
 MAX_NOT_FOUND_ATTEMPTS=4
+BACKOFF_BASE_SECONDS=5
+BACKOFF_CAP_SECONDS=60
 GITLAB_API_BASE_URL="${GITLAB_API_BASE_URL:-https://gitlab.com/api/v4}"
 GITLAB_CURL_CONNECT_TIMEOUT_SECONDS="${GITLAB_CURL_CONNECT_TIMEOUT_SECONDS:-10}"
 GITLAB_CURL_MAX_TIME_SECONDS="${GITLAB_CURL_MAX_TIME_SECONDS:-30}"
@@ -23,7 +25,7 @@ Options:
   --remote <name>      Git remote to inspect (default: gitlab)
   --sha <commit>       Commit SHA to query (default: git rev-parse HEAD)
   --wait               Poll until the pipeline reaches a terminal status
-  --interval <secs>    Poll interval in seconds when --wait is set (default: 15)
+  --interval <secs>    Fixed poll interval (default: 0 = exponential backoff 5s→10s→20s→60s)
   --attempts <count>      Max polling attempts when --wait is set (default: 40)
   --max-not-found <count> Exit with ci_skip_likely after N consecutive not_created (default: 4)
   --help               Show this help
@@ -202,6 +204,20 @@ pipeline_status_from_line() {
   printf '%s\n' "$line" | sed -n 's/.* status=\([^ ]*\).*/\1/p'
 }
 
+compute_sleep_seconds() {
+  local attempt=$1
+  if [[ "$POLL_INTERVAL_SECONDS" -gt 0 ]]; then
+    printf '%s\n' "$POLL_INTERVAL_SECONDS"
+    return
+  fi
+  local exp=$(( BACKOFF_BASE_SECONDS * (1 << (attempt - 1)) ))
+  if (( exp > BACKOFF_CAP_SECONDS )); then
+    printf '%s\n' "$BACKOFF_CAP_SECONDS"
+  else
+    printf '%s\n' "$exp"
+  fi
+}
+
 is_running_status() {
   case "$1" in
     created|pending|preparing|running|waiting_for_resource|scheduled)
@@ -320,6 +336,7 @@ while true; do
     exit 0
   fi
 
+  sleep_secs="$(compute_sleep_seconds "$attempt")"
   attempt=$((attempt + 1))
-  sleep "$POLL_INTERVAL_SECONDS"
+  sleep "$sleep_secs"
 done

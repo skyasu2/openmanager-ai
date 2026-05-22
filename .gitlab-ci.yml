@@ -126,6 +126,9 @@
 # job-level rules:changes 와 달리 파이프라인 자체 생성을 차단 → UI 노이즈 제거
 # duplicate pipeline 방지:
 #   - MR이 열려 있으면 branch push pipeline 대신 MR pipeline만 유지
+# CI skip 2-layer 전략:
+#   Layer 1 (commit-type): docs/reports 전용 커밋 타입 → 파이프라인 미생성 (명시적, 빠름)
+#   Layer 2 (path-filter): 변경 경로가 pipeline_relevant_changes 에 없으면 미생성 (정확, 보완)
 workflow:
   rules:
     # semver 태그 push → deploy 파이프라인 (validate + deploy + smoke)
@@ -133,11 +136,18 @@ workflow:
     # 운영 관측/수동 점검 파이프라인은 변경 감지와 무관하게 생성 허용
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
+    # Layer 1: docs/reports/QA 전용 커밋 타입 → 파이프라인 생성 차단
+    # test(qa): QA 산출물 기록 / docs: 문서 전용 / docs(scope): 스코프 포함 문서
+    # 주의: 해당 커밋이 src/** 를 건드리면 아래 path-filter가 실행되어야 하므로
+    #        tag/schedule/web 규칙 다음에 위치시켜 우선순위 충돌 방지
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^(test\(qa\)|docs(\([^)]+\))?):[[:space:]]/'
+      when: never
     # MR / branch push → validate 전용 파이프라인
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: *pipeline_relevant_changes
     - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"'
       when: never
+    # Layer 2: path-filter (최종 보루 — 변경 경로에 관련 파일 없으면 미생성)
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes: *pipeline_relevant_changes
     - if: '$CI_COMMIT_BRANCH'
