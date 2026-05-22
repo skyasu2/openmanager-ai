@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-22
+> Last reviewed: 2026-05-22 (Task I 추가 — Playwright MCP QA-20260522-0559 신규 발견 3개 개선 항목)
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -373,6 +373,192 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 ---
 
+## Task H: Evidence Provider 라우팅·응답 품질 개선 (v8.12.5 QA 발견)
+
+**근거**: v8.12.5 신규 5문항 QA(`QA-20260522-0558`)에서 두 가지 evidence provider 품질 갭이 확인됨.
+기존 AI 품질 계획과 주제 중복 → 신규 plan 파일 미생성, 이 Task로 추가.
+
+### H-1: monitoringCapacityForecastEvidenceProvider 불일치 라우팅
+
+**증상**: `QA-20260522-0558 Q1` — "db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘"
+→ 이상감지/추세 분석 artifact 카드 출력 (응답 근거: "일반 대화 응답", 도구: "이상감지/추세 분석")
+
+**예상 경로**: `monitoring-capacity-forecast` evidence provider → deterministic 용량 예측 답변
+**실제 경로**: Vercel streaming path → server-monitoring-analysis 이상감지 artifact
+
+**관찰된 불일치**:
+- `QA-20260522-0557 Q2`: 동일 쿼리 → artifact 우회 확인됨 (0558 이전 세션에서 CAPACITY_FORECAST_EXCLUSION_PATTERN 정상 동작 확인)
+- `QA-20260522-0558 Q1`: 동일 쿼리 → 이상감지 카드 재출현
+- 두 세션의 차이: 0557은 기존 대화 세션 계속, 0558은 새 대화 시작
+
+**원인 후보**:
+
+| 번호 | 가설 | 진단 방법 |
+|------|------|-----------|
+| H1-A | `CAPACITY_FORECAST_EXCLUSION_PATTERN` regex가 chat 전처리 이후 메시지에서 불일치 | `chat-artifact-intent.ts` unit test에 동일 쿼리 추가해 확인 |
+| H1-B | `isServerMonitoringArtifactRequest`가 EXCLUSION 후에도 다른 조건으로 true 반환 | `isServerMonitoringArtifactRequest` 전체 분기 추적 |
+| H1-C | `monitoringCapacityForecastEvidenceProvider.canHandle`이 실제로 매칭되나 `resolve`가 null 반환 → LLM fallback → anomaly tool 선택 | evidence provider `resolve` 로직 확인. `buildCapacityForecastAnswer` → slope≈0 → 빈 결과 가능성 |
+| H1-D | 새 대화 시작 시 다른 Vercel Edge 인스턴스가 이전 코드 버전을 서빙 | `/api/version` 응답 확인 |
+
+**CAPACITY_FORECAST_PATTERN 검증** (`load-balance-capacity-evidence-provider.ts`):
+```
+/(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|...)/i
+```
+"언제 90%를 넘을까" → `언제.{0,24}90\s*%.{0,24}넘` → 이론상 매칭 ✓
+→ 매칭됨에도 provider가 불안정한 경우 H1-C(resolve null)가 주요 원인 가능성
+
+**계약**:
+- 동일 세션/신규 세션 모두 "언제 N%를 넘을까/용량 예측" 쿼리가 `monitoring-capacity-forecast` evidence provider를 일관되게 트리거해야 한다.
+- `buildCapacityForecastAnswer` slope≈0 케이스도 "현재 추세상 N시간 내 도달 없음"을 명시한 답변을 반환해야 한다 (null 반환 금지).
+
+**테스트 시나리오**:
+- [ ] `chat-artifact-intent.test`: "언제 90%를 넘을까? 용량 예측해줘" → `isServerMonitoringArtifactRequest=false`
+- [ ] `load-balance-capacity-evidence-provider.test`: CAPACITY_FORECAST_PATTERN이 "언제 90%를 넘을까", "용량 예측해줘", "임계치 도달 시점" 쿼리를 모두 매칭한다
+- [ ] `load-balance-capacity-evidence-provider.test`: slope≈0 서버에서 `buildCapacityForecastAnswer`가 null이 아닌 "현재 추세상 90% 도달 없음" 답변을 반환한다
+
+---
+
+### H-2: monitoringPeakMetricEvidenceProvider 응답 내용 부실
+
+**증상**: `QA-20260522-0558 Q3` — "지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대는 언제야?"
+→ "모니터링 피크 지표 근거" 확인 (provider 트리거됨), 그러나 응답은 섹션 제목만 반환, 기간 표시 "최근 1시간"
+
+**예상 응답**: 피크 시각, 상위 서버명, CPU 수치, 24h 내 타임슬롯 정보
+**실제 응답**: "📊 CPU 사용률 상위 3대", "💡 서버별 확인 항목", "🖥️ 관련 서버: db-mysql-dc1-primary" — 섹션 제목만 존재
+
+**원인 후보**:
+
+| 번호 | 가설 | 진단 방법 |
+|------|------|-----------|
+| H2-A | `parseMonitoringPeakMetricMessage`가 windowHours를 1h로 파싱하고 있음 (`HOURS_PATTERN`이 "24시간"을 24가 아닌 다른 값으로 파싱) | `parseWindowHours("지난 24시간 동안")` 직접 테스트 |
+| H2-B | evidence provider의 `prompt` 문자열이 LLM에게 빈 placeholder만 제공하고 실제 데이터 없음 | `monitoringPeakMetricEvidenceProvider.resolve` 반환값 확인 |
+| H2-C | history 데이터가 충분하지 않아 peak 계산 결과가 빈 상태 | `getTimeRangeData(24)` 반환 슬롯 수 확인 |
+| H2-D | LLM이 evidence prompt의 데이터를 응답에 포함하지 않고 자체 생성 | evidence `fallback` 필드를 직접 사용하도록 policy 강화 |
+
+**`HOURS_PATTERN` 분석** (`peak-metric-intent.ts`):
+```
+/(\d{1,2})\s*(?:시간|h|hr|hour)s?/i
+```
+"지난 24시간 동안" → "24시간" → `\d{1,2}=24`? NO — `\d{1,2}`는 최대 2자리, 24는 2자리 ✓ → `windowHours=24`
+→ windowHours 파싱은 정상. H2-B 또는 H2-C가 주요 원인 가능성
+
+**계약**:
+- "지난 24시간" 쿼리에서 `parseWindowHours` 결과가 24여야 한다.
+- `monitoringPeakMetricEvidenceProvider.resolve`가 실제 피크 서버명, 최대 수치, 타임슬롯 정보를 포함한 `answer`를 반환해야 한다.
+- `answer`가 섹션 제목만 포함하는 경우 테스트로 차단해야 한다.
+
+**테스트 시나리오**:
+- [ ] `peak-metric-intent.test`: "지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대" → `parseWindowHours=24`, metric=`load` 또는 `cpu`
+- [ ] `peak-metric-evidence-provider.test`: 24h 히스토리 슬롯이 있을 때 `resolve` 결과의 `answer`에 피크 서버명과 수치가 포함된다
+- [ ] `peak-metric-evidence-provider.test`: `answer`가 섹션 제목만("CPU 사용률 상위 3대") 반환하는 경우 테스트 실패
+
+---
+
+**우선순위**: P2 (non-blocking, QA tracker auto WONT-FIX. 재현 빈도 증가 시 P1 승격)
+**SDD 게이트**: 진단 → failing test 선행 커밋 → 구현 순서 준수
+**현재 판단**: H-1과 H-2 모두 재현 조건이 불안정(동일 쿼리 세션 간 차이). 현재 사용자 경험에 직접 차단 영향은 없으므로 Backlog에 두고 다음 AI Engine 변경 시 함께 처리한다.
+
+**예상 소요**: 진단 30분 + 구현/테스트 60분
+
+- [ ] H-1 `isServerMonitoringArtifactRequest` + `buildCapacityForecastAnswer` slope=0 케이스 진단
+- [ ] H-2 `monitoringPeakMetricEvidenceProvider.resolve` answer 내용 진단
+- [ ] failing test 선행 커밋
+- [ ] 구현 커밋
+- [ ] AI Engine targeted tests / type-check 통과
+
+---
+
+## Task I: 신규 개선 항목 (QA-20260522-0559 발견)
+
+**근거**: 2026-05-22 Playwright MCP 6문항 신규 평가에서 이전 QA에서 다루지 않은 영역을 테스트하여 3개 품질 갭 도출.
+
+### I-1: 서버 1:1 비교 쿼리 deterministic 경로 미확립 (P1)
+
+**증상**: "api-was-dc1-01 과 api-was-dc1-02 의 CPU 사용량을 비교해줘"
+→ `일반 대화 응답` 경로 라우팅, api-was-dc1-01 **92%** 보고(실제 대시보드 **82%**, 오탈자 Q3에서 `monitoring-server-health` 경로로 82% 정확 보고 — 두 경로 대조로 일반 대화 경로 수치 오류 확인됨).
+
+**현황**:
+- AZ 비교(`DC1-AZ1 vs DC1-AZ2`)는 `monitoringLocationLoadBalanceEvidenceProvider`가 처리.
+- 개별 서버 1:1 비교("A vs B")는 대응 evidence provider 없음.
+- `일반 대화 경로`는 LLM이 수치를 합성하여 오류 발생 가능.
+
+**계약**:
+- "서버A 와 서버B CPU/MEM/DISK 비교" 패턴을 `monitoring-metric-ranking` 또는 신규 `monitoringServerCompareEvidenceProvider`가 처리해야 한다.
+- 응답의 수치는 현재 OTel 슬롯 데이터와 일치해야 한다.
+
+**테스트 시나리오**:
+- [ ] `load-balance-capacity-evidence-provider.test` 또는 신규 `server-compare-evidence-provider.test`: "api-was-dc1-01 vs api-was-dc1-02 CPU 비교" → deterministic 경로 라우팅 확인
+- [ ] 응답 수치가 현재 슬롯 OTel 데이터와 일치함
+
+**우선순위**: P1 (수치 오류 직접 발생, intentFrame trust gap 동일 근본 원인)
+**SDD 게이트**: 진단 → failing test → 구현
+
+- [ ] "A vs B" 쿼리 분류 로직 현황 분석
+- [ ] failing test 선행 커밋
+- [ ] `monitoringLocationLoadBalanceEvidenceProvider` 확장 또는 신규 provider 추가
+- [ ] supervisor-prompt에 서버 비교 few-shot 예시 추가
+- [ ] AI Engine targeted tests / type-check 통과
+
+---
+
+### I-2: 심층 원인 분석 시 서버 도메인 특성 미주입 (P2)
+
+**증상**: "db-mysql-dc1-backup 서버의 디스크 사용량이 70%로 높은데 원인이 뭔지 분석해줘"
+→ 5개 도구 복합 실행, 상관관계(MEM 0.61, NET 0.57) 산출은 양호. 그러나 원인 추정이 "DISK 관련 문제" 수준의 generic 답변. Q1에서 단순 순위 쿼리가 오히려 "백업 산출물 보존 기간, 증분 백업 크기, 오래된 dump 정리 확인"처럼 구체적 권고를 포함한 것과 대조.
+
+**현황**:
+- `monitoring-metric-ranking` evidence provider의 서버별 확인 항목은 서버 역할 기반 힌트를 포함.
+- 심층 분석 경로(`이상 징후 확인 + 서버 메트릭 조회 외 3`)에는 서버 역할/유형별 도메인 특성이 주입되지 않음.
+
+**계약**:
+- backup 서버 DISK 분석 시 binlog/WAL/dump/incremental backup 축적을 원인 후보로 제시해야 한다.
+- redis 서버 MEM 분석 시 eviction policy/maxmemory/key TTL 미설정을 원인 후보로 제시해야 한다.
+- 서버 유형은 serverId prefix(db-mysql, cache-redis, storage-nfs 등)로 식별 가능.
+
+**구현 방향**: KB seed 보강(서버 역할별 장애 원인 패턴) 또는 supervisor-prompt에 역할별 분석 힌트 추가.
+
+**테스트 시나리오**:
+- [ ] `supervisor-prompt.test` 또는 `knowledge-retrieval.test`: backup 서버 디스크 분석 쿼리 → binlog/dump 관련 근거 포함 확인
+- [ ] KRL smoke: "db 서버 디스크 증가 원인" 쿼리의 top result에 backup/binlog 관련 항목 포함
+
+**우선순위**: P2
+**SDD 게이트**: KB seed 변경이므로 `rag:analyze` governance 확인 후 진행
+
+- [ ] 서버 역할별 원인 분석 KRL seed 항목 설계
+- [ ] `supabase:rag:smoke` 갱신
+- [ ] 또는 supervisor-prompt에 역할 힌트 섹션 추가
+- [ ] `rag:analyze` governance PASS 확인
+
+---
+
+### I-3: Reporter 영향 서버 기준 대시보드와 불일치 (P3)
+
+**증상**: 자동 보고서 생성 결과 "영향받는 서버: api-was-dc1-01, web-nginx-dc1-01, web-nginx-dc1-02, web-nginx-dc1-03" (4대 주의)
+→ 대시보드는 경고 1대(api-was-dc1-01만), web-nginx 3대는 경고 상태 아님.
+
+**현황**:
+- Reporter agent가 "경고" 서버 외 "영향 반경"(downstream dependencies)을 포함하여 4대를 보고.
+- 대시보드는 임계값 초과 서버만 "경고"로 표시.
+- 사용자 입장에서 두 숫자가 달라 혼란 가능.
+
+**판단 옵션**:
+1. Reporter가 영향 서버 개념임을 UI에 명시 (낮은 비용)
+2. Reporter 영향 서버 기준을 대시보드 경고 임계값과 통일
+3. 현 상태 유지 + 사용자가 보고서 레이블로 이해
+
+**계약**:
+- 보고서에 "경고 1대 (임계값 초과)" vs "영향 서버 4대 (의존 서버 포함)"를 구분 표시, 또는
+- Reporter가 사용하는 기준("주의" = 어떤 조건인지)을 보고서 본문에 명시.
+
+**우선순위**: P3 (사용자 혼란 유발이나 비차단)
+**SDD 게이트**: 불필요 (단순 레이블/텍스트 변경 수준)
+
+- [ ] Reporter "주의" 기준 코드 확인 (`reporter-agent.ts` 또는 `analytics-report-utils.ts`)
+- [ ] 보고서 UI 레이블에 기준 명시 또는 대시보드 기준과 통일
+- [ ] Reporter targeted tests 통과
+
+---
+
 ## 실행 우선순위
 
 | Task | 우선순위 | 상태 | 예상 소요 | 마감 기준 |
@@ -382,6 +568,10 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | C: KRL corpus 보강 | — | No-op | 0분 | coverage FAIL 발생 시 재개 |
 | F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
 | G: AZ 집계·Top-N 추세 grounding | 🔴 High | SDD Approved | 60~90분 | production QA 회귀 수정 |
+| H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Backlog | 진단 30 + 구현 60분 | 재현 빈도 증가 또는 다음 AI Engine 변경 시 |
+| **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Backlog (Draft)** | 진단 30 + 구현 60분 | 수치 오류 재현 시 즉시, 또는 다음 AI Engine 변경 시 |
+| **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Backlog (Draft) | KB seed 30 + 검증 30분 | 다음 KRL seed 변경 시 |
+| **I-3: Reporter 기준 명시** | 🟢 P3 | Backlog (Draft) | 30분 | 사용자 혼란 재현 시 |
 | D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |
 | E: 세션 메모리 확장 | 🟢 중장기 | Draft | 2~3시간 | Backlog |
 
@@ -394,6 +584,10 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 - Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
 - Task E는 별도 Approved plan 없이는 구현하지 않는다.
 - Task G는 failing regression test와 구현 커밋을 분리하고, AI Engine targeted tests/type-check를 통과한다.
+- Task H는 진단 후 근본 원인이 특정되면 failing test → 구현 순서로 진행하고, 재현 조건이 불안정한 동안은 Backlog에 유지한다.
+- Task I-1은 서버 비교 쿼리 수치 오류가 재현되거나 다음 AI Engine 변경 시 failing test → 구현 순서로 진행한다.
+- Task I-2는 다음 KRL seed 변경 시 함께 처리하고, rag:analyze governance PASS를 검증한다.
+- Task I-3은 레이블/텍스트 변경 수준으로 SDD 게이트 불필요, 단독 착수 가능.
 
 ---
 

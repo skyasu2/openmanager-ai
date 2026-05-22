@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-22 11:32:10 KST
+> Generated at: 2026-05-22 13:13:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 556 |
+| Total Recorded Runs | 557 |
 | Total Runs (Counted) | 443 |
-| Non-counted Runs | 113 |
+| Non-counted Runs | 114 |
 | Total Checks | 4055 |
 | Passed | 3897 |
 | Failed | 145 |
 | Completed Items | 632 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 38 |
+| Wont-Fix Items | 41 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260522-0558 (2026-05-22T02:32:10.298Z) |
-| Latest Recorded Run | QA-20260522-0558 (2026-05-22T02:32:10.298Z) |
+| Latest Recorded Run | QA-20260522-0559 (2026-05-22T04:13:27.604Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,71 +34,82 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260522-0558 (2026-05-22T02:32:10.298Z)
+Latest run: QA-20260522-0559 (2026-05-22T04:13:27.604Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | monitoringCapacityForecastEvidenceProvider supervisor intent 라우팅 점검, peak metric 24h 창 지원 여부 검토 |
+| AI Quality Assurance Specialist | appropriate | yes | 서버 1:1 비교 쿼리용 evidence provider 또는 supervisor 라우팅 규칙 추가 검토. 서버 도메인 특성(backup=binlog/dump) KB 시드 보강. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | dashboard | checked | normal | Targeted QA run. Vercel production 정상 동작 확인. 함수 실행 이상 없음. |
+| vercel | playwright-mcp | checked | normal | Playwright MCP로 Vercel production 직접 접속. 대시보드 정상 로드, AI 어시스턴트 응답 6건 정상 수신. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-21T02:32:10.298Z -> 2026-05-22T02:32:10.298Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 10
+- Window: 2026-05-21T04:13:27.604Z -> 2026-05-22T04:13:27.604Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | streaming | 1 | 11000ms | 11000ms | 2000ms | 2000ms | 9000ms | 9000ms | QA-20260521-0550 |
 | Reporter Agent | zai | 1 | 7021ms | 7021ms | 1200ms | 1200ms | 5821ms | 5821ms | QA-20260521-0550 |
-| Cloud Run AI | cloud-run-ai-engine | 5 | 1555ms | 6120ms | - | - | - | - | QA-20260521-0549 |
 | Metrics Query Agent | cloud-run-deterministic | 2 | 836ms | 1434ms | - | - | - | - | QA-20260522-0556 |
 | Advisor Agent | deterministic | 1 | 26ms | 26ms | 26ms | 26ms | 0ms | 0ms | QA-20260521-0550 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-21T02:32:10.298Z -> 2026-05-22T02:32:10.298Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 7
-- Drift rate: 0%
+- Window: 2026-05-21T04:13:27.604Z -> 2026-05-22T04:13:27.604Z (24h)
+- Runs with observations: 3 recorded / 2 counted
+- Samples: 13
+- Drift rate: 7.69%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | deterministic | 5 | 0% | 1ms | 2ms | QA-20260522-0558 |
-| /api/ai/supervisor/stream/v2 | single-agent | 2 | 0% | 0ms | 0ms | QA-20260522-0558 |
+| reporter-agent | single-agent | 1 | 0% | 30000ms | 30000ms | QA-20260522-0559 |
+| /api/ai/supervisor/stream/v2 | deterministic | 7 | 0% | 0ms | 2ms | QA-20260522-0559 |
+| /api/ai/supervisor/stream/v2 | single-agent | 3 | 33.33% | 0ms | 0ms | QA-20260522-0559 |
+| /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
+| anomaly-detection | deterministic | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
+- Release-Facing: no
+- Counts Toward Summary: no
 - Deployment: dpl_EfWEBPcgUWKRjCh29WZfbSNypakd / SHA 1b0b329b
 - Coverage Packs: ai-core
-- Covered Surfaces: AI sidebar chat, capacity forecast routing fix, AZ load balance evidence provider, metric ranking evidence provider, server health evidence provider, peak metric evidence provider
-- Skipped Surfaces: dashboard UI, reporter, anomaly detection tab
+- Covered Surfaces: AI sidebar chat - DISK metric ranking, AI sidebar chat - server-to-server comparison, AI sidebar chat - Korean typo handling, 자동 보고서 탭 - Reporter agent, 이상감지 탭 - Anomaly Detection, AI sidebar chat - root cause analysis
+- Skipped Surfaces: dashboard overview UI, 서버 목록 페이지, topology 페이지
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline v8.12.5 (success) | [GitLab pipeline v8.12.5 (success)](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545042099) | - |
-| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
+| general | Vercel Production v8.12.5 | [Vercel Production v8.12.5](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | page-2026-05-22T03-10-15-214Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-10-15-214Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-10-31-724Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-10-31-724Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-10-42-427Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-10-42-427Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-11-00-053Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-11-00-053Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-11-12-489Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-11-12-489Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-11-52-216Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-11-52-216Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-13-36-316Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-13-36-316Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-13-58-898Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-13-58-898Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-14-32-591Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-14-32-591Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-15-04-876Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-15-04-876Z.png` | - |
+| playwright-screenshot | page-2026-05-22T03-15-34-401Z.png | `.playwright-mcp/screenshots/page-2026-05-22T03-15-34-401Z.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260522-0558)
-  next: monitoringCapacityForecastEvidenceProvider supervisor intent 라우팅 점검, peak metric 24h 창 지원 여부 검토
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260522-0559)
+  next: 서버 1:1 비교 쿼리용 evidence provider 또는 supervisor 라우팅 규칙 추가 검토. 서버 도메인 특성(backup=binlog/dump) KB 시드 보강.
 
 ## Pending Improvements
 
@@ -110,7 +121,7 @@ Latest run: QA-20260522-0558 (2026-05-22T02:32:10.298Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 27
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 30
 
 ### Platform Constraint
 
@@ -163,6 +174,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
   - note: 포트폴리오 운영성 우선 규칙: 실운영 오탐/미탐 주간 자동 리포트는 데모/포트폴리오 범위 밖의 운영 프로세스 자동화이므로 WONT-FIX 유지
+- [P1] server-comparison-deterministic-path: 서버 1:1 비교 쿼리 deterministic 경로 미확립 (seen 1회, last QA-20260522-0559)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-adversarial-natural-language-qa-pack: Add QC/security-style natural-language AI regression prompts (seen 1회, last QA-20260512-0487)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-agent-type-metadata: AI Chat 에이전트 타입 메타데이터 표시 개선 (seen 1회, last QA-20260326-0190)
@@ -176,6 +189,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] ai-sidebar-answer-details-default-visibility: AI sidebar should show actionable response details inline by default when analysis metadata exists (seen 1회, last QA-20260430-0374)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-streaming-ui-improvement-s1-s3: AI streaming UI improvements (seen 1회, last QA-20260503-0397)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] analyst-domain-context-injection: 심층 분석 시 서버 도메인 특성 미주입 (seen 1회, last QA-20260522-0559)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -204,6 +219,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P3] action-needed-transient-500-observation: One transient 500 on standard question 4 before immediate retry success (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] planner-shadow-local-decision-drift: Planner shadow still reports local_decision_missing for deterministic monitoring evidence (seen 1회, last QA-20260522-0556)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] reporter-dashboard-threshold-unification: Reporter 영향 서버 기준 대시보드와 불일치 (seen 1회, last QA-20260522-0559)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] vision-ui-upload-e2e: Authenticated frontend image-upload UI E2E path (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -847,6 +864,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260522-0559 | 2026-05-22T04:13:27.604Z | targeted | no | no | v8.12.5 신규 질문 6문항 평가 (Playwright MCP) - 미테스트 영역 집중 | 6 | 0 | 0 | 0 | 3 | 1 |
 | QA-20260522-0558 | 2026-05-22T02:32:10.298Z | targeted | yes | yes | v8.12.5 신규 변경사항 AI 어시스턴트 평가 (5문항) - evidence providers + routing fix | 5 | 0 | 0 | 0 | 2 | 1 |
 | QA-20260522-0557 | 2026-05-22T00:36:19.482Z | targeted | no | no | v8.12.4 AI 어시스턴트 신규 5문항 평가 (Vercel Production) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0556 | 2026-05-22T00:09:55.910Z | targeted | yes | yes | Production AI QA - v8.12.4 Cache Scope and Disk Trend | 12 | 2 | 0 | 0 | 1 | 0 |
@@ -866,4 +884,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260520-0542 | 2026-05-20T04:05:02.782Z | targeted | no | no | Cloud Run Gemini Vision Answer Quality Smoke | 3 | 1 | 0 | 0 | 1 | 0 |
 | QA-20260520-0541 | 2026-05-20T03:16:25.342Z | targeted | no | no | Cloud Run Vision Provider Answer Quality Smoke | 2 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260520-0540 | 2026-05-20T02:11:54.045Z | targeted | no | no | AI Assistant cleanup local dev supervisor report smoke | 1 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260519-0539 | 2026-05-19T11:41:05.468Z | targeted | no | no | Manual Cloud Run QA - Z.AI GLM Vision fallback live smoke | 4 | 1 | 0 | 0 | 0 | 0 |
