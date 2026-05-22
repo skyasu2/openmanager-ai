@@ -1,0 +1,54 @@
+{
+  "runId": "QA-20260522-0557",
+  "recordedAt": "2026-05-22T00:36:19.482Z",
+  "recordedAtKst": "2026-05-22 09:36:19 KST",
+  "runTitle": "v8.12.4 AI 어시스턴트 신규 5문항 평가 (Vercel Production)",
+  "owner": "claude",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "6176fe3295e359c474d737a308989377da158ef3"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard",
+    "AI 사이드바 Chat",
+    "AI Q1 이상징후탐지",
+    "AI Q2 용량예측",
+    "AI Q3 장애원인분석",
+    "AI Q4 에러로그TOP3",
+    "AI Q5 AZ부하비교"
+  ],
+  "skippedSurfaces": [
+    "login",
+    "observability pack",
+    "auto-report"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 2,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-22 09:11:49 KST
+> Generated at: 2026-05-22 09:36:20 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 554 |
+| Total Recorded Runs | 555 |
 | Total Runs (Counted) | 442 |
-| Non-counted Runs | 112 |
+| Non-counted Runs | 113 |
 | Total Checks | 4050 |
 | Passed | 3894 |
 | Failed | 145 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260522-0556 (2026-05-22T00:09:55.910Z) |
-| Latest Recorded Run | QA-20260522-0556 (2026-05-22T00:09:55.910Z) |
+| Latest Recorded Run | QA-20260522-0557 (2026-05-22T00:36:19.482Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,22 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260522-0556 (2026-05-22T00:09:55.910Z)
+Latest run: QA-20260522-0557 (2026-05-22T00:36:19.482Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after production QA; effective 14.0014 USD, billed 0.0000 USD. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-21T00:09:55.910Z -> 2026-05-22T00:09:55.910Z (24h)
+- Window: 2026-05-21T00:36:19.482Z -> 2026-05-22T00:36:19.482Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 10
 
@@ -63,7 +62,7 @@ Latest run: QA-20260522-0556 (2026-05-22T00:09:55.910Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-21T00:09:55.910Z -> 2026-05-22T00:09:55.910Z (24h)
+- Window: 2026-05-21T00:36:19.482Z -> 2026-05-22T00:36:19.482Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 2
 - Drift rate: 0%
@@ -75,20 +74,18 @@ Latest run: QA-20260522-0556 (2026-05-22T00:09:55.910Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_3fT6D3HjyvNkoAhu43FN8bGaUu5H / SHA 4c79450c
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA 6176fe32
 - Coverage Packs: ai-core
-- Covered Surfaces: /api/version, Cloud Run /health, AI sidebar stream: cache memory current status, AI sidebar stream: whole-fleet disk trend
-- Skipped Surfaces: full dashboard visual regression, Playwright browser journey
+- Covered Surfaces: /dashboard, AI 사이드바 Chat, AI Q1 이상징후탐지, AI Q2 용량예측, AI Q3 장애원인분석, AI Q4 에러로그TOP3, AI Q5 AZ부하비교
+- Skipped Surfaces: login, observability pack, auto-report
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run service | [Cloud Run service](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| general | GitLab v8.12.4 release pipeline | [GitLab v8.12.4 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2544921351) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-purafi4ho-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
@@ -843,6 +840,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260522-0557 | 2026-05-22T00:36:19.482Z | targeted | no | no | v8.12.4 AI 어시스턴트 신규 5문항 평가 (Vercel Production) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0556 | 2026-05-22T00:09:55.910Z | targeted | yes | yes | Production AI QA - v8.12.4 Cache Scope and Disk Trend | 12 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260522-0555 | 2026-05-21T21:20:59.747Z | targeted | yes | yes | Vercel Release Smoke - v8.12.1 AI Grounding Release | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0554 | 2026-05-21T13:59:34.965Z | targeted | no | yes | Local Playwright QA - AI Workspace Phase 5 Layout | 7 | 1 | 0 | 0 | 0 | 0 |
@@ -862,4 +860,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260520-0540 | 2026-05-20T02:11:54.045Z | targeted | no | no | AI Assistant cleanup local dev supervisor report smoke | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260519-0539 | 2026-05-19T11:41:05.468Z | targeted | no | no | Manual Cloud Run QA - Z.AI GLM Vision fallback live smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260519-0538 | 2026-05-19T11:08:35.867Z | targeted | yes | yes | Production Vision Attachment Routing QA - v8.11.184 | 14 | 2 | 0 | 0 | 7 | 1 |
-| QA-20260519-0537 | 2026-05-19T07:40:00.196Z | targeted | yes | yes | v8.11.181 Vercel Playwright MCP QA - weekly hardening post-deploy closure | 7 | 1 | 0 | 0 | 0 | 0 |
