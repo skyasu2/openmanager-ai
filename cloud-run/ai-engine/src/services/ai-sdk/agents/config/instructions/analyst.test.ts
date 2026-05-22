@@ -10,4 +10,15 @@ describe('ANALYST_INSTRUCTIONS lightweight evidence boundary', () => {
     expect(ANALYST_INSTRUCTIONS).toContain('장애 발생 확률');
     expect(ANALYST_INSTRUCTIONS).toContain('제공되지 않은 메트릭·확률·시각');
   });
+
+  it('keeps backup disk and Redis memory RCA hypotheses domain-specific', () => {
+    expect(ANALYST_INSTRUCTIONS).toContain('db-mysql');
+    expect(ANALYST_INSTRUCTIONS).toContain('backup');
+    expect(ANALYST_INSTRUCTIONS).toContain('binlog');
+    expect(ANALYST_INSTRUCTIONS).toContain('dump');
+    expect(ANALYST_INSTRUCTIONS).toContain('incremental backup');
+    expect(ANALYST_INSTRUCTIONS).toContain('eviction policy');
+    expect(ANALYST_INSTRUCTIONS).toContain('maxmemory');
+    expect(ANALYST_INSTRUCTIONS).toContain('key TTL');
+  });
 });
