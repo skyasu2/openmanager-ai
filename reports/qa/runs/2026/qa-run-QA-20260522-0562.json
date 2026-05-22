@@ -1,0 +1,201 @@
+{
+  "runId": "QA-20260522-0562",
+  "recordedAt": "2026-05-22T09:30:00.000Z",
+  "recordedAtKst": "2026-05-22 18:30:00 KST",
+  "runTitle": "v8.12.7 미테스트 7문항 QA (Playwright MCP) - 신규 패턴·트렌드·운영우선순위·DC비교",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "commitSha": "fd4d4a21b"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI sidebar - '포화 예측' capacity forecast (v8.12.7 신규 패턴)",
+    "AI sidebar - 영어 'how soon will disk hit 80%' capacity forecast",
+    "AI sidebar - DC1 vs DC2 데이터센터 비교",
+    "AI sidebar - 특정 서버 메모리 24시간 트렌드 (monitoring-metric-trend)",
+    "AI sidebar - 운영 우선순위 '조치 시급한 서버 순위'",
+    "AI sidebar - '가득 찰까' capacity forecast (v8.12.7 신규 패턴)",
+    "AI sidebar - CPU '위험 수준 도달' 예측 표현"
+  ],
+  "skippedSurfaces": [
+    "자동 보고서 탭",
+    "이상감지 탭",
+    "토폴로지 페이지"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 4,
+    "partial": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar - 'db-mysql-dc1-backup 디스크 포화 예측'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "evidenceProvider": "monitoring-capacity-forecast",
+      "verdict": "PASS",
+      "note": "v8.12.7 신규 '포화 예측' 패턴 정상 매칭. OTel 24h 기울기 -0.1%p/h, 도달 없음",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - 'how soon will disk hit 80%'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "evidenceProvider": "monitoring-capacity-forecast",
+      "verdict": "PASS",
+      "note": "영어 'hit N%' 패턴 정상 매칭. 전체 18대 TOP5 OTel 수치 포함",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - 'DC1과 DC2 중 어느 데이터센터가 부하 더 높아'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 0,
+      "classification": "drift",
+      "evidenceProvider": "일반 대화 응답 (monitoring-location-load-balance 미진입)",
+      "verdict": "PARTIAL",
+      "note": "'DC1과 DC2' 표현이 location-load-balance 패턴에 미매칭. 'DC1-AZ1/AZ2/AZ3' 형태만 인식. LLM 생성 수치(CPU DC1 34.2%, DC2 23.1%) OTel 근거 불명",
+      "driftReasonCodes": [
+        "location-load-balance 트리거 표현 범위 부족"
+      ],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - 'cache-redis-dc1-01 메모리 24시간 트렌드'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "evidenceProvider": "monitoring-metric-trend",
+      "verdict": "PASS",
+      "note": "★ 신규 경로 첫 확인. OTel 기반 +24.2%p 상승(24h 평균 56.8%→현재 81%) 정확",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - '지금 당장 조치 시급한 서버 순위'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 0,
+      "classification": "drift",
+      "evidenceProvider": "일반 대화 응답",
+      "verdict": "PARTIAL",
+      "note": "monitoring-snapshot-risk-signal 미진입. 응답 느림. api-was-dc1-01 CPU 92% 수치가 Q7 OTel 실측(43%)과 불일치 → hallucination 확인됨",
+      "driftReasonCodes": [
+        "운영 우선순위 쿼리 deterministic 경로 미확립",
+        "수치 hallucination (92% vs OTel 43%)"
+      ],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - 'storage-nfs-dc1-02 디스크 언제 가득 찰까'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "evidenceProvider": "monitoring-capacity-forecast",
+      "verdict": "PASS",
+      "note": "v8.12.7 신규 '가득 찰까' 패턴 정상 매칭. OTel 59.4%, 기울기 +0%p/h, 도달 없음",
+      "driftReasonCodes": [],
+      "source": "playwright-mcp"
+    },
+    {
+      "surface": "AI sidebar - 'api-was-dc1-01 CPU 언제 위험 수준 도달해'",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 0,
+      "classification": "drift",
+      "evidenceProvider": "서버 실시간 데이터 분석",
+      "verdict": "PARTIAL",
+      "note": "capacity-forecast 미진입. '위험 수준 도달' 표현 미매칭. 단, OTel 실제 데이터(현재 43%, 최고 96%, 6h 평균 59.4%) 포함 — Q5 hallucination(92%)과 대비. 응답 느림",
+      "driftReasonCodes": [
+        "capacity-forecast 패턴에 '위험 수준 도달' 표현 미포함"
+      ],
+      "source": "playwright-mcp"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "7문항 4PASS/3PARTIAL: v8.12.7 신규 패턴(포화예측·가득찰까·영어hit) 3개 모두 PASS. monitoring-metric-trend 신규 경로 첫 확인. DC비교/운영우선순위/CPU위험수준 3개 일반대화 오라우팅. Q5 hallucination(CPU 92%) vs Q7 OTel 실측(43%) 불일치 확인.",
+      "nextAction": "1) 'DC1과 DC2' 표현 location-load-balance 패턴 확장. 2) '조치 시급한 서버' → monitoring-snapshot-risk-signal 라우팅 연결. 3) capacity-forecast에 '위험 수준 도달' 패턴 추가."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "playwright-mcp",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-22T18:30:00+09:00",
+      "summary": "v8.12.7 Playwright MCP 7문항 신규 평가. v8.12.7 신규 패턴 3개 PASS, monitoring-metric-trend 신규 확인, DC비교·운영우선순위 오라우팅 한계 발견.",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "q1-saturation-forecast.png",
+      "path": "reports/qa/evidence/qa-20260522-0562-q1-saturation-forecast.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q2-english-disk-forecast.png",
+      "path": "reports/qa/evidence/qa-20260522-0562-q2-english-disk-forecast.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q3-dc1-dc2-result.png",
+      "path": "reports/qa/evidence/qa-20260522-0562-q3-dc1-dc2-result.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q4-redis-trend.png",
+      "path": "reports/qa/evidence/qa-20260522-0562-q4-redis-trend.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "q7-cpu-danger-forecast.png",
+      "path": "reports/qa/evidence/qa-20260522-0562-q7-cpu-danger-forecast.png"
+    }
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production v8.12.7",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.7 release (2545712930)",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545712930"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": []
+}
