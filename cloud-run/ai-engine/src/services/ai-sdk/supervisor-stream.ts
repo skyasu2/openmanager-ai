@@ -12,6 +12,7 @@ import {
   buildSupervisorAssistantResult,
   buildSupervisorModeMetadata,
   buildSupervisorRouteDecision,
+  refinePlannerShadowWithActualExecution,
   resolveSupervisorModeDecision,
   type ResolvedSupervisorModeDecision,
 } from './supervisor-mode';
@@ -161,6 +162,15 @@ export async function* executeSupervisorStream(
     shouldUseDeterministicDomainEvidenceAnswer(domainEvidence)
   ) {
     const durationMs = Date.now() - startTime;
+    const resolvedAssistantPlan = assistantPlan.plannerShadow
+      ? {
+          ...assistantPlan,
+          plannerShadow: refinePlannerShadowWithActualExecution(
+            assistantPlan.plannerShadow,
+            'deterministic'
+          ),
+        }
+      : assistantPlan;
     yield { type: 'text_delta', data: domainEvidence.fallback };
     yield {
       type: 'done',
@@ -177,7 +187,7 @@ export async function* executeSupervisorStream(
           ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
           ...buildSupervisorModeMetadata(modeDecision),
           routeDecision,
-          assistantPlan,
+          assistantPlan: resolvedAssistantPlan,
           assistantRuntime: runtimeMetadata,
           assistantResult: buildSupervisorAssistantResult(routeDecision),
           domainEvidence: {
@@ -198,6 +208,15 @@ export async function* executeSupervisorStream(
   const serviceCommandAnswer = buildServiceCommandGuidanceAnswer(queryText);
   if (serviceCommandAnswer) {
     const durationMs = Date.now() - startTime;
+    const resolvedAssistantPlanForServiceCommand = assistantPlan.plannerShadow
+      ? {
+          ...assistantPlan,
+          plannerShadow: refinePlannerShadowWithActualExecution(
+            assistantPlan.plannerShadow,
+            'deterministic'
+          ),
+        }
+      : assistantPlan;
     yield { type: 'text_delta', data: serviceCommandAnswer };
     yield {
       type: 'done',
@@ -214,7 +233,7 @@ export async function* executeSupervisorStream(
           ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
           ...buildSupervisorModeMetadata(modeDecision),
           routeDecision,
-          assistantPlan,
+          assistantPlan: resolvedAssistantPlanForServiceCommand,
           assistantRuntime: runtimeMetadata,
           assistantResult: buildSupervisorAssistantResult(routeDecision),
           ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null

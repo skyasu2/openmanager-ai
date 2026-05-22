@@ -654,6 +654,32 @@ export function buildSupervisorAssistantPlanForRequest(
   });
 }
 
+/**
+ * Refines a planner shadow after actual execution is known.
+ *
+ * When localRouteDecision is absent (direct API calls, QA smoke tests),
+ * buildPlannerDrift emits local_decision_missing instead of comparing.
+ * Once we know the actual execution mode, we can verify whether the shadow
+ * prediction was correct and replace the missing-decision placeholder with
+ * an accurate matched/mismatch result.
+ */
+export function refinePlannerShadowWithActualExecution(
+  shadow: SupervisorPlannerShadow,
+  actualExecutionMode: SupervisorPlannerExecutionMode
+): SupervisorPlannerShadow {
+  if (!shadow.drift?.reasonCodes.includes('local_decision_missing')) {
+    return shadow;
+  }
+  const matched = shadow.candidate.executionMode === actualExecutionMode;
+  return {
+    ...shadow,
+    drift: {
+      matched,
+      reasonCodes: matched ? [] : ['execution_mode_mismatch'],
+    },
+  };
+}
+
 export function buildSupervisorAssistantResult(
   routeDecision: SupervisorRouteDecision | undefined,
   options?: {

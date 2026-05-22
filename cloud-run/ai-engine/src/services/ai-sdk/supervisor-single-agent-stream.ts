@@ -33,6 +33,7 @@ import {
   buildSupervisorAssistantPlanForRequest,
   buildSupervisorModeMetadata,
   buildSupervisorRouteDecision,
+  refinePlannerShadowWithActualExecution,
   type ResolvedSupervisorModeDecision,
 } from './supervisor-mode';
 import {
@@ -98,6 +99,18 @@ export async function* streamSingleAgent(
   const assistantPlan = routeDecision
     ? buildSupervisorAssistantPlanForRequest(request, routeDecision)
     : undefined;
+  const refinedPlanFor = (
+    mode: 'deterministic' | 'single-agent'
+  ) =>
+    assistantPlan?.plannerShadow
+      ? {
+          ...assistantPlan,
+          plannerShadow: refinePlannerShadowWithActualExecution(
+            assistantPlan.plannerShadow,
+            mode
+          ),
+        }
+      : assistantPlan;
   const excludedProviders: ProviderName[] = [];
   const MAX_PROVIDER_ATTEMPTS = 3;
 
@@ -142,7 +155,7 @@ export async function* streamSingleAgent(
       request,
       modeDecision,
       routeDecision,
-      assistantPlan,
+      assistantPlan: refinedPlanFor('deterministic'),
       runtimeMetadata,
       degradedFallbackContext,
       provider: 'deterministic',
@@ -684,7 +697,7 @@ export async function* streamSingleAgent(
         request,
         modeDecision,
         routeDecision,
-        assistantPlan,
+        assistantPlan: refinedPlanFor('single-agent'),
         runtimeMetadata,
         degradedFallbackContext,
         provider,

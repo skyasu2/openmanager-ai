@@ -5,6 +5,7 @@ import {
   buildSupervisorPlannerShadow,
   buildSupervisorRouteDecision,
   normalizeSupervisorLocalRouteDecision,
+  refinePlannerShadowWithActualExecution,
   resolveSupervisorMode,
   resolveSupervisorModeDecision,
 } from './supervisor-mode';
@@ -632,5 +633,120 @@ describe('supervisor planner shadow', () => {
 
     expect(mismatches).toBeLessThanOrEqual(5);
     expect(Date.now() - startedAt).toBeLessThanOrEqual(200);
+  });
+});
+
+describe('refinePlannerShadowWithActualExecution', () => {
+  function makeShadowWithMissingDecision(
+    candidateMode: 'deterministic' | 'single-agent' | 'multi-agent'
+  ) {
+    return buildSupervisorPlannerShadow({
+      request: {
+        mode: 'auto',
+        messages: [{ role: 'user', content: 'CPU 상태 알려줘' }],
+        sessionId: 'session-refine-test',
+      },
+      routeDecision: buildSupervisorRouteDecision(
+        { requestedMode: 'auto', resolvedMode: 'single', modeSelectionSource: 'auto_complexity' }
+      ),
+      localRouteDecision: undefined,
+      latencyMs: 0,
+    }) satisfies { candidate: { executionMode: string }; drift?: { matched: boolean; reasonCodes: string[] } };
+  }
+
+  it('deterministic 실행 후 shadow가 deterministic을 예측한 경우 matched: true로 변환', () => {
+    const shadow = buildSupervisorPlannerShadow({
+      request: {
+        mode: 'auto',
+        messages: [{ role: 'user', content: 'CPU 상태 알려줘' }],
+        sessionId: 's1',
+      },
+      routeDecision: buildSupervisorRouteDecision(
+        { requestedMode: 'auto', resolvedMode: 'single', modeSelectionSource: 'auto_complexity' }
+      ),
+      localRouteDecision: undefined,
+      latencyMs: 0,
+    });
+
+    expect(shadow.drift?.reasonCodes).toContain('local_decision_missing');
+
+    const refined = refinePlannerShadowWithActualExecution(shadow, 'deterministic');
+
+    expect(refined.drift?.matched).toBe(
+      shadow.candidate.executionMode === 'deterministic'
+    );
+    expect(refined.drift?.reasonCodes).not.toContain('local_decision_missing');
+  });
+
+  it('actual deterministic이지만 shadow가 single-agent를 예측한 경우 execution_mode_mismatch', () => {
+    const shadow = buildSupervisorPlannerShadow({
+      request: {
+        mode: 'auto',
+        messages: [{ role: 'user', content: '장애 원인 분석해줘' }],
+        sessionId: 's2',
+      },
+      routeDecision: buildSupervisorRouteDecision(
+        { requestedMode: 'auto', resolvedMode: 'multi', modeSelectionSource: 'auto_complexity' }
+      ),
+      localRouteDecision: undefined,
+      latencyMs: 0,
+    });
+
+    const refined = refinePlannerShadowWithActualExecution(shadow, 'deterministic');
+
+    if (shadow.candidate.executionMode !== 'deterministic') {
+      expect(refined.drift?.matched).toBe(false);
+      expect(refined.drift?.reasonCodes).toContain('execution_mode_mismatch');
+    }
+  });
+
+  it('localDecision이 있는 shadow는 건드리지 않음 (idempotent guard)', () => {
+    const shadow = buildSupervisorPlannerShadow({
+      request: {
+        mode: 'auto',
+        messages: [{ role: 'user', content: 'CPU 상태 알려줘' }],
+        sessionId: 's3',
+      },
+      routeDecision: buildSupervisorRouteDecision(
+        { requestedMode: 'auto', resolvedMode: 'single', modeSelectionSource: 'auto_complexity' }
+      ),
+      localRouteDecision: normalizeSupervisorLocalRouteDecision({
+        intent: 'chat',
+        executionPath: 'stream',
+        complexity: 'simple',
+        reasonCodes: ['complexity_below_threshold'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'frontend',
+      }),
+      latencyMs: 0,
+    });
+
+    expect(shadow.drift?.reasonCodes).not.toContain('local_decision_missing');
+
+    const refined = refinePlannerShadowWithActualExecution(shadow, 'deterministic');
+
+    expect(refined).toBe(shadow);
+  });
+
+  it('actual single-agent이고 shadow도 single-agent를 예측한 경우 matched: true', () => {
+    const shadow = buildSupervisorPlannerShadow({
+      request: {
+        mode: 'auto',
+        messages: [{ role: 'user', content: '장애 원인 분석해줘' }],
+        sessionId: 's4',
+      },
+      routeDecision: buildSupervisorRouteDecision(
+        { requestedMode: 'auto', resolvedMode: 'single', modeSelectionSource: 'auto_complexity' }
+      ),
+      localRouteDecision: undefined,
+      latencyMs: 0,
+    });
+
+    const refined = refinePlannerShadowWithActualExecution(shadow, 'single-agent');
+
+    expect(refined.drift?.matched).toBe(
+      shadow.candidate.executionMode === 'single-agent'
+    );
+    expect(refined.drift?.reasonCodes).not.toContain('local_decision_missing');
   });
 });
