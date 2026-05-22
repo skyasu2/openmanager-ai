@@ -94,6 +94,16 @@ describe('classifyChatArtifactIntent', () => {
     });
   });
 
+  it('keeps server capacity forecasts on the normal AI path without monitoring artifacts', () => {
+    const query =
+      'db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘';
+
+    expect(classifyChatArtifactIntent(query)).toMatchObject({
+      kind: 'none',
+    });
+    expect(shouldUseLLMChatArtifactIntent(query)).toBe(false);
+  });
+
   it('keeps ambiguous feature questions as local guidance without API execution', () => {
     expect(
       classifyChatArtifactIntent('장애 보고는 어떻게 하면 돼?')

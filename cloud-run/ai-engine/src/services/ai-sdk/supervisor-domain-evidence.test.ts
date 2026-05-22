@@ -295,6 +295,27 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('keeps mixed current-value and threshold capacity forecasts on deterministic evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query:
+        'db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘',
+      domain: monitoringDomainPack,
+      sessionId: 'session-capacity-forecast-current-and-target',
+      traceId: 'trace-capacity-forecast-current-and-target',
+    });
+
+    expect(support?.id).toBe('monitoring-capacity-forecast');
+    expect(support?.fallback).toContain('디스크 90% 도달 예측');
+    expect(support?.fallback).toContain('db-mysql-dc1-backup');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.capacity_forecast',
+      intent: 'capacity_forecast',
+      metric: 'disk',
+      threshold: 90,
+    });
+  });
+
   it('does not let KRL/SSOT wording collapse into current server health evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query:

@@ -380,6 +380,8 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 ### H-1: monitoringCapacityForecastEvidenceProvider 불일치 라우팅
 
+**Status**: Approved (2026-05-22)
+
 **증상**: `QA-20260522-0558 Q1` — "db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘"
 → 이상감지/추세 분석 artifact 카드 출력 (응답 근거: "일반 대화 응답", 도구: "이상감지/추세 분석")
 
@@ -399,6 +401,11 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | H1-B | `isServerMonitoringArtifactRequest`가 EXCLUSION 후에도 다른 조건으로 true 반환 | `isServerMonitoringArtifactRequest` 전체 분기 추적 |
 | H1-C | `monitoringCapacityForecastEvidenceProvider.canHandle`이 실제로 매칭되나 `resolve`가 null 반환 → LLM fallback → anomaly tool 선택 | evidence provider `resolve` 로직 확인. `buildCapacityForecastAnswer` → slope≈0 → 빈 결과 가능성 |
 | H1-D | 새 대화 시작 시 다른 Vercel Edge 인스턴스가 이전 코드 버전을 서빙 | `/api/version` 응답 확인 |
+| H1-E | `parseThreshold`가 "현재 69% ... 언제 90%"에서 첫 번째 퍼센트(현재값)를 목표 임계치로 오인 | provider regression test로 `threshold=90` 고정 |
+
+**진단 결과(2026-05-22)**:
+- H1-B 재현: server-specific exclusion 이후 general monitoring artifact 분기로 재진입 가능.
+- H1-E 재현: evidence provider가 동일 쿼리에서 목표 임계치 90이 아닌 현재값 69를 threshold로 반환.
 
 **CAPACITY_FORECAST_PATTERN 검증** (`load-balance-capacity-evidence-provider.ts`):
 ```
