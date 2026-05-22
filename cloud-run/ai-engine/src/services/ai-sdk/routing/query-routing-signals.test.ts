@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { performance } from 'node:perf_hooks';
 import { describe, expect, it } from 'vitest';
 import {
@@ -108,6 +109,15 @@ describe('extractQueryRoutingSignals', () => {
     expect(signals.reasonCodes).toContain('mode_multi_knowledge');
     expect(signals.preFilter.action).toBe('suggest_agent');
     expect(signals.preFilter.suggestedAgent).toBe('Advisor Agent');
+  });
+
+  it('keeps retired analysis-mode reason labels out of the routing source', () => {
+    const source = readFileSync(
+      new URL('./query-routing-signals.ts', import.meta.url),
+      'utf8'
+    );
+
+    expect(source).not.toContain('mode_multi_analysis_mode');
   });
 
   it('keeps deterministic extraction under the p50 latency budget', () => {

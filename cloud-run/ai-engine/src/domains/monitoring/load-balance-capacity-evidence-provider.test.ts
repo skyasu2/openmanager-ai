@@ -75,4 +75,36 @@ describe('monitoring capacity forecast evidence provider', () => {
     );
     expect(result?.fallback).toContain('현 추세 도달 없음');
   });
+
+  it('defaults to the standard threshold when the only percentage is a current value', async () => {
+    const result = await monitoringCapacityForecastEvidenceProvider.resolve(
+      createRequest(
+        'capacity-test-01 현재 서버의 CPU 사용률이 45%인데 포화될까요? 용량 예측해줘'
+      )
+    );
+
+    expect(result?.metadata).toMatchObject({
+      metric: 'cpu',
+      threshold: 90,
+      responsePolicy: 'deterministic_answer',
+    });
+    expect(result?.fallback).toContain('CPU 90% 도달 예측');
+    expect(result?.fallback).not.toContain('CPU 45% 도달 예측');
+  });
+
+  it('does not treat a past threshold crossing report as the forecast threshold', async () => {
+    const result = await monitoringCapacityForecastEvidenceProvider.resolve(
+      createRequest(
+        'capacity-test-01 어제 CPU가 80%를 초과했는데 앞으로는 포화될까요? 용량 예측해줘'
+      )
+    );
+
+    expect(result?.metadata).toMatchObject({
+      metric: 'cpu',
+      threshold: 90,
+      responsePolicy: 'deterministic_answer',
+    });
+    expect(result?.fallback).toContain('CPU 90% 도달 예측');
+    expect(result?.fallback).not.toContain('CPU 80% 도달 예측');
+  });
 });

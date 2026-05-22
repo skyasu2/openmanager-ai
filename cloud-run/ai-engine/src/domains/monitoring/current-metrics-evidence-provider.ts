@@ -169,8 +169,12 @@ function filterSnapshotServers(
     return { servers, targetLabel: '전체 서버' };
   }
 
-  const targetIds = new Set(normalizedTargets);
-  const exactMatches = servers.filter((server) => targetIds.has(server.id));
+  const targetIds = new Set(
+    normalizedTargets.map((target) => target.toLowerCase())
+  );
+  const exactMatches = servers.filter((server) =>
+    targetIds.has(server.id.toLowerCase())
+  );
   if (exactMatches.length > 0) {
     const uniqueTypes = Array.from(
       new Set(exactMatches.map((server) => normalizeServerType(server.type ?? '')))

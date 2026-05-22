@@ -283,6 +283,70 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
   });
 
+  it('matches explicit server IDs case-insensitively against snapshot IDs', async () => {
+    const request = createEvidenceRequest(
+      'web-dc1-az1 과 web-dc1-az2 의 CPU 사용량을 비교해줘',
+      {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'Web-DC1-AZ1',
+            type: 'web',
+            status: 'online',
+            cpu: 44,
+            memory: 52,
+            disk: 31,
+            network: 11,
+          },
+          {
+            id: 'Web-DC1-AZ2',
+            type: 'web',
+            status: 'warning',
+            cpu: 67,
+            memory: 58,
+            disk: 35,
+            network: 15,
+          },
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 92,
+            memory: 45,
+            disk: 28,
+            network: 11,
+          },
+        ],
+      }
+    );
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      metric: 'cpu',
+      targets: ['web-dc1-az1', 'web-dc1-az2'],
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      request
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        metric: 'cpu',
+        targets: ['web-dc1-az1', 'web-dc1-az2'],
+      },
+    });
+    expect(evidence?.fallback).toContain('웹 서버 2대 CPU 현황');
+    expect(evidence?.fallback).toContain('Web-DC1-AZ1 44%');
+    expect(evidence?.fallback).toContain('Web-DC1-AZ2 67%');
+    expect(evidence?.fallback).not.toContain('api-was-dc1-01');
+  });
+
   it('resolves whole-fleet disk trend frame without drifting to CPU summary', async () => {
     const evidence = await monitoringMetricTrendEvidenceProvider.resolve({
       ...createEvidenceRequest('전체 서버 디스크 추이', {

@@ -324,7 +324,7 @@ function buildModeReasonCodes(
   if (REPORTER_QUERY_PATTERN.test(query)) return ['mode_multi_report_request'];
   if (ADVISOR_QUERY_PATTERN.test(query)) return ['mode_multi_advisor'];
   if (FORCE_KB_QUERY_PATTERN.test(query)) return ['mode_multi_knowledge'];
-  return ['mode_multi_analysis_mode'];
+  return ['mode_multi_default'];
 }
 
 function buildPreFilterSignal(

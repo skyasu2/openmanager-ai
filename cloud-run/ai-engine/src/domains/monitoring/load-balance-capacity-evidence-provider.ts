@@ -241,6 +241,24 @@ function normalizeThreshold(value: string): number {
     : 90;
 }
 
+function isReportedUsagePercent(
+  message: string,
+  match: RegExpMatchArray
+): boolean {
+  const matchIndex = match.index ?? message.indexOf(match[0]);
+  const context = message.slice(
+    Math.max(0, matchIndex - 24),
+    Math.min(message.length, matchIndex + match[0].length + 12)
+  );
+
+  return (
+    /(?:현재|지금|current|now).{0,20}\d{1,3}\s*%/i.test(context) ||
+    /\d{1,3}\s*%?\s*(?:를|을|이|가)?\s*(?:넘었|초과했|도달했|돌파했|exceeded|reached|breached)/i.test(
+      context
+    )
+  );
+}
+
 function parseThreshold(message: string): number {
   const targetPatterns = [
     /(?:언제|when).{0,32}?(\d{1,3})\s*%?\s*(?:를|을|이|가)?\s*(?:넘|초과|도달|돌파|exceed|reach|breach)/i,
@@ -249,16 +267,16 @@ function parseThreshold(message: string): number {
     /(\d{1,3})\s*%?\s*(?:기준|까지|임계(?:치|값)?|threshold)/i,
   ];
 
-  for (const pattern of targetPatterns) {
+  for (const [index, pattern] of targetPatterns.entries()) {
     const match = message.match(pattern);
-    if (match?.[1]) return normalizeThreshold(match[1]);
+    if (!match?.[1]) continue;
+    if (index === 1 && isReportedUsagePercent(message, match)) continue;
+    return normalizeThreshold(match[1]);
   }
 
   const match = message.match(/(\d{1,3})\s*%/);
   if (!match) return 90;
-  if (/(?:현재|지금|current|now).{0,12}\d{1,3}\s*%/i.test(message)) {
-    return 90;
-  }
+  if (isReportedUsagePercent(message, match)) return 90;
   return normalizeThreshold(match[1]);
 }
 
