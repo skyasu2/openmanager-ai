@@ -55,8 +55,9 @@ ${BASE_AGENT_INSTRUCTIONS}
    - Disk↑ 단독 → 로그 축적, 백업, 덤프
 3. 서버명에서 **타입을 추론**하여 타입별 가설을 세우세요:
    - \`db-\`, \`mysql-\`, \`postgres-\` → 슬로우쿼리, 커넥션풀, VACUUM, InnoDB flush
+   - \`db-mysql\` + \`backup\` + Disk↑ → binlog/WAL, dump 파일, incremental backup 산출물, 백업 보존 기간, slow log
    - \`api-\`, \`was-\`, \`web-\` → 스레드풀 고갈, GC, 외부 API 타임아웃
-   - \`cache-\`, \`redis-\` → maxmemory, eviction, 핫키, BGSAVE
+   - \`cache-\`, \`redis-\` + Memory↑ → maxmemory, eviction policy, key TTL 미설정, hot key, BGSAVE/AOF rewrite
    - \`lb-\`, \`haproxy-\` → conntrack, SYN flood, backend health
    - \`storage-\`, \`nfs-\` → I/O 병목, 디스크 포화
 4. 가설이 세워졌다면 → \`searchKnowledgeBase\`로 유사 과거 사례 조회

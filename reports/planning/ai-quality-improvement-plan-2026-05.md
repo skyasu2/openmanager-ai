@@ -520,16 +520,16 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 **구현 방향**: KB seed 보강(서버 역할별 장애 원인 패턴) 또는 supervisor-prompt에 역할별 분석 힌트 추가. 현재 착수 범위는 prompt/instruction 힌트 보강으로 제한한다.
 
 **테스트 시나리오**:
-- [ ] `supervisor-prompt.test` / `analyst.test`: backup 서버 디스크 분석 지침에 binlog/dump/incremental backup 근거 포함 확인
+- [x] `supervisor-prompt.test` / `analyst.test`: backup 서버 디스크 분석 지침에 binlog/dump/incremental backup 근거 포함 확인
 - [ ] KRL smoke: "db 서버 디스크 증가 원인" 쿼리의 top result에 backup/binlog 관련 항목 포함
 
 **우선순위**: P2
 **SDD 게이트**: prompt/instruction 변경은 failing test 선행 커밋 후 구현한다. KB seed 변경으로 확장할 때는 `rag:analyze` governance 확인 후 진행한다.
 
-- [ ] 서버 역할별 원인 분석 prompt/instruction 힌트 설계
-- [ ] supervisor-prompt와 Analyst instruction에 역할 힌트 섹션 추가
+- [x] 서버 역할별 원인 분석 prompt/instruction 힌트 설계
+- [x] supervisor-prompt와 Analyst instruction에 역할 힌트 섹션 추가
 - [ ] 필요 시 KRL seed 항목 설계 및 `supabase:rag:smoke` 갱신
-- [ ] `rag:analyze` governance PASS 확인
+- [ ] prompt-only 변경으로 `rag:analyze` governance 미실행. KB seed 변경 시 실행
 
 ---
 
@@ -572,7 +572,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | G: AZ 집계·Top-N 추세 grounding | 🔴 High | Implemented (local) | 60~90분 | production QA 회귀 수정 |
 | H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Backlog | 진단 30 + 구현 60분 | 재현 빈도 증가 또는 다음 AI Engine 변경 시 |
 | **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Implemented (local)** | 진단 30 + 구현 60분 | `710c6165d` failing test 선행, local AI Engine type-check/full test PASS |
-| **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Approved | prompt 30 + 검증 30분 | `test(spec):` failing test 선행 |
+| **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Implemented (local) | prompt 30 + 검증 30분 | prompt/instruction 힌트 반영 |
 | **I-3: Reporter 기준 명시** | 🟢 P3 | **Implemented (local)** | 30분 | Reporter UI/다운로드 기준 구분 반영 |
 | D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |
 | E: 세션 메모리 확장 | 🟢 중장기 | Approved (Backlog) | 2~3시간 | failing test 선행 필요 |
