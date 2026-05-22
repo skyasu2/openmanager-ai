@@ -569,7 +569,7 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
 | G: AZ 집계·Top-N 추세 grounding | 🔴 High | SDD Approved | 60~90분 | production QA 회귀 수정 |
 | H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Backlog | 진단 30 + 구현 60분 | 재현 빈도 증가 또는 다음 AI Engine 변경 시 |
-| **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Backlog (Draft)** | 진단 30 + 구현 60분 | 수치 오류 재현 시 즉시, 또는 다음 AI Engine 변경 시 |
+| **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Approved** | 진단 30 + 구현 60분 | 수치 오류 재현 시 즉시, 또는 다음 AI Engine 변경 시 |
 | **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Backlog (Draft) | KB seed 30 + 검증 30분 | 다음 KRL seed 변경 시 |
 | **I-3: Reporter 기준 명시** | 🟢 P3 | Backlog (Draft) | 30분 | 사용자 혼란 재현 시 |
 | D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |
