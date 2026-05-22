@@ -72,7 +72,7 @@ if command -v timeout >/dev/null 2>&1; then
     echo "⚠️ Type-check timed out after ${TYPECHECK_CHANGED_TIMEOUT_SECONDS}s."
     if [ "$TYPECHECK_CHANGED_SOFT_TIMEOUT" = "true" ]; then
       write_status "soft-timeout"
-      echo "ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 local Docker CI/Vercel 전체 타입체크에 위임합니다."
+      echo "ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 ci:local / Vercel 전체 타입체크에 위임합니다."
       exit 0
     fi
     write_status "timeout"

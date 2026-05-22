@@ -475,7 +475,7 @@ function runBuildValidation(changedFilesResult) {
   if (buildValidation.mode === 'known-no-op') {
     typeCheckStatus = 'skipped-no-op-push';
     console.log('⚪ TypeScript 검증 스킵 (known no-op push)');
-    console.log('ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨');
+    console.log('ℹ️  Full build/type-check는 필요 시 ci:local 또는 Vercel에서 계속 검증됨');
     return;
   }
 
@@ -508,7 +508,7 @@ function runBuildValidation(changedFilesResult) {
         skipDescription?.message || '⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)'
       );
       console.log(
-        'ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨'
+        'ℹ️  Full build/type-check는 필요 시 ci:local 또는 Vercel에서 계속 검증됨'
       );
       return;
     }
@@ -553,7 +553,7 @@ function runBuildValidation(changedFilesResult) {
       if (changedStatus === 'soft-timeout') {
         typeCheckStatus = 'delegated-soft-timeout';
         console.log(
-          '⚪ Root TypeScript 증분 검증 soft-timeout, local Docker CI/Vercel 전체 타입체크로 위임'
+          '⚪ Root TypeScript 증분 검증 soft-timeout, ci:local / Vercel 전체 타입체크로 위임'
         );
       } else {
         console.log('✅ Root TypeScript 검증 통과');
@@ -578,7 +578,7 @@ function runBuildValidation(changedFilesResult) {
     if (typeCheckStatus !== 'delegated-soft-timeout') {
       typeCheckStatus = 'passed';
     }
-    console.log('ℹ️  Full build는 필요 시 local Docker CI와 Vercel에서 실행됨');
+    console.log('ℹ️  Full build는 필요 시 ci:local 또는 Vercel에서 실행됨');
   } else {
     typeCheckStatus = 'delegated';
     console.log('🐢 Full Build 검증 (QUICK_PUSH=false)...');
@@ -640,7 +640,7 @@ function printSummary(duration) {
   if (typeCheckStatus === 'passed') {
     console.log('  ✅ TypeScript check passed');
   } else if (typeCheckStatus === 'delegated-soft-timeout') {
-    console.log('  ⚪ TypeScript delegated after soft-timeout (local Docker CI/Vercel)');
+    console.log('  ⚪ TypeScript delegated after soft-timeout (ci:local / Vercel)');
   } else if (typeCheckStatus === 'skipped-docs-only') {
     console.log('  ⚪ TypeScript skipped (docs/report-only push)');
   } else if (typeCheckStatus === 'skipped-no-relevant-ts') {
@@ -678,7 +678,7 @@ function printSummary(duration) {
   } else if (!QUICK_PUSH && !isLimitedMode) {
     console.log('  ✅ Full build passed');
   } else {
-    console.log('  ⚪ Full build → local Docker CI / Vercel');
+    console.log('  ⚪ Full build → ci:local / Vercel');
   }
   if (validationMode === 'guard-only') {
     console.log('  ⚪ Environment check skipped (fast mode)');
