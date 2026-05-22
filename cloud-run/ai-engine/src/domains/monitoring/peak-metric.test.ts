@@ -145,4 +145,34 @@ describe('parseMonitoringPeakMetricMessage', () => {
     expect(evidence?.prompt).toContain('패키지 설치');
     expect(evidence?.prompt).toContain('서비스 재시작');
   });
+
+  it('returns deterministic evidence for the 24h CPU/load peak QA query', async () => {
+    const query =
+      '지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대는 언제야?';
+    const parsed = parseMonitoringPeakMetricMessage(query);
+    const evidence = await monitoringPeakMetricEvidenceProvider.resolve({
+      requestId: 'peak-qa-24h-cpu-load',
+      domainId: MONITORING_DOMAIN_ID,
+      message: query,
+      messages: [{ role: 'user', content: query }],
+    });
+
+    expect(parsed).toMatchObject({
+      metric: 'load',
+      windowHours: 24,
+    });
+    expect(evidence?.metadata).toMatchObject({
+      metric: 'load',
+      sourceMetric: 'load1',
+      windowHours: 24,
+      responsePolicy: 'deterministic_answer',
+    });
+    expect(evidence?.fallback).toContain('지난 24시간 기준');
+    expect(evidence?.fallback).toMatch(/\d{4}-\d{2}-\d{2}.*\d{2}:\d{2}/);
+    expect(evidence?.fallback).toMatch(
+      /\b(?:api|web|db|cache|storage|lb|monitoring|batch|worker)-[a-z0-9]+(?:-[a-z0-9]+)*\b/
+    );
+    expect(evidence?.fallback).toMatch(/\d+(?:\.\d+)?/);
+    expect(evidence?.fallback).not.toContain('CPU 사용률 상위 3대');
+  });
 });

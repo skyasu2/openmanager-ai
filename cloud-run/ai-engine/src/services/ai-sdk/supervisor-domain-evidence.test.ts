@@ -198,6 +198,34 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('resolves the 24h CPU load peak QA query as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query:
+        '지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대는 언제야?',
+      domain: monitoringDomainPack,
+      sessionId: 'session-qa-24h-cpu-load-peak',
+      traceId: 'trace-qa-24h-cpu-load-peak',
+    });
+
+    expect(support?.id).toBe('monitoring-peak-metric');
+    expect(support?.fallback).toContain('지난 24시간 기준');
+    expect(support?.fallback).toContain('상위 서버');
+    expect(support?.fallback).toMatch(/\d{4}-\d{2}-\d{2}.*\d{2}:\d{2}/);
+    expect(support?.fallback).not.toContain('CPU 사용률 상위 3대');
+    expect(support?.metadata).toMatchObject({
+      metric: 'load',
+      sourceMetric: 'load1',
+      windowHours: 24,
+      responsePolicy: 'deterministic_answer',
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_peak',
+        selectedEvidenceProvider: 'monitoring-peak-metric',
+        evidenceAvailable: true,
+      },
+    });
+  });
+
   it('resolves current metric ranking as deterministic domain evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query: '현재 CPU 사용률 상위 3대 알려줘',

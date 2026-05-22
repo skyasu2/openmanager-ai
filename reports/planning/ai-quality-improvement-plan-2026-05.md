@@ -427,6 +427,8 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 
 ### H-2: monitoringPeakMetricEvidenceProvider 응답 내용 부실
 
+**Status**: Approved (2026-05-22)
+
 **증상**: `QA-20260522-0558 Q3` — "지난 24시간 동안 전체 서버에서 CPU load가 가장 높았던 시간대는 언제야?"
 → "모니터링 피크 지표 근거" 확인 (provider 트리거됨), 그러나 응답은 섹션 제목만 반환, 기간 표시 "최근 1시간"
 
@@ -441,6 +443,11 @@ Cloud Run: selectExecutionMode(query, analysisMode, intentFrame, inputType)
 | H2-B | evidence provider의 `prompt` 문자열이 LLM에게 빈 placeholder만 제공하고 실제 데이터 없음 | `monitoringPeakMetricEvidenceProvider.resolve` 반환값 확인 |
 | H2-C | history 데이터가 충분하지 않아 peak 계산 결과가 빈 상태 | `getTimeRangeData(24)` 반환 슬롯 수 확인 |
 | H2-D | LLM이 evidence prompt의 데이터를 응답에 포함하지 않고 자체 생성 | evidence `fallback` 필드를 직접 사용하도록 policy 강화 |
+
+**진단 결과(2026-05-22)**:
+- H2-A는 현재 코드상 24h 파싱이 가능하다.
+- H2-B/H2-C는 provider fallback이 피크 시각·서버명·수치를 만들고 있어 주원인 가능성이 낮다.
+- H2-D 재현 가능성이 높다. 일반 peak evidence는 `responsePolicy=deterministic_answer`가 없어 stream path에서 LLM 합성으로 넘어갈 수 있다.
 
 **`HOURS_PATTERN` 분석** (`peak-metric-intent.ts`):
 ```
