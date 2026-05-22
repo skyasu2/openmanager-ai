@@ -109,9 +109,6 @@ const streamRequestSchema = z.object({
     .optional(),
   enableWebSearch: z.union([z.boolean(), z.literal('auto')]).optional(),
   enableRAG: z.boolean().optional(),
-  // Backward compatibility only: accepted from older callers, ignored by
-  // supervisor routing and execution.
-  analysisMode: z.enum(['auto', 'thinking']).optional(),
   internalDisclosureMode: z.enum(['user', 'developer']).optional(),
   queryAsOf: z.unknown().optional(),
   deviceType: z.enum(['mobile', 'desktop']).optional(),

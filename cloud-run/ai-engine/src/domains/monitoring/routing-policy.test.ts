@@ -294,7 +294,6 @@ describe('selectExecutionMode', () => {
         '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘';
 
       expect(selectExecutionMode(query)).toBe('single');
-      expect(selectExecutionMode(query, 'thinking')).toBe('single');
       await expect(createPrepareStep(query)({ stepNumber: 0 })).resolves.toEqual({
         activeTools: ['finalAnswer'],
         toolChoice: 'required',

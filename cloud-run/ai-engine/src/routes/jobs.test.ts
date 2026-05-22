@@ -294,14 +294,13 @@ describe('Jobs Routes', () => {
       );
     });
 
-    it('RAG/Web 옵션을 supervisor stream에 보존하고 legacy analysisMode는 무시한다', async () => {
+    it('RAG/Web 옵션을 supervisor stream에 보존한다', async () => {
       const res = await app.request('/jobs/process', {
         method: 'POST',
         body: JSON.stringify({
           jobId: 'job-tool-options',
           messages: [{ role: 'user', content: '서버 상태 확인' }],
           sessionId: 'session-tool-options',
-          analysisMode: 'thinking',
           enableRAG: true,
           enableWebSearch: true,
         }),
@@ -316,17 +315,10 @@ describe('Jobs Routes', () => {
           enableWebSearch: true,
         })
       );
-      expect(
-        vi.mocked(executeSupervisorStream).mock.calls[0]?.[0]
-      ).not.toHaveProperty('analysisMode');
       expect(vi.mocked(storeJobResult)).toHaveBeenCalledWith(
         'job-tool-options',
         'AI 응답',
-        expect.objectContaining({
-          metadata: expect.not.objectContaining({
-            analysisMode: expect.anything(),
-          }),
-        })
+        expect.any(Object)
       );
     });
 

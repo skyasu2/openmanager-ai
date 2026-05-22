@@ -677,8 +677,6 @@ describe('AIWorkspace', () => {
     expect(lastCall?.estimatedWaitSeconds).toBe(30);
     expect(lastCall?.webSearchEnabled).toBe(true);
     expect(lastCall).not.toHaveProperty('ragEnabled');
-    expect(lastCall).not.toHaveProperty('analysisMode');
-    expect(lastCall).not.toHaveProperty('onSelectAnalysisMode');
     expect(lastCall?.queuedQueries).toEqual([{ id: 1, text: 'queued' }]);
   });
 

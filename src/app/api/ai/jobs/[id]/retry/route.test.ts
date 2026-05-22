@@ -127,7 +127,6 @@ describe('POST /api/ai/jobs/[id]/retry trigger readiness', () => {
       sessionId: 'session-1234',
       metadata: {
         retryCount: 0,
-        analysisMode: 'thinking',
         enableRAG: true,
         enableWebSearch: true,
       },
@@ -163,6 +162,5 @@ describe('POST /api/ai/jobs/[id]/retry trigger readiness', () => {
       enableRAG: true,
       enableWebSearch: true,
     });
-    expect(body.analysisMode).toBeUndefined();
   });
 });
