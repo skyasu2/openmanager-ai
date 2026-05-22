@@ -207,7 +207,7 @@ Rules:
 - Set executionMode "single" for simple/current metric lookups, rankings, status checks, and formatting-only rewrites.
 - Set intent "anomaly_detection" for current anomaly, abnormal, spike, detection, "이상 탐지", "비정상 감지" questions.
 - Set intent "anomaly_prediction" for future-looking anomaly signal questions such as "이상 징후 예측", "미리 감지", or "위험 징후".
-- Set intent "capacity_forecast" for resource exhaustion/capacity forecasts such as disk/memory/cpu saturation, "고갈", "임계치 넘기 전", or "언제 포화".
+- Set intent "capacity_forecast" for resource exhaustion/capacity forecasts such as disk/memory/cpu saturation, "고갈", "임계치 넘기 전", "언제 포화", or "언제 90% 넘을까".
 - Set intent "failure_risk" for broad failure-risk questions such as "장애 날 것 같은 서버", "장애 위험", or "불안정한 서버".
 - Set intent "root_cause" for RCA, causality, correlation, incident cause, "왜", "원인", "근본 원인" questions.
 - Set intent "incident_report" for incident/failure report creation or timeline report requests.
@@ -337,11 +337,86 @@ function inferGroupTargetFromQuery(query: string): string | undefined {
   return GROUP_TARGET_HINTS.find((hint) => hint.pattern.test(query))?.target;
 }
 
+const CAPACITY_FORECAST_QUERY_PATTERN =
+  /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}언제|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘)|고갈|포화)/i;
+
+function inferCapacityMetricForQuery(
+  query: string,
+  entities: ExtractedEntities
+): SemanticMetric {
+  const frameMetric = entities.intentFrame?.metric;
+  if (
+    frameMetric &&
+    frameMetric !== 'unknown' &&
+    frameMetric !== 'load1' &&
+    frameMetric !== 'load5'
+  ) {
+    return frameMetric;
+  }
+  if (entities.metric) return entities.metric;
+  if (/\bcpu\b|씨피유/i.test(query)) return 'cpu';
+  if (/메모리|\bmem\b|\bmemory\b/i.test(query)) return 'memory';
+  if (/디스크|\bdisk\b|스토리지|\bstorage\b|용량/i.test(query)) return 'disk';
+  if (/네트워크|\bnetwork\b|\bnet\b/i.test(query)) return 'network';
+  return 'all';
+}
+
+function buildCapacityForecastCorrection(
+  entities: ExtractedEntities,
+  query: string
+): ExtractedEntities | null {
+  if (!CAPACITY_FORECAST_QUERY_PATTERN.test(query)) return null;
+
+  const groupTarget = inferGroupTargetFromQuery(query);
+  const hasKnownServer = queryMentionsKnownServerId(query);
+  const targets =
+    hasKnownServer && entities.server
+      ? [entities.server]
+      : groupTarget
+        ? [groupTarget]
+        : (entities.intentFrame?.targets ?? []);
+  const scope: SemanticScope = hasKnownServer
+    ? 'server'
+    : groupTarget
+      ? 'group'
+      : 'whole_fleet';
+  const metric = inferCapacityMetricForQuery(query, entities);
+  const confidence = Math.max(
+    entities.intentFrame?.confidence ?? 0,
+    entities.confidence,
+    80
+  );
+
+  const { intentFrame: _intentFrame, server: _server, ...rest } = entities;
+  return {
+    ...rest,
+    ...(hasKnownServer && entities.server ? { server: entities.server } : {}),
+    intentFrame: {
+      domain: 'monitoring',
+      intent: 'capacity_forecast',
+      scope,
+      targets,
+      metric,
+      timeWindow: '24h',
+      aggregation: 'summary',
+      ambiguity: 'low',
+      executionMode: 'multi',
+      confidence,
+    },
+    confidence,
+  };
+}
+
 export function normalizeExtractedEntitiesForQuery(
   data: unknown,
   query: string
 ): ExtractedEntities {
   const entities = normalizeExtractedEntities(data);
+  const capacityCorrection = buildCapacityForecastCorrection(entities, query);
+  if (capacityCorrection) {
+    return capacityCorrection;
+  }
+
   const groupTarget = inferGroupTargetFromQuery(query);
   if (!groupTarget || queryMentionsKnownServerId(query)) {
     return entities;

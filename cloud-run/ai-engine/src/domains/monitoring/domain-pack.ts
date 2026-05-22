@@ -41,6 +41,10 @@ import {
   monitoringServerHealthEvidenceProvider,
   parseCurrentMetricsEvidenceRequest,
 } from './current-metrics-evidence-provider';
+import {
+  monitoringCapacityForecastEvidenceProvider,
+  monitoringLocationLoadBalanceEvidenceProvider,
+} from './load-balance-capacity-evidence-provider';
 import { monitoringPeakMetricEvidenceProvider } from './peak-metric-evidence-provider';
 import { parseMonitoringPeakMetricIntent } from './peak-metric-intent';
 import {
@@ -54,6 +58,7 @@ import {
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
   MONITORING_METRIC_TREND_CAPABILITY_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
+  MONITORING_LOCATION_LOAD_BALANCE_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
 export {
@@ -67,6 +72,7 @@ export {
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
   MONITORING_METRIC_TREND_CAPABILITY_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
+  MONITORING_LOCATION_LOAD_BALANCE_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
 
@@ -306,6 +312,14 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
       optionalSlots: ['targets', 'scope', 'timeWindow'],
     },
     {
+      id: MONITORING_LOCATION_LOAD_BALANCE_CAPABILITY_ID,
+      description:
+        'Resolve availability-zone load balance summaries directly from monitoring snapshots.',
+      intents: ['location_load_balance'],
+      requiredSlots: ['scope'],
+      optionalSlots: ['metric', 'targets'],
+    },
+    {
       id: MONITORING_FAILURE_RISK_CAPABILITY_ID,
       description:
         'Route broad failure-risk screening requests to the Analyst evidence path.',
@@ -362,6 +376,8 @@ export const monitoringDomainPack: AssistantDomain = {
   intentParser: monitoringIntentParser,
   evidenceProviders: [
     monitoringPeakMetricEvidenceProvider,
+    monitoringLocationLoadBalanceEvidenceProvider,
+    monitoringCapacityForecastEvidenceProvider,
     monitoringMetricCurrentEvidenceProvider,
     monitoringMetricRankingEvidenceProvider,
     monitoringMetricTrendEvidenceProvider,

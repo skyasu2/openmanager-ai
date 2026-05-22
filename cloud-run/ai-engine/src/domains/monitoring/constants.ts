@@ -16,3 +16,5 @@ export const MONITORING_CAPACITY_FORECAST_CAPABILITY_ID =
   'monitoring.capacity_forecast';
 export const MONITORING_FAILURE_RISK_CAPABILITY_ID =
   'monitoring.failure_risk';
+export const MONITORING_LOCATION_LOAD_BALANCE_CAPABILITY_ID =
+  'monitoring.location_load_balance';

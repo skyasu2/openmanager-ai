@@ -70,6 +70,9 @@ function resolveIntentFrameExecutionMode(
   return intentFrame.executionMode;
 }
 
+const CAPACITY_FORECAST_MODE_PATTERNS =
+  /(?:cpu|씨피유|메모리|mem|memory|디스크|disk|스토리지|storage|네트워크|network|용량).{0,32}(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|용량\s*(?:예측|계획|부족|고갈)|임계(?:치|값)?.{0,24}(?:초과|도달|넘)|고갈|포화)|(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)).{0,32}(?:cpu|씨피유|메모리|mem|memory|디스크|disk|스토리지|storage|네트워크|network|용량)/i;
+
 export function selectExecutionMode(
   query: string,
   analysisMode?: AnalysisMode,
@@ -96,6 +99,10 @@ export function selectExecutionMode(
   }
 
   if (FORCE_KB_QUERY_PATTERN.test(q)) {
+    return 'multi';
+  }
+
+  if (CAPACITY_FORECAST_MODE_PATTERNS.test(q)) {
     return 'multi';
   }
 
@@ -126,7 +133,7 @@ export type IntentCategory = 'anomaly' | 'prediction' | 'math' | 'rca' | 'adviso
 
 const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
-  prediction: /예측|트렌드|추이|전망|forecast|추세|임계치.*전|넘기\s*전|미리.*알|고갈/i,
+  prediction: /예측|트렌드|추이|전망|forecast|추세|언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}언제|임계(?:치|값)?.*(?:전|넘|초과|도달)|넘기\s*전|미리.*알|고갈|포화/i,
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
   math: /(?:계산|연산|수식|중앙값|표준편차|percentile|p\d{2}|증가율|성장률|지수|루트|\d+(?:\.\d+)?\s*(?:[+*\/\^]|\s-\s)\s*\d+)/i,
   advisor:
