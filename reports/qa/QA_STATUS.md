@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-22 09:36:20 KST
+> Generated at: 2026-05-22 11:32:10 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 555 |
-| Total Runs (Counted) | 442 |
+| Total Recorded Runs | 556 |
+| Total Runs (Counted) | 443 |
 | Non-counted Runs | 113 |
-| Total Checks | 4050 |
-| Passed | 3894 |
+| Total Checks | 4055 |
+| Passed | 3897 |
 | Failed | 145 |
 | Completed Items | 632 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 36 |
+| Wont-Fix Items | 38 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260522-0556 (2026-05-22T00:09:55.910Z) |
-| Latest Recorded Run | QA-20260522-0557 (2026-05-22T00:36:19.482Z) |
+| Last Counted Run | QA-20260522-0558 (2026-05-22T02:32:10.298Z) |
+| Latest Recorded Run | QA-20260522-0558 (2026-05-22T02:32:10.298Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260522-0557 (2026-05-22T00:36:19.482Z)
+Latest run: QA-20260522-0558 (2026-05-22T02:32:10.298Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | yes | monitoringCapacityForecastEvidenceProvider supervisor intent 라우팅 점검, peak metric 24h 창 지원 여부 검토 |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | dashboard | checked | normal | Targeted QA run. Vercel production 정상 동작 확인. 함수 실행 이상 없음. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-21T00:36:19.482Z -> 2026-05-22T00:36:19.482Z (24h)
+- Window: 2026-05-21T02:32:10.298Z -> 2026-05-22T02:32:10.298Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 10
 
@@ -62,30 +62,32 @@ Latest run: QA-20260522-0557 (2026-05-22T00:36:19.482Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-21T00:36:19.482Z -> 2026-05-22T00:36:19.482Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 2
+- Window: 2026-05-21T02:32:10.298Z -> 2026-05-22T02:32:10.298Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 7
 - Drift rate: 0%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | deterministic | 2 | 0% | 2ms | 2ms | QA-20260522-0556 |
+| /api/ai/supervisor/stream/v2 | deterministic | 5 | 0% | 1ms | 2ms | QA-20260522-0558 |
+| /api/ai/supervisor/stream/v2 | single-agent | 2 | 0% | 0ms | 0ms | QA-20260522-0558 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 6176fe32
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_EfWEBPcgUWKRjCh29WZfbSNypakd / SHA 1b0b329b
 - Coverage Packs: ai-core
-- Covered Surfaces: /dashboard, AI 사이드바 Chat, AI Q1 이상징후탐지, AI Q2 용량예측, AI Q3 장애원인분석, AI Q4 에러로그TOP3, AI Q5 AZ부하비교
-- Skipped Surfaces: login, observability pack, auto-report
+- Covered Surfaces: AI sidebar chat, capacity forecast routing fix, AZ load balance evidence provider, metric ranking evidence provider, server health evidence provider, peak metric evidence provider
+- Skipped Surfaces: dashboard UI, reporter, anomaly detection tab
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab pipeline v8.12.5 (success) | [GitLab pipeline v8.12.5 (success)](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545042099) | - |
+| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
@@ -95,7 +97,8 @@ Latest run: QA-20260522-0557 (2026-05-22T00:36:19.482Z)
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260522-0558)
+  next: monitoringCapacityForecastEvidenceProvider supervisor intent 라우팅 점검, peak metric 24h 창 지원 여부 검토
 
 ## Pending Improvements
 
@@ -107,7 +110,7 @@ Latest run: QA-20260522-0557 (2026-05-22T00:36:19.482Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 25
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 27
 
 ### Platform Constraint
 
@@ -180,11 +183,15 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] api-system-abort-race-condition: /api/system ERR_ABORTED 경쟁상태 해결 (seen 1회, last QA-20260519-0535)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] capacity-forecast-evidence-routing: monitoringCapacityForecastEvidenceProvider 라우팅 미트리거 (seen 1회, last QA-20260522-0558)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] landing-tech-stack-version-copy-drift: 기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리 (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] mobile-header-density: Review dashboard mobile header density around AI CTA and profile cluster (seen 1회, last QA-20260418-0303)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] nlq-provider-ministral3b-candidate-v811157: Evaluate Mistral ministral-3b as front NLQ primary or fallback after schema compatibility fix (seen 1회, last QA-20260516-0507)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] peak-metric-response-content: monitoringPeakMetricEvidenceProvider 응답 내용 부실 (seen 1회, last QA-20260522-0558)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -840,6 +847,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260522-0558 | 2026-05-22T02:32:10.298Z | targeted | yes | yes | v8.12.5 신규 변경사항 AI 어시스턴트 평가 (5문항) - evidence providers + routing fix | 5 | 0 | 0 | 0 | 2 | 1 |
 | QA-20260522-0557 | 2026-05-22T00:36:19.482Z | targeted | no | no | v8.12.4 AI 어시스턴트 신규 5문항 평가 (Vercel Production) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0556 | 2026-05-22T00:09:55.910Z | targeted | yes | yes | Production AI QA - v8.12.4 Cache Scope and Disk Trend | 12 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260522-0555 | 2026-05-21T21:20:59.747Z | targeted | yes | yes | Vercel Release Smoke - v8.12.1 AI Grounding Release | 12 | 1 | 0 | 0 | 0 | 0 |
@@ -859,4 +867,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260520-0541 | 2026-05-20T03:16:25.342Z | targeted | no | no | Cloud Run Vision Provider Answer Quality Smoke | 2 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260520-0540 | 2026-05-20T02:11:54.045Z | targeted | no | no | AI Assistant cleanup local dev supervisor report smoke | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260519-0539 | 2026-05-19T11:41:05.468Z | targeted | no | no | Manual Cloud Run QA - Z.AI GLM Vision fallback live smoke | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260519-0538 | 2026-05-19T11:08:35.867Z | targeted | yes | yes | Production Vision Attachment Routing QA - v8.11.184 | 14 | 2 | 0 | 0 | 7 | 1 |

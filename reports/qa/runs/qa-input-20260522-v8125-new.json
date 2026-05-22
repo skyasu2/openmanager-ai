@@ -1,0 +1,146 @@
+{
+  "runTitle": "v8.12.5 신규 변경사항 AI 어시스턴트 평가 (5문항) - evidence providers + routing fix",
+  "owner": "claude",
+  "source": "chrome-devtools-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI sidebar chat",
+    "capacity forecast routing fix",
+    "AZ load balance evidence provider",
+    "metric ranking evidence provider",
+    "server health evidence provider",
+    "peak metric evidence provider"
+  ],
+  "skippedSurfaces": ["dashboard UI", "reporter", "anomaly detection tab"],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "1b0b329b6bdde0df1b0761e1fdd4748104f9f3c5",
+    "deploymentId": "dpl_EfWEBPcgUWKRjCh29WZfbSNypakd",
+    "deploymentUrl": "https://openmanager-iy3dwg4nd-skyasus-projects.vercel.app"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 3,
+    "failed": 0,
+    "partial": 2
+  },
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar - capacity forecast 쿼리 (db-mysql-dc1-backup 69%, 언제 90% 넘을까)",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 0,
+      "classification": "partial",
+      "driftReasonCodes": ["capacity_forecast_evidence_provider_not_triggered"],
+      "source": "chrome-devtools-mcp snapshot",
+      "note": "CAPACITY_FORECAST_EXCLUSION_PATTERN으로 artifact 오라우팅은 방지됨(✅). 그러나 monitoringCapacityForecastEvidenceProvider 대신 이상감지/추세 분석 경로로 라우팅됨. 도구: 이상감지/추세 분석 확인"
+    },
+    {
+      "surface": "AI sidebar - AZ 부하 균형 쿼리 (가용 영역별 부하 균형)",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "chrome-devtools-mcp snapshot",
+      "note": "monitoring-location-load-balance evidence provider 정상 동작. DC1-AZ1/AZ2/AZ3 CPU/MEM/DISK 모두 정확. 응답 빠름"
+    },
+    {
+      "surface": "AI sidebar - CPU 피크 시간대 쿼리 (지난 24시간 CPU load 가장 높은 시간대)",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 0,
+      "classification": "partial",
+      "driftReasonCodes": ["response_content_truncated", "time_window_mismatch"],
+      "source": "chrome-devtools-mcp snapshot",
+      "note": "monitoringPeakMetricEvidenceProvider 트리거됨(모니터링 피크 지표 근거). 그러나 응답 내용이 섹션 제목만 있고 실제 데이터(피크 시각, 서버별 수치) 없음. 기간 '최근 1시간'으로 24시간 요청 불일치"
+    },
+    {
+      "surface": "AI sidebar - MEM 상위 3대 쿼리 (메모리 사용량 기준 상위 3대)",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "chrome-devtools-mcp snapshot",
+      "note": "monitoring-metric-ranking evidence provider 정상 동작. 상위 3대: api-was-dc1-01(76%), db-mysql-dc1-replica(59%), api-was-dc1-02(57%) - 대시보드 데이터와 정확히 일치. 서버별 확인 항목 제공. 응답 빠름"
+    },
+    {
+      "surface": "AI sidebar - 전체 서버 건강 상태 요약 쿼리",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "chrome-devtools-mcp snapshot",
+      "note": "monitoring-server-health evidence provider 정상 동작. 전체 18대: 정상 17대/경고 1대/위험 0대/오프라인 0대, 평균 CPU 34%/MEM 46%/DISK 37% - 대시보드와 정확히 일치. 응답 빠름"
+    }
+  ],
+  "notes": [
+    "v8.12.5 신규 변경사항 집중 검증: CAPACITY_FORECAST_EXCLUSION_PATTERN, monitoringLocationLoadBalanceEvidenceProvider, monitoringCapacityForecastEvidenceProvider",
+    "기존 QA-20260522-0557(5문항)과 중복 없는 신규 질문으로 구성",
+    "Q1(PARTIAL): capacity forecast routing fix는 artifact 오라우팅 방지 확인. 그러나 monitoringCapacityForecastEvidenceProvider는 미트리거 - 이상감지 경로로 우회됨. 백로그 등록 필요",
+    "Q2(PASS): monitoring-location-load-balance evidence provider 완벽 동작. AZ별 CPU/MEM/DISK 비교 즉각 응답",
+    "Q3(PARTIAL): monitoringPeakMetricEvidenceProvider 트리거되었으나 응답 내용 부실(섹션 제목만). 24시간 요청에 '최근 1시간' 창 사용. peak metric 응답 품질 개선 필요",
+    "Q4(PASS): monitoring-metric-ranking MEM 상위 3대 정확. 대시보드 수치 일치",
+    "Q5(PASS): monitoring-server-health 전체 상태 요약 정확. 카운트/평균 수치 일치",
+    "Chrome DevTools MCP 사용 (Playwright MCP 브라우저 세션 없음)"
+  ],
+  "pendingImprovements": [
+    {
+      "id": "capacity-forecast-evidence-routing",
+      "title": "monitoringCapacityForecastEvidenceProvider 라우팅 미트리거",
+      "priority": "P2",
+      "isBlocking": false,
+      "note": "'언제 90% 넘을까' 쿼리 시 anomaly detection 경로로 우회됨. supervisor의 intent/capabilityId가 capacity_forecast로 분류되지 않는 것이 원인으로 추정"
+    },
+    {
+      "id": "peak-metric-response-content",
+      "title": "monitoringPeakMetricEvidenceProvider 응답 내용 부실",
+      "priority": "P2",
+      "isBlocking": false,
+      "note": "24시간 피크 쿼리에서 섹션 제목만 반환, 실제 피크 시각/수치 없음. 시간 창 파라미터 24h 미지원 가능성"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "v8.12.5 신규 evidence providers(location-load-balance, metric-ranking, server-health) 정상 동작 확인. capacity-forecast provider 트리거 미흡, peak-metric 응답 내용 부실 개선 필요",
+      "nextAction": "monitoringCapacityForecastEvidenceProvider supervisor intent 라우팅 점검, peak metric 24h 창 지원 여부 검토"
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "dashboard",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-22T11:29:00+09:00",
+      "summary": "Targeted QA run. Vercel production 정상 동작 확인. 함수 실행 이상 없음.",
+      "evidence": "chrome-devtools-mcp QA 세션에서 AI 어시스턴트 5문항 응답 정상 수신 확인",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.5 (success)",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545042099"
+    }
+  ]
+}

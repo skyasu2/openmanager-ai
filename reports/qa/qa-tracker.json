@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-22T00:36:19.482Z"
+    "updatedAt": "2026-05-22T02:32:10.298Z"
   },
   "sequence": {
-    "nextRunNumber": 558
+    "nextRunNumber": 559
   },
   "summary": {
-    "totalRecordedRuns": 555,
-    "totalRuns": 442,
+    "totalRecordedRuns": 556,
+    "totalRuns": 443,
     "excludedRuns": 113,
-    "totalChecks": 4050,
-    "totalPassed": 3894,
+    "totalChecks": 4055,
+    "totalPassed": 3897,
     "totalFailed": 145,
     "completionRate": 100,
     "completedItems": 632,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 36,
+    "wontFixItems": 38,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260522-0556",
-    "lastRecordedAt": "2026-05-22T00:09:55.910Z",
-    "latestRecordedRunId": "QA-20260522-0557",
-    "latestRecordedAt": "2026-05-22T00:36:19.482Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260522-0558",
+    "lastRecordedAt": "2026-05-22T02:32:10.298Z",
+    "latestRecordedRunId": "QA-20260522-0558",
+    "latestRecordedAt": "2026-05-22T02:32:10.298Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15761,6 +15761,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-22T00:09:55.910Z"
+    },
+    "capacity-forecast-evidence-routing": {
+      "id": "capacity-forecast-evidence-routing",
+      "title": "monitoringCapacityForecastEvidenceProvider 라우팅 미트리거",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260522-0558",
+      "firstSeenAt": "2026-05-22T02:32:10.298Z",
+      "lastSeenRunId": "QA-20260522-0558",
+      "lastSeenAt": "2026-05-22T02:32:10.298Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "'언제 90% 넘을까' 쿼리 시 anomaly detection 경로로 우회됨. supervisor의 intent/capabilityId가 capacity_forecast로 분류되지 않는 것이 원인으로 추정",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-22T02:32:10.298Z"
+    },
+    "peak-metric-response-content": {
+      "id": "peak-metric-response-content",
+      "title": "monitoringPeakMetricEvidenceProvider 응답 내용 부실",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260522-0558",
+      "firstSeenAt": "2026-05-22T02:32:10.298Z",
+      "lastSeenRunId": "QA-20260522-0558",
+      "lastSeenAt": "2026-05-22T02:32:10.298Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "24시간 피크 쿼리에서 섹션 제목만 반환, 실제 피크 시각/수치 없음. 시간 창 파라미터 24h 미지원 가능성",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-22T02:32:10.298Z"
     }
   },
   "runs": [
@@ -63995,6 +64043,138 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260522-0558",
+      "recordedAt": "2026-05-22T02:32:10.298Z",
+      "recordedAtKst": "2026-05-22 11:32:10 KST",
+      "title": "v8.12.5 신규 변경사항 AI 어시스턴트 평가 (5문항) - evidence providers + routing fix",
+      "owner": "claude",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260522-0558.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EfWEBPcgUWKRjCh29WZfbSNypakd",
+        "deploymentUrl": "https://openmanager-iy3dwg4nd-skyasus-projects.vercel.app",
+        "commitSha": "1b0b329b6bdde0df1b0761e1fdd4748104f9f3c5"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI sidebar chat",
+        "capacity forecast routing fix",
+        "AZ load balance evidence provider",
+        "metric ranking evidence provider",
+        "server health evidence provider",
+        "peak metric evidence provider"
+      ],
+      "skippedSurfaces": [
+        "dashboard UI",
+        "reporter",
+        "anomaly detection tab"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [
+        {
+          "surface": "AI sidebar - capacity forecast 쿼리 (db-mysql-dc1-backup 69%, 언제 90% 넘을까)",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "single-agent",
+          "latencyMs": 0,
+          "classification": "unknown",
+          "driftReasonCodes": [],
+          "source": "chrome-devtools-mcp snapshot"
+        },
+        {
+          "surface": "AI sidebar - AZ 부하 균형 쿼리 (가용 영역별 부하 균형)",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "chrome-devtools-mcp snapshot"
+        },
+        {
+          "surface": "AI sidebar - CPU 피크 시간대 쿼리 (지난 24시간 CPU load 가장 높은 시간대)",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "single-agent",
+          "latencyMs": 0,
+          "classification": "unknown",
+          "driftReasonCodes": [],
+          "source": "chrome-devtools-mcp snapshot"
+        },
+        {
+          "surface": "AI sidebar - MEM 상위 3대 쿼리 (메모리 사용량 기준 상위 3대)",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "chrome-devtools-mcp snapshot"
+        },
+        {
+          "surface": "AI sidebar - 전체 서버 건강 상태 요약 쿼리",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "chrome-devtools-mcp snapshot"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "v8.12.5 신규 evidence providers(location-load-balance, metric-ranking, server-health) 정상 동작 확인. capacity-forecast provider 트리거 미흡, peak-metric 응답 내용 부실 개선 필요",
+          "nextAction": "monitoringCapacityForecastEvidenceProvider supervisor intent 라우팅 점검, peak metric 24h 창 지원 여부 검토"
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "dashboard",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-22T11:29:00+09:00",
+          "summary": "Targeted QA run. Vercel production 정상 동작 확인. 함수 실행 이상 없음.",
+          "evidence": "chrome-devtools-mcp QA 세션에서 AI 어시스턴트 5문항 응답 정상 수신 확인",
+          "url": "https://openmanager-ai.vercel.app"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.5 (success)",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2545042099"
+        },
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 2
     }
   ],
   "experts": {
@@ -64003,17 +64183,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 279,
-      "appropriateCount": 238,
+      "seenCount": 280,
+      "appropriateCount": 239,
       "partialCount": 41,
       "inappropriateCount": 0,
-      "improvementNeededCount": 51,
-      "lastRunId": "QA-20260522-0556",
-      "lastSeenAt": "2026-05-22T00:09:55.910Z",
+      "improvementNeededCount": 52,
+      "lastRunId": "QA-20260522-0558",
+      "lastSeenAt": "2026-05-22T02:32:10.298Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Q3 cache group scope and Q4 disk trend regressions were validated against production stream responses.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "v8.12.5 신규 evidence providers(location-load-balance, metric-ranking, server-health) 정상 동작 확인. capacity-forecast provider 트리거 미흡, peak-metric 응답 내용 부실 개선 필요",
+      "lastNextAction": "monitoringCapacityForecastEvidenceProvider supervisor intent 라우팅 점검, peak metric 24h 창 지원 여부 검토"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
