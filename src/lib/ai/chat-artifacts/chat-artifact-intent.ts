@@ -62,6 +62,9 @@ const REPORT_ACTION_PATTERN =
 
 const MONITORING_PATTERN =
   /(이상\s*감지|이상감지|이상\s*탐지|추세|트렌드|리스크\s*(추세|분석)|예측|예상|anomaly|forecast|trend)/i;
+// 용량 예측·임계치 도달 시점 쿼리는 artifact가 아닌 일반 AI 경로로 처리
+const CAPACITY_FORECAST_EXCLUSION_PATTERN =
+  /언제\s*\d+\s*%(?:\s*(?:를|을|이|가))?\s*(?:넘|초과|도달)|용량\s*(?:예측|부족|고갈)|capacity\s*(?:forecast|plan|projection)|임계치\s*도달\s*시점|디스크\s*(?:가득|고갈|부족)\s*(?:언제|예상)/i;
 const MONITORING_ACTION_PATTERN =
   /(분석\s*(해|해줘|해주세요|해줄래|좀|부탁|요청)|분석해|실행|돌려|요약\s*(해|해줘|해주세요|해줄래|부탁|요청)|요약해|확인\s*(해|해줘|해주세요|해줄래|부탁|요청)|확인해|생성(?!\s*(방법|법|기능|설명|안내))|만들|다운로드(?!\s*(방법|법|기능|설명|안내))|예측\s*(해|해줘|해주세요|해줄래|부탁|요청)|예측해|forecast|analy[sz]e|run)/i;
 const MONITORING_ARTIFACT_PATTERN =
@@ -145,6 +148,7 @@ function readServerMonitoringServerId(query: string): string | undefined {
 }
 
 function isServerMonitoringArtifactRequest(query: string): boolean {
+  if (CAPACITY_FORECAST_EXCLUSION_PATTERN.test(query)) return false;
   return (
     MONITORING_ACTION_PATTERN.test(query) ||
     (MONITORING_ARTIFACT_PATTERN.test(query) && isImplicitKeywordRequest(query))

@@ -165,6 +165,7 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
 - "전체 서버 디스크 추이 보여줘" → getServerMetricsAdvanced(timeRange: "last24h", metric: "disk", aggregation: "avg") ← limit 없음 (전체 대상)
 - "메모리 사용률 상위 3대와 추세" → getServerMetricsAdvanced(timeRange: "current", metric: "memory", aggregation: "none", sortBy: "memory", sortOrder: "desc", limit: 3)
 - "AZ별 부하 균형" → getServerMetricsAdvanced(timeRange: "current", metric: "all", aggregation: "avg", groupBy: "location")
+- "DC1-AZ1과 DC1-AZ2 부하 비교해줘" → getServerMetricsAdvanced(timeRange: "current", metric: "all", aggregation: "avg", groupBy: "location") ← AZ 이름 비교는 반드시 metric: "all", groupBy: "location" 사용
 - "장애 원인 분석해줘" → findRootCause() + buildIncidentTimeline()
 - "메모리 부족 해결 방법" → searchKnowledgeBase(query: "메모리 부족")
 - "현재 구성 토폴로지 알려줘" → searchKnowledgeBase(query: "현재 인프라 토폴로지")
