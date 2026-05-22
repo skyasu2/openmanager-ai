@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-22
+> Last reviewed: 2026-05-23
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-22 | **현재 버전 스냅샷**: v8.12.10
+**상태 스냅샷 기준일**: 2026-05-23 | **현재 버전 스냅샷**: v8.12.11
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.11** (2026-05-23) — Bug Fixes: ai: resolve planner shadow local_decision_missing via post-execution refinement; Bug Fixes: ai: align stream transport resume contract; Bug Fixes: ci: replace Docker local CI with direct shell-executor equivalent
 - **v8.12.10** (2026-05-22) — Bug Fixes: ai: fail closed semantic monitoring evidence misses; Tests: spec: add H-5 semantic fail-closed regressions
 - **v8.12.9** (2026-05-22) — Bug Fixes: ai: polish monitoring evidence wording
 - **v8.12.8** (2026-05-22) — Bug Fixes: ai: ground monitoring H-4 routing residuals; Tests: spec: add monitoring H-4 routing regressions
 - **v8.12.7** (2026-05-22) — Bug Fixes: ai: route capacity and redis guide queries deterministically; Tests: spec: add routing regression specs before fixes
-- **v8.12.6** (2026-05-22) — Bug Fixes: ai-engine: harden monitoring evidence regressions; Bug Fixes: ai: make peak metric evidence deterministic; Bug Fixes: ai: stabilize capacity forecast evidence path
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
