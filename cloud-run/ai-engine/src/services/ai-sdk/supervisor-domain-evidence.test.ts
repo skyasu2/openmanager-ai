@@ -21,6 +21,19 @@ const monitoringMetricPeakFrame = {
   confidence: 96,
 } as const;
 
+const unsupportedMetricCurrentFrame = {
+  domainId: monitoringDomainPack.id,
+  intent: 'metric_current',
+  capabilityId: 'monitoring.metric_current',
+  scope: 'whole_fleet',
+  targets: [],
+  metric: 'temperature',
+  timeWindow: 'current',
+  aggregation: 'summary',
+  ambiguity: 'low',
+  confidence: 0.92,
+} as const;
+
 function readCapabilities(domain: unknown) {
   return (domain as { capabilities?: unknown }).capabilities;
 }
@@ -600,6 +613,85 @@ describe('supervisor domain evidence support', () => {
         ]),
       },
     });
+  });
+
+  it('fail-closes high-confidence evidence-required monitoring frames when no provider can ground the metric', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '전체 서버 temperature 현재값 순위 알려줘',
+      domain: monitoringDomainPack,
+      sessionId: 'semantic-fail-closed',
+      metadata: {
+        intentFrame: unsupportedMetricCurrentFrame,
+        semanticQueryTrace: {
+          originalQuery: '전체 서버 temperature 현재값 순위 알려줘',
+          reasonCodes: [],
+        },
+      },
+    } as Parameters<typeof resolveDomainEvidenceSupport>[0] & {
+      metadata: Record<string, unknown>;
+    });
+
+    expect(support?.id).toBe('monitoring-evidence-unavailable');
+    expect(support?.fallback).toContain('모니터링 근거를 찾지 못했습니다');
+    expect(support?.fallback).toContain('임의 수치');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_fail_closed',
+      capabilityId: 'monitoring.metric_current',
+      intent: 'metric_current',
+      semanticQueryTrace: {
+        originalQuery: '전체 서버 temperature 현재값 순위 알려줘',
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_current',
+        selectedEvidenceProvider: 'monitoring-evidence-unavailable',
+        evidenceAvailable: false,
+        clarificationRequired: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_provider_miss',
+          'semantic_frame_fail_closed',
+        ]),
+      },
+    });
+  });
+
+  it('keeps low-confidence monitoring evidence misses on the normal fallback path', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '전체 서버 temperature 현재값 순위 알려줘',
+      domain: monitoringDomainPack,
+      sessionId: 'semantic-low-confidence-miss',
+      metadata: {
+        intentFrame: {
+          ...unsupportedMetricCurrentFrame,
+          confidence: 0.42,
+        },
+      },
+    } as Parameters<typeof resolveDomainEvidenceSupport>[0] & {
+      metadata: Record<string, unknown>;
+    });
+
+    expect(support).toBeNull();
+  });
+
+  it('does not fail-close non-evidence-required monitoring capabilities', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '전체 장애 위험 예측해줘',
+      domain: monitoringDomainPack,
+      sessionId: 'semantic-analyst-capability-miss',
+      metadata: {
+        intentFrame: {
+          domainId: monitoringDomainPack.id,
+          intent: 'anomaly_detection',
+          capabilityId: 'monitoring.anomaly_detection',
+          scope: 'whole_fleet',
+          targets: [],
+          ambiguity: 'low',
+          confidence: 0.95,
+        },
+      },
+    } as Parameters<typeof resolveDomainEvidenceSupport>[0] & {
+      metadata: Record<string, unknown>;
+    });
+
+    expect(support).toBeNull();
   });
 
   it('uses the same runtime hook for a non-monitoring sample domain', async () => {
