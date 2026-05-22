@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-22 | **현재 버전 스냅샷**: v8.12.4
+**상태 스냅샷 기준일**: 2026-05-22 | **현재 버전 스냅샷**: v8.12.5
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.5** (2026-05-22) — Bug Fixes: ai: load tracked otel resource catalog in ci; Bug Fixes: ai: exclude capacity forecast queries from artifact routing and add AZ comparison hint; Features: ai: add deterministic capacity and AZ evidence
 - **v8.12.4** (2026-05-22) — Bug Fixes: ai: preserve server group entity scope; Bug Fixes: ai: clarification dialog scrollable options + supervisor prompt self-consistency rules; Tests: cloud-run: stabilize rate-limiter test with fake timers
 - **v8.12.3** (2026-05-22) — Bug Fixes: ai: ground semantic metric evidence
 - **v8.12.2** (2026-05-22) — Bug Fixes: ai: preserve cache storage QA context; Tests: qa: record v8.12.1 release smoke
 - **v8.12.1** (2026-05-22) — Bug Fixes: ai: include load metrics in az summaries; Bug Fixes: ai: ground az balance and ranking trends; Bug Fixes: ui: tune dashboard header CTA
-- **v8.12.0** (2026-05-21) — Features: dashboard: implement UX search and metric trends; Tests: spec: dashboard UX add failing tests before implementation; Tests: qa: record v8.11.195 release smoke
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
