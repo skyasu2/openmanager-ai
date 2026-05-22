@@ -117,16 +117,10 @@ describe('useHybridAIQuery Contract', () => {
     );
 
     const transportOptions = mocks.defaultChatTransport.mock.calls[0]?.[0] as {
-      prepareReconnectToStreamRequest: (args: { id: string }) => {
-        api: string;
-      };
+      prepareReconnectToStreamRequest?: unknown;
     };
 
-    expect(
-      transportOptions.prepareReconnectToStreamRequest({ id: 'session-abc' })
-    ).toEqual({
-      api: '/api/ai/supervisor/stream/v2?sessionId=session-abc',
-    });
+    expect(transportOptions.prepareReconnectToStreamRequest).toBeUndefined();
   });
 
   it('legacy ask facade opt-in flag가 있어도 공식 스트리밍 엔드포인트를 유지한다', () => {
@@ -143,16 +137,10 @@ describe('useHybridAIQuery Contract', () => {
 
       const transportOptions = mocks.defaultChatTransport.mock
         .calls[0]?.[0] as {
-        prepareReconnectToStreamRequest: (args: { id: string }) => {
-          api: string;
-        };
+        prepareReconnectToStreamRequest?: unknown;
       };
 
-      expect(
-        transportOptions.prepareReconnectToStreamRequest({ id: 'session-abc' })
-      ).toEqual({
-        api: '/api/ai/supervisor/stream/v2?sessionId=session-abc',
-      });
+      expect(transportOptions.prepareReconnectToStreamRequest).toBeUndefined();
     } finally {
       delete process.env.NEXT_PUBLIC_AI_ASK_FACADE_ENABLED;
     }

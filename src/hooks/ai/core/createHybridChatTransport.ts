@@ -94,8 +94,5 @@ export function createHybridChatTransport(
         ...semanticIntentPayload,
       };
     },
-    prepareReconnectToStreamRequest: ({ id }) => ({
-      api: `${apiEndpoint}?sessionId=${id}`,
-    }),
   });
 }

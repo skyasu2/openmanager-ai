@@ -196,4 +196,20 @@ describe('createHybridChatTransport', () => {
       },
     });
   });
+
+  it('does not advertise unsupported AI SDK stream resume requests', () => {
+    createHybridChatTransport({
+      apiEndpoint: '/api/ai/supervisor/stream/v2',
+      traceIdRef: ref('trace-no-resume'),
+      traceIdHeader: 'X-Trace-Id',
+      webSearchEnabledRef: ref(undefined),
+      ragEnabledRef: ref(undefined),
+    });
+
+    const transportConfig = mockDefaultChatTransport.mock.calls.at(-1)?.[0] as {
+      prepareReconnectToStreamRequest?: unknown;
+    };
+
+    expect(transportConfig.prepareReconnectToStreamRequest).toBeUndefined();
+  });
 });
