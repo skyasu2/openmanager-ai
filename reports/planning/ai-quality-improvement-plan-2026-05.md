@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-22 (QA-20260522-0562 v8.12.7 7문항 평가 반영)
+> Last reviewed: 2026-05-22 (QA-20260522-0563 v8.12.9 H-4 production QA 및 H-5 SDD 반영)
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서는 H-3 capacity forecast 표현과 `monitoring-metric-trend`는 PASS였고, DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현이 H-4 후보로 남았다. 잔여는 Task F 최종 관찰, H-4 구현 여부 판단, 조건부 production QA 판정이다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. 잔여는 Task F 최종 관찰과 H-5 semantic-router-v2/fail-closed 구조 개선이다.
 
 ---
 
@@ -518,7 +518,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 ### H-4: QA-20260522-0562 residual deterministic routing
 
-**Status**: Implemented locally, 검증 완료. 커밋/배포/production QA 대기.
+**Status**: Released (v8.12.9) + production QA 완료.
 
 **근거**: v8.12.7 Playwright MCP 7문항 평가(`QA-20260522-0562`)에서 H-3 개선은 확인됐지만, 일반 대화 경로로 빠질 때 OTel 없는 수치 창작 위험이 다시 확인됐다. 특히 Q5의 `api-was-dc1-01 CPU 92%`는 Q7의 OTel 실측 43%와 충돌했다.
 
@@ -543,10 +543,12 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - [x] AI Engine targeted 82/82 PASS
 - [x] AI Engine `type-check`, full `test` 1410/1410 PASS
 - [x] `git diff --check` PASS
+- [x] v8.12.9 release/tag pipeline `2546072069` success, Cloud Run `ai-engine-00511-2s9` 100% traffic, production `/api/version` 및 AI Engine `/health` 8.12.9 확인
+- [x] `QA-20260522-0563` targeted production QA 3/3 PASS: DC2 missing snapshot 안내, action-needed deterministic ranking, CPU danger-level capacity forecast duplicate label 제거
 
 ### H-5: Semantic router v2 / monitoring evidence fail-closed 후속
 
-**Status**: Backlog 후보 (신규 runtime contract 변경이므로 SDD 필요)
+**Status**: SDD Approved (2026-05-22). 신규 runtime contract 변경이므로 failing regression test 선행 커밋 후 구현한다.
 
 **근거**: H-3/H-4에서 확인된 공통 원인은 개별 문장 표현이 아니라 `intentFrame trust gap`이다. LLM 또는 local semantic frame이 의도를 맞혀도 최종 provider 선택이 raw regex miss에 좌우되면 OTel 없는 일반 LLM 응답으로 빠져 수치 hallucination이 발생한다.
 
@@ -558,16 +560,56 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
   -> monitoring 수치 근거 없으면 수치 답변 금지
 ```
 
-**계약 후보**:
-- Monitoring 수치 질의는 `intentFrame.capabilityId + slots`를 provider 선택의 1차 신호로 사용하고, raw regex는 보조 fallback으로 제한한다.
-- `capacity_forecast`, `location_load_balance`, `server_health_action_priority`, `metric_current`, `metric_trend` 의도군별 seed corpus를 parameterized regression으로 관리한다.
-- monitoring 수치/순위/예측 질의가 evidence provider를 얻지 못하면 일반 LLM이 임의 수치를 만들지 않고, 근거 부족 또는 명확화 요청으로 fail-closed한다.
-- Supabase/DB나 live LLM 추가 호출 없이 기존 root semantic extractor, Cloud Run normalized metadata, domain evidence provider 계약 안에서 먼저 설계한다.
+### 계약 (Contract)
+
+#### 변경 대상 파일
+
+| 영역 | 파일 |
+|------|------|
+| Runtime contract | `cloud-run/ai-engine/src/core/assistant-runtime/types.ts` |
+| Monitoring capability metadata | `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts` |
+| Evidence resolution/fail-closed | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.ts` |
+| Stream deterministic policy | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent-stream.ts` |
+| Regression tests | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-domain-evidence.test.ts`, 필요 시 domain wiring/stream tests |
+
+#### 입출력 계약
+
+| 조건 | 입력 | 기대 출력 |
+|------|------|-----------|
+| Evidence-required capability + high-confidence semantic frame | `intentFrame.domainId='openmanager-monitoring'`, `confidence >= 0.8`, `capability.metadata.evidenceRequired=true` | matching provider가 valid evidence를 반환하면 기존 deterministic answer 유지 |
+| Evidence-required capability + high-confidence semantic frame + provider miss | 예: `monitoring.metric_current`인데 unsupported metric/slot으로 provider가 evidence를 만들 수 없음 | 일반 LLM stream으로 넘기지 않고 deterministic fail-closed 답변 반환 |
+| Low-confidence semantic frame | `confidence < 0.8` | 기존 raw regex/provider fallback 유지. provider miss 시 일반 path 허용 |
+| Evidence-required가 아닌 capability | anomaly/failure-risk처럼 Analyst tool path가 필요한 capability | provider miss만으로 fail-closed하지 않음 |
+| Semantic trace | provider success/fail-closed 모두 `semanticQueryTrace` 반환 | success는 `evidenceAvailable=true`, fail-closed는 `evidenceAvailable=false`, `clarificationRequired=true`, reasonCodes에 `semantic_frame_provider_miss`, `semantic_frame_fail_closed` 포함 |
+
+#### 정책 계약
+
+- `DomainCapability.metadata.evidenceRequired === true`인 capability만 fail-closed 대상이다.
+- confidence threshold는 기존 semantic routing 기준과 같은 `0.8`을 사용한다.
+- fail-closed 응답은 수치/순위/예측값을 새로 만들지 않는다.
+- fail-closed 응답은 사용자가 다시 질의할 수 있도록 필요한 slot(`server`, `metric`, `timeWindow`, `threshold`, `topN`)을 짧게 안내한다.
+- Supabase/DB, Redis, live LLM 추가 호출 없이 Cloud Run runtime 내부에서 처리한다.
+- raw regex fallback은 삭제하지 않는다. 단, high-confidence semantic frame이 evidence-required capability를 가리킨 경우 provider miss가 LLM hallucination으로 이어지지 않게 차단한다.
+
+#### 테스트 시나리오
+
+- [ ] high-confidence `monitoring.metric_current` frame이 unsupported metric을 담으면 `monitoring-evidence-unavailable` fail-closed evidence를 반환한다.
+- [ ] fail-closed evidence는 `responsePolicy='deterministic_fail_closed'`, `evidenceAvailable=false`, `clarificationRequired=true` trace를 포함한다.
+- [ ] low-confidence evidence-required frame은 fail-closed하지 않고 기존 fallback path를 유지한다.
+- [ ] evidence-required가 아닌 `monitoring.anomaly_detection` frame은 provider miss만으로 fail-closed하지 않는다.
+- [ ] 기존 H-4 seed(DC comparison/action-needed/danger-level forecast)는 계속 deterministic evidence provider로 resolve된다.
+
+**수용 기준**:
+- H-5 targeted tests PASS
+- AI Engine `type-check` 및 관련 targeted tests PASS
+- root 영향이 있으면 `test:contract` 또는 관련 root targeted tests PASS
+- Free Tier 영향 없음: DB/Redis/LLM 추가 호출 없음
 
 **다음 단계**:
-- [ ] SDD 계약 작성: intentFrame → capability routing 우선순위, confidence 기준, fail-closed 응답 계약
-- [ ] failing regression seed corpus 구성: 한국어/영어/오타/역문장 표현을 문장별 hardcode가 아닌 intent class별로 묶음
-- [ ] 구현 범위 판단: 기존 `supervisor-semantic-metadata`, `domain-pack`, provider `canHandle` 계약으로 해결 가능한지 확인
+- [x] SDD 계약 작성: intentFrame → capability routing 우선순위, confidence 기준, fail-closed 응답 계약
+- [ ] failing regression seed corpus 구성 및 `test(spec):` 커밋
+- [ ] 구현: capability metadata + supervisor fail-closed response policy
+- [ ] targeted/full validation 후 배포 필요성 판단
 
 ---
 
