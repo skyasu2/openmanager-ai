@@ -1,0 +1,57 @@
+{
+  "runId": "QA-20260523-0569",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "checkedAt": "2026-05-23T10:16:34.386Z",
+  "execution": {
+    "requestedSource": "playwright-mcp",
+    "actualSource": "playwright-cli-fallback",
+    "playwrightMcpTransport": "unavailable: direct browser_navigate returned Transport closed after stale MCP process cleanup",
+    "runnerNote": "Initial assertion run produced false-negative for DB because it evaluated the full conversation log; corrected product verdict uses the DB query segment preserved in ai-transcript.txt."
+  },
+  "summary": {
+    "total": 7,
+    "passed": 6,
+    "failed": 1
+  },
+  "checks": [
+    {
+      "id": "prod-version-health",
+      "title": "Vercel production serves v8.12.15 and healthy status",
+      "status": "passed"
+    },
+    {
+      "id": "dashboard-core-render",
+      "title": "Guest login reaches Vercel production dashboard",
+      "status": "passed"
+    },
+    {
+      "id": "ai-sidebar-quickstart-dedupe",
+      "title": "AI sidebar quick-start prompt titles are unique",
+      "status": "passed",
+      "details": "Observed 4 unique prompt titles in the sidebar welcome state."
+    },
+    {
+      "id": "embedded-ai-tab-copy-scope",
+      "title": "Embedded /dashboard/ai-assistant tabs still use older generic descriptions",
+      "status": "failed",
+      "details": "Observed embedded tab subtitles remain 보고서 생성 / 이상 신호 분석. The more explicit MD/TXT 다운로드 / 실시간 분석 실행 copy changed in other navigation surfaces is not visible on the primary embedded dashboard route."
+    },
+    {
+      "id": "auto-report-quickstart-dedupe",
+      "title": "Auto Report quick-start uses 리스크 요약 보고서 and no duplicate 이상감지 요약",
+      "status": "passed"
+    },
+    {
+      "id": "artifact-envelope-render",
+      "title": "Artifact envelope metadata renders a monitoring artifact card/CTA in AI workspace",
+      "status": "passed",
+      "details": "Observed 전체 서버 이상감지/추세 분석 card content plus MD 다운로드, JSON 다운로드, 이상감지/추세에서 보기 CTA."
+    },
+    {
+      "id": "db-disk-threshold-regression",
+      "title": "DB disk 60%+ query keeps threshold filter and excludes replica 40%",
+      "status": "passed",
+      "details": "DB 서버 디스크 60% 이상인 곳오후 07:10:14복사📊 DB 서버 디스크 60% 이상 서버\n• 조건: 디스크 >= 60%\n• 대상: DB 서버 3대 중 2대 · 데이터 슬롯 19:10 KST\n• 서버별: db-mysql-dc1-backup 69% (online), db-mysql-dc1-primary 62% (online)오후 07:10:15응답 빠름복사다시 생성deterministic/ monitoring-metric-current분석 근거도구: monitoring-metric-current"
+    }
+  ]
+}

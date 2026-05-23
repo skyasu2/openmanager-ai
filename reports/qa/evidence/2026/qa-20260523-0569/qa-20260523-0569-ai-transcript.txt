@@ -1,0 +1,18 @@
+--- artifact query ---
+전체 서버 이상감지 돌려줘오후 07:07:29복사이상감지/추세 분석을 완료했습니다.
+
+분석 서버: 18대
+위험 신호: 1건
+
+아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.이상감지/추세 분석전체 서버 이상감지/추세 분석1대 서버에서 1개 risk signal이 감지되었습니다. critical 0개, warning 1개입니다.데이터 OpenTelemetry snapshot기준 19:00분석 서버18위험 신호1상태주의 1대 · 위험 0대역할별 현황web3대CPU 27% · MEM 38% · DISK 27%application3대CPU 34% · MEM 48% · DISK 27%database3대CPU 34% · MEM 52% · DISK 57%cache3대CPU 34% · MEM 57% · DISK 24%storage3대CPU 25% · MEM 40% · DISK 55%loadbalancer3대CPU 37% · MEM 35% · DISK 23%주의 1대 · 위험 0대용량 소진 예측lb-haproxy-dc1-01NETWORK 71%위험 도달 59분예측 100% · 현재 경고 상태 → 58분 후 심각 상태 예상lb-haproxy-dc1-03NETWORK 33%위험 도달 2시간 25분예측 100% · 2시간 24분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능db-mysql-dc1-replicaCPU 44%위험 도달 12시간 49분예측 100% · 12시간 49분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능위험 신호lb-haproxy-dc1-01network 71%임계치 70% · up근거lb-haproxy-dc1-01 network 70.8% exceeded 70% warning threshold.lb-haproxy-dc1-01 haproxy: haproxy[11400]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 24 requestsweb-nginx-dc1-01 nginx: nginx[6797]: *5858 upstream prematurely closed connection while reading response headerMD 다운로드JSON 다운로드이상감지/추세에서 보기오후 07:07:29복사다시 생성분석 근거도구: 이상감지/추세 분석
+
+--- db threshold query ---
+전체 서버 이상감지 돌려줘오후 07:10:14복사이상감지/추세 분석을 완료했습니다.
+
+분석 서버: 18대
+위험 신호: 1건
+
+아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.이상감지/추세 분석전체 서버 이상감지/추세 분석1대 서버에서 1개 risk signal이 감지되었습니다. critical 0개, warning 1개입니다.데이터 OpenTelemetry snapshot기준 19:00분석 서버18위험 신호1상태주의 1대 · 위험 0대역할별 현황web3대CPU 27% · MEM 38% · DISK 27%application3대CPU 34% · MEM 48% · DISK 27%database3대CPU 34% · MEM 52% · DISK 57%cache3대CPU 34% · MEM 57% · DISK 24%storage3대CPU 25% · MEM 40% · DISK 55%loadbalancer3대CPU 37% · MEM 35% · DISK 23%주의 1대 · 위험 0대용량 소진 예측lb-haproxy-dc1-01NETWORK 71%위험 도달 59분예측 100% · 현재 경고 상태 → 58분 후 심각 상태 예상lb-haproxy-dc1-03NETWORK 33%위험 도달 2시간 25분예측 100% · 2시간 24분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능db-mysql-dc1-replicaCPU 44%위험 도달 12시간 49분예측 100% · 12시간 49분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능위험 신호lb-haproxy-dc1-01network 71%임계치 70% · up근거lb-haproxy-dc1-01 network 70.8% exceeded 70% warning threshold.lb-haproxy-dc1-01 haproxy: haproxy[11400]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 24 requestsweb-nginx-dc1-01 nginx: nginx[6797]: *5858 upstream prematurely closed connection while reading response headerMD 다운로드JSON 다운로드이상감지/추세에서 보기오후 07:10:14복사분석 근거도구: 이상감지/추세 분석DB 서버 디스크 60% 이상인 곳오후 07:10:14복사📊 DB 서버 디스크 60% 이상 서버
+• 조건: 디스크 >= 60%
+• 대상: DB 서버 3대 중 2대 · 데이터 슬롯 19:10 KST
+• 서버별: db-mysql-dc1-backup 69% (online), db-mysql-dc1-primary 62% (online)오후 07:10:15응답 빠름복사다시 생성deterministic/ monitoring-metric-current분석 근거도구: monitoring-metric-current

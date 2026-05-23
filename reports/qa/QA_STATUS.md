@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-23 18:29:11 KST
+> Generated at: 2026-05-23 19:19:56 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 566 |
-| Total Runs (Counted) | 451 |
+| Total Recorded Runs | 567 |
+| Total Runs (Counted) | 452 |
 | Non-counted Runs | 115 |
-| Total Checks | 4085 |
-| Passed | 3920 |
-| Failed | 145 |
-| Completed Items | 640 |
+| Total Checks | 4092 |
+| Passed | 3926 |
+| Failed | 146 |
+| Completed Items | 643 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 42 |
+| Wont-Fix Items | 43 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260523-0568 (2026-05-23T08:57:58.383Z) |
-| Latest Recorded Run | QA-20260523-0568 (2026-05-23T08:57:58.383Z) |
+| Last Counted Run | QA-20260523-0569 (2026-05-23T10:19:45.964Z) |
+| Latest Recorded Run | QA-20260523-0569 (2026-05-23T10:19:45.964Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,70 +34,81 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260523-0568 (2026-05-23T08:57:58.383Z)
+Latest run: QA-20260523-0569 (2026-05-23T10:19:45.964Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | yes | Align AI_WORKSPACE_FUNCTION_TABS descriptions with the sharpened navigation copy if the embedded route is intended to expose the same UX. |
+| Test Automation Architect | partially-appropriate | yes | If this scenario becomes recurring, add a stable message-segment helper for AI E2E transcript assertions. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | QA 정리 중 npm run check:usage:vercel 실행. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398로 예상 밖 청구 사용량 없음. |
+| vercel | cli | checked | normal | npm run check:usage:vercel completed after focused production QA. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398; no unexpected billed usage observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-22T08:57:58.383Z -> 2026-05-23T08:57:58.383Z (24h)
-- Runs with observations: 5 recorded / 5 counted
-- Samples: 11
+- Window: 2026-05-22T10:19:45.964Z -> 2026-05-23T10:19:45.964Z (24h)
+- Runs with observations: 6 recorded / 6 counted
+- Samples: 13
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Reporter Agent | z.ai | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260523-0568 |
+| Analyst Agent | production route | 1 | 3000ms | 3000ms | - | - | - | - | QA-20260523-0569 |
 | Metrics Query Agent | cloud-run-deterministic | 5 | 536ms | 1662ms | - | - | - | - | QA-20260523-0565 |
+| NLQ Agent | deterministic | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0569 |
 | NLQ Agent | groq | 5 | 760ms | 1000ms | - | - | - | - | QA-20260523-0568 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-22T08:57:58.383Z -> 2026-05-23T08:57:58.383Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 11
-- Drift rate: 27.27%
+- Window: 2026-05-22T10:19:45.964Z -> 2026-05-23T10:19:45.964Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 4
+- Drift rate: 0%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | deterministic | 8 | 0% | 324ms | 1662ms | QA-20260522-0564 |
-| /api/ai/supervisor/stream/v2 | single-agent | 3 | 100% | 0ms | 0ms | QA-20260522-0562 |
+| /api/ai/supervisor/stream/v2 | deterministic | 4 | 0% | 648ms | 1662ms | QA-20260522-0564 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2547910287 / SHA 3194be0d
-- Coverage Packs: ai-core, dashboard-core, ai-advanced-surface
-- Covered Surfaces: AI Chat - DB 그룹 임계값 필터 재검증 (v8.12.14 fix), AI Chat - 스토리지 서버 그룹 디스크, AI Chat - 로드밸런서 그룹 메모리, AI Chat - CPU+디스크 복합 AND 질의, AI Chat - 전체 디스크 사용률 랭킹, AI Chat - 단일 서버 CPU 트렌드, 자동 보고서 탭 - Reporter Agent 장애 보고서 생성
-- Skipped Surfaces: -
+- Deployment: gitlab-pipeline-2547969325 / SHA f7a16aab
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: Vercel production version/health, Guest login and dashboard render, AI sidebar quick-start dedupe, /dashboard/ai-assistant embedded AI tabs and Auto Report quick-start, AI workspace monitoring artifact envelope render, AI Chat DB disk threshold regression
+- Skipped Surfaces: Direct Playwright MCP browser session: unavailable in this Codex session because mcp__playwright__.browser_navigate returned Transport closed after stale MCP process cleanup; Playwright CLI fallback used against the same Vercel production URL.
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab release pipeline 2547969325 | [GitLab release pipeline 2547969325](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2547969325) | - |
+| general | Vercel production URL | [Vercel production URL](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | QA-0568 login screen | `reports/qa/evidence/qa-20260523-0568-login.png` | - |
-| playwright-screenshot | QA-0568 dashboard loaded | `reports/qa/evidence/qa-20260523-0568-dashboard.png` | - |
-| playwright-screenshot | QA-0568 Reporter Agent response | `reports/qa/evidence/qa-20260523-0568-q7-reporter.png` | - |
-| playwright-console | QA-0568 input JSON | `reports/qa/evidence/qa-20260523-0568-input.json` | - |
+| playwright-console | QA-0569 corrected Playwright result summary | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-playwright-result.json` | - |
+| playwright-console | QA-0569 version and health response | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-version-health.json` | - |
+| playwright-screenshot | QA-0569 dashboard render | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-dashboard.png` | - |
+| playwright-screenshot | QA-0569 AI sidebar quick-start dedupe | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-ai-sidebar-quickstart.png` | - |
+| playwright-screenshot | QA-0569 Auto Report quick-start dedupe and embedded tab copy | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-auto-report-dedupe.png` | - |
+| playwright-screenshot | QA-0569 artifact envelope card/CTA render | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-artifact-envelope.png` | - |
+| playwright-screenshot | QA-0569 DB threshold regression response | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-db-threshold.png` | - |
+| playwright-console | QA-0569 AI transcript | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-ai-transcript.txt` | - |
+| playwright-console | QA-0569 qa:record input | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-input.json` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260523-0569)
+  next: Align AI_WORKSPACE_FUNCTION_TABS descriptions with the sharpened navigation copy if the embedded route is intended to expose the same UX.
+- test-automation: Test Automation Architect (last QA-20260523-0569)
+  next: If this scenario becomes recurring, add a stable message-segment helper for AI E2E transcript assertions.
 
 ## Pending Improvements
 
@@ -109,7 +120,7 @@ Latest run: QA-20260523-0568 (2026-05-23T08:57:58.383Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 31
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 32
 
 ### Platform Constraint
 
@@ -207,6 +218,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] vision-gemini-exact-forecast-delta-attribution: Gemini Vision misattributes exact forecast delta values in the screenshot (seen 1회, last QA-20260520-0542)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] action-needed-transient-500-observation: One transient 500 on standard question 4 before immediate retry success (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] embedded-ai-tab-copy-scope: /dashboard/ai-assistant embedded tabs still show older generic subtitles (seen 1회, last QA-20260523-0569)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] planner-shadow-local-decision-drift: Planner shadow still reports local_decision_missing for deterministic monitoring evidence (seen 1회, last QA-20260522-0556)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -820,6 +833,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
 - ui-landing-pass: 랜딩 페이지 로드 정상, v8.10.0 확인 (completed 1회, last QA-20260326-0190)
 - ui-ux-improvement-plan-p1-p3-closure: UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed (completed 1회, last QA-20260509-0436)
+- v8-12-14-db-threshold-regression: DB disk 60%+ threshold filter remains fixed on v8.12.15 (completed 1회, last QA-20260523-0569)
+- v8-12-15-artifact-envelope-render: artifactEnvelopes transform preservation renders monitoring artifact card/CTA (completed 1회, last QA-20260523-0569)
+- v8-12-15-auto-report-quickstart-dedupe: Auto Report quick-start no longer duplicates 이상감지 요약 (completed 1회, last QA-20260523-0569)
 - v8.11.121-rag-krl-production-release: Release RAG/KRL cleanup and DB index improvements to production (completed 1회, last QA-20260510-0455)
 - v8.11.122-ai-server-id-clarification-production-release: Release explicit server ID clarification fix to production (completed 1회, last QA-20260510-0457)
 - v8.12.14-임계값-필터-fix-검증-db-60-질의에-2대만-반환-8.12.13-partial-pass: v8.12.14 임계값 필터 fix 검증: DB 60%+ 질의에 2대만 반환 (8.12.13 PARTIAL → PASS) (completed 1회, last QA-20260523-0568)
@@ -862,6 +878,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260523-0569 | 2026-05-23T10:19:45.964Z | targeted | yes | yes | v8.12.15 focused Vercel production QA - quick-start, artifact envelope, DB threshold | 7 | 3 | 0 | 0 | 1 | 2 |
 | QA-20260523-0568 | 2026-05-23T08:57:58.383Z | targeted | yes | yes | v8.12.14 신규 7문항 평가 - 임계값픽스재검증·스토리지·LB그룹·CPU+디스크AND·디스크랭킹·CPU트렌드·Reporter | 7 | 4 | 0 | 0 | 1 | 0 |
 | QA-20260523-0567 | 2026-05-23T08:29:59.590Z | targeted | yes | yes | v8.12.14 Q3 DB 디스크 임계값 필터 프로덕션 재검증 | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260523-0566 | 2026-05-23T07:09:27.338Z | targeted | yes | yes | v8.12.13 신규 7문항 평가 - WAS그룹·단일메트릭회귀·네트워크·DB임계값·트렌드·KRL·위험우선순위 | 7 | 3 | 0 | 0 | 2 | 0 |
@@ -881,4 +898,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260521-0552 | 2026-05-21T08:50:59.688Z | targeted | no | yes | Local Playwright QA - Dashboard UX Search and Metric Trends | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0551 | 2026-05-21T07:05:41.434Z | targeted | yes | yes | Release Smoke - v8.11.195 UI animated visual surfaces | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260521-0550 | 2026-05-21T05:23:03.217Z | targeted | yes | yes | 이번주 변경사항 집중 QA — v8.11.194 (grounded KRL / clarification split / session freeze / Cerebras) | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260521-0549 | 2026-05-21T04:10:30.110Z | targeted | yes | yes | Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release | 14 | 2 | 0 | 0 | 0 | 0 |
