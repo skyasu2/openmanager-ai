@@ -298,6 +298,10 @@ function getServerTypeKoreanLabel(type: string): string {
   }
 }
 
+function removeTargetCountSuffix(label: string): string {
+  return label.replace(/\s+\d+대$/, '');
+}
+
 function formatMetricPercent(value: number): string {
   return `${round1(value)}%`;
 }
@@ -422,6 +426,16 @@ function parseCurrentMetricsFrame(
     normalizeTargets(frame.targets),
     request.message
   );
+  const classification = classifyQueryIntent(request.message);
+  const frameThreshold =
+    classification.intent === 'data-filter' &&
+    classification.metric === metric &&
+    classification.threshold !== undefined
+      ? {
+          threshold: classification.threshold,
+          thresholdOperator: classification.operator ?? '>=',
+        }
+      : null;
   if (
     metric &&
     frame.intent === 'metric_current' &&
@@ -442,6 +456,7 @@ function parseCurrentMetricsFrame(
       sourceIntent: frame.intent,
       answerQuery: request.message,
       metric,
+      ...(frameThreshold ?? {}),
       ...(targets.length > 0 && { targets }),
     };
   }
@@ -567,6 +582,28 @@ function parseCurrentMetricsMessage(
   }
 
   if (
+    classification.intent === 'data-filter' &&
+    metric &&
+    classification.threshold !== undefined &&
+    !HISTORICAL_OR_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: classification.intent,
+      answerQuery: message,
+      metric,
+      threshold: classification.threshold,
+      thresholdOperator: classification.operator ?? '>=',
+      ...(explicitServerTargets.length > 0
+        ? { targets: explicitServerTargets }
+        : groupTarget
+          ? { targets: [groupTarget] }
+          : {}),
+    };
+  }
+
+  if (
     classification.intent === 'data-ranking' &&
     metric &&
     !HISTORICAL_OR_TREND_PATTERN.test(message)
@@ -663,13 +700,53 @@ function buildMetricCurrentAnswer(params: {
   );
   if (servers.length === 0) return null;
 
-  const rows = servers
+  const rawRows = servers
     .map((server) => ({
       server,
       value: getMetricValue(server, metric),
     }))
-    .filter((row): row is { server: SnapshotServer; value: number } => row.value !== null)
-    .sort((left, right) => right.value - left.value);
+    .filter((row): row is { server: SnapshotServer; value: number } => row.value !== null);
+  if (rawRows.length === 0) return null;
+
+  if (params.parsed.threshold !== undefined) {
+    const threshold = params.parsed.threshold;
+    const operator = params.parsed.thresholdOperator;
+    const rows = rawRows
+      .filter((row) => compareMetricValue(row.value, operator, threshold))
+      .sort((left, right) =>
+        operator === '<' || operator === '<='
+          ? left.value - right.value
+          : right.value - left.value
+      );
+    const metricLabel = getMetricLabel(metric);
+    const operatorLabel = getThresholdOperatorLabel(operator);
+    const operatorSymbol = getThresholdOperatorSymbol(operator);
+    const timeLabel = readSnapshotTimeLabel(params.snapshot);
+    const title = `${removeTargetCountSuffix(targetLabel)} ${metricLabel} ${threshold}% ${operatorLabel} 서버`;
+
+    if (rows.length === 0) {
+      return [
+        `📊 **${title}**`,
+        `• 조건: ${metricLabel} ${operatorSymbol} ${threshold}%`,
+        `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+        '• 결과: 현재 조건을 만족하는 서버는 없습니다.',
+      ].join('\n');
+    }
+
+    return [
+      `📊 **${title}**`,
+      `• 조건: ${metricLabel} ${operatorSymbol} ${threshold}%`,
+      `• 대상: ${targetLabel} 중 ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+      `• 서버별: ${rows
+        .map(
+          (row) =>
+            `${row.server.id} ${formatMetricPercent(row.value)} (${row.server.status ?? 'unknown'})`
+        )
+        .join(', ')}`,
+    ].join('\n');
+  }
+
+  const rows = rawRows.sort((left, right) => right.value - left.value);
   if (rows.length === 0) return null;
 
   const values = rows.map((row) => row.value);

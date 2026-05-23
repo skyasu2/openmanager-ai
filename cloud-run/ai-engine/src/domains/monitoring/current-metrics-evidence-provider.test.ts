@@ -335,6 +335,95 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
   });
 
+  it('preserves single metric thresholds when a current metric frame is present', async () => {
+    const request = {
+      ...createEvidenceRequest('DB 서버 디스크 60% 이상인 곳', {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'db-mysql-dc1-primary',
+            type: 'database',
+            status: 'online',
+            cpu: 41,
+            memory: 66,
+            disk: 72,
+            network: 13,
+          },
+          {
+            id: 'db-mysql-dc1-analytics',
+            type: 'database',
+            status: 'warning',
+            cpu: 45,
+            memory: 70,
+            disk: 65,
+            network: 14,
+          },
+          {
+            id: 'db-mysql-dc1-replica',
+            type: 'database',
+            status: 'online',
+            cpu: 35,
+            memory: 58,
+            disk: 40,
+            network: 12,
+          },
+          {
+            id: 'storage-nfs-dc1-01',
+            type: 'storage',
+            status: 'critical',
+            cpu: 30,
+            memory: 45,
+            disk: 95,
+            network: 20,
+          },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: ['db-mysql-dc1-replica'],
+        metric: 'disk',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.8,
+      },
+    };
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      metric: 'disk',
+      threshold: 60,
+      thresholdOperator: '>=',
+      targets: ['database'],
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      request
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        metric: 'disk',
+        threshold: 60,
+        thresholdOperator: '>=',
+        targets: ['database'],
+      },
+    });
+    expect(evidence?.fallback).toContain('DB 서버 디스크 60% 이상 서버');
+    expect(evidence?.fallback).toContain('db-mysql-dc1-primary 72%');
+    expect(evidence?.fallback).toContain('db-mysql-dc1-analytics 65%');
+    expect(evidence?.fallback).not.toContain('db-mysql-dc1-replica');
+    expect(evidence?.fallback).not.toContain('storage-nfs-dc1-01');
+  });
+
   it('resolves role group metric comparisons deterministically', async () => {
     const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
       createEvidenceRequest('WAS와 DB 서버 CPU 비교해줘', {
