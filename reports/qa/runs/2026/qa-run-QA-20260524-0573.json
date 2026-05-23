@@ -1,0 +1,176 @@
+{
+  "runId": "QA-20260524-0573",
+  "recordedAt": "2026-05-23T17:08:54.211Z",
+  "recordedAtKst": "2026-05-24 02:08:54 KST",
+  "runTitle": "v8.12.17 production targeted QA - AI v8.12.16 follow-up closure",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-tag-pipeline-2548270166",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "b2f6ccf11a86076e96bca4e5a7daba0b4e4a4f70"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version reports v8.12.17 with commit b2f6ccf11a86076e96bca4e5a7daba0b4e4a4f70 and GitLab tag pipeline 2548270166",
+    "Vercel production /api/health reports healthy database/cache/AI services",
+    "GitLab main validate pipeline 2548270161 success for release commit",
+    "GitLab v8.12.17 tag deploy/smoke pipeline 2548270166 success",
+    "Playwright CLI production AI direct-message smoke: tests/e2e/dashboard-ai-chat.spec.ts direct input case passed",
+    "AI Chat: Advisor server performance improvement query returns non-empty actionable response",
+    "AI Chat: healthy-only 정상 범위 서버 목록 query returns server list without compact markdown heading leak",
+    "AI Chat: lowest composite-load query returns a grounded server answer",
+    "AI Chat: available server TOP 3 query returns ranked top-three style answer"
+  ],
+  "skippedSurfaces": [
+    "AI starter prompt button path: existing E2E selector button[data-prompt-title=\"서버 상태 확인\"] did not match production DOM; direct input AI path covered changed surface instead.",
+    "P4 session context continuity: documented as high-complexity follow-up, not included in v8.12.17 P1-P3 closure.",
+    "Vision real-image QA: skipped per manual-only policy because Vision routing/provider behavior was not changed."
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.12.16에서 실패한 P1 Advisor, P2 healthy-only/markdown, P3 lowest-load/TOP3 surfaces were retested on production v8.12.17 and passed through real Playwright CLI browser flow.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Main validate pipeline 2548270161, tag deploy/smoke pipeline 2548270166, /api/version, /api/health, and Vercel usage all passed after canonical GitLab release.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Playwright MCP browser actions timed out in the Codex session and the existing starter prompt E2E still depends on a production-missing data-prompt-title selector, although the direct input product path passed.",
+      "nextAction": "Stabilize the starter prompt E2E selector with role/text fallback and recheck MCP action reliability in a fresh Codex session."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T01:53:52+09:00",
+      "summary": "npm run check:usage:vercel PASS. Current billing period effective 15.3081 USD, billed 0.0000 USD; no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "playwright-cli-targeted-ai",
+    "reason": "This targeted counted run used Playwright CLI pass/fail output, GitLab pipeline URLs, Vercel version/health JSON, and Vercel usage CLI evidence rather than durable screenshot artifacts.",
+    "recordedAt": "2026-05-23T17:08:54.211Z",
+    "recordedBy": "codex"
+  },
+  "completedImprovements": [
+    {
+      "id": "ai-v81216-advisor-routing-empty-response",
+      "title": "Advisor performance-improvement query should route to Advisor and return non-empty guidance",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production v8.12.17 targeted Playwright CLI asked 'api-was-dc1-01 서버 성능 개선 조언 해줘' and received non-empty actionable response.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-v81216-healthy-filter-evidence",
+      "title": "Healthy-only server filter should resolve to deterministic evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production v8.12.17 targeted Playwright CLI asked '현재 정상 범위인 서버 목록 보여줘' and received a server list.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-v81216-compact-markdown-heading",
+      "title": "Compact markdown headings should not leak as raw ##/### text",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production v8.12.17 healthy-list answer did not expose raw compact heading text such as ##정상서버목록 or ###CPU사용률.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-v81216-lowest-load-ranking",
+      "title": "Lowest-load and available-server TOP-N queries should use grounded ranking",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production v8.12.17 targeted Playwright CLI asked '지금 부하가 가장 낮은 서버는?' and '여유 있는 서버 TOP 3 보여줘'; both returned ranked/grounded server answers.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright MCP attempt was made first but browser_click/browser_evaluate actions timed out and reset to about:blank; Playwright CLI fallback was used against the same Vercel production URL.",
+    "Existing dashboard-ai-chat.spec direct input case passed; starter prompt case failed because production DOM did not expose button[data-prompt-title=\"서버 상태 확인\"], which is recorded as a test automation gap rather than a product regression for this release.",
+    "Local validation before release included AI Engine targeted supervisor-mode test with CI=true, AI Engine type-check, and AI Engine full test 139 files / 1430 tests."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release main validate pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548270161",
+      "note": "release commit main validate pipeline success"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.12.17 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548270166",
+      "note": "deploy, deploy_ai_engine, and post-deploy smoke pipeline success"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "production served v8.12.17 during post-deploy smoke"
+    }
+  ]
+}

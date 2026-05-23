@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-23T15:52:37.929Z"
+    "updatedAt": "2026-05-23T17:08:54.211Z"
   },
   "sequence": {
-    "nextRunNumber": 573
+    "nextRunNumber": 574
   },
   "summary": {
-    "totalRecordedRuns": 570,
-    "totalRuns": 455,
+    "totalRecordedRuns": 571,
+    "totalRuns": 456,
     "excludedRuns": 115,
-    "totalChecks": 4113,
-    "totalPassed": 3943,
+    "totalChecks": 4122,
+    "totalPassed": 3952,
     "totalFailed": 149,
     "completionRate": 100,
-    "completedItems": 648,
+    "completedItems": 652,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 44,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260524-0572",
-    "lastRecordedAt": "2026-05-23T15:52:37.929Z",
-    "latestRecordedRunId": "QA-20260524-0572",
-    "latestRecordedAt": "2026-05-23T15:52:37.929Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260524-0573",
+    "lastRecordedAt": "2026-05-23T17:08:54.211Z",
+    "latestRecordedRunId": "QA-20260524-0573",
+    "latestRecordedAt": "2026-05-23T17:08:54.211Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16337,6 +16337,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-23T14:54:43.243Z"
+    },
+    "ai-v81216-advisor-routing-empty-response": {
+      "id": "ai-v81216-advisor-routing-empty-response",
+      "title": "Advisor performance-improvement query should route to Advisor and return non-empty guidance",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0573",
+      "firstSeenAt": "2026-05-23T17:08:54.211Z",
+      "lastSeenRunId": "QA-20260524-0573",
+      "lastSeenAt": "2026-05-23T17:08:54.211Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production v8.12.17 targeted Playwright CLI asked 'api-was-dc1-01 서버 성능 개선 조언 해줘' and received non-empty actionable response.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T17:08:54.211Z"
+    },
+    "ai-v81216-healthy-filter-evidence": {
+      "id": "ai-v81216-healthy-filter-evidence",
+      "title": "Healthy-only server filter should resolve to deterministic evidence",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0573",
+      "firstSeenAt": "2026-05-23T17:08:54.211Z",
+      "lastSeenRunId": "QA-20260524-0573",
+      "lastSeenAt": "2026-05-23T17:08:54.211Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production v8.12.17 targeted Playwright CLI asked '현재 정상 범위인 서버 목록 보여줘' and received a server list.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T17:08:54.211Z"
+    },
+    "ai-v81216-compact-markdown-heading": {
+      "id": "ai-v81216-compact-markdown-heading",
+      "title": "Compact markdown headings should not leak as raw ##/### text",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0573",
+      "firstSeenAt": "2026-05-23T17:08:54.211Z",
+      "lastSeenRunId": "QA-20260524-0573",
+      "lastSeenAt": "2026-05-23T17:08:54.211Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production v8.12.17 healthy-list answer did not expose raw compact heading text such as ##정상서버목록 or ###CPU사용률.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T17:08:54.211Z"
+    },
+    "ai-v81216-lowest-load-ranking": {
+      "id": "ai-v81216-lowest-load-ranking",
+      "title": "Lowest-load and available-server TOP-N queries should use grounded ranking",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0573",
+      "firstSeenAt": "2026-05-23T17:08:54.211Z",
+      "lastSeenRunId": "QA-20260524-0573",
+      "lastSeenAt": "2026-05-23T17:08:54.211Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production v8.12.17 targeted Playwright CLI asked '지금 부하가 가장 낮은 서버는?' and '여유 있는 서버 TOP 3 보여줘'; both returned ranked/grounded server answers.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T17:08:54.211Z"
     }
   },
   "runs": [
@@ -66660,6 +66756,120 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260524-0573",
+      "recordedAt": "2026-05-23T17:08:54.211Z",
+      "recordedAtKst": "2026-05-24 02:08:54 KST",
+      "title": "v8.12.17 production targeted QA - AI v8.12.16 follow-up closure",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260524-0573.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-tag-pipeline-2548270166",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "b2f6ccf11a86076e96bca4e5a7daba0b4e4a4f70"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version reports v8.12.17 with commit b2f6ccf11a86076e96bca4e5a7daba0b4e4a4f70 and GitLab tag pipeline 2548270166",
+        "Vercel production /api/health reports healthy database/cache/AI services",
+        "GitLab main validate pipeline 2548270161 success for release commit",
+        "GitLab v8.12.17 tag deploy/smoke pipeline 2548270166 success",
+        "Playwright CLI production AI direct-message smoke: tests/e2e/dashboard-ai-chat.spec.ts direct input case passed",
+        "AI Chat: Advisor server performance improvement query returns non-empty actionable response",
+        "AI Chat: healthy-only 정상 범위 서버 목록 query returns server list without compact markdown heading leak",
+        "AI Chat: lowest composite-load query returns a grounded server answer",
+        "AI Chat: available server TOP 3 query returns ranked top-three style answer"
+      ],
+      "skippedSurfaces": [
+        "AI starter prompt button path: existing E2E selector button[data-prompt-title=\"서버 상태 확인\"] did not match production DOM; direct input AI path covered changed surface instead.",
+        "P4 session context continuity: documented as high-complexity follow-up, not included in v8.12.17 P1-P3 closure.",
+        "Vision real-image QA: skipped per manual-only policy because Vision routing/provider behavior was not changed."
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.12.16에서 실패한 P1 Advisor, P2 healthy-only/markdown, P3 lowest-load/TOP3 surfaces were retested on production v8.12.17 and passed through real Playwright CLI browser flow.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Main validate pipeline 2548270161, tag deploy/smoke pipeline 2548270166, /api/version, /api/health, and Vercel usage all passed after canonical GitLab release.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Playwright MCP browser actions timed out in the Codex session and the existing starter prompt E2E still depends on a production-missing data-prompt-title selector, although the direct input product path passed.",
+          "nextAction": "Stabilize the starter prompt E2E selector with role/text fallback and recheck MCP action reliability in a fresh Codex session."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-24T01:53:52+09:00",
+          "summary": "npm run check:usage:vercel PASS. Current billing period effective 15.3081 USD, billed 0.0000 USD; no unexpected billed usage observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release main validate pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548270161",
+          "note": "release commit main validate pipeline success"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.12.17 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548270166",
+          "note": "deploy, deploy_ai_engine, and post-deploy smoke pipeline success"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "production served v8.12.17 during post-deploy smoke"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -66668,17 +66878,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 292,
-      "appropriateCount": 251,
+      "seenCount": 293,
+      "appropriateCount": 252,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 58,
-      "lastRunId": "QA-20260524-0572",
-      "lastSeenAt": "2026-05-23T15:52:37.929Z",
+      "lastRunId": "QA-20260524-0573",
+      "lastSeenAt": "2026-05-23T17:08:54.211Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "5차 평가에서 cache/WAS 그룹 직접 진입 및 그룹+capacity forecast 복합 처리는 강점 확인. 역방향 필터·최솟값·Advisor 빈 응답·세션 컨텍스트 4개 신규 약점 발견.",
-      "lastNextAction": "역방향 필터 evidence path 추가, Advisor 응답 생성 실패 원인 조사, 마크다운 미렌더링 버그 수정 우선 권고."
+      "lastImprovementNeeded": false,
+      "lastRationale": "v8.12.16에서 실패한 P1 Advisor, P2 healthy-only/markdown, P3 lowest-load/TOP3 surfaces were retested on production v8.12.17 and passed through real Playwright CLI browser flow.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -66719,16 +66929,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 209,
-      "appropriateCount": 189,
+      "seenCount": 210,
+      "appropriateCount": 190,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260522-0564",
-      "lastSeenAt": "2026-05-22T12:13:39.004Z",
+      "lastRunId": "QA-20260524-0573",
+      "lastSeenAt": "2026-05-23T17:08:54.211Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab CI release pipeline과 Cloud Run health/traffic/version 검증이 통과했고 free-tier runtime limits 및 Cloud Build machineType guard가 유지됐다.",
+      "lastRationale": "Main validate pipeline 2548270161, tag deploy/smoke pipeline 2548270166, /api/version, /api/health, and Vercel usage all passed after canonical GitLab release.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -66736,17 +66946,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 253,
+      "seenCount": 254,
       "appropriateCount": 229,
-      "partialCount": 24,
+      "partialCount": 25,
       "inappropriateCount": 0,
-      "improvementNeededCount": 27,
-      "lastRunId": "QA-20260523-0571",
-      "lastSeenAt": "2026-05-23T14:54:43.243Z",
+      "improvementNeededCount": 28,
+      "lastRunId": "QA-20260524-0573",
+      "lastSeenAt": "2026-05-23T17:08:54.211Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Playwright MCP localhost initialize/tools-list는 통과했지만 현재 Codex 세션의 native namespace와 Windows HTTP long action은 안정적이지 않아 direct Playwright fallback을 병행했다.",
-      "lastNextAction": "Codex 세션 재시작 후 localhost MCP config가 native namespace에 반영되는지 재검증하고, long browser action은 stdio 또는 짧은 tool-call polling으로 분리한다."
+      "lastRationale": "Playwright MCP browser actions timed out in the Codex session and the existing starter prompt E2E still depends on a production-missing data-prompt-title selector, although the direct input product path passed.",
+      "lastNextAction": "Stabilize the starter prompt E2E selector with role/text fallback and recheck MCP action reliability in a fresh Codex session."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

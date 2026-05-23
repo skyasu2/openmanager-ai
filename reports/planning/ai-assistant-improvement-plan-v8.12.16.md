@@ -1,7 +1,7 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-24 (P1/P2/P3 local implementation + targeted tests)
+> Last reviewed: 2026-05-24 (v8.12.17 production targeted QA closure)
 > Tags: ai,assistant,routing,evidence,markdown,qa
 
 # AI 어시스턴트 개선 작업 계획서
@@ -252,7 +252,10 @@ Day 3~4 (선택)
 - [x] P3 composite-load lowest ranking: CPU 40% + memory 40% + disk 20% 가중 하위 ranking 추가
 - [x] 라인 가드 대응: `current-metrics-evidence-answers.ts`로 answer builder를 분리해 fail-threshold 제거
 - [x] 검증: targeted tests, root `type-check`/`lint`/`test:quick`/`test:contract`, AI Engine `type-check`/`test`, AI Engine `line-guard`, `git diff --check` PASS
-- [ ] 배포 및 production QA 여부 판단
+- [x] GitLab main validate 복구: `2548266355` success, release commit main pipeline `2548270161` success
+- [x] 배포: `v8.12.17` tag pipeline `2548270166` success, Vercel production `/api/version` `8.12.17`
+- [x] Production targeted QA: `QA-20260524-0573` 9/9 PASS
+- [ ] P4 세션 컨텍스트 연속성은 고난도 후속 항목으로 이번 P1~P3 closure 범위에서 제외
 
 ---
 
