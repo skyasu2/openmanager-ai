@@ -34,7 +34,7 @@ export function isFormattingOnlyReportRequest(query: string): boolean {
 }
 
 export const ADVISOR_QUERY_PATTERN =
-  /해결|방법|명령어|가이드|어떻게|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|how\s+to\s+(fix|resolve|solve)|troubleshoot|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
+  /해결|방법|명령어|가이드|어떻게|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|조언|개선|튜닝|최적화|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|how\s+to\s+(fix|resolve|solve)|troubleshoot|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
 
 export const FORCE_KB_QUERY_PATTERN =
   /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)|ssot|single\s*source\s*of\s*truth|pre-generated|krl|knowledge\s*retrieval|책임\s*경계|플랫폼\s*경계|platform\s*boundary|(?:vercel|bff|cloud\s*run|ai\s*engine).*(?:책임|경계|boundary|bff|cloud\s*run|ai\s*engine)|(?:프로젝트|저장소|repo|repository|코드|문서|내부).*(?:파일|경로|위치|path|문서)|(?:otel|데이터).*(?:파일|경로|위치|path|ssot)|(?:redis|레디스).{0,32}(?:설정|config|redis\.conf|maxmemory|eviction|영속화).{0,32}(?:가이드|방법|문서|guide|how\s+to|설명)|(?:redis|레디스).{0,32}(?:가이드|문서|설명).{0,32}(?:설정|config|redis\.conf|maxmemory|eviction|영속화)/i;
@@ -129,7 +129,7 @@ const TOOL_ROUTING_PATTERNS = {
   math:
     /(?:계산|연산|수식|중앙값|표준편차|percentile|p\d{2}|증가율|성장률|지수|루트|\d+(?:\.\d+)?\s*(?:[+*\/\^]|\s-\s)\s*\d+)/i,
   advisor:
-    /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|troubleshoot|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
+    /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|조언|개선|튜닝|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|troubleshoot|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
   serverGroup:
     /(db|web|cache|lb|api|storage|haproxy|nginx|mysql|redis|nfs|backend|백엔드|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
   logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
@@ -237,7 +237,7 @@ const SERVER_GROUP_PATTERN =
 const SERVER_ID_PATTERN =
   /\b[a-z][-a-z0-9]*-(?:dc|zone|region|prod|staging)\d*[-a-z0-9]*\b/i;
 const ACTION_PATTERN =
-  /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|추천|권장|조치|대응|fix|resolve|troubleshoot/i;
+  /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|조언|개선|튜닝|최적화|추천|권장|조치|대응|fix|resolve|troubleshoot/i;
 const MUTATING_COMMAND_PATTERN =
   /apt\s+install|yum\s+install|dnf\s+install|systemctl\s+(?:restart|reload|stop|start)|restart|재시작|설치|삭제|변경|수정|적용|배포|scale|resize/i;
 const ATTACHMENT_VISION_PATTERN =

@@ -260,9 +260,16 @@ function renderInlineContent(text: string, keyPrefix: string): React.ReactNode {
 }
 
 const HEADING_REGEX = /^(#{1,3})\s+(.+)$/;
+const COMPACT_HEADING_REGEX = /^(#{2,3})([^\s#].+)$/;
 const ORDERED_LIST_REGEX = /^(\d+)\.\s+(.+)$/;
 const UNORDERED_LIST_REGEX = /^[-*]\s+(.+)$/;
 const HR_REGEX = /^---+$/;
+
+function normalizeCompactHeadingMarkdown(text: string): string {
+  return text
+    .replace(/([^#\n])(?=#{2,3}[^\s#\n])/g, '$1\n')
+    .replace(/(^|\n)(#{2,3})([^\s#\n])/g, '$1$2 $3');
+}
 
 /**
  * Render text with full block-level markdown support:
@@ -270,7 +277,7 @@ const HR_REGEX = /^---+$/;
  * and inline formatting (bold, code, links).
  */
 function renderFormattedText(text: string): React.ReactNode {
-  const lines = text.split('\n');
+  const lines = normalizeCompactHeadingMarkdown(text).split('\n');
   const nodes: React.ReactNode[] = [];
   let listBuffer: { ordered: boolean; items: string[] } | null = null;
 
@@ -304,7 +311,8 @@ function renderFormattedText(text: string): React.ReactNode {
     }
 
     // Headings
-    const headingMatch = line.match(HEADING_REGEX);
+    const headingMatch =
+      line.match(HEADING_REGEX) ?? line.match(COMPACT_HEADING_REGEX);
     if (headingMatch) {
       flushList(`list-before-h-${i}`);
       const level = (headingMatch[1] ?? '').length;
