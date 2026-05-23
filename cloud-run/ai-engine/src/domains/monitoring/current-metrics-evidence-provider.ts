@@ -430,6 +430,12 @@ function parseCurrentMetricsFrame(
       capabilityId === MONITORING_METRIC_CURRENT_CAPABILITY_ID ||
       capabilityId === MONITORING_METRIC_RANKING_CAPABILITY_ID)
   ) {
+    // Multi-metric AND 쿼리("CPU와 메모리 둘 다 높은")는 entity extractor가
+    // 단일 metric만 반환하더라도 message 기반 파싱으로 처리해야 복합점수가 올바르게 계산됨
+    const mentionedMetrics = extractMentionedMetrics(request.message);
+    if (mentionedMetrics.length >= 2 && isAndMetricFilterMessage(request.message)) {
+      return null;
+    }
     return {
       intent: 'metric_current',
       capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
