@@ -350,10 +350,10 @@ describe('AIWorkspace', () => {
       screen.getByRole('button', { name: /AI Chat\s+자연어 질의/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /장애 보고서\s+보고서 생성/i })
+      screen.getByRole('button', { name: /장애 보고서\s+MD\/TXT 다운로드/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /이상감지\/추세\s+이상 신호 분석/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+실시간 분석 실행/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: '대시보드로 돌아가기' })
@@ -494,10 +494,10 @@ describe('AIWorkspace', () => {
       await screen.findByRole('button', { name: /AI Chat\s+자연어 질의/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /장애 보고서\s+보고서 생성/i })
+      screen.getByRole('button', { name: /장애 보고서\s+MD\/TXT 다운로드/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /이상감지\/추세\s+이상 신호 분석/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+실시간 분석 실행/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByTestId('ai-workspace-mobile-handoff')
@@ -876,7 +876,9 @@ describe('AIWorkspace', () => {
     render(<AIWorkspace mode="fullscreen" />);
 
     fireEvent.click(
-      screen.getByRole('button', { name: /이상감지\/추세\s+이상 신호 분석/i })
+      screen.getByRole('button', {
+        name: /이상감지\/추세\s+실시간 분석 실행/i,
+      })
     );
     fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
 
@@ -891,7 +893,9 @@ describe('AIWorkspace', () => {
       screen.getByRole('button', { name: /AI Chat\s+자연어 질의/i })
     );
     fireEvent.click(
-      screen.getByRole('button', { name: /이상감지\/추세\s+이상 신호 분석/i })
+      screen.getByRole('button', {
+        name: /이상감지\/추세\s+실시간 분석 실행/i,
+      })
     );
 
     expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
@@ -906,7 +910,7 @@ describe('AIWorkspace', () => {
     render(<AIWorkspace mode="fullscreen" />);
 
     fireEvent.click(
-      screen.getByRole('button', { name: /장애 보고서\s+보고서 생성/i })
+      screen.getByRole('button', { name: /장애 보고서\s+MD\/TXT 다운로드/i })
     );
     fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
 
@@ -921,7 +925,7 @@ describe('AIWorkspace', () => {
       screen.getByRole('button', { name: /AI Chat\s+자연어 질의/i })
     );
     fireEvent.click(
-      screen.getByRole('button', { name: /장애 보고서\s+보고서 생성/i })
+      screen.getByRole('button', { name: /장애 보고서\s+MD\/TXT 다운로드/i })
     );
 
     expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
