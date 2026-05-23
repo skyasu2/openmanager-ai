@@ -31,6 +31,28 @@ const hasAnchorNode = (node: RenderNode): boolean => {
   return false;
 };
 
+const hasElementType = (node: RenderNode, type: string): boolean => {
+  if (!node) return false;
+
+  if (isValidElement(node)) {
+    if (node.type === type) {
+      return true;
+    }
+
+    const children = node.props?.children;
+    if (!children) return false;
+    const list = Array.isArray(children) ? children : [children];
+
+    return list.some((child: RenderNode) => hasElementType(child, type));
+  }
+
+  if (Array.isArray(node)) {
+    return node.some((child) => hasElementType(child, type));
+  }
+
+  return false;
+};
+
 describe('parseMarkdownLinks', () => {
   it('renders markdown links as anchor elements', () => {
     const parsed = parseMarkdownLinks(
@@ -131,5 +153,18 @@ describe('markdown parser legacy paths', () => {
     }
 
     expect(hasAnchorNode(rendered)).toBe(true);
+  });
+
+  it('renders compact heading markers without leaking raw hash prefixes', () => {
+    const rendered = RenderMarkdownContent({
+      content: '##정상서버목록\n###CPU사용률80%미만\n1. **api-was-dc1-01**',
+    });
+
+    if (!isValidElement(rendered)) {
+      throw new Error('Expected RenderMarkdownContent to return an element');
+    }
+
+    expect(hasElementType(rendered, 'h2')).toBe(true);
+    expect(hasElementType(rendered, 'h3')).toBe(true);
   });
 });

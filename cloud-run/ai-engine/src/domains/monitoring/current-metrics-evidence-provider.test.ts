@@ -740,6 +740,132 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.prompt).toContain('현재 서버 상태');
   });
 
+  it('resolves healthy-only server list queries as deterministic server health evidence', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+      createEvidenceRequest('현재 정상 범위인 서버 목록 보여줘', {
+        timeLabel: '08:50',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 43,
+            memory: 66,
+            disk: 44,
+          },
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'warning',
+            cpu: 45,
+            memory: 91,
+            disk: 44,
+          },
+          {
+            id: 'storage-nfs-dc1-01',
+            type: 'storage',
+            status: 'online',
+            cpu: 22,
+            memory: 61,
+            disk: 89,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+        sourceIntent: 'healthy-only',
+        statusFilter: 'healthy-only',
+      },
+    });
+    expect(evidence?.fallback).toContain('정상 범위 서버');
+    expect(evidence?.fallback).toContain('api-was-dc1-01');
+    expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).not.toContain('storage-nfs-dc1-01');
+  });
+
+  it('resolves lowest composite load queries as deterministic ranking evidence', async () => {
+    const evidence = await monitoringMetricRankingEvidenceProvider.resolve(
+      createEvidenceRequest('지금 부하가 가장 낮은 서버는?', {
+        timeLabel: '08:50',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 60,
+            memory: 70,
+            disk: 30,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 20,
+            memory: 30,
+            disk: 25,
+          },
+          {
+            id: 'db-mysql-dc1-primary',
+            type: 'database',
+            status: 'warning',
+            cpu: 80,
+            memory: 60,
+            disk: 70,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-ranking',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+        intent: 'metric_ranking',
+        sourceIntent: 'composite-load-ranking',
+        rankBasis: 'composite-load',
+        rankOrder: 'asc',
+        rankCount: 1,
+      },
+    });
+    expect(evidence?.fallback).toContain('복합 부하 하위 1대');
+    expect(evidence?.fallback).toMatch(/1\. web-nginx-dc1-01/s);
+    expect(evidence?.fallback).toContain('CPU 20%');
+    expect(evidence?.fallback).toContain('메모리 30%');
+    expect(evidence?.fallback).toContain('디스크 25%');
+  });
+
+  it('resolves available-server TOP-N queries by composite load ascending', async () => {
+    const evidence = await monitoringMetricRankingEvidenceProvider.resolve(
+      createEvidenceRequest('여유 있는 서버 TOP 3 알려줘', {
+        timeLabel: '08:50',
+        servers: [
+          { id: 'api-was-dc1-01', status: 'online', cpu: 60, memory: 70, disk: 30 },
+          { id: 'web-nginx-dc1-01', status: 'online', cpu: 20, memory: 30, disk: 25 },
+          { id: 'cache-redis-dc1-01', status: 'online', cpu: 35, memory: 42, disk: 30 },
+          { id: 'db-mysql-dc1-primary', status: 'warning', cpu: 80, memory: 60, disk: 70 },
+        ],
+      })
+    );
+
+    expect(evidence?.metadata).toMatchObject({
+      rankBasis: 'composite-load',
+      rankOrder: 'asc',
+      rankCount: 3,
+    });
+    expect(evidence?.fallback).toContain('복합 부하 하위 3대');
+    expect(evidence?.fallback).toMatch(
+      /1\. web-nginx-dc1-01[\s\S]+2\. cache-redis-dc1-01[\s\S]+3\. api-was-dc1-01/
+    );
+    expect(evidence?.fallback).not.toContain('db-mysql-dc1-primary');
+  });
+
   it('resolves server alias detail prompts without falling back to whole-fleet summaries', async () => {
     const evidence = await monitoringServerHealthEvidenceProvider.resolve(
       createEvidenceRequest('web-server-01 상태를 자세히 알려줘')

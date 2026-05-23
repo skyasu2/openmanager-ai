@@ -131,6 +131,22 @@ describe('extractQueryRoutingSignals', () => {
     );
   });
 
+  it('routes performance improvement advice wording to Advisor pre-filter', () => {
+    const signals = extractQueryRoutingSignals(
+      'api-was-dc1-01 서버 성능 개선 조언 해줘'
+    );
+
+    expect(signals.intent).toBe('advisor');
+    expect(signals.toolIntentCategory).toBe('advisor');
+    expect(signals.preFilter.action).toBe('suggest_agent');
+    expect(signals.preFilter.suggestedAgent).toBe('Advisor Agent');
+
+    const optimizationSignals = extractQueryRoutingSignals(
+      'db-mysql-dc1-primary 최적화 방법 알려줘'
+    );
+    expect(optimizationSignals.preFilter.suggestedAgent).toBe('Advisor Agent');
+  });
+
   it('keeps retired analysis-mode reason labels out of the routing source', () => {
     const source = readFileSync(
       new URL('./query-routing-signals.ts', import.meta.url),

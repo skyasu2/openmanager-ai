@@ -13,6 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| AI 어시스턴트 v8.12.16 QA 후속 개선 (Advisor routing·healthy filter·lowest load·markdown) | High | In Progress (Codex) | 2026-05-24 `QA-20260524-0572`에서 확인된 P1~P3 결함을 처리한다. 기존 AI 품질 개선과 겹치지만 최신 QA 후속 범위가 독립되어 [ai-assistant-improvement-plan-v8.12.16.md](ai-assistant-improvement-plan-v8.12.16.md)를 Approved plan으로 정리했다. |
 | AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-22 v8.12.9 H-4 배포 및 targeted production QA(`QA-20260522-0563`) 완료. H-5 semantic-router-v2/fail-closed는 SDD/failing spec 선행 후 local 구현·검증 완료. 잔여: H-5 커밋/배포/production QA 여부 판단, intentFrame 실측 적중률, Task F 최종 판정. Task E/H-5 SDD Approved. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | 사용자 액션 필요 | R-0~R-4, R-6 완료. 2026-05-21 data-plane INFO/DBSIZE 스냅샷은 keys 32, data 15.895KB, 누적 명령 60,495로 기록했다. 남은 R-5 월간 소비량 보정은 Upstash dashboard 또는 management API 접근이 있어야 확정 가능. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P1~P5 완료. 2026-05-21 `npm run bundle:budget` PASS(JS 1.45MB < 2MB, CSS 61.69KB < 250KB). P0은 warn-first 관찰 중이며 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
