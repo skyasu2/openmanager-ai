@@ -1,0 +1,127 @@
+{
+  "runId": "QA-20260523-0571",
+  "target": "https://openmanager-ai.vercel.app",
+  "version": {
+    "version": "8.12.16",
+    "buildVersion": "8.12.16",
+    "versions": {
+      "overall": "8.12.16",
+      "frontend": "8.12.16"
+    },
+    "nextjs": "16.1.6",
+    "environment": "production",
+    "commitSha": "0d6c1005285b04607ca39996b86305e6db85c812",
+    "shortCommitSha": "0d6c100528",
+    "releaseTag": "v8.12.16",
+    "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548040399",
+    "deploymentProvider": "vercel",
+    "timestamp": "2026-05-23T14:51:14.629Z"
+  },
+  "health": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "status": "healthy",
+        "services": {
+          "database": {
+            "status": "connected",
+            "lastCheck": "2026-05-23T14:48:07.623Z",
+            "latency": 3
+          },
+          "cache": {
+            "status": "connected",
+            "lastCheck": "2026-05-23T14:48:07.624Z",
+            "latency": 3
+          },
+          "ai": {
+            "status": "connected",
+            "lastCheck": "2026-05-23T14:48:07.624Z",
+            "latency": 3
+          }
+        },
+        "uptime": 1112,
+        "version": "8.12.16",
+        "timestamp": "2026-05-23T14:48:07.624Z"
+      },
+      "timestamp": "2026-05-23T14:48:07.626Z"
+    }
+  },
+  "checks": [
+    {
+      "id": "guest-login-ui",
+      "title": "Guest session issued through Vercel login UI",
+      "status": "passed",
+      "details": "login=200"
+    },
+    {
+      "id": "version-health",
+      "title": "Vercel production version/health reachable",
+      "status": "passed",
+      "details": "version=8.12.16 commit=0d6c100528 health=200"
+    },
+    {
+      "id": "dashboard-render",
+      "title": "Guest session reaches Vercel dashboard",
+      "status": "passed",
+      "details": "개요 서버 알림 로그 토폴로지 OpenManager AI 2026.05.23 23:51:14 (토) AI 어시스턴트 👆 GU 게스트 사용자 게스트 로그인 전체 18 대 OpenTelemetry snapshot · 23:50 KST (slot 143/143) Telemetry catalog v1.0.0 · updated 2026-02-15 03:56Z 온라인 17 경고 1 위험 0 오프라인 0 상태 성능 경고 상태 헤더 도구 알림 1 로그 스파크라인 시간 범위 2h 6h 12h 24h 시스템 리소스 34% CPU 45% Memory 40% Disk 리소스 경고 (TOP 5) storage-nfs-dc1-01 DISK 84% db-mysql-dc1-backup DISK 75% storage-s3gw-dc1-01 DISK 74% db-mysql-dc1-primary DISK 65% api-was-dc1-01 MEM 57% 서버 보기 방식 목록 그리드 정렬 서버 정렬 상태 CPU MEM 이름 상위 알림 서버 4개 표시(전체 18대) 위험도 우선 storage-nfs-dc1-01 상세 보기 storage-nfs-dc1-01 스토리지 🐧 Linux DC1-AZ1 LIVE METRICS 경고 CPU 66.0% ↑ +8% MEM 48.0% ↑ +4% Disk 84.0% ↑ +4% api-was-dc1-01 상세 보기 api-was-dc1-01 서버 🐧 Linux DC1-AZ1 LIVE METRICS 정상 CPU 43.0% ↑ +5% MEM 57.0% ↑ +1% Disk 35.0% ↑ +4% api-was-dc1-02 상세 보기 api-was-dc1-02 서버 🐧 Linux DC1-AZ2 LIVE METRICS 정상 CPU 39.0% ↑ +1% MEM 57.0% — Disk 31.0% ↑ +1"
+    },
+    {
+      "id": "embedded-ai-route",
+      "title": "Vercel /dashboard/ai-assistant renders current AI workspace",
+      "status": "passed",
+      "details": "개요 서버 알림 로그 토폴로지 OpenManager AI 2026.05.23 23:51:15 (토) GU 게스트 사용자 게스트 로그인 AI 어시스턴트 질의, Reporter, Analyst 기능을 한 화면에서 실행 AI Chat 자연어 질의 장애 보고서 MD/TXT 다운로드 이상감지/추세 실시간 분석 실행 컨텍스트 운영 상태를 어디부터 볼까요? 현재 관측 데이터를 기준으로 바로 분석할 수 있습니다 시스템 스냅샷 18대 중 17대 온라인 · 경고 1건 · CPU 평균 34% 점검 필요 storage-nfs-dc1-01 DISK 84% 현재 데이터 기준 최우선 점검 대상 오늘 성능 추세 CPU·메모리·디스크 변화 확인 지난 1시간 이상 징후 최근 알림과 리소스 급등 확인 장애 보고서 생성 공유 가능한 운영 보고서 작성 Shift+Enter로 줄바꿈 서버 컨텍스트 기준 23:50 KST 대화 시작 후 관련 서버가 여기 표시됩니다"
+    },
+    {
+      "id": "embedded-tab-copy",
+      "title": "Embedded AI function tab copy is aligned",
+      "status": "passed",
+      "details": "개요 서버 알림 로그 토폴로지 OpenManager AI 2026.05.23 23:51:15 (토) GU 게스트 사용자 게스트 로그인 AI 어시스턴트 질의, Reporter, Analyst 기능을 한 화면에서 실행 AI Chat 자연어 질의 장애 보고서 MD/TXT 다운로드 이상감지/추세 실시간 분석 실행 컨텍스트 운영 상태를 어디부터 볼까요? 현재 관측 데이터를 기준으로 바로 분석할 수 있습니다 시스템 스냅샷 18대 중 17대 온라인 · 경고 1건 · CPU 평균 34% 점검 필요 storage-nfs-dc1-01 DISK 84% 현재 데이터 기준 최우선 점검 대상 오늘 성능 추세 CPU·메모리·디스크 변화 확인 지난 1시간 이상 징후 최근 알림과 리소스 급등 확인 장애 보고서 생성 공유 가능한 운영 보고서 작성 Shift+Enter로 줄바꿈 서버 컨텍스트 기준 23:50 KST 대화 시작 후 관련 서버가 여기 표시됩니다"
+    },
+    {
+      "id": "auto-report-quickstart-dedupe",
+      "title": "Auto Report quick-start stays deduped",
+      "status": "passed",
+      "details": "riskQuickStart=0 staleAnomalyQuickStart=0"
+    },
+    {
+      "id": "multi-metric-cpu-memory",
+      "title": "CPU+memory AND query returns multi-metric server evidence",
+      "status": "passed",
+      "details": "CPU와 메모리 둘 다 높은 서버를 알려줘 오후 11:51:17 복사 📊 전체 서버 CPU + 메모리 복합 부하 상위 • 대상: 전체 서버 · 데이터 슬롯 23:50 KST • 서버별 (CPU + 메모리 합산 내림차순): storage-nfs-dc1-01 [CPU 66%, 메모리 48%], db-mysql-dc1-primary [CPU 45%, 메모리 58%], api-was-dc1-01 [CPU 43%, 메모리 57%], api-was-dc1-02 [CPU 39%, 메모리 57%], db-mysql-dc1-replica [CPU 40%, 메모리 56%] 오후 11:51:17 응답 빠름 복사 다시 생성 deterministic / monitoring-metric-current 분석 근거 도구: monitoring-metric-current Shift+Enter로 줄바꿈 서버 컨텍스트 기준 23:50 KST storage-nfs-dc1-01 storage-nfs-dc1-01.openmanager.kr warning CPU 66% MEM 48% DISK 84% 상세 보기 api-was-dc1-01 api-was-dc1-01.openmanager.kr online CPU 43% MEM 57% DISK 35% 상세 보기 api-was-dc1-02 api-was-dc1-02.openmanager.kr online CPU 39% MEM 57% DISK 31% 상세 보기"
+    },
+    {
+      "id": "db-threshold-regression",
+      "title": "DB disk threshold excludes 40% replica",
+      "status": "passed",
+      "details": "DB 서버 디스크 60% 이상인 곳 오후 11:51:20 복사 📊 DB 서버 디스크 60% 이상 서버 • 조건: 디스크 >= 60% • 대상: DB 서버 3대 중 2대 · 데이터 슬롯 23:50 KST • 서버별: db-mysql-dc1-backup 75% (online), db-mysql-dc1-primary 65% (online) 오후 11:51:20 응답 빠름 복사 다시 생성 deterministic / monitoring-metric-current 분석 근거 도구: monitoring-metric-current Shift+Enter로 줄바꿈 서버 컨텍스트 기준 23:50 KST storage-nfs-dc1-01 storage-nfs-dc1-01.openmanager.kr warning CPU 66% MEM 48% DISK 84% 상세 보기 api-was-dc1-01 api-was-dc1-01.openmanager.kr online CPU 43% MEM 57% DISK 35% 상세 보기 api-was-dc1-02 api-was-dc1-02.openmanager.kr online CPU 39% MEM 57% DISK 31% 상세 보기"
+    },
+    {
+      "id": "artifact-envelope-render",
+      "title": "Monitoring artifact envelope renders card and download CTAs",
+      "status": "passed",
+      "details": "전체 서버 이상감지 돌려줘 오후 11:51:20 복사 이상감지/추세 분석을 완료했습니다. 분석 서버: 18대 위험 신호: 1건 아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다. 이상감지/추세 분석 전체 서버 이상감지/추세 분석 1대 서버에서 1개 risk signal이 감지되었습니다. critical 0개, warning 1개입니다. 데이터 OpenTelemetry snapshot 기준 23:50 분석 서버 18 위험 신호 1 상태 주의 1대 · 위험 0대 역할별 현황 web 3대 CPU 29% · MEM 40% · DISK 27% application 3대 CPU 36% · MEM 52% · DISK 31% database 3대 CPU 38% · MEM 51% · DISK 61% cache 3대 CPU 24% · MEM 47% · DISK 25% storage 3대 CPU 43% · MEM 42% · DISK 69% 주의 1대 · 위험 0대 loadbalancer 3대 CPU 32% · MEM 37% · DISK 25% 용량 소진 예측 storage-nfs-dc1-01 DISK 84% 위험 도달 16분 예측 100% · 현재 경고 상태 → 15분 후 심각 상태 예상 storage-nfs-dc1-01 CPU 66% 위험 도달 47분 예측 100% · 47분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능 storage-s3gw-dc1-01 DISK 74% 위험 도달 1시간 5분 예측 100% · 1시간 5분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능 위험 신호 storage-nfs-dc1-01 disk 84% 임계치 80% · stable 근거 storage-nfs-dc1-01 disk 84% exceeded 80% warning threshold. storage-s3gw-dc1-01 syslog: minio[11905]: ERROR: Multipart "
+    }
+  ],
+  "dashboard": "개요 서버 알림 로그 토폴로지 OpenManager AI 2026.05.23 23:51:14 (토) AI 어시스턴트 👆 GU 게스트 사용자 게스트 로그인 전체 18 대 OpenTelemetry snapshot · 23:50 KST (slot 143/143) Telemetry catalog v1.0.0 · updated 2026-02-15 03:56Z 온라인 17 경고 1 위험 0 오프라인 0 상태 성능 경고 상태 헤더 도구 알림 1 로그 스파크라인 시간 범위 2h 6h 12h 24h 시스템 리소스 34% CPU 45% Memory 40% Disk 리소스 경고 (TOP 5) storage-nfs-dc1-01 DISK 84% db-mysql-dc1-backup DISK 75% storage-s3gw-dc1-01 DISK 74% db-mysql-dc1-primary DISK 65% api-was-dc1-01 MEM 57% 서버 보기 방식 목록 그리드 정렬 서버 정렬 상태 CPU MEM 이름 상위 알림 서버 4개 표시(전체 18대) 위험도 우선 storage-nfs-dc1-01 상세 보기 storage-nfs-dc1-01 스토리지 🐧 Linux DC1-AZ1 LIVE METRICS 경고 CPU 66.0% ↑ +8% MEM 48.0% ↑ +4% Disk 84.0% ↑ +4% api-was-dc1-01 상세 보기 api-was-dc1-01 서버 🐧 Linux DC1-AZ1 LIVE METRICS 정상 CPU 43.0% ↑ +5% MEM 57.0% ↑ +1% Disk 35.0% ↑ +4% api-was-dc1-02 상세 보기 api-was-dc1-02 서버 🐧 Linux DC1-AZ2 LIVE METRICS 정상 CPU 39.0% ↑ +1% MEM 57.0% — Disk 31.0% ↑ +1% api-was-dc1-03 상세 보기 api-was-dc1-03 서버 🐧 Linux DC1-AZ3 LIVE METRICS 정상 CPU 27.0% ↑ +3% MEM 41.0% ↑ +1% Disk 28.0% — 상위 알림 서버 4개 표시 더 보기 (14대 남음) 인시던트 피드 접속 시점 기준 활성 알림 전체 1 경고 경고 storage-nfs-dc1-01 Disk = 84.0% 3분 경과",
+  "aiRoute": "개요 서버 알림 로그 토폴로지 OpenManager AI 2026.05.23 23:51:15 (토) GU 게스트 사용자 게스트 로그인 AI 어시스턴트 질의, Reporter, Analyst 기능을 한 화면에서 실행 AI Chat 자연어 질의 장애 보고서 MD/TXT 다운로드 이상감지/추세 실시간 분석 실행 컨텍스트 운영 상태를 어디부터 볼까요? 현재 관측 데이터를 기준으로 바로 분석할 수 있습니다 시스템 스냅샷 18대 중 17대 온라인 · 경고 1건 · CPU 평균 34% 점검 필요 storage-nfs-dc1-01 DISK 84% 현재 데이터 기준 최우선 점검 대상 오늘 성능 추세 CPU·메모리·디스크 변화 확인 지난 1시간 이상 징후 최근 알림과 리소스 급등 확인 장애 보고서 생성 공유 가능한 운영 보고서 작성 Shift+Enter로 줄바꿈 서버 컨텍스트 기준 23:50 KST 대화 시작 후 관련 서버가 여기 표시됩니다",
+  "segments": {
+    "composite": "CPU와 메모리 둘 다 높은 서버를 알려줘 오후 11:51:17 복사 📊 전체 서버 CPU + 메모리 복합 부하 상위 • 대상: 전체 서버 · 데이터 슬롯 23:50 KST • 서버별 (CPU + 메모리 합산 내림차순): storage-nfs-dc1-01 [CPU 66%, 메모리 48%], db-mysql-dc1-primary [CPU 45%, 메모리 58%], api-was-dc1-01 [CPU 43%, 메모리 57%], api-was-dc1-02 [CPU 39%, 메모리 57%], db-mysql-dc1-replica [CPU 40%, 메모리 56%] 오후 11:51:17 응답 빠름 복사 다시 생성 deterministic / monitoring-metric-current 분석 근거 도구: monitoring-metric-current Shift+Enter로 줄바꿈 서버 컨텍스트 기준 23:50 KST storage-nfs-dc1-01 storage-nfs-dc1-01.openmanager.kr warning CPU 66% MEM 48% DISK 84% 상세 보기 api-was-dc1-01 api-was-dc1-01.openmanager.kr online CPU 43% MEM 57% DISK 35% 상세 보기 api-was-dc1-02 api-was-dc1-02.openmanager.kr online CPU 39% MEM 57% DISK 31% 상세 보기",
+    "db": "DB 서버 디스크 60% 이상인 곳 오후 11:51:20 복사 📊 DB 서버 디스크 60% 이상 서버 • 조건: 디스크 >= 60% • 대상: DB 서버 3대 중 2대 · 데이터 슬롯 23:50 KST • 서버별: db-mysql-dc1-backup 75% (online), db-mysql-dc1-primary 65% (online) 오후 11:51:20 응답 빠름 복사 다시 생성 deterministic / monitoring-metric-current 분석 근거 도구: monitoring-metric-current Shift+Enter로 줄바꿈 서버 컨텍스트 기준 23:50 KST storage-nfs-dc1-01 storage-nfs-dc1-01.openmanager.kr warning CPU 66% MEM 48% DISK 84% 상세 보기 api-was-dc1-01 api-was-dc1-01.openmanager.kr online CPU 43% MEM 57% DISK 35% 상세 보기 api-was-dc1-02 api-was-dc1-02.openmanager.kr online CPU 39% MEM 57% DISK 31% 상세 보기",
+    "artifact": "전체 서버 이상감지 돌려줘 오후 11:51:20 복사 이상감지/추세 분석을 완료했습니다. 분석 서버: 18대 위험 신호: 1건 아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다. 이상감지/추세 분석 전체 서버 이상감지/추세 분석 1대 서버에서 1개 risk signal이 감지되었습니다. critical 0개, warning 1개입니다. 데이터 OpenTelemetry snapshot 기준 23:50 분석 서버 18 위험 신호 1 상태 주의 1대 · 위험 0대 역할별 현황 web 3대 CPU 29% · MEM 40% · DISK 27% application 3대 CPU 36% · MEM 52% · DISK 31% database 3대 CPU 38% · MEM 51% · DISK 61% cache 3대 CPU 24% · MEM 47% · DISK 25% storage 3대 CPU 43% · MEM 42% · DISK 69% 주의 1대 · 위험 0대 loadbalancer 3대 CPU 32% · MEM 37% · DISK 25% 용량 소진 예측 storage-nfs-dc1-01 DISK 84% 위험 도달 16분 예측 100% · 현재 경고 상태 → 15분 후 심각 상태 예상 storage-nfs-dc1-01 CPU 66% 위험 도달 47분 예측 100% · 47분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능 storage-s3gw-dc1-01 DISK 74% 위험 도달 1시간 5분 예측 100% · 1시간 5분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능 위험 신호 storage-nfs-dc1-01 disk 84% 임계치 80% · stable 근거 storage-nfs-dc1-01 disk 84% exceeded 80% warning threshold. storage-s3gw-dc1-01 syslog: minio[11905]: ERROR: Multipart upload stalled on storage-s3gw-dc1-01 during backup window db-mysql-dc1-backup mysqld: mysqld[4396]: [Warning] InnoDB: Write to NFS mount stalled for 812ms MD 다운로드 JSON 다운로드 이상감지/추세에서 보기 오후 11:51:27 복사 다시 생성 분석 근거 도구: 이상감지/추세 분석 Shift+Enter로 줄바꿈 서버 컨텍스트 기준 23:50 KST storage-nfs-dc1-01 storage-nfs-dc1-01.openmanager.kr warning CPU 66% MEM 48% DISK 84% 상세 보기 api-was-dc1-01 api-was-dc1-01.openmanager.kr online CPU 43% MEM 57% DISK 35% 상세 보기 api-was-dc1-02 api-was-dc1-02.openmanager.kr online CPU 39% MEM 57% DISK 31% 상세 보기"
+  },
+  "screenshots": [
+    {
+      "slug": "dashboard",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-dashboard.png"
+    },
+    {
+      "slug": "ai-route",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-route.png"
+    },
+    {
+      "slug": "ai-final",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-final.png"
+    }
+  ]
+}

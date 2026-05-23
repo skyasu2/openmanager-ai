@@ -1,0 +1,167 @@
+{
+  "runTitle": "QA-20260523-0571 v8.12.16 focused Vercel QA - MCP transport, multi-metric, threshold, artifact envelope",
+  "owner": "codex",
+  "source": "playwright-mcp+direct-playwright-fallback+vercel-usage",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "/login guest PIN flow",
+    "/dashboard overview",
+    "/dashboard/ai-assistant embedded workspace",
+    "CPU+memory AND current metrics",
+    "DB disk threshold filtering",
+    "monitoring artifact envelope downloads"
+  ],
+  "skippedSurfaces": [
+    "Native mcp__playwright__ namespace in this already-running Codex session remained closed until MCP config reload; localhost HTTP JSON-RPC initialize/tools-list passed, long browser actions were completed through direct Playwright fallback."
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2548040399",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "0d6c1005285b04607ca39996b86305e6db85c812"
+  },
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-23T23:52:22+09:00",
+      "summary": "npm run check:usage:vercel completed after focused production QA. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398; no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Playwright MCP transport probe",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-mcp-transport.json"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Focused production QA result",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-playwright-fallback-result.json"
+    },
+    {
+      "type": "playwright-console",
+      "label": "AI transcript",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-transcript.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Dashboard text snapshot",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-dashboard-snapshot.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "AI route text snapshot",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-route-snapshot.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI route screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-route.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI final artifact screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-final.png"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "오늘 변경된 AI deterministic/current-metrics 경로와 artifact UI를 프로덕션 질의로 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Playwright MCP localhost initialize/tools-list는 통과했지만 현재 Codex 세션의 native namespace와 Windows HTTP long action은 안정적이지 않아 direct Playwright fallback을 병행했다.",
+      "nextAction": "Codex 세션 재시작 후 localhost MCP config가 native namespace에 반영되는지 재검증하고, long browser action은 stdio 또는 짧은 tool-call polling으로 분리한다."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "DB 디스크 60% 이상 쿼리에서 3대 중 2대만 반환되어 40% replica 제외를 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "playwright-mcp-localhost-transport-probe",
+      "title": "Playwright MCP localhost initialize/tools-list probe",
+      "priority": "P1",
+      "evidence": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-mcp-transport.json"
+    },
+    {
+      "id": "multi-metric-cpu-memory-and-routing",
+      "title": "CPU+memory AND query returns composite current-metrics ranking",
+      "priority": "P0",
+      "evidence": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-transcript.txt"
+    },
+    {
+      "id": "db-disk-threshold-filter",
+      "title": "DB disk threshold excludes below-threshold replica",
+      "priority": "P0",
+      "evidence": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-transcript.txt"
+    },
+    {
+      "id": "monitoring-artifact-envelope-render",
+      "title": "Monitoring artifact envelope renders MD/JSON download CTAs",
+      "priority": "P1",
+      "evidence": "reports/qa/evidence/2026/qa-20260523-0571/qa-20260523-0571-ai-final.png"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "playwright-mcp-native-session-reload",
+      "title": "Current Codex session native Playwright MCP namespace remains closed until config reload",
+      "priority": "P1",
+      "isBlocking": false,
+      "note": "localhost HTTP JSON-RPC probe is green, but mcp__playwright__ native calls in this existing session still returned Transport closed. Requires Codex MCP config reload/session restart validation."
+    }
+  ],
+  "notes": [
+    "Production app version observed as v8.12.16 commit 0d6c100528.",
+    "Focused product QA passed 9/9 checks through direct Playwright fallback after MCP transport probing.",
+    "MCP HTTP long browser actions returned empty/closed responses in this already-running session; product evidence remains valid but native MCP transport needs a follow-up reload check."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

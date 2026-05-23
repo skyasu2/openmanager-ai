@@ -1,0 +1,10 @@
+{
+  "endpoint": "http://localhost:8931/mcp",
+  "sessionId": "4e3eb115-15e8-4cf2-86c3-21896f1d763d",
+  "serverVersion": "0.0.55",
+  "toolCount": 22,
+  "hasBrowserNavigate": true,
+  "hasBrowserRunCode": true,
+  "hasBrowserTakeScreenshot": true,
+  "codexNativeObservation": "mcp__playwright__ namespace stayed closed in this already-running Codex session until config reload; localhost HTTP JSON-RPC initialize/tools-list succeeded. Long browser actions were completed with direct Playwright fallback and recorded separately."
+}

@@ -39,7 +39,7 @@ approval_mode = "approve"
 [mcp_servers.playwright]
 # Windows HTTP mode: run `npm run mcp:playwright:windows:start` before starting Codex session.
 # Switch to stdio: npm run mcp:playwright:mode:stdio (requires DISPLAY=:0)
-url = "http://127.0.0.1:8931/mcp"
+url = "http://localhost:8931/mcp"
 startup_timeout_sec = 60
 tool_timeout_sec = 180
 required = false

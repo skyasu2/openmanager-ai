@@ -86,7 +86,7 @@ function print_playwright_section() {
     print "[mcp_servers.playwright.env]"
     print "DISPLAY = \":0\""
   } else if (mode == "windows-http") {
-    print "url = \"http://127.0.0.1:" port "/mcp\""
+    print "url = \"http://localhost:" port "/mcp\""
     print "startup_timeout_sec = 60"
     print "tool_timeout_sec = 180"
     print "required = false"
@@ -172,6 +172,6 @@ echo "Updated Playwright MCP mode: $MODE"
 echo "Config: $CONFIG_FILE"
 echo "Backup: $backup_file"
 if [[ "$MODE" == "windows-http" ]]; then
-  echo "Target endpoint: http://127.0.0.1:${PORT}/mcp"
+  echo "Target endpoint: http://localhost:${PORT}/mcp"
 fi
 echo "Restart Codex session to apply the MCP config change."

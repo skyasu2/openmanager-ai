@@ -112,7 +112,7 @@ Codex MCP는 project `.codex/config.toml`만 OpenManager 서버 목록을 보유
 |---|---|---:|---|
 | `supabase-db` | `run-with-project-env.sh` → `start-supabase-mcp.sh` | `30/120` | `SUPABASE_ACCESS_TOKEN` runtime 주입 |
 | `diagram-converter` | `start-node-mcp-package.sh diagram-converter-mcp 0.2.11 dist/index.js` | `120/180` | pinned |
-| `playwright` | Windows HTTP `url = http://127.0.0.1:8931/mcp` | `60/180` | Windows MCP 서버 별도 실행 필요 |
+| `playwright` | Windows HTTP `url = http://localhost:8931/mcp` | `60/180` | Windows MCP 서버 별도 실행 필요 |
 | `next-devtools` | `start-node-mcp-package.sh next-devtools-mcp 0.3.10 dist/index.js` | `75/120` | Windows env 보강 |
 | `chrome-devtools` | `start-node-mcp-package.sh chrome-devtools-mcp 0.23.0 ... --isolated` | `90/180` | `DISPLAY=:0` |
 | `github` | HTTP MCP endpoint | `120/120` | `codex-local.sh`가 `GITHUB_PERSONAL_ACCESS_TOKEN` runtime 주입, token 없으면 auto mode에서 제외 |
@@ -186,7 +186,7 @@ GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --de
 
 ## Playwright MCP
 
-**현재 모드: Windows HTTP** (`url = "http://127.0.0.1:8931/mcp"`)
+**현재 모드: Windows HTTP** (`url = "http://localhost:8931/mcp"`)
 
 WSL2 환경에서 `DISPLAY=:0` stdio 모드는 transport 닫힘 오류가 발생합니다. Windows에서 MCP 서버를 실행하고 HTTP로 연결하는 방식을 기본으로 합니다.
 
