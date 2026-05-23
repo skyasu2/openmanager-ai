@@ -785,4 +785,70 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('즉시 조치 대상은 1대입니다');
     expect(evidence?.fallback).not.toContain('서버 현황 요약');
   });
+
+  it('routes "가장 위험한 서버" wording to server health evidence via ACTION_NEEDED_PATTERN', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+      createEvidenceRequest('지금 현재 메트릭 기준으로 가장 위험한 서버는?', {
+        servers: [
+          { id: 'api-was-dc1-01', status: 'warning', cpu: 84, memory: 62, disk: 41 },
+          { id: 'api-was-dc1-02', status: 'online', cpu: 43, memory: 51, disk: 39 },
+          { id: 'web-nginx-dc1-01', status: 'online', cpu: 21, memory: 45, disk: 28 },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+        sourceIntent: 'action-needed',
+      },
+    });
+    expect(evidence?.fallback).toContain('api-was-dc1-01');
+    expect(evidence?.fallback).not.toContain('CPU 84% 창작');
+  });
+
+  it('routes "WAS 서버 그룹 상태" to server_health with application group target', async () => {
+    // "WAS 서버 그룹 전체 CPU 상태 요약해줘"는 cpu 메트릭이 명시되어 metric_current로 파싱됨
+    // server_health 라우팅은 특정 메트릭 없이 상태/현황을 묻는 쿼리에만 적용됨
+    const parsed = parseCurrentMetricsEvidenceRequest(
+      createEvidenceRequest('WAS 서버 그룹 상태 어때요?')
+    );
+
+    expect(parsed).toMatchObject({
+      capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+      intent: 'server_health',
+      targets: ['application'],
+    });
+  });
+
+  it('routes "CPU와 메모리 둘 다 높은" without threshold to multi-metric-no-threshold path', async () => {
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      createEvidenceRequest('CPU와 메모리 둘 다 높은 서버 알려줘', {
+        timeLabel: '08:50',
+        servers: [
+          { id: 'api-was-dc1-01', type: 'application', status: 'warning', cpu: 84, memory: 62, disk: 41 },
+          { id: 'api-was-dc1-02', type: 'application', status: 'online', cpu: 43, memory: 78, disk: 39 },
+          { id: 'web-nginx-dc1-01', type: 'web', status: 'online', cpu: 21, memory: 45, disk: 28 },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        sourceIntent: 'multi-metric-no-threshold',
+        metrics: expect.arrayContaining(['cpu', 'memory']),
+        filterOperator: 'AND',
+      },
+    });
+    // 합산 점수 기준 정렬: api-was-dc1-01(84+62=146) > api-was-dc1-02(43+78=121)
+    expect(evidence?.fallback).toMatch(/api-was-dc1-01.+api-was-dc1-02/s);
+    expect(evidence?.fallback).toContain('CPU + 메모리');
+  });
 });

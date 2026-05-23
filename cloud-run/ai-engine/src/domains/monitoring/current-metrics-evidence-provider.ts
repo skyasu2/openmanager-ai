@@ -71,7 +71,7 @@ const SERVER_HEALTH_EXCLUSION_PATTERN =
 const SERVER_DETAIL_PATTERN =
   /\b[a-z0-9]+(?:-[a-z0-9]+){1,}\b.{0,24}(상태|현황|자세|상세|health|status|detail|어때|알려)/i;
 const ACTION_NEEDED_PATTERN =
-  /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응).{0,32}(?:필요|해야|대상|있|시급).{0,16}(?:서버|대상|순위)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|immediate\s+action|urgent\s+action|action\s+needed/i;
+  /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응|위험).{0,32}(?:필요|해야|대상|있|시급|서버)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)|immediate\s+action|urgent\s+action|action\s+needed|most\s+at\s+risk/i;
 const CURRENT_METRIC_GROUP_PATTERN =
   /(?:\b(?:db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend)\b|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN = /추이|추세|trend|변화|변동/i;
@@ -524,22 +524,37 @@ function parseCurrentMetricsMessage(
   }
 
   if (
-    classification.intent === 'data-filter' &&
-    classification.threshold !== undefined &&
     mentionedMetrics.length >= 2 &&
     isAndMetricFilterMessage(message) &&
-    (classification.operator === undefined ||
-      classification.operator === '>=' ||
-      classification.operator === '>')
+    !HISTORICAL_OR_TREND_PATTERN.test(message) &&
+    explicitServerTargets.length === 0
   ) {
+    if (
+      classification.intent === 'data-filter' &&
+      classification.threshold !== undefined &&
+      (classification.operator === undefined ||
+        classification.operator === '>=' ||
+        classification.operator === '>')
+    ) {
+      return {
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        sourceIntent: 'multi-metric-filter',
+        answerQuery: message,
+        metrics: mentionedMetrics,
+        threshold: classification.threshold,
+        thresholdOperator: classification.operator ?? '>=',
+        filterOperator: 'AND',
+        ...(groupTarget && { targets: [groupTarget] }),
+      };
+    }
+    // threshold 없는 "둘 다 높은" 형태 — 복합 메트릭 교차 정렬
     return {
       intent: 'metric_current',
       capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
-      sourceIntent: 'multi-metric-filter',
+      sourceIntent: 'multi-metric-no-threshold',
       answerQuery: message,
       metrics: mentionedMetrics,
-      threshold: classification.threshold,
-      thresholdOperator: classification.operator ?? '>=',
       filterOperator: 'AND',
       ...(groupTarget && { targets: [groupTarget] }),
     };
@@ -596,20 +611,24 @@ function parseCurrentMetricsMessage(
     SERVER_HEALTH_PATTERN.test(message) &&
     !SERVER_HEALTH_EXCLUSION_PATTERN.test(message)
   ) {
+    const healthGroupTarget = inferGroupTargetFromMessage(message);
     return {
       intent: 'server_health',
       capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
       sourceIntent: classification.intent,
       answerQuery: message,
+      ...(healthGroupTarget && { targets: [healthGroupTarget] }),
     };
   }
 
   if (ACTION_NEEDED_PATTERN.test(message)) {
+    const actionGroupTarget = inferGroupTargetFromMessage(message);
     return {
       intent: 'server_health',
       capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
       sourceIntent: 'action-needed',
       answerQuery: message,
+      ...(actionGroupTarget && { targets: [actionGroupTarget] }),
     };
   }
 
@@ -624,11 +643,7 @@ function buildMetricCurrentAnswer(params: {
     return buildGroupMetricCompareAnswer(params);
   }
 
-  if (
-    params.parsed.metrics &&
-    params.parsed.metrics.length > 0 &&
-    params.parsed.threshold !== undefined
-  ) {
+  if (params.parsed.metrics && params.parsed.metrics.length > 0) {
     return buildMultiMetricFilterAnswer(params);
   }
 
@@ -714,7 +729,20 @@ function buildGroupMetricCompareAnswer(params: {
       };
     })
     .filter((summary): summary is NonNullable<typeof summary> => summary !== null);
-  if (summaries.length < 2) return null;
+  if (summaries.length === 0) return null;
+  if (summaries.length === 1) {
+    // 한 그룹만 데이터 있는 경우 단일 그룹 현황으로 응답
+    const only = summaries[0];
+    if (!only) return null;
+    const metricLabel = getMetricLabel(metric);
+    const timeLabel = readSnapshotTimeLabel(params.snapshot);
+    return [
+      `📊 **${only.label} ${metricLabel} 현황** (비교 대상 그룹 데이터 없음)`,
+      `• 대상: ${only.rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+      `• 평균 ${metricLabel}: ${formatMetricPercent(only.avg)} · 최고 ${only.max.server.id} ${formatMetricPercent(only.max.value)}`,
+      `• 서버별: ${only.rows.map(row => `${row.server.id} ${formatMetricPercent(row.value)}`).join(', ')}`,
+    ].join('\n');
+  }
 
   const sortedByAverage = [...summaries].sort((left, right) => right.avg - left.avg);
   const leader = sortedByAverage[0];
@@ -755,7 +783,49 @@ function buildMultiMetricFilterAnswer(params: {
 }): string | null {
   const metrics = params.parsed.metrics ?? [];
   const threshold = params.parsed.threshold;
-  if (metrics.length === 0 || threshold === undefined) return null;
+  if (metrics.length === 0) return null;
+
+  // threshold 없는 경우 — 복합 메트릭 합산 점수 기반 상위 서버 정렬
+  if (threshold === undefined) {
+    const allServers = readSnapshotServers(params.snapshot);
+    const { servers, targetLabel } = filterSnapshotServers(allServers, params.parsed.targets);
+    if (servers.length === 0) return null;
+
+    const rows = servers
+      .map((server) => {
+        const values = metrics.map((metric) => ({
+          metric,
+          value: getMetricValue(server, metric),
+        }));
+        if (values.some((entry) => entry.value === null)) return null;
+        const numericValues = values as Array<{ metric: SupportedMetric; value: number }>;
+        return {
+          server,
+          values: numericValues,
+          score: numericValues.reduce((sum, entry) => sum + entry.value, 0),
+        };
+      })
+      .filter((row): row is NonNullable<typeof row> => row !== null)
+      .sort((left, right) => right.score - left.score)
+      .slice(0, 5);
+
+    if (rows.length === 0) return null;
+
+    const metricLabels = metrics.map(getMetricLabel).join(' + ');
+    const timeLabel = readSnapshotTimeLabel(params.snapshot);
+    return [
+      `📊 **${targetLabel} ${metricLabels} 복합 부하 상위**`,
+      `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+      `• 서버별 (${metricLabels} 합산 내림차순): ${rows
+        .map((row) => {
+          const metricText = row.values
+            .map((entry) => `${getMetricLabel(entry.metric)} ${formatMetricPercent(entry.value)}`)
+            .join(', ');
+          return `${row.server.id} [${metricText}]`;
+        })
+        .join(', ')}`,
+    ].join('\n');
+  }
 
   const allServers = readSnapshotServers(params.snapshot);
   const { servers, targetLabel } = filterSnapshotServers(
