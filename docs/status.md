@@ -55,12 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
-- **v8.12.15** (2026-05-23) — Bug Fixes: ui: pass artifactEnvelopes through message transform; remove duplicate quick-start between tabs
+- **v8.12.15** (2026-05-23) — Tests: qa: record v8.12.14 expanded production QA; Tests: qa: record v8.12.14 threshold retest; Bug Fixes: ui: pass artifactEnvelopes through message transform & remove duplicate quick-start
 - **v8.12.14** (2026-05-23) — Bug Fixes: ai-engine: preserve metric threshold filters; Tests: qa: record v8.12.13 seven-question production QA; Tests: qa: record v8.12.13 multi-metric production QA
 - **v8.12.13** (2026-05-23) — Bug Fixes: ai-engine: skip single-metric intentFrame for multi-metric AND queries
 - **v8.12.12** (2026-05-23) — Bug Fixes: ai-engine: repair multi-metric and server-health evidence routing gaps; Bug Fixes: ai-engine: harden current metric evidence filters; Features: ai-engine: add WAS server group capability, multi-metric filtering, and resolve flaky test
 - **v8.12.11** (2026-05-23) — Bug Fixes: ai: resolve planner shadow local_decision_missing via post-execution refinement; Bug Fixes: ai: align stream transport resume contract; Bug Fixes: ci: replace Docker local CI with direct shell-executor equivalent
-- **v8.12.10** (2026-05-22) — Bug Fixes: ai: fail closed semantic monitoring evidence misses; Tests: spec: add H-5 semantic fail-closed regressions
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
