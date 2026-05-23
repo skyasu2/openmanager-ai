@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-23T10:19:45.964Z"
+    "updatedAt": "2026-05-23T11:30:48.477Z"
   },
   "sequence": {
-    "nextRunNumber": 570
+    "nextRunNumber": 571
   },
   "summary": {
-    "totalRecordedRuns": 567,
-    "totalRuns": 452,
+    "totalRecordedRuns": 568,
+    "totalRuns": 453,
     "excludedRuns": 115,
-    "totalChecks": 4092,
-    "totalPassed": 3926,
+    "totalChecks": 4098,
+    "totalPassed": 3932,
     "totalFailed": 146,
     "completionRate": 100,
-    "completedItems": 643,
+    "completedItems": 644,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 43,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260523-0569",
-    "lastRecordedAt": "2026-05-23T10:19:45.964Z",
-    "latestRecordedRunId": "QA-20260523-0569",
-    "latestRecordedAt": "2026-05-23T10:19:45.964Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260523-0570",
+    "lastRecordedAt": "2026-05-23T11:30:48.477Z",
+    "latestRecordedRunId": "QA-20260523-0570",
+    "latestRecordedAt": "2026-05-23T11:30:48.477Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16105,10 +16105,10 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260523-0569",
       "firstSeenAt": "2026-05-23T10:19:45.964Z",
-      "lastSeenRunId": "QA-20260523-0569",
-      "lastSeenAt": "2026-05-23T10:19:45.964Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260523-0570",
+      "lastSeenAt": "2026-05-23T11:30:48.477Z",
+      "seenCount": 2,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
@@ -16120,19 +16120,19 @@
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-23T10:19:45.964Z"
+      "lastStatusChangeAt": "2026-05-23T11:30:48.477Z"
     },
     "v8-12-15-auto-report-quickstart-dedupe": {
       "id": "v8-12-15-auto-report-quickstart-dedupe",
-      "title": "Auto Report quick-start no longer duplicates 이상감지 요약",
+      "title": "Auto Report quick-start remains deduped",
       "priority": "P2",
       "status": "completed",
       "firstSeenRunId": "QA-20260523-0569",
       "firstSeenAt": "2026-05-23T10:19:45.964Z",
-      "lastSeenRunId": "QA-20260523-0569",
-      "lastSeenAt": "2026-05-23T10:19:45.964Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260523-0570",
+      "lastSeenAt": "2026-05-23T11:30:48.477Z",
+      "seenCount": 2,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
@@ -16144,19 +16144,19 @@
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-23T10:19:45.964Z"
+      "lastStatusChangeAt": "2026-05-23T11:30:48.477Z"
     },
     "v8-12-14-db-threshold-regression": {
       "id": "v8-12-14-db-threshold-regression",
-      "title": "DB disk 60%+ threshold filter remains fixed on v8.12.15",
+      "title": "DB disk 60%+ threshold filter remains fixed on v8.12.16",
       "priority": "P2",
       "status": "completed",
       "firstSeenRunId": "QA-20260523-0569",
       "firstSeenAt": "2026-05-23T10:19:45.964Z",
-      "lastSeenRunId": "QA-20260523-0569",
-      "lastSeenAt": "2026-05-23T10:19:45.964Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260523-0570",
+      "lastSeenAt": "2026-05-23T11:30:48.477Z",
+      "seenCount": 2,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
@@ -16168,7 +16168,7 @@
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-23T10:19:45.964Z"
+      "lastStatusChangeAt": "2026-05-23T11:30:48.477Z"
     },
     "embedded-ai-tab-copy-scope": {
       "id": "embedded-ai-tab-copy-scope",
@@ -16193,6 +16193,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-23T10:19:45.964Z"
+    },
+    "v8-12-16-embedded-tab-copy": {
+      "id": "v8-12-16-embedded-tab-copy",
+      "title": "Embedded AI function tab descriptions align with shared workspace copy",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260523-0570",
+      "firstSeenAt": "2026-05-23T11:30:48.477Z",
+      "lastSeenRunId": "QA-20260523-0570",
+      "lastSeenAt": "2026-05-23T11:30:48.477Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "/dashboard/ai-assistant shows 장애 보고서 MD/TXT 다운로드 and 이상감지/추세 실시간 분석 실행.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T11:30:48.477Z"
     }
   },
   "runs": [
@@ -66101,6 +66125,169 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260523-0570",
+      "recordedAt": "2026-05-23T11:30:48.477Z",
+      "recordedAtKst": "2026-05-23 20:30:48 KST",
+      "title": "v8.12.16 focused Vercel production QA - embedded tab copy, artifact envelope, DB threshold",
+      "owner": "codex",
+      "source": "playwright-cli-fallback",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260523-0570.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2548040399",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "0d6c1005285b04607ca39996b86305e6db85c812"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production version/health",
+        "Guest login and dashboard render",
+        "/dashboard/ai-assistant embedded function tab copy",
+        "Auto Report quick-start dedupe",
+        "AI workspace monitoring artifact envelope render",
+        "AI Chat DB disk threshold regression"
+      ],
+      "skippedSurfaces": [
+        "Direct Playwright MCP browser session: unavailable in this Codex session. After v8.12.16 deploy, mcp__playwright__.browser_navigate returned Transport closed and mcp__next_devtools__.browser_eval start returned Connection closed; Playwright CLI fallback used against the same Vercel production URL."
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "전체 서버 이상감지 artifact",
+          "agent": "Analyst Agent",
+          "provider": "production route",
+          "route": "chat artifact execution",
+          "source": "Playwright UI transcript",
+          "latencyMs": 3000
+        },
+        {
+          "surface": "DB 서버 디스크 60% 이상",
+          "agent": "NLQ Agent",
+          "provider": "deterministic",
+          "route": "monitoring-metric-current",
+          "source": "Playwright UI transcript response label",
+          "latencyMs": 1000
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Focused production QA covered today’s embedded tab copy fix plus the latest artifact envelope, quick-start, and DB threshold regression surfaces. All product checks passed on v8.12.16.",
+          "nextAction": "No product follow-up from this focused QA run."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The direct Playwright MCP transport was unavailable in the Codex session, so the run used a Playwright CLI browser fallback. Product evidence is valid, but MCP transport health remains an automation issue.",
+          "nextAction": "Investigate the local Playwright MCP transport lifecycle before the next MCP-mandated QA run."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-23T20:29:33+09:00",
+          "summary": "npm run check:usage:vercel completed after focused production QA. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398; no unexpected billed usage observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "QA-0570 Playwright result summary",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-playwright-result.json"
+        },
+        {
+          "type": "playwright-console",
+          "label": "QA-0570 version and health response",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-version-health.json"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0570 dashboard render",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0570 embedded AI tab copy",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-embedded-tab-copy.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0570 Auto Report quick-start dedupe",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-auto-report-quickstart.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0570 artifact envelope card/CTA render",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-artifact-envelope.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0570 DB threshold regression response",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-db-threshold.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "QA-0570 AI transcript",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-ai-transcript.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "QA-0570 qa:record input",
+          "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-input.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline 2548040397",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548040397"
+        },
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2548040399",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548040399"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -66109,17 +66296,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 289,
-      "appropriateCount": 248,
+      "seenCount": 290,
+      "appropriateCount": 249,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 57,
-      "lastRunId": "QA-20260523-0569",
-      "lastSeenAt": "2026-05-23T10:19:45.964Z",
+      "lastRunId": "QA-20260523-0570",
+      "lastSeenAt": "2026-05-23T11:30:48.477Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Focused production QA covered today’s AI artifact transform and quick-start changes plus DB threshold regression. Core behavior passed; one non-blocking embedded tab copy alignment gap remains.",
-      "lastNextAction": "Align AI_WORKSPACE_FUNCTION_TABS descriptions with the sharpened navigation copy if the embedded route is intended to expose the same UX."
+      "lastImprovementNeeded": false,
+      "lastRationale": "Focused production QA covered today’s embedded tab copy fix plus the latest artifact envelope, quick-start, and DB threshold regression surfaces. All product checks passed on v8.12.16.",
+      "lastNextAction": "No product follow-up from this focused QA run."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -66177,17 +66364,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 251,
+      "seenCount": 252,
       "appropriateCount": 229,
-      "partialCount": 22,
+      "partialCount": 23,
       "inappropriateCount": 0,
-      "improvementNeededCount": 25,
-      "lastRunId": "QA-20260523-0569",
-      "lastSeenAt": "2026-05-23T10:19:45.964Z",
+      "improvementNeededCount": 26,
+      "lastRunId": "QA-20260523-0570",
+      "lastSeenAt": "2026-05-23T11:30:48.477Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Playwright MCP transport was unavailable and the temporary Playwright CLI spec initially produced a full-log false-negative for DB. Durable transcript and screenshots preserved the product evidence, but the temporary spec should not be promoted as-is.",
-      "lastNextAction": "If this scenario becomes recurring, add a stable message-segment helper for AI E2E transcript assertions."
+      "lastRationale": "The direct Playwright MCP transport was unavailable in the Codex session, so the run used a Playwright CLI browser fallback. Product evidence is valid, but MCP transport health remains an automation issue.",
+      "lastNextAction": "Investigate the local Playwright MCP transport lifecycle before the next MCP-mandated QA run."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

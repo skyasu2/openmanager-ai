@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-23 19:19:56 KST
+> Generated at: 2026-05-23 20:30:58 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 567 |
-| Total Runs (Counted) | 452 |
+| Total Recorded Runs | 568 |
+| Total Runs (Counted) | 453 |
 | Non-counted Runs | 115 |
-| Total Checks | 4092 |
-| Passed | 3926 |
+| Total Checks | 4098 |
+| Passed | 3932 |
 | Failed | 146 |
-| Completed Items | 643 |
+| Completed Items | 644 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 43 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 2 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260523-0569 (2026-05-23T10:19:45.964Z) |
-| Latest Recorded Run | QA-20260523-0569 (2026-05-23T10:19:45.964Z) |
+| Last Counted Run | QA-20260523-0570 (2026-05-23T11:30:48.477Z) |
+| Latest Recorded Run | QA-20260523-0570 (2026-05-23T11:30:48.477Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,12 +34,12 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260523-0569 (2026-05-23T10:19:45.964Z)
+Latest run: QA-20260523-0570 (2026-05-23T11:30:48.477Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | Align AI_WORKSPACE_FUNCTION_TABS descriptions with the sharpened navigation copy if the embedded route is intended to expose the same UX. |
-| Test Automation Architect | partially-appropriate | yes | If this scenario becomes recurring, add a stable message-segment helper for AI E2E transcript assertions. |
+| AI Quality Assurance Specialist | appropriate | no | No product follow-up from this focused QA run. |
+| Test Automation Architect | partially-appropriate | yes | Investigate the local Playwright MCP transport lifecycle before the next MCP-mandated QA run. |
 
 ## Usage Checks (Latest Run)
 
@@ -49,66 +49,65 @@ Latest run: QA-20260523-0569 (2026-05-23T10:19:45.964Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-22T10:19:45.964Z -> 2026-05-23T10:19:45.964Z (24h)
+- Window: 2026-05-22T11:30:48.477Z -> 2026-05-23T11:30:48.477Z (24h)
 - Runs with observations: 6 recorded / 6 counted
-- Samples: 13
+- Samples: 12
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Reporter Agent | z.ai | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260523-0568 |
-| Analyst Agent | production route | 1 | 3000ms | 3000ms | - | - | - | - | QA-20260523-0569 |
-| Metrics Query Agent | cloud-run-deterministic | 5 | 536ms | 1662ms | - | - | - | - | QA-20260523-0565 |
-| NLQ Agent | deterministic | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0569 |
+| Analyst Agent | production route | 2 | 3000ms | 3000ms | - | - | - | - | QA-20260523-0570 |
+| NLQ Agent | deterministic | 2 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0570 |
 | NLQ Agent | groq | 5 | 760ms | 1000ms | - | - | - | - | QA-20260523-0568 |
+| Metrics Query Agent | cloud-run-deterministic | 2 | 185ms | 278ms | - | - | - | - | QA-20260523-0565 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-22T10:19:45.964Z -> 2026-05-23T10:19:45.964Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 4
+- Window: 2026-05-22T11:30:48.477Z -> 2026-05-23T11:30:48.477Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 1
 - Drift rate: 0%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | deterministic | 4 | 0% | 648ms | 1662ms | QA-20260522-0564 |
+| /api/ai/supervisor/stream/v2 | deterministic | 1 | 0% | 278ms | 278ms | QA-20260522-0564 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2547969325 / SHA f7a16aab
+- Deployment: gitlab-pipeline-2548040399 / SHA 0d6c1005
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production version/health, Guest login and dashboard render, AI sidebar quick-start dedupe, /dashboard/ai-assistant embedded AI tabs and Auto Report quick-start, AI workspace monitoring artifact envelope render, AI Chat DB disk threshold regression
-- Skipped Surfaces: Direct Playwright MCP browser session: unavailable in this Codex session because mcp__playwright__.browser_navigate returned Transport closed after stale MCP process cleanup; Playwright CLI fallback used against the same Vercel production URL.
+- Covered Surfaces: Vercel production version/health, Guest login and dashboard render, /dashboard/ai-assistant embedded function tab copy, Auto Report quick-start dedupe, AI workspace monitoring artifact envelope render, AI Chat DB disk threshold regression
+- Skipped Surfaces: Direct Playwright MCP browser session: unavailable in this Codex session. After v8.12.16 deploy, mcp__playwright__.browser_navigate returned Transport closed and mcp__next_devtools__.browser_eval start returned Connection closed; Playwright CLI fallback used against the same Vercel production URL.
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2547969325 | [GitLab release pipeline 2547969325](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2547969325) | - |
+| general | GitLab main validate pipeline 2548040397 | [GitLab main validate pipeline 2548040397](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548040397) | - |
+| general | GitLab release pipeline 2548040399 | [GitLab release pipeline 2548040399](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548040399) | - |
 | general | Vercel production URL | [Vercel production URL](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | QA-0569 corrected Playwright result summary | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-playwright-result.json` | - |
-| playwright-console | QA-0569 version and health response | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-version-health.json` | - |
-| playwright-screenshot | QA-0569 dashboard render | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-dashboard.png` | - |
-| playwright-screenshot | QA-0569 AI sidebar quick-start dedupe | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-ai-sidebar-quickstart.png` | - |
-| playwright-screenshot | QA-0569 Auto Report quick-start dedupe and embedded tab copy | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-auto-report-dedupe.png` | - |
-| playwright-screenshot | QA-0569 artifact envelope card/CTA render | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-artifact-envelope.png` | - |
-| playwright-screenshot | QA-0569 DB threshold regression response | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-db-threshold.png` | - |
-| playwright-console | QA-0569 AI transcript | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-ai-transcript.txt` | - |
-| playwright-console | QA-0569 qa:record input | `reports/qa/evidence/2026/qa-20260523-0569/qa-20260523-0569-input.json` | - |
+| playwright-console | QA-0570 Playwright result summary | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-playwright-result.json` | - |
+| playwright-console | QA-0570 version and health response | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-version-health.json` | - |
+| playwright-screenshot | QA-0570 dashboard render | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-dashboard.png` | - |
+| playwright-screenshot | QA-0570 embedded AI tab copy | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-embedded-tab-copy.png` | - |
+| playwright-screenshot | QA-0570 Auto Report quick-start dedupe | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-auto-report-quickstart.png` | - |
+| playwright-screenshot | QA-0570 artifact envelope card/CTA render | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-artifact-envelope.png` | - |
+| playwright-screenshot | QA-0570 DB threshold regression response | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-db-threshold.png` | - |
+| playwright-console | QA-0570 AI transcript | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-ai-transcript.txt` | - |
+| playwright-console | QA-0570 qa:record input | `reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-input.json` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260523-0569)
-  next: Align AI_WORKSPACE_FUNCTION_TABS descriptions with the sharpened navigation copy if the embedded route is intended to expose the same UX.
-- test-automation: Test Automation Architect (last QA-20260523-0569)
-  next: If this scenario becomes recurring, add a stable message-segment helper for AI E2E transcript assertions.
+- test-automation: Test Automation Architect (last QA-20260523-0570)
+  next: Investigate the local Playwright MCP transport lifecycle before the next MCP-mandated QA run.
 
 ## Pending Improvements
 
@@ -833,9 +832,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
 - ui-landing-pass: 랜딩 페이지 로드 정상, v8.10.0 확인 (completed 1회, last QA-20260326-0190)
 - ui-ux-improvement-plan-p1-p3-closure: UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed (completed 1회, last QA-20260509-0436)
-- v8-12-14-db-threshold-regression: DB disk 60%+ threshold filter remains fixed on v8.12.15 (completed 1회, last QA-20260523-0569)
-- v8-12-15-artifact-envelope-render: artifactEnvelopes transform preservation renders monitoring artifact card/CTA (completed 1회, last QA-20260523-0569)
-- v8-12-15-auto-report-quickstart-dedupe: Auto Report quick-start no longer duplicates 이상감지 요약 (completed 1회, last QA-20260523-0569)
+- v8-12-14-db-threshold-regression: DB disk 60%+ threshold filter remains fixed on v8.12.16 (completed 2회, last QA-20260523-0570)
+- v8-12-15-artifact-envelope-render: artifactEnvelopes transform preservation renders monitoring artifact card/CTA (completed 2회, last QA-20260523-0570)
+- v8-12-15-auto-report-quickstart-dedupe: Auto Report quick-start remains deduped (completed 2회, last QA-20260523-0570)
+- v8-12-16-embedded-tab-copy: Embedded AI function tab descriptions align with shared workspace copy (completed 1회, last QA-20260523-0570)
 - v8.11.121-rag-krl-production-release: Release RAG/KRL cleanup and DB index improvements to production (completed 1회, last QA-20260510-0455)
 - v8.11.122-ai-server-id-clarification-production-release: Release explicit server ID clarification fix to production (completed 1회, last QA-20260510-0457)
 - v8.12.14-임계값-필터-fix-검증-db-60-질의에-2대만-반환-8.12.13-partial-pass: v8.12.14 임계값 필터 fix 검증: DB 60%+ 질의에 2대만 반환 (8.12.13 PARTIAL → PASS) (completed 1회, last QA-20260523-0568)
@@ -878,6 +878,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260523-0570 | 2026-05-23T11:30:48.477Z | targeted | yes | yes | v8.12.16 focused Vercel production QA - embedded tab copy, artifact envelope, DB threshold | 6 | 4 | 0 | 0 | 0 | 1 |
 | QA-20260523-0569 | 2026-05-23T10:19:45.964Z | targeted | yes | yes | v8.12.15 focused Vercel production QA - quick-start, artifact envelope, DB threshold | 7 | 3 | 0 | 0 | 1 | 2 |
 | QA-20260523-0568 | 2026-05-23T08:57:58.383Z | targeted | yes | yes | v8.12.14 신규 7문항 평가 - 임계값픽스재검증·스토리지·LB그룹·CPU+디스크AND·디스크랭킹·CPU트렌드·Reporter | 7 | 4 | 0 | 0 | 1 | 0 |
 | QA-20260523-0567 | 2026-05-23T08:29:59.590Z | targeted | yes | yes | v8.12.14 Q3 DB 디스크 임계값 필터 프로덕션 재검증 | 1 | 1 | 0 | 0 | 0 | 0 |
@@ -897,4 +898,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260521-0553 | 2026-05-21T09:57:07.056Z | targeted | yes | yes | Vercel Release Smoke - v8.12.0 Dashboard UX Release | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0552 | 2026-05-21T08:50:59.688Z | targeted | no | yes | Local Playwright QA - Dashboard UX Search and Metric Trends | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0551 | 2026-05-21T07:05:41.434Z | targeted | yes | yes | Release Smoke - v8.11.195 UI animated visual surfaces | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260521-0550 | 2026-05-21T05:23:03.217Z | targeted | yes | yes | 이번주 변경사항 집중 QA — v8.11.194 (grounded KRL / clarification split / session freeze / Cerebras) | 12 | 0 | 0 | 0 | 0 | 0 |

@@ -1,0 +1,45 @@
+{
+  "version": {
+    "version": "8.12.16",
+    "buildVersion": "8.12.16",
+    "versions": {
+      "overall": "8.12.16",
+      "frontend": "8.12.16"
+    },
+    "nextjs": "16.1.6",
+    "environment": "production",
+    "commitSha": "0d6c1005285b04607ca39996b86305e6db85c812",
+    "shortCommitSha": "0d6c100528",
+    "releaseTag": "v8.12.16",
+    "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548040399",
+    "deploymentProvider": "vercel",
+    "timestamp": "2026-05-23T11:27:55.605Z"
+  },
+  "health": {
+    "success": true,
+    "data": {
+      "status": "healthy",
+      "services": {
+        "database": {
+          "status": "connected",
+          "lastCheck": "2026-05-23T11:23:06.253Z",
+          "latency": 15
+        },
+        "cache": {
+          "status": "connected",
+          "lastCheck": "2026-05-23T11:23:06.253Z",
+          "latency": 14
+        },
+        "ai": {
+          "status": "connected",
+          "lastCheck": "2026-05-23T11:23:06.253Z",
+          "latency": 14
+        }
+      },
+      "uptime": 195,
+      "version": "8.12.16",
+      "timestamp": "2026-05-23T11:23:06.253Z"
+    },
+    "timestamp": "2026-05-23T11:23:06.255Z"
+  }
+}

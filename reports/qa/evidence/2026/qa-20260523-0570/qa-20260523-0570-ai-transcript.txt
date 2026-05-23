@@ -1,0 +1,9 @@
+전체 서버 이상감지 돌려줘오후 08:28:47복사이상감지/추세 분석을 완료했습니다.
+
+분석 서버: 18대
+위험 신호: 1건
+
+아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.이상감지/추세 분석전체 서버 이상감지/추세 분석1대 서버에서 1개 risk signal이 감지되었습니다. critical 0개, warning 1개입니다.데이터 OpenTelemetry snapshot기준 20:20분석 서버18위험 신호1상태주의 1대 · 위험 0대역할별 현황web3대CPU 29% · MEM 38% · DISK 27%application3대CPU 35% · MEM 51% · DISK 30%database3대CPU 33% · MEM 50% · DISK 58%cache3대CPU 21% · MEM 52% · DISK 24%storage3대CPU 25% · MEM 42% · DISK 54%loadbalancer3대CPU 50% · MEM 35% · DISK 24%주의 1대 · 위험 0대용량 소진 예측lb-haproxy-dc1-01CPU 71%위험 도달 43분예측 100% · 42분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능lb-haproxy-dc1-01NETWORK 77%위험 도달 1시간 6분예측 100% · 현재 경고 상태 → 1시간 6분 후 심각 상태 예상cache-redis-dc1-03MEMORY 64%위험 도달 3시간 54분예측 100% · 3시간 53분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능위험 신호lb-haproxy-dc1-01network 77%임계치 70% · stable근거lb-haproxy-dc1-01 network 77.2% exceeded 70% warning threshold.lb-haproxy-dc1-01 haproxy: haproxy[11502]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 32 requestsweb-nginx-dc1-01 nginx: nginx[1464]: upstream timed out (110: Connection timed out) while connecting to upstreamMD 다운로드JSON 다운로드이상감지/추세에서 보기오후 08:28:47복사분석 근거도구: 이상감지/추세 분석DB 서버 디스크 60% 이상인 곳오후 08:28:47복사📊 DB 서버 디스크 60% 이상 서버
+• 조건: 디스크 >= 60%
+• 대상: DB 서버 3대 중 2대 · 데이터 슬롯 20:20 KST
+• 서버별: db-mysql-dc1-backup 71% (online), db-mysql-dc1-primary 61% (online)오후 08:28:47응답 빠름복사다시 생성deterministic/ monitoring-metric-current분석 근거도구: monitoring-metric-current

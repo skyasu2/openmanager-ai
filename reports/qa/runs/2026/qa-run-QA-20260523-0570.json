@@ -1,0 +1,218 @@
+{
+  "runId": "QA-20260523-0570",
+  "recordedAt": "2026-05-23T11:30:48.477Z",
+  "recordedAtKst": "2026-05-23 20:30:48 KST",
+  "runTitle": "v8.12.16 focused Vercel production QA - embedded tab copy, artifact envelope, DB threshold",
+  "owner": "codex",
+  "source": "playwright-cli-fallback",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2548040399",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "0d6c1005285b04607ca39996b86305e6db85c812"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production version/health",
+    "Guest login and dashboard render",
+    "/dashboard/ai-assistant embedded function tab copy",
+    "Auto Report quick-start dedupe",
+    "AI workspace monitoring artifact envelope render",
+    "AI Chat DB disk threshold regression"
+  ],
+  "skippedSurfaces": [
+    "Direct Playwright MCP browser session: unavailable in this Codex session. After v8.12.16 deploy, mcp__playwright__.browser_navigate returned Transport closed and mcp__next_devtools__.browser_eval start returned Connection closed; Playwright CLI fallback used against the same Vercel production URL."
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "전체 서버 이상감지 artifact",
+      "agent": "Analyst Agent",
+      "provider": "production route",
+      "route": "chat artifact execution",
+      "source": "Playwright UI transcript",
+      "latencyMs": 3000
+    },
+    {
+      "surface": "DB 서버 디스크 60% 이상",
+      "agent": "NLQ Agent",
+      "provider": "deterministic",
+      "route": "monitoring-metric-current",
+      "source": "Playwright UI transcript response label",
+      "latencyMs": 1000
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Focused production QA covered today’s embedded tab copy fix plus the latest artifact envelope, quick-start, and DB threshold regression surfaces. All product checks passed on v8.12.16.",
+      "nextAction": "No product follow-up from this focused QA run."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The direct Playwright MCP transport was unavailable in the Codex session, so the run used a Playwright CLI browser fallback. Product evidence is valid, but MCP transport health remains an automation issue.",
+      "nextAction": "Investigate the local Playwright MCP transport lifecycle before the next MCP-mandated QA run."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-23T20:29:33+09:00",
+      "summary": "npm run check:usage:vercel completed after focused production QA. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398; no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "QA-0570 Playwright result summary",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-playwright-result.json"
+    },
+    {
+      "type": "playwright-console",
+      "label": "QA-0570 version and health response",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-version-health.json"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "QA-0570 dashboard render",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "QA-0570 embedded AI tab copy",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-embedded-tab-copy.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "QA-0570 Auto Report quick-start dedupe",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-auto-report-quickstart.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "QA-0570 artifact envelope card/CTA render",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-artifact-envelope.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "QA-0570 DB threshold regression response",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-db-threshold.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "QA-0570 AI transcript",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-ai-transcript.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "QA-0570 qa:record input",
+      "path": "reports/qa/evidence/2026/qa-20260523-0570/qa-20260523-0570-input.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "v8-12-16-embedded-tab-copy",
+      "title": "Embedded AI function tab descriptions align with shared workspace copy",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "/dashboard/ai-assistant shows 장애 보고서 MD/TXT 다운로드 and 이상감지/추세 실시간 분석 실행.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "v8-12-15-auto-report-quickstart-dedupe",
+      "title": "Auto Report quick-start remains deduped",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Auto Report empty state shows 리스크 요약 보고서 and no 이상감지 요약 text.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "v8-12-15-artifact-envelope-render",
+      "title": "artifactEnvelopes transform preservation renders monitoring artifact card/CTA",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "AI workspace displayed 전체 서버 이상감지/추세 분석 card plus MD/JSON download buttons and 이상감지/추세에서 보기 CTA.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "v8-12-14-db-threshold-regression",
+      "title": "DB disk 60%+ threshold filter remains fixed on v8.12.16",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "DB 서버 3대 중 2대 returned: db-mysql-dc1-backup and db-mysql-dc1-primary; replica 40% excluded.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.12.16 was deployed by GitLab tag pipeline 2548040399 before QA because Vercel production still served v8.12.15 at task start.",
+    "Direct Playwright MCP retry after deploy failed with Transport closed; next-devtools browser start also failed with Connection closed.",
+    "Playwright CLI fallback ran against https://openmanager-ai.vercel.app production, version v8.12.16 commit 0d6c1005285b04607ca39996b86305e6db85c812."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main validate pipeline 2548040397",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548040397"
+    },
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2548040399",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548040399"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
