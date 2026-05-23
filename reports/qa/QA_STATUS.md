@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-22 21:16:13 KST
+> Generated at: 2026-05-23 12:39:56 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 562 |
-| Total Runs (Counted) | 447 |
+| Total Recorded Runs | 563 |
+| Total Runs (Counted) | 448 |
 | Non-counted Runs | 115 |
-| Total Checks | 4069 |
-| Passed | 3907 |
+| Total Checks | 4070 |
+| Passed | 3908 |
 | Failed | 145 |
 | Completed Items | 632 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260522-0564 (2026-05-22T12:13:39.004Z) |
-| Latest Recorded Run | QA-20260522-0564 (2026-05-22T12:13:39.004Z) |
+| Last Counted Run | QA-20260523-0565 (2026-05-23T03:18:05.556Z) |
+| Latest Recorded Run | QA-20260523-0565 (2026-05-23T03:18:05.556Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,68 +34,64 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260522-0564 (2026-05-22T12:13:39.004Z)
+Latest run: QA-20260523-0565 (2026-05-23T03:18:05.556Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| gcp-cloud-run | gitlab-ci-release-and-direct-health-smoke | checked | normal | v8.12.10 deployed by GitLab pipeline 2546194670. Cloud Run /health reported 8.12.10; revision ai-engine-00512-zwf has 100% traffic and limits cpu=1 memory=512Mi. Latest Cloud Build c33b7a8e-9027-489a-84e5-a5c59ed731fd succeeded with no custom machineType. |
-| ai-provider-quota | deterministic-fail-closed-smoke | checked | normal | H-5 production smoke used direct Cloud Run API with injected semantic intentFrame. The response was deterministic provider=monitoring-evidence-unavailable, toolsCalled=monitoring-evidence-unavailable, and did not require LLM retries, Supabase writes, or Redis session storage. |
+| vercel | cli | checked | normal | Current billing period reviewed after v8.12.13 targeted production QA; vercel usage reported effective=14.6557 USD, billed=0.0000 USD, chargeCount=12789 with no unexpected billed usage in command output. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-21T12:13:39.004Z -> 2026-05-22T12:13:39.004Z (24h)
+- Window: 2026-05-22T03:18:05.556Z -> 2026-05-23T03:18:05.556Z (24h)
 - Runs with observations: 3 recorded / 3 counted
-- Samples: 6
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Metrics Query Agent | cloud-run-deterministic | 6 | 711ms | 1662ms | - | - | - | - | QA-20260522-0564 |
+| Metrics Query Agent | cloud-run-deterministic | 5 | 536ms | 1662ms | - | - | - | - | QA-20260523-0565 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-21T12:13:39.004Z -> 2026-05-22T12:13:39.004Z (24h)
-- Runs with observations: 8 recorded / 6 counted
-- Samples: 32
-- Drift rate: 18.75%
+- Window: 2026-05-22T03:18:05.556Z -> 2026-05-23T03:18:05.556Z (24h)
+- Runs with observations: 6 recorded / 4 counted
+- Samples: 25
+- Drift rate: 24%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
 | reporter-agent | single-agent | 1 | 0% | 30000ms | 30000ms | QA-20260522-0559 |
-| /api/ai/supervisor/stream/v2 | single-agent | 9 | 66.67% | 3556ms | 25000ms | QA-20260522-0562 |
-| /api/ai/supervisor/stream/v2 | deterministic | 20 | 0% | 138ms | 1662ms | QA-20260522-0564 |
+| /api/ai/supervisor/stream/v2 | single-agent | 7 | 85.71% | 4571ms | 25000ms | QA-20260522-0562 |
+| /api/ai/supervisor/stream/v2 | deterministic | 15 | 0% | 184ms | 1662ms | QA-20260522-0564 |
 | /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 | anomaly-detection | deterministic | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2546194670 / SHA 2e80bd62
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: Cloud Run AI supervisor stream v2 - high-confidence semantic monitoring frame provider miss, Semantic router v2 - deterministic fail-closed response policy, Monitoring evidence guard - unsupported metric avoids LLM hallucinated numeric answer
-- Skipped Surfaces: dashboard visual Playwright flow, standard five-question conversational QA pack, low-confidence fallback live LLM path
+- Deployment: SHA aacf38f6
+- Coverage Packs: ai-core
+- Covered Surfaces: /dashboard AI chat - multi-metric AND query
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline v8.12.10 release (2546194670) | [GitLab pipeline v8.12.10 release (2546194670)](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2546194670) | - |
-| general | Vercel Production v8.12.10 | [Vercel Production v8.12.10](https://openmanager-ai.vercel.app/) | - |
-| monitoring | Cloud Run AI Engine health v8.12.10 | [Cloud Run AI Engine health v8.12.10](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| json-evidence | H-5 fail-closed smoke result | `reports/qa/evidence/qa-20260522-0564-h5-fail-closed-smoke.json` | - |
+| playwright-console | Playwright MCP DOM snapshot - v8.12.13 multi-metric response | `reports/qa/evidence/qa-20260523-v81213-multi-metric-playwright.yml` | - |
 
 ## Expert Domain Open Gaps
 
@@ -217,8 +213,55 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
+- 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
+- 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
+- 단위-테스트-123-files-1698-tests-pass: 단위 테스트 123 files 1698 tests PASS (completed 1회, last QA-20260301-0032)
+- 대시보드-15서버-렌더링-13-온라인-1-경고-1-위험: 대시보드 15서버 렌더링 (13 온라인, 1 경고, 1 위험) (completed 1회, last QA-20260302-0042)
+- 대시보드-15서버-렌더링-13-온라인-2-경고: 대시보드 15서버 렌더링 (13 온라인, 2 경고) (completed 1회, last QA-20260302-0040)
+- 대시보드-15서버-렌더링-14-온라인-1-경고: 대시보드 15서버 렌더링 (14 온라인, 1 경고) (completed 1회, last QA-20260302-0041)
+- 랜딩-페이지-v8.7.2-로드-및-게스트-자동-로그인-정상: 랜딩 페이지 v8.7.2 로드 및 게스트 자동 로그인 정상 (completed 2회, last QA-20260302-0041)
+- 랜딩-페이지-v8.7.3-로드-및-게스트-자동-로그인-정상: 랜딩 페이지 v8.7.3 로드 및 게스트 자동 로그인 정상 (completed 1회, last QA-20260302-0042)
+- 로그인-정책-카피-정합성: 로그인 정책 카피 정합성 (completed 1회, last QA-20260227-0010)
+- 리소스-경고-top-5-api-was-dc1-01-cpu-91-1위: 리소스 경고 Top 5 (api-was-dc1-01 CPU 91% 1위) (completed 1회, last QA-20260302-0042)
+- 리소스-경고-top-5-db-mysql-dc1-primary-disk-82-1위: 리소스 경고 Top 5 (db-mysql-dc1-primary DISK 82% 1위) (completed 1회, last QA-20260302-0041)
+- 리소스-경고-top-5-db-mysql-dc1-primary-mem-89-1위: 리소스 경고 Top 5 (db-mysql-dc1-primary MEM 89% 1위) (completed 1회, last QA-20260302-0040)
+- 모달-esc-닫기-정상-동작: 모달 ESC 닫기 정상 동작 (completed 3회, last QA-20260302-0042)
+- 문서-인프라-점검-완료: 문서 인프라 점검 완료 (completed 1회, last QA-20260301-0032)
+- 보안-테스트-62-tests-pass: 보안 테스트 62 tests PASS (completed 1회, last QA-20260301-0032)
+- 보안-헤더-production-확인: 보안 헤더 Production 확인 (completed 1회, last QA-20260301-0032)
+- 비로그인-시스템-시작-가드-모달-동작: 비로그인 시스템 시작 가드 모달 동작 (completed 1회, last QA-20260227-0010)
+- 비로그인-시스템-시작-버튼-노출-유지: 비로그인 사용자 시스템 시작 버튼 노출 유지 (completed 2회, last QA-20260227-0020)
+- 비로그인-시스템-시작-클릭-로그인-모달: 비로그인 사용자 시스템 시작 클릭 시 로그인 모달 경유 (completed 2회, last QA-20260227-0020)
+- 상태-필터-온라인-13경고-1위험-1오프라인-0: 상태 필터 (온라인 13/경고 1/위험 1/오프라인 0) (completed 1회, last QA-20260302-0042)
+- 상태-필터-온라인-13경고-2위험-0오프라인-0: 상태 필터 (온라인 13/경고 2/위험 0/오프라인 0) (completed 1회, last QA-20260302-0040)
+- 상태-필터-온라인-14경고-1위험-0오프라인-0: 상태 필터 (온라인 14/경고 1/위험 0/오프라인 0) (completed 1회, last QA-20260302-0041)
+- 서버-모달-3탭-전환: 서버 모달 3탭 전환 (completed 1회, last QA-20260317-0114)
+- 서버-모달-로그-네트워크-탭-syslogalertsstreams-네트워크-상태: 서버 모달 로그 & 네트워크 탭 (Syslog/Alerts/Streams, 네트워크 상태) (completed 1회, last QA-20260302-0040)
+- 서버-모달-로그-네트워크-탭-syslogalertsstreams-필터-네트워크-양호-1gbps-연결-정보: 서버 모달 로그 & 네트워크 탭 (Syslog/Alerts/Streams 필터, 네트워크 양호 1Gbps, 연결 정보) (completed 2회, last QA-20260302-0042)
+- 서버-모달-성능-분석-탭-실시간-차트-분석-뷰-이상탐지: 서버 모달 성능 분석 탭 (실시간 차트 + 분석 뷰 + 이상탐지) (completed 1회, last QA-20260302-0040)
+- 서버-모달-성능-분석-탭-cpumemorydisknetwork-실시간-차트-서비스-mysql3306-exporter9104: 서버 모달 성능 분석 탭 (CPU/Memory/Disk/Network 실시간 차트, 서비스 MySQL:3306 + Exporter:9104) (completed 1회, last QA-20260302-0041)
+- 서버-모달-성능-분석-탭-cpumemorydisknetwork-실시간-차트-서비스-node.js3000-pm29615: 서버 모달 성능 분석 탭 (CPU/Memory/Disk/Network 실시간 차트, 서비스 Node.js:3000 + PM2:9615) (completed 1회, last QA-20260302-0042)
+- 서버-모달-종합-상황-탭-cpu-68-memory-78-disk-82-주의-mysqlexporter-정상: 서버 모달 종합 상황 탭 (CPU 68%, Memory 78%, Disk 82% 주의, MySQL/Exporter 정상) (completed 1회, last QA-20260302-0041)
+- 서버-모달-종합-상황-탭-cpu-91-위험-memory-86-주의-disk-34-정상-서비스-22-정상: 서버 모달 종합 상황 탭 (CPU 91% 위험, Memory 86% 주의, Disk 34% 정상, 서비스 2/2 정상) (completed 1회, last QA-20260302-0042)
+- 서버-모달-종합-상황-탭-cpumemorydisk서비스시스템정보: 서버 모달 종합 상황 탭 (CPU/Memory/Disk/서비스/시스템정보) (completed 1회, last QA-20260302-0040)
+- 세션-타이머-정상-카운트다운: 세션 타이머 정상 카운트다운 (completed 1회, last QA-20260302-0040)
+- 세션-타이머-정상-카운트다운-28분: 세션 타이머 정상 카운트다운 (28분) (completed 1회, last QA-20260302-0042)
+- 세션-타이머-정상-카운트다운-29분: 세션 타이머 정상 카운트다운 (29분) (completed 1회, last QA-20260302-0041)
+- 시스템-리소스-요약-cpu-36-memory-47-disk-34: 시스템 리소스 요약 (CPU 36%, Memory 47%, Disk 34%) (completed 1회, last QA-20260302-0041)
+- 시스템-리소스-요약-cpu-37-memory-46-disk-36: 시스템 리소스 요약 (CPU 37%, Memory 46%, Disk 36%) (completed 1회, last QA-20260302-0040)
+- 시스템-리소스-요약-cpu-40-memory-49-disk-32: 시스템 리소스 요약 (CPU 40%, Memory 49%, Disk 32%) (completed 1회, last QA-20260302-0042)
+- 시스템-시작-대시보드-리다이렉트-정상: 시스템 시작 → 대시보드 리다이렉트 정상 (completed 1회, last QA-20260302-0041)
+- 시스템-시작-system-boot-대시보드-리다이렉트-정상: 시스템 시작 → system-boot → 대시보드 리다이렉트 정상 (completed 2회, last QA-20260302-0042)
+- 코드-품질-리뷰-5-핵심파일: 코드 품질 리뷰 5 핵심파일 (completed 1회, last QA-20260301-0032)
+- 통합-검증-validateall-통과: 통합 검증 validate:all 통과 (completed 1회, last QA-20260301-0032)
+- 패턴-위반-검사-any-0-todo-0: 패턴 위반 검사 any 0 TODO 0 (completed 1회, last QA-20260301-0032)
+- 프로덕션-대시보드-렌더링: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
+- 프로덕션-빌드-46-pages-성공: 프로덕션 빌드 46 pages 성공 (completed 1회, last QA-20260301-0032)
+- 프로필-메뉴-게스트-사용자-게스트-모드-표시: 프로필 메뉴 (게스트 사용자, 게스트 모드 표시) (completed 3회, last QA-20260302-0042)
 - active-alerts-modal-ai-prefill: 활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0166)
 - admin-log-level-admin-auth: 관리자 로그레벨 API 관리자 권한 강제 (completed 1회, last QA-20260325-0183)
+- ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
+- ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - ai-advanced-anomaly-trend-surface-v811108: Anomaly/trend production surface generated visible monitoring analysis (completed 1회, last QA-20260506-0415)
 - ai-advanced-reporter-surface-v811108: Reporter Agent production surface generated a visible report with copy/download actions (completed 1회, last QA-20260506-0415)
 - ai-advanced-surface-targeted-qa-pack-v811109: AI advanced surface targeted QA pack completed after RAG/Web closure (completed 1회, last QA-20260506-0416)
@@ -415,8 +458,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-whole-fleet-disk-trend: Whole-fleet disk trend uses 18 servers and disk metrics (completed 1회, last QA-20260522-0556)
 - ai-workspace-analysis-basis-hydration-drift: Fullscreen AI workspace should preserve tool-grounded analysis basis metadata (completed 3회, last QA-20260416-0293)
 - ai-workspace-dom-test-runner-hang: AIWorkspace DOM test runner hang 정리 (completed 1회, last QA-20260318-0124)
-- ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
-- ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - alert-history-modal: 알림 이력 모달 (completed 1회, last QA-20260317-0114)
 - alert-history-modal-ai-prefill: 알림 이력 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0167)
 - analysis-basis-badge-fullscreen: 분석근거 배지 전체화면 parity (completed 1회, last QA-20260419-0306)
@@ -442,8 +483,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
 - anomaly-detection-static-confidence: Replace static anomaly/trend snapshot confidence with severity and threshold-distance scoring (completed 1회, last QA-20260519-0534)
 - anomaly-trend-confidence-label-review: Anomaly/trend confidence-style label replaced with signal strength wording (completed 1회, last QA-20260519-0529)
-- api-metrics-route-status-label-contract: Preserve status label for openmanager_server_status (completed 1회, last QA-20260511-0472)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
+- api-metrics-route-status-label-contract: Preserve status label for openmanager_server_status (completed 1회, last QA-20260511-0472)
 - approval-history-runtime-smoke: approvalStore pending/decision/history/stats runtime path verified (completed 1회, last QA-20260411-0270)
 - artifact-ux-capacity-alerts: Monitoring artifact capacityAlerts section (completed 1회, last QA-20260514-0502)
 - artifact-ux-incident-availability-impact: Incident report availability impact line (completed 1회, last QA-20260514-0502)
@@ -804,56 +845,12 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - weekly-hardening-production-post-deploy-retest: Deploy weekly hardening changes and rerun focused Vercel production QA (completed 1회, last QA-20260519-0537)
 - zai-glm-vision-fallback-live-smoke: Z.AI GLM Vision fallback 실제 이미지 입력 live smoke 확인 (completed 1회, last QA-20260519-0539)
 - zod-v4-ai-engine-migration: Migrate AI Engine from Zod v3 to Zod v4 (completed 1회, last QA-20260511-0471)
-- 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
-- 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
-- 단위-테스트-123-files-1698-tests-pass: 단위 테스트 123 files 1698 tests PASS (completed 1회, last QA-20260301-0032)
-- 대시보드-15서버-렌더링-13-온라인-1-경고-1-위험: 대시보드 15서버 렌더링 (13 온라인, 1 경고, 1 위험) (completed 1회, last QA-20260302-0042)
-- 대시보드-15서버-렌더링-13-온라인-2-경고: 대시보드 15서버 렌더링 (13 온라인, 2 경고) (completed 1회, last QA-20260302-0040)
-- 대시보드-15서버-렌더링-14-온라인-1-경고: 대시보드 15서버 렌더링 (14 온라인, 1 경고) (completed 1회, last QA-20260302-0041)
-- 랜딩-페이지-v8.7.2-로드-및-게스트-자동-로그인-정상: 랜딩 페이지 v8.7.2 로드 및 게스트 자동 로그인 정상 (completed 2회, last QA-20260302-0041)
-- 랜딩-페이지-v8.7.3-로드-및-게스트-자동-로그인-정상: 랜딩 페이지 v8.7.3 로드 및 게스트 자동 로그인 정상 (completed 1회, last QA-20260302-0042)
-- 로그인-정책-카피-정합성: 로그인 정책 카피 정합성 (completed 1회, last QA-20260227-0010)
-- 리소스-경고-top-5-api-was-dc1-01-cpu-91-1위: 리소스 경고 Top 5 (api-was-dc1-01 CPU 91% 1위) (completed 1회, last QA-20260302-0042)
-- 리소스-경고-top-5-db-mysql-dc1-primary-disk-82-1위: 리소스 경고 Top 5 (db-mysql-dc1-primary DISK 82% 1위) (completed 1회, last QA-20260302-0041)
-- 리소스-경고-top-5-db-mysql-dc1-primary-mem-89-1위: 리소스 경고 Top 5 (db-mysql-dc1-primary MEM 89% 1위) (completed 1회, last QA-20260302-0040)
-- 모달-esc-닫기-정상-동작: 모달 ESC 닫기 정상 동작 (completed 3회, last QA-20260302-0042)
-- 문서-인프라-점검-완료: 문서 인프라 점검 완료 (completed 1회, last QA-20260301-0032)
-- 보안-테스트-62-tests-pass: 보안 테스트 62 tests PASS (completed 1회, last QA-20260301-0032)
-- 보안-헤더-production-확인: 보안 헤더 Production 확인 (completed 1회, last QA-20260301-0032)
-- 비로그인-시스템-시작-가드-모달-동작: 비로그인 시스템 시작 가드 모달 동작 (completed 1회, last QA-20260227-0010)
-- 비로그인-시스템-시작-버튼-노출-유지: 비로그인 사용자 시스템 시작 버튼 노출 유지 (completed 2회, last QA-20260227-0020)
-- 비로그인-시스템-시작-클릭-로그인-모달: 비로그인 사용자 시스템 시작 클릭 시 로그인 모달 경유 (completed 2회, last QA-20260227-0020)
-- 상태-필터-온라인-13경고-1위험-1오프라인-0: 상태 필터 (온라인 13/경고 1/위험 1/오프라인 0) (completed 1회, last QA-20260302-0042)
-- 상태-필터-온라인-13경고-2위험-0오프라인-0: 상태 필터 (온라인 13/경고 2/위험 0/오프라인 0) (completed 1회, last QA-20260302-0040)
-- 상태-필터-온라인-14경고-1위험-0오프라인-0: 상태 필터 (온라인 14/경고 1/위험 0/오프라인 0) (completed 1회, last QA-20260302-0041)
-- 서버-모달-3탭-전환: 서버 모달 3탭 전환 (completed 1회, last QA-20260317-0114)
-- 서버-모달-로그-네트워크-탭-syslogalertsstreams-네트워크-상태: 서버 모달 로그 & 네트워크 탭 (Syslog/Alerts/Streams, 네트워크 상태) (completed 1회, last QA-20260302-0040)
-- 서버-모달-로그-네트워크-탭-syslogalertsstreams-필터-네트워크-양호-1gbps-연결-정보: 서버 모달 로그 & 네트워크 탭 (Syslog/Alerts/Streams 필터, 네트워크 양호 1Gbps, 연결 정보) (completed 2회, last QA-20260302-0042)
-- 서버-모달-성능-분석-탭-cpumemorydisknetwork-실시간-차트-서비스-mysql3306-exporter9104: 서버 모달 성능 분석 탭 (CPU/Memory/Disk/Network 실시간 차트, 서비스 MySQL:3306 + Exporter:9104) (completed 1회, last QA-20260302-0041)
-- 서버-모달-성능-분석-탭-cpumemorydisknetwork-실시간-차트-서비스-node.js3000-pm29615: 서버 모달 성능 분석 탭 (CPU/Memory/Disk/Network 실시간 차트, 서비스 Node.js:3000 + PM2:9615) (completed 1회, last QA-20260302-0042)
-- 서버-모달-성능-분석-탭-실시간-차트-분석-뷰-이상탐지: 서버 모달 성능 분석 탭 (실시간 차트 + 분석 뷰 + 이상탐지) (completed 1회, last QA-20260302-0040)
-- 서버-모달-종합-상황-탭-cpu-68-memory-78-disk-82-주의-mysqlexporter-정상: 서버 모달 종합 상황 탭 (CPU 68%, Memory 78%, Disk 82% 주의, MySQL/Exporter 정상) (completed 1회, last QA-20260302-0041)
-- 서버-모달-종합-상황-탭-cpu-91-위험-memory-86-주의-disk-34-정상-서비스-22-정상: 서버 모달 종합 상황 탭 (CPU 91% 위험, Memory 86% 주의, Disk 34% 정상, 서비스 2/2 정상) (completed 1회, last QA-20260302-0042)
-- 서버-모달-종합-상황-탭-cpumemorydisk서비스시스템정보: 서버 모달 종합 상황 탭 (CPU/Memory/Disk/서비스/시스템정보) (completed 1회, last QA-20260302-0040)
-- 세션-타이머-정상-카운트다운: 세션 타이머 정상 카운트다운 (completed 1회, last QA-20260302-0040)
-- 세션-타이머-정상-카운트다운-28분: 세션 타이머 정상 카운트다운 (28분) (completed 1회, last QA-20260302-0042)
-- 세션-타이머-정상-카운트다운-29분: 세션 타이머 정상 카운트다운 (29분) (completed 1회, last QA-20260302-0041)
-- 시스템-리소스-요약-cpu-36-memory-47-disk-34: 시스템 리소스 요약 (CPU 36%, Memory 47%, Disk 34%) (completed 1회, last QA-20260302-0041)
-- 시스템-리소스-요약-cpu-37-memory-46-disk-36: 시스템 리소스 요약 (CPU 37%, Memory 46%, Disk 36%) (completed 1회, last QA-20260302-0040)
-- 시스템-리소스-요약-cpu-40-memory-49-disk-32: 시스템 리소스 요약 (CPU 40%, Memory 49%, Disk 32%) (completed 1회, last QA-20260302-0042)
-- 시스템-시작-system-boot-대시보드-리다이렉트-정상: 시스템 시작 → system-boot → 대시보드 리다이렉트 정상 (completed 2회, last QA-20260302-0042)
-- 시스템-시작-대시보드-리다이렉트-정상: 시스템 시작 → 대시보드 리다이렉트 정상 (completed 1회, last QA-20260302-0041)
-- 코드-품질-리뷰-5-핵심파일: 코드 품질 리뷰 5 핵심파일 (completed 1회, last QA-20260301-0032)
-- 통합-검증-validateall-통과: 통합 검증 validate:all 통과 (completed 1회, last QA-20260301-0032)
-- 패턴-위반-검사-any-0-todo-0: 패턴 위반 검사 any 0 TODO 0 (completed 1회, last QA-20260301-0032)
-- 프로덕션-대시보드-렌더링: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
-- 프로덕션-빌드-46-pages-성공: 프로덕션 빌드 46 pages 성공 (completed 1회, last QA-20260301-0032)
-- 프로필-메뉴-게스트-사용자-게스트-모드-표시: 프로필 메뉴 (게스트 사용자, 게스트 모드 표시) (completed 3회, last QA-20260302-0042)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260523-0565 | 2026-05-23T03:18:05.556Z | targeted | no | yes | v8.12.13 Q2 multi-metric 복합점수 fix 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0564 | 2026-05-22T12:13:39.004Z | targeted | yes | yes | v8.12.10 H-5 semantic router fail-closed production QA | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0563 | 2026-05-22T11:14:44.822Z | targeted | no | yes | v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0562 | 2026-05-22T09:30:00.000Z | targeted | yes | yes | v8.12.7 미테스트 7문항 QA (Playwright MCP) - 신규 패턴·트렌드·운영우선순위·DC비교 | 7 | 0 | 0 | 0 | 0 | 1 |
@@ -873,4 +870,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260521-0548 | 2026-05-21T01:20:42.196Z | targeted | yes | yes | Release Verification - v8.11.193 Cerebras gpt-oss-120b | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0547 | 2026-05-20T23:37:20.403Z | targeted | yes | yes | Vercel Playwright QA - v8.11.192 Grounded KRL OTel Criteria | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260520-0546 | 2026-05-20T12:57:49.227Z | targeted | yes | yes | Vercel Playwright QA - v8.11.189 KRL Routing and Stream Sanitizer Closure | 12 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260520-0545 | 2026-05-20T10:33:17.738Z | targeted | yes | yes | Vercel Playwright QA - v8.11.185 Landing AI Text and Dashboard Status | 12 | 2 | 0 | 0 | 0 | 0 |

@@ -1,0 +1,506 @@
+- generic [ref=e1]:
+  - alert [ref=e2]: Dashboard | OpenManager AI
+  - main "대시보드" [ref=e125]:
+    - complementary [ref=e126]:
+      - navigation "대시보드 내비게이션" [ref=e127]:
+        - link "개요" [ref=e128] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e130]
+          - generic: 개요
+        - link "서버" [ref=e136] [cursor=pointer]:
+          - /url: /dashboard/servers
+          - img [ref=e138]
+          - generic: 서버
+        - link "알림" [ref=e142] [cursor=pointer]:
+          - /url: /dashboard/alerts
+          - img [ref=e144]
+          - generic: 알림
+        - link "로그" [ref=e148] [cursor=pointer]:
+          - /url: /dashboard/logs
+          - img [ref=e150]
+          - generic: 로그
+        - link "토폴로지" [ref=e156] [cursor=pointer]:
+          - /url: /dashboard/topology
+          - img [ref=e158]
+          - generic: 토폴로지
+    - generic [ref=e164]:
+      - generic [ref=e167]:
+        - link "OpenManager AI" [ref=e169] [cursor=pointer]:
+          - /url: /
+          - heading "OpenManager AI" [level=1] [ref=e173]
+        - generic [ref=e176]:
+          - img [ref=e177]
+          - generic [ref=e180]: 2026.05.23 12:02:18
+          - generic [ref=e181]: (토)
+        - generic [ref=e182]:
+          - button "AI 어시스턴트 닫기" [pressed] [ref=e618] [cursor=pointer]:
+            - generic [ref=e187]:
+              - img [ref=e188]
+              - generic [ref=e191]: AI 어시스턴트
+          - button "GU 게스트 사용자 게스트 로그인" [ref=e195] [cursor=pointer]:
+            - generic [ref=e197]: GU
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - text: 게스트 사용자
+                - img [ref=e202]
+              - generic [ref=e206]: 게스트 로그인
+            - img [ref=e207]
+      - main [ref=e210]:
+        - generic [ref=e211]:
+          - generic [ref=e212]:
+            - generic [ref=e213]:
+              - generic [ref=e215]:
+                - generic [ref=e216]:
+                  - img [ref=e217]
+                  - generic [ref=e220]: 전체
+                - generic [ref=e221]:
+                  - generic [ref=e222]: "18"
+                  - generic [ref=e223]: 대
+                - paragraph [ref=e224]: OpenTelemetry snapshot · 12:00 KST (slot 72/143)
+                - paragraph [ref=e225]: Telemetry catalog v1.0.0 · updated 2026-02-15 03:56Z
+              - img [ref=e227]
+            - generic [ref=e229]:
+              - button "온라인 17대 필터" [ref=e230] [cursor=pointer]:
+                - generic [ref=e232]:
+                  - generic [ref=e233]:
+                    - img [ref=e234]
+                    - text: 온라인
+                  - generic [ref=e237]: "17"
+              - button "경고 1대 필터" [ref=e238] [cursor=pointer]:
+                - generic [ref=e241]:
+                  - generic [ref=e242]:
+                    - img [ref=e243]
+                    - text: 경고
+                  - generic [ref=e245]: "1"
+              - button "위험 0대 필터" [ref=e246] [cursor=pointer]:
+                - generic [ref=e248]:
+                  - generic [ref=e249]:
+                    - img [ref=e250]
+                    - text: 위험
+                  - generic [ref=e252]: "0"
+              - button "오프라인 0대 필터" [ref=e253] [cursor=pointer]:
+                - generic [ref=e255]:
+                  - generic [ref=e256]:
+                    - img [ref=e257]
+                    - text: 오프라인
+                  - generic [ref=e261]: "0"
+            - generic [ref=e265]:
+              - generic [ref=e266]:
+                - img [ref=e268]
+                - generic [ref=e271]:
+                  - generic [ref=e272]: 상태
+                  - generic [ref=e273]: 성능 경고
+                - group "상태 헤더 도구" [ref=e274]:
+                  - generic [ref=e275]: 상태 헤더 도구
+                  - button "알림 보기" [ref=e276] [cursor=pointer]:
+                    - img [ref=e277]
+                    - generic [ref=e279]: 알림
+                    - generic [ref=e280]: "1"
+                  - button "로그 검색 보기" [ref=e281] [cursor=pointer]:
+                    - img [ref=e282]
+                    - generic [ref=e287]: 로그
+              - group "스파크라인 시간 범위" [ref=e288]:
+                - generic [ref=e289]: 스파크라인 시간 범위
+                - button "2시간" [ref=e290] [cursor=pointer]: 2h
+                - button "6시간" [ref=e291] [cursor=pointer]: 6h
+                - button "12시간" [ref=e292] [cursor=pointer]: 12h
+                - button "24시간" [pressed] [ref=e293] [cursor=pointer]: 24h
+          - generic [ref=e295]:
+            - generic [ref=e296]:
+              - paragraph [ref=e297]: 시스템 리소스
+              - generic [ref=e298]:
+                - generic [ref=e299]:
+                  - generic [ref=e300]:
+                    - img [ref=e301]
+                    - generic [ref=e305]: 34%
+                  - generic [ref=e306]: CPU
+                - generic [ref=e307]:
+                  - generic [ref=e308]:
+                    - img [ref=e309]
+                    - generic [ref=e313]: 46%
+                  - generic [ref=e314]: Memory
+                - generic [ref=e315]:
+                  - generic [ref=e316]:
+                    - img [ref=e317]
+                    - generic [ref=e321]: 36%
+                  - generic [ref=e322]: Disk
+            - generic [ref=e323]:
+              - paragraph [ref=e324]: 리소스 경고 (Top 5)
+              - generic [ref=e325]:
+                - button "api-was-dc1-01 CPU 81%" [ref=e326] [cursor=pointer]:
+                  - generic "api-was-dc1-01" [ref=e327]
+                  - generic [ref=e328]: CPU 81%
+                - button "db-mysql-dc1-backup DISK 69%" [ref=e329] [cursor=pointer]:
+                  - generic "db-mysql-dc1-backup" [ref=e330]
+                  - generic [ref=e331]: DISK 69%
+                - button "api-was-dc1-02 CPU 67%" [ref=e332] [cursor=pointer]:
+                  - generic "api-was-dc1-02" [ref=e333]
+                  - generic [ref=e334]: CPU 67%
+                - button "db-mysql-dc1-replica MEM 63%" [ref=e335] [cursor=pointer]:
+                  - generic "db-mysql-dc1-replica" [ref=e336]
+                  - generic [ref=e337]: MEM 63%
+                - button "db-mysql-dc1-primary DISK 62%" [ref=e338] [cursor=pointer]:
+                  - generic "db-mysql-dc1-primary" [ref=e339]
+                  - generic [ref=e340]: DISK 62%
+          - generic [ref=e341]:
+            - generic [ref=e345]:
+              - generic [ref=e346]:
+                - generic [ref=e347]:
+                  - img
+                  - searchbox "서버 검색" [ref=e348]
+                - generic [ref=e349]:
+                  - group "서버 보기 방식" [ref=e350]:
+                    - generic [ref=e351]: 서버 보기 방식
+                    - button "목록 보기" [pressed] [ref=e352] [cursor=pointer]:
+                      - img [ref=e353]
+                      - generic [ref=e354]: 목록
+                    - button "그리드 보기" [ref=e355] [cursor=pointer]:
+                      - img [ref=e356]
+                      - generic [ref=e361]: 그리드
+                  - generic [ref=e362]:
+                    - generic [ref=e363]:
+                      - img [ref=e364]
+                      - text: 정렬
+                    - group "서버 정렬" [ref=e367]:
+                      - generic [ref=e368]: 서버 정렬
+                      - button "상태 정렬" [pressed] [ref=e369] [cursor=pointer]: 상태
+                      - button "CPU 정렬" [ref=e370] [cursor=pointer]: CPU
+                      - button "MEM 정렬" [ref=e371] [cursor=pointer]: MEM
+                      - button "이름 정렬" [ref=e372] [cursor=pointer]: 이름
+              - generic [ref=e373]:
+                - paragraph [ref=e374]:
+                  - text: 상위 알림 서버 4개 표시
+                  - generic [ref=e375]: (전체 18대)
+                - generic [ref=e376]: 위험도 우선
+              - generic [ref=e378]:
+                - generic [ref=e379] [cursor=pointer]:
+                  - button "api-was-dc1-01 상세 보기" [ref=e385]:
+                    - generic [ref=e386]: api-was-dc1-01 상세 보기
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                      - generic:
+                        - generic:
+                          - heading "api-was-dc1-01" [level=2]
+                        - generic:
+                          - 'generic "서버 타입: 서버"': 서버
+                          - 'generic "운영체제: Linux"':
+                            - generic: 🐧
+                            - generic: Linux
+                        - generic:
+                          - img
+                          - generic: DC1-AZ1
+                    - button "api-was-dc1-01 로그 보기" [ref=e388]:
+                      - img [ref=e389]
+                  - generic [ref=e392]:
+                    - generic [ref=e393]:
+                      - generic [ref=e396]: Live Metrics
+                      - 'generic "서버 상태: 경고" [ref=e398]': 경고
+                    - generic [ref=e399]:
+                      - generic [ref=e400]:
+                        - generic [ref=e401]:
+                          - generic [ref=e402]:
+                            - generic [ref=e403]: CPU
+                            - generic [ref=e404]: 81.0%
+                          - img "CPU 추세 상승 +43.4%" [ref=e405]: ↑ +43%
+                        - img "Metric trend sparkline" [ref=e408]
+                      - generic [ref=e411]:
+                        - generic [ref=e412]:
+                          - generic [ref=e413]:
+                            - generic [ref=e414]: MEM
+                            - generic [ref=e415]: 65.0%
+                          - img "MEM 추세 상승 +8.8%" [ref=e416]: ↑ +9%
+                        - img "Metric trend sparkline" [ref=e419]
+                      - generic [ref=e422]:
+                        - generic [ref=e423]:
+                          - generic [ref=e424]:
+                            - generic [ref=e425]: Disk
+                            - generic [ref=e426]: 32.0%
+                          - img "Disk 추세 상승 +1.4%" [ref=e427]: ↑ +1%
+                        - img "Metric trend sparkline" [ref=e430]
+                - generic [ref=e433] [cursor=pointer]:
+                  - button "api-was-dc1-02 상세 보기" [ref=e437]:
+                    - generic [ref=e438]: api-was-dc1-02 상세 보기
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                      - generic:
+                        - generic:
+                          - heading "api-was-dc1-02" [level=2]
+                        - generic:
+                          - 'generic "서버 타입: 서버"': 서버
+                          - 'generic "운영체제: Linux"':
+                            - generic: 🐧
+                            - generic: Linux
+                        - generic:
+                          - img
+                          - generic: DC1-AZ2
+                    - button "api-was-dc1-02 로그 보기" [ref=e440]:
+                      - img [ref=e441]
+                  - generic [ref=e444]:
+                    - generic [ref=e445]:
+                      - generic [ref=e448]: Live Metrics
+                      - 'generic "서버 상태: 정상" [ref=e450]': 정상
+                    - generic [ref=e451]:
+                      - generic [ref=e452]:
+                        - generic [ref=e453]:
+                          - generic [ref=e454]:
+                            - generic [ref=e455]: CPU
+                            - generic [ref=e456]: 67.0%
+                          - img "CPU 추세 상승 +29.4%" [ref=e457]: ↑ +29%
+                        - img "Metric trend sparkline" [ref=e460]
+                      - generic [ref=e463]:
+                        - generic [ref=e464]:
+                          - generic [ref=e465]:
+                            - generic [ref=e466]: MEM
+                            - generic [ref=e467]: 54.0%
+                          - img "MEM 추세 하락 -3.0%" [ref=e468]: ↓ -3%
+                        - img "Metric trend sparkline" [ref=e471]
+                      - generic [ref=e474]:
+                        - generic [ref=e475]:
+                          - generic [ref=e476]:
+                            - generic [ref=e477]: Disk
+                            - generic [ref=e478]: 27.0%
+                          - img "Disk 추세 하락 -3.0%" [ref=e479]: ↓ -3%
+                        - img "Metric trend sparkline" [ref=e482]
+                - generic [ref=e485] [cursor=pointer]:
+                  - button "api-was-dc1-03 상세 보기" [ref=e489]:
+                    - generic [ref=e490]: api-was-dc1-03 상세 보기
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                      - generic:
+                        - generic:
+                          - heading "api-was-dc1-03" [level=2]
+                        - generic:
+                          - 'generic "서버 타입: 서버"': 서버
+                          - 'generic "운영체제: Linux"':
+                            - generic: 🐧
+                            - generic: Linux
+                        - generic:
+                          - img
+                          - generic: DC1-AZ3
+                    - button "api-was-dc1-03 로그 보기" [ref=e492]:
+                      - img [ref=e493]
+                  - generic [ref=e496]:
+                    - generic [ref=e497]:
+                      - generic [ref=e500]: Live Metrics
+                      - 'generic "서버 상태: 정상" [ref=e502]': 정상
+                    - generic [ref=e503]:
+                      - generic [ref=e504]:
+                        - generic [ref=e505]:
+                          - generic [ref=e506]:
+                            - generic [ref=e507]: CPU
+                            - generic [ref=e508]: 26.0%
+                          - img "CPU 추세 상승 +1.6%" [ref=e509]: ↑ +2%
+                        - img "Metric trend sparkline" [ref=e512]
+                      - generic [ref=e515]:
+                        - generic [ref=e516]:
+                          - generic [ref=e517]:
+                            - generic [ref=e518]: MEM
+                            - generic [ref=e519]: 36.0%
+                          - img "MEM 추세 하락 -4.2%" [ref=e520]: ↓ -4%
+                        - img "Metric trend sparkline" [ref=e523]
+                      - generic [ref=e526]:
+                        - generic [ref=e527]:
+                          - generic [ref=e528]:
+                            - generic [ref=e529]: Disk
+                            - generic [ref=e530]: 28.0%
+                          - img "Disk 추세 변화 없음" [ref=e531]: —
+                        - img "Metric trend sparkline" [ref=e534]
+                - generic [ref=e537] [cursor=pointer]:
+                  - button "cache-redis-dc1-01 상세 보기" [ref=e541]:
+                    - generic [ref=e542]: cache-redis-dc1-01 상세 보기
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                      - generic:
+                        - generic:
+                          - heading "cache-redis-dc1-01" [level=2]
+                        - generic:
+                          - 'generic "서버 타입: 캐시"': 캐시
+                          - 'generic "운영체제: Linux"':
+                            - generic: 🐧
+                            - generic: Linux
+                        - generic:
+                          - img
+                          - generic: DC1-AZ1
+                    - button "cache-redis-dc1-01 로그 보기" [ref=e544]:
+                      - img [ref=e545]
+                  - generic [ref=e548]:
+                    - generic [ref=e549]:
+                      - generic [ref=e552]: Live Metrics
+                      - 'generic "서버 상태: 정상" [ref=e554]': 정상
+                    - generic [ref=e555]:
+                      - generic [ref=e556]:
+                        - generic [ref=e557]:
+                          - generic [ref=e558]:
+                            - generic [ref=e559]: CPU
+                            - generic [ref=e560]: 21.0%
+                          - img "CPU 추세 변화 없음" [ref=e561]: —
+                        - img "Metric trend sparkline" [ref=e564]
+                      - generic [ref=e567]:
+                        - generic [ref=e568]:
+                          - generic [ref=e569]:
+                            - generic [ref=e570]: MEM
+                            - generic [ref=e571]: 61.0%
+                          - img "MEM 추세 상승 +15.0%" [ref=e572]: ↑ +15%
+                        - img "Metric trend sparkline" [ref=e575]
+                      - generic [ref=e578]:
+                        - generic [ref=e579]:
+                          - generic [ref=e580]:
+                            - generic [ref=e581]: Disk
+                            - generic [ref=e582]: 24.0%
+                          - img "Disk 추세 변화 없음" [ref=e583]: —
+                        - img "Metric trend sparkline" [ref=e586]
+              - generic [ref=e589]:
+                - generic [ref=e590]: 상위 알림 서버 4개 표시
+                - button "더 보기 (14대 남음)" [ref=e592] [cursor=pointer]:
+                  - img [ref=e593]
+                  - text: 더 보기
+                  - generic [ref=e595]: (14대 남음)
+            - complementary "인시던트 피드" [ref=e596]:
+              - generic [ref=e597]:
+                - generic [ref=e598]:
+                  - img [ref=e600]
+                  - generic [ref=e602]:
+                    - heading "인시던트 피드" [level=2] [ref=e603]
+                    - paragraph [ref=e604]: 접속 시점 기준 활성 알림
+                  - button "전체" [ref=e605] [cursor=pointer]
+                - generic [ref=e607]: 1 경고
+              - button "api-was-dc1-01 서버 상세 보기" [ref=e610] [cursor=pointer]:
+                - generic [ref=e611]:
+                  - generic [ref=e612]:
+                    - generic [ref=e613]:
+                      - generic [ref=e614]: 경고
+                      - generic [ref=e615]: api-was-dc1-01
+                    - paragraph [ref=e616]: CPU = 81.0%
+                  - generic [ref=e617]: 방금 전
+      - dialog "AI 어시스턴트" [ref=e619]:
+        - separator "사이드바 너비 조절" [ref=e620]:
+          - img [ref=e622]
+        - generic [ref=e629]:
+          - generic [ref=e630]:
+            - generic [ref=e631]:
+              - generic [ref=e632]:
+                - img [ref=e634]
+                - generic [ref=e642]:
+                  - heading "AI 어시스턴트" [level=2] [ref=e643]:
+                    - generic [ref=e645]: AI 어시스턴트
+                  - generic [ref=e646]:
+                    - generic [ref=e647]: 서버 상태·로그·메트릭을 자연어로 질의
+                    - 'button "AI 엔진 상태: Ready" [ref=e648] [cursor=pointer]':
+                      - img [ref=e649]
+              - generic [ref=e652]:
+                - button "전체화면으로 보기" [ref=e653] [cursor=pointer]:
+                  - img [ref=e654]
+                - button "새 대화 시작" [ref=e659] [cursor=pointer]:
+                  - img [ref=e660]
+                - button "AI 어시스턴트 사이드바 닫기" [ref=e661] [cursor=pointer]:
+                  - img [ref=e662]
+            - tablist "AI 기능" [ref=e665]:
+              - button "AI Chat" [pressed] [ref=e666] [cursor=pointer]:
+                - img [ref=e667]
+                - generic [ref=e669]: AI Chat
+              - button "자동 보고서" [ref=e670] [cursor=pointer]:
+                - img [ref=e671]
+                - generic [ref=e674]: 자동 보고서
+              - button "이상감지" [ref=e675] [cursor=pointer]:
+                - img [ref=e676]
+                - generic [ref=e678]: 이상감지
+          - generic [ref=e682]:
+            - log "AI 대화 메시지" [ref=e684]:
+              - generic [ref=e685]:
+                - generic [ref=e687]:
+                  - img [ref=e689]
+                  - generic [ref=e692]:
+                    - generic [ref=e694]: CPU와 메모리 둘 다 높은 서버 알려줘
+                    - paragraph [ref=e696]: 오후 12:01:11
+                    - button "메시지 복사" [ref=e699] [cursor=pointer]:
+                      - img [ref=e700]
+                      - generic [ref=e703]: 복사
+                - generic [ref=e705]:
+                  - img [ref=e707]
+                  - generic [ref=e710]:
+                    - generic [ref=e715]:
+                      - generic [ref=e717]:
+                        - text: 📊
+                        - strong [ref=e718]: 전체 서버 CPU 현황
+                      - generic [ref=e719]: "• 대상: 18대 · 데이터 슬롯 11:30 KST"
+                      - generic [ref=e720]: "• 평균 CPU: 33.8% · 최고 api-was-dc1-01 82% · 최저 db-mysql-dc1-backup 19%"
+                      - generic [ref=e721]: "• 서버별: api-was-dc1-01 82% (warning), api-was-dc1-02 73% (online), db-mysql-dc1-primary 39% (online), db-mysql-dc1-replica 39% (online), lb-haproxy-dc1-03 38.5% (online), cache-redis-dc1-03 36.3% (online), web-nginx-dc1-02 35% (online), web-nginx-dc1-01 31% (online), lb-haproxy-dc1-01 30% (online), storage-nfs-dc1-01 27% (online), lb-haproxy-dc1-02 26% (online), cache-redis-dc1-01 24% (online), storage-s3gw-dc1-01 24% (online), api-was-dc1-03 23% (online), cache-redis-dc1-02 22% (online), storage-nfs-dc1-02 21.4% (online), web-nginx-dc1-03 19% (online), db-mysql-dc1-backup 19% (online)"
+                    - paragraph [ref=e723]: 오후 12:01:11
+                    - generic [ref=e777]:
+                      - img [ref=e778]
+                      - generic [ref=e781]: Streaming AI
+                      - generic [ref=e782]: ·
+                      - generic [ref=e783]: 모니터링 도메인 근거
+                    - generic [ref=e784]:
+                      - button "분석 근거 상세 보기" [ref=e785] [cursor=pointer]:
+                        - generic [ref=e786]:
+                          - img [ref=e787]
+                          - generic [ref=e791]: 분석 근거
+                        - img [ref=e792]
+                      - paragraph [ref=e795]: "도구: monitoring-metric-current"
+                    - button "메시지 복사" [ref=e745] [cursor=pointer]:
+                      - img [ref=e746]
+                      - generic [ref=e749]: 복사
+                - generic [ref=e797]:
+                  - img [ref=e799]
+                  - generic [ref=e802]:
+                    - generic [ref=e804]: CPU와 메모리 둘 다 높은 서버 알려줘
+                    - paragraph [ref=e806]: 오후 12:01:12
+                    - button "메시지 복사" [ref=e809] [cursor=pointer]:
+                      - img [ref=e810]
+                      - generic [ref=e813]: 복사
+                - generic [ref=e815]:
+                  - img [ref=e817]
+                  - generic [ref=e820]:
+                    - generic [ref=e825]:
+                      - generic [ref=e827]:
+                        - text: 📊
+                        - strong [ref=e828]: 전체 서버 CPU + 메모리 복합 부하 상위
+                      - generic [ref=e829]: "• 대상: 전체 서버 · 데이터 슬롯 12:00 KST"
+                      - generic [ref=e830]: "• 서버별 (CPU + 메모리 합산 내림차순): api-was-dc1-01 [CPU 81%, 메모리 65%], api-was-dc1-02 [CPU 67%, 메모리 54%], cache-redis-dc1-03 [CPU 45.1%, 메모리 59.1%], db-mysql-dc1-replica [CPU 38%, 메모리 63%], db-mysql-dc1-primary [CPU 41%, 메모리 57%]"
+                    - generic [ref=e831]:
+                      - paragraph [ref=e832]: 오후 12:01:12
+                      - generic "91ms" [ref=e834]: 응답 빠름
+                    - generic [ref=e835]:
+                      - img [ref=e836]
+                      - generic [ref=e839]: Streaming AI
+                      - generic [ref=e840]: ·
+                      - generic [ref=e841]: 모니터링 도메인 근거
+                    - generic [ref=e842]:
+                      - button "분석 근거 상세 보기" [ref=e843] [cursor=pointer]:
+                        - generic [ref=e844]:
+                          - img [ref=e845]
+                          - generic [ref=e849]: 분석 근거
+                        - img [ref=e850]
+                      - paragraph [ref=e853]: "도구: monitoring-metric-current"
+                    - generic [ref=e855]:
+                      - button "메시지 복사" [ref=e856] [cursor=pointer]:
+                        - img [ref=e857]
+                        - generic [ref=e860]: 복사
+                      - button "응답 다시 생성" [ref=e862] [cursor=pointer]:
+                        - img [ref=e863]
+                        - generic [ref=e868]: 다시 생성
+            - generic [ref=e759]:
+              - form "AI 질문 전송" [ref=e760]:
+                - generic [ref=e761]:
+                  - button "파일 첨부" [ref=e762] [cursor=pointer]:
+                    - img [ref=e763]
+                  - button "Web 검색" [ref=e765] [cursor=pointer]:
+                    - img [ref=e766]
+                - textbox "AI 질문 입력" [active] [ref=e769]:
+                  - /placeholder: 서버 운영 질문을 입력하세요
+                - button "메시지 전송" [disabled] [ref=e771]:
+                  - img [ref=e772]
+              - generic [ref=e776]: Shift+Enter로 줄바꿈

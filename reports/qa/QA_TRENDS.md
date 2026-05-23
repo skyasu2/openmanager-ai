@@ -1,45 +1,45 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-22 21:16:13 KST
+> Generated at: 2026-05-23 12:39:56 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 562 |
-| Counted Runs | 447 |
-| Total Checks | 4069 |
-| Total Passed | 3907 |
+| Recorded Runs | 563 |
+| Counted Runs | 448 |
+| Total Checks | 4070 |
+| Total Passed | 3908 |
 | Total Failed | 145 |
 | Overall Pass Rate | 96.02% |
-| Latest Recorded Run | QA-20260522-0564 |
-| Last Counted Run | QA-20260522-0564 |
+| Latest Recorded Run | QA-20260523-0565 |
+| Last Counted Run | QA-20260523-0565 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-21T12:13:39.004Z -> 2026-05-22T12:13:39.004Z (24h)
+- Window: 2026-05-22T03:18:05.556Z -> 2026-05-23T03:18:05.556Z (24h)
 - Runs with observations: 3 recorded / 3 counted
-- Samples: 6
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Metrics Query Agent | cloud-run-deterministic | 6 | 711ms | 1662ms | - | - | - | - | QA-20260522-0564 |
+| Metrics Query Agent | cloud-run-deterministic | 5 | 536ms | 1662ms | - | - | - | - | QA-20260523-0565 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-21T12:13:39.004Z -> 2026-05-22T12:13:39.004Z (24h)
-- Runs with observations: 8 recorded / 6 counted
-- Samples: 32
-- Drift rate: 18.75%
-- Classification counts: {"unknown":6,"matched":20,"drift":6}
+- Window: 2026-05-22T03:18:05.556Z -> 2026-05-23T03:18:05.556Z (24h)
+- Runs with observations: 6 recorded / 4 counted
+- Samples: 25
+- Drift rate: 24%
+- Classification counts: {"matched":17,"drift":6,"unknown":2}
 - Reason code counts: {}
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
 | reporter-agent | single-agent | 1 | 0% | 30000ms | 30000ms | QA-20260522-0559 |
-| /api/ai/supervisor/stream/v2 | single-agent | 9 | 66.67% | 3556ms | 25000ms | QA-20260522-0562 |
-| /api/ai/supervisor/stream/v2 | deterministic | 20 | 0% | 138ms | 1662ms | QA-20260522-0564 |
+| /api/ai/supervisor/stream/v2 | single-agent | 7 | 85.71% | 4571ms | 25000ms | QA-20260522-0562 |
+| /api/ai/supervisor/stream/v2 | deterministic | 15 | 0% | 184ms | 1662ms | QA-20260522-0564 |
 | /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 | anomaly-detection | deterministic | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
 
@@ -51,9 +51,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 447 | 4069 | 96.02% | 79 | 17.67% | 87 | 19.46% |
-| Last 30 Counted Runs | 30 | 294 | 94.22% | 4 | 13.33% | 4 | 13.33% |
-| Last 10 Counted Runs | 10 | 68 | 91.18% | 0 | 0% | 0 | 0% |
+| All Counted Runs | 448 | 4070 | 96.02% | 79 | 17.63% | 87 | 19.42% |
+| Last 30 Counted Runs | 30 | 282 | 93.97% | 4 | 13.33% | 4 | 13.33% |
+| Last 10 Counted Runs | 10 | 61 | 90.16% | 0 | 0% | 0 | 0% |
 
 ## Gate Run Windows
 
@@ -73,7 +73,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 375 | 261 |
+| targeted | 376 | 262 |
 | legacy | 137 | 137 |
 | broad | 35 | 34 |
 | release-gate | 9 | 9 |
@@ -111,7 +111,6 @@
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-05-08 | 2 | 20 | 95% | 0 | 0 | 0% |
 | 2026-05-09 | 8 | 42 | 66.67% | 4 | 5 | 62.5% |
 | 2026-05-10 | 22 | 263 | 98.86% | 1 | 2 | 9.09% |
 | 2026-05-11 | 3 | 27 | 96.3% | 1 | 1 | 33.33% |
@@ -125,6 +124,7 @@
 | 2026-05-20 | 3 | 36 | 91.67% | 1 | 1 | 33.33% |
 | 2026-05-21 | 8 | 78 | 100% | 0 | 0 | 0% |
 | 2026-05-22 | 7 | 43 | 86.05% | 0 | 0 | 0% |
+| 2026-05-23 | 1 | 1 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 

@@ -1,0 +1,74 @@
+{
+  "runId": "QA-20260523-0565",
+  "recordedAt": "2026-05-23T03:18:05.556Z",
+  "recordedAtKst": "2026-05-23 12:18:05 KST",
+  "runTitle": "v8.12.13 Q2 multi-metric 복합점수 fix 검증",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run ai-engine-00515-vz7",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "aacf38f63"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard AI chat - multi-metric AND query"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "CPU + memory multi-metric AND query",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP dashboard AI chat response",
+      "latencyMs": 91
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-23T12:38:13+09:00",
+      "summary": "Current billing period reviewed after v8.12.13 targeted production QA; vercel usage reported effective=14.6557 USD, billed=0.0000 USD, chargeCount=12789 with no unexpected billed usage in command output.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Playwright MCP DOM snapshot - v8.12.13 multi-metric response",
+      "path": "reports/qa/evidence/qa-20260523-v81213-multi-metric-playwright.yml",
+      "note": "Durable copy of Playwright MCP YAML snapshot showing the query and corrected CPU + memory composite response."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.12.13 production Playwright MCP snapshot shows the query `CPU와 메모리 둘 다 높은 서버 알려줘` returning `전체 서버 CPU + 메모리 복합 부하 상위` with monitoring-metric-current and 91ms response."
+  ],
+  "links": []
+}
