@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-23 | **현재 버전 스냅샷**: v8.12.14
+**상태 스냅샷 기준일**: 2026-05-23 | **현재 버전 스냅샷**: v8.12.15
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,6 +55,7 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.15** (2026-05-23) — Bug Fixes: ui: pass artifactEnvelopes through message transform; remove duplicate quick-start between tabs
 - **v8.12.14** (2026-05-23) — Bug Fixes: ai-engine: preserve metric threshold filters; Tests: qa: record v8.12.13 seven-question production QA; Tests: qa: record v8.12.13 multi-metric production QA
 - **v8.12.13** (2026-05-23) — Bug Fixes: ai-engine: skip single-metric intentFrame for multi-metric AND queries
 - **v8.12.12** (2026-05-23) — Bug Fixes: ai-engine: repair multi-metric and server-health evidence routing gaps; Bug Fixes: ai-engine: harden current metric evidence filters; Features: ai-engine: add WAS server group capability, multi-metric filtering, and resolve flaky test
