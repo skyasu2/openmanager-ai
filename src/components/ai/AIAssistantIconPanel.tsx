@@ -43,13 +43,13 @@ const AI_ASSISTANT_ICONS: AIAssistantIcon[] = [
     id: 'auto-report',
     icon: FileText,
     label: '자동장애 보고서',
-    description: 'Reporter Agent 장애 분석 보고서 생성',
+    description: '장애·운영 보고서 생성 및 MD/TXT 다운로드',
   },
   {
     id: 'intelligent-monitoring',
     icon: Monitor,
     label: '이상감지/추세',
-    description: '경량 이상 신호와 리스크 추세 분석',
+    description: '서버별 이상 신호 탐지 및 추세 분석 실행',
   },
 ];
 

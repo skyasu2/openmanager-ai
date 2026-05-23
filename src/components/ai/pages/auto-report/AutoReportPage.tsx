@@ -63,11 +63,11 @@ const REPORT_QUICK_STARTS: ReportQuickStart[] = [
     severity: 'info',
   },
   {
-    id: 'anomaly-summary',
-    label: '이상감지 요약',
-    description: '탐지된 이상 신호와 영향 서버만 빠르게 요약',
-    query: '현재 이상감지 결과와 영향 서버를 요약해줘',
-    category: 'anomaly-summary',
+    id: 'risk-summary',
+    label: '리스크 요약 보고서',
+    description: '위험 서버의 장애 가능성과 우선 조치 항목을 보고서로 정리',
+    query: '현재 위험 서버의 장애 리스크와 우선 조치 항목을 보고서로 정리해줘',
+    category: 'risk',
     severity: 'warning',
   },
 ];

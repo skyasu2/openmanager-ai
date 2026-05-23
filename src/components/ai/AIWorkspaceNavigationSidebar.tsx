@@ -95,7 +95,9 @@ export function AIWorkspaceNavigationSidebar({
             <FileText className="h-4 w-4 shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium">장애 보고서</div>
-              <div className="text-xs text-gray-500 truncate">보고서 생성</div>
+              <div className="text-xs text-gray-500 truncate">
+                MD/TXT 다운로드
+              </div>
             </div>
           </button>
           <button
@@ -111,7 +113,7 @@ export function AIWorkspaceNavigationSidebar({
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium">이상감지/추세</div>
               <div className="text-xs text-gray-500 truncate">
-                이상 신호 분석
+                실시간 분석 실행
               </div>
             </div>
           </button>
