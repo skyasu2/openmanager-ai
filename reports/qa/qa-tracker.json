@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-23T07:09:27.338Z"
+    "updatedAt": "2026-05-23T08:29:59.590Z"
   },
   "sequence": {
-    "nextRunNumber": 567
+    "nextRunNumber": 568
   },
   "summary": {
-    "totalRecordedRuns": 564,
-    "totalRuns": 449,
+    "totalRecordedRuns": 565,
+    "totalRuns": 450,
     "excludedRuns": 115,
-    "totalChecks": 4077,
-    "totalPassed": 3913,
+    "totalChecks": 4078,
+    "totalPassed": 3914,
     "totalFailed": 145,
     "completionRate": 100,
-    "completedItems": 635,
+    "completedItems": 636,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 43,
+    "wontFixItems": 42,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260523-0566",
-    "lastRecordedAt": "2026-05-23T07:09:27.338Z",
-    "latestRecordedRunId": "QA-20260523-0566",
-    "latestRecordedAt": "2026-05-23T07:09:27.338Z"
+    "lastRunId": "QA-20260523-0567",
+    "lastRecordedAt": "2026-05-23T08:29:59.590Z",
+    "latestRecordedRunId": "QA-20260523-0567",
+    "latestRecordedAt": "2026-05-23T08:29:59.590Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15956,27 +15956,27 @@
     },
     "threshold-filter-missing": {
       "id": "threshold-filter-missing",
-      "title": "그룹+임계값 조합 질의에서 임계값 필터 미적용",
+      "title": "그룹+임계값 조합 질의에서 임계값 필터 적용",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260523-0566",
       "firstSeenAt": "2026-05-23T07:09:27.338Z",
-      "lastSeenRunId": "QA-20260523-0566",
-      "lastSeenAt": "2026-05-23T07:09:27.338Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260523-0567",
+      "lastSeenAt": "2026-05-23T08:29:59.590Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
-      "lastNote": "DB 서버 60%+ 질의에 40%짜리 서버도 포함됨. 현재는 그룹 전체 반환 후 사용자가 직접 판단",
+      "lastEvidence": "reports/qa/evidence/2026/qa-20260523-0567-q3-threshold-response.txt",
+      "lastNote": "v8.12.14 프로덕션에서 'DB 서버 디스크 60% 이상인 곳' 질의가 DB 서버 3대 중 2대만 반환하고, db-mysql-dc1-replica 40% 및 비DB storage 서버를 제외함.",
       "isBlocking": false,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-05-23T07:09:27.338Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T08:29:59.590Z"
     },
     "anomaly-artifact-card-missing": {
       "id": "anomaly-artifact-card-missing",
@@ -65546,6 +65546,91 @@
       "notes": [
         "QA-20260523-0566 result: 5 PASS / 2 PARTIAL / 0 FAIL. Partial observations were recorded as non-blocking WONT-FIX: threshold-filter-missing and anomaly-artifact-card-missing."
       ]
+    },
+    {
+      "runId": "QA-20260523-0567",
+      "recordedAt": "2026-05-23T08:29:59.590Z",
+      "recordedAtKst": "2026-05-23 17:29:59 KST",
+      "title": "v8.12.14 Q3 DB 디스크 임계값 필터 프로덕션 재검증",
+      "owner": "codex",
+      "source": "playwright-cli-fallback",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260523-0567.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2547910287",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "3194be0d224296d5904e26764eed973c285e939f"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI Chat - DB 그룹 단일 메트릭 임계값 필터"
+      ],
+      "skippedSurfaces": [
+        "전체 7문항 팩은 재실행하지 않음",
+        "Playwright MCP transport 종료로 Playwright CLI 대체 실행"
+      ],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "이전 PARTIAL 항목인 그룹+임계값 조합을 동일 프로덕션 AI Chat 경로에서 재검증했고, 필터 조건·그룹 범위·제외 조건을 모두 확인함.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-23T17:28:00+09:00",
+          "summary": "QA 직후 npm run check:usage:vercel 실행. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398로 예상 밖 청구 사용량 없음.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Q3 DB disk threshold passing response",
+          "path": "reports/qa/evidence/2026/qa-20260523-0567-q3-threshold.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Q3 DB disk threshold response text",
+          "path": "reports/qa/evidence/2026/qa-20260523-0567-q3-threshold-response.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "QA input JSON",
+          "path": "reports/qa/evidence/qa-20260523-0567-input.json"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -65554,16 +65639,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 286,
-      "appropriateCount": 245,
+      "seenCount": 287,
+      "appropriateCount": 246,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 56,
-      "lastRunId": "QA-20260523-0566",
-      "lastSeenAt": "2026-05-23T07:09:27.338Z",
+      "lastRunId": "QA-20260523-0567",
+      "lastSeenAt": "2026-05-23T08:29:59.590Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.12.11-8.12.13 신규 기능(WAS매핑, multi-metric guard, 위험한 키워드 라우팅) 검증 및 미검증 영역(네트워크, threshold 조합, KRL) 최초 커버리지. FAIL 없음.",
+      "lastRationale": "이전 PARTIAL 항목인 그룹+임계값 조합을 동일 프로덕션 AI Chat 경로에서 재검증했고, 필터 조건·그룹 범위·제외 조건을 모두 확인함.",
       "lastNextAction": ""
     },
     "observability-monitoring": {

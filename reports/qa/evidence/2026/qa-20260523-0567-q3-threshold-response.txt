@@ -1,0 +1,1 @@
+DB 서버 디스크 60% 이상인 곳5:27:50 PM복사📊 DB 서버 디스크 60% 이상 서버• 조건: 디스크 >= 60%• 대상: DB 서버 3대 중 2대 · 데이터 슬롯 17:20 KST• 서버별: db-mysql-dc1-backup 69% (online), db-mysql-dc1-primary 60% (online)5:27:44 PM응답 빠름Streaming AI·모니터링 도메인 근거분석 근거도구: monitoring-metric-current복사다시 생성

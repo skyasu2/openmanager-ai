@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-23 16:16:19 KST
+> Generated at: 2026-05-23 17:30:08 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 564 |
-| Total Runs (Counted) | 449 |
+| Total Recorded Runs | 565 |
+| Total Runs (Counted) | 450 |
 | Non-counted Runs | 115 |
-| Total Checks | 4077 |
-| Passed | 3913 |
+| Total Checks | 4078 |
+| Passed | 3914 |
 | Failed | 145 |
-| Completed Items | 635 |
+| Completed Items | 636 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 43 |
+| Wont-Fix Items | 42 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260523-0566 (2026-05-23T07:09:27.338Z) |
-| Latest Recorded Run | QA-20260523-0566 (2026-05-23T07:09:27.338Z) |
+| Last Counted Run | QA-20260523-0567 (2026-05-23T08:29:59.590Z) |
+| Latest Recorded Run | QA-20260523-0567 (2026-05-23T08:29:59.590Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260523-0566 (2026-05-23T07:09:27.338Z)
+Latest run: QA-20260523-0567 (2026-05-23T08:29:59.590Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -44,11 +44,11 @@ Latest run: QA-20260523-0566 (2026-05-23T07:09:27.338Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after QA-20260523-0566 targeted production QA; vercel usage reported effective=15.3073 USD, billed=0.0000 USD, chargeCount=13398 with no unexpected billed usage in command output. |
+| vercel | cli | checked | normal | QA 직후 npm run check:usage:vercel 실행. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398로 예상 밖 청구 사용량 없음. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-22T07:09:27.338Z -> 2026-05-23T07:09:27.338Z (24h)
+- Window: 2026-05-22T08:29:59.590Z -> 2026-05-23T08:29:59.590Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 8
 
@@ -59,7 +59,7 @@ Latest run: QA-20260523-0566 (2026-05-23T07:09:27.338Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-22T07:09:27.338Z -> 2026-05-23T07:09:27.338Z (24h)
+- Window: 2026-05-22T08:29:59.590Z -> 2026-05-23T08:29:59.590Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 11
 - Drift rate: 27.27%
@@ -74,10 +74,10 @@ Latest run: QA-20260523-0566 (2026-05-23T07:09:27.338Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_qa20260523_0566 / SHA c489223f
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: AI Chat - WAS 서버 그룹 질의, AI Chat - 단일 서버 단일 메트릭, AI Chat - DB 그룹 임계값 조합, AI Chat - 네트워크 메트릭 랭킹, AI Chat - 서버 트렌드 이상감지, AI Chat - KRL 지식베이스 권장조치, AI Chat - 위험 서버 우선순위
-- Skipped Surfaces: -
+- Deployment: gitlab-pipeline-2547910287 / SHA 3194be0d
+- Coverage Packs: ai-core
+- Covered Surfaces: AI Chat - DB 그룹 단일 메트릭 임계값 필터
+- Skipped Surfaces: 전체 7문항 팩은 재실행하지 않음, Playwright MCP transport 종료로 Playwright CLI 대체 실행
 
 ## Links (Latest Run)
 
@@ -89,16 +89,9 @@ Latest run: QA-20260523-0566 (2026-05-23T07:09:27.338Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | QA input/setup evidence | `reports/qa/evidence/qa-20260523-0566-init.png` | - |
-| playwright-console | QA input JSON | `reports/qa/evidence/qa-20260523-0566-input.json` | - |
-| playwright-screenshot | Q1 WAS CPU response | `reports/qa/evidence/qa-20260523-0566-q1-was-cpu.png` | - |
-| playwright-screenshot | Q2 single server memory response | `reports/qa/evidence/qa-20260523-0566-q2-single-mem.png` | - |
-| playwright-screenshot | Q3 DB disk threshold partial response | `reports/qa/evidence/qa-20260523-0566-q3-db-disk.png` | - |
-| playwright-screenshot | Q4 network ranking response | `reports/qa/evidence/qa-20260523-0566-q4-network.png` | - |
-| playwright-screenshot | Q5 anomaly artifact card partial evidence | `reports/qa/evidence/qa-20260523-0566-q5-artifact.png` | - |
-| playwright-screenshot | Q5 Redis trend response | `reports/qa/evidence/qa-20260523-0566-q5-trend.png` | - |
-| playwright-screenshot | Q6 Redis remediation/KRL response | `reports/qa/evidence/qa-20260523-0566-q6-krl.png` | - |
-| playwright-screenshot | Q7 danger-priority routing response | `reports/qa/evidence/qa-20260523-0566-q7-danger.png` | - |
+| playwright-screenshot | Q3 DB disk threshold passing response | `reports/qa/evidence/2026/qa-20260523-0567-q3-threshold.png` | - |
+| playwright-console | Q3 DB disk threshold response text | `reports/qa/evidence/2026/qa-20260523-0567-q3-threshold-response.txt` | - |
+| playwright-console | QA input JSON | `reports/qa/evidence/qa-20260523-0567-input.json` | - |
 
 ## Expert Domain Open Gaps
 
@@ -114,7 +107,7 @@ Latest run: QA-20260523-0566 (2026-05-23T07:09:27.338Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 32
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 31
 
 ### Platform Constraint
 
@@ -208,8 +201,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] release-dod-gitlab-tag-pipeline: GitLab v8.11.184 tag pipeline (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] release-dod-production-version: Vercel and Cloud Run production version (seen 1회, last QA-20260519-0538)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P2] threshold-filter-missing: 그룹+임계값 조합 질의에서 임계값 필터 미적용 (seen 1회, last QA-20260523-0566)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] vision-gemini-exact-forecast-delta-attribution: Gemini Vision misattributes exact forecast delta values in the screenshot (seen 1회, last QA-20260520-0542)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -817,6 +808,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
 - system-start-metrics-gate: 시스템 시작 KPI 계측 (completed 2회, last QA-20260302-0038)
+- threshold-filter-missing: 그룹+임계값 조합 질의에서 임계값 필터 적용 (completed 1회, last QA-20260523-0567)
 - top5-server-detail: Top5 서버 상세 모달 (3탭) (completed 1회, last QA-20260317-0114)
 - topology-map-render: 토폴로지 맵 완벽 렌더링 (completed 2회, last QA-20260314-0097)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
@@ -864,6 +856,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260523-0567 | 2026-05-23T08:29:59.590Z | targeted | yes | yes | v8.12.14 Q3 DB 디스크 임계값 필터 프로덕션 재검증 | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260523-0566 | 2026-05-23T07:09:27.338Z | targeted | yes | yes | v8.12.13 신규 7문항 평가 - WAS그룹·단일메트릭회귀·네트워크·DB임계값·트렌드·KRL·위험우선순위 | 7 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260523-0565 | 2026-05-23T03:18:05.556Z | targeted | no | yes | v8.12.13 Q2 multi-metric 복합점수 fix 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0564 | 2026-05-22T12:13:39.004Z | targeted | yes | yes | v8.12.10 H-5 semantic router fail-closed production QA | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -883,4 +876,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260521-0550 | 2026-05-21T05:23:03.217Z | targeted | yes | yes | 이번주 변경사항 집중 QA — v8.11.194 (grounded KRL / clarification split / session freeze / Cerebras) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260521-0549 | 2026-05-21T04:10:30.110Z | targeted | yes | yes | Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260521-0548 | 2026-05-21T01:20:42.196Z | targeted | yes | yes | Release Verification - v8.11.193 Cerebras gpt-oss-120b | 9 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260521-0547 | 2026-05-20T23:37:20.403Z | targeted | yes | yes | Vercel Playwright QA - v8.11.192 Grounded KRL OTel Criteria | 6 | 1 | 0 | 0 | 0 | 0 |

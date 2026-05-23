@@ -1,0 +1,97 @@
+{
+  "runId": "QA-20260523-0567",
+  "recordedAt": "2026-05-23T08:29:59.590Z",
+  "recordedAtKst": "2026-05-23 17:29:59 KST",
+  "runTitle": "v8.12.14 Q3 DB 디스크 임계값 필터 프로덕션 재검증",
+  "owner": "codex",
+  "source": "playwright-cli-fallback",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2547910287",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "3194be0d224296d5904e26764eed973c285e939f"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI Chat - DB 그룹 단일 메트릭 임계값 필터"
+  ],
+  "skippedSurfaces": [
+    "전체 7문항 팩은 재실행하지 않음",
+    "Playwright MCP transport 종료로 Playwright CLI 대체 실행"
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "이전 PARTIAL 항목인 그룹+임계값 조합을 동일 프로덕션 AI Chat 경로에서 재검증했고, 필터 조건·그룹 범위·제외 조건을 모두 확인함.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-23T17:28:00+09:00",
+      "summary": "QA 직후 npm run check:usage:vercel 실행. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398로 예상 밖 청구 사용량 없음.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q3 DB disk threshold passing response",
+      "path": "reports/qa/evidence/2026/qa-20260523-0567-q3-threshold.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Q3 DB disk threshold response text",
+      "path": "reports/qa/evidence/2026/qa-20260523-0567-q3-threshold-response.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "QA input JSON",
+      "path": "reports/qa/evidence/qa-20260523-0567-input.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "threshold-filter-missing",
+      "title": "그룹+임계값 조합 질의에서 임계값 필터 적용",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/2026/qa-20260523-0567-q3-threshold-response.txt",
+      "note": "v8.12.14 프로덕션에서 'DB 서버 디스크 60% 이상인 곳' 질의가 DB 서버 3대 중 2대만 반환하고, db-mysql-dc1-replica 40% 및 비DB storage 서버를 제외함.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
