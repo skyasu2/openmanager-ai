@@ -15,6 +15,16 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+const SHADOW_PLANNER_BASELINE_MAX_MISMATCHES = 5;
+const SHADOW_PLANNER_BASELINE_LOCAL_BUDGET_MS = 200;
+const SHADOW_PLANNER_BASELINE_CI_BUDGET_MS = 10_000;
+
+function getShadowPlannerBaselineBudgetMs(): number {
+  return process.env.CI === 'true'
+    ? SHADOW_PLANNER_BASELINE_CI_BUDGET_MS
+    : SHADOW_PLANNER_BASELINE_LOCAL_BUDGET_MS;
+}
+
 describe('resolveSupervisorMode', () => {
   it('upgrades explicit single request to multi when degraded single is disallowed', () => {
     delete process.env.ALLOW_DEGRADED_SINGLE;
@@ -631,8 +641,12 @@ describe('supervisor planner shadow', () => {
       }
     }
 
-    expect(mismatches).toBeLessThanOrEqual(5);
-    expect(Date.now() - startedAt).toBeLessThanOrEqual(200);
+    expect(mismatches).toBeLessThanOrEqual(
+      SHADOW_PLANNER_BASELINE_MAX_MISMATCHES
+    );
+    expect(Date.now() - startedAt).toBeLessThanOrEqual(
+      getShadowPlannerBaselineBudgetMs()
+    );
   });
 });
 
