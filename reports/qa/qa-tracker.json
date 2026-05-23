@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-23T14:54:43.243Z"
+    "updatedAt": "2026-05-23T15:52:37.929Z"
   },
   "sequence": {
-    "nextRunNumber": 572
+    "nextRunNumber": 573
   },
   "summary": {
-    "totalRecordedRuns": 569,
-    "totalRuns": 454,
+    "totalRecordedRuns": 570,
+    "totalRuns": 455,
     "excludedRuns": 115,
-    "totalChecks": 4107,
-    "totalPassed": 3941,
-    "totalFailed": 146,
+    "totalChecks": 4113,
+    "totalPassed": 3943,
+    "totalFailed": 149,
     "completionRate": 100,
     "completedItems": 648,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 44,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260523-0571",
-    "lastRecordedAt": "2026-05-23T14:54:43.243Z",
-    "latestRecordedRunId": "QA-20260523-0571",
-    "latestRecordedAt": "2026-05-23T14:54:43.243Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260524-0572",
+    "lastRecordedAt": "2026-05-23T15:52:37.929Z",
+    "latestRecordedRunId": "QA-20260524-0572",
+    "latestRecordedAt": "2026-05-23T15:52:37.929Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -66547,6 +66547,119 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260524-0572",
+      "recordedAt": "2026-05-23T15:52:37.929Z",
+      "recordedAtKst": "2026-05-24 00:52:37 KST",
+      "title": "v8.12.16 AI 어시스턴트 5차 평가 — 미테스트 6문항 (cache그룹·역방향필터·최솟값·그룹+예측·Advisor·세션컨텍스트)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260524-0572.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-latest",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "e83d933f28bf1b1a5fba589c39e158947ca16c29"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "AI Chat: cache 서버 그룹 CPU 현재 메트릭 (monitoring-metric-current 직접 진입)",
+        "AI Chat: 역방향 필터 정상 범위 서버 목록 (오라우팅 확인)",
+        "AI Chat: 최솟값 쿼리 부하 가장 낮은 서버 (오라우팅 확인)",
+        "AI Chat: WAS 그룹 + 메모리 capacity forecast 복합 (monitoring-capacity-forecast)",
+        "AI Chat: 특정 서버 성능 개선 조언 Advisor 경로 (빈 응답 확인)",
+        "AI Chat: 직전 대화 결과 참조 세션 컨텍스트 연속성 (실패 확인)"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 6,
+        "passed": 2,
+        "failed": 3
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Chat cache 그룹 CPU (Q1)",
+          "agent": "NLQ Agent",
+          "provider": "groq",
+          "route": "monitoring-metric-current",
+          "source": "assistant metadata badge",
+          "latencyMs": 2
+        },
+        {
+          "surface": "AI Chat 역방향 필터 (Q2)",
+          "agent": "일반 대화",
+          "provider": "streaming",
+          "route": "일반 대화 응답",
+          "source": "assistant metadata badge",
+          "latencyMs": 907
+        },
+        {
+          "surface": "AI Chat 최솟값 쿼리 (Q3)",
+          "agent": "일반 대화",
+          "provider": "streaming",
+          "route": "일반 대화 응답",
+          "source": "assistant metadata badge",
+          "latencyMs": 25000
+        },
+        {
+          "surface": "AI Chat WAS 그룹 메모리 예측 (Q4)",
+          "agent": "capacity-forecast",
+          "provider": "cloud-run",
+          "route": "monitoring-capacity-forecast",
+          "source": "assistant metadata badge",
+          "latencyMs": 1000
+        },
+        {
+          "surface": "AI Chat Advisor 성능 조언 (Q5)",
+          "agent": "서버 실시간 데이터 분석",
+          "provider": "streaming",
+          "route": "server-realtime-analysis",
+          "source": "assistant metadata badge",
+          "latencyMs": 20000
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "5차 평가에서 cache/WAS 그룹 직접 진입 및 그룹+capacity forecast 복합 처리는 강점 확인. 역방향 필터·최솟값·Advisor 빈 응답·세션 컨텍스트 4개 신규 약점 발견.",
+          "nextAction": "역방향 필터 evidence path 추가, Advisor 응답 생성 실패 원인 조사, 마크다운 미렌더링 버그 수정 우선 권고."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "unknown",
+          "checkedAt": "",
+          "summary": "",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -66555,17 +66668,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 291,
-      "appropriateCount": 250,
+      "seenCount": 292,
+      "appropriateCount": 251,
       "partialCount": 41,
       "inappropriateCount": 0,
-      "improvementNeededCount": 57,
-      "lastRunId": "QA-20260523-0571",
-      "lastSeenAt": "2026-05-23T14:54:43.243Z",
+      "improvementNeededCount": 58,
+      "lastRunId": "QA-20260524-0572",
+      "lastSeenAt": "2026-05-23T15:52:37.929Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "오늘 변경된 AI deterministic/current-metrics 경로와 artifact UI를 프로덕션 질의로 확인했다.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "5차 평가에서 cache/WAS 그룹 직접 진입 및 그룹+capacity forecast 복합 처리는 강점 확인. 역방향 필터·최솟값·Advisor 빈 응답·세션 컨텍스트 4개 신규 약점 발견.",
+      "lastNextAction": "역방향 필터 evidence path 추가, Advisor 응답 생성 실패 원인 조사, 마크다운 미렌더링 버그 수정 우선 권고."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
