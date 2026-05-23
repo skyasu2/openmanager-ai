@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-23T08:29:59.590Z"
+    "updatedAt": "2026-05-23T08:57:58.383Z"
   },
   "sequence": {
-    "nextRunNumber": 568
+    "nextRunNumber": 569
   },
   "summary": {
-    "totalRecordedRuns": 565,
-    "totalRuns": 450,
+    "totalRecordedRuns": 566,
+    "totalRuns": 451,
     "excludedRuns": 115,
-    "totalChecks": 4078,
-    "totalPassed": 3914,
+    "totalChecks": 4085,
+    "totalPassed": 3920,
     "totalFailed": 145,
     "completionRate": 100,
-    "completedItems": 636,
+    "completedItems": 640,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 42,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260523-0567",
-    "lastRecordedAt": "2026-05-23T08:29:59.590Z",
-    "latestRecordedRunId": "QA-20260523-0567",
-    "latestRecordedAt": "2026-05-23T08:29:59.590Z"
+    "lastRunId": "QA-20260523-0568",
+    "lastRecordedAt": "2026-05-23T08:57:58.383Z",
+    "latestRecordedRunId": "QA-20260523-0568",
+    "latestRecordedAt": "2026-05-23T08:57:58.383Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15985,22 +15985,118 @@
       "status": "wont-fix",
       "firstSeenRunId": "QA-20260523-0566",
       "firstSeenAt": "2026-05-23T07:09:27.338Z",
-      "lastSeenRunId": "QA-20260523-0566",
-      "lastSeenAt": "2026-05-23T07:09:27.338Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260523-0568",
+      "lastSeenAt": "2026-05-23T08:57:58.383Z",
+      "seenCount": 2,
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 1,
+      "wontFixCount": 2,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "응답 텍스트에 카드 언급하지만 UI에 실제 카드 미표시",
+      "lastNote": "CPU 트렌드 분석 시 카드 언급하지만 실제 UI 카드 미표시. QA-20260523-0566 Q5와 동일 패턴 반복.",
       "isBlocking": false,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-05-23T07:09:27.338Z"
+      "lastStatusChangeAt": "2026-05-23T08:57:58.383Z"
+    },
+    "v8.12.14-임계값-필터-fix-검증-db-60-질의에-2대만-반환-8.12.13-partial-pass": {
+      "id": "v8.12.14-임계값-필터-fix-검증-db-60-질의에-2대만-반환-8.12.13-partial-pass",
+      "title": "v8.12.14 임계값 필터 fix 검증: DB 60%+ 질의에 2대만 반환 (8.12.13 PARTIAL → PASS)",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260523-0568",
+      "firstSeenAt": "2026-05-23T08:57:58.383Z",
+      "lastSeenRunId": "QA-20260523-0568",
+      "lastSeenAt": "2026-05-23T08:57:58.383Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T08:57:58.383Z"
+    },
+    "스토리지-서버-그룹-최초-검증-storage-nfss3gw-3대-정확-필터링": {
+      "id": "스토리지-서버-그룹-최초-검증-storage-nfss3gw-3대-정확-필터링",
+      "title": "스토리지 서버 그룹 최초 검증: storage-nfs/s3gw 3대 정확 필터링",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260523-0568",
+      "firstSeenAt": "2026-05-23T08:57:58.383Z",
+      "lastSeenRunId": "QA-20260523-0568",
+      "lastSeenAt": "2026-05-23T08:57:58.383Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T08:57:58.383Z"
+    },
+    "로드밸런서-그룹-최초-검증-lb-haproxy-3대-메모리-현황": {
+      "id": "로드밸런서-그룹-최초-검증-lb-haproxy-3대-메모리-현황",
+      "title": "로드밸런서 그룹 최초 검증: lb-haproxy 3대 메모리 현황",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260523-0568",
+      "firstSeenAt": "2026-05-23T08:57:58.383Z",
+      "lastSeenRunId": "QA-20260523-0568",
+      "lastSeenAt": "2026-05-23T08:57:58.383Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T08:57:58.383Z"
+    },
+    "reporter-agent-최초-직접-검증-장애-보고서-자동-생성-의존-서버-영향-범위-분석-명령어-포함": {
+      "id": "reporter-agent-최초-직접-검증-장애-보고서-자동-생성-의존-서버-영향-범위-분석-명령어-포함",
+      "title": "Reporter Agent 최초 직접 검증: 장애 보고서 자동 생성, 의존 서버 영향 범위 분석, 명령어 포함",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260523-0568",
+      "firstSeenAt": "2026-05-23T08:57:58.383Z",
+      "lastSeenRunId": "QA-20260523-0568",
+      "lastSeenAt": "2026-05-23T08:57:58.383Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T08:57:58.383Z"
     }
   },
   "runs": [
@@ -65631,6 +65727,126 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260523-0568",
+      "recordedAt": "2026-05-23T08:57:58.383Z",
+      "recordedAtKst": "2026-05-23 17:57:58 KST",
+      "title": "v8.12.14 신규 7문항 평가 - 임계값픽스재검증·스토리지·LB그룹·CPU+디스크AND·디스크랭킹·CPU트렌드·Reporter",
+      "owner": "claude",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260523-0568.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "commitSha": "3194be0d224296d5904e26764eed973c285e939f",
+        "deploymentId": "gitlab-pipeline-2547910287",
+        "deploymentUrl": "https://openmanager-ai.vercel.app"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "AI Chat - DB 그룹 임계값 필터 재검증 (v8.12.14 fix)",
+        "AI Chat - 스토리지 서버 그룹 디스크",
+        "AI Chat - 로드밸런서 그룹 메모리",
+        "AI Chat - CPU+디스크 복합 AND 질의",
+        "AI Chat - 전체 디스크 사용률 랭킹",
+        "AI Chat - 단일 서버 CPU 트렌드",
+        "자동 보고서 탭 - Reporter Agent 장애 보고서 생성"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 7,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "DB 디스크 임계값 필터 (v8.12.14 fix)",
+          "agent": "NLQ Agent",
+          "provider": "groq",
+          "route": "monitoring-metric-current",
+          "source": "응답 빠름 라벨",
+          "latencyMs": 500
+        },
+        {
+          "surface": "전체 디스크 랭킹",
+          "agent": "NLQ Agent",
+          "provider": "groq",
+          "route": "monitoring-metric-ranking",
+          "source": "응답 빠름 라벨",
+          "latencyMs": 600
+        },
+        {
+          "surface": "Reporter 장애 보고서 생성",
+          "agent": "Reporter Agent",
+          "provider": "z.ai",
+          "route": "reporter",
+          "source": "Chrome DevTools 측정",
+          "latencyMs": 6000
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.12.14 임계값 필터 fix 직접 검증 + 미검증 그룹(storage/LB/reporter) 최초 커버리지. 6/7 PASS, 아티팩트 카드 미렌더링 1건만 PARTIAL.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-23T18:28:24+09:00",
+          "summary": "QA 정리 중 npm run check:usage:vercel 실행. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398로 예상 밖 청구 사용량 없음.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0568 login screen",
+          "path": "reports/qa/evidence/qa-20260523-0568-login.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0568 dashboard loaded",
+          "path": "reports/qa/evidence/qa-20260523-0568-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0568 Reporter Agent response",
+          "path": "reports/qa/evidence/qa-20260523-0568-q7-reporter.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "QA-0568 input JSON",
+          "path": "reports/qa/evidence/qa-20260523-0568-input.json"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -65639,16 +65855,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 287,
-      "appropriateCount": 246,
+      "seenCount": 288,
+      "appropriateCount": 247,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 56,
-      "lastRunId": "QA-20260523-0567",
-      "lastSeenAt": "2026-05-23T08:29:59.590Z",
+      "lastRunId": "QA-20260523-0568",
+      "lastSeenAt": "2026-05-23T08:57:58.383Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "이전 PARTIAL 항목인 그룹+임계값 조합을 동일 프로덕션 AI Chat 경로에서 재검증했고, 필터 조건·그룹 범위·제외 조건을 모두 확인함.",
+      "lastRationale": "v8.12.14 임계값 필터 fix 직접 검증 + 미검증 그룹(storage/LB/reporter) 최초 커버리지. 6/7 PASS, 아티팩트 카드 미렌더링 1건만 PARTIAL.",
       "lastNextAction": ""
     },
     "observability-monitoring": {

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-23 17:30:08 KST
+> Generated at: 2026-05-23 18:29:11 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 565 |
-| Total Runs (Counted) | 450 |
+| Total Recorded Runs | 566 |
+| Total Runs (Counted) | 451 |
 | Non-counted Runs | 115 |
-| Total Checks | 4078 |
-| Passed | 3914 |
+| Total Checks | 4085 |
+| Passed | 3920 |
 | Failed | 145 |
-| Completed Items | 636 |
+| Completed Items | 640 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 42 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260523-0567 (2026-05-23T08:29:59.590Z) |
-| Latest Recorded Run | QA-20260523-0567 (2026-05-23T08:29:59.590Z) |
+| Last Counted Run | QA-20260523-0568 (2026-05-23T08:57:58.383Z) |
+| Latest Recorded Run | QA-20260523-0568 (2026-05-23T08:57:58.383Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260523-0567 (2026-05-23T08:29:59.590Z)
+Latest run: QA-20260523-0568 (2026-05-23T08:57:58.383Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -44,22 +44,23 @@ Latest run: QA-20260523-0567 (2026-05-23T08:29:59.590Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | QA 직후 npm run check:usage:vercel 실행. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398로 예상 밖 청구 사용량 없음. |
+| vercel | cli | checked | normal | QA 정리 중 npm run check:usage:vercel 실행. effective=15.3081 USD, billed=0.0000 USD, chargeCount=13398로 예상 밖 청구 사용량 없음. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-22T08:29:59.590Z -> 2026-05-23T08:29:59.590Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 8
+- Window: 2026-05-22T08:57:58.383Z -> 2026-05-23T08:57:58.383Z (24h)
+- Runs with observations: 5 recorded / 5 counted
+- Samples: 11
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Reporter Agent | z.ai | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260523-0568 |
 | Metrics Query Agent | cloud-run-deterministic | 5 | 536ms | 1662ms | - | - | - | - | QA-20260523-0565 |
-| NLQ Agent | groq | 3 | 900ms | 1000ms | - | - | - | - | QA-20260523-0566 |
+| NLQ Agent | groq | 5 | 760ms | 1000ms | - | - | - | - | QA-20260523-0568 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-22T08:29:59.590Z -> 2026-05-23T08:29:59.590Z (24h)
+- Window: 2026-05-22T08:57:58.383Z -> 2026-05-23T08:57:58.383Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 11
 - Drift rate: 27.27%
@@ -75,9 +76,9 @@ Latest run: QA-20260523-0567 (2026-05-23T08:29:59.590Z)
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: gitlab-pipeline-2547910287 / SHA 3194be0d
-- Coverage Packs: ai-core
-- Covered Surfaces: AI Chat - DB 그룹 단일 메트릭 임계값 필터
-- Skipped Surfaces: 전체 7문항 팩은 재실행하지 않음, Playwright MCP transport 종료로 Playwright CLI 대체 실행
+- Coverage Packs: ai-core, dashboard-core, ai-advanced-surface
+- Covered Surfaces: AI Chat - DB 그룹 임계값 필터 재검증 (v8.12.14 fix), AI Chat - 스토리지 서버 그룹 디스크, AI Chat - 로드밸런서 그룹 메모리, AI Chat - CPU+디스크 복합 AND 질의, AI Chat - 전체 디스크 사용률 랭킹, AI Chat - 단일 서버 CPU 트렌드, 자동 보고서 탭 - Reporter Agent 장애 보고서 생성
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
@@ -89,9 +90,10 @@ Latest run: QA-20260523-0567 (2026-05-23T08:29:59.590Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Q3 DB disk threshold passing response | `reports/qa/evidence/2026/qa-20260523-0567-q3-threshold.png` | - |
-| playwright-console | Q3 DB disk threshold response text | `reports/qa/evidence/2026/qa-20260523-0567-q3-threshold-response.txt` | - |
-| playwright-console | QA input JSON | `reports/qa/evidence/qa-20260523-0567-input.json` | - |
+| playwright-screenshot | QA-0568 login screen | `reports/qa/evidence/qa-20260523-0568-login.png` | - |
+| playwright-screenshot | QA-0568 dashboard loaded | `reports/qa/evidence/qa-20260523-0568-dashboard.png` | - |
+| playwright-screenshot | QA-0568 Reporter Agent response | `reports/qa/evidence/qa-20260523-0568-q7-reporter.png` | - |
+| playwright-console | QA-0568 input JSON | `reports/qa/evidence/qa-20260523-0568-input.json` | - |
 
 ## Expert Domain Open Gaps
 
@@ -182,7 +184,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-trend-formatting-and-issue-ranking-polish: Analyst trend target formatting and issue ranking need polish (seen 1회, last QA-20260427-0352)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P2] anomaly-artifact-card-missing: 이상감지 분석 아티팩트 카드 미렌더링 (seen 1회, last QA-20260523-0566)
+- [P2] anomaly-artifact-card-missing: 이상감지 분석 아티팩트 카드 미렌더링 (seen 2회, last QA-20260523-0568)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] api-system-abort-race-condition: /api/system ERR_ABORTED 경쟁상태 해결 (seen 1회, last QA-20260519-0535)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -224,6 +226,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - 랜딩-페이지-v8.7.2-로드-및-게스트-자동-로그인-정상: 랜딩 페이지 v8.7.2 로드 및 게스트 자동 로그인 정상 (completed 2회, last QA-20260302-0041)
 - 랜딩-페이지-v8.7.3-로드-및-게스트-자동-로그인-정상: 랜딩 페이지 v8.7.3 로드 및 게스트 자동 로그인 정상 (completed 1회, last QA-20260302-0042)
 - 로그인-정책-카피-정합성: 로그인 정책 카피 정합성 (completed 1회, last QA-20260227-0010)
+- 로드밸런서-그룹-최초-검증-lb-haproxy-3대-메모리-현황: 로드밸런서 그룹 최초 검증: lb-haproxy 3대 메모리 현황 (completed 1회, last QA-20260523-0568)
 - 리소스-경고-top-5-api-was-dc1-01-cpu-91-1위: 리소스 경고 Top 5 (api-was-dc1-01 CPU 91% 1위) (completed 1회, last QA-20260302-0042)
 - 리소스-경고-top-5-db-mysql-dc1-primary-disk-82-1위: 리소스 경고 Top 5 (db-mysql-dc1-primary DISK 82% 1위) (completed 1회, last QA-20260302-0041)
 - 리소스-경고-top-5-db-mysql-dc1-primary-mem-89-1위: 리소스 경고 Top 5 (db-mysql-dc1-primary MEM 89% 1위) (completed 1회, last QA-20260302-0040)
@@ -249,6 +252,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - 세션-타이머-정상-카운트다운: 세션 타이머 정상 카운트다운 (completed 1회, last QA-20260302-0040)
 - 세션-타이머-정상-카운트다운-28분: 세션 타이머 정상 카운트다운 (28분) (completed 1회, last QA-20260302-0042)
 - 세션-타이머-정상-카운트다운-29분: 세션 타이머 정상 카운트다운 (29분) (completed 1회, last QA-20260302-0041)
+- 스토리지-서버-그룹-최초-검증-storage-nfss3gw-3대-정확-필터링: 스토리지 서버 그룹 최초 검증: storage-nfs/s3gw 3대 정확 필터링 (completed 1회, last QA-20260523-0568)
 - 시스템-리소스-요약-cpu-36-memory-47-disk-34: 시스템 리소스 요약 (CPU 36%, Memory 47%, Disk 34%) (completed 1회, last QA-20260302-0041)
 - 시스템-리소스-요약-cpu-37-memory-46-disk-36: 시스템 리소스 요약 (CPU 37%, Memory 46%, Disk 36%) (completed 1회, last QA-20260302-0040)
 - 시스템-리소스-요약-cpu-40-memory-49-disk-32: 시스템 리소스 요약 (CPU 40%, Memory 49%, Disk 32%) (completed 1회, last QA-20260302-0042)
@@ -740,6 +744,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
 - release-v811142-production-alignment: Align Frontend and AI Engine production deployments to v8.11.142 (completed 1회, last QA-20260513-0491)
 - release-v81189-production-smoke: v8.11.89 production release smoke completed through GitLab CI semver tag pipeline (completed 1회, last QA-20260504-0401)
+- reporter-agent-최초-직접-검증-장애-보고서-자동-생성-의존-서버-영향-범위-분석-명령어-포함: Reporter Agent 최초 직접 검증: 장애 보고서 자동 생성, 의존 서버 영향 범위 분석, 명령어 포함 (completed 1회, last QA-20260523-0568)
 - reporter-agent-generate: Reporter Agent 보고서 생성 신뢰도 80% (completed 1회, last QA-20260419-0306)
 - reporter-agent-pass: Reporter Agent 보고서 즉시 생성 정상 (completed 1회, last QA-20260326-0190)
 - reporter-analyst-production-mcp-functional-check-v81136: Reporter and Analyst production MCP functional check on v8.11.36 (completed 1회, last QA-20260427-0352)
@@ -817,6 +822,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ui-ux-improvement-plan-p1-p3-closure: UI/UX improvement plan P1/P2/P3 implementation and local closure QA completed (completed 1회, last QA-20260509-0436)
 - v8.11.121-rag-krl-production-release: Release RAG/KRL cleanup and DB index improvements to production (completed 1회, last QA-20260510-0455)
 - v8.11.122-ai-server-id-clarification-production-release: Release explicit server ID clarification fix to production (completed 1회, last QA-20260510-0457)
+- v8.12.14-임계값-필터-fix-검증-db-60-질의에-2대만-반환-8.12.13-partial-pass: v8.12.14 임계값 필터 fix 검증: DB 60%+ 질의에 2대만 반환 (8.12.13 PARTIAL → PASS) (completed 1회, last QA-20260523-0568)
 - v811119-production-release-smoke: v8.11.119 production release smoke passed (completed 1회, last QA-20260509-0437)
 - v811120-production-release-smoke: v8.11.120 production release smoke passed (completed 1회, last QA-20260510-0438)
 - v811122-explicit-server-id-production-regression: Explicit server ID questions no longer trigger broad server clarification (completed 1회, last QA-20260510-0458)
@@ -856,6 +862,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260523-0568 | 2026-05-23T08:57:58.383Z | targeted | yes | yes | v8.12.14 신규 7문항 평가 - 임계값픽스재검증·스토리지·LB그룹·CPU+디스크AND·디스크랭킹·CPU트렌드·Reporter | 7 | 4 | 0 | 0 | 1 | 0 |
 | QA-20260523-0567 | 2026-05-23T08:29:59.590Z | targeted | yes | yes | v8.12.14 Q3 DB 디스크 임계값 필터 프로덕션 재검증 | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260523-0566 | 2026-05-23T07:09:27.338Z | targeted | yes | yes | v8.12.13 신규 7문항 평가 - WAS그룹·단일메트릭회귀·네트워크·DB임계값·트렌드·KRL·위험우선순위 | 7 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260523-0565 | 2026-05-23T03:18:05.556Z | targeted | no | yes | v8.12.13 Q2 multi-metric 복합점수 fix 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -875,4 +882,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260521-0551 | 2026-05-21T07:05:41.434Z | targeted | yes | yes | Release Smoke - v8.11.195 UI animated visual surfaces | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260521-0550 | 2026-05-21T05:23:03.217Z | targeted | yes | yes | 이번주 변경사항 집중 QA — v8.11.194 (grounded KRL / clarification split / session freeze / Cerebras) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260521-0549 | 2026-05-21T04:10:30.110Z | targeted | yes | yes | Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release | 14 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260521-0548 | 2026-05-21T01:20:42.196Z | targeted | yes | yes | Release Verification - v8.11.193 Cerebras gpt-oss-120b | 9 | 1 | 0 | 0 | 0 | 0 |
