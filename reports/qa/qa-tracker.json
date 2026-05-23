@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-23T03:18:05.556Z"
+    "updatedAt": "2026-05-23T07:09:27.338Z"
   },
   "sequence": {
-    "nextRunNumber": 566
+    "nextRunNumber": 567
   },
   "summary": {
-    "totalRecordedRuns": 563,
-    "totalRuns": 448,
+    "totalRecordedRuns": 564,
+    "totalRuns": 449,
     "excludedRuns": 115,
-    "totalChecks": 4070,
-    "totalPassed": 3908,
+    "totalChecks": 4077,
+    "totalPassed": 3913,
     "totalFailed": 145,
     "completionRate": 100,
-    "completedItems": 632,
+    "completedItems": 635,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 41,
+    "wontFixItems": 43,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260523-0565",
-    "lastRecordedAt": "2026-05-23T03:18:05.556Z",
-    "latestRecordedRunId": "QA-20260523-0565",
-    "latestRecordedAt": "2026-05-23T03:18:05.556Z"
+    "lastRunId": "QA-20260523-0566",
+    "lastRecordedAt": "2026-05-23T07:09:27.338Z",
+    "latestRecordedRunId": "QA-20260523-0566",
+    "latestRecordedAt": "2026-05-23T07:09:27.338Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15881,6 +15881,126 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-22T04:13:27.604Z"
+    },
+    "was-서버-그룹-매핑v8.12.11-wasapplication-정확-라우팅-확인": {
+      "id": "was-서버-그룹-매핑v8.12.11-wasapplication-정확-라우팅-확인",
+      "title": "WAS 서버 그룹 매핑(v8.12.11): was→application 정확 라우팅 확인",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260523-0566",
+      "firstSeenAt": "2026-05-23T07:09:27.338Z",
+      "lastSeenRunId": "QA-20260523-0566",
+      "lastSeenAt": "2026-05-23T07:09:27.338Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T07:09:27.338Z"
+    },
+    "multi-metric-and-guardv8.12.13-단일-메트릭-질의-부작용-없음-확인": {
+      "id": "multi-metric-and-guardv8.12.13-단일-메트릭-질의-부작용-없음-확인",
+      "title": "multi-metric AND guard(v8.12.13): 단일 메트릭 질의 부작용 없음 확인",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260523-0566",
+      "firstSeenAt": "2026-05-23T07:09:27.338Z",
+      "lastSeenRunId": "QA-20260523-0566",
+      "lastSeenAt": "2026-05-23T07:09:27.338Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T07:09:27.338Z"
+    },
+    "위험한-키워드-라우팅v8.12.12-monitoring-server-health-정확-라우팅-확인": {
+      "id": "위험한-키워드-라우팅v8.12.12-monitoring-server-health-정확-라우팅-확인",
+      "title": "위험한 키워드 라우팅(v8.12.12): monitoring-server-health 정확 라우팅 확인",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260523-0566",
+      "firstSeenAt": "2026-05-23T07:09:27.338Z",
+      "lastSeenRunId": "QA-20260523-0566",
+      "lastSeenAt": "2026-05-23T07:09:27.338Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-23T07:09:27.338Z"
+    },
+    "threshold-filter-missing": {
+      "id": "threshold-filter-missing",
+      "title": "그룹+임계값 조합 질의에서 임계값 필터 미적용",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260523-0566",
+      "firstSeenAt": "2026-05-23T07:09:27.338Z",
+      "lastSeenRunId": "QA-20260523-0566",
+      "lastSeenAt": "2026-05-23T07:09:27.338Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "DB 서버 60%+ 질의에 40%짜리 서버도 포함됨. 현재는 그룹 전체 반환 후 사용자가 직접 판단",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-23T07:09:27.338Z"
+    },
+    "anomaly-artifact-card-missing": {
+      "id": "anomaly-artifact-card-missing",
+      "title": "이상감지 분석 아티팩트 카드 미렌더링",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260523-0566",
+      "firstSeenAt": "2026-05-23T07:09:27.338Z",
+      "lastSeenRunId": "QA-20260523-0566",
+      "lastSeenAt": "2026-05-23T07:09:27.338Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "응답 텍스트에 카드 언급하지만 UI에 실제 카드 미표시",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-23T07:09:27.338Z"
     }
   },
   "runs": [
@@ -65273,6 +65393,159 @@
       "notes": [
         "v8.12.13 production Playwright MCP snapshot shows the query `CPU와 메모리 둘 다 높은 서버 알려줘` returning `전체 서버 CPU + 메모리 복합 부하 상위` with monitoring-metric-current and 91ms response."
       ]
+    },
+    {
+      "runId": "QA-20260523-0566",
+      "recordedAt": "2026-05-23T07:09:27.338Z",
+      "recordedAtKst": "2026-05-23 16:09:27 KST",
+      "title": "v8.12.13 신규 7문항 평가 - WAS그룹·단일메트릭회귀·네트워크·DB임계값·트렌드·KRL·위험우선순위",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260523-0566.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_qa20260523_0566",
+        "deploymentUrl": "",
+        "commitSha": "c489223f5bedf646ff8f110ea0c854ccae949233"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "AI Chat - WAS 서버 그룹 질의",
+        "AI Chat - 단일 서버 단일 메트릭",
+        "AI Chat - DB 그룹 임계값 조합",
+        "AI Chat - 네트워크 메트릭 랭킹",
+        "AI Chat - 서버 트렌드 이상감지",
+        "AI Chat - KRL 지식베이스 권장조치",
+        "AI Chat - 위험 서버 우선순위"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 7,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "WAS 서버 CPU 현황",
+          "agent": "NLQ Agent",
+          "provider": "groq",
+          "route": "monitoring-metric-current",
+          "source": "Playwright 응답 빠름 라벨",
+          "latencyMs": 800
+        },
+        {
+          "surface": "네트워크 상위 3대",
+          "agent": "NLQ Agent",
+          "provider": "groq",
+          "route": "monitoring-metric-ranking",
+          "source": "Playwright 응답 빠름 라벨",
+          "latencyMs": 1000
+        },
+        {
+          "surface": "위험 서버 우선순위",
+          "agent": "NLQ Agent",
+          "provider": "groq",
+          "route": "monitoring-server-health",
+          "source": "Playwright 응답 빠름 라벨",
+          "latencyMs": 900
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.12.11-8.12.13 신규 기능(WAS매핑, multi-metric guard, 위험한 키워드 라우팅) 검증 및 미검증 영역(네트워크, threshold 조합, KRL) 최초 커버리지. FAIL 없음.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-23T16:14:34+09:00",
+          "summary": "Current billing period reviewed after QA-20260523-0566 targeted production QA; vercel usage reported effective=15.3073 USD, billed=0.0000 USD, chargeCount=13398 with no unexpected billed usage in command output.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "QA input/setup evidence",
+          "path": "reports/qa/evidence/qa-20260523-0566-init.png",
+          "note": "Playwright MCP Vercel production QA evidence for QA-20260523-0566."
+        },
+        {
+          "type": "playwright-console",
+          "label": "QA input JSON",
+          "path": "reports/qa/evidence/qa-20260523-0566-input.json"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q1 WAS CPU response",
+          "path": "reports/qa/evidence/qa-20260523-0566-q1-was-cpu.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q2 single server memory response",
+          "path": "reports/qa/evidence/qa-20260523-0566-q2-single-mem.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q3 DB disk threshold partial response",
+          "path": "reports/qa/evidence/qa-20260523-0566-q3-db-disk.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q4 network ranking response",
+          "path": "reports/qa/evidence/qa-20260523-0566-q4-network.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q5 anomaly artifact card partial evidence",
+          "path": "reports/qa/evidence/qa-20260523-0566-q5-artifact.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q5 Redis trend response",
+          "path": "reports/qa/evidence/qa-20260523-0566-q5-trend.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q6 Redis remediation/KRL response",
+          "path": "reports/qa/evidence/qa-20260523-0566-q6-krl.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q7 danger-priority routing response",
+          "path": "reports/qa/evidence/qa-20260523-0566-q7-danger.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 2,
+      "notes": [
+        "QA-20260523-0566 result: 5 PASS / 2 PARTIAL / 0 FAIL. Partial observations were recorded as non-blocking WONT-FIX: threshold-filter-missing and anomaly-artifact-card-missing."
+      ]
     }
   ],
   "experts": {
@@ -65281,16 +65554,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 285,
-      "appropriateCount": 244,
+      "seenCount": 286,
+      "appropriateCount": 245,
       "partialCount": 41,
       "inappropriateCount": 0,
       "improvementNeededCount": 56,
-      "lastRunId": "QA-20260522-0564",
-      "lastSeenAt": "2026-05-22T12:13:39.004Z",
+      "lastRunId": "QA-20260523-0566",
+      "lastSeenAt": "2026-05-23T07:09:27.338Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "H-5의 핵심 수용 기준인 high-confidence semantic frame provider miss가 deterministic fail-closed로 처리되고, trace에 semantic_frame_provider_miss 및 semantic_frame_fail_closed가 남는 것을 production Cloud Run에서 확인했다.",
+      "lastRationale": "v8.12.11-8.12.13 신규 기능(WAS매핑, multi-metric guard, 위험한 키워드 라우팅) 검증 및 미검증 영역(네트워크, threshold 조합, KRL) 최초 커버리지. FAIL 없음.",
       "lastNextAction": ""
     },
     "observability-monitoring": {

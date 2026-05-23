@@ -1,0 +1,61 @@
+{
+  "runTitle": "v8.12.13 신규 7문항 평가 - WAS그룹·단일메트릭회귀·네트워크·DB임계값·트렌드·KRL·위험우선순위",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveredSurfaces": [
+    "AI Chat - WAS 서버 그룹 질의",
+    "AI Chat - 단일 서버 단일 메트릭",
+    "AI Chat - DB 그룹 임계값 조합",
+    "AI Chat - 네트워크 메트릭 랭킹",
+    "AI Chat - 서버 트렌드 이상감지",
+    "AI Chat - KRL 지식베이스 권장조치",
+    "AI Chat - 위험 서버 우선순위"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "c489223f5bedf646ff8f110ea0c854ccae949233",
+    "deploymentId": "dpl_qa20260523_0566"
+  },
+  "checks": {
+    "total": 7,
+    "passed": 5,
+    "failed": 0,
+    "partial": 2,
+    "wontFix": 0,
+    "deferred": 0
+  },
+  "aiLatencyObservations": [
+    { "surface": "WAS 서버 CPU 현황", "agent": "NLQ Agent", "provider": "groq", "route": "monitoring-metric-current", "source": "Playwright 응답 빠름 라벨", "latencyMs": 800 },
+    { "surface": "네트워크 상위 3대", "agent": "NLQ Agent", "provider": "groq", "route": "monitoring-metric-ranking", "source": "Playwright 응답 빠름 라벨", "latencyMs": 1000 },
+    { "surface": "위험 서버 우선순위", "agent": "NLQ Agent", "provider": "groq", "route": "monitoring-server-health", "source": "Playwright 응답 빠름 라벨", "latencyMs": 900 }
+  ],
+  "completedImprovements": [
+    "WAS 서버 그룹 매핑(v8.12.11): was→application 정확 라우팅 확인",
+    "multi-metric AND guard(v8.12.13): 단일 메트릭 질의 부작용 없음 확인",
+    "위험한 키워드 라우팅(v8.12.12): monitoring-server-health 정확 라우팅 확인"
+  ],
+  "pendingImprovements": [
+    { "id": "threshold-filter-missing", "title": "그룹+임계값 조합 질의에서 임계값 필터 미적용", "severity": "minor", "status": "partial", "note": "DB 서버 60%+ 질의에 40%짜리 서버도 포함됨. 현재는 그룹 전체 반환 후 사용자가 직접 판단" },
+    { "id": "anomaly-artifact-card-missing", "title": "이상감지 분석 아티팩트 카드 미렌더링", "severity": "minor", "status": "partial", "note": "응답 텍스트에 카드 언급하지만 UI에 실제 카드 미표시" }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.12.11-8.12.13 신규 기능(WAS매핑, multi-metric guard, 위험한 키워드 라우팅) 검증 및 미검증 영역(네트워크, threshold 조합, KRL) 최초 커버리지. FAIL 없음."
+    }
+  ],
+  "usageChecks": [
+    { "platform": "vercel", "status": "ok", "note": "Vercel production https://openmanager-ai.vercel.app 접근 정상, 대시보드 로드됨" }
+  ],
+  "notes": "v8.12.11-8.12.13 변경사항 중심 신규 질문 7개. 기존 QA에서 테스트하지 않은 WAS 그룹, 네트워크 메트릭, threshold 조합, KRL 권장조치 패턴을 최초 검증함. 전반적으로 5/7 PASS, 2/7 PARTIAL(임계값필터·아티팩트카드). FAIL 없음."
+}

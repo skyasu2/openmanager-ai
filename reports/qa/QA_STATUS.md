@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-23 12:39:56 KST
+> Generated at: 2026-05-23 16:16:19 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 563 |
-| Total Runs (Counted) | 448 |
+| Total Recorded Runs | 564 |
+| Total Runs (Counted) | 449 |
 | Non-counted Runs | 115 |
-| Total Checks | 4070 |
-| Passed | 3908 |
+| Total Checks | 4077 |
+| Passed | 3913 |
 | Failed | 145 |
-| Completed Items | 632 |
+| Completed Items | 635 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 41 |
+| Wont-Fix Items | 43 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260523-0565 (2026-05-23T03:18:05.556Z) |
-| Latest Recorded Run | QA-20260523-0565 (2026-05-23T03:18:05.556Z) |
+| Last Counted Run | QA-20260523-0566 (2026-05-23T07:09:27.338Z) |
+| Latest Recorded Run | QA-20260523-0566 (2026-05-23T07:09:27.338Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,51 +34,49 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260523-0565 (2026-05-23T03:18:05.556Z)
+Latest run: QA-20260523-0566 (2026-05-23T07:09:27.338Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.12.13 targeted production QA; vercel usage reported effective=14.6557 USD, billed=0.0000 USD, chargeCount=12789 with no unexpected billed usage in command output. |
+| vercel | cli | checked | normal | Current billing period reviewed after QA-20260523-0566 targeted production QA; vercel usage reported effective=15.3073 USD, billed=0.0000 USD, chargeCount=13398 with no unexpected billed usage in command output. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-22T03:18:05.556Z -> 2026-05-23T03:18:05.556Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 5
+- Window: 2026-05-22T07:09:27.338Z -> 2026-05-23T07:09:27.338Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 8
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Metrics Query Agent | cloud-run-deterministic | 5 | 536ms | 1662ms | - | - | - | - | QA-20260523-0565 |
+| NLQ Agent | groq | 3 | 900ms | 1000ms | - | - | - | - | QA-20260523-0566 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-22T03:18:05.556Z -> 2026-05-23T03:18:05.556Z (24h)
-- Runs with observations: 6 recorded / 4 counted
-- Samples: 25
-- Drift rate: 24%
+- Window: 2026-05-22T07:09:27.338Z -> 2026-05-23T07:09:27.338Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 11
+- Drift rate: 27.27%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| reporter-agent | single-agent | 1 | 0% | 30000ms | 30000ms | QA-20260522-0559 |
-| /api/ai/supervisor/stream/v2 | single-agent | 7 | 85.71% | 4571ms | 25000ms | QA-20260522-0562 |
-| /api/ai/supervisor/stream/v2 | deterministic | 15 | 0% | 184ms | 1662ms | QA-20260522-0564 |
-| /api/ai/supervisor/stream/v2 | multi-agent | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
-| anomaly-detection | deterministic | 1 | 0% | 0ms | 0ms | QA-20260522-0559 |
+| /api/ai/supervisor/stream/v2 | deterministic | 8 | 0% | 324ms | 1662ms | QA-20260522-0564 |
+| /api/ai/supervisor/stream/v2 | single-agent | 3 | 100% | 0ms | 0ms | QA-20260522-0562 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA aacf38f6
-- Coverage Packs: ai-core
-- Covered Surfaces: /dashboard AI chat - multi-metric AND query
+- Deployment: dpl_qa20260523_0566 / SHA c489223f
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: AI Chat - WAS 서버 그룹 질의, AI Chat - 단일 서버 단일 메트릭, AI Chat - DB 그룹 임계값 조합, AI Chat - 네트워크 메트릭 랭킹, AI Chat - 서버 트렌드 이상감지, AI Chat - KRL 지식베이스 권장조치, AI Chat - 위험 서버 우선순위
 - Skipped Surfaces: -
 
 ## Links (Latest Run)
@@ -91,7 +89,16 @@ Latest run: QA-20260523-0565 (2026-05-23T03:18:05.556Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Playwright MCP DOM snapshot - v8.12.13 multi-metric response | `reports/qa/evidence/qa-20260523-v81213-multi-metric-playwright.yml` | - |
+| playwright-screenshot | QA input/setup evidence | `reports/qa/evidence/qa-20260523-0566-init.png` | - |
+| playwright-console | QA input JSON | `reports/qa/evidence/qa-20260523-0566-input.json` | - |
+| playwright-screenshot | Q1 WAS CPU response | `reports/qa/evidence/qa-20260523-0566-q1-was-cpu.png` | - |
+| playwright-screenshot | Q2 single server memory response | `reports/qa/evidence/qa-20260523-0566-q2-single-mem.png` | - |
+| playwright-screenshot | Q3 DB disk threshold partial response | `reports/qa/evidence/qa-20260523-0566-q3-db-disk.png` | - |
+| playwright-screenshot | Q4 network ranking response | `reports/qa/evidence/qa-20260523-0566-q4-network.png` | - |
+| playwright-screenshot | Q5 anomaly artifact card partial evidence | `reports/qa/evidence/qa-20260523-0566-q5-artifact.png` | - |
+| playwright-screenshot | Q5 Redis trend response | `reports/qa/evidence/qa-20260523-0566-q5-trend.png` | - |
+| playwright-screenshot | Q6 Redis remediation/KRL response | `reports/qa/evidence/qa-20260523-0566-q6-krl.png` | - |
+| playwright-screenshot | Q7 danger-priority routing response | `reports/qa/evidence/qa-20260523-0566-q7-danger.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -107,7 +114,7 @@ Latest run: QA-20260523-0565 (2026-05-23T03:18:05.556Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 30
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 32
 
 ### Platform Constraint
 
@@ -182,6 +189,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-trend-formatting-and-issue-ranking-polish: Analyst trend target formatting and issue ranking need polish (seen 1회, last QA-20260427-0352)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] anomaly-artifact-card-missing: 이상감지 분석 아티팩트 카드 미렌더링 (seen 1회, last QA-20260523-0566)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] api-system-abort-race-condition: /api/system ERR_ABORTED 경쟁상태 해결 (seen 1회, last QA-20260519-0535)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] capacity-forecast-evidence-routing: monitoringCapacityForecastEvidenceProvider 라우팅 미트리거 (seen 1회, last QA-20260522-0558)
@@ -199,6 +208,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] release-dod-gitlab-tag-pipeline: GitLab v8.11.184 tag pipeline (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] release-dod-production-version: Vercel and Cloud Run production version (seen 1회, last QA-20260519-0538)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] threshold-filter-missing: 그룹+임계값 조합 질의에서 임계값 필터 미적용 (seen 1회, last QA-20260523-0566)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] vision-gemini-exact-forecast-delta-attribution: Gemini Vision misattributes exact forecast delta values in the screenshot (seen 1회, last QA-20260520-0542)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -252,6 +263,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - 시스템-리소스-요약-cpu-40-memory-49-disk-32: 시스템 리소스 요약 (CPU 40%, Memory 49%, Disk 32%) (completed 1회, last QA-20260302-0042)
 - 시스템-시작-대시보드-리다이렉트-정상: 시스템 시작 → 대시보드 리다이렉트 정상 (completed 1회, last QA-20260302-0041)
 - 시스템-시작-system-boot-대시보드-리다이렉트-정상: 시스템 시작 → system-boot → 대시보드 리다이렉트 정상 (completed 2회, last QA-20260302-0042)
+- 위험한-키워드-라우팅v8.12.12-monitoring-server-health-정확-라우팅-확인: 위험한 키워드 라우팅(v8.12.12): monitoring-server-health 정확 라우팅 확인 (completed 1회, last QA-20260523-0566)
 - 코드-품질-리뷰-5-핵심파일: 코드 품질 리뷰 5 핵심파일 (completed 1회, last QA-20260301-0032)
 - 통합-검증-validateall-통과: 통합 검증 validate:all 통과 (completed 1회, last QA-20260301-0032)
 - 패턴-위반-검사-any-0-todo-0: 패턴 위반 검사 any 0 TODO 0 (completed 1회, last QA-20260301-0032)
@@ -681,6 +693,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - monitoring-source-errors-bff-pass-through-v81189: Monitoring source errors preserve structured sourceMode/queryAsOf payload through Cloud Run and BFF (completed 1회, last QA-20260504-0401)
 - multi-agent-orchestration: 멀티에이전트 오케스트레이션 활성화 (Steps A-E) (completed 1회, last QA-20260307-0053)
 - multi-agent-tool-result-bubble-up: orchestrator-agent-stream.ts: tool_result yield 누락으로 분석 근거 영역 비어있던 문제 수정 (completed 1회, last QA-20260408-0252)
+- multi-metric-and-guardv8.12.13-단일-메트릭-질의-부작용-없음-확인: multi-metric AND guard(v8.12.13): 단일 메트릭 질의 부작용 없음 확인 (completed 1회, last QA-20260523-0566)
 - negative-feedback-trace-preserved: Negative feedback traceId preserved through feedback submission (completed 1회, last QA-20260322-0155)
 - next-dev-allowed-origins-loopback-parity: 127.0.0.1 dev-origin parity for OAuth smoke (completed 1회, last QA-20260412-0273)
 - nivo-active-anomaly-highlight-visual-qa: Nivo active anomaly highlight rect is visible for active alert data (completed 1회, last QA-20260508-0424)
@@ -841,6 +854,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - vision-native-multimodal: Vision Agent image/file path uses native multimodal model call (completed 1회, last QA-20260519-0538)
 - vision-production-latency-sample-refresh: Vision 최신 production latency 표본 보강 (completed 1회, last QA-20260421-0322)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
+- was-서버-그룹-매핑v8.12.11-wasapplication-정확-라우팅-확인: WAS 서버 그룹 매핑(v8.12.11): was→application 정확 라우팅 확인 (completed 1회, last QA-20260523-0566)
 - weekly-followup-planning-hygiene: Weekly follow-up planning hygiene and data slot policy updated (completed 1회, last QA-20260519-0536)
 - weekly-hardening-production-post-deploy-retest: Deploy weekly hardening changes and rerun focused Vercel production QA (completed 1회, last QA-20260519-0537)
 - zai-glm-vision-fallback-live-smoke: Z.AI GLM Vision fallback 실제 이미지 입력 live smoke 확인 (completed 1회, last QA-20260519-0539)
@@ -850,6 +864,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260523-0566 | 2026-05-23T07:09:27.338Z | targeted | yes | yes | v8.12.13 신규 7문항 평가 - WAS그룹·단일메트릭회귀·네트워크·DB임계값·트렌드·KRL·위험우선순위 | 7 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260523-0565 | 2026-05-23T03:18:05.556Z | targeted | no | yes | v8.12.13 Q2 multi-metric 복합점수 fix 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0564 | 2026-05-22T12:13:39.004Z | targeted | yes | yes | v8.12.10 H-5 semantic router fail-closed production QA | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0563 | 2026-05-22T11:14:44.822Z | targeted | no | yes | v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast | 3 | 0 | 0 | 0 | 0 | 0 |
@@ -869,4 +884,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260521-0549 | 2026-05-21T04:10:30.110Z | targeted | yes | yes | Vercel Playwright QA - v8.11.194 AI Routing and Dashboard Release | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260521-0548 | 2026-05-21T01:20:42.196Z | targeted | yes | yes | Release Verification - v8.11.193 Cerebras gpt-oss-120b | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260521-0547 | 2026-05-20T23:37:20.403Z | targeted | yes | yes | Vercel Playwright QA - v8.11.192 Grounded KRL OTel Criteria | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260520-0546 | 2026-05-20T12:57:49.227Z | targeted | yes | yes | Vercel Playwright QA - v8.11.189 KRL Routing and Stream Sanitizer Closure | 12 | 2 | 0 | 0 | 0 | 0 |
