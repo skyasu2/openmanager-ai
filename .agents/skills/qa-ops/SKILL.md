@@ -1,7 +1,7 @@
 ---
 name: qa-ops
 description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, record every run into reports/qa tracker, and include conversational AI QA for AI-related changes.
-version: v1.5.2
+version: v1.5.3
 ---
 
 # OpenManager QA Ops
@@ -36,6 +36,10 @@ Final QA operation workflow with cumulative tracking.
 
 2. Decide target environment.
 - Default: **Vercel + Playwright MCP** (`https://openmanager-ai.vercel.app`) for functional QA and E2E flows.
+- For Codex/WSL browser QA, verify Windows HTTP Playwright MCP readiness before starting the run:
+  - `npm run mcp:playwright:windows:start` when the Windows server is not already running.
+  - `bash scripts/mcp/mcp-health-check-codex.sh --probe playwright` to confirm the JSON-RPC `initialize` probe succeeds.
+  - Restart the Codex session after changing `.codex/config.toml`; MCP server config is loaded at session start.
 - Diagnostics: Use **Chrome DevTools MCP** for performance (LCP, CLS, Core Web Vitals), Lighthouse audits, memory leaks, and deep network inspection.
 - Use local dev server QA only when AI-path validation is unnecessary (UI/copy/layout/basic auth flow).
 - Use Cloud Run endpoint checks when the scope is observability, monitoring, trace propagation, or Langfuse runtime proof.
@@ -223,3 +227,4 @@ Close with one short operator note that explains the highest remaining risk or s
 - 2026-05-07: v1.5.0 - Added conversational AI QA for AI-related changes with the standard five-question set and tracker recording guidance.
 - 2026-05-07: v1.5.1 - Aligned QA selection with risk-based test methodology, cost guardrails, and representative live-run limits.
 - 2026-05-19: v1.5.2 - Made Vision real-image Gemini/GLM smoke manual-only and documented GLM fallback live-smoke evidence requirements.
+- 2026-05-23: v1.5.3 - Added Codex/WSL Playwright MCP Windows HTTP readiness checks before browser-driven Vercel QA.

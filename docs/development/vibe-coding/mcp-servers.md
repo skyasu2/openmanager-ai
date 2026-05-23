@@ -4,17 +4,17 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-05-23
 > Canonical: docs/development/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
 ## 개요
 
-**MCP (Model Context Protocol)**는 AI 에이전트에 외부 도구와 데이터를 연결하는 프로토콜입니다. OpenManager는 Codex, Claude Code, Gemini CLI가 같은 7개 project MCP 구성을 공유하되, 각 도구의 native config 형식은 유지합니다.
+**MCP (Model Context Protocol)**는 AI 에이전트에 외부 도구와 데이터를 연결하는 프로토콜입니다. OpenManager는 Codex, Claude Code, Gemini CLI가 공통 7개 project MCP 구성을 공유하고, Codex는 OpenAI 공식 문서 확인용 MCP를 1개 추가로 사용합니다. 각 도구의 native config 형식은 유지합니다.
 
 ## 현재 MCP 카탈로그
 
-> 현재 상시 등록: 7개 / 온디맨드: Storybook 1개
+> 현재 상시 등록: 공통 7개 + Codex 전용 1개 / 온디맨드: Storybook 1개
 
 | MCP | 용도 | Claude `.mcp.json` | Gemini `.gemini/settings.json` | Codex `.codex/config.toml` |
 |-----|------|:------------------:|:------------------------------:|:--------------------------:|
@@ -25,6 +25,7 @@
 | `next-devtools` | Next.js dev runtime 진단 | ✅ | ✅ | ✅ |
 | `chrome-devtools` | CDP 성능/네트워크/메모리/Lighthouse 진단 | ✅ | ✅ | ✅ |
 | `github` | GitHub repo/PR/issue 조회 | ✅ | ✅ | ✅ |
+| `openaiDeveloperDocs` | OpenAI 공식 문서 조회 | ❌ | ❌ | ✅ |
 | `storybook` | Storybook MCP | 온디맨드 | 온디맨드 | 온디맨드 |
 
 제거된 상시 MCP: `context7`, `sequential-thinking`, standalone `lighthouse`, `stitch`. 필요 시 명시 요청 또는 전용 스크립트로만 사용합니다.
@@ -111,10 +112,11 @@ Codex MCP는 project `.codex/config.toml`만 OpenManager 서버 목록을 보유
 |---|---|---:|---|
 | `supabase-db` | `run-with-project-env.sh` → `start-supabase-mcp.sh` | `30/120` | `SUPABASE_ACCESS_TOKEN` runtime 주입 |
 | `diagram-converter` | `start-node-mcp-package.sh diagram-converter-mcp 0.2.11 dist/index.js` | `120/180` | pinned |
-| `playwright` | `start-node-mcp-package.sh @playwright/mcp 0.0.70 cli.js` | `60/180` | `DISPLAY=:0` |
+| `playwright` | Windows HTTP `url = http://127.0.0.1:8931/mcp` | `60/180` | Windows MCP 서버 별도 실행 필요 |
 | `next-devtools` | `start-node-mcp-package.sh next-devtools-mcp 0.3.10 dist/index.js` | `75/120` | Windows env 보강 |
 | `chrome-devtools` | `start-node-mcp-package.sh chrome-devtools-mcp 0.23.0 ... --isolated` | `90/180` | `DISPLAY=:0` |
 | `github` | HTTP MCP endpoint | `120/120` | `codex-local.sh`가 `GITHUB_PERSONAL_ACCESS_TOKEN` runtime 주입, token 없으면 auto mode에서 제외 |
+| `openaiDeveloperDocs` | HTTP MCP endpoint | `60/120` | OpenAI 공식 문서 확인용 |
 | `vercel` | `start-vercel-mcp.sh` | `180/120` | read-only deployment tools만 활성화 |
 
 ## Claude Code MCP 설정법
@@ -184,10 +186,49 @@ GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --de
 
 ## Playwright MCP
 
-- 기본 모드: stdio
-- 스크린샷 출력: `tmp/playwright/mcp/screenshots` 또는 `.playwright-mcp/screenshots`
+**현재 모드: Windows HTTP** (`url = "http://127.0.0.1:8931/mcp"`)
+
+WSL2 환경에서 `DISPLAY=:0` stdio 모드는 transport 닫힘 오류가 발생합니다. Windows에서 MCP 서버를 실행하고 HTTP로 연결하는 방식을 기본으로 합니다.
+
+### Windows MCP 서버 실행
+
+```bash
+# MCP 서버를 Windows PowerShell 창에서 백그라운드 시작
+npm run mcp:playwright:windows:start
+# (고정 버전: @playwright/mcp@0.0.55, 포트: 8931, 브라우저: msedge)
+
+# config만 확인
+bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
+
+# Windows HTTP 서버 live probe
+bash scripts/mcp/mcp-health-check-codex.sh --probe playwright
+```
+
+- Codex 세션은 **세션 시작 시** MCP config를 로드합니다. 서버를 띄운 뒤 세션을 (재)시작해야 playwright tool이 활성화됩니다.
+- 고정 버전 `0.0.55`: 이 저장소의 Windows HTTP 경로에서 검증된 known-good 버전입니다. `@latest`는 npm 캐시/게시 상태 변화에 영향을 받으므로 기본 실행 경로에서는 고정합니다.
+
+### 모드 전환
+
+```bash
+# stdio → windows-http (현재 기본)
+npm run mcp:playwright:mode:windows    # config.toml만 변경
+npm run mcp:playwright:windows:enable  # config 변경 + 서버 실행 한 번에
+
+# windows-http → stdio (WSL DISPLAY=:0 환경 복구 시)
+npm run mcp:playwright:mode:stdio
+```
+
+### 스크린샷 출력
+
+- MCP 경로: `tmp/playwright/mcp/screenshots` 또는 `.playwright-mcp/screenshots`
 - durable QA evidence가 필요하면 `reports/qa/evidence/`로 별도 승격합니다.
-- Windows headed fallback이 필요하면 `npm run mcp:playwright:windows:enable`을 사용하고, 복구는 `npm run mcp:playwright:mode:stdio`를 사용합니다.
+
+### Health Probe
+
+`mcp-health-check-codex.sh`는 playwright live probe를 지원합니다 (`AVAILABLE_LIVE_PROBE_SERVERS` 포함).
+
+- Windows HTTP 모드: MCP JSON-RPC `initialize` POST로 서버 버전 확인 (SDK 불필요)
+- stdio 모드: live probe 미지원 (skip)
 
 ## Chrome DevTools MCP
 
@@ -263,6 +304,8 @@ curl -I http://127.0.0.1:6006
 4. Claude: `claude mcp list`
 5. Gemini: `GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug`
 6. Supabase live probe: `bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db`
+7. Playwright live probe: `bash scripts/mcp/mcp-health-check-codex.sh --probe playwright`
+   - Windows MCP 서버가 실행 중이어야 합니다. 미실행 시 `npm run mcp:playwright:windows:start` 먼저 실행.
 
 ### 토큰 누락
 

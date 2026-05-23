@@ -73,15 +73,18 @@ cleanup() {
 trap cleanup EXIT
 
 set +e
-awk -v mode="$MODE" -v port="$PORT" '
+awk -v mode="$MODE" -v port="$PORT" -v repo_root="$REPO_ROOT" '
 function print_playwright_section() {
   print "[mcp_servers.playwright]"
   if (mode == "stdio") {
-    print "command = \"npx\""
-    print "args = [\"-y\", \"@playwright/mcp\", \"--output-dir\", \"tmp/playwright/mcp/screenshots\"]"
+    print "command = \"bash\""
+    print "args = [\"" repo_root "/scripts/mcp/start-node-mcp-package.sh\", \"@playwright/mcp\", \"0.0.70\", \"cli.js\", \"--output-dir\", \"tmp/playwright/mcp/screenshots\"]"
     print "startup_timeout_sec = 60"
     print "tool_timeout_sec = 180"
     print "required = false"
+    print ""
+    print "[mcp_servers.playwright.env]"
+    print "DISPLAY = \":0\""
   } else if (mode == "windows-http") {
     print "url = \"http://127.0.0.1:" port "/mcp\""
     print "startup_timeout_sec = 60"
@@ -92,27 +95,43 @@ function print_playwright_section() {
 }
 
 BEGIN {
-  in_playwright = 0
+  state = "normal"
   found = 0
 }
 
 {
-  if ($0 ~ /^\[mcp_servers\.playwright\]$/) {
-    found = 1
-    in_playwright = 1
-    print_playwright_section()
-    next
-  }
-
-  if (in_playwright == 1) {
-    if ($0 ~ /^\[mcp_servers\./) {
-      in_playwright = 0
+  if (state == "normal") {
+    if ($0 == "[mcp_servers.playwright]") {
+      found = 1
+      state = "playwright-main"
+      print_playwright_section()
+    } else {
       print $0
     }
     next
   }
 
-  print $0
+  # Inside playwright main or env subsection: skip content, handle sub-sections
+  if (state == "playwright-main" || state == "playwright-env") {
+    if ($0 == "[mcp_servers.playwright.env]") {
+      state = "playwright-env"
+      next
+    }
+    # Tools sub-sections: exit skip state and print normally
+    if ($0 ~ /^\[mcp_servers\.playwright\.tools\./) {
+      state = "normal"
+      print $0
+      next
+    }
+    # Different server entirely: exit skip state and print
+    if ($0 ~ /^\[mcp_servers\./ && $0 !~ /^\[mcp_servers\.playwright/) {
+      state = "normal"
+      print $0
+      next
+    }
+    # Content lines inside main or env section: skip
+    next
+  }
 }
 
 END {

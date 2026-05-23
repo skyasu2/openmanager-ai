@@ -12,6 +12,7 @@ const expectedProjectServers = [
   'next-devtools',
   'chrome-devtools',
   'github',
+  'openaiDeveloperDocs',
   'vercel',
 ].sort();
 

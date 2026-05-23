@@ -37,14 +37,12 @@ approval_mode = "approve"
 approval_mode = "approve"
 
 [mcp_servers.playwright]
-command = "bash"
-args = ["__REPO_ROOT__/scripts/mcp/start-node-mcp-package.sh", "@playwright/mcp", "0.0.70", "cli.js", "--output-dir", "tmp/playwright/mcp/screenshots"]
+# Windows HTTP mode: run `npm run mcp:playwright:windows:start` before starting Codex session.
+# Switch to stdio: npm run mcp:playwright:mode:stdio (requires DISPLAY=:0)
+url = "http://127.0.0.1:8931/mcp"
 startup_timeout_sec = 60
 tool_timeout_sec = 180
 required = false
-
-[mcp_servers.playwright.env]
-DISPLAY = ":0"
 
 [mcp_servers.playwright.tools.browser_tabs]
 approval_mode = "approve"

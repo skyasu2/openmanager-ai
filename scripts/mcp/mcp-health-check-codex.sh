@@ -26,7 +26,7 @@ DEFAULT_LIVE_PROBE_TIMEOUT_SEC=45
 LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-}"
 RUN_LIVE_PROBE=1
 SELECTED_PROBES=()
-AVAILABLE_LIVE_PROBE_SERVERS=("supabase-db")
+AVAILABLE_LIVE_PROBE_SERVERS=("supabase-db" "playwright")
 OUTPUT_FORMAT="text"
 JSON_STATE_DIR=""
 SERVER_STATUS_FILE=""
@@ -732,6 +732,68 @@ get_server_probe_timeout_sec() {
   printf '%s\n' "$DEFAULT_LIVE_PROBE_TIMEOUT_SEC"
 }
 
+get_playwright_http_url() {
+  awk '
+    /^\[mcp_servers\.playwright\]$/ { in_section = 1; next }
+    /^\[mcp_servers\./ { if (in_section) exit }
+    in_section && /^[[:space:]]*url[[:space:]]*=/ {
+      line = $0
+      sub(/^[^"]*"/, "", line)
+      sub(/".*$/, "", line)
+      print line
+      exit
+    }
+  ' "$CONFIG_FILE"
+}
+
+run_playwright_http_probe() {
+  local url="$1"
+  local timeout_sec="${2:-10}"
+  local response=""
+  local curl_exit=0
+  # Prefer localhost for Playwright MCP origin-check compatibility.
+  local probe_url="${url/127.0.0.1/localhost}"
+
+  echo "  - playwright: MCP initialize probe → $probe_url (timeout ${timeout_sec}s)"
+  echo "  - playwright: MCP initialize probe → $probe_url (timeout ${timeout_sec}s)" >> "$LOG_FILE"
+
+  set +e
+  response=$(curl -s --max-time "$timeout_sec" \
+    -X POST "$probe_url" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json, text/event-stream" \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"health-check","version":"1.0.0"}}}' \
+    2>/dev/null)
+  curl_exit=$?
+  set -e
+
+  if [ "$curl_exit" -eq 0 ] && printf '%s\n' "$response" | grep -q '"protocolVersion"'; then
+    local version=""
+    version=$(printf '%s\n' "$response" | grep -o '"version":"[^"]*"' | head -1 | sed 's/"version":"//;s/"//')
+    echo -e "${GREEN}OK${NC}   playwright: MCP server ready (version ${version:-?})"
+    echo "OK   playwright: MCP server ready (version ${version:-?})" >> "$LOG_FILE"
+    record_live_probe_status "playwright" "http" "ok" "MCP initialize OK (version ${version:-?})"
+    return 0
+  fi
+
+  if [ "$curl_exit" -eq 28 ]; then
+    echo -e "${YELLOW}WARN${NC} playwright: HTTP probe timed out (${timeout_sec}s)"
+    echo "WARN playwright: HTTP probe timed out (${timeout_sec}s)" >> "$LOG_FILE"
+    record_live_probe_status "playwright" "http" "warn" "timed out (${timeout_sec}s)"
+  elif [ "$curl_exit" -ne 0 ]; then
+    echo -e "${YELLOW}WARN${NC} playwright: HTTP server not reachable — Windows MCP server 실행 필요"
+    echo "WARN playwright: HTTP server not reachable (curl exit ${curl_exit})" >> "$LOG_FILE"
+    echo "  - 힌트: npm run mcp:playwright:windows:start" | tee -a "$LOG_FILE"
+    record_live_probe_status "playwright" "http" "warn" "connection failed (curl exit ${curl_exit}) — run: npm run mcp:playwright:windows:start"
+  else
+    echo -e "${YELLOW}WARN${NC} playwright: MCP initialize failed — unexpected response"
+    printf '%s\n' "$response" | head -3 | sed 's/^/  - /'
+    printf '%s\n' "$response" | head -3 | sed 's/^/  - /' >> "$LOG_FILE"
+    record_live_probe_status "playwright" "http" "warn" "unexpected initialize response: $(printf '%s' "$response" | head -c 120)"
+  fi
+  return 1
+}
+
 run_live_probe() {
   local server="$1"
   local stage="$2"
@@ -934,37 +996,57 @@ echo "실동작 프로브:" >> "$LOG_FILE"
 if [ "$RUN_LIVE_PROBE" -ne 1 ]; then
   echo "  - skipped (--no-live-probe)"
   echo "  - skipped (--no-live-probe)" >> "$LOG_FILE"
-elif [ ! -d "$REPO_ROOT/node_modules/@modelcontextprotocol/sdk" ]; then
-  echo -e "${YELLOW}WARN${NC} live probe skipped: @modelcontextprotocol/sdk 미설치"
-  echo "WARN live probe skipped: @modelcontextprotocol/sdk 미설치" >> "$LOG_FILE"
-  record_warning "live-probe" "@modelcontextprotocol/sdk 미설치"
 else
-  if should_probe_server "supabase-db"; then
-    SUPABASE_TOKEN=$(get_server_env_value "supabase-db" "SUPABASE_ACCESS_TOKEN")
-    SUPABASE_COMMAND="$(get_server_command "supabase-db")"
-    SUPABASE_ARGS_JSON="$(get_server_args_json "supabase-db")"
-    SUPABASE_TIMEOUT_SEC="$(get_server_probe_timeout_sec "supabase-db")"
-    if [ -z "$SUPABASE_TOKEN" ]; then
-      echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
-      echo "WARN supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
-      record_live_probe_status "supabase-db" "preflight" "skip" "skipped (SUPABASE_ACCESS_TOKEN missing)"
-      LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
-    elif [ -z "$SUPABASE_COMMAND" ] || [ -z "$SUPABASE_ARGS_JSON" ]; then
-      echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (launch config missing)"
-      echo "WARN supabase-db: live probe skipped (launch config missing)" >> "$LOG_FILE"
-      record_live_probe_status "supabase-db" "preflight" "skip" "skipped (launch config missing)"
+  # ── playwright HTTP probe (SDK 불필요, HTTP mode만) ─────────────────────
+  if should_probe_server "playwright"; then
+    PLAYWRIGHT_URL="$(get_playwright_http_url)"
+    PLAYWRIGHT_TIMEOUT_SEC="$(get_server_probe_timeout_sec "playwright")"
+    if [ -z "$PLAYWRIGHT_URL" ]; then
+      echo -e "${YELLOW}WARN${NC} playwright: live probe skipped (stdio mode — HTTP probe 불가)"
+      echo "WARN playwright: live probe skipped (stdio mode — set windows-http mode to enable)" >> "$LOG_FILE"
+      record_live_probe_status "playwright" "preflight" "skip" "stdio mode — HTTP probe unavailable"
       LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
     else
-      if ! run_live_probe \
-        "supabase-db" \
-        "full" \
-        "$SUPABASE_COMMAND" \
-        "$SUPABASE_ARGS_JSON" \
-        "list_projects" \
-        "$SUPABASE_TIMEOUT_SEC" \
-        "" \
-        "SUPABASE_ACCESS_TOKEN=$SUPABASE_TOKEN"; then
+      if ! run_playwright_http_probe "$PLAYWRIGHT_URL" "$PLAYWRIGHT_TIMEOUT_SEC"; then
         LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+      fi
+    fi
+  fi
+
+  # ── supabase-db stdio probe (SDK 필요) ──────────────────────────────────
+  if should_probe_server "supabase-db"; then
+    if [ ! -d "$REPO_ROOT/node_modules/@modelcontextprotocol/sdk" ]; then
+      echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (@modelcontextprotocol/sdk 미설치)"
+      echo "WARN supabase-db: live probe skipped (@modelcontextprotocol/sdk 미설치)" >> "$LOG_FILE"
+      record_warning "live-probe" "@modelcontextprotocol/sdk 미설치"
+      LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
+    else
+      SUPABASE_TOKEN=$(get_server_env_value "supabase-db" "SUPABASE_ACCESS_TOKEN")
+      SUPABASE_COMMAND="$(get_server_command "supabase-db")"
+      SUPABASE_ARGS_JSON="$(get_server_args_json "supabase-db")"
+      SUPABASE_TIMEOUT_SEC="$(get_server_probe_timeout_sec "supabase-db")"
+      if [ -z "$SUPABASE_TOKEN" ]; then
+        echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
+        echo "WARN supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
+        record_live_probe_status "supabase-db" "preflight" "skip" "skipped (SUPABASE_ACCESS_TOKEN missing)"
+        LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
+      elif [ -z "$SUPABASE_COMMAND" ] || [ -z "$SUPABASE_ARGS_JSON" ]; then
+        echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (launch config missing)"
+        echo "WARN supabase-db: live probe skipped (launch config missing)" >> "$LOG_FILE"
+        record_live_probe_status "supabase-db" "preflight" "skip" "skipped (launch config missing)"
+        LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
+      else
+        if ! run_live_probe \
+          "supabase-db" \
+          "full" \
+          "$SUPABASE_COMMAND" \
+          "$SUPABASE_ARGS_JSON" \
+          "list_projects" \
+          "$SUPABASE_TIMEOUT_SEC" \
+          "" \
+          "SUPABASE_ACCESS_TOKEN=$SUPABASE_TOKEN"; then
+          LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+        fi
       fi
     fi
   fi

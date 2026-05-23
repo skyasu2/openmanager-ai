@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash scripts/mcp/enable-playwright-headed-windows.sh [--port <number>] [--browser <msedge|chrome|chromium|firefox|webkit>]
+  bash scripts/mcp/enable-playwright-headed-windows.sh [--port <number>] [--browser <msedge|chrome|chromium|firefox|webkit>] [--version <npm-version>]
 
 What it does:
   1) Switches .codex/config.toml Playwright MCP to windows-http mode
@@ -14,6 +14,7 @@ EOF
 
 PORT=8931
 BROWSER="msedge"
+VERSION="0.0.55"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -23,6 +24,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --browser)
       BROWSER="${2:-}"
+      shift 2
+      ;;
+    --version)
+      VERSION="${2:-}"
       shift 2
       ;;
     -h|--help)
@@ -37,9 +42,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ -z "$VERSION" ]]; then
+  echo "Error: --version must not be empty" >&2
+  exit 2
+fi
+
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 bash "$REPO_ROOT/scripts/mcp/set-playwright-mcp-mode.sh" --mode windows-http --port "$PORT"
-bash "$REPO_ROOT/scripts/mcp/start-playwright-mcp-windows.sh" --port "$PORT" --browser "$BROWSER"
+bash "$REPO_ROOT/scripts/mcp/start-playwright-mcp-windows.sh" --port "$PORT" --browser "$BROWSER" --version "$VERSION"
 
 echo "Done. Restart Codex session to reconnect Playwright MCP via HTTP."

@@ -104,6 +104,7 @@
       "purpose": "Execute final QA with the right target environment and record every run into the QA tracker.",
       "invariants": [
         "Use Vercel plus Playwright MCP by default for release-facing QA.",
+        "Before browser-driven Vercel QA from Codex/WSL, verify the Playwright MCP transport is reachable with the repo health probe.",
         "Switch to local dev only when AI-path validation is unnecessary.",
         "Record QA evidence through qa:record and status commands.",
         "Keep release-facing QA risk-based and representative; avoid repeated live runs, broad matrix expansion, or coverage-percentage chasing.",

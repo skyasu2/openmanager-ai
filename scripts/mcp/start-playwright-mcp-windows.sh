@@ -4,15 +4,18 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash scripts/mcp/start-playwright-mcp-windows.sh [--port <number>] [--browser <msedge|chrome|chromium|firefox|webkit>]
+  bash scripts/mcp/start-playwright-mcp-windows.sh [--port <number>] [--browser <msedge|chrome|chromium|firefox|webkit>] [--version <npm-version>]
 
 Example:
   bash scripts/mcp/start-playwright-mcp-windows.sh --port 8931 --browser msedge
+  bash scripts/mcp/start-playwright-mcp-windows.sh --port 8931 --browser chrome --version 0.0.55
 EOF
 }
 
 PORT=8931
 BROWSER="msedge"
+# Known-good version for this repo's Windows HTTP transport path.
+VERSION="0.0.55"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -22,6 +25,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --browser)
       BROWSER="${2:-}"
+      shift 2
+      ;;
+    --version)
+      VERSION="${2:-}"
       shift 2
       ;;
     -h|--help)
@@ -38,6 +45,11 @@ done
 
 if ! [[ "$PORT" =~ ^[0-9]+$ ]] || ((PORT < 1 || PORT > 65535)); then
   echo "Error: --port must be a valid TCP port (1-65535)" >&2
+  exit 2
+fi
+
+if [[ -z "$VERSION" ]]; then
+  echo "Error: --version must not be empty" >&2
   exit 2
 fi
 
@@ -68,9 +80,10 @@ WIN_REPO_ROOT="$(wslpath -w "$REPO_ROOT")"
 WIN_PS_SCRIPT="$(wslpath -w "$PS_SCRIPT")"
 
 # WSL에서 cmd.exe start가 블로킹되는 케이스가 있어 비동기 실행으로 즉시 반환한다.
-cmd.exe /c start '""' powershell -NoExit -ExecutionPolicy Bypass -File "$WIN_PS_SCRIPT" -RepoPath "$WIN_REPO_ROOT" -Port "$PORT" -Browser "$BROWSER" >/dev/null 2>&1 &
+cmd.exe /c start '""' powershell -NoExit -ExecutionPolicy Bypass -File "$WIN_PS_SCRIPT" -RepoPath "$WIN_REPO_ROOT" -Port "$PORT" -Browser "$BROWSER" -Version "$VERSION" >/dev/null 2>&1 &
 
 echo "Started Windows Playwright MCP server in a new PowerShell window."
 echo "Port: $PORT"
 echo "Browser: $BROWSER"
+echo "Version: @playwright/mcp@${VERSION}"
 echo "Endpoint: http://127.0.0.1:${PORT}/mcp"
