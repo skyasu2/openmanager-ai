@@ -1,0 +1,137 @@
+{
+  "runId": "QA-20260524-0576",
+  "recordedAt": "2026-05-24T02:47:28.531Z",
+  "recordedAtKst": "2026-05-24 11:47:28 KST",
+  "runTitle": "v8.12.19 production targeted QA - healthy filter closure",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-tag-pipeline-2548694499",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "197e762aa1e64d16beda2a1bb77a109ad5b11160"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version reports v8.12.19 with commit 197e762aa1e64d16beda2a1bb77a109ad5b11160 and GitLab pipeline 2548694499",
+    "Cloud Run AI Engine /health reports version 8.12.19",
+    "GitLab v8.12.19 tag pipeline 2548694499 success, including deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke",
+    "Playwright CLI production AI direct-message recheck for normal-range server list prompt",
+    "AI Chat: normal-range server list query returns deterministic healthy-only server list with concrete server IDs and criteria"
+  ],
+  "skippedSurfaces": [
+    "Lowest-load and Advisor prompts: already passed in QA-20260524-0574 and were not rerun to avoid extra live LLM calls.",
+    "Standard five-question conversational QA: skipped because this was a single blocker closure recheck.",
+    "Vision real-image QA: skipped per manual-only policy.",
+    "Broad route/dashboard/modal packs: skipped because this run validated one AI routing blocker only."
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Chat normal-range server list",
+      "agent": "Metrics Query Agent",
+      "provider": "streaming",
+      "model": "production route",
+      "route": "monitoring-server-health healthy-only deterministic evidence",
+      "source": "Playwright CLI UI metadata badge and response body",
+      "latencyMs": 3315
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The remaining healthy-filter blocker was retested on production v8.12.19 and returned deterministic healthy-only evidence instead of the previous generic summary.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab pipeline 2548694499 succeeded, Vercel version metadata matched v8.12.19, Cloud Run health was ok, and Vercel usage remained normal.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The recheck used a stricter Playwright CLI assertion requiring the exact normal-range server-list shape and rejecting the previous generic health summary.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T11:44:42+09:00",
+      "summary": "npm run check:usage:vercel PASS. Current billing period effective 15.3081 USD, billed 0.0000 USD; no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.19 healthy filter closure evidence",
+      "path": "reports/qa/evidence/qa-20260524-v81219-healthy-filter-closure.md",
+      "note": "Single-prompt pass evidence and deploy/version observations."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-v81216-healthy-filter-evidence",
+      "title": "Healthy-only server filter should resolve to deterministic inverse filter evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production v8.12.19 recheck asked '현재 정상 범위인 서버 목록 보여줘' and received '정상 범위 서버 목록' with criteria and 17 concrete server IDs.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run closes the pending healthy-filter blocker opened by QA-20260524-0574 and reproduced by QA-20260524-0575.",
+    "The response still reports tool metadata as monitoring-server-health because the healthy-only path is implemented inside server-health deterministic evidence, but the response body now carries the required normal-range criteria and server list."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.12.19 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548694499",
+      "note": "deploy, deploy_ai_engine, and post-deploy smoke pipeline success"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Production UI used for Playwright CLI AI sidebar prompt."
+    }
+  ]
+}
