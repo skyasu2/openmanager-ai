@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-24 20:45:40 KST
+> Generated at: 2026-05-24 21:29:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 579 |
+| Total Recorded Runs | 580 |
 | Total Runs (Counted) | 463 |
-| Non-counted Runs | 116 |
+| Non-counted Runs | 117 |
 | Total Checks | 4141 |
 | Passed | 3966 |
 | Failed | 151 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260524-0580 (2026-05-24T10:29:54.220Z) |
-| Latest Recorded Run | QA-20260524-0581 (2026-05-24T11:45:40.608Z) |
+| Latest Recorded Run | QA-20260524-0582 (2026-05-24T12:29:51.034Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260524-0581 (2026-05-24T11:45:40.608Z)
+Latest run: QA-20260524-0582 (2026-05-24T12:29:51.034Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | P4(Advisor 빈 응답), P5(세션 컨텍스트) 잔여 약점 수정 검증 필요 |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | browser | checked | normal | Vercel production 정상 접속 확인. 프로덕션 앱 v8.12.25 배포 상태 양호, AI 어시스턴트 6문항 응답 빠름. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T11:45:40.608Z -> 2026-05-24T11:45:40.608Z (24h)
+- Window: 2026-05-23T12:29:51.034Z -> 2026-05-24T12:29:51.034Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 10
 
@@ -64,7 +64,7 @@ Latest run: QA-20260524-0581 (2026-05-24T11:45:40.608Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T11:45:40.608Z -> 2026-05-24T11:45:40.608Z (24h)
+- Window: 2026-05-23T12:29:51.034Z -> 2026-05-24T12:29:51.034Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 6
 - Drift rate: 16.67%
@@ -79,10 +79,10 @@ Latest run: QA-20260524-0581 (2026-05-24T11:45:40.608Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA c200999d
+- Deployment: SHA 5941c23a
 - Coverage Packs: ai-core
-- Covered Surfaces: AI Engine parseCurrentMetricsEvidenceRequest: 메모리 트렌드 상승 서버 -> monitoring.metric_trend, AI Engine current-metrics evidence provider regression pack, AI Engine deterministic summary fallback metric issue filter regression, Root AI supervisor contract tests
-- Skipped Surfaces: Vercel production browser QA, Cloud Run live LLM stream QA, dashboard non-AI UI pack, vision live smoke
+- Covered Surfaces: /dashboard AI Chat, monitoring-server-health, monitoring-metric-ranking, monitoring-metric-trend
+- Skipped Surfaces: 자동 보고서, 이상감지 탭, Advisor agent
 
 ## Links (Latest Run)
 
@@ -94,7 +94,7 @@ Latest run: QA-20260524-0581 (2026-05-24T11:45:40.608Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | QA-0581 qa:record input | `reports/qa/evidence/2026/qa-20260524-0581/qa-20260524-0581-input.json` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -894,6 +894,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260524-0582 | 2026-05-24T12:29:51.034Z | targeted | no | no | 6차 AI 어시스턴트 평가 — v8.12.17~25 수정사항 검증 (Playwright MCP) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0581 | 2026-05-24T11:45:40.608Z | targeted | no | no | v8.12.25 AI Engine trend routing local regression closure | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0580 | 2026-05-24T10:29:54.220Z | targeted | yes | yes | v8.12.25 AI Assistant server detail and group routing targeted QA | 2 | 6 | 0 | 0 | 0 | 0 |
 | QA-20260524-0579 | 2026-05-24T07:21:06.892Z | targeted | yes | yes | v8.12.20 신규 AI Assistant 6문항 QA - 목록 가독성·위험 라우팅·트렌드 관찰 | 6 | 4 | 1 | 0 | 2 | 1 |
@@ -913,4 +914,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260523-0565 | 2026-05-23T03:18:05.556Z | targeted | no | yes | v8.12.13 Q2 multi-metric 복합점수 fix 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0564 | 2026-05-22T12:13:39.004Z | targeted | yes | yes | v8.12.10 H-5 semantic router fail-closed production QA | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0563 | 2026-05-22T11:14:44.822Z | targeted | no | yes | v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast | 3 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260522-0562 | 2026-05-22T09:30:00.000Z | targeted | yes | yes | v8.12.7 미테스트 7문항 QA (Playwright MCP) - 신규 패턴·트렌드·운영우선순위·DC비교 | 7 | 0 | 0 | 0 | 0 | 1 |

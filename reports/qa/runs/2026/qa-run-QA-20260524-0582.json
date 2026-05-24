@@ -1,0 +1,71 @@
+{
+  "runId": "QA-20260524-0582",
+  "recordedAt": "2026-05-24T12:29:51.034Z",
+  "recordedAtKst": "2026-05-24 21:29:51 KST",
+  "runTitle": "6차 AI 어시스턴트 평가 — v8.12.17~25 수정사항 검증 (Playwright MCP)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "5941c23a39149dd30b35213b149a1fd9d6ea4c79"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard AI Chat",
+    "monitoring-server-health",
+    "monitoring-metric-ranking",
+    "monitoring-metric-trend"
+  ],
+  "skippedSurfaces": [
+    "자동 보고서",
+    "이상감지 탭",
+    "Advisor agent"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.12.17~25 수정 항목(P2/P3/트렌드 표현/clarification skip) 6문항 전체 PASS. 이전 약점이 체계적으로 해소됨.",
+      "nextAction": "P4(Advisor 빈 응답), P5(세션 컨텍스트) 잔여 약점 수정 검증 필요"
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "browser",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T21:23:00+09:00",
+      "summary": "Vercel production 정상 접속 확인. 프로덕션 앱 v8.12.25 배포 상태 양호, AI 어시스턴트 6문항 응답 빠름.",
+      "evidence": "Playwright MCP 브라우저 직접 확인",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
