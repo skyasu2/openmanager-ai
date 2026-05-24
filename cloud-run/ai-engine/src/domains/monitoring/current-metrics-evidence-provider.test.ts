@@ -15,12 +15,16 @@ import {
 } from './current-metrics-evidence-provider';
 import { monitoringDomainDataSource } from './domain-pack';
 
-function createEvidenceRequest(message: string, data?: unknown) {
+function createEvidenceRequest(
+  message: string,
+  data?: unknown,
+  messages?: Array<{ role: 'user' | 'assistant'; content: string }>
+) {
   return {
     requestId: 'current-metrics-evidence-test',
     domainId: MONITORING_DOMAIN_ID,
     message,
-    messages: [{ role: 'user' as const, content: message }],
+    messages: messages ?? [{ role: 'user' as const, content: message }],
     dataSource: data
       ? {
           async snapshot() {
@@ -544,6 +548,91 @@ describe('current metrics domain evidence providers', () => {
       metric: 'memory',
       threshold: 70,
     });
+  });
+
+  it('scopes contextual metric issue follow-ups to prior assistant server ids', async () => {
+    const query = '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘';
+    const request = createEvidenceRequest(
+      query,
+      {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'lb-haproxy-dc1-01',
+            type: 'loadbalancer',
+            status: 'warning',
+            cpu: 55,
+            memory: 61,
+            disk: 39,
+            network: 72.6,
+          },
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 43,
+            memory: 51,
+            disk: 37,
+            network: 64,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 21,
+            memory: 45,
+            disk: 28,
+            network: 88,
+          },
+          {
+            id: 'db-mysql-dc1-primary',
+            type: 'database',
+            status: 'warning',
+            cpu: 58,
+            memory: 69,
+            disk: 53,
+            network: 91,
+          },
+        ],
+      },
+      [
+        { role: 'user', content: '현재 문제 있는 서버가 무엇인지 알려줘' },
+        {
+          role: 'assistant',
+          content:
+            '주의 관찰 대상: lb-haproxy-dc1-01, api-was-dc1-01 입니다.',
+        },
+        { role: 'user', content: query },
+      ]
+    );
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'data-filter',
+      metric: 'network',
+      threshold: 70,
+      targets: ['lb-haproxy-dc1-01', 'api-was-dc1-01'],
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        sourceIntent: 'data-filter',
+        metric: 'network',
+        threshold: 70,
+        targets: ['lb-haproxy-dc1-01', 'api-was-dc1-01'],
+      },
+    });
+    expect(evidence?.fallback).toContain('대상: 지정 서버 2대 중 1대');
+    expect(evidence?.fallback).toContain('lb-haproxy-dc1-01');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+    expect(evidence?.fallback).not.toContain('db-mysql-dc1-primary');
   });
 
   it('preserves single metric thresholds when a current metric frame is present', async () => {

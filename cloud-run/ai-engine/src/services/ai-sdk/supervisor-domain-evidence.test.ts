@@ -2,6 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import * as precomputedState from '../../data/precomputed-state';
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
 import { sampleDomainPack } from '../../test-fixtures/sample-domain-pack';
+import type {
+  AssistantDomain,
+  DomainEvidenceProvider,
+} from '../../core/assistant-runtime';
 import type { SupervisorRequest } from './supervisor-types';
 import {
   resolveDomainEvidenceForStream,
@@ -163,6 +167,62 @@ describe('supervisor domain evidence support', () => {
     expect(support?.metadata).toMatchObject({
       capabilityId: 'monitoring.metric_peak',
       intent: 'metric_peak',
+    });
+  });
+
+  it('preserves stream conversation messages for contextual evidence providers', async () => {
+    const contextualProvider: DomainEvidenceProvider = {
+      id: 'sample-context-history-evidence',
+      canHandle(request) {
+        return request.messages.some(
+          (message) =>
+            message.role === 'assistant' &&
+            message.content.includes('lb-haproxy-dc1-01')
+        );
+      },
+      async resolve(request) {
+        const previousAssistant = request.messages.find(
+          (message) => message.role === 'assistant'
+        );
+        return {
+          id: 'sample-context-history-evidence',
+          prompt: 'Use preserved conversation context.',
+          fallback: 'Preserved conversation context.',
+          metadata: {
+            messageCount: request.messages.length,
+            previousAssistant: previousAssistant?.content,
+          },
+        };
+      },
+    };
+    const contextualDomain: AssistantDomain = {
+      ...sampleDomainPack,
+      evidenceProviders: [contextualProvider],
+    };
+
+    const support = await resolveDomainEvidenceForStream({
+      request: {
+        messages: [
+          { role: 'user', content: '현재 문제 있는 서버가 무엇인지 알려줘' },
+          {
+            role: 'assistant',
+            content: '주의 관찰 대상: lb-haproxy-dc1-01 입니다.',
+          },
+          {
+            role: 'user',
+            content: '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+          },
+        ],
+        sessionId: 'session-contextual-follow-up',
+      } as SupervisorRequest,
+      query: '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+      domain: contextualDomain,
+    });
+
+    expect(support?.id).toBe('sample-context-history-evidence');
+    expect(support?.metadata).toMatchObject({
+      messageCount: 3,
+      previousAssistant: '주의 관찰 대상: lb-haproxy-dc1-01 입니다.',
     });
   });
 

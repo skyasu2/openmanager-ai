@@ -1,5 +1,6 @@
 import type {
   AssistantDomain,
+  AssistantMessage,
   AssistantRequestContext,
   DomainCapability,
   DomainEvidenceRequest,
@@ -153,15 +154,21 @@ function resolveCapability(params: {
 function createEvidenceContext(params: {
   query: string;
   domain: AssistantDomain;
+  messages?: AssistantMessage[];
   sessionId?: string;
   traceId?: string;
   metadata?: Record<string, unknown>;
 }): AssistantRequestContext {
+  const messages =
+    params.messages && params.messages.length > 0
+      ? params.messages
+      : [{ role: 'user' as const, content: params.query }];
+
   return {
     requestId: params.traceId ?? `domain-evidence:${params.sessionId ?? 'default'}`,
     domainId: params.domain.id,
     message: params.query,
-    messages: [{ role: 'user', content: params.query }],
+    messages,
     ...(params.sessionId && { sessionId: params.sessionId }),
     ...(params.traceId && { traceId: params.traceId }),
     ...(params.metadata && { metadata: params.metadata }),
@@ -409,6 +416,7 @@ function buildFailClosedEvidence(params: {
 export async function resolveDomainEvidenceSupport(params: {
   query: string;
   domain: AssistantDomain;
+  messages?: AssistantMessage[];
   sessionId?: string;
   traceId?: string;
   metadata?: Record<string, unknown>;
@@ -489,6 +497,10 @@ export function resolveDomainEvidenceForStream(params: {
     domain: params.domain,
     sessionId: params.request.sessionId,
     traceId: params.request.traceId,
+    messages: params.request.messages.map((message) => ({
+      role: message.role,
+      content: message.content,
+    })),
     metadata: params.request.metadata,
   });
 }

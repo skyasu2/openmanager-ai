@@ -79,6 +79,9 @@ const METRIC_TREND_PATTERN =
 const GROUP_SERVER_LIST_PATTERN =
   /서버\s*(?:들|목록|리스트)|호스트\s*(?:목록|리스트)?|목록|리스트|보여|알려|나열|show|list|servers?|hosts?|instances?|nodes?/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
+const CONTEXTUAL_FOLLOW_UP_PATTERN =
+  /방금|직전|이전|앞서|위\s*(?:결과|답변|내용)|방금\s*분석한|분석한\s*서버\s*중|방금\s*본|앞에서\s*본/i;
+const MAX_CONTEXTUAL_SERVER_TARGETS = 12;
 const SERVER_COMPARISON_CONNECTOR_PATTERN =
   /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
 const TIME_SERIES_COMPARISON_PATTERN =
@@ -224,6 +227,42 @@ function extractServerIdTargetsFromMessage(message: string): string[] {
   return Array.from(targets);
 }
 
+function isContextualFollowUpMessage(message: string): boolean {
+  return CONTEXTUAL_FOLLOW_UP_PATTERN.test(message);
+}
+
+function extractContextualServerTargetsFromMessages(
+  request: DomainEvidenceRequest
+): string[] {
+  if (!isContextualFollowUpMessage(request.message)) return [];
+
+  const messages = request.messages ?? [];
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message.role !== 'assistant') continue;
+
+    const targets = extractServerIdTargetsFromMessage(message.content).slice(
+      0,
+      MAX_CONTEXTUAL_SERVER_TARGETS
+    );
+    if (targets.length > 0) return targets;
+  }
+
+  return [];
+}
+
+function resolveMetricTargets(params: {
+  request: DomainEvidenceRequest;
+  explicitServerTargets: string[];
+  groupTarget?: string;
+}): string[] {
+  if (params.explicitServerTargets.length > 0) {
+    return params.explicitServerTargets;
+  }
+  if (params.groupTarget) return [params.groupTarget];
+  return extractContextualServerTargetsFromMessages(params.request);
+}
+
 function isCurrentServerComparisonMessage(message: string): boolean {
   return (
     SERVER_COMPARISON_CONNECTOR_PATTERN.test(message) &&
@@ -335,10 +374,14 @@ function parseCurrentMetricsFrame(
   }
 
   const metric = normalizeSupportedMetric(frame.metric);
-  const targets = reconcileTargetsWithMessage(
+  const frameTargets = reconcileTargetsWithMessage(
     normalizeTargets(frame.targets),
     request.message
   );
+  const targets =
+    frameTargets.length > 0
+      ? frameTargets
+      : extractContextualServerTargetsFromMessages(request);
   const frameThreshold =
     classification.intent === 'data-filter' &&
     classification.metric === metric &&
@@ -405,6 +448,7 @@ function parseCurrentMetricsFrame(
       metric,
       rankCount,
       rankOrder,
+      ...(targets.length > 0 && { targets }),
     };
   }
 
@@ -412,8 +456,9 @@ function parseCurrentMetricsFrame(
 }
 
 function parseCurrentMetricsMessage(
-  message: string
+  request: DomainEvidenceRequest
 ): ParsedCurrentMetricsEvidenceRequest | null {
+  const message = request.message;
   if (isServiceCommandGuidanceQuery(message)) return null;
 
   const classification = classifyQueryIntent(message);
@@ -425,6 +470,11 @@ function parseCurrentMetricsMessage(
   const groupTargets = extractGroupTargetsFromMessage(message);
   const mentionedMetrics = extractMentionedMetrics(message);
   const explicitServerTargets = extractServerIdTargetsFromMessage(message);
+  const metricTargets = resolveMetricTargets({
+    request,
+    explicitServerTargets,
+    groupTarget,
+  });
 
   if (isHealthyOnlyServerListMessage(message)) {
     const healthGroupTarget = inferGroupTargetFromMessage(message);
@@ -535,7 +585,7 @@ function parseCurrentMetricsMessage(
         threshold: classification.threshold,
         thresholdOperator: classification.operator ?? '>=',
         filterOperator: 'AND',
-        ...(groupTarget && { targets: [groupTarget] }),
+        ...(metricTargets.length > 0 && { targets: metricTargets }),
       };
     }
     // threshold 없는 "둘 다 높은" 형태 — 복합 메트릭 교차 정렬
@@ -546,7 +596,7 @@ function parseCurrentMetricsMessage(
       answerQuery: message,
       metrics: mentionedMetrics,
       filterOperator: 'AND',
-      ...(groupTarget && { targets: [groupTarget] }),
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
 
@@ -564,11 +614,7 @@ function parseCurrentMetricsMessage(
       metric,
       threshold: classification.threshold,
       thresholdOperator: classification.operator ?? '>=',
-      ...(explicitServerTargets.length > 0
-        ? { targets: explicitServerTargets }
-        : groupTarget
-          ? { targets: [groupTarget] }
-          : {}),
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
 
@@ -585,6 +631,7 @@ function parseCurrentMetricsMessage(
       metric,
       rankCount: normalizeRankCount(classification.rankCount),
       rankOrder: classification.rankOrder ?? 'desc',
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
 
@@ -600,7 +647,7 @@ function parseCurrentMetricsMessage(
       sourceIntent: classification.intent,
       answerQuery: message,
       metric,
-      ...(groupTarget && { targets: [groupTarget] }),
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
 
@@ -615,6 +662,7 @@ function parseCurrentMetricsMessage(
       sourceIntent: classification.intent,
       answerQuery: message,
       metric,
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
 
@@ -653,7 +701,7 @@ export function parseCurrentMetricsEvidenceRequest(
   if (FORCE_KB_QUERY_PATTERN.test(request.message)) return null;
 
   return (
-    parseCurrentMetricsFrame(request) ?? parseCurrentMetricsMessage(request.message)
+    parseCurrentMetricsFrame(request) ?? parseCurrentMetricsMessage(request)
   );
 }
 
