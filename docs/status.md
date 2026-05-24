@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-24 | **현재 버전 스냅샷**: v8.12.23
+**상태 스냅샷 기준일**: 2026-05-24 | **현재 버전 스냅샷**: v8.12.24
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.24** (2026-05-24) — Bug Fixes: ai: skip clarification for explicit server groups
 - **v8.12.23** (2026-05-24) — Bug Fixes: ai-engine: prefer server detail metric evidence over health frames
 - **v8.12.22** (2026-05-24) — Bug Fixes: ai-engine: route server detail and group list evidence
 - **v8.12.21** (2026-05-24) — Bug Fixes: ai: extend METRIC_TREND_PATTERN to catch 계속/꾸준히/지속 trend expressions; Tests: spec: add failing tests for trend-routing — 상승/하락 표현이 metric_trend로 미분류; Tests: qa: record v8.12.20 new assistant evaluation
 - **v8.12.20** (2026-05-24) — Features: ai: centralize routing patterns + fix Q5 action-needed detection; Tests: spec: add routing-patterns + action-needed Q5 failing tests before implementation; Tests: qa: sync QA status dashboard
-- **v8.12.19** (2026-05-24) — Tests: qa: record v8.12.18 healthy filter recheck; Bug Fixes: ai: preserve healthy-only evidence intent
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
