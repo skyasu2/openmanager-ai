@@ -64,7 +64,7 @@ const SERVER_HEALTH_EXCLUSION_PATTERN =
 const SERVER_DETAIL_PATTERN =
   /\b[a-z0-9]+(?:-[a-z0-9]+){1,}\b.{0,24}(상태|현황|자세|상세|health|status|detail|어때|알려)/i;
 const ACTION_NEEDED_PATTERN =
-  /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응|위험).{0,32}(?:필요|해야|대상|있|시급|서버)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)|immediate\s+action|urgent\s+action|action\s+needed|most\s+at\s+risk/i;
+  /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응|위험).{0,32}(?:필요|해야|대상|있|시급|서버)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)|(?:어떤|어느|무슨)?\s*(?:서버|대상).{0,24}(?:가장\s*)?(?:위험한|위험도\s*높은)|immediate\s+action|urgent\s+action|action\s+needed|most\s+at\s+risk/i;
 const HEALTHY_ONLY_PATTERN =
   /정상\s*범위|이상\s*없는|문제\s*없는|괜찮은\s*서버|정상.{0,12}서버|healthy|normal|ok\s+servers?/i;
 const HEALTHY_ONLY_EXCLUSION_PATTERN =

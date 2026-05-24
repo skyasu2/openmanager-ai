@@ -1058,27 +1058,33 @@ describe('current metrics domain evidence providers', () => {
   });
 
   it('routes "가장 위험한 서버" wording to server health evidence via ACTION_NEEDED_PATTERN', async () => {
-    const evidence = await monitoringServerHealthEvidenceProvider.resolve(
-      createEvidenceRequest('지금 현재 메트릭 기준으로 가장 위험한 서버는?', {
-        servers: [
-          { id: 'api-was-dc1-01', status: 'warning', cpu: 84, memory: 62, disk: 41 },
-          { id: 'api-was-dc1-02', status: 'online', cpu: 43, memory: 51, disk: 39 },
-          { id: 'web-nginx-dc1-01', status: 'online', cpu: 21, memory: 45, disk: 28 },
-        ],
-      })
-    );
+    for (const message of [
+      '지금 현재 메트릭 기준으로 가장 위험한 서버는?',
+      '어떤 서버가 가장 위험한가요?',
+      '현재 어떤 서버가 가장 위험한가요?',
+    ]) {
+      const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+        createEvidenceRequest(message, {
+          servers: [
+            { id: 'api-was-dc1-01', status: 'warning', cpu: 84, memory: 62, disk: 41 },
+            { id: 'api-was-dc1-02', status: 'online', cpu: 43, memory: 51, disk: 39 },
+            { id: 'web-nginx-dc1-01', status: 'online', cpu: 21, memory: 45, disk: 28 },
+          ],
+        })
+      );
 
-    expect(evidence).toMatchObject({
-      id: 'monitoring-server-health',
-      metadata: {
-        responsePolicy: 'deterministic_answer',
-        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
-        intent: 'server_health',
-        sourceIntent: 'action-needed',
-      },
-    });
-    expect(evidence?.fallback).toContain('api-was-dc1-01');
-    expect(evidence?.fallback).not.toContain('CPU 84% 창작');
+      expect(evidence, message).toMatchObject({
+        id: 'monitoring-server-health',
+        metadata: {
+          responsePolicy: 'deterministic_answer',
+          capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+          intent: 'server_health',
+          sourceIntent: 'action-needed',
+        },
+      });
+      expect(evidence?.fallback, message).toContain('api-was-dc1-01');
+      expect(evidence?.fallback, message).not.toContain('CPU 84% 창작');
+    }
   });
 
   it('routes "WAS 서버 그룹 상태" to server_health with application group target', async () => {
