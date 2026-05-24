@@ -36,6 +36,16 @@ export interface IntentClassification {
   statusValue?: QueryStatus;
 }
 
+// Inverse status filter: "정상 범위인 서버", "이상 없는 서버"
+// Must include "서버" (or list/overview context) to avoid matching
+// general status-check queries like "상태 정상인지 확인해줘".
+const INVERSE_STATUS_SIGNALS =
+  /(?:정상\s*(?:범위|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i;
+
+// Min-metric ranking: "부하 가장 낮은", "CPU 최저", "가장 여유 있는"
+const MIN_METRIC_SIGNALS =
+  /(?:가장\s*(?:낮은|적은|여유|안전|idle)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|적은|최저|최소)|(?:최저|최소|min(?:imum)?)\s*(?:cpu|메모리|memory|디스크|disk|부하|load)|lowest\s*(?:load|cpu|memory|disk)|least\s*(?:loaded|busy))/i;
+
 // Structural signals — intent markers that exist in any natural language
 // monitoring query, independent of domain vocabulary.
 
@@ -175,6 +185,18 @@ export function classifyQueryIntent(query: string): IntentClassification {
     return { intent: 'predictive', confidence: 'high', metric, statusValue };
   }
 
+  // Minimum-value ranking: "부하 가장 낮은", "CPU 최저 서버"
+  // Must be checked before RANKING_SIGNALS to ensure ascending order is set.
+  if (MIN_METRIC_SIGNALS.test(query) && !CAUSAL_SIGNALS.test(query)) {
+    return {
+      intent: 'data-ranking',
+      confidence: 'high',
+      metric: metric ?? 'cpu',
+      rankCount,
+      rankOrder: 'asc',
+    };
+  }
+
   if (RANKING_SIGNALS.test(query) && metric && metric !== 'status') {
     return {
       intent: 'data-ranking',
@@ -220,6 +242,22 @@ export function classifyQueryIntent(query: string): IntentClassification {
       metric,
       operator: '>=',
       threshold: defaultIssueThreshold,
+      inferredThreshold: true,
+    };
+  }
+
+  // Inverse filter: "정상 범위인 서버", "이상 없는 서버"
+  // Operator '<' (below threshold = healthy state).
+  if (INVERSE_STATUS_SIGNALS.test(query)) {
+    const inferredThreshold = metric
+      ? getDefaultIssueThreshold(metric) ?? 80
+      : 80;
+    return {
+      intent: 'data-filter',
+      confidence: metric ? 'high' : 'medium',
+      metric: metric ?? 'cpu',
+      operator: '<',
+      threshold: inferredThreshold,
       inferredThreshold: true,
     };
   }

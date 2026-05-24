@@ -35,8 +35,13 @@ ${BASE_AGENT_INSTRUCTIONS}
 - "지난 6시간 CPU 평균" -> getServerMetricsAdvanced({ timeRange: "last6h", metric: "cpu", aggregation: "avg" })
 - "CPU가 가장 높은 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "desc", limit: 3 })
 - "메모리 상위 3대와 추세" -> getServerMetricsAdvanced({ timeRange: "current", metric: "memory", aggregation: "none", sortBy: "memory", sortOrder: "desc", limit: 3 })
+- "부하가 가장 낮은 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "asc", limit: 3 })
+- "CPU 최저 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "asc", limit: 3 })
+- "가장 여유 있는 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "asc", limit: 3 })
 - "AZ별 부하 균형" -> getServerMetricsAdvanced({ groupBy: "location", timeRange: "current", metric: "all", aggregation: "avg" })
 - "CPU 80% 이상" -> filterServers({ field: "cpu", operator: ">", value: 80 })
+- "정상 범위인 서버 목록" -> filterServers({ field: "cpu", operator: "<", value: 80 }) (필요시 memory, disk도 함께 조회)
+- "이상 없는 서버" -> filterServers({ field: "cpu", operator: "<", value: 80 }) + filterServers({ field: "memory", operator: "<", value: 80 })
 - "DB 서버 상태" -> getServerByGroup({ group: "db" })
 - "DB 서버 중 CPU 80% 이상" -> getServerByGroupAdvanced({ group: "db", filters: { cpuMin: 80 } })
 
@@ -80,9 +85,19 @@ export const NLQ_RANK_CONTEXT = `## 순위 조회 지침
 - "가장 높은/낮은", "상위 N", "Top N", "순위" 요청은 임계값 필터가 아니라 현재 값 기준 정렬입니다.
 - getServerMetricsAdvanced를 사용하고 timeRange는 "current", aggregation은 "none"으로 둡니다.
 - sortBy는 요청 메트릭(cpu, memory, disk, network)에 맞추고 sortOrder는 desc/asc를 명확히 지정합니다.
+- **"가장 낮은", "최저", "최소", "부하 낮은", "여유 있는"은 sortOrder: "asc"를 사용합니다.**
+- **"가장 높은", "최대", "상위", "부하 높은"은 sortOrder: "desc"를 사용합니다.**
 - 도구가 반환한 servers 순서와 답변 순서를 그대로 유지합니다.
 - "가장 높은 서버"는 첫 번째 항목을 그대로 인용합니다.
 - "추세"가 함께 요청되면 servers[].trends.<metric>의 direction, avg24h, deltaPercentPoints를 함께 인용합니다.`;
+
+export const NLQ_INVERSE_FILTER_CONTEXT = `## 역방향 필터 조회 지침 (정상 범위 서버)
+- "정상 범위인 서버", "이상 없는 서버", "문제 없는 서버" 요청은 임계값 **미만** 필터입니다.
+- filterServers를 사용하고 operator는 "<"(미만)를 사용합니다.
+- 메트릭이 명시되지 않으면 cpu와 memory를 기본으로 조회합니다.
+- 예: filterServers({ field: "cpu", operator: "<", value: 80 })
+- 결과가 많으면 메트릭값 오름차순 정렬 후 상위 5-10대를 표시합니다.
+- 결과가 없으면 "현재 모든 서버가 임계값 이상 상태입니다"로 답변합니다.`;
 
 export const NLQ_THRESHOLD_CONTEXT = `## 임계값 조건 조회 지침
 - "% 이상", "초과", "미만", "임계값" 같은 명시적 비교 조건은 filterServers를 우선 사용합니다.
@@ -95,8 +110,30 @@ function shouldUseStatusSummaryContext(query: string): boolean {
   return /(모든|전체|현황|요약|간단히|핵심|summary|overview|tldr|tl;dr)/i.test(query);
 }
 
+function isInverseFilterQuery(query: string): boolean {
+  return /(?:정상\s*(?:범위|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i.test(
+    query
+  );
+}
+
+function isMinMetricRankQuery(query: string): boolean {
+  return /(?:가장\s*(?:낮은|적은|여유)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|최저|최소)|(?:최저|최소)\s*(?:cpu|메모리|memory|디스크|disk)|lowest\s*(?:load|cpu|memory)|least\s*(?:loaded|busy))/i.test(
+    query
+  );
+}
+
 export function getNlqInstructions(query: string): string {
   const { intent } = classifyQueryIntent(query);
+
+  // Inverse filter takes priority over generic data-filter context
+  if (intent === 'data-filter' && isInverseFilterQuery(query)) {
+    return `${NLQ_BASE_INSTRUCTIONS}\n\n${NLQ_INVERSE_FILTER_CONTEXT}`;
+  }
+
+  // Ascending rank takes priority over generic ranking context
+  if (intent === 'data-ranking' && isMinMetricRankQuery(query)) {
+    return `${NLQ_BASE_INSTRUCTIONS}\n\n${NLQ_RANK_CONTEXT}`;
+  }
 
   switch (intent) {
     case 'data-lookup':

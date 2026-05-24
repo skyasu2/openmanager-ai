@@ -28,6 +28,8 @@ import {
   COMPOSITE_QUERY_PATTERNS,
   FORCE_KB_QUERY_PATTERN,
   REPORTER_QUERY_PATTERN,
+  INVERSE_STATUS_FILTER_PATTERN,
+  MIN_METRIC_RANKING_PATTERN,
   isFormattingOnlyReportRequest,
   extractQueryRoutingSignals,
 } from '../routing/query-routing-signals';
@@ -497,6 +499,21 @@ export function preFilterQuery(
       !isFormattingOnlyReportRequest(query) && REPORTER_QUERY_PATTERN.test(query);
     const isAdvisorIntent =
       isForceKnowledgeBaseIntent || ADVISOR_QUERY_PATTERN.test(query);
+
+    // 역방향 필터("정상 범위인 서버 목록", "이상 없는 서버")와
+    // 최솟값 랭킹("부하 가장 낮은 서버") 쿼리는 Metrics Query Agent 직행
+    const isInverseFilterIntent = INVERSE_STATUS_FILTER_PATTERN.test(query);
+    const isMinMetricRankingIntent =
+      MIN_METRIC_RANKING_PATTERN.test(query) &&
+      !ANALYST_QUERY_PATTERN.test(query);
+
+    if (isInverseFilterIntent || isMinMetricRankingIntent) {
+      return {
+        shouldHandoff: true,
+        suggestedAgent: 'Metrics Query Agent',
+        confidence: 0.88,
+      };
+    }
     const isOpsProcedureIntent =
       /(스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|대응\s*(순서|절차))/i.test(
         query

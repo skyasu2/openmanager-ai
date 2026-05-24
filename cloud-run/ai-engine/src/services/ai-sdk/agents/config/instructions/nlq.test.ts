@@ -8,7 +8,7 @@ describe('Metrics Query instruction layering', () => {
   it('keeps base instructions compact enough for every Metrics Query request', () => {
     const lineCount = NLQ_BASE_INSTRUCTIONS.trim().split('\n').length;
 
-    expect(lineCount).toBeLessThanOrEqual(80);
+    expect(lineCount).toBeLessThanOrEqual(92); // 기준 +12: 최솟값·역방향 필터 예시 4줄 + 여유
     expect(NLQ_BASE_INSTRUCTIONS).toContain('getServerMetrics');
     expect(NLQ_BASE_INSTRUCTIONS).toContain('getServerMetricsAdvanced');
     expect(NLQ_BASE_INSTRUCTIONS).toContain('filterServers');

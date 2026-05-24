@@ -32,7 +32,9 @@ export interface DirectRoutingContext {
   inputType?: AssistantInputType;
 }
 
-const SEMANTIC_AGENT_CONFIDENCE_THRESHOLD = 0.8;
+// 0.8 → 0.65: NLQ intentFrame이 routing primary signal로 실질 반영되도록 임계값 완화.
+// 기존 0.8은 실제 분류 신뢰도에 비해 높아 semantic_frame 경로가 fallback되는 빈도가 높았음.
+const SEMANTIC_AGENT_CONFIDENCE_THRESHOLD = 0.65;
 
 function normalizeConfidence(value: number | undefined): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
