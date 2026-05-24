@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-24 11:47:31 KST
+> Generated at: 2026-05-24 14:05:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 574 |
-| Total Runs (Counted) | 459 |
+| Total Recorded Runs | 575 |
+| Total Runs (Counted) | 460 |
 | Non-counted Runs | 115 |
-| Total Checks | 4127 |
-| Passed | 3955 |
+| Total Checks | 4132 |
+| Passed | 3959 |
 | Failed | 151 |
 | Completed Items | 652 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260524-0576 (2026-05-24T02:47:28.531Z) |
-| Latest Recorded Run | QA-20260524-0576 (2026-05-24T02:47:28.531Z) |
+| Last Counted Run | QA-20260524-0577 (2026-05-24T05:05:22.864Z) |
+| Latest Recorded Run | QA-20260524-0577 (2026-05-24T05:05:22.864Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,25 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260524-0576 (2026-05-24T02:47:28.531Z)
+Latest run: QA-20260524-0577 (2026-05-24T05:05:22.864Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | npm run check:usage:vercel PASS. Current billing period effective 15.3081 USD, billed 0.0000 USD; no unexpected billed usage observed. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T02:47:28.531Z -> 2026-05-24T02:47:28.531Z (24h)
-- Runs with observations: 9 recorded / 9 counted
-- Samples: 21
+- Window: 2026-05-23T05:05:22.864Z -> 2026-05-24T05:05:22.864Z (24h)
+- Runs with observations: 8 recorded / 8 counted
+- Samples: 20
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -66,11 +64,10 @@ Latest run: QA-20260524-0576 (2026-05-24T02:47:28.531Z)
 | capacity-forecast | cloud-run | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260524-0572 |
 | NLQ Agent | deterministic | 2 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0570 |
 | NLQ Agent | groq | 6 | 634ms | 1000ms | - | - | - | - | QA-20260524-0572 |
-| Metrics Query Agent | cloud-run-deterministic | 1 | 91ms | 91ms | - | - | - | - | QA-20260523-0565 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T02:47:28.531Z -> 2026-05-24T02:47:28.531Z (24h)
+- Window: 2026-05-23T05:05:22.864Z -> 2026-05-24T05:05:22.864Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -82,25 +79,23 @@ Latest run: QA-20260524-0576 (2026-05-24T02:47:28.531Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: gitlab-tag-pipeline-2548694499 / SHA 197e762a
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production /api/version reports v8.12.19 with commit 197e762aa1e64d16beda2a1bb77a109ad5b11160 and GitLab pipeline 2548694499, Cloud Run AI Engine /health reports version 8.12.19, GitLab v8.12.19 tag pipeline 2548694499 success, including deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke, Playwright CLI production AI direct-message recheck for normal-range server list prompt, AI Chat: normal-range server list query returns deterministic healthy-only server list with concrete server IDs and criteria
-- Skipped Surfaces: Lowest-load and Advisor prompts: already passed in QA-20260524-0574 and were not rerun to avoid extra live LLM calls., Standard five-question conversational QA: skipped because this was a single blocker closure recheck., Vision real-image QA: skipped per manual-only policy., Broad route/dashboard/modal packs: skipped because this run validated one AI routing blocker only.
+- Deployment: SHA 6737affb
+- Covered Surfaces: AI 어시스턴트 채팅, healthy-only filter, asc metric ranking, inverse status filter, Advisor P4, portfolio standalone query
+- Skipped Surfaces: 자동 보고서, 이상감지, E2E 인증
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.12.19 tag pipeline | [GitLab v8.12.19 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548694499) | deploy, deploy_ai_engine, and post-deploy smoke pipeline success |
-| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | Production UI used for Playwright CLI AI sidebar prompt. |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.19 healthy filter closure evidence | `reports/qa/evidence/qa-20260524-v81219-healthy-filter-closure.md` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -885,6 +880,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260524-0577 | 2026-05-24T05:05:22.864Z | targeted | no | yes | v8.12.19 Playwright MCP QA — P1~P4 routing fix regression + portfolio | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0576 | 2026-05-24T02:47:28.531Z | targeted | yes | yes | v8.12.19 production targeted QA - healthy filter closure | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0575 | 2026-05-24T02:26:16.493Z | targeted | yes | yes | v8.12.18 production targeted QA - healthy filter recheck | 1 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260524-0574 | 2026-05-24T02:01:17.511Z | targeted | yes | yes | Cloud Run 94ce8471b production targeted QA - AI routing closure check | 3 | 2 | 1 | 0 | 0 | 2 |
@@ -904,4 +900,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260522-0560 | 2026-05-22T05:00:00.000Z | targeted | no | no | v8.12.5 미평가 5문항 QA (Playwright MCP) - AZ비교·capacity-forecast·KRL·Advisor | 5 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260522-0559 | 2026-05-22T04:13:27.604Z | targeted | no | no | v8.12.5 신규 질문 6문항 평가 (Playwright MCP) - 미테스트 영역 집중 | 6 | 0 | 0 | 0 | 3 | 1 |
 | QA-20260522-0558 | 2026-05-22T02:32:10.298Z | targeted | yes | yes | v8.12.5 신규 변경사항 AI 어시스턴트 평가 (5문항) - evidence providers + routing fix | 5 | 0 | 0 | 0 | 2 | 1 |
-| QA-20260522-0557 | 2026-05-22T00:36:19.482Z | targeted | no | no | v8.12.4 AI 어시스턴트 신규 5문항 평가 (Vercel Production) | 5 | 0 | 0 | 0 | 0 | 0 |
