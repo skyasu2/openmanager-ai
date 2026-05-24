@@ -1,0 +1,58 @@
+{
+  "runTitle": "v8.12.25 AI Engine trend routing local regression closure",
+  "owner": "codex",
+  "source": "local-vitest",
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI Engine parseCurrentMetricsEvidenceRequest: 메모리 트렌드 상승 서버 -> monitoring.metric_trend",
+    "AI Engine current-metrics evidence provider regression pack",
+    "AI Engine deterministic summary fallback metric issue filter regression",
+    "Root AI supervisor contract tests"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser QA",
+    "Cloud Run live LLM stream QA",
+    "dashboard non-AI UI pack",
+    "vision live smoke"
+  ],
+  "environment": {
+    "target": "local",
+    "url": "local workspace",
+    "frontend": "not exercised",
+    "backend": "local ai-engine tests",
+    "branch": "main",
+    "commitSha": "c200999d44d118f12986f255b5daa16325974e9f"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "QA-0581 qa:record input",
+      "path": "reports/qa/evidence/2026/qa-20260524-0581/qa-20260524-0581-input.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "trend-routing",
+      "title": "트렌드 상승 질의가 monitoring-metric-trend 경로로 라우팅되지 않음",
+      "priority": "P2",
+      "evidence": "METRIC_TREND_PATTERN에 한글 외래어 '트렌드'를 포함하고 QA 문구 '메모리 트렌드 상승 서버' 회귀 테스트를 추가했다. 로컬 직접 파싱은 monitoring.metric_trend로 확인했고, current-metrics provider 40/40, summary fallback 39/39, ai-engine 전체 1480/1480, root test:contract 24/24 통과.",
+      "note": "Metric-specific issue follow-up('네트워크 문제가 있는 것만 골라줘')는 action-needed에서 제외해 기존 네트워크 임계값 필터 계약을 유지했다."
+    }
+  ],
+  "notes": [
+    "Commands: node_modules/.bin/tsx -e manual parse check",
+    "Commands: cd cloud-run/ai-engine && npm run test -- src/domains/monitoring/current-metrics-evidence-provider.test.ts",
+    "Commands: cd cloud-run/ai-engine && npm run test -- src/services/ai-sdk/agents/orchestrator-summary-fallback.test.ts",
+    "Commands: cd cloud-run/ai-engine && npm run type-check",
+    "Commands: cd cloud-run/ai-engine && npm run test",
+    "Commands: npm run test:contract"
+  ]
+}

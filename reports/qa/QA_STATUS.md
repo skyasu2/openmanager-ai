@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-24 19:29:55 KST
+> Generated at: 2026-05-24 20:45:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 578 |
+| Total Recorded Runs | 579 |
 | Total Runs (Counted) | 463 |
-| Non-counted Runs | 115 |
+| Non-counted Runs | 116 |
 | Total Checks | 4141 |
 | Passed | 3966 |
 | Failed | 151 |
-| Completed Items | 662 |
-| Pending Items | 1 |
+| Completed Items | 663 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 46 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 99.85% |
+| Completion Rate | 100% |
 | Last Counted Run | QA-20260524-0580 (2026-05-24T10:29:54.220Z) |
-| Latest Recorded Run | QA-20260524-0580 (2026-05-24T10:29:54.220Z) |
+| Latest Recorded Run | QA-20260524-0581 (2026-05-24T11:45:40.608Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260524-0580 (2026-05-24T10:29:54.220Z)
+Latest run: QA-20260524-0581 (2026-05-24T11:45:40.608Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-24T10:28:13Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T10:29:54.220Z -> 2026-05-24T10:29:54.220Z (24h)
-- Runs with observations: 5 recorded / 5 counted
-- Samples: 12
+- Window: 2026-05-23T11:45:40.608Z -> 2026-05-24T11:45:40.608Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -59,15 +58,13 @@ Latest run: QA-20260524-0580 (2026-05-24T10:29:54.220Z)
 | 서버 실시간 데이터 분석 | streaming | 1 | 20000ms | 20000ms | - | - | - | - | QA-20260524-0572 |
 | Server Health Summary | streaming | 2 | 2711ms | 3482ms | - | - | - | - | QA-20260524-0575 |
 | Metrics Query Agent | streaming | 2 | 2157ms | 3315ms | - | - | - | - | QA-20260524-0576 |
-| Analyst Agent | production route | 1 | 3000ms | 3000ms | - | - | - | - | QA-20260523-0570 |
 | Advisor Agent | streaming | 1 | 2018ms | 2018ms | - | - | - | - | QA-20260524-0574 |
 | capacity-forecast | cloud-run | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260524-0572 |
-| NLQ Agent | deterministic | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0570 |
 | NLQ Agent | groq | 1 | 2ms | 2ms | - | - | - | - | QA-20260524-0572 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T10:29:54.220Z -> 2026-05-24T10:29:54.220Z (24h)
+- Window: 2026-05-23T11:45:40.608Z -> 2026-05-24T11:45:40.608Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 6
 - Drift rate: 16.67%
@@ -80,26 +77,24 @@ Latest run: QA-20260524-0580 (2026-05-24T10:29:54.220Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_FeB6CbX4FoL8Y7teQ2evbfsh55Be / SHA dcba0f5e
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA c200999d
 - Coverage Packs: ai-core
-- Covered Surfaces: AI Chat - group server list: WAS 서버들 -> no clarification UI, 애플리케이션 서버 3대 only, monitoring-server-health PASS, AI Chat - server detail metric: cache-redis-dc1-01 메모리 상태 자세히 -> monitoring-metric-current PASS, GitLab v8.12.25 deploy/smoke pipeline success, Cloud Run ai-engine revision ai-engine-00529-8bn ready at 100% traffic
-- Skipped Surfaces: core route pack, dashboard non-AI UI pack, modal/detail pack, observability pack, vision live smoke, standard five-question broad conversational AI QA
+- Covered Surfaces: AI Engine parseCurrentMetricsEvidenceRequest: 메모리 트렌드 상승 서버 -> monitoring.metric_trend, AI Engine current-metrics evidence provider regression pack, AI Engine deterministic summary fallback metric issue filter regression, Root AI supervisor contract tests
+- Skipped Surfaces: Vercel production browser QA, Cloud Run live LLM stream QA, dashboard non-AI UI pack, vision live smoke
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run ai-engine | [Cloud Run ai-engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| general | GitLab Pipeline v8.12.25 | [GitLab Pipeline v8.12.25](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549062544) | - |
-| vercel-deployment | Vercel Production Deployment | [Vercel Production Deployment](https://openmanager-j9wwtu6sy-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-console | QA-0581 qa:record input | `reports/qa/evidence/2026/qa-20260524-0581/qa-20260524-0581-input.json` | - |
 
 ## Expert Domain Open Gaps
 
@@ -107,7 +102,7 @@ Latest run: QA-20260524-0580 (2026-05-24T10:29:54.220Z)
 
 ## Pending Improvements
 
-- [P2] trend-routing: 트렌드 상승 질의가 monitoring-metric-trend 경로로 라우팅되지 않음 (seen 1회, last QA-20260524-0579)
+- None
 
 ## Deferred Improvements
 
@@ -848,6 +843,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - threshold-filter-missing: 그룹+임계값 조합 질의에서 임계값 필터 적용 (completed 1회, last QA-20260523-0567)
 - top5-server-detail: Top5 서버 상세 모달 (3탭) (completed 1회, last QA-20260317-0114)
 - topology-map-render: 토폴로지 맵 완벽 렌더링 (completed 2회, last QA-20260314-0097)
+- trend-routing: 트렌드 상승 질의가 monitoring-metric-trend 경로로 라우팅되지 않음 (completed 1회, last QA-20260524-0581)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
 - ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
 - ui-landing-pass: 랜딩 페이지 로드 정상, v8.10.0 확인 (completed 1회, last QA-20260326-0190)
@@ -898,6 +894,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260524-0581 | 2026-05-24T11:45:40.608Z | targeted | no | no | v8.12.25 AI Engine trend routing local regression closure | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0580 | 2026-05-24T10:29:54.220Z | targeted | yes | yes | v8.12.25 AI Assistant server detail and group routing targeted QA | 2 | 6 | 0 | 0 | 0 | 0 |
 | QA-20260524-0579 | 2026-05-24T07:21:06.892Z | targeted | yes | yes | v8.12.20 신규 AI Assistant 6문항 QA - 목록 가독성·위험 라우팅·트렌드 관찰 | 6 | 4 | 1 | 0 | 2 | 1 |
 | QA-20260524-0578 | 2026-05-24T06:37:24.413Z | targeted | yes | yes | v8.12.20 Q5 Fix QA - 위험 서버 조회 라우팅 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -917,4 +914,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260522-0564 | 2026-05-22T12:13:39.004Z | targeted | yes | yes | v8.12.10 H-5 semantic router fail-closed production QA | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0563 | 2026-05-22T11:14:44.822Z | targeted | no | yes | v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0562 | 2026-05-22T09:30:00.000Z | targeted | yes | yes | v8.12.7 미테스트 7문항 QA (Playwright MCP) - 신규 패턴·트렌드·운영우선순위·DC비교 | 7 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260522-0561 | 2026-05-22T06:30:00.000Z | regression | yes | yes | v8.12.7 routing regression 재검증 3문항 (Playwright MCP) - 영어+오타·도달시점·Redis가이드 | 3 | 0 | 0 | 0 | 0 | 1 |

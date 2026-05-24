@@ -283,7 +283,15 @@ function isServerDetailStatusQuery(query: string): boolean {
   return /상태|현황|자세|상세|health|status|detail|어때|알려/i.test(query);
 }
 
+function isMetricIssueFilterQuery(query: string): boolean {
+  return /(?:\bcpu\b|씨피유|메모리|\bmem\b|\bmemory\b|디스크|\bdisk\b|스토리지|\bstorage\b|네트워크|\bnetwork\b|\bnet\b).{0,24}(?:문제|이상|비정상|위험|경고|포화|병목|장애).{0,32}(?:있는|인|난|발생|것만|골라|추려|필터|filter|only)/i.test(
+    query
+  );
+}
+
 function isActionNeededQuery(query: string): boolean {
+  if (isMetricIssueFilterQuery(query)) return false;
+
   return (
     /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응).{0,32}(?:필요|해야|대상|있|시급).{0,16}(?:서버|대상|순위)/i.test(query) ||
     /(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)/i.test(query) ||
@@ -292,7 +300,12 @@ function isActionNeededQuery(query: string): boolean {
     ) ||
     /(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)/i.test(query) ||
     /(?:어떤|어느|무슨)?\s*(?:서버|대상).{0,24}(?:가장\s*)?(?:위험한|위험도\s*높은)/i.test(query) ||
-    /most\s+at\s+risk/i.test(query)
+    /문제\s*(?:있는|가\s*있는|있\s*는)\s*(?:서버|대상|시스템)/i.test(query) ||
+    /(?:서버|대상|시스템).{0,20}문제\s*(?:있|가\s*있)/i.test(query) ||
+    /이상\s*(?:있는|이\s*있는)\s*(?:서버|대상)/i.test(query) ||
+    /비정상\s*(?:서버|대상|인\s*서버)/i.test(query) ||
+    /장애\s*(?:있는|가\s*있는)\s*(?:서버|대상)/i.test(query) ||
+    /most\s+at\s+risk|problematic\s+servers?|faulty\s+servers?|unhealthy\s+servers?/i.test(query)
   );
 }
 

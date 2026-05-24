@@ -65,7 +65,7 @@ const SERVER_HEALTH_EXCLUSION_PATTERN =
 const SERVER_DETAIL_PATTERN =
   /\b[a-z0-9]+(?:-[a-z0-9]+){1,}\b.{0,24}(상태|현황|자세|상세|health|status|detail|어때|알려)/i;
 const ACTION_NEEDED_PATTERN =
-  /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응|위험).{0,32}(?:필요|해야|대상|있|시급|서버)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)|(?:어떤|어느|무슨)?\s*(?:서버|대상).{0,24}(?:가장\s*)?(?:위험한|위험도\s*높은)|immediate\s+action|urgent\s+action|action\s+needed|most\s+at\s+risk/i;
+  /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응|위험).{0,32}(?:필요|해야|대상|있|시급|서버)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)|(?:어떤|어느|무슨)?\s*(?:서버|대상).{0,24}(?:가장\s*)?(?:위험한|위험도\s*높은)|문제\s*(?:있는|가\s*있는|있\s*는)\s*(?:서버|대상|시스템)|(?:서버|대상|시스템).{0,20}문제\s*(?:있|가\s*있)|이상\s*(?:있는|이\s*있는)\s*(?:서버|대상)|비정상\s*(?:서버|대상|인\s*서버)|장애\s*(?:있는|가\s*있는)\s*(?:서버|대상)|immediate\s+action|urgent\s+action|action\s+needed|most\s+at\s+risk|problematic\s+servers?|faulty\s+servers?|unhealthy\s+servers?/i;
 const HEALTHY_ONLY_PATTERN =
   /정상\s*범위|이상\s*없는|문제\s*없는|괜찮은\s*서버|정상.{0,12}서버|healthy|normal|ok\s+servers?/i;
 const HEALTHY_ONLY_EXCLUSION_PATTERN =
@@ -75,7 +75,7 @@ const COMPOSITE_LOAD_RANKING_PATTERN =
 const CURRENT_METRIC_GROUP_PATTERN =
   /(?:\b(?:db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend)\b|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN =
-  /추이|추세|trend|변화|변동|(?:계속|지속|꾸준히|점점).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)/i;
+  /추이|추세|트렌드|trend|변화|변동|(?:계속|지속|꾸준히|점점).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)/i;
 const GROUP_SERVER_LIST_PATTERN =
   /서버\s*(?:들|목록|리스트)|호스트\s*(?:목록|리스트)?|목록|리스트|보여|알려|나열|show|list|servers?|hosts?|instances?|nodes?/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;

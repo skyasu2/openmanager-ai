@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-24T10:29:54.220Z"
+    "updatedAt": "2026-05-24T11:45:40.608Z"
   },
   "sequence": {
-    "nextRunNumber": 581
+    "nextRunNumber": 582
   },
   "summary": {
-    "totalRecordedRuns": 578,
+    "totalRecordedRuns": 579,
     "totalRuns": 463,
-    "excludedRuns": 115,
+    "excludedRuns": 116,
     "totalChecks": 4141,
     "totalPassed": 3966,
     "totalFailed": 151,
-    "completionRate": 99.85,
-    "completedItems": 662,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 663,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 46,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260524-0580",
     "lastRecordedAt": "2026-05-24T10:29:54.220Z",
-    "latestRecordedRunId": "QA-20260524-0580",
-    "latestRecordedAt": "2026-05-24T10:29:54.220Z"
+    "latestRecordedRunId": "QA-20260524-0581",
+    "latestRecordedAt": "2026-05-24T11:45:40.608Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16534,25 +16534,25 @@
       "id": "trend-routing",
       "title": "트렌드 상승 질의가 monitoring-metric-trend 경로로 라우팅되지 않음",
       "priority": "P2",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260524-0579",
       "firstSeenAt": "2026-05-24T07:21:06.892Z",
-      "lastSeenRunId": "QA-20260524-0579",
-      "lastSeenAt": "2026-05-24T07:21:06.892Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260524-0581",
+      "lastSeenAt": "2026-05-24T11:45:40.608Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "project",
-      "lastEvidence": "Q-NEW6 '메모리 트렌드 상승 서버' 질의가 트렌드 특화 경로 대신 LLM inference로 처리되어 현재 상태 위주 응답을 반환함.",
-      "lastNote": "release-blocking 아님. 다만 트렌드 질의 품질 회귀를 막기 위해 별도 추적 대상으로 유지.",
-      "isBlocking": true,
-      "isBlockingExplicit": true,
+      "lastEvidence": "METRIC_TREND_PATTERN에 한글 외래어 '트렌드'를 포함하고 QA 문구 '메모리 트렌드 상승 서버' 회귀 테스트를 추가했다. 로컬 직접 파싱은 monitoring.metric_trend로 확인했고, current-metrics provider 40/40, summary fallback 39/39, ai-engine 전체 1480/1480, root test:contract 24/24 통과.",
+      "lastNote": "Metric-specific issue follow-up('네트워크 문제가 있는 것만 골라줘')는 action-needed에서 제외해 기존 네트워크 임계값 필터 계약을 유지했다.",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
       "overengineeringScope": "tracking-only AI routing quality gap",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
+      "lastStatusChangeAt": "2026-05-24T11:45:40.608Z"
     },
     "ranking-min-advice": {
       "id": "ranking-min-advice",
@@ -67943,6 +67943,66 @@
       "expertCount": 2,
       "expertNeedsImprovementCount": 0,
       "completedCount": 6,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260524-0581",
+      "recordedAt": "2026-05-24T11:45:40.608Z",
+      "recordedAtKst": "2026-05-24 20:45:40 KST",
+      "title": "v8.12.25 AI Engine trend routing local regression closure",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260524-0581.json",
+      "environment": {
+        "target": "local",
+        "url": "local workspace",
+        "frontend": "not exercised",
+        "backend": "local ai-engine tests",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "c200999d44d118f12986f255b5daa16325974e9f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI Engine parseCurrentMetricsEvidenceRequest: 메모리 트렌드 상승 서버 -> monitoring.metric_trend",
+        "AI Engine current-metrics evidence provider regression pack",
+        "AI Engine deterministic summary fallback metric issue filter regression",
+        "Root AI supervisor contract tests"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "Cloud Run live LLM stream QA",
+        "dashboard non-AI UI pack",
+        "vision live smoke"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "QA-0581 qa:record input",
+          "path": "reports/qa/evidence/2026/qa-20260524-0581/qa-20260524-0581-input.json"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

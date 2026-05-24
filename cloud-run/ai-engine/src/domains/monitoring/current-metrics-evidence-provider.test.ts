@@ -1298,6 +1298,38 @@ describe('current metrics domain evidence providers', () => {
     }
   });
 
+  it('routes "문제 있는 서버" wording to server health evidence via ACTION_NEEDED_PATTERN', async () => {
+    for (const message of [
+      '현재 문제 있는 서버가 무엇인지 알려줘',
+      '지금 문제가 있는 서버 알려줘',
+      '문제 있는 서버가 어디야?',
+      '이상 있는 서버 목록',
+      '비정상 서버 뭐 있어?',
+      '장애가 있는 서버 알려줘',
+    ]) {
+      const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+        createEvidenceRequest(message, {
+          servers: [
+            { id: 'lb-haproxy-dc1-01', status: 'warning', cpu: 55, memory: 61, disk: 39, network: 72.6 },
+            { id: 'api-was-dc1-01', status: 'online', cpu: 43, memory: 51, disk: 37 },
+            { id: 'web-nginx-dc1-01', status: 'online', cpu: 21, memory: 45, disk: 28 },
+          ],
+        })
+      );
+
+      expect(evidence, message).toMatchObject({
+        id: 'monitoring-server-health',
+        metadata: {
+          responsePolicy: 'deterministic_answer',
+          capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+          intent: 'server_health',
+          sourceIntent: 'action-needed',
+        },
+      });
+      expect(evidence?.fallback, message).toContain('lb-haproxy-dc1-01');
+    }
+  });
+
   it('routes "WAS 서버 그룹 상태" to server_health with application group target', async () => {
     // "WAS 서버 그룹 전체 CPU 상태 요약해줘"는 cpu 메트릭이 명시되어 metric_current로 파싱됨
     // server_health 라우팅은 특정 메트릭 없이 상태/현황을 묻는 쿼리에만 적용됨
@@ -1347,6 +1379,7 @@ describe('current metrics domain evidence providers', () => {
     ];
 
     it.each([
+      ['메모리 트렌드 상승 서버', 'memory'],
       ['최근 메모리 사용량이 계속 올라가는 서버 있어?', 'memory'],
       ['CPU가 계속 상승 중인 서버 알려줘', 'cpu'],
       ['디스크 사용량이 꾸준히 늘어나는 서버는?', 'disk'],
