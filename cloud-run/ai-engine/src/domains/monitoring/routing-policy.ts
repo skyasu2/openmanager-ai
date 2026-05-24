@@ -509,6 +509,17 @@ export function createPrepareStep(
       toolChoice = { type: 'tool', toolName: 'searchWeb' };
     }
 
+    if (
+      policyIntent === 'advisor' &&
+      stepNumber === 0 &&
+      shouldPreferAdvisorForOperationalAdvice(q) &&
+      !shouldForceKnowledgeBase &&
+      !shouldForceWeb &&
+      activeTools.includes('recommendCommands')
+    ) {
+      toolChoice = { type: 'tool', toolName: 'recommendCommands' };
+    }
+
     return { activeTools, toolChoice };
   };
 }

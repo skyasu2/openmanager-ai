@@ -586,6 +586,9 @@ describe('createPrepareStep', () => {
     expect(result.activeTools).not.toContain('searchKnowledgeBase');
     expect(result.activeTools).not.toContain('searchWeb');
     expect(result.toolChoice).toBe('required');
+
+    const nextStep = await prepare({ stepNumber: 1 });
+    expect(nextStep.toolChoice).toBe('required');
   });
 
   it('should route beginner operations guidance to advisor commands', async () => {
@@ -597,6 +600,36 @@ describe('createPrepareStep', () => {
     expect(result.activeTools).toContain('recommendCommands');
     expect(result.activeTools).toContain('finalAnswer');
     expect(result.activeTools).not.toContain('computeSeriesStats');
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'recommendCommands',
+    });
+  });
+
+  it('should force Advisor command evidence for named-server performance advice', async () => {
+    const prepare = createPrepareStep(
+      'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘',
+      {
+        intentFrame: buildSemanticIntentFrame({
+          intent: 'metric_ranking',
+          capabilityId: 'monitoring.metric_ranking',
+          scope: 'entity',
+          targets: ['db-mysql-dc1-primary'],
+          metric: 'disk',
+          aggregation: 'top_n',
+          executionMode: 'single',
+          confidence: 0.93,
+        }),
+      }
+    );
+    const result = await prepare({ stepNumber: 0 });
+
+    expect(result.activeTools).toContain('recommendCommands');
+    expect(result.activeTools).toContain('finalAnswer');
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'recommendCommands',
+    });
   });
 
   it('should keep HAProxy load-distribution wording out of math tools', async () => {
