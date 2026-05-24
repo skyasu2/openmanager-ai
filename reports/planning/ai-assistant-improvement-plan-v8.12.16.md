@@ -1,7 +1,7 @@
 > Owner: project
 > Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-24 (v8.12.17 production targeted QA closure)
+> Last reviewed: 2026-05-24 (v8.12.19 production targeted QA closure)
 > Tags: ai,assistant,routing,evidence,markdown,qa
 
 # AI 어시스턴트 개선 작업 계획서
@@ -255,6 +255,8 @@ Day 3~4 (선택)
 - [x] GitLab main validate 복구: `2548266355` success, release commit main pipeline `2548270161` success
 - [x] 배포: `v8.12.17` tag pipeline `2548270166` success, Vercel production `/api/version` `8.12.17`
 - [x] Production targeted QA: `QA-20260524-0573` 9/9 PASS
+- [x] Post-closure hotfix: `QA-20260524-0574`/`QA-20260524-0575`에서 healthy-only intentFrame preservation gap 확인 후 `v8.12.19` 배포
+- [x] Production targeted QA closure: `QA-20260524-0576` 1/1 PASS, pending 0, expert open gap 0
 - [ ] P4 세션 컨텍스트 연속성은 고난도 후속 항목으로 이번 P1~P3 closure 범위에서 제외
 
 ---

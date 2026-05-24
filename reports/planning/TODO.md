@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-24 KST (v8.12.17 AI 어시스턴트 P1~P3 closure QA 반영)
+**Last Updated**: 2026-05-24 KST (v8.12.19 AI 어시스턴트 healthy filter closure QA 반영)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -13,7 +13,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI 어시스턴트 v8.12.16 QA 후속 개선 (Advisor routing·healthy filter·lowest load·markdown) | High | Completed (v8.12.17) | 2026-05-24 P1~P3 구현·검증·배포 완료. GitLab main pipeline `2548266355`, release main pipeline `2548270161`, tag pipeline `2548270166` success. Production targeted QA `QA-20260524-0573` 9/9 PASS. P4 세션 컨텍스트는 고난도 별도 후속으로 보류. 상세: [ai-assistant-improvement-plan-v8.12.16.md](ai-assistant-improvement-plan-v8.12.16.md) |
+| AI 어시스턴트 v8.12.16 QA 후속 개선 (Advisor routing·healthy filter·lowest load·markdown) | High | Completed (v8.12.19) | 2026-05-24 P1~P3 구현·검증·배포 완료 후 healthy filter 실환경 회귀를 `v8.12.19`에서 hotfix. GitLab tag pipeline `2548694499` success, production targeted QA `QA-20260524-0576` 1/1 PASS, pending 0, expert open gap 0. P4 세션 컨텍스트는 고난도 별도 후속으로 보류. 상세: [ai-assistant-improvement-plan-v8.12.16.md](ai-assistant-improvement-plan-v8.12.16.md) |
 | AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-22 v8.12.9 H-4 배포 및 targeted production QA(`QA-20260522-0563`) 완료. H-5 semantic-router-v2/fail-closed는 v8.12.10 배포 및 production QA(`QA-20260522-0564`) 완료. 잔여: intentFrame 실측 적중률, Task F 최종 판정, Task E 세션 메모리 확장 착수 여부. Task E SDD Approved. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | 사용자 액션 필요 | R-0~R-4, R-6 완료. 2026-05-21 data-plane INFO/DBSIZE 스냅샷은 keys 32, data 15.895KB, 누적 명령 60,495로 기록했다. 남은 R-5 월간 소비량 보정은 Upstash dashboard 또는 management API 접근이 있어야 확정 가능. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P1~P5 완료. 2026-05-21 `npm run bundle:budget` PASS(JS 1.45MB < 2MB, CSS 61.69KB < 250KB). P0은 warn-first 관찰 중이며 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
