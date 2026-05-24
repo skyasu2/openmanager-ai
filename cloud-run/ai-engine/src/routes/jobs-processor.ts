@@ -14,6 +14,7 @@ import {
   logProviderStatus,
 } from '../services/ai-sdk';
 import { getDefaultMonitoringAssistantRuntimeHost } from '../services/ai-sdk/monitoring-runtime-host';
+import { SessionMemoryService } from '../services/ai-sdk/session-memory';
 import {
   normalizeSemanticQueryTrace,
   type SemanticQueryTrace,
@@ -40,6 +41,106 @@ import {
   type JobProviderMetadata,
   parseRetrievalMetadata,
 } from './jobs-result-metadata';
+
+const MAX_RECOVERED_SESSION_MESSAGES = 20;
+
+function isRecordValue(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizeSupervisorMessages(
+  messages: unknown[]
+): SupervisorRequest['messages'] {
+  return messages
+    .filter(isRecordValue)
+    .map((message) => ({
+      role: message.role,
+      content: message.content,
+    }))
+    .filter(
+      (
+        message
+      ): message is SupervisorRequest['messages'][number] =>
+        (message.role === 'user' || message.role === 'assistant') &&
+        typeof message.content === 'string' &&
+        message.content.trim().length > 0
+    )
+    .map((message) => ({
+      role: message.role,
+      content: message.content.trim(),
+    }));
+}
+
+function mergeSessionHistoryMessages(params: {
+  history: SupervisorRequest['messages'];
+  current: SupervisorRequest['messages'];
+}): SupervisorRequest['messages'] {
+  const currentLastUserIndex = params.current
+    .map((message) => message.role)
+    .lastIndexOf('user');
+  const currentLastUser =
+    currentLastUserIndex >= 0 ? params.current[currentLastUserIndex] : undefined;
+  if (!currentLastUser) return params.current;
+
+  const currentContext = params.current.slice(0, currentLastUserIndex);
+  const seen = new Set<string>();
+  const merged: SupervisorRequest['messages'] = [];
+
+  for (const message of [...params.history, ...currentContext]) {
+    const key = `${message.role}\u0000${message.content}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(message);
+  }
+
+  return [...merged.slice(-(MAX_RECOVERED_SESSION_MESSAGES - 1)), currentLastUser];
+}
+
+async function restoreJobSessionHistory(params: {
+  sessionId?: string;
+  messages: SupervisorRequest['messages'];
+}): Promise<SupervisorRequest['messages']> {
+  if (!params.sessionId) return params.messages;
+
+  try {
+    const history = normalizeSupervisorMessages(
+      await SessionMemoryService.getHistory(params.sessionId)
+    );
+    if (history.length === 0) return params.messages;
+
+    return mergeSessionHistoryMessages({
+      history,
+      current: params.messages,
+    });
+  } catch (error) {
+    logger.warn(
+      `[Jobs] Session history restore failed for ${params.sessionId}:`,
+      error
+    );
+    return params.messages;
+  }
+}
+
+async function persistJobSessionHistory(params: {
+  sessionId?: string;
+  messages: SupervisorRequest['messages'];
+  responseText: string;
+}): Promise<void> {
+  const responseText = params.responseText.trim();
+  if (!params.sessionId || responseText.length === 0) return;
+
+  try {
+    await SessionMemoryService.saveHistory(params.sessionId, [
+      ...params.messages,
+      { role: 'assistant', content: responseText },
+    ]);
+  } catch (error) {
+    logger.warn(
+      `[Jobs] Session history save failed for ${params.sessionId}:`,
+      error
+    );
+  }
+}
 
 export async function processJobSynchronously({
   jobId,
@@ -123,12 +224,13 @@ export async function processJobSynchronously({
         }>
       | undefined;
     let completedSuccessfully = false;
+    const supervisorMessages = await restoreJobSessionHistory({
+      sessionId,
+      messages: normalizeSupervisorMessages(messages),
+    });
 
     for await (const event of executeSupervisorStream({
-      messages: messages.map((m) => ({
-        role: m.role as 'user' | 'assistant',
-        content: m.content,
-      })),
+      messages: supervisorMessages,
       sessionId: sessionId || 'default',
       enableRAG,
       enableWebSearch,
@@ -345,6 +447,11 @@ export async function processJobSynchronously({
         }),
       },
       startedAt,
+    });
+    await persistJobSessionHistory({
+      sessionId,
+      messages: supervisorMessages,
+      responseText: responseChunks.join(''),
     });
 
     const processingTime = Date.now() - startTime;

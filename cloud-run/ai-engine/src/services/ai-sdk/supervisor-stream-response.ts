@@ -216,23 +216,25 @@ async function restoreSessionHistory(
   }
 }
 
-function persistSessionHistory(params: {
+async function persistSessionHistory(params: {
   sessionId: string;
   messages: SupervisorRequest['messages'];
   responseText: string;
-}) {
+}): Promise<void> {
   const responseText = params.responseText.trim();
   if (!params.sessionId || responseText.length === 0) return;
 
-  SessionMemoryService.saveHistory(params.sessionId, [
-    ...params.messages,
-    { role: 'assistant', content: responseText },
-  ]).catch((error) => {
+  try {
+    await SessionMemoryService.saveHistory(params.sessionId, [
+      ...params.messages,
+      { role: 'assistant', content: responseText },
+    ]);
+  } catch (error) {
     logger.warn(
       `[UIMessageStream] Session history save failed for ${params.sessionId}:`,
       error
     );
-  });
+  }
 }
 
 function getStructuredResponseSummary(
@@ -421,7 +423,7 @@ export function createSupervisorStreamResponse(
               );
               const normalizedResponseSummary = responseSummaryView.summary.trim();
               if (success) {
-                persistSessionHistory({
+                await persistSessionHistory({
                   sessionId: runtimeRequest.sessionId,
                   messages: runtimeRequest.messages,
                   responseText: responseText || normalizedResponseSummary,

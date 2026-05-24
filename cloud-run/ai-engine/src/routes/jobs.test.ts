@@ -7,6 +7,11 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 
+const { mockSessionGetHistory, mockSessionSaveHistory } = vi.hoisted(() => ({
+  mockSessionGetHistory: vi.fn(async () => []),
+  mockSessionSaveHistory: vi.fn(async () => {}),
+}));
+
 vi.mock('../lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
@@ -88,6 +93,13 @@ vi.mock('../services/ai-sdk', () => ({
   logProviderStatus: vi.fn(),
 }));
 
+vi.mock('../services/ai-sdk/session-memory', () => ({
+  SessionMemoryService: {
+    getHistory: mockSessionGetHistory,
+    saveHistory: mockSessionSaveHistory,
+  },
+}));
+
 import { jobsRouter } from './jobs';
 import {
   getJobResult,
@@ -104,6 +116,8 @@ app.route('/jobs', jobsRouter);
 describe('Jobs Routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSessionGetHistory.mockResolvedValue([]);
+    mockSessionSaveHistory.mockResolvedValue(undefined);
   });
 
   describe('POST /jobs/process', () => {
@@ -249,6 +263,98 @@ describe('Jobs Routes', () => {
             ],
           }),
         })
+      );
+    });
+
+    it('async follow-up job에서 세션 히스토리를 복구하고 응답을 저장한다', async () => {
+      mockSessionGetHistory.mockResolvedValue([
+        { role: 'user', content: '지금 당장 조치가 필요한 서버가 있어?' },
+        {
+          role: 'assistant',
+          content:
+            '🚨 즉시 조치 필요 여부\n• 주의 관찰 대상은 1대입니다: storage-nfs-dc1-01.',
+        },
+      ]);
+      vi.mocked(executeSupervisorStream).mockImplementationOnce(
+        async function* () {
+          yield {
+            type: 'text_delta',
+            data: '📊 지정 서버 네트워크 70% 이상 서버\n',
+          };
+          yield { type: 'text_delta', data: '• 대상: 지정 서버 1대\n' };
+          yield {
+            type: 'done',
+            data: {
+              success: true,
+              finalAgent: 'Metrics Query Agent',
+              metadata: {
+                provider: 'deterministic',
+                modelId: 'monitoring-metric-current',
+              },
+            },
+          };
+        }
+      );
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-follow-up',
+          messages: [
+            {
+              role: 'user',
+              content:
+                '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+            },
+          ],
+          sessionId: 'session-contextual-follow-up',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      expect(vi.mocked(executeSupervisorStream)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          messages: [
+            { role: 'user', content: '지금 당장 조치가 필요한 서버가 있어?' },
+            {
+              role: 'assistant',
+              content:
+                '🚨 즉시 조치 필요 여부\n• 주의 관찰 대상은 1대입니다: storage-nfs-dc1-01.',
+            },
+            {
+              role: 'user',
+              content:
+                '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+            },
+          ],
+        })
+      );
+      expect(mockSessionSaveHistory).toHaveBeenCalledWith(
+        'session-contextual-follow-up',
+        [
+          { role: 'user', content: '지금 당장 조치가 필요한 서버가 있어?' },
+          {
+            role: 'assistant',
+            content:
+              '🚨 즉시 조치 필요 여부\n• 주의 관찰 대상은 1대입니다: storage-nfs-dc1-01.',
+          },
+          {
+            role: 'user',
+            content:
+              '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+          },
+          {
+            role: 'assistant',
+            content:
+              '📊 지정 서버 네트워크 70% 이상 서버\n• 대상: 지정 서버 1대',
+          },
+        ]
+      );
+      expect(vi.mocked(storeJobResult)).toHaveBeenCalledWith(
+        'job-follow-up',
+        '📊 지정 서버 네트워크 70% 이상 서버\n• 대상: 지정 서버 1대\n',
+        expect.any(Object)
       );
     });
 
