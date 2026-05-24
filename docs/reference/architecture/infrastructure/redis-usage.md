@@ -177,7 +177,12 @@
 
 > 월 30K 요청 기준으로 Free Tier 한도(500K)에 근접하거나 초과할 수 있다. 요청량이 증가하면 Job Queue 유지 여부, AI 캐시 히트율, Cloud Run L2 캐시 TTL, Langfuse sample rate가 1차 최적화 대상이다.
 > Job Queue를 제품 경로에서 제거하면 월 30K 요청 기준 `job:*` 계열 약 90K~120K 커맨드를 줄일 수 있으나, 공통 보안과 Cloud Run quota 계층의 Redis 사용은 별도 판단 대상이다.
-> 2026-05-21 data-plane INFO 스냅샷은 총 키 32개, 데이터 15.895KB, 누적 명령 60,495개로 현재 저장 용량과 순간 부하는 낮음을 보여준다. 다만 월간 Free Tier command 사용량 카운터가 아니므로 billing 기준 보정값으로 사용하지 않는다.
+> **2026-05-24 실측 보정 완료**: INFO delta 방식(2026-05-21 → 2026-05-24, 3일간)으로 일간 소비 속도를 실측했다.
+> - 2026-05-21 스냅샷: `total_commands_processed=60,495`, keys=32, data=15.895KB
+> - 2026-05-24 스냅샷: `total_commands_processed=66,291`, keys=73, data=6.469KB
+> - 3일 델타: 5,796건 → 일간 1,932건/일 → **월간 추정 약 57,960건/월 (Free Tier 500K의 약 11.6%)**
+> - keyspace hit rate: 76.5% (hits=67,260, misses=20,644), evicted_keys=0
+> - 결론: 현 트래픽 수준에서 Free Tier 한도에 충분한 여유가 있다. 30K 요청/월 기준 예상치(378K~528K)는 과대 추정이며, 실제 활성 세션 수가 낮아 소비가 적다.
 
 ---
 
