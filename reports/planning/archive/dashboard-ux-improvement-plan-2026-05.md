@@ -1,9 +1,9 @@
 # 대시보드 UX 개선 작업 계획서
 
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-22 (AI response mode removal alignment)
+> Last reviewed: 2026-05-24 (Phase 1~5 완료, Phase 6 backlog으로 분리)
 > Tags: dashboard,ux,ai-sidebar,frontend
 
 > 작성일: 2026-05-21
