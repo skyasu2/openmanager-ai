@@ -80,7 +80,7 @@ const GROUP_SERVER_LIST_PATTERN =
   /서버\s*(?:들|목록|리스트)|호스트\s*(?:목록|리스트)?|목록|리스트|보여|알려|나열|show|list|servers?|hosts?|instances?|nodes?/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
 const CONTEXTUAL_FOLLOW_UP_PATTERN =
-  /방금|직전|이전|앞서|위\s*(?:결과|답변|내용)|방금\s*분석한|분석한\s*서버\s*중|방금\s*본|앞에서\s*본/i;
+  /방금|직전|이전|앞서|위\s*(?:결과|답변|내용)|방금\s*분석한|분석한\s*서버\s*중|방금\s*본|앞에서\s*본|(?:그|해당|이|위)\s*(?:서버|대상|호스트|노드)\s*(?:들|중|만|의)?/i;
 const MAX_CONTEXTUAL_SERVER_TARGETS = 12;
 const SERVER_COMPARISON_CONNECTOR_PATTERN =
   /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
@@ -632,6 +632,22 @@ function parseCurrentMetricsMessage(
       rankCount: normalizeRankCount(classification.rankCount),
       rankOrder: classification.rankOrder ?? 'desc',
       ...(metricTargets.length > 0 && { targets: metricTargets }),
+    };
+  }
+
+  if (
+    classification.intent === 'data-lookup' &&
+    metric &&
+    metricTargets.length > 0 &&
+    !HISTORICAL_OR_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'contextual-follow-up',
+      answerQuery: message,
+      metric,
+      targets: metricTargets,
     };
   }
 

@@ -635,6 +635,140 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('db-mysql-dc1-primary');
   });
 
+  it('scopes pronoun metric follow-ups to the prior assistant server ids', async () => {
+    const query = '그 서버들 디스크 상태는?';
+    const priorTargets = [
+      'cache-redis-dc1-03',
+      'db-mysql-dc1-replica',
+      'api-was-dc1-01',
+      'lb-haproxy-dc1-01',
+      'storage-nfs-dc1-01',
+    ];
+    const request = createEvidenceRequest(
+      query,
+      {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'cache-redis-dc1-03',
+            type: 'cache',
+            status: 'online',
+            cpu: 20,
+            memory: 74,
+            disk: 33,
+            network: 12,
+          },
+          {
+            id: 'db-mysql-dc1-replica',
+            type: 'database',
+            status: 'warning',
+            cpu: 44,
+            memory: 71,
+            disk: 68,
+            network: 18,
+          },
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 43,
+            memory: 69,
+            disk: 37,
+            network: 64,
+          },
+          {
+            id: 'lb-haproxy-dc1-01',
+            type: 'loadbalancer',
+            status: 'warning',
+            cpu: 55,
+            memory: 67,
+            disk: 39,
+            network: 72.6,
+          },
+          {
+            id: 'storage-nfs-dc1-01',
+            type: 'storage',
+            status: 'online',
+            cpu: 27,
+            memory: 63,
+            disk: 62,
+            network: 22,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 21,
+            memory: 45,
+            disk: 28,
+            network: 88,
+          },
+        ],
+      },
+      [
+        { role: 'user', content: '현재 메모리 사용량 상위 5대 서버 알려줘' },
+        {
+          role: 'assistant',
+          content: priorTargets
+            .map((target, index) => `${index + 1}. ${target}: 메모리 상위권`)
+            .join('\n'),
+        },
+        { role: 'user', content: query },
+      ]
+    );
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'contextual-follow-up',
+      metric: 'disk',
+      targets: priorTargets,
+    });
+
+    const framedRequest = {
+      ...request,
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'disk',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.88,
+      },
+    };
+
+    expect(parseCurrentMetricsEvidenceRequest(framedRequest)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'metric_current',
+      metric: 'disk',
+      targets: priorTargets,
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        sourceIntent: 'contextual-follow-up',
+        metric: 'disk',
+        targets: priorTargets,
+      },
+    });
+    expect(evidence?.fallback).toContain('지정 서버 5대 디스크 현황');
+    expect(evidence?.fallback).toContain('• 대상: 5대');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-03');
+    expect(evidence?.fallback).toContain('storage-nfs-dc1-01');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
   it('preserves single metric thresholds when a current metric frame is present', async () => {
     const request = {
       ...createEvidenceRequest('DB 서버 디스크 60% 이상인 곳', {
