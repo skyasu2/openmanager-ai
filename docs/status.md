@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-24 | **현재 버전 스냅샷**: v8.12.19
+**상태 스냅샷 기준일**: 2026-05-24 | **현재 버전 스냅샷**: v8.12.20
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.20** (2026-05-24) — Features: ai: centralize routing patterns + fix Q5 action-needed detection; Tests: spec: add routing-patterns + action-needed Q5 failing tests before implementation; Tests: qa: sync QA status dashboard
 - **v8.12.19** (2026-05-24) — Tests: qa: record v8.12.18 healthy filter recheck; Bug Fixes: ai: preserve healthy-only evidence intent
 - **v8.12.18** (2026-05-24) — Tests: qa: record 94ce8471b targeted routing QA; Tests: e2e: stabilize AI starter prompt selectors; Tests: qa: record v8.12.17 assistant closure
 - **v8.12.17** (2026-05-24) — Tests: ai: stabilize supervisor shadow timing budget; Tests: spec: add v8.12.16 assistant QA regressions; Tests: qa: record v8.12.16 5th AI assistant evaluation + improvement plan
 - **v8.12.16** (2026-05-23) — Bug Fixes: ui: align embedded AI tab descriptions; Tests: qa: record v8.12.15 focused production QA
-- **v8.12.15** (2026-05-23) — Tests: qa: record v8.12.14 expanded production QA; Tests: qa: record v8.12.14 threshold retest; Bug Fixes: ui: pass artifactEnvelopes through message transform & remove duplicate quick-start
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
