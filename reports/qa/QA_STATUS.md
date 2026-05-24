@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-24 02:08:57 KST
+> Generated at: 2026-05-24 11:01:19 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 571 |
-| Total Runs (Counted) | 456 |
+| Total Recorded Runs | 572 |
+| Total Runs (Counted) | 457 |
 | Non-counted Runs | 115 |
-| Total Checks | 4122 |
-| Passed | 3952 |
-| Failed | 149 |
-| Completed Items | 652 |
-| Pending Items | 0 |
+| Total Checks | 4125 |
+| Passed | 3954 |
+| Failed | 150 |
+| Completed Items | 651 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 44 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260524-0573 (2026-05-23T17:08:54.211Z) |
-| Latest Recorded Run | QA-20260524-0573 (2026-05-23T17:08:54.211Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.85% |
+| Last Counted Run | QA-20260524-0574 (2026-05-24T02:01:17.511Z) |
+| Latest Recorded Run | QA-20260524-0574 (2026-05-24T02:01:17.511Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,13 +34,13 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260524-0573 (2026-05-23T17:08:54.211Z)
+Latest run: QA-20260524-0574 (2026-05-24T02:01:17.511Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | partially-appropriate | yes | Stabilize the starter prompt E2E selector with role/text fallback and recheck MCP action reliability in a fresh Codex session. |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Deploy the local regex/pre-filter fix and rerun only the normal-range server list prompt. |
+| DevOps / SRE Engineer | partially-appropriate | yes | After the next deploy, verify frontend version metadata and Cloud Run revision evidence point to the expected release surfaces. |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -50,9 +50,9 @@ Latest run: QA-20260524-0573 (2026-05-23T17:08:54.211Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-22T17:08:54.211Z -> 2026-05-23T17:08:54.211Z (24h)
-- Runs with observations: 6 recorded / 6 counted
-- Samples: 16
+- Window: 2026-05-23T02:01:17.511Z -> 2026-05-24T02:01:17.511Z (24h)
+- Runs with observations: 7 recorded / 7 counted
+- Samples: 19
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -60,14 +60,17 @@ Latest run: QA-20260524-0573 (2026-05-23T17:08:54.211Z)
 | 서버 실시간 데이터 분석 | streaming | 1 | 20000ms | 20000ms | - | - | - | - | QA-20260524-0572 |
 | Reporter Agent | z.ai | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260523-0568 |
 | Analyst Agent | production route | 2 | 3000ms | 3000ms | - | - | - | - | QA-20260523-0570 |
+| Advisor Agent | streaming | 1 | 2018ms | 2018ms | - | - | - | - | QA-20260524-0574 |
+| Server Health Summary | streaming | 1 | 1940ms | 1940ms | - | - | - | - | QA-20260524-0574 |
 | capacity-forecast | cloud-run | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260524-0572 |
 | NLQ Agent | deterministic | 2 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0570 |
 | NLQ Agent | groq | 6 | 634ms | 1000ms | - | - | - | - | QA-20260524-0572 |
+| Metrics Query Agent | streaming | 1 | 998ms | 998ms | - | - | - | - | QA-20260524-0574 |
 | Metrics Query Agent | cloud-run-deterministic | 1 | 91ms | 91ms | - | - | - | - | QA-20260523-0565 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-22T17:08:54.211Z -> 2026-05-23T17:08:54.211Z (24h)
+- Window: 2026-05-23T02:01:17.511Z -> 2026-05-24T02:01:17.511Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -81,33 +84,35 @@ Latest run: QA-20260524-0573 (2026-05-23T17:08:54.211Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: gitlab-tag-pipeline-2548270166 / SHA b2f6ccf1
+- Deployment: gitlab-pipeline-2548650141 / cloud-run-revision-94ce8471b / SHA 94ce8471
 - Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production /api/version reports v8.12.17 with commit b2f6ccf11a86076e96bca4e5a7daba0b4e4a4f70 and GitLab tag pipeline 2548270166, Vercel production /api/health reports healthy database/cache/AI services, GitLab main validate pipeline 2548270161 success for release commit, GitLab v8.12.17 tag deploy/smoke pipeline 2548270166 success, Playwright CLI production AI direct-message smoke: tests/e2e/dashboard-ai-chat.spec.ts direct input case passed, AI Chat: Advisor server performance improvement query returns non-empty actionable response, AI Chat: healthy-only 정상 범위 서버 목록 query returns server list without compact markdown heading leak, AI Chat: lowest composite-load query returns a grounded server answer, AI Chat: available server TOP 3 query returns ranked top-three style answer
-- Skipped Surfaces: AI starter prompt button path: existing E2E selector button[data-prompt-title="서버 상태 확인"] did not match production DOM; direct input AI path covered changed surface instead., P4 session context continuity: documented as high-complexity follow-up, not included in v8.12.17 P1-P3 closure., Vision real-image QA: skipped per manual-only policy because Vision routing/provider behavior was not changed.
+- Covered Surfaces: Vercel UI production AI sidebar direct-message flow for three post-deploy routing prompts, Cloud Run AI Engine /health returned status=ok, service=ai-engine, version=8.12.17, Vercel /api/health returned healthy database/cache/AI services, Vercel /api/version still reported frontend v8.12.17 commit b2f6ccf11a86076e96bca4e5a7daba0b4e4a4f70 and pipeline 2548270166 during this backend-targeted QA, AI Chat: lowest-load query returned a grounded monitoring-metric-ranking answer for web-nginx-dc1-03, AI Chat: Advisor performance improvement query returned non-empty Type C guidance for api-was-dc1-01, AI Chat: normal-range server list query failed semantic target by returning monitoring-server-health summary instead of inverse filter server list
+- Skipped Surfaces: Standard five-question conversational QA: skipped to avoid extra live LLM calls; this run was a targeted rerun of the three user-requested post-deploy prompts., Vision real-image QA: skipped per manual-only policy because Vision routing/provider behavior was not changed., Broad route/dashboard/modal packs: skipped because this run validated Cloud Run AI routing behavior only., Local ahead commits a4f1fc3b8/a2644ab32/251cdf0ab are test/docs/tooling only and were not part of the deployed production target.
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release main validate pipeline | [GitLab release main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548270161) | release commit main validate pipeline success |
-| general | GitLab v8.12.17 tag pipeline | [GitLab v8.12.17 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548270166) | deploy, deploy_ai_engine, and post-deploy smoke pipeline success |
-| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | production served v8.12.17 during post-deploy smoke |
+| general | Cloud Run AI Engine | [Cloud Run AI Engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | User-reported Cloud Run ai-engine URL; /health returned status=ok during QA. |
+| general | GitLab pipeline 2548650141 | [GitLab pipeline 2548650141](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548650141) | User-reported successful deploy pipeline for Cloud Run 94ce8471b and Vercel. |
+| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | Production UI used for Playwright CLI AI sidebar prompts. |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-console | Targeted AI routing prompt evidence | `reports/qa/evidence/qa-20260524-ai-routing-94ce8471b-targeted.md` | - |
 
 ## Expert Domain Open Gaps
 
-- test-automation: Test Automation Architect (last QA-20260524-0573)
-  next: Stabilize the starter prompt E2E selector with role/text fallback and recheck MCP action reliability in a fresh Codex session.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260524-0574)
+  next: Deploy the local regex/pre-filter fix and rerun only the normal-range server list prompt.
+- sre-devops: DevOps / SRE Engineer (last QA-20260524-0574)
+  next: After the next deploy, verify frontend version metadata and Cloud Run revision evidence point to the expected release surfaces.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-v81216-healthy-filter-evidence: Healthy-only server filter should resolve to deterministic inverse filter evidence (seen 2회, last QA-20260524-0574)
 
 ## Deferred Improvements
 
@@ -471,10 +476,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-topology-duplicate-tool-invocation: Topology query duplicate searchKnowledgeBase invocation removed (completed 1회, last QA-20260415-0284)
 - ai-topology-variant-function-call-failure: Advisor Agent latency/format quality stabilization (Task 1-3) (completed 2회, last QA-20260415-0283)
 - ai-topology-variant-schema-validation-failure: searchKnowledgeBase boolean-string tool-call validation failure removed (completed 1회, last QA-20260413-0281)
-- ai-v81216-advisor-routing-empty-response: Advisor performance-improvement query should route to Advisor and return non-empty guidance (completed 1회, last QA-20260524-0573)
+- ai-v81216-advisor-routing-empty-response: Advisor performance-improvement query should route to Advisor and return non-empty guidance (completed 2회, last QA-20260524-0574)
 - ai-v81216-compact-markdown-heading: Compact markdown headings should not leak as raw ##/### text (completed 1회, last QA-20260524-0573)
-- ai-v81216-healthy-filter-evidence: Healthy-only server filter should resolve to deterministic evidence (completed 1회, last QA-20260524-0573)
-- ai-v81216-lowest-load-ranking: Lowest-load and available-server TOP-N queries should use grounded ranking (completed 1회, last QA-20260524-0573)
+- ai-v81216-lowest-load-ranking: Lowest-load and available-server TOP-N queries should use grounded ranking (completed 2회, last QA-20260524-0574)
 - ai-web-search-intent-and-answer-quality-v81197: Web search query returns current sourced answer without clarification/fallback failure (completed 1회, last QA-20260505-0408)
 - ai-whole-fleet-disk-trend: Whole-fleet disk trend uses 18 servers and disk metrics (completed 1회, last QA-20260522-0556)
 - ai-workspace-analysis-basis-hydration-drift: Fullscreen AI workspace should preserve tool-grounded analysis basis metadata (completed 3회, last QA-20260416-0293)
@@ -884,6 +888,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260524-0574 | 2026-05-24T02:01:17.511Z | targeted | yes | yes | Cloud Run 94ce8471b production targeted QA - AI routing closure check | 3 | 2 | 1 | 0 | 0 | 2 |
 | QA-20260524-0573 | 2026-05-23T17:08:54.211Z | targeted | yes | yes | v8.12.17 production targeted QA - AI v8.12.16 follow-up closure | 9 | 4 | 0 | 0 | 0 | 1 |
 | QA-20260524-0572 | 2026-05-23T15:52:37.929Z | targeted | yes | yes | v8.12.16 AI 어시스턴트 5차 평가 — 미테스트 6문항 (cache그룹·역방향필터·최솟값·그룹+예측·Advisor·세션컨텍스트) | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260523-0571 | 2026-05-23T14:54:43.243Z | targeted | yes | yes | QA-20260523-0571 v8.12.16 focused Vercel QA - MCP transport, multi-metric, threshold, artifact envelope | 9 | 4 | 0 | 0 | 1 | 1 |
@@ -903,4 +908,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260522-0557 | 2026-05-22T00:36:19.482Z | targeted | no | no | v8.12.4 AI 어시스턴트 신규 5문항 평가 (Vercel Production) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0556 | 2026-05-22T00:09:55.910Z | targeted | yes | yes | Production AI QA - v8.12.4 Cache Scope and Disk Trend | 12 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260522-0555 | 2026-05-21T21:20:59.747Z | targeted | yes | yes | Vercel Release Smoke - v8.12.1 AI Grounding Release | 12 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260521-0554 | 2026-05-21T13:59:34.965Z | targeted | no | yes | Local Playwright QA - AI Workspace Phase 5 Layout | 7 | 1 | 0 | 0 | 0 | 0 |

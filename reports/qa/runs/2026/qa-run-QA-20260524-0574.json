@@ -1,0 +1,192 @@
+{
+  "runId": "QA-20260524-0574",
+  "recordedAt": "2026-05-24T02:01:17.511Z",
+  "recordedAtKst": "2026-05-24 11:01:17 KST",
+  "runTitle": "Cloud Run 94ce8471b production targeted QA - AI routing closure check",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production-cloud-run-ai-engine",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2548650141 / cloud-run-revision-94ce8471b",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "94ce8471bebef9ba48279eb5d9df8a6441044bb5"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel UI production AI sidebar direct-message flow for three post-deploy routing prompts",
+    "Cloud Run AI Engine /health returned status=ok, service=ai-engine, version=8.12.17",
+    "Vercel /api/health returned healthy database/cache/AI services",
+    "Vercel /api/version still reported frontend v8.12.17 commit b2f6ccf11a86076e96bca4e5a7daba0b4e4a4f70 and pipeline 2548270166 during this backend-targeted QA",
+    "AI Chat: lowest-load query returned a grounded monitoring-metric-ranking answer for web-nginx-dc1-03",
+    "AI Chat: Advisor performance improvement query returned non-empty Type C guidance for api-was-dc1-01",
+    "AI Chat: normal-range server list query failed semantic target by returning monitoring-server-health summary instead of inverse filter server list"
+  ],
+  "skippedSurfaces": [
+    "Standard five-question conversational QA: skipped to avoid extra live LLM calls; this run was a targeted rerun of the three user-requested post-deploy prompts.",
+    "Vision real-image QA: skipped per manual-only policy because Vision routing/provider behavior was not changed.",
+    "Broad route/dashboard/modal packs: skipped because this run validated Cloud Run AI routing behavior only.",
+    "Local ahead commits a4f1fc3b8/a2644ab32/251cdf0ab are test/docs/tooling only and were not part of the deployed production target."
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Chat normal-range server list",
+      "agent": "Server Health Summary",
+      "provider": "streaming",
+      "model": "production route",
+      "route": "monitoring-server-health",
+      "source": "Playwright CLI UI metadata badge",
+      "latencyMs": 1940
+    },
+    {
+      "surface": "AI Chat lowest-load ranking",
+      "agent": "Metrics Query Agent",
+      "provider": "streaming",
+      "model": "production route",
+      "route": "monitoring-metric-ranking",
+      "source": "Playwright CLI UI metadata badge",
+      "latencyMs": 998
+    },
+    {
+      "surface": "AI Chat Advisor performance improvement guidance",
+      "agent": "Advisor Agent",
+      "provider": "streaming",
+      "model": "production route",
+      "route": "type-c-final-answer",
+      "source": "Playwright CLI UI response",
+      "latencyMs": 2018
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Two of three targeted production prompts passed, but the normal-range server list still failed the semantic target by routing to health summary instead of deterministic inverse filter evidence.",
+      "nextAction": "Deploy the local regex/pre-filter fix and rerun only the normal-range server list prompt."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Cloud Run health and Vercel usage were normal, but Vercel /api/version still reported the previous frontend commit/pipeline while the QA target was the user-reported Cloud Run 94ce8471b revision.",
+      "nextAction": "After the next deploy, verify frontend version metadata and Cloud Run revision evidence point to the expected release surfaces."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright CLI exercised the three production UI prompts, and the local follow-up fix added regression coverage for the exact failed wording.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T10:47:40+09:00",
+      "summary": "npm run check:usage:vercel PASS. Current billing period effective 15.3081 USD, billed 0.0000 USD; no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Targeted AI routing prompt evidence",
+      "path": "reports/qa/evidence/qa-20260524-ai-routing-94ce8471b-targeted.md",
+      "note": "Prompt results, semantic QA judgment, deploy/version observations, and local follow-up validation."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-v81216-lowest-load-ranking",
+      "title": "Lowest-load and available-server TOP-N queries should use grounded ranking",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production targeted QA on the user-reported 94ce8471b Cloud Run deployment asked '지금 부하가 가장 낮은 서버는?' and received web-nginx-dc1-03 via monitoring-metric-ranking.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-v81216-advisor-routing-empty-response",
+      "title": "Advisor performance-improvement query should route to Advisor and return non-empty guidance",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production targeted QA asked 'api-was-dc1-01 서버 성능 개선 조언 해줘' and received non-empty Type C guidance instead of the previous empty response.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-v81216-healthy-filter-evidence",
+      "title": "Healthy-only server filter should resolve to deterministic inverse filter evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production targeted QA asked '현재 정상 범위인 서버 목록 보여줘' and received a monitoring-server-health summary with warning servers rather than a normal-range server list from inverse filter evidence.",
+      "note": "Local follow-up fix has been implemented and passed AI Engine tests, but it is not deployed yet.",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright CLI mechanical assertions passed after response extraction was tightened, but semantic QA marked the normal-range prompt as failed because the answer did not list healthy servers and metadata showed monitoring-server-health.",
+    "Local follow-up fix changed inverse filter matching for '정상 범위인 서버' and aligned routing signal prefilter extraction with runtime preFilterQuery behavior.",
+    "Local validation after the fix: targeted AI Engine tests 48 passed; npm run type-check passed; full AI Engine npm run test passed 139 files / 1435 tests.",
+    "This run validates production before the local follow-up fix is deployed; the release decision is conditional/no-go for the healthy-filter target only."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run AI Engine",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/",
+      "note": "User-reported Cloud Run ai-engine URL; /health returned status=ok during QA."
+    },
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2548650141",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548650141",
+      "note": "User-reported successful deploy pipeline for Cloud Run 94ce8471b and Vercel."
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Production UI used for Playwright CLI AI sidebar prompts."
+    }
+  ]
+}

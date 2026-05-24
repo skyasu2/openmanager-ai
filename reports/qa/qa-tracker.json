@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-23T17:08:54.211Z"
+    "updatedAt": "2026-05-24T02:01:17.511Z"
   },
   "sequence": {
-    "nextRunNumber": 574
+    "nextRunNumber": 575
   },
   "summary": {
-    "totalRecordedRuns": 571,
-    "totalRuns": 456,
+    "totalRecordedRuns": 572,
+    "totalRuns": 457,
     "excludedRuns": 115,
-    "totalChecks": 4122,
-    "totalPassed": 3952,
-    "totalFailed": 149,
-    "completionRate": 100,
-    "completedItems": 652,
-    "pendingItems": 0,
+    "totalChecks": 4125,
+    "totalPassed": 3954,
+    "totalFailed": 150,
+    "completionRate": 99.85,
+    "completedItems": 651,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 44,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260524-0573",
-    "lastRecordedAt": "2026-05-23T17:08:54.211Z",
-    "latestRecordedRunId": "QA-20260524-0573",
-    "latestRecordedAt": "2026-05-23T17:08:54.211Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260524-0574",
+    "lastRecordedAt": "2026-05-24T02:01:17.511Z",
+    "latestRecordedRunId": "QA-20260524-0574",
+    "latestRecordedAt": "2026-05-24T02:01:17.511Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16345,46 +16345,46 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260524-0573",
       "firstSeenAt": "2026-05-23T17:08:54.211Z",
-      "lastSeenRunId": "QA-20260524-0573",
-      "lastSeenAt": "2026-05-23T17:08:54.211Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260524-0574",
+      "lastSeenAt": "2026-05-24T02:01:17.511Z",
+      "seenCount": 2,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Production v8.12.17 targeted Playwright CLI asked 'api-was-dc1-01 서버 성능 개선 조언 해줘' and received non-empty actionable response.",
+      "lastEvidence": "Production targeted QA asked 'api-was-dc1-01 서버 성능 개선 조언 해줘' and received non-empty Type C guidance instead of the previous empty response.",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-23T17:08:54.211Z"
+      "lastStatusChangeAt": "2026-05-24T02:01:17.511Z"
     },
     "ai-v81216-healthy-filter-evidence": {
       "id": "ai-v81216-healthy-filter-evidence",
-      "title": "Healthy-only server filter should resolve to deterministic evidence",
+      "title": "Healthy-only server filter should resolve to deterministic inverse filter evidence",
       "priority": "P1",
-      "status": "completed",
+      "status": "pending",
       "firstSeenRunId": "QA-20260524-0573",
       "firstSeenAt": "2026-05-23T17:08:54.211Z",
-      "lastSeenRunId": "QA-20260524-0573",
-      "lastSeenAt": "2026-05-23T17:08:54.211Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260524-0574",
+      "lastSeenAt": "2026-05-24T02:01:17.511Z",
+      "seenCount": 2,
       "completedCount": 1,
-      "pendingCount": 0,
+      "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Production v8.12.17 targeted Playwright CLI asked '현재 정상 범위인 서버 목록 보여줘' and received a server list.",
-      "lastNote": "",
+      "lastEvidence": "Production targeted QA asked '현재 정상 범위인 서버 목록 보여줘' and received a monitoring-server-health summary with warning servers rather than a normal-range server list from inverse filter evidence.",
+      "lastNote": "Local follow-up fix has been implemented and passed AI Engine tests, but it is not deployed yet.",
       "isBlocking": true,
-      "isBlockingExplicit": false,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-23T17:08:54.211Z"
+      "lastStatusChangeAt": "2026-05-24T02:01:17.511Z"
     },
     "ai-v81216-compact-markdown-heading": {
       "id": "ai-v81216-compact-markdown-heading",
@@ -16417,22 +16417,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260524-0573",
       "firstSeenAt": "2026-05-23T17:08:54.211Z",
-      "lastSeenRunId": "QA-20260524-0573",
-      "lastSeenAt": "2026-05-23T17:08:54.211Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260524-0574",
+      "lastSeenAt": "2026-05-24T02:01:17.511Z",
+      "seenCount": 2,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Production v8.12.17 targeted Playwright CLI asked '지금 부하가 가장 낮은 서버는?' and '여유 있는 서버 TOP 3 보여줘'; both returned ranked/grounded server answers.",
+      "lastEvidence": "Production targeted QA on the user-reported 94ce8471b Cloud Run deployment asked '지금 부하가 가장 낮은 서버는?' and received web-nginx-dc1-03 via monitoring-metric-ranking.",
       "lastNote": "",
       "isBlocking": false,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-23T17:08:54.211Z"
+      "lastStatusChangeAt": "2026-05-24T02:01:17.511Z"
     }
   },
   "runs": [
@@ -66870,6 +66870,154 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260524-0574",
+      "recordedAt": "2026-05-24T02:01:17.511Z",
+      "recordedAtKst": "2026-05-24 11:01:17 KST",
+      "title": "Cloud Run 94ce8471b production targeted QA - AI routing closure check",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260524-0574.json",
+      "environment": {
+        "target": "vercel-production-cloud-run-ai-engine",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2548650141 / cloud-run-revision-94ce8471b",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "94ce8471bebef9ba48279eb5d9df8a6441044bb5"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel UI production AI sidebar direct-message flow for three post-deploy routing prompts",
+        "Cloud Run AI Engine /health returned status=ok, service=ai-engine, version=8.12.17",
+        "Vercel /api/health returned healthy database/cache/AI services",
+        "Vercel /api/version still reported frontend v8.12.17 commit b2f6ccf11a86076e96bca4e5a7daba0b4e4a4f70 and pipeline 2548270166 during this backend-targeted QA",
+        "AI Chat: lowest-load query returned a grounded monitoring-metric-ranking answer for web-nginx-dc1-03",
+        "AI Chat: Advisor performance improvement query returned non-empty Type C guidance for api-was-dc1-01",
+        "AI Chat: normal-range server list query failed semantic target by returning monitoring-server-health summary instead of inverse filter server list"
+      ],
+      "skippedSurfaces": [
+        "Standard five-question conversational QA: skipped to avoid extra live LLM calls; this run was a targeted rerun of the three user-requested post-deploy prompts.",
+        "Vision real-image QA: skipped per manual-only policy because Vision routing/provider behavior was not changed.",
+        "Broad route/dashboard/modal packs: skipped because this run validated Cloud Run AI routing behavior only.",
+        "Local ahead commits a4f1fc3b8/a2644ab32/251cdf0ab are test/docs/tooling only and were not part of the deployed production target."
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Chat normal-range server list",
+          "agent": "Server Health Summary",
+          "provider": "streaming",
+          "model": "production route",
+          "route": "monitoring-server-health",
+          "source": "Playwright CLI UI metadata badge",
+          "latencyMs": 1940
+        },
+        {
+          "surface": "AI Chat lowest-load ranking",
+          "agent": "Metrics Query Agent",
+          "provider": "streaming",
+          "model": "production route",
+          "route": "monitoring-metric-ranking",
+          "source": "Playwright CLI UI metadata badge",
+          "latencyMs": 998
+        },
+        {
+          "surface": "AI Chat Advisor performance improvement guidance",
+          "agent": "Advisor Agent",
+          "provider": "streaming",
+          "model": "production route",
+          "route": "type-c-final-answer",
+          "source": "Playwright CLI UI response",
+          "latencyMs": 2018
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Two of three targeted production prompts passed, but the normal-range server list still failed the semantic target by routing to health summary instead of deterministic inverse filter evidence.",
+          "nextAction": "Deploy the local regex/pre-filter fix and rerun only the normal-range server list prompt."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Cloud Run health and Vercel usage were normal, but Vercel /api/version still reported the previous frontend commit/pipeline while the QA target was the user-reported Cloud Run 94ce8471b revision.",
+          "nextAction": "After the next deploy, verify frontend version metadata and Cloud Run revision evidence point to the expected release surfaces."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright CLI exercised the three production UI prompts, and the local follow-up fix added regression coverage for the exact failed wording.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-24T10:47:40+09:00",
+          "summary": "npm run check:usage:vercel PASS. Current billing period effective 15.3081 USD, billed 0.0000 USD; no unexpected billed usage observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Targeted AI routing prompt evidence",
+          "path": "reports/qa/evidence/qa-20260524-ai-routing-94ce8471b-targeted.md",
+          "note": "Prompt results, semantic QA judgment, deploy/version observations, and local follow-up validation."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run AI Engine",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/",
+          "note": "User-reported Cloud Run ai-engine URL; /health returned status=ok during QA."
+        },
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2548650141",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548650141",
+          "note": "User-reported successful deploy pipeline for Cloud Run 94ce8471b and Vercel."
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "Production UI used for Playwright CLI AI sidebar prompts."
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 2,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -66878,17 +67026,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 293,
+      "seenCount": 294,
       "appropriateCount": 252,
-      "partialCount": 41,
+      "partialCount": 42,
       "inappropriateCount": 0,
-      "improvementNeededCount": 58,
-      "lastRunId": "QA-20260524-0573",
-      "lastSeenAt": "2026-05-23T17:08:54.211Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "v8.12.16에서 실패한 P1 Advisor, P2 healthy-only/markdown, P3 lowest-load/TOP3 surfaces were retested on production v8.12.17 and passed through real Playwright CLI browser flow.",
-      "lastNextAction": ""
+      "improvementNeededCount": 59,
+      "lastRunId": "QA-20260524-0574",
+      "lastSeenAt": "2026-05-24T02:01:17.511Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Two of three targeted production prompts passed, but the normal-range server list still failed the semantic target by routing to health summary instead of deterministic inverse filter evidence.",
+      "lastNextAction": "Deploy the local regex/pre-filter fix and rerun only the normal-range server list prompt."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -66929,34 +67077,34 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 210,
+      "seenCount": 211,
       "appropriateCount": 190,
-      "partialCount": 20,
+      "partialCount": 21,
       "inappropriateCount": 0,
-      "improvementNeededCount": 24,
-      "lastRunId": "QA-20260524-0573",
-      "lastSeenAt": "2026-05-23T17:08:54.211Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Main validate pipeline 2548270161, tag deploy/smoke pipeline 2548270166, /api/version, /api/health, and Vercel usage all passed after canonical GitLab release.",
-      "lastNextAction": ""
+      "improvementNeededCount": 25,
+      "lastRunId": "QA-20260524-0574",
+      "lastSeenAt": "2026-05-24T02:01:17.511Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Cloud Run health and Vercel usage were normal, but Vercel /api/version still reported the previous frontend commit/pipeline while the QA target was the user-reported Cloud Run 94ce8471b revision.",
+      "lastNextAction": "After the next deploy, verify frontend version metadata and Cloud Run revision evidence point to the expected release surfaces."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 254,
-      "appropriateCount": 229,
+      "seenCount": 255,
+      "appropriateCount": 230,
       "partialCount": 25,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260524-0573",
-      "lastSeenAt": "2026-05-23T17:08:54.211Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Playwright MCP browser actions timed out in the Codex session and the existing starter prompt E2E still depends on a production-missing data-prompt-title selector, although the direct input product path passed.",
-      "lastNextAction": "Stabilize the starter prompt E2E selector with role/text fallback and recheck MCP action reliability in a fresh Codex session."
+      "lastRunId": "QA-20260524-0574",
+      "lastSeenAt": "2026-05-24T02:01:17.511Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Playwright CLI exercised the three production UI prompts, and the local follow-up fix added regression coverage for the exact failed wording.",
+      "lastNextAction": ""
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
