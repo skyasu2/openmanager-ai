@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-24 16:21:25 KST
+> Generated at: 2026-05-24 19:29:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 577 |
-| Total Runs (Counted) | 462 |
+| Total Recorded Runs | 578 |
+| Total Runs (Counted) | 463 |
 | Non-counted Runs | 115 |
-| Total Checks | 4139 |
-| Passed | 3964 |
+| Total Checks | 4141 |
+| Passed | 3966 |
 | Failed | 151 |
-| Completed Items | 656 |
+| Completed Items | 662 |
 | Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 46 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 99.85% |
-| Last Counted Run | QA-20260524-0579 (2026-05-24T07:21:06.892Z) |
-| Latest Recorded Run | QA-20260524-0579 (2026-05-24T07:21:06.892Z) |
+| Last Counted Run | QA-20260524-0580 (2026-05-24T10:29:54.220Z) |
+| Latest Recorded Run | QA-20260524-0580 (2026-05-24T10:29:54.220Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,40 +34,40 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260524-0579 (2026-05-24T07:21:06.892Z)
+Latest run: QA-20260524-0580 (2026-05-24T10:29:54.220Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | trend-routing P2 항목을 별도 추적하고, monitoring-metric-trend 라우팅 패턴 보강 여부를 판단한다. |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-24T07:10:13Z: effective=15.9621 USD, billed=0.0000 USD. No unexpected billed usage. |
+| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-24T10:28:13Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T07:21:06.892Z -> 2026-05-24T07:21:06.892Z (24h)
-- Runs with observations: 7 recorded / 7 counted
-- Samples: 17
+- Window: 2026-05-23T10:29:54.220Z -> 2026-05-24T10:29:54.220Z (24h)
+- Runs with observations: 5 recorded / 5 counted
+- Samples: 12
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | 일반 대화 | streaming | 2 | 12954ms | 25000ms | - | - | - | - | QA-20260524-0572 |
 | 서버 실시간 데이터 분석 | streaming | 1 | 20000ms | 20000ms | - | - | - | - | QA-20260524-0572 |
-| Reporter Agent | z.ai | 1 | 6000ms | 6000ms | - | - | - | - | QA-20260523-0568 |
 | Server Health Summary | streaming | 2 | 2711ms | 3482ms | - | - | - | - | QA-20260524-0575 |
 | Metrics Query Agent | streaming | 2 | 2157ms | 3315ms | - | - | - | - | QA-20260524-0576 |
-| Analyst Agent | production route | 2 | 3000ms | 3000ms | - | - | - | - | QA-20260523-0570 |
+| Analyst Agent | production route | 1 | 3000ms | 3000ms | - | - | - | - | QA-20260523-0570 |
 | Advisor Agent | streaming | 1 | 2018ms | 2018ms | - | - | - | - | QA-20260524-0574 |
 | capacity-forecast | cloud-run | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260524-0572 |
-| NLQ Agent | deterministic | 2 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0570 |
-| NLQ Agent | groq | 3 | 367ms | 600ms | - | - | - | - | QA-20260524-0572 |
+| NLQ Agent | deterministic | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0570 |
+| NLQ Agent | groq | 1 | 2ms | 2ms | - | - | - | - | QA-20260524-0572 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T07:21:06.892Z -> 2026-05-24T07:21:06.892Z (24h)
+- Window: 2026-05-23T10:29:54.220Z -> 2026-05-24T10:29:54.220Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 6
 - Drift rate: 16.67%
@@ -82,18 +82,18 @@ Latest run: QA-20260524-0579 (2026-05-24T07:21:06.892Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4 / SHA 0513c8fd
+- Deployment: dpl_FeB6CbX4FoL8Y7teQ2evbfsh55Be / SHA dcba0f5e
 - Coverage Packs: ai-core
-- Covered Surfaces: AI Chat - CPU 상위 3개 서버 (monitoring-metric-ranking, PASS), AI Chat - 메모리 70% 이상 서버 (monitoring-metric-current, PASS), AI Chat - 디스크 최저 서버 (monitoring-metric-ranking, PARTIAL), AI Chat - 정상 범위 서버 목록 (monitoring-server-health, PASS), AI Chat - DC1-AZ1 vs DC1-AZ2 부하 비교 (monitoring-location-load-balance, PASS), AI Chat - 메모리 트렌드 상승 서버 (LLM inference, PARTIAL)
-- Skipped Surfaces: core route pack, dashboard non-AI UI pack, modal/detail pack, observability pack, vision live smoke
+- Covered Surfaces: AI Chat - group server list: WAS 서버들 -> no clarification UI, 애플리케이션 서버 3대 only, monitoring-server-health PASS, AI Chat - server detail metric: cache-redis-dc1-01 메모리 상태 자세히 -> monitoring-metric-current PASS, GitLab v8.12.25 deploy/smoke pipeline success, Cloud Run ai-engine revision ai-engine-00529-8bn ready at 100% traffic
+- Skipped Surfaces: core route pack, dashboard non-AI UI pack, modal/detail pack, observability pack, vision live smoke, standard five-question broad conversational AI QA
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Cloud Run ai-engine | [Cloud Run ai-engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| general | GitLab Pipeline v8.12.20 | [GitLab Pipeline v8.12.20](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548881038) | - |
-| vercel-deployment | Vercel Production Deployment | [Vercel Production Deployment](https://openmanager-46f72rxlu-skyasus-projects.vercel.app/) | - |
+| general | GitLab Pipeline v8.12.25 | [GitLab Pipeline v8.12.25](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549062544) | - |
+| vercel-deployment | Vercel Production Deployment | [Vercel Production Deployment](https://openmanager-j9wwtu6sy-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
@@ -103,8 +103,7 @@ Latest run: QA-20260524-0579 (2026-05-24T07:21:06.892Z)
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260524-0579)
-  next: trend-routing P2 항목을 별도 추적하고, monitoring-metric-trend 라우팅 패턴 보강 여부를 판단한다.
+- None
 
 ## Pending Improvements
 
@@ -618,6 +617,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - e2e-testid-production-fix: E2E 테스트 data-testid 의존성 제거 (completed 1회, last QA-20260310-0076)
 - esc-모달-닫기: ESC 모달 닫기 (completed 1회, last QA-20260317-0114)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
+- feature-dod-ai-engine-tests-v81225: AI Engine full test suite (completed 1회, last QA-20260524-0580)
+- feature-dod-ai-engine-typecheck-v81225: AI Engine type-check (completed 1회, last QA-20260524-0580)
 - feature-dod-e2e-critical: E2E 크리티컬 흐름 통과 (completed 1회, last QA-20260228-0029)
 - feature-dod-lint-zero-error: lint 0 에러 (completed 5회, last QA-20260302-0044)
 - feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (completed 1회, last QA-20260227-0017)
@@ -625,6 +626,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - feature-dod-release-response-time-check: Feature/Release DoD: 핵심 응답시간 합격 (completed 1회, last QA-20260226-0005)
 - feature-dod-security-review: Feature DoD: 보안 검토(입력 검증/인증/OWASP) (completed 1회, last QA-20260226-0006)
 - feature-dod-system-start-guard: 비로그인 시스템 시작 가드 모달 동작 (completed 7회, last QA-20260227-0018)
+- feature-dod-targeted-production-ai-qa-v81225: Production AI Assistant targeted QA (completed 1회, last QA-20260524-0580)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - feedback-trace-links-exposed: Feedback API direct trace links exposed for operator follow-up (completed 1회, last QA-20260322-0156)
@@ -644,6 +646,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - gitlab-tag-pipeline-v81119-release-blocked: Restore v8.11.19 semver tag deploy path before targeted production QA (completed 1회, last QA-20260417-0302)
 - gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (completed 1회, last QA-20260409-0258)
 - graphrag-traversal-keep-decision: Graph traversal keep/remove re-evaluation closed with KEEP decision (completed 1회, last QA-20260415-0285)
+- group-disambiguation-ui: Explicit server groups bypass clarification UI and preserve group scope (completed 1회, last QA-20260524-0580)
+- group-server-list-health-frame-scope: server_health intentFrame preserves raw group-list scope (completed 1회, last QA-20260524-0580)
 - guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
 - guest-dashboard-auth-check: 게스트 대시보드 로컬 인증 체크 우회 보완 (completed 1회, last QA-20260310-0078)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
@@ -813,6 +817,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - server-card-badge-ai-prefill: 서버 카드 경고 배지 클릭 시 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0165)
 - server-card-click-only-disclosure: Server card progressive disclosure opens only via explicit toggle (completed 1회, last QA-20260509-0427)
 - server-card-expand: 서버 카드 상세 펼치기/접기 (completed 1회, last QA-20260317-0114)
+- server-detail-evidence: Specific server ID + metric detail prompts route to deterministic current-metric evidence (completed 1회, last QA-20260524-0580)
 - server-detail-log-tab: 로그 & 네트워크 탭 (completed 1회, last QA-20260317-0114)
 - server-detail-mobile-overflow: Mobile server detail has no page horizontal overflow or control overlap (completed 1회, last QA-20260508-0426)
 - server-detail-perf-tab: 성능 분석 탭 (completed 1회, last QA-20260317-0114)
@@ -893,6 +898,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260524-0580 | 2026-05-24T10:29:54.220Z | targeted | yes | yes | v8.12.25 AI Assistant server detail and group routing targeted QA | 2 | 6 | 0 | 0 | 0 | 0 |
 | QA-20260524-0579 | 2026-05-24T07:21:06.892Z | targeted | yes | yes | v8.12.20 신규 AI Assistant 6문항 QA - 목록 가독성·위험 라우팅·트렌드 관찰 | 6 | 4 | 1 | 0 | 2 | 1 |
 | QA-20260524-0578 | 2026-05-24T06:37:24.413Z | targeted | yes | yes | v8.12.20 Q5 Fix QA - 위험 서버 조회 라우팅 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0577 | 2026-05-24T05:05:22.864Z | targeted | no | yes | v8.12.19 Playwright MCP QA — P1~P4 routing fix regression + portfolio | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -912,4 +918,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260522-0563 | 2026-05-22T11:14:44.822Z | targeted | no | yes | v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0562 | 2026-05-22T09:30:00.000Z | targeted | yes | yes | v8.12.7 미테스트 7문항 QA (Playwright MCP) - 신규 패턴·트렌드·운영우선순위·DC비교 | 7 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260522-0561 | 2026-05-22T06:30:00.000Z | regression | yes | yes | v8.12.7 routing regression 재검증 3문항 (Playwright MCP) - 영어+오타·도달시점·Redis가이드 | 3 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260522-0560 | 2026-05-22T05:00:00.000Z | targeted | no | no | v8.12.5 미평가 5문항 QA (Playwright MCP) - AZ비교·capacity-forecast·KRL·Advisor | 5 | 0 | 0 | 0 | 0 | 1 |

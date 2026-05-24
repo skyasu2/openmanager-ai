@@ -1,0 +1,181 @@
+{
+  "runId": "QA-20260524-0580",
+  "recordedAt": "2026-05-24T10:29:54.220Z",
+  "recordedAtKst": "2026-05-24 19:29:54 KST",
+  "runTitle": "v8.12.25 AI Assistant server detail and group routing targeted QA",
+  "owner": "codex",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FeB6CbX4FoL8Y7teQ2evbfsh55Be",
+    "deploymentUrl": "https://openmanager-j9wwtu6sy-skyasus-projects.vercel.app",
+    "commitSha": "dcba0f5e4f567d96a888c3d7b615cbdd64741c55"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI Chat - group server list: WAS 서버들 -> no clarification UI, 애플리케이션 서버 3대 only, monitoring-server-health PASS",
+    "AI Chat - server detail metric: cache-redis-dc1-01 메모리 상태 자세히 -> monitoring-metric-current PASS",
+    "GitLab v8.12.25 deploy/smoke pipeline success",
+    "Cloud Run ai-engine revision ai-engine-00529-8bn ready at 100% traffic"
+  ],
+  "skippedSurfaces": [
+    "core route pack",
+    "dashboard non-AI UI pack",
+    "modal/detail pack",
+    "observability pack",
+    "vision live smoke",
+    "standard five-question broad conversational AI QA"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "server-detail-evidence and group-disambiguation-ui regressions were verified fixed on Vercel production after v8.12.25 deployment.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline 2549062544 completed deploy, deploy_ai_engine, and post-deploy smoke jobs successfully; Cloud Run free-tier limits remain 512Mi/1 vCPU/maxScale=1.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T19:28:13+09:00",
+      "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-24T10:28:13Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "server-detail-evidence",
+      "title": "Specific server ID + metric detail prompts route to deterministic current-metric evidence",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "cache-redis-dc1-01 메모리 상태 자세히 returned monitoring-metric-current with cache-redis-dc1-01 메모리 49%, no evidence-unavailable.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "group-disambiguation-ui",
+      "title": "Explicit server groups bypass clarification UI and preserve group scope",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "WAS 서버들 returned 애플리케이션 서버 현황 with api-was-dc1-01/02/03 only and no clarification UI.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "group-server-list-health-frame-scope",
+      "title": "server_health intentFrame preserves raw group-list scope",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.25 AI Engine uses group-server-list before broad server_health fallback for WAS 서버들 semantic frames.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-ai-engine-typecheck-v81225",
+      "title": "AI Engine type-check",
+      "priority": "P2",
+      "evidence": "cd cloud-run/ai-engine && npm run type-check",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-ai-engine-tests-v81225",
+      "title": "AI Engine full test suite",
+      "priority": "P2",
+      "evidence": "cd cloud-run/ai-engine && npm test (142 files, 1478 tests passed)",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-targeted-production-ai-qa-v81225",
+      "title": "Production AI Assistant targeted QA",
+      "priority": "P2",
+      "evidence": "Chrome DevTools MCP on https://openmanager-ai.vercel.app/dashboard?qa=v81225",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production QA used Vercel UI path with guest session and AI Assistant dialog.",
+    "No clarification UI, no evidence-unavailable, and expected monitoring evidence tools were visible in the response footer.",
+    "Vercel production version gate served 8.12.25; Cloud Run latestReadyRevisionName=ai-engine-00529-8bn."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run ai-engine",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab Pipeline v8.12.25",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549062544"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel Production Deployment",
+      "url": "https://openmanager-j9wwtu6sy-skyasus-projects.vercel.app/"
+    }
+  ]
+}

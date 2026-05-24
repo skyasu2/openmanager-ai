@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-24T07:21:06.892Z"
+    "updatedAt": "2026-05-24T10:29:54.220Z"
   },
   "sequence": {
-    "nextRunNumber": 580
+    "nextRunNumber": 581
   },
   "summary": {
-    "totalRecordedRuns": 577,
-    "totalRuns": 462,
+    "totalRecordedRuns": 578,
+    "totalRuns": 463,
     "excludedRuns": 115,
-    "totalChecks": 4139,
-    "totalPassed": 3964,
+    "totalChecks": 4141,
+    "totalPassed": 3966,
     "totalFailed": 151,
     "completionRate": 99.85,
-    "completedItems": 656,
+    "completedItems": 662,
     "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 46,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260524-0579",
-    "lastRecordedAt": "2026-05-24T07:21:06.892Z",
-    "latestRecordedRunId": "QA-20260524-0579",
-    "latestRecordedAt": "2026-05-24T07:21:06.892Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260524-0580",
+    "lastRecordedAt": "2026-05-24T10:29:54.220Z",
+    "latestRecordedRunId": "QA-20260524-0580",
+    "latestRecordedAt": "2026-05-24T10:29:54.220Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16601,6 +16601,150 @@
       "overengineeringScope": "portfolio UI rendering polish",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
+    },
+    "server-detail-evidence": {
+      "id": "server-detail-evidence",
+      "title": "Specific server ID + metric detail prompts route to deterministic current-metric evidence",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0580",
+      "firstSeenAt": "2026-05-24T10:29:54.220Z",
+      "lastSeenRunId": "QA-20260524-0580",
+      "lastSeenAt": "2026-05-24T10:29:54.220Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "cache-redis-dc1-01 메모리 상태 자세히 returned monitoring-metric-current with cache-redis-dc1-01 메모리 49%, no evidence-unavailable.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T10:29:54.220Z"
+    },
+    "group-disambiguation-ui": {
+      "id": "group-disambiguation-ui",
+      "title": "Explicit server groups bypass clarification UI and preserve group scope",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0580",
+      "firstSeenAt": "2026-05-24T10:29:54.220Z",
+      "lastSeenRunId": "QA-20260524-0580",
+      "lastSeenAt": "2026-05-24T10:29:54.220Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "WAS 서버들 returned 애플리케이션 서버 현황 with api-was-dc1-01/02/03 only and no clarification UI.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T10:29:54.220Z"
+    },
+    "group-server-list-health-frame-scope": {
+      "id": "group-server-list-health-frame-scope",
+      "title": "server_health intentFrame preserves raw group-list scope",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0580",
+      "firstSeenAt": "2026-05-24T10:29:54.220Z",
+      "lastSeenRunId": "QA-20260524-0580",
+      "lastSeenAt": "2026-05-24T10:29:54.220Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.25 AI Engine uses group-server-list before broad server_health fallback for WAS 서버들 semantic frames.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T10:29:54.220Z"
+    },
+    "feature-dod-ai-engine-typecheck-v81225": {
+      "id": "feature-dod-ai-engine-typecheck-v81225",
+      "title": "AI Engine type-check",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0580",
+      "firstSeenAt": "2026-05-24T10:29:54.220Z",
+      "lastSeenRunId": "QA-20260524-0580",
+      "lastSeenAt": "2026-05-24T10:29:54.220Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "cd cloud-run/ai-engine && npm run type-check",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T10:29:54.220Z"
+    },
+    "feature-dod-ai-engine-tests-v81225": {
+      "id": "feature-dod-ai-engine-tests-v81225",
+      "title": "AI Engine full test suite",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0580",
+      "firstSeenAt": "2026-05-24T10:29:54.220Z",
+      "lastSeenRunId": "QA-20260524-0580",
+      "lastSeenAt": "2026-05-24T10:29:54.220Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "cd cloud-run/ai-engine && npm test (142 files, 1478 tests passed)",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T10:29:54.220Z"
+    },
+    "feature-dod-targeted-production-ai-qa-v81225": {
+      "id": "feature-dod-targeted-production-ai-qa-v81225",
+      "title": "Production AI Assistant targeted QA",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0580",
+      "firstSeenAt": "2026-05-24T10:29:54.220Z",
+      "lastSeenRunId": "QA-20260524-0580",
+      "lastSeenAt": "2026-05-24T10:29:54.220Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Chrome DevTools MCP on https://openmanager-ai.vercel.app/dashboard?qa=v81225",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T10:29:54.220Z"
     }
   },
   "runs": [
@@ -67702,6 +67846,106 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 2
+    },
+    {
+      "runId": "QA-20260524-0580",
+      "recordedAt": "2026-05-24T10:29:54.220Z",
+      "recordedAtKst": "2026-05-24 19:29:54 KST",
+      "title": "v8.12.25 AI Assistant server detail and group routing targeted QA",
+      "owner": "codex",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260524-0580.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FeB6CbX4FoL8Y7teQ2evbfsh55Be",
+        "deploymentUrl": "https://openmanager-j9wwtu6sy-skyasus-projects.vercel.app",
+        "commitSha": "dcba0f5e4f567d96a888c3d7b615cbdd64741c55"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI Chat - group server list: WAS 서버들 -> no clarification UI, 애플리케이션 서버 3대 only, monitoring-server-health PASS",
+        "AI Chat - server detail metric: cache-redis-dc1-01 메모리 상태 자세히 -> monitoring-metric-current PASS",
+        "GitLab v8.12.25 deploy/smoke pipeline success",
+        "Cloud Run ai-engine revision ai-engine-00529-8bn ready at 100% traffic"
+      ],
+      "skippedSurfaces": [
+        "core route pack",
+        "dashboard non-AI UI pack",
+        "modal/detail pack",
+        "observability pack",
+        "vision live smoke",
+        "standard five-question broad conversational AI QA"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "server-detail-evidence and group-disambiguation-ui regressions were verified fixed on Vercel production after v8.12.25 deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2549062544 completed deploy, deploy_ai_engine, and post-deploy smoke jobs successfully; Cloud Run free-tier limits remain 512Mi/1 vCPU/maxScale=1.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-24T19:28:13+09:00",
+          "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-24T10:28:13Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run ai-engine",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab Pipeline v8.12.25",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549062544"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel Production Deployment",
+          "url": "https://openmanager-j9wwtu6sy-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 6,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -67710,17 +67954,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 298,
-      "appropriateCount": 254,
+      "seenCount": 299,
+      "appropriateCount": 255,
       "partialCount": 44,
       "inappropriateCount": 0,
       "improvementNeededCount": 61,
-      "lastRunId": "QA-20260524-0579",
-      "lastSeenAt": "2026-05-24T07:21:06.892Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "v8.12.20 신규 6문항 평가 결과 4 PASS / 2 PARTIAL. 핵심 개선사항인 목록 가독성, 위험 서버 라우팅, AZ 비교는 정상 동작했지만 '계속 올라가는' 트렌드 질의가 monitoring-metric-trend가 아닌 LLM inference 경로로 처리됨.",
-      "lastNextAction": "trend-routing P2 항목을 별도 추적하고, monitoring-metric-trend 라우팅 패턴 보강 여부를 판단한다."
+      "lastRunId": "QA-20260524-0580",
+      "lastSeenAt": "2026-05-24T10:29:54.220Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "server-detail-evidence and group-disambiguation-ui regressions were verified fixed on Vercel production after v8.12.25 deployment.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -67761,16 +68005,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 213,
-      "appropriateCount": 192,
+      "seenCount": 214,
+      "appropriateCount": 193,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260524-0576",
-      "lastSeenAt": "2026-05-24T02:47:28.531Z",
+      "lastRunId": "QA-20260524-0580",
+      "lastSeenAt": "2026-05-24T10:29:54.220Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab pipeline 2548694499 succeeded, Vercel version metadata matched v8.12.19, Cloud Run health was ok, and Vercel usage remained normal.",
+      "lastRationale": "GitLab tag pipeline 2549062544 completed deploy, deploy_ai_engine, and post-deploy smoke jobs successfully; Cloud Run free-tier limits remain 512Mi/1 vCPU/maxScale=1.",
       "lastNextAction": ""
     },
     "test-automation": {
