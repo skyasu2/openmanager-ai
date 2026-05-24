@@ -1,0 +1,142 @@
+{
+  "runId": "QA-20260525-0585",
+  "recordedAt": "2026-05-24T21:25:11.046Z",
+  "recordedAtKst": "2026-05-25 06:25:11 KST",
+  "runTitle": "v8.12.30 Q-NEW18 pronoun follow-up targeted production QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_DDwFH26Jso8hGpukmEQFjkPMzvz5",
+    "deploymentUrl": "https://openmanager-bto9zw4ow-skyasus-projects.vercel.app",
+    "commitSha": "4cf58251de7e7102742ebc5dfa6cb0e71bc007c1"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI sidebar conversational follow-up",
+    "Q-NEW15 setup: current memory top 5 servers via monitoring-metric-ranking",
+    "Q-NEW18 fix verification: '그 서버들 디스크 상태는?' scoped to prior 5 servers via monitoring-metric-current"
+  ],
+  "skippedSurfaces": [
+    "full standard five-question conversational AI QA",
+    "vision agent",
+    "reporter/analyst tabs",
+    "anomaly detection tab",
+    "core route broad smoke"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "Q-NEW15 current memory top 5 setup",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "assistant metadata: tool monitoring-metric-ranking"
+    },
+    {
+      "surface": "Q-NEW18 pronoun disk follow-up",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "assistant metadata: tool monitoring-metric-current"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Q-NEW18 reproduced the exact follow-up shape after the prior memory top-5 answer. The fixed production response stayed scoped to the five prior assistant server IDs and used monitoring-metric-current.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline 2549629328 completed successfully. Vercel serves v8.12.30, and Cloud Run ai-engine revision ai-engine-00534-jjw serves v8.12.30 at 100% traffic with 1 CPU / 512Mi limits.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-25T06:20:12+09:00",
+      "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-24T21:20:12Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q-NEW18 scoped disk follow-up pass",
+      "path": "reports/qa/evidence/2026/qa-20260525-0585/qa-20260525-q-new18-v81230-followup-pass.png",
+      "note": "AI sidebar shows monitoring-metric-current and exactly the prior memory top 5 servers, not all 18 servers."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new18-pronoun-follow-up-scope",
+      "title": "Q-NEW18 대명사 follow-up 범위를 직전 서버 목록으로 제한",
+      "priority": "P5",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production AI sidebar returned '지정 서버 5대 디스크 현황' for '그 서버들 디스크 상태는?' after memory top-5 setup.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local gates passed before release: AI Engine targeted provider test 42/42, AI Engine full test 1490/1490, AI Engine type-check, root test:contract 24/24, root test:quick, git diff --check.",
+    "Release path used GitLab CI tag pipeline v8.12.30. No manual Cloud Run deploy was used.",
+    "Cloud Run /monitoring unauthenticated probe returned authentication-required, as expected."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run ai-engine",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab Pipeline v8.12.30",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549629328"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

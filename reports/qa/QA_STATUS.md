@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-25 00:52:13 KST
+> Generated at: 2026-05-25 06:25:14 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 582 |
-| Total Runs (Counted) | 465 |
+| Total Recorded Runs | 583 |
+| Total Runs (Counted) | 466 |
 | Non-counted Runs | 117 |
-| Total Checks | 4155 |
-| Passed | 3976 |
+| Total Checks | 4157 |
+| Passed | 3978 |
 | Failed | 152 |
-| Completed Items | 666 |
+| Completed Items | 667 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 50 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260525-0584 (2026-05-24T15:52:12.919Z) |
-| Latest Recorded Run | QA-20260525-0584 (2026-05-24T15:52:12.919Z) |
+| Last Counted Run | QA-20260525-0585 (2026-05-24T21:25:11.046Z) |
+| Latest Recorded Run | QA-20260525-0585 (2026-05-24T21:25:11.046Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260525-0584 (2026-05-24T15:52:12.919Z)
+Latest run: QA-20260525-0585 (2026-05-24T21:25:11.046Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -45,57 +45,55 @@ Latest run: QA-20260525-0584 (2026-05-24T15:52:12.919Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period 2026-05-01..2026-05-24T15:50: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
+| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-24T21:20:12Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T15:52:12.919Z -> 2026-05-24T15:52:12.919Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 10
+- Window: 2026-05-23T21:25:11.046Z -> 2026-05-24T21:25:11.046Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| 일반 대화 | streaming | 2 | 12954ms | 25000ms | - | - | - | - | QA-20260524-0572 |
-| 서버 실시간 데이터 분석 | streaming | 1 | 20000ms | 20000ms | - | - | - | - | QA-20260524-0572 |
 | Server Health Summary | streaming | 2 | 2711ms | 3482ms | - | - | - | - | QA-20260524-0575 |
 | Metrics Query Agent | streaming | 2 | 2157ms | 3315ms | - | - | - | - | QA-20260524-0576 |
 | Advisor Agent | streaming | 1 | 2018ms | 2018ms | - | - | - | - | QA-20260524-0574 |
-| capacity-forecast | cloud-run | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260524-0572 |
-| NLQ Agent | groq | 1 | 2ms | 2ms | - | - | - | - | QA-20260524-0572 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T15:52:12.919Z -> 2026-05-24T15:52:12.919Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 6
-- Drift rate: 16.67%
+- Window: 2026-05-23T21:25:11.046Z -> 2026-05-24T21:25:11.046Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 8
+- Drift rate: 12.5%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
 | /api/ai/supervisor/stream/v2 | single-agent | 1 | 100% | 0ms | 0ms | QA-20260524-0579 |
-| /api/ai/supervisor/stream/v2 | deterministic | 5 | 0% | 0ms | 0ms | QA-20260524-0579 |
+| /api/ai/supervisor/stream/v2 | deterministic | 7 | 0% | 0ms | 0ms | QA-20260525-0585 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_97NxHEcLgvBNUVSCuxAUeuY7232L / SHA 8da361db
+- Deployment: dpl_DDwFH26Jso8hGpukmEQFjkPMzvz5 / SHA 4cf58251
 - Coverage Packs: ai-core
-- Covered Surfaces: /dashboard AI sidebar open, conversational-ai-qa Q-NEW7 disk threshold filter: monitoring-metric-current, conversational-ai-qa Q-NEW8 advisor routing: P4 regression confirm, conversational-ai-qa Q-NEW9 cpu ranking top-3: monitoring-metric-ranking, conversational-ai-qa Q-NEW10 follow-up pronoun: v8.12.28 partial fix, conversational-ai-qa Q-NEW11 AZ location compare: monitoring-location-load-balance, conversational-ai-qa Q-NEW12 network traffic spike: graceful fallback
-- Skipped Surfaces: core route smoke, vision agent, reporter/analyst tab, anomaly detection tab
+- Covered Surfaces: /, /dashboard, AI sidebar conversational follow-up, Q-NEW15 setup: current memory top 5 servers via monitoring-metric-ranking, Q-NEW18 fix verification: '그 서버들 디스크 상태는?' scoped to prior 5 servers via monitoring-metric-current
+- Skipped Surfaces: full standard five-question conversational AI QA, vision agent, reporter/analyst tabs, anomaly detection tab, core route broad smoke
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Cloud Run ai-engine | [Cloud Run ai-engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
+| general | GitLab Pipeline v8.12.30 | [GitLab Pipeline v8.12.30](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549629328) | - |
+| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Q-NEW18 scoped disk follow-up pass | `reports/qa/evidence/2026/qa-20260525-0585/qa-20260525-q-new18-v81230-followup-pass.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -758,6 +756,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - profile-system-stop-state-drift-v811161: Profile dropdown system stop does not visibly clear running/dashboard state (completed 1회, last QA-20260517-0511)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - provider-fallback-freshness-hardening: OpenRouter vision fallback disabled by default and Cerebras GPT-OSS short-output guard added (completed 1회, last QA-20260519-0536)
+- q-new18-pronoun-follow-up-scope: Q-NEW18 대명사 follow-up 범위를 직전 서버 목록으로 제한 (completed 1회, last QA-20260525-0585)
 - q-new7-disk-threshold: 디스크 60% 초과 서버 목록 — PASS (completed 1회, last QA-20260525-0584)
 - q-new9-cpu-ranking: CPU 상위 3대 랭킹 — PASS (completed 1회, last QA-20260525-0584)
 - q5-action-needed-risky-wording-route: 위험 서버 질의 ACTION_NEEDED_PATTERN 라우팅 보강 (completed 1회, last QA-20260524-0579)
@@ -906,6 +905,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260525-0585 | 2026-05-24T21:25:11.046Z | targeted | yes | yes | v8.12.30 Q-NEW18 pronoun follow-up targeted production QA | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0584 | 2026-05-24T15:52:12.919Z | targeted | yes | yes | v8.12.28 신규 6문항 AI 어시스턴트 평가 — 디스크필터·Advisor·팔로업·AZ비교·네트워크 | 6 | 2 | 0 | 0 | 4 | 0 |
 | QA-20260525-0583 | 2026-05-24T15:31:45.890Z | targeted | yes | yes | v8.12.28 AI Assistant contextual follow-up live QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0582 | 2026-05-24T12:29:51.034Z | targeted | no | no | 6차 AI 어시스턴트 평가 — v8.12.17~25 수정사항 검증 (Playwright MCP) | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -925,4 +925,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260523-0568 | 2026-05-23T08:57:58.383Z | targeted | yes | yes | v8.12.14 신규 7문항 평가 - 임계값픽스재검증·스토리지·LB그룹·CPU+디스크AND·디스크랭킹·CPU트렌드·Reporter | 7 | 4 | 0 | 0 | 1 | 0 |
 | QA-20260523-0567 | 2026-05-23T08:29:59.590Z | targeted | yes | yes | v8.12.14 Q3 DB 디스크 임계값 필터 프로덕션 재검증 | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260523-0566 | 2026-05-23T07:09:27.338Z | targeted | yes | yes | v8.12.13 신규 7문항 평가 - WAS그룹·단일메트릭회귀·네트워크·DB임계값·트렌드·KRL·위험우선순위 | 7 | 3 | 0 | 0 | 2 | 0 |
-| QA-20260523-0565 | 2026-05-23T03:18:05.556Z | targeted | no | yes | v8.12.13 Q2 multi-metric 복합점수 fix 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
