@@ -1,0 +1,159 @@
+{
+  "runId": "QA-20260525-0586",
+  "recordedAt": "2026-05-24T22:51:39.888Z",
+  "recordedAtKst": "2026-05-25 07:51:39 KST",
+  "runTitle": "Q-NEW17 Production QA - Generic Metric Trend Routing",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_C16eKGD4LRzryrgF26bYRLv7dA6G",
+    "deploymentUrl": "https://openmanager-oy82ht1ah-skyasus-projects.vercel.app",
+    "commitSha": "ce2808bc3743bc375f43d7167ecfdb8c143db44c"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI sidebar conversational query",
+    "Q-NEW17 fix verification: 'cache-redis-dc1-01 서버의 24시간 메트릭 추세 알려줘' routes to monitoring-metric-trend",
+    "Cloud Run ai-engine health and protected /monitoring endpoint",
+    "Vercel production version and deployment alias"
+  ],
+  "skippedSurfaces": [
+    "full standard five-question conversational AI QA",
+    "vision agent",
+    "reporter/analyst tabs",
+    "core route broad smoke",
+    "Cloud Run admin /monitoring authenticated data view"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar Q-NEW17 generic metric trend",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-trend",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "assistant UI response footer",
+      "latencyMs": 60,
+      "processingTimeMs": 60
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar Q-NEW17 generic metric trend",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 60,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "assistant metadata: tool monitoring-metric-trend"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Q-NEW17 partial regression was rerun through the production AI sidebar and now returns deterministic monitoring-metric-trend evidence instead of the prior one-hour generic analysis path.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Response is scoped to cache-redis-dc1-01 and reports CPU, memory, and disk against 24h averages from the OTel snapshot.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline 2549769244 deployed v8.12.31 successfully, Cloud Run revision ai-engine-00535-hrv serves 100% traffic with 1 CPU and 512Mi limits, and health checks pass.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-25T07:47:41+09:00",
+      "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-24T22:47:41Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q-NEW17 generic metric trend routing pass",
+      "path": "reports/qa/evidence/2026/qa-20260525-0586/qa-20260525-q-new17-v81231-trend-pass.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new17-generic-metric-trend-routing",
+      "title": "Q-NEW17 generic single-server 24h metric trend routes to monitoring-metric-trend",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production QA on v8.12.31 returned '캐시 서버 1대 메트릭 추이' and tool 'monitoring-metric-trend' for cache-redis-dc1-01.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production version: 8.12.31, release tag v8.12.31, GitLab pipeline 2549769244 success.",
+    "Cloud Run health returned version 8.12.31; /monitoring returned authentication-required response as expected.",
+    "Q-NEW17 response no longer uses the prior '서버 실시간 데이터 분석 (1시간 조회)' path.",
+    "mode audit: deterministic monitoring-metric-trend path observed; no planner drift for this query."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run ai-engine",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab Pipeline v8.12.31",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549769244"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel Deployment v8.12.31",
+      "url": "https://openmanager-oy82ht1ah-skyasus-projects.vercel.app/"
+    }
+  ]
+}
