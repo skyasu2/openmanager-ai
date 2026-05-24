@@ -418,8 +418,10 @@ describe('current metrics domain evidence providers', () => {
       },
     });
     expect(evidence?.fallback).toContain('DB 서버 디스크 60% 이상 서버');
-    expect(evidence?.fallback).toContain('db-mysql-dc1-primary 72%');
-    expect(evidence?.fallback).toContain('db-mysql-dc1-analytics 65%');
+    expect(evidence?.fallback).toContain('📌 **서버별 현황**');
+    expect(evidence?.fallback).toContain('1. **db-mysql-dc1-primary**: 디스크 72%');
+    expect(evidence?.fallback).toContain('2. **db-mysql-dc1-analytics**: 디스크 65%');
+    expect(evidence?.fallback).not.toContain('• 서버별:');
     expect(evidence?.fallback).not.toContain('db-mysql-dc1-replica');
     expect(evidence?.fallback).not.toContain('storage-nfs-dc1-01');
   });
@@ -784,6 +786,9 @@ describe('current metrics domain evidence providers', () => {
       },
     });
     expect(evidence?.fallback).toContain('정상 범위 서버');
+    expect(evidence?.fallback).toContain('📌 **서버별 현황**');
+    expect(evidence?.fallback).toContain('1. **api-was-dc1-01**');
+    expect(evidence?.fallback).not.toContain('• 서버별:');
     expect(evidence?.fallback).toContain('api-was-dc1-01');
     expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
     expect(evidence?.fallback).not.toContain('storage-nfs-dc1-01');

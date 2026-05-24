@@ -109,6 +109,8 @@ describe('portfolio standalone monitoring demo evidence', () => {
       statusFilter: 'healthy-only',
     });
     expect(evidence?.fallback).toContain('정상 범위 서버 목록');
+    expect(evidence?.fallback).toContain('📌 **서버별 현황**');
+    expect(evidence?.fallback).not.toContain('• 서버별:');
     expect(evidence?.fallback).toContain('web-nginx-dc1-01');
     expect(evidence?.fallback).toContain('api-was-dc1-02');
     expect(evidence?.fallback).not.toContain('서버 현황 요약');

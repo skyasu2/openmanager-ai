@@ -24,4 +24,14 @@ describe('createMonitoringSystemPrompt', () => {
     expect(prompt).toContain('maxmemory');
     expect(prompt).toContain('key TTL');
   });
+
+  it('guides list answers toward readable numbered sections', () => {
+    const prompt = createMonitoringSystemPrompt();
+
+    expect(prompt).toContain('목록 출력 포맷');
+    expect(prompt).toContain('번호 목록');
+    expect(prompt).toContain('기준');
+    expect(prompt).toContain('대상/개수');
+    expect(prompt).toContain('Markdown table보다 번호 목록');
+  });
 });

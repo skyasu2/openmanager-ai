@@ -197,6 +197,22 @@ function formatMetricPercent(value: number): string {
   return `${round1(value)}%`;
 }
 
+function formatServerStatus(server: SnapshotServer): string {
+  return server.status ?? 'unknown';
+}
+
+function buildNumberedServerSection(title: string, rows: string[]): string[] {
+  return ['', `📌 **${title}**`, ...rows.map((row, index) => `${index + 1}. ${row}`)];
+}
+
+function formatServerMetricLine(
+  server: SnapshotServer,
+  metricLabel: string,
+  value: number
+): string {
+  return `**${server.id}**: ${metricLabel} ${formatMetricPercent(value)} (상태 ${formatServerStatus(server)})`;
+}
+
 function formatTrendDirection(delta: number): string {
   if (delta > 3) return '상승';
   if (delta < -3) return '하락';
@@ -271,12 +287,10 @@ export function buildMetricCurrentAnswer(params: {
       `📊 **${title}**`,
       `• 조건: ${metricLabel} ${operatorSymbol} ${threshold}%`,
       `• 대상: ${targetLabel} 중 ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
-      `• 서버별: ${rows
-        .map(
-          (row) =>
-            `${row.server.id} ${formatMetricPercent(row.value)} (${row.server.status ?? 'unknown'})`
-        )
-        .join(', ')}`,
+      ...buildNumberedServerSection(
+        '서버별 현황',
+        rows.map((row) => formatServerMetricLine(row.server, metricLabel, row.value))
+      ),
     ].join('\n');
   }
 
@@ -296,12 +310,10 @@ export function buildMetricCurrentAnswer(params: {
     `📊 **${targetLabel} ${metricLabel} 현황**`,
     `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
     `• 평균 ${metricLabel}: ${formatMetricPercent(avg)} · 최고 ${max.server.id} ${formatMetricPercent(max.value)} · 최저 ${min.server.id} ${formatMetricPercent(min.value)}`,
-    `• 서버별: ${rows
-      .map(
-        (row) =>
-          `${row.server.id} ${formatMetricPercent(row.value)} (${row.server.status ?? 'unknown'})`
-      )
-      .join(', ')}`,
+    ...buildNumberedServerSection(
+      '서버별 현황',
+      rows.map((row) => formatServerMetricLine(row.server, metricLabel, row.value))
+    ),
   ].join('\n');
 }
 
@@ -408,12 +420,13 @@ export function buildHealthyOnlyServerAnswer(params: {
 
   return [
     ...header,
-    `• 서버별: ${rows
-      .map(
+    ...buildNumberedServerSection(
+      '서버별 현황',
+      rows.map(
         (server) =>
-          `${server.id} (CPU ${formatMetricPercent(getMetricValue(server, 'cpu') ?? 0)}, 메모리 ${formatMetricPercent(getMetricValue(server, 'memory') ?? 0)}, 디스크 ${formatMetricPercent(getMetricValue(server, 'disk') ?? 0)})`
+          `**${server.id}**: CPU ${formatMetricPercent(getMetricValue(server, 'cpu') ?? 0)}, 메모리 ${formatMetricPercent(getMetricValue(server, 'memory') ?? 0)}, 디스크 ${formatMetricPercent(getMetricValue(server, 'disk') ?? 0)}`
       )
-      .join(', ')}`,
+    ),
   ].join('\n');
 }
 
@@ -470,7 +483,12 @@ function buildGroupMetricCompareAnswer(params: {
       `📊 **${only.label} ${metricLabel} 현황** (비교 대상 그룹 데이터 없음)`,
       `• 대상: ${only.rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
       `• 평균 ${metricLabel}: ${formatMetricPercent(only.avg)} · 최고 ${only.max.server.id} ${formatMetricPercent(only.max.value)}`,
-      `• 서버별: ${only.rows.map((row) => `${row.server.id} ${formatMetricPercent(row.value)}`).join(', ')}`,
+      ...buildNumberedServerSection(
+        '서버별 현황',
+        only.rows.map((row) =>
+          formatServerMetricLine(row.server, metricLabel, row.value)
+        )
+      ),
     ].join('\n');
   }
 
@@ -498,14 +516,15 @@ function buildGroupMetricCompareAnswer(params: {
       .map((summary) => `${summary.label} ${formatMetricPercent(summary.avg)}`)
       .join(' · ')}`,
     `• 결론: ${conclusion}`,
-    `• 서버별: ${summaries
-      .map(
-        (summary) =>
-          `${summary.label}: ${summary.rows
-            .map((row) => `${row.server.id} ${formatMetricPercent(row.value)}`)
-            .join(', ')}`
+    ...buildNumberedServerSection(
+      '그룹별 서버 현황',
+      summaries.flatMap((summary) =>
+        summary.rows.map(
+          (row) =>
+            `${summary.label} / **${row.server.id}**: ${metricLabel} ${formatMetricPercent(row.value)} (상태 ${formatServerStatus(row.server)})`
+        )
       )
-      .join(' | ')}`,
+    ),
   ].join('\n');
 }
 
@@ -553,17 +572,18 @@ function buildMultiMetricFilterAnswer(params: {
     return [
       `📊 **${targetLabel} ${metricLabels} 복합 부하 상위**`,
       `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
-      `• 서버별 (${metricLabels} 합산 내림차순): ${rows
-        .map((row) => {
+      ...buildNumberedServerSection(
+        `${metricLabels} 합산 내림차순`,
+        rows.map((row) => {
           const metricText = row.values
             .map(
               (entry) =>
                 `${getMetricLabel(entry.metric)} ${formatMetricPercent(entry.value)}`
             )
             .join(', ');
-          return `${row.server.id} [${metricText}]`;
+          return `**${row.server.id}**: ${metricText} (상태 ${formatServerStatus(row.server)})`;
         })
-        .join(', ')}`,
+      ),
     ].join('\n');
   }
 
@@ -640,17 +660,18 @@ function buildMultiMetricFilterAnswer(params: {
     `📊 **${title}**`,
     `• 조건: ${condition}`,
     `• 대상: ${targetLabel} 중 ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
-    `• 서버별: ${rows
-      .map((row) => {
+    ...buildNumberedServerSection(
+      '서버별 현황',
+      rows.map((row) => {
         const metricText = row.values
           .map(
             (entry) =>
               `${getMetricLabel(entry.metric)} ${formatMetricPercent(entry.value)}`
           )
           .join(', ');
-        return `${row.server.id} ${metricText} (${row.server.status ?? 'unknown'})`;
+        return `**${row.server.id}**: ${metricText} (상태 ${formatServerStatus(row.server)})`;
       })
-      .join(', ')}`,
+    ),
   ].join('\n');
 }
 
@@ -710,11 +731,12 @@ export function buildMetricTrendAnswer(params: {
     `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
     `• 현재 평균 ${metricLabel}: ${formatMetricPercent(avgCurrent)} · 24h 평균 ${formatMetricPercent(avg24h)} · 전체 ${formatTrendDirection(avgCurrent - avg24h)}`,
     `• 추세 분포: 상승 ${directionCounts['상승'] ?? 0}대, 안정 ${directionCounts['안정'] ?? 0}대, 하락 ${directionCounts['하락'] ?? 0}대`,
-    `• 현재 ${metricLabel} 상위: ${topRows
-      .map(
+    ...buildNumberedServerSection(
+      `현재 ${metricLabel} 상위`,
+      topRows.map(
         (row) =>
-          `${row.server.id} ${formatMetricPercent(row.current)} (24h 평균 ${formatMetricPercent(row.avg24h)}, ${row.direction} ${row.delta >= 0 ? '+' : ''}${row.delta}%p)`
+          `**${row.server.id}**: 현재 ${metricLabel} ${formatMetricPercent(row.current)} (24h 평균 ${formatMetricPercent(row.avg24h)}, ${row.direction} ${row.delta >= 0 ? '+' : ''}${row.delta}%p)`
       )
-      .join(', ')}`,
+    ),
   ].join('\n');
 }
