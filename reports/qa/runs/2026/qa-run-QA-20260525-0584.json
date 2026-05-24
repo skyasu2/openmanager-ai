@@ -1,0 +1,170 @@
+{
+  "runId": "QA-20260525-0584",
+  "recordedAt": "2026-05-24T15:52:12.919Z",
+  "recordedAtKst": "2026-05-25 00:52:12 KST",
+  "runTitle": "v8.12.28 신규 6문항 AI 어시스턴트 평가 — 디스크필터·Advisor·팔로업·AZ비교·네트워크",
+  "owner": "claude",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_97NxHEcLgvBNUVSCuxAUeuY7232L",
+    "deploymentUrl": "",
+    "commitSha": "8da361db55f29fed08fa36c568419295732a8bd6"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard AI sidebar open",
+    "conversational-ai-qa Q-NEW7 disk threshold filter: monitoring-metric-current",
+    "conversational-ai-qa Q-NEW8 advisor routing: P4 regression confirm",
+    "conversational-ai-qa Q-NEW9 cpu ranking top-3: monitoring-metric-ranking",
+    "conversational-ai-qa Q-NEW10 follow-up pronoun: v8.12.28 partial fix",
+    "conversational-ai-qa Q-NEW11 AZ location compare: monitoring-location-load-balance",
+    "conversational-ai-qa Q-NEW12 network traffic spike: graceful fallback"
+  ],
+  "skippedSurfaces": [
+    "core route smoke",
+    "vision agent",
+    "reporter/analyst tab",
+    "anomaly detection tab"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 2,
+    "failed": 1
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "신규 6문항 AI 라우팅/컨텍스트/데이터 한계 시나리오 포함",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.12.28 배포 후 프로덕션 AI 어시스턴트 동작 검증",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T15:50:52.000Z",
+      "summary": "Current billing period 2026-05-01..2026-05-24T15:50: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "q-new7-disk-threshold",
+      "title": "디스크 60% 초과 서버 목록 — PASS",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "monitoring-metric-current, 2대(83%,71%) 정확 식별",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "q-new9-cpu-ranking",
+      "title": "CPU 상위 3대 랭킹 — PASS",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "monitoring-metric-ranking, 57%/40%/39% + 서버별 확인 항목",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "q-new8-advisor-routing",
+      "title": "P4 재확인: 특정 서버 성능 개선 조언 시 Advisor 대신 AZ 라우팅 오발동",
+      "priority": "P4",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "성능 개선 조언 + 서버 ID 조합 시 location-load-balance로 잘못 라우팅. Advisor 에이전트 진입 조건 보강 필요",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "q-new10-pronoun-resolution",
+      "title": "팔로업 대명사 해석 미완 — 그 서버들 = 전체 18대로 확장",
+      "priority": "P5",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "v8.12.28 히스토리 복원은 됐으나 이전 응답 대상을 대명사로 참조하는 pronoun resolution 미구현",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "q-new11-location-clarification",
+      "title": "DC1-AZ1/AZ2 명시에도 clarification 불필요 발동",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "위치 기반 그룹(DC1-AZ*)은 clarification 스킵 대상에 미포함. 서버 그룹명과 동일한 처리 필요",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "q-new12-network-metric-disclosure",
+      "title": "네트워크 I/O 미보유 시 데이터 부재 미명시 폴백",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "OTel 데이터셋에 네트워크 트래픽 메트릭 없음을 명시하지 않고 서버 건강 요약으로 폴백. 사용자에게 데이터 한계 안내 필요",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "v8.12.28 신규 6문항 테스트 (기존 테스트와 중복 없음)",
+    "PASS 2 / FAIL 1 / PARTIAL 3",
+    "Q-NEW8 P4 Advisor 라우팅 이슈 재현 확인 (wont-fix 백로그 유지)",
+    "Q-NEW10 v8.12.28 follow-up 히스토리 복원은 확인됐으나 pronoun resolution은 별도 이슈",
+    "Q-NEW11 위치 그룹(DC1-AZ*) clarification 스킵 누락 신규 발견",
+    "Q-NEW12 네트워크 I/O 미제공 상황에서 graceful fallback 동작 확인 (명시도 개선 필요)"
+  ],
+  "links": []
+}
