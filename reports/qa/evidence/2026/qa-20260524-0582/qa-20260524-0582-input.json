@@ -1,0 +1,105 @@
+{
+  "runTitle": "6차 AI 어시스턴트 평가 — v8.12.17~25 수정사항 검증 (Playwright MCP)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "/dashboard AI Chat",
+    "monitoring-server-health",
+    "monitoring-metric-ranking",
+    "monitoring-metric-trend"
+  ],
+  "skippedSurfaces": ["자동 보고서", "이상감지 탭", "Advisor agent"],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "5941c23a39149dd30b35213b149a1fd9d6ea4c79"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "browser",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T21:23:00+09:00",
+      "summary": "Vercel production 정상 접속 확인. 프로덕션 앱 v8.12.25 배포 상태 양호, AI 어시스턴트 6문항 응답 빠름.",
+      "evidence": "Playwright MCP 브라우저 직접 확인"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.12.17~25 수정 항목(P2/P3/트렌드 표현/clarification skip) 6문항 전체 PASS. 이전 약점이 체계적으로 해소됨.",
+      "nextAction": "P4(Advisor 빈 응답), P5(세션 컨텍스트) 잔여 약점 수정 검증 필요"
+    }
+  ],
+  "notes": "6차 평가 — v8.12.17~25 신규 수정사항 6문항 전체 PASS. 이전 5차 평가(v8.12.16) P2/P3/마크다운 버그 등 해결 확인. 잔여 미수정: P4(Advisor 빈 응답), P5(세션 컨텍스트). 총점 ~87/100 (이전 85 → +2).",
+  "aiAssistantEvaluation": {
+    "version": "v8.12.25",
+    "evalRound": 6,
+    "questions": [
+      {
+        "id": "Q-NEW1",
+        "question": "정상 운영 중인 서버 목록 알려줘",
+        "evidencePath": "monitoring-server-health",
+        "verdict": "PASS",
+        "latency": "빠름",
+        "notes": "v8.12.17~19 P2 INVERSE_STATUS_PATTERN 수정 확인. 17대 목록 + 기준(CPU<80%/MEM<90%/DISK<85%) 명시. lb-haproxy-dc1-01(CPU 85%) 제외. 마크다운 렌더링 정상."
+      },
+      {
+        "id": "Q-NEW2",
+        "question": "현재 CPU 부하가 가장 낮은 서버 3대 알려줘",
+        "evidencePath": "monitoring-metric-ranking",
+        "verdict": "PASS",
+        "latency": "빠름",
+        "notes": "v8.12.20 P3 MIN_METRIC_PATTERN 수정 확인. 복합 부하 하위 3대: web-nginx-dc1-03(27.8점), api-was-dc1-03(31점), cache-redis-dc1-02(31.2점). 25초 오라우팅 해소."
+      },
+      {
+        "id": "Q-NEW3",
+        "question": "CPU 사용률이 계속 올라가고 있는 서버 있어?",
+        "evidencePath": "monitoring-metric-trend",
+        "verdict": "PASS",
+        "latency": "빠름",
+        "notes": "v8.12.21 METRIC_TREND_PATTERN '계속 올라가고 있는' 패턴 추가 확인. 추세 분포(상승 6/안정 6/하락 6) + 24h 대비 증가량(%p) 출력."
+      },
+      {
+        "id": "Q-NEW4",
+        "question": "lb 서버들 지금 상세 현황 알려줘",
+        "evidencePath": "monitoring-server-health",
+        "verdict": "PASS",
+        "latency": "빠름",
+        "notes": "v8.12.23 명시적 그룹 clarification skip 확인. disambiguation dialog 없이 lb 3대 직접 응답. lb-haproxy-dc1-01 critical CPU 86% 포함."
+      },
+      {
+        "id": "Q-NEW5",
+        "question": "메모리가 꾸준히 증가하는 추세인 서버 있어?",
+        "evidencePath": "monitoring-metric-trend",
+        "verdict": "PASS",
+        "latency": "빠름",
+        "notes": "v8.12.25 '꾸준히' 트렌드 표현 결정적 라우팅 확인. 상승 0대로 정직 고지 — hallucination 없음."
+      },
+      {
+        "id": "Q-NEW6",
+        "question": "어떤 서버가 가장 위험한가요?",
+        "evidencePath": "monitoring-server-health",
+        "verdict": "PASS",
+        "latency": "빠름",
+        "notes": "v8.12.20 isActionNeededQuery '위험한' 패턴 추가 확인. lb-haproxy-dc1-01 즉시 조치 + HAProxy 진단 명령어 제공."
+      }
+    ]
+  }
+}

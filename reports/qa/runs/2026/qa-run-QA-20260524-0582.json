@@ -61,7 +61,13 @@
       "url": ""
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "QA-0582 original qa:record input with six-question details",
+      "path": "reports/qa/evidence/2026/qa-20260524-0582/qa-20260524-0582-input.json"
+    }
+  ],
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],
