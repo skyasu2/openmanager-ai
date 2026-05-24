@@ -128,4 +128,59 @@ describe('resolveDirectRoutingTarget', () => {
       reason: 'Direct routing (explicit remediation pre-filter)',
     });
   });
+
+  it('keeps single-server operational advice on Advisor before metric semantic routing', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          suggestedAgent: 'Advisor Agent',
+          confidence: 0.87,
+        },
+        {
+          intentFrame: frame({
+            capabilityId: 'monitoring.metric_ranking',
+            intent: 'metric_ranking',
+            scope: 'entity',
+            targets: ['db-mysql-dc1-primary'],
+            metric: 'disk',
+            aggregation: 'top_n',
+            executionMode: 'single',
+            confidence: 0.93,
+          }),
+        }
+      )
+    ).toMatchObject({
+      agentName: 'Advisor Agent',
+      source: 'pre_filter',
+      reason: 'Direct routing (explicit remediation pre-filter)',
+    });
+  });
+
+  it('keeps broad metric ranking on semantic routing even with advisory wording', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          suggestedAgent: 'Advisor Agent',
+          confidence: 0.87,
+        },
+        {
+          intentFrame: frame({
+            capabilityId: 'monitoring.metric_ranking',
+            intent: 'metric_ranking',
+            scope: 'whole_fleet',
+            targets: [],
+            metric: 'cpu',
+            aggregation: 'top_n',
+            executionMode: 'single',
+            confidence: 0.93,
+          }),
+        }
+      )
+    ).toMatchObject({
+      agentName: 'Metrics Query Agent',
+      source: 'semantic_frame',
+    });
+  });
 });

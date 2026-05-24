@@ -61,6 +61,36 @@ describe('current metrics domain evidence providers', () => {
     ).toBeNull();
   });
 
+  it('does not claim single-server performance advice as metric ranking evidence', async () => {
+    const request = {
+      ...createEvidenceRequest(
+        'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘'
+      ),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_ranking',
+        capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+        scope: 'entity',
+        targets: ['db-mysql-dc1-primary'],
+        metric: 'disk',
+        timeWindow: 'current',
+        aggregation: 'top_n',
+        topN: 3,
+        ambiguity: 'low',
+        executionMode: 'single',
+        confidence: 0.93,
+      },
+    };
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toBeNull();
+    expect(monitoringMetricRankingEvidenceProvider.canHandle(request)).toBe(
+      false
+    );
+    await expect(
+      monitoringMetricRankingEvidenceProvider.resolve(request)
+    ).resolves.toBeNull();
+  });
+
   it('resolves current metric ranking with deterministic answer metadata', async () => {
     const evidence = await monitoringMetricRankingEvidenceProvider.resolve(
       createEvidenceRequest('현재 CPU 사용률 상위 3대 알려줘')

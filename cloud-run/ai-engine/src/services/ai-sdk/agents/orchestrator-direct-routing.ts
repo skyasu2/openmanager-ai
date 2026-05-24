@@ -62,6 +62,18 @@ function isExplicitAdvisorPreFilter(preFilterResult: PreFilterResult): boolean {
   );
 }
 
+function shouldAdvisorPreFilterOverrideSemanticFrame(
+  preFilterResult: PreFilterResult,
+  semanticAgent: string,
+  context: DirectRoutingContext
+): boolean {
+  return (
+    isExplicitAdvisorPreFilter(preFilterResult) &&
+    (semanticAgent === 'Analyst Agent' ||
+      context.intentFrame?.scope !== 'whole_fleet')
+  );
+}
+
 export function resolveDirectRoutingTarget(
   preFilterResult: PreFilterResult,
   context: DirectRoutingContext = {}
@@ -69,8 +81,12 @@ export function resolveDirectRoutingTarget(
   const semanticAgent = resolveSemanticFrameAgent(context.intentFrame);
   if (semanticAgent) {
     if (
-      semanticAgent === 'Analyst Agent' &&
-      isExplicitAdvisorPreFilter(preFilterResult)
+      semanticAgent !== 'Advisor Agent' &&
+      shouldAdvisorPreFilterOverrideSemanticFrame(
+        preFilterResult,
+        semanticAgent,
+        context
+      )
     ) {
       return {
         agentName: 'Advisor Agent',

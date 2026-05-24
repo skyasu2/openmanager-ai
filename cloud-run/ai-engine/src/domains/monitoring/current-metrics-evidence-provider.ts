@@ -14,7 +14,10 @@ import {
   type QueryOperator,
   type QueryRankOrder,
 } from '../../services/ai-sdk/agents/orchestrator-query-intent';
-import { FORCE_KB_QUERY_PATTERN } from '../../services/ai-sdk/routing/query-routing-signals';
+import {
+  FORCE_KB_QUERY_PATTERN,
+  shouldPreferAdvisorForOperationalAdvice,
+} from '../../services/ai-sdk/routing/query-routing-signals';
 import { isServiceCommandGuidanceQuery } from '../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 import {
   MONITORING_DOMAIN_ID,
@@ -769,6 +772,7 @@ export function parseCurrentMetricsEvidenceRequest(
   request: DomainEvidenceRequest
 ): ParsedCurrentMetricsEvidenceRequest | null {
   if (FORCE_KB_QUERY_PATTERN.test(request.message)) return null;
+  if (shouldPreferAdvisorForOperationalAdvice(request.message)) return null;
 
   return (
     parseCurrentMetricsFrame(request) ?? parseCurrentMetricsMessage(request)

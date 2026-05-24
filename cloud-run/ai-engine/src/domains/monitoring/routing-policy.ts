@@ -26,6 +26,7 @@ import {
   REPORTER_QUERY_PATTERN,
   isFormattingOnlyReportRequest,
   extractQueryRoutingSignals,
+  shouldPreferAdvisorForOperationalAdvice,
 } from '../../services/ai-sdk/routing/query-routing-signals';
 import { createRoutingDecisionTrace } from '../../services/ai-sdk/routing/routing-decision-trace';
 import { resolveMonitoringSemanticFrameRoute } from '../../services/ai-sdk/routing/semantic-frame-policy';
@@ -95,6 +96,10 @@ export function selectExecutionMode(
     return 'multi';
   }
 
+  if (shouldPreferAdvisorForOperationalAdvice(q)) {
+    return 'multi';
+  }
+
   const frameMode = resolveIntentFrameExecutionMode(intentFrame);
   if (frameMode) {
     return frameMode;
@@ -160,12 +165,21 @@ export function getIntentCategory(
   if (FORCE_KB_QUERY_PATTERN.test(q)) return 'advisor';
 
   const semanticCategory = resolveIntentFrameCategory(intentFrame);
-  if (semanticCategory) return semanticCategory;
+  if (
+    semanticCategory &&
+    !(
+      semanticCategory === 'metrics' &&
+      shouldPreferAdvisorForOperationalAdvice(q)
+    )
+  ) {
+    return semanticCategory;
+  }
 
   if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) return 'anomaly';
   if (TOOL_ROUTING_PATTERNS.prediction.test(q)) return 'prediction';
   if (TOOL_ROUTING_PATTERNS.math.test(q)) return 'math';
   if (TOOL_ROUTING_PATTERNS.rca.test(q)) return 'rca';
+  if (shouldPreferAdvisorForOperationalAdvice(q)) return 'advisor';
   if (TOOL_ROUTING_PATTERNS.advisor.test(q)) return 'advisor';
   if (TOOL_ROUTING_PATTERNS.logs.test(q)) return 'logs';
   if (TOOL_ROUTING_PATTERNS.serverGroup.test(q)) return 'serverGroup';

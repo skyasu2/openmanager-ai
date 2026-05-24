@@ -11,6 +11,7 @@
  */
 
 import { INVERSE_STATUS_PATTERN, MIN_METRIC_PATTERN } from '../routing/routing-patterns';
+import { shouldPreferAdvisorForOperationalAdvice } from '../routing/query-routing-signals';
 
 export type QueryIntent =
   | 'data-lookup'     // Show current state/overview
@@ -181,6 +182,10 @@ export function classifyQueryIntent(query: string): IntentClassification {
 
   if (PREDICTIVE_SIGNALS.test(query)) {
     return { intent: 'predictive', confidence: 'high', metric, statusValue };
+  }
+
+  if (shouldPreferAdvisorForOperationalAdvice(query)) {
+    return { intent: 'advisory', confidence: 'high', metric, statusValue };
   }
 
   // Minimum-value ranking: "부하 가장 낮은", "CPU 최저 서버"

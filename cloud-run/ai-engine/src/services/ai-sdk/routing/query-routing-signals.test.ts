@@ -14,6 +14,7 @@ import {
   extractQueryRoutingSignals,
   mapQuerySignalsToIntentCategory,
   MONITORING_RUNTIME_ROUTING_SOURCE,
+  shouldPreferAdvisorForOperationalAdvice,
 } from './query-routing-signals';
 
 describe('extractQueryRoutingSignals', () => {
@@ -153,6 +154,23 @@ describe('extractQueryRoutingSignals', () => {
     expect(genericPerformanceAdviceSignals.preFilter.suggestedAgent).toBe(
       'Advisor Agent'
     );
+
+    const qNew13Signals = extractQueryRoutingSignals(
+      'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘'
+    );
+    expect(qNew13Signals.intent).toBe('advisor');
+    expect(qNew13Signals.toolIntentCategory).toBe('advisor');
+    expect(qNew13Signals.scope).toBe('single_server');
+    expect(qNew13Signals.preFilter.suggestedAgent).toBe('Advisor Agent');
+    expect(shouldPreferAdvisorForOperationalAdvice(
+      'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘'
+    )).toBe(true);
+
+    expect(
+      shouldPreferAdvisorForOperationalAdvice(
+        '현재 CPU 사용률 상위 5대 서버와 개선 조언 알려줘'
+      )
+    ).toBe(false);
   });
 
   it.each([

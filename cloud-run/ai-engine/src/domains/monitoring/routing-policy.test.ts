@@ -107,6 +107,24 @@ describe('selectExecutionMode', () => {
       ).toBe('single');
     });
 
+    it('keeps explicit single-server ops advice on Advisor before metric intentFrame', () => {
+      const metricFrame = buildSemanticIntentFrame({
+        intent: 'metric_ranking',
+        capabilityId: 'monitoring.metric_ranking',
+        scope: 'entity',
+        targets: ['db-mysql-dc1-primary'],
+        metric: 'disk',
+        aggregation: 'top_n',
+        executionMode: 'single',
+        confidence: 0.93,
+      });
+      const query =
+        'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘';
+
+      expect(selectExecutionMode(query, metricFrame)).toBe('multi');
+      expect(getIntentCategory(query, metricFrame)).toBe('advisor');
+    });
+
     it('falls back when executionMode is unknown or confidence is low', () => {
       expect(
         selectExecutionMode(
