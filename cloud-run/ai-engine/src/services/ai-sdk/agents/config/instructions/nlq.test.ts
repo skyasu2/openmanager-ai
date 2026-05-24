@@ -53,6 +53,14 @@ describe('Metrics Query instruction layering', () => {
     expect(instructions).toContain('filterServers');
   });
 
+  it('injects inverse filter context for normal-range server list wording', () => {
+    const instructions = getNlqInstructions('현재 정상 범위인 서버 목록 보여줘');
+
+    expect(instructions).toContain('역방향 필터 조회');
+    expect(instructions).toContain('filterServers');
+    expect(instructions).toContain('operator는 "<"');
+  });
+
   it('keeps simple lookup prompts free from specialized contexts', () => {
     const instructions = getNlqInstructions('lb-haproxy-dc1-01 상태는?');
 

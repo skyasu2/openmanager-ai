@@ -40,7 +40,7 @@ export interface IntentClassification {
 // Must include "서버" (or list/overview context) to avoid matching
 // general status-check queries like "상태 정상인지 확인해줘".
 const INVERSE_STATUS_SIGNALS =
-  /(?:정상\s*(?:범위|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i;
+  /(?:정상\s*(?:범위(?:\s*인)?|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i;
 
 // Min-metric ranking: "부하 가장 낮은", "CPU 최저", "가장 여유 있는"
 const MIN_METRIC_SIGNALS =

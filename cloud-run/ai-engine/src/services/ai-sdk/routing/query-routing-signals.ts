@@ -45,7 +45,7 @@ export const FORCE_KB_QUERY_PATTERN =
  * → Metrics Query Agent가 data-filter(operator: '<') 경로로 처리해야 함
  */
 export const INVERSE_STATUS_FILTER_PATTERN =
-  /(?:정상\s*(?:범위|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i;
+  /(?:정상\s*(?:범위(?:\s*인)?|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i;
 
 /**
  * 최솟값 랭킹 패턴: 부하/메트릭이 가장 낮은 서버를 요청하는 쿼리
@@ -396,10 +396,22 @@ function buildPreFilterSignal(
     !isFormattingOnlyReportRequest(query) && REPORTER_QUERY_PATTERN.test(query);
   const isAdvisorIntent =
     isForceKnowledgeBaseIntent || ADVISOR_QUERY_PATTERN.test(query);
+  const isInverseFilterIntent = INVERSE_STATUS_FILTER_PATTERN.test(query);
+  const isMinMetricRankingIntent =
+    MIN_METRIC_RANKING_PATTERN.test(query) && !isAnalystIntent;
   const isOpsProcedureIntent =
     /(스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|대응\s*(순서|절차))/i.test(
       query
     );
+
+  if (isInverseFilterIntent || isMinMetricRankingIntent) {
+    return {
+      action: 'suggest_agent',
+      suggestedAgent: 'Metrics Query Agent',
+      confidence: 0.88,
+      reasonCodes: ['prefilter_suggest_nlq'],
+    };
+  }
 
   if (isOpsProcedureIntent) {
     return {

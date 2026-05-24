@@ -147,6 +147,17 @@ describe('extractQueryRoutingSignals', () => {
     expect(optimizationSignals.preFilter.suggestedAgent).toBe('Advisor Agent');
   });
 
+  it.each([
+    '현재 정상 범위인 서버 목록 보여줘',
+    '정상 범위 서버 목록',
+    '이상 없는 서버만 골라줘',
+  ])('routes inverse healthy filter wording to Metrics Query pre-filter: %s', (query) => {
+    const signals = extractQueryRoutingSignals(query);
+
+    expect(signals.preFilter.action).toBe('suggest_agent');
+    expect(signals.preFilter.suggestedAgent).toBe('Metrics Query Agent');
+  });
+
   it('keeps retired analysis-mode reason labels out of the routing source', () => {
     const source = readFileSync(
       new URL('./query-routing-signals.ts', import.meta.url),

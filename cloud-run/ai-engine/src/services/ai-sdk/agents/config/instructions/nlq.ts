@@ -111,7 +111,7 @@ function shouldUseStatusSummaryContext(query: string): boolean {
 }
 
 function isInverseFilterQuery(query: string): boolean {
-  return /(?:정상\s*(?:범위|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i.test(
+  return /(?:정상\s*(?:범위(?:\s*인)?|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i.test(
     query
   );
 }

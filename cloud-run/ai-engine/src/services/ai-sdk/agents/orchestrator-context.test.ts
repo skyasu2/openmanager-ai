@@ -134,6 +134,14 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBe(0.86);
   });
 
+  it('routes normal-range server lists to Metrics Query before generic status summary', () => {
+    const result = preFilterQuery('현재 정상 범위인 서버 목록 보여줘');
+
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('Metrics Query Agent');
+    expect(result.confidence).toBe(0.88);
+  });
+
   it('routes topology queries to Advisor Agent with high confidence', () => {
     const result = preFilterQuery('현재 인프라 토폴로지 알려줘. 관련된 운영 가이드도 연결해줘');
     expect(result.shouldHandoff).toBe(true);
