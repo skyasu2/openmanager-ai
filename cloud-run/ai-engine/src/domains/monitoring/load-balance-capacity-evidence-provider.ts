@@ -47,8 +47,10 @@ interface CapacityRiskRow {
   etaHours: number | null;
 }
 
+// (?<![a-z\d-])dc\d+ — 서버명 내 dc\d+ (예: db-mysql-dc1-primary) 오매칭 방지.
+// dc\d+-?az\d+ (dc1-az1 형식) 은 앞에 배치되어 우선 매칭되므로 영향 없음.
 const LOCATION_LOAD_BALANCE_PATTERN =
-  /(?:az\d*|dc\d+-?az\d+|dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치).{0,40}(?:부하|로드|load|균형|balance|비교|분산|높|낮|어느)|(?:부하|로드|load|균형|balance|비교|분산|높|낮|어느).{0,40}(?:az\d*|dc\d+-?az\d+|dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치)/i;
+  /(?:(?<![a-z\d-])az\d+|dc\d+-?az\d+|(?<![a-z\d-])dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치).{0,40}(?:부하|로드|load|균형|balance|비교|분산|높|낮|어느)|(?:부하|로드|load|균형|balance|비교|분산|높|낮|어느).{0,40}(?:(?<![a-z\d-])az\d+|dc\d+-?az\d+|(?<![a-z\d-])dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치)/i;
 const CAPACITY_FORECAST_PATTERN =
   /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
 

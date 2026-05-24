@@ -145,6 +145,22 @@ describe('monitoring location load balance evidence provider', () => {
     });
   });
 
+  it('does not fire for a server-name containing dc\\d+ with advisor keywords', () => {
+    const advisorQueries = [
+      'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘',
+      'web-dc2-proxy CPU 높은데 튜닝 방법 알려줘',
+      'cache-dc1-primary 메모리 많이 쓰는데 해결 방법',
+    ];
+    for (const message of advisorQueries) {
+      expect(
+        monitoringLocationLoadBalanceEvidenceProvider.canHandle(
+          createLocationRequest(message)
+        ),
+        `should not match: "${message}"`
+      ).toBe(false);
+    }
+  });
+
   it('names requested data centers that are absent from the current snapshot', async () => {
     const result = await monitoringLocationLoadBalanceEvidenceProvider.resolve(
       createSingleDataCenterRequest('DC1과 DC2 어느 데이터센터 부하 높아?')
