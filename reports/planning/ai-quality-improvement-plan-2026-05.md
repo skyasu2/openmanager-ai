@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-22 (QA-20260522-0563 v8.12.9 H-4 production QA 및 H-5 SDD 반영)
+> Last reviewed: 2026-05-24 (H-5 v8.12.10 production QA closure 반영)
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. H-5 semantic-router-v2/fail-closed는 SDD/failing spec 선행 후 local 구현·검증 완료했다. 잔여는 Task F 최종 관찰과 H-5 배포/production QA 여부 판단이다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. H-5 semantic-router-v2/fail-closed는 SDD/failing spec 선행 후 v8.12.10으로 배포했고 `QA-20260522-0564` production QA에서 deterministic fail-closed를 확인했다. 잔여는 Task F 최종 판정, intentFrame 실측 필요성 재판단, Task E 착수 여부다.
 
 ---
 
@@ -548,7 +548,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 ### H-5: Semantic router v2 / monitoring evidence fail-closed 후속
 
-**Status**: Implemented locally, 검증 완료. 커밋/배포/production QA 대기.
+**Status**: Released (v8.12.10) + production QA 완료.
 
 **근거**: H-3/H-4에서 확인된 공통 원인은 개별 문장 표현이 아니라 `intentFrame trust gap`이다. LLM 또는 local semantic frame이 의도를 맞혀도 최종 provider 선택이 raw regex miss에 좌우되면 OTel 없는 일반 LLM 응답으로 빠져 수치 hallucination이 발생한다.
 
@@ -610,7 +610,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - [x] failing regression seed corpus 구성 및 `test(spec):` 커밋 (`6efd2a474`)
 - [x] 구현: capability metadata + supervisor fail-closed response policy
 - [x] targeted/full validation 완료: H-5 targeted 31/31 PASS, domain wiring/stream/domain-pack targeted 58/58 PASS, AI Engine full 1414/1414 PASS, root `test:contract` PASS, docs checks PASS
-- [ ] 배포 및 production QA 여부 판단
+- [x] 배포 및 production QA 완료: v8.12.10 GitLab pipeline `2546194670`, Cloud Run `/health` 8.12.10, `QA-20260522-0564` direct Cloud Run fail-closed smoke PASS
 
 ---
 
@@ -733,6 +733,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - Task E는 failing test 선행 커밋 없이는 구현하지 않는다.
 - Task G는 failing regression test와 구현 커밋을 분리하고, AI Engine targeted tests/type-check를 통과한다.
 - Task H는 H-1/H-2 v8.12.6 배포 완료, H-3 v8.12.7 배포 완료 상태다. QA-0562에서 확인된 H-4 후보는 구현 여부를 별도 판단하고, 착수 시 failing regression test를 먼저 추가한다.
+- Task H-5는 v8.12.10 배포와 `QA-20260522-0564` production QA로 완료 처리한다.
 - Task I-1은 v8.12.6 배포 완료 상태로 유지하고, 서버 비교 쿼리 수치 오류 재현 시 새 회귀 테스트로 재개한다.
 - Task I-2는 prompt/instruction 힌트는 v8.12.6 배포 완료. KRL seed 변경으로 확장할 때만 `rag:analyze` governance PASS를 검증한다.
 - Task I-3은 v8.12.6 배포 완료. 레이블/텍스트 변경 수준이므로 추가 SDD 게이트는 없다.
