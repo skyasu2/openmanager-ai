@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-24 (session memory portfolio deferral and standalone QA priority)
+> Last reviewed: 2026-05-24 (Z.AI stability gate closure)
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. H-5 semantic-router-v2/fail-closed는 SDD/failing spec 선행 후 v8.12.10으로 배포했고 `QA-20260522-0564` production QA에서 deterministic fail-closed를 확인했다. 2026-05-24 기준 Task E Supabase 장기 세션 메모리는 portfolio-deferred로 낮추고, 다음 단계는 DB/Cloud Run 스펙 증설 없는 standalone 운영 질의 회귀 고정이다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. H-5 semantic-router-v2/fail-closed는 SDD/failing spec 선행 후 v8.12.10으로 배포했고 `QA-20260522-0564` production QA에서 deterministic fail-closed를 확인했다. 2026-05-24 기준 Task E Supabase 장기 세션 메모리는 portfolio-deferred, Task J standalone 운영 질의 guard는 완료, Task F Z.AI 안정성 관찰 게이트는 provider-attributed 오류 0건으로 완료 처리했다.
 
 ---
 
@@ -27,7 +27,7 @@
 | KRL grounded synthesis | v8.11.191~192 신규 도입, v8.11.192 OTel criteria production QA 완료 | production 추가 호출은 변경 발생 시만 수행 |
 | KB corpus | 67건 (target 72, hard max 80), governance PASS | 현 상태 유지 |
 | 세션 메모리 | session-memory.ts 71줄, 최대 20메시지, Redis TTL 1시간 | 현행 유지. 장기 기억은 portfolio-deferred, standalone 질의 정확도 우선 |
-| Z.AI 안정성 | Reporter primary 편입 5일차 | 안정성 관찰 게이트 통과 |
+| Z.AI 안정성 | Reporter primary 편입 후 7일+ 관찰 | availability/fallback 안정 판정. Latency는 별도 추적 |
 | intentFrame 신뢰도 | 0.8 임계값, 실제 적중률 미측정 | 실측 후 임계값 교정 |
 | Redis R-5 | 예산 초안 완료, 실측 보정 대기 | dashboard/management API 접근 가능 시만 보정 |
 | bundlemon | warn-first 관찰 중 (2026-05-30 마일스톤) | blocking 승격 여부 결정 |
@@ -46,7 +46,7 @@
 | Task C KRL corpus 보강 | 미진행 | 현재 67건, target 72/hard 80, `security=5`, `incident=9`, governance PASS. 추가 seed는 필요성이 없다. |
 | Task D intentFrame 10회 live sampling | 보류 | 실 LLM 호출과 Langfuse trace 접근이 필요하다. 임계값 변경 근거가 생길 때 별도 측정한다. |
 | Task E Supabase session memory | Portfolio-deferred | 비용 0원 범위 구현은 가능하지만 DB/RLS/RPC/pruning/QA 복잡도 대비 포트폴리오 효과가 낮다. 현행 Redis 1시간 TTL을 유지하고, 장기 기억은 핵심 기능으로 홍보하지 않는다. |
-| Task F Z.AI 안정성 | 관찰 지속 | 마감일은 2026-05-23. 현재는 코드 작업 대상이 아니다. |
+| Task F Z.AI 안정성 | 완료 | 2026-05-24 final 관찰에서 Z.AI/GLM provider-attributed ERROR 0건, `config.zai=true`, Cloud Run free-tier guard 유지. Reporter primary 유지. |
 | Task G AZ 집계·Top-N 추세 grounding | Released | v8.12.0 production QA에서 확인된 품질 갭은 failing regression test 선행 후 구현·배포까지 완료됐다. 현재 신규 구현 대상이 아니며, 재현 시 새 회귀 테스트로 재개한다. |
 
 ---
@@ -283,7 +283,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 ---
 
-## Task F: Z.AI 안정성 관찰 게이트 (🟡 추적)
+## Task F: Z.AI 안정성 관찰 게이트 (Completed)
 
 **근거**: v8.11.156(2026-05-16)에 Z.AI(GLM Flash)를 Reporter primary로 편입했다. 현재 5일 경과.
 
@@ -307,17 +307,25 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - Cloud Run free-tier guard 재확인: live service limit `cpu=1;memory=512Mi`, 최근 Cloud Build 30건 `options.machineType` 공란.
 - 기록된 Z.AI Reporter latency 표본은 `QA-20260521-0550`에서 7021ms(TTFB 1200ms, processing 5821ms)로 목표 P95 <3s에는 못 미친다. 다만 현재 증거는 availability/fallback 안정성 이슈가 아니라 latency 추적 이슈로 분리해 보는 것이 맞다.
 
+**2026-05-24 final 관찰**:
+- Cloud Run `/health`: `status=ok`, `version=8.12.19`, `config.zai=true`, Redis `state=closed`, routes ready.
+- Cloud Run free-tier guard: live service limit `cpu=1;memory=512Mi`, 최근 Cloud Build 30건 `options.machineType` 공란.
+- Cloud Run 로그(2026-05-16 이후): `severity>=ERROR AND ("zai" OR "Z.AI" OR "glm")` 검색 결과 0건.
+- 같은 기간 `zai/Z.AI/glm` 전체 검색에는 2026-05-22 incident-report tool fallback 경고와 과거 provider toggle 로그가 잡혔지만, Z.AI provider/model attributed failure는 확인되지 않았다. 2026-05-22 주변 ERROR는 Groq streamText 오류와 Analyst empty-response fallback으로, Z.AI text primary 불안정 근거로 보지 않는다.
+- 최종 판정: Z.AI Reporter primary는 availability/fallback 기준 안정. Reporter primary를 Mistral로 되돌리는 hotfix는 하지 않는다. 단, latency P95 <3s는 표본 부족과 7s 표본 때문에 안정 판정 근거로 쓰지 않고 향후 QA latency rollup에서 별도 관찰한다.
+
 **판단 기준**:
 - 7일 연속 Z.AI 실패율 < 5% → 안정 판정, 이 Task 완료
 - 실패율 ≥ 5% → Reporter primary를 Mistral로 복귀하는 hotfix
 
-**예상 소요**: 관찰만 (코드 작업 없음)
+**예상 소요**: 완료 (코드 작업 없음)
 
-- [ ] 7일 관찰 완료 (마감: 2026-05-23)
+- [x] 7일 관찰 완료 (마감: 2026-05-23)
 - [x] 2026-05-21 중간 관찰 기록
 - [x] 2026-05-22 pre-final 관찰 기록
-- [ ] 안정/불안정 판정 기록
-- [ ] 불안정 시 reporter provider order 복귀 hotfix
+- [x] 2026-05-24 final 관찰 기록
+- [x] 안정 판정 기록
+- [x] 불안정 시 reporter provider order 복귀 hotfix 불필요
 
 ---
 
@@ -753,7 +761,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 | A: grounded KRL production QA | 🟡 조건부 | 부분 완료, 추가 호출 보류 | 변경 시 15~30분 | KRL runtime 변경 시 |
 | B: Redis R-5 완결 | 🟡 사용자 액션 | 접근 권한 대기 | 접근 후 15분 | dashboard/API 가능 시 |
 | C: KRL corpus 보강 | — | No-op | 0분 | coverage FAIL 발생 시 재개 |
-| F: Z.AI 안정성 관찰 | 🟡 추적 | 관찰 중 | 관찰 | 마감: 2026-05-23 |
+| F: Z.AI 안정성 관찰 | 🟢 완료 | Completed | 완료 | provider-attributed ERROR 0건, Reporter primary 유지 |
 | G: AZ 집계·Top-N 추세 grounding | 🔴 High | Released (v8.12.5) | 60~90분 | production QA 회귀 수정 |
 | H: Evidence Provider 라우팅·응답 품질 | 🟡 P2 | Released (v8.12.7) + H-4 Tracking | 조건부 | QA-0562 residual: DC 비교, 운영 우선순위, CPU 위험 수준 표현 |
 | **I-1: 서버 1:1 비교 쿼리 경로** | 🔴 **P1** | **Released (v8.12.6)** | 완료 | `710c6165d` failing test 선행, AI Engine type-check/full test PASS |
@@ -768,7 +776,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 - Task A 추가 QA, Task B 실측, Task D 측정은 조건 충족 시만 수행한다.
 - Task C는 현재 no-op으로 닫고, 재개 조건 발생 전까지 DB/seed 변경을 금지한다.
-- Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
+- Task F는 2026-05-24 final 관찰로 완료. latency는 별도 QA rollup에서 관찰한다.
 - Task E는 portfolio-deferred로 유지한다. 재개 조건 충족 전까지 Supabase migration/RPC/Cloud Run owner propagation을 구현하지 않는다.
 - Task G는 Released 상태다. 같은 증상이 재현될 때만 새 회귀 테스트로 재개한다.
 - Task H는 H-1/H-2 v8.12.6 배포 완료, H-3 v8.12.7 배포 완료 상태다. QA-0562에서 확인된 H-4 후보는 구현 여부를 별도 판단하고, 착수 시 failing regression test를 먼저 추가한다.
