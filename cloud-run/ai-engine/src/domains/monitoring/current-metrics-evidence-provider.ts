@@ -73,7 +73,8 @@ const COMPOSITE_LOAD_RANKING_PATTERN =
   /(?:부하|로드|\bload\b).{0,24}(?:가장\s*)?(?:낮|적|최저|여유|한가)|(?:가장\s*)?(?:낮|적|최저|여유|한가).{0,24}(?:부하|로드|\bload\b)|여유\s*있는\s*서버|한가한\s*서버|available\s+servers?/i;
 const CURRENT_METRIC_GROUP_PATTERN =
   /(?:\b(?:db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend)\b|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
-const METRIC_TREND_PATTERN = /추이|추세|trend|변화|변동/i;
+const METRIC_TREND_PATTERN =
+  /추이|추세|trend|변화|변동|(?:계속|지속|꾸준히|점점).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
 const SERVER_COMPARISON_CONNECTOR_PATTERN =
   /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
