@@ -273,6 +273,42 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('캐시 서버 1대 메모리 현황');
     expect(evidence?.fallback).toContain('cache-redis-dc1-01 83%');
     expect(evidence?.fallback).not.toContain('cache-redis-dc1-02');
+
+    const serverHealthFrameRequest = {
+      ...request,
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        scope: 'entity',
+        targets: ['cache-redis-dc1-01'],
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.94,
+      },
+    };
+
+    expect(
+      parseCurrentMetricsEvidenceRequest(serverHealthFrameRequest)
+    ).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'server-detail-metric',
+      metric: 'memory',
+      targets: ['cache-redis-dc1-01'],
+    });
+    await expect(
+      monitoringMetricCurrentEvidenceProvider.resolve(serverHealthFrameRequest)
+    ).resolves.toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        sourceIntent: 'server-detail-metric',
+        metric: 'memory',
+        targets: ['cache-redis-dc1-01'],
+      },
+    });
   });
 
   it('routes explicit server-to-server metric comparisons to deterministic current metric evidence', async () => {
@@ -448,6 +484,33 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('api-was-dc1-01');
     expect(evidence?.fallback).toContain('api-was-dc1-02');
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
+  it('keeps group health summary prompts on the group-server-list evidence path', () => {
+    expect(
+      parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('애플리케이션 서버 현황 알려줘')
+      )
+    ).toMatchObject({
+      intent: 'server_health',
+      capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+      sourceIntent: 'group-server-list',
+      targets: ['application'],
+    });
+  });
+
+  it('does not treat bare server wording in metric filters as a group list', () => {
+    expect(
+      parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('메모리 70% 이상인 서버는?')
+      )
+    ).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'data-filter',
+      metric: 'memory',
+      threshold: 70,
+    });
   });
 
   it('preserves single metric thresholds when a current metric frame is present', async () => {
@@ -1270,6 +1333,13 @@ describe('current metrics domain evidence providers', () => {
     it('메모리 임계값 쿼리는 metric_trend로 분류되지 않음', () => {
       const parsed = parseCurrentMetricsEvidenceRequest(
         createEvidenceRequest('메모리 70% 이상인 서버는?', { servers: trendServers })
+      );
+      expect(parsed?.intent).not.toBe('metric_trend');
+    });
+
+    it('"계속" 운영 명령은 metric_trend로 분류되지 않음', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('서버를 계속 모니터링해줘', { servers: trendServers })
       );
       expect(parsed?.intent).not.toBe('metric_trend');
     });

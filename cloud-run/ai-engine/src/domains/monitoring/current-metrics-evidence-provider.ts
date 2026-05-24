@@ -77,7 +77,7 @@ const CURRENT_METRIC_GROUP_PATTERN =
 const METRIC_TREND_PATTERN =
   /추이|추세|trend|변화|변동|(?:계속|지속|꾸준히|점점).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)/i;
 const GROUP_SERVER_LIST_PATTERN =
-  /서버(?:들|목록)?|호스트|목록|보여|알려|show|list|servers?|hosts?|instances?|nodes?/i;
+  /서버\s*(?:들|목록|리스트)|호스트\s*(?:목록|리스트)?|목록|리스트|보여|알려|나열|show|list|servers?|hosts?|instances?|nodes?/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
 const SERVER_COMPARISON_CONNECTOR_PATTERN =
   /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
@@ -260,6 +260,28 @@ function parseCurrentMetricsFrame(
   if (!frame || frame.domainId !== MONITORING_DOMAIN_ID) return null;
 
   const capabilityId = request.capability?.id ?? frame.capabilityId;
+  const classification = classifyQueryIntent(request.message);
+  const messageMetric = normalizeSupportedMetric(classification.metric);
+  const explicitServerTargets = extractServerIdTargetsFromMessage(request.message);
+
+  // Raw "server id + metric" evidence is more specific than a broad server_health frame.
+  if (
+    messageMetric &&
+    explicitServerTargets.length === 1 &&
+    !HISTORICAL_OR_TREND_PATTERN.test(request.message) &&
+    (frame.intent === 'server_health' ||
+      capabilityId === MONITORING_SERVER_HEALTH_CAPABILITY_ID)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'server-detail-metric',
+      answerQuery: request.message,
+      metric: messageMetric,
+      targets: explicitServerTargets,
+    };
+  }
+
   if (
     frame.intent === 'server_health' &&
     (capabilityId === undefined ||
@@ -300,7 +322,6 @@ function parseCurrentMetricsFrame(
     normalizeTargets(frame.targets),
     request.message
   );
-  const classification = classifyQueryIntent(request.message);
   const frameThreshold =
     classification.intent === 'data-filter' &&
     classification.metric === metric &&
