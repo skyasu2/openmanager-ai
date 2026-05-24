@@ -484,6 +484,39 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('api-was-dc1-01');
     expect(evidence?.fallback).toContain('api-was-dc1-02');
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+
+    const serverHealthFrameRequest = {
+      ...request,
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        scope: 'group',
+        targets: [],
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.92,
+      },
+    };
+
+    expect(
+      parseCurrentMetricsEvidenceRequest(serverHealthFrameRequest)
+    ).toMatchObject({
+      intent: 'server_health',
+      capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+      sourceIntent: 'group-server-list',
+      targets: ['application'],
+    });
+    await expect(
+      monitoringServerHealthEvidenceProvider.resolve(serverHealthFrameRequest)
+    ).resolves.toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        sourceIntent: 'group-server-list',
+        targets: ['application'],
+      },
+    });
   });
 
   it('keeps group health summary prompts on the group-server-list evidence path', () => {

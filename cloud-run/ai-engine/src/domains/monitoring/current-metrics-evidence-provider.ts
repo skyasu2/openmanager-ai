@@ -299,6 +299,23 @@ function parseCurrentMetricsFrame(
       };
     }
 
+    const groupTarget = inferGroupTargetFromMessage(request.message);
+    if (
+      !messageMetric &&
+      groupTarget &&
+      explicitServerTargets.length === 0 &&
+      classification.intent === 'data-lookup' &&
+      GROUP_SERVER_LIST_PATTERN.test(request.message)
+    ) {
+      return {
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        sourceIntent: 'group-server-list',
+        answerQuery: request.message,
+        targets: [groupTarget],
+      };
+    }
+
     const targets = normalizeTargets(frame.targets);
     const shouldUseRawMessage =
       ACTION_NEEDED_PATTERN.test(request.message) ||
