@@ -261,6 +261,18 @@ function parseCurrentMetricsFrame(
     (capabilityId === undefined ||
       capabilityId === MONITORING_SERVER_HEALTH_CAPABILITY_ID)
   ) {
+    if (isHealthyOnlyServerListMessage(request.message)) {
+      const healthGroupTarget = inferGroupTargetFromMessage(request.message);
+      return {
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        sourceIntent: 'healthy-only',
+        answerQuery: request.message,
+        statusFilter: 'healthy-only',
+        ...(healthGroupTarget && { targets: [healthGroupTarget] }),
+      };
+    }
+
     const targets = normalizeTargets(frame.targets);
     const shouldUseRawMessage =
       ACTION_NEEDED_PATTERN.test(request.message) ||

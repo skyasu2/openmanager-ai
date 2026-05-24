@@ -789,6 +789,57 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('storage-nfs-dc1-01');
   });
 
+  it('preserves healthy-only intent when metadata frame is whole-fleet server health', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve({
+      ...createEvidenceRequest('현재 정상 범위인 서버 목록 보여줘', {
+        timeLabel: '08:50',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 43,
+            memory: 66,
+            disk: 44,
+          },
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'warning',
+            cpu: 45,
+            memory: 91,
+            disk: 44,
+          },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.9,
+      },
+    });
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+        sourceIntent: 'healthy-only',
+        statusFilter: 'healthy-only',
+      },
+    });
+    expect(evidence?.fallback).toContain('정상 범위 서버');
+    expect(evidence?.fallback).toContain('api-was-dc1-01');
+    expect(evidence?.fallback).not.toContain('서버 현황 요약');
+    expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
+  });
+
   it('resolves lowest composite load queries as deterministic ranking evidence', async () => {
     const evidence = await monitoringMetricRankingEvidenceProvider.resolve(
       createEvidenceRequest('지금 부하가 가장 낮은 서버는?', {
