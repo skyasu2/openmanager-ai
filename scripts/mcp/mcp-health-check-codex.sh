@@ -614,6 +614,10 @@ export OPENMANAGER_CODEX_HOME_MODE
 source "$RUNTIME_ENV_RESOLVER"
 # shellcheck source=/dev/null
 source "$PROJECT_ENV_LOADER" codex-mcp
+# resolve-runtime-env.sh is shared with strict launchers and enables errexit
+# when sourced. This health checker handles command failures explicitly so it
+# can keep enough context to print actionable diagnostics.
+set +e
 
 load_expected_servers() {
   if [ ! -f "$CONFIG_FILE" ]; then
@@ -931,6 +935,26 @@ if [ "$MCP_EXIT_CODE" -ne 0 ]; then
   LAST_ERROR="project codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)"
   echo -e "${RED}project codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)${NC}"
   echo "project codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)" >> "$LOG_FILE"
+  if [ "$MCP_EXIT_CODE" -eq 124 ]; then
+    echo -e "${YELLOW}타임아웃 원인 후보${NC}: MCP endpoint handshaking 중 응답이 없을 수 있습니다."
+    echo "타임아웃 원인 후보: MCP endpoint handshaking 중 응답이 없을 수 있습니다." >> "$LOG_FILE"
+    PLAYWRIGHT_URL="$(get_playwright_http_url)"
+    if [ -n "$PLAYWRIGHT_URL" ]; then
+      echo "  - playwright HTTP endpoint configured: $PLAYWRIGHT_URL"
+      echo "  - playwright HTTP endpoint configured: $PLAYWRIGHT_URL" >> "$LOG_FILE"
+      if command -v curl >/dev/null 2>&1 && ! curl -sS -m 2 -o /dev/null "$PLAYWRIGHT_URL" >/dev/null 2>&1; then
+        echo "  - 원인 후보: Windows Playwright MCP 서버가 실행 중이 아닙니다."
+        echo "  - 해결: npm run mcp:playwright:windows:start 후 Codex 세션을 재시작"
+        echo "  - 우회: npm run mcp:playwright:mode:stdio 후 Codex 세션을 재시작"
+        {
+          echo "  - 원인 후보: Windows Playwright MCP 서버가 실행 중이 아닙니다."
+          echo "  - 해결: npm run mcp:playwright:windows:start 후 Codex 세션을 재시작"
+          echo "  - 우회: npm run mcp:playwright:mode:stdio 후 Codex 세션을 재시작"
+        } >> "$LOG_FILE"
+        record_warning "playwright" "HTTP endpoint unreachable: $PLAYWRIGHT_URL"
+      fi
+    fi
+  fi
   echo "$MCP_OUTPUT" >> "$LOG_FILE"
   exit 2
 fi
