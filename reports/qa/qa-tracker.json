@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-24T02:47:28.531Z"
+    "updatedAt": "2026-05-24T05:05:22.864Z"
   },
   "sequence": {
-    "nextRunNumber": 577
+    "nextRunNumber": 578
   },
   "summary": {
-    "totalRecordedRuns": 574,
-    "totalRuns": 459,
+    "totalRecordedRuns": 575,
+    "totalRuns": 460,
     "excludedRuns": 115,
-    "totalChecks": 4127,
-    "totalPassed": 3955,
+    "totalChecks": 4132,
+    "totalPassed": 3959,
     "totalFailed": 151,
     "completionRate": 100,
     "completedItems": 652,
@@ -21,10 +21,10 @@
     "wontFixItems": 44,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260524-0576",
-    "lastRecordedAt": "2026-05-24T02:47:28.531Z",
-    "latestRecordedRunId": "QA-20260524-0576",
-    "latestRecordedAt": "2026-05-24T02:47:28.531Z"
+    "lastRunId": "QA-20260524-0577",
+    "lastRecordedAt": "2026-05-24T05:05:22.864Z",
+    "latestRecordedRunId": "QA-20260524-0577",
+    "latestRecordedAt": "2026-05-24T05:05:22.864Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -67250,6 +67250,59 @@
       "expertCount": 3,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260524-0577",
+      "recordedAt": "2026-05-24T05:05:22.864Z",
+      "recordedAtKst": "2026-05-24 14:05:22 KST",
+      "title": "v8.12.19 Playwright MCP QA — P1~P4 routing fix regression + portfolio",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260524-0577.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "6737affb464eccbb787ce1a81039f9e398743e24"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "AI 어시스턴트 채팅",
+        "healthy-only filter",
+        "asc metric ranking",
+        "inverse status filter",
+        "Advisor P4",
+        "portfolio standalone query"
+      ],
+      "skippedSurfaces": [
+        "자동 보고서",
+        "이상감지",
+        "E2E 인증"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
