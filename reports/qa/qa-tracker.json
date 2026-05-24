@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-24T06:37:24.413Z"
+    "updatedAt": "2026-05-24T07:21:06.892Z"
   },
   "sequence": {
-    "nextRunNumber": 579
+    "nextRunNumber": 580
   },
   "summary": {
-    "totalRecordedRuns": 576,
-    "totalRuns": 461,
+    "totalRecordedRuns": 577,
+    "totalRuns": 462,
     "excludedRuns": 115,
-    "totalChecks": 4133,
-    "totalPassed": 3960,
+    "totalChecks": 4139,
+    "totalPassed": 3964,
     "totalFailed": 151,
-    "completionRate": 100,
-    "completedItems": 652,
-    "pendingItems": 0,
+    "completionRate": 99.85,
+    "completedItems": 656,
+    "pendingItems": 1,
     "deferredItems": 0,
-    "wontFixItems": 44,
+    "wontFixItems": 46,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260524-0578",
-    "lastRecordedAt": "2026-05-24T06:37:24.413Z",
-    "latestRecordedRunId": "QA-20260524-0578",
-    "latestRecordedAt": "2026-05-24T06:37:24.413Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260524-0579",
+    "lastRecordedAt": "2026-05-24T07:21:06.892Z",
+    "latestRecordedRunId": "QA-20260524-0579",
+    "latestRecordedAt": "2026-05-24T07:21:06.892Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16433,6 +16433,174 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-24T02:01:17.511Z"
+    },
+    "ai-assistant-numbered-server-list-readability": {
+      "id": "ai-assistant-numbered-server-list-readability",
+      "title": "AI Assistant 서버 목록 가독성 개선",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0579",
+      "firstSeenAt": "2026-05-24T07:21:06.892Z",
+      "lastSeenRunId": "QA-20260524-0579",
+      "lastSeenAt": "2026-05-24T07:21:06.892Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Q-NEW2 메모리 70% 이상 서버 질의에서 monitoring-metric-current 경로가 📌 서버별 현황 헤더와 줄바꿈 번호 목록을 적용함.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
+    },
+    "q5-action-needed-risky-wording-route": {
+      "id": "q5-action-needed-risky-wording-route",
+      "title": "위험 서버 질의 ACTION_NEEDED_PATTERN 라우팅 보강",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0579",
+      "firstSeenAt": "2026-05-24T07:21:06.892Z",
+      "lastSeenRunId": "QA-20260524-0579",
+      "lastSeenAt": "2026-05-24T07:21:06.892Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "d769571f2 current-metrics-evidence-provider 수정, Q5 검증에서 monitoring-server-health evidence 정상 진입 확인.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
+    },
+    "q5-is-action-needed-query-risk-pattern": {
+      "id": "q5-is-action-needed-query-risk-pattern",
+      "title": "isActionNeededQuery 위험 서버 표현 확장",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0579",
+      "firstSeenAt": "2026-05-24T07:21:06.892Z",
+      "lastSeenRunId": "QA-20260524-0579",
+      "lastSeenAt": "2026-05-24T07:21:06.892Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "9772284fd routing-patterns 중앙화 및 orchestrator-summary 경로에서 검증됨.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
+    },
+    "az-load-balance-comparison-routing": {
+      "id": "az-load-balance-comparison-routing",
+      "title": "AZ 부하 비교 질의 라우팅 검증",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260524-0579",
+      "firstSeenAt": "2026-05-24T07:21:06.892Z",
+      "lastSeenRunId": "QA-20260524-0579",
+      "lastSeenAt": "2026-05-24T07:21:06.892Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Q-NEW5 DC1-AZ1 vs DC1-AZ2 부하 비교에서 monitoring-location-load-balance 경로가 3개 AZ 수치를 정확히 비교함.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
+    },
+    "trend-routing": {
+      "id": "trend-routing",
+      "title": "트렌드 상승 질의가 monitoring-metric-trend 경로로 라우팅되지 않음",
+      "priority": "P2",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260524-0579",
+      "firstSeenAt": "2026-05-24T07:21:06.892Z",
+      "lastSeenRunId": "QA-20260524-0579",
+      "lastSeenAt": "2026-05-24T07:21:06.892Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Q-NEW6 '메모리 트렌드 상승 서버' 질의가 트렌드 특화 경로 대신 LLM inference로 처리되어 현재 상태 위주 응답을 반환함.",
+      "lastNote": "release-blocking 아님. 다만 트렌드 질의 품질 회귀를 막기 위해 별도 추적 대상으로 유지.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "tracking-only AI routing quality gap",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
+    },
+    "ranking-min-advice": {
+      "id": "ranking-min-advice",
+      "title": "최저값 랭킹 응답에도 경고성 확인 항목이 표시됨",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260524-0579",
+      "firstSeenAt": "2026-05-24T07:21:06.892Z",
+      "lastSeenRunId": "QA-20260524-0579",
+      "lastSeenAt": "2026-05-24T07:21:06.892Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Q-NEW3 디스크 최저 서버 질의에서 MIN_METRIC_PATTERN은 작동했으나, 낮은 값이 좋은 지표임에도 하위 서버에 동일한 '확인 항목' 문구가 표시됨.",
+      "lastNote": "비차단 UX polish. 낮은 부하/낮은 사용률 랭킹에서는 조치/주의 문구 톤 조정 필요.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "portfolio UX polish",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
+    },
+    "numbered-list-accordion-split": {
+      "id": "numbered-list-accordion-split",
+      "title": "번호 목록이 핵심 요약/상세 분석 아코디언 경계에서 분리됨",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260524-0579",
+      "firstSeenAt": "2026-05-24T07:21:06.892Z",
+      "lastSeenRunId": "QA-20260524-0579",
+      "lastSeenAt": "2026-05-24T07:21:06.892Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "번호 목록 가독성 개선은 적용됐지만, 일부 응답에서 목록이 핵심 요약/상세 분석 아코디언 경계에 의해 분리되어 보임.",
+      "lastNote": "비차단 렌더링 polish. 다음 AI 응답 UI 개선 시 함께 검토.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "portfolio UI rendering polish",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-24T07:21:06.892Z"
     }
   },
   "runs": [
@@ -67384,6 +67552,156 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260524-0579",
+      "recordedAt": "2026-05-24T07:21:06.892Z",
+      "recordedAtKst": "2026-05-24 16:21:06 KST",
+      "title": "v8.12.20 신규 AI Assistant 6문항 QA - 목록 가독성·위험 라우팅·트렌드 관찰",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260524-0579.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4",
+        "deploymentUrl": "https://openmanager-46f72rxlu-skyasus-projects.vercel.app",
+        "commitSha": "0513c8fdbf99972956b83acd6f1439e37f3b308b"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI Chat - CPU 상위 3개 서버 (monitoring-metric-ranking, PASS)",
+        "AI Chat - 메모리 70% 이상 서버 (monitoring-metric-current, PASS)",
+        "AI Chat - 디스크 최저 서버 (monitoring-metric-ranking, PARTIAL)",
+        "AI Chat - 정상 범위 서버 목록 (monitoring-server-health, PASS)",
+        "AI Chat - DC1-AZ1 vs DC1-AZ2 부하 비교 (monitoring-location-load-balance, PASS)",
+        "AI Chat - 메모리 트렌드 상승 서버 (LLM inference, PARTIAL)"
+      ],
+      "skippedSurfaces": [
+        "core route pack",
+        "dashboard non-AI UI pack",
+        "modal/detail pack",
+        "observability pack",
+        "vision live smoke"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [
+        {
+          "surface": "AI Chat - CPU 상위 3개 서버",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "provided Playwright MCP QA summary"
+        },
+        {
+          "surface": "AI Chat - 메모리 70% 이상 서버",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "provided Playwright MCP QA summary"
+        },
+        {
+          "surface": "AI Chat - 디스크 최저 서버",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "provided Playwright MCP QA summary"
+        },
+        {
+          "surface": "AI Chat - 정상 범위 서버 목록",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "provided Playwright MCP QA summary"
+        },
+        {
+          "surface": "AI Chat - DC1-AZ1 vs DC1-AZ2 부하 비교",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "provided Playwright MCP QA summary"
+        },
+        {
+          "surface": "AI Chat - 메모리 트렌드 상승 서버",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "single-agent",
+          "latencyMs": 0,
+          "classification": "drift",
+          "driftReasonCodes": [
+            "execution_path_mismatch"
+          ],
+          "source": "provided Playwright MCP QA summary"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "v8.12.20 신규 6문항 평가 결과 4 PASS / 2 PARTIAL. 핵심 개선사항인 목록 가독성, 위험 서버 라우팅, AZ 비교는 정상 동작했지만 '계속 올라가는' 트렌드 질의가 monitoring-metric-trend가 아닌 LLM inference 경로로 처리됨.",
+          "nextAction": "trend-routing P2 항목을 별도 추적하고, monitoring-metric-trend 라우팅 패턴 보강 여부를 판단한다."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-24T07:10:13Z",
+          "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-24T07:10:13Z: effective=15.9621 USD, billed=0.0000 USD. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run ai-engine",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab Pipeline v8.12.20",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548881038"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel Production Deployment",
+          "url": "https://openmanager-46f72rxlu-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 4,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 2
     }
   ],
   "experts": {
@@ -67392,17 +67710,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 297,
+      "seenCount": 298,
       "appropriateCount": 254,
-      "partialCount": 43,
+      "partialCount": 44,
       "inappropriateCount": 0,
-      "improvementNeededCount": 60,
-      "lastRunId": "QA-20260524-0578",
-      "lastSeenAt": "2026-05-24T06:37:24.413Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Q5 위험 서버 라우팅 수정이 isActionNeededQuery 패턴 확장으로 정상 처리됨을 확인",
-      "lastNextAction": ""
+      "improvementNeededCount": 61,
+      "lastRunId": "QA-20260524-0579",
+      "lastSeenAt": "2026-05-24T07:21:06.892Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "v8.12.20 신규 6문항 평가 결과 4 PASS / 2 PARTIAL. 핵심 개선사항인 목록 가독성, 위험 서버 라우팅, AZ 비교는 정상 동작했지만 '계속 올라가는' 트렌드 질의가 monitoring-metric-trend가 아닌 LLM inference 경로로 처리됨.",
+      "lastNextAction": "trend-routing P2 항목을 별도 추적하고, monitoring-metric-trend 라우팅 패턴 보강 여부를 판단한다."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

@@ -1,0 +1,253 @@
+{
+  "runId": "QA-20260524-0579",
+  "recordedAt": "2026-05-24T07:21:06.892Z",
+  "recordedAtKst": "2026-05-24 16:21:06 KST",
+  "runTitle": "v8.12.20 신규 AI Assistant 6문항 QA - 목록 가독성·위험 라우팅·트렌드 관찰",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4",
+    "deploymentUrl": "https://openmanager-46f72rxlu-skyasus-projects.vercel.app",
+    "commitSha": "0513c8fdbf99972956b83acd6f1439e37f3b308b"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI Chat - CPU 상위 3개 서버 (monitoring-metric-ranking, PASS)",
+    "AI Chat - 메모리 70% 이상 서버 (monitoring-metric-current, PASS)",
+    "AI Chat - 디스크 최저 서버 (monitoring-metric-ranking, PARTIAL)",
+    "AI Chat - 정상 범위 서버 목록 (monitoring-server-health, PASS)",
+    "AI Chat - DC1-AZ1 vs DC1-AZ2 부하 비교 (monitoring-location-load-balance, PASS)",
+    "AI Chat - 메모리 트렌드 상승 서버 (LLM inference, PARTIAL)"
+  ],
+  "skippedSurfaces": [
+    "core route pack",
+    "dashboard non-AI UI pack",
+    "modal/detail pack",
+    "observability pack",
+    "vision live smoke"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI Chat - CPU 상위 3개 서버",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "provided Playwright MCP QA summary"
+    },
+    {
+      "surface": "AI Chat - 메모리 70% 이상 서버",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "provided Playwright MCP QA summary"
+    },
+    {
+      "surface": "AI Chat - 디스크 최저 서버",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "provided Playwright MCP QA summary"
+    },
+    {
+      "surface": "AI Chat - 정상 범위 서버 목록",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "provided Playwright MCP QA summary"
+    },
+    {
+      "surface": "AI Chat - DC1-AZ1 vs DC1-AZ2 부하 비교",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "provided Playwright MCP QA summary"
+    },
+    {
+      "surface": "AI Chat - 메모리 트렌드 상승 서버",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 0,
+      "classification": "drift",
+      "driftReasonCodes": [
+        "execution_path_mismatch"
+      ],
+      "source": "provided Playwright MCP QA summary"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "v8.12.20 신규 6문항 평가 결과 4 PASS / 2 PARTIAL. 핵심 개선사항인 목록 가독성, 위험 서버 라우팅, AZ 비교는 정상 동작했지만 '계속 올라가는' 트렌드 질의가 monitoring-metric-trend가 아닌 LLM inference 경로로 처리됨.",
+      "nextAction": "trend-routing P2 항목을 별도 추적하고, monitoring-metric-trend 라우팅 패턴 보강 여부를 판단한다."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T07:10:13Z",
+      "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-24T07:10:13Z: effective=15.9621 USD, billed=0.0000 USD. No unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-numbered-server-list-readability",
+      "title": "AI Assistant 서버 목록 가독성 개선",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Q-NEW2 메모리 70% 이상 서버 질의에서 monitoring-metric-current 경로가 📌 서버별 현황 헤더와 줄바꿈 번호 목록을 적용함.",
+      "note": "",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "q5-action-needed-risky-wording-route",
+      "title": "위험 서버 질의 ACTION_NEEDED_PATTERN 라우팅 보강",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "d769571f2 current-metrics-evidence-provider 수정, Q5 검증에서 monitoring-server-health evidence 정상 진입 확인.",
+      "note": "",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "q5-is-action-needed-query-risk-pattern",
+      "title": "isActionNeededQuery 위험 서버 표현 확장",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "9772284fd routing-patterns 중앙화 및 orchestrator-summary 경로에서 검증됨.",
+      "note": "",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "az-load-balance-comparison-routing",
+      "title": "AZ 부하 비교 질의 라우팅 검증",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Q-NEW5 DC1-AZ1 vs DC1-AZ2 부하 비교에서 monitoring-location-load-balance 경로가 3개 AZ 수치를 정확히 비교함.",
+      "note": "",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "trend-routing",
+      "title": "트렌드 상승 질의가 monitoring-metric-trend 경로로 라우팅되지 않음",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "tracking-only AI routing quality gap",
+      "evidence": "Q-NEW6 '메모리 트렌드 상승 서버' 질의가 트렌드 특화 경로 대신 LLM inference로 처리되어 현재 상태 위주 응답을 반환함.",
+      "note": "release-blocking 아님. 다만 트렌드 질의 품질 회귀를 막기 위해 별도 추적 대상으로 유지.",
+      "owner": "project",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ranking-min-advice",
+      "title": "최저값 랭킹 응답에도 경고성 확인 항목이 표시됨",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "portfolio UX polish",
+      "evidence": "Q-NEW3 디스크 최저 서버 질의에서 MIN_METRIC_PATTERN은 작동했으나, 낮은 값이 좋은 지표임에도 하위 서버에 동일한 '확인 항목' 문구가 표시됨.",
+      "note": "비차단 UX polish. 낮은 부하/낮은 사용률 랭킹에서는 조치/주의 문구 톤 조정 필요.",
+      "owner": "project",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "numbered-list-accordion-split",
+      "title": "번호 목록이 핵심 요약/상세 분석 아코디언 경계에서 분리됨",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "portfolio UI rendering polish",
+      "evidence": "번호 목록 가독성 개선은 적용됐지만, 일부 응답에서 목록이 핵심 요약/상세 분석 아코디언 경계에 의해 분리되어 보임.",
+      "note": "비차단 렌더링 polish. 다음 AI 응답 UI 개선 시 함께 검토.",
+      "owner": "project",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "최근 개선사항 검증: buildNumberedServerSection 기반 번호 목록은 monitoring-metric-current 경로에서 적용 확인. ranking 경로에는 아직 미적용.",
+    "최근 개선사항 검증: ACTION_NEEDED_PATTERN '위험한' 추가(d769571f2)는 Q5에서 검증됨.",
+    "최근 개선사항 검증: isActionNeededQuery 패턴 확장(9772284fd)은 orchestrator-summary 경로에서 검증됨.",
+    "Q-NEW1 PASS: CPU 상위 3개 서버 -> monitoring-metric-ranking. db-mysql 68%, api-was 63%/62% 정확.",
+    "Q-NEW2 PASS: 메모리 70% 이상 서버 -> monitoring-metric-current. 번호 목록 형식 적용, 2대 정확.",
+    "Q-NEW3 PARTIAL: 디스크 최저 서버 -> monitoring-metric-ranking. MIN_METRIC_PATTERN은 작동했으나 낮은 값이 좋은 지표인데 경고성 '확인 항목' 문구가 부적절.",
+    "Q-NEW4 PASS: 정상 범위 서버 목록 -> monitoring-server-health. INVERSE_STATUS_PATTERN 작동, 17대 정확.",
+    "Q-NEW5 PASS: DC1-AZ1 vs DC1-AZ2 부하 비교 -> monitoring-location-load-balance. 3개 AZ 모두 비교, 수치 정확.",
+    "Q-NEW6 PARTIAL: 메모리 트렌드 상승 서버 -> LLM inference. trend 특화 경로 미작동, 현재 상태 위주 응답.",
+    "Overall: 4 PASS / 2 PARTIAL / 0 FAIL. 핵심 개선사항은 정상 동작 확인, P2 trend-routing은 별도 추적 권장."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run ai-engine",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab Pipeline v8.12.20",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548881038"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel Production Deployment",
+      "url": "https://openmanager-46f72rxlu-skyasus-projects.vercel.app/"
+    }
+  ]
+}

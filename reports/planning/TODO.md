@@ -13,7 +13,9 @@
 
 ## Active Tasks
 
-현재 즉시 착수 가능한 구현 작업 없음.
+| Task | Priority | Notes |
+|------|----------|-------|
+| AI 품질 - trend-routing 라우팅 보강 | P2 | QA-20260524-0579에서 "메모리 트렌드 상승 서버" 질의가 `monitoring-metric-trend` 대신 LLM inference로 처리됨. 단일 라우팅 버그 수정으로 TODO 1줄 추적. |
 
 ---
 

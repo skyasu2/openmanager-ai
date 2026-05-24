@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-24 15:37:24 KST
+> Generated at: 2026-05-24 16:21:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 576 |
-| Total Runs (Counted) | 461 |
+| Total Recorded Runs | 577 |
+| Total Runs (Counted) | 462 |
 | Non-counted Runs | 115 |
-| Total Checks | 4133 |
-| Passed | 3960 |
+| Total Checks | 4139 |
+| Passed | 3964 |
 | Failed | 151 |
-| Completed Items | 652 |
-| Pending Items | 0 |
+| Completed Items | 656 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 44 |
+| Wont-Fix Items | 46 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260524-0578 (2026-05-24T06:37:24.413Z) |
-| Latest Recorded Run | QA-20260524-0578 (2026-05-24T06:37:24.413Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.85% |
+| Last Counted Run | QA-20260524-0579 (2026-05-24T07:21:06.892Z) |
+| Latest Recorded Run | QA-20260524-0579 (2026-05-24T07:21:06.892Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260524-0578 (2026-05-24T06:37:24.413Z)
+Latest run: QA-20260524-0579 (2026-05-24T07:21:06.892Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | trend-routing P2 항목을 별도 추적하고, monitoring-metric-trend 라우팅 패턴 보강 여부를 판단한다. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period 2026-05-01~2026-05-24: effective=15.31 USD, billed=0.00 USD. No unexpected spike. |
+| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-24T07:10:13Z: effective=15.9621 USD, billed=0.0000 USD. No unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T06:37:24.413Z -> 2026-05-24T06:37:24.413Z (24h)
-- Runs with observations: 8 recorded / 8 counted
-- Samples: 20
+- Window: 2026-05-23T07:21:06.892Z -> 2026-05-24T07:21:06.892Z (24h)
+- Runs with observations: 7 recorded / 7 counted
+- Samples: 17
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -63,18 +63,19 @@ Latest run: QA-20260524-0578 (2026-05-24T06:37:24.413Z)
 | Advisor Agent | streaming | 1 | 2018ms | 2018ms | - | - | - | - | QA-20260524-0574 |
 | capacity-forecast | cloud-run | 1 | 1000ms | 1000ms | - | - | - | - | QA-20260524-0572 |
 | NLQ Agent | deterministic | 2 | 1000ms | 1000ms | - | - | - | - | QA-20260523-0570 |
-| NLQ Agent | groq | 6 | 634ms | 1000ms | - | - | - | - | QA-20260524-0572 |
+| NLQ Agent | groq | 3 | 367ms | 600ms | - | - | - | - | QA-20260524-0572 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T06:37:24.413Z -> 2026-05-24T06:37:24.413Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
-- Drift rate: 0%
+- Window: 2026-05-23T07:21:06.892Z -> 2026-05-24T07:21:06.892Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 6
+- Drift rate: 16.67%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| - | - | 0 | 0% | - | - | - |
+| /api/ai/supervisor/stream/v2 | single-agent | 1 | 100% | 0ms | 0ms | QA-20260524-0579 |
+| /api/ai/supervisor/stream/v2 | deterministic | 5 | 0% | 0ms | 0ms | QA-20260524-0579 |
 
 ## Coverage (Latest Run)
 
@@ -83,28 +84,31 @@ Latest run: QA-20260524-0578 (2026-05-24T06:37:24.413Z)
 - Counts Toward Summary: yes
 - Deployment: dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4 / SHA 0513c8fd
 - Coverage Packs: ai-core
-- Covered Surfaces: /dashboard AI Chat - 위험 서버 쿼리
-- Skipped Surfaces: -
+- Covered Surfaces: AI Chat - CPU 상위 3개 서버 (monitoring-metric-ranking, PASS), AI Chat - 메모리 70% 이상 서버 (monitoring-metric-current, PASS), AI Chat - 디스크 최저 서버 (monitoring-metric-ranking, PARTIAL), AI Chat - 정상 범위 서버 목록 (monitoring-server-health, PASS), AI Chat - DC1-AZ1 vs DC1-AZ2 부하 비교 (monitoring-location-load-balance, PASS), AI Chat - 메모리 트렌드 상승 서버 (LLM inference, PARTIAL)
+- Skipped Surfaces: core route pack, dashboard non-AI UI pack, modal/detail pack, observability pack, vision live smoke
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab Pipeline | [GitLab Pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548881038) | - |
+| general | Cloud Run ai-engine | [Cloud Run ai-engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
+| general | GitLab Pipeline v8.12.20 | [GitLab Pipeline v8.12.20](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548881038) | - |
+| vercel-deployment | Vercel Production Deployment | [Vercel Production Deployment](https://openmanager-46f72rxlu-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Q5 응답 스크린샷 - monitoring-server-health evidence 확인 | `reports/qa/evidence/qa-20260524-0570-q5-response.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260524-0579)
+  next: trend-routing P2 항목을 별도 추적하고, monitoring-metric-trend 라우팅 패턴 보강 여부를 판단한다.
 
 ## Pending Improvements
 
-- None
+- [P2] trend-routing: 트렌드 상승 질의가 monitoring-metric-trend 경로로 라우팅되지 않음 (seen 1회, last QA-20260524-0579)
 
 ## Deferred Improvements
 
@@ -112,7 +116,7 @@ Latest run: QA-20260524-0578 (2026-05-24T06:37:24.413Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 33
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 35
 
 ### Platform Constraint
 
@@ -215,7 +219,11 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] embedded-ai-tab-copy-scope: /dashboard/ai-assistant embedded tabs still show older generic subtitles (seen 1회, last QA-20260523-0569)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] numbered-list-accordion-split: 번호 목록이 핵심 요약/상세 분석 아코디언 경계에서 분리됨 (seen 1회, last QA-20260524-0579)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] planner-shadow-local-decision-drift: Planner shadow still reports local_decision_missing for deterministic monitoring evidence (seen 1회, last QA-20260522-0556)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] ranking-min-advice: 최저값 랭킹 응답에도 경고성 확인 항목이 표시됨 (seen 1회, last QA-20260524-0579)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] reporter-dashboard-threshold-unification: Reporter 영향 서버 기준 대시보드와 불일치 (seen 1회, last QA-20260522-0559)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -305,6 +313,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-load-fragile-phrasing-v811131: Previously failing Korean peak-load phrasings stay grounded to load1 24h whole-fleet evidence on v8.11.131 (completed 1회, last QA-20260512-0483)
 - ai-assistant-load-natural-language-metric-drift-v811128: AI Assistant natural load phrasing stays on load1/24h whole-fleet peak evidence after v8.11.129 semantic parser fix (completed 1회, last QA-20260512-0482)
 - ai-assistant-multi-agent-semantic-trace-v811135: Multi-agent supervisor stream preserves semanticQueryTrace for monitoring metric_peak evidence (completed 1회, last QA-20260512-0485)
+- ai-assistant-numbered-server-list-readability: AI Assistant 서버 목록 가독성 개선 (completed 1회, last QA-20260524-0579)
 - ai-assistant-ops-procedure-artifact: Structure operational scripts, alert rules, and runbooks as ops-procedure artifacts (completed 1회, last QA-20260511-0468)
 - ai-assistant-peak-load-composite-routing-v811131: Composite load peak plus response-guidance prompt should still use deterministic peak evidence (completed 1회, last QA-20260512-0484)
 - ai-assistant-real-chat-e2e-v81136: AI assistant Playwright MCP real chat QA on Vercel v8.11.36 (completed 1회, last QA-20260427-0350)
@@ -514,6 +523,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - auth-success-legacy-route-404-v81197: /auth/success legacy route redirects safely instead of 404 (completed 1회, last QA-20260505-0409)
 - auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
+- az-load-balance-comparison-routing: AZ 부하 비교 질의 라우팅 검증 (completed 1회, last QA-20260524-0579)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
 - biome-optional-chain-4: Biome useOptionalChain 4건 수정 (completed 1회, last QA-20260329-0194)
 - blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 2회, last QA-20260318-0125)
@@ -739,6 +749,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - profile-system-stop-state-drift-v811161: Profile dropdown system stop does not visibly clear running/dashboard state (completed 1회, last QA-20260517-0511)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - provider-fallback-freshness-hardening: OpenRouter vision fallback disabled by default and Cerebras GPT-OSS short-output guard added (completed 1회, last QA-20260519-0536)
+- q5-action-needed-risky-wording-route: 위험 서버 질의 ACTION_NEEDED_PATTERN 라우팅 보강 (completed 1회, last QA-20260524-0579)
+- q5-is-action-needed-query-risk-pattern: isActionNeededQuery 위험 서버 표현 확장 (completed 1회, last QA-20260524-0579)
 - qa-0346-core-routes-proof-gap: QA-20260424-0346 core-routes-smoke evidence gap closed with follow-up route/API smoke (completed 1회, last QA-20260424-0347)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
@@ -881,6 +893,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260524-0579 | 2026-05-24T07:21:06.892Z | targeted | yes | yes | v8.12.20 신규 AI Assistant 6문항 QA - 목록 가독성·위험 라우팅·트렌드 관찰 | 6 | 4 | 1 | 0 | 2 | 1 |
 | QA-20260524-0578 | 2026-05-24T06:37:24.413Z | targeted | yes | yes | v8.12.20 Q5 Fix QA - 위험 서버 조회 라우팅 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0577 | 2026-05-24T05:05:22.864Z | targeted | no | yes | v8.12.19 Playwright MCP QA — P1~P4 routing fix regression + portfolio | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0576 | 2026-05-24T02:47:28.531Z | targeted | yes | yes | v8.12.19 production targeted QA - healthy filter closure | 1 | 1 | 0 | 0 | 0 | 0 |
@@ -900,4 +913,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260522-0562 | 2026-05-22T09:30:00.000Z | targeted | yes | yes | v8.12.7 미테스트 7문항 QA (Playwright MCP) - 신규 패턴·트렌드·운영우선순위·DC비교 | 7 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260522-0561 | 2026-05-22T06:30:00.000Z | regression | yes | yes | v8.12.7 routing regression 재검증 3문항 (Playwright MCP) - 영어+오타·도달시점·Redis가이드 | 3 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260522-0560 | 2026-05-22T05:00:00.000Z | targeted | no | no | v8.12.5 미평가 5문항 QA (Playwright MCP) - AZ비교·capacity-forecast·KRL·Advisor | 5 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260522-0559 | 2026-05-22T04:13:27.604Z | targeted | no | no | v8.12.5 신규 질문 6문항 평가 (Playwright MCP) - 미테스트 영역 집중 | 6 | 0 | 0 | 0 | 3 | 1 |
