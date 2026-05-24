@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-24 14:05:25 KST
+> Generated at: 2026-05-24 15:37:24 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 575 |
-| Total Runs (Counted) | 460 |
+| Total Recorded Runs | 576 |
+| Total Runs (Counted) | 461 |
 | Non-counted Runs | 115 |
-| Total Checks | 4132 |
-| Passed | 3959 |
+| Total Checks | 4133 |
+| Passed | 3960 |
 | Failed | 151 |
 | Completed Items | 652 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260524-0577 (2026-05-24T05:05:22.864Z) |
-| Latest Recorded Run | QA-20260524-0577 (2026-05-24T05:05:22.864Z) |
+| Last Counted Run | QA-20260524-0578 (2026-05-24T06:37:24.413Z) |
+| Latest Recorded Run | QA-20260524-0578 (2026-05-24T06:37:24.413Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260524-0577 (2026-05-24T05:05:22.864Z)
+Latest run: QA-20260524-0578 (2026-05-24T06:37:24.413Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period 2026-05-01~2026-05-24: effective=15.31 USD, billed=0.00 USD. No unexpected spike. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T05:05:22.864Z -> 2026-05-24T05:05:22.864Z (24h)
+- Window: 2026-05-23T06:37:24.413Z -> 2026-05-24T06:37:24.413Z (24h)
 - Runs with observations: 8 recorded / 8 counted
 - Samples: 20
 
@@ -67,7 +67,7 @@ Latest run: QA-20260524-0577 (2026-05-24T05:05:22.864Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T05:05:22.864Z -> 2026-05-24T05:05:22.864Z (24h)
+- Window: 2026-05-23T06:37:24.413Z -> 2026-05-24T06:37:24.413Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -79,23 +79,24 @@ Latest run: QA-20260524-0577 (2026-05-24T05:05:22.864Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA 6737affb
-- Covered Surfaces: AI 어시스턴트 채팅, healthy-only filter, asc metric ranking, inverse status filter, Advisor P4, portfolio standalone query
-- Skipped Surfaces: 자동 보고서, 이상감지, E2E 인증
+- Deployment: dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4 / SHA 0513c8fd
+- Coverage Packs: ai-core
+- Covered Surfaces: /dashboard AI Chat - 위험 서버 쿼리
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab Pipeline | [GitLab Pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548881038) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Q5 응답 스크린샷 - monitoring-server-health evidence 확인 | `reports/qa/evidence/qa-20260524-0570-q5-response.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -880,6 +881,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260524-0578 | 2026-05-24T06:37:24.413Z | targeted | yes | yes | v8.12.20 Q5 Fix QA - 위험 서버 조회 라우팅 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0577 | 2026-05-24T05:05:22.864Z | targeted | no | yes | v8.12.19 Playwright MCP QA — P1~P4 routing fix regression + portfolio | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0576 | 2026-05-24T02:47:28.531Z | targeted | yes | yes | v8.12.19 production targeted QA - healthy filter closure | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0575 | 2026-05-24T02:26:16.493Z | targeted | yes | yes | v8.12.18 production targeted QA - healthy filter recheck | 1 | 0 | 1 | 0 | 0 | 1 |
@@ -899,4 +901,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260522-0561 | 2026-05-22T06:30:00.000Z | regression | yes | yes | v8.12.7 routing regression 재검증 3문항 (Playwright MCP) - 영어+오타·도달시점·Redis가이드 | 3 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260522-0560 | 2026-05-22T05:00:00.000Z | targeted | no | no | v8.12.5 미평가 5문항 QA (Playwright MCP) - AZ비교·capacity-forecast·KRL·Advisor | 5 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260522-0559 | 2026-05-22T04:13:27.604Z | targeted | no | no | v8.12.5 신규 질문 6문항 평가 (Playwright MCP) - 미테스트 영역 집중 | 6 | 0 | 0 | 0 | 3 | 1 |
-| QA-20260522-0558 | 2026-05-22T02:32:10.298Z | targeted | yes | yes | v8.12.5 신규 변경사항 AI 어시스턴트 평가 (5문항) - evidence providers + routing fix | 5 | 0 | 0 | 0 | 2 | 1 |

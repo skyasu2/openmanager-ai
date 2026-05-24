@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260524-0578",
+  "recordedAt": "2026-05-24T06:37:24.413Z",
+  "recordedAtKst": "2026-05-24 15:37:24 KST",
+  "runTitle": "v8.12.20 Q5 Fix QA - 위험 서버 조회 라우팅 검증",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4",
+    "deploymentUrl": "https://openmanager-46f72rxlu-skyasus-projects.vercel.app",
+    "commitSha": "0513c8fdbf99972956b83acd6f1439e37f3b308b"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard AI Chat - 위험 서버 쿼리"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Q5 위험 서버 라우팅 수정이 isActionNeededQuery 패턴 확장으로 정상 처리됨을 확인",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T06:34:41Z",
+      "summary": "Current billing period 2026-05-01~2026-05-24: effective=15.31 USD, billed=0.00 USD. No unexpected spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q5 응답 스크린샷 - monitoring-server-health evidence 확인",
+      "path": "reports/qa/evidence/qa-20260524-0570-q5-response.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Q5 fix: isActionNeededQuery에 위험한|위험도 높은 패턴 추가 (orchestrator-summary-current-status.ts)",
+    "응답: 즉시 조치 대상 없음, 주의 관찰 1대(cache-redis-dc1-01 MEM 83%) - monitoring-server-health evidence 사용",
+    "이전 v8.12.4에서 FAIL(routing)이었던 항목이 PASS로 전환됨"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab Pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548881038"
+    }
+  ]
+}
