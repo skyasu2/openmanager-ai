@@ -1,4 +1,5 @@
 import type { SupervisorMode } from '../supervisor-types';
+import { INVERSE_STATUS_PATTERN, MIN_METRIC_PATTERN } from './routing-patterns';
 
 /**
  * Runtime routing SSOT for monitoring query signals.
@@ -39,21 +40,11 @@ export const ADVISOR_QUERY_PATTERN =
 export const FORCE_KB_QUERY_PATTERN =
   /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)|ssot|single\s*source\s*of\s*truth|pre-generated|krl|knowledge\s*retrieval|책임\s*경계|플랫폼\s*경계|platform\s*boundary|(?:vercel|bff|cloud\s*run|ai\s*engine).*(?:책임|경계|boundary|bff|cloud\s*run|ai\s*engine)|(?:프로젝트|저장소|repo|repository|코드|문서|내부).*(?:파일|경로|위치|path|문서)|(?:otel|데이터).*(?:파일|경로|위치|path|ssot)|(?:redis|레디스).{0,32}(?:설정|config|redis\.conf|maxmemory|eviction|영속화).{0,32}(?:가이드|방법|문서|guide|how\s+to|설명)|(?:redis|레디스).{0,32}(?:가이드|문서|설명).{0,32}(?:설정|config|redis\.conf|maxmemory|eviction|영속화)/i;
 
-/**
- * 역방향 필터 패턴: 임계값 이하(정상 범위) 서버를 요청하는 쿼리
- * 예: "정상 범위인 서버 목록", "이상 없는 서버", "문제 없는 서버"
- * → Metrics Query Agent가 data-filter(operator: '<') 경로로 처리해야 함
- */
-export const INVERSE_STATUS_FILTER_PATTERN =
-  /(?:정상\s*(?:범위(?:\s*인)?|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i;
+/** 역방향 필터: routing-patterns.ts SSOT에서 re-export */
+export const INVERSE_STATUS_FILTER_PATTERN = INVERSE_STATUS_PATTERN;
 
-/**
- * 최솟값 랭킹 패턴: 부하/메트릭이 가장 낮은 서버를 요청하는 쿼리
- * 예: "부하 가장 낮은 서버", "CPU 최저 서버", "가장 여유 있는 서버"
- * → Metrics Query Agent가 data-ranking(rankOrder: 'asc') 경로로 처리해야 함
- */
-export const MIN_METRIC_RANKING_PATTERN =
-  /(?:가장\s*(?:낮은|적은|여유|안전)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|적은|최저|최소)|(?:최저|최소|min(?:imum)?)\s*(?:cpu|메모리|memory|디스크|disk|부하|load)|(?:여유\s*(?:많은|있는)|idle).*서버|lowest\s*(?:load|cpu|memory|disk)|least\s*(?:loaded|busy))/i;
+/** 최솟값 랭킹: routing-patterns.ts SSOT에서 re-export */
+export const MIN_METRIC_RANKING_PATTERN = MIN_METRIC_PATTERN;
 
 export const COMPOSITE_QUERY_PATTERNS = [
   /그리고|또한|동시에|함께|및|plus|and|then/i,

@@ -289,7 +289,10 @@ function isActionNeededQuery(query: string): boolean {
     /(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)/i.test(query) ||
     /(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|immediate\s+action|urgent\s+action|action\s+needed/i.test(
       query
-    )
+    ) ||
+    /(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)/i.test(query) ||
+    /(?:어떤|어느|무슨)?\s*(?:서버|대상).{0,24}(?:가장\s*)?(?:위험한|위험도\s*높은)/i.test(query) ||
+    /most\s+at\s+risk/i.test(query)
   );
 }
 

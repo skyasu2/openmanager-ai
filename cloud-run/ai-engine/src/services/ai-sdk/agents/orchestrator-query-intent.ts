@@ -10,6 +10,8 @@
  * regexes.
  */
 
+import { INVERSE_STATUS_PATTERN, MIN_METRIC_PATTERN } from '../routing/routing-patterns';
+
 export type QueryIntent =
   | 'data-lookup'     // Show current state/overview
   | 'data-filter'     // Filter by threshold or status condition
@@ -36,15 +38,11 @@ export interface IntentClassification {
   statusValue?: QueryStatus;
 }
 
-// Inverse status filter: "정상 범위인 서버", "이상 없는 서버"
-// Must include "서버" (or list/overview context) to avoid matching
-// general status-check queries like "상태 정상인지 확인해줘".
-const INVERSE_STATUS_SIGNALS =
-  /(?:정상\s*(?:범위(?:\s*인)?|인)\s*(?:서버|목록)|이상\s*(?:없는|없음|없어)\s*(?:서버|것|게)|문제\s*(?:없는|없음|없어)\s*(?:서버|것|게)|여유\s*(?:있는|있어|있음)\s*(?:서버|것)|safe\s*server|healthy\s*server|normal\s*(?:range|server))/i;
+// Inverse status filter — routing-patterns.ts SSOT
+const INVERSE_STATUS_SIGNALS = INVERSE_STATUS_PATTERN;
 
-// Min-metric ranking: "부하 가장 낮은", "CPU 최저", "가장 여유 있는"
-const MIN_METRIC_SIGNALS =
-  /(?:가장\s*(?:낮은|적은|여유|안전|idle)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|적은|최저|최소)|(?:최저|최소|min(?:imum)?)\s*(?:cpu|메모리|memory|디스크|disk|부하|load)|lowest\s*(?:load|cpu|memory|disk)|least\s*(?:loaded|busy))/i;
+// Min-metric ranking — routing-patterns.ts SSOT
+const MIN_METRIC_SIGNALS = MIN_METRIC_PATTERN;
 
 // Structural signals — intent markers that exist in any natural language
 // monitoring query, independent of domain vocabulary.
