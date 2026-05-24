@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-24 | **현재 버전 스냅샷**: v8.12.26
+**상태 스냅샷 기준일**: 2026-05-24 | **현재 버전 스냅샷**: v8.12.27
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.27** (2026-05-24) — Bug Fixes: ai-engine: restore stream session history for follow-ups
 - **v8.12.26** (2026-05-24) — Bug Fixes: ai-engine: preserve context for monitoring follow-ups; Bug Fixes: ai-engine: recover advisor advice empty streams; Bug Fixes: ai-engine: route trend wording deterministically
 - **v8.12.25** (2026-05-24) — Bug Fixes: ai-engine: preserve group list scope for health frames
 - **v8.12.24** (2026-05-24) — Bug Fixes: ai: skip clarification for explicit server groups
 - **v8.12.23** (2026-05-24) — Bug Fixes: ai-engine: prefer server detail metric evidence over health frames
-- **v8.12.22** (2026-05-24) — Bug Fixes: ai-engine: route server detail and group list evidence
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
