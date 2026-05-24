@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-24 21:29:53 KST
+> Generated at: 2026-05-25 00:31:48 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 580 |
-| Total Runs (Counted) | 463 |
+| Total Recorded Runs | 581 |
+| Total Runs (Counted) | 464 |
 | Non-counted Runs | 117 |
-| Total Checks | 4141 |
-| Passed | 3966 |
+| Total Checks | 4149 |
+| Passed | 3974 |
 | Failed | 151 |
-| Completed Items | 663 |
+| Completed Items | 664 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 46 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260524-0580 (2026-05-24T10:29:54.220Z) |
-| Latest Recorded Run | QA-20260524-0582 (2026-05-24T12:29:51.034Z) |
+| Last Counted Run | QA-20260525-0583 (2026-05-24T15:31:45.890Z) |
+| Latest Recorded Run | QA-20260525-0583 (2026-05-24T15:31:45.890Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260524-0582 (2026-05-24T12:29:51.034Z)
+Latest run: QA-20260525-0583 (2026-05-24T15:31:45.890Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | P4(Advisor 빈 응답), P5(세션 컨텍스트) 잔여 약점 수정 검증 필요 |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | browser | checked | normal | Vercel production 정상 접속 확인. 프로덕션 앱 v8.12.25 배포 상태 양호, AI 어시스턴트 6문항 응답 빠름. |
+| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-24T15:28:08Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T12:29:51.034Z -> 2026-05-24T12:29:51.034Z (24h)
+- Window: 2026-05-23T15:31:45.890Z -> 2026-05-24T15:31:45.890Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 10
 
@@ -64,7 +65,7 @@ Latest run: QA-20260524-0582 (2026-05-24T12:29:51.034Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T12:29:51.034Z -> 2026-05-24T12:29:51.034Z (24h)
+- Window: 2026-05-23T15:31:45.890Z -> 2026-05-24T15:31:45.890Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 6
 - Drift rate: 16.67%
@@ -77,18 +78,20 @@ Latest run: QA-20260524-0582 (2026-05-24T12:29:51.034Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 5941c23a
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_97NxHEcLgvBNUVSCuxAUeuY7232L / SHA 3535641a
 - Coverage Packs: ai-core
-- Covered Surfaces: /dashboard AI Chat, monitoring-server-health, monitoring-metric-ranking, monitoring-metric-trend
-- Skipped Surfaces: 자동 보고서, 이상감지 탭, Advisor agent
+- Covered Surfaces: /dashboard AI sidebar open, conversational-ai-qa Q4 action-needed: monitoring-server-health, db-mysql-dc1-primary warning scoped answer, conversational-ai-qa Q5 contextual follow-up: /api/ai/jobs async path, monitoring-metric-current, previous server scope preserved as DB 서버 1대, GitLab v8.12.28 deploy/smoke pipeline success, Cloud Run ai-engine revision ai-engine-00532-pll ready at 100% traffic
+- Skipped Surfaces: core route pack beyond release smoke, dashboard non-AI UI pack, modal/detail pack, observability admin traces, vision live smoke, full standard five-question conversational AI QA rerun
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Cloud Run ai-engine | [Cloud Run ai-engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
+| general | GitLab Pipeline v8.12.28 | [GitLab Pipeline v8.12.28](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549284525) | - |
+| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
@@ -720,6 +723,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - nlq-provider-live-smoke-v811157: Run low-priority NLQ provider comparison smoke after v8.11.157 deployment (completed 1회, last QA-20260516-0507)
 - off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (completed 1회, last QA-20260421-0324)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
+- p5-session-context-follow-up: AI Assistant follow-up queries preserve previous server scope across streaming and async job paths (completed 1회, last QA-20260525-0583)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
 - planner-shadow-latency-precision: plannerShadow latency metadata no longer collapses to 0ms for fast production shadow decisions (completed 1회, last QA-20260504-0405)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
@@ -894,6 +898,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260525-0583 | 2026-05-24T15:31:45.890Z | targeted | yes | yes | v8.12.28 AI Assistant contextual follow-up live QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0582 | 2026-05-24T12:29:51.034Z | targeted | no | no | 6차 AI 어시스턴트 평가 — v8.12.17~25 수정사항 검증 (Playwright MCP) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0581 | 2026-05-24T11:45:40.608Z | targeted | no | no | v8.12.25 AI Engine trend routing local regression closure | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0580 | 2026-05-24T10:29:54.220Z | targeted | yes | yes | v8.12.25 AI Assistant server detail and group routing targeted QA | 2 | 6 | 0 | 0 | 0 | 0 |
@@ -913,4 +918,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260523-0566 | 2026-05-23T07:09:27.338Z | targeted | yes | yes | v8.12.13 신규 7문항 평가 - WAS그룹·단일메트릭회귀·네트워크·DB임계값·트렌드·KRL·위험우선순위 | 7 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260523-0565 | 2026-05-23T03:18:05.556Z | targeted | no | yes | v8.12.13 Q2 multi-metric 복합점수 fix 검증 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260522-0564 | 2026-05-22T12:13:39.004Z | targeted | yes | yes | v8.12.10 H-5 semantic router fail-closed production QA | 1 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260522-0563 | 2026-05-22T11:14:44.822Z | targeted | no | yes | v8.12.9 H-4 monitoring routing production QA - DC comparison, urgent action ranking, danger-level forecast | 3 | 0 | 0 | 0 | 0 | 0 |

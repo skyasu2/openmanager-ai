@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-24T12:29:51.034Z"
+    "updatedAt": "2026-05-24T15:31:45.890Z"
   },
   "sequence": {
-    "nextRunNumber": 583
+    "nextRunNumber": 584
   },
   "summary": {
-    "totalRecordedRuns": 580,
-    "totalRuns": 463,
+    "totalRecordedRuns": 581,
+    "totalRuns": 464,
     "excludedRuns": 117,
-    "totalChecks": 4141,
-    "totalPassed": 3966,
+    "totalChecks": 4149,
+    "totalPassed": 3974,
     "totalFailed": 151,
     "completionRate": 100,
-    "completedItems": 663,
+    "completedItems": 664,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 46,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260524-0580",
-    "lastRecordedAt": "2026-05-24T10:29:54.220Z",
-    "latestRecordedRunId": "QA-20260524-0582",
-    "latestRecordedAt": "2026-05-24T12:29:51.034Z"
+    "lastRunId": "QA-20260525-0583",
+    "lastRecordedAt": "2026-05-24T15:31:45.890Z",
+    "latestRecordedRunId": "QA-20260525-0583",
+    "latestRecordedAt": "2026-05-24T15:31:45.890Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16745,6 +16745,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-24T10:29:54.220Z"
+    },
+    "p5-session-context-follow-up": {
+      "id": "p5-session-context-follow-up",
+      "title": "AI Assistant follow-up queries preserve previous server scope across streaming and async job paths",
+      "priority": "P5",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260525-0583",
+      "firstSeenAt": "2026-05-24T15:31:45.890Z",
+      "lastSeenRunId": "QA-20260525-0583",
+      "lastSeenAt": "2026-05-24T15:31:45.890Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.28 Playwright MCP: Q5 returned 대상 DB 서버 1대 instead of 전체 서버",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-24T15:31:45.890Z"
     }
   },
   "runs": [
@@ -68079,6 +68103,107 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0583",
+      "recordedAt": "2026-05-24T15:31:45.890Z",
+      "recordedAtKst": "2026-05-25 00:31:45 KST",
+      "title": "v8.12.28 AI Assistant contextual follow-up live QA",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0583.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_97NxHEcLgvBNUVSCuxAUeuY7232L",
+        "deploymentUrl": "https://openmanager-a7qeelyul-skyasus-projects.vercel.app",
+        "commitSha": "3535641a998bae8cc1fe8a7868944eeae0429c74"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard AI sidebar open",
+        "conversational-ai-qa Q4 action-needed: monitoring-server-health, db-mysql-dc1-primary warning scoped answer",
+        "conversational-ai-qa Q5 contextual follow-up: /api/ai/jobs async path, monitoring-metric-current, previous server scope preserved as DB 서버 1대",
+        "GitLab v8.12.28 deploy/smoke pipeline success",
+        "Cloud Run ai-engine revision ai-engine-00532-pll ready at 100% traffic"
+      ],
+      "skippedSurfaces": [
+        "core route pack beyond release smoke",
+        "dashboard non-AI UI pack",
+        "modal/detail pack",
+        "observability admin traces",
+        "vision live smoke",
+        "full standard five-question conversational AI QA rerun"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previously failing contextual follow-up was reproduced on v8.12.27 and verified fixed on v8.12.28. The answer now remains scoped to the prior action-needed server group instead of all servers.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2549284525 completed frontend deploy, ai-engine deploy, and both post-deploy smoke jobs successfully; Cloud Run health reports version 8.12.28 with revision ai-engine-00532-pll at 100% traffic.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-25T00:28:08+09:00",
+          "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-24T15:28:08Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run ai-engine",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab Pipeline v8.12.28",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549284525"
+        },
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -68087,17 +68212,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 300,
-      "appropriateCount": 256,
+      "seenCount": 301,
+      "appropriateCount": 257,
       "partialCount": 44,
       "inappropriateCount": 0,
       "improvementNeededCount": 61,
-      "lastRunId": "QA-20260524-0582",
-      "lastSeenAt": "2026-05-24T12:29:51.034Z",
+      "lastRunId": "QA-20260525-0583",
+      "lastSeenAt": "2026-05-24T15:31:45.890Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.12.17~25 수정 항목(P2/P3/트렌드 표현/clarification skip) 6문항 전체 PASS. 이전 약점이 체계적으로 해소됨.",
-      "lastNextAction": "P4(Advisor 빈 응답), P5(세션 컨텍스트) 잔여 약점 수정 검증 필요"
+      "lastRationale": "The previously failing contextual follow-up was reproduced on v8.12.27 and verified fixed on v8.12.28. The answer now remains scoped to the prior action-needed server group instead of all servers.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -68138,16 +68263,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 214,
-      "appropriateCount": 193,
+      "seenCount": 215,
+      "appropriateCount": 194,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260524-0580",
-      "lastSeenAt": "2026-05-24T10:29:54.220Z",
+      "lastRunId": "QA-20260525-0583",
+      "lastSeenAt": "2026-05-24T15:31:45.890Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2549062544 completed deploy, deploy_ai_engine, and post-deploy smoke jobs successfully; Cloud Run free-tier limits remain 512Mi/1 vCPU/maxScale=1.",
+      "lastRationale": "GitLab tag pipeline 2549284525 completed frontend deploy, ai-engine deploy, and both post-deploy smoke jobs successfully; Cloud Run health reports version 8.12.28 with revision ai-engine-00532-pll at 100% traffic.",
       "lastNextAction": ""
     },
     "test-automation": {
