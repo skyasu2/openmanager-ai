@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-24T02:01:17.511Z"
+    "updatedAt": "2026-05-24T02:26:16.493Z"
   },
   "sequence": {
-    "nextRunNumber": 575
+    "nextRunNumber": 576
   },
   "summary": {
-    "totalRecordedRuns": 572,
-    "totalRuns": 457,
+    "totalRecordedRuns": 573,
+    "totalRuns": 458,
     "excludedRuns": 115,
-    "totalChecks": 4125,
+    "totalChecks": 4126,
     "totalPassed": 3954,
-    "totalFailed": 150,
+    "totalFailed": 151,
     "completionRate": 99.85,
     "completedItems": 651,
     "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 44,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260524-0574",
-    "lastRecordedAt": "2026-05-24T02:01:17.511Z",
-    "latestRecordedRunId": "QA-20260524-0574",
-    "latestRecordedAt": "2026-05-24T02:01:17.511Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260524-0575",
+    "lastRecordedAt": "2026-05-24T02:26:16.493Z",
+    "latestRecordedRunId": "QA-20260524-0575",
+    "latestRecordedAt": "2026-05-24T02:26:16.493Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16369,22 +16369,22 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260524-0573",
       "firstSeenAt": "2026-05-23T17:08:54.211Z",
-      "lastSeenRunId": "QA-20260524-0574",
-      "lastSeenAt": "2026-05-24T02:01:17.511Z",
-      "seenCount": 2,
+      "lastSeenRunId": "QA-20260524-0575",
+      "lastSeenAt": "2026-05-24T02:26:16.493Z",
+      "seenCount": 3,
       "completedCount": 1,
-      "pendingCount": 1,
+      "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Production targeted QA asked '현재 정상 범위인 서버 목록 보여줘' and received a monitoring-server-health summary with warning servers rather than a normal-range server list from inverse filter evidence.",
-      "lastNote": "Local follow-up fix has been implemented and passed AI Engine tests, but it is not deployed yet.",
+      "lastEvidence": "Production v8.12.18 recheck asked '현재 정상 범위인 서버 목록 보여줘' and still received generic monitoring-server-health summary with warning server api-was-dc1-01.",
+      "lastNote": "Second local follow-up fix has been implemented and passed AI Engine tests, but it is not deployed yet.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-24T02:01:17.511Z"
+      "lastStatusChangeAt": "2026-05-24T02:26:16.493Z"
     },
     "ai-v81216-compact-markdown-heading": {
       "id": "ai-v81216-compact-markdown-heading",
@@ -67018,6 +67018,119 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260524-0575",
+      "recordedAt": "2026-05-24T02:26:16.493Z",
+      "recordedAtKst": "2026-05-24 11:26:16 KST",
+      "title": "v8.12.18 production targeted QA - healthy filter recheck",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260524-0575.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-tag-pipeline-2548681561",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "dcd012fd0cf7f886b0afd326467eb538786fe149"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version reports v8.12.18 with commit dcd012fd0cf7f886b0afd326467eb538786fe149 and GitLab pipeline 2548681561",
+        "Cloud Run AI Engine /health reports version 8.12.18",
+        "Playwright CLI production AI direct-message recheck for normal-range server list prompt",
+        "AI Chat: normal-range server list query still returned generic monitoring-server-health summary instead of healthy-only list"
+      ],
+      "skippedSurfaces": [
+        "Lowest-load and Advisor prompts: already passed in QA-20260524-0574 and were not rerun to avoid extra live LLM calls.",
+        "Standard five-question conversational QA: skipped because this was a single blocker recheck.",
+        "Vision real-image QA: skipped per manual-only policy.",
+        "Broad route/dashboard/modal packs: skipped because this run validated one AI routing blocker only."
+      ],
+      "checks": {
+        "total": 1,
+        "passed": 0,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Chat normal-range server list",
+          "agent": "Server Health Summary",
+          "provider": "streaming",
+          "model": "production route",
+          "route": "monitoring-server-health",
+          "source": "Playwright CLI UI metadata badge",
+          "latencyMs": 3482
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The v8.12.18 production recheck reproduced the remaining healthy-filter blocker after deploy.",
+          "nextAction": "Deploy the healthy-only intentFrame preservation fix and rerun only this prompt."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab pipeline 2548681561 succeeded, Vercel version metadata matched v8.12.18, Cloud Run health was ok, and Vercel usage remained normal.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-24T11:25:02+09:00",
+          "summary": "npm run check:usage:vercel PASS. Current billing period effective 15.3081 USD, billed 0.0000 USD; no unexpected billed usage observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.18 healthy filter recheck evidence",
+          "path": "reports/qa/evidence/qa-20260524-v81218-healthy-filter-recheck.md",
+          "note": "Single-prompt result, failure judgment, and local follow-up validation."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.12.18 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548681561",
+          "note": "deploy, deploy_ai_engine, and post-deploy smoke pipeline success"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "Production UI used for Playwright CLI AI sidebar prompt."
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -67026,17 +67139,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 294,
+      "seenCount": 295,
       "appropriateCount": 252,
-      "partialCount": 42,
+      "partialCount": 43,
       "inappropriateCount": 0,
-      "improvementNeededCount": 59,
-      "lastRunId": "QA-20260524-0574",
-      "lastSeenAt": "2026-05-24T02:01:17.511Z",
+      "improvementNeededCount": 60,
+      "lastRunId": "QA-20260524-0575",
+      "lastSeenAt": "2026-05-24T02:26:16.493Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Two of three targeted production prompts passed, but the normal-range server list still failed the semantic target by routing to health summary instead of deterministic inverse filter evidence.",
-      "lastNextAction": "Deploy the local regex/pre-filter fix and rerun only the normal-range server list prompt."
+      "lastRationale": "The v8.12.18 production recheck reproduced the remaining healthy-filter blocker after deploy.",
+      "lastNextAction": "Deploy the healthy-only intentFrame preservation fix and rerun only this prompt."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -67077,17 +67190,17 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 211,
-      "appropriateCount": 190,
+      "seenCount": 212,
+      "appropriateCount": 191,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260524-0574",
-      "lastSeenAt": "2026-05-24T02:01:17.511Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Cloud Run health and Vercel usage were normal, but Vercel /api/version still reported the previous frontend commit/pipeline while the QA target was the user-reported Cloud Run 94ce8471b revision.",
-      "lastNextAction": "After the next deploy, verify frontend version metadata and Cloud Run revision evidence point to the expected release surfaces."
+      "lastRunId": "QA-20260524-0575",
+      "lastSeenAt": "2026-05-24T02:26:16.493Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "GitLab pipeline 2548681561 succeeded, Vercel version metadata matched v8.12.18, Cloud Run health was ok, and Vercel usage remained normal.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",

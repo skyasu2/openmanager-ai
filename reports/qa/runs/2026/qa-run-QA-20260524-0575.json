@@ -1,0 +1,128 @@
+{
+  "runId": "QA-20260524-0575",
+  "recordedAt": "2026-05-24T02:26:16.493Z",
+  "recordedAtKst": "2026-05-24 11:26:16 KST",
+  "runTitle": "v8.12.18 production targeted QA - healthy filter recheck",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-tag-pipeline-2548681561",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "dcd012fd0cf7f886b0afd326467eb538786fe149"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version reports v8.12.18 with commit dcd012fd0cf7f886b0afd326467eb538786fe149 and GitLab pipeline 2548681561",
+    "Cloud Run AI Engine /health reports version 8.12.18",
+    "Playwright CLI production AI direct-message recheck for normal-range server list prompt",
+    "AI Chat: normal-range server list query still returned generic monitoring-server-health summary instead of healthy-only list"
+  ],
+  "skippedSurfaces": [
+    "Lowest-load and Advisor prompts: already passed in QA-20260524-0574 and were not rerun to avoid extra live LLM calls.",
+    "Standard five-question conversational QA: skipped because this was a single blocker recheck.",
+    "Vision real-image QA: skipped per manual-only policy.",
+    "Broad route/dashboard/modal packs: skipped because this run validated one AI routing blocker only."
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Chat normal-range server list",
+      "agent": "Server Health Summary",
+      "provider": "streaming",
+      "model": "production route",
+      "route": "monitoring-server-health",
+      "source": "Playwright CLI UI metadata badge",
+      "latencyMs": 3482
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The v8.12.18 production recheck reproduced the remaining healthy-filter blocker after deploy.",
+      "nextAction": "Deploy the healthy-only intentFrame preservation fix and rerun only this prompt."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab pipeline 2548681561 succeeded, Vercel version metadata matched v8.12.18, Cloud Run health was ok, and Vercel usage remained normal.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-24T11:25:02+09:00",
+      "summary": "npm run check:usage:vercel PASS. Current billing period effective 15.3081 USD, billed 0.0000 USD; no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.18 healthy filter recheck evidence",
+      "path": "reports/qa/evidence/qa-20260524-v81218-healthy-filter-recheck.md",
+      "note": "Single-prompt result, failure judgment, and local follow-up validation."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-v81216-healthy-filter-evidence",
+      "title": "Healthy-only server filter should resolve to deterministic inverse filter evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production v8.12.18 recheck asked '현재 정상 범위인 서버 목록 보여줘' and still received generic monitoring-server-health summary with warning server api-was-dc1-01.",
+      "note": "Second local follow-up fix has been implemented and passed AI Engine tests, but it is not deployed yet.",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This QA run intentionally records the failed v8.12.18 one-prompt recheck before deploying the second local fix.",
+    "Root cause found after the run: upstream server_health intentFrame bypassed message-level healthy-only parsing, so statusFilter healthy-only was lost."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.12.18 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2548681561",
+      "note": "deploy, deploy_ai_engine, and post-deploy smoke pipeline success"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Production UI used for Playwright CLI AI sidebar prompt."
+    }
+  ]
+}
