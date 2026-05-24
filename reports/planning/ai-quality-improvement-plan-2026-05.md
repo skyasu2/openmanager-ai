@@ -1,7 +1,7 @@
 > Owner: project
 > Status: In Progress
 > Doc type: Plan
-> Last reviewed: 2026-05-24 (H-5 v8.12.10 production QA closure 반영)
+> Last reviewed: 2026-05-24 (session memory portfolio deferral and standalone QA priority)
 > Tags: ai,krl,session-memory,intentframe,quality,z.ai,production-qa
 
 # AI 품질 개선 계획 (2026-05 이후)
@@ -16,7 +16,7 @@
 - Cloud Run: 1 vCPU, 512Mi
 - 실 LLM/운영 DB 변경은 필요성이 입증된 경우에만 수행한다. 이미 contract/unit/local smoke로 덮인 failure path를 production에서 인위적으로 만들지 않는다.
 
-**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, Task E는 신규 기능/DB schema 변경이므로 구현 전 SDD 계약을 먼저 Approved 상태로 승격했다. v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. H-5 semantic-router-v2/fail-closed는 SDD/failing spec 선행 후 v8.12.10으로 배포했고 `QA-20260522-0564` production QA에서 deterministic fail-closed를 확인했다. 잔여는 Task F 최종 판정, intentFrame 실측 필요성 재판단, Task E 착수 여부다.
+**현재 실행 상태**: tracking/conditional. 2026-05-22 기준 `groundingMode` developer-panel 노출 보강과 Z.AI Task F pre-final 관찰은 완료됐으며, v8.12.0~v8.12.5 production QA에서 발견된 Task G/H/I 계열 AI 품질 gap은 local implementation 후 v8.12.6으로 배포 완료했다. 같은 날 v8.12.5 2차 Playwright MCP 평가에서 capacity forecast 표현 다양성, 영어+오타 metric 입력, Redis 설정 가이드 KRL 미진입이 추가 확인되어 Task H follow-up으로 회귀 테스트 선행 후 v8.12.7로 배포 완료했다. `QA-20260522-0562`에서 남은 H-4 DC 비교·운영 우선순위·CPU "위험 수준 도달" 표현은 v8.12.9 배포 후 `QA-20260522-0563`에서 3/3 PASS로 닫았다. H-5 semantic-router-v2/fail-closed는 SDD/failing spec 선행 후 v8.12.10으로 배포했고 `QA-20260522-0564` production QA에서 deterministic fail-closed를 확인했다. 2026-05-24 기준 Task E Supabase 장기 세션 메모리는 portfolio-deferred로 낮추고, 다음 단계는 DB/Cloud Run 스펙 증설 없는 standalone 운영 질의 회귀 고정이다.
 
 ---
 
@@ -26,7 +26,7 @@
 |------|-----------|------|
 | KRL grounded synthesis | v8.11.191~192 신규 도입, v8.11.192 OTel criteria production QA 완료 | production 추가 호출은 변경 발생 시만 수행 |
 | KB corpus | 67건 (target 72, hard max 80), governance PASS | 현 상태 유지 |
-| 세션 메모리 | session-memory.ts 71줄, 최대 20메시지 | Supabase 기반 지속 (P3) |
+| 세션 메모리 | session-memory.ts 71줄, 최대 20메시지, Redis TTL 1시간 | 현행 유지. 장기 기억은 portfolio-deferred, standalone 질의 정확도 우선 |
 | Z.AI 안정성 | Reporter primary 편입 5일차 | 안정성 관찰 게이트 통과 |
 | intentFrame 신뢰도 | 0.8 임계값, 실제 적중률 미측정 | 실측 후 임계값 교정 |
 | Redis R-5 | 예산 초안 완료, 실측 보정 대기 | dashboard/management API 접근 가능 시만 보정 |
@@ -45,7 +45,7 @@
 | Task B Upstash 실측 보정 | 사용자 액션 필요 | 소비량은 Upstash dashboard 또는 management API 권한이 있어야 확인 가능하다. Redis data REST credential만으로 billing/usage metric을 조회하지 않는다. |
 | Task C KRL corpus 보강 | 미진행 | 현재 67건, target 72/hard 80, `security=5`, `incident=9`, governance PASS. 추가 seed는 필요성이 없다. |
 | Task D intentFrame 10회 live sampling | 보류 | 실 LLM 호출과 Langfuse trace 접근이 필요하다. 임계값 변경 근거가 생길 때 별도 측정한다. |
-| Task E Supabase session memory | SDD 계약 Approved | 신규 기능/DB schema 변경이므로 구현 전 failing test 선행 커밋이 필요하다. 신규 plan 파일은 TODO Backlog와 이 plan Task E가 이미 존재하므로 만들지 않는다. |
+| Task E Supabase session memory | Portfolio-deferred | 비용 0원 범위 구현은 가능하지만 DB/RLS/RPC/pruning/QA 복잡도 대비 포트폴리오 효과가 낮다. 현행 Redis 1시간 TTL을 유지하고, 장기 기억은 핵심 기능으로 홍보하지 않는다. |
 | Task F Z.AI 안정성 | 관찰 지속 | 마감일은 2026-05-23. 현재는 코드 작업 대상이 아니다. |
 | Task G AZ 집계·Top-N 추세 grounding | SDD 계약 Approved | v8.12.0 production QA에서 실제 품질 갭이 확인됐다. 기존 AI 품질/intentFrame 계획과 중복되므로 신규 plan 파일 없이 이 계획에 계약을 추가하고, failing regression test 선행 커밋 후 구현한다. |
 
@@ -190,11 +190,17 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 ---
 
-## Task E: 세션 메모리 확장 — Supabase 기반 (🟢 중장기)
+## Task E: 세션 메모리 확장 — Supabase 기반 (Portfolio-deferred)
 
 **근거**: `session-memory.ts` 71줄, Redis 기반 최대 20메시지(TTL 1시간). 세션 재시작 시 대화 맥락이 단절된다.
 
-**SDD 상태**: Approved (2026-05-22). 계약 섹션을 이 Task 안에 확정했으며, TODO.md Backlog와 이 plan의 중복 주제이므로 신규 plan 파일을 만들지 않는다. 구현 착수 전 `test(spec):` failing test 커밋이 먼저 필요하다.
+**SDD 상태**: 계약 초안 Approved였으나, 2026-05-24 portfolio 판단으로 구현 보류. 계약 섹션은 재개 시 재사용 가능한 참고안으로 유지하지만, 현재 구현 대상이 아니다.
+
+**2026-05-24 판단**:
+- 포트폴리오에서 더 중요한 것은 장기 사용자 기억보다 `현재 서버 상태`, `정상 범위 서버`, `최저 부하`, `성능 개선 조언`, `즉시 조치 대상` 같은 standalone 운영 질의의 정확도다.
+- Supabase Free Tier 안에서 0원 구현은 가능하지만 DB migration, RLS, service-role RPC, owner hash, pruning, fallback, QA 표면이 늘어난다.
+- 저장 비용보다 실제 위험은 저장된 대화를 prompt에 다시 넣으며 생기는 LLM 토큰/쿼터 증가다.
+- 따라서 Cloud Run RAM 증설, min instance, 항상 켜진 worker, Supabase 장기 기억 구현은 진행하지 않는다.
 
 **현재 한계**:
 - Redis TTL 1시간 후 대화 히스토리 소멸
@@ -260,14 +266,20 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 **예상 소요**: 2~3시간 (설계 + 구현 + 테스트)
 
-**우선순위**: P3 (Backlog에서 SDD ready로 승격 — 구현은 Task F 최종 판정 또는 사용자 명시 지시 후 착수)
+**우선순위**: Low / Portfolio-deferred
+
+**재개 조건**:
+- 로그인 사용자의 며칠 단위 장기 follow-up이 포트폴리오 핵심 시나리오로 승격될 때
+- 실제 QA에서 standalone 질의가 아니라 세션 기억 부재 자체가 blocker로 확인될 때
+- Supabase row/egress와 LLM prompt budget을 함께 감당할 명확한 운영 예산이 있을 때
 
 - [x] Supabase migration/RPC 계약 설계
-- [ ] failing test 선행 커밋
-- [ ] session-memory.ts 확장 구현
-- [ ] Root BFF `sessionOwnerKey` 전달 구현
-- [ ] Cloud Run schema/agent option 전달 구현
-- [ ] 세션 복원 local/contract 확인
+- [x] 2026-05-24 portfolio-deferred 판단 기록
+- [ ] 재개 조건 충족 시 failing test 선행 커밋
+- [ ] 재개 조건 충족 시 session-memory.ts 확장 구현
+- [ ] 재개 조건 충족 시 Root BFF `sessionOwnerKey` 전달 구현
+- [ ] 재개 조건 충족 시 Cloud Run schema/agent option 전달 구현
+- [ ] 재개 조건 충족 시 세션 복원 local/contract 확인
 
 ---
 
@@ -707,10 +719,35 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 ---
 
+## Task J: 포트폴리오 standalone 운영 질의 회귀 고정
+
+**근거**: 2026-05-24 세션 메모리 확장 판단에서 포트폴리오 목표는 장기 사용자 기억보다 독립 질의 정확도라고 정리했다. 따라서 다음 단계는 Supabase/Cloud Run 스펙을 늘리는 것이 아니라, 핵심 데모 질의가 세션 기억 없이도 deterministic evidence 경로를 유지하도록 local regression을 고정하는 것이다.
+
+**대상 질의**:
+- `현재 서버 전체 상태를 요약해줘`
+- `현재 정상 범위인 서버 목록 보여줘`
+- `지금 부하가 가장 낮은 서버는?`
+- `web-server-01 상태를 자세히 알려줘`
+- `지금 당장 조치가 필요한 서버가 있어?`
+
+**계약**:
+- 각 질의는 DB 기반 장기 세션 메모리 없이 단일 request snapshot으로 답할 수 있어야 한다.
+- 정상 범위/최저 부하/조치 필요 질의는 일반 대화나 hallucinated 숫자로 빠지지 않고 deterministic monitoring evidence를 반환해야 한다.
+- 테스트는 live LLM, Supabase, Cloud Run production 호출 없이 로컬 deterministic provider만 사용한다.
+
+**상태**: Completed locally (2026-05-24). Task E를 보류한 대신 바로 착수한 다음 단계로, live LLM/DB 호출 없이 local deterministic evidence regression을 추가했다.
+
+- [x] 포트폴리오 핵심 standalone 질의 local regression 추가 (`portfolio-demo-evidence.test.ts`)
+- [x] AI Engine targeted test 실행: 1 file / 5 tests PASS
+- [ ] 필요 시 production targeted QA는 후속 release-facing 변경 때만 수행
+
+---
+
 ## 실행 우선순위
 
 | Task | 우선순위 | 상태 | 예상 소요 | 마감 기준 |
 |------|:------:|------|:---------:|-----------|
+| **J: 포트폴리오 standalone 운영 질의 회귀 고정** | 🔴 High | Completed locally | 완료 | DB/스펙 증설 없이 핵심 데모 질의 deterministic evidence 유지 |
 | A: grounded KRL production QA | 🟡 조건부 | 부분 완료, 추가 호출 보류 | 변경 시 15~30분 | KRL runtime 변경 시 |
 | B: Redis R-5 완결 | 🟡 사용자 액션 | 접근 권한 대기 | 접근 후 15분 | dashboard/API 가능 시 |
 | C: KRL corpus 보강 | — | No-op | 0분 | coverage FAIL 발생 시 재개 |
@@ -721,7 +758,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 | **I-2: 심층 분석 도메인 특성 주입** | 🟡 P2 | Released (v8.12.6) | 완료 | prompt/instruction 힌트 반영 |
 | **I-3: Reporter 기준 명시** | 🟢 P3 | **Released (v8.12.6)** | 완료 | Reporter UI/다운로드 기준 구분 반영 |
 | D: intentFrame 신뢰도 측정 | 🟡 조건부 | 보류 | 필요 시 30분 | routing 증상 재현 시 |
-| E: 세션 메모리 확장 | 🟢 중장기 | Approved (Backlog) | 2~3시간 | failing test 선행 필요 |
+| E: 세션 메모리 확장 | 🟢 Low | Portfolio-deferred | 재개 시 2~3시간 | 장기 follow-up이 portfolio blocker가 될 때만 |
 
 ---
 
@@ -730,13 +767,14 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - Task A 추가 QA, Task B 실측, Task D 측정은 조건 충족 시만 수행한다.
 - Task C는 현재 no-op으로 닫고, 재개 조건 발생 전까지 DB/seed 변경을 금지한다.
 - Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
-- Task E는 failing test 선행 커밋 없이는 구현하지 않는다.
+- Task E는 portfolio-deferred로 유지한다. 재개 조건 충족 전까지 Supabase migration/RPC/Cloud Run owner propagation을 구현하지 않는다.
 - Task G는 failing regression test와 구현 커밋을 분리하고, AI Engine targeted tests/type-check를 통과한다.
 - Task H는 H-1/H-2 v8.12.6 배포 완료, H-3 v8.12.7 배포 완료 상태다. QA-0562에서 확인된 H-4 후보는 구현 여부를 별도 판단하고, 착수 시 failing regression test를 먼저 추가한다.
 - Task H-5는 v8.12.10 배포와 `QA-20260522-0564` production QA로 완료 처리한다.
 - Task I-1은 v8.12.6 배포 완료 상태로 유지하고, 서버 비교 쿼리 수치 오류 재현 시 새 회귀 테스트로 재개한다.
 - Task I-2는 prompt/instruction 힌트는 v8.12.6 배포 완료. KRL seed 변경으로 확장할 때만 `rag:analyze` governance PASS를 검증한다.
 - Task I-3은 v8.12.6 배포 완료. 레이블/텍스트 변경 수준이므로 추가 SDD 게이트는 없다.
+- Task J는 추가 DB/LLM/live QA 없이 local deterministic evidence regression으로 시작한다. production live QA는 release-facing 변경이 생길 때만 1회 targeted로 수행한다.
 
 ---
 

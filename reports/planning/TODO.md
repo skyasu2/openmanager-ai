@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-24 KST (v8.12.19 AI 어시스턴트 healthy filter closure QA 반영)
+**Last Updated**: 2026-05-24 KST (세션 메모리 보류·포트폴리오 standalone 질의 안정화 판단 반영)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -14,7 +14,7 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | AI 어시스턴트 v8.12.16 QA 후속 개선 (Advisor routing·healthy filter·lowest load·markdown) | High | Completed (v8.12.19) | 2026-05-24 P1~P3 구현·검증·배포 완료 후 healthy filter 실환경 회귀를 `v8.12.19`에서 hotfix. GitLab tag pipeline `2548694499` success, production targeted QA `QA-20260524-0576` 1/1 PASS, pending 0, expert open gap 0. P4 세션 컨텍스트는 고난도 별도 후속으로 보류. 상세: [ai-assistant-improvement-plan-v8.12.16.md](ai-assistant-improvement-plan-v8.12.16.md) |
-| AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-22 v8.12.9 H-4 배포 및 targeted production QA(`QA-20260522-0563`) 완료. H-5 semantic-router-v2/fail-closed는 v8.12.10 배포 및 production QA(`QA-20260522-0564`) 완료. 잔여: intentFrame 실측 적중률, Task F 최종 판정, Task E 세션 메모리 확장 착수 여부. Task E SDD Approved. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
+| AI 품질 개선 (grounded KRL QA·intentFrame 관찰·Z.AI 안정성) | High | In Progress (tracking) | 2026-05-24 판단: 포트폴리오 목표는 장기 사용자 기억보다 standalone 운영 질의 정확도다. Task E Supabase 장기 세션 메모리는 비용 0원 구현이 가능하더라도 ROI 낮아 보류하고, 다음 단계는 DB/스펙 증설 없는 포트폴리오 핵심 질의 회귀 고정이다. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) |
 | Redis 사용 현황 정비 (사문화 코드·Job Queue 단일 의존성·문서 불일치) | Medium | 사용자 액션 필요 | R-0~R-4, R-6 완료. 2026-05-21 data-plane INFO/DBSIZE 스냅샷은 keys 32, data 15.895KB, 누적 명령 60,495로 기록했다. 남은 R-5 월간 소비량 보정은 Upstash dashboard 또는 management API 접근이 있어야 확정 가능. 상세: [redis-usage-cleanup-plan.md](redis-usage-cleanup-plan.md) |
 | Frontend 품질 게이트 최적화 (bundlemon warn-first 포함) | High | In Progress (tracking) | P1~P5 완료. 2026-05-21 `npm run bundle:budget` PASS(JS 1.45MB < 2MB, CSS 61.69KB < 250KB). P0은 warn-first 관찰 중이며 2026-05-30 전후 1~2주 관측 후 blocking 승격 여부만 판단. 상세: [vitest-storybook-optimization-plan.md](vitest-storybook-optimization-plan.md) |
 | 대시보드 UX 개선 (서버 목록·AI 사이드바 단계 개선) | Medium | In Progress (tracking) | 2026-05-21 Phase 1~5 완료: dashboard status token 공유, 목록/그리드 레이블, 시스템 상태 중복 숫자 제거, 서버 목록 검색/empty state, 서버 카드 메트릭 `↑/↓/—` 추세 인디케이터, standard/detailed 카드 `가동률 N.N% / 24h` 행, 모바일 헤더 compact 실시간 표시와 sub-bar 제거, overview 우측 인시던트 피드, `2h/6h/12h/24h` 시간 범위 Quick Picker와 카드 스파크라인 range 연동, 정렬 `상태/CPU/MEM/이름` 세그먼트 버튼, AI 사이드바 색상/탭/배너/입력창/헤더 UX, AI 전체 페이지 서버 컨텍스트 패널과 메시지 시각 구분을 반영했다. 로컬 브라우저 QA에서 compact 카드 delta 겹침과 dev runtime stats update loop를 수정했다. Phase 6은 낮은 우선순위의 선택적 백로그이며 별도 기획 필요. 상세: [dashboard-ux-improvement-plan-2026-05.md](dashboard-ux-improvement-plan-2026-05.md) |
@@ -24,7 +24,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| 세션 메모리 확장 (Supabase 기반, 로그인 사용자 한정) | Medium | 2026-05-22 SDD 계약 Approved. 구현 전 `test(spec):` failing test 선행 커밋 필요. 로그인 사용자만 Supabase `chat_sessions`/`chat_messages`, guest는 현행 Redis 유지. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) Task E |
+| 세션 메모리 확장 (Supabase 기반, 로그인 사용자 한정) | Low | 2026-05-24 Portfolio-deferred. 비용 0원 범위 구현은 가능하지만 DB/RLS/RPC/pruning/QA 복잡도 대비 포트폴리오 효과가 낮다. 현행 Redis 1시간 TTL 유지, 장기 기억은 핵심 기능으로 홍보하지 않는다. 재개 조건: 실제 사용자형 장기 follow-up이 포트폴리오 필수 요구가 될 때. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) Task E |
 | ~~Semantic router v2 / monitoring evidence fail-closed~~ | — | **완료** — 2026-05-22 H-5 SDD Approved, failing spec 선행, v8.12.10 배포 및 production QA `QA-20260522-0564` 완료. Supabase/DB/LLM 추가 호출 없이 domain capability metadata와 supervisor domain evidence 경계에서 처리. 상세: [ai-quality-improvement-plan-2026-05.md](ai-quality-improvement-plan-2026-05.md) H-5 |
 | 장기 세션 AI data slot drift 정책 | Low | Fresh load에서는 AI 수치와 dashboard OTel snapshot이 일치한다. 장기 세션에서는 `aiQueryAsOfDataSlot`이 SSR 시점 slot에 고정되어 dashboard 최신 slot과 달라질 수 있으나, free-tier/portfolio 범위에서는 실시간 resync를 도입하지 않는다. 재현 시 새로고침/새 세션으로 최신 slot을 사용하고, 제품 요구로 승격될 때 별도 `data-slot-resync-plan.md`를 작성한다. |
 | Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` 기본값으로 production에서 single mode 실질 비활성. 경량 단순쿼리 경로 설계 시 재검토. |
