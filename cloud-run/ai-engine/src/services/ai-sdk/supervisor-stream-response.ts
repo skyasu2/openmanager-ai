@@ -26,6 +26,7 @@ import { getPublicErrorResponse, sanitizeErrorData } from '../../lib/error-handl
 import { logger } from '../../lib/logger';
 import { sanitizeUserFacingResponse } from '../../lib/text-sanitizer';
 import { flushLangfuseBestEffort } from '../observability/langfuse-flush';
+import { SessionMemoryService } from './session-memory';
 
 // ============================================================================
 // UIMessageStream Response
@@ -33,6 +34,7 @@ import { flushLangfuseBestEffort } from '../observability/langfuse-flush';
 
 const RESPONSE_SUMMARY_CHAR_THRESHOLD = 680;
 const RESPONSE_SUMMARY_LINE_THRESHOLD = 14;
+const MAX_RECOVERED_SESSION_MESSAGES = 20;
 
 interface AssistantResponseSummary {
   summary: string;
@@ -139,6 +141,100 @@ function isRecordValue(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function normalizeSessionHistoryMessages(
+  messages: unknown[]
+): SupervisorRequest['messages'] {
+  return messages
+    .filter(isRecordValue)
+    .map((message) => ({
+      role: message.role,
+      content: message.content,
+    }))
+    .filter(
+      (
+        message
+      ): message is SupervisorRequest['messages'][number] =>
+        (message.role === 'user' || message.role === 'assistant') &&
+        typeof message.content === 'string' &&
+        message.content.trim().length > 0
+    )
+    .map((message) => ({
+      role: message.role,
+      content: message.content.trim(),
+    }));
+}
+
+function mergeSessionHistoryMessages(params: {
+  history: SupervisorRequest['messages'];
+  current: SupervisorRequest['messages'];
+}): SupervisorRequest['messages'] {
+  const currentLastUserIndex = params.current
+    .map((message) => message.role)
+    .lastIndexOf('user');
+  const currentLastUser =
+    currentLastUserIndex >= 0 ? params.current[currentLastUserIndex] : undefined;
+  if (!currentLastUser) return params.current;
+
+  const currentContext = params.current.slice(0, currentLastUserIndex);
+  const seen = new Set<string>();
+  const merged: SupervisorRequest['messages'] = [];
+
+  for (const message of [...params.history, ...currentContext]) {
+    const key = `${message.role}\u0000${message.content}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(message);
+  }
+
+  return [...merged.slice(-(MAX_RECOVERED_SESSION_MESSAGES - 1)), currentLastUser];
+}
+
+async function restoreSessionHistory(
+  request: SupervisorRequest
+): Promise<SupervisorRequest> {
+  if (!request.sessionId) return request;
+
+  try {
+    const history = normalizeSessionHistoryMessages(
+      await SessionMemoryService.getHistory(request.sessionId)
+    );
+    if (history.length === 0) return request;
+
+    return {
+      ...request,
+      messages: mergeSessionHistoryMessages({
+        history,
+        current: request.messages,
+      }),
+    };
+  } catch (error) {
+    logger.warn(
+      `[UIMessageStream] Session history restore failed for ${request.sessionId}:`,
+      error
+    );
+    return request;
+  }
+}
+
+function persistSessionHistory(params: {
+  sessionId: string;
+  messages: SupervisorRequest['messages'];
+  responseText: string;
+}) {
+  const responseText = params.responseText.trim();
+  if (!params.sessionId || responseText.length === 0) return;
+
+  SessionMemoryService.saveHistory(params.sessionId, [
+    ...params.messages,
+    { role: 'assistant', content: responseText },
+  ]).catch((error) => {
+    logger.warn(
+      `[UIMessageStream] Session history save failed for ${params.sessionId}:`,
+      error
+    );
+  });
+}
+
 function getStructuredResponseSummary(
   doneData: Record<string, unknown>,
   fallback: AssistantResponseSummary
@@ -187,9 +283,10 @@ export function createSupervisorStreamResponse(
     execute: async ({ writer }) => {
       const startTime = Date.now();
       const nonce = generateId();
+      const runtimeRequest = await restoreSessionHistory(request);
 
       let messageSeq = 0;
-      let currentMessageId = `assistant-${request.sessionId}-${startTime}-${nonce}-${messageSeq}`;
+      let currentMessageId = `assistant-${runtimeRequest.sessionId}-${startTime}-${nonce}-${messageSeq}`;
       let responseText = '';
 
       let textPartStarted = false;
@@ -198,19 +295,19 @@ export function createSupervisorStreamResponse(
         writer.write({
           type: 'data-start',
           data: {
-            sessionId: request.sessionId,
+            sessionId: runtimeRequest.sessionId,
             timestamp: new Date().toISOString(),
           },
         });
 
-        const modeDecision = resolveSupervisorModeDecision(request);
+        const modeDecision = resolveSupervisorModeDecision(runtimeRequest);
         const modeMetadata = buildSupervisorModeMetadata(modeDecision);
         const routeDecision = buildSupervisorRouteDecision(modeDecision, {
-          traceId: request.traceId,
-          queryAsOf: request.queryAsOf,
+          traceId: runtimeRequest.traceId,
+          queryAsOf: runtimeRequest.queryAsOf,
         });
         const assistantPlan = buildSupervisorAssistantPlanForRequest(
-          request,
+          runtimeRequest,
           routeDecision
         );
 
@@ -224,7 +321,7 @@ export function createSupervisorStreamResponse(
           },
         });
 
-        for await (const event of executeSupervisorStream(request)) {
+        for await (const event of executeSupervisorStream(runtimeRequest)) {
           switch (event.type) {
             case 'text_delta': {
               const textDelta =
@@ -262,7 +359,7 @@ export function createSupervisorStreamResponse(
               }
 
               messageSeq += 1;
-              currentMessageId = `assistant-${request.sessionId}-${startTime}-${nonce}-${messageSeq}`;
+              currentMessageId = `assistant-${runtimeRequest.sessionId}-${startTime}-${nonce}-${messageSeq}`;
 
               writer.write({
                 type: 'data-handoff',
@@ -323,6 +420,13 @@ export function createSupervisorStreamResponse(
                 summary
               );
               const normalizedResponseSummary = responseSummaryView.summary.trim();
+              if (success) {
+                persistSessionHistory({
+                  sessionId: runtimeRequest.sessionId,
+                  messages: runtimeRequest.messages,
+                  responseText: responseText || normalizedResponseSummary,
+                });
+              }
               const upstreamMetadata = isRecordValue(doneData.metadata)
                 ? doneData.metadata
                 : {};

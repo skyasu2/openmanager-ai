@@ -11,6 +11,8 @@ const {
   mockBuildSupervisorAssistantPlan,
   mockBuildSupervisorAssistantResult,
   mockFlushLangfuseBestEffort,
+  mockSessionGetHistory,
+  mockSessionSaveHistory,
 } = vi.hoisted(() => ({
   mockCreateUIMessageStream: vi.fn((config: unknown) => config),
   mockCreateUIMessageStreamResponse: vi.fn((params: unknown) => params),
@@ -55,6 +57,8 @@ const {
     status: 'completed',
   })),
   mockFlushLangfuseBestEffort: vi.fn(async () => undefined),
+  mockSessionGetHistory: vi.fn(async () => []),
+  mockSessionSaveHistory: vi.fn(async () => undefined),
 }));
 
 vi.mock('ai', () => ({
@@ -96,11 +100,20 @@ vi.mock('../observability/langfuse-flush', () => ({
   flushLangfuseBestEffort: mockFlushLangfuseBestEffort,
 }));
 
+vi.mock('./session-memory', () => ({
+  SessionMemoryService: {
+    getHistory: mockSessionGetHistory,
+    saveHistory: mockSessionSaveHistory,
+  },
+}));
+
 import { createSupervisorStreamResponse } from './supervisor-stream-response';
 
 describe('createSupervisorStreamResponse', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSessionGetHistory.mockResolvedValue([]);
+    mockSessionSaveHistory.mockResolvedValue(undefined);
     mockExecuteSupervisorStream.mockReturnValue((async function* () {
       yield { type: 'text_delta', data: 'CPU 42%' };
       yield {
@@ -207,6 +220,110 @@ describe('createSupervisorStreamResponse', () => {
       }),
     );
     expect(mockFlushLangfuseBestEffort).toHaveBeenCalledWith('UIMessageStream');
+  });
+
+  it('restores Redis session history before stream execution and persists the assistant response', async () => {
+    mockSessionGetHistory.mockResolvedValue([
+      { role: 'user', content: '지금 당장 조치가 필요한 서버가 있어?' },
+      {
+        role: 'assistant',
+        content:
+          '🚨 즉시 조치 필요 여부\n• 관찰 우선 서버: db-mysql-dc1-backup',
+      },
+    ]);
+    mockExecuteSupervisorStream.mockReturnValue((async function* () {
+      yield {
+        type: 'text_delta',
+        data: '📊 **지정 서버 네트워크 70% 이상 서버**\n',
+      };
+      yield {
+        type: 'text_delta',
+        data: '• 대상: 지정 서버 1대\n',
+      };
+      yield {
+        type: 'done',
+        data: {
+          success: true,
+          metadata: {
+            provider: 'deterministic',
+            modelId: 'monitoring-metric-current',
+          },
+        },
+      };
+    })());
+
+    const request = {
+      sessionId: 'session-contextual-follow-up',
+      mode: 'auto' as const,
+      messages: [
+        {
+          role: 'user' as const,
+          content: '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+        },
+      ],
+    };
+    const response = createSupervisorStreamResponse(request) as unknown as {
+      stream: {
+        execute: (args: {
+          writer: { write: (chunk: unknown) => void };
+        }) => Promise<void>;
+      };
+    };
+
+    const writes: unknown[] = [];
+    await response.stream.execute({
+      writer: {
+        write: (chunk: unknown) => {
+          writes.push(chunk);
+        },
+      },
+    });
+
+    expect(mockExecuteSupervisorStream).toHaveBeenCalledWith(
+      expect.objectContaining({
+        messages: [
+          { role: 'user', content: '지금 당장 조치가 필요한 서버가 있어?' },
+          {
+            role: 'assistant',
+            content:
+              '🚨 즉시 조치 필요 여부\n• 관찰 우선 서버: db-mysql-dc1-backup',
+          },
+          {
+            role: 'user',
+            content: '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+          },
+        ],
+      })
+    );
+    expect(mockSessionSaveHistory).toHaveBeenCalledWith(
+      'session-contextual-follow-up',
+      [
+        { role: 'user', content: '지금 당장 조치가 필요한 서버가 있어?' },
+        {
+          role: 'assistant',
+          content:
+            '🚨 즉시 조치 필요 여부\n• 관찰 우선 서버: db-mysql-dc1-backup',
+        },
+        {
+          role: 'user',
+          content: '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘',
+        },
+        {
+          role: 'assistant',
+          content:
+            '📊 **지정 서버 네트워크 70% 이상 서버**• 대상: 지정 서버 1대',
+        },
+      ]
+    );
+    expect(writes).toContainEqual(
+      expect.objectContaining({
+        type: 'data-done',
+        data: expect.objectContaining({
+          responseSummary:
+            '📊 **지정 서버 네트워크 70% 이상 서버**• 대상: 지정 서버 1대',
+        }),
+      })
+    );
   });
 
   it('maps agent_step stream events to data-agent-step UI parts', async () => {
