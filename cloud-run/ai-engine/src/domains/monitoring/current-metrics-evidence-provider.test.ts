@@ -1128,4 +1128,35 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toMatch(/api-was-dc1-01.+api-was-dc1-02/s);
     expect(evidence?.fallback).toContain('CPU + 메모리');
   });
+
+  describe('trend-routing: 상승/하락 트렌드 표현이 metric_trend intent로 라우팅', () => {
+    const trendServers = [
+      { id: 'cache-redis-dc1-01', type: 'cache', status: 'critical', cpu: 19, memory: 92, disk: 22 },
+      { id: 'api-was-dc1-01', type: 'application', status: 'online', cpu: 63, memory: 55, disk: 30 },
+    ];
+
+    it.each([
+      ['최근 메모리 사용량이 계속 올라가는 서버 있어?', 'memory'],
+      ['CPU가 계속 상승 중인 서버 알려줘', 'cpu'],
+      ['디스크 사용량이 꾸준히 늘어나는 서버는?', 'disk'],
+      ['메모리가 점점 높아지고 있는 서버', 'memory'],
+      ['CPU 사용률이 지속적으로 상승하는 서버', 'cpu'],
+    ])('"%s" → metric_trend (metric=%s)', (query, expectedMetric) => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest(query, { servers: trendServers })
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_trend',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        metric: expectedMetric,
+      });
+    });
+
+    it('메모리 임계값 쿼리는 metric_trend로 분류되지 않음', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('메모리 70% 이상인 서버는?', { servers: trendServers })
+      );
+      expect(parsed?.intent).not.toBe('metric_trend');
+    });
+  });
 });
