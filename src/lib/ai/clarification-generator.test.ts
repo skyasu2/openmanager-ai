@@ -406,7 +406,7 @@ describe('generateClarification', () => {
       ).toBe(true);
     });
 
-    it('캐시/스토리지 그룹이 명시된 쿼리는 원본 그룹 컨텍스트를 유지하도록 clarification을 스킵', () => {
+    it('캐시/스토리지/WAS 그룹이 명시된 쿼리는 원본 그룹 컨텍스트를 유지하도록 clarification을 스킵', () => {
       expect(
         generateClarification('캐시 서버 메모리 현황', lowConfidence)
       ).toBeNull();
@@ -415,6 +415,10 @@ describe('generateClarification', () => {
       ).toBeNull();
       expect(
         generateClarification('storage 서버 상태 확인', lowConfidence)
+      ).toBeNull();
+      expect(generateClarification('WAS 서버들', lowConfidence)).toBeNull();
+      expect(
+        generateClarification('애플리케이션 서버 현황 알려줘', lowConfidence)
       ).toBeNull();
     });
   });

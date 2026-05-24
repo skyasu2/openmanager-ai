@@ -31,7 +31,7 @@ export interface ClarificationRequest {
 const SERVER_PATTERNS = {
   missing: /서버|server|상태|status|확인|check/i,
   hasSpecific:
-    /web-\d+|db-\d+|api-\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|캐시|cache|스토리지|저장소|storage|nfs|s3/i,
+    /web-\d+|db-\d+|api-\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|was|api|app|application|backend|애플리케이션|캐시|cache|스토리지|저장소|storage|nfs|s3/i,
 };
 
 const MAX_CLARIFICATION_OPTIONS = 6;
@@ -57,6 +57,9 @@ const SPECIFIC_CONDITION_PATTERNS = {
   // 명시적 스코프: "모든 서버", "전체 서버" 등 스코프가 명확한 쿼리
   explicitScope:
     /모든\s*(서버|server)|전체\s*(서버|server|시스템|system)|서버명\s*없이|전부|all\s*(서버|server|systems?)|whole\s*(fleet|system)/i,
+  // 명시적 서버 그룹: "WAS 서버들", "캐시 서버"처럼 단일 서버 ID는 없어도 scope가 분명한 질의
+  groupScope:
+    /(?:\b(?:was|api|app|application|backend|web|db|database|mysql|redis|cache|storage|nfs|lb|loadbalancer)\b|애플리케이션|캐시|스토리지|저장소|웹|디비|데이터베이스|로드\s*밸런서)\s*(?:서버|서버들|그룹|servers?|hosts?|instances?|nodes?)/i,
   // 전체 서버 탐색 의도: 특정 서버명이 없어도 fleet scan으로 실행 가능
   fleetScanIntent:
     /(?:조치|대응|확인).{0,16}필요.{0,16}서버|서버.{0,16}(?:조치|대응|확인).{0,16}필요|문제.{0,12}있는.{0,12}서버|위험.{0,12}서버|경고.{0,12}서버|장애.{0,12}서버|당장.{0,12}서버/i,
@@ -99,6 +102,7 @@ function hasSpecificConditions(query: string): boolean {
     SPECIFIC_CONDITION_PATTERNS.filterIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.clarifiedSuffix.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.explicitScope.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.groupScope.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.fleetScanIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.followUpContextReference.test(query)
   );
