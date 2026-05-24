@@ -82,6 +82,45 @@ describe('recoverEmptySupervisorStreamOutput', () => {
     expect(result.fullText).toBe('Recovered answer from tool result.');
   });
 
+  it('recovers server performance advice queries with read-only guidance', async () => {
+    const { events, result } = await collectRecoveryEvents({
+      queryText: '서버 성능 개선 조언 해줘',
+    });
+
+    expect(events).toHaveLength(1);
+    expect(events[0]?.type).toBe('text_delta');
+    const text = String(events[0]?.data ?? '');
+    expect(text).toContain('성능 개선 조언');
+    expect(text).toContain('읽기 전용');
+    expect(text).toContain('```bash');
+    expect(text).toContain('vmstat 1 5');
+    expect(text).not.toContain('응답 본문이 비어 있어');
+    expect(result.fullText).toBe(text);
+    expect(result.streamError).toBeNull();
+  });
+
+  it('includes the server id in Advisor performance advice recovery', async () => {
+    const { events, result } = await collectRecoveryEvents({
+      queryText: 'api-was-dc1-01 서버 성능 개선 조언 해줘',
+    });
+
+    const text = String(events[0]?.data ?? '');
+    expect(text).toContain('api-was-dc1-01');
+    expect(result.fullText).toBe(text);
+  });
+
+  it('preserves provider retry when Advisor advice recovery still has a stream error', async () => {
+    const streamError = new Error('empty model output');
+    const { events, result } = await collectRecoveryEvents({
+      queryText: '서버 성능 개선 조언 해줘',
+      streamError,
+    });
+
+    expect(events).toEqual([]);
+    expect(result.fullText).toBe('');
+    expect(result.streamError).toBe(streamError);
+  });
+
   it('leaves empty output empty so provider retry can run before generic fallback', async () => {
     const streamError = new Error('empty model output');
     const { events, result } = await collectRecoveryEvents({
@@ -95,6 +134,35 @@ describe('recoverEmptySupervisorStreamOutput', () => {
 });
 
 describe('emitGenericEmptySupervisorStreamFallback', () => {
+  it('uses Advisor read-only guidance instead of generic empty text for exhausted advice fallback', async () => {
+    const generator = emitGenericEmptySupervisorStreamFallback({
+      streamError: new Error('empty model output'),
+      queryText: '서버 성능 개선 조언 해줘',
+      steps: [],
+      provider: 'groq',
+      modelId: 'test-model',
+      startTime: Date.now(),
+    });
+    const events: StreamEvent[] = [];
+
+    for (;;) {
+      const next = await generator.next();
+      if (next.done) {
+        expect(next.value).toContain('성능 개선 조언');
+        expect(next.value).not.toContain('응답 본문이 비어 있어');
+        break;
+      }
+      events.push(next.value);
+    }
+
+    expect(events).toEqual([
+      expect.objectContaining({
+        type: 'text_delta',
+        data: expect.stringContaining('읽기 전용'),
+      }),
+    ]);
+  });
+
   it('emits the generic warning after provider retry is no longer available', async () => {
     const generator = emitGenericEmptySupervisorStreamFallback({
       streamError: null,

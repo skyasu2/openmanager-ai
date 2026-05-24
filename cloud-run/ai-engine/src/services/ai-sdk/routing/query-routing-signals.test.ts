@@ -145,6 +145,14 @@ describe('extractQueryRoutingSignals', () => {
       'db-mysql-dc1-primary 최적화 방법 알려줘'
     );
     expect(optimizationSignals.preFilter.suggestedAgent).toBe('Advisor Agent');
+
+    const genericPerformanceAdviceSignals = extractQueryRoutingSignals(
+      '서버 성능 개선 조언 해줘'
+    );
+    expect(genericPerformanceAdviceSignals.intent).toBe('advisor');
+    expect(genericPerformanceAdviceSignals.preFilter.suggestedAgent).toBe(
+      'Advisor Agent'
+    );
   });
 
   it.each([
