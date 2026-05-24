@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-22
+> Last reviewed: 2026-05-24
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
-> **v8.12.6** | Updated 2026-05-22
+> **v8.12.25** | Updated 2026-05-24
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -27,7 +27,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **deterministi
 
 제품 경계는 **advisory assistant**입니다. 범용 분류로는 **운영 의사결정 AI 어시스턴트**이고, 구현 분류로는 **tool-augmented LLM + deterministic decision layer**입니다. AI Engine은 실제 서버를 직접 변경하지 않고, 운영 수치·근거·보고서·조치안 초안을 생성합니다. 자율 remediation은 승인, dry-run, rollback, audit, 권한 계약이 갖춰진 별도 요구사항으로 분리합니다.
 
-> **As-built note (2026-05-22)**: 이 문서는 초기 설계도가 아니라 실제 구현을 역추적한 현재 아키텍처 기준입니다. 기본 채팅 transport는 `/api/ai/supervisor/stream/v2`입니다. 최근 안정화는 **Round-Robin + Context Guard provider selection** (4개 provider 균등 순환, `rotationSlot` UI attribution), **Cerebras `gpt-oss-120b` 전환** (65K context, llama3.1-8b 2026-05-27 deprecated 선제 대응), **KRL 직접 경로 grounded LLM synthesis** (`FORCE_KB_QUERY_PATTERN` 경로에서 KB 결과를 closed-context로 LLM 합성, `groundingMode` 메타데이터 도입), Orchestrator LLM routing 제거 → deterministic Direct Router 전환, Z.AI GLM Flash provider mesh 편입, NLQ 전처리 파이프라인 (N0~N2/N4 완료: QueryGuard, intentFrame 신뢰 경로, streaming output filter), intent별 LLM parameter, tool-result response enrichment, deterministic ranking/recovery fallback, 사용자 노출 응답/분석 모드 제거, monitoring current/capacity/peak evidence provider의 deterministic answer 고정을 중심으로 이루어졌습니다.
+> **As-built note (2026-05-24, v8.12.25)**: 이 문서는 초기 설계도가 아니라 실제 구현을 역추적한 현재 아키텍처 기준입니다. 기본 채팅 transport는 `/api/ai/supervisor/stream/v2`입니다. 최근 안정화는 **Round-Robin + Context Guard provider selection** (4개 provider 균등 순환, `rotationSlot` UI attribution), **Cerebras `gpt-oss-120b` primary 전환** (65K context, llama3.1-8b deprecated 완료), **routing-patterns.ts 중앙화** (INVERSE_STATUS_PATTERN, MIN_METRIC_PATTERN SSOT화), **METRIC_TREND_PATTERN 확장** (계속/꾸준히/지속 표현과 "메모리 트렌드 상승 서버" 같은 명사형 trend-routing 회귀 보강), **action-needed 서버 건강 문구 보강** ("문제 있는 서버", "비정상 서버", "장애가 있는 서버" 계열 deterministic evidence 처리), **AZ 비교 evidence providers 추가** (monitoringLocationLoadBalanceEvidenceProvider, monitoringCapacityForecastEvidenceProvider, v8.12.5), **semantic_frame confidence 임계값 완화** (0.8 → 0.65), **KB 67건** 운영 중, Orchestrator LLM routing 제거 → deterministic Direct Router 전환, KRL 직접 경로 grounded LLM synthesis (`groundingMode` 메타데이터 도입)을 중심으로 이루어졌습니다.
 
 ### Vercel ↔ Cloud Run Runtime Boundary (2026-05-20)
 
@@ -157,7 +157,7 @@ repo docs / seed JSON
   -> EvidenceCard[] / source group: knowledge-base
 ```
 
-현재 corpus는 60건 규모이고 category/golden smoke로 `architecture`, `command`, `incident`와 CPU·DB·topology 운영 표현 alias를 확인합니다. 이 규모에서는 PostgreSQL Full Text Search가 무료 티어, 단순성, deterministic 검증 가능성 측면에서 가장 적합합니다. Vertex AI Search 같은 managed search는 대량 파일 ingest, IAM 기반 문서 권한, 수천~수만 문서 규모가 되면 재검토합니다. Vercel Blob/Edge Config는 파일·설정 보관에는 맞지만 내부 지식 검색 DB 역할에는 두지 않습니다.
+현재 corpus는 **67건** 규모이고 category/golden smoke로 `architecture`, `command`, `incident`와 CPU·DB·topology 운영 표현 alias를 확인합니다. 이 규모에서는 PostgreSQL Full Text Search가 무료 티어, 단순성, deterministic 검증 가능성 측면에서 가장 적합합니다. Vertex AI Search 같은 managed search는 대량 파일 ingest, IAM 기반 문서 권한, 수천~수만 문서 규모가 되면 재검토합니다. Vercel Blob/Edge Config는 파일·설정 보관에는 맞지만 내부 지식 검색 DB 역할에는 두지 않습니다.
 
 ### Improvement Candidates
 
