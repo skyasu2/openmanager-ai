@@ -76,6 +76,8 @@ const CURRENT_METRIC_GROUP_PATTERN =
   /(?:\b(?:db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend)\b|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN =
   /추이|추세|트렌드|trend|변화|변동|(?:계속|지속|꾸준히|점점).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)/i;
+const GENERIC_METRIC_TREND_PATTERN =
+  /메트릭|지표|리소스|resource|metrics?/i;
 const GROUP_SERVER_LIST_PATTERN =
   /서버\s*(?:들|목록|리스트)|호스트\s*(?:목록|리스트)?|목록|리스트|보여|알려|나열|show|list|servers?|hosts?|instances?|nodes?/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
@@ -86,6 +88,7 @@ const SERVER_COMPARISON_CONNECTOR_PATTERN =
   /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
 const TIME_SERIES_COMPARISON_PATTERN =
   /(지난\s*\d|최근\s*\d|24\s*시간|하루|어제|last\s+\d|last24h|past\s+\d|평균|avg|추세|트렌드|trend|예측|forecast|변화)/i;
+const DEFAULT_TREND_METRICS: SupportedMetric[] = ['cpu', 'memory', 'disk'];
 const GROUP_TARGET_HINTS = [
   {
     target: 'cache',
@@ -148,6 +151,20 @@ function extractMentionedMetrics(message: string): SupportedMetric[] {
   }
   if (/네트워크|\bnetwork\b|\bnet\b/i.test(message)) metrics.push('network');
   return metrics;
+}
+
+function resolveTrendMetrics(message: string, metric: SupportedMetric | null): SupportedMetric[] {
+  if (metric && metric !== 'network') return [metric];
+  if (metric === 'network') return [];
+
+  const mentionedMetrics = extractMentionedMetrics(message).filter(
+    (mentionedMetric) => mentionedMetric !== 'network'
+  );
+  if (mentionedMetrics.length > 0) return mentionedMetrics;
+
+  return GENERIC_METRIC_TREND_PATTERN.test(message)
+    ? DEFAULT_TREND_METRICS
+    : [];
 }
 
 function isAndMetricFilterMessage(message: string): boolean {
@@ -433,6 +450,25 @@ function parseCurrentMetricsFrame(
   }
 
   if (
+    !metric &&
+    frame.intent === 'metric_trend' &&
+    (capabilityId === undefined ||
+      capabilityId === MONITORING_METRIC_TREND_CAPABILITY_ID)
+  ) {
+    const trendMetrics = resolveTrendMetrics(request.message, null);
+    if (trendMetrics.length > 0) {
+      return {
+        intent: 'metric_trend',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        sourceIntent: frame.intent,
+        answerQuery: request.message,
+        metrics: trendMetrics,
+        ...(targets.length > 0 && { targets }),
+      };
+    }
+  }
+
+  if (
     metric &&
     isMetricRankingFrame(frame) &&
     (capabilityId === undefined ||
@@ -680,6 +716,24 @@ function parseCurrentMetricsMessage(
       metric,
       ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
+  }
+
+  if (
+    classification.intent === 'data-lookup' &&
+    !metric &&
+    METRIC_TREND_PATTERN.test(message)
+  ) {
+    const trendMetrics = resolveTrendMetrics(message, null);
+    if (trendMetrics.length > 0) {
+      return {
+        intent: 'metric_trend',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        sourceIntent: 'generic-metric-trend',
+        answerQuery: message,
+        metrics: trendMetrics,
+        ...(metricTargets.length > 0 && { targets: metricTargets }),
+      };
+    }
   }
 
   if (

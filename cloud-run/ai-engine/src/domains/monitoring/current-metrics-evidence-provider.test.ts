@@ -1158,6 +1158,60 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('CPU 평균');
   });
 
+  it('routes single-server generic 24h metric trend queries to deterministic trend evidence', async () => {
+    const query = 'cache-redis-dc1-01 서버의 24시간 메트릭 추세 알려줘';
+    const request = createEvidenceRequest(query, {
+      timeLabel: '07:50',
+      servers: [
+        {
+          id: 'cache-redis-dc1-01',
+          type: 'cache',
+          status: 'online',
+          cpu: 22,
+          memory: 61,
+          disk: 31,
+          network: 10,
+        },
+        {
+          id: 'api-was-dc1-01',
+          type: 'application',
+          status: 'online',
+          cpu: 63,
+          memory: 55,
+          disk: 30,
+          network: 64,
+        },
+      ],
+    });
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_trend',
+      capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+      sourceIntent: 'generic-metric-trend',
+      metrics: ['cpu', 'memory', 'disk'],
+      targets: ['cache-redis-dc1-01'],
+    });
+
+    const evidence = await monitoringMetricTrendEvidenceProvider.resolve(request);
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-trend',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        intent: 'metric_trend',
+        sourceIntent: 'generic-metric-trend',
+        metrics: ['cpu', 'memory', 'disk'],
+        targets: ['cache-redis-dc1-01'],
+      },
+    });
+    expect(evidence?.fallback).toContain('캐시 서버 1대 메트릭 추이');
+    expect(evidence?.fallback).toContain('서버별 24h 추세');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).toContain('24h 평균');
+    expect(evidence?.fallback).not.toContain('api-was-dc1-01');
+  });
+
   it('resolves current server health summaries as deterministic evidence', async () => {
     const evidence = await monitoringServerHealthEvidenceProvider.resolve(
       createEvidenceRequest('현재 모든 서버 상태 요약해줘')

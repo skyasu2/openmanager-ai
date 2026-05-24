@@ -714,8 +714,13 @@ export function buildMetricTrendAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
 }): string | null {
-  const metric = params.parsed.metric;
-  if (!metric || metric === 'network') return null;
+  const metrics = params.parsed.metric && params.parsed.metric !== 'network'
+    ? [params.parsed.metric]
+    : (params.parsed.metrics ?? []).filter(
+        (metric): metric is Exclude<SupportedMetric, 'network'> =>
+          metric !== 'network'
+      );
+  if (metrics.length === 0) return null;
 
   const allServers = readSnapshotServers(params.snapshot);
   const { servers, targetLabel } = filterSnapshotServers(
@@ -727,6 +732,17 @@ export function buildMetricTrendAnswer(params: {
   const trendMap = new Map(
     get24hTrendSummaries().map((trend) => [trend.serverId, trend])
   );
+  if (metrics.length > 1) {
+    return buildMultiMetricTrendAnswer({
+      metrics,
+      servers,
+      targetLabel,
+      snapshot: params.snapshot,
+      trendMap,
+    });
+  }
+
+  const metric = metrics[0];
   const rows = servers
     .map((server) => {
       const current = getMetricValue(server, metric);
@@ -772,6 +788,74 @@ export function buildMetricTrendAnswer(params: {
         (row) =>
           `**${row.server.id}**: 현재 ${metricLabel} ${formatMetricPercent(row.current)} (24h 평균 ${formatMetricPercent(row.avg24h)}, ${row.direction} ${row.delta >= 0 ? '+' : ''}${row.delta}%p)`
       )
+    ),
+  ].join('\n');
+}
+
+function buildMultiMetricTrendAnswer(params: {
+  metrics: Array<Exclude<SupportedMetric, 'network'>>;
+  servers: SnapshotServer[];
+  targetLabel: string;
+  snapshot: DomainSnapshot;
+  trendMap: Map<string, ReturnType<typeof get24hTrendSummaries>[number]>;
+}): string | null {
+  const rows = params.servers
+    .map((server) => {
+      const trend = params.trendMap.get(server.id);
+      if (!trend) return null;
+
+      const metricRows = params.metrics
+        .map((metric) => {
+          const current = getMetricValue(server, metric);
+          const metricTrend = trend[metric];
+          if (current === null || !metricTrend) return null;
+          const delta = round1(current - metricTrend.avg);
+          return {
+            metric,
+            current,
+            avg24h: metricTrend.avg,
+            delta,
+            direction: formatTrendDirection(delta),
+          };
+        })
+        .filter((row): row is NonNullable<typeof row> => row !== null);
+      if (metricRows.length === 0) return null;
+
+      const maxDelta = Math.max(
+        ...metricRows.map((row) => Math.abs(row.delta))
+      );
+      return { server, metricRows, maxDelta };
+    })
+    .filter((row): row is NonNullable<typeof row> => row !== null)
+    .sort((left, right) => right.maxDelta - left.maxDelta);
+  if (rows.length === 0) return null;
+
+  const directionCounts = rows
+    .flatMap((row) => row.metricRows)
+    .reduce<Record<string, number>>((acc, row) => {
+      acc[row.direction] = (acc[row.direction] ?? 0) + 1;
+      return acc;
+    }, {});
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+  const metricLabels = params.metrics.map(getMetricLabel).join(' · ');
+  const topRows = rows.slice(0, 5);
+
+  return [
+    `📈 **${params.targetLabel} 메트릭 추이**`,
+    `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 기준: ${metricLabels} 현재값과 24h 평균 비교`,
+    `• 추세 분포: 상승 ${directionCounts['상승'] ?? 0}건, 안정 ${directionCounts['안정'] ?? 0}건, 하락 ${directionCounts['하락'] ?? 0}건`,
+    ...buildNumberedServerSection(
+      '서버별 24h 추세',
+      topRows.map((row) => {
+        const metricText = row.metricRows
+          .map(
+            (metricRow) =>
+              `${getMetricLabel(metricRow.metric)} 현재 ${formatMetricPercent(metricRow.current)} (24h 평균 ${formatMetricPercent(metricRow.avg24h)}, ${metricRow.direction} ${metricRow.delta >= 0 ? '+' : ''}${metricRow.delta}%p)`
+          )
+          .join(', ');
+        return `**${row.server.id}**: ${metricText}`;
+      })
     ),
   ].join('\n');
 }
