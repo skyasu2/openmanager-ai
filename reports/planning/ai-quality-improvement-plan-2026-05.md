@@ -47,7 +47,7 @@
 | Task D intentFrame 10회 live sampling | 보류 | 실 LLM 호출과 Langfuse trace 접근이 필요하다. 임계값 변경 근거가 생길 때 별도 측정한다. |
 | Task E Supabase session memory | Portfolio-deferred | 비용 0원 범위 구현은 가능하지만 DB/RLS/RPC/pruning/QA 복잡도 대비 포트폴리오 효과가 낮다. 현행 Redis 1시간 TTL을 유지하고, 장기 기억은 핵심 기능으로 홍보하지 않는다. |
 | Task F Z.AI 안정성 | 관찰 지속 | 마감일은 2026-05-23. 현재는 코드 작업 대상이 아니다. |
-| Task G AZ 집계·Top-N 추세 grounding | SDD 계약 Approved | v8.12.0 production QA에서 실제 품질 갭이 확인됐다. 기존 AI 품질/intentFrame 계획과 중복되므로 신규 plan 파일 없이 이 계획에 계약을 추가하고, failing regression test 선행 커밋 후 구현한다. |
+| Task G AZ 집계·Top-N 추세 grounding | Released | v8.12.0 production QA에서 확인된 품질 갭은 failing regression test 선행 후 구현·배포까지 완료됐다. 현재 신규 구현 대상이 아니며, 재현 시 새 회귀 테스트로 재개한다. |
 
 ---
 
@@ -321,7 +321,9 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 
 ---
 
-## Task G: AZ 집계·Top-N 추세 grounding 회귀 수정 (🔴 SDD Approved)
+## Task G: AZ 집계·Top-N 추세 grounding 회귀 수정 (Released)
+
+**상태**: Released. v8.12.0 production QA에서 확인된 두 가지 데이터 grounding gap은 failing regression test 선행 후 구현·검증까지 완료했다. 이 섹션의 계약은 완료 이력과 재개 기준으로 보존한다.
 
 **근거**: v8.12.0 production QA에서 프론트엔드 UX는 정상이나 AI 응답 품질에서 두 가지 데이터 grounding gap이 확인됐다.
 
@@ -366,7 +368,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - [x] `server-metrics.test`: current memory Top-3 응답의 각 서버에 trend direction/avg/delta가 포함되고 `answer`가 추세 라벨을 포함한다.
 - [x] `nlq.test` / `routing-policy.test`: 순위+추세 및 AZ load-balance 예시가 프롬프트/지침에 포함된다.
 
-**SDD 게이트**: 이 Task는 AI tool response schema와 routing contract 변경이므로 failing test 선행 커밋이 필요하다.
+**SDD 게이트**: 완료. 이 Task는 AI tool response schema와 routing contract 변경이었으므로 failing test 선행 커밋 후 구현했다.
 
 **수용 기준**:
 - production과 동일한 query class에서 도구 없는 일반 응답으로 빠지지 않는다.
@@ -768,7 +770,7 @@ Cloud Run: selectExecutionMode(query, intentFrame, inputType)
 - Task C는 현재 no-op으로 닫고, 재개 조건 발생 전까지 DB/seed 변경을 금지한다.
 - Task F는 2026-05-23 이후 안정/불안정 판정을 기록한다.
 - Task E는 portfolio-deferred로 유지한다. 재개 조건 충족 전까지 Supabase migration/RPC/Cloud Run owner propagation을 구현하지 않는다.
-- Task G는 failing regression test와 구현 커밋을 분리하고, AI Engine targeted tests/type-check를 통과한다.
+- Task G는 Released 상태다. 같은 증상이 재현될 때만 새 회귀 테스트로 재개한다.
 - Task H는 H-1/H-2 v8.12.6 배포 완료, H-3 v8.12.7 배포 완료 상태다. QA-0562에서 확인된 H-4 후보는 구현 여부를 별도 판단하고, 착수 시 failing regression test를 먼저 추가한다.
 - Task H-5는 v8.12.10 배포와 `QA-20260522-0564` production QA로 완료 처리한다.
 - Task I-1은 v8.12.6 배포 완료 상태로 유지하고, 서버 비교 쿼리 수치 오류 재현 시 새 회귀 테스트로 재개한다.
