@@ -25,6 +25,7 @@ import {
 } from './constants';
 import {
   buildCompositeLoadRankingAnswer,
+  buildGroupServerHealthAnswer,
   buildHealthyOnlyServerAnswer,
   buildMetricCurrentAnswer,
   buildMetricTrendAnswer,
@@ -75,6 +76,8 @@ const CURRENT_METRIC_GROUP_PATTERN =
   /(?:\b(?:db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend)\b|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
 const METRIC_TREND_PATTERN =
   /추이|추세|trend|변화|변동|(?:계속|지속|꾸준히|점점).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)/i;
+const GROUP_SERVER_LIST_PATTERN =
+  /서버(?:들|목록)?|호스트|목록|보여|알려|show|list|servers?|hosts?|instances?|nodes?/i;
 const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
 const SERVER_COMPARISON_CONNECTOR_PATTERN =
   /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
@@ -410,6 +413,22 @@ function parseCurrentMetricsMessage(
   }
 
   if (
+    !metric &&
+    groupTarget &&
+    explicitServerTargets.length === 0 &&
+    classification.intent === 'data-lookup' &&
+    GROUP_SERVER_LIST_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'server_health',
+      capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+      sourceIntent: 'group-server-list',
+      answerQuery: message,
+      targets: [groupTarget],
+    };
+  }
+
+  if (
     metric &&
     explicitServerTargets.length >= 2 &&
     isCurrentServerComparisonMessage(message)
@@ -436,6 +455,23 @@ function parseCurrentMetricsMessage(
       answerQuery: message,
       metric,
       groupTargets: groupTargets.slice(0, 2),
+    };
+  }
+
+  if (
+    metric &&
+    explicitServerTargets.length === 1 &&
+    (classification.intent === 'data-lookup' ||
+      classification.intent === 'unknown') &&
+    !HISTORICAL_OR_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'server-detail-metric',
+      answerQuery: message,
+      metric,
+      targets: explicitServerTargets,
     };
   }
 
@@ -639,6 +675,11 @@ async function resolveCurrentMetricsEvidence(
     parsed.rankBasis === 'composite-load'
   ) {
     answer = buildCompositeLoadRankingAnswer({ parsed, snapshot });
+  } else if (
+    parsed.intent === 'server_health' &&
+    parsed.sourceIntent === 'group-server-list'
+  ) {
+    answer = buildGroupServerHealthAnswer({ parsed, snapshot });
   } else if (
     parsed.intent === 'server_health' &&
     parsed.statusFilter === 'healthy-only'

@@ -219,6 +219,62 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('cache-redis-dc1-02');
   });
 
+  it('routes explicit server detail metric prompts to deterministic current metric evidence', async () => {
+    const request = createEvidenceRequest(
+      'cache-redis-dc1-01 메모리 상태 자세히',
+      {
+        timeLabel: '07:50',
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'warning',
+            cpu: 22,
+            memory: 83,
+            disk: 31,
+            network: 10,
+          },
+          {
+            id: 'cache-redis-dc1-02',
+            type: 'cache',
+            status: 'online',
+            cpu: 18,
+            memory: 55,
+            disk: 29,
+            network: 11,
+          },
+        ],
+      }
+    );
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'server-detail-metric',
+      metric: 'memory',
+      targets: ['cache-redis-dc1-01'],
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      request
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        sourceIntent: 'server-detail-metric',
+        metric: 'memory',
+        targets: ['cache-redis-dc1-01'],
+      },
+    });
+    expect(evidence?.fallback).toContain('캐시 서버 1대 메모리 현황');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-01 83%');
+    expect(evidence?.fallback).not.toContain('cache-redis-dc1-02');
+  });
+
   it('routes explicit server-to-server metric comparisons to deterministic current metric evidence', async () => {
     const request = createEvidenceRequest(
       'api-was-dc1-01 과 api-was-dc1-02 의 CPU 사용량을 비교해줘',
@@ -332,6 +388,65 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('애플리케이션 서버 2대 CPU 현황');
     expect(evidence?.fallback).toContain('api-was-dc1-01 82%');
     expect(evidence?.fallback).toContain('api-was-dc1-02 57%');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
+  it('routes clear group-only server list prompts to deterministic server health evidence', async () => {
+    const request = createEvidenceRequest('WAS 서버들', {
+      timeLabel: '07:50',
+      servers: [
+        {
+          id: 'api-was-dc1-01',
+          type: 'application',
+          status: 'warning',
+          cpu: 82,
+          memory: 62,
+          disk: 41,
+          network: 18,
+        },
+        {
+          id: 'api-was-dc1-02',
+          type: 'application',
+          status: 'online',
+          cpu: 57,
+          memory: 51,
+          disk: 39,
+          network: 16,
+        },
+        {
+          id: 'web-nginx-dc1-01',
+          type: 'web',
+          status: 'online',
+          cpu: 92,
+          memory: 45,
+          disk: 28,
+          network: 11,
+        },
+      ],
+    });
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'server_health',
+      capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+      sourceIntent: 'group-server-list',
+      targets: ['application'],
+    });
+
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve(request);
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+        sourceIntent: 'group-server-list',
+        targets: ['application'],
+      },
+    });
+    expect(evidence?.fallback).toContain('애플리케이션 서버 현황');
+    expect(evidence?.fallback).toContain('api-was-dc1-01');
+    expect(evidence?.fallback).toContain('api-was-dc1-02');
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
   });
 

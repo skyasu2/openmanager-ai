@@ -379,6 +379,41 @@ export function buildCompositeLoadRankingAnswer(params: {
   ].join('\n');
 }
 
+export function buildGroupServerHealthAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  if (params.parsed.sourceIntent !== 'group-server-list') return null;
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const { servers, targetLabel } = filterSnapshotServers(
+    allServers,
+    params.parsed.targets
+  );
+  if (servers.length === 0) return null;
+
+  const rows = [...servers].sort((left, right) => left.id.localeCompare(right.id));
+  const statusCounts = rows.reduce<Record<string, number>>((acc, server) => {
+    const status = formatServerStatus(server);
+    acc[status] = (acc[status] ?? 0) + 1;
+    return acc;
+  }, {});
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+
+  return [
+    `📋 **${removeTargetCountSuffix(targetLabel)} 현황**`,
+    `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 상태: online ${statusCounts.online ?? 0}대 · warning ${statusCounts.warning ?? 0}대 · critical ${statusCounts.critical ?? 0}대 · offline ${statusCounts.offline ?? 0}대`,
+    ...buildNumberedServerSection(
+      '서버별 현황',
+      rows.map(
+        (server) =>
+          `**${server.id}**: 상태 ${formatServerStatus(server)}, CPU ${formatMetricPercent(getMetricValue(server, 'cpu') ?? 0)}, 메모리 ${formatMetricPercent(getMetricValue(server, 'memory') ?? 0)}, 디스크 ${formatMetricPercent(getMetricValue(server, 'disk') ?? 0)}`
+      )
+    ),
+  ].join('\n');
+}
+
 function isHealthyServer(server: SnapshotServer): boolean {
   return (
     server.status === 'online' &&
