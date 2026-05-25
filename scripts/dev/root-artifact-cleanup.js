@@ -96,6 +96,7 @@ function parseArgs(argv) {
     apply,
     applyDirs,
     strict,
+    skipToleratedDirSize: strict && !apply && !applyDirs,
     destination: path.resolve(PROJECT_ROOT, destination),
   };
 }
@@ -126,7 +127,7 @@ function hasTrackedEntriesUnder(relativePath) {
   return Boolean(String(result.stdout || '').trim());
 }
 
-function listRootDirs() {
+function listRootDirs({ skipToleratedDirSize = false } = {}) {
   return ROOT_EPHEMERAL_DIRS.map((name) => {
     const absolutePath = path.join(PROJECT_ROOT, name);
     if (!fs.existsSync(absolutePath)) {
@@ -134,11 +135,13 @@ function listRootDirs() {
     }
     const stat = fs.statSync(absolutePath);
     if (!stat.isDirectory()) return null;
+    const sizeSkipped = skipToleratedDirSize && TOLERATED_ROOT_DIRS.has(name);
     return {
       name,
       absolutePath,
       relativePath: toRelative(absolutePath),
-      size: directorySizeBytes(absolutePath),
+      size: sizeSkipped ? 0 : directorySizeBytes(absolutePath),
+      sizeSkipped,
     };
   }).filter(Boolean);
 }
@@ -202,7 +205,9 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const rootFiles = listRootFiles();
   const artifactFiles = detectArtifactFiles(rootFiles);
-  const ephemeralDirs = listRootDirs().map((dir) => ({
+  const ephemeralDirs = listRootDirs({
+    skipToleratedDirSize: args.skipToleratedDirSize,
+  }).map((dir) => ({
     ...dir,
     tracked: hasTrackedEntriesUnder(dir.relativePath),
   }));
@@ -219,7 +224,12 @@ function main() {
 
   console.log('Root Artifact Audit');
   console.log(`- artifact files in root: ${artifactFiles.length} (${formatBytes(artifactBytes)})`);
-  console.log(`- ephemeral dirs in root: ${ephemeralDirs.length} (${formatBytes(dirsBytes)})`);
+  const skippedDirCount = ephemeralDirs.filter((dir) => dir.sizeSkipped).length;
+  console.log(
+    `- ephemeral dirs in root: ${ephemeralDirs.length} (${formatBytes(dirsBytes)} scanned${
+      skippedDirCount > 0 ? `, ${skippedDirCount} tolerated dir size(s) skipped` : ''
+    })`
+  );
   console.log(
     `- blocking dirs in root: ${blockingDirs.length} (${formatBytes(blockingDirsBytes)})`
   );
@@ -237,13 +247,13 @@ function main() {
   printList(
     'Root ephemeral dirs',
     ephemeralDirs,
-    (dir) => `${formatBytes(dir.size)} - ${dir.relativePath}`
+    (dir) => `${dir.sizeSkipped ? 'size skipped' : formatBytes(dir.size)} - ${dir.relativePath}`
   );
   console.log('');
   printList(
     'Root tolerated dirs',
     toleratedDirs,
-    (dir) => `${formatBytes(dir.size)} - ${dir.relativePath}`
+    (dir) => `${dir.sizeSkipped ? 'size skipped' : formatBytes(dir.size)} - ${dir.relativePath}`
   );
   console.log('');
   printList(

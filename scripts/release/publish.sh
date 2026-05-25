@@ -9,6 +9,7 @@
 #   ./scripts/release/publish.sh major     # force major
 #   RELEASE_VERIFY_PRODUCTION=false ./scripts/release/publish.sh patch
 #   RELEASE_VERIFY_RETRIES=80 RELEASE_VERIFY_DELAY_MS=15000 ./scripts/release/publish.sh patch
+#   RELEASE_WAIT_FOR_GITLAB_PIPELINE=false ./scripts/release/publish.sh patch
 #   DRY_RUN=1 ./scripts/release/publish.sh # preview only
 
 set -euo pipefail
@@ -22,6 +23,10 @@ RELEASE_VERIFY_URL="${RELEASE_VERIFY_URL:-https://openmanager-ai.vercel.app}"
 RELEASE_VERIFY_RETRIES="${RELEASE_VERIFY_RETRIES:-80}"
 RELEASE_VERIFY_DELAY_MS="${RELEASE_VERIFY_DELAY_MS:-15000}"
 RELEASE_VERIFY_TIMEOUT_MS="${RELEASE_VERIFY_TIMEOUT_MS:-8000}"
+RELEASE_WAIT_FOR_GITLAB_PIPELINE="${RELEASE_WAIT_FOR_GITLAB_PIPELINE:-true}"
+RELEASE_GITLAB_PIPELINE_WAIT_ATTEMPTS="${RELEASE_GITLAB_PIPELINE_WAIT_ATTEMPTS:-80}"
+RELEASE_GITLAB_PIPELINE_WAIT_INTERVAL_SECONDS="${RELEASE_GITLAB_PIPELINE_WAIT_INTERVAL_SECONDS:-15}"
+RELEASE_GITLAB_PIPELINE_MAX_NOT_FOUND_ATTEMPTS="${RELEASE_GITLAB_PIPELINE_MAX_NOT_FOUND_ATTEMPTS:-12}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RELEASE_TOOL="${RELEASE_TOOL:-${SCRIPT_DIR}/version-and-tag.mjs}"
 
@@ -104,6 +109,70 @@ run_post_release_verification() {
   return 1
 }
 
+wait_for_gitlab_release_pipeline() {
+  local wait_enabled
+  wait_enabled="$(printf '%s' "$RELEASE_WAIT_FOR_GITLAB_PIPELINE" | tr '[:upper:]' '[:lower:]')"
+
+  if [[ "$wait_enabled" == "false" || "$wait_enabled" == "0" || "$wait_enabled" == "off" ]]; then
+    echo "⚪ GitLab tag pipeline wait skipped (RELEASE_WAIT_FOR_GITLAB_PIPELINE=${RELEASE_WAIT_FOR_GITLAB_PIPELINE})"
+    return 0
+  fi
+
+  if [[ ! -f "scripts/gitlab/check-head-pipeline.sh" ]]; then
+    echo "⚪ GitLab tag pipeline wait skipped (missing scripts/gitlab/check-head-pipeline.sh)"
+    return 0
+  fi
+
+  echo "⏳ GitLab release pipeline 확인 중..."
+  echo "   production smoke는 tag deploy/smoke pipeline이 끝난 뒤 실행합니다."
+
+  local output=""
+  local status=0
+  set +e
+  output="$(bash scripts/gitlab/check-head-pipeline.sh \
+    --wait \
+    --interval "$RELEASE_GITLAB_PIPELINE_WAIT_INTERVAL_SECONDS" \
+    --attempts "$RELEASE_GITLAB_PIPELINE_WAIT_ATTEMPTS" \
+    --max-not-found "$RELEASE_GITLAB_PIPELINE_MAX_NOT_FOUND_ATTEMPTS" 2>&1)"
+  status=$?
+  set -e
+
+  printf '%s\n' "$output"
+
+  if [[ "$status" -eq 0 ]]; then
+    if grep -q 'status=success' <<<"$output"; then
+      echo "✅ GitLab release pipeline success"
+      return 0
+    fi
+
+    if grep -q 'note=pipeline_not_terminal_after_wait' <<<"$output"; then
+      echo "❌ GitLab release pipeline did not finish within the configured wait window."
+      echo "   Production polling is skipped because deploy authority is the GitLab tag pipeline."
+      return 2
+    fi
+
+    if grep -q 'status=not_created' <<<"$output"; then
+      echo "❌ GitLab release pipeline was not created for this SHA."
+      echo "   Production polling is skipped because no canonical deploy pipeline is available."
+      return 2
+    fi
+
+    echo "❌ GitLab release pipeline finished without success."
+    echo "   Production polling is skipped because deploy authority is the GitLab tag pipeline."
+    return 2
+  fi
+
+  if grep -qi 'GitLab token not found' <<<"$output"; then
+    echo "⚠️ GitLab pipeline wait skipped because no GitLab token is available."
+    echo "   Continuing with production version verification."
+    return 0
+  fi
+
+  echo "❌ GitLab release pipeline failed or reached a terminal non-success state."
+  echo "   Production polling is skipped because deploy authority is the GitLab tag pipeline."
+  return "$status"
+}
+
 # ── Dry-run mode ───────────────────────────────────────────
 if [[ -n "$DRY_RUN" ]]; then
   echo "🔍 Dry-run 모드"
@@ -181,7 +250,10 @@ node scripts/release/check-release-consistency.js
 echo "🚀 Canonical push 중... (commit + tag -> ${CANONICAL_REMOTE}/main)"
 git push --follow-tags "$CANONICAL_REMOTE" main
 
-# ── 4. Production verification ────────────────────────────
+# ── 4. Wait for GitLab deploy authority ───────────────────
+wait_for_gitlab_release_pipeline
+
+# ── 5. Production verification ────────────────────────────
 run_post_release_verification "$NEW_VERSION" "$TAG"
 
 echo ""
