@@ -10,6 +10,7 @@ import {
   containsForeignCharacters,
   sanitizeChineseCharacters,
   sanitizeJsonStrings,
+  sanitizeStreamingDelta,
   sanitizeUserFacingResponse,
 } from './text-sanitizer';
 
@@ -155,6 +156,39 @@ describe('sanitizeUserFacingResponse', () => {
     expect(result).not.toContain('<|tool_call_begin|>');
     expect(result).not.toContain('Nothing to process');
     expect(result).not.toContain('"reasoning"');
+  });
+});
+
+// ============================================================================
+// sanitizeStreamingDelta
+// ============================================================================
+
+describe('sanitizeStreamingDelta', () => {
+  it('preserves leading space (streaming word boundary)', () => {
+    // streaming delta는 " 모니터링" 처럼 선행 공백이 단어 경계를 나타냄
+    expect(sanitizeStreamingDelta(' 모니터링')).toBe(' 모니터링');
+    expect(sanitizeStreamingDelta(' **서버**')).toBe(' **서버**');
+    expect(sanitizeStreamingDelta(' AI 어시스턴트')).toBe(' AI 어시스턴트');
+  });
+
+  it('preserves trailing space', () => {
+    expect(sanitizeStreamingDelta('서버 ')).toBe('서버 ');
+  });
+
+  it('still strips raw model markers', () => {
+    const result = sanitizeStreamingDelta('<|tool_call_begin|> 텍스트');
+    expect(result).not.toContain('<|tool_call_begin|>');
+    expect(result).toContain('텍스트');
+  });
+
+  it('handles empty string', () => {
+    expect(sanitizeStreamingDelta('')).toBe('');
+  });
+
+  it('cleans scaffold phrases (응답 가이드)', () => {
+    const result = sanitizeStreamingDelta('[응답 가이드] 서버 상태');
+    expect(result).not.toContain('[응답 가이드]');
+    expect(result).toContain('서버 상태');
   });
 });
 
