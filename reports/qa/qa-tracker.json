@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T04:28:13.683Z"
+    "updatedAt": "2026-05-25T07:46:05.844Z"
   },
   "sequence": {
-    "nextRunNumber": 592
+    "nextRunNumber": 593
   },
   "summary": {
-    "totalRecordedRuns": 589,
+    "totalRecordedRuns": 590,
     "totalRuns": 472,
-    "excludedRuns": 117,
+    "excludedRuns": 118,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
-    "completionRate": 100,
-    "completedItems": 673,
-    "pendingItems": 0,
+    "completionRate": 99.85,
+    "completedItems": 675,
+    "pendingItems": 1,
     "deferredItems": 0,
-    "wontFixItems": 51,
+    "wontFixItems": 52,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 0,
+    "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260525-0591",
     "lastRecordedAt": "2026-05-25T04:28:13.683Z",
-    "latestRecordedRunId": "QA-20260525-0591",
-    "latestRecordedAt": "2026-05-25T04:28:13.683Z"
+    "latestRecordedRunId": "QA-20260525-0592",
+    "latestRecordedAt": "2026-05-25T07:46:05.844Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17105,6 +17105,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-25T04:28:13.683Z"
+    },
+    "q-new24-peak-metric-쿼리-정상-동작-확인": {
+      "id": "q-new24-peak-metric-쿼리-정상-동작-확인",
+      "title": "Q-NEW24 peak-metric 쿼리 정상 동작 확인",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260525-0592",
+      "firstSeenAt": "2026-05-25T07:46:05.844Z",
+      "lastSeenRunId": "QA-20260525-0592",
+      "lastSeenAt": "2026-05-25T07:46:05.844Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T07:46:05.844Z"
+    },
+    "q-new27-threshold-필터-정확도-확인": {
+      "id": "q-new27-threshold-필터-정확도-확인",
+      "title": "Q-NEW27 threshold 필터 정확도 확인",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260525-0592",
+      "firstSeenAt": "2026-05-25T07:46:05.844Z",
+      "lastSeenRunId": "QA-20260525-0592",
+      "lastSeenAt": "2026-05-25T07:46:05.844Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T07:46:05.844Z"
+    },
+    "llm-prefilter-timeout-hotfix": {
+      "id": "llm-prefilter-timeout-hotfix",
+      "title": "LLM pre-filter timeout 파라미터 핫픽스",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260525-0592",
+      "firstSeenAt": "2026-05-25T07:46:05.844Z",
+      "lastSeenRunId": "QA-20260525-0592",
+      "lastSeenAt": "2026-05-25T07:46:05.844Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "generateObject의 timeout:{totalMs} 비표준 파라미터 제거. abortSignal로 이미 제어",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T07:46:05.844Z"
+    },
+    "advisor-response-quality": {
+      "id": "advisor-response-quality",
+      "title": "Advisor 응답 내용 충실도 개선",
+      "priority": "P4",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260525-0592",
+      "firstSeenAt": "2026-05-25T07:46:05.844Z",
+      "lastSeenRunId": "QA-20260525-0592",
+      "lastSeenAt": "2026-05-25T07:46:05.844Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Advisor Agent 라우팅 정상이나 응답 1문장 이하 + 22초 소요",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-25T07:46:05.844Z"
     }
   },
   "runs": [
@@ -69408,6 +69504,94 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0592",
+      "recordedAt": "2026-05-25T07:46:05.844Z",
+      "recordedAtKst": "2026-05-25 16:46:05 KST",
+      "title": "10차 AI 어시스턴트 평가 — LLM pre-filter v8.12.38 신규질문·회귀 검증",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0592.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "374b94bba446fc301519300b73f629b66cc5b28d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard AI 어시스턴트",
+        "Q-NEW24~28 신규 질문 평가",
+        "P8/P9 회귀·수정 검증",
+        "LLM pre-filter v8.12.38 회귀 식별"
+      ],
+      "skippedSurfaces": [
+        "reporter",
+        "vision",
+        "anomaly detection"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 2,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "LLM pre-filter 회귀(P8/Q-NEW25 Worker failed) 발견. timeout:{totalMs} 파라미터 문제 식별 완료",
+          "nextAction": "timeout 파라미터 제거 핫픽스 후 P8/Q-NEW25 재검증"
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-25T07-28-46-379Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-25T07-28-46-379Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-25T07-29-03-805Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-25T07-29-03-805Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-25T07-30-44-558Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-25T07-30-44-558Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-25T07-31-28-400Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-25T07-31-28-400Z.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "page-2026-05-25T07-31-46-700Z.png",
+          "path": ".playwright-mcp/screenshots/page-2026-05-25T07-31-46-700Z.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 2,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -69416,17 +69600,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 308,
-      "appropriateCount": 263,
+      "seenCount": 309,
+      "appropriateCount": 264,
       "partialCount": 45,
       "inappropriateCount": 0,
-      "improvementNeededCount": 63,
-      "lastRunId": "QA-20260525-0591",
-      "lastSeenAt": "2026-05-25T04:28:13.683Z",
+      "improvementNeededCount": 64,
+      "lastRunId": "QA-20260525-0592",
+      "lastSeenAt": "2026-05-25T07:46:05.844Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Q-NEW13 now uses current server metrics plus Advisor command evidence and displays the Advisor evidence footer in production.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "LLM pre-filter 회귀(P8/Q-NEW25 Worker failed) 발견. timeout:{totalMs} 파라미터 문제 식별 완료",
+      "lastNextAction": "timeout 파라미터 제거 핫픽스 후 P8/Q-NEW25 재검증"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

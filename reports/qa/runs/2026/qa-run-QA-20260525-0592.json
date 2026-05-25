@@ -1,0 +1,141 @@
+{
+  "runId": "QA-20260525-0592",
+  "recordedAt": "2026-05-25T07:46:05.844Z",
+  "recordedAtKst": "2026-05-25 16:46:05 KST",
+  "runTitle": "10차 AI 어시스턴트 평가 — LLM pre-filter v8.12.38 신규질문·회귀 검증",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "374b94bba446fc301519300b73f629b66cc5b28d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard AI 어시스턴트",
+    "Q-NEW24~28 신규 질문 평가",
+    "P8/P9 회귀·수정 검증",
+    "LLM pre-filter v8.12.38 회귀 식별"
+  ],
+  "skippedSurfaces": [
+    "reporter",
+    "vision",
+    "anomaly detection"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 2,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "LLM pre-filter 회귀(P8/Q-NEW25 Worker failed) 발견. timeout:{totalMs} 파라미터 문제 식별 완료",
+      "nextAction": "timeout 파라미터 제거 핫픽스 후 P8/Q-NEW25 재검증"
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-25T07-28-46-379Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-28-46-379Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-25T07-29-03-805Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-29-03-805Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-25T07-30-44-558Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-30-44-558Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-25T07-31-28-400Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-31-28-400Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-25T07-31-46-700Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-31-46-700Z.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new24-peak-metric-쿼리-정상-동작-확인",
+      "title": "Q-NEW24 peak-metric 쿼리 정상 동작 확인",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "q-new27-threshold-필터-정확도-확인",
+      "title": "Q-NEW27 threshold 필터 정확도 확인",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "llm-prefilter-timeout-hotfix",
+      "title": "LLM pre-filter timeout 파라미터 핫픽스",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "generateObject의 timeout:{totalMs} 비표준 파라미터 제거. abortSignal로 이미 제어",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "advisor-response-quality",
+      "title": "Advisor 응답 내용 충실도 개선",
+      "priority": "P4",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Advisor Agent 라우팅 정상이나 응답 1문장 이하 + 22초 소요",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [],
+  "links": []
+}
