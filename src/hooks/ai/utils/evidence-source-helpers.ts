@@ -270,10 +270,10 @@ export function buildAssistantAnalysisBasis(params: {
     dataSource = `지식 근거 검색 (${retrieval?.evidenceCount ?? 0}건)`;
   } else if (semanticEvidenceDataSource) {
     dataSource = semanticEvidenceDataSource;
-  } else if (hasServerAnalysisEvidence) {
-    dataSource = '서버 실시간 데이터 분석';
   } else if (hasAdvisorCommandEvidence) {
     dataSource = 'Advisor Agent 조치 명령어 근거';
+  } else if (hasServerAnalysisEvidence) {
+    dataSource = '서버 실시간 데이터 분석';
   } else if (effectiveRagEnabled) {
     dataSource = '일반 대화 응답 (지식 검색 활성)';
   } else {

@@ -1195,6 +1195,64 @@ describe('transformMessages', () => {
       'recommendCommands',
     ]);
   });
+
+  it('keeps Advisor evidence when command guidance follows a metrics precheck', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'db-mysql-dc1-primary 서버 성능 개선 조언 해줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '현재 메트릭을 기준으로 MySQL 점검 명령어를 실행하세요.',
+          parts: [
+            {
+              type: 'text',
+              text: '현재 메트릭을 기준으로 MySQL 점검 명령어를 실행하세요.',
+            },
+            {
+              type: 'tool-getServerMetrics',
+              toolCallId: 'tool-metrics-1',
+              output: {
+                serverId: 'db-mysql-dc1-primary',
+                cpu: 42,
+                memory: 57,
+                disk: 63,
+              },
+            },
+            {
+              type: 'tool-recommendCommands',
+              toolCallId: 'tool-recommend-1',
+              output: {
+                success: true,
+                recommendations: [
+                  {
+                    command: 'SHOW PROCESSLIST;',
+                    description: '현재 MySQL 연결과 쿼리 상태 확인',
+                  },
+                ],
+                matchedKeywords: ['mysql', 'performance'],
+              },
+            },
+          ],
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata?.analysisBasis?.dataSource).toBe(
+      'Advisor Agent 조치 명령어 근거'
+    );
+    expect(assistant?.metadata?.analysisBasis?.toolsCalled).toEqual([
+      'getServerMetrics',
+      'recommendCommands',
+    ]);
+    expect(assistant?.metadata?.analysisBasis?.timeRange).toBe('최근 1시간');
+  });
 });
 
 describe('normalizeAIResponse', () => {
