@@ -219,7 +219,7 @@ describe('ServerDashboard', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('초기 더보기 가능 상태에서도 서버 그리드를 온전한 행 단위로 표시한다', () => {
+  it('초기 더보기 가능 상태에서는 카드 클리핑 없이 하단 fade divider를 표시한다', () => {
     setViewportWidth(1280);
 
     render(
@@ -242,8 +242,8 @@ describe('ServerDashboard', () => {
       screen.getByTestId('server-dashboard-peek-container')
     ).not.toHaveStyle({ overflow: 'hidden' });
     expect(
-      screen.queryByTestId('server-dashboard-peek-fade')
-    ).not.toBeInTheDocument();
+      screen.getByTestId('server-dashboard-more-fade')
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '그리드 보기' }));
 
@@ -251,9 +251,12 @@ describe('ServerDashboard', () => {
     expect(
       screen.getByTestId('server-dashboard-peek-container')
     ).not.toHaveStyle({ overflow: 'hidden' });
+    expect(
+      screen.getByTestId('server-dashboard-more-fade')
+    ).toBeInTheDocument();
   });
 
-  it('더 보기는 클리핑/접기 없이 다음 행을 추가한다', () => {
+  it('더 보기는 클리핑/접기 없이 다음 행을 추가하고 모두 표시하면 fade divider를 제거한다', () => {
     setViewportWidth(1280);
 
     render(
@@ -272,14 +275,14 @@ describe('ServerDashboard', () => {
     );
 
     expect(
-      screen.queryByTestId('server-dashboard-peek-fade')
-    ).not.toBeInTheDocument();
+      screen.getByTestId('server-dashboard-more-fade')
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /더 보기/ }));
 
     expect(screen.getAllByTestId(/^server-card-/)).toHaveLength(9);
     expect(
-      screen.queryByTestId('server-dashboard-peek-fade')
+      screen.queryByTestId('server-dashboard-more-fade')
     ).not.toBeInTheDocument();
     expect(
       screen.getByTestId('server-dashboard-peek-container')
@@ -308,7 +311,7 @@ describe('ServerDashboard', () => {
     );
 
     expect(
-      screen.queryByTestId('server-dashboard-peek-fade')
+      screen.queryByTestId('server-dashboard-more-fade')
     ).not.toBeInTheDocument();
   });
 
@@ -335,8 +338,87 @@ describe('ServerDashboard', () => {
       screen.getByTestId('server-dashboard-peek-container')
     ).not.toHaveStyle({ overflow: 'hidden' });
     expect(
-      screen.queryByTestId('server-dashboard-peek-fade')
+      screen.getByTestId('server-dashboard-more-fade')
+    ).toBeInTheDocument();
+  });
+
+  it('서버 표시 탭은 호스트 맵을 렌더링하고 hex node 클릭을 상세 route로 연결한다', () => {
+    routerPush.mockClear();
+
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('server-1', 'API Server 1', { cpu: 75, memory: 64 }),
+          createServer('server-2', 'DB Server 1', {
+            status: 'warning',
+            cpu: 88,
+            memory: 79,
+          }),
+        ]}
+        totalServers={2}
+        currentPage={1}
+        totalPages={1}
+        pageSize={2}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    const viewTabs = screen.getByRole('tablist', { name: '서버 표시 방식' });
+
+    expect(
+      within(viewTabs).getByRole('tab', { name: '서버 카드' })
+    ).toHaveAttribute('aria-selected', 'true');
+
+    fireEvent.click(within(viewTabs).getByRole('tab', { name: '호스트 맵' }));
+
+    expect(
+      within(viewTabs).getByRole('tab', { name: '호스트 맵' })
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByTestId('hexagonal-host-map')).toBeInTheDocument();
+    expect(screen.getAllByTestId(/^hex-host-node-/)).toHaveLength(2);
+    expect(
+      screen.queryByTestId('server-dashboard-list')
     ).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'API Server 1 호스트 맵 상세 보기' })
+    );
+
+    expect(routerPush).toHaveBeenCalledWith('/dashboard/servers/server-1');
+  });
+
+  it('지원 브라우저에서는 서버 표시 탭 전환을 View Transition API로 실행한다', () => {
+    const startViewTransition = vi.fn((callback: () => void) => {
+      callback();
+      return {};
+    });
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: startViewTransition,
+    });
+
+    render(
+      <ServerDashboard
+        servers={[createServer('server-1', 'API Server 1')]}
+        totalServers={1}
+        currentPage={1}
+        totalPages={1}
+        pageSize={1}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('tab', { name: '호스트 맵' }));
+
+    expect(startViewTransition).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('hexagonal-host-map')).toBeInTheDocument();
+
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: undefined,
+    });
   });
 
   it('서버 탭 더 보기는 페이지 크기를 늘려 다음 줄을 같은 화면에 붙인다', () => {

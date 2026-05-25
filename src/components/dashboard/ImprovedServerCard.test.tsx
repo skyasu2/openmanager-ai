@@ -277,6 +277,21 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       );
       expect(liveIndicator).toBeInTheDocument();
     });
+
+    it('compact 카드 컨테이너는 fixed height 대신 min-height로 내용 확장을 허용한다', () => {
+      const { container } = render(
+        <ImprovedServerCard
+          server={mockServer}
+          onClick={mockOnClick}
+          variant="compact"
+        />
+      );
+
+      const cardContainer = getCardContainer(container);
+
+      expect(cardContainer).toHaveClass('min-h-[192px]');
+      expect(cardContainer.className).not.toContain('h-[192px]');
+    });
   });
 
   describe('안전성 검증', () => {

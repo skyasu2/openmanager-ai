@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 진행 중인 작업 없음. |
+| Dashboard UX Phase 6 | Low | In Progress (Codex). 상세 계획: `reports/planning/dashboard-ux-phase-6-plan.md`. |
 
 ---
 
@@ -23,7 +23,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Dashboard UX Phase 6 | Low | T-6-A Hexagonal Host Map / T-6-B 카드 min-h / T-6-C fade overlay / T-6-D Tab 네비 / T-6-E 상태 카드 축소 / T-6-F View Transition. 착수 시 별도 기획 필요. |
 | Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` production 비활성. 단순쿼리 경로 설계 시 재검토. |
 
 ---

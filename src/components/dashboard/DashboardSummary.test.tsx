@@ -80,7 +80,7 @@ describe('DashboardSummary status filter cards', () => {
     ).toBeDisabled();
   });
 
-  it('모바일 상태 카드 레이아웃 클래스를 유지한다', () => {
+  it('모바일 상태 카드 레이아웃은 유지하면서 상태 카드 밀도를 낮춘다', () => {
     render(<DashboardSummary stats={mockStats} onFilterChange={vi.fn()} />);
 
     const onlineButton = screen.getByTestId('status-card-online');
@@ -88,7 +88,8 @@ describe('DashboardSummary status filter cards', () => {
 
     expect(statusGrid).toHaveClass('grid-cols-2');
     expect(statusGrid).toHaveClass('sm:grid-cols-4');
-    expect(onlineButton).toHaveClass('min-h-[84px]');
+    expect(onlineButton).toHaveClass('min-h-[72px]');
+    expect(within(onlineButton).getByText('3')).toHaveClass('text-2xl');
   });
 
   it('모바일에서 위험/경고/오프라인을 우선 순서로 배치한다', () => {
