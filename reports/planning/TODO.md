@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Dashboard UX Phase 6 | Low | In Progress (Codex). 상세 계획: `reports/planning/dashboard-ux-phase-6-plan.md`. |
+| _None_ | - | 현재 진행 중인 작업 없음. |
 
 ---
 

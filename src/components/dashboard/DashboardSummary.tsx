@@ -100,7 +100,7 @@ function StatusCard({
       aria-label={`${label} ${count}대 필터`}
       aria-pressed={isInteractive ? activeFilter === status : undefined}
       className={cn(
-        'group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-md p-4 text-left min-h-[84px]',
+        'group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-md p-3 text-left min-h-[72px]',
         'border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ring-1 ring-white/60',
         gradient.border,
         gradient.glow,
@@ -130,7 +130,7 @@ function StatusCard({
         </span>
         <span
           className={cn(
-            'mt-2 text-3xl font-bold tracking-tight tabular-nums leading-none',
+            'mt-1.5 text-2xl font-bold tracking-tight tabular-nums leading-none',
             countColorClass && count > 0 ? countColorClass : 'text-slate-700'
           )}
         >

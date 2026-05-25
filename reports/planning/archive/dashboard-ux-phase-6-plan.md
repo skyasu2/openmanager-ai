@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-26
 > Tags: dashboard,ux,frontend
 
 # Dashboard UX Phase 6 Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-26
 - TODO.md 연결: Active Tasks > Dashboard UX Phase 6
 
@@ -48,10 +48,17 @@
 
 ## Task 목록
 
-- [ ] Task 0 — failing test 커밋
-- [ ] Task 1 — `ServerDashboard` 표시 탭, hexagonal host map, View Transition, fade divider 구현
-- [ ] Task 2 — `ImprovedServerCard` min-height 및 `DashboardSummary` 상태 카드 축소 구현
-- [ ] Task 3 — 검증 후 계획서 완료/아카이브
+- [x] Task 0 — failing test 커밋
+- [x] Task 1 — `ServerDashboard` 표시 탭, hexagonal host map, View Transition, fade divider 구현
+- [x] Task 2 — `ImprovedServerCard` min-height 및 `DashboardSummary` 상태 카드 축소 구현
+- [x] Task 3 — 검증 후 계획서 완료/아카이브
+
+## 검증 결과
+
+- `npm run test:dom -- src/components/dashboard/ServerDashboard.test.tsx src/components/dashboard/ImprovedServerCard.test.tsx src/components/dashboard/DashboardSummary.test.tsx` — PASS (3 files / 92 tests)
+- `npm run type-check` — PASS
+- `npm run lint` — PASS
+- `npm run test:quick` — PASS
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -63,8 +70,8 @@
 
 ## 완료 기준
 
-- [ ] targeted DOM tests 통과
-- [ ] `npm run type-check` 통과
-- [ ] `npm run lint` 통과
-- [ ] `npm run test:quick` 통과
-- [ ] TODO.md에서 Phase 6 Active 제거
+- [x] targeted DOM tests 통과
+- [x] `npm run type-check` 통과
+- [x] `npm run lint` 통과
+- [x] `npm run test:quick` 통과
+- [x] TODO.md에서 Phase 6 Active 제거

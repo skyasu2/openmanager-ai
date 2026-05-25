@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   List,
   Loader2,
+  Network,
   Search,
   X,
 } from 'lucide-react';
@@ -28,6 +29,7 @@ const STATUS_PRIORITY = {
 
 type ServerViewMode = 'list' | 'grid';
 type ServerSortKey = 'status' | 'cpu' | 'memory' | 'name';
+type ServerVisualizationMode = 'cards' | 'host-map';
 
 const DEFAULT_VISIBLE_ROWS = 3;
 const SERVER_CARD_FIXED_WIDTH = {
@@ -41,6 +43,32 @@ const SORT_OPTIONS: Array<{ value: ServerSortKey; label: string }> = [
   { value: 'memory', label: 'MEM' },
   { value: 'name', label: '이름' },
 ];
+
+const VISUALIZATION_OPTIONS: Array<{
+  value: ServerVisualizationMode;
+  label: string;
+  icon: typeof LayoutGrid;
+}> = [
+  { value: 'cards', label: '서버 카드', icon: LayoutGrid },
+  { value: 'host-map', label: '호스트 맵', icon: Network },
+];
+
+const HOST_MAP_STATUS_CLASSES: Record<string, string> = {
+  critical:
+    'bg-rose-50 text-rose-900 ring-rose-300 shadow-rose-100 hover:bg-rose-100',
+  warning:
+    'bg-amber-50 text-amber-900 ring-amber-300 shadow-amber-100 hover:bg-amber-100',
+  online:
+    'bg-emerald-50 text-emerald-900 ring-emerald-300 shadow-emerald-100 hover:bg-emerald-100',
+  offline:
+    'bg-slate-100 text-slate-700 ring-slate-300 shadow-slate-100 hover:bg-slate-200',
+  unknown:
+    'bg-violet-50 text-violet-900 ring-violet-300 shadow-violet-100 hover:bg-violet-100',
+};
+
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (callback: () => void) => unknown;
+};
 
 // 🚀 성능 최적화: 알림 수 계산 로직 분리 및 메모이제이션
 const getAlertsCountOptimized = (alerts: unknown): number => {
@@ -107,6 +135,106 @@ function getServerCardGapPx(viewMode: ServerViewMode, width: number): number {
   return 12;
 }
 
+function runDashboardViewTransition(callback: () => void): void {
+  if (typeof document === 'undefined') {
+    callback();
+    return;
+  }
+
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const startViewTransition = (document as ViewTransitionDocument)
+    .startViewTransition;
+
+  if (prefersReducedMotion || typeof startViewTransition !== 'function') {
+    callback();
+    return;
+  }
+
+  startViewTransition.call(document, callback);
+}
+
+function getHostMapNodeLabel(server: Server): string {
+  const rawName = server.name || server.id || 'host';
+  const initials = rawName
+    .split(/[-_\s.]+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
+
+  return initials || rawName.slice(0, 3).toUpperCase();
+}
+
+function HexagonalHostMap({
+  servers,
+  onSelect,
+}: {
+  servers: Server[];
+  onSelect: (server: Server) => void;
+}) {
+  return (
+    <section
+      data-testid="hexagonal-host-map"
+      aria-label="Hexagonal host map"
+      className="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
+      style={{ viewTransitionName: 'dashboard-hexagonal-host-map' }}
+    >
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-semibold text-slate-900">호스트 맵</h2>
+          <p className="text-xs text-slate-500">
+            상태와 부하를 한 화면에서 비교합니다.
+          </p>
+        </div>
+        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+          {servers.length} nodes
+        </span>
+      </div>
+
+      <div
+        data-testid="hexagonal-host-map-grid"
+        className="grid grid-cols-2 gap-x-2 gap-y-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+      >
+        {servers.map((server, index) => {
+          const serverId = server.id || `server-${index}`;
+          const statusClass =
+            HOST_MAP_STATUS_CLASSES[server.status ?? 'unknown'] ??
+            HOST_MAP_STATUS_CLASSES.unknown;
+
+          return (
+            <button
+              key={serverId}
+              type="button"
+              data-testid={`hex-host-node-${serverId}`}
+              aria-label={`${server.name} 호스트 맵 상세 보기`}
+              onClick={() => onSelect(server)}
+              className={`group relative flex aspect-[1.15/1] min-h-20 flex-col items-center justify-center overflow-hidden px-3 py-2 text-center shadow-sm ring-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${statusClass}`}
+              style={{
+                clipPath:
+                  'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+              }}
+            >
+              <span className="text-sm font-bold tracking-wide">
+                {getHostMapNodeLabel(server)}
+              </span>
+              <span className="mt-1 max-w-full truncate text-[11px] font-medium">
+                {server.name}
+              </span>
+              <span className="mt-1 text-[10px] tabular-nums opacity-75">
+                CPU {Math.round(server.cpu ?? 0)} · MEM{' '}
+                {Math.round(server.memory ?? 0)}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 /**
  * ServerDashboard Props (Phase 4: Props 기반 데이터 흐름)
  * - 중복 fetch 제거: DashboardClient → DashboardContent → ServerDashboard로 props 전달
@@ -165,6 +293,8 @@ export default function ServerDashboard({
   const performanceStats = usePerformanceTracking('ServerDashboard');
 
   const [viewMode, setViewMode] = useState<ServerViewMode>('list');
+  const [visualizationMode, setVisualizationMode] =
+    useState<ServerVisualizationMode>('cards');
   const [serverSortKey, setServerSortKey] = useState<ServerSortKey>('status');
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleRows, setVisibleRows] = useState(initialVisibleRows);
@@ -188,6 +318,17 @@ export default function ServerDashboard({
       router.push(`/dashboard/logs?server=${encodeURIComponent(serverId)}`);
     },
     [router]
+  );
+
+  const handleVisualizationModeChange = useCallback(
+    (nextMode: ServerVisualizationMode) => {
+      if (nextMode === visualizationMode) {
+        return;
+      }
+
+      runDashboardViewTransition(() => setVisualizationMode(nextMode));
+    },
+    [visualizationMode]
   );
 
   // paginatedServers → servers (props)
@@ -466,65 +607,100 @@ export default function ServerDashboard({
     <div>
       <div>
         <div className="space-y-4">
-          <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white/80 px-3 py-3 shadow-sm backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-4">
-            <div className="relative min-w-0 flex-1">
-              <Search
-                aria-hidden="true"
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                id="server-search"
-                type="search"
-                aria-label="서버 검색"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="서버 이름, ID, IP, 위치 검색"
-                className="min-h-10 w-full rounded-md border border-gray-200 bg-white py-2 pl-9 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  aria-label="서버 검색어 지우기"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
+          <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white/80 px-3 py-3 shadow-sm backdrop-blur-sm sm:px-4">
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+              <div
+                role="tablist"
+                aria-label="서버 표시 방식"
+                className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto"
+              >
+                {VISUALIZATION_OPTIONS.map((option) => {
+                  const Icon = option.icon;
+                  const selected = visualizationMode === option.value;
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="tab"
+                      aria-selected={selected}
+                      onClick={() =>
+                        handleVisualizationModeChange(option.value)
+                      }
+                      className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                        selected
+                          ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                          : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      <span>{option.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="relative min-w-0 flex-1">
+                <Search
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  id="server-search"
+                  type="search"
+                  aria-label="서버 검색"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="서버 이름, ID, IP, 위치 검색"
+                  className="min-h-10 w-full rounded-md border border-gray-200 bg-white py-2 pl-9 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    aria-label="서버 검색어 지우기"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-              <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
-                <legend className="sr-only">서버 보기 방식</legend>
-                <button
-                  type="button"
-                  aria-label="목록 보기"
-                  aria-pressed={viewMode === 'list'}
-                  onClick={() => setViewMode('list')}
-                  className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                    viewMode === 'list'
-                      ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                      : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                  }`}
-                >
-                  <List className="h-3.5 w-3.5" />
-                  <span>목록</span>
-                </button>
-                <button
-                  type="button"
-                  aria-label="그리드 보기"
-                  aria-pressed={viewMode === 'grid'}
-                  onClick={() => setViewMode('grid')}
-                  className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                    viewMode === 'grid'
-                      ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                      : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                  }`}
-                >
-                  <LayoutGrid className="h-3.5 w-3.5" />
-                  <span>그리드</span>
-                </button>
-              </fieldset>
+            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+              {visualizationMode === 'cards' && (
+                <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
+                  <legend className="sr-only">서버 보기 방식</legend>
+                  <button
+                    type="button"
+                    aria-label="목록 보기"
+                    aria-pressed={viewMode === 'list'}
+                    onClick={() => setViewMode('list')}
+                    className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                      viewMode === 'list'
+                        ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                        : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                    }`}
+                  >
+                    <List className="h-3.5 w-3.5" />
+                    <span>목록</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="그리드 보기"
+                    aria-pressed={viewMode === 'grid'}
+                    onClick={() => setViewMode('grid')}
+                    className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                      viewMode === 'grid'
+                        ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                        : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                    }`}
+                  >
+                    <LayoutGrid className="h-3.5 w-3.5" />
+                    <span>그리드</span>
+                  </button>
+                </fieldset>
+              )}
 
               <div className="flex w-full items-center gap-2 sm:w-auto">
                 <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600">
@@ -609,42 +785,50 @@ export default function ServerDashboard({
             <div
               data-testid="server-dashboard-peek-container"
               className="relative"
+              style={{ viewTransitionName: 'dashboard-server-visualization' }}
             >
-              <div
-                ref={setServerGridElement}
-                data-testid={
-                  viewMode === 'grid'
-                    ? 'server-dashboard-grid'
-                    : 'server-dashboard-list'
-                }
-                className={
-                  viewMode === 'grid'
-                    ? 'mx-auto grid max-w-[1352px] grid-cols-1 justify-center gap-4 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(320px,320px))] sm:gap-6'
-                    : 'mx-auto grid max-w-[1196px] grid-cols-1 justify-center gap-3 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(290px,290px))]'
-                }
-              >
-                {displayedServers.map((server, index) => {
-                  const serverId = server.id || `server-${index}`;
+              {visualizationMode === 'host-map' ? (
+                <HexagonalHostMap
+                  servers={displayedServers}
+                  onSelect={handleServerSelect}
+                />
+              ) : (
+                <div
+                  ref={setServerGridElement}
+                  data-testid={
+                    viewMode === 'grid'
+                      ? 'server-dashboard-grid'
+                      : 'server-dashboard-list'
+                  }
+                  className={
+                    viewMode === 'grid'
+                      ? 'mx-auto grid max-w-[1352px] grid-cols-1 justify-center gap-4 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(320px,320px))] sm:gap-6'
+                      : 'mx-auto grid max-w-[1196px] grid-cols-1 justify-center gap-3 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(290px,290px))]'
+                  }
+                >
+                  {displayedServers.map((server, index) => {
+                    const serverId = server.id || `server-${index}`;
 
-                  return (
-                    <ServerCardErrorBoundary
-                      key={`boundary-${serverId}`}
-                      serverId={serverId}
-                    >
-                      <ImprovedServerCard
-                        key={serverId}
-                        server={server}
-                        variant="compact"
-                        showRealTimeUpdates={true}
-                        index={index}
-                        onClick={handleServerSelect}
-                        onOpenLogs={handleOpenLogs}
-                        metricsTimeRange={metricsTimeRange}
-                      />
-                    </ServerCardErrorBoundary>
-                  );
-                })}
-              </div>
+                    return (
+                      <ServerCardErrorBoundary
+                        key={`boundary-${serverId}`}
+                        serverId={serverId}
+                      >
+                        <ImprovedServerCard
+                          key={serverId}
+                          server={server}
+                          variant="compact"
+                          showRealTimeUpdates={true}
+                          index={index}
+                          onClick={handleServerSelect}
+                          onOpenLogs={handleOpenLogs}
+                          metricsTimeRange={metricsTimeRange}
+                        />
+                      </ServerCardErrorBoundary>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex h-64 items-center justify-center">
@@ -675,6 +859,14 @@ export default function ServerDashboard({
                 </p>
               </div>
             </div>
+          )}
+
+          {canShowMoreServers && (
+            <div
+              data-testid="server-dashboard-more-fade"
+              aria-hidden="true"
+              className="h-6 rounded-b-xl bg-linear-to-b from-transparent via-white/80 to-white"
+            />
           )}
 
           {canShowMoreServers && (

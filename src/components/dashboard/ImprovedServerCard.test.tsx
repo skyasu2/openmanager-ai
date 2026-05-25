@@ -288,9 +288,10 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       );
 
       const cardContainer = getCardContainer(container);
+      const cardClassTokens = cardContainer.className.split(/\s+/);
 
       expect(cardContainer).toHaveClass('min-h-[192px]');
-      expect(cardContainer.className).not.toContain('h-[192px]');
+      expect(cardClassTokens).not.toContain('h-[192px]');
     });
   });
 
@@ -591,7 +592,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(screen.getByText('Web Server 01')).toBeInTheDocument();
     });
 
-    it('compact variant는 하단 여백을 위해 카드 높이와 padding을 확보한다', () => {
+    it('compact variant는 하단 여백을 위해 카드 min-height와 padding을 확보한다', () => {
       const { container } = render(
         <ImprovedServerCard
           server={mockServer}
@@ -601,7 +602,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       );
 
       const card = getCardContainer(container);
-      expect(card).toHaveClass('h-[192px]', 'p-3', 'pb-4');
+      expect(card).toHaveClass('min-h-[192px]', 'p-3', 'pb-4');
     });
 
     it('standard variant를 렌더링한다 (기본값)', () => {
