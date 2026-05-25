@@ -34,7 +34,7 @@
 
 | Item | Reason | Next Review |
 |------|--------|-------------|
-| QA WONT-FIX 52개 | `QA_STATUS.md` 기준 Platform Constraint 1 / Free Tier Tradeoff 3 / Historical Obsolete 7 / Portfolio Deferral 41. 현재 active 개선 대상 아님. | release blocker로 재분류될 때만 |
+| QA WONT-FIX 45개 | `QA-20260526-0602`에서 DoD/릴리즈 통과 증거 7개를 completed로 전환. 잔여는 Platform Constraint 1 / Free Tier Tradeoff 3 / Historical Obsolete 2 / Portfolio Deferral 39. | release blocker로 재분류될 때만 |
 | Historical gate-window warning | `QA-20260519-0535` broad 회귀가 rolling window에 남은 historical context. active gate warning은 없음. | clean gate run이 window를 대체하면 자동 해소 |
 | 최근 non-evidence artifact refs 16개 | 모두 `countsTowardSummary=false`, `releaseFacing=false` targeted run의 로컬 MCP screenshot 참조. durable evidence 요구 대상 아님. | 같은 유형이 counted/release-facing run에 생길 때만 |
 | QA evidence cleanup batch | 2026-05-26 audit: orphan 0, missing 0, archive candidate 0, storage warning 0. 즉시 정리 불필요. | `reports/qa` 90MiB 초과 또는 orphan/missing 발생 시 |

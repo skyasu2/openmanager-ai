@@ -1,0 +1,145 @@
+{
+  "runId": "QA-20260526-0602",
+  "recordedAt": "2026-05-25T16:29:04.864Z",
+  "recordedAtKst": "2026-05-26 01:29:04 KST",
+  "runTitle": "WONT-FIX tracker triage - convert completed DoD evidence items",
+  "owner": "codex",
+  "source": "qa-metadata-audit",
+  "environment": {
+    "target": "local-qa-metadata",
+    "url": "",
+    "frontend": "",
+    "backend": "",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "d702e569b5a6446642e7023d742d8fc2a51ab663"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "QA tracker WONT-FIX semantic cleanup",
+    "Root local validation gates",
+    "AI Engine local validation gates",
+    "v8.12.43 deployment evidence from QA-20260526-0601"
+  ],
+  "skippedSurfaces": [
+    "Live Vercel Playwright product rerun",
+    "Remaining portfolio WONT-FIX product-quality items"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-tsc-zero-error",
+      "title": "Root TypeScript type-check passes",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "npm run type-check -> PASS, TypeScript compile success in 219.2s",
+      "note": "Converted from WONT-FIX because this is verified DoD evidence, not an unfixed issue.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-unit-tests",
+      "title": "Root quick unit/smoke test gate passes",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "npm run test:quick -> PASS on rerun",
+      "note": "First parallel attempt exited 1 with empty output while other heavy checks were running; isolated rerun exited 0.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-ai-engine-typecheck",
+      "title": "AI Engine type-check passes",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "cd cloud-run/ai-engine && npm run type-check -> PASS",
+      "note": "Converted from WONT-FIX because this is verified DoD evidence, not an unfixed issue.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-ai-engine-tests",
+      "title": "AI Engine test suite passes",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "cd cloud-run/ai-engine && npm run test -> 143 files / 1543 tests passed",
+      "note": "Converted from WONT-FIX because this is verified DoD evidence, not an unfixed issue.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-root-contract",
+      "title": "Root API contract tests pass",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "npm run test:contract -> 3 files / 24 tests passed",
+      "note": "Converted from WONT-FIX because this is verified DoD evidence, not an unfixed issue.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "release-dod-gitlab-tag-pipeline",
+      "title": "GitLab deployment pipeline succeeded",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.43 GitLab pipeline 2551336942 success: deploy, deploy_ai_engine, post-deploy smoke jobs succeeded",
+      "note": "Converted from WONT-FIX because current release deployment evidence exists.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "release-dod-production-version",
+      "title": "Vercel and Cloud Run production versions verified",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260526-0601 verified Vercel /api/version v8.12.43 and Cloud Run /health v8.12.43",
+      "note": "Converted from WONT-FIX because current production version evidence exists.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "WONT-FIX triage result: 7 items had pass/deployment evidence and were semantically completed, not accepted no-fix debt.",
+    "Remaining WONT-FIX items keep accepted policy status unless they are promoted to release-blocking work by a future QA run."
+  ],
+  "links": []
+}
