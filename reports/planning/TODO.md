@@ -26,7 +26,6 @@
 | Dashboard UX Phase 6 | Low | T-6-A Hexagonal Host Map / T-6-B 카드 min-h / T-6-C fade overlay / T-6-D Tab 네비 / T-6-E 상태 카드 축소 / T-6-F View Transition. 착수 시 별도 기획 필요. |
 | 세션 메모리 확장 (Supabase) | Low | Portfolio-deferred. 현행 Redis 1시간 TTL 유지. 재개 조건: 장기 follow-up이 포트폴리오 필수 요구로 승격될 때. |
 | 장기 세션 AI data slot drift 정책 | Low | Fresh load 기준 일치. 장기 세션 resync 미도입. 제품 요구 승격 시 별도 plan 작성. |
-| P11 capacity forecast N시간/N일 포화 표현 | Medium | QA-20260525-0595. `48시간 이내에 디스크 꽉 찰`류 표현이 capacity forecast deterministic path로 바로 가지 않음. 단일 routing 회귀로 plan 파일 없이 regression test 선행 후 처리. |
 | Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` production 비활성. 단순쿼리 경로 설계 시 재검토. |
 
 ---

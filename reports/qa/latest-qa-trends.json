@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-25T10:59:15.913Z",
-  "generatedAtKst": "2026-05-25 19:59:15 KST",
-  "trackerUpdatedAt": "2026-05-25T10:58:57.910Z",
+  "generatedAt": "2026-05-25T11:21:14.730Z",
+  "generatedAtKst": "2026-05-25 20:21:14 KST",
+  "trackerUpdatedAt": "2026-05-25T11:20:49.100Z",
   "totals": {
-    "recordedRuns": 594,
+    "recordedRuns": 595,
     "countedRuns": 472,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
     "overallPassRatePct": 95.61,
-    "latestRecordedRunId": "QA-20260525-0596",
+    "latestRecordedRunId": "QA-20260525-0597",
     "lastCountedRunId": "QA-20260525-0591"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 407,
+      "totalRuns": 408,
       "countedRuns": 286
     },
     {
@@ -298,12 +298,12 @@
     {
       "priority": "P4",
       "totalItems": 5,
-      "recurringItems": 0,
-      "openItems": 1,
+      "recurringItems": 1,
+      "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 1,
+      "completedItems": 2,
       "wontFixItems": 3,
-      "recurrenceRatePct": 0,
+      "recurrenceRatePct": 20,
       "openRecurrenceRatePct": 0
     },
     {
@@ -747,18 +747,7 @@
     }
   ],
   "recurringItems": {
-    "open": [
-      {
-        "id": "p11-capacity-forecast-n-hours-expression",
-        "title": "P11: N시간 이내 디스크 포화 표현 capacity-forecast 미라우팅",
-        "status": "pending",
-        "priority": "P4",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260525-0595",
-        "lastResolvedRunId": null
-      }
-    ],
+    "open": [],
     "wontFix": [
       {
         "id": "feature-dod-tsc-zero-error",
@@ -966,8 +955,8 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T10:58:57.910Z",
-    "windowEnd": "2026-05-25T10:58:57.910Z",
+    "windowStart": "2026-05-24T11:20:49.100Z",
+    "windowEnd": "2026-05-25T11:20:49.100Z",
     "recordedRunCount": 4,
     "countedRunCount": 2,
     "sampleCount": 7,
@@ -1051,8 +1040,8 @@
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T10:58:57.910Z",
-    "windowEnd": "2026-05-25T10:58:57.910Z",
+    "windowStart": "2026-05-24T11:20:49.100Z",
+    "windowEnd": "2026-05-25T11:20:49.100Z",
     "recordedRunCount": 3,
     "countedRunCount": 3,
     "sampleCount": 7,

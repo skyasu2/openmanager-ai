@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T10:58:57.910Z"
+    "updatedAt": "2026-05-25T11:20:49.100Z"
   },
   "sequence": {
-    "nextRunNumber": 597
+    "nextRunNumber": 598
   },
   "summary": {
-    "totalRecordedRuns": 594,
+    "totalRecordedRuns": 595,
     "totalRuns": 472,
-    "excludedRuns": 122,
+    "excludedRuns": 123,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
-    "completionRate": 99.85,
-    "completedItems": 684,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 685,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 52,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260525-0591",
     "lastRecordedAt": "2026-05-25T04:28:13.683Z",
-    "latestRecordedRunId": "QA-20260525-0596",
-    "latestRecordedAt": "2026-05-25T10:58:57.910Z"
+    "latestRecordedRunId": "QA-20260525-0597",
+    "latestRecordedAt": "2026-05-25T11:20:49.100Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17396,27 +17396,27 @@
     },
     "p11-capacity-forecast-n-hours-expression": {
       "id": "p11-capacity-forecast-n-hours-expression",
-      "title": "P11: N시간 이내 디스크 포화 표현 capacity-forecast 미라우팅",
+      "title": "P11: N시간 이내 디스크 포화 표현 capacity-forecast 라우팅",
       "priority": "P4",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260525-0595",
       "firstSeenAt": "2026-05-25T10:16:08.749Z",
-      "lastSeenRunId": "QA-20260525-0595",
-      "lastSeenAt": "2026-05-25T10:16:08.749Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260525-0597",
+      "lastSeenAt": "2026-05-25T11:20:49.100Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
-      "owner": "claude",
-      "lastEvidence": "Q-NEW33: 48시간 이내에 디스크 꽉 찰 — disambiguation 발동 후 단기 위험 추세 계산 경로. 이번 주 내로 N% 넘을 형태만 CAPACITY_FORECAST_PATTERN 매칭",
-      "lastNote": "신규 표현: N시간/N일 이내에 + 꽉 찰/포화/가득 찰 패턴 추가 필요. TODO.md Backlog로 추적.",
+      "owner": "codex",
+      "lastEvidence": "Added failing regression specs in 98eee810f and fixed in f8c936973. Verified npx vitest run targeted routing/evidence suite: 159 passed; cloud-run/ai-engine npm run type-check passed; cloud-run/ai-engine npm run test passed: 1535 tests; npm run lint:ci passed; git diff --check passed.",
+      "lastNote": "Local deterministic verification only. Production Cloud Run verification requires the next release/tag deployment.",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-25T10:16:08.749Z"
+      "lastStatusChangeAt": "2026-05-25T11:20:49.100Z"
     }
   },
   "runs": [
@@ -70152,6 +70152,72 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0597",
+      "recordedAt": "2026-05-25T11:20:49.100Z",
+      "recordedAtKst": "2026-05-25 20:20:49 KST",
+      "title": "P11 local routing regression verification — disk-full capacity forecast wording",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0597.json",
+      "environment": {
+        "target": "local-ai-engine",
+        "url": "",
+        "frontend": "",
+        "backend": "cloud-run/ai-engine local test runner",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "f8c936973aa244d07853e070ed32957488f1955b"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "monitoring capacity forecast evidence provider",
+        "monitoring routing policy execution mode and tool category",
+        "query-routing-signals trace parity",
+        "supervisor domain evidence support",
+        "AI Engine full deterministic test suite"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser QA",
+        "Cloud Run production live P11 query",
+        "standard five-question conversational AI QA",
+        "reporter",
+        "vision"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P11 failure was reproduced with failing specs, then local routing/evidence tests verified 48시간/N일 디스크 포화 wording reaches monitoring-capacity-forecast deterministically.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -70160,16 +70226,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 312,
-      "appropriateCount": 267,
+      "seenCount": 313,
+      "appropriateCount": 268,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 64,
-      "lastRunId": "QA-20260525-0596",
-      "lastSeenAt": "2026-05-25T10:58:57.910Z",
+      "lastRunId": "QA-20260525-0597",
+      "lastSeenAt": "2026-05-25T11:20:49.100Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.12.40 production deployment restored Metrics Query routing for P9 restart-needed lookup and Q-NEW30 efficient-server wording.",
+      "lastRationale": "P11 failure was reproduced with failing specs, then local routing/evidence tests verified 48시간/N일 디스크 포화 wording reaches monitoring-capacity-forecast deterministically.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
