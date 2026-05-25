@@ -6,12 +6,14 @@ const {
   mockAppendMetrics,
   mockAppendRecommendedCommands,
   mockUpdateSessionContext,
+  mockClassifyRoutingIntentWithLLM,
 } = vi.hoisted(() => ({
   mockAppendAffectedServers: vi.fn(),
   mockAppendAnomalies: vi.fn(),
   mockAppendMetrics: vi.fn(),
   mockAppendRecommendedCommands: vi.fn(),
   mockUpdateSessionContext: vi.fn(),
+  mockClassifyRoutingIntentWithLLM: vi.fn(),
 }));
 
 vi.mock('./context-store', () => ({
@@ -28,7 +30,16 @@ vi.mock('./vision-agent', () => ({
   ),
 }));
 
-import { preFilterQuery, saveAgentFindingsToContext } from './orchestrator-context';
+vi.mock('../routing/llm-intent-classifier', () => ({
+  classifyRoutingIntentWithLLM: (...args: unknown[]) =>
+    mockClassifyRoutingIntentWithLLM(...args),
+}));
+
+import {
+  preFilterQuery,
+  preFilterQueryWithLLM,
+  saveAgentFindingsToContext,
+} from './orchestrator-context';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -179,6 +190,47 @@ describe('preFilterQuery', () => {
       const inGrayBand = result.confidence > 0.65 && result.confidence < 0.85;
       expect(inGrayBand).toBe(false);
     }
+  });
+
+  it('keeps high-confidence deterministic routing on the sync fast path', async () => {
+    const result = await preFilterQueryWithLLM('서버 상태 알려줘');
+
+    expect(result).toEqual(preFilterQuery('서버 상태 알려줘'));
+    expect(mockClassifyRoutingIntentWithLLM).not.toHaveBeenCalled();
+  });
+
+  it('uses high-confidence LLM classification for unclear routing expressions', async () => {
+    mockClassifyRoutingIntentWithLLM.mockResolvedValueOnce({
+      suggestedAgent: 'Metrics Query Agent',
+      confidence: 0.91,
+    });
+
+    const result = await preFilterQueryWithLLM('DB vs Cache 비교');
+
+    expect(result).toEqual({
+      shouldHandoff: true,
+      suggestedAgent: 'Metrics Query Agent',
+      confidence: 0.91,
+    });
+  });
+
+  it('keeps deterministic fallback when LLM confidence is below threshold', async () => {
+    mockClassifyRoutingIntentWithLLM.mockResolvedValueOnce({
+      suggestedAgent: 'Advisor Agent',
+      confidence: 0.6,
+    });
+
+    const result = await preFilterQueryWithLLM('재시작이 필요해?');
+
+    expect(result).toEqual(preFilterQuery('재시작이 필요해?'));
+  });
+
+  it('keeps deterministic fallback when LLM classification fails', async () => {
+    mockClassifyRoutingIntentWithLLM.mockResolvedValueOnce(null);
+
+    const result = await preFilterQueryWithLLM('새로운 운영 표현');
+
+    expect(result).toEqual(preFilterQuery('새로운 운영 표현'));
   });
 });
 

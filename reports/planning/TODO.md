@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 진행 중인 작업 없음. |
+| LLM-backed pre-filter routing | High | [`llm-prefilter-routing-plan.md`](llm-prefilter-routing-plan.md) — Groq Scout structured classifier로 deterministic pre-filter 보강. |
 
 ---
 
