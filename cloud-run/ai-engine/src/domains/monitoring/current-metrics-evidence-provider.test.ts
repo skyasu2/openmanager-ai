@@ -1868,4 +1868,60 @@ describe('current metrics domain evidence providers', () => {
       expect(parsed?.intent).not.toBe('metric_trend');
     });
   });
+
+  describe('group-compare: 두 그룹 비교 표현이 group-compare 경로로 라우팅 (P8)', () => {
+    it('message-only 경로: web vs storage 메모리 비교는 group-compare로 파싱', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('web 서버 그룹과 storage 서버 그룹 중 메모리를 더 많이 쓰는 쪽은?')
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'group-compare',
+        metric: 'memory',
+      });
+      expect(parsed?.groupTargets).toHaveLength(2);
+      expect(parsed?.groupTargets).toContain('web');
+      expect(parsed?.groupTargets).toContain('storage');
+    });
+
+    it('intentFrame 경로: metric_current frame이 있어도 두 그룹 비교는 group-compare로 파싱', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest({
+        ...createEvidenceRequest('web 서버 그룹과 storage 서버 그룹 중 메모리를 더 많이 쓰는 쪽은?'),
+        intentFrame: {
+          domainId: MONITORING_DOMAIN_ID,
+          intent: 'metric_current',
+          metric: 'memory',
+          confidence: 0.9,
+        },
+      });
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'group-compare',
+        metric: 'memory',
+      });
+      expect(parsed?.groupTargets).toHaveLength(2);
+      expect(parsed?.groupTargets).toContain('web');
+      expect(parsed?.groupTargets).toContain('storage');
+    });
+
+    it('intentFrame 경로: DB vs Cache 비교도 group-compare로 파싱', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest({
+        ...createEvidenceRequest('DB 서버와 Cache 서버 중 어느 쪽이 메모리 더 높아?'),
+        intentFrame: {
+          domainId: MONITORING_DOMAIN_ID,
+          intent: 'metric_current',
+          metric: 'memory',
+          confidence: 0.9,
+        },
+      });
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'group-compare',
+        metric: 'memory',
+      });
+      expect(parsed?.groupTargets).toHaveLength(2);
+      expect(parsed?.groupTargets).toContain('database');
+      expect(parsed?.groupTargets).toContain('cache');
+    });
+  });
 });
