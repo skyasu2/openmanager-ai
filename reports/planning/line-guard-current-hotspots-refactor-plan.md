@@ -1,15 +1,55 @@
 > Owner: project
-> Status: Completed
+> Status: Approved
 > Doc type: Plan
-> Last reviewed: 2026-05-11
+> Last reviewed: 2026-05-26
 > Tags: refactor,line-guard,ai-assistant,ai-engine,hotspots
 
 # Line Guard Current Hotspots Refactor Plan
 
-- 상태: Completed
+- 상태: Approved
 - 작성일: 2026-05-11
 - TODO.md 연결: Active Tasks > Line guard current hotspots refactor
 - 기준 게이트: `npm run line-guard`
+
+## 2026-05-26 재개 기준선
+
+2026-05-26 코드 리뷰에서 `npm run line-guard`가 다시 fail 상태가 되었다. 기존 계획을 새 파일로 복제하지 않고 본 계획을 재개한다.
+
+```text
+npm run line-guard (regression baseline, 2026-05-26)
+  result: FAIL
+  fail files: 3
+    - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-provider.ts (1014)
+    - src/components/dashboard/ServerDashboard.tsx (919)
+    - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-answers.ts (861)
+```
+
+### 2026-05-26 추가 계약
+
+| 영역 | 유지 계약 |
+|------|-----------|
+| monitoring evidence | `monitoringMetricRankingEvidenceProvider`, `monitoringMetricCurrentEvidenceProvider`, `monitoringMetricTrendEvidenceProvider`, `monitoringServerHealthEvidenceProvider` export와 prompt/evidence output shape 유지 |
+| parser | `parseCurrentMetricsEvidenceRequest()` export와 `ParsedCurrentMetricsEvidenceRequest`, `SupportedMetric` type import compatibility 유지 |
+| dashboard | `ServerDashboard` props, search/sort/time-range/view-mode/host-map interaction 유지 |
+| line guard | fail threshold 800 lines 완화 금지 |
+
+### 2026-05-26 추가 Task
+
+- [ ] Task 6 — 재개 기준선 커밋
+  - 현재 failing gate `npm run line-guard` 결과를 계획에 기록한다.
+  - 커밋 메시지: `test(spec): line guard regression baseline`
+- [ ] Task 7 — monitoring evidence provider 분리
+  - current metric parser/prompt/provider 책임을 분리한다.
+  - 완료 기준: `current-metrics-evidence-provider.ts < 800 lines`
+- [ ] Task 8 — monitoring evidence answer builder 분리
+  - metric current/trend/group-health/ranking answer builder를 helper로 분리한다.
+  - 완료 기준: `current-metrics-evidence-answers.ts < 800 lines`
+- [ ] Task 9 — dashboard host map/controls 분리
+  - `ServerDashboard.tsx` host-map/controls/list helper를 분리한다.
+  - 완료 기준: `ServerDashboard.tsx < 800 lines`
+- [ ] Task 10 — 최종 검증
+  - `npm run line-guard` PASS
+  - 관련 targeted tests와 root/AI Engine 필수 smoke PASS
 
 ## 목표
 
