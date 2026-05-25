@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-25 | **현재 버전 스냅샷**: v8.12.39
+**상태 스냅샷 기준일**: 2026-05-25 | **현재 버전 스냅샷**: v8.12.40
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.40** (2026-05-25) — Tests: qa: normalize assistant evaluation follow-ups; Tests: qa: record AI routing regression closure; Tests: spec: add AI routing regression specs before implementation
 - **v8.12.39** (2026-05-25) — Bug Fixes: ai-engine: remove non-standard timeout param from llm intent classifier; Tests: qa: record v8.12.38 q-new24~28 10th evaluation closure
 - **v8.12.38** (2026-05-25) — Features: implement LLM prefilter routing; Tests: spec: add LLM prefilter routing specs; Tests: qa: record v8.12.37 q-new13 closure
 - **v8.12.37** (2026-05-25) — Bug Fixes: ai-engine: route named-server advice through advisor commands; Tests: qa: record v8.12.36 q-new13 partial
 - **v8.12.36** (2026-05-25) — Bug Fixes: ai: preserve advisor evidence label after metrics precheck; Tests: qa: record v8.12.35 ai targeted qa
-- **v8.12.35** (2026-05-25) — Tests: qa: record v8.12.29 eighth assistant evaluation; Tests: qa: record Q-NEW13 advisor evidence closure; Bug Fixes: ai-engine: cap pronoun follow-ups to prior top results
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
