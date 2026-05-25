@@ -184,6 +184,8 @@ describe('monitoring capacity forecast evidence provider', () => {
       'cache-redis-dc1-01 메모리 포화 예측해줘',
       'api-was-dc1-01 CPU 언제 위험 수준 도달해',
       'capacity-test-01 memori when will it exceed 90%',
+      '48시간 이내에 디스크 꽉 찰 서버 있어?',
+      '2일 안에 storage disk 가득 찰까?',
     ];
 
     for (const query of queries) {
@@ -224,6 +226,21 @@ describe('monitoring capacity forecast evidence provider', () => {
     expect(result?.fallback).toContain('CPU 90% 도달 예측');
     expect(result?.fallback).toContain('대상: 지정 서버 1대');
     expect(result?.fallback).not.toContain('지정 서버 1대 1대');
+  });
+
+  it('resolves n-hour disk-full wording to deterministic evidence', async () => {
+    const result = await monitoringCapacityForecastEvidenceProvider.resolve(
+      createRequest('capacity-test-01 48시간 이내에 디스크 꽉 찰까?')
+    );
+
+    expect(result?.id).toBe('monitoring-capacity-forecast');
+    expect(result?.metadata).toMatchObject({
+      metric: 'disk',
+      threshold: 90,
+      responsePolicy: 'deterministic_answer',
+    });
+    expect(result?.fallback).toContain('디스크 90% 도달 예측');
+    expect(result?.fallback).toContain('대상: 지정 서버 1대');
   });
 
   it('uses the requested future threshold instead of the current metric value', async () => {

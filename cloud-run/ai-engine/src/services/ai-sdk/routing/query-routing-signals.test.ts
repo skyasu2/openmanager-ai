@@ -68,6 +68,7 @@ describe('extractQueryRoutingSignals', () => {
     '서버 상태와 원인 분석을 비교하고 해결 방법도 알려줘',
     '현재 인프라 토폴로지 알려줘',
     '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘',
+    '48시간 이내에 디스크 꽉 찰까?',
   ])('keeps trace-only parity with current routing policies: %s', (query) => {
     const signals = extractQueryRoutingSignals(query);
     const preFilter = preFilterQuery(query);

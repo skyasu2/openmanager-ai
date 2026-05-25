@@ -200,6 +200,7 @@ describe('selectExecutionMode', () => {
     it('should select multi for metric threshold capacity forecast questions', () => {
       expect(selectExecutionMode('디스크 사용률 언제 90% 넘을까?')).toBe('multi');
       expect(selectExecutionMode('메모리 용량 예측해줘')).toBe('multi');
+      expect(selectExecutionMode('48시간 이내에 디스크 꽉 찰까?')).toBe('multi');
     });
 
     it('should use intentFrame for server summary requests instead of typo regex', () => {
@@ -337,6 +338,7 @@ describe('getIntentCategory', () => {
     expect(getIntentCategory('추이 예측')).toBe('prediction');
     expect(getIntentCategory('forecast CPU usage')).toBe('prediction');
     expect(getIntentCategory('디스크 사용률 언제 90% 넘을까?')).toBe('prediction');
+    expect(getIntentCategory('48시간 이내에 디스크 꽉 찰까?')).toBe('prediction');
   });
 
   it('should classify math queries', () => {
@@ -564,6 +566,14 @@ describe('createPrepareStep', () => {
 
   it('should route threshold crossing questions to prediction tools', async () => {
     const prepare = createPrepareStep('디스크 사용률 언제 90% 넘을까?');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('predictTrends');
+    expect(result.activeTools).toContain('estimateCapacityProjection');
+    expect(result.toolChoice).toBe('required');
+  });
+
+  it('should route disk-full window questions to prediction tools', async () => {
+    const prepare = createPrepareStep('48시간 이내에 디스크 꽉 찰까?');
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('predictTrends');
     expect(result.activeTools).toContain('estimateCapacityProjection');

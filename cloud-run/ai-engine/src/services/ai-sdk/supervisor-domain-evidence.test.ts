@@ -501,6 +501,26 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('resolves n-hour disk-full wording as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: 'storage-nfs-dc1-01 48시간 이내에 디스크 꽉 찰까?',
+      domain: monitoringDomainPack,
+      sessionId: 'session-capacity-disk-full-window',
+      traceId: 'trace-capacity-disk-full-window',
+    });
+
+    expect(support?.id).toBe('monitoring-capacity-forecast');
+    expect(support?.fallback).toContain('디스크 90% 도달 예측');
+    expect(support?.fallback).toContain('storage-nfs-dc1-01');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.capacity_forecast',
+      intent: 'capacity_forecast',
+      metric: 'disk',
+      threshold: 90,
+    });
+  });
+
   it('keeps mixed current-value and threshold capacity forecasts on deterministic evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query:
