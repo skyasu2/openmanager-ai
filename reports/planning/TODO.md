@@ -38,6 +38,7 @@
 | Historical gate-window warning | `QA-20260519-0535` broad 회귀가 rolling window에 남은 historical context. active gate warning은 없음. | clean gate run이 window를 대체하면 자동 해소 |
 | 최근 non-evidence artifact refs 16개 | 모두 `countsTowardSummary=false`, `releaseFacing=false` targeted run의 로컬 MCP screenshot 참조. durable evidence 요구 대상 아님. | 같은 유형이 counted/release-facing run에 생길 때만 |
 | QA evidence cleanup batch | 2026-05-26 audit: orphan 0, missing 0, archive candidate 0, storage warning 0. 즉시 정리 불필요. | `reports/qa` 90MiB 초과 또는 orphan/missing 발생 시 |
+| Local Docker/WSL storage hygiene residue | 2026-05-26 cleanup 완료: Docker build cache 20.45GB prune, npm cache 8.3GiB -> 16.9MiB, repo tmp/playwright 445.2MiB -> 20.9MiB, uv/puppeteer/next-swc cache 제거. 보존: `.codex`/`.gemini`/`.claude` history, active `ms-playwright`, minikube cache. | 월 1회 `npm run storage:audit` 또는 대규모 QA/배포 전 |
 
 ---
 
@@ -45,8 +46,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Local Docker/WSL storage hygiene | Medium | 감사: `npm run storage:audit`. WSL 상위 후보 `.npm` 9.7GiB / `.gemini/backups` 2.7GiB / `.codex/sessions` 2.6GiB. |
-| QA evidence 저장소 용량 정리 | Low | 현재 cleanup batch 불필요. `npm run qa:evidence:audit` 기준 reports/qa 65.86MiB, orphan/missing/archive candidate 0. |
+| _None_ | - | 현재 보류 중인 작업 없음. |
 
 ---
 
