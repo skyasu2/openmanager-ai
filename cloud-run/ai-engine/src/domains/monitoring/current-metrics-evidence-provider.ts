@@ -489,6 +489,22 @@ function parseCurrentMetricsFrame(
       return null;
     }
 
+    // 두 그룹 비교 (DB vs Cache, web vs storage 등): group-compare 경로로 처리
+    const groupTargetsForFrame = extractGroupTargetsFromMessage(request.message);
+    if (
+      groupTargetsForFrame.length >= 2 &&
+      isCurrentServerComparisonMessage(request.message)
+    ) {
+      return {
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        sourceIntent: 'group-compare',
+        answerQuery: request.message,
+        metric,
+        groupTargets: groupTargetsForFrame.slice(0, 2),
+      };
+    }
+
     return {
       intent: 'metric_current',
       capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
