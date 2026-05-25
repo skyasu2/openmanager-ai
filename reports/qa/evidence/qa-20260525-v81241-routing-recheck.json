@@ -1,0 +1,254 @@
+{
+  "startedAt": "2026-05-25T13:23:44.159Z",
+  "finishedAt": "2026-05-25T13:26:19.514Z",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "version": {
+    "version": "8.12.41",
+    "buildVersion": "8.12.41",
+    "versions": {
+      "overall": "8.12.41",
+      "frontend": "8.12.41"
+    },
+    "nextjs": "16.1.6",
+    "environment": "production",
+    "commitSha": "a5618cd5ca1a3c13753f9c3c6c1b8fa0e773b252",
+    "shortCommitSha": "a5618cd5ca",
+    "releaseTag": "v8.12.41",
+    "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550916589",
+    "deploymentProvider": "vercel",
+    "timestamp": "2026-05-25T13:23:44.666Z"
+  },
+  "finalUrl": null,
+  "checks": [
+    {
+      "id": "q-new25-capacity-forecast",
+      "prompt": "db-mysql-dc1-backup 디스크가 현재 69%야. 이 추세라면 언제 90%를 넘을까? 용량 예측해줘",
+      "status": "pass",
+      "latencyMs": 5330,
+      "matched": [
+        true,
+        true,
+        true
+      ],
+      "failedSignal": false,
+      "responsePreview": "오후 10:23:56복사📈 디스크 90% 도달 예측• 결론: db-mysql-dc1-backup가 가장 먼저 90%에 도달할 가능성이 있습니다.• 대상: 지정 서버 1대 · 데이터 슬롯 22:20 KST• 기준: 최근 24h 선형 추세 기반 추정이며, 배치/장애/트래픽 급증 같은 비선형 이벤트는 별도 로그 확인이 필요합니다.• 근접/예상 TOP 1: db-mysql-dc1-backup 71% (여유 +19%p, 24h 기울기 +0.1%p/h, 190시간 후)• 권고: 가장 근접한 서버부터 로그 적체, 백업/배치 산출물, 최근 배포 후 사용률 변화를 확인하고 증설은 마지막 수단으로 검토하세요.오후 10:23:56응답 빠름Cloud Run AI·모니터링 도메인 근거분석 근거도구: monitoring-capacity-forecast복사다시 생성"
+    },
+    {
+      "id": "p8-db-cache-memory-comparison",
+      "prompt": "DB와 Cache 메모리 사용량 비교해줘",
+      "status": "pass",
+      "latencyMs": 5848,
+      "matched": [
+        true,
+        true,
+        true
+      ],
+      "failedSignal": false,
+      "responsePreview": "오후 10:24:02복사📊 캐시 서버 vs DB 서버 메모리 비교• 대상: 캐시 서버 3대 · DB 서버 3대 · 데이터 슬롯 22:20 KST• 평균: 캐시 서버 54.2% · DB 서버 50.7%• 결론: 캐시 서버가 DB 서버보다 평균 메모리 3.5%p 높습니다.📌 그룹별 서버 현황캐시 서버 / cache-redis-dc1-03: 메모리 70.7% (상태 online)캐시 서버 / cache-redis-dc1-01: 메모리 46% (상태 online)캐시 서버 / cache-redis-dc1-02: 메모리 46% (상태 online)DB 서버 / db-mysql-dc1-replica: 메모리 63% (상태 online)DB 서버 / db-mysql-dc1-primary: 메모리 57% (상태 online)DB 서버 / db-mysql-dc1-backup: 메모리 32% (상태 online)오후 10:24:02응답 빠름Cloud Run AI·모니터링 도메인 근거분석 근거도구: monitoring-metric-current복사다시 생성"
+    },
+    {
+      "id": "p9-restart-needed-servers",
+      "prompt": "재시작해야 할 서버 있어?",
+      "status": "pass",
+      "latencyMs": 5570,
+      "matched": [
+        true,
+        true
+      ],
+      "failedSignal": false,
+      "responsePreview": "오후 10:24:06복사🚨 즉시 조치 필요 여부• 즉시 조치 대상은 없습니다.오후 10:24:07응답 보통Streaming AI·서버 실시간 데이터 분석분석 근거도구: 대상 서버 추리기 · 기간: 최근 1시간복사다시 생성"
+    },
+    {
+      "id": "q-new28-efficient-server",
+      "prompt": "가장 효율적인 서버 알려줘",
+      "status": "pass",
+      "latencyMs": 2913,
+      "matched": [
+        true,
+        true
+      ],
+      "failedSignal": false,
+      "responsePreview": "오후 10:24:10복사📊 CPU 사용률 상위 3대lb-haproxy-dc1-01: CPU 74%lb-haproxy-dc1-03: CPU 55%api-was-dc1-01: CPU 46% 💡 서버별 확인 항목lb-haproxy-dc1-01: HAProxy worker CPU, active connection, backend 분산 편차를 확인하세요.lb-haproxy-dc1-03: HAProxy worker CPU, active connection, backend 분산 편차를 확인하세요.api-was-dc1-01: 상위 프로세스와 최근 배포/배치 작업의 CPU 증가 여부를 확인하세요.오후 10:24:10응답 빠름Streaming AI·모니터링 도메인 근거분석 근거도구: monitoring-metric-ranking복사다시 생성"
+    }
+  ],
+  "apiEvents": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/version",
+      "status": 200,
+      "method": "GET",
+      "timing": {
+        "startTime": 1779715424508.825,
+        "domainLookupStart": 1.333,
+        "domainLookupEnd": 46.176,
+        "connectStart": 46.371,
+        "secureConnectionStart": 51.49,
+        "connectEnd": 70.812,
+        "requestStart": 71.229,
+        "responseStart": 153.359,
+        "responseEnd": 158.766
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779715433308.2678,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.536,
+        "responseStart": 1039.126,
+        "responseEnd": 1042.771
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "status": 201,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779715435386.515,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.411,
+        "responseStart": 743.412,
+        "responseEnd": 747.728
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/0b5eab56-9d7a-41eb-9806-24508849a743/stream",
+      "status": 200,
+      "method": "GET",
+      "timing": {
+        "startTime": 1779715436145.777,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.655,
+        "responseStart": 373.744,
+        "responseEnd": 412.27
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779715438598.203,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 1.291,
+        "responseStart": 1212.503,
+        "responseEnd": 1225.746
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "status": 201,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779715439913.902,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 8.437,
+        "responseStart": 316.663,
+        "responseEnd": 321.91
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/49d06466-e2f5-4aec-8412-b86a1d3f536d/stream",
+      "status": 200,
+      "method": "GET",
+      "timing": {
+        "startTime": 1779715440234.431,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.367,
+        "responseStart": 167.166,
+        "responseEnd": 2236.638
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779715444161.325,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.617,
+        "responseStart": 1389.879,
+        "responseEnd": 1393.316
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779715445635.645,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.531,
+        "responseStart": 338.447,
+        "responseEnd": 2218.858
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779715450135.9321,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.552,
+        "responseStart": 373.751,
+        "responseEnd": 382.471
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779715452987.45,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.391,
+        "responseStart": 977.608,
+        "responseEnd": 980.041
+      }
+    }
+  ],
+  "performanceEntries": [],
+  "screenshotPath": "/mnt/d/dev/openmanager-ai/reports/qa/evidence/qa-20260525-v81241-routing-recheck.png"
+}

@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-25T12:37:03.598Z",
-  "generatedAtKst": "2026-05-25 21:37:03 KST",
-  "trackerUpdatedAt": "2026-05-25T12:37:02.779Z",
+  "generatedAt": "2026-05-25T13:30:30.521Z",
+  "generatedAtKst": "2026-05-25 22:30:30 KST",
+  "trackerUpdatedAt": "2026-05-25T13:30:15.211Z",
   "totals": {
-    "recordedRuns": 596,
+    "recordedRuns": 597,
     "countedRuns": 472,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
     "overallPassRatePct": 95.61,
-    "latestRecordedRunId": "QA-20260525-0598",
+    "latestRecordedRunId": "QA-20260525-0599",
     "lastCountedRunId": "QA-20260525-0591"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 409,
+      "totalRuns": 410,
       "countedRuns": 286
     },
     {
@@ -955,11 +955,11 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T12:37:02.779Z",
-    "windowEnd": "2026-05-25T12:37:02.779Z",
-    "recordedRunCount": 5,
+    "windowStart": "2026-05-24T13:30:15.211Z",
+    "windowEnd": "2026-05-25T13:30:15.211Z",
+    "recordedRunCount": 6,
     "countedRunCount": 2,
-    "sampleCount": 8,
+    "sampleCount": 13,
     "buckets": [
       {
         "agent": "Advisor Agent",
@@ -992,6 +992,21 @@
         "latestRecordedAt": "2026-05-25T12:37:02.779Z"
       },
       {
+        "agent": "Metrics Query Agent",
+        "provider": "cloud-run-ai",
+        "sampleCount": 3,
+        "runCount": 1,
+        "countedRunCount": 0,
+        "avgLatencyMs": 6559,
+        "p95LatencyMs": 8498,
+        "avgTtfbMs": 284,
+        "p95TtfbMs": 284,
+        "avgProcessingTimeMs": 2368,
+        "p95ProcessingTimeMs": 2368,
+        "latestRunId": "QA-20260525-0599",
+        "latestRecordedAt": "2026-05-25T13:30:15.211Z"
+      },
+      {
         "agent": "Server Realtime Analysis",
         "provider": "mixed",
         "sampleCount": 1,
@@ -1005,6 +1020,21 @@
         "p95ProcessingTimeMs": null,
         "latestRunId": "QA-20260525-0595",
         "latestRecordedAt": "2026-05-25T10:16:08.749Z"
+      },
+      {
+        "agent": "Metrics Query Agent",
+        "provider": "streaming-ai",
+        "sampleCount": 2,
+        "runCount": 1,
+        "countedRunCount": 0,
+        "avgLatencyMs": 4242,
+        "p95LatencyMs": 5570,
+        "avgTtfbMs": null,
+        "p95TtfbMs": null,
+        "avgProcessingTimeMs": null,
+        "p95ProcessingTimeMs": null,
+        "latestRunId": "QA-20260525-0599",
+        "latestRecordedAt": "2026-05-25T13:30:15.211Z"
       },
       {
         "agent": "Metrics Query Agent",
@@ -1055,8 +1085,8 @@
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T12:37:02.779Z",
-    "windowEnd": "2026-05-25T12:37:02.779Z",
+    "windowStart": "2026-05-24T13:30:15.211Z",
+    "windowEnd": "2026-05-25T13:30:15.211Z",
     "recordedRunCount": 3,
     "countedRunCount": 3,
     "sampleCount": 7,

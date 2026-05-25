@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-25 21:37:02 KST
+> Generated at: 2026-05-25 22:30:30 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 596 |
+| Total Recorded Runs | 597 |
 | Total Runs (Counted) | 472 |
-| Non-counted Runs | 124 |
+| Non-counted Runs | 125 |
 | Total Checks | 4194 |
 | Passed | 4010 |
 | Failed | 153 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260525-0591 (2026-05-25T04:28:13.683Z) |
-| Latest Recorded Run | QA-20260525-0598 (2026-05-25T12:37:02.779Z) |
+| Latest Recorded Run | QA-20260525-0599 (2026-05-25T13:30:15.211Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,37 +34,39 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260525-0598 (2026-05-25T12:37:02.779Z)
+Latest run: QA-20260525-0599 (2026-05-25T13:30:15.211Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | partially-appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage reported effective=16.6209 USD, billed=0.0000 USD for the current billing period after v8.12.41 deploy. |
+| vercel | cli | checked | normal | Current billing period checked after targeted Playwright QA; effective=16.6209 USD, billed=0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T12:37:02.779Z -> 2026-05-25T12:37:02.779Z (24h)
-- Runs with observations: 5 recorded / 2 counted
-- Samples: 8
+- Window: 2026-05-24T13:30:15.211Z -> 2026-05-25T13:30:15.211Z (24h)
+- Runs with observations: 6 recorded / 2 counted
+- Samples: 13
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Advisor Agent | mixed | 1 | 27514ms | 27514ms | 0ms | 0ms | 27514ms | 27514ms | QA-20260525-0591 |
 | Metrics Query Agent | zai | 1 | 18141ms | 18141ms | - | - | - | - | QA-20260525-0598 |
+| Metrics Query Agent | cloud-run-ai | 3 | 6559ms | 8498ms | 284ms | 284ms | 2368ms | 2368ms | QA-20260525-0599 |
 | Server Realtime Analysis | mixed | 1 | 8456ms | 8456ms | - | - | - | - | QA-20260525-0595 |
+| Metrics Query Agent | streaming-ai | 2 | 4242ms | 5570ms | - | - | - | - | QA-20260525-0599 |
 | Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | deterministic | 3 | 37ms | 60ms | - | - | 60ms | 60ms | QA-20260525-0595 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T12:37:02.779Z -> 2026-05-25T12:37:02.779Z (24h)
+- Window: 2026-05-24T13:30:15.211Z -> 2026-05-25T13:30:15.211Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 7
 - Drift rate: 0%
@@ -80,21 +82,23 @@ Latest run: QA-20260525-0598 (2026-05-25T12:37:02.779Z)
 - Release-Facing: no
 - Counts Toward Summary: no
 - Deployment: SHA a5618cd5
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: GitLab v8.12.41 tag pipeline, Vercel /api/version v8.12.41, Cloud Run ai-engine /health v8.12.41, Cloud Run /monitoring unauth/auth boundary, Cloud Run authenticated supervisor health, P11 production live query: 48시간 이내 디스크 꽉 찰
-- Skipped Surfaces: full browser conversational AI QA, reporter, vision, GitHub public snapshot sync
+- Coverage Packs: ai-core, ai-advanced-surface, observability-pack
+- Covered Surfaces: Vercel production /login guest PIN flow, Vercel production /dashboard AI assistant UI, Q-NEW25 disk 90% capacity forecast wording, P8 DB vs Cache memory comparison, P9 restart-needed server wording, Q-NEW28 most efficient server wording, P11 48-hour disk-full capacity forecast wording
+- Skipped Surfaces: standard five-question conversational pack, reporter artifact generation, vision image upload, full route/device matrix, GitHub public snapshot sync
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | v8.12.41 tag pipeline | [v8.12.41 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550916589) | - |
+| general | GitLab v8.12.41 deployment pipeline | [GitLab v8.12.41 deployment pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550916589) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-network | Four-query Playwright UI result JSON | `reports/qa/evidence/qa-20260525-v81241-routing-recheck.json` | - |
+| playwright-network | P11 Playwright UI result JSON | `reports/qa/evidence/qa-20260525-v81241-p11-ui-recheck.json` | - |
+| playwright-screenshot | P11 capacity forecast UI screenshot | `reports/qa/evidence/qa-20260525-v81241-p11-ui-recheck.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -928,6 +932,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260525-0599 | 2026-05-25T13:30:15.211Z | targeted | no | no | v8.12.41 Vercel Playwright regression recheck - recent AI routing fixes | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260525-0598 | 2026-05-25T12:37:02.779Z | targeted | no | no | v8.12.41 production deployment verification — P11 capacity forecast live closure | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0597 | 2026-05-25T11:20:49.100Z | targeted | no | no | P11 local routing regression verification — disk-full capacity forecast wording | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0596 | 2026-05-25T10:58:57.910Z | targeted | no | no | v8.12.40 production routing verification — P9/Q-NEW30 deployment closure | 6 | 2 | 0 | 0 | 0 | 0 |
@@ -947,4 +952,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260524-0582 | 2026-05-24T12:29:51.034Z | targeted | no | no | 6차 AI 어시스턴트 평가 — v8.12.17~25 수정사항 검증 (Playwright MCP) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0581 | 2026-05-24T11:45:40.608Z | targeted | no | no | v8.12.25 AI Engine trend routing local regression closure | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0580 | 2026-05-24T10:29:54.220Z | targeted | yes | yes | v8.12.25 AI Assistant server detail and group routing targeted QA | 2 | 6 | 0 | 0 | 0 | 0 |
-| QA-20260524-0579 | 2026-05-24T07:21:06.892Z | targeted | yes | yes | v8.12.20 신규 AI Assistant 6문항 QA - 목록 가독성·위험 라우팅·트렌드 관찰 | 6 | 4 | 1 | 0 | 2 | 1 |

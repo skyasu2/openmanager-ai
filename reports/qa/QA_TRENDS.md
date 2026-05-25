@@ -1,39 +1,41 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-25 21:37:03 KST
+> Generated at: 2026-05-25 22:30:30 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 596 |
+| Recorded Runs | 597 |
 | Counted Runs | 472 |
 | Total Checks | 4194 |
 | Total Passed | 4010 |
 | Total Failed | 153 |
 | Overall Pass Rate | 95.61% |
-| Latest Recorded Run | QA-20260525-0598 |
+| Latest Recorded Run | QA-20260525-0599 |
 | Last Counted Run | QA-20260525-0591 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T12:37:02.779Z -> 2026-05-25T12:37:02.779Z (24h)
-- Runs with observations: 5 recorded / 2 counted
-- Samples: 8
+- Window: 2026-05-24T13:30:15.211Z -> 2026-05-25T13:30:15.211Z (24h)
+- Runs with observations: 6 recorded / 2 counted
+- Samples: 13
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Advisor Agent | mixed | 1 | 27514ms | 27514ms | 0ms | 0ms | 27514ms | 27514ms | QA-20260525-0591 |
 | Metrics Query Agent | zai | 1 | 18141ms | 18141ms | - | - | - | - | QA-20260525-0598 |
+| Metrics Query Agent | cloud-run-ai | 3 | 6559ms | 8498ms | 284ms | 284ms | 2368ms | 2368ms | QA-20260525-0599 |
 | Server Realtime Analysis | mixed | 1 | 8456ms | 8456ms | - | - | - | - | QA-20260525-0595 |
+| Metrics Query Agent | streaming-ai | 2 | 4242ms | 5570ms | - | - | - | - | QA-20260525-0599 |
 | Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | deterministic | 3 | 37ms | 60ms | - | - | 60ms | 60ms | QA-20260525-0595 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T12:37:02.779Z -> 2026-05-25T12:37:02.779Z (24h)
+- Window: 2026-05-24T13:30:15.211Z -> 2026-05-25T13:30:15.211Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 7
 - Drift rate: 0%
@@ -75,7 +77,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 409 | 286 |
+| targeted | 410 | 286 |
 | legacy | 137 | 137 |
 | broad | 35 | 34 |
 | release-gate | 9 | 9 |

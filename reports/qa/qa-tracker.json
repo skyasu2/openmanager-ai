@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T12:37:02.779Z"
+    "updatedAt": "2026-05-25T13:30:15.211Z"
   },
   "sequence": {
-    "nextRunNumber": 599
+    "nextRunNumber": 600
   },
   "summary": {
-    "totalRecordedRuns": 596,
+    "totalRecordedRuns": 597,
     "totalRuns": 472,
-    "excludedRuns": 124,
+    "excludedRuns": 125,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260525-0591",
     "lastRecordedAt": "2026-05-25T04:28:13.683Z",
-    "latestRecordedRunId": "QA-20260525-0598",
-    "latestRecordedAt": "2026-05-25T12:37:02.779Z"
+    "latestRecordedRunId": "QA-20260525-0599",
+    "latestRecordedAt": "2026-05-25T13:30:15.211Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -70319,6 +70319,159 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0599",
+      "recordedAt": "2026-05-25T13:30:15.211Z",
+      "recordedAtKst": "2026-05-25 22:30:15 KST",
+      "title": "v8.12.41 Vercel Playwright regression recheck - recent AI routing fixes",
+      "owner": "codex",
+      "source": "playwright-direct",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0599.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.41",
+        "backend": "Cloud Run AI Engine v8.12.41",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "a5618cd5ca1a3c13753f9c3c6c1b8fa0e773b252"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /login guest PIN flow",
+        "Vercel production /dashboard AI assistant UI",
+        "Q-NEW25 disk 90% capacity forecast wording",
+        "P8 DB vs Cache memory comparison",
+        "P9 restart-needed server wording",
+        "Q-NEW28 most efficient server wording",
+        "P11 48-hour disk-full capacity forecast wording"
+      ],
+      "skippedSurfaces": [
+        "standard five-question conversational pack",
+        "reporter artifact generation",
+        "vision image upload",
+        "full route/device matrix",
+        "GitHub public snapshot sync"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Q-NEW25 disk 90% forecast",
+          "agent": "Metrics Query Agent",
+          "provider": "cloud-run-ai",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright UI response timing",
+          "latencyMs": 5330
+        },
+        {
+          "surface": "P8 DB vs Cache memory comparison",
+          "agent": "Metrics Query Agent",
+          "provider": "cloud-run-ai",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright UI response timing",
+          "latencyMs": 5848
+        },
+        {
+          "surface": "P9 restart-needed servers",
+          "agent": "Metrics Query Agent",
+          "provider": "streaming-ai",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright UI response timing",
+          "latencyMs": 5570
+        },
+        {
+          "surface": "Q-NEW28 most efficient server",
+          "agent": "Metrics Query Agent",
+          "provider": "streaming-ai",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright UI response timing",
+          "latencyMs": 2913
+        },
+        {
+          "surface": "P11 disk full within 48h",
+          "agent": "Metrics Query Agent",
+          "provider": "cloud-run-ai",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright UI response timing + resource timing",
+          "latencyMs": 8498,
+          "ttfbMs": 284,
+          "processingTimeMs": 2368
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "최근 회귀/핫픽스 질의 5개가 Vercel production UI에서 모두 모니터링 근거 도구로 응답했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "Native Playwright MCP profile lock으로 direct Playwright fallback을 사용했지만, CSRF를 우회하지 않고 UI 입력/전송 경로로 검증했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-25T22:28:11+09:00",
+          "summary": "Current billing period checked after targeted Playwright QA; effective=16.6209 USD, billed=0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "Four-query Playwright UI result JSON",
+          "path": "reports/qa/evidence/qa-20260525-v81241-routing-recheck.json"
+        },
+        {
+          "type": "playwright-network",
+          "label": "P11 Playwright UI result JSON",
+          "path": "reports/qa/evidence/qa-20260525-v81241-p11-ui-recheck.json"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "P11 capacity forecast UI screenshot",
+          "path": "reports/qa/evidence/qa-20260525-v81241-p11-ui-recheck.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.12.41 deployment pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550916589"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -70327,16 +70480,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 314,
-      "appropriateCount": 269,
+      "seenCount": 315,
+      "appropriateCount": 270,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 64,
-      "lastRunId": "QA-20260525-0598",
-      "lastSeenAt": "2026-05-25T12:37:02.779Z",
+      "lastRunId": "QA-20260525-0599",
+      "lastSeenAt": "2026-05-25T13:30:15.211Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.12.41 production now routes the P11 natural-language disk-full window query through the monitoring AI path and returns concrete disk capacity evidence.",
+      "lastRationale": "최근 회귀/핫픽스 질의 5개가 Vercel production UI에서 모두 모니터링 근거 도구로 응답했습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -70395,16 +70548,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 256,
+      "seenCount": 257,
       "appropriateCount": 231,
-      "partialCount": 25,
+      "partialCount": 26,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260524-0576",
-      "lastSeenAt": "2026-05-24T02:47:28.531Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260525-0599",
+      "lastSeenAt": "2026-05-25T13:30:15.211Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The recheck used a stricter Playwright CLI assertion requiring the exact normal-range server-list shape and rejecting the previous generic health summary.",
+      "lastRationale": "Native Playwright MCP profile lock으로 direct Playwright fallback을 사용했지만, CSRF를 우회하지 않고 UI 입력/전송 경로로 검증했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
