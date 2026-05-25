@@ -1,0 +1,44 @@
+{
+  "runId": "QA-20260526-0600",
+  "recordedAt": "2026-05-25T15:50:57.311Z",
+  "recordedAtKst": "2026-05-26 00:50:57 KST",
+  "runTitle": "P12 streaming spaces fix verification — v8.12.43",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run v8.12.43",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "2d5df8cb0fb37c6d86329a6b53705a4fcaa27a0a"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI sidebar general conversation"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

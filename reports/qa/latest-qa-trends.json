@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-25T13:30:30.521Z",
-  "generatedAtKst": "2026-05-25 22:30:30 KST",
-  "trackerUpdatedAt": "2026-05-25T13:30:15.211Z",
+  "generatedAt": "2026-05-25T15:54:55.633Z",
+  "generatedAtKst": "2026-05-26 00:54:55 KST",
+  "trackerUpdatedAt": "2026-05-25T15:54:39.843Z",
   "totals": {
-    "recordedRuns": 597,
+    "recordedRuns": 599,
     "countedRuns": 472,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
     "overallPassRatePct": 95.61,
-    "latestRecordedRunId": "QA-20260525-0599",
+    "latestRecordedRunId": "QA-20260526-0601",
     "lastCountedRunId": "QA-20260525-0591"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 410,
+      "totalRuns": 412,
       "countedRuns": 286
     },
     {
@@ -264,13 +264,13 @@
     },
     {
       "priority": "P1",
-      "totalItems": 302,
+      "totalItems": 304,
       "recurringItems": 109,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 294,
+      "completedItems": 296,
       "wontFixItems": 8,
-      "recurrenceRatePct": 36.09,
+      "recurrenceRatePct": 35.86,
       "openRecurrenceRatePct": 0
     },
     {
@@ -955,11 +955,11 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T13:30:15.211Z",
-    "windowEnd": "2026-05-25T13:30:15.211Z",
-    "recordedRunCount": 6,
+    "windowStart": "2026-05-24T15:54:39.843Z",
+    "windowEnd": "2026-05-25T15:54:39.843Z",
+    "recordedRunCount": 7,
     "countedRunCount": 2,
-    "sampleCount": 13,
+    "sampleCount": 15,
     "buckets": [
       {
         "agent": "Advisor Agent",
@@ -1024,17 +1024,17 @@
       {
         "agent": "Metrics Query Agent",
         "provider": "streaming-ai",
-        "sampleCount": 2,
-        "runCount": 1,
+        "sampleCount": 4,
+        "runCount": 2,
         "countedRunCount": 0,
-        "avgLatencyMs": 4242,
+        "avgLatencyMs": 4118,
         "p95LatencyMs": 5570,
-        "avgTtfbMs": null,
-        "p95TtfbMs": null,
-        "avgProcessingTimeMs": null,
-        "p95ProcessingTimeMs": null,
-        "latestRunId": "QA-20260525-0599",
-        "latestRecordedAt": "2026-05-25T13:30:15.211Z"
+        "avgTtfbMs": 602,
+        "p95TtfbMs": 741,
+        "avgProcessingTimeMs": 606,
+        "p95ProcessingTimeMs": 747,
+        "latestRunId": "QA-20260526-0601",
+        "latestRecordedAt": "2026-05-25T15:54:39.843Z"
       },
       {
         "agent": "Metrics Query Agent",
@@ -1085,8 +1085,8 @@
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T13:30:15.211Z",
-    "windowEnd": "2026-05-25T13:30:15.211Z",
+    "windowStart": "2026-05-24T15:54:39.843Z",
+    "windowEnd": "2026-05-25T15:54:39.843Z",
     "recordedRunCount": 3,
     "countedRunCount": 3,
     "sampleCount": 7,

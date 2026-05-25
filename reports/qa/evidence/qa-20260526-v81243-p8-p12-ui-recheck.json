@@ -1,0 +1,169 @@
+{
+  "startedAt": "2026-05-25T15:49:48.873Z",
+  "finishedAt": "2026-05-25T15:50:08.587Z",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "version": {
+    "version": "8.12.43",
+    "buildVersion": "8.12.43",
+    "versions": {
+      "overall": "8.12.43",
+      "frontend": "8.12.43"
+    },
+    "nextjs": "16.1.6",
+    "environment": "production",
+    "commitSha": "2d5df8cb0fb37c6d86329a6b53705a4fcaa27a0a",
+    "shortCommitSha": "2d5df8cb0f",
+    "releaseTag": "v8.12.43",
+    "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2551336942",
+    "deploymentProvider": "vercel",
+    "timestamp": "2026-05-25T15:49:50.013Z"
+  },
+  "finalUrl": "https://openmanager-ai.vercel.app/dashboard",
+  "checks": [
+    {
+      "id": "p8-db-cache-group-compare-intentframe",
+      "prompt": "DB 서버와 Cache 서버 중 어느 쪽이 메모리 더 높아?",
+      "status": "pass",
+      "latencyMs": 4375,
+      "matched": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden": [],
+      "failedSignal": false,
+      "routeMatched": true,
+      "responsePreview": "오전 12:50:01복사📊 캐시 서버 vs DB 서버 메모리 비교• 대상: 캐시 서버 3대 · DB 서버 3대 · 데이터 슬롯 00:50 KST• 평균: 캐시 서버 47.3% · DB 서버 55.7%• 결론: DB 서버가 캐시 서버보다 평균 메모리 8.4%p 높습니다. 📌 그룹별 서버 현황캐시 서버 / cache-redis-dc1-03: 메모리 48% (상태 online)캐시 서버 / cache-redis-dc1-01: 메모리 47% (상태 online)캐시 서버 / cache-redis-dc1-02: 메모리 47% (상태 online)DB 서버 / db-mysql-dc1-primary: 메모리 69% (상태 warning)DB 서버 / db-mysql-dc1-replica: 메모리 61% (상태 online)DB 서버 / db-mysql-dc1-backup: 메모리 37% (상태 online)오전 12:50:01응답 빠름Streaming AI·모니터링 도메인 근거분석 근거도구: monitoring-metric-current복사다시 생성"
+    },
+    {
+      "id": "p12-streaming-whitespace",
+      "prompt": "OpenManager AI 어시스턴트는 서버 상태를 단계별로 설명합니다. 이 문장을 포함해서 한 문장으로 답해줘",
+      "status": "fail",
+      "latencyMs": 4086,
+      "matched": [
+        false,
+        false,
+        false
+      ],
+      "forbidden": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "failedSignal": false,
+      "routeMatched": true,
+      "responsePreview": "오전 12:50:05복사📊 서버 현황 요약• 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대• 평균 CPU: 30%, 메모리: 46%, 디스크: 38% ⚠️ 주의 서버• db-mysql-dc1-primary: 디스크 82% (안정 추세 →) 📈 추세• 전체 서버는 평균 대비 큰 변동 없이 안정적입니다. 💡 권고• db-mysql-dc1-primary: 로그 적체, 백업 산출물, tmp 디렉터리 증가 경로를 우선 점검하세요.오전 12:50:05응답 빠름Streaming AI·모니터링 도메인 근거분석 근거도구: monitoring-server-health복사다시 생성"
+    }
+  ],
+  "apiEvents": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/version",
+      "status": 200,
+      "method": "GET",
+      "timing": {
+        "startTime": 1779724189898.635,
+        "domainLookupStart": 7.19,
+        "domainLookupEnd": 55.219,
+        "connectStart": 56.374,
+        "secureConnectionStart": 61.644,
+        "connectEnd": 115.746,
+        "requestStart": 118.477,
+        "responseStart": 184.946,
+        "responseEnd": 196.627
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779724199578.8882,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.331,
+        "responseStart": 1202.905,
+        "responseEnd": 1205.207
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779724200887.7659,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.396,
+        "responseStart": 740.709,
+        "responseEnd": 746.731
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779724203713.236,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.475,
+        "responseStart": 1645.048,
+        "responseEnd": 1647.24
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779724205385.923,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.368,
+        "responseStart": 432.832,
+        "responseEnd": 437.378
+      }
+    }
+  ],
+  "performanceEntries": [
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 1205,
+      "transferSize": 352
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 747,
+      "transferSize": 6948
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 1647,
+      "transferSize": 485
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 437,
+      "transferSize": 6472
+    }
+  ],
+  "screenshotPath": "/mnt/d/dev/openmanager-ai/reports/qa/evidence/qa-20260526-v81243-p8-p12-ui-recheck.png"
+}

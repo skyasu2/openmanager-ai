@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T13:30:15.211Z"
+    "updatedAt": "2026-05-25T15:54:39.843Z"
   },
   "sequence": {
-    "nextRunNumber": 600
+    "nextRunNumber": 602
   },
   "summary": {
-    "totalRecordedRuns": 597,
+    "totalRecordedRuns": 599,
     "totalRuns": 472,
-    "excludedRuns": 125,
+    "excludedRuns": 127,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
     "completionRate": 100,
-    "completedItems": 685,
+    "completedItems": 687,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 52,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260525-0591",
     "lastRecordedAt": "2026-05-25T04:28:13.683Z",
-    "latestRecordedRunId": "QA-20260525-0599",
-    "latestRecordedAt": "2026-05-25T13:30:15.211Z"
+    "latestRecordedRunId": "QA-20260526-0601",
+    "latestRecordedAt": "2026-05-25T15:54:39.843Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17417,6 +17417,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-25T12:37:02.779Z"
+    },
+    "p8-group-compare-intentframe-production-closure": {
+      "id": "p8-group-compare-intentframe-production-closure",
+      "title": "P8 group-compare via intentFrame production closure",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260526-0601",
+      "firstSeenAt": "2026-05-25T15:54:39.843Z",
+      "lastSeenRunId": "QA-20260526-0601",
+      "lastSeenAt": "2026-05-25T15:54:39.843Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "QA-20260526 Codex Playwright direct UI run, v8.12.43",
+      "lastNote": "DB 서버와 Cache 서버 메모리 비교가 Streaming AI + monitoring-metric-current 경로에서 캐시 서버 vs DB 서버 비교로 응답했습니다.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T15:54:39.843Z"
+    },
+    "p12-streaming-delta-whitespace-production-closure": {
+      "id": "p12-streaming-delta-whitespace-production-closure",
+      "title": "P12 streaming delta whitespace production closure",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260526-0601",
+      "firstSeenAt": "2026-05-25T15:54:39.843Z",
+      "lastSeenRunId": "QA-20260526-0601",
+      "lastSeenAt": "2026-05-25T15:54:39.843Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "QA-20260526 Codex Playwright direct UI run, v8.12.43",
+      "lastNote": "stream/v2 응답에서 '서버 현황 요약', '평균 CPU', '디스크 82%' 공백 경계가 보존되고 금지 패턴 서버현황/평균CPU/디스크82%가 없었습니다.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T15:54:39.843Z"
     }
   },
   "runs": [
@@ -70472,6 +70520,194 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0600",
+      "recordedAt": "2026-05-25T15:50:57.311Z",
+      "recordedAtKst": "2026-05-26 00:50:57 KST",
+      "title": "P12 streaming spaces fix verification — v8.12.43",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0600.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run v8.12.43",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "2d5df8cb0fb37c6d86329a6b53705a4fcaa27a0a"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI sidebar general conversation"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0601",
+      "recordedAt": "2026-05-25T15:54:39.843Z",
+      "recordedAtKst": "2026-05-26 00:54:39 KST",
+      "title": "v8.12.43 Vercel Playwright hotfix QA - P8 group compare and P12 streaming spaces",
+      "owner": "codex",
+      "source": "playwright-direct",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0601.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.43",
+        "backend": "Cloud Run AI Engine v8.12.43",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "2d5df8cb0fb37c6d86329a6b53705a4fcaa27a0a"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.12.43 tag pipeline deploy/deploy_ai_engine/post-deploy smoke",
+        "Vercel production /api/version v8.12.43",
+        "Cloud Run AI Engine /health v8.12.43",
+        "AI sidebar P8 group compare: DB vs Cache memory",
+        "AI sidebar P12 streaming whitespace: stream/v2 visible word boundaries"
+      ],
+      "skippedSurfaces": [
+        "standard five-question conversational pack",
+        "reporter artifact generation",
+        "vision image upload",
+        "full route/device matrix",
+        "GitHub public snapshot sync"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "P8 DB vs Cache group compare through AI sidebar",
+          "agent": "Metrics Query Agent",
+          "provider": "streaming-ai",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright UI response timing",
+          "latencyMs": 4375,
+          "ttfbMs": 741,
+          "processingTimeMs": 747
+        },
+        {
+          "surface": "P12 streaming whitespace through AI sidebar",
+          "agent": "Metrics Query Agent",
+          "provider": "streaming-ai",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright UI response timing",
+          "latencyMs": 3614,
+          "ttfbMs": 462,
+          "processingTimeMs": 464
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P8 deterministic monitoring evidence and P12 stream/v2 visible text spacing were verified on Vercel production.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "Native Playwright MCP profile remained locked, so direct Playwright was used against the real UI without bypassing the chat input/submit path.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab v8.12.43 deploy, AI Engine deploy, and both post-deploy smoke jobs completed successfully.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-26T00:52:29+09:00",
+          "summary": "Current billing period checked after v8.12.43 targeted Playwright QA; effective=16.6209 USD, billed=0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "P8 + initial P12 Playwright UI result JSON",
+          "path": "reports/qa/evidence/qa-20260526-v81243-p8-p12-ui-recheck.json"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "P8 + initial P12 Playwright UI screenshot",
+          "path": "reports/qa/evidence/qa-20260526-v81243-p8-p12-ui-recheck.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "P12 streaming whitespace final UI result JSON",
+          "path": "reports/qa/evidence/qa-20260526-v81243-p12-ui-recheck.json"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "P12 streaming whitespace final UI screenshot",
+          "path": "reports/qa/evidence/qa-20260526-v81243-p12-ui-recheck.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.12.43 deployment pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2551336942"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -70480,16 +70716,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 315,
-      "appropriateCount": 270,
+      "seenCount": 316,
+      "appropriateCount": 271,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 64,
-      "lastRunId": "QA-20260525-0599",
-      "lastSeenAt": "2026-05-25T13:30:15.211Z",
+      "lastRunId": "QA-20260526-0601",
+      "lastSeenAt": "2026-05-25T15:54:39.843Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "최근 회귀/핫픽스 질의 5개가 Vercel production UI에서 모두 모니터링 근거 도구로 응답했습니다.",
+      "lastRationale": "P8 deterministic monitoring evidence and P12 stream/v2 visible text spacing were verified on Vercel production.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -70531,16 +70767,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 221,
-      "appropriateCount": 200,
+      "seenCount": 222,
+      "appropriateCount": 201,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260525-0598",
-      "lastSeenAt": "2026-05-25T12:37:02.779Z",
+      "lastRunId": "QA-20260526-0601",
+      "lastSeenAt": "2026-05-25T15:54:39.843Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2550916589 completed deploy, deploy_ai_engine, and both post-deploy smoke jobs successfully. Cloud Run health and auth boundary checks passed.",
+      "lastRationale": "GitLab v8.12.43 deploy, AI Engine deploy, and both post-deploy smoke jobs completed successfully.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -70548,16 +70784,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 257,
+      "seenCount": 258,
       "appropriateCount": 231,
-      "partialCount": 26,
+      "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260525-0599",
-      "lastSeenAt": "2026-05-25T13:30:15.211Z",
+      "lastRunId": "QA-20260526-0601",
+      "lastSeenAt": "2026-05-25T15:54:39.843Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Native Playwright MCP profile lock으로 direct Playwright fallback을 사용했지만, CSRF를 우회하지 않고 UI 입력/전송 경로로 검증했습니다.",
+      "lastRationale": "Native Playwright MCP profile remained locked, so direct Playwright was used against the real UI without bypassing the chat input/submit path.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

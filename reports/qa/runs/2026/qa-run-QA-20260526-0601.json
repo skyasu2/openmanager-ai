@@ -1,0 +1,172 @@
+{
+  "runId": "QA-20260526-0601",
+  "recordedAt": "2026-05-25T15:54:39.843Z",
+  "recordedAtKst": "2026-05-26 00:54:39 KST",
+  "runTitle": "v8.12.43 Vercel Playwright hotfix QA - P8 group compare and P12 streaming spaces",
+  "owner": "codex",
+  "source": "playwright-direct",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.43",
+    "backend": "Cloud Run AI Engine v8.12.43",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "2d5df8cb0fb37c6d86329a6b53705a4fcaa27a0a"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core",
+    "ai-advanced-surface",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab v8.12.43 tag pipeline deploy/deploy_ai_engine/post-deploy smoke",
+    "Vercel production /api/version v8.12.43",
+    "Cloud Run AI Engine /health v8.12.43",
+    "AI sidebar P8 group compare: DB vs Cache memory",
+    "AI sidebar P12 streaming whitespace: stream/v2 visible word boundaries"
+  ],
+  "skippedSurfaces": [
+    "standard five-question conversational pack",
+    "reporter artifact generation",
+    "vision image upload",
+    "full route/device matrix",
+    "GitHub public snapshot sync"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P8 DB vs Cache group compare through AI sidebar",
+      "agent": "Metrics Query Agent",
+      "provider": "streaming-ai",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright UI response timing",
+      "latencyMs": 4375,
+      "ttfbMs": 741,
+      "processingTimeMs": 747
+    },
+    {
+      "surface": "P12 streaming whitespace through AI sidebar",
+      "agent": "Metrics Query Agent",
+      "provider": "streaming-ai",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright UI response timing",
+      "latencyMs": 3614,
+      "ttfbMs": 462,
+      "processingTimeMs": 464
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P8 deterministic monitoring evidence and P12 stream/v2 visible text spacing were verified on Vercel production.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "Native Playwright MCP profile remained locked, so direct Playwright was used against the real UI without bypassing the chat input/submit path.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab v8.12.43 deploy, AI Engine deploy, and both post-deploy smoke jobs completed successfully.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-26T00:52:29+09:00",
+      "summary": "Current billing period checked after v8.12.43 targeted Playwright QA; effective=16.6209 USD, billed=0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "P8 + initial P12 Playwright UI result JSON",
+      "path": "reports/qa/evidence/qa-20260526-v81243-p8-p12-ui-recheck.json"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "P8 + initial P12 Playwright UI screenshot",
+      "path": "reports/qa/evidence/qa-20260526-v81243-p8-p12-ui-recheck.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "P12 streaming whitespace final UI result JSON",
+      "path": "reports/qa/evidence/qa-20260526-v81243-p12-ui-recheck.json"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "P12 streaming whitespace final UI screenshot",
+      "path": "reports/qa/evidence/qa-20260526-v81243-p12-ui-recheck.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p8-group-compare-intentframe-production-closure",
+      "title": "P8 group-compare via intentFrame production closure",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260526 Codex Playwright direct UI run, v8.12.43",
+      "note": "DB 서버와 Cache 서버 메모리 비교가 Streaming AI + monitoring-metric-current 경로에서 캐시 서버 vs DB 서버 비교로 응답했습니다.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "p12-streaming-delta-whitespace-production-closure",
+      "title": "P12 streaming delta whitespace production closure",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260526 Codex Playwright direct UI run, v8.12.43",
+      "note": "stream/v2 응답에서 '서버 현황 요약', '평균 CPU', '디스크 82%' 공백 경계가 보존되고 금지 패턴 서버현황/평균CPU/디스크82%가 없었습니다.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Native Playwright MCP browser_navigate failed because the shared MCP Chrome profile was locked; direct Playwright Chromium was used as the fallback.",
+    "The first combined P8/P12 artifact contains a P12 false-negative from an over-specific echo assertion. The final P12 artifact uses spacing-regression criteria and passed.",
+    "P8 response used Streaming AI with monitoring-metric-current and returned DB/cache group averages and per-server rows.",
+    "P12 response used /api/ai/supervisor/stream/v2 and preserved visible word boundaries in the rendered response."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.12.43 deployment pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2551336942"
+    }
+  ]
+}

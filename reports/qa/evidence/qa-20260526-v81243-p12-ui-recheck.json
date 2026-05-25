@@ -1,0 +1,110 @@
+{
+  "startedAt": "2026-05-25T15:51:51.478Z",
+  "finishedAt": "2026-05-25T15:52:03.588Z",
+  "baseUrl": "https://openmanager-ai.vercel.app",
+  "version": {
+    "version": "8.12.43",
+    "buildVersion": "8.12.43",
+    "versions": {
+      "overall": "8.12.43",
+      "frontend": "8.12.43"
+    },
+    "nextjs": "16.1.6",
+    "environment": "production",
+    "commitSha": "2d5df8cb0fb37c6d86329a6b53705a4fcaa27a0a",
+    "shortCommitSha": "2d5df8cb0f",
+    "releaseTag": "v8.12.43",
+    "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2551336942",
+    "deploymentProvider": "vercel",
+    "timestamp": "2026-05-25T15:51:51.894Z"
+  },
+  "finalUrl": "https://openmanager-ai.vercel.app/dashboard",
+  "checks": [
+    {
+      "id": "p12-streaming-whitespace",
+      "prompt": "OpenManager AI 어시스턴트는 서버 상태를 단계별로 설명합니다. 이 문장을 포함해서 한 문장으로 답해줘",
+      "status": "pass",
+      "latencyMs": 3614,
+      "matched": [
+        true,
+        true,
+        true
+      ],
+      "forbidden": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "failedSignal": false,
+      "routeMatched": true,
+      "responsePreview": "(전체 서버)오전 12:52:01복사📊 서버 현황 요약• 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대• 평균 CPU: 30%, 메모리: 46%, 디스크: 38% ⚠️ 주의 서버• db-mysql-dc1-primary: 디스크 82% (안정 추세 →) 📈 추세• 전체 서버는 평균 대비 큰 변동 없이 안정적입니다. 💡 권고• db-mysql-dc1-primary: 로그 적체, 백업 산출물, tmp 디렉터리 증가 경로를 우선 점검하세요.오전 12:52:01응답 빠름Streaming AI·모니터링 도메인 근거분석 근거도구: monitoring-server-health복사다시 생성"
+    }
+  ],
+  "apiEvents": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/version",
+      "status": 200,
+      "method": "GET",
+      "timing": {
+        "startTime": 1779724311811.1768,
+        "domainLookupStart": 0.917,
+        "domainLookupEnd": 49.802,
+        "connectStart": 49.948,
+        "secureConnectionStart": 54.644,
+        "connectEnd": 72.819,
+        "requestStart": 73.24,
+        "responseStart": 157.616,
+        "responseEnd": 160.356
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779724319361.271,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.417,
+        "responseStart": 1129.143,
+        "responseEnd": 1131.745
+      }
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "status": 200,
+      "method": "POST",
+      "timing": {
+        "startTime": 1779724321173.6382,
+        "domainLookupStart": -1,
+        "domainLookupEnd": -1,
+        "connectStart": -1,
+        "secureConnectionStart": -1,
+        "connectEnd": -1,
+        "requestStart": 0.527,
+        "responseStart": 461.953,
+        "responseEnd": 464.407
+      }
+    }
+  ],
+  "performanceEntries": [
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/nlq/extract-entities",
+      "initiatorType": "fetch",
+      "duration": 1131,
+      "transferSize": 459
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "initiatorType": "fetch",
+      "duration": 464,
+      "transferSize": 6488
+    }
+  ],
+  "screenshotPath": "/mnt/d/dev/openmanager-ai/reports/qa/evidence/qa-20260526-v81243-p12-ui-recheck.png"
+}

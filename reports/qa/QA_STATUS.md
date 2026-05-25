@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-25 22:30:30 KST
+> Generated at: 2026-05-26 00:54:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 597 |
+| Total Recorded Runs | 599 |
 | Total Runs (Counted) | 472 |
-| Non-counted Runs | 125 |
+| Non-counted Runs | 127 |
 | Total Checks | 4194 |
 | Passed | 4010 |
 | Failed | 153 |
-| Completed Items | 685 |
+| Completed Items | 687 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 52 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260525-0591 (2026-05-25T04:28:13.683Z) |
-| Latest Recorded Run | QA-20260525-0599 (2026-05-25T13:30:15.211Z) |
+| Latest Recorded Run | QA-20260526-0601 (2026-05-25T15:54:39.843Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,25 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260525-0599 (2026-05-25T13:30:15.211Z)
+Latest run: QA-20260526-0601 (2026-05-25T15:54:39.843Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | Test Automation Architect | partially-appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after targeted Playwright QA; effective=16.6209 USD, billed=0.0000 USD. |
+| vercel | cli | checked | normal | Current billing period checked after v8.12.43 targeted Playwright QA; effective=16.6209 USD, billed=0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T13:30:15.211Z -> 2026-05-25T13:30:15.211Z (24h)
-- Runs with observations: 6 recorded / 2 counted
-- Samples: 13
+- Window: 2026-05-24T15:54:39.843Z -> 2026-05-25T15:54:39.843Z (24h)
+- Runs with observations: 7 recorded / 2 counted
+- Samples: 15
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -59,14 +60,14 @@ Latest run: QA-20260525-0599 (2026-05-25T13:30:15.211Z)
 | Metrics Query Agent | zai | 1 | 18141ms | 18141ms | - | - | - | - | QA-20260525-0598 |
 | Metrics Query Agent | cloud-run-ai | 3 | 6559ms | 8498ms | 284ms | 284ms | 2368ms | 2368ms | QA-20260525-0599 |
 | Server Realtime Analysis | mixed | 1 | 8456ms | 8456ms | - | - | - | - | QA-20260525-0595 |
-| Metrics Query Agent | streaming-ai | 2 | 4242ms | 5570ms | - | - | - | - | QA-20260525-0599 |
+| Metrics Query Agent | streaming-ai | 4 | 4118ms | 5570ms | 602ms | 741ms | 606ms | 747ms | QA-20260526-0601 |
 | Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | deterministic | 3 | 37ms | 60ms | - | - | 60ms | 60ms | QA-20260525-0595 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T13:30:15.211Z -> 2026-05-25T13:30:15.211Z (24h)
+- Window: 2026-05-24T15:54:39.843Z -> 2026-05-25T15:54:39.843Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 7
 - Drift rate: 0%
@@ -81,24 +82,25 @@ Latest run: QA-20260525-0599 (2026-05-25T13:30:15.211Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA a5618cd5
+- Deployment: SHA 2d5df8cb
 - Coverage Packs: ai-core, ai-advanced-surface, observability-pack
-- Covered Surfaces: Vercel production /login guest PIN flow, Vercel production /dashboard AI assistant UI, Q-NEW25 disk 90% capacity forecast wording, P8 DB vs Cache memory comparison, P9 restart-needed server wording, Q-NEW28 most efficient server wording, P11 48-hour disk-full capacity forecast wording
+- Covered Surfaces: GitLab v8.12.43 tag pipeline deploy/deploy_ai_engine/post-deploy smoke, Vercel production /api/version v8.12.43, Cloud Run AI Engine /health v8.12.43, AI sidebar P8 group compare: DB vs Cache memory, AI sidebar P12 streaming whitespace: stream/v2 visible word boundaries
 - Skipped Surfaces: standard five-question conversational pack, reporter artifact generation, vision image upload, full route/device matrix, GitHub public snapshot sync
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.12.41 deployment pipeline | [GitLab v8.12.41 deployment pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550916589) | - |
+| general | GitLab v8.12.43 deployment pipeline | [GitLab v8.12.43 deployment pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2551336942) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | Four-query Playwright UI result JSON | `reports/qa/evidence/qa-20260525-v81241-routing-recheck.json` | - |
-| playwright-network | P11 Playwright UI result JSON | `reports/qa/evidence/qa-20260525-v81241-p11-ui-recheck.json` | - |
-| playwright-screenshot | P11 capacity forecast UI screenshot | `reports/qa/evidence/qa-20260525-v81241-p11-ui-recheck.png` | - |
+| playwright-network | P8 + initial P12 Playwright UI result JSON | `reports/qa/evidence/qa-20260526-v81243-p8-p12-ui-recheck.json` | - |
+| playwright-screenshot | P8 + initial P12 Playwright UI screenshot | `reports/qa/evidence/qa-20260526-v81243-p8-p12-ui-recheck.png` | - |
+| playwright-network | P12 streaming whitespace final UI result JSON | `reports/qa/evidence/qa-20260526-v81243-p12-ui-recheck.json` | - |
+| playwright-screenshot | P12 streaming whitespace final UI screenshot | `reports/qa/evidence/qa-20260526-v81243-p12-ui-recheck.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -739,8 +741,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (completed 1회, last QA-20260421-0324)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - p11-capacity-forecast-n-hours-expression: P11: N시간 이내 디스크 포화 표현 production 라우팅 검증 (completed 2회, last QA-20260525-0598)
+- p12-streaming-delta-whitespace-production-closure: P12 streaming delta whitespace production closure (completed 1회, last QA-20260526-0601)
 - p5-session-context-follow-up: AI Assistant follow-up queries preserve previous server scope across streaming and async job paths (completed 1회, last QA-20260525-0583)
 - p8-db-vs-cache-메모리-비교-worker-request-failed-수정: P8: DB vs Cache 메모리 비교 Worker request failed 수정 (completed 1회, last QA-20260525-0593)
+- p8-group-compare-intentframe-production-closure: P8 group-compare via intentFrame production closure (completed 1회, last QA-20260526-0601)
 - p9-restart-needed-server-routing: P9: 재시작 필요 서버 조회 Metrics Query 라우팅 고정 (completed 1회, last QA-20260525-0594)
 - p9-restart-routing-production-deploy: P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증 (completed 1회, last QA-20260525-0596)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
@@ -932,6 +936,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0601 | 2026-05-25T15:54:39.843Z | targeted | no | no | v8.12.43 Vercel Playwright hotfix QA - P8 group compare and P12 streaming spaces | 6 | 2 | 0 | 0 | 0 | 0 |
+| QA-20260526-0600 | 2026-05-25T15:50:57.311Z | targeted | no | no | P12 streaming spaces fix verification — v8.12.43 | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260525-0599 | 2026-05-25T13:30:15.211Z | targeted | no | no | v8.12.41 Vercel Playwright regression recheck - recent AI routing fixes | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260525-0598 | 2026-05-25T12:37:02.779Z | targeted | no | no | v8.12.41 production deployment verification — P11 capacity forecast live closure | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0597 | 2026-05-25T11:20:49.100Z | targeted | no | no | P11 local routing regression verification — disk-full capacity forecast wording | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -950,5 +956,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0584 | 2026-05-24T15:52:12.919Z | targeted | yes | yes | v8.12.28 신규 6문항 AI 어시스턴트 평가 — 디스크필터·Advisor·팔로업·AZ비교·네트워크 | 6 | 2 | 0 | 0 | 4 | 0 |
 | QA-20260525-0583 | 2026-05-24T15:31:45.890Z | targeted | yes | yes | v8.12.28 AI Assistant contextual follow-up live QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0582 | 2026-05-24T12:29:51.034Z | targeted | no | no | 6차 AI 어시스턴트 평가 — v8.12.17~25 수정사항 검증 (Playwright MCP) | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260524-0581 | 2026-05-24T11:45:40.608Z | targeted | no | no | v8.12.25 AI Engine trend routing local regression closure | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260524-0580 | 2026-05-24T10:29:54.220Z | targeted | yes | yes | v8.12.25 AI Assistant server detail and group routing targeted QA | 2 | 6 | 0 | 0 | 0 | 0 |
