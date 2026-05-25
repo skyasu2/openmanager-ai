@@ -49,6 +49,8 @@ describe('classifyRoutingIntentWithLLM', () => {
         temperature: 0,
       })
     );
+    expect(mockGenerateObject.mock.calls[0]?.[0]).toHaveProperty('abortSignal');
+    expect(mockGenerateObject.mock.calls[0]?.[0]).not.toHaveProperty('timeout');
   });
 
   it('returns no specialist override for general labels', async () => {
@@ -69,7 +71,7 @@ describe('classifyRoutingIntentWithLLM', () => {
   it('uses an in-memory cache for repeated normalized queries', async () => {
     mockGenerateObject.mockResolvedValueOnce({
       object: {
-        agent: 'advisor',
+        agent: 'metrics_query',
         confidence: 0.84,
       },
     });
@@ -84,7 +86,7 @@ describe('classifyRoutingIntentWithLLM', () => {
     );
 
     expect(first).toEqual({
-      suggestedAgent: 'Advisor Agent',
+      suggestedAgent: 'Metrics Query Agent',
       confidence: 0.84,
     });
     expect(second).toEqual(first);

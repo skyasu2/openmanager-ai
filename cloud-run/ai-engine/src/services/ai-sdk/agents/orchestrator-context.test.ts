@@ -153,6 +153,24 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBe(0.88);
   });
 
+  it.each([
+    '재시작해야 할 서버 있어?',
+    '재시작이 필요해?',
+  ])('routes restart-needed lookup wording to Metrics Query: %s', (query) => {
+    const result = preFilterQuery(query);
+
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('Metrics Query Agent');
+    expect(result.confidence).toBe(0.88);
+  });
+
+  it('keeps restart procedure wording on Advisor routing', () => {
+    const result = preFilterQuery('서버 재시작 방법 알려줘');
+
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('Advisor Agent');
+  });
+
   it('routes topology queries to Advisor Agent with high confidence', () => {
     const result = preFilterQuery('현재 인프라 토폴로지 알려줘. 관련된 운영 가이드도 연결해줘');
     expect(result.shouldHandoff).toBe(true);

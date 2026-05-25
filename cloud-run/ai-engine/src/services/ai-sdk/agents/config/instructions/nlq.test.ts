@@ -38,6 +38,15 @@ describe('Metrics Query instruction layering', () => {
     expect(instructions).not.toContain('서버 현황 응답 필수 포맷');
   });
 
+  it('treats efficient-server wording as an ascending resource ranking', () => {
+    const instructions = getNlqInstructions('가장 효율적인 서버 알려줘');
+
+    expect(instructions).toContain('순위 조회');
+    expect(instructions).toContain('"가장 효율적인 서버"');
+    expect(instructions).toContain('sortOrder: "asc"');
+    expect(instructions).not.toContain('서버 현황 응답 필수 포맷');
+  });
+
   it('documents ranking plus trend and AZ grouping tool usage', () => {
     const instructions = getNlqInstructions('메모리 사용률 상위 3개 서버와 추세를 봐줘');
 

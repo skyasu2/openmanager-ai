@@ -45,6 +45,8 @@ describe('buildActionNeededAnswer — Q5 action-needed routing fix', () => {
     '위험도 높은 서버 순위',
     '지금 즉시 조치 필요한 서버는?',
     '조치가 필요한 서버 목록',
+    '재시작해야 할 서버 있어?',
+    '재시작이 필요한 서버 알려줘',
   ])('returns non-null for action-needed query: "%s"', (query) => {
     const result = buildActionNeededAnswer(query, criticalPayload);
     expect(result).not.toBeNull();
@@ -60,6 +62,7 @@ describe('buildActionNeededAnswer — Q5 action-needed routing fix', () => {
     'CPU 가장 높은 서버는?',
     '서버 상태 요약해줘',
     '메모리 상위 3개',
+    '서버 재시작 방법 알려줘',
   ])('returns null for non-action-needed query: "%s"', (query) => {
     const result = buildActionNeededAnswer(query, criticalPayload);
     expect(result).toBeNull();

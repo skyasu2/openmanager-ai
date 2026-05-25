@@ -514,6 +514,30 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('cpu 85%');
   });
 
+  it('builds deterministic ascending ranking for efficient-server wording', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '가장 효율적인 서버 알려줘',
+      'Metrics Query Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'api-was-dc1-01', status: 'online', cpu: 63, memory: 44, disk: 31 },
+              { id: 'web-nginx-dc1-01', status: 'online', cpu: 22, memory: 30, disk: 24 },
+              { id: 'db-mysql-dc1-primary', status: 'online', cpu: 76, memory: 70, disk: 64 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('📊 **CPU 사용률 하위 3대**');
+    expect(summary).toContain('1. web-nginx-dc1-01: CPU 22%');
+    expect(summary).toContain('2. api-was-dc1-01: CPU 63%');
+    expect(summary).toContain('3. db-mysql-dc1-primary: CPU 76%');
+  });
+
   it('builds deterministic DISK threshold ranking for analyst queries', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 18대 서버 중 DISK 사용률이 70% 이상인 서버를 모두 찾아서 위험도 순으로 정렬하고, 각 서버의 잠재적 장애 시점과 권장 조치안을 상세히 분석해줘',
@@ -1084,6 +1108,37 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).toContain('주의 관찰 대상은 1대입니다');
     expect(summary).toContain('api-was-dc1-02');
     expect(summary).not.toMatch(/즉시 조치[^\n]+없(?:습니다|음)/);
+  });
+
+  it('answers restart-needed server lookup as an action-needed metric summary', () => {
+    const summary = buildDeterministicSummaryFromCurrentState(
+      '재시작해야 할 서버 있어?',
+      'Metrics Query Agent',
+      {
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            status: 'critical',
+            cpu: 93,
+            memory: 66,
+            disk: 44,
+            network: 28,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            status: 'online',
+            cpu: 41,
+            memory: 52,
+            disk: 31,
+            network: 12,
+          },
+        ],
+      }
+    );
+
+    expect(summary).toContain('즉시 조치 대상은 1대입니다');
+    expect(summary).toContain('api-was-dc1-01');
+    expect(summary).not.toContain('service restart');
   });
 
   it('adds read-only diagnostics to action-needed answers without mutating commands', () => {

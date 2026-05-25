@@ -184,6 +184,38 @@ describe('extractQueryRoutingSignals', () => {
     expect(signals.preFilter.suggestedAgent).toBe('Metrics Query Agent');
   });
 
+  it('routes efficient-server ranking wording to Metrics Query before general fallback', () => {
+    const signals = extractQueryRoutingSignals('가장 효율적인 서버 알려줘');
+
+    expect(signals.intent).toBe('metrics');
+    expect(signals.preFilter.action).toBe('suggest_agent');
+    expect(signals.preFilter.suggestedAgent).toBe('Metrics Query Agent');
+    expect(signals.preFilter.confidence).toBe(0.88);
+  });
+
+  it.each([
+    '재시작해야 할 서버 있어?',
+    '재시작이 필요해?',
+  ])('routes restart-needed lookup wording to Metrics Query: %s', (query) => {
+    const signals = extractQueryRoutingSignals(query);
+
+    expect(signals.intent).toBe('metrics');
+    expect(signals.toolIntentCategory).toBe('metrics');
+    expect(signals.modeHint).toBe('single');
+    expect(signals.hasInfraContext).toBe(true);
+    expect(signals.reasonCodes).toContain('restart_needed_lookup');
+    expect(signals.preFilter.action).toBe('suggest_agent');
+    expect(signals.preFilter.suggestedAgent).toBe('Metrics Query Agent');
+    expect(signals.preFilter.confidence).toBe(0.88);
+  });
+
+  it('keeps restart procedure wording on Advisor guidance routing', () => {
+    const signals = extractQueryRoutingSignals('서버 재시작 방법 알려줘');
+
+    expect(signals.intent).toBe('advisor');
+    expect(signals.preFilter.suggestedAgent).toBe('Advisor Agent');
+  });
+
   it('keeps retired analysis-mode reason labels out of the routing source', () => {
     const source = readFileSync(
       new URL('./query-routing-signals.ts', import.meta.url),
