@@ -415,7 +415,10 @@ export function createPrepareStep(
       return resolvePrepareStepToolPolicy('metricRanking');
     }
 
-    if (shouldForceRealtimeMetric) {
+    if (
+      shouldForceRealtimeMetric &&
+      !shouldPreferAdvisorForOperationalAdvice(q)
+    ) {
       logger.debug('[PrepareStep] Direct realtime server metric query detected, forcing getServerMetrics');
       if (stepNumber > 0) {
         return resolvePrepareStepToolPolicy('general');
