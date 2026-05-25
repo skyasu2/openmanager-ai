@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Line guard current hotspots refactor | High | 2026-05-26 `npm run line-guard` fail 3건 재발. 기존 plan 재개: [`line-guard-current-hotspots-refactor-plan.md`](line-guard-current-hotspots-refactor-plan.md). |
+| _None_ | - | 현재 진행 중인 작업 없음. |
 
 ---
 

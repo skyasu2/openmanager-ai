@@ -17,6 +17,9 @@ import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary'
 import { logger } from '@/lib/logging';
 import type { Server } from '@/types/server';
 import { usePerformanceTracking } from '@/utils/performance';
+import { ServerDashboardDevStats } from './ServerDashboardDevStats';
+import { ServerDashboardEmptyState } from './ServerDashboardEmptyState';
+import { HexagonalHostMap } from './ServerDashboardHostMap';
 import type { DashboardTimeRange } from './types/dashboard.types';
 
 // 🚀 성능 최적화: statusPriority를 컴포넌트 외부로 이동 (매번 새로 생성 방지)
@@ -52,19 +55,6 @@ const VISUALIZATION_OPTIONS: Array<{
   { value: 'cards', label: '서버 카드', icon: LayoutGrid },
   { value: 'host-map', label: '호스트 맵', icon: Network },
 ];
-
-const HOST_MAP_STATUS_CLASSES: Record<string, string> = {
-  critical:
-    'bg-rose-50 text-rose-900 ring-rose-300 shadow-rose-100 hover:bg-rose-100',
-  warning:
-    'bg-amber-50 text-amber-900 ring-amber-300 shadow-amber-100 hover:bg-amber-100',
-  online:
-    'bg-emerald-50 text-emerald-900 ring-emerald-300 shadow-emerald-100 hover:bg-emerald-100',
-  offline:
-    'bg-slate-100 text-slate-700 ring-slate-300 shadow-slate-100 hover:bg-slate-200',
-  unknown:
-    'bg-violet-50 text-violet-900 ring-violet-300 shadow-violet-100 hover:bg-violet-100',
-};
 
 type ViewTransitionDocument = Document & {
   startViewTransition?: (callback: () => void) => unknown;
@@ -154,85 +144,6 @@ function runDashboardViewTransition(callback: () => void): void {
   }
 
   startViewTransition.call(document, callback);
-}
-
-function getHostMapNodeLabel(server: Server): string {
-  const rawName = server.name || server.id || 'host';
-  const initials = rawName
-    .split(/[-_\s.]+/)
-    .filter(Boolean)
-    .slice(0, 3)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('');
-
-  return initials || rawName.slice(0, 3).toUpperCase();
-}
-
-function HexagonalHostMap({
-  servers,
-  onSelect,
-}: {
-  servers: Server[];
-  onSelect: (server: Server) => void;
-}) {
-  return (
-    <section
-      data-testid="hexagonal-host-map"
-      aria-label="Hexagonal host map"
-      className="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
-      style={{ viewTransitionName: 'dashboard-hexagonal-host-map' }}
-    >
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-900">호스트 맵</h2>
-          <p className="text-xs text-slate-500">
-            상태와 부하를 한 화면에서 비교합니다.
-          </p>
-        </div>
-        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-          {servers.length} nodes
-        </span>
-      </div>
-
-      <div
-        data-testid="hexagonal-host-map-grid"
-        className="grid grid-cols-2 gap-x-2 gap-y-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
-      >
-        {servers.map((server, index) => {
-          const serverId = server.id || `server-${index}`;
-          const statusClass =
-            HOST_MAP_STATUS_CLASSES[server.status ?? 'unknown'] ??
-            HOST_MAP_STATUS_CLASSES.unknown;
-
-          return (
-            <button
-              key={serverId}
-              type="button"
-              data-testid={`hex-host-node-${serverId}`}
-              aria-label={`${server.name} 호스트 맵 상세 보기`}
-              onClick={() => onSelect(server)}
-              className={`group relative flex aspect-[1.15/1] min-h-20 flex-col items-center justify-center overflow-hidden px-3 py-2 text-center shadow-sm ring-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${statusClass}`}
-              style={{
-                clipPath:
-                  'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
-              }}
-            >
-              <span className="text-sm font-bold tracking-wide">
-                {getHostMapNodeLabel(server)}
-              </span>
-              <span className="mt-1 max-w-full truncate text-[11px] font-medium">
-                {server.name}
-              </span>
-              <span className="mt-1 text-[10px] tabular-nums opacity-75">
-                CPU {Math.round(server.cpu ?? 0)} · MEM{' '}
-                {Math.round(server.memory ?? 0)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
 }
 
 /**
@@ -831,34 +742,7 @@ export default function ServerDashboard({
               )}
             </div>
           ) : (
-            <div className="flex h-64 items-center justify-center">
-              <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                  <svg
-                    className="h-6 w-6 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="mb-1 text-sm font-medium text-gray-900">
-                  {isSearching ? '검색 결과 없음' : '서버 정보 없음'}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {isSearching
-                    ? '검색어를 지우거나 다른 서버 이름, ID, IP, 위치를 입력하세요.'
-                    : '표시할 서버가 없습니다.'}
-                </p>
-              </div>
-            </div>
+            <ServerDashboardEmptyState isSearching={isSearching} />
           )}
 
           {canShowMoreServers && (
@@ -898,22 +782,12 @@ export default function ServerDashboard({
         {/* 다른 탭 컨텐츠는 여기에 추가될 수 있습니다. */}
       </div>
 
-      {/* 🚀 개발 환경 전용: 성능 통계 표시 (좌측 하단 - AI 어시스턴트와 겹침 방지) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 left-4 z-40 max-w-xs rounded-lg border border-gray-300 bg-white/90 p-3 text-xs shadow-lg backdrop-blur-sm">
-          <div className="mb-2 font-medium text-gray-800">📊 성능 통계</div>
-          <div className="space-y-1 text-gray-600">
-            <div>렌더링: {performanceStats.getRenderCount()}회</div>
-            <div>
-              평균 시간: {performanceStats.getAverageRenderTime().toFixed(1)}ms
-            </div>
-            <div>서버 수: {sortedServers.length}개</div>
-            <div>
-              표시: {displayedServers.length}/{paginationInfo.totalServers}
-            </div>
-          </div>
-        </div>
-      )}
+      <ServerDashboardDevStats
+        displayedServerCount={displayedServers.length}
+        performanceStats={performanceStats}
+        sortedServerCount={sortedServers.length}
+        totalServerCount={paginationInfo.totalServers}
+      />
     </div>
   );
 }

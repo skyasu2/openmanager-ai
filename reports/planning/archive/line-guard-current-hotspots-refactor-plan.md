@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-26
 > Tags: refactor,line-guard,ai-assistant,ai-engine,hotspots
 
 # Line Guard Current Hotspots Refactor Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-11
 - TODO.md 연결: Active Tasks > Line guard current hotspots refactor
 - 기준 게이트: `npm run line-guard`
@@ -35,21 +35,50 @@ npm run line-guard (regression baseline, 2026-05-26)
 
 ### 2026-05-26 추가 Task
 
-- [ ] Task 6 — 재개 기준선 커밋
+- [x] Task 6 — 재개 기준선 커밋
   - 현재 failing gate `npm run line-guard` 결과를 계획에 기록한다.
   - 커밋 메시지: `test(spec): line guard regression baseline`
-- [ ] Task 7 — monitoring evidence provider 분리
+- [x] Task 7 — monitoring evidence provider 분리
   - current metric parser/prompt/provider 책임을 분리한다.
   - 완료 기준: `current-metrics-evidence-provider.ts < 800 lines`
-- [ ] Task 8 — monitoring evidence answer builder 분리
+- [x] Task 8 — monitoring evidence answer builder 분리
   - metric current/trend/group-health/ranking answer builder를 helper로 분리한다.
   - 완료 기준: `current-metrics-evidence-answers.ts < 800 lines`
-- [ ] Task 9 — dashboard host map/controls 분리
+- [x] Task 9 — dashboard host map/controls 분리
   - `ServerDashboard.tsx` host-map/controls/list helper를 분리한다.
   - 완료 기준: `ServerDashboard.tsx < 800 lines`
-- [ ] Task 10 — 최종 검증
+- [x] Task 10 — 최종 검증
   - `npm run line-guard` PASS
   - 관련 targeted tests와 root/AI Engine 필수 smoke PASS
+
+### 2026-05-26 완료 결과
+
+재발 fail 3건을 모두 800줄 미만으로 축소했다.
+
+```text
+npm run line-guard (final, 2026-05-26)
+  result: PASS
+  fail files: 0
+  warning files: 47
+  touched hotspots:
+    - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-provider.ts (201)
+    - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-answers.ts (794)
+    - src/components/dashboard/ServerDashboard.tsx (793)
+```
+
+검증:
+- `npm run line-guard` PASS
+- `npm run type-check` PASS
+- `npm run lint` PASS
+- `npm run test:quick` PASS
+- `npm run test:contract` PASS
+- `cd cloud-run/ai-engine && npm run type-check` PASS
+- `cd cloud-run/ai-engine && npm run test` PASS
+- `node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.dom.ts src/components/dashboard/ServerDashboard.test.tsx` PASS
+- `npm run docs:components:verify` PASS
+- `npm run docs:budget` PASS
+- `npm run docs:ai-consistency` PASS
+- `git diff --check` PASS
 
 ## 목표
 

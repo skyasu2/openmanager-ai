@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 150 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 153 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 157 |
+| Total TSX component inventory | 160 |
 
 ## App Route-Local Component Distribution
 
@@ -51,12 +51,12 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 31859 |
-| Component nodes | 150 |
-| Component edges | 149 |
-| Graph density | 0.67% |
+| Component source lines | 31892 |
+| Component nodes | 153 |
+| Component edges | 152 |
+| Graph density | 0.65% |
 | Alias edges (`@/components/*`) | 41 |
-| Relative edges (`./`, `../`) | 108 |
+| Relative edges (`./`, `../`) | 111 |
 | Isolated components | 23 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
@@ -69,7 +69,7 @@ flowchart LR
   d1["ai-sidebar (16)"]
   d2["auth (1)"]
   d3["charts (2)"]
-  d4["dashboard (35)"]
+  d4["dashboard (38)"]
   d5["emergency (1)"]
   d6["error (3)"]
   d7["home (2)"]
@@ -80,7 +80,7 @@ flowchart LR
   d12["ui (9)"]
   d13["unified-profile (3)"]
   d0 -->|45| d0
-  d4 -->|33| d4
+  d4 -->|36| d4
   d1 -->|14| d1
   d1 -->|12| d0
   d10 -->|11| d10
@@ -108,7 +108,7 @@ flowchart LR
 | Domain | Node Count |
 | --- | --- |
 | ai | 46 |
-| dashboard | 35 |
+| dashboard | 38 |
 | shared | 25 |
 | ai-sidebar | 16 |
 | ui | 9 |
@@ -127,7 +127,7 @@ flowchart LR
 | From | To | Edge Count |
 | --- | --- | --- |
 | ai | ai | 45 |
-| dashboard | dashboard | 33 |
+| dashboard | dashboard | 36 |
 | ai-sidebar | ai-sidebar | 14 |
 | ai-sidebar | ai | 12 |
 | shared | shared | 11 |
@@ -179,9 +179,9 @@ flowchart LR
 | dashboard/ServerDetailView | 6 |
 | shared/FeatureCardModal | 6 |
 | ai/domain-renderers/monitoring-artifact-renderers | 5 |
+| dashboard/ServerDashboard | 5 |
 | ai/AIWorkspaceEmbeddedLayout | 4 |
 | ai/analysis/ServerResultCard | 4 |
-| dashboard/DashboardHeader | 4 |
 
 ## Cycle Risk (SCC Top 10)
 
