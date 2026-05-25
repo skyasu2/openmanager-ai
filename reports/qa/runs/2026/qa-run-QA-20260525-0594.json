@@ -1,0 +1,104 @@
+{
+  "runId": "QA-20260525-0594",
+  "recordedAt": "2026-05-25T09:39:11.343Z",
+  "recordedAtKst": "2026-05-25 18:39:11 KST",
+  "runTitle": "Local AI routing regression validation — Q-NEW28/P9 deterministic fixes",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local",
+    "url": "",
+    "frontend": "local",
+    "backend": "ai-engine local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "4cd76767a99bc1bc44841e1e8d8d6af0925ff967"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI Engine deterministic routing: Q-NEW28 efficient-server wording",
+    "AI Engine deterministic routing: P9 restart-needed server lookup",
+    "Metrics Query deterministic summary fallback for efficient/restart-needed questions",
+    "LLM intent classifier timeout option regression guard"
+  ],
+  "skippedSurfaces": [
+    "Vercel production UI conversational QA",
+    "reporter",
+    "vision",
+    "live LLM provider calls"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Q-NEW28/P9 routing regressions were covered by deterministic unit tests, full AI Engine tests, lint, type-check, contract tests, and diff whitespace check.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "q-new28-efficient-server-routing",
+      "title": "Q-NEW28: 가장 효율적인 서버 질문 Metrics Query 라우팅 고정",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "routing/query-routing-signals.test.ts routes '가장 효율적인 서버 알려줘' to Metrics Query; orchestrator-summary-fallback.test.ts builds CPU asc deterministic ranking; AI Engine full test 143 files / 1531 tests passed.",
+      "note": "효율적인 서버 표현을 CPU 낮은 서버 asc ranking으로 해석하고, 비효율적인 서버 오탐은 제외.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "p9-restart-needed-server-routing",
+      "title": "P9: 재시작 필요 서버 조회 Metrics Query 라우팅 고정",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "routing/query-routing-signals.test.ts and orchestrator-context.test.ts route '재시작해야 할 서버 있어?' and '재시작이 필요해?' to Metrics Query; restart procedure wording remains Advisor; AI Engine full test 143 files / 1531 tests passed.",
+      "note": "실행 방법 질문과 조회 질문을 분리해 조회형 재시작 필요 여부는 action-needed metric summary로 처리.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "llm-prefilter-generateobject-timeout-regression-guard",
+      "title": "LLM pre-filter generateObject timeout 옵션 회귀 방지 테스트",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "llm-intent-classifier.test.ts asserts generateObject call has abortSignal and does not pass timeout; targeted and full AI Engine tests passed.",
+      "note": "v8.12.39 timeout:{totalMs} 핫픽스 재발 방지.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation commands passed: targeted vitest 6 files / 135 tests, cloud-run/ai-engine type-check, cloud-run/ai-engine full test 143 files / 1531 tests, npm run lint:ci, npm run test:contract, git diff --check.",
+    "This run is local deterministic validation only; production conversational QA is intentionally skipped until deployment."
+  ],
+  "links": []
+}

@@ -87,6 +87,19 @@
       "owner": "",
       "status": "completed",
       "policyNote": ""
+    },
+    {
+      "id": "llm-prefilter-timeout-hotfix",
+      "title": "LLM pre-filter timeout 파라미터 핫픽스",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "09ecb8cbd fix(ai-engine): remove non-standard timeout param from llm intent classifier; QA-20260525-0593 P8/Q-NEW25 2/2 pass",
+      "note": "v8.12.39에서 generateObject timeout:{totalMs} 제거 후 abortSignal 제어만 유지",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
     }
   ],
   "pendingImprovements": [],

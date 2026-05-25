@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-25 17:02:19 KST
+> Generated at: 2026-05-25 18:39:11 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 591 |
+| Total Recorded Runs | 592 |
 | Total Runs (Counted) | 472 |
-| Non-counted Runs | 119 |
+| Non-counted Runs | 120 |
 | Total Checks | 4194 |
 | Passed | 4010 |
 | Failed | 153 |
-| Completed Items | 677 |
-| Pending Items | 1 |
+| Completed Items | 681 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 52 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 99.85% |
+| Completion Rate | 100% |
 | Last Counted Run | QA-20260525-0591 (2026-05-25T04:28:13.683Z) |
-| Latest Recorded Run | QA-20260525-0593 (2026-05-25T08:02:14.837Z) |
+| Latest Recorded Run | QA-20260525-0594 (2026-05-25T09:39:11.343Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260525-0593 (2026-05-25T08:02:14.837Z)
+Latest run: QA-20260525-0594 (2026-05-25T09:39:11.343Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260525-0593 (2026-05-25T08:02:14.837Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T08:02:14.837Z -> 2026-05-25T08:02:14.837Z (24h)
+- Window: 2026-05-24T09:39:11.343Z -> 2026-05-25T09:39:11.343Z (24h)
 - Runs with observations: 2 recorded / 2 counted
 - Samples: 2
 
@@ -59,7 +59,7 @@ Latest run: QA-20260525-0593 (2026-05-25T08:02:14.837Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T08:02:14.837Z -> 2026-05-25T08:02:14.837Z (24h)
+- Window: 2026-05-24T09:39:11.343Z -> 2026-05-25T09:39:11.343Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 7
 - Drift rate: 0%
@@ -74,10 +74,10 @@ Latest run: QA-20260525-0593 (2026-05-25T08:02:14.837Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 9acfb525
+- Deployment: SHA 4cd76767
 - Coverage Packs: ai-core
-- Covered Surfaces: /dashboard AI 어시스턴트, P8 회귀: DB vs Cache 메모리 비교 재검증, Q-NEW25: 디스크 capacity forecast 재검증
-- Skipped Surfaces: reporter, vision, anomaly detection
+- Covered Surfaces: AI Engine deterministic routing: Q-NEW28 efficient-server wording, AI Engine deterministic routing: P9 restart-needed server lookup, Metrics Query deterministic summary fallback for efficient/restart-needed questions, LLM intent classifier timeout option regression guard
+- Skipped Surfaces: Vercel production UI conversational QA, reporter, vision, live LLM provider calls
 
 ## Links (Latest Run)
 
@@ -89,8 +89,7 @@ Latest run: QA-20260525-0593 (2026-05-25T08:02:14.837Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | page-2026-05-25T08-00-45-870Z.png | `.playwright-mcp/screenshots/page-2026-05-25T08-00-45-870Z.png` | - |
-| playwright-screenshot | page-2026-05-25T08-01-26-779Z.png | `.playwright-mcp/screenshots/page-2026-05-25T08-01-26-779Z.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -98,7 +97,7 @@ Latest run: QA-20260525-0593 (2026-05-25T08:02:14.837Z)
 
 ## Pending Improvements
 
-- [P1] llm-prefilter-timeout-hotfix: LLM pre-filter timeout 파라미터 핫픽스 (seen 1회, last QA-20260525-0592)
+- None
 
 ## Deferred Improvements
 
@@ -702,6 +701,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - live-supabase-krl-smoke-after-rpc-cleanup: Verify Knowledge Retrieval Lite still works after DB cleanup (completed 1회, last QA-20260510-0448)
 - live-supabase-legacy-rag-rpc-cleanup-applied: Apply legacy vector/graph RAG RPC cleanup to Supabase production (completed 1회, last QA-20260510-0448)
 - live-supabase-post-check-legacy-rpc-removed: Verify legacy vector/graph RAG RPCs are removed while KRL RPC remains (completed 1회, last QA-20260510-0448)
+- llm-prefilter-generateobject-timeout-regression-guard: LLM pre-filter generateObject timeout 옵션 회귀 방지 테스트 (completed 1회, last QA-20260525-0594)
+- llm-prefilter-timeout-hotfix: LLM pre-filter timeout 파라미터 핫픽스 (completed 1회, last QA-20260525-0593)
 - log-explorer-modal: 로그 탐색기 모달 (completed 1회, last QA-20260317-0114)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-custom-cursor-scope-no-leak: Custom cursor scope does not leak into login page (completed 1회, last QA-20260518-0514)
@@ -730,6 +731,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - p5-session-context-follow-up: AI Assistant follow-up queries preserve previous server scope across streaming and async job paths (completed 1회, last QA-20260525-0583)
 - p8-db-vs-cache-메모리-비교-worker-request-failed-수정: P8: DB vs Cache 메모리 비교 Worker request failed 수정 (completed 1회, last QA-20260525-0593)
+- p9-restart-needed-server-routing: P9: 재시작 필요 서버 조회 Metrics Query 라우팅 고정 (completed 1회, last QA-20260525-0594)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
 - planner-shadow-latency-precision: plannerShadow latency metadata no longer collapses to 0ms for fast production shadow decisions (completed 1회, last QA-20260504-0405)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
@@ -768,6 +770,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - q-new24-peak-metric-쿼리-정상-동작-확인: Q-NEW24 peak-metric 쿼리 정상 동작 확인 (completed 1회, last QA-20260525-0592)
 - q-new25-capacity-forecast-쿼리-worker-request-failed-수정: Q-NEW25: capacity forecast 쿼리 Worker request failed 수정 (completed 1회, last QA-20260525-0593)
 - q-new27-threshold-필터-정확도-확인: Q-NEW27 threshold 필터 정확도 확인 (completed 1회, last QA-20260525-0592)
+- q-new28-efficient-server-routing: Q-NEW28: 가장 효율적인 서버 질문 Metrics Query 라우팅 고정 (completed 1회, last QA-20260525-0594)
 - q-new7-disk-threshold: 디스크 60% 초과 서버 목록 — PASS (completed 1회, last QA-20260525-0584)
 - q-new9-cpu-ranking: CPU 상위 3대 랭킹 — PASS (completed 1회, last QA-20260525-0584)
 - q5-action-needed-risky-wording-route: 위험 서버 질의 ACTION_NEEDED_PATTERN 라우팅 보강 (completed 1회, last QA-20260524-0579)
@@ -916,7 +919,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
-| QA-20260525-0593 | 2026-05-25T08:02:14.837Z | targeted | no | no | v8.12.39 핫픽스 검증 — P8/Q-NEW25 LLM pre-filter 회귀 수정 확인 | 2 | 2 | 0 | 0 | 0 | 0 |
+| QA-20260525-0594 | 2026-05-25T09:39:11.343Z | targeted | no | no | Local AI routing regression validation — Q-NEW28/P9 deterministic fixes | 6 | 3 | 0 | 0 | 0 | 0 |
+| QA-20260525-0593 | 2026-05-25T08:02:14.837Z | targeted | no | no | v8.12.39 핫픽스 검증 — P8/Q-NEW25 LLM pre-filter 회귀 수정 확인 | 2 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260525-0592 | 2026-05-25T07:46:05.844Z | targeted | no | no | 10차 AI 어시스턴트 평가 — LLM pre-filter v8.12.38 신규질문·회귀 검증 | 7 | 2 | 1 | 0 | 1 | 1 |
 | QA-20260525-0591 | 2026-05-25T04:28:13.683Z | targeted | yes | yes | v8.12.37 Production QA - Q-NEW13 Advisor evidence closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0590 | 2026-05-25T03:57:03.861Z | targeted | yes | yes | v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check | 4 | 0 | 1 | 0 | 0 | 1 |
@@ -935,4 +939,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260524-0577 | 2026-05-24T05:05:22.864Z | targeted | no | yes | v8.12.19 Playwright MCP QA — P1~P4 routing fix regression + portfolio | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260524-0576 | 2026-05-24T02:47:28.531Z | targeted | yes | yes | v8.12.19 production targeted QA - healthy filter closure | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0575 | 2026-05-24T02:26:16.493Z | targeted | yes | yes | v8.12.18 production targeted QA - healthy filter recheck | 1 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260524-0574 | 2026-05-24T02:01:17.511Z | targeted | yes | yes | Cloud Run 94ce8471b production targeted QA - AI routing closure check | 3 | 2 | 1 | 0 | 0 | 2 |
