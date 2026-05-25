@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T00:41:31.507Z"
+    "updatedAt": "2026-05-25T01:11:32.229Z"
   },
   "sequence": {
-    "nextRunNumber": 588
+    "nextRunNumber": 589
   },
   "summary": {
-    "totalRecordedRuns": 585,
-    "totalRuns": 468,
+    "totalRecordedRuns": 586,
+    "totalRuns": 469,
     "excludedRuns": 117,
-    "totalChecks": 4173,
-    "totalPassed": 3994,
+    "totalChecks": 4179,
+    "totalPassed": 3997,
     "totalFailed": 152,
     "completionRate": 100,
     "completedItems": 669,
@@ -21,10 +21,10 @@
     "wontFixItems": 50,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260525-0587",
-    "lastRecordedAt": "2026-05-25T00:41:31.507Z",
-    "latestRecordedRunId": "QA-20260525-0587",
-    "latestRecordedAt": "2026-05-25T00:41:31.507Z"
+    "lastRunId": "QA-20260525-0588",
+    "lastRecordedAt": "2026-05-25T01:11:32.229Z",
+    "latestRecordedRunId": "QA-20260525-0588",
+    "latestRecordedAt": "2026-05-25T01:11:32.229Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -68902,6 +68902,57 @@
       "expertCount": 3,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0588",
+      "recordedAt": "2026-05-25T01:11:32.229Z",
+      "recordedAtKst": "2026-05-25 10:11:32 KST",
+      "title": "v8.12.29 8차 AI 어시스턴트 평가 — storage/메모리랭킹/AZ비교/단일서버추세/대명사follow-up",
+      "owner": "claude",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0588.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "1f392682b"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI sidebar - Advisor routing (Q-NEW13)",
+        "AI sidebar - storage metric-current (Q-NEW14)",
+        "AI sidebar - memory metric-ranking top5 (Q-NEW15)",
+        "AI sidebar - AZ location-load-balance (Q-NEW16)",
+        "AI sidebar - single server 24h trend (Q-NEW17)",
+        "AI sidebar - pronoun follow-up (Q-NEW18)"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 6,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

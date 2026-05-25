@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-25 09:41:34 KST
+> Generated at: 2026-05-25 10:11:33 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 585 |
-| Total Runs (Counted) | 468 |
+| Total Recorded Runs | 586 |
+| Total Runs (Counted) | 469 |
 | Non-counted Runs | 117 |
-| Total Checks | 4173 |
-| Passed | 3994 |
+| Total Checks | 4179 |
+| Passed | 3997 |
 | Failed | 152 |
 | Completed Items | 669 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260525-0587 (2026-05-25T00:41:31.507Z) |
-| Latest Recorded Run | QA-20260525-0587 (2026-05-25T00:41:31.507Z) |
+| Last Counted Run | QA-20260525-0588 (2026-05-25T01:11:32.229Z) |
+| Latest Recorded Run | QA-20260525-0588 (2026-05-25T01:11:32.229Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260525-0587 (2026-05-25T00:41:31.507Z)
+Latest run: QA-20260525-0588 (2026-05-25T01:11:32.229Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-25T00:40:13Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T00:41:31.507Z -> 2026-05-25T00:41:31.507Z (24h)
+- Window: 2026-05-24T01:11:32.229Z -> 2026-05-25T01:11:32.229Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 6
 
@@ -63,7 +61,7 @@ Latest run: QA-20260525-0587 (2026-05-25T00:41:31.507Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T00:41:31.507Z -> 2026-05-25T00:41:31.507Z (24h)
+- Window: 2026-05-24T01:11:32.229Z -> 2026-05-25T01:11:32.229Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 9
 - Drift rate: 11.11%
@@ -76,28 +74,24 @@ Latest run: QA-20260525-0587 (2026-05-25T00:41:31.507Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_7Wbtupu75cp3QzUM6QoY2h4kLp4k / SHA f194ec74
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: /, /dashboard, AI sidebar conversational query, Q-NEW13 fix verification: 'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘' displays Advisor Agent command evidence, Cloud Run ai-engine health and protected /monitoring endpoint, Vercel production version and deployment alias
-- Skipped Surfaces: full standard five-question conversational AI QA, vision agent, reporter/analyst tabs, core route broad smoke, Cloud Run admin /monitoring authenticated data view
+- Deployment: SHA 1f392682
+- Coverage Packs: ai-core
+- Covered Surfaces: AI sidebar - Advisor routing (Q-NEW13), AI sidebar - storage metric-current (Q-NEW14), AI sidebar - memory metric-ranking top5 (Q-NEW15), AI sidebar - AZ location-load-balance (Q-NEW16), AI sidebar - single server 24h trend (Q-NEW17), AI sidebar - pronoun follow-up (Q-NEW18)
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run ai-engine | [Cloud Run ai-engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| general | GitLab Pipeline v8.12.33 | [GitLab Pipeline v8.12.33](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549850530) | - |
-| general | GitLab Pipeline v8.12.34 | [GitLab Pipeline v8.12.34](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549885486) | - |
-| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel Deployment v8.12.34 | [Vercel Deployment v8.12.34](https://openmanager-cigd3x1r7-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Q-NEW13 advisor command evidence pass | `reports/qa/evidence/2026/qa-20260525-0587/qa-20260525-q-new13-v81234-advisor-pass.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -911,6 +905,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260525-0588 | 2026-05-25T01:11:32.229Z | targeted | no | yes | v8.12.29 8차 AI 어시스턴트 평가 — storage/메모리랭킹/AZ비교/단일서버추세/대명사follow-up | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260525-0587 | 2026-05-25T00:41:31.507Z | targeted | yes | yes | Q-NEW13 Production QA - Advisor Command Evidence | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0586 | 2026-05-24T22:51:39.888Z | targeted | yes | yes | Q-NEW17 Production QA - Generic Metric Trend Routing | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0585 | 2026-05-24T21:25:11.046Z | targeted | yes | yes | v8.12.30 Q-NEW18 pronoun follow-up targeted production QA | 2 | 1 | 0 | 0 | 0 | 0 |
@@ -930,4 +925,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260523-0571 | 2026-05-23T14:54:43.243Z | targeted | yes | yes | QA-20260523-0571 v8.12.16 focused Vercel QA - MCP transport, multi-metric, threshold, artifact envelope | 9 | 4 | 0 | 0 | 1 | 1 |
 | QA-20260523-0570 | 2026-05-23T11:30:48.477Z | targeted | yes | yes | v8.12.16 focused Vercel production QA - embedded tab copy, artifact envelope, DB threshold | 6 | 4 | 0 | 0 | 0 | 1 |
 | QA-20260523-0569 | 2026-05-23T10:19:45.964Z | targeted | yes | yes | v8.12.15 focused Vercel production QA - quick-start, artifact envelope, DB threshold | 7 | 3 | 0 | 0 | 1 | 2 |
-| QA-20260523-0568 | 2026-05-23T08:57:58.383Z | targeted | yes | yes | v8.12.14 신규 7문항 평가 - 임계값픽스재검증·스토리지·LB그룹·CPU+디스크AND·디스크랭킹·CPU트렌드·Reporter | 7 | 4 | 0 | 0 | 1 | 0 |
