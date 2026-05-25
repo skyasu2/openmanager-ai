@@ -10,6 +10,9 @@ import { describe, expect, it } from 'vitest';
 const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 
 describe('canonical deploy policy', () => {
+  const degradedSingleDefaultEnv =
+    'ALLOW_DEGRADED_SINGLE=$' + '{ALLOW_DEGRADED_SINGLE:-false}';
+
   it('does not expose local Vercel production fallback scripts', () => {
     const packageJson = JSON.parse(
       readFileSync(join(REPO_ROOT, 'package.json'), 'utf8')
@@ -41,9 +44,7 @@ describe('canonical deploy policy', () => {
       'utf8'
     );
 
-    expect(deployScript).toContain(
-      'ALLOW_DEGRADED_SINGLE=${ALLOW_DEGRADED_SINGLE:-false}'
-    );
+    expect(deployScript).toContain(degradedSingleDefaultEnv);
     expect(deployScript).not.toContain('ALLOW_DEGRADED_SINGLE=true');
   });
 });
