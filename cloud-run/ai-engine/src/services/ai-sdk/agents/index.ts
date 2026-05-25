@@ -45,6 +45,7 @@ export {
   executeMultiAgentStream,
   getRecentHandoffs,
   preFilterQuery,
+  preFilterQueryWithLLM,
   resolveRAGSetting,
   shouldEnableWebSearch,
   resolveWebSearchSetting,

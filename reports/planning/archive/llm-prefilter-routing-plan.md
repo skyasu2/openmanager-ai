@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-25
 > Tags: ai-engine,routing,prefilter,groq,ai-sdk
 
 # LLM-backed Pre-filter Routing Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-25
 - TODO.md 연결: Active Tasks > LLM-backed pre-filter routing
 
@@ -70,20 +70,20 @@ preFilterQueryWithLLM(query)   # async wrapper
 
 ## 테스트 시나리오
 
-- [ ] confidence `>= 0.75` deterministic result는 LLM을 호출하지 않고 그대로 반환한다.
-- [ ] unknown/continue deterministic result에서 LLM `metrics_query` confidence `0.9`가 `Metrics Query Agent`로 승격된다.
-- [ ] LLM confidence `0.6`은 deterministic fallback을 유지한다.
-- [ ] LLM timeout/error는 deterministic fallback을 유지한다.
-- [ ] 동일 query/context는 cache hit 시 LLM을 재호출하지 않는다.
-- [ ] execution path는 async wrapper 결과를 `resolveDirectRoutingTarget()`에 전달한다.
-- [ ] stream path는 async wrapper 결과를 `resolveDirectRoutingTarget()`에 전달한다.
+- [x] confidence `>= 0.75` deterministic result는 LLM을 호출하지 않고 그대로 반환한다.
+- [x] unknown/continue deterministic result에서 LLM `metrics_query` confidence `0.9`가 `Metrics Query Agent`로 승격된다.
+- [x] LLM confidence `0.6`은 deterministic fallback을 유지한다.
+- [x] LLM timeout/error는 deterministic fallback을 유지한다.
+- [x] 동일 query/context는 cache hit 시 LLM을 재호출하지 않는다.
+- [x] execution path는 async wrapper 결과를 `resolveDirectRoutingTarget()`에 전달한다.
+- [x] stream path는 async wrapper 결과를 `resolveDirectRoutingTarget()`에 전달한다.
 
 ## Task 목록
 
-- [ ] Task 0 — failing specs 작성
-- [ ] Task 1 — classifier + LRU/timeout 구현
-- [ ] Task 2 — orchestrator wrapper와 execution/stream wiring
-- [ ] Task 3 — targeted validation 및 문서 상태 갱신
+- [x] Task 0 — failing specs 작성
+- [x] Task 1 — classifier + LRU/timeout 구현
+- [x] Task 2 — orchestrator wrapper와 execution/stream wiring
+- [x] Task 3 — targeted validation 및 문서 상태 갱신
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -95,7 +95,20 @@ preFilterQueryWithLLM(query)   # async wrapper
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `cd cloud-run/ai-engine && npm run type-check` 통과
-- [ ] targeted vitest 통과
-- [ ] 변경이 live LLM 호출 없이 deterministic test로 검증됨
+- [x] 테스트 시나리오 전체 통과
+- [x] `cd cloud-run/ai-engine && npm run type-check` 통과
+- [x] targeted vitest 통과
+- [x] 변경이 live LLM 호출 없이 deterministic test로 검증됨
+
+## 검증 결과
+
+- `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/routing/llm-intent-classifier.test.ts src/services/ai-sdk/agents/orchestrator-context.test.ts src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts` — 40 tests passed
+- `cd cloud-run/ai-engine && npm run type-check` — passed
+- `cd cloud-run/ai-engine && npm run test` — 143 files / 1508 tests passed
+
+## 완료 메모
+
+- `preFilterQuery()` sync 계약은 유지했다.
+- `preFilterQueryWithLLM()` async wrapper가 confidence 낮은 handoff만 Groq structured classifier로 보강한다.
+- LLM classifier는 AI SDK v6 `generateObject`, Zod schema, 2초 timeout, 5분/200-entry LRU cache를 사용한다.
+- execution/stream direct routing은 wrapper 결과를 기존 `resolveDirectRoutingTarget()`에 전달한다.

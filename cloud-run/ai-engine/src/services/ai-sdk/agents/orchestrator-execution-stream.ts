@@ -8,7 +8,7 @@ import {
   type MultiAgentRequest,
 } from './orchestrator-types';
 import { resolveRAGSetting, resolveWebSearchSetting } from './orchestrator-web-search';
-import { preFilterQuery } from './orchestrator-context';
+import { preFilterQueryWithLLM } from './orchestrator-context';
 import { extractQueryRoutingSignals } from '../routing/query-routing-signals';
 import {
   attachAgentDecision,
@@ -79,7 +79,7 @@ export async function* executeMultiAgentStream(
   logger.debug(`[Stream Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
   const contextSummary = await getContextSummary(request.sessionId);
 
-  const preFilterResult = preFilterQuery(query, {
+  const preFilterResult = await preFilterQueryWithLLM(query, {
     hasImageAttachments: !!(request.images && request.images.length > 0),
     hasFileAttachments: !!(request.files && request.files.length > 0),
   });

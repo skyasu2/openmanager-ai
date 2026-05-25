@@ -41,6 +41,7 @@ export {
 // Context & Pre-filter
 export {
   preFilterQuery,
+  preFilterQueryWithLLM,
   saveAgentFindingsToContext,
 } from './orchestrator-context';
 

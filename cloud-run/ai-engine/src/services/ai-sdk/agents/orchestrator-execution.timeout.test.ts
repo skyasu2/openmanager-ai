@@ -46,6 +46,11 @@ vi.mock('./orchestrator-context', () => ({
     suggestedAgent: 'Reporter Agent',
     confidence: 0.68,
   })),
+  preFilterQueryWithLLM: vi.fn(() => ({
+    shouldHandoff: true,
+    suggestedAgent: 'Reporter Agent',
+    confidence: 0.68,
+  })),
   saveAgentFindingsToContext: vi.fn(async () => undefined),
 }));
 
@@ -214,7 +219,7 @@ describe('executeMultiAgent direct routing contract', () => {
 
   it('uses vision fallback helper for direct Vision Agent routing', async () => {
     const contextModule = await import('./orchestrator-context');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Vision Agent',
       confidence: 0.7,
@@ -271,7 +276,7 @@ describe('executeMultiAgent direct routing contract', () => {
     const contextModule = await import('./orchestrator-context');
     const routingModule = await import('./orchestrator-routing');
 
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Vision Agent',
       confidence: 0.9,
@@ -320,7 +325,7 @@ describe('executeMultiAgent direct routing contract', () => {
     const contextModule = await import('./orchestrator-context');
     const routingModule = await import('./orchestrator-routing');
 
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Vision Agent',
       confidence: 0.7,
@@ -369,7 +374,7 @@ describe('executeMultiAgent direct routing contract', () => {
 
   it('adds routingDecisionTrace to forced stream done metadata', async () => {
     const contextModule = await import('./orchestrator-context');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Reporter Agent',
       confidence: 0.9,
@@ -405,7 +410,7 @@ describe('executeMultiAgent direct routing contract', () => {
 
   it('adds deterministic fallback routingDecisionTrace to stream done metadata', async () => {
     const contextModule = await import('./orchestrator-context');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       confidence: 0.5,
     });
@@ -442,7 +447,7 @@ describe('executeMultiAgent direct routing contract', () => {
 
   it('records pre-filter forced routing source without calling LLM routing', async () => {
     const contextModule = await import('./orchestrator-context');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Reporter Agent',
       confidence: 0.9,
@@ -486,7 +491,7 @@ describe('executeMultiAgent direct routing contract', () => {
   it('runs high-confidence non-stream forced routing before task decomposition', async () => {
     const contextModule = await import('./orchestrator-context');
     const decompositionModule = await import('./orchestrator-decomposition');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Reporter Agent',
       confidence: 0.9,
@@ -525,7 +530,7 @@ describe('executeMultiAgent direct routing contract', () => {
   it('runs high-confidence stream forced routing before task decomposition', async () => {
     const contextModule = await import('./orchestrator-context');
     const decompositionModule = await import('./orchestrator-decomposition');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Reporter Agent',
       confidence: 0.9,
@@ -548,7 +553,7 @@ describe('executeMultiAgent direct routing contract', () => {
   it('uses low-confidence suggested agent directly without decomposition or LLM routing', async () => {
     const contextModule = await import('./orchestrator-context');
     const decompositionModule = await import('./orchestrator-decomposition');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Reporter Agent',
       confidence: 0.68,
@@ -604,7 +609,7 @@ describe('executeMultiAgent direct routing contract', () => {
   it('direct-routes low-confidence non-stream suggestions without Orchestrator LLM or decomposition', async () => {
     const contextModule = await import('./orchestrator-context');
     const decompositionModule = await import('./orchestrator-decomposition');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Reporter Agent',
       confidence: 0.68,
@@ -667,7 +672,7 @@ describe('executeMultiAgent direct routing contract', () => {
   it('direct-routes low-confidence stream suggestions without Orchestrator LLM or decomposition', async () => {
     const contextModule = await import('./orchestrator-context');
     const decompositionModule = await import('./orchestrator-decomposition');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       suggestedAgent: 'Advisor Agent',
       confidence: 0.68,
@@ -703,7 +708,7 @@ describe('executeMultiAgent direct routing contract', () => {
   it('falls back to Metrics Query Agent when direct routing has no suggested agent', async () => {
     const contextModule = await import('./orchestrator-context');
     const decompositionModule = await import('./orchestrator-decomposition');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       confidence: 0.5,
     });
@@ -759,7 +764,7 @@ describe('executeMultiAgent direct routing contract', () => {
 
   it('records deterministic fallback source when pre-filter is not decisive', async () => {
     const contextModule = await import('./orchestrator-context');
-    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
       shouldHandoff: true,
       confidence: 0.5,
     });

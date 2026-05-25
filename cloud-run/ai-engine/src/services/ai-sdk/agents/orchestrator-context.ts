@@ -34,6 +34,7 @@ import {
   extractQueryRoutingSignals,
 } from '../routing/query-routing-signals';
 import { createRoutingDecisionTrace } from '../routing/routing-decision-trace';
+import { classifyRoutingIntentWithLLM } from '../routing/llm-intent-classifier';
 import { buildServiceCommandGuidanceAnswer } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 
 // ============================================================================
@@ -378,6 +379,8 @@ export interface PreFilterContext {
   hasFileAttachments?: boolean;
 }
 
+const LLM_PREFILTER_CONFIDENCE_THRESHOLD = 0.75;
+
 export function preFilterQuery(
   query: string,
   context: PreFilterContext = {},
@@ -583,5 +586,41 @@ export function preFilterQuery(
   return {
     shouldHandoff: true,
     confidence: 0.5,
+  };
+}
+
+function shouldTryLLMPreFilter(preFilterResult: PreFilterResult): boolean {
+  if (!preFilterResult.shouldHandoff || preFilterResult.directResponse) {
+    return false;
+  }
+
+  return (
+    preFilterResult.confidence < LLM_PREFILTER_CONFIDENCE_THRESHOLD ||
+    !preFilterResult.suggestedAgent
+  );
+}
+
+export async function preFilterQueryWithLLM(
+  query: string,
+  context: PreFilterContext = {},
+): Promise<PreFilterResult> {
+  const deterministicResult = preFilterQuery(query, context);
+  if (!shouldTryLLMPreFilter(deterministicResult)) {
+    return deterministicResult;
+  }
+
+  const llmResult = await classifyRoutingIntentWithLLM(query);
+  if (
+    !llmResult ||
+    !llmResult.suggestedAgent ||
+    llmResult.confidence < LLM_PREFILTER_CONFIDENCE_THRESHOLD
+  ) {
+    return deterministicResult;
+  }
+
+  return {
+    shouldHandoff: true,
+    suggestedAgent: llmResult.suggestedAgent,
+    confidence: llmResult.confidence,
   };
 }
