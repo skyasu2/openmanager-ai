@@ -1,0 +1,115 @@
+{
+  "runId": "QA-20260526-0604",
+  "recordedAt": "2026-05-25T17:08:49.837Z",
+  "recordedAtKst": "2026-05-26 02:08:49 KST",
+  "runTitle": "WONT-FIX → completed 복구: 수정 커밋 확인된 5개 항목",
+  "owner": "claude",
+  "source": "code-analysis",
+  "environment": {
+    "target": "git-history",
+    "url": "",
+    "frontend": "",
+    "backend": "",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "30e5557c3"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "AI artifact card rendering",
+    "Planner shadow drift",
+    "Capacity forecast routing",
+    "Streaming UI S1-S3",
+    "AI sidebar visibility"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "anomaly-artifact-card-missing",
+      "title": "이상감지 분석 아티팩트 카드 미렌더링",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "commit a135324c7 (2026-05-23 18:11) fix(ui): pass artifactEnvelopes through message transform. WONT-FIX 분류(08:57) 이후 당일 수정 완료.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "planner-shadow-local-decision-drift",
+      "title": "Planner shadow local_decision_missing drift",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "commit b1aaa845e (2026-05-22 22:34) fix(ai): resolve planner shadow local_decision_missing via post-execution refinement. WONT-FIX 분류(00:09) 이후 당일 수정.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "capacity-forecast-evidence-routing",
+      "title": "monitoringCapacityForecastEvidenceProvider 라우팅 미트리거",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "commits f8be81c03 (10:00), a125e5679 (14:36), a3be0df2f (17:09) — 모두 2026-05-22. WONT-FIX 분류(02:32) 이후 당일 3회 수정.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-streaming-ui-improvement-s1-s3",
+      "title": "AI streaming UI improvements S1-S3",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "commit 3a2e5cbff (2026-05-03 23:23) docs(qa): record streaming ui s3 release qa. S1/S2/S3 모두 2026-05-03 완료. WONT-FIX 분류(06:27) 이후 당일 S3까지 전 구간 완료 QA 기록.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-sidebar-answer-details-default-visibility",
+      "title": "AI sidebar actionable details inline visibility",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "commits 620ba7f79, 7c9248ec6 (2026-05-21) feat: ai sidebar color system + residual ux implement to pass specs. WONT-FIX(2026-04-29) 이후 사이드바 UX 전면 개선 완료.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "코드 커밋 히스토리(git log) 교차 분석으로 확인. WONT-FIX 분류 직후 수정 커밋이 존재하는 항목을 completed로 복구.",
+    "실제 Playwright 재검증은 수행하지 않았으나, 각 수정 커밋은 test(spec): 선행 커밋 + feat/fix 커밋 쌍으로 SDD 게이트를 통과함."
+  ],
+  "links": []
+}
