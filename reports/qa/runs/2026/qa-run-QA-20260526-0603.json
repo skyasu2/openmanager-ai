@@ -1,0 +1,172 @@
+{
+  "runId": "QA-20260526-0603",
+  "recordedAt": "2026-05-25T16:49:56.870Z",
+  "recordedAtKst": "2026-05-26 01:49:56 KST",
+  "runTitle": "WONT-FIX cleanup - retire no-action policy and tooling items",
+  "owner": "codex",
+  "source": "qa-metadata-audit",
+  "environment": {
+    "target": "local-qa-metadata",
+    "url": "",
+    "frontend": "",
+    "backend": "",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "8bbe56e17b678e3a9fbdc22f4fdab48529c9af49"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "QA tracker accepted no-fix cleanup",
+    "Platform constraint classification",
+    "Free Tier tradeoff classification",
+    "Historical/legacy route classification",
+    "Developer tooling and provider-candidate cleanup"
+  ],
+  "skippedSurfaces": [
+    "Live Vercel Playwright product rerun",
+    "Fixable AI routing and answer-quality WONT-FIX items"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-server-timing-header-production",
+      "title": "Retire Server-Timing production visibility as platform constraint",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Vercel production drops Server-Timing on stream/proxy routes; X-AI-Latency-Ms and X-AI-Processing-Ms are the documented QA SSOT.",
+      "note": "No product code improvement needed; closed as accepted platform boundary.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-cold-start-latency",
+      "title": "Retire Cloud Run cold-start optimization as Free Tier tradeoff",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run production shape remains Free Tier aligned; min-instances/always-on keepalive is not an approved improvement path.",
+      "note": "No infrastructure upgrade or cost-increasing fix planned under current policy.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "cloud-run-cold-start-latency",
+      "title": "Retire excessive cold-start wait as Free Tier tradeoff",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Issue requires min-instances/keepalive style mitigation to remove cold start; that conflicts with the current Free Tier operating shape.",
+      "note": "Keep retry/fallback UX within existing architecture; do not track as active improvement.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "streaming-ai-fallback-cold-start",
+      "title": "Retire streaming fallback cold-start case as Free Tier tradeoff",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Failure mode is tied to Cloud Run cold start and fallback path timing; resource-level mitigation is intentionally out of scope.",
+      "note": "No separate active improvement remains after Free Tier tradeoff acceptance.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "vision-legacy-json-route-fallback",
+      "title": "Retire legacy JSON supervisor image fallback investigation",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Legacy JSON image POST path is not the current primary AI product surface.",
+      "note": "Reopen only if the authenticated frontend image-upload flow becomes a release-facing surface.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-provider-copy-policy-drift",
+      "title": "Retire historical AI provider copy drift observation",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Historical provider/copy drift is not an active runtime defect and is superseded by current QA/product state tracking.",
+      "note": "Copy can be adjusted with future content work, but it is not tracked as an active improvement.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "obs-fp-fn-weekly-report",
+      "title": "Retire weekly false-positive/false-negative report automation",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Weekly precision/recall reporting is an operations process automation item outside the portfolio demo scope.",
+      "note": "No current product improvement needed.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "playwright-mcp-native-session-reload",
+      "title": "Retire current-session native Playwright MCP reload issue",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "This is a Codex session/tool reload condition, not product runtime behavior; HTTP JSON-RPC probe was green.",
+      "note": "Resolve by starting a fresh tool session if needed, not by changing product code.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "nlq-provider-ministral3b-candidate-v811157",
+      "title": "Retire Mistral ministral-3b provider candidate evaluation",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Candidate evaluation is a low-priority provider decision, not a product defect; current routing stack remains stable.",
+      "note": "Reopen only if provider cost/latency policy changes.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "No-action cleanup result: 9 accepted no-fix items were closed because they are platform/free-tier/history/tooling/provider-candidate records, not product improvements to pursue.",
+    "Fixable AI routing, evidence, response-quality, and UI consistency items remain in WONT-FIX for later explicit promotion or continued acceptance."
+  ],
+  "links": []
+}

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 01:29:05 KST
+> Generated at: 2026-05-26 01:49:57 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 600 |
+| Total Recorded Runs | 601 |
 | Total Runs (Counted) | 472 |
-| Non-counted Runs | 128 |
+| Non-counted Runs | 129 |
 | Total Checks | 4194 |
 | Passed | 4010 |
 | Failed | 153 |
-| Completed Items | 694 |
+| Completed Items | 703 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 45 |
+| Wont-Fix Items | 36 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260525-0591 (2026-05-25T04:28:13.683Z) |
-| Latest Recorded Run | QA-20260526-0602 (2026-05-25T16:29:04.864Z) |
+| Latest Recorded Run | QA-20260526-0603 (2026-05-25T16:49:56.870Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0602 (2026-05-25T16:29:04.864Z)
+Latest run: QA-20260526-0603 (2026-05-25T16:49:56.870Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260526-0602 (2026-05-25T16:29:04.864Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T16:29:04.864Z -> 2026-05-25T16:29:04.864Z (24h)
+- Window: 2026-05-24T16:49:56.870Z -> 2026-05-25T16:49:56.870Z (24h)
 - Runs with observations: 7 recorded / 2 counted
 - Samples: 15
 
@@ -65,7 +65,7 @@ Latest run: QA-20260526-0602 (2026-05-25T16:29:04.864Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T16:29:04.864Z -> 2026-05-25T16:29:04.864Z (24h)
+- Window: 2026-05-24T16:49:56.870Z -> 2026-05-25T16:49:56.870Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 7
 - Drift rate: 0%
@@ -80,10 +80,10 @@ Latest run: QA-20260526-0602 (2026-05-25T16:29:04.864Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA d702e569
+- Deployment: SHA 8bbe56e1
 - Coverage Packs: observability-pack
-- Covered Surfaces: QA tracker WONT-FIX semantic cleanup, Root local validation gates, AI Engine local validation gates, v8.12.43 deployment evidence from QA-20260526-0601
-- Skipped Surfaces: Live Vercel Playwright product rerun, Remaining portfolio WONT-FIX product-quality items
+- Covered Surfaces: QA tracker accepted no-fix cleanup, Platform constraint classification, Free Tier tradeoff classification, Historical/legacy route classification, Developer tooling and provider-candidate cleanup
+- Skipped Surfaces: Live Vercel Playwright product rerun, Fixable AI routing and answer-quality WONT-FIX items
 
 ## Links (Latest Run)
 
@@ -111,34 +111,7 @@ Latest run: QA-20260526-0602 (2026-05-25T16:29:04.864Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 2, Portfolio Deferral 39
-
-### Platform Constraint
-
-_Accepted because the hosting platform or provider boundary constrains the behavior._
-
-- [P1] ai-server-timing-header-production: Server-Timing header visibility in production (seen 2회, last QA-20260310-0081)
-  - note: 플랫폼 제약으로 인한 비차단 항목: Vercel production에서는 Server-Timing 대신 X-AI-Latency-Ms를 운영 SSOT로 사용
-
-### Free Tier Tradeoff
-
-_Accepted to preserve the free-tier production shape instead of increasing deployed resources._
-
-- [P2] ai-cold-start-latency: Cloud Run cold start 레이턴시 최적화 (seen 2회, last QA-20260327-0193)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P2] cloud-run-cold-start-latency: Cloud Run AI Chat 콜드스타트 대기시간 과도 (5회 재시도, ~5분) (seen 1회, last QA-20260310-0089)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
-- [P2] streaming-ai-fallback-cold-start: Streaming AI fallback에서 Cloud Run 콜드스타트 시 프리셋 질문 실패 (seen 1회, last QA-20260310-0090)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
-
-### Historical Obsolete
-
-_Accepted because the item is historical, legacy, or superseded by current QA/CI gates._
-
-- [P2] vision-legacy-json-route-fallback: legacy JSON supervisor image path fallback 원인 확인 (seen 1회, last QA-20260421-0322)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P3] ai-provider-copy-policy-drift: Frontend AI provider and architecture copy must reflect current routing policy (seen 1회, last QA-20260404-0222)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- Reason categories: Portfolio Deferral 36
 
 ### Portfolio Deferral
 
@@ -151,10 +124,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P1] landing-console-api-system-unauthorized: 랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P1] landing-vibe-content-deployment-drift: Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 (seen 1회, last QA-20260330-0195)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
-  - note: 포트폴리오 운영성 우선 규칙: 실운영 오탐/미탐 주간 자동 리포트는 데모/포트폴리오 범위 밖의 운영 프로세스 자동화이므로 WONT-FIX 유지
-- [P1] playwright-mcp-native-session-reload: Current Codex session native Playwright MCP namespace remains closed until config reload (seen 1회, last QA-20260523-0571)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P1] server-comparison-deterministic-path: 서버 1:1 비교 쿼리 deterministic 경로 미확립 (seen 1회, last QA-20260522-0559)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -189,8 +158,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] landing-tech-stack-version-copy-drift: 기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리 (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] mobile-header-density: Review dashboard mobile header density around AI CTA and profile cluster (seen 1회, last QA-20260418-0303)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P2] nlq-provider-ministral3b-candidate-v811157: Evaluate Mistral ministral-3b as front NLQ primary or fallback after schema compatibility fix (seen 1회, last QA-20260516-0507)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] peak-metric-response-content: monitoringPeakMetricEvidenceProvider 응답 내용 부실 (seen 1회, last QA-20260522-0558)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -340,6 +307,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-chat-ux-build-runtime-regression: NLQ entity extraction route build regression fixed before production release (completed 1회, last QA-20260510-0466)
 - ai-chat-ux-v811124-production: AI Chat UI/UX improvements deployed and verified on Vercel production (completed 1회, last QA-20260510-0466)
 - ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 2회, last QA-20260318-0125)
+- ai-cold-start-latency: Retire Cloud Run cold-start optimization as Free Tier tradeoff (completed 1회, last QA-20260526-0603)
 - ai-dashboard-query-asof-slot-drift: AI sidebar job requests use the dashboard-visible OTel data slot (completed 1회, last QA-20260429-0372)
 - ai-disk-cleanup-command-relevance: AI disk cleanup guidance should prioritize filesystem cleanup commands before MySQL diagnostics (completed 1회, last QA-20260510-0441)
 - ai-disk-threshold-answer-accuracy-drift: AI async job answer preserves DISK threshold and dashboard metric values (completed 2회, last QA-20260429-0368)
@@ -393,6 +361,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-ops-haproxy-context-specificity: A1 HAProxy CPU included, backend distribution limitation disclosed (completed 1회, last QA-20260509-0435)
 - ai-ops-redis-context-quality: Redis context comparison response identifies highest-memory Redis nodes (completed 1회, last QA-20260509-0429)
 - ai-ops-tool-result-empty-summary: Tool-backed AI responses no longer show empty-summary fallback for A1/C1 retest paths (completed 1회, last QA-20260509-0429)
+- ai-provider-copy-policy-drift: Retire historical AI provider copy drift observation (completed 1회, last QA-20260526-0603)
 - ai-provider-forced-routing-context-floor: Forced-routing quality agents skip 8K Cerebras fallback (completed 1회, last QA-20260428-0356)
 - ai-provider-phase4-supervisor-routing-hints: Supervisor routing hints deployed (completed 1회, last QA-20260428-0356)
 - ai-provider-queue-exceeded-retry-amplification: Cerebras queue_exceeded should not amplify retries before provider fallback (completed 1회, last QA-20260429-0366)
@@ -443,6 +412,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-semantic-trace-job-path-v811137: Preserve semanticQueryTrace for production AI job-path monitoring peak answers (completed 1회, last QA-20260512-0487)
 - ai-server-snapshot-artifact-cancellation-v81185: Server snapshot artifact respects cancellation and preserves production rendering (completed 1회, last QA-20260503-0395)
 - ai-server-snapshot-artifact-v81184: Server status snapshot artifact routes and renders in production without LLM/Cloud Run cost path (completed 1회, last QA-20260503-0394)
+- ai-server-timing-header-production: Retire Server-Timing production visibility as platform constraint (completed 1회, last QA-20260526-0603)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-sidebar-open: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-parity-contract-rendering: AI sidebar 상세 분석에 실제 parity metadata contract 노출 (completed 1회, last QA-20260323-0164)
@@ -526,6 +496,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - cloud-run-ai-engine-v811107-health: Cloud Run AI Engine v8.11.107 health and authenticated supervisor health verified (completed 1회, last QA-20260506-0413)
 - cloud-run-ai-engine-v811110-deploy-smoke: Cloud Run AI Engine v8.11.110 deploy and post-deploy smoke verified (completed 1회, last QA-20260507-0418)
 - cloud-run-cerebras-env-pinned: Cloud Run env pins CEREBRAS_MODEL_ID=llama3.1-8b (completed 1회, last QA-20260430-0385)
+- cloud-run-cold-start-latency: Retire excessive cold-start wait as Free Tier tradeoff (completed 1회, last QA-20260526-0603)
 - cloud-run-latest-traffic-recovery: Cloud Run service traffic restored to latest revision (completed 1회, last QA-20260418-0305)
 - cloud-run-proxy-runtime-env-refresh: Cloud Run proxy runtime env refresh (completed 1회, last QA-20260325-0185)
 - cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
@@ -724,6 +695,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - nivo-storage-tooltip-visual-qa: Nivo slice tooltip is visible on storage-nfs-dc1-01 DISK hover (completed 1회, last QA-20260508-0424)
 - nlq-entity-schema-provider-compatibility-v811157: NLQ EntitySchema provider-compatible required nullable fields (completed 1회, last QA-20260516-0508)
 - nlq-provider-live-smoke-v811157: Run low-priority NLQ provider comparison smoke after v8.11.157 deployment (completed 1회, last QA-20260516-0507)
+- nlq-provider-ministral3b-candidate-v811157: Retire Mistral ministral-3b provider candidate evaluation (completed 1회, last QA-20260526-0603)
+- obs-fp-fn-weekly-report: Retire weekly false-positive/false-negative report automation (completed 1회, last QA-20260526-0603)
 - off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (completed 1회, last QA-20260421-0324)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - p11-capacity-forecast-n-hours-expression: P11: N시간 이내 디스크 포화 표현 production 라우팅 검증 (completed 2회, last QA-20260525-0598)
@@ -737,6 +710,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - planner-shadow-latency-precision: plannerShadow latency metadata no longer collapses to 0ms for fast production shadow decisions (completed 1회, last QA-20260504-0405)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
 - playwright-mcp-localhost-transport-probe: Playwright MCP localhost initialize/tools-list probe (completed 1회, last QA-20260523-0571)
+- playwright-mcp-native-session-reload: Retire current-session native Playwright MCP reload issue (completed 1회, last QA-20260526-0603)
 - preview-dashboard-entry-20260313: Preview guest -> system start -> dashboard (completed 1회, last QA-20260313-0092)
 - preview-guest-login-recovered-20260313: Preview guest login recovered after SESSION_SECRET sync (completed 1회, last QA-20260313-0092)
 - preview-guest-session-secret-sync: SESSION_SECRET synced for guest session proof issuance (completed 1회, last QA-20260313-0092)
@@ -856,6 +830,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - storybook-react-vite-migration: Storybook Next.js preset 제거 및 react-vite 전환 (completed 1회, last QA-20260315-0099)
 - storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
 - storybook-smoke-script-stable-port: Storybook smoke 테스트 스크립트 안정화 (completed 1회, last QA-20260315-0102)
+- streaming-ai-fallback-cold-start: Retire streaming fallback cold-start case as Free Tier tradeoff (completed 1회, last QA-20260526-0603)
 - streaming-analysis-basis-data-source-promotion: 스트리밍 AI 응답의 데이터 소스 라벨을 실시간 데이터 분석으로 승격 (completed 1회, last QA-20260324-0175)
 - streaming-parity-type-build-fix: Streaming parity deferred metadata type mismatch fix builds on production (completed 1회, last QA-20260324-0174)
 - supabase-legacy-rag-rpc-readonly-inventory: Confirm legacy vector/graph RAG RPCs remain in Supabase (completed 1회, last QA-20260510-0446)
@@ -911,6 +886,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - vision-gemini-primary-image-answer-quality: Gemini primary vision image answer quality verified for dashboard screenshot (completed 1회, last QA-20260520-0541)
 - vision-gemini-routing-and-current-values: Gemini Vision routes correctly and reads current dashboard values (completed 1회, last QA-20260520-0542)
 - vision-glm-fallback-http-500-quality: GLM vision fallback HTTP 500 resolved by removing GLM from Vision runtime (completed 1회, last QA-20260520-0543)
+- vision-legacy-json-route-fallback: Retire legacy JSON supervisor image fallback investigation (completed 1회, last QA-20260526-0603)
 - vision-native-multimodal: Vision Agent image/file path uses native multimodal model call (completed 1회, last QA-20260519-0538)
 - vision-production-latency-sample-refresh: Vision 최신 production latency 표본 보강 (completed 1회, last QA-20260421-0322)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
@@ -924,6 +900,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0603 | 2026-05-25T16:49:56.870Z | targeted | no | no | WONT-FIX cleanup - retire no-action policy and tooling items | 9 | 9 | 0 | 0 | 0 | 0 |
 | QA-20260526-0602 | 2026-05-25T16:29:04.864Z | targeted | no | no | WONT-FIX tracker triage - convert completed DoD evidence items | 7 | 7 | 0 | 0 | 0 | 0 |
 | QA-20260526-0601 | 2026-05-25T15:54:39.843Z | targeted | no | no | v8.12.43 Vercel Playwright hotfix QA - P8 group compare and P12 streaming spaces | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260526-0600 | 2026-05-25T15:50:57.311Z | targeted | no | no | P12 streaming spaces fix verification — v8.12.43 | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -943,4 +920,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0586 | 2026-05-24T22:51:39.888Z | targeted | yes | yes | Q-NEW17 Production QA - Generic Metric Trend Routing | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0585 | 2026-05-24T21:25:11.046Z | targeted | yes | yes | v8.12.30 Q-NEW18 pronoun follow-up targeted production QA | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0584 | 2026-05-24T15:52:12.919Z | targeted | yes | yes | v8.12.28 신규 6문항 AI 어시스턴트 평가 — 디스크필터·Advisor·팔로업·AZ비교·네트워크 | 6 | 2 | 0 | 0 | 4 | 0 |
-| QA-20260525-0583 | 2026-05-24T15:31:45.890Z | targeted | yes | yes | v8.12.28 AI Assistant contextual follow-up live QA | 8 | 1 | 0 | 0 | 0 | 0 |
