@@ -1,0 +1,96 @@
+{
+  "runId": "QA-20260525-0590",
+  "recordedAt": "2026-05-25T03:57:03.861Z",
+  "recordedAtKst": "2026-05-25 12:57:03 KST",
+  "runTitle": "v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EJx6EaYjDnbA9dbBexrn3g1LrCxY",
+    "deploymentUrl": "https://openmanager-ihxj1b1lc-skyasus-projects.vercel.app",
+    "commitSha": "68715a95b517b7c3251c447e33f5d5bab41787ca"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI sidebar Q-NEW13 named-server performance advice",
+    "Advisor evidence footer",
+    "Cloud Run AI Engine streamed response"
+  ],
+  "skippedSurfaces": [
+    "core route pack",
+    "modal/detail pack",
+    "observability pack",
+    "full conversational five-question pack"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Q-NEW13 no longer misroutes to location load balance and includes live metrics, but Advisor command evidence is still not invoked in production.",
+      "nextAction": "Make named-server operational advice yield from realtime metric shortcut to Advisor getServerMetrics then recommendCommands."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-25T12:54:58+09:00",
+      "summary": "Current billing period checked after targeted production AI QA; effective 15.9631 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q-NEW13 v8.12.36 partial response",
+      "path": "reports/qa/evidence/qa-20260525-v81236-qnew13-partial.png",
+      "note": "Footer still showed Streaming AI / 서버 실시간 데이터 분석 with only getServerMetrics evidence."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "q-new13-advisor-command-evidence-not-called",
+      "title": "Q-NEW13 named-server performance advice must invoke Advisor command evidence after metric precheck",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.36 production response used getServerMetrics only and footer stayed 서버 실시간 데이터 분석.",
+      "note": "release-blocking 아님; targeted follow-up fix is in progress.",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Question: db-mysql-dc1-primary 서버 성능 개선 조언 해줘",
+    "Observed: response grounded in current metrics but did not call recommendCommands, so frontend label preservation could not apply.",
+    "Decision: conditional/no-go for Q-NEW13 closure only; broader production release remains as previously deployed."
+  ],
+  "links": []
+}

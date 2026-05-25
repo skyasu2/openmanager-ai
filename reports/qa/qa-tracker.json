@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T03:01:02.015Z"
+    "updatedAt": "2026-05-25T03:57:03.861Z"
   },
   "sequence": {
-    "nextRunNumber": 590
+    "nextRunNumber": 591
   },
   "summary": {
-    "totalRecordedRuns": 587,
-    "totalRuns": 470,
+    "totalRecordedRuns": 588,
+    "totalRuns": 471,
     "excludedRuns": 117,
-    "totalChecks": 4185,
-    "totalPassed": 4002,
-    "totalFailed": 152,
-    "completionRate": 100,
+    "totalChecks": 4189,
+    "totalPassed": 4005,
+    "totalFailed": 153,
+    "completionRate": 99.85,
     "completedItems": 672,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 51,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260525-0589",
-    "lastRecordedAt": "2026-05-25T03:01:02.015Z",
-    "latestRecordedRunId": "QA-20260525-0589",
-    "latestRecordedAt": "2026-05-25T03:01:02.015Z"
+    "lastRunId": "QA-20260525-0590",
+    "lastRecordedAt": "2026-05-25T03:57:03.861Z",
+    "latestRecordedRunId": "QA-20260525-0590",
+    "latestRecordedAt": "2026-05-25T03:57:03.861Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17081,6 +17081,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-25T03:01:02.015Z"
+    },
+    "q-new13-advisor-command-evidence-not-called": {
+      "id": "q-new13-advisor-command-evidence-not-called",
+      "title": "Q-NEW13 named-server performance advice must invoke Advisor command evidence after metric precheck",
+      "priority": "P2",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260525-0590",
+      "firstSeenAt": "2026-05-25T03:57:03.861Z",
+      "lastSeenRunId": "QA-20260525-0590",
+      "lastSeenAt": "2026-05-25T03:57:03.861Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "v8.12.36 production response used getServerMetrics only and footer stayed 서버 실시간 데이터 분석.",
+      "lastNote": "release-blocking 아님; targeted follow-up fix is in progress.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T03:57:03.861Z"
     }
   },
   "runs": [
@@ -69211,6 +69235,86 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260525-0590",
+      "recordedAt": "2026-05-25T03:57:03.861Z",
+      "recordedAtKst": "2026-05-25 12:57:03 KST",
+      "title": "v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0590.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EJx6EaYjDnbA9dbBexrn3g1LrCxY",
+        "deploymentUrl": "https://openmanager-ihxj1b1lc-skyasus-projects.vercel.app",
+        "commitSha": "68715a95b517b7c3251c447e33f5d5bab41787ca"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI sidebar Q-NEW13 named-server performance advice",
+        "Advisor evidence footer",
+        "Cloud Run AI Engine streamed response"
+      ],
+      "skippedSurfaces": [
+        "core route pack",
+        "modal/detail pack",
+        "observability pack",
+        "full conversational five-question pack"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 3,
+        "failed": 1
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Q-NEW13 no longer misroutes to location load balance and includes live metrics, but Advisor command evidence is still not invoked in production.",
+          "nextAction": "Make named-server operational advice yield from realtime metric shortcut to Advisor getServerMetrics then recommendCommands."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-25T12:54:58+09:00",
+          "summary": "Current billing period checked after targeted production AI QA; effective 15.9631 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW13 v8.12.36 partial response",
+          "path": "reports/qa/evidence/qa-20260525-v81236-qnew13-partial.png",
+          "note": "Footer still showed Streaming AI / 서버 실시간 데이터 분석 with only getServerMetrics evidence."
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -69219,17 +69323,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 306,
-      "appropriateCount": 261,
+      "seenCount": 307,
+      "appropriateCount": 262,
       "partialCount": 45,
       "inappropriateCount": 0,
-      "improvementNeededCount": 62,
-      "lastRunId": "QA-20260525-0589",
-      "lastSeenAt": "2026-05-25T03:01:02.015Z",
-      "lastFit": "partially-appropriate",
+      "improvementNeededCount": 63,
+      "lastRunId": "QA-20260525-0590",
+      "lastSeenAt": "2026-05-25T03:57:03.861Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Q-NEW17 and Q-NEW18 pass on v8.12.35 production. Q-NEW13 no longer routes to location-load-balance and is grounded in real server metrics, but the UI evidence footer remains server real-time metrics rather than Advisor Agent command evidence.",
-      "lastNextAction": "Preserve Advisor command evidence after the forced getServerMetrics preparation step."
+      "lastRationale": "Q-NEW13 no longer misroutes to location load balance and includes live metrics, but Advisor command evidence is still not invoked in production.",
+      "lastNextAction": "Make named-server operational advice yield from realtime metric shortcut to Advisor getServerMetrics then recommendCommands."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
