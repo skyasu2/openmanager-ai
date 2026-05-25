@@ -29,6 +29,7 @@ import {
   shouldPreferAdvisorForOperationalAdvice,
 } from '../../services/ai-sdk/routing/query-routing-signals';
 import { createRoutingDecisionTrace } from '../../services/ai-sdk/routing/routing-decision-trace';
+import { CAPACITY_FULL_FORECAST_PATTERN } from '../../services/ai-sdk/routing/routing-patterns';
 import { resolveMonitoringSemanticFrameRoute } from '../../services/ai-sdk/routing/semantic-frame-policy';
 
 export function createSystemPrompt(deviceType?: string): string {
@@ -92,7 +93,10 @@ export function selectExecutionMode(
     return 'multi';
   }
 
-  if (CAPACITY_FORECAST_MODE_PATTERNS.test(q)) {
+  if (
+    CAPACITY_FORECAST_MODE_PATTERNS.test(q) ||
+    CAPACITY_FULL_FORECAST_PATTERN.test(q)
+  ) {
     return 'multi';
   }
 
@@ -176,7 +180,10 @@ export function getIntentCategory(
   }
 
   if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) return 'anomaly';
-  if (TOOL_ROUTING_PATTERNS.prediction.test(q)) return 'prediction';
+  if (
+    TOOL_ROUTING_PATTERNS.prediction.test(q) ||
+    CAPACITY_FULL_FORECAST_PATTERN.test(q)
+  ) return 'prediction';
   if (TOOL_ROUTING_PATTERNS.math.test(q)) return 'math';
   if (TOOL_ROUTING_PATTERNS.rca.test(q)) return 'rca';
   if (shouldPreferAdvisorForOperationalAdvice(q)) return 'advisor';

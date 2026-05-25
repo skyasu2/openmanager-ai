@@ -11,6 +11,7 @@
  */
 
 import {
+  CAPACITY_FULL_FORECAST_PATTERN,
   INVERSE_STATUS_PATTERN,
   MIN_METRIC_PATTERN,
   isRestartNeededLookupQuery,
@@ -184,7 +185,10 @@ export function classifyQueryIntent(query: string): IntentClassification {
     return { intent: 'causal-analysis', confidence: 'high', metric, statusValue };
   }
 
-  if (PREDICTIVE_SIGNALS.test(query)) {
+  if (
+    PREDICTIVE_SIGNALS.test(query) ||
+    CAPACITY_FULL_FORECAST_PATTERN.test(query)
+  ) {
     return { intent: 'predictive', confidence: 'high', metric, statusValue };
   }
 

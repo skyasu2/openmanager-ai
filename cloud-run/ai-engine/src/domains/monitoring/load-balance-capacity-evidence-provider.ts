@@ -12,6 +12,7 @@ import {
   MONITORING_CAPACITY_FORECAST_CAPABILITY_ID,
   MONITORING_LOCATION_LOAD_BALANCE_CAPABILITY_ID,
 } from './constants';
+import { CAPACITY_FULL_FORECAST_PATTERN } from '../../services/ai-sdk/routing/routing-patterns';
 
 type PercentMetric = 'cpu' | 'memory' | 'disk' | 'network';
 
@@ -585,7 +586,8 @@ export const monitoringCapacityForecastEvidenceProvider: DomainEvidenceProvider 
         request.intentFrame?.capabilityId ===
           MONITORING_CAPACITY_FORECAST_CAPABILITY_ID ||
         request.intentFrame?.intent === 'capacity_forecast' ||
-        CAPACITY_FORECAST_PATTERN.test(request.message)
+        CAPACITY_FORECAST_PATTERN.test(request.message) ||
+        CAPACITY_FULL_FORECAST_PATTERN.test(request.message)
       );
     },
     async resolve(request) {

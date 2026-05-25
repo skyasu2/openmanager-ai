@@ -1,5 +1,6 @@
 import type { SupervisorMode } from '../supervisor-types';
 import {
+  CAPACITY_FULL_FORECAST_PATTERN,
   INVERSE_STATUS_PATTERN,
   MIN_METRIC_PATTERN,
   isRestartNeededLookupQuery,
@@ -280,7 +281,10 @@ function detectToolIntentCategory(
   const q = query.toLowerCase();
   if (isRestartNeededLookup(q)) return 'metrics';
   if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) return 'anomaly';
-  if (TOOL_ROUTING_PATTERNS.prediction.test(q)) return 'prediction';
+  if (
+    TOOL_ROUTING_PATTERNS.prediction.test(q) ||
+    CAPACITY_FULL_FORECAST_PATTERN.test(q)
+  ) return 'prediction';
   if (TOOL_ROUTING_PATTERNS.math.test(q)) return 'math';
   if (TOOL_ROUTING_PATTERNS.rca.test(q)) return 'rca';
   if (TOOL_ROUTING_PATTERNS.advisor.test(q)) return 'advisor';
@@ -338,6 +342,7 @@ function deriveModeHint(query: string): Exclude<SupervisorMode, 'auto'> {
   if (isFormattingOnlyReportRequest(q)) return 'single';
   if (isRestartNeededLookup(q)) return 'single';
   if (FORCE_KB_QUERY_PATTERN.test(q)) return 'multi';
+  if (CAPACITY_FULL_FORECAST_PATTERN.test(q)) return 'multi';
 
   const fallbackMultiPatterns = [
     REPORTER_QUERY_PATTERN,
@@ -357,6 +362,9 @@ function buildModeReasonCodes(
   if (modeHint === 'single') return ['mode_single_default'];
   if (isRestartNeededLookup(query)) return ['mode_single_default'];
   if (FORCE_KB_QUERY_PATTERN.test(query)) return ['mode_multi_knowledge'];
+  if (CAPACITY_FULL_FORECAST_PATTERN.test(query)) {
+    return ['mode_multi_capacity_forecast'];
+  }
   if (REPORTER_QUERY_PATTERN.test(query)) return ['mode_multi_report_request'];
   if (ADVISOR_QUERY_PATTERN.test(query)) return ['mode_multi_advisor'];
   return ['mode_multi_default'];
