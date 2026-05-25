@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-25 KST
+**Last Updated**: 2026-05-26 KST
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -30,12 +30,23 @@
 
 ---
 
+## Not Actionable / Accepted No-Fix
+
+| Item | Reason | Next Review |
+|------|--------|-------------|
+| QA WONT-FIX 52개 | `QA_STATUS.md` 기준 Platform Constraint 1 / Free Tier Tradeoff 3 / Historical Obsolete 7 / Portfolio Deferral 41. 현재 active 개선 대상 아님. | release blocker로 재분류될 때만 |
+| Historical gate-window warning | `QA-20260519-0535` broad 회귀가 rolling window에 남은 historical context. active gate warning은 없음. | clean gate run이 window를 대체하면 자동 해소 |
+| 최근 non-evidence artifact refs 16개 | 모두 `countsTowardSummary=false`, `releaseFacing=false` targeted run의 로컬 MCP screenshot 참조. durable evidence 요구 대상 아님. | 같은 유형이 counted/release-facing run에 생길 때만 |
+| QA evidence cleanup batch | 2026-05-26 audit: orphan 0, missing 0, archive candidate 0, storage warning 0. 즉시 정리 불필요. | `reports/qa` 90MiB 초과 또는 orphan/missing 발생 시 |
+
+---
+
 ## On Hold
 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Local Docker/WSL storage hygiene | Medium | 감사: `npm run storage:audit`. WSL 상위 후보 `.npm` 9.7GiB / `.gemini/backups` 2.7GiB / `.codex/sessions` 2.6GiB. |
-| QA evidence 저장소 용량 정리 | Medium | orphan durable evidence 19개, reports/qa 111MiB. cleanup batch 승인 시 재평가. |
+| QA evidence 저장소 용량 정리 | Low | 현재 cleanup batch 불필요. `npm run qa:evidence:audit` 기준 reports/qa 65.86MiB, orphan/missing/archive candidate 0. |
 
 ---
 
