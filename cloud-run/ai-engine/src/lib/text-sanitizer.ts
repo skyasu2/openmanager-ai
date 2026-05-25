@@ -226,6 +226,26 @@ export function sanitizeUserFacingResponse(text: string): string {
 }
 
 /**
+ * Same as sanitizeUserFacingResponse but WITHOUT trim().
+ *
+ * Use this for individual streaming deltas. LLM tokenizers emit leading spaces
+ * (e.g. " 모니터링", " **서버**") as word boundaries. Trimming each delta
+ * strips those spaces and produces concatenated text with no word separators.
+ */
+export function sanitizeStreamingDelta(text: string): string {
+  if (!text) {
+    return text;
+  }
+
+  return sanitizeChineseCharacters(text)
+    .replace(/\[응답\s*가이드\]\s*/g, '')
+    .replace(/\s*순서를\s*바꾸지\s*말고\s*그대로\s*사용자에게\s*전달하세요\.?/g, '')
+    .replace(/\s*이\s*값을\s*사용자에게\s*전달하세요\.?/g, '')
+    .replace(/\s{2,}/g, ' ');
+  // trim() 미사용: 선행/후행 공백이 단어 경계를 나타내므로 보존
+}
+
+/**
  * Sanitize a JSON object's string values recursively
  * Useful for API responses that have nested text fields
  */

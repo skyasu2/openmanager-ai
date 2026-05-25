@@ -311,7 +311,7 @@ describe('createSupervisorStreamResponse', () => {
         {
           role: 'assistant',
           content:
-            '📊 **지정 서버 네트워크 70% 이상 서버**• 대상: 지정 서버 1대',
+            '📊 **지정 서버 네트워크 70% 이상 서버**\n• 대상: 지정 서버 1대',
         },
       ]
     );
@@ -320,7 +320,7 @@ describe('createSupervisorStreamResponse', () => {
         type: 'data-done',
         data: expect.objectContaining({
           responseSummary:
-            '📊 **지정 서버 네트워크 70% 이상 서버**• 대상: 지정 서버 1대',
+            '📊 **지정 서버 네트워크 70% 이상 서버**\n• 대상: 지정 서버 1대',
         }),
       })
     );

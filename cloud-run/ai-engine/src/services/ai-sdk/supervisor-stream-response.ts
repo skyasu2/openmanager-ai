@@ -24,7 +24,10 @@ import {
 import { executeSupervisorStream } from './supervisor-single-agent';
 import { getPublicErrorResponse, sanitizeErrorData } from '../../lib/error-handler';
 import { logger } from '../../lib/logger';
-import { sanitizeUserFacingResponse } from '../../lib/text-sanitizer';
+import {
+  sanitizeStreamingDelta,
+  sanitizeUserFacingResponse,
+} from '../../lib/text-sanitizer';
 import { flushLangfuseBestEffort } from '../observability/langfuse-flush';
 import { SessionMemoryService } from './session-memory';
 
@@ -328,7 +331,7 @@ export function createSupervisorStreamResponse(
             case 'text_delta': {
               const textDelta =
                 typeof event.data === 'string'
-                  ? sanitizeUserFacingResponse(event.data)
+                  ? sanitizeStreamingDelta(event.data)
                   : '';
               if (textDelta.length === 0) {
                 break;
