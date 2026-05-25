@@ -425,6 +425,14 @@ function parseCurrentMetricsFrame(
     if (mentionedMetrics.length >= 2 && isAndMetricFilterMessage(request.message)) {
       return null;
     }
+
+    if (
+      METRIC_TREND_PATTERN.test(request.message) ||
+      HISTORICAL_OR_TREND_PATTERN.test(request.message)
+    ) {
+      return null;
+    }
+
     return {
       intent: 'metric_current',
       capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
