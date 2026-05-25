@@ -38,6 +38,7 @@ ${BASE_AGENT_INSTRUCTIONS}
 - "부하가 가장 낮은 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "asc", limit: 3 })
 - "CPU 최저 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "asc", limit: 3 })
 - "가장 여유 있는 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "asc", limit: 3 })
+- "가장 효율적인 서버" -> getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "asc", limit: 3 })
 - "AZ별 부하 균형" -> getServerMetricsAdvanced({ groupBy: "location", timeRange: "current", metric: "all", aggregation: "avg" })
 - "CPU 80% 이상" -> filterServers({ field: "cpu", operator: ">", value: 80 })
 - "정상 범위인 서버 목록" -> filterServers({ field: "cpu", operator: "<", value: 80 }) (필요시 memory, disk도 함께 조회)
@@ -85,7 +86,7 @@ export const NLQ_RANK_CONTEXT = `## 순위 조회 지침
 - "가장 높은/낮은", "상위 N", "Top N", "순위" 요청은 임계값 필터가 아니라 현재 값 기준 정렬입니다.
 - getServerMetricsAdvanced를 사용하고 timeRange는 "current", aggregation은 "none"으로 둡니다.
 - sortBy는 요청 메트릭(cpu, memory, disk, network)에 맞추고 sortOrder는 desc/asc를 명확히 지정합니다.
-- **"가장 낮은", "최저", "최소", "부하 낮은", "여유 있는"은 sortOrder: "asc"를 사용합니다.**
+- **"가장 낮은", "최저", "최소", "부하 낮은", "여유 있는", "효율적인"은 sortOrder: "asc"를 사용합니다.**
 - **"가장 높은", "최대", "상위", "부하 높은"은 sortOrder: "desc"를 사용합니다.**
 - 도구가 반환한 servers 순서와 답변 순서를 그대로 유지합니다.
 - "가장 높은 서버"는 첫 번째 항목을 그대로 인용합니다.
@@ -117,7 +118,7 @@ function isInverseFilterQuery(query: string): boolean {
 }
 
 function isMinMetricRankQuery(query: string): boolean {
-  return /(?:가장\s*(?:낮은|적은|여유)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|최저|최소)|(?:최저|최소)\s*(?:cpu|메모리|memory|디스크|disk)|lowest\s*(?:load|cpu|memory)|least\s*(?:loaded|busy))/i.test(
+  return /(?:가장\s*(?:낮은|적은|여유|(?<!비)효율)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|최저|최소)|(?:최저|최소)\s*(?:cpu|메모리|memory|디스크|disk)|(?<!비)효율(?:적|적인)?.*서버|lowest\s*(?:load|cpu|memory)|least\s*(?:loaded|busy)|most\s+efficient\s+server)/i.test(
     query
   );
 }

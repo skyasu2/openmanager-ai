@@ -4,7 +4,7 @@
  * Architecture:
  * - BaseAgent: Abstract base class for unified agent interface
  * - AgentFactory: Factory for creating agent instances
- * - Direct Router: deterministic pre-filter routing to specialist agents
+ * - Direct Router: deterministic pre-filter plus bounded LLM classifier fallback
  *
  * Agents:
  * - Metrics Query Agent (Groq -> Cerebras -> Mistral): metric lookup, filtering, ranking, and summaries

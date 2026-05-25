@@ -1,5 +1,9 @@
 import type { SupervisorMode } from '../supervisor-types';
-import { INVERSE_STATUS_PATTERN, MIN_METRIC_PATTERN } from './routing-patterns';
+import {
+  INVERSE_STATUS_PATTERN,
+  MIN_METRIC_PATTERN,
+  isRestartNeededLookupQuery,
+} from './routing-patterns';
 
 /**
  * Runtime routing SSOT for monitoring query signals.
@@ -48,6 +52,9 @@ export const INVERSE_STATUS_FILTER_PATTERN = INVERSE_STATUS_PATTERN;
 
 /** 최솟값 랭킹: routing-patterns.ts SSOT에서 re-export */
 export const MIN_METRIC_RANKING_PATTERN = MIN_METRIC_PATTERN;
+
+/** 재시작 필요 여부 조회: routing-patterns.ts SSOT */
+export const isRestartNeededLookup = isRestartNeededLookupQuery;
 
 export const COMPOSITE_QUERY_PATTERNS = [
   /그리고|또한|동시에|함께|및|plus|and|then/i,
@@ -271,6 +278,7 @@ function detectToolIntentCategory(
   query: string
 ): QueryRoutingToolIntentCategory {
   const q = query.toLowerCase();
+  if (isRestartNeededLookup(q)) return 'metrics';
   if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) return 'anomaly';
   if (TOOL_ROUTING_PATTERNS.prediction.test(q)) return 'prediction';
   if (TOOL_ROUTING_PATTERNS.math.test(q)) return 'math';
@@ -289,6 +297,7 @@ function toRoutingIntent(
 ): QueryRoutingIntent {
   if (hasAttachment && ATTACHMENT_VISION_PATTERN.test(query)) return 'vision';
   if (FORCE_KB_QUERY_PATTERN.test(query)) return 'knowledge';
+  if (isRestartNeededLookup(query)) return 'metrics';
   if (!isFormattingOnlyReportRequest(query) && REPORTER_QUERY_PATTERN.test(query)) {
     return 'report';
   }
@@ -327,6 +336,7 @@ function deriveModeHint(query: string): Exclude<SupervisorMode, 'auto'> {
   const q = query.toLowerCase();
 
   if (isFormattingOnlyReportRequest(q)) return 'single';
+  if (isRestartNeededLookup(q)) return 'single';
   if (FORCE_KB_QUERY_PATTERN.test(q)) return 'multi';
 
   const fallbackMultiPatterns = [
@@ -345,6 +355,7 @@ function buildModeReasonCodes(
 ): string[] {
   if (isFormattingOnlyReportRequest(query)) return ['mode_single_formatting_only'];
   if (modeHint === 'single') return ['mode_single_default'];
+  if (isRestartNeededLookup(query)) return ['mode_single_default'];
   if (FORCE_KB_QUERY_PATTERN.test(query)) return ['mode_multi_knowledge'];
   if (REPORTER_QUERY_PATTERN.test(query)) return ['mode_multi_report_request'];
   if (ADVISOR_QUERY_PATTERN.test(query)) return ['mode_multi_advisor'];
@@ -374,8 +385,10 @@ function buildPreFilterSignal(
   }
 
   const isForceKnowledgeBaseIntent = FORCE_KB_QUERY_PATTERN.test(query);
+  const isRestartNeededLookupIntent = isRestartNeededLookup(query);
   const hasServerKeyword =
     isForceKnowledgeBaseIntent ||
+    isRestartNeededLookupIntent ||
     SERVER_KEYWORDS.some((keyword) => normalized.includes(keyword));
   const hasAttachmentVisionHint =
     (options.hasImageAttachments === true || options.hasFileAttachments === true) &&
@@ -412,7 +425,7 @@ function buildPreFilterSignal(
       query
     );
 
-  if (isInverseFilterIntent || isMinMetricRankingIntent) {
+  if (isInverseFilterIntent || isMinMetricRankingIntent || isRestartNeededLookupIntent) {
     return {
       action: 'suggest_agent',
       suggestedAgent: 'Metrics Query Agent',
@@ -525,7 +538,9 @@ export function extractQueryRoutingSignals(
   const hasImageAttachment = options.hasImageAttachments === true;
   const hasFileAttachment = options.hasFileAttachments === true;
   const hasAttachment = hasImageAttachment || hasFileAttachment;
-  const hasInfraContext = INFRA_CONTEXT_PATTERN.test(normalizedQuery);
+  const isRestartNeededLookupIntent = isRestartNeededLookup(normalizedQuery);
+  const hasInfraContext =
+    INFRA_CONTEXT_PATTERN.test(normalizedQuery) || isRestartNeededLookupIntent;
   const asksForFormattingOnly = isFormattingOnlyReportRequest(normalizedQuery);
   const asksForReport =
     !asksForFormattingOnly && REPORTER_QUERY_PATTERN.test(normalizedQuery);
@@ -544,6 +559,7 @@ export function extractQueryRoutingSignals(
   const preFilter = buildPreFilterSignal(query, options);
 
   if (hasInfraContext) appendUnique(reasonCodes, 'infra_context_present');
+  if (isRestartNeededLookupIntent) appendUnique(reasonCodes, 'restart_needed_lookup');
   if (hasCompositeSignal(normalizedQuery)) appendUnique(reasonCodes, 'composite_query');
   if (metric) appendUnique(reasonCodes, `metric_detected_${metric}`);
   if (scope === 'whole_fleet' && metric) {

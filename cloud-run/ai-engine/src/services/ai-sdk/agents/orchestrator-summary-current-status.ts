@@ -6,6 +6,7 @@ import {
 } from './orchestrator-summary-payload';
 import { getReadOnlyDiagnosticCommands } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 import type { DiagnosticMetric } from '../../../tools-ai-sdk/reporter-tools/knowledge-types';
+import { isRestartNeededLookupQuery } from '../routing/routing-patterns';
 
 function roundPercent(value: number | null): string {
   return value === null ? 'N/A' : `${Math.round(value)}%`;
@@ -293,6 +294,7 @@ function isActionNeededQuery(query: string): boolean {
   if (isMetricIssueFilterQuery(query)) return false;
 
   return (
+    isRestartNeededLookupQuery(query) ||
     /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응).{0,32}(?:필요|해야|대상|있|시급).{0,16}(?:서버|대상|순위)/i.test(query) ||
     /(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)/i.test(query) ||
     /(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|immediate\s+action|urgent\s+action|action\s+needed/i.test(

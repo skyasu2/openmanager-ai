@@ -30,6 +30,7 @@ import {
   REPORTER_QUERY_PATTERN,
   INVERSE_STATUS_FILTER_PATTERN,
   MIN_METRIC_RANKING_PATTERN,
+  isRestartNeededLookup,
   isFormattingOnlyReportRequest,
   extractQueryRoutingSignals,
 } from '../routing/query-routing-signals';
@@ -463,8 +464,11 @@ export function preFilterQuery(
 
   // 3. Check for server-related keywords - needs handoff
   const isForceKnowledgeBaseIntent = FORCE_KB_QUERY_PATTERN.test(query);
+  const isRestartNeededLookupIntent = isRestartNeededLookup(query);
   const hasServerKeyword =
-    isForceKnowledgeBaseIntent || SERVER_KEYWORDS.some(kw => normalized.includes(kw));
+    isForceKnowledgeBaseIntent ||
+    isRestartNeededLookupIntent ||
+    SERVER_KEYWORDS.some(kw => normalized.includes(kw));
   const hasAttachmentVisionHint =
     (context.hasImageAttachments || context.hasFileAttachments) &&
     looksLikeAttachedVisionRequest(normalized);
@@ -510,7 +514,7 @@ export function preFilterQuery(
       MIN_METRIC_RANKING_PATTERN.test(query) &&
       !ANALYST_QUERY_PATTERN.test(query);
 
-    if (isInverseFilterIntent || isMinMetricRankingIntent) {
+    if (isInverseFilterIntent || isMinMetricRankingIntent || isRestartNeededLookupIntent) {
       return {
         shouldHandoff: true,
         suggestedAgent: 'Metrics Query Agent',

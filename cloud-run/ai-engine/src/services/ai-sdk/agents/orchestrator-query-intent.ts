@@ -10,7 +10,11 @@
  * regexes.
  */
 
-import { INVERSE_STATUS_PATTERN, MIN_METRIC_PATTERN } from '../routing/routing-patterns';
+import {
+  INVERSE_STATUS_PATTERN,
+  MIN_METRIC_PATTERN,
+  isRestartNeededLookupQuery,
+} from '../routing/routing-patterns';
 import { shouldPreferAdvisorForOperationalAdvice } from '../routing/query-routing-signals';
 
 export type QueryIntent =
@@ -182,6 +186,10 @@ export function classifyQueryIntent(query: string): IntentClassification {
 
   if (PREDICTIVE_SIGNALS.test(query)) {
     return { intent: 'predictive', confidence: 'high', metric, statusValue };
+  }
+
+  if (isRestartNeededLookupQuery(query)) {
+    return { intent: 'data-lookup', confidence: 'high', metric, statusValue };
   }
 
   if (shouldPreferAdvisorForOperationalAdvice(query)) {

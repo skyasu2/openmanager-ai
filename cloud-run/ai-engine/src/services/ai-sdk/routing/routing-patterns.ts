@@ -14,8 +14,25 @@ export const INVERSE_STATUS_PATTERN =
 
 /**
  * 최솟값 랭킹: 부하/메트릭이 가장 낮은 서버를 요청하는 쿼리
- * 예: "부하 가장 낮은 서버", "CPU 최저 서버", "가장 여유 있는 서버"
+ * 예: "부하 가장 낮은 서버", "CPU 최저 서버", "가장 여유 있는 서버", "가장 효율적인 서버"
  * Merged from query-routing-signals + orchestrator-query-intent.
  */
 export const MIN_METRIC_PATTERN =
-  /(?:가장\s*(?:낮은|적은|여유|안전|idle)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|적은|최저|최소)|(?:최저|최소|min(?:imum)?)\s*(?:cpu|메모리|memory|디스크|disk|부하|load)|(?:여유\s*(?:많은|있는)|idle).*서버|lowest\s*(?:load|cpu|memory|disk)|least\s*(?:loaded|busy))/i;
+  /(?:가장\s*(?:낮은|적은|여유|안전|(?<!비)효율|idle)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|적은|최저|최소)|(?:최저|최소|min(?:imum)?)\s*(?:cpu|메모리|memory|디스크|disk|부하|load)|(?:여유\s*(?:많은|있는)|(?<!비)효율(?:적|적인)?|idle).*서버|lowest\s*(?:load|cpu|memory|disk)|least\s*(?:loaded|busy)|most\s+efficient\s+server)/i;
+
+/**
+ * 재시작 필요 여부 조회: 실행 방법이 아니라 "어떤 서버가 재시작/즉시 조치 대상인가"를 묻는 쿼리
+ * 예: "재시작해야 할 서버 있어?", "재시작이 필요한 서버", "재시작이 필요해?"
+ */
+export const RESTART_NEEDED_LOOKUP_PATTERN =
+  /(?:(?:재시작|restart).{0,16}(?:필요|해야\s*할?|대상|권장|추천|need(?:ed)?).{0,24}(?:서버|대상|있|목록|servers?)?|(?:서버|대상|servers?).{0,24}(?:재시작|restart).{0,16}(?:필요|대상|권장|추천|need(?:ed)?))/i;
+
+const RESTART_PROCEDURE_PATTERN =
+  /명령어|커맨드|cli|방법|어떻게|순서|절차|스크립트|script|runbook|런북|command/i;
+
+export function isRestartNeededLookupQuery(query: string): boolean {
+  return (
+    RESTART_NEEDED_LOOKUP_PATTERN.test(query) &&
+    !RESTART_PROCEDURE_PATTERN.test(query)
+  );
+}

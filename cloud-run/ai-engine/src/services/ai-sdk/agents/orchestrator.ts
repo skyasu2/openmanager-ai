@@ -1,7 +1,8 @@
 /**
  * Multi-Agent Direct Router
  *
- * Routes user queries to specialized agents using deterministic pre-filter signals.
+ * Routes user queries to specialized agents using deterministic pre-filter
+ * signals with a bounded LLM classifier fallback for low-confidence cases.
  * Uses AI SDK v6 native generateText/streamText with stopWhen conditions.
  *
  * Architecture:
