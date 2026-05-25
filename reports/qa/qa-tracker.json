@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T01:11:32.229Z"
+    "updatedAt": "2026-05-25T03:01:02.015Z"
   },
   "sequence": {
-    "nextRunNumber": 589
+    "nextRunNumber": 590
   },
   "summary": {
-    "totalRecordedRuns": 586,
-    "totalRuns": 469,
+    "totalRecordedRuns": 587,
+    "totalRuns": 470,
     "excludedRuns": 117,
-    "totalChecks": 4179,
-    "totalPassed": 3997,
+    "totalChecks": 4185,
+    "totalPassed": 4002,
     "totalFailed": 152,
     "completionRate": 100,
-    "completedItems": 669,
+    "completedItems": 672,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 50,
+    "wontFixItems": 51,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260525-0588",
-    "lastRecordedAt": "2026-05-25T01:11:32.229Z",
-    "latestRecordedRunId": "QA-20260525-0588",
-    "latestRecordedAt": "2026-05-25T01:11:32.229Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260525-0589",
+    "lastRecordedAt": "2026-05-25T03:01:02.015Z",
+    "latestRecordedRunId": "QA-20260525-0589",
+    "latestRecordedAt": "2026-05-25T03:01:02.015Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16985,6 +16985,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-25T00:41:31.507Z"
+    },
+    "q-new17-single-server-24h-trend": {
+      "id": "q-new17-single-server-24h-trend",
+      "title": "Q-NEW17 단일 서버 24시간 추세를 monitoring-metric-trend로 라우팅",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260525-0589",
+      "firstSeenAt": "2026-05-25T03:01:02.015Z",
+      "lastSeenRunId": "QA-20260525-0589",
+      "lastSeenAt": "2026-05-25T03:01:02.015Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production AI sidebar returned cache-redis-dc1-01 current vs 24h average metrics with tool monitoring-metric-trend.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T03:01:02.015Z"
+    },
+    "q-new18-pronoun-follow-up-top3-scope": {
+      "id": "q-new18-pronoun-follow-up-top3-scope",
+      "title": "Q-NEW18 대명사 follow-up 범위를 직전 메모리 상위 3대로 제한",
+      "priority": "P5",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260525-0589",
+      "firstSeenAt": "2026-05-25T03:01:02.015Z",
+      "lastSeenRunId": "QA-20260525-0589",
+      "lastSeenAt": "2026-05-25T03:01:02.015Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production AI sidebar returned exactly api-was-dc1-01, db-mysql-dc1-replica, and db-mysql-dc1-primary for '그 서버들 디스크 상태는?'.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T03:01:02.015Z"
+    },
+    "q-new13-named-server-advice-metric-grounding": {
+      "id": "q-new13-named-server-advice-metric-grounding",
+      "title": "Q-NEW13 named-server performance advice uses live server metrics",
+      "priority": "P4",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260525-0589",
+      "firstSeenAt": "2026-05-25T03:01:02.015Z",
+      "lastSeenRunId": "QA-20260525-0589",
+      "lastSeenAt": "2026-05-25T03:01:02.015Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production AI sidebar answered db-mysql-dc1-primary advice with current CPU 42%, memory 57%, disk 63%, 24h averages/max values, and MySQL action commands.",
+      "lastNote": "Evidence footer still needs Advisor command label preservation.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T03:01:02.015Z"
+    },
+    "q-new13-advisor-evidence-label-preservation": {
+      "id": "q-new13-advisor-evidence-label-preservation",
+      "title": "Q-NEW13 Advisor command evidence label should survive getServerMetrics preparation",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260525-0589",
+      "firstSeenAt": "2026-05-25T03:01:02.015Z",
+      "lastSeenRunId": "QA-20260525-0589",
+      "lastSeenAt": "2026-05-25T03:01:02.015Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production answer was useful and metric-grounded, but footer showed 'Streaming AI · 서버 실시간 데이터 분석' and basis '도구: 서버 메트릭 조회' instead of Advisor Agent command evidence.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-25T03:01:02.015Z"
     }
   },
   "runs": [
@@ -68956,6 +69052,165 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0589",
+      "recordedAt": "2026-05-25T03:01:02.015Z",
+      "recordedAtKst": "2026-05-25 12:01:02 KST",
+      "title": "v8.12.35 Production QA - P7 trend, P5 pronoun follow-up, Advisor grounding",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0589.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5KXXyEWQFhPjHCmgPozKs8DfvNG5",
+        "deploymentUrl": "https://openmanager-hnjfn5bk9-skyasus-projects.vercel.app",
+        "commitSha": "3748656c6a98977771c2f68c381186db3769a385"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "AI sidebar conversational query",
+        "Q-NEW13 named-server performance advice after Advisor metrics grounding",
+        "Q-NEW17 single-server 24h metric trend routing",
+        "Q-NEW18 pronoun follow-up scoped to prior memory top 3"
+      ],
+      "skippedSurfaces": [
+        "full standard five-question conversational AI QA",
+        "vision agent",
+        "reporter/analyst tabs",
+        "anomaly detection tab",
+        "core route broad smoke",
+        "Cloud Run admin /monitoring authenticated data view"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [
+        {
+          "surface": "Q-NEW17 single server 24h trend",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "assistant metadata: tool monitoring-metric-trend"
+        },
+        {
+          "surface": "Q-NEW18 memory top 3 setup",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "assistant metadata: tool monitoring-metric-ranking"
+        },
+        {
+          "surface": "Q-NEW18 pronoun disk follow-up",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "assistant metadata: tool monitoring-metric-current"
+        },
+        {
+          "surface": "Q-NEW13 named server advice",
+          "route": "/api/ai/jobs/[id]/stream",
+          "executionMode": "single-agent",
+          "latencyMs": 0,
+          "classification": "unknown",
+          "driftReasonCodes": [],
+          "source": "assistant metadata: footer 'Streaming AI · 서버 실시간 데이터 분석', tool '서버 메트릭 조회'"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Q-NEW17 and Q-NEW18 pass on v8.12.35 production. Q-NEW13 no longer routes to location-load-balance and is grounded in real server metrics, but the UI evidence footer remains server real-time metrics rather than Advisor Agent command evidence.",
+          "nextAction": "Preserve Advisor command evidence after the forced getServerMetrics preparation step."
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The tested answers used current OTel-backed values: cache-redis-dc1-01 24h trend, memory top 3, and scoped disk values for exactly those prior 3 servers.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2550015043 completed successfully. Vercel and Cloud Run both serve v8.12.35, Cloud Run health is OK, and unauthenticated /monitoring remains protected.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-25T11:51:41+09:00",
+          "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-25T02:51:41Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW18 scoped top-3 disk follow-up pass",
+          "path": "reports/qa/evidence/qa-20260525-v81235-ai-targeted.png",
+          "note": "AI sidebar shows '지정 서버 3대 디스크 현황' and tool monitoring-metric-current after the prior memory top-3 answer."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run ai-engine",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab Pipeline v8.12.35",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550015043"
+        },
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel Deployment v8.12.35",
+          "url": "https://openmanager-hnjfn5bk9-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -68964,17 +69219,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 305,
+      "seenCount": 306,
       "appropriateCount": 261,
-      "partialCount": 44,
+      "partialCount": 45,
       "inappropriateCount": 0,
-      "improvementNeededCount": 61,
-      "lastRunId": "QA-20260525-0587",
-      "lastSeenAt": "2026-05-25T00:41:31.507Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Q-NEW13 was rerun through the production AI sidebar and now shows Advisor Agent command evidence instead of the prior generic conversation label.",
-      "lastNextAction": ""
+      "improvementNeededCount": 62,
+      "lastRunId": "QA-20260525-0589",
+      "lastSeenAt": "2026-05-25T03:01:02.015Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Q-NEW17 and Q-NEW18 pass on v8.12.35 production. Q-NEW13 no longer routes to location-load-balance and is grounded in real server metrics, but the UI evidence footer remains server real-time metrics rather than Advisor Agent command evidence.",
+      "lastNextAction": "Preserve Advisor command evidence after the forced getServerMetrics preparation step."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -69015,16 +69270,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 219,
-      "appropriateCount": 198,
+      "seenCount": 220,
+      "appropriateCount": 199,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260525-0587",
-      "lastSeenAt": "2026-05-25T00:41:31.507Z",
+      "lastRunId": "QA-20260525-0589",
+      "lastSeenAt": "2026-05-25T03:01:02.015Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab pipelines for the AI Engine and frontend releases completed successfully, Cloud Run health passed, and Vercel production serves v8.12.34.",
+      "lastRationale": "GitLab tag pipeline 2550015043 completed successfully. Vercel and Cloud Run both serve v8.12.35, Cloud Run health is OK, and unauthenticated /monitoring remains protected.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -69049,16 +69304,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 75,
-      "appropriateCount": 53,
+      "seenCount": 76,
+      "appropriateCount": 54,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260525-0587",
-      "lastSeenAt": "2026-05-25T00:41:31.507Z",
+      "lastRunId": "QA-20260525-0589",
+      "lastSeenAt": "2026-05-25T03:01:02.015Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The query remains scoped to db-mysql-dc1-primary and the answer uses recommendCommands evidence for disk and MySQL operational guidance.",
+      "lastRationale": "The tested answers used current OTel-backed values: cache-redis-dc1-01 24h trend, memory top 3, and scoped disk values for exactly those prior 3 servers.",
       "lastNextAction": ""
     },
     "infra-reliability": {

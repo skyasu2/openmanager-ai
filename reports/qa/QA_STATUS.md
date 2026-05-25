@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-25 10:11:33 KST
+> Generated at: 2026-05-25 12:01:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 586 |
-| Total Runs (Counted) | 469 |
+| Total Recorded Runs | 587 |
+| Total Runs (Counted) | 470 |
 | Non-counted Runs | 117 |
-| Total Checks | 4179 |
-| Passed | 3997 |
+| Total Checks | 4185 |
+| Passed | 4002 |
 | Failed | 152 |
-| Completed Items | 669 |
+| Completed Items | 672 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 50 |
+| Wont-Fix Items | 51 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260525-0588 (2026-05-25T01:11:32.229Z) |
-| Latest Recorded Run | QA-20260525-0588 (2026-05-25T01:11:32.229Z) |
+| Last Counted Run | QA-20260525-0589 (2026-05-25T03:01:02.015Z) |
+| Latest Recorded Run | QA-20260525-0589 (2026-05-25T03:01:02.015Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,68 +34,72 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260525-0588 (2026-05-25T01:11:32.229Z)
+Latest run: QA-20260525-0589 (2026-05-25T03:01:02.015Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Preserve Advisor command evidence after the forced getServerMetrics preparation step. |
+| Data Quality & Metrics Analyst | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-25T02:51:41Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T01:11:32.229Z -> 2026-05-25T01:11:32.229Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 6
+- Window: 2026-05-24T03:01:02.015Z -> 2026-05-25T03:01:02.015Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Server Health Summary | streaming | 2 | 2711ms | 3482ms | - | - | - | - | QA-20260524-0575 |
-| Metrics Query Agent | streaming | 2 | 2157ms | 3315ms | - | - | - | - | QA-20260524-0576 |
-| Advisor Agent | streaming | 1 | 2018ms | 2018ms | - | - | - | - | QA-20260524-0574 |
 | Metrics Query Agent | deterministic | 1 | 60ms | 60ms | - | - | 60ms | 60ms | QA-20260525-0586 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T01:11:32.229Z -> 2026-05-25T01:11:32.229Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 9
-- Drift rate: 11.11%
+- Window: 2026-05-24T03:01:02.015Z -> 2026-05-25T03:01:02.015Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 13
+- Drift rate: 7.69%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | deterministic | 8 | 0% | 8ms | 60ms | QA-20260525-0586 |
+| /api/ai/supervisor/stream/v2 | deterministic | 11 | 0% | 5ms | 60ms | QA-20260525-0589 |
 | /api/ai/supervisor/stream/v2 | single-agent | 1 | 100% | 0ms | 0ms | QA-20260524-0579 |
+| /api/ai/jobs/[id]/stream | single-agent | 1 | 0% | 0ms | 0ms | QA-20260525-0589 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA 1f392682
+- Deployment: dpl_5KXXyEWQFhPjHCmgPozKs8DfvNG5 / SHA 3748656c
 - Coverage Packs: ai-core
-- Covered Surfaces: AI sidebar - Advisor routing (Q-NEW13), AI sidebar - storage metric-current (Q-NEW14), AI sidebar - memory metric-ranking top5 (Q-NEW15), AI sidebar - AZ location-load-balance (Q-NEW16), AI sidebar - single server 24h trend (Q-NEW17), AI sidebar - pronoun follow-up (Q-NEW18)
-- Skipped Surfaces: -
+- Covered Surfaces: /, /dashboard, AI sidebar conversational query, Q-NEW13 named-server performance advice after Advisor metrics grounding, Q-NEW17 single-server 24h metric trend routing, Q-NEW18 pronoun follow-up scoped to prior memory top 3
+- Skipped Surfaces: full standard five-question conversational AI QA, vision agent, reporter/analyst tabs, anomaly detection tab, core route broad smoke, Cloud Run admin /monitoring authenticated data view
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Cloud Run ai-engine | [Cloud Run ai-engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
+| general | GitLab Pipeline v8.12.35 | [GitLab Pipeline v8.12.35](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550015043) | - |
+| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel Deployment v8.12.35 | [Vercel Deployment v8.12.35](https://openmanager-hnjfn5bk9-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Q-NEW18 scoped top-3 disk follow-up pass | `reports/qa/evidence/qa-20260525-v81235-ai-targeted.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260525-0589)
+  next: Preserve Advisor command evidence after the forced getServerMetrics preparation step.
 
 ## Pending Improvements
 
@@ -107,7 +111,7 @@ Latest run: QA-20260525-0588 (2026-05-25T01:11:32.229Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 39
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 7, Portfolio Deferral 40
 
 ### Platform Constraint
 
@@ -221,6 +225,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P3] q-new11-location-clarification: DC1-AZ1/AZ2 명시에도 clarification 불필요 발동 (seen 1회, last QA-20260525-0584)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] q-new12-network-metric-disclosure: 네트워크 I/O 미보유 시 데이터 부재 미명시 폴백 (seen 1회, last QA-20260525-0584)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] q-new13-advisor-evidence-label-preservation: Q-NEW13 Advisor command evidence label should survive getServerMetrics preparation (seen 1회, last QA-20260525-0589)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] ranking-min-advice: 최저값 랭킹 응답에도 경고성 확인 항목이 표시됨 (seen 1회, last QA-20260524-0579)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -755,8 +761,11 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - provider-fallback-freshness-hardening: OpenRouter vision fallback disabled by default and Cerebras GPT-OSS short-output guard added (completed 1회, last QA-20260519-0536)
 - q-new13-advisor-command-evidence: Q-NEW13 named server performance advice displays Advisor Agent command evidence (completed 1회, last QA-20260525-0587)
+- q-new13-named-server-advice-metric-grounding: Q-NEW13 named-server performance advice uses live server metrics (completed 1회, last QA-20260525-0589)
 - q-new17-generic-metric-trend-routing: Q-NEW17 generic single-server 24h metric trend routes to monitoring-metric-trend (completed 1회, last QA-20260525-0586)
+- q-new17-single-server-24h-trend: Q-NEW17 단일 서버 24시간 추세를 monitoring-metric-trend로 라우팅 (completed 1회, last QA-20260525-0589)
 - q-new18-pronoun-follow-up-scope: Q-NEW18 대명사 follow-up 범위를 직전 서버 목록으로 제한 (completed 1회, last QA-20260525-0585)
+- q-new18-pronoun-follow-up-top3-scope: Q-NEW18 대명사 follow-up 범위를 직전 메모리 상위 3대로 제한 (completed 1회, last QA-20260525-0589)
 - q-new7-disk-threshold: 디스크 60% 초과 서버 목록 — PASS (completed 1회, last QA-20260525-0584)
 - q-new9-cpu-ranking: CPU 상위 3대 랭킹 — PASS (completed 1회, last QA-20260525-0584)
 - q5-action-needed-risky-wording-route: 위험 서버 질의 ACTION_NEEDED_PATTERN 라우팅 보강 (completed 1회, last QA-20260524-0579)
@@ -905,6 +914,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260525-0589 | 2026-05-25T03:01:02.015Z | targeted | yes | yes | v8.12.35 Production QA - P7 trend, P5 pronoun follow-up, Advisor grounding | 6 | 3 | 0 | 0 | 1 | 1 |
 | QA-20260525-0588 | 2026-05-25T01:11:32.229Z | targeted | no | yes | v8.12.29 8차 AI 어시스턴트 평가 — storage/메모리랭킹/AZ비교/단일서버추세/대명사follow-up | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260525-0587 | 2026-05-25T00:41:31.507Z | targeted | yes | yes | Q-NEW13 Production QA - Advisor Command Evidence | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0586 | 2026-05-24T22:51:39.888Z | targeted | yes | yes | Q-NEW17 Production QA - Generic Metric Trend Routing | 7 | 1 | 0 | 0 | 0 | 0 |
@@ -924,4 +934,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260524-0572 | 2026-05-23T15:52:37.929Z | targeted | yes | yes | v8.12.16 AI 어시스턴트 5차 평가 — 미테스트 6문항 (cache그룹·역방향필터·최솟값·그룹+예측·Advisor·세션컨텍스트) | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260523-0571 | 2026-05-23T14:54:43.243Z | targeted | yes | yes | QA-20260523-0571 v8.12.16 focused Vercel QA - MCP transport, multi-metric, threshold, artifact envelope | 9 | 4 | 0 | 0 | 1 | 1 |
 | QA-20260523-0570 | 2026-05-23T11:30:48.477Z | targeted | yes | yes | v8.12.16 focused Vercel production QA - embedded tab copy, artifact envelope, DB threshold | 6 | 4 | 0 | 0 | 0 | 1 |
-| QA-20260523-0569 | 2026-05-23T10:19:45.964Z | targeted | yes | yes | v8.12.15 focused Vercel production QA - quick-start, artifact envelope, DB threshold | 7 | 3 | 0 | 0 | 1 | 2 |
