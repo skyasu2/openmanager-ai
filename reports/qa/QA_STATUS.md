@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-25 16:46:11 KST
+> Generated at: 2026-05-25 17:02:19 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 590 |
+| Total Recorded Runs | 591 |
 | Total Runs (Counted) | 472 |
-| Non-counted Runs | 118 |
+| Non-counted Runs | 119 |
 | Total Checks | 4194 |
 | Passed | 4010 |
 | Failed | 153 |
-| Completed Items | 675 |
+| Completed Items | 677 |
 | Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 52 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 99.85% |
 | Last Counted Run | QA-20260525-0591 (2026-05-25T04:28:13.683Z) |
-| Latest Recorded Run | QA-20260525-0592 (2026-05-25T07:46:05.844Z) |
+| Latest Recorded Run | QA-20260525-0593 (2026-05-25T08:02:14.837Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260525-0592 (2026-05-25T07:46:05.844Z)
+Latest run: QA-20260525-0593 (2026-05-25T08:02:14.837Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | timeout 파라미터 제거 핫픽스 후 P8/Q-NEW25 재검증 |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -48,7 +48,7 @@ Latest run: QA-20260525-0592 (2026-05-25T07:46:05.844Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T07:46:05.844Z -> 2026-05-25T07:46:05.844Z (24h)
+- Window: 2026-05-24T08:02:14.837Z -> 2026-05-25T08:02:14.837Z (24h)
 - Runs with observations: 2 recorded / 2 counted
 - Samples: 2
 
@@ -59,7 +59,7 @@ Latest run: QA-20260525-0592 (2026-05-25T07:46:05.844Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T07:46:05.844Z -> 2026-05-25T07:46:05.844Z (24h)
+- Window: 2026-05-24T08:02:14.837Z -> 2026-05-25T08:02:14.837Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 7
 - Drift rate: 0%
@@ -74,9 +74,9 @@ Latest run: QA-20260525-0592 (2026-05-25T07:46:05.844Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 374b94bb
+- Deployment: SHA 9acfb525
 - Coverage Packs: ai-core
-- Covered Surfaces: /dashboard AI 어시스턴트, Q-NEW24~28 신규 질문 평가, P8/P9 회귀·수정 검증, LLM pre-filter v8.12.38 회귀 식별
+- Covered Surfaces: /dashboard AI 어시스턴트, P8 회귀: DB vs Cache 메모리 비교 재검증, Q-NEW25: 디스크 capacity forecast 재검증
 - Skipped Surfaces: reporter, vision, anomaly detection
 
 ## Links (Latest Run)
@@ -89,16 +89,12 @@ Latest run: QA-20260525-0592 (2026-05-25T07:46:05.844Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | page-2026-05-25T07-28-46-379Z.png | `.playwright-mcp/screenshots/page-2026-05-25T07-28-46-379Z.png` | - |
-| playwright-screenshot | page-2026-05-25T07-29-03-805Z.png | `.playwright-mcp/screenshots/page-2026-05-25T07-29-03-805Z.png` | - |
-| playwright-screenshot | page-2026-05-25T07-30-44-558Z.png | `.playwright-mcp/screenshots/page-2026-05-25T07-30-44-558Z.png` | - |
-| playwright-screenshot | page-2026-05-25T07-31-28-400Z.png | `.playwright-mcp/screenshots/page-2026-05-25T07-31-28-400Z.png` | - |
-| playwright-screenshot | page-2026-05-25T07-31-46-700Z.png | `.playwright-mcp/screenshots/page-2026-05-25T07-31-46-700Z.png` | - |
+| playwright-screenshot | page-2026-05-25T08-00-45-870Z.png | `.playwright-mcp/screenshots/page-2026-05-25T08-00-45-870Z.png` | - |
+| playwright-screenshot | page-2026-05-25T08-01-26-779Z.png | `.playwright-mcp/screenshots/page-2026-05-25T08-01-26-779Z.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260525-0592)
-  next: timeout 파라미터 제거 핫픽스 후 P8/Q-NEW25 재검증
+- None
 
 ## Pending Improvements
 
@@ -733,6 +729,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (completed 1회, last QA-20260421-0324)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - p5-session-context-follow-up: AI Assistant follow-up queries preserve previous server scope across streaming and async job paths (completed 1회, last QA-20260525-0583)
+- p8-db-vs-cache-메모리-비교-worker-request-failed-수정: P8: DB vs Cache 메모리 비교 Worker request failed 수정 (completed 1회, last QA-20260525-0593)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
 - planner-shadow-latency-precision: plannerShadow latency metadata no longer collapses to 0ms for fast production shadow decisions (completed 1회, last QA-20260504-0405)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
@@ -769,6 +766,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - q-new18-pronoun-follow-up-scope: Q-NEW18 대명사 follow-up 범위를 직전 서버 목록으로 제한 (completed 1회, last QA-20260525-0585)
 - q-new18-pronoun-follow-up-top3-scope: Q-NEW18 대명사 follow-up 범위를 직전 메모리 상위 3대로 제한 (completed 1회, last QA-20260525-0589)
 - q-new24-peak-metric-쿼리-정상-동작-확인: Q-NEW24 peak-metric 쿼리 정상 동작 확인 (completed 1회, last QA-20260525-0592)
+- q-new25-capacity-forecast-쿼리-worker-request-failed-수정: Q-NEW25: capacity forecast 쿼리 Worker request failed 수정 (completed 1회, last QA-20260525-0593)
 - q-new27-threshold-필터-정확도-확인: Q-NEW27 threshold 필터 정확도 확인 (completed 1회, last QA-20260525-0592)
 - q-new7-disk-threshold: 디스크 60% 초과 서버 목록 — PASS (completed 1회, last QA-20260525-0584)
 - q-new9-cpu-ranking: CPU 상위 3대 랭킹 — PASS (completed 1회, last QA-20260525-0584)
@@ -918,6 +916,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260525-0593 | 2026-05-25T08:02:14.837Z | targeted | no | no | v8.12.39 핫픽스 검증 — P8/Q-NEW25 LLM pre-filter 회귀 수정 확인 | 2 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260525-0592 | 2026-05-25T07:46:05.844Z | targeted | no | no | 10차 AI 어시스턴트 평가 — LLM pre-filter v8.12.38 신규질문·회귀 검증 | 7 | 2 | 1 | 0 | 1 | 1 |
 | QA-20260525-0591 | 2026-05-25T04:28:13.683Z | targeted | yes | yes | v8.12.37 Production QA - Q-NEW13 Advisor evidence closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0590 | 2026-05-25T03:57:03.861Z | targeted | yes | yes | v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check | 4 | 0 | 1 | 0 | 0 | 1 |
@@ -937,4 +936,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260524-0576 | 2026-05-24T02:47:28.531Z | targeted | yes | yes | v8.12.19 production targeted QA - healthy filter closure | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260524-0575 | 2026-05-24T02:26:16.493Z | targeted | yes | yes | v8.12.18 production targeted QA - healthy filter recheck | 1 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260524-0574 | 2026-05-24T02:01:17.511Z | targeted | yes | yes | Cloud Run 94ce8471b production targeted QA - AI routing closure check | 3 | 2 | 1 | 0 | 0 | 2 |
-| QA-20260524-0573 | 2026-05-23T17:08:54.211Z | targeted | yes | yes | v8.12.17 production targeted QA - AI v8.12.16 follow-up closure | 9 | 4 | 0 | 0 | 0 | 1 |

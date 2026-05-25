@@ -1,0 +1,97 @@
+{
+  "runId": "QA-20260525-0593",
+  "recordedAt": "2026-05-25T08:02:14.837Z",
+  "recordedAtKst": "2026-05-25 17:02:14 KST",
+  "runTitle": "v8.12.39 핫픽스 검증 — P8/Q-NEW25 LLM pre-filter 회귀 수정 확인",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "9acfb525ddca1a97e064e7f8c7d5460d2c1137b1"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard AI 어시스턴트",
+    "P8 회귀: DB vs Cache 메모리 비교 재검증",
+    "Q-NEW25: 디스크 capacity forecast 재검증"
+  ],
+  "skippedSurfaces": [
+    "reporter",
+    "vision",
+    "anomaly detection"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.12.39 핫픽스(timeout:{totalMs} 파라미터 제거)로 P8/Q-NEW25 회귀 완전 수정 확인",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-25T08-00-45-870Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-25T08-00-45-870Z.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "page-2026-05-25T08-01-26-779Z.png",
+      "path": ".playwright-mcp/screenshots/page-2026-05-25T08-01-26-779Z.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p8-db-vs-cache-메모리-비교-worker-request-failed-수정",
+      "title": "P8: DB vs Cache 메모리 비교 Worker request failed 수정",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "q-new25-capacity-forecast-쿼리-worker-request-failed-수정",
+      "title": "Q-NEW25: capacity forecast 쿼리 Worker request failed 수정",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
