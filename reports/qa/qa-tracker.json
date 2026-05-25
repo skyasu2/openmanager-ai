@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T10:16:08.749Z"
+    "updatedAt": "2026-05-25T10:58:57.910Z"
   },
   "sequence": {
-    "nextRunNumber": 596
+    "nextRunNumber": 597
   },
   "summary": {
-    "totalRecordedRuns": 593,
+    "totalRecordedRuns": 594,
     "totalRuns": 472,
-    "excludedRuns": 121,
+    "excludedRuns": 122,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
-    "completionRate": 99.56,
-    "completedItems": 682,
-    "pendingItems": 3,
+    "completionRate": 99.85,
+    "completedItems": 684,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 52,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260525-0591",
     "lastRecordedAt": "2026-05-25T04:28:13.683Z",
-    "latestRecordedRunId": "QA-20260525-0595",
-    "latestRecordedAt": "2026-05-25T10:16:08.749Z"
+    "latestRecordedRunId": "QA-20260525-0596",
+    "latestRecordedAt": "2026-05-25T10:58:57.910Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17348,51 +17348,51 @@
     },
     "p9-restart-routing-production-deploy": {
       "id": "p9-restart-routing-production-deploy",
-      "title": "P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증 필요",
+      "title": "P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증",
       "priority": "P3",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260525-0595",
       "firstSeenAt": "2026-05-25T10:16:08.749Z",
-      "lastSeenRunId": "QA-20260525-0595",
-      "lastSeenAt": "2026-05-25T10:16:08.749Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260525-0596",
+      "lastSeenAt": "2026-05-25T10:58:57.910Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
-      "owner": "claude",
-      "lastEvidence": "",
-      "lastNote": "main routing fix 검증 완료, Cloud Run production v8.12.39 기준 미배포 상태. release/tag 배포 후 production 재검증 필요.",
+      "owner": "codex",
+      "lastEvidence": "Cloud Run v8.12.40 /api/ai/supervisor query '재시작해야 할 서버 있어?' returned success=true and metadata.handoffs Direct Router -> Metrics Query Agent, finalAgent=Metrics Query Agent.",
+      "lastNote": "Production now serves v8.12.40; immediate-action answer returned no restart-needed servers.",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-25T10:16:08.749Z"
+      "lastStatusChangeAt": "2026-05-25T10:58:57.910Z"
     },
     "q-new30-efficient-routing-production-deploy": {
       "id": "q-new30-efficient-routing-production-deploy",
-      "title": "Q-NEW30: 효율적인 서버 라우팅 프로덕션 배포 후 재검증 필요",
+      "title": "Q-NEW30: 효율적인 서버 라우팅 프로덕션 배포 후 재검증",
       "priority": "P3",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260525-0595",
       "firstSeenAt": "2026-05-25T10:16:08.749Z",
-      "lastSeenRunId": "QA-20260525-0595",
-      "lastSeenAt": "2026-05-25T10:16:08.749Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260525-0596",
+      "lastSeenAt": "2026-05-25T10:58:57.910Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
-      "owner": "claude",
-      "lastEvidence": "",
-      "lastNote": "main routing fix 검증 완료, Cloud Run production v8.12.39 기준 미배포 상태. release/tag 배포 후 production 재검증 필요.",
+      "owner": "codex",
+      "lastEvidence": "Cloud Run v8.12.40 /api/ai/supervisor query '가장 효율적인 서버 알려줘' returned success=true and metadata.finalAgent=Metrics Query Agent with CPU low-use ranking answer.",
+      "lastNote": "Production now serves v8.12.40 and routes efficient-server wording to Metrics Query Agent.",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-25T10:16:08.749Z"
+      "lastStatusChangeAt": "2026-05-25T10:58:57.910Z"
     },
     "p11-capacity-forecast-n-hours-expression": {
       "id": "p11-capacity-forecast-n-hours-expression",
@@ -70063,6 +70063,95 @@
       "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0596",
+      "recordedAt": "2026-05-25T10:58:57.910Z",
+      "recordedAtKst": "2026-05-25 19:58:57 KST",
+      "title": "v8.12.40 production routing verification — P9/Q-NEW30 deployment closure",
+      "owner": "codex",
+      "source": "cloud-run-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0596.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.40",
+        "backend": "Cloud Run v8.12.40",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "4b6a0ba6336f5341cc7ea6b5c809c73d3bcc0912"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.12.40 tag pipeline",
+        "Cloud Run ai-engine /health and authenticated supervisor health",
+        "Frontend /api/version v8.12.40",
+        "P9 restart-needed server lookup production routing",
+        "Q-NEW30 efficient-server production routing"
+      ],
+      "skippedSurfaces": [
+        "reporter",
+        "vision",
+        "full browser conversational QA",
+        "P11 capacity forecast expression fix"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "P9 restart-needed server lookup",
+          "agent": "Metrics Query Agent",
+          "provider": "groq",
+          "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "route": "Cloud Run /api/ai/supervisor",
+          "source": "production API metadata",
+          "latencyMs": 1584
+        },
+        {
+          "surface": "Q-NEW30 efficient-server lookup",
+          "agent": "Metrics Query Agent",
+          "provider": "mistral",
+          "model": "mistral-small-latest",
+          "route": "Cloud Run /api/ai/supervisor",
+          "source": "production API metadata",
+          "latencyMs": 3228
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.12.40 production deployment restored Metrics Query routing for P9 restart-needed lookup and Q-NEW30 efficient-server wording.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.12.40 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550821432"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -70071,16 +70160,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 311,
-      "appropriateCount": 266,
+      "seenCount": 312,
+      "appropriateCount": 267,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 64,
-      "lastRunId": "QA-20260525-0594",
-      "lastSeenAt": "2026-05-25T09:39:11.343Z",
+      "lastRunId": "QA-20260525-0596",
+      "lastSeenAt": "2026-05-25T10:58:57.910Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Q-NEW28/P9 routing regressions were covered by deterministic unit tests, full AI Engine tests, lint, type-check, contract tests, and diff whitespace check.",
+      "lastRationale": "v8.12.40 production deployment restored Metrics Query routing for P9 restart-needed lookup and Q-NEW30 efficient-server wording.",
       "lastNextAction": ""
     },
     "observability-monitoring": {

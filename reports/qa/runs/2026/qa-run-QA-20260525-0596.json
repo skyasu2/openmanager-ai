@@ -1,0 +1,120 @@
+{
+  "runId": "QA-20260525-0596",
+  "recordedAt": "2026-05-25T10:58:57.910Z",
+  "recordedAtKst": "2026-05-25 19:58:57 KST",
+  "runTitle": "v8.12.40 production routing verification — P9/Q-NEW30 deployment closure",
+  "owner": "codex",
+  "source": "cloud-run-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.40",
+    "backend": "Cloud Run v8.12.40",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "4b6a0ba6336f5341cc7ea6b5c809c73d3bcc0912"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "GitLab v8.12.40 tag pipeline",
+    "Cloud Run ai-engine /health and authenticated supervisor health",
+    "Frontend /api/version v8.12.40",
+    "P9 restart-needed server lookup production routing",
+    "Q-NEW30 efficient-server production routing"
+  ],
+  "skippedSurfaces": [
+    "reporter",
+    "vision",
+    "full browser conversational QA",
+    "P11 capacity forecast expression fix"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P9 restart-needed server lookup",
+      "agent": "Metrics Query Agent",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "Cloud Run /api/ai/supervisor",
+      "source": "production API metadata",
+      "latencyMs": 1584
+    },
+    {
+      "surface": "Q-NEW30 efficient-server lookup",
+      "agent": "Metrics Query Agent",
+      "provider": "mistral",
+      "model": "mistral-small-latest",
+      "route": "Cloud Run /api/ai/supervisor",
+      "source": "production API metadata",
+      "latencyMs": 3228
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.12.40 production deployment restored Metrics Query routing for P9 restart-needed lookup and Q-NEW30 efficient-server wording.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "p9-restart-routing-production-deploy",
+      "title": "P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run v8.12.40 /api/ai/supervisor query '재시작해야 할 서버 있어?' returned success=true and metadata.handoffs Direct Router -> Metrics Query Agent, finalAgent=Metrics Query Agent.",
+      "note": "Production now serves v8.12.40; immediate-action answer returned no restart-needed servers.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "q-new30-efficient-routing-production-deploy",
+      "title": "Q-NEW30: 효율적인 서버 라우팅 프로덕션 배포 후 재검증",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run v8.12.40 /api/ai/supervisor query '가장 효율적인 서버 알려줘' returned success=true and metadata.finalAgent=Metrics Query Agent with CPU low-use ranking answer.",
+      "note": "Production now serves v8.12.40 and routes efficient-server wording to Metrics Query Agent.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release commit/tag: v8.12.40, commit 4b6a0ba6336f5341cc7ea6b5c809c73d3bcc0912.",
+    "GitLab pipeline 2550821432 succeeded: deploy, deploy_ai_engine, post_deploy_smoke, post_deploy_ai_engine_smoke all success.",
+    "Cloud Run health returned status=ok, service=ai-engine, version=8.12.40.",
+    "Frontend /api/version returned version/buildVersion 8.12.40 and pipelineUrl 2550821432.",
+    "P11 capacity forecast N시간/N일 포화 표현 remains pending in TODO.md."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.12.40 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550821432"
+    }
+  ]
+}

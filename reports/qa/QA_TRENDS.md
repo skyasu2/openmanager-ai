@@ -1,36 +1,38 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-25 19:32:23 KST
+> Generated at: 2026-05-25 19:59:15 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 593 |
+| Recorded Runs | 594 |
 | Counted Runs | 472 |
 | Total Checks | 4194 |
 | Total Passed | 4010 |
 | Total Failed | 153 |
 | Overall Pass Rate | 95.61% |
-| Latest Recorded Run | QA-20260525-0595 |
+| Latest Recorded Run | QA-20260525-0596 |
 | Last Counted Run | QA-20260525-0591 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T10:16:08.749Z -> 2026-05-25T10:16:08.749Z (24h)
-- Runs with observations: 3 recorded / 2 counted
-- Samples: 5
+- Window: 2026-05-24T10:58:57.910Z -> 2026-05-25T10:58:57.910Z (24h)
+- Runs with observations: 4 recorded / 2 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Advisor Agent | mixed | 1 | 27514ms | 27514ms | 0ms | 0ms | 27514ms | 27514ms | QA-20260525-0591 |
 | Server Realtime Analysis | mixed | 1 | 8456ms | 8456ms | - | - | - | - | QA-20260525-0595 |
+| Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
+| Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | deterministic | 3 | 37ms | 60ms | - | - | 60ms | 60ms | QA-20260525-0595 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T10:16:08.749Z -> 2026-05-25T10:16:08.749Z (24h)
+- Window: 2026-05-24T10:58:57.910Z -> 2026-05-25T10:58:57.910Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 7
 - Drift rate: 0%
@@ -72,7 +74,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 406 | 286 |
+| targeted | 407 | 286 |
 | legacy | 137 | 137 |
 | broad | 35 | 34 |
 | release-gate | 9 | 9 |
@@ -86,7 +88,7 @@
 | P0 | 49 | 10 | 20.41% | 0 | 0 | 0% | 49 | 0 |
 | P1 | 302 | 109 | 36.09% | 0 | 0 | 0% | 294 | 8 |
 | P2 | 319 | 66 | 20.69% | 0 | 0 | 0% | 290 | 29 |
-| P3 | 57 | 14 | 24.56% | 2 | 0 | 0% | 44 | 11 |
+| P3 | 57 | 16 | 28.07% | 0 | 0 | 0% | 46 | 11 |
 | P4 | 5 | 0 | 0% | 1 | 0 | 0% | 1 | 3 |
 | P5 | 5 | 0 | 0% | 0 | 0 | 0% | 4 | 1 |
 
@@ -145,8 +147,6 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
-| p9-restart-routing-production-deploy | P3 | pending | 1 | QA-20260525-0595 | P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증 필요 |
-| q-new30-efficient-routing-production-deploy | P3 | pending | 1 | QA-20260525-0595 | Q-NEW30: 효율적인 서버 라우팅 프로덕션 배포 후 재검증 필요 |
 | p11-capacity-forecast-n-hours-expression | P4 | pending | 1 | QA-20260525-0595 | P11: N시간 이내 디스크 포화 표현 capacity-forecast 미라우팅 |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |

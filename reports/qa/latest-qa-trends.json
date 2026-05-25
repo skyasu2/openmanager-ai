@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-25T10:32:23.939Z",
-  "generatedAtKst": "2026-05-25 19:32:23 KST",
-  "trackerUpdatedAt": "2026-05-25T10:16:08.749Z",
+  "generatedAt": "2026-05-25T10:59:15.913Z",
+  "generatedAtKst": "2026-05-25 19:59:15 KST",
+  "trackerUpdatedAt": "2026-05-25T10:58:57.910Z",
   "totals": {
-    "recordedRuns": 593,
+    "recordedRuns": 594,
     "countedRuns": 472,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
     "overallPassRatePct": 95.61,
-    "latestRecordedRunId": "QA-20260525-0595",
+    "latestRecordedRunId": "QA-20260525-0596",
     "lastCountedRunId": "QA-20260525-0591"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 406,
+      "totalRuns": 407,
       "countedRuns": 286
     },
     {
@@ -287,12 +287,12 @@
     {
       "priority": "P3",
       "totalItems": 57,
-      "recurringItems": 14,
-      "openItems": 2,
+      "recurringItems": 16,
+      "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 44,
+      "completedItems": 46,
       "wontFixItems": 11,
-      "recurrenceRatePct": 24.56,
+      "recurrenceRatePct": 28.07,
       "openRecurrenceRatePct": 0
     },
     {
@@ -749,26 +749,6 @@
   "recurringItems": {
     "open": [
       {
-        "id": "p9-restart-routing-production-deploy",
-        "title": "P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증 필요",
-        "status": "pending",
-        "priority": "P3",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260525-0595",
-        "lastResolvedRunId": null
-      },
-      {
-        "id": "q-new30-efficient-routing-production-deploy",
-        "title": "Q-NEW30: 효율적인 서버 라우팅 프로덕션 배포 후 재검증 필요",
-        "status": "pending",
-        "priority": "P3",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260525-0595",
-        "lastResolvedRunId": null
-      },
-      {
         "id": "p11-capacity-forecast-n-hours-expression",
         "title": "P11: N시간 이내 디스크 포화 표현 capacity-forecast 미라우팅",
         "status": "pending",
@@ -986,11 +966,11 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T10:16:08.749Z",
-    "windowEnd": "2026-05-25T10:16:08.749Z",
-    "recordedRunCount": 3,
+    "windowStart": "2026-05-24T10:58:57.910Z",
+    "windowEnd": "2026-05-25T10:58:57.910Z",
+    "recordedRunCount": 4,
     "countedRunCount": 2,
-    "sampleCount": 5,
+    "sampleCount": 7,
     "buckets": [
       {
         "agent": "Advisor Agent",
@@ -1024,6 +1004,36 @@
       },
       {
         "agent": "Metrics Query Agent",
+        "provider": "mistral",
+        "sampleCount": 1,
+        "runCount": 1,
+        "countedRunCount": 0,
+        "avgLatencyMs": 3228,
+        "p95LatencyMs": 3228,
+        "avgTtfbMs": null,
+        "p95TtfbMs": null,
+        "avgProcessingTimeMs": null,
+        "p95ProcessingTimeMs": null,
+        "latestRunId": "QA-20260525-0596",
+        "latestRecordedAt": "2026-05-25T10:58:57.910Z"
+      },
+      {
+        "agent": "Metrics Query Agent",
+        "provider": "groq",
+        "sampleCount": 1,
+        "runCount": 1,
+        "countedRunCount": 0,
+        "avgLatencyMs": 1584,
+        "p95LatencyMs": 1584,
+        "avgTtfbMs": null,
+        "p95TtfbMs": null,
+        "avgProcessingTimeMs": null,
+        "p95ProcessingTimeMs": null,
+        "latestRunId": "QA-20260525-0596",
+        "latestRecordedAt": "2026-05-25T10:58:57.910Z"
+      },
+      {
+        "agent": "Metrics Query Agent",
         "provider": "deterministic",
         "sampleCount": 3,
         "runCount": 2,
@@ -1041,8 +1051,8 @@
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T10:16:08.749Z",
-    "windowEnd": "2026-05-25T10:16:08.749Z",
+    "windowStart": "2026-05-24T10:58:57.910Z",
+    "windowEnd": "2026-05-25T10:58:57.910Z",
     "recordedRunCount": 3,
     "countedRunCount": 3,
     "sampleCount": 7,
