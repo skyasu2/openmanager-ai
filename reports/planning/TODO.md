@@ -23,7 +23,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Single path 경량화 | Low | `ALLOW_DEGRADED_SINGLE=false` production 비활성. 단순쿼리 경로 설계 시 재검토. |
+| _None_ | - | 현재 대기 중인 작업 없음. |
 
 ---
 
@@ -37,6 +37,7 @@
 | QA evidence cleanup batch | 2026-05-26 audit: orphan 0, missing 0, archive candidate 0, storage warning 0. 즉시 정리 불필요. | `reports/qa` 90MiB 초과 또는 orphan/missing 발생 시 |
 | Local Docker/WSL storage hygiene residue | 2026-05-26 cleanup 완료: Docker build cache 20.45GB prune, npm cache 8.3GiB -> 16.9MiB, repo tmp/playwright 445.2MiB -> 20.9MiB, uv/puppeteer/next-swc cache 제거. 보존: `.codex`/`.gemini`/`.claude` history, active `ms-playwright`, minikube cache. | 월 1회 `npm run storage:audit` 또는 대규모 QA/배포 전 |
 | Supabase 세션 메모리/장기 drift 정책 | 포트폴리오 범위에서는 장기 개인화 메모리와 장기 세션 재동기화가 제품 필수 기능이 아님. 현행 Redis 1시간 TTL과 fresh-load 기준으로 충분하며 Supabase 저장 확장은 과설계. | 포트폴리오 요구가 장기 follow-up/개인화 기억으로 명확히 승격될 때만 |
+| Single path 경량화 별도 구현 | 현재 `auto` 모드는 단순 질의를 deterministic/single-agent 경로로 이미 유지합니다. explicit `single`과 multi 실패 후 degraded single retry는 emergency gate이며, 2026-05-26 `deploy.sh` 기본값을 `ALLOW_DEGRADED_SINGLE=${ALLOW_DEGRADED_SINGLE:-false}`로 정리해 production 기본 정책과 문서 불일치를 제거했습니다. | 단순 질의 경로의 비용/지연 회귀가 QA 증거로 확인될 때만 |
 
 ---
 

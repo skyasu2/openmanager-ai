@@ -34,4 +34,16 @@ describe('canonical deploy policy', () => {
       existsSync(join(REPO_ROOT, 'scripts/deploy/guard-canonical-deploy.sh'))
     ).toBe(false);
   });
+
+  it('keeps degraded single fallback disabled by default in Cloud Run deploys', () => {
+    const deployScript = readFileSync(
+      join(REPO_ROOT, 'cloud-run/ai-engine/deploy.sh'),
+      'utf8'
+    );
+
+    expect(deployScript).toContain(
+      'ALLOW_DEGRADED_SINGLE=${ALLOW_DEGRADED_SINGLE:-false}'
+    );
+    expect(deployScript).not.toContain('ALLOW_DEGRADED_SINGLE=true');
+  });
 });

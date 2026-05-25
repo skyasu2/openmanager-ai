@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-05-26
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -263,12 +263,14 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
                 BUILD_SHA=${SHORT_SHA},\
                 DEFAULT_ORIGIN=${DEFAULT_ORIGIN},\
                 ALLOWED_ORIGINS=${ALLOWED_ORIGINS},\
-                ALLOW_DEGRADED_SINGLE=true,\
+                ALLOW_DEGRADED_SINGLE=${ALLOW_DEGRADED_SINGLE:-false},\
                 CEREBRAS_MODEL_ID=${CEREBRAS_MODEL_ID},\
                 CEREBRAS_FALLBACK_MODEL_IDS=${CEREBRAS_FALLBACK_MODEL_IDS},\
                 CEREBRAS_TOOL_CALLING_ENABLED=true,\
                 CEREBRAS_LONG_CONTEXT_ENABLED=true"
 ```
+
+`ALLOW_DEGRADED_SINGLE`의 배포 기본값은 `false`입니다. 명시적 `single` 요청과 multi-agent 실패 후 degraded single retry를 여는 emergency gate이며, `auto` 모드의 저복잡도 deterministic/single routing과는 별개입니다.
 
 ### 로컬 개발용 (`cloud-run/ai-engine/.env`)
 
