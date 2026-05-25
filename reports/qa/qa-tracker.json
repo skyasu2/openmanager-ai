@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T03:57:03.861Z"
+    "updatedAt": "2026-05-25T04:28:13.683Z"
   },
   "sequence": {
-    "nextRunNumber": 591
+    "nextRunNumber": 592
   },
   "summary": {
-    "totalRecordedRuns": 588,
-    "totalRuns": 471,
+    "totalRecordedRuns": 589,
+    "totalRuns": 472,
     "excludedRuns": 117,
-    "totalChecks": 4189,
-    "totalPassed": 4005,
+    "totalChecks": 4194,
+    "totalPassed": 4010,
     "totalFailed": 153,
-    "completionRate": 99.85,
-    "completedItems": 672,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 673,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 51,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260525-0590",
-    "lastRecordedAt": "2026-05-25T03:57:03.861Z",
-    "latestRecordedRunId": "QA-20260525-0590",
-    "latestRecordedAt": "2026-05-25T03:57:03.861Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260525-0591",
+    "lastRecordedAt": "2026-05-25T04:28:13.683Z",
+    "latestRecordedRunId": "QA-20260525-0591",
+    "latestRecordedAt": "2026-05-25T04:28:13.683Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17084,27 +17084,27 @@
     },
     "q-new13-advisor-command-evidence-not-called": {
       "id": "q-new13-advisor-command-evidence-not-called",
-      "title": "Q-NEW13 named-server performance advice must invoke Advisor command evidence after metric precheck",
+      "title": "Q-NEW13 named-server performance advice invokes Advisor command evidence after metric precheck",
       "priority": "P2",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260525-0590",
       "firstSeenAt": "2026-05-25T03:57:03.861Z",
-      "lastSeenRunId": "QA-20260525-0590",
-      "lastSeenAt": "2026-05-25T03:57:03.861Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260525-0591",
+      "lastSeenAt": "2026-05-25T04:28:13.683Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "v8.12.36 production response used getServerMetrics only and footer stayed 서버 실시간 데이터 분석.",
-      "lastNote": "release-blocking 아님; targeted follow-up fix is in progress.",
+      "lastEvidence": "v8.12.37 production response footer: Advisor Agent 조치 명령어 근거; tools: 서버 메트릭 조회 + 조치 명령어 정리.",
+      "lastNote": "Validated on Vercel production with Cloud Run AI Engine v8.12.37.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-25T03:57:03.861Z"
+      "lastStatusChangeAt": "2026-05-25T04:28:13.683Z"
     }
   },
   "runs": [
@@ -69315,6 +69315,99 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0591",
+      "recordedAt": "2026-05-25T04:28:13.683Z",
+      "recordedAtKst": "2026-05-25 13:28:13 KST",
+      "title": "v8.12.37 Production QA - Q-NEW13 Advisor evidence closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0591.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FocxFMt8y6Cy3GGXxwGUXBjhTyRp",
+        "deploymentUrl": "https://openmanager-4u4uz91zu-skyasus-projects.vercel.app",
+        "commitSha": "beb8e6acc4c3f1e2767037036129df868587cf76"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "AI sidebar Q-NEW13 named-server performance advice",
+        "Advisor getServerMetrics precheck",
+        "Advisor recommendCommands evidence",
+        "Cloud Run AI Engine v8.12.37 streamed response"
+      ],
+      "skippedSurfaces": [
+        "core route pack",
+        "modal/detail pack",
+        "observability pack",
+        "full conversational five-question pack"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar Q-NEW13 named-server performance advice",
+          "agent": "Advisor Agent",
+          "provider": "mixed",
+          "model": "production rotation",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Performance API fetch resource duration",
+          "latencyMs": 27514,
+          "ttfbMs": 0,
+          "processingTimeMs": 27514
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Q-NEW13 now uses current server metrics plus Advisor command evidence and displays the Advisor evidence footer in production.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-25T13:27:09+09:00",
+          "summary": "Current billing period checked after v8.12.37 targeted production AI QA; effective 15.9631 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW13 v8.12.37 Advisor evidence footer",
+          "path": "reports/qa/evidence/qa-20260525-v81237-qnew13-pass-footer.png",
+          "note": "Footer shows Advisor Agent 조치 명령어 근거 and analysis basis lists 서버 메트릭 조회 + 조치 명령어 정리."
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -69323,17 +69416,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 307,
-      "appropriateCount": 262,
+      "seenCount": 308,
+      "appropriateCount": 263,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 63,
-      "lastRunId": "QA-20260525-0590",
-      "lastSeenAt": "2026-05-25T03:57:03.861Z",
+      "lastRunId": "QA-20260525-0591",
+      "lastSeenAt": "2026-05-25T04:28:13.683Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Q-NEW13 no longer misroutes to location load balance and includes live metrics, but Advisor command evidence is still not invoked in production.",
-      "lastNextAction": "Make named-server operational advice yield from realtime metric shortcut to Advisor getServerMetrics then recommendCommands."
+      "lastImprovementNeeded": false,
+      "lastRationale": "Q-NEW13 now uses current server metrics plus Advisor command evidence and displays the Advisor evidence footer in production.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

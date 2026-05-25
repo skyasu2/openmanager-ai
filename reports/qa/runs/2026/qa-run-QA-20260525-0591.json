@@ -1,0 +1,109 @@
+{
+  "runId": "QA-20260525-0591",
+  "recordedAt": "2026-05-25T04:28:13.683Z",
+  "recordedAtKst": "2026-05-25 13:28:13 KST",
+  "runTitle": "v8.12.37 Production QA - Q-NEW13 Advisor evidence closure",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FocxFMt8y6Cy3GGXxwGUXBjhTyRp",
+    "deploymentUrl": "https://openmanager-4u4uz91zu-skyasus-projects.vercel.app",
+    "commitSha": "beb8e6acc4c3f1e2767037036129df868587cf76"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "AI sidebar Q-NEW13 named-server performance advice",
+    "Advisor getServerMetrics precheck",
+    "Advisor recommendCommands evidence",
+    "Cloud Run AI Engine v8.12.37 streamed response"
+  ],
+  "skippedSurfaces": [
+    "core route pack",
+    "modal/detail pack",
+    "observability pack",
+    "full conversational five-question pack"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar Q-NEW13 named-server performance advice",
+      "agent": "Advisor Agent",
+      "provider": "mixed",
+      "model": "production rotation",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Performance API fetch resource duration",
+      "latencyMs": 27514,
+      "ttfbMs": 0,
+      "processingTimeMs": 27514
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Q-NEW13 now uses current server metrics plus Advisor command evidence and displays the Advisor evidence footer in production.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-25T13:27:09+09:00",
+      "summary": "Current billing period checked after v8.12.37 targeted production AI QA; effective 15.9631 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q-NEW13 v8.12.37 Advisor evidence footer",
+      "path": "reports/qa/evidence/qa-20260525-v81237-qnew13-pass-footer.png",
+      "note": "Footer shows Advisor Agent 조치 명령어 근거 and analysis basis lists 서버 메트릭 조회 + 조치 명령어 정리."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new13-advisor-command-evidence-not-called",
+      "title": "Q-NEW13 named-server performance advice invokes Advisor command evidence after metric precheck",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.37 production response footer: Advisor Agent 조치 명령어 근거; tools: 서버 메트릭 조회 + 조치 명령어 정리.",
+      "note": "Validated on Vercel production with Cloud Run AI Engine v8.12.37.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Question: db-mysql-dc1-primary 서버 성능 개선 조언 해줘",
+    "Observed: response uses getServerMetrics first, then recommendCommands, and the UI evidence label is Advisor Agent 조치 명령어 근거.",
+    "Production versions: frontend v8.12.37, ai-engine v8.12.37."
+  ],
+  "links": []
+}
