@@ -8,6 +8,7 @@ describe('ADVISOR_INSTRUCTIONS', () => {
     expect(ADVISOR_INSTRUCTIONS).toContain('패키지 설치');
     expect(ADVISOR_INSTRUCTIONS).toContain('서비스 재시작');
     expect(ADVISOR_INSTRUCTIONS).toContain('실행을 보류');
+    expect(ADVISOR_INSTRUCTIONS).toContain('getServerMetrics(serverId)');
   });
 
   it('does not instruct Advisor to call Analyst-owned RCA tools directly', () => {

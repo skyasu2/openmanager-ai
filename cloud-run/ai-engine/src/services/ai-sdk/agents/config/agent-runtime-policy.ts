@@ -177,6 +177,7 @@ export const AGENT_RUNTIME_POLICIES = {
     maxSteps: 3,
     evidenceBudget: 3,
     toolAllowlist: [
+      'getServerMetrics',
       'searchKnowledgeBase',
       'recommendCommands',
       'searchWeb',

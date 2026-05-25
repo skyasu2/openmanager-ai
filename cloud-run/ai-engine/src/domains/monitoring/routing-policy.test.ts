@@ -583,6 +583,7 @@ describe('createPrepareStep', () => {
     const prepare = createPrepareStep('해결 방법 알려줘');
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('recommendCommands');
+    expect(result.activeTools).not.toContain('getServerMetrics');
     expect(result.activeTools).not.toContain('searchKnowledgeBase');
     expect(result.activeTools).not.toContain('searchWeb');
     expect(result.toolChoice).toBe('required');
@@ -598,11 +599,24 @@ describe('createPrepareStep', () => {
     const result = await prepare({ stepNumber: 0 });
 
     expect(result.activeTools).toContain('recommendCommands');
+    expect(result.activeTools).toContain('getServerMetrics');
     expect(result.activeTools).toContain('finalAnswer');
     expect(result.activeTools).not.toContain('computeSeriesStats');
     expect(result.toolChoice).toEqual({
       type: 'tool',
+      toolName: 'getServerMetrics',
+    });
+
+    const commandStep = await prepare({ stepNumber: 1 });
+    expect(commandStep.toolChoice).toEqual({
+      type: 'tool',
       toolName: 'recommendCommands',
+    });
+
+    const finalStep = await prepare({ stepNumber: 2 });
+    expect(finalStep).toEqual({
+      activeTools: ['finalAnswer'],
+      toolChoice: 'required',
     });
   });
 
@@ -624,11 +638,26 @@ describe('createPrepareStep', () => {
     );
     const result = await prepare({ stepNumber: 0 });
 
+    expect(result.activeTools).toContain('getServerMetrics');
     expect(result.activeTools).toContain('recommendCommands');
     expect(result.activeTools).toContain('finalAnswer');
     expect(result.toolChoice).toEqual({
       type: 'tool',
+      toolName: 'getServerMetrics',
+    });
+
+    const commandStep = await prepare({ stepNumber: 1 });
+    expect(commandStep.activeTools).toContain('getServerMetrics');
+    expect(commandStep.activeTools).toContain('recommendCommands');
+    expect(commandStep.toolChoice).toEqual({
+      type: 'tool',
       toolName: 'recommendCommands',
+    });
+
+    const finalStep = await prepare({ stepNumber: 2 });
+    expect(finalStep).toEqual({
+      activeTools: ['finalAnswer'],
+      toolChoice: 'required',
     });
   });
 

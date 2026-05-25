@@ -511,13 +511,29 @@ export function createPrepareStep(
 
     if (
       policyIntent === 'advisor' &&
-      stepNumber === 0 &&
       shouldPreferAdvisorForOperationalAdvice(q) &&
       !shouldForceKnowledgeBase &&
-      !shouldForceWeb &&
-      activeTools.includes('recommendCommands')
+      !shouldForceWeb
     ) {
-      toolChoice = { type: 'tool', toolName: 'recommendCommands' };
+      if (!activeTools.includes('getServerMetrics')) {
+        const recommendCommandsIdx = activeTools.indexOf('recommendCommands');
+        const finalAnswerIdx = activeTools.indexOf('finalAnswer');
+        const insertionIdx =
+          recommendCommandsIdx >= 0
+            ? recommendCommandsIdx
+            : finalAnswerIdx >= 0
+              ? finalAnswerIdx
+              : 0;
+        activeTools.splice(insertionIdx, 0, 'getServerMetrics');
+      }
+
+      if (stepNumber === 0) {
+        toolChoice = { type: 'tool', toolName: 'getServerMetrics' };
+      } else if (stepNumber === 1 && activeTools.includes('recommendCommands')) {
+        toolChoice = { type: 'tool', toolName: 'recommendCommands' };
+      } else if (stepNumber > 1) {
+        return resolvePrepareStepToolPolicy('general');
+      }
     }
 
     return { activeTools, toolChoice };

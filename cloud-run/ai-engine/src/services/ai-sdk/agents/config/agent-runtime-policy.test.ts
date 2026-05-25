@@ -87,6 +87,7 @@ const EXPECTED_POLICIES = {
     maxSteps: 3,
     evidenceBudget: 3,
     toolAllowlist: [
+      'getServerMetrics',
       'searchKnowledgeBase',
       'recommendCommands',
       'searchWeb',
@@ -210,6 +211,8 @@ describe('agent runtime policy SSOT', () => {
     expect(advisorAllowlist).not.toContain('findRootCause');
     expect(advisorAllowlist).not.toContain('correlateMetrics');
     expect(advisorAllowlist).not.toContain('detectAnomalies');
+    expect(advisorAllowlist).toContain('getServerMetrics');
+    expect(advisorAllowlist).not.toContain('getServerMetricsAdvanced');
   });
 
   it('keeps single-path intent tool overlays inside their owner agent ceilings', () => {
