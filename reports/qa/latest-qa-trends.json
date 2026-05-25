@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-25T11:21:14.730Z",
-  "generatedAtKst": "2026-05-25 20:21:14 KST",
-  "trackerUpdatedAt": "2026-05-25T11:20:49.100Z",
+  "generatedAt": "2026-05-25T12:37:03.598Z",
+  "generatedAtKst": "2026-05-25 21:37:03 KST",
+  "trackerUpdatedAt": "2026-05-25T12:37:02.779Z",
   "totals": {
-    "recordedRuns": 595,
+    "recordedRuns": 596,
     "countedRuns": 472,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
     "overallPassRatePct": 95.61,
-    "latestRecordedRunId": "QA-20260525-0597",
+    "latestRecordedRunId": "QA-20260525-0598",
     "lastCountedRunId": "QA-20260525-0591"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 408,
+      "totalRuns": 409,
       "countedRuns": 286
     },
     {
@@ -955,11 +955,11 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T11:20:49.100Z",
-    "windowEnd": "2026-05-25T11:20:49.100Z",
-    "recordedRunCount": 4,
+    "windowStart": "2026-05-24T12:37:02.779Z",
+    "windowEnd": "2026-05-25T12:37:02.779Z",
+    "recordedRunCount": 5,
     "countedRunCount": 2,
-    "sampleCount": 7,
+    "sampleCount": 8,
     "buckets": [
       {
         "agent": "Advisor Agent",
@@ -975,6 +975,21 @@
         "p95ProcessingTimeMs": 27514,
         "latestRunId": "QA-20260525-0591",
         "latestRecordedAt": "2026-05-25T04:28:13.683Z"
+      },
+      {
+        "agent": "Metrics Query Agent",
+        "provider": "zai",
+        "sampleCount": 1,
+        "runCount": 1,
+        "countedRunCount": 0,
+        "avgLatencyMs": 18141,
+        "p95LatencyMs": 18141,
+        "avgTtfbMs": null,
+        "p95TtfbMs": null,
+        "avgProcessingTimeMs": null,
+        "p95ProcessingTimeMs": null,
+        "latestRunId": "QA-20260525-0598",
+        "latestRecordedAt": "2026-05-25T12:37:02.779Z"
       },
       {
         "agent": "Server Realtime Analysis",
@@ -1040,8 +1055,8 @@
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T11:20:49.100Z",
-    "windowEnd": "2026-05-25T11:20:49.100Z",
+    "windowStart": "2026-05-24T12:37:02.779Z",
+    "windowEnd": "2026-05-25T12:37:02.779Z",
     "recordedRunCount": 3,
     "countedRunCount": 3,
     "sampleCount": 7,

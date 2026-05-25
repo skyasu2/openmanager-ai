@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T11:20:49.100Z"
+    "updatedAt": "2026-05-25T12:37:02.779Z"
   },
   "sequence": {
-    "nextRunNumber": 598
+    "nextRunNumber": 599
   },
   "summary": {
-    "totalRecordedRuns": 595,
+    "totalRecordedRuns": 596,
     "totalRuns": 472,
-    "excludedRuns": 123,
+    "excludedRuns": 124,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260525-0591",
     "lastRecordedAt": "2026-05-25T04:28:13.683Z",
-    "latestRecordedRunId": "QA-20260525-0597",
-    "latestRecordedAt": "2026-05-25T11:20:49.100Z"
+    "latestRecordedRunId": "QA-20260525-0598",
+    "latestRecordedAt": "2026-05-25T12:37:02.779Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17396,27 +17396,27 @@
     },
     "p11-capacity-forecast-n-hours-expression": {
       "id": "p11-capacity-forecast-n-hours-expression",
-      "title": "P11: N시간 이내 디스크 포화 표현 capacity-forecast 라우팅",
+      "title": "P11: N시간 이내 디스크 포화 표현 production 라우팅 검증",
       "priority": "P4",
       "status": "completed",
       "firstSeenRunId": "QA-20260525-0595",
       "firstSeenAt": "2026-05-25T10:16:08.749Z",
-      "lastSeenRunId": "QA-20260525-0597",
-      "lastSeenAt": "2026-05-25T11:20:49.100Z",
-      "seenCount": 2,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260525-0598",
+      "lastSeenAt": "2026-05-25T12:37:02.779Z",
+      "seenCount": 3,
+      "completedCount": 2,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Added failing regression specs in 98eee810f and fixed in f8c936973. Verified npx vitest run targeted routing/evidence suite: 159 passed; cloud-run/ai-engine npm run type-check passed; cloud-run/ai-engine npm run test passed: 1535 tests; npm run lint:ci passed; git diff --check passed.",
-      "lastNote": "Local deterministic verification only. Production Cloud Run verification requires the next release/tag deployment.",
+      "lastEvidence": "Cloud Run v8.12.41 /api/ai/supervisor query '48시간 이내에 디스크 꽉 찰 서버 있어?' returned success=true, finalAgent=Metrics Query Agent, mode=multi, provider=zai, and capacity evidence including 48시간 예측, 디스크 사용량, 임계 도달 예측 없음.",
+      "lastNote": "Production deployment closure for the local P11 fix. P11 remains completed; no pending QA item remains.",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-25T11:20:49.100Z"
+      "lastStatusChangeAt": "2026-05-25T12:37:02.779Z"
     }
   },
   "runs": [
@@ -70218,6 +70218,107 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0598",
+      "recordedAt": "2026-05-25T12:37:02.779Z",
+      "recordedAtKst": "2026-05-25 21:37:02 KST",
+      "title": "v8.12.41 production deployment verification — P11 capacity forecast live closure",
+      "owner": "codex",
+      "source": "cloud-run-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0598.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.41",
+        "backend": "Cloud Run v8.12.41",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "a5618cd5ca1a3c13753f9c3c6c1b8fa0e773b252"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.12.41 tag pipeline",
+        "Vercel /api/version v8.12.41",
+        "Cloud Run ai-engine /health v8.12.41",
+        "Cloud Run /monitoring unauth/auth boundary",
+        "Cloud Run authenticated supervisor health",
+        "P11 production live query: 48시간 이내 디스크 꽉 찰"
+      ],
+      "skippedSurfaces": [
+        "full browser conversational AI QA",
+        "reporter",
+        "vision",
+        "GitHub public snapshot sync"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "P11 disk-full capacity forecast live query",
+          "agent": "Metrics Query Agent",
+          "provider": "zai",
+          "model": "not_reported",
+          "route": "Cloud Run /api/ai/supervisor",
+          "source": "production API smoke metadata",
+          "latencyMs": 18141
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.12.41 production now routes the P11 natural-language disk-full window query through the monitoring AI path and returns concrete disk capacity evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2550916589 completed deploy, deploy_ai_engine, and both post-deploy smoke jobs successfully. Cloud Run health and auth boundary checks passed.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-25T21:00:00+09:00",
+          "summary": "vercel usage reported effective=16.6209 USD, billed=0.0000 USD for the current billing period after v8.12.41 deploy.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.12.41 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550916589"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -70226,16 +70327,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 313,
-      "appropriateCount": 268,
+      "seenCount": 314,
+      "appropriateCount": 269,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 64,
-      "lastRunId": "QA-20260525-0597",
-      "lastSeenAt": "2026-05-25T11:20:49.100Z",
+      "lastRunId": "QA-20260525-0598",
+      "lastSeenAt": "2026-05-25T12:37:02.779Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "P11 failure was reproduced with failing specs, then local routing/evidence tests verified 48시간/N일 디스크 포화 wording reaches monitoring-capacity-forecast deterministically.",
+      "lastRationale": "v8.12.41 production now routes the P11 natural-language disk-full window query through the monitoring AI path and returns concrete disk capacity evidence.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -70277,16 +70378,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 220,
-      "appropriateCount": 199,
+      "seenCount": 221,
+      "appropriateCount": 200,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260525-0589",
-      "lastSeenAt": "2026-05-25T03:01:02.015Z",
+      "lastRunId": "QA-20260525-0598",
+      "lastSeenAt": "2026-05-25T12:37:02.779Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2550015043 completed successfully. Vercel and Cloud Run both serve v8.12.35, Cloud Run health is OK, and unauthenticated /monitoring remains protected.",
+      "lastRationale": "GitLab tag pipeline 2550916589 completed deploy, deploy_ai_engine, and both post-deploy smoke jobs successfully. Cloud Run health and auth boundary checks passed.",
       "lastNextAction": ""
     },
     "test-automation": {

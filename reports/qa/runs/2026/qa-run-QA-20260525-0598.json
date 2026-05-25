@@ -1,0 +1,120 @@
+{
+  "runId": "QA-20260525-0598",
+  "recordedAt": "2026-05-25T12:37:02.779Z",
+  "recordedAtKst": "2026-05-25 21:37:02 KST",
+  "runTitle": "v8.12.41 production deployment verification — P11 capacity forecast live closure",
+  "owner": "codex",
+  "source": "cloud-run-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.41",
+    "backend": "Cloud Run v8.12.41",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "a5618cd5ca1a3c13753f9c3c6c1b8fa0e773b252"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab v8.12.41 tag pipeline",
+    "Vercel /api/version v8.12.41",
+    "Cloud Run ai-engine /health v8.12.41",
+    "Cloud Run /monitoring unauth/auth boundary",
+    "Cloud Run authenticated supervisor health",
+    "P11 production live query: 48시간 이내 디스크 꽉 찰"
+  ],
+  "skippedSurfaces": [
+    "full browser conversational AI QA",
+    "reporter",
+    "vision",
+    "GitHub public snapshot sync"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P11 disk-full capacity forecast live query",
+      "agent": "Metrics Query Agent",
+      "provider": "zai",
+      "model": "not_reported",
+      "route": "Cloud Run /api/ai/supervisor",
+      "source": "production API smoke metadata",
+      "latencyMs": 18141
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.12.41 production now routes the P11 natural-language disk-full window query through the monitoring AI path and returns concrete disk capacity evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline 2550916589 completed deploy, deploy_ai_engine, and both post-deploy smoke jobs successfully. Cloud Run health and auth boundary checks passed.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-25T21:00:00+09:00",
+      "summary": "vercel usage reported effective=16.6209 USD, billed=0.0000 USD for the current billing period after v8.12.41 deploy.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "p11-capacity-forecast-n-hours-expression",
+      "title": "P11: N시간 이내 디스크 포화 표현 production 라우팅 검증",
+      "priority": "P4",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run v8.12.41 /api/ai/supervisor query '48시간 이내에 디스크 꽉 찰 서버 있어?' returned success=true, finalAgent=Metrics Query Agent, mode=multi, provider=zai, and capacity evidence including 48시간 예측, 디스크 사용량, 임계 도달 예측 없음.",
+      "note": "Production deployment closure for the local P11 fix. P11 remains completed; no pending QA item remains.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release commit/tag: v8.12.41, commit a5618cd5ca1a3c13753f9c3c6c1b8fa0e773b252.",
+    "GitLab pipeline 2550916589 succeeded: deploy, deploy_ai_engine, post_deploy_smoke, post_deploy_ai_engine_smoke all success.",
+    "Cloud Run health returned status=ok, service=ai-engine, version=8.12.41.",
+    "Frontend /api/version returned version/buildVersion 8.12.41 and pipelineUrl 2550916589.",
+    "Cloud Run /monitoring unauth returned 403 as expected; authenticated /monitoring returned 200.",
+    "Cloud deployment essential smoke passed 3/3 with 0 LLM calls; P11 live query used exactly one supervisor call."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.12.41 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2550916589"
+    }
+  ]
+}
