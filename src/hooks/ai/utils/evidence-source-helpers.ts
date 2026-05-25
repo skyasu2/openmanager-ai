@@ -190,6 +190,11 @@ export function buildAssistantAnalysisBasis(params: {
   const hasServerAnalysisEvidence = completedToolNames.some(
     isServerAnalysisToolName
   );
+  const hasAdvisorCommandEvidence =
+    completedToolNames.includes('recommendCommands') ||
+    toolResultSummaries.some(
+      (summary) => summary.toolName === 'recommendCommands'
+    );
 
   const metadataEvidenceCards = normalizeEvidenceCards(metadata?.evidenceCards);
   const evidenceCards =
@@ -267,6 +272,8 @@ export function buildAssistantAnalysisBasis(params: {
     dataSource = semanticEvidenceDataSource;
   } else if (hasServerAnalysisEvidence) {
     dataSource = '서버 실시간 데이터 분석';
+  } else if (hasAdvisorCommandEvidence) {
+    dataSource = 'Advisor Agent 조치 명령어 근거';
   } else if (effectiveRagEnabled) {
     dataSource = '일반 대화 응답 (지식 검색 활성)';
   } else {

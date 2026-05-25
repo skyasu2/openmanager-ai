@@ -1149,6 +1149,52 @@ describe('transformMessages', () => {
     expect(assistant?.metadata?.analysisBasis?.timeRange).toBeUndefined();
     expect(assistant?.metadata?.assistantResponseView).toBeUndefined();
   });
+
+  it('labels recommendCommands output as Advisor evidence instead of general chat', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '읽기 전용 진단 명령어를 먼저 확인하세요.',
+          parts: [
+            {
+              type: 'text',
+              text: '읽기 전용 진단 명령어를 먼저 확인하세요.',
+            },
+            {
+              type: 'tool-recommendCommands',
+              toolCallId: 'tool-recommend-1',
+              output: {
+                success: true,
+                recommendations: [
+                  {
+                    command: 'df -h',
+                    description: '디스크 사용량 확인',
+                  },
+                ],
+                matchedKeywords: ['mysql', 'disk'],
+              },
+            },
+          ],
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata?.analysisBasis?.dataSource).toBe(
+      'Advisor Agent 조치 명령어 근거'
+    );
+    expect(assistant?.metadata?.analysisBasis?.toolsCalled).toEqual([
+      'recommendCommands',
+    ]);
+  });
 });
 
 describe('normalizeAIResponse', () => {
