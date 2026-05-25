@@ -799,6 +799,90 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
   });
 
+  it('limits pronoun follow-ups to the previous top-N result when the assistant also mentioned extra servers', async () => {
+    const query = '그 서버들 디스크 상태는?';
+    const priorTopTargets = [
+      'cache-redis-dc1-03',
+      'db-mysql-dc1-replica',
+      'api-was-dc1-01',
+    ];
+    const extraTargets = [
+      'lb-haproxy-dc1-01',
+      'storage-nfs-dc1-01',
+      'web-nginx-dc1-01',
+      'api-was-dc1-02',
+      'db-mysql-dc1-primary',
+      'storage-nfs-dc1-02',
+      'cache-redis-dc1-02',
+    ];
+    const request = createEvidenceRequest(
+      query,
+      {
+        timeLabel: '07:50',
+        servers: [...priorTopTargets, ...extraTargets].map((id, index) => ({
+          id,
+          type: id.startsWith('cache')
+            ? 'cache'
+            : id.startsWith('db')
+              ? 'database'
+              : id.startsWith('storage')
+                ? 'storage'
+                : id.startsWith('web')
+                  ? 'web'
+                  : id.startsWith('lb')
+                    ? 'loadbalancer'
+                    : 'application',
+          status: 'online',
+          cpu: 20 + index,
+          memory: 70 - index,
+          disk: 30 + index,
+          network: 10 + index,
+        })),
+      },
+      [
+        { role: 'user', content: '현재 메모리 사용량 상위 3대 서버 알려줘' },
+        {
+          role: 'assistant',
+          content: [
+            '메모리 사용량 상위 3대입니다.',
+            ...priorTopTargets.map(
+              (target, index) => `${index + 1}. ${target}: 메모리 상위권`
+            ),
+            '',
+            `참고로 전체 관측 서버에는 ${extraTargets.join(', ')} 도 포함됩니다.`,
+          ].join('\n'),
+        },
+        { role: 'user', content: query },
+      ]
+    );
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'contextual-follow-up',
+      metric: 'disk',
+      targets: priorTopTargets,
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        sourceIntent: 'contextual-follow-up',
+        metric: 'disk',
+        targets: priorTopTargets,
+      },
+    });
+    expect(evidence?.fallback).toContain('지정 서버 3대 디스크 현황');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-03');
+    expect(evidence?.fallback).not.toContain('lb-haproxy-dc1-01');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
   it('preserves single metric thresholds when a current metric frame is present', async () => {
     const request = {
       ...createEvidenceRequest('DB 서버 디스크 60% 이상인 곳', {

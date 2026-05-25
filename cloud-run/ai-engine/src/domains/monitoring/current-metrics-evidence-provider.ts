@@ -87,6 +87,10 @@ const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
 const CONTEXTUAL_FOLLOW_UP_PATTERN =
   /방금|직전|이전|앞서|위\s*(?:결과|답변|내용)|방금\s*분석한|분석한\s*서버\s*중|방금\s*본|앞에서\s*본|(?:그|해당|이|위)\s*(?:서버|대상|호스트|노드)\s*(?:들|중|만|의)?/i;
 const MAX_CONTEXTUAL_SERVER_TARGETS = 12;
+const CONTEXTUAL_TOP_N_PATTERN =
+  /(?:상위|하위|top|bottom)\s*(\d{1,2})|(?:가장|최고|최저|높|낮|많|적).{0,24}(\d{1,2})\s*(?:대|개)|(\d{1,2})\s*(?:대|개).{0,24}(?:상위|하위|top|bottom|가장|높|낮|많|적|랭킹|순위)/i;
+const RANKED_SERVER_LINE_PATTERN =
+  /^\s*(?:\d{1,2}[.)]|[-*])\s*([a-z][a-z0-9]+(?:-[a-z0-9]+){2,})\b/gim;
 const SERVER_COMPARISON_CONNECTOR_PATTERN =
   /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
 const TIME_SERIES_COMPARISON_PATTERN =
@@ -247,6 +251,44 @@ function extractServerIdTargetsFromMessage(message: string): string[] {
   return Array.from(targets);
 }
 
+function extractRankedServerIdTargetsFromMessage(message: string): string[] {
+  const targets = new Set<string>();
+  for (const match of message.matchAll(RANKED_SERVER_LINE_PATTERN)) {
+    const serverId = match[1]?.toLowerCase();
+    if (serverId) targets.add(serverId);
+  }
+  return Array.from(targets);
+}
+
+function normalizeContextualTargetLimit(value: number): number | undefined {
+  if (!Number.isInteger(value) || value <= 0) return undefined;
+  return Math.min(value, MAX_CONTEXTUAL_SERVER_TARGETS);
+}
+
+function inferContextualTopNLimit(message: string): number | undefined {
+  const match = message.match(CONTEXTUAL_TOP_N_PATTERN);
+  if (!match) return undefined;
+
+  for (const rawValue of match.slice(1)) {
+    if (!rawValue) continue;
+    const limit = normalizeContextualTargetLimit(Number(rawValue));
+    if (limit !== undefined) return limit;
+  }
+
+  return undefined;
+}
+
+function findPreviousUserMessageContent(
+  messages: DomainEvidenceRequest['messages'],
+  assistantIndex: number
+): string {
+  for (let index = assistantIndex - 1; index >= 0; index -= 1) {
+    const message = messages?.[index];
+    if (message?.role === 'user') return message.content;
+  }
+  return '';
+}
+
 function isContextualFollowUpMessage(message: string): boolean {
   return CONTEXTUAL_FOLLOW_UP_PATTERN.test(message);
 }
@@ -261,10 +303,24 @@ function extractContextualServerTargetsFromMessages(
     const message = messages[index];
     if (message.role !== 'assistant') continue;
 
-    const targets = extractServerIdTargetsFromMessage(message.content).slice(
-      0,
-      MAX_CONTEXTUAL_SERVER_TARGETS
+    const rawTargets = extractServerIdTargetsFromMessage(message.content);
+    if (rawTargets.length === 0) continue;
+
+    const previousUserMessage = findPreviousUserMessageContent(messages, index);
+    const topNLimit =
+      inferContextualTopNLimit(previousUserMessage) ??
+      inferContextualTopNLimit(message.content);
+    const rankedTargets = extractRankedServerIdTargetsFromMessage(
+      message.content
     );
+    const sourceTargets =
+      rankedTargets.length > 0 ? rankedTargets : rawTargets;
+    const limit =
+      topNLimit ??
+      (rankedTargets.length > 0
+        ? rankedTargets.length
+        : MAX_CONTEXTUAL_SERVER_TARGETS);
+    const targets = sourceTargets.slice(0, limit);
     if (targets.length > 0) return targets;
   }
 
