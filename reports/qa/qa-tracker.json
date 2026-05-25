@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-24T22:51:39.888Z"
+    "updatedAt": "2026-05-25T00:41:31.507Z"
   },
   "sequence": {
-    "nextRunNumber": 587
+    "nextRunNumber": 588
   },
   "summary": {
-    "totalRecordedRuns": 584,
-    "totalRuns": 467,
+    "totalRecordedRuns": 585,
+    "totalRuns": 468,
     "excludedRuns": 117,
-    "totalChecks": 4164,
-    "totalPassed": 3985,
+    "totalChecks": 4173,
+    "totalPassed": 3994,
     "totalFailed": 152,
     "completionRate": 100,
-    "completedItems": 668,
+    "completedItems": 669,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 50,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260525-0586",
-    "lastRecordedAt": "2026-05-24T22:51:39.888Z",
-    "latestRecordedRunId": "QA-20260525-0586",
-    "latestRecordedAt": "2026-05-24T22:51:39.888Z"
+    "lastRunId": "QA-20260525-0587",
+    "lastRecordedAt": "2026-05-25T00:41:31.507Z",
+    "latestRecordedRunId": "QA-20260525-0587",
+    "latestRecordedAt": "2026-05-25T00:41:31.507Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16961,6 +16961,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-24T22:51:39.888Z"
+    },
+    "q-new13-advisor-command-evidence": {
+      "id": "q-new13-advisor-command-evidence",
+      "title": "Q-NEW13 named server performance advice displays Advisor Agent command evidence",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260525-0587",
+      "firstSeenAt": "2026-05-25T00:41:31.507Z",
+      "lastSeenRunId": "QA-20260525-0587",
+      "lastSeenAt": "2026-05-25T00:41:31.507Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production QA on v8.12.34 returned footer 'Streaming AI · Advisor Agent 조치 명령어 근거' and analysis basis tool '조치 명령어 정리' for db-mysql-dc1-primary disk performance advice.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T00:41:31.507Z"
     }
   },
   "runs": [
@@ -68755,6 +68779,132 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0587",
+      "recordedAt": "2026-05-25T00:41:31.507Z",
+      "recordedAtKst": "2026-05-25 09:41:31 KST",
+      "title": "Q-NEW13 Production QA - Advisor Command Evidence",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0587.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7Wbtupu75cp3QzUM6QoY2h4kLp4k",
+        "deploymentUrl": "https://openmanager-cigd3x1r7-skyasus-projects.vercel.app",
+        "commitSha": "f194ec747e99bf43d11d9c412d64dafc0ec0dfe3"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "AI sidebar conversational query",
+        "Q-NEW13 fix verification: 'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘' displays Advisor Agent command evidence",
+        "Cloud Run ai-engine health and protected /monitoring endpoint",
+        "Vercel production version and deployment alias"
+      ],
+      "skippedSurfaces": [
+        "full standard five-question conversational AI QA",
+        "vision agent",
+        "reporter/analyst tabs",
+        "core route broad smoke",
+        "Cloud Run admin /monitoring authenticated data view"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Q-NEW13 was rerun through the production AI sidebar and now shows Advisor Agent command evidence instead of the prior generic conversation label.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The query remains scoped to db-mysql-dc1-primary and the answer uses recommendCommands evidence for disk and MySQL operational guidance.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab pipelines for the AI Engine and frontend releases completed successfully, Cloud Run health passed, and Vercel production serves v8.12.34.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-25T09:40:13+09:00",
+          "summary": "Current billing period 2026-05-01T07:00:00Z..2026-05-25T00:40:13Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW13 advisor command evidence pass",
+          "path": "reports/qa/evidence/2026/qa-20260525-0587/qa-20260525-q-new13-v81234-advisor-pass.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run ai-engine",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab Pipeline v8.12.33",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549850530"
+        },
+        {
+          "type": "general",
+          "label": "GitLab Pipeline v8.12.34",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549885486"
+        },
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel Deployment v8.12.34",
+          "url": "https://openmanager-cigd3x1r7-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -68763,16 +68913,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 304,
-      "appropriateCount": 260,
+      "seenCount": 305,
+      "appropriateCount": 261,
       "partialCount": 44,
       "inappropriateCount": 0,
       "improvementNeededCount": 61,
-      "lastRunId": "QA-20260525-0586",
-      "lastSeenAt": "2026-05-24T22:51:39.888Z",
+      "lastRunId": "QA-20260525-0587",
+      "lastSeenAt": "2026-05-25T00:41:31.507Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Q-NEW17 partial regression was rerun through the production AI sidebar and now returns deterministic monitoring-metric-trend evidence instead of the prior one-hour generic analysis path.",
+      "lastRationale": "Q-NEW13 was rerun through the production AI sidebar and now shows Advisor Agent command evidence instead of the prior generic conversation label.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -68814,16 +68964,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 218,
-      "appropriateCount": 197,
+      "seenCount": 219,
+      "appropriateCount": 198,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260525-0586",
-      "lastSeenAt": "2026-05-24T22:51:39.888Z",
+      "lastRunId": "QA-20260525-0587",
+      "lastSeenAt": "2026-05-25T00:41:31.507Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2549769244 deployed v8.12.31 successfully, Cloud Run revision ai-engine-00535-hrv serves 100% traffic with 1 CPU and 512Mi limits, and health checks pass.",
+      "lastRationale": "GitLab pipelines for the AI Engine and frontend releases completed successfully, Cloud Run health passed, and Vercel production serves v8.12.34.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -68848,16 +68998,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 74,
-      "appropriateCount": 52,
+      "seenCount": 75,
+      "appropriateCount": 53,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260525-0586",
-      "lastSeenAt": "2026-05-24T22:51:39.888Z",
+      "lastRunId": "QA-20260525-0587",
+      "lastSeenAt": "2026-05-25T00:41:31.507Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Response is scoped to cache-redis-dc1-01 and reports CPU, memory, and disk against 24h averages from the OTel snapshot.",
+      "lastRationale": "The query remains scoped to db-mysql-dc1-primary and the answer uses recommendCommands evidence for disk and MySQL operational guidance.",
       "lastNextAction": ""
     },
     "infra-reliability": {

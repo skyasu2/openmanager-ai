@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-25 07:51:43 KST
+> Generated at: 2026-05-25 09:41:34 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 584 |
-| Total Runs (Counted) | 467 |
+| Total Recorded Runs | 585 |
+| Total Runs (Counted) | 468 |
 | Non-counted Runs | 117 |
-| Total Checks | 4164 |
-| Passed | 3985 |
+| Total Checks | 4173 |
+| Passed | 3994 |
 | Failed | 152 |
-| Completed Items | 668 |
+| Completed Items | 669 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 50 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260525-0586 (2026-05-24T22:51:39.888Z) |
-| Latest Recorded Run | QA-20260525-0586 (2026-05-24T22:51:39.888Z) |
+| Last Counted Run | QA-20260525-0587 (2026-05-25T00:41:31.507Z) |
+| Latest Recorded Run | QA-20260525-0587 (2026-05-25T00:41:31.507Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260525-0586 (2026-05-24T22:51:39.888Z)
+Latest run: QA-20260525-0587 (2026-05-25T00:41:31.507Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -46,11 +46,11 @@ Latest run: QA-20260525-0586 (2026-05-24T22:51:39.888Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-24T22:47:41Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
+| vercel | cli | checked | normal | Current billing period 2026-05-01T07:00:00Z..2026-05-25T00:40:13Z: effective=15.9631 USD, billed=0.0000 USD. No unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-23T22:51:39.888Z -> 2026-05-24T22:51:39.888Z (24h)
+- Window: 2026-05-24T00:41:31.507Z -> 2026-05-25T00:41:31.507Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 6
 
@@ -63,7 +63,7 @@ Latest run: QA-20260525-0586 (2026-05-24T22:51:39.888Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-23T22:51:39.888Z -> 2026-05-24T22:51:39.888Z (24h)
+- Window: 2026-05-24T00:41:31.507Z -> 2026-05-25T00:41:31.507Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 9
 - Drift rate: 11.11%
@@ -78,9 +78,9 @@ Latest run: QA-20260525-0586 (2026-05-24T22:51:39.888Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_C16eKGD4LRzryrgF26bYRLv7dA6G / SHA ce2808bc
+- Deployment: dpl_7Wbtupu75cp3QzUM6QoY2h4kLp4k / SHA f194ec74
 - Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: /, /dashboard, AI sidebar conversational query, Q-NEW17 fix verification: 'cache-redis-dc1-01 서버의 24시간 메트릭 추세 알려줘' routes to monitoring-metric-trend, Cloud Run ai-engine health and protected /monitoring endpoint, Vercel production version and deployment alias
+- Covered Surfaces: /, /dashboard, AI sidebar conversational query, Q-NEW13 fix verification: 'db-mysql-dc1-primary 서버 디스크 사용량이 높은데 성능 개선 조언 해줘' displays Advisor Agent command evidence, Cloud Run ai-engine health and protected /monitoring endpoint, Vercel production version and deployment alias
 - Skipped Surfaces: full standard five-question conversational AI QA, vision agent, reporter/analyst tabs, core route broad smoke, Cloud Run admin /monitoring authenticated data view
 
 ## Links (Latest Run)
@@ -88,15 +88,16 @@ Latest run: QA-20260525-0586 (2026-05-24T22:51:39.888Z)
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Cloud Run ai-engine | [Cloud Run ai-engine](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| general | GitLab Pipeline v8.12.31 | [GitLab Pipeline v8.12.31](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549769244) | - |
+| general | GitLab Pipeline v8.12.33 | [GitLab Pipeline v8.12.33](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549850530) | - |
+| general | GitLab Pipeline v8.12.34 | [GitLab Pipeline v8.12.34](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2549885486) | - |
 | general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel Deployment v8.12.31 | [Vercel Deployment v8.12.31](https://openmanager-oy82ht1ah-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel Deployment v8.12.34 | [Vercel Deployment v8.12.34](https://openmanager-cigd3x1r7-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Q-NEW17 generic metric trend routing pass | `reports/qa/evidence/2026/qa-20260525-0586/qa-20260525-q-new17-v81231-trend-pass.png` | - |
+| playwright-screenshot | Q-NEW13 advisor command evidence pass | `reports/qa/evidence/2026/qa-20260525-0587/qa-20260525-q-new13-v81234-advisor-pass.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -759,6 +760,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - profile-system-stop-state-drift-v811161: Profile dropdown system stop does not visibly clear running/dashboard state (completed 1회, last QA-20260517-0511)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - provider-fallback-freshness-hardening: OpenRouter vision fallback disabled by default and Cerebras GPT-OSS short-output guard added (completed 1회, last QA-20260519-0536)
+- q-new13-advisor-command-evidence: Q-NEW13 named server performance advice displays Advisor Agent command evidence (completed 1회, last QA-20260525-0587)
 - q-new17-generic-metric-trend-routing: Q-NEW17 generic single-server 24h metric trend routes to monitoring-metric-trend (completed 1회, last QA-20260525-0586)
 - q-new18-pronoun-follow-up-scope: Q-NEW18 대명사 follow-up 범위를 직전 서버 목록으로 제한 (completed 1회, last QA-20260525-0585)
 - q-new7-disk-threshold: 디스크 60% 초과 서버 목록 — PASS (completed 1회, last QA-20260525-0584)
@@ -909,6 +911,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260525-0587 | 2026-05-25T00:41:31.507Z | targeted | yes | yes | Q-NEW13 Production QA - Advisor Command Evidence | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0586 | 2026-05-24T22:51:39.888Z | targeted | yes | yes | Q-NEW17 Production QA - Generic Metric Trend Routing | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0585 | 2026-05-24T21:25:11.046Z | targeted | yes | yes | v8.12.30 Q-NEW18 pronoun follow-up targeted production QA | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0584 | 2026-05-24T15:52:12.919Z | targeted | yes | yes | v8.12.28 신규 6문항 AI 어시스턴트 평가 — 디스크필터·Advisor·팔로업·AZ비교·네트워크 | 6 | 2 | 0 | 0 | 4 | 0 |
@@ -928,4 +931,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260523-0570 | 2026-05-23T11:30:48.477Z | targeted | yes | yes | v8.12.16 focused Vercel production QA - embedded tab copy, artifact envelope, DB threshold | 6 | 4 | 0 | 0 | 0 | 1 |
 | QA-20260523-0569 | 2026-05-23T10:19:45.964Z | targeted | yes | yes | v8.12.15 focused Vercel production QA - quick-start, artifact envelope, DB threshold | 7 | 3 | 0 | 0 | 1 | 2 |
 | QA-20260523-0568 | 2026-05-23T08:57:58.383Z | targeted | yes | yes | v8.12.14 신규 7문항 평가 - 임계값픽스재검증·스토리지·LB그룹·CPU+디스크AND·디스크랭킹·CPU트렌드·Reporter | 7 | 4 | 0 | 0 | 1 | 0 |
-| QA-20260523-0567 | 2026-05-23T08:29:59.590Z | targeted | yes | yes | v8.12.14 Q3 DB 디스크 임계값 필터 프로덕션 재검증 | 1 | 1 | 0 | 0 | 0 | 0 |
