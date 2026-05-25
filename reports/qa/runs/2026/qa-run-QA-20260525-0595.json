@@ -1,0 +1,180 @@
+{
+  "runId": "QA-20260525-0595",
+  "recordedAt": "2026-05-25T10:16:08.749Z",
+  "recordedAtKst": "2026-05-25 19:16:08 KST",
+  "runTitle": "v8.12.39 프로덕션 11차 AI 어시스턴트 평가 — Q-NEW29~33 신규 5문항",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run v8.12.39",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "9acfb525ddca1a97e064e7f8c7d5460d2c1137b1"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard AI 어시스턴트 신규 5문항 평가 (Q-NEW29~33)",
+    "재시작 필요 서버 조회 라우팅 (P9 fix — 미배포 확인)",
+    "효율적인 서버 조회 라우팅 (Q-NEW28 fix — 미배포 확인)",
+    "CPU threshold 필터 정확도 (Q-NEW31)",
+    "두 그룹 비교 P8 재확인 (Q-NEW32)",
+    "N시간 이내 capacity forecast 신규 표현 (Q-NEW33)"
+  ],
+  "skippedSurfaces": [
+    "reporter",
+    "vision",
+    "anomaly detection"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 1,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Q-NEW31 CPU threshold",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "latencyMs": 28
+    },
+    {
+      "surface": "Q-NEW32 web vs storage",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "latencyMs": 24
+    },
+    {
+      "surface": "Q-NEW33 48h capacity",
+      "agent": "Server Realtime Analysis",
+      "provider": "mixed",
+      "latencyMs": 8456
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-chat-open.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-chat-open.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-dashboard.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-q29.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-q29.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-q30.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-q30.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-q31.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-q31.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-q32.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-q32.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-q33-dialog.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-q33-dialog.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-q33-result.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-q33-result.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-11th-q33.png",
+      "path": ".playwright-mcp/screenshots/qa-11th-q33.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new31-cpu-threshold-pass",
+      "title": "Q-NEW31: CPU 80% 이상 threshold 필터 정상 확인",
+      "priority": "P5",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "monitoring-metric-current 28ms, 현재 조건 만족 서버 없음 정직 고지",
+      "note": "",
+      "owner": "claude",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "p9-restart-routing-production-deploy",
+      "title": "P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증 필요",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "main routing fix 검증 완료, Cloud Run production v8.12.39 기준 미배포 상태. release/tag 배포 후 production 재검증 필요.",
+      "owner": "claude",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "q-new30-efficient-routing-production-deploy",
+      "title": "Q-NEW30: 효율적인 서버 라우팅 프로덕션 배포 후 재검증 필요",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "main routing fix 검증 완료, Cloud Run production v8.12.39 기준 미배포 상태. release/tag 배포 후 production 재검증 필요.",
+      "owner": "claude",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "p11-capacity-forecast-n-hours-expression",
+      "title": "P11: N시간 이내 디스크 포화 표현 capacity-forecast 미라우팅",
+      "priority": "P4",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Q-NEW33: 48시간 이내에 디스크 꽉 찰 — disambiguation 발동 후 단기 위험 추세 계산 경로. 이번 주 내로 N% 넘을 형태만 CAPACITY_FORECAST_PATTERN 매칭",
+      "note": "신규 표현: N시간/N일 이내에 + 꽉 찰/포화/가득 찰 패턴 추가 필요. TODO.md Backlog로 추적.",
+      "owner": "claude",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Q-NEW29: main routing fix 미배포 production 관찰 — 서버 실시간 데이터 분석 오라우팅. 내용 합리적(재시작 필요 서버 없음), 1491ms.",
+    "Q-NEW30: main routing fix 미배포 production 관찰 — 일반 대화 응답. 특정 서버 미식별. 1730ms.",
+    "Q-NEW31: monitoring-metric-current 28ms PASS. threshold 필터 정확.",
+    "Q-NEW32: P8 재확인 — storage 3대만(avg 52.5%), web 그룹 비교 없음. 24ms.",
+    "Q-NEW33: disambiguation + 단기 위험 추세 계산 오라우팅. 8456ms. 신규 P11.",
+    "응답 텍스트 공백 없음 버그 지속 (모든 일반 대화 응답에서 단어 사이 공백 미렌더링).",
+    "프로덕션 상태: v8.12.39 (Cloud Run), OTel slot 114/143, CPU 32%/MEM 45%/DISK 35%."
+  ],
+  "links": []
+}

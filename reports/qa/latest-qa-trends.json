@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-25T08:18:13.384Z",
-  "generatedAtKst": "2026-05-25 17:18:13 KST",
-  "trackerUpdatedAt": "2026-05-25T08:02:14.837Z",
+  "generatedAt": "2026-05-25T10:32:23.939Z",
+  "generatedAtKst": "2026-05-25 19:32:23 KST",
+  "trackerUpdatedAt": "2026-05-25T10:16:08.749Z",
   "totals": {
-    "recordedRuns": 591,
+    "recordedRuns": 593,
     "countedRuns": 472,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
     "overallPassRatePct": 95.61,
-    "latestRecordedRunId": "QA-20260525-0593",
+    "latestRecordedRunId": "QA-20260525-0595",
     "lastCountedRunId": "QA-20260525-0591"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 404,
+      "totalRuns": 406,
       "countedRuns": 286
     },
     {
@@ -275,31 +275,31 @@
     },
     {
       "priority": "P2",
-      "totalItems": 318,
+      "totalItems": 319,
       "recurringItems": 66,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 289,
+      "completedItems": 290,
       "wontFixItems": 29,
-      "recurrenceRatePct": 20.75,
+      "recurrenceRatePct": 20.69,
       "openRecurrenceRatePct": 0
     },
     {
       "priority": "P3",
-      "totalItems": 53,
+      "totalItems": 57,
       "recurringItems": 14,
-      "openItems": 0,
+      "openItems": 2,
       "openRecurringItems": 0,
-      "completedItems": 42,
+      "completedItems": 44,
       "wontFixItems": 11,
-      "recurrenceRatePct": 26.42,
+      "recurrenceRatePct": 24.56,
       "openRecurrenceRatePct": 0
     },
     {
       "priority": "P4",
-      "totalItems": 4,
+      "totalItems": 5,
       "recurringItems": 0,
-      "openItems": 0,
+      "openItems": 1,
       "openRecurringItems": 0,
       "completedItems": 1,
       "wontFixItems": 3,
@@ -308,11 +308,11 @@
     },
     {
       "priority": "P5",
-      "totalItems": 4,
+      "totalItems": 5,
       "recurringItems": 0,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 3,
+      "completedItems": 4,
       "wontFixItems": 1,
       "recurrenceRatePct": 0,
       "openRecurrenceRatePct": 0
@@ -747,7 +747,38 @@
     }
   ],
   "recurringItems": {
-    "open": [],
+    "open": [
+      {
+        "id": "p9-restart-routing-production-deploy",
+        "title": "P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증 필요",
+        "status": "pending",
+        "priority": "P3",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260525-0595",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "q-new30-efficient-routing-production-deploy",
+        "title": "Q-NEW30: 효율적인 서버 라우팅 프로덕션 배포 후 재검증 필요",
+        "status": "pending",
+        "priority": "P3",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260525-0595",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "p11-capacity-forecast-n-hours-expression",
+        "title": "P11: N시간 이내 디스크 포화 표현 capacity-forecast 미라우팅",
+        "status": "pending",
+        "priority": "P4",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260525-0595",
+        "lastResolvedRunId": null
+      }
+    ],
     "wontFix": [
       {
         "id": "feature-dod-tsc-zero-error",
@@ -955,11 +986,11 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T08:02:14.837Z",
-    "windowEnd": "2026-05-25T08:02:14.837Z",
-    "recordedRunCount": 2,
+    "windowStart": "2026-05-24T10:16:08.749Z",
+    "windowEnd": "2026-05-25T10:16:08.749Z",
+    "recordedRunCount": 3,
     "countedRunCount": 2,
-    "sampleCount": 2,
+    "sampleCount": 5,
     "buckets": [
       {
         "agent": "Advisor Agent",
@@ -977,26 +1008,41 @@
         "latestRecordedAt": "2026-05-25T04:28:13.683Z"
       },
       {
-        "agent": "Metrics Query Agent",
-        "provider": "deterministic",
+        "agent": "Server Realtime Analysis",
+        "provider": "mixed",
         "sampleCount": 1,
         "runCount": 1,
+        "countedRunCount": 0,
+        "avgLatencyMs": 8456,
+        "p95LatencyMs": 8456,
+        "avgTtfbMs": null,
+        "p95TtfbMs": null,
+        "avgProcessingTimeMs": null,
+        "p95ProcessingTimeMs": null,
+        "latestRunId": "QA-20260525-0595",
+        "latestRecordedAt": "2026-05-25T10:16:08.749Z"
+      },
+      {
+        "agent": "Metrics Query Agent",
+        "provider": "deterministic",
+        "sampleCount": 3,
+        "runCount": 2,
         "countedRunCount": 1,
-        "avgLatencyMs": 60,
+        "avgLatencyMs": 37,
         "p95LatencyMs": 60,
         "avgTtfbMs": null,
         "p95TtfbMs": null,
         "avgProcessingTimeMs": 60,
         "p95ProcessingTimeMs": 60,
-        "latestRunId": "QA-20260525-0586",
-        "latestRecordedAt": "2026-05-24T22:51:39.888Z"
+        "latestRunId": "QA-20260525-0595",
+        "latestRecordedAt": "2026-05-25T10:16:08.749Z"
       }
     ]
   },
   "plannerShadowRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-05-24T08:02:14.837Z",
-    "windowEnd": "2026-05-25T08:02:14.837Z",
+    "windowStart": "2026-05-24T10:16:08.749Z",
+    "windowEnd": "2026-05-25T10:16:08.749Z",
     "recordedRunCount": 3,
     "countedRunCount": 3,
     "sampleCount": 7,

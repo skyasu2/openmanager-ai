@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T09:39:11.343Z"
+    "updatedAt": "2026-05-25T10:16:08.749Z"
   },
   "sequence": {
-    "nextRunNumber": 595
+    "nextRunNumber": 596
   },
   "summary": {
-    "totalRecordedRuns": 592,
+    "totalRecordedRuns": 593,
     "totalRuns": 472,
-    "excludedRuns": 120,
+    "excludedRuns": 121,
     "totalChecks": 4194,
     "totalPassed": 4010,
     "totalFailed": 153,
-    "completionRate": 100,
-    "completedItems": 681,
-    "pendingItems": 0,
+    "completionRate": 99.56,
+    "completedItems": 682,
+    "pendingItems": 3,
     "deferredItems": 0,
     "wontFixItems": 52,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260525-0591",
     "lastRecordedAt": "2026-05-25T04:28:13.683Z",
-    "latestRecordedRunId": "QA-20260525-0594",
-    "latestRecordedAt": "2026-05-25T09:39:11.343Z"
+    "latestRecordedRunId": "QA-20260525-0595",
+    "latestRecordedAt": "2026-05-25T10:16:08.749Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17321,6 +17321,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-25T09:39:11.343Z"
+    },
+    "q-new31-cpu-threshold-pass": {
+      "id": "q-new31-cpu-threshold-pass",
+      "title": "Q-NEW31: CPU 80% 이상 threshold 필터 정상 확인",
+      "priority": "P5",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260525-0595",
+      "firstSeenAt": "2026-05-25T10:16:08.749Z",
+      "lastSeenRunId": "QA-20260525-0595",
+      "lastSeenAt": "2026-05-25T10:16:08.749Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "claude",
+      "lastEvidence": "monitoring-metric-current 28ms, 현재 조건 만족 서버 없음 정직 고지",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T10:16:08.749Z"
+    },
+    "p9-restart-routing-production-deploy": {
+      "id": "p9-restart-routing-production-deploy",
+      "title": "P9: 재시작 필요 서버 라우팅 프로덕션 배포 후 재검증 필요",
+      "priority": "P3",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260525-0595",
+      "firstSeenAt": "2026-05-25T10:16:08.749Z",
+      "lastSeenRunId": "QA-20260525-0595",
+      "lastSeenAt": "2026-05-25T10:16:08.749Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "claude",
+      "lastEvidence": "",
+      "lastNote": "main routing fix 검증 완료, Cloud Run production v8.12.39 기준 미배포 상태. release/tag 배포 후 production 재검증 필요.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T10:16:08.749Z"
+    },
+    "q-new30-efficient-routing-production-deploy": {
+      "id": "q-new30-efficient-routing-production-deploy",
+      "title": "Q-NEW30: 효율적인 서버 라우팅 프로덕션 배포 후 재검증 필요",
+      "priority": "P3",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260525-0595",
+      "firstSeenAt": "2026-05-25T10:16:08.749Z",
+      "lastSeenRunId": "QA-20260525-0595",
+      "lastSeenAt": "2026-05-25T10:16:08.749Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "claude",
+      "lastEvidence": "",
+      "lastNote": "main routing fix 검증 완료, Cloud Run production v8.12.39 기준 미배포 상태. release/tag 배포 후 production 재검증 필요.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T10:16:08.749Z"
+    },
+    "p11-capacity-forecast-n-hours-expression": {
+      "id": "p11-capacity-forecast-n-hours-expression",
+      "title": "P11: N시간 이내 디스크 포화 표현 capacity-forecast 미라우팅",
+      "priority": "P4",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260525-0595",
+      "firstSeenAt": "2026-05-25T10:16:08.749Z",
+      "lastSeenRunId": "QA-20260525-0595",
+      "lastSeenAt": "2026-05-25T10:16:08.749Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "claude",
+      "lastEvidence": "Q-NEW33: 48시간 이내에 디스크 꽉 찰 — disambiguation 발동 후 단기 위험 추세 계산 경로. 이번 주 내로 N% 넘을 형태만 CAPACITY_FORECAST_PATTERN 매칭",
+      "lastNote": "신규 표현: N시간/N일 이내에 + 꽉 찰/포화/가득 찰 패턴 추가 필요. TODO.md Backlog로 추적.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-25T10:16:08.749Z"
     }
   },
   "runs": [
@@ -69845,6 +69941,126 @@
       "expertNeedsImprovementCount": 0,
       "completedCount": 3,
       "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260525-0595",
+      "recordedAt": "2026-05-25T10:16:08.749Z",
+      "recordedAtKst": "2026-05-25 19:16:08 KST",
+      "title": "v8.12.39 프로덕션 11차 AI 어시스턴트 평가 — Q-NEW29~33 신규 5문항",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260525-0595.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run v8.12.39",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "9acfb525ddca1a97e064e7f8c7d5460d2c1137b1"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard AI 어시스턴트 신규 5문항 평가 (Q-NEW29~33)",
+        "재시작 필요 서버 조회 라우팅 (P9 fix — 미배포 확인)",
+        "효율적인 서버 조회 라우팅 (Q-NEW28 fix — 미배포 확인)",
+        "CPU threshold 필터 정확도 (Q-NEW31)",
+        "두 그룹 비교 P8 재확인 (Q-NEW32)",
+        "N시간 이내 capacity forecast 신규 표현 (Q-NEW33)"
+      ],
+      "skippedSurfaces": [
+        "reporter",
+        "vision",
+        "anomaly detection"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 1,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Q-NEW31 CPU threshold",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "latencyMs": 28
+        },
+        {
+          "surface": "Q-NEW32 web vs storage",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "latencyMs": 24
+        },
+        {
+          "surface": "Q-NEW33 48h capacity",
+          "agent": "Server Realtime Analysis",
+          "provider": "mixed",
+          "latencyMs": 8456
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-chat-open.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-chat-open.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-dashboard.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-q29.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-q29.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-q30.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-q30.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-q31.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-q31.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-q32.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-q32.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-q33-dialog.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-q33-dialog.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-q33-result.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-q33-result.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-11th-q33.png",
+          "path": ".playwright-mcp/screenshots/qa-11th-q33.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0
     }
