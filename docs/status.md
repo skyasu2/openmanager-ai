@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-25 | **현재 버전 스냅샷**: v8.12.33
+**상태 스냅샷 기준일**: 2026-05-25 | **현재 버전 스냅샷**: v8.12.34
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.34** (2026-05-25) — Bug Fixes: ai: label advisor command evidence
 - **v8.12.33** (2026-05-25) — Bug Fixes: ai-engine: force advisor command evidence
 - **v8.12.32** (2026-05-25) — Bug Fixes: ai-engine: route named server advice to advisor; Tests: qa: record Q-NEW17 trend routing closure
 - **v8.12.31** (2026-05-25) — Bug Fixes: ai-engine: route generic metric trends; Tests: qa: record Q-NEW18 pronoun follow-up closure
 - **v8.12.30** (2026-05-25) — Bug Fixes: ai-engine: scope pronoun metric follow-ups
-- **v8.12.29** (2026-05-25) — Bug Fixes: ai-engine: prevent server-name dc\d+ from triggering location load balance evidence; Tests: qa: record v8.12.28 new 6-question AI assistant evaluation; Tests: qa: preserve QA-0582 input evidence
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
