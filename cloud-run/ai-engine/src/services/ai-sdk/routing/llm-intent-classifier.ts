@@ -188,7 +188,6 @@ export async function classifyRoutingIntentWithLLM(
         maxOutputTokens: 80,
         maxRetries: 0,
         abortSignal,
-        timeout: { totalMs: timeoutMs },
       }),
       timeoutMs
     );
