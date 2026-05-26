@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-26T08:37:39.090Z"
+    "updatedAt": "2026-05-26T09:58:33.066Z"
   },
   "sequence": {
-    "nextRunNumber": 613
+    "nextRunNumber": 614
   },
   "summary": {
-    "totalRecordedRuns": 610,
-    "totalRuns": 480,
+    "totalRecordedRuns": 611,
+    "totalRuns": 481,
     "excludedRuns": 130,
-    "totalChecks": 4241,
-    "totalPassed": 4053,
+    "totalChecks": 4249,
+    "totalPassed": 4061,
     "totalFailed": 153,
     "completionRate": 100,
-    "completedItems": 708,
+    "completedItems": 710,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260526-0612",
-    "lastRecordedAt": "2026-05-26T08:37:39.090Z",
-    "latestRecordedRunId": "QA-20260526-0612",
-    "latestRecordedAt": "2026-05-26T08:37:39.090Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260526-0613",
+    "lastRecordedAt": "2026-05-26T09:58:33.066Z",
+    "latestRecordedRunId": "QA-20260526-0613",
+    "latestRecordedAt": "2026-05-26T09:58:33.066Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17468,6 +17468,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-25T15:54:39.843Z"
+    },
+    "p14-group-aggregate-current-metric": {
+      "id": "p14-group-aggregate-current-metric",
+      "title": "P14 db-mysql group average memory query returns current metric evidence",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260526-0613",
+      "firstSeenAt": "2026-05-26T09:58:33.066Z",
+      "lastSeenRunId": "QA-20260526-0613",
+      "lastSeenAt": "2026-05-26T09:58:33.066Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Vercel Playwright MCP returned monitoring-metric-current answer with average memory 50.7% for 3 db-mysql servers.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-26T09:58:33.066Z"
+    },
+    "cloud-tasks-dispatch-env-drift": {
+      "id": "cloud-tasks-dispatch-env-drift",
+      "title": "Cloud Tasks dispatch remains enabled after AI Engine deploy",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260526-0613",
+      "firstSeenAt": "2026-05-26T09:58:33.066Z",
+      "lastSeenRunId": "QA-20260526-0613",
+      "lastSeenAt": "2026-05-26T09:58:33.066Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.50 deploy script default keeps CLOUD_TASKS_ENABLED=true; Vercel async job path returned SSE response without Worker request failed.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-26T09:58:33.066Z"
     }
   },
   "runs": [
@@ -71482,6 +71530,127 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0613",
+      "recordedAt": "2026-05-26T09:58:33.066Z",
+      "recordedAtKst": "2026-05-26 18:58:33 KST",
+      "title": "Vercel Playwright QA - P14 group aggregate metric and Cloud Tasks dispatch",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0613.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM",
+        "deploymentUrl": "https://openmanager-1ocf286ce-skyasus-projects.vercel.app",
+        "commitSha": "9ee0a193449a55b7dffa457f0230935893016225"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/dashboard AI sidebar",
+        "P14 group aggregate current metric query",
+        "async job dispatch path: POST /api/ai/jobs -> SSE stream",
+        "Cloud Run /health",
+        "Cloud Run deploy env CLOUD_TASKS_ENABLED=true",
+        "Vercel production version endpoint"
+      ],
+      "skippedSurfaces": [
+        "full core route pack; covered by v8.12.50 release smoke",
+        "dashboard Host Map; unchanged in this fix",
+        "Cloud Run admin monitoring pages; not required for P14 dispatch regression"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "P14 DB group average memory query",
+          "agent": "Metrics Query",
+          "provider": "deterministic-monitoring",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright Performance API",
+          "latencyMs": 1097,
+          "ttfbMs": 1097,
+          "processingTimeMs": 1097
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P14 group aggregate query returned grounded current metric evidence with DB group average and all three db-mysql servers.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2552860900 completed, Cloud Run ai-engine-00558-t5m serves 8.12.50 at 100% traffic, and CLOUD_TASKS_ENABLED is true.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "cost-operations",
+          "domainName": "Cost / Free Tier Operations",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run free-tier guardrails remain unchanged and Vercel usage check reported billed 0.0000 USD.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-26T18:52:01+09:00",
+          "summary": "Current billing period checked after production QA; effective 17.2740 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "P14 Vercel Playwright MCP evidence",
+          "path": "reports/qa/evidence/qa-20260526-p14-v81250.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2552860900",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552860900"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM",
+          "url": "https://openmanager-1ocf286ce-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -71490,17 +71659,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 324,
-      "appropriateCount": 279,
+      "seenCount": 325,
+      "appropriateCount": 280,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 66,
-      "lastRunId": "QA-20260526-0612",
-      "lastSeenAt": "2026-05-26T08:37:39.090Z",
+      "lastRunId": "QA-20260526-0613",
+      "lastSeenAt": "2026-05-26T09:58:33.066Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "4/6 PASS (Q-NEW40/41/42/44), 2/6 PARTIAL (Q-NEW43/45). 신규 강점 3개: 3중 AND 복합 조건 완전 처리(Q-NEW41), storage+db P8 그룹 비교 수정 확인(Q-NEW42), 24h 상승폭 랭킹(Q-NEW44). 신규 약점 P14: 단일 그룹 집계(db-mysql 평균 메모리) monitoring-evidence-unavailable. Q-NEW45 RCA+forecast 47분 예측 우수하나 응답 느림+capacity-forecast 전용 경로 미진입. OTel 교차 검증: db-mysql-dc1-backup CPU19%/MEM33%, storage 평균DISK 55.8%, DB 평균DISK 59.7% 수치 일치.",
-      "lastNextAction": "P14 단일 그룹 집계 패턴 추가 검토 — monitoring-metric-current에 단일 그룹 평균 계산 경로 추가 또는 group-aggregate evidence provider 신규 추가"
+      "lastImprovementNeeded": false,
+      "lastRationale": "P14 group aggregate query returned grounded current metric evidence with DB group average and all three db-mysql servers.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -71541,16 +71710,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 223,
-      "appropriateCount": 202,
+      "seenCount": 224,
+      "appropriateCount": 203,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260526-0611",
-      "lastSeenAt": "2026-05-26T08:11:39.764Z",
+      "lastRunId": "QA-20260526-0613",
+      "lastSeenAt": "2026-05-26T09:58:33.066Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab release pipeline 2552542622 completed deploy, deploy_ai_engine, and both post-deploy smoke jobs successfully; Vercel and Cloud Run versions both report 8.12.48.",
+      "lastRationale": "GitLab tag pipeline 2552860900 completed, Cloud Run ai-engine-00558-t5m serves 8.12.50 at 100% traffic, and CLOUD_TASKS_ENABLED is true.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -71813,16 +71982,16 @@
       "domainName": "Cost / Free Tier Operations",
       "firstSeenRunId": "QA-20260521-0548",
       "firstSeenAt": "2026-05-21T01:20:42.196Z",
-      "seenCount": 4,
-      "appropriateCount": 4,
+      "seenCount": 5,
+      "appropriateCount": 5,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260521-0551",
-      "lastSeenAt": "2026-05-21T07:05:41.434Z",
+      "lastRunId": "QA-20260526-0613",
+      "lastSeenAt": "2026-05-26T09:58:33.066Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel usage check reported billed 0.0000 USD for the current period after deployment.",
+      "lastRationale": "Cloud Run free-tier guardrails remain unchanged and Vercel usage check reported billed 0.0000 USD.",
       "lastNextAction": ""
     },
     "frontend-ux-engineer": {

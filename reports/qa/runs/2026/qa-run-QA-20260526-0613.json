@@ -1,0 +1,150 @@
+{
+  "runId": "QA-20260526-0613",
+  "recordedAt": "2026-05-26T09:58:33.066Z",
+  "recordedAtKst": "2026-05-26 18:58:33 KST",
+  "runTitle": "Vercel Playwright QA - P14 group aggregate metric and Cloud Tasks dispatch",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM",
+    "deploymentUrl": "https://openmanager-1ocf286ce-skyasus-projects.vercel.app",
+    "commitSha": "9ee0a193449a55b7dffa457f0230935893016225"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/dashboard AI sidebar",
+    "P14 group aggregate current metric query",
+    "async job dispatch path: POST /api/ai/jobs -> SSE stream",
+    "Cloud Run /health",
+    "Cloud Run deploy env CLOUD_TASKS_ENABLED=true",
+    "Vercel production version endpoint"
+  ],
+  "skippedSurfaces": [
+    "full core route pack; covered by v8.12.50 release smoke",
+    "dashboard Host Map; unchanged in this fix",
+    "Cloud Run admin monitoring pages; not required for P14 dispatch regression"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P14 DB group average memory query",
+      "agent": "Metrics Query",
+      "provider": "deterministic-monitoring",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API",
+      "latencyMs": 1097,
+      "ttfbMs": 1097,
+      "processingTimeMs": 1097
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P14 group aggregate query returned grounded current metric evidence with DB group average and all three db-mysql servers.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline 2552860900 completed, Cloud Run ai-engine-00558-t5m serves 8.12.50 at 100% traffic, and CLOUD_TASKS_ENABLED is true.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "cost-operations",
+      "domainName": "Cost / Free Tier Operations",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run free-tier guardrails remain unchanged and Vercel usage check reported billed 0.0000 USD.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-26T18:52:01+09:00",
+      "summary": "Current billing period checked after production QA; effective 17.2740 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "P14 Vercel Playwright MCP evidence",
+      "path": "reports/qa/evidence/qa-20260526-p14-v81250.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p14-group-aggregate-current-metric",
+      "title": "P14 db-mysql group average memory query returns current metric evidence",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Vercel Playwright MCP returned monitoring-metric-current answer with average memory 50.7% for 3 db-mysql servers.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "cloud-tasks-dispatch-env-drift",
+      "title": "Cloud Tasks dispatch remains enabled after AI Engine deploy",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.50 deploy script default keeps CLOUD_TASKS_ENABLED=true; Vercel async job path returned SSE response without Worker request failed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.12.49 direct Cloud Run P14 parser was already correct; Vercel UI failed because Cloud Run dispatch env was false.",
+    "v8.12.50 fixes the persistent deploy default so future AI Engine releases keep Cloud Tasks dispatch enabled unless explicitly overridden.",
+    "Playwright network requests showed POST /api/ai/jobs 201 and EventSource /api/ai/jobs/:id/stream 1097 ms."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2552860900",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552860900"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel deployment dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM",
+      "url": "https://openmanager-1ocf286ce-skyasus-projects.vercel.app/"
+    }
+  ]
+}

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 17:37:40 KST
+> Generated at: 2026-05-26 18:58:34 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 610 |
-| Total Runs (Counted) | 480 |
+| Total Recorded Runs | 611 |
+| Total Runs (Counted) | 481 |
 | Non-counted Runs | 130 |
-| Total Checks | 4241 |
-| Passed | 4053 |
+| Total Checks | 4249 |
+| Passed | 4061 |
 | Failed | 153 |
-| Completed Items | 708 |
+| Completed Items | 710 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0612 (2026-05-26T08:37:39.090Z) |
-| Latest Recorded Run | QA-20260526-0612 (2026-05-26T08:37:39.090Z) |
+| Last Counted Run | QA-20260526-0613 (2026-05-26T09:58:33.066Z) |
+| Latest Recorded Run | QA-20260526-0613 (2026-05-26T09:58:33.066Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,25 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0612 (2026-05-26T08:37:39.090Z)
+Latest run: QA-20260526-0613 (2026-05-26T09:58:33.066Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | P14 단일 그룹 집계 패턴 추가 검토 — monitoring-metric-current에 단일 그룹 평균 계산 경로 추가 또는 group-aggregate evidence provider 신규 추가 |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Cost / Free Tier Operations | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period checked after production QA; effective 17.2740 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T08:37:39.090Z -> 2026-05-26T08:37:39.090Z (24h)
-- Runs with observations: 6 recorded / 1 counted
-- Samples: 14
+- Window: 2026-05-25T09:58:33.066Z -> 2026-05-26T09:58:33.066Z (24h)
+- Runs with observations: 7 recorded / 2 counted
+- Samples: 15
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -60,11 +62,12 @@ Latest run: QA-20260526-0612 (2026-05-26T08:37:39.090Z)
 | Metrics Query Agent | streaming-ai | 5 | 3592ms | 5570ms | 602ms | 741ms | 899ms | 1487ms | QA-20260526-0611 |
 | Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
+| Metrics Query | deterministic-monitoring | 1 | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | QA-20260526-0613 |
 | Metrics Query Agent | deterministic | 2 | 26ms | 28ms | - | - | - | - | QA-20260525-0595 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T08:37:39.090Z -> 2026-05-26T08:37:39.090Z (24h)
+- Window: 2026-05-25T09:58:33.066Z -> 2026-05-26T09:58:33.066Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -76,29 +79,29 @@ Latest run: QA-20260526-0612 (2026-05-26T08:37:39.090Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA cbca218e
-- Coverage Packs: ai-core
-- Covered Surfaces: P10 fix 범위 확장 — backup CPU/MEM 쿼리 (Q-NEW40), 3중 AND 복합 조건 CPU+MEM+DISK >= 50% (Q-NEW41), P8 storage vs db 그룹 비교 디스크 (Q-NEW42), 단일 그룹 집계 평균 메모리 쿼리 (Q-NEW43), 24h 전 대비 상승폭 랭킹 (Q-NEW44), RCA + forecast 복합 장애 예측 (Q-NEW45)
-- Skipped Surfaces: -
+- Deployment: dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM / SHA 9ee0a193
+- Coverage Packs: ai-core, observability-pack
+- Covered Surfaces: /dashboard AI sidebar, P14 group aggregate current metric query, async job dispatch path: POST /api/ai/jobs -> SSE stream, Cloud Run /health, Cloud Run deploy env CLOUD_TASKS_ENABLED=true, Vercel production version endpoint
+- Skipped Surfaces: full core route pack; covered by v8.12.50 release smoke, dashboard Host Map; unchanged in this fix, Cloud Run admin monitoring pages; not required for P14 dispatch regression
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
+| general | GitLab pipeline 2552860900 | [GitLab pipeline 2552860900](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552860900) | - |
+| vercel-deployment | Vercel deployment dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM | [Vercel deployment dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM](https://openmanager-1ocf286ce-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | 17차 AI 6문항 — Chrome DevTools MCP (v8.12.48) | `reports/qa/evidence/qa-20260526-17cha-ai-6questions.png` | - |
+| playwright-network | P14 Vercel Playwright MCP evidence | `reports/qa/evidence/qa-20260526-p14-v81250.md` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260526-0612)
-  next: P14 단일 그룹 집계 패턴 추가 검토 — monitoring-metric-current에 단일 그룹 평균 계산 경로 추가 또는 group-aggregate evidence provider 신규 추가
+- None
 
 ## Pending Improvements
 
@@ -494,6 +497,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - cloud-run-proxy-runtime-env-refresh: Cloud Run proxy runtime env refresh (completed 1회, last QA-20260325-0185)
 - cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
+- cloud-tasks-dispatch-env-drift: Cloud Tasks dispatch remains enabled after AI Engine deploy (completed 1회, last QA-20260526-0613)
 - cloud-tasks-dispatch-follow-up-hardening: Cloud Tasks dispatch header allowlist and createTask transient retry hardening (completed 1회, last QA-20260429-0359)
 - cloud-tasks-fresh-browser-dispatch-sse: Fresh browser Cloud Tasks dispatch and SSE completion verified (completed 1회, last QA-20260429-0365)
 - cloud-tasks-payload-byte-guard: Cloud Tasks dispatch payload byte guard and 413 response (completed 1회, last QA-20260429-0364)
@@ -694,6 +698,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - p11-capacity-forecast-n-hours-expression: P11: N시간 이내 디스크 포화 표현 production 라우팅 검증 (completed 2회, last QA-20260525-0598)
 - p12-streaming-delta-whitespace-production-closure: P12 streaming delta whitespace production closure (completed 1회, last QA-20260526-0601)
+- p14-group-aggregate-current-metric: P14 db-mysql group average memory query returns current metric evidence (completed 1회, last QA-20260526-0613)
 - p5-session-context-follow-up: AI Assistant follow-up queries preserve previous server scope across streaming and async job paths (completed 1회, last QA-20260525-0583)
 - p8-db-vs-cache-메모리-비교-worker-request-failed-수정: P8: DB vs Cache 메모리 비교 Worker request failed 수정 (completed 1회, last QA-20260525-0593)
 - p8-group-compare-intentframe-production-closure: P8 group-compare via intentFrame production closure (completed 1회, last QA-20260526-0601)
@@ -894,6 +899,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0613 | 2026-05-26T09:58:33.066Z | targeted | yes | yes | Vercel Playwright QA - P14 group aggregate metric and Cloud Tasks dispatch | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260526-0612 | 2026-05-26T08:37:39.090Z | targeted | no | yes | 17차 신규 6문항 평가 — v8.12.48 미테스트 영역 검증 | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260526-0611 | 2026-05-26T08:11:39.764Z | release-gate | yes | yes | v8.12.48 Vercel production Playwright MCP release smoke | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0610 | 2026-05-26T05:33:38.310Z | targeted | no | yes | P10 production Playwright recheck — backup group filter | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -913,4 +919,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0596 | 2026-05-25T10:58:57.910Z | targeted | no | no | v8.12.40 production routing verification — P9/Q-NEW30 deployment closure | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260525-0595 | 2026-05-25T10:16:08.749Z | targeted | no | no | v8.12.39 프로덕션 11차 AI 어시스턴트 평가 — Q-NEW29~33 신규 5문항 | 5 | 1 | 3 | 0 | 0 | 0 |
 | QA-20260525-0594 | 2026-05-25T09:39:11.343Z | targeted | no | no | Local AI routing regression validation — Q-NEW28/P9 deterministic fixes | 6 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260525-0593 | 2026-05-25T08:02:14.837Z | targeted | no | no | v8.12.39 핫픽스 검증 — P8/Q-NEW25 LLM pre-filter 회귀 수정 확인 | 2 | 3 | 0 | 0 | 0 | 0 |
