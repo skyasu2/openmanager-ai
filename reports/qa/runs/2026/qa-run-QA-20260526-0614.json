@@ -1,0 +1,220 @@
+{
+  "runId": "QA-20260526-0614",
+  "recordedAt": "2026-05-26T12:52:44.071Z",
+  "recordedAtKst": "2026-05-26 21:52:44 KST",
+  "runTitle": "Vercel Playwright QA - v8.12.51 Release Gate",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2553301909-v8.12.51-cloud-run-ai-engine-00559-62w",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "ad7735e728ad64d8f8a6fb3a99eee51ea4917b3b"
+  },
+  "scope": "release-gate",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/ landing route version and CTA",
+    "/login route auth options and version",
+    "/dashboard status cards and resource panels",
+    "/dashboard AI sidebar",
+    "conversational-ai-qa standard five",
+    "direct stream path: /api/ai/supervisor/stream/v2",
+    "async job dispatch path: POST /api/ai/jobs -> SSE stream",
+    "Vercel production /api/version",
+    "Cloud Run /health",
+    "Cloud Run /monitoring unauthorized guard",
+    "Vercel usage check"
+  ],
+  "skippedSurfaces": [
+    "modal-detail-pack; unchanged by v8.12.51 release",
+    "reporter tab full report generation; outside this release risk",
+    "analyst tab manual drilldown; cache hardening covered by ai-engine tests and standard QA",
+    "Vision live image QA; no Vision provider or upload behavior changed",
+    "Cloud Run authenticated admin traces; health and unauthorized guard checked only"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "standard Q1 server status summary",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI and Performance API",
+      "latencyMs": 1552
+    },
+    {
+      "surface": "standard Q2 single server detail",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API",
+      "latencyMs": 833
+    },
+    {
+      "surface": "standard Q3 24h peak time",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-peak-metric",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API",
+      "latencyMs": 838,
+      "processingTimeMs": 838
+    },
+    {
+      "surface": "standard Q4 action-needed servers",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API",
+      "latencyMs": 515
+    },
+    {
+      "surface": "standard Q5 network follow-up filter",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API",
+      "latencyMs": 2545,
+      "processingTimeMs": 2545
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The standard five AI questions all returned grounded monitoring evidence, including direct stream and async job/SSE paths.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab release pipeline 2553301909 succeeded, Vercel serves commit ad7735e72, and Cloud Run revision ai-engine-00559-62w reports health ok for v8.12.51.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "cost-operations",
+      "domainName": "Cost / Free Tier Operations",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run remains at cpu=1 and memory=512Mi, no paid machine type was detected, and Vercel usage remains billed 0.0000 USD.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-26T21:49:46+09:00",
+      "summary": "Current billing period checked after production QA; effective 17.2740 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "v8.12.51 release-gate evidence",
+      "path": "reports/qa/evidence/qa-20260526-v81251-release-gate.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI standard five final response screenshot",
+      "path": "reports/qa/evidence/qa-20260526-v81251-ai-standard-five.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "wont-fix-review-classification-tooling",
+      "title": "WONT-FIX review class tooling reflects current portfolio deferral policy",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Local validation and release-gate QA completed for v8.12.51; QA status shows 31 WONT-FIX items with review classes and no open expert gaps.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-cache-key-data-slot-hardening",
+      "title": "Analyst and RCA cache keys include data slot context",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AI Engine tests passed locally and production standard five QA exercised current slot grounded monitoring paths after v8.12.51 deploy.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "v81251-release-gate-standard-five",
+      "title": "v8.12.51 release-gate standard five conversational AI QA",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Vercel Playwright MCP standard five: 5/5 pass with monitoring-server-health, monitoring-peak-metric, and monitoring-metric-current evidence.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release decision: go.",
+    "Docker preflight build-only pass required a timeout retry with DOCKER_BUILD_TIMEOUT_SECONDS=900 after the first 420s attempt reached the final chown step.",
+    "Cloud Run /monitoring without auth returned 403 as expected.",
+    "AI Q1 used monitoring-server-health severity taxonomy and matched the resource-alert surface; dashboard host-status tile was not used as a strict parity oracle.",
+    "Standard Q5 confirmed conversational context for the previous action-needed server set and filtered network >= 70% to lb-haproxy-dc1-01."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2553301909",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2553301909"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production v8.12.51",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 20:08:38 KST
+> Generated at: 2026-05-26 21:52:56 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 611 |
-| Total Runs (Counted) | 481 |
+| Total Recorded Runs | 612 |
+| Total Runs (Counted) | 482 |
 | Non-counted Runs | 130 |
-| Total Checks | 4249 |
-| Passed | 4061 |
+| Total Checks | 4261 |
+| Passed | 4073 |
 | Failed | 153 |
-| Completed Items | 710 |
+| Completed Items | 713 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0613 (2026-05-26T09:58:33.066Z) |
-| Latest Recorded Run | QA-20260526-0613 (2026-05-26T09:58:33.066Z) |
+| Last Counted Run | QA-20260526-0614 (2026-05-26T12:52:44.071Z) |
+| Latest Recorded Run | QA-20260526-0614 (2026-05-26T12:52:44.071Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0613 (2026-05-26T09:58:33.066Z)
+Latest run: QA-20260526-0614 (2026-05-26T12:52:44.071Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -50,24 +50,19 @@ Latest run: QA-20260526-0613 (2026-05-26T09:58:33.066Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T09:58:33.066Z -> 2026-05-26T09:58:33.066Z (24h)
-- Runs with observations: 7 recorded / 2 counted
-- Samples: 15
+- Window: 2026-05-25T12:52:44.071Z -> 2026-05-26T12:52:44.071Z (24h)
+- Runs with observations: 5 recorded / 3 counted
+- Samples: 14
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Metrics Query Agent | zai | 1 | 18141ms | 18141ms | - | - | - | - | QA-20260525-0598 |
-| Metrics Query Agent | cloud-run-ai | 3 | 6559ms | 8498ms | 284ms | 284ms | 2368ms | 2368ms | QA-20260525-0599 |
-| Server Realtime Analysis | mixed | 1 | 8456ms | 8456ms | - | - | - | - | QA-20260525-0595 |
+| Metrics Query Agent | cloud-run-ai | 8 | 3245ms | 8498ms | 284ms | 284ms | 1917ms | 2545ms | QA-20260526-0614 |
 | Metrics Query Agent | streaming-ai | 5 | 3592ms | 5570ms | 602ms | 741ms | 899ms | 1487ms | QA-20260526-0611 |
-| Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
-| Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query | deterministic-monitoring | 1 | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | QA-20260526-0613 |
-| Metrics Query Agent | deterministic | 2 | 26ms | 28ms | - | - | - | - | QA-20260525-0595 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T09:58:33.066Z -> 2026-05-26T09:58:33.066Z (24h)
+- Window: 2026-05-25T12:52:44.071Z -> 2026-05-26T12:52:44.071Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,26 +73,28 @@ Latest run: QA-20260526-0613 (2026-05-26T09:58:33.066Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
+- Scope: release-gate
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM / SHA 9ee0a193
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: /dashboard AI sidebar, P14 group aggregate current metric query, async job dispatch path: POST /api/ai/jobs -> SSE stream, Cloud Run /health, Cloud Run deploy env CLOUD_TASKS_ENABLED=true, Vercel production version endpoint
-- Skipped Surfaces: full core route pack; covered by v8.12.50 release smoke, dashboard Host Map; unchanged in this fix, Cloud Run admin monitoring pages; not required for P14 dispatch regression
+- Deployment: gitlab-pipeline-2553301909-v8.12.51-cloud-run-ai-engine-00559-62w / SHA ad7735e7
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
+- Covered Surfaces: / landing route version and CTA, /login route auth options and version, /dashboard status cards and resource panels, /dashboard AI sidebar, conversational-ai-qa standard five, direct stream path: /api/ai/supervisor/stream/v2, async job dispatch path: POST /api/ai/jobs -> SSE stream, Vercel production /api/version, Cloud Run /health, Cloud Run /monitoring unauthorized guard, Vercel usage check
+- Skipped Surfaces: modal-detail-pack; unchanged by v8.12.51 release, reporter tab full report generation; outside this release risk, analyst tab manual drilldown; cache hardening covered by ai-engine tests and standard QA, Vision live image QA; no Vision provider or upload behavior changed, Cloud Run authenticated admin traces; health and unauthorized guard checked only
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline 2552860900 | [GitLab pipeline 2552860900](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552860900) | - |
-| vercel-deployment | Vercel deployment dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM | [Vercel deployment dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM](https://openmanager-1ocf286ce-skyasus-projects.vercel.app/) | - |
+| general | GitLab release pipeline 2553301909 | [GitLab release pipeline 2553301909](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2553301909) | - |
+| monitoring | Cloud Run ai-engine health | [Cloud Run ai-engine health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
+| vercel-deployment | Vercel production v8.12.51 | [Vercel production v8.12.51](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | P14 Vercel Playwright MCP evidence | `reports/qa/evidence/qa-20260526-p14-v81250.md` | - |
+| playwright-network | v8.12.51 release-gate evidence | `reports/qa/evidence/qa-20260526-v81251-release-gate.md` | - |
+| playwright-screenshot | AI standard five final response screenshot | `reports/qa/evidence/qa-20260526-v81251-ai-standard-five.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -459,6 +456,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - analysis-basis-badge-tab-ux-broad-v823: Production 8.11.23 broad QA confirms analysis basis tabs across sidebar and fullscreen surfaces (completed 1회, last QA-20260419-0309)
 - analyst-agent-full-analysis: Analyst 18서버 분석 16정상 2주의 (completed 1회, last QA-20260419-0306)
 - analyst-agent-pass: Analyst Agent 전체 분석 정상 (completed 1회, last QA-20260326-0190)
+- analyst-cache-key-data-slot-hardening: Analyst and RCA cache keys include data slot context (completed 1회, last QA-20260526-0614)
 - analyst-full-analysis: Analyst 전체 분석 (completed 1회, last QA-20260317-0114)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 2회, last QA-20260309-0069)
@@ -873,6 +871,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - v811158-production-deploy: Deploy NLQ schema provider compatibility fix to production (completed 1회, last QA-20260516-0509)
 - v81195-dashboard-core-routes-playwright-recheck: Dashboard core routes and AI assistant tabs render in Vercel production (completed 1회, last QA-20260504-0404)
 - v81195-vercel-playwright-ai-routing-recheck: AI ranking and formatting rewrite production routes remain stable on v8.11.95 (completed 1회, last QA-20260504-0404)
+- v81251-release-gate-standard-five: v8.12.51 release-gate standard five conversational AI QA (completed 1회, last QA-20260526-0614)
 - validation-evidence-summary-clarity: Validation evidence summary 카피와 정보 우선순위 정리 (completed 1회, last QA-20260324-0171)
 - validation-public-snapshot-artifact: Validation evidence public snapshot artifact 분리 (completed 1회, last QA-20260323-0168)
 - validation-stale-banner-client-side-fix: Validation stale banner client-side age check fix (completed 1회, last QA-20260324-0170)
@@ -900,6 +899,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - was-서버-그룹-매핑v8.12.11-wasapplication-정확-라우팅-확인: WAS 서버 그룹 매핑(v8.12.11): was→application 정확 라우팅 확인 (completed 1회, last QA-20260523-0566)
 - weekly-followup-planning-hygiene: Weekly follow-up planning hygiene and data slot policy updated (completed 1회, last QA-20260519-0536)
 - weekly-hardening-production-post-deploy-retest: Deploy weekly hardening changes and rerun focused Vercel production QA (completed 1회, last QA-20260519-0537)
+- wont-fix-review-classification-tooling: WONT-FIX review class tooling reflects current portfolio deferral policy (completed 1회, last QA-20260526-0614)
 - zai-glm-vision-fallback-live-smoke: Z.AI GLM Vision fallback 실제 이미지 입력 live smoke 확인 (completed 1회, last QA-20260519-0539)
 - zod-v4-ai-engine-migration: Migrate AI Engine from Zod v3 to Zod v4 (completed 1회, last QA-20260511-0471)
 
@@ -907,6 +907,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0614 | 2026-05-26T12:52:44.071Z | release-gate | yes | yes | Vercel Playwright QA - v8.12.51 Release Gate | 12 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260526-0613 | 2026-05-26T09:58:33.066Z | targeted | yes | yes | Vercel Playwright QA - P14 group aggregate metric and Cloud Tasks dispatch | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260526-0612 | 2026-05-26T08:37:39.090Z | targeted | no | yes | 17차 신규 6문항 평가 — v8.12.48 미테스트 영역 검증 | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260526-0611 | 2026-05-26T08:11:39.764Z | release-gate | yes | yes | v8.12.48 Vercel production Playwright MCP release smoke | 16 | 0 | 0 | 0 | 0 | 0 |
@@ -926,4 +927,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0597 | 2026-05-25T11:20:49.100Z | targeted | no | no | P11 local routing regression verification — disk-full capacity forecast wording | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0596 | 2026-05-25T10:58:57.910Z | targeted | no | no | v8.12.40 production routing verification — P9/Q-NEW30 deployment closure | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260525-0595 | 2026-05-25T10:16:08.749Z | targeted | no | no | v8.12.39 프로덕션 11차 AI 어시스턴트 평가 — Q-NEW29~33 신규 5문항 | 5 | 1 | 3 | 0 | 0 | 0 |
-| QA-20260525-0594 | 2026-05-25T09:39:11.343Z | targeted | no | no | Local AI routing regression validation — Q-NEW28/P9 deterministic fixes | 6 | 3 | 0 | 0 | 0 | 0 |
