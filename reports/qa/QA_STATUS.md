@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 12:34:18 KST
+> Generated at: 2026-05-26 13:02:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 605 |
+| Total Recorded Runs | 606 |
 | Total Runs (Counted) | 476 |
-| Non-counted Runs | 129 |
+| Non-counted Runs | 130 |
 | Total Checks | 4210 |
 | Passed | 4024 |
 | Failed | 153 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260526-0607 (2026-05-26T03:34:11.537Z) |
-| Latest Recorded Run | QA-20260526-0607 (2026-05-26T03:34:11.537Z) |
+| Latest Recorded Run | QA-20260526-0608 (2026-05-26T04:01:53.841Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,12 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0607 (2026-05-26T03:34:11.537Z)
+Latest run: QA-20260526-0608 (2026-05-26T04:01:53.841Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -48,7 +49,7 @@ Latest run: QA-20260526-0607 (2026-05-26T03:34:11.537Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T03:34:11.537Z -> 2026-05-26T03:34:11.537Z (24h)
+- Window: 2026-05-25T04:01:53.841Z -> 2026-05-26T04:01:53.841Z (24h)
 - Runs with observations: 6 recorded / 1 counted
 - Samples: 14
 
@@ -65,7 +66,7 @@ Latest run: QA-20260526-0607 (2026-05-26T03:34:11.537Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T03:34:11.537Z -> 2026-05-26T03:34:11.537Z (24h)
+- Window: 2026-05-25T04:01:53.841Z -> 2026-05-26T04:01:53.841Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,23 +79,24 @@ Latest run: QA-20260526-0607 (2026-05-26T03:34:11.537Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: yes
-- Deployment: SHA fd0b0da6
+- Counts Toward Summary: no
+- Deployment: v8.12.46-gitlab-pipeline-2552105899 / SHA fd0b0da6
 - Coverage Packs: ai-core
-- Covered Surfaces: ai-chat Q-NEW38 재검증
-- Skipped Surfaces: -
+- Covered Surfaces: ai-chat Q-NEW38 P4 RCA routing direct retest, ai-chat Q-NEW34 P13 multi-metric comparison direct retest
+- Skipped Surfaces: broad route smoke, mobile responsive matrix, unrelated residual AI weaknesses
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Frontend production version API | [Frontend production version API](https://openmanager-ai.vercel.app/api/version) | - |
+| general | GitLab v8.12.46 deployment pipeline | [GitLab v8.12.46 deployment pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552105899) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-console | Codex direct P4/P13 AI assistant retest evidence | `reports/qa/evidence/2026/qa-20260526-0608-codex-direct/qa-20260526-0608-codex-direct.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -894,6 +896,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0608 | 2026-05-26T04:01:53.841Z | targeted | no | no | Codex 직접 재검증 — v8.12.46 P4/P13 AI Assistant fixes | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0607 | 2026-05-26T03:34:11.537Z | targeted | no | yes | P4 수정 확인 — v8.12.46 원인/RCA 쿼리 Analyst 경로 라우팅 (Q-NEW38 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0606 | 2026-05-26T02:18:46.663Z | targeted | no | yes | P13 수정 확인 — v8.12.45 서버 1:1 다중 메트릭 비교 (Q-NEW34 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0605 | 2026-05-26T01:24:48.297Z | targeted | no | yes | 14차 AI 어시스턴트 평가 + Host Map UX Phase 6 배포 점검 (Q-NEW34~39) | 9 | 0 | 0 | 0 | 0 | 1 |
@@ -913,4 +916,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0591 | 2026-05-25T04:28:13.683Z | targeted | yes | yes | v8.12.37 Production QA - Q-NEW13 Advisor evidence closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0590 | 2026-05-25T03:57:03.861Z | targeted | yes | yes | v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check | 4 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260525-0589 | 2026-05-25T03:01:02.015Z | targeted | yes | yes | v8.12.35 Production QA - P7 trend, P5 pronoun follow-up, Advisor grounding | 6 | 3 | 0 | 0 | 1 | 1 |
-| QA-20260525-0588 | 2026-05-25T01:11:32.229Z | targeted | no | yes | v8.12.29 8차 AI 어시스턴트 평가 — storage/메모리랭킹/AZ비교/단일서버추세/대명사follow-up | 6 | 0 | 0 | 0 | 0 | 0 |

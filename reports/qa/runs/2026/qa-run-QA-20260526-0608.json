@@ -1,0 +1,88 @@
+{
+  "runId": "QA-20260526-0608",
+  "recordedAt": "2026-05-26T04:01:53.841Z",
+  "recordedAtKst": "2026-05-26 13:01:53 KST",
+  "runTitle": "Codex 직접 재검증 — v8.12.46 P4/P13 AI Assistant fixes",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.46",
+    "backend": "Cloud Run AI Engine v8.12.46",
+    "branch": "main",
+    "deploymentId": "v8.12.46-gitlab-pipeline-2552105899",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "fd0b0da6debd174ee30ba464c620907ee977a179"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "ai-chat Q-NEW38 P4 RCA routing direct retest",
+    "ai-chat Q-NEW34 P13 multi-metric comparison direct retest"
+  ],
+  "skippedSurfaces": [
+    "broad route smoke",
+    "mobile responsive matrix",
+    "unrelated residual AI weaknesses"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Codex 직접 재검증에서 P4/Q-NEW38은 일반 대화가 아닌 서버 실시간 데이터 분석 + 분석 근거로 응답했고, P13/Q-NEW34는 CPU+메모리+디스크 3개 지표를 모두 반환했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "응답이 현재 OTel 스냅샷 기준으로 잘못된 사용자 전제(CPU 높음)를 정정하고 현재 CPU 28% 정상 범위를 명시했다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Codex direct P4/P13 AI assistant retest evidence",
+      "path": "reports/qa/evidence/2026/qa-20260526-0608-codex-direct/qa-20260526-0608-codex-direct.md",
+      "note": "Observed prompts, rendered evidence labels, route/tool markers, and version/health metadata."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "User-requested direct retest on an already-counted v8.12.46 production deployment; countsTowardSummary=false prevents duplicate aggregate inflation.",
+    "P4 prompt used a high-CPU premise, but live data reported CPU 28%, so the desired behavior is premise correction plus evidence-based RCA path, not forcing a high-CPU answer.",
+    "P4 response displayed the UI badge '응답 느림'; exact latency was not measured in this retest."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Frontend production version API",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.12.46 deployment pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552105899"
+    }
+  ]
+}
