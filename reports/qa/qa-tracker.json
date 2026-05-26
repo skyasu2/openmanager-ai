@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-25T17:08:49.837Z"
+    "updatedAt": "2026-05-26T01:24:48.297Z"
   },
   "sequence": {
-    "nextRunNumber": 605
+    "nextRunNumber": 606
   },
   "summary": {
-    "totalRecordedRuns": 602,
-    "totalRuns": 473,
+    "totalRecordedRuns": 603,
+    "totalRuns": 474,
     "excludedRuns": 129,
-    "totalChecks": 4199,
-    "totalPassed": 4015,
+    "totalChecks": 4208,
+    "totalPassed": 4022,
     "totalFailed": 153,
     "completionRate": 100,
     "completedItems": 708,
@@ -20,11 +20,11 @@
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260526-0604",
-    "lastRecordedAt": "2026-05-25T17:08:49.837Z",
-    "latestRecordedRunId": "QA-20260526-0604",
-    "latestRecordedAt": "2026-05-25T17:08:49.837Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260526-0605",
+    "lastRecordedAt": "2026-05-26T01:24:48.297Z",
+    "latestRecordedRunId": "QA-20260526-0605",
+    "latestRecordedAt": "2026-05-26T01:24:48.297Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -70864,6 +70864,69 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0605",
+      "recordedAt": "2026-05-26T01:24:48.297Z",
+      "recordedAtKst": "2026-05-26 10:24:48 KST",
+      "title": "14차 AI 어시스턴트 평가 + Host Map UX Phase 6 배포 점검 (Q-NEW34~39)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0605.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel (최신 배포, Host Map 포함)",
+        "backend": "Cloud Run AI Engine v8.12.43",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "b01e091944109ce326886dfe3670663b9d4b27e1"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard",
+        "/dashboard/servers",
+        "ai-chat Q-NEW34~Q-NEW39",
+        "host-map tab + hexagonal tiles"
+      ],
+      "skippedSurfaces": [
+        "alerts",
+        "logs",
+        "topology"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Q-NEW34~39 신규 6문항 평가 완료. 4 PASS, 2 PARTIAL. 신규 강점(그룹+threshold 복합, 네트워크 I/O), 신규 약점(P13 서버 1:1 비교, P4 지속). Host Map 배포 후 정상 렌더링 확인.",
+          "nextAction": "P13(서버 1:1 다중 메트릭 비교) 수정 검토"
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -70872,17 +70935,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 316,
-      "appropriateCount": 271,
+      "seenCount": 317,
+      "appropriateCount": 272,
       "partialCount": 45,
       "inappropriateCount": 0,
-      "improvementNeededCount": 64,
-      "lastRunId": "QA-20260526-0601",
-      "lastSeenAt": "2026-05-25T15:54:39.843Z",
+      "improvementNeededCount": 65,
+      "lastRunId": "QA-20260526-0605",
+      "lastSeenAt": "2026-05-26T01:24:48.297Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "P8 deterministic monitoring evidence and P12 stream/v2 visible text spacing were verified on Vercel production.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "Q-NEW34~39 신규 6문항 평가 완료. 4 PASS, 2 PARTIAL. 신규 강점(그룹+threshold 복합, 네트워크 I/O), 신규 약점(P13 서버 1:1 비교, P4 지속). Host Map 배포 후 정상 렌더링 확인.",
+      "lastNextAction": "P13(서버 1:1 다중 메트릭 비교) 수정 검토"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 02:08:50 KST
+> Generated at: 2026-05-26 10:24:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 602 |
-| Total Runs (Counted) | 473 |
+| Total Recorded Runs | 603 |
+| Total Runs (Counted) | 474 |
 | Non-counted Runs | 129 |
-| Total Checks | 4199 |
-| Passed | 4015 |
+| Total Checks | 4208 |
+| Passed | 4022 |
 | Failed | 153 |
 | Completed Items | 708 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0604 (2026-05-25T17:08:49.837Z) |
-| Latest Recorded Run | QA-20260526-0604 (2026-05-25T17:08:49.837Z) |
+| Last Counted Run | QA-20260526-0605 (2026-05-26T01:24:48.297Z) |
+| Latest Recorded Run | QA-20260526-0605 (2026-05-26T01:24:48.297Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0604 (2026-05-25T17:08:49.837Z)
+Latest run: QA-20260526-0605 (2026-05-26T01:24:48.297Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | yes | P13(서버 1:1 다중 메트릭 비교) 수정 검토 |
 
 ## Usage Checks (Latest Run)
 
@@ -48,9 +48,9 @@ Latest run: QA-20260526-0604 (2026-05-25T17:08:49.837Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T17:08:49.837Z -> 2026-05-25T17:08:49.837Z (24h)
-- Runs with observations: 7 recorded / 2 counted
-- Samples: 15
+- Window: 2026-05-25T01:24:48.297Z -> 2026-05-26T01:24:48.297Z (24h)
+- Runs with observations: 6 recorded / 1 counted
+- Samples: 14
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -61,28 +61,29 @@ Latest run: QA-20260526-0604 (2026-05-25T17:08:49.837Z)
 | Metrics Query Agent | streaming-ai | 4 | 4118ms | 5570ms | 602ms | 741ms | 606ms | 747ms | QA-20260526-0601 |
 | Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
-| Metrics Query Agent | deterministic | 3 | 37ms | 60ms | - | - | 60ms | 60ms | QA-20260525-0595 |
+| Metrics Query Agent | deterministic | 2 | 26ms | 28ms | - | - | - | - | QA-20260525-0595 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T17:08:49.837Z -> 2026-05-25T17:08:49.837Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 7
+- Window: 2026-05-25T01:24:48.297Z -> 2026-05-26T01:24:48.297Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 4
 - Drift rate: 0%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | deterministic | 6 | 0% | 10ms | 60ms | QA-20260525-0589 |
 | /api/ai/jobs/[id]/stream | single-agent | 1 | 0% | 0ms | 0ms | QA-20260525-0589 |
+| /api/ai/supervisor/stream/v2 | deterministic | 3 | 0% | 0ms | 0ms | QA-20260525-0589 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA 30e5557c
-- Covered Surfaces: AI artifact card rendering, Planner shadow drift, Capacity forecast routing, Streaming UI S1-S3, AI sidebar visibility
-- Skipped Surfaces: -
+- Deployment: SHA b01e0919
+- Coverage Packs: ai-core, dashboard-core
+- Covered Surfaces: /dashboard, /dashboard/servers, ai-chat Q-NEW34~Q-NEW39, host-map tab + hexagonal tiles
+- Skipped Surfaces: alerts, logs, topology
 
 ## Links (Latest Run)
 
@@ -98,7 +99,8 @@ Latest run: QA-20260526-0604 (2026-05-25T17:08:49.837Z)
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260526-0605)
+  next: P13(서버 1:1 다중 메트릭 비교) 수정 검토
 
 ## Pending Improvements
 
@@ -894,6 +896,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0605 | 2026-05-26T01:24:48.297Z | targeted | no | yes | 14차 AI 어시스턴트 평가 + Host Map UX Phase 6 배포 점검 (Q-NEW34~39) | 9 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260526-0604 | 2026-05-25T17:08:49.837Z | targeted | no | yes | WONT-FIX → completed 복구: 수정 커밋 확인된 5개 항목 | 5 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260526-0603 | 2026-05-25T16:49:56.870Z | targeted | no | no | WONT-FIX cleanup - retire no-action policy and tooling items | 9 | 9 | 0 | 0 | 0 | 0 |
 | QA-20260526-0602 | 2026-05-25T16:29:04.864Z | targeted | no | no | WONT-FIX tracker triage - convert completed DoD evidence items | 7 | 7 | 0 | 0 | 0 | 0 |
@@ -913,4 +916,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0588 | 2026-05-25T01:11:32.229Z | targeted | no | yes | v8.12.29 8차 AI 어시스턴트 평가 — storage/메모리랭킹/AZ비교/단일서버추세/대명사follow-up | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260525-0587 | 2026-05-25T00:41:31.507Z | targeted | yes | yes | Q-NEW13 Production QA - Advisor Command Evidence | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0586 | 2026-05-24T22:51:39.888Z | targeted | yes | yes | Q-NEW17 Production QA - Generic Metric Trend Routing | 7 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260525-0585 | 2026-05-24T21:25:11.046Z | targeted | yes | yes | v8.12.30 Q-NEW18 pronoun follow-up targeted production QA | 2 | 1 | 0 | 0 | 0 | 0 |

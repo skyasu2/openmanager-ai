@@ -1,0 +1,61 @@
+{
+  "runId": "QA-20260526-0605",
+  "recordedAt": "2026-05-26T01:24:48.297Z",
+  "recordedAtKst": "2026-05-26 10:24:48 KST",
+  "runTitle": "14차 AI 어시스턴트 평가 + Host Map UX Phase 6 배포 점검 (Q-NEW34~39)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel (최신 배포, Host Map 포함)",
+    "backend": "Cloud Run AI Engine v8.12.43",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "b01e091944109ce326886dfe3670663b9d4b27e1"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "dashboard-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard",
+    "/dashboard/servers",
+    "ai-chat Q-NEW34~Q-NEW39",
+    "host-map tab + hexagonal tiles"
+  ],
+  "skippedSurfaces": [
+    "alerts",
+    "logs",
+    "topology"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Q-NEW34~39 신규 6문항 평가 완료. 4 PASS, 2 PARTIAL. 신규 강점(그룹+threshold 복합, 네트워크 I/O), 신규 약점(P13 서버 1:1 비교, P4 지속). Host Map 배포 후 정상 렌더링 확인.",
+      "nextAction": "P13(서버 1:1 다중 메트릭 비교) 수정 검토"
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
