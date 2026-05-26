@@ -327,6 +327,51 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('updates semantic trace capability when a safer raw evidence provider overrides a stale frame', async () => {
+    const query = '전체 서버 리소스 압박 순위 알려줘';
+    const support = await resolveDomainEvidenceSupport({
+      query,
+      domain: monitoringDomainPack,
+      sessionId: 'session-current-pressure-ranking-frame-override',
+      traceId: 'trace-current-pressure-ranking-frame-override',
+      metadata: {
+        intentFrame: {
+          ...monitoringMetricPeakFrame,
+          timeWindow: 'current',
+          topN: 5,
+        },
+        semanticQueryTrace: {
+          originalQuery: query,
+          selectedDomain: monitoringDomainPack.id,
+          selectedCapability: 'monitoring.metric_peak',
+          selectedEvidenceProvider: 'monitoring-peak-metric',
+          evidenceAvailable: false,
+          clarificationRequired: false,
+          reasonCodes: ['semantic_frame_from_llm'],
+        },
+      },
+    } as Parameters<typeof resolveDomainEvidenceSupport>[0] & {
+      metadata: Record<string, unknown>;
+    });
+
+    expect(support?.id).toBe('monitoring-metric-ranking');
+    expect(support?.fallback).toContain('리소스 압박 상위 5대');
+    expect(support?.metadata).toMatchObject({
+      capabilityId: 'monitoring.metric_ranking',
+      intent: 'metric_ranking',
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_ranking',
+        selectedEvidenceProvider: 'monitoring-metric-ranking',
+        evidenceAvailable: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_raw_fallback_used',
+          'semantic_frame_evidence_validated',
+        ]),
+      },
+    });
+  });
+
   it('resolves current server health as deterministic domain evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query: '현재 모든 서버 상태 요약해줘',

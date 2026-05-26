@@ -206,22 +206,26 @@ function buildValidatedSemanticQueryTrace(params: {
   const evidenceCapabilityId = readString(
     params.evidence.metadata?.capabilityId
   );
+  const semanticCapability =
+    baseTrace?.selectedCapability ??
+    params.capability?.id ??
+    intentFrame?.capabilityId;
+  const capabilityMismatch =
+    semanticCapability !== undefined &&
+    evidenceCapabilityId !== undefined &&
+    semanticCapability !== evidenceCapabilityId;
 
   const selectedDomain =
     baseTrace?.selectedDomain ?? intentFrame?.domainId ?? params.domain.id;
   const selectedCapability =
-    baseTrace?.selectedCapability ??
-    params.capability?.id ??
-    intentFrame?.capabilityId ??
-    evidenceCapabilityId;
+    capabilityMismatch
+      ? evidenceCapabilityId
+      : (semanticCapability ?? evidenceCapabilityId);
   const reasonCodes = new Set(baseTrace?.reasonCodes ?? []);
   if (!baseTrace && !intentFrame) {
     reasonCodes.add('semantic_frame_raw_fallback_used');
   }
-  if (
-    intentFrame?.capabilityId &&
-    params.evidence.metadata?.capabilityId !== intentFrame.capabilityId
-  ) {
+  if (capabilityMismatch) {
     reasonCodes.add('semantic_frame_raw_fallback_used');
   }
   reasonCodes.add('semantic_frame_evidence_validated');
