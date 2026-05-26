@@ -3,6 +3,7 @@ const { buildQaTrendSnapshot } = require('./qa-trends');
 const {
   formatWontFixCategorySummary,
   groupWontFixItemsByCategory,
+  groupWontFixItemsByReviewClass,
 } = require('./qa-wont-fix-classification');
 
 function formatLatencyValue(value) {
@@ -320,9 +321,19 @@ function statusMarkdown(tracker) {
     lines.push('- None');
   } else {
     const wontFixGroups = groupWontFixItemsByCategory(wontFix);
+    const wontFixReviewGroups = groupWontFixItemsByReviewClass(wontFix);
     lines.push(
       `- Reason categories: ${formatWontFixCategorySummary(wontFixGroups)}`
     );
+    lines.push(
+      `- Review classes: ${formatWontFixCategorySummary(wontFixReviewGroups)}`
+    );
+    lines.push('');
+    lines.push('### Review Classes');
+    lines.push('');
+    for (const group of wontFixReviewGroups) {
+      lines.push(`- ${group.label} ${group.items.length}: ${group.description}`);
+    }
     lines.push('');
     for (const [groupIndex, group] of wontFixGroups.entries()) {
       lines.push(`### ${group.label}`);

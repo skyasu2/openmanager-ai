@@ -66,6 +66,86 @@ const CATEGORY_DEFINITIONS = [
   },
 ];
 
+const REVIEW_CLASS_DEFINITIONS = [
+  {
+    id: 'verify-before-promotion',
+    label: 'Verify Before Promotion',
+    description:
+      'Potentially stale accepted debt. Re-run a targeted QA check before promoting it back to implementation work.',
+    matches: ({ text, item }) =>
+      text.includes('deterministic path') ||
+      text.includes('deterministic') ||
+      String(item.id || '').includes('routing') ||
+      text.includes('잘못 라우팅') ||
+      text.includes('오발동') ||
+      text.includes('response content') ||
+      text.includes('내용 부실') ||
+      text.includes('evidence label') ||
+      text.includes('metadata') ||
+      text.includes('메타데이터') ||
+      text.includes('response mismatch') ||
+      text.includes('응답 구조 불일치') ||
+      text.includes('console error') ||
+      text.includes('콘솔 에러') ||
+      text.includes('transient') ||
+      text.includes('drift') ||
+      text.includes('드리프트'),
+  },
+  {
+    id: 'future-product-expansion',
+    label: 'Future Product Expansion',
+    description:
+      'Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.',
+    matches: ({ text }) =>
+      text.includes('pronoun') ||
+      text.includes('대명사') ||
+      text.includes('image-upload') ||
+      text.includes('upload') ||
+      text.includes('e2e path') ||
+      text.includes('qa pack') ||
+      text.includes('adversarial') ||
+      text.includes('domain context') ||
+      text.includes('도메인 특성') ||
+      text.includes('dashboard threshold') ||
+      text.includes('네트워크 i/o') ||
+      text.includes('location') ||
+      text.includes('az1') ||
+      text.includes('az2') ||
+      text.includes('vision') ||
+      text.includes('gemini'),
+  },
+  {
+    id: 'low-priority-polish',
+    label: 'Low-Priority Polish',
+    description:
+      'Non-blocking answer, copy, layout, or evidence-label polish. Keep accepted unless it appears in a release-facing regression.',
+    matches: ({ text }) =>
+      text.includes('polish') ||
+      text.includes('copy') ||
+      text.includes('density') ||
+      text.includes('style') ||
+      text.includes('formatting') ||
+      text.includes('rewrite') ||
+      text.includes('response quality') ||
+      text.includes('응답 내용') ||
+      text.includes('응답 품질') ||
+      text.includes('충실도') ||
+      text.includes('톤 조정') ||
+      text.includes('accordion') ||
+      text.includes('아코디언') ||
+      text.includes('ranking') ||
+      text.includes('랭킹') ||
+      text.includes('advisor'),
+  },
+  {
+    id: 'accepted-no-action',
+    label: 'Accepted No-Action',
+    description:
+      'Accepted no-fix item with no current trigger for implementation work.',
+    matches: () => true,
+  },
+];
+
 const PRIORITY_RANK = new Map([
   ['P0', 0],
   ['P1', 1],
@@ -100,6 +180,17 @@ function classifyWontFixItem(item) {
   return CATEGORY_DEFINITIONS.find((category) => category.matches(context));
 }
 
+function classifyWontFixReviewClass(item) {
+  const context = {
+    item,
+    text: itemSearchText(item),
+  };
+
+  return REVIEW_CLASS_DEFINITIONS.find((reviewClass) =>
+    reviewClass.matches(context)
+  );
+}
+
 function compareWontFixItems(left, right) {
   const leftRank = PRIORITY_RANK.get(left.priority || 'P2') ?? 2;
   const rightRank = PRIORITY_RANK.get(right.priority || 'P2') ?? 2;
@@ -107,30 +198,46 @@ function compareWontFixItems(left, right) {
   return String(left.id || '').localeCompare(String(right.id || ''));
 }
 
-function groupWontFixItemsByCategory(items) {
+function groupItemsByDefinitions(items, definitions, classifier) {
   const groupsById = new Map(
-    CATEGORY_DEFINITIONS.map((category) => [
-      category.id,
+    definitions.map((definition) => [
+      definition.id,
       {
-        id: category.id,
-        label: category.label,
-        description: category.description,
+        id: definition.id,
+        label: definition.label,
+        description: definition.description,
         items: [],
       },
     ])
   );
 
   for (const item of items) {
-    const category = classifyWontFixItem(item);
-    groupsById.get(category.id).items.push(item);
+    const definition = classifier(item);
+    groupsById.get(definition.id).items.push(item);
   }
 
-  return CATEGORY_DEFINITIONS.map((category) => groupsById.get(category.id))
+  return definitions.map((definition) => groupsById.get(definition.id))
     .filter((group) => group.items.length > 0)
     .map((group) => ({
       ...group,
       items: [...group.items].sort(compareWontFixItems),
     }));
+}
+
+function groupWontFixItemsByCategory(items) {
+  return groupItemsByDefinitions(
+    items,
+    CATEGORY_DEFINITIONS,
+    classifyWontFixItem
+  );
+}
+
+function groupWontFixItemsByReviewClass(items) {
+  return groupItemsByDefinitions(
+    items,
+    REVIEW_CLASS_DEFINITIONS,
+    classifyWontFixReviewClass
+  );
 }
 
 function formatWontFixCategorySummary(groups) {
@@ -141,7 +248,10 @@ function formatWontFixCategorySummary(groups) {
 
 module.exports = {
   CATEGORY_DEFINITIONS,
+  REVIEW_CLASS_DEFINITIONS,
   classifyWontFixItem,
+  classifyWontFixReviewClass,
   groupWontFixItemsByCategory,
+  groupWontFixItemsByReviewClass,
   formatWontFixCategorySummary,
 };

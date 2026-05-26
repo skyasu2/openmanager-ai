@@ -13,6 +13,7 @@ const { writeValidationEvidenceSnapshot } = require('./build-validation-evidence
 const { statusMarkdown } = require('./qa-status-markdown');
 const {
   groupWontFixItemsByCategory,
+  groupWontFixItemsByReviewClass,
 } = require('./qa-wont-fix-classification');
 
 const TRACKER_PATH = path.resolve(process.cwd(), 'reports/qa/qa-tracker.json');
@@ -237,6 +238,10 @@ function run() {
 
   if (wontFix.length > 0) {
     console.log('\nWont-Fix Improvements');
+    console.log('\nReview Classes');
+    for (const group of groupWontFixItemsByReviewClass(wontFix)) {
+      console.log(`- ${group.label} (${group.items.length}): ${group.description}`);
+    }
     for (const group of groupWontFixItemsByCategory(wontFix)) {
       console.log(`\n${group.label} (${group.items.length})`);
       console.log(`  reason: ${group.description}`);

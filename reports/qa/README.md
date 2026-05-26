@@ -190,6 +190,12 @@ reports/qa/
 - WONT-FIX reason category:
   - `qa:status`와 `QA_STATUS.md`는 WONT-FIX 항목을 `Policy Missing`, `Platform Constraint`, `Free Tier Tradeoff`, `Historical Obsolete`, `Portfolio Deferral`, `Accepted Debt`로 분류해 표시합니다.
   - `Policy Missing`은 명시적 수용 근거가 없는 항목이므로 다음 QA 정리 시 우선 재검토합니다.
+- WONT-FIX review class:
+  - reason category는 "왜 수용했는지"를, review class는 "다시 볼 조건"을 나타냅니다.
+  - `Verify Before Promotion`: 이후 수정으로 이미 해소됐을 수 있으므로 구현 작업으로 승격하기 전에 targeted QA로 재확인합니다.
+  - `Future Product Expansion`: 장기 메모리, Vision 업로드, 더 넓은 자연어 QA처럼 포트폴리오 범위를 제품화 수준으로 넓힐 때만 재검토합니다.
+  - `Low-Priority Polish`: 응답 문체, 카피, 레이아웃, evidence label 개선이며 release-facing 회귀로 재현될 때만 재검토합니다.
+  - `Accepted No-Action`: 현재 구현 트리거가 없는 명시적 수용 항목입니다.
 - `QA_STATUS.md`는 `qa:record` 실행 시 자동 재생성됩니다.
 - `qa:status`는 기본적으로 `qa-tracker.json`만 읽는 read-only 요약 명령입니다.
 - 대시보드를 수동으로 다시 맞출 때만 `npm run qa:status:sync` 또는 `npm run qa:status -- --write`를 사용합니다.

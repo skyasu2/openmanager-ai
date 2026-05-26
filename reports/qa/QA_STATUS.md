@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 18:58:34 KST
+> Generated at: 2026-05-26 20:08:38 KST
 
 ## Summary
 
@@ -114,6 +114,14 @@ Latest run: QA-20260526-0613 (2026-05-26T09:58:33.066Z)
 ## Wont-Fix Improvements
 
 - Reason categories: Portfolio Deferral 31
+- Review classes: Verify Before Promotion 14, Future Product Expansion 6, Low-Priority Polish 8, Accepted No-Action 3
+
+### Review Classes
+
+- Verify Before Promotion 14: Potentially stale accepted debt. Re-run a targeted QA check before promoting it back to implementation work.
+- Future Product Expansion 6: Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.
+- Low-Priority Polish 8: Non-blocking answer, copy, layout, or evidence-label polish. Keep accepted unless it appears in a release-facing regression.
+- Accepted No-Action 3: Accepted no-fix item with no current trigger for implementation work.
 
 ### Portfolio Deferral
 
