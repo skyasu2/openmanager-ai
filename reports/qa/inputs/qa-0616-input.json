@@ -1,0 +1,137 @@
+{
+  "runTitle": "Vercel Playwright QA - v8.12.53 Q-NEW46 Analyst zero-metric regression recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Q-NEW46b storage-nfs-dc1-01 disk RCA first run — PASS no CPU=0%",
+    "Q-NEW46c repeated disk RCA after session context/cache — PASS no CPU=0%",
+    "Q-NEW46a generic anomaly signal — WARN clarification step remains, all-target Analyst path works",
+    "Cloud Run ai-engine v8.12.53 health and production deployment",
+    "Vercel production version smoke v8.12.53"
+  ],
+  "skippedSurfaces": [
+    "standard five conversational AI QA — skipped to avoid repeated live LLM spend after targeted Q-NEW46 fix; v8.12.51 release-gate run remains current baseline",
+    "Reporter and Vision surfaces — unchanged",
+    "auth/login flow — unchanged and covered by release smoke"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2554097149-v8.12.53-cloud-run-ai-engine-00561-rc5",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "035bf607b564b47f8a545cc714c7ff32674a9e8d"
+  },
+  "checks": {
+    "total": 4,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Q-NEW46b storage-nfs-dc1-01 disk RCA first run",
+      "agent": "Analyst Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI timestamps",
+      "latencyMs": 10000
+    },
+    {
+      "surface": "Q-NEW46c repeated disk RCA after session context/cache",
+      "agent": "Analyst Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI timestamps",
+      "latencyMs": 8000
+    },
+    {
+      "surface": "Q-NEW46a generic anomaly signal all-target execution",
+      "agent": "Analyst Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI timestamps",
+      "latencyMs": 20000
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-27T02:46:36+09:00",
+      "summary": "Vercel usage CLI checked current billing period after production QA; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q-NEW46 generic anomaly all-target Analyst answer",
+      "path": "reports/qa/evidence/2026/qa-20260527-0616/qa-20260527-0616-q46-postfix.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Q-NEW46b/c transcript evidence",
+      "path": "reports/qa/evidence/2026/qa-20260527-0616/qa-20260527-0616-ai-transcript.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new46c-analyst-zero-metric-context-regression",
+      "title": "Q-NEW46c repeated Analyst RCA no longer reports CPU=0% from session context",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.53 production repeated storage-nfs-dc1-01 disk RCA returned Disk 93%, CPU 58%, Memory 42% and did not report CPU=0%.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The targeted regression was reproduced on the same production AI sidebar surface and the repeated RCA no longer carries the false CPU=0% value. Generic anomaly wording still uses a clarification step, but it no longer misroutes to metric-current and the all-target Analyst path is functional.",
+      "nextAction": ""
+    }
+  ],
+  "notes": [
+    "GitLab release pipeline 2554097149 succeeded for v8.12.53.",
+    "Cloud Run ai-engine revision ai-engine-00561-rc5 serves 100% traffic with cpu=1 and memory=512Mi; /health reports version 8.12.53; unauthenticated /monitoring returns 403 as expected.",
+    "Local validation before release: ai-engine type-check PASS, ai-engine tests PASS (145 files / 1563 tests), targeted tests PASS, line-guard PASS with 47 warnings / 0 fails, git diff --check PASS, Docker preflight build PASS on 900s retry.",
+    "Q-NEW46a remains a UX clarification behavior rather than an active misrouting regression: direct generic wording asks for confirmation at 80% confidence; selecting all-target execution returns Analyst anomaly evidence."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2554097149",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2554097149",
+      "note": "v8.12.53 release/deploy/smoke success"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "version 8.12.53"
+    }
+  ]
+}

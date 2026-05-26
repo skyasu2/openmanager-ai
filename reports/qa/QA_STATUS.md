@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 23:54:37 KST
+> Generated at: 2026-05-27 02:49:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 613 |
-| Total Runs (Counted) | 483 |
+| Total Recorded Runs | 614 |
+| Total Runs (Counted) | 484 |
 | Non-counted Runs | 130 |
-| Total Checks | 4268 |
-| Passed | 4076 |
+| Total Checks | 4272 |
+| Passed | 4079 |
 | Failed | 155 |
-| Completed Items | 713 |
+| Completed Items | 714 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0615 (2026-05-26T14:54:35.345Z) |
-| Latest Recorded Run | QA-20260526-0615 (2026-05-26T14:54:35.345Z) |
+| Last Counted Run | QA-20260527-0616 (2026-05-26T17:49:46.355Z) |
+| Latest Recorded Run | QA-20260527-0616 (2026-05-26T17:49:46.355Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,34 +34,34 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0615 (2026-05-26T14:54:35.345Z)
+Latest run: QA-20260527-0616 (2026-05-26T17:49:46.355Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | P15: query-routing-signals.ts 이상징후 패턴 추가 Analyst 라우팅. P16: 역상관 AND 복합 조건 필터 경로 추가. |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Vercel usage CLI checked current billing period after production QA; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T14:54:35.345Z -> 2026-05-26T14:54:35.345Z (24h)
-- Runs with observations: 5 recorded / 4 counted
-- Samples: 12
+- Window: 2026-05-25T17:49:46.355Z -> 2026-05-26T17:49:46.355Z (24h)
+- Runs with observations: 5 recorded / 5 counted
+- Samples: 13
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Analyst Agent | cloud-run-ai | 1 | 8200ms | 8200ms | - | - | - | - | QA-20260526-0615 |
+| Analyst Agent | cloud-run-ai | 4 | 11550ms | 20000ms | - | - | - | - | QA-20260527-0616 |
 | Metrics Query Agent | cloud-run-ai | 7 | 2183ms | 5900ms | - | - | 1692ms | 2545ms | QA-20260526-0615 |
-| Metrics Query Agent | streaming-ai | 3 | 3159ms | 4375ms | 602ms | 741ms | 899ms | 1487ms | QA-20260526-0611 |
+| Metrics Query Agent | streaming-ai | 1 | 1487ms | 1487ms | - | - | 1487ms | 1487ms | QA-20260526-0611 |
 | Metrics Query | deterministic-monitoring | 1 | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | QA-20260526-0613 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T14:54:35.345Z -> 2026-05-26T14:54:35.345Z (24h)
+- Window: 2026-05-25T17:49:46.355Z -> 2026-05-26T17:49:46.355Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,37 +73,30 @@ Latest run: QA-20260526-0615 (2026-05-26T14:54:35.345Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-v8.12.51-cloud-run-ai-engine-00559-62w / SHA a6e599e4
+- Deployment: gitlab-pipeline-2554097149-v8.12.53-cloud-run-ai-engine-00561-rc5 / SHA 035bf607
 - Coverage Packs: ai-core
-- Covered Surfaces: 이상 징후 분석 라우팅 (Q-NEW46a) — P15 발견, 디스크 원인 RCA + Analyst 캐시 동작 (Q-NEW46b/c), S3GW NFS 특화 도메인 RCA (Q-NEW47) — 신규 강점, 역상관 복합 조건 CPU낮고 메모리높은 (Q-NEW48) — P16 발견, web 그룹 내 서버 불균형 탐지 (Q-NEW49), 디스크 정리 우선순위 capacity-forecast 라우팅 (Q-NEW50) — 신규 강점, 전체 서버 리소스 압박 순위 (Q-NEW51)
-- Skipped Surfaces: Reporter 전체 보고서 — 이번 세션 범위 외, Vision 탭 — 미변경, 인증/로그인 플로우 — 미변경
+- Covered Surfaces: Q-NEW46b storage-nfs-dc1-01 disk RCA first run — PASS no CPU=0%, Q-NEW46c repeated disk RCA after session context/cache — PASS no CPU=0%, Q-NEW46a generic anomaly signal — WARN clarification step remains, all-target Analyst path works, Cloud Run ai-engine v8.12.53 health and production deployment, Vercel production version smoke v8.12.53
+- Skipped Surfaces: standard five conversational AI QA — skipped to avoid repeated live LLM spend after targeted Q-NEW46 fix; v8.12.51 release-gate run remains current baseline, Reporter and Vision surfaces — unchanged, auth/login flow — unchanged and covered by release smoke
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab release pipeline 2554097149 | [GitLab release pipeline 2554097149](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2554097149) | v8.12.53 release/deploy/smoke success |
+| monitoring | Cloud Run ai-engine health | [Cloud Run ai-engine health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | version 8.12.53 |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | QA-0615 초기 상태 | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-00-initial.png` | - |
-| playwright-screenshot | 대시보드 슬롯 140 (23:20 KST) | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-01-dashboard.png` | - |
-| playwright-screenshot | Q-NEW46a/b P15 이상 징후 오파싱 / RCA 1차 | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q46b-rca-1st.png` | - |
-| playwright-screenshot | Q-NEW46c Analyst 캐시 CPU=0% 오류 | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q46c-rca-2nd-cache.png` | - |
-| playwright-screenshot | Q-NEW47 S3GW 도메인 특화 RCA 신규 강점 | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q47-s3gw-rca.png` | - |
-| playwright-screenshot | Q-NEW48 P16 역상관 복합 조건 미처리 | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q48-cpu-low-mem-high.png` | - |
-| playwright-screenshot | Q-NEW49 web 그룹 불균형 탐지 PASS | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q49-web-outlier.png` | - |
-| playwright-screenshot | Q-NEW50 capacity-forecast 정확 라우팅 신규 강점 | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q50-disk-threshold-priority.png` | - |
-| playwright-screenshot | Q-NEW51 리소스 압박 순위 PARTIAL 24h peak load1 기준 | `reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q51-resource-pressure-rank.png` | - |
+| playwright-screenshot | Q-NEW46 generic anomaly all-target Analyst answer | `reports/qa/evidence/2026/qa-20260527-0616/qa-20260527-0616-q46-postfix.png` | - |
+| playwright-console | Q-NEW46b/c transcript evidence | `reports/qa/evidence/2026/qa-20260527-0616/qa-20260527-0616-ai-transcript.md` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260526-0615)
-  next: P15: query-routing-signals.ts 이상징후 패턴 추가 Analyst 라우팅. P16: 역상관 AND 복합 조건 필터 경로 추가.
+- None
 
 ## Pending Improvements
 
@@ -194,18 +187,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 713 items completed (full list in qa-tracker.json)
+- Total: 714 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - q-new46c-analyst-zero-metric-context-regression: Q-NEW46c repeated Analyst RCA no longer reports CPU=0% from session context (last QA-20260527-0616)
   - analyst-cache-key-data-slot-hardening: Analyst and RCA cache keys include data slot context (last QA-20260526-0614)
   - v81251-release-gate-standard-five: v8.12.51 release-gate standard five conversational AI QA (last QA-20260526-0614)
   - wont-fix-review-classification-tooling: WONT-FIX review class tooling reflects current portfolio deferral policy (last QA-20260526-0614)
   - cloud-tasks-dispatch-env-drift: Cloud Tasks dispatch remains enabled after AI Engine deploy (last QA-20260526-0613)
-  - p14-group-aggregate-current-metric: P14 db-mysql group average memory query returns current metric evidence (last QA-20260526-0613)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260527-0616 | 2026-05-26T17:49:46.355Z | targeted | yes | yes | Vercel Playwright QA - v8.12.53 Q-NEW46 Analyst zero-metric regression recheck | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260526-0615 | 2026-05-26T14:54:35.345Z | targeted | no | yes | AI 어시스턴트 신규 질문 평가 Q-NEW46~Q-NEW51 (P15/P16 발견) | 7 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260526-0614 | 2026-05-26T12:52:44.071Z | release-gate | yes | yes | Vercel Playwright QA - v8.12.51 Release Gate | 12 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260526-0613 | 2026-05-26T09:58:33.066Z | targeted | yes | yes | Vercel Playwright QA - P14 group aggregate metric and Cloud Tasks dispatch | 8 | 2 | 0 | 0 | 0 | 0 |
@@ -225,4 +219,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0599 | 2026-05-25T13:30:15.211Z | targeted | no | no | v8.12.41 Vercel Playwright regression recheck - recent AI routing fixes | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260525-0598 | 2026-05-25T12:37:02.779Z | targeted | no | no | v8.12.41 production deployment verification — P11 capacity forecast live closure | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0597 | 2026-05-25T11:20:49.100Z | targeted | no | no | P11 local routing regression verification — disk-full capacity forecast wording | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260525-0596 | 2026-05-25T10:58:57.910Z | targeted | no | no | v8.12.40 production routing verification — P9/Q-NEW30 deployment closure | 6 | 2 | 0 | 0 | 0 | 0 |
