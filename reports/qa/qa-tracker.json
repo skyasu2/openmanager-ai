@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-26T12:52:44.071Z"
+    "updatedAt": "2026-05-26T14:54:35.345Z"
   },
   "sequence": {
-    "nextRunNumber": 615
+    "nextRunNumber": 616
   },
   "summary": {
-    "totalRecordedRuns": 612,
-    "totalRuns": 482,
+    "totalRecordedRuns": 613,
+    "totalRuns": 483,
     "excludedRuns": 130,
-    "totalChecks": 4261,
-    "totalPassed": 4073,
-    "totalFailed": 153,
+    "totalChecks": 4268,
+    "totalPassed": 4076,
+    "totalFailed": 155,
     "completionRate": 100,
     "completedItems": 713,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260526-0614",
-    "lastRecordedAt": "2026-05-26T12:52:44.071Z",
-    "latestRecordedRunId": "QA-20260526-0614",
-    "latestRecordedAt": "2026-05-26T12:52:44.071Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260526-0615",
+    "lastRecordedAt": "2026-05-26T14:54:35.345Z",
+    "latestRecordedRunId": "QA-20260526-0615",
+    "latestRecordedAt": "2026-05-26T14:54:35.345Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -33168,6 +33168,145 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0615",
+      "recordedAt": "2026-05-26T14:54:35.345Z",
+      "recordedAtKst": "2026-05-26 23:54:35 KST",
+      "title": "AI 어시스턴트 신규 질문 평가 Q-NEW46~Q-NEW51 (P15/P16 발견)",
+      "owner": "claude",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0615.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-v8.12.51-cloud-run-ai-engine-00559-62w",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "a6e599e4c"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "이상 징후 분석 라우팅 (Q-NEW46a) — P15 발견",
+        "디스크 원인 RCA + Analyst 캐시 동작 (Q-NEW46b/c)",
+        "S3GW NFS 특화 도메인 RCA (Q-NEW47) — 신규 강점",
+        "역상관 복합 조건 CPU낮고 메모리높은 (Q-NEW48) — P16 발견",
+        "web 그룹 내 서버 불균형 탐지 (Q-NEW49)",
+        "디스크 정리 우선순위 capacity-forecast 라우팅 (Q-NEW50) — 신규 강점",
+        "전체 서버 리소스 압박 순위 (Q-NEW51)"
+      ],
+      "skippedSurfaces": [
+        "Reporter 전체 보고서 — 이번 세션 범위 외",
+        "Vision 탭 — 미변경",
+        "인증/로그인 플로우 — 미변경"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 3,
+        "failed": 2
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Q-NEW47 S3GW RCA — Analyst Agent",
+          "agent": "Analyst Agent",
+          "provider": "cloud-run-ai",
+          "model": "monitoring-server-health",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "chrome-devtools-mcp 스톱워치",
+          "latencyMs": 8200
+        },
+        {
+          "surface": "Q-NEW50 capacity-forecast 디스크 정리 우선순위",
+          "agent": "Metrics Query Agent",
+          "provider": "cloud-run-ai",
+          "model": "monitoring-capacity-forecast",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "chrome-devtools-mcp 스톱워치",
+          "latencyMs": 3100
+        },
+        {
+          "surface": "Q-NEW51 리소스 압박 순위 — peak-metric",
+          "agent": "Metrics Query Agent",
+          "provider": "cloud-run-ai",
+          "model": "monitoring-peak-metric",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "chrome-devtools-mcp 스톱워치",
+          "latencyMs": 5900
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "신규 질문 7개 평가 결과: PASS 3건(Q-NEW47/49/50), PARTIAL 2건(Q-NEW46b 캐시오류/Q-NEW51 해석불일치), FAIL 2건(P15 이상징후오파싱/P16 역상관복합조건미처리). S3GW 도메인 인식(강점)과 capacity-forecast 정확 라우팅(강점) 확인. 신규 약점 P15/P16 발견.",
+          "nextAction": "P15: query-routing-signals.ts 이상징후 패턴 추가 Analyst 라우팅. P16: 역상관 AND 복합 조건 필터 경로 추가."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "QA-0615 초기 상태",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-00-initial.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "대시보드 슬롯 140 (23:20 KST)",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-01-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW46a/b P15 이상 징후 오파싱 / RCA 1차",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q46b-rca-1st.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW46c Analyst 캐시 CPU=0% 오류",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q46c-rca-2nd-cache.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW47 S3GW 도메인 특화 RCA 신규 강점",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q47-s3gw-rca.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW48 P16 역상관 복합 조건 미처리",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q48-cpu-low-mem-high.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW49 web 그룹 불균형 탐지 PASS",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q49-web-outlier.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW50 capacity-forecast 정확 라우팅 신규 강점",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q50-disk-threshold-priority.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW51 리소스 압박 순위 PARTIAL 24h peak load1 기준",
+          "path": "reports/qa/evidence/2026/qa-20260526-0615/qa-20260526-0615-q51-resource-pressure-rank.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -33176,17 +33315,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 326,
+      "seenCount": 327,
       "appropriateCount": 281,
-      "partialCount": 45,
+      "partialCount": 46,
       "inappropriateCount": 0,
-      "improvementNeededCount": 66,
-      "lastRunId": "QA-20260526-0614",
-      "lastSeenAt": "2026-05-26T12:52:44.071Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The standard five AI questions all returned grounded monitoring evidence, including direct stream and async job/SSE paths.",
-      "lastNextAction": ""
+      "improvementNeededCount": 67,
+      "lastRunId": "QA-20260526-0615",
+      "lastSeenAt": "2026-05-26T14:54:35.345Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "신규 질문 7개 평가 결과: PASS 3건(Q-NEW47/49/50), PARTIAL 2건(Q-NEW46b 캐시오류/Q-NEW51 해석불일치), FAIL 2건(P15 이상징후오파싱/P16 역상관복합조건미처리). S3GW 도메인 인식(강점)과 capacity-forecast 정확 라우팅(강점) 확인. 신규 약점 P15/P16 발견.",
+      "lastNextAction": "P15: query-routing-signals.ts 이상징후 패턴 추가 Analyst 라우팅. P16: 역상관 AND 복합 조건 필터 경로 추가."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
