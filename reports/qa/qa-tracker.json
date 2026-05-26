@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-26T02:18:46.663Z"
+    "updatedAt": "2026-05-26T03:34:11.537Z"
   },
   "sequence": {
-    "nextRunNumber": 607
+    "nextRunNumber": 608
   },
   "summary": {
-    "totalRecordedRuns": 604,
-    "totalRuns": 475,
+    "totalRecordedRuns": 605,
+    "totalRuns": 476,
     "excludedRuns": 129,
-    "totalChecks": 4209,
-    "totalPassed": 4023,
+    "totalChecks": 4210,
+    "totalPassed": 4024,
     "totalFailed": 153,
     "completionRate": 100,
     "completedItems": 708,
@@ -21,10 +21,10 @@
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260526-0606",
-    "lastRecordedAt": "2026-05-26T02:18:46.663Z",
-    "latestRecordedRunId": "QA-20260526-0606",
-    "latestRecordedAt": "2026-05-26T02:18:46.663Z"
+    "lastRunId": "QA-20260526-0607",
+    "lastRecordedAt": "2026-05-26T03:34:11.537Z",
+    "latestRecordedRunId": "QA-20260526-0607",
+    "latestRecordedAt": "2026-05-26T03:34:11.537Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -70982,6 +70982,61 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0607",
+      "recordedAt": "2026-05-26T03:34:11.537Z",
+      "recordedAtKst": "2026-05-26 12:34:11 KST",
+      "title": "P4 수정 확인 — v8.12.46 원인/RCA 쿼리 Analyst 경로 라우팅 (Q-NEW38 재검증)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0607.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.46",
+        "backend": "Cloud Run AI Engine v8.12.46",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "fd0b0da6debd174ee30ba464c620907ee977a179"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "ai-chat Q-NEW38 재검증"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P4 수정 확인: v8.12.46에서 원인/RCA 쿼리가 일반 대화 응답 → 서버 실시간 데이터 분석(Analyst 경로)으로 변경됨. detectAnomalies + 상관관계 분석 OTel 기반 수행. 응답 느림은 잔존.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -70990,16 +71045,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 318,
-      "appropriateCount": 273,
+      "seenCount": 319,
+      "appropriateCount": 274,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 65,
-      "lastRunId": "QA-20260526-0606",
-      "lastSeenAt": "2026-05-26T02:18:46.663Z",
+      "lastRunId": "QA-20260526-0607",
+      "lastSeenAt": "2026-05-26T03:34:11.537Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "P13 수정 확인: v8.12.45에서 서버 1:1 다중 메트릭 비교가 CPU+메모리+디스크 3개 모두 정상 표시됨. monitoring-metric-current, 응답 빠름.",
+      "lastRationale": "P4 수정 확인: v8.12.46에서 원인/RCA 쿼리가 일반 대화 응답 → 서버 실시간 데이터 분석(Analyst 경로)으로 변경됨. detectAnomalies + 상관관계 분석 OTel 기반 수행. 응답 느림은 잔존.",
       "lastNextAction": ""
     },
     "observability-monitoring": {

@@ -1,0 +1,53 @@
+{
+  "runId": "QA-20260526-0607",
+  "recordedAt": "2026-05-26T03:34:11.537Z",
+  "recordedAtKst": "2026-05-26 12:34:11 KST",
+  "runTitle": "P4 수정 확인 — v8.12.46 원인/RCA 쿼리 Analyst 경로 라우팅 (Q-NEW38 재검증)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.46",
+    "backend": "Cloud Run AI Engine v8.12.46",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "fd0b0da6debd174ee30ba464c620907ee977a179"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "ai-chat Q-NEW38 재검증"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P4 수정 확인: v8.12.46에서 원인/RCA 쿼리가 일반 대화 응답 → 서버 실시간 데이터 분석(Analyst 경로)으로 변경됨. detectAnomalies + 상관관계 분석 OTel 기반 수행. 응답 느림은 잔존.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

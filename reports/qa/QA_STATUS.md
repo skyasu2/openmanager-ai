@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 11:18:53 KST
+> Generated at: 2026-05-26 12:34:18 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 604 |
-| Total Runs (Counted) | 475 |
+| Total Recorded Runs | 605 |
+| Total Runs (Counted) | 476 |
 | Non-counted Runs | 129 |
-| Total Checks | 4209 |
-| Passed | 4023 |
+| Total Checks | 4210 |
+| Passed | 4024 |
 | Failed | 153 |
 | Completed Items | 708 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0606 (2026-05-26T02:18:46.663Z) |
-| Latest Recorded Run | QA-20260526-0606 (2026-05-26T02:18:46.663Z) |
+| Last Counted Run | QA-20260526-0607 (2026-05-26T03:34:11.537Z) |
+| Latest Recorded Run | QA-20260526-0607 (2026-05-26T03:34:11.537Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0606 (2026-05-26T02:18:46.663Z)
+Latest run: QA-20260526-0607 (2026-05-26T03:34:11.537Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260526-0606 (2026-05-26T02:18:46.663Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T02:18:46.663Z -> 2026-05-26T02:18:46.663Z (24h)
+- Window: 2026-05-25T03:34:11.537Z -> 2026-05-26T03:34:11.537Z (24h)
 - Runs with observations: 6 recorded / 1 counted
 - Samples: 14
 
@@ -65,24 +65,23 @@ Latest run: QA-20260526-0606 (2026-05-26T02:18:46.663Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T02:18:46.663Z -> 2026-05-26T02:18:46.663Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 4
+- Window: 2026-05-25T03:34:11.537Z -> 2026-05-26T03:34:11.537Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
 - Drift rate: 0%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/jobs/[id]/stream | single-agent | 1 | 0% | 0ms | 0ms | QA-20260525-0589 |
-| /api/ai/supervisor/stream/v2 | deterministic | 3 | 0% | 0ms | 0ms | QA-20260525-0589 |
+| - | - | 0 | 0% | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA 88e30960
+- Deployment: SHA fd0b0da6
 - Coverage Packs: ai-core
-- Covered Surfaces: ai-chat Q-NEW34 재검증
+- Covered Surfaces: ai-chat Q-NEW38 재검증
 - Skipped Surfaces: -
 
 ## Links (Latest Run)
@@ -895,6 +894,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0607 | 2026-05-26T03:34:11.537Z | targeted | no | yes | P4 수정 확인 — v8.12.46 원인/RCA 쿼리 Analyst 경로 라우팅 (Q-NEW38 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0606 | 2026-05-26T02:18:46.663Z | targeted | no | yes | P13 수정 확인 — v8.12.45 서버 1:1 다중 메트릭 비교 (Q-NEW34 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0605 | 2026-05-26T01:24:48.297Z | targeted | no | yes | 14차 AI 어시스턴트 평가 + Host Map UX Phase 6 배포 점검 (Q-NEW34~39) | 9 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260526-0604 | 2026-05-25T17:08:49.837Z | targeted | no | yes | WONT-FIX → completed 복구: 수정 커밋 확인된 5개 항목 | 5 | 5 | 0 | 0 | 0 | 0 |
@@ -914,4 +914,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0590 | 2026-05-25T03:57:03.861Z | targeted | yes | yes | v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check | 4 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260525-0589 | 2026-05-25T03:01:02.015Z | targeted | yes | yes | v8.12.35 Production QA - P7 trend, P5 pronoun follow-up, Advisor grounding | 6 | 3 | 0 | 0 | 1 | 1 |
 | QA-20260525-0588 | 2026-05-25T01:11:32.229Z | targeted | no | yes | v8.12.29 8차 AI 어시스턴트 평가 — storage/메모리랭킹/AZ비교/단일서버추세/대명사follow-up | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260525-0587 | 2026-05-25T00:41:31.507Z | targeted | yes | yes | Q-NEW13 Production QA - Advisor Command Evidence | 9 | 1 | 0 | 0 | 0 | 0 |
