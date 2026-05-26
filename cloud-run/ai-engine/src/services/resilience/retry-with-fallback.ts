@@ -11,7 +11,6 @@
 import { generateText } from 'ai';
 import type { ProviderName } from '../ai-sdk/model-provider';
 import { logger } from '../../lib/logger';
-import { getCerebrasModelId } from '../../lib/config-parser';
 import {
   getCapabilityMismatchReasons,
   getTextProviderCapabilities,
@@ -22,7 +21,6 @@ import {
   getCerebrasModelPolicy,
   isCerebrasModelExpiredByDate,
 } from '../ai-sdk/provider-model-policy';
-import { getCircuitBreaker } from './circuit-breaker';
 import {
   __resetProviderRetryBudgetForTests,
   consumeProviderRetryBudget,

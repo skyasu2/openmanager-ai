@@ -40,14 +40,10 @@ import {
 } from './model-provider-core';
 import {
   checkProviderStatus,
-  getProviderToggleState,
-  invalidateProviderStatusCache,
-  toggleProvider,
 } from './model-provider-status';
 import type {
   ProviderHealth,
   ProviderName,
-  ProviderStatus,
 } from './model-provider.types';
 
 export type { ProviderHealth, ProviderName, ProviderStatus } from './model-provider.types';

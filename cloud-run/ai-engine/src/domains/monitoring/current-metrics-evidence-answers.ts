@@ -1,13 +1,7 @@
 import type { DomainSnapshot } from '../../core/assistant-runtime';
-import {
-  get24hTrendSummaries,
-  normalizeServerType,
-} from '../../tools-ai-sdk/server-metrics/data';
+import { get24hTrendSummaries, normalizeServerType } from '../../tools-ai-sdk/server-metrics/data';
 import type { QueryOperator } from '../../services/ai-sdk/agents/orchestrator-query-intent';
-import type {
-  ParsedCurrentMetricsEvidenceRequest,
-  SupportedMetric,
-} from './current-metrics-evidence-provider';
+import type { ParsedCurrentMetricsEvidenceRequest, SupportedMetric } from './current-metrics-evidence-provider';
 import { buildMultiMetricTrendAnswer } from './current-metrics-multi-trend-answer';
 
 type SnapshotServer = {
@@ -35,11 +29,7 @@ function readSnapshotTimeLabel(snapshot: DomainSnapshot): string | undefined {
   return isRecord(snapshot.data) ? readString(snapshot.data.timeLabel) : undefined;
 }
 
-function compareMetricValue(
-  value: number,
-  operator: QueryOperator | undefined,
-  threshold: number
-): boolean {
+function compareMetricValue(value: number, operator: QueryOperator | undefined, threshold: number): boolean {
   switch (operator) {
     case '>':
       return value > threshold;
@@ -57,9 +47,7 @@ function compareMetricValue(
   }
 }
 
-function getThresholdOperatorLabel(
-  operator: QueryOperator | undefined
-): string {
+function getThresholdOperatorLabel(operator: QueryOperator | undefined): string {
   switch (operator) {
     case '>':
       return '초과';

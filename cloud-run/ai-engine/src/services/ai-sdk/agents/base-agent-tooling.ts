@@ -9,7 +9,7 @@ import {
 export function filterTools(
   tools: ToolSet,
   options: AgentRunOptions,
-  provider: string,
+  _provider: string,
   agentName: string
 ): ToolSet {
   const filtered = { ...tools };
@@ -29,8 +29,8 @@ export function filterTools(
 
 export function resolveMaxOutputTokens(
   options: AgentRunOptions,
-  provider: string,
-  agentName: string
+  _provider: string,
+  _agentName: string
 ): number {
   const requested = options.maxOutputTokens ?? DEFAULT_OPTIONS.maxOutputTokens;
 

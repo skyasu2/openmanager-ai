@@ -24,10 +24,7 @@ import {
 import { executeSupervisorStream } from './supervisor-single-agent';
 import { getPublicErrorResponse, sanitizeErrorData } from '../../lib/error-handler';
 import { logger } from '../../lib/logger';
-import {
-  sanitizeStreamingDelta,
-  sanitizeUserFacingResponse,
-} from '../../lib/text-sanitizer';
+import { sanitizeStreamingDelta } from '../../lib/text-sanitizer';
 import { flushLangfuseBestEffort } from '../observability/langfuse-flush';
 import { SessionMemoryService } from './session-memory';
 

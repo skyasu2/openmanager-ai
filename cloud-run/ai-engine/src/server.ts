@@ -35,12 +35,9 @@ import { rateLimitMiddleware } from './middleware/rate-limiter';
 
 // Observability & Resilience
 import {
-  getLangfuseUsageStatus,
   restoreUsageFromRedis,
   initializeLangfuseClient,
 } from './services/observability/langfuse';
-import { getAllCircuitStats, resetAllCircuitBreakers } from './services/resilience/circuit-breaker';
-import { getAvailableAgentsStatus, preFilterQuery, executeMultiAgent, type MultiAgentRequest } from './services/ai-sdk/agents';
 
 // Routes — lazy loaded after server starts listening
 let routesReady = false;

@@ -2,7 +2,6 @@ import './env-loader';
 import { logger } from './logger';
 import {
   CEREBRAS_GPT_OSS_MODEL_ID,
-  CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   DEFAULT_CEREBRAS_MODEL,
 } from '../services/ai-sdk/provider-model-policy';
 export {

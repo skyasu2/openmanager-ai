@@ -14,7 +14,6 @@ import {
   buildSupervisorRouteDecision,
   refinePlannerShadowWithActualExecution,
   resolveSupervisorModeDecision,
-  type ResolvedSupervisorModeDecision,
 } from './supervisor-mode';
 import {
   getLastUserQueryText,

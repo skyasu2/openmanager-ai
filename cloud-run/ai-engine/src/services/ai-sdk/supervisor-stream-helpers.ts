@@ -1,5 +1,4 @@
 import type { ToolSet } from 'ai';
-import { extractToolResultOutput } from '../../lib/ai-sdk-utils';
 import { logger } from '../../lib/logger';
 import type { ProviderName } from './model-provider';
 import {

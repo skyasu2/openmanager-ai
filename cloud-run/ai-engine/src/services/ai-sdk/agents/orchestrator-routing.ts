@@ -30,7 +30,6 @@ import {
 } from './config/agent-loop-settings';
 
 import type { MultiAgentResponse } from './orchestrator-types';
-import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 import { evaluateAgentResponseQuality } from './response-quality';
 import {

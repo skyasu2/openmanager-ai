@@ -1,6 +1,5 @@
 import { randomBytes } from 'node:crypto';
 
-import { logger } from '../../lib/logger';
 import type {
   GenerationParams,
   LangfuseTrace,

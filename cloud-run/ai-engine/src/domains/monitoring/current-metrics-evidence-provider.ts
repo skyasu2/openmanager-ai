@@ -8,10 +8,6 @@ import {
   buildDeterministicSummaryFromCurrentState,
 } from '../../services/ai-sdk/agents/orchestrator-summary-fallback';
 import {
-  MONITORING_METRIC_RANKING_CAPABILITY_ID,
-  MONITORING_SERVER_HEALTH_CAPABILITY_ID,
-} from './constants';
-import {
   buildCompositeLoadRankingAnswer,
   buildGroupServerHealthAnswer,
   buildHealthyOnlyServerAnswer,

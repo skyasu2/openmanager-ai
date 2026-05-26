@@ -7,7 +7,7 @@ import type { AgentRunOptions } from './base-agent-types';
 const MAX_HISTORY_MESSAGES = 4;
 
 export async function buildAgentContext(
-  agentName: string,
+  _agentName: string,
   query: string,
   options: AgentRunOptions,
   buildUserContent: (
