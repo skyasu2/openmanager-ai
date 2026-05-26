@@ -386,7 +386,7 @@ describe('detectAnomaliesAllServers', () => {
 
       expect(mockGetAnalysis).toHaveBeenCalledWith(
         'anomaly-all',
-        { metricType: 'all' },
+        { metricType: 'all', slotIndex: expect.any(Number) },
         expect.any(Function)
       );
     });
@@ -397,12 +397,12 @@ describe('detectAnomaliesAllServers', () => {
 
       expect(mockGetAnalysis).toHaveBeenCalledWith(
         'anomaly-all',
-        { metricType: 'cpu' },
+        { metricType: 'cpu', slotIndex: expect.any(Number) },
         expect.any(Function)
       );
       expect(mockGetAnalysis).toHaveBeenCalledWith(
         'anomaly-all',
-        { metricType: 'memory' },
+        { metricType: 'memory', slotIndex: expect.any(Number) },
         expect.any(Function)
       );
     });
@@ -445,14 +445,16 @@ describe('detectAnomaliesAllServers', () => {
       );
 
       const firstParams = mockGetAnalysis.mock.calls[0]?.[1] as
-        | { metricType: string; externalCacheFingerprint?: string }
+        | { metricType: string; slotIndex?: number; externalCacheFingerprint?: string }
         | undefined;
       const secondParams = mockGetAnalysis.mock.calls[1]?.[1] as
-        | { metricType: string; externalCacheFingerprint?: string }
+        | { metricType: string; slotIndex?: number; externalCacheFingerprint?: string }
         | undefined;
 
       expect(firstParams?.metricType).toBe('cpu');
       expect(secondParams?.metricType).toBe('cpu');
+      expect(firstParams?.slotIndex).toEqual(expect.any(Number));
+      expect(secondParams?.slotIndex).toEqual(expect.any(Number));
       expect(firstParams?.externalCacheFingerprint).toBeDefined();
       expect(secondParams?.externalCacheFingerprint).toBeDefined();
       expect(firstParams?.externalCacheFingerprint).not.toBe(
@@ -752,6 +754,30 @@ describe('detectAnomalies', () => {
       ])
     );
   });
+
+  it('should include the current synthetic slot in the anomaly cache key', async () => {
+    await detectAnomalies.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        currentMetrics: { cpu: 88 },
+        history: { cpu: [10, 20, 30, 40] },
+      },
+      {} as never
+    );
+
+    expect(mockGetAnalysis).toHaveBeenCalledWith(
+      'anomaly',
+      expect.objectContaining({
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        slotIndex: expect.any(Number),
+        currentMetrics: { cpu: 88 },
+        history: { cpu: [10, 20, 30, 40] },
+      }),
+      expect.any(Function)
+    );
+  });
 });
 
 describe('predictTrends', () => {
@@ -774,6 +800,28 @@ describe('predictTrends', () => {
       expect.any(Array),
       'cpu',
       3 * 60 * 60 * 1000
+    );
+  });
+
+  it('should include the current synthetic slot in the trend cache key', async () => {
+    await predictTrends.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        predictionHours: 3,
+      },
+      {} as never
+    );
+
+    expect(mockGetAnalysis).toHaveBeenCalledWith(
+      'trend',
+      expect.objectContaining({
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        hours: 3,
+        slotIndex: expect.any(Number),
+      }),
+      expect.any(Function)
     );
   });
 

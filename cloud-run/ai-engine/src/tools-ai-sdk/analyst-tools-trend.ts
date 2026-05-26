@@ -101,10 +101,18 @@ export const predictTrends = tool({
         Math.min(rawHours, MAX_PREDICTION_HORIZON / 3600000)
       );
       const predictionHorizonMs = hours * 3600000;
+      const fixedSlot = getCurrentSlotIndex();
 
       return await cache.getAnalysis(
         'trend',
-        { serverId: serverId || 'first', metricType, hours, currentMetrics, history },
+        {
+          serverId: serverId || 'first',
+          metricType,
+          hours,
+          slotIndex: fixedSlot,
+          currentMetrics,
+          history,
+        },
         async () => {
           const state = getCurrentState();
           const server: ServerSnapshot | undefined = serverId
@@ -154,7 +162,6 @@ export const predictTrends = tool({
           const criticalAlerts: string[] = [];
           const recoveryPredictions: string[] = [];
           const skippedMetrics: string[] = [];
-          const fixedSlot = getCurrentSlotIndex();
 
           for (const metric of targetMetrics) {
             const currentValue = analyzedServer[

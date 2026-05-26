@@ -174,10 +174,17 @@ export const detectAnomalies = tool({
   }) => {
     try {
       const cache = getDataCache();
+      const fixedSlot = getCurrentSlotIndex();
 
       return await cache.getAnalysis(
         'anomaly',
-        { serverId: serverId || 'first', metricType, currentMetrics, history },
+        {
+          serverId: serverId || 'first',
+          metricType,
+          slotIndex: fixedSlot,
+          currentMetrics,
+          history,
+        },
         async () => {
           const state = getCurrentState();
           const server: ServerSnapshot | undefined = serverId
@@ -210,7 +217,6 @@ export const detectAnomalies = tool({
 
           const results: Record<string, AnomalyResultItem & { thresholdExceeded?: boolean }> = {};
           const detector = getAnomalyDetector();
-          const fixedSlot = getCurrentSlotIndex();
 
           // 1. Basic Metrics Analysis (CPU, Memory, Disk)
           for (const metric of targetMetrics) {

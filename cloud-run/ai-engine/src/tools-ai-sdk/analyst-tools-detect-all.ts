@@ -158,6 +158,7 @@ export const detectAnomaliesAllServers = tool({
   }) => {
     try {
       const cache = getDataCache();
+      const fixedSlot = getCurrentSlotIndex();
       const externalCacheFingerprint = externalServers
         ? buildExternalServersCacheFingerprint(externalServers)
         : undefined;
@@ -166,6 +167,7 @@ export const detectAnomaliesAllServers = tool({
         'anomaly-all',
         {
           metricType,
+          slotIndex: fixedSlot,
           ...(externalCacheFingerprint && { externalCacheFingerprint }),
         },
         async () => {
@@ -204,7 +206,6 @@ export const detectAnomaliesAllServers = tool({
           let criticalCount = 0;
           let offlineCount = 0;
           const affectedServers: string[] = [];
-          const fixedSlot = getCurrentSlotIndex();
 
           for (const server of allServers) {
             let serverHasAnomaly = false;
