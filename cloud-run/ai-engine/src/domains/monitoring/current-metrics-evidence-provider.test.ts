@@ -2052,4 +2052,73 @@ describe('current metrics domain evidence providers', () => {
       expect(answer).not.toContain('web-nginx-dc1-01');
     });
   });
+
+  describe('P14 regression: single-group aggregate metric query', () => {
+    const dbSnapshot = {
+      timeLabel: '12:00',
+      servers: [
+        {
+          id: 'db-mysql-dc1-001',
+          type: 'database',
+          status: 'online',
+          cpu: 40,
+          memory: 70,
+          disk: 55,
+          network: 10,
+        },
+        {
+          id: 'db-mysql-dc1-002',
+          type: 'database',
+          status: 'online',
+          cpu: 35,
+          memory: 80,
+          disk: 60,
+          network: 12,
+        },
+        {
+          id: 'web-nginx-dc1-01',
+          type: 'web',
+          status: 'online',
+          cpu: 15,
+          memory: 40,
+          disk: 30,
+          network: 5,
+        },
+      ],
+    };
+
+    it('parses single-group average query as metric_current with group target', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('db-mysql 서버들 평균 메모리 사용량은?', dbSnapshot)
+      );
+      expect(parsed).not.toBeNull();
+      expect(parsed?.intent).toBe('metric_current');
+      expect(parsed?.metric).toBe('memory');
+      expect(parsed?.targets).toContain('database');
+    });
+
+    it('resolves single-group average query to group average answer', async () => {
+      const request = createEvidenceRequest(
+        'db-mysql 서버들 평균 메모리 사용량은?',
+        dbSnapshot
+      );
+      const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
+      expect(evidence).not.toBeNull();
+      const answer = (evidence as { fallback?: string } | null)?.fallback ?? '';
+      expect(answer).toContain('메모리');
+      expect(answer).toContain('db-mysql-dc1-001');
+      expect(answer).toContain('db-mysql-dc1-002');
+      expect(answer).not.toContain('web-nginx-dc1-01');
+    });
+
+    it('also handles web server group average query', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('웹 서버들 평균 CPU 사용률은?', dbSnapshot)
+      );
+      expect(parsed).not.toBeNull();
+      expect(parsed?.intent).toBe('metric_current');
+      expect(parsed?.metric).toBe('cpu');
+      expect(parsed?.targets).toContain('web');
+    });
+  });
 });
