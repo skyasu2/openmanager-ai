@@ -1,0 +1,146 @@
+{
+  "runId": "QA-20260526-0611",
+  "recordedAt": "2026-05-26T08:11:39.764Z",
+  "recordedAtKst": "2026-05-26 17:11:39 KST",
+  "runTitle": "v8.12.48 Vercel production Playwright MCP release smoke",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.48",
+    "backend": "Cloud Run AI Engine v8.12.48 (revision ai-engine-00554-n6s)",
+    "branch": "main",
+    "deploymentId": "dpl_BVJyVGDfMJ3MQB53pWWDn2fwR3BB",
+    "deploymentUrl": "https://openmanager-inyihzsqj-skyasus-projects.vercel.app",
+    "commitSha": "cbca218e71df8ca9ce72d1a3b8bf5d46da326966"
+  },
+  "scope": "release-gate",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "Vercel production landing route / with v8.12.48 badge",
+    "browser fetch /api/version = 8.12.48 with commit cbca218e71",
+    "browser fetch /api/health = 200 healthy, AI connected",
+    "/login OAuth/email/guest PIN surface and privacy link",
+    "/privacy policy page and back link",
+    "/main redirect to /",
+    "intentional 404 route render",
+    "/system-boot redirect to /dashboard",
+    "dashboard summary: 18 total, 17 online, 1 warning, 0 risk, 0 offline",
+    "dashboard resource panel and Top 5 alerts",
+    "Host Map expanded to 18 nodes with CPU/MEM metrics",
+    "server detail route /dashboard/servers/cache-redis-dc1-01",
+    "server detail tab switching: performance and logs/network",
+    "AI sidebar open from dashboard shell",
+    "AI sidebar production query: backup servers disk status",
+    "monitoring-metric-current evidence path for db-mysql-dc1-backup DISK 70%"
+  ],
+  "skippedSurfaces": [
+    "full five-question conversational AI QA (no prompt/routing behavior change in v8.12.48; representative AI regression query covered)",
+    "Reporter and Analyst advanced flows",
+    "Cloud Run admin observability endpoints (/monitoring, /monitoring/traces)",
+    "Vision live image smoke"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar backup server disk status",
+      "agent": "Metrics Query Agent",
+      "provider": "streaming-ai",
+      "model": "Cloud Run AI Engine v8.12.48",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API resource duration",
+      "latencyMs": 1487,
+      "processingTimeMs": 1487
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production UI query returned the exact backup host db-mysql-dc1-backup with DISK 70% and monitoring-metric-current evidence after the v8.12.48 AI Engine cleanup deployment.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab release pipeline 2552542622 completed deploy, deploy_ai_engine, and both post-deploy smoke jobs successfully; Vercel and Cloud Run versions both report 8.12.48.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP exercised real browser route rendering, dashboard interaction, server detail tab switching, AI sidebar input/submit, and captured durable evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard and AI response used the same OTel-backed 17:00 KST snapshot: db-mysql-dc1-backup DISK 70% appears in Top 5 and the AI answer.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-26T17:09:45+09:00",
+      "summary": "Current billing period checked after Vercel Playwright MCP QA; effective 17.2740 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.12.48 AI sidebar backup disk answer",
+      "path": "reports/qa/evidence/qa-20260526-v81248-ai-backup.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "No unexpected user-visible failure observed. The deliberate 404 smoke produced the expected browser 404 resource console entry.",
+    "Two /api/servers fetches showed net::ERR_ABORTED during rapid route transition to the server detail page; the server detail page loaded and tabs passed, so this was treated as non-blocking navigation cancellation."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2552542622",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552542622"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run AI Engine health endpoint",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-inyihzsqj-skyasus-projects.vercel.app/"
+    }
+  ]
+}

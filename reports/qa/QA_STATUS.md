@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 14:33:44 KST
+> Generated at: 2026-05-26 17:11:48 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 608 |
-| Total Runs (Counted) | 478 |
+| Total Recorded Runs | 609 |
+| Total Runs (Counted) | 479 |
 | Non-counted Runs | 130 |
-| Total Checks | 4219 |
-| Passed | 4033 |
+| Total Checks | 4235 |
+| Passed | 4049 |
 | Failed | 153 |
 | Completed Items | 708 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0610 (2026-05-26T05:33:38.310Z) |
-| Latest Recorded Run | QA-20260526-0610 (2026-05-26T05:33:38.310Z) |
+| Last Counted Run | QA-20260526-0611 (2026-05-26T08:11:39.764Z) |
+| Latest Recorded Run | QA-20260526-0611 (2026-05-26T08:11:39.764Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,37 +34,40 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0610 (2026-05-26T05:33:38.310Z)
+Latest run: QA-20260526-0611 (2026-05-26T08:11:39.764Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after targeted production AI QA; effective 16.6209 USD, billed 0.0000 USD. |
+| vercel | cli | checked | normal | Current billing period checked after Vercel Playwright MCP QA; effective 17.2740 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T05:33:38.310Z -> 2026-05-26T05:33:38.310Z (24h)
-- Runs with observations: 5 recorded / 0 counted
-- Samples: 13
+- Window: 2026-05-25T08:11:39.764Z -> 2026-05-26T08:11:39.764Z (24h)
+- Runs with observations: 6 recorded / 1 counted
+- Samples: 14
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Metrics Query Agent | zai | 1 | 18141ms | 18141ms | - | - | - | - | QA-20260525-0598 |
 | Metrics Query Agent | cloud-run-ai | 3 | 6559ms | 8498ms | 284ms | 284ms | 2368ms | 2368ms | QA-20260525-0599 |
 | Server Realtime Analysis | mixed | 1 | 8456ms | 8456ms | - | - | - | - | QA-20260525-0595 |
-| Metrics Query Agent | streaming-ai | 4 | 4118ms | 5570ms | 602ms | 741ms | 606ms | 747ms | QA-20260526-0601 |
+| Metrics Query Agent | streaming-ai | 5 | 3592ms | 5570ms | 602ms | 741ms | 899ms | 1487ms | QA-20260526-0611 |
 | Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
 | Metrics Query Agent | deterministic | 2 | 26ms | 28ms | - | - | - | - | QA-20260525-0595 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T05:33:38.310Z -> 2026-05-26T05:33:38.310Z (24h)
+- Window: 2026-05-25T08:11:39.764Z -> 2026-05-26T08:11:39.764Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,25 +78,27 @@ Latest run: QA-20260526-0610 (2026-05-26T05:33:38.310Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
+- Scope: release-gate
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA b013e5f8
-- Coverage Packs: ai-core
-- Covered Surfaces: Vercel production dashboard AI sidebar, P10 backup group natural-language filter, monitoring-metric-current evidence path, db-mysql-dc1-backup DISK metric response
-- Skipped Surfaces: broad route pack, full standard five-question conversational QA, Cloud Run admin observability endpoints
+- Deployment: dpl_BVJyVGDfMJ3MQB53pWWDn2fwR3BB / SHA cbca218e
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: Vercel production landing route / with v8.12.48 badge, browser fetch /api/version = 8.12.48 with commit cbca218e71, browser fetch /api/health = 200 healthy, AI connected, /login OAuth/email/guest PIN surface and privacy link, /privacy policy page and back link, /main redirect to /, intentional 404 route render, /system-boot redirect to /dashboard, dashboard summary: 18 total, 17 online, 1 warning, 0 risk, 0 offline, dashboard resource panel and Top 5 alerts, Host Map expanded to 18 nodes with CPU/MEM metrics, server detail route /dashboard/servers/cache-redis-dc1-01, server detail tab switching: performance and logs/network, AI sidebar open from dashboard shell, AI sidebar production query: backup servers disk status, monitoring-metric-current evidence path for db-mysql-dc1-backup DISK 70%
+- Skipped Surfaces: full five-question conversational AI QA (no prompt/routing behavior change in v8.12.48; representative AI regression query covered), Reporter and Analyst advanced flows, Cloud Run admin observability endpoints (/monitoring, /monitoring/traces), Vision live image smoke
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
+| general | GitLab release pipeline 2552542622 | [GitLab release pipeline 2552542622](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552542622) | - |
+| monitoring | Cloud Run AI Engine health endpoint | [Cloud Run AI Engine health endpoint](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-inyihzsqj-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | P10 backup group production AI response | `reports/qa/evidence/qa-20260526-p10-backup-prod.png` | - |
+| playwright-screenshot | v8.12.48 AI sidebar backup disk answer | `reports/qa/evidence/qa-20260526-v81248-ai-backup.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -893,6 +898,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0611 | 2026-05-26T08:11:39.764Z | release-gate | yes | yes | v8.12.48 Vercel production Playwright MCP release smoke | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0610 | 2026-05-26T05:33:38.310Z | targeted | no | yes | P10 production Playwright recheck — backup group filter | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0609 | 2026-05-26T05:23:27.822Z | targeted | no | yes | P10 수정 확인 — v8.12.47 backup 그룹 서버 필터 (단위 테스트 검증) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0608 | 2026-05-26T04:01:53.841Z | targeted | no | no | Codex 직접 재검증 — v8.12.46 P4/P13 AI Assistant fixes | 2 | 0 | 0 | 0 | 0 | 0 |
@@ -912,4 +918,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0594 | 2026-05-25T09:39:11.343Z | targeted | no | no | Local AI routing regression validation — Q-NEW28/P9 deterministic fixes | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260525-0593 | 2026-05-25T08:02:14.837Z | targeted | no | no | v8.12.39 핫픽스 검증 — P8/Q-NEW25 LLM pre-filter 회귀 수정 확인 | 2 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260525-0592 | 2026-05-25T07:46:05.844Z | targeted | no | no | 10차 AI 어시스턴트 평가 — LLM pre-filter v8.12.38 신규질문·회귀 검증 | 7 | 2 | 1 | 0 | 1 | 1 |
-| QA-20260525-0591 | 2026-05-25T04:28:13.683Z | targeted | yes | yes | v8.12.37 Production QA - Q-NEW13 Advisor evidence closure | 5 | 1 | 0 | 0 | 0 | 0 |
