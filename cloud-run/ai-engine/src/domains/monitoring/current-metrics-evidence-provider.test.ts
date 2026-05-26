@@ -4,6 +4,7 @@ import {
   MONITORING_METRIC_CURRENT_CAPABILITY_ID,
   MONITORING_METRIC_RANKING_CAPABILITY_ID,
   MONITORING_METRIC_TREND_CAPABILITY_ID,
+  MONITORING_PEAK_METRIC_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
 import {
@@ -42,6 +43,20 @@ describe('current metrics domain evidence providers', () => {
   it('parses current metric Top-N queries as deterministic metric ranking', () => {
     const parsed = parseCurrentMetricsEvidenceRequest(
       createEvidenceRequest('현재 CPU 사용률 상위 3대 알려줘')
+    );
+
+    expect(parsed).toMatchObject({
+      intent: 'metric_ranking',
+      capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+      metric: 'cpu',
+      rankCount: 3,
+      rankOrder: 'desc',
+    });
+  });
+
+  it('keeps metric-specific load wording on the requested metric ranking path', () => {
+    const parsed = parseCurrentMetricsEvidenceRequest(
+      createEvidenceRequest('현재 가장 CPU 부하가 높은 서버 TOP 3')
     );
 
     expect(parsed).toMatchObject({
@@ -1661,6 +1676,57 @@ describe('current metrics domain evidence providers', () => {
       /1\. web-nginx-dc1-01[\s\S]+2\. cache-redis-dc1-01[\s\S]+3\. api-was-dc1-01/
     );
     expect(evidence?.fallback).not.toContain('db-mysql-dc1-primary');
+  });
+
+  it('resolves current resource pressure ranking by composite load descending', async () => {
+    const parsed = parseCurrentMetricsEvidenceRequest(
+      createEvidenceRequest('전체 서버 리소스 압박 순위 알려줘')
+    );
+    const evidence = await monitoringMetricRankingEvidenceProvider.resolve({
+      ...createEvidenceRequest('전체 서버 리소스 압박 순위 알려줘', {
+        timeLabel: '08:50',
+        servers: [
+          { id: 'api-was-dc1-01', status: 'online', cpu: 65, memory: 70, disk: 30 },
+          { id: 'web-nginx-dc1-01', status: 'online', cpu: 20, memory: 30, disk: 25 },
+          { id: 'storage-nfs-dc1-01', status: 'critical', cpu: 70, memory: 75, disk: 93 },
+          { id: 'db-mysql-dc1-primary', status: 'warning', cpu: 80, memory: 60, disk: 70 },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_peak',
+        capabilityId: MONITORING_PEAK_METRIC_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'load',
+        timeWindow: 'current',
+        aggregation: 'peak',
+        topN: 5,
+        ambiguity: 'low',
+        confidence: 0.9,
+      },
+    });
+
+    expect(parsed).toMatchObject({
+      intent: 'metric_ranking',
+      sourceIntent: 'composite-pressure-ranking',
+      rankBasis: 'composite-load',
+      rankOrder: 'desc',
+      rankCount: 5,
+    });
+    expect(evidence?.metadata).toMatchObject({
+      capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+      intent: 'metric_ranking',
+      sourceIntent: 'composite-pressure-ranking',
+      rankBasis: 'composite-load',
+      rankOrder: 'desc',
+      rankCount: 5,
+    });
+    expect(evidence?.fallback).toContain('리소스 압박 상위 5대');
+    expect(evidence?.fallback).toMatch(
+      /1\. storage-nfs-dc1-01[\s\S]+2\. db-mysql-dc1-primary[\s\S]+3\. api-was-dc1-01/
+    );
+    expect(evidence?.fallback).not.toContain('최고 시간대');
   });
 
   it('resolves server alias detail prompts without falling back to whole-fleet summaries', async () => {

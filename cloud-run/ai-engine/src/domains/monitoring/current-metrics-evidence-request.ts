@@ -23,6 +23,7 @@ import {
 import {
   ACTION_NEEDED_PATTERN,
   COMPOSITE_LOAD_RANKING_PATTERN,
+  COMPOSITE_PRESSURE_RANKING_PATTERN,
   CURRENT_METRIC_GROUP_PATTERN,
   DEFAULT_TREND_METRICS,
   GENERIC_METRIC_TREND_PATTERN,
@@ -45,6 +46,7 @@ import {
   isCurrentServerComparisonMessage,
   isHealthyOnlyServerListMessage,
   normalizeCompositeLoadRankCount,
+  normalizeCompositePressureRankCount,
   normalizeRankCount,
   normalizeRankOrder,
   normalizeTargets,
@@ -394,6 +396,19 @@ function parseCurrentMetricsMessage(
       rankBasis: 'composite-load',
       rankOrder: 'asc',
       rankCount: normalizeCompositeLoadRankCount(message),
+    };
+  }
+
+  if (!metric && COMPOSITE_PRESSURE_RANKING_PATTERN.test(message)) {
+    return {
+      intent: 'metric_ranking',
+      capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+      sourceIntent: 'composite-pressure-ranking',
+      answerQuery: message,
+      rankBasis: 'composite-load',
+      rankOrder: 'desc',
+      rankCount: normalizeCompositePressureRankCount(message),
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
 

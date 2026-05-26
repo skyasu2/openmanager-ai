@@ -131,6 +131,33 @@ describe('parseMonitoringPeakMetricMessage', () => {
     });
   });
 
+  it('does not let current resource pressure rankings use peak metric frames', () => {
+    const query = '전체 서버 리소스 압박 순위 알려줘';
+
+    expect(parseMonitoringPeakMetricMessage(query)).toBeNull();
+    expect(
+      parseMonitoringPeakMetricFrame({
+        requestId: 'current-pressure-ranking-frame',
+        domainId: MONITORING_DOMAIN_ID,
+        message: query,
+        messages: [{ role: 'user', content: query }],
+        intentFrame: {
+          domainId: MONITORING_DOMAIN_ID,
+          intent: 'metric_peak',
+          capabilityId: MONITORING_PEAK_METRIC_CAPABILITY_ID,
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'load',
+          timeWindow: 'current',
+          aggregation: 'peak',
+          topN: 5,
+          ambiguity: 'low',
+          confidence: 0.9,
+        },
+      })
+    ).toBeNull();
+  });
+
   it('keeps composite peak-and-advice requests evidence-bound and read-only', async () => {
     const query = '최근 하루 load 피크 시간과 대응 방법 알려줘';
     const evidence = await monitoringPeakMetricEvidenceProvider.resolve({

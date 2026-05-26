@@ -364,19 +364,27 @@ export function buildCompositeLoadRankingAnswer(params: {
 
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
   const orderLabel = rankOrder === 'asc' ? '하위' : '상위';
+  const isPressureRanking =
+    params.parsed.sourceIntent === 'composite-pressure-ranking';
+  const rankingLabel = isPressureRanking ? '리소스 압박' : '복합 부하';
+  const basisLabel = isPressureRanking
+    ? 'CPU 40% + 메모리 40% + 디스크 20% 가중 압박 점수'
+    : 'CPU 40% + 메모리 40% + 디스크 20% 가중 점수';
 
   return [
-    `📊 **${targetLabel} 복합 부하 ${orderLabel} ${rankCount}대**`,
-    `• 기준: CPU 40% + 메모리 40% + 디스크 20% 가중 점수${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `📊 **${targetLabel} ${rankingLabel} ${orderLabel} ${rankCount}대**`,
+    `• 기준: ${basisLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
     ...rows.map(
       (row, index) =>
-        `${index + 1}. ${row.server.id}: 복합 부하 ${row.score}점 (CPU ${formatMetricPercent(row.cpu)}, 메모리 ${formatMetricPercent(row.memory)}, 디스크 ${formatMetricPercent(row.disk)}, 상태 ${row.server.status ?? 'unknown'})`
+        `${index + 1}. ${row.server.id}: ${rankingLabel} ${row.score}점 (CPU ${formatMetricPercent(row.cpu)}, 메모리 ${formatMetricPercent(row.memory)}, 디스크 ${formatMetricPercent(row.disk)}, 상태 ${row.server.status ?? 'unknown'})`
     ),
     '',
     '💡 **확인 항목**',
     ...rows.map(
       (row, index) =>
-        `${index + 1}. ${row.server.id}: 낮은 부하 서버는 배치/트래픽 이동 후보입니다. 배포 전 역할, AZ, 의존 서비스, 최근 에러 로그를 함께 확인하세요.`
+        rankOrder === 'asc'
+          ? `${index + 1}. ${row.server.id}: 낮은 부하 서버는 배치/트래픽 이동 후보입니다. 배포 전 역할, AZ, 의존 서비스, 최근 에러 로그를 함께 확인하세요.`
+          : `${index + 1}. ${row.server.id}: 압박 점수가 높은 서버입니다. 지배 지표(CPU/메모리/디스크), 같은 계층 서버 편차, 최근 에러 로그를 우선 대조하세요.`
     ),
   ].join('\n');
 }

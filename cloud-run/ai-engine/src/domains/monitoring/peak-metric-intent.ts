@@ -29,6 +29,10 @@ const ADVICE_SEEKING_PATTERN = /조치|방법|해결|어떻게|대응|처리|해
 const EXPLICIT_PEAK_OR_RANKING_REQUEST_PATTERN =
   /언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|구간|순간|\btimestamp\b|\bwhen\b|\btime\b|top\s*server|상위\s*서버|주범\s*서버|영향.*서버|어떤\s*서버|피크|최고점|최댓값|peak|max|highest/i;
 const HOURS_PATTERN = /(\d{1,2})\s*(?:시간|h|hr|hour)s?/i;
+const CURRENT_RESOURCE_PRESSURE_RANKING_PATTERN =
+  /(?:현재|지금|실시간|current|now)?\s*(?:전체\s*)?(?:서버|호스트|시스템|fleet|server|host|system)?.{0,24}(?:리소스|자원|resource|resources?|메트릭|지표|metric|metrics?).{0,40}(?:압박|부담|포화|위험|상위|순위|랭킹|ranking|rank|top|pressure|stress|saturation)|(?:압박|부담|포화|pressure|stress|saturation).{0,40}(?:리소스|자원|resource|resources?|서버|호스트|상위|순위|랭킹|ranking|rank|top)/i;
+const EXPLICIT_PEAK_TIME_FOCUS_PATTERN =
+  /지난|최근|24\s*시간|\b24\s*h(?:ours?)?\b|하루|어제(?:부터)?|지금까지|부터\s*지금|last\s*24|last\s*day|past\s*day|since\s*yesterday|from\s*yesterday\s*to\s*now|언제|(?:^|[^\d])시간(?:대|은|이|을|를)?|시각|시점|몇\s*시|구간|순간|피크|최고점|최댓값|peak|max|highest|spike|스파이크|튀/i;
 const METRIC_PATTERNS: Array<{ metric: PeakMetric; pattern: RegExp }> = [
   {
     metric: 'load',
@@ -52,6 +56,13 @@ function isAdviceOnlyRequest(message: string): boolean {
   return (
     ADVICE_SEEKING_PATTERN.test(message) &&
     !EXPLICIT_PEAK_OR_RANKING_REQUEST_PATTERN.test(message)
+  );
+}
+
+function isCurrentResourcePressureRankingRequest(message: string): boolean {
+  return (
+    CURRENT_RESOURCE_PRESSURE_RANKING_PATTERN.test(message) &&
+    !EXPLICIT_PEAK_TIME_FOCUS_PATTERN.test(message)
   );
 }
 
@@ -128,6 +139,8 @@ function isPeakAggregation(aggregation: string | undefined): boolean {
 export function parseMonitoringPeakMetricFrame(
   request: DomainEvidenceRequest
 ): ParsedPeakMetricRequest | null {
+  if (isCurrentResourcePressureRankingRequest(request.message)) return null;
+
   const frame = request.intentFrame;
   if (!frame || frame.domainId !== MONITORING_DOMAIN_ID) return null;
 

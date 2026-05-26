@@ -255,4 +255,30 @@ describe('monitoring domain pack contract', () => {
       aggregation: 'summary',
     });
   });
+
+  it('parses current resource pressure ranking as deterministic metric ranking', async () => {
+    const frame = await Promise.resolve(
+      monitoringDomainPack.intentParser?.parse({
+        requestId: 'monitoring-current-pressure-ranking-1',
+        domainId: monitoringDomainPack.id,
+        message: '전체 서버 리소스 압박 순위 알려줘',
+        messages: [
+          {
+            role: 'user' as const,
+            content: '전체 서버 리소스 압박 순위 알려줘',
+          },
+        ],
+      })
+    );
+
+    expect(frame).toMatchObject({
+      domainId: 'openmanager-monitoring',
+      intent: 'metric_ranking',
+      capabilityId: 'monitoring.metric_ranking',
+      scope: 'whole_fleet',
+      timeWindow: 'current',
+      aggregation: 'top_n',
+      topN: 5,
+    });
+  });
 });

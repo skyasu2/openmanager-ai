@@ -35,6 +35,11 @@ export function normalizeCompositeLoadRankCount(message: string): number {
   return /가장|최저|lowest|least/i.test(message) ? 1 : 3;
 }
 
+export function normalizeCompositePressureRankCount(message: string): number {
+  const explicitCount = extractRankCountFromMessage(message);
+  return explicitCount ?? 5;
+}
+
 export function isHealthyOnlyServerListMessage(message: string): boolean {
   return (
     HEALTHY_ONLY_PATTERN.test(message) &&
