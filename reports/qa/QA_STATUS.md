@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 10:24:55 KST
+> Generated at: 2026-05-26 11:18:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 603 |
-| Total Runs (Counted) | 474 |
+| Total Recorded Runs | 604 |
+| Total Runs (Counted) | 475 |
 | Non-counted Runs | 129 |
-| Total Checks | 4208 |
-| Passed | 4022 |
+| Total Checks | 4209 |
+| Passed | 4023 |
 | Failed | 153 |
 | Completed Items | 708 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0605 (2026-05-26T01:24:48.297Z) |
-| Latest Recorded Run | QA-20260526-0605 (2026-05-26T01:24:48.297Z) |
+| Last Counted Run | QA-20260526-0606 (2026-05-26T02:18:46.663Z) |
+| Latest Recorded Run | QA-20260526-0606 (2026-05-26T02:18:46.663Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0605 (2026-05-26T01:24:48.297Z)
+Latest run: QA-20260526-0606 (2026-05-26T02:18:46.663Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | P13(서버 1:1 다중 메트릭 비교) 수정 검토 |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -48,7 +48,7 @@ Latest run: QA-20260526-0605 (2026-05-26T01:24:48.297Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T01:24:48.297Z -> 2026-05-26T01:24:48.297Z (24h)
+- Window: 2026-05-25T02:18:46.663Z -> 2026-05-26T02:18:46.663Z (24h)
 - Runs with observations: 6 recorded / 1 counted
 - Samples: 14
 
@@ -65,7 +65,7 @@ Latest run: QA-20260526-0605 (2026-05-26T01:24:48.297Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T01:24:48.297Z -> 2026-05-26T01:24:48.297Z (24h)
+- Window: 2026-05-25T02:18:46.663Z -> 2026-05-26T02:18:46.663Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 4
 - Drift rate: 0%
@@ -80,10 +80,10 @@ Latest run: QA-20260526-0605 (2026-05-26T01:24:48.297Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA b01e0919
-- Coverage Packs: ai-core, dashboard-core
-- Covered Surfaces: /dashboard, /dashboard/servers, ai-chat Q-NEW34~Q-NEW39, host-map tab + hexagonal tiles
-- Skipped Surfaces: alerts, logs, topology
+- Deployment: SHA 88e30960
+- Coverage Packs: ai-core
+- Covered Surfaces: ai-chat Q-NEW34 재검증
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
@@ -99,8 +99,7 @@ Latest run: QA-20260526-0605 (2026-05-26T01:24:48.297Z)
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260526-0605)
-  next: P13(서버 1:1 다중 메트릭 비교) 수정 검토
+- None
 
 ## Pending Improvements
 
@@ -896,6 +895,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0606 | 2026-05-26T02:18:46.663Z | targeted | no | yes | P13 수정 확인 — v8.12.45 서버 1:1 다중 메트릭 비교 (Q-NEW34 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0605 | 2026-05-26T01:24:48.297Z | targeted | no | yes | 14차 AI 어시스턴트 평가 + Host Map UX Phase 6 배포 점검 (Q-NEW34~39) | 9 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260526-0604 | 2026-05-25T17:08:49.837Z | targeted | no | yes | WONT-FIX → completed 복구: 수정 커밋 확인된 5개 항목 | 5 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260526-0603 | 2026-05-25T16:49:56.870Z | targeted | no | no | WONT-FIX cleanup - retire no-action policy and tooling items | 9 | 9 | 0 | 0 | 0 | 0 |
@@ -915,4 +915,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0589 | 2026-05-25T03:01:02.015Z | targeted | yes | yes | v8.12.35 Production QA - P7 trend, P5 pronoun follow-up, Advisor grounding | 6 | 3 | 0 | 0 | 1 | 1 |
 | QA-20260525-0588 | 2026-05-25T01:11:32.229Z | targeted | no | yes | v8.12.29 8차 AI 어시스턴트 평가 — storage/메모리랭킹/AZ비교/단일서버추세/대명사follow-up | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260525-0587 | 2026-05-25T00:41:31.507Z | targeted | yes | yes | Q-NEW13 Production QA - Advisor Command Evidence | 9 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260525-0586 | 2026-05-24T22:51:39.888Z | targeted | yes | yes | Q-NEW17 Production QA - Generic Metric Trend Routing | 7 | 1 | 0 | 0 | 0 | 0 |

@@ -1,0 +1,53 @@
+{
+  "runId": "QA-20260526-0606",
+  "recordedAt": "2026-05-26T02:18:46.663Z",
+  "recordedAtKst": "2026-05-26 11:18:46 KST",
+  "runTitle": "P13 수정 확인 — v8.12.45 서버 1:1 다중 메트릭 비교 (Q-NEW34 재검증)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.45",
+    "backend": "Cloud Run AI Engine v8.12.45",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "88e309601b1e714e23d75addc39e376c6dbfc97b"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "ai-chat Q-NEW34 재검증"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P13 수정 확인: v8.12.45에서 서버 1:1 다중 메트릭 비교가 CPU+메모리+디스크 3개 모두 정상 표시됨. monitoring-metric-current, 응답 빠름.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

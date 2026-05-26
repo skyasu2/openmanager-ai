@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-26T01:24:48.297Z"
+    "updatedAt": "2026-05-26T02:18:46.663Z"
   },
   "sequence": {
-    "nextRunNumber": 606
+    "nextRunNumber": 607
   },
   "summary": {
-    "totalRecordedRuns": 603,
-    "totalRuns": 474,
+    "totalRecordedRuns": 604,
+    "totalRuns": 475,
     "excludedRuns": 129,
-    "totalChecks": 4208,
-    "totalPassed": 4022,
+    "totalChecks": 4209,
+    "totalPassed": 4023,
     "totalFailed": 153,
     "completionRate": 100,
     "completedItems": 708,
@@ -20,11 +20,11 @@
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260526-0605",
-    "lastRecordedAt": "2026-05-26T01:24:48.297Z",
-    "latestRecordedRunId": "QA-20260526-0605",
-    "latestRecordedAt": "2026-05-26T01:24:48.297Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260526-0606",
+    "lastRecordedAt": "2026-05-26T02:18:46.663Z",
+    "latestRecordedRunId": "QA-20260526-0606",
+    "latestRecordedAt": "2026-05-26T02:18:46.663Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -70927,6 +70927,61 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0606",
+      "recordedAt": "2026-05-26T02:18:46.663Z",
+      "recordedAtKst": "2026-05-26 11:18:46 KST",
+      "title": "P13 수정 확인 — v8.12.45 서버 1:1 다중 메트릭 비교 (Q-NEW34 재검증)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0606.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.45",
+        "backend": "Cloud Run AI Engine v8.12.45",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "88e309601b1e714e23d75addc39e376c6dbfc97b"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "ai-chat Q-NEW34 재검증"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P13 수정 확인: v8.12.45에서 서버 1:1 다중 메트릭 비교가 CPU+메모리+디스크 3개 모두 정상 표시됨. monitoring-metric-current, 응답 빠름.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -70935,17 +70990,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 317,
-      "appropriateCount": 272,
+      "seenCount": 318,
+      "appropriateCount": 273,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 65,
-      "lastRunId": "QA-20260526-0605",
-      "lastSeenAt": "2026-05-26T01:24:48.297Z",
+      "lastRunId": "QA-20260526-0606",
+      "lastSeenAt": "2026-05-26T02:18:46.663Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Q-NEW34~39 신규 6문항 평가 완료. 4 PASS, 2 PARTIAL. 신규 강점(그룹+threshold 복합, 네트워크 I/O), 신규 약점(P13 서버 1:1 비교, P4 지속). Host Map 배포 후 정상 렌더링 확인.",
-      "lastNextAction": "P13(서버 1:1 다중 메트릭 비교) 수정 검토"
+      "lastImprovementNeeded": false,
+      "lastRationale": "P13 수정 확인: v8.12.45에서 서버 1:1 다중 메트릭 비교가 CPU+메모리+디스크 3개 모두 정상 표시됨. monitoring-metric-current, 응답 빠름.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
