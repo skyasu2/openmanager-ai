@@ -18,7 +18,9 @@
   "scope": "targeted",
   "releaseFacing": false,
   "countsTowardSummary": false,
-  "coveragePacks": ["ai-core"],
+  "coveragePacks": [
+    "ai-core"
+  ],
   "coveredSurfaces": [
     "/dashboard/ai-assistant local render",
     "AI Chat empty welcome prompt cards",
@@ -61,13 +63,7 @@
       "url": ""
     }
   ],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "Local AI Assistant empty chat smoke",
-      "path": ".playwright-mcp/page-2026-05-10T11-39-32-349Z.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],
@@ -75,7 +71,8 @@
   "notes": [
     "Implemented and verified B1, I2-I4, and M1-M5 from the AI Chat UI/UX plan.",
     "Browser QA confirmed the local AI Assistant page title, welcome state, starter prompt presence, conversation counter, and zero console errors/warnings.",
-    "Tool menu bounded-height behavior is covered by component test, not by the local browser smoke."
+    "Tool menu bounded-height behavior is covered by component test, not by the local browser smoke.",
+    "[ephemeral-artifact-migration] 1 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": []
 }

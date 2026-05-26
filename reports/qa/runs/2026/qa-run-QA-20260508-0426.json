@@ -18,7 +18,10 @@
   "scope": "targeted",
   "releaseFacing": false,
   "countsTowardSummary": false,
-  "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+  "coveragePacks": [
+    "dashboard-core",
+    "modal-detail-pack"
+  ],
   "coveredSurfaces": [
     "/dashboard/servers desktop server card grid",
     "/dashboard/servers/[serverId] mobile server detail",
@@ -39,18 +42,7 @@
   "plannerShadowObservations": [],
   "expertAssessments": [],
   "usageChecks": [],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "Desktop server cards after density fix",
-      "path": "/tmp/dashboard-servers-ui-fix-1440-v4.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "Mobile server detail after overflow fix",
-      "path": "/tmp/server-detail-ui-fix-mobile-final-v2.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [
     {
       "id": "dashboard-server-card-density",
@@ -85,7 +77,8 @@
   "notes": [
     "Local dev QA only; AI behavior was not changed and conversational AI QA was skipped.",
     "Server detail page was checked at 390x844 mobile viewport and 1440x1000 desktop viewport.",
-    "Targeted E2E: PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-server-cards.spec.ts --grep \"모바일 서버 상세 route\" --project=chromium"
+    "Targeted E2E: PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-server-cards.spec.ts --grep \"모바일 서버 상세 route\" --project=chromium",
+    "[ephemeral-artifact-migration] 2 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": []
 }

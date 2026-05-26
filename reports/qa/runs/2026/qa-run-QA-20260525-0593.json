@@ -49,18 +49,7 @@
     }
   ],
   "usageChecks": [],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-25T08-00-45-870Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-25T08-00-45-870Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-25T08-01-26-779Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-25T08-01-26-779Z.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [
     {
       "id": "p8-db-vs-cache-메모리-비교-worker-request-failed-수정",
@@ -105,6 +94,8 @@
   "pendingImprovements": [],
   "deferredImprovements": [],
   "wontFixImprovements": [],
-  "notes": [],
+  "notes": [
+    "[ephemeral-artifact-migration] 2 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
+  ],
   "links": []
 }

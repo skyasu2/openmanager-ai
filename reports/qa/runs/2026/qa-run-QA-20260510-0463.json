@@ -18,7 +18,9 @@
   "scope": "targeted",
   "releaseFacing": false,
   "countsTowardSummary": false,
-  "coveragePacks": ["ai-core"],
+  "coveragePacks": [
+    "ai-core"
+  ],
   "coveredSurfaces": [
     "AI Chat - entity extraction 명확화 차단",
     "AI Chat - 명확화 다이얼로그 정상 표시",
@@ -28,7 +30,10 @@
     "AI Chat - 서버ID+메트릭 복합 entity",
     "자동장애 보고서 생성"
   ],
-  "skippedSurfaces": ["이상감지/추세 탭", "전체화면 모드"],
+  "skippedSurfaces": [
+    "이상감지/추세 탭",
+    "전체화면 모드"
+  ],
   "checks": {
     "total": 7,
     "passed": 6,
@@ -58,67 +63,13 @@
       "url": ""
     }
   ],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-29-24-564Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-29-24-564Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-29-39-395Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-29-39-395Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-30-04-297Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-30-04-297Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-30-43-941Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-30-43-941Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-31-20-321Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-31-20-321Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-31-51-419Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-31-51-419Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-32-22-923Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-32-22-923Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-32-58-326Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-32-58-326Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-33-38-167Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-33-38-167Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-33-52-764Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-33-52-764Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-10T10-34-40-747Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-10T10-34-40-747Z.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],
   "wontFixImprovements": [],
-  "notes": [],
+  "notes": [
+    "[ephemeral-artifact-migration] 11 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
+  ],
   "links": []
 }

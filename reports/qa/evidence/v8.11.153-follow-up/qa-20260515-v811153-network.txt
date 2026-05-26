@@ -1,5 +1,0 @@
-[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200]
-[GET] https://openmanager-ai.vercel.app/api/monitoring/report => [200]
-[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [200]
-[GET] https://openmanager-ai.vercel.app/api/health?service=ai&soft=true => [200]
-[POST] https://openmanager-ai.vercel.app/api/ai/intelligent-monitoring => [200]

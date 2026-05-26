@@ -118,63 +118,7 @@
       "url": "https://openmanager-ai.vercel.app"
     }
   ],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-10-15-214Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-10-15-214Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-10-31-724Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-10-31-724Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-10-42-427Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-10-42-427Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-11-00-053Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-11-00-053Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-11-12-489Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-11-12-489Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-11-52-216Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-11-52-216Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-13-36-316Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-13-36-316Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-13-58-898Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-13-58-898Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-14-32-591Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-14-32-591Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-15-04-876Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-15-04-876Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-22T03-15-34-401Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-22T03-15-34-401Z.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],
@@ -226,7 +170,8 @@
     "Q4(PASS): Reporter agent 정상 (~30초), 이상 1건, 명령어 포함. 영향 서버 4대(대시보드 경고 1대) 기준 차이 관찰",
     "Q5(PASS): 이상감지 탭 - api-was-dc1-01 CPU 82% 1건 감지, monitoring-snapshot-risk-signal 알고리즘 명시, '점심시간' 시간 컨텍스트 레이블 확인",
     "Q6(PARTIAL): 원인 분석 - 상관관계(MEM 0.61, NET 0.57) 산출 강점, 원인 generic, 응답 느림 (5개 도구 복합)",
-    "신규 발견: 서버 1:1 비교 쿼리 경로 미확립 (P1), 심층 분석 도메인 특성 미주입 (P2), Reporter/대시보드 경고 기준 차이 (P3)"
+    "신규 발견: 서버 1:1 비교 쿼리 경로 미확립 (P1), 심층 분석 도메인 특성 미주입 (P2), Reporter/대시보드 경고 기준 차이 (P3)",
+    "[ephemeral-artifact-migration] 11 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": [
     {

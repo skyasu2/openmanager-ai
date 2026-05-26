@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-26T13:05:24.369Z",
-  "generatedAtKst": "2026-05-26 22:05:24 KST",
+  "generatedAt": "2026-05-26T13:41:52.973Z",
+  "generatedAtKst": "2026-05-26 22:41:52 KST",
   "trackerUpdatedAt": "2026-05-26T12:52:44.071Z",
   "totals": {
     "recordedRuns": 612,
@@ -444,48 +444,6 @@
       "latestRunId": "QA-20260525-0585",
       "passRatePct": 100,
       "regressionRunRatePct": 0
-    },
-    {
-      "deploymentId": "dpl_97NxHEcLgvBNUVSCuxAUeuY7232L",
-      "target": "vercel-production",
-      "commitSha": "8da361db55f29fed08fa36c568419295732a8bd6",
-      "runCount": 2,
-      "totalChecks": 14,
-      "totalFailed": 1,
-      "regressionRuns": 1,
-      "failingRuns": 1,
-      "latestRecordedAt": "2026-05-24T15:52:12.919Z",
-      "latestRunId": "QA-20260525-0584",
-      "passRatePct": 92.86,
-      "regressionRunRatePct": 50
-    },
-    {
-      "deploymentId": "dpl_FeB6CbX4FoL8Y7teQ2evbfsh55Be",
-      "target": "vercel-production",
-      "commitSha": "dcba0f5e4f567d96a888c3d7b615cbdd64741c55",
-      "runCount": 1,
-      "totalChecks": 2,
-      "totalFailed": 0,
-      "regressionRuns": 0,
-      "failingRuns": 0,
-      "latestRecordedAt": "2026-05-24T10:29:54.220Z",
-      "latestRunId": "QA-20260524-0580",
-      "passRatePct": 100,
-      "regressionRunRatePct": 0
-    },
-    {
-      "deploymentId": "dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4",
-      "target": "vercel-production",
-      "commitSha": "0513c8fdbf99972956b83acd6f1439e37f3b308b",
-      "runCount": 2,
-      "totalChecks": 7,
-      "totalFailed": 0,
-      "regressionRuns": 1,
-      "failingRuns": 0,
-      "latestRecordedAt": "2026-05-24T07:21:06.892Z",
-      "latestRunId": "QA-20260524-0579",
-      "passRatePct": 100,
-      "regressionRunRatePct": 50
     }
   ],
   "recentDailyTrend": [

@@ -18,7 +18,10 @@
   "scope": "targeted",
   "releaseFacing": false,
   "countsTowardSummary": false,
-  "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core"
+  ],
   "coveredSurfaces": [
     "preview landing route via Vercel protection bypass",
     "preview /dashboard?serverId=web-nginx-dc1-01 route reachability",
@@ -49,13 +52,7 @@
       "url": ""
     }
   ],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "Preview dashboard redirect state",
-      "path": "tmp/playwright/manual-vercel/preview-dashboard-server-focus.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],
@@ -64,7 +61,8 @@
     "Vercel preview returned HTTP 200 on / with x-vercel-protection-bypass header applied.",
     "Navigating to /dashboard?serverId=web-nginx-dc1-01 returned HTTP 200 but redirected to /login?redirectTo=%2Fdashboard, so dashboard/modal assertions could not run.",
     "Preview login page did not expose a guest-mode CTA, which blocked remote verification of the serverId modal auto-focus flow.",
-    "Deployment metadata reported gitCommitRef=main and gitCommitSha=ac18ca2f99e4ade8fcad2e0646e6d20cffd23de3, while the local branch under test was feat/reporter-dashboard-followups at 75ed79dffa785fcfd18567aa715644da650c9045."
+    "Deployment metadata reported gitCommitRef=main and gitCommitSha=ac18ca2f99e4ade8fcad2e0646e6d20cffd23de3, while the local branch under test was feat/reporter-dashboard-followups at 75ed79dffa785fcfd18567aa715644da650c9045.",
+    "[ephemeral-artifact-migration] 1 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": [
     {

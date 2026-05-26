@@ -1,7 +1,7 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-26 22:05:24 KST
+> Generated at: 2026-05-26 22:41:52 KST
 
 ## Summary
 
@@ -102,9 +102,6 @@
 | dpl_7Wbtupu75cp3QzUM6QoY2h4kLp4k | vercel-production | 1 | 9 | 100% | 0 | 0% | QA-20260525-0587 | f194ec74 |
 | dpl_C16eKGD4LRzryrgF26bYRLv7dA6G | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260525-0586 | ce2808bc |
 | dpl_DDwFH26Jso8hGpukmEQFjkPMzvz5 | vercel-production | 1 | 2 | 100% | 0 | 0% | QA-20260525-0585 | 4cf58251 |
-| dpl_97NxHEcLgvBNUVSCuxAUeuY7232L | vercel-production | 2 | 14 | 92.86% | 1 | 50% | QA-20260525-0584 | 8da361db |
-| dpl_FeB6CbX4FoL8Y7teQ2evbfsh55Be | vercel-production | 1 | 2 | 100% | 0 | 0% | QA-20260524-0580 | dcba0f5e |
-| dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4 | vercel-production | 2 | 7 | 100% | 1 | 50% | QA-20260524-0579 | 0513c8fd |
 
 ## Recent Daily Trend (KST)
 

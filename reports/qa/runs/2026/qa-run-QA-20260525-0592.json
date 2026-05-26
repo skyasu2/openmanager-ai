@@ -50,33 +50,7 @@
     }
   ],
   "usageChecks": [],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-25T07-28-46-379Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-28-46-379Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-25T07-29-03-805Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-29-03-805Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-25T07-30-44-558Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-30-44-558Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-25T07-31-28-400Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-31-28-400Z.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "page-2026-05-25T07-31-46-700Z.png",
-      "path": ".playwright-mcp/screenshots/page-2026-05-25T07-31-46-700Z.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [
     {
       "id": "q-new24-peak-metric-쿼리-정상-동작-확인",
@@ -136,6 +110,8 @@
       "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
     }
   ],
-  "notes": [],
+  "notes": [
+    "[ephemeral-artifact-migration] 5 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
+  ],
   "links": []
 }

@@ -359,10 +359,13 @@ function statusMarkdown(tracker) {
   if (completed.length === 0) {
     lines.push('- None');
   } else {
-    for (const item of completed) {
-      lines.push(
-        `- ${item.id}: ${item.title} (completed ${item.completedCount}회, last ${item.lastSeenRunId})`
-      );
+    const latestCompleted = completed.slice().sort((a, b) =>
+      (b.lastSeenAt || '').localeCompare(a.lastSeenAt || '')
+    ).slice(0, 5);
+    lines.push(`- Total: ${completed.length} items completed (full list in qa-tracker.json)`);
+    lines.push('- Recently completed:');
+    for (const item of latestCompleted) {
+      lines.push(`  - ${item.id}: ${item.title} (last ${item.lastSeenRunId})`);
     }
   }
   lines.push('');

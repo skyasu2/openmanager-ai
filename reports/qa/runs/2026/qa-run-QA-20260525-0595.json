@@ -62,53 +62,7 @@
   "plannerShadowObservations": [],
   "expertAssessments": [],
   "usageChecks": [],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-chat-open.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-chat-open.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-dashboard.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-dashboard.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-q29.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-q29.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-q30.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-q30.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-q31.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-q31.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-q32.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-q32.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-q33-dialog.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-q33-dialog.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-q33-result.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-q33-result.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-11th-q33.png",
-      "path": ".playwright-mcp/screenshots/qa-11th-q33.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [
     {
       "id": "q-new31-cpu-threshold-pass",
@@ -174,7 +128,8 @@
     "Q-NEW32: P8 재확인 — storage 3대만(avg 52.5%), web 그룹 비교 없음. 24ms.",
     "Q-NEW33: disambiguation + 단기 위험 추세 계산 오라우팅. 8456ms. 신규 P11.",
     "응답 텍스트 공백 없음 버그 지속 (모든 일반 대화 응답에서 단어 사이 공백 미렌더링).",
-    "프로덕션 상태: v8.12.39 (Cloud Run), OTel slot 114/143, CPU 32%/MEM 45%/DISK 35%."
+    "프로덕션 상태: v8.12.39 (Cloud Run), OTel slot 114/143, CPU 32%/MEM 45%/DISK 35%.",
+    "[ephemeral-artifact-migration] 9 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": []
 }
