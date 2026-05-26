@@ -339,6 +339,45 @@ describe('normalizeExtractedEntities', () => {
       },
     });
   });
+
+  it('corrects anomaly-signal wording to analyst anomaly detection intent', () => {
+    expect(
+      normalizeExtractedEntitiesForQuery(
+        {
+          metric: null,
+          confidence: 83,
+          intentFrame: {
+            domain: 'monitoring',
+            intent: 'metric_current',
+            scope: 'whole_fleet',
+            targets: [],
+            metric: 'unknown',
+            timeWindow: 'current',
+            aggregation: 'summary',
+            topN: null,
+            ambiguity: 'low',
+            executionMode: 'single',
+            confidence: 83,
+          },
+        },
+        '이상 징후 분석해줘'
+      )
+    ).toEqual({
+      confidence: 83,
+      intentFrame: {
+        domain: 'monitoring',
+        intent: 'anomaly_detection',
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'all',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        executionMode: 'multi',
+        confidence: 83,
+      },
+    });
+  });
 });
 
 describe('extractEntities', () => {

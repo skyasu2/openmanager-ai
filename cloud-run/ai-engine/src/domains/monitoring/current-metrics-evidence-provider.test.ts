@@ -1902,6 +1902,86 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('CPU + 메모리');
   });
 
+  it('routes inverse CPU-low and memory-high filters to directional multi-metric filtering', async () => {
+    const parsed = parseCurrentMetricsEvidenceRequest(
+      createEvidenceRequest('CPU 낮고 메모리 높은 서버 알려줘')
+    );
+
+    expect(parsed).toMatchObject({
+      intent: 'metric_current',
+      sourceIntent: 'multi-metric-directional-filter',
+      metrics: ['cpu', 'memory'],
+      metricConditions: [
+        {
+          metric: 'cpu',
+          operator: '<=',
+          threshold: 50,
+          inferredThreshold: true,
+        },
+        {
+          metric: 'memory',
+          operator: '>=',
+          threshold: 80,
+          inferredThreshold: true,
+        },
+      ],
+      filterOperator: 'AND',
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      createEvidenceRequest('CPU 낮고 메모리 높은 서버 알려줘', {
+        timeLabel: '09:10',
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'warning',
+            cpu: 19,
+            memory: 92,
+            disk: 22,
+          },
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'warning',
+            cpu: 84,
+            memory: 86,
+            disk: 41,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 34,
+            memory: 55,
+            disk: 28,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        sourceIntent: 'multi-metric-directional-filter',
+        metrics: ['cpu', 'memory'],
+        metricConditions: expect.arrayContaining([
+          expect.objectContaining({ metric: 'cpu', operator: '<=', threshold: 50 }),
+          expect.objectContaining({ metric: 'memory', operator: '>=', threshold: 80 }),
+        ]),
+        filterOperator: 'AND',
+      },
+    });
+    expect(evidence?.fallback).toContain('CPU <= 50%');
+    expect(evidence?.fallback).toContain('메모리 >= 80%');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).not.toContain('api-was-dc1-01');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
   describe('trend-routing: 상승/하락 트렌드 표현이 metric_trend intent로 라우팅', () => {
     const trendServers = [
       { id: 'cache-redis-dc1-01', type: 'cache', status: 'critical', cpu: 19, memory: 92, disk: 22 },

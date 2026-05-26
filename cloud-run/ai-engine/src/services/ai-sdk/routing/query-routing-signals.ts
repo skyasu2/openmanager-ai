@@ -15,10 +15,10 @@ export const MONITORING_RUNTIME_ROUTING_SOURCE =
   'query-routing-signals' as const;
 
 export const INFRA_CONTEXT_PATTERN =
-  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|당직|알림|알람|로그|마운트|백엔드|로드\s*밸런서|캐시|스토리지|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|부하|로드|구역|영역|위치|az|zone|haproxy|nginx|mysql|redis|nfs|primary|replica|server|servr|sever|memory|memori|memroy|disk|traffic|network|latency|response|load|backend|mount/i;
+  /서버|서벼|썹|인프라|시스템|시스탬|모니터링|당직|알림|알람|로그|마운트|백엔드|로드\s*밸런서|캐시|스토리지|징후|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|부하|로드|구역|영역|위치|az|zone|haproxy|nginx|mysql|redis|nfs|primary|replica|server|servr|sever|memory|memori|memroy|disk|traffic|network|latency|response|load|backend|mount/i;
 
 export const ANALYST_QUERY_PATTERN =
-  /이상|비정상|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca|고장|느려|다운|안\s*됨|안됨|장애/i;
+  /이상|비정상|징후|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca|고장|느려|다운|안\s*됨|안됨|장애/i;
 
 export const REPORTER_QUERY_PATTERN =
   /보고서|리포트|타임라인|인시던트|incident/i;
@@ -140,7 +140,7 @@ export interface QueryRoutingSignals {
 }
 
 const TOOL_ROUTING_PATTERNS = {
-  anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
+  anomaly: /이상|징후|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
   prediction:
     /예측|트렌드|추이|전망|forecast|추세|임계치.*전|넘기\s*전|미리.*알|고갈|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?/i,
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
@@ -174,6 +174,7 @@ const SERVER_KEYWORDS = [
   'disk',
   '상태',
   '이상',
+  '징후',
   '비정상',
   '분석',
   '예측',

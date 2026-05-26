@@ -206,6 +206,7 @@ Rules:
 - Use scope "server" only when the user asks about one specific server.
 - Set executionMode "single" for simple/current metric lookups, rankings, status checks, and formatting-only rewrites.
 - Set intent "anomaly_detection" for current anomaly, abnormal, spike, detection, "이상 탐지", "비정상 감지" questions.
+- Set intent "anomaly_detection" for current anomaly signal analysis such as "이상 징후 분석", "징후 분석", or "비정상 징후".
 - Set intent "anomaly_prediction" for future-looking anomaly signal questions such as "이상 징후 예측", "미리 감지", or "위험 징후".
 - Set intent "capacity_forecast" for resource exhaustion/capacity forecasts such as disk/memory/cpu saturation, "고갈", "임계치 넘기 전", "언제 포화", "위험 수준 도달", or "언제 90% 넘을까".
 - Set intent "failure_risk" for broad failure-risk questions such as "장애 날 것 같은 서버", "장애 위험", or "불안정한 서버".
@@ -346,6 +347,12 @@ function inferGroupTargetFromQuery(query: string): string | undefined {
 const CAPACITY_FORECAST_QUERY_PATTERN =
   /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
 
+const ANOMALY_PREDICTION_QUERY_PATTERN =
+  /(?:이상|비정상|위험|장애)?\s*징후.{0,24}(?:예측|전망|미리|앞으로|사전)|(?:예측|전망|미리|사전).{0,24}(?:이상|비정상|위험|장애)?\s*징후/i;
+const ANOMALY_DETECTION_QUERY_PATTERN =
+  /(?:이상|비정상|징후|스파이크|급증|급감|anomal).{0,32}(?:분석|탐지|감지|찾|확인|있)|(?:분석|탐지|감지|확인).{0,32}(?:이상|비정상|징후|스파이크|anomal)/i;
+const ROOT_CAUSE_QUERY_PATTERN = /왜|원인|근본|rca|root.?cause|cause/i;
+
 function inferCapacityMetricForQuery(
   query: string,
   entities: ExtractedEntities
@@ -415,11 +422,79 @@ function buildCapacityForecastCorrection(
   };
 }
 
+function inferAnomalyMetricForQuery(
+  query: string,
+  entities: ExtractedEntities
+): SemanticMetric {
+  const frameMetric = entities.intentFrame?.metric;
+  if (frameMetric && frameMetric !== 'unknown') return frameMetric;
+  if (entities.metric) return entities.metric;
+  if (/\bcpu\b|씨피유/i.test(query)) return 'cpu';
+  if (/메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/i.test(query)) {
+    return 'memory';
+  }
+  if (/디스크|\bdisk\b|스토리지|\bstorage\b/i.test(query)) return 'disk';
+  if (/네트워크|\bnetwork\b|\bnet\b/i.test(query)) return 'network';
+  return 'all';
+}
+
+function buildAnomalyIntentCorrection(
+  entities: ExtractedEntities,
+  query: string
+): ExtractedEntities | null {
+  if (!ANOMALY_DETECTION_QUERY_PATTERN.test(query)) return null;
+  if (ANOMALY_PREDICTION_QUERY_PATTERN.test(query)) return null;
+  if (ROOT_CAUSE_QUERY_PATTERN.test(query)) return null;
+
+  const groupTarget = inferGroupTargetFromQuery(query);
+  const inferredServer = entities.server ?? inferKnownServerIdFromQuery(query);
+  const targets = inferredServer
+    ? [inferredServer]
+    : groupTarget
+      ? [groupTarget]
+      : (entities.intentFrame?.targets ?? []);
+  const scope: SemanticScope = inferredServer
+    ? 'server'
+    : groupTarget
+      ? 'group'
+      : 'whole_fleet';
+  const metric = inferAnomalyMetricForQuery(query, entities);
+  const confidence = Math.max(
+    entities.intentFrame?.confidence ?? 0,
+    entities.confidence,
+    80
+  );
+
+  const { intentFrame: _intentFrame, server: _server, ...rest } = entities;
+  return {
+    ...rest,
+    ...(inferredServer ? { server: inferredServer } : {}),
+    intentFrame: {
+      domain: 'monitoring',
+      intent: 'anomaly_detection',
+      scope,
+      targets,
+      metric,
+      timeWindow: 'current',
+      aggregation: 'summary',
+      ambiguity: 'low',
+      executionMode: 'multi',
+      confidence,
+    },
+    confidence,
+  };
+}
+
 export function normalizeExtractedEntitiesForQuery(
   data: unknown,
   query: string
 ): ExtractedEntities {
   const entities = normalizeExtractedEntities(data);
+  const anomalyCorrection = buildAnomalyIntentCorrection(entities, query);
+  if (anomalyCorrection) {
+    return anomalyCorrection;
+  }
+
   const capacityCorrection = buildCapacityForecastCorrection(entities, query);
   if (capacityCorrection) {
     return capacityCorrection;

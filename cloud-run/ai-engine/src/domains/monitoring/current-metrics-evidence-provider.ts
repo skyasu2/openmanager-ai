@@ -14,6 +14,7 @@ import {
   buildMetricCurrentAnswer,
   buildMetricTrendAnswer,
 } from './current-metrics-evidence-answers';
+import { buildDirectionalMultiMetricFilterAnswer } from './current-metrics-directional-answer';
 import {
   parseCurrentMetricsEvidenceRequest,
   type CurrentMetricsEvidenceIntent,
@@ -21,6 +22,7 @@ import {
 } from './current-metrics-evidence-request';
 
 export type {
+  MetricCondition,
   ParsedCurrentMetricsEvidenceRequest,
   SupportedMetric,
 } from './current-metrics-evidence-request';
@@ -90,7 +92,14 @@ async function resolveCurrentMetricsEvidence(
 
   let answer: string | null;
   if (parsed.intent === 'metric_current') {
-    answer = buildMetricCurrentAnswer({ parsed, snapshot });
+    answer =
+      parsed.metricConditions && parsed.metricConditions.length > 0
+        ? buildDirectionalMultiMetricFilterAnswer({
+            metricConditions: parsed.metricConditions,
+            parsed,
+            snapshot,
+          })
+        : buildMetricCurrentAnswer({ parsed, snapshot });
   } else if (parsed.intent === 'metric_trend') {
     answer = buildMetricTrendAnswer({ parsed, snapshot });
   } else if (
@@ -149,6 +158,9 @@ async function resolveCurrentMetricsEvidence(
         thresholdOperator: parsed.thresholdOperator,
       }),
       ...(parsed.filterOperator && { filterOperator: parsed.filterOperator }),
+      ...(parsed.metricConditions && {
+        metricConditions: parsed.metricConditions,
+      }),
       ...(parsed.rankCount && { rankCount: parsed.rankCount }),
       ...(parsed.rankOrder && { rankOrder: parsed.rankOrder }),
       ...(parsed.rankBasis && { rankBasis: parsed.rankBasis }),

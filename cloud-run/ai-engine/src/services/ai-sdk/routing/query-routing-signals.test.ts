@@ -194,6 +194,20 @@ describe('extractQueryRoutingSignals', () => {
     expect(signals.preFilter.confidence).toBe(0.88);
   });
 
+  it.each(['이상 징후 분석해줘', '징후 분석해줘'])(
+    'routes anomaly-signal analysis wording to Analyst pre-filter: %s',
+    (query) => {
+      const signals = extractQueryRoutingSignals(query);
+
+      expect(signals.intent).toBe('anomaly');
+      expect(signals.toolIntentCategory).toBe('anomaly');
+      expect(signals.hasInfraContext).toBe(true);
+      expect(signals.preFilter.action).toBe('suggest_agent');
+      expect(signals.preFilter.suggestedAgent).toBe('Analyst Agent');
+      expect(signals.preFilter.confidence).toBe(0.88);
+    }
+  );
+
   it.each([
     '재시작해야 할 서버 있어?',
     '재시작이 필요해?',
