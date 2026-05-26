@@ -29,6 +29,8 @@ const {
 } = require('./pre-push-changed-files');
 const {
   isDocsArtifactOnlyPush,
+  shouldRunQaEvidenceIntegrityValidation,
+  validateQaEvidenceIntegrityChanges,
   validateChangedJsonArtifacts,
 } = require('./pre-push-docs-artifacts');
 const { checkRootArtifactAudit } = require('./pre-push-root-artifacts');
@@ -320,6 +322,41 @@ function runDocsArtifactValidation(changedFilesResult) {
   console.log(
     `✅ JSON artifact validation passed (${jsonValidation.jsonFiles.length} files)`
   );
+  return { ok: true };
+}
+
+function runQaEvidenceIntegrityGuard(changedFilesResult) {
+  if (!shouldRunQaEvidenceIntegrityValidation(changedFilesResult)) {
+    console.log('⚪ QA evidence integrity check skipped (not-relevant)');
+    return { ok: true };
+  }
+
+  console.log('🔎 QA evidence integrity check...');
+  const validation = validateQaEvidenceIntegrityChanges(
+    changedFilesResult.files,
+    cwd
+  );
+  if (!validation.ok) {
+    if (validation.reason === 'referenced-evidence-deleted') {
+      console.log(`❌ Referenced QA evidence deleted: ${validation.file}`);
+      console.log(`   Referenced by: ${validation.runIds.join(', ')}`);
+    } else if (validation.reason === 'run-references-missing-evidence') {
+      console.log(`❌ QA run references missing evidence: ${validation.file}`);
+      console.log(`   Missing: ${validation.artifactPath}`);
+    } else if (validation.reason === 'invalid-run-json') {
+      console.log(`❌ Invalid QA run JSON: ${validation.file}`);
+      console.log(`   ${validation.message}`);
+    } else if (validation.reason === 'qa-run-deleted') {
+      console.log(`❌ QA run record deleted: ${validation.file}`);
+    } else {
+      console.log('❌ QA evidence integrity check failed');
+    }
+    console.log('');
+    console.log('💡 Fix: restore missing evidence or update run artifact debt metadata');
+    return { ok: false, reason: validation.reason };
+  }
+
+  console.log('✅ QA evidence integrity check passed');
   return { ok: true };
 }
 
@@ -734,6 +771,7 @@ function main() {
   );
   exitIfGuardFailed(runRootArtifactAuditGuard());
   exitIfGuardFailed(runAiDocsConsistencyGuard(changedFilesResult));
+  exitIfGuardFailed(runQaEvidenceIntegrityGuard(changedFilesResult));
 
   if (docsOnlyPush) {
     exitIfGuardFailed(runDocsArtifactValidation(changedFilesResult));
