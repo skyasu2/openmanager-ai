@@ -51,5 +51,12 @@
   "deferredImprovements": [],
   "wontFixImprovements": [],
   "notes": [],
-  "links": []
+  "links": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "unit-test-targeted-qa",
+    "reason": "This counted targeted unit-test QA recorded P10 backup group filter test results; no durable test log artifact was preserved at the time.",
+    "recordedAt": "2026-05-26T13:10:00.000Z",
+    "recordedBy": "codex"
+  }
 }

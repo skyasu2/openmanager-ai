@@ -1,51 +1,45 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-26 00:54:55 KST
+> Generated at: 2026-05-26 22:05:24 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 599 |
-| Counted Runs | 472 |
-| Total Checks | 4194 |
-| Total Passed | 4010 |
+| Recorded Runs | 612 |
+| Counted Runs | 482 |
+| Total Checks | 4261 |
+| Total Passed | 4073 |
 | Total Failed | 153 |
-| Overall Pass Rate | 95.61% |
-| Latest Recorded Run | QA-20260526-0601 |
-| Last Counted Run | QA-20260525-0591 |
+| Overall Pass Rate | 95.59% |
+| Latest Recorded Run | QA-20260526-0614 |
+| Last Counted Run | QA-20260526-0614 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-24T15:54:39.843Z -> 2026-05-25T15:54:39.843Z (24h)
-- Runs with observations: 7 recorded / 2 counted
-- Samples: 15
+- Window: 2026-05-25T12:52:44.071Z -> 2026-05-26T12:52:44.071Z (24h)
+- Runs with observations: 5 recorded / 3 counted
+- Samples: 14
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Advisor Agent | mixed | 1 | 27514ms | 27514ms | 0ms | 0ms | 27514ms | 27514ms | QA-20260525-0591 |
-| Metrics Query Agent | zai | 1 | 18141ms | 18141ms | - | - | - | - | QA-20260525-0598 |
-| Metrics Query Agent | cloud-run-ai | 3 | 6559ms | 8498ms | 284ms | 284ms | 2368ms | 2368ms | QA-20260525-0599 |
-| Server Realtime Analysis | mixed | 1 | 8456ms | 8456ms | - | - | - | - | QA-20260525-0595 |
-| Metrics Query Agent | streaming-ai | 4 | 4118ms | 5570ms | 602ms | 741ms | 606ms | 747ms | QA-20260526-0601 |
-| Metrics Query Agent | mistral | 1 | 3228ms | 3228ms | - | - | - | - | QA-20260525-0596 |
-| Metrics Query Agent | groq | 1 | 1584ms | 1584ms | - | - | - | - | QA-20260525-0596 |
-| Metrics Query Agent | deterministic | 3 | 37ms | 60ms | - | - | 60ms | 60ms | QA-20260525-0595 |
+| Metrics Query Agent | cloud-run-ai | 8 | 3245ms | 8498ms | 284ms | 284ms | 1917ms | 2545ms | QA-20260526-0614 |
+| Metrics Query Agent | streaming-ai | 5 | 3592ms | 5570ms | 602ms | 741ms | 899ms | 1487ms | QA-20260526-0611 |
+| Metrics Query | deterministic-monitoring | 1 | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | QA-20260526-0613 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-24T15:54:39.843Z -> 2026-05-25T15:54:39.843Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 7
+- Window: 2026-05-25T12:52:44.071Z -> 2026-05-26T12:52:44.071Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
 - Drift rate: 0%
-- Classification counts: {"matched":6,"unknown":1}
+- Classification counts: {}
 - Reason code counts: {}
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor/stream/v2 | deterministic | 6 | 0% | 10ms | 60ms | QA-20260525-0589 |
-| /api/ai/jobs/[id]/stream | single-agent | 1 | 0% | 0ms | 0ms | QA-20260525-0589 |
+| - | - | 0 | 0% | - | - | - |
 
 ## Warnings
 
@@ -55,32 +49,32 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 472 | 4194 | 95.61% | 85 | 18.01% | 94 | 19.92% |
-| Last 30 Counted Runs | 30 | 144 | 80.56% | 6 | 20% | 7 | 23.33% |
-| Last 10 Counted Runs | 10 | 55 | 83.64% | 2 | 20% | 2 | 20% |
+| All Counted Runs | 482 | 4261 | 95.59% | 85 | 17.63% | 94 | 19.5% |
+| Last 30 Counted Runs | 30 | 169 | 86.98% | 5 | 16.67% | 6 | 20% |
+| Last 10 Counted Runs | 10 | 67 | 94.03% | 0 | 0% | 0 | 0% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 43 | 709 | 96.05% | 11 | 25.58% |
-| Last 5 Gate Runs | 5 | 78 | 92.31% | 1 | 20% |
+| All Gate Runs | 45 | 737 | 96.2% | 11 | 24.44% |
+| Last 5 Gate Runs | 5 | 73 | 94.52% | 1 | 20% |
 
 ## Release-Gate Only Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Release-Gate Runs | 9 | 123 | 99.19% | 0 | 0% |
-| Last 5 Release-Gate Runs | 5 | 62 | 98.39% | 0 | 0% |
+| All Release-Gate Runs | 11 | 151 | 99.34% | 0 | 0% |
+| Last 5 Release-Gate Runs | 5 | 75 | 98.67% | 0 | 0% |
 
 ## Scope Distribution
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 412 | 286 |
+| targeted | 423 | 294 |
 | legacy | 137 | 137 |
 | broad | 35 | 34 |
-| release-gate | 9 | 9 |
+| release-gate | 11 | 11 |
 | smoke | 5 | 5 |
 | regression | 1 | 1 |
 
@@ -89,9 +83,9 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 49 | 10 | 20.41% | 0 | 0 | 0% | 49 | 0 |
-| P1 | 304 | 109 | 35.86% | 0 | 0 | 0% | 296 | 8 |
-| P2 | 319 | 66 | 20.69% | 0 | 0 | 0% | 290 | 29 |
-| P3 | 57 | 16 | 28.07% | 0 | 0 | 0% | 46 | 11 |
+| P1 | 307 | 110 | 35.83% | 0 | 0 | 0% | 302 | 5 |
+| P2 | 321 | 78 | 24.3% | 0 | 0 | 0% | 308 | 13 |
+| P3 | 57 | 18 | 31.58% | 0 | 0 | 0% | 48 | 9 |
 | P4 | 5 | 1 | 20% | 0 | 0 | 0% | 2 | 3 |
 | P5 | 5 | 0 | 0% | 0 | 0 | 0% | 4 | 1 |
 
@@ -99,6 +93,9 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| gitlab-pipeline-2553301909-v8.12.51-cloud-run-ai-engine-00559-62w | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260526-0614 | ad7735e7 |
+| dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260526-0613 | 9ee0a193 |
+| dpl_BVJyVGDfMJ3MQB53pWWDn2fwR3BB | vercel-production | 1 | 16 | 100% | 0 | 0% | QA-20260526-0611 | cbca218e |
 | dpl_FocxFMt8y6Cy3GGXxwGUXBjhTyRp | vercel-production | 1 | 5 | 100% | 0 | 0% | QA-20260525-0591 | beb8e6ac |
 | dpl_EJx6EaYjDnbA9dbBexrn3g1LrCxY | vercel-production | 1 | 4 | 75% | 1 | 100% | QA-20260525-0590 | 68715a95 |
 | dpl_5KXXyEWQFhPjHCmgPozKs8DfvNG5 | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260525-0589 | 3748656c |
@@ -108,15 +105,11 @@
 | dpl_97NxHEcLgvBNUVSCuxAUeuY7232L | vercel-production | 2 | 14 | 92.86% | 1 | 50% | QA-20260525-0584 | 8da361db |
 | dpl_FeB6CbX4FoL8Y7teQ2evbfsh55Be | vercel-production | 1 | 2 | 100% | 0 | 0% | QA-20260524-0580 | dcba0f5e |
 | dpl_AZ9gG1HfcSpw732EZ9NykZeWxkR4 | vercel-production | 2 | 7 | 100% | 1 | 50% | QA-20260524-0579 | 0513c8fd |
-| gitlab-tag-pipeline-2548694499 | vercel-production | 1 | 1 | 100% | 0 | 0% | QA-20260524-0576 | 197e762a |
-| gitlab-tag-pipeline-2548681561 | vercel-production | 1 | 1 | 0% | 1 | 100% | QA-20260524-0575 | dcd012fd |
-| gitlab-pipeline-2548650141 / cloud-run-revision-94ce8471b | vercel-production-cloud-run-ai-engine | 1 | 3 | 66.67% | 1 | 100% | QA-20260524-0574 | 94ce8471 |
 
 ## Recent Daily Trend (KST)
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-05-11 | 3 | 27 | 96.3% | 1 | 1 | 33.33% |
 | 2026-05-12 | 9 | 73 | 91.78% | 3 | 3 | 33.33% |
 | 2026-05-13 | 7 | 59 | 98.31% | 1 | 1 | 14.29% |
 | 2026-05-14 | 4 | 42 | 95.24% | 1 | 1 | 25% |
@@ -130,6 +123,7 @@
 | 2026-05-23 | 7 | 38 | 89.47% | 1 | 1 | 14.29% |
 | 2026-05-24 | 9 | 34 | 73.53% | 3 | 4 | 44.44% |
 | 2026-05-25 | 9 | 53 | 83.02% | 2 | 2 | 22.22% |
+| 2026-05-26 | 10 | 67 | 94.03% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 
@@ -150,22 +144,24 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
-| feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
-| feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
-| obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |
-| ai-server-timing-header-production | P1 | wont-fix | 2 | QA-20260310-0081 | Server-Timing header visibility in production |
 | ai-thinking-visualizer-contract-drift | P1 | wont-fix | 2 | QA-20260428-0357 | Thinking visualizer production UI contract drift |
-| ai-cold-start-latency | P2 | wont-fix | 2 | QA-20260327-0193 | Cloud Run cold start 레이턴시 최적화 |
-| anomaly-artifact-card-missing | P2 | wont-fix | 2 | QA-20260523-0568 | 이상감지 분석 아티팩트 카드 미렌더링 |
 | analyst-single-server-response-mismatch | P1 | wont-fix | 1 | QA-20260519-0535 | Analyst 단일 서버 분석 응답 구조 불일치 수정 |
 | landing-console-api-system-unauthorized | P1 | wont-fix | 1 | QA-20260330-0195 | 랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling |
 | landing-vibe-content-deployment-drift | P1 | wont-fix | 1 | QA-20260330-0195 | Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 |
+| server-comparison-deterministic-path | P1 | wont-fix | 1 | QA-20260522-0559 | 서버 1:1 비교 쿼리 deterministic 경로 미확립 |
+| ai-adversarial-natural-language-qa-pack | P2 | wont-fix | 1 | QA-20260512-0487 | Add QC/security-style natural-language AI regression prompts |
+| ai-agent-type-metadata | P2 | wont-fix | 1 | QA-20260326-0190 | AI Chat 에이전트 타입 메타데이터 표시 개선 |
+| ai-metric-ranking-memory-path-metadata | P2 | wont-fix | 1 | QA-20260418-0304 | Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata |
+| ai-remediation-response-quality | P2 | wont-fix | 1 | QA-20260519-0535 | AI Chat 조치 방법 응답 품질 개선 |
+| analyst-domain-context-injection | P2 | wont-fix | 1 | QA-20260522-0559 | 심층 분석 시 서버 도메인 특성 미주입 |
 
 ## Most Repeated Completed Items
 
 | ID | Completed Count | Seen | Last Seen Run | Title |
 |---|---:|---:|---|---|
 | feature-dod-system-start-guard | 7 | 7 | QA-20260227-0018 | 비로그인 시스템 시작 가드 모달 동작 |
+| feature-dod-tsc-zero-error | 6 | 10 | QA-20260526-0602 | Root TypeScript type-check passes |
+| feature-dod-unit-tests | 6 | 10 | QA-20260526-0602 | Root quick unit/smoke test gate passes |
 | feature-dod-lint-zero-error | 5 | 7 | QA-20260302-0044 | lint 0 에러 |
 | dashboard-health-v880-recheck | 5 | 5 | QA-20260309-0068 | 프로덕션 대시보드 및 Health API 재검증 |
 | landing-copy-alignment | 4 | 8 | QA-20260227-0016 | 랜딩/로그인 정책 카피 정합성 |
@@ -173,8 +169,6 @@
 | landing-page-render | 4 | 5 | QA-20260419-0306 | 랜딩 페이지 정상 렌더링 v8.11.20 |
 | ai-chat-response-quality-v880-recheck-20260309 | 4 | 4 | QA-20260309-0068 | AI Chat 응답 품질 및 권고 재검증 |
 | analyst-full-analysis-v880-recheck-20260309 | 4 | 4 | QA-20260309-0068 | Analyst 전체 분석 경로 재검증 |
-| guest-pin-login-flow | 4 | 4 | QA-20260227-0018 | 게스트 PIN 인증 후 시스템 시작 버튼 노출 |
-| reporter-empty-cta-generate-v880-recheck-20260309 | 4 | 4 | QA-20260309-0068 | Reporter empty state CTA 생성 경로 재검증 |
 
 ## Definitions
 

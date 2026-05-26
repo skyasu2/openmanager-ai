@@ -70983,7 +70983,14 @@
       "completedCount": 5,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "code-analysis-targeted-qa",
+        "reason": "This counted targeted code-analysis run restored WONT-FIX items from git history and SDD/test commit evidence; no contemporaneous durable Playwright or screenshot artifact was captured.",
+        "recordedAt": "2026-05-26T13:10:00.000Z",
+        "recordedBy": "codex"
+      }
     },
     {
       "runId": "QA-20260526-0605",
@@ -71046,7 +71053,14 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "playwright-mcp-targeted-ai-host-map",
+        "reason": "This counted targeted Playwright MCP run was recorded from live QA observations for Host Map and Q-NEW34~Q-NEW39, but no durable screenshot or network artifact was preserved at the time.",
+        "recordedAt": "2026-05-26T13:10:00.000Z",
+        "recordedBy": "codex"
+      }
     },
     {
       "runId": "QA-20260526-0606",
@@ -71101,7 +71115,14 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "playwright-mcp-targeted-ai-recheck",
+        "reason": "This counted targeted Playwright MCP recheck verified P13/Q-NEW34 behavior, but no durable screenshot or network artifact was preserved at the time.",
+        "recordedAt": "2026-05-26T13:10:00.000Z",
+        "recordedBy": "codex"
+      }
     },
     {
       "runId": "QA-20260526-0607",
@@ -71156,7 +71177,14 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "playwright-mcp-targeted-ai-recheck",
+        "reason": "This counted targeted Playwright MCP recheck verified P4/Q-NEW38 routing, but no durable screenshot or network artifact was preserved at the time.",
+        "recordedAt": "2026-05-26T13:10:00.000Z",
+        "recordedBy": "codex"
+      }
     },
     {
       "runId": "QA-20260526-0608",
@@ -71299,7 +71327,14 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "unit-test-targeted-qa",
+        "reason": "This counted targeted unit-test QA recorded P10 backup group filter test results; no durable test log artifact was preserved at the time.",
+        "recordedAt": "2026-05-26T13:10:00.000Z",
+        "recordedBy": "codex"
+      }
     },
     {
       "runId": "QA-20260526-0610",

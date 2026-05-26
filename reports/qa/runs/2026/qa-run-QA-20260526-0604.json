@@ -111,5 +111,12 @@
     "코드 커밋 히스토리(git log) 교차 분석으로 확인. WONT-FIX 분류 직후 수정 커밋이 존재하는 항목을 completed로 복구.",
     "실제 Playwright 재검증은 수행하지 않았으나, 각 수정 커밋은 test(spec): 선행 커밋 + feat/fix 커밋 쌍으로 SDD 게이트를 통과함."
   ],
-  "links": []
+  "links": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "code-analysis-targeted-qa",
+    "reason": "This counted targeted code-analysis run restored WONT-FIX items from git history and SDD/test commit evidence; no contemporaneous durable Playwright or screenshot artifact was captured.",
+    "recordedAt": "2026-05-26T13:10:00.000Z",
+    "recordedBy": "codex"
+  }
 }

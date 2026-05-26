@@ -49,5 +49,12 @@
   "deferredImprovements": [],
   "wontFixImprovements": [],
   "notes": [],
-  "links": []
+  "links": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "playwright-mcp-targeted-ai-recheck",
+    "reason": "This counted targeted Playwright MCP recheck verified P13/Q-NEW34 behavior, but no durable screenshot or network artifact was preserved at the time.",
+    "recordedAt": "2026-05-26T13:10:00.000Z",
+    "recordedBy": "codex"
+  }
 }
