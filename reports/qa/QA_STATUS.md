@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 13:02:01 KST
+> Generated at: 2026-05-26 14:23:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 606 |
-| Total Runs (Counted) | 476 |
+| Total Recorded Runs | 607 |
+| Total Runs (Counted) | 477 |
 | Non-counted Runs | 130 |
-| Total Checks | 4210 |
-| Passed | 4024 |
+| Total Checks | 4213 |
+| Passed | 4027 |
 | Failed | 153 |
 | Completed Items | 708 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0607 (2026-05-26T03:34:11.537Z) |
-| Latest Recorded Run | QA-20260526-0608 (2026-05-26T04:01:53.841Z) |
+| Last Counted Run | QA-20260526-0609 (2026-05-26T05:23:27.822Z) |
+| Latest Recorded Run | QA-20260526-0609 (2026-05-26T05:23:27.822Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,12 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0608 (2026-05-26T04:01:53.841Z)
+Latest run: QA-20260526-0609 (2026-05-26T05:23:27.822Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | Playwright MCP 브라우저 재시작 후 프로덕션 UI 재검증 |
 
 ## Usage Checks (Latest Run)
 
@@ -49,13 +48,12 @@ Latest run: QA-20260526-0608 (2026-05-26T04:01:53.841Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T04:01:53.841Z -> 2026-05-26T04:01:53.841Z (24h)
-- Runs with observations: 6 recorded / 1 counted
-- Samples: 14
+- Window: 2026-05-25T05:23:27.822Z -> 2026-05-26T05:23:27.822Z (24h)
+- Runs with observations: 5 recorded / 0 counted
+- Samples: 13
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Advisor Agent | mixed | 1 | 27514ms | 27514ms | 0ms | 0ms | 27514ms | 27514ms | QA-20260525-0591 |
 | Metrics Query Agent | zai | 1 | 18141ms | 18141ms | - | - | - | - | QA-20260525-0598 |
 | Metrics Query Agent | cloud-run-ai | 3 | 6559ms | 8498ms | 284ms | 284ms | 2368ms | 2368ms | QA-20260525-0599 |
 | Server Realtime Analysis | mixed | 1 | 8456ms | 8456ms | - | - | - | - | QA-20260525-0595 |
@@ -66,7 +64,7 @@ Latest run: QA-20260526-0608 (2026-05-26T04:01:53.841Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T04:01:53.841Z -> 2026-05-26T04:01:53.841Z (24h)
+- Window: 2026-05-25T05:23:27.822Z -> 2026-05-26T05:23:27.822Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -79,24 +77,23 @@ Latest run: QA-20260526-0608 (2026-05-26T04:01:53.841Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: v8.12.46-gitlab-pipeline-2552105899 / SHA fd0b0da6
+- Counts Toward Summary: yes
+- Deployment: SHA b013e5f8
 - Coverage Packs: ai-core
-- Covered Surfaces: ai-chat Q-NEW38 P4 RCA routing direct retest, ai-chat Q-NEW34 P13 multi-metric comparison direct retest
-- Skipped Surfaces: broad route smoke, mobile responsive matrix, unrelated residual AI weaknesses
+- Covered Surfaces: ai-engine P10 backup group filter
+- Skipped Surfaces: playwright-e2e (브라우저 종료 상태)
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Frontend production version API | [Frontend production version API](https://openmanager-ai.vercel.app/api/version) | - |
-| general | GitLab v8.12.46 deployment pipeline | [GitLab v8.12.46 deployment pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2552105899) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Codex direct P4/P13 AI assistant retest evidence | `reports/qa/evidence/2026/qa-20260526-0608-codex-direct/qa-20260526-0608-codex-direct.md` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -896,6 +893,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0609 | 2026-05-26T05:23:27.822Z | targeted | no | yes | P10 수정 확인 — v8.12.47 backup 그룹 서버 필터 (단위 테스트 검증) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0608 | 2026-05-26T04:01:53.841Z | targeted | no | no | Codex 직접 재검증 — v8.12.46 P4/P13 AI Assistant fixes | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0607 | 2026-05-26T03:34:11.537Z | targeted | no | yes | P4 수정 확인 — v8.12.46 원인/RCA 쿼리 Analyst 경로 라우팅 (Q-NEW38 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0606 | 2026-05-26T02:18:46.663Z | targeted | no | yes | P13 수정 확인 — v8.12.45 서버 1:1 다중 메트릭 비교 (Q-NEW34 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -915,4 +913,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0592 | 2026-05-25T07:46:05.844Z | targeted | no | no | 10차 AI 어시스턴트 평가 — LLM pre-filter v8.12.38 신규질문·회귀 검증 | 7 | 2 | 1 | 0 | 1 | 1 |
 | QA-20260525-0591 | 2026-05-25T04:28:13.683Z | targeted | yes | yes | v8.12.37 Production QA - Q-NEW13 Advisor evidence closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260525-0590 | 2026-05-25T03:57:03.861Z | targeted | yes | yes | v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check | 4 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260525-0589 | 2026-05-25T03:01:02.015Z | targeted | yes | yes | v8.12.35 Production QA - P7 trend, P5 pronoun follow-up, Advisor grounding | 6 | 3 | 0 | 0 | 1 | 1 |

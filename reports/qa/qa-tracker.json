@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-26T04:01:53.841Z"
+    "updatedAt": "2026-05-26T05:23:27.822Z"
   },
   "sequence": {
-    "nextRunNumber": 609
+    "nextRunNumber": 610
   },
   "summary": {
-    "totalRecordedRuns": 606,
-    "totalRuns": 476,
+    "totalRecordedRuns": 607,
+    "totalRuns": 477,
     "excludedRuns": 130,
-    "totalChecks": 4210,
-    "totalPassed": 4024,
+    "totalChecks": 4213,
+    "totalPassed": 4027,
     "totalFailed": 153,
     "completionRate": 100,
     "completedItems": 708,
@@ -21,10 +21,10 @@
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260526-0607",
-    "lastRecordedAt": "2026-05-26T03:34:11.537Z",
-    "latestRecordedRunId": "QA-20260526-0608",
-    "latestRecordedAt": "2026-05-26T04:01:53.841Z"
+    "lastRunId": "QA-20260526-0609",
+    "lastRecordedAt": "2026-05-26T05:23:27.822Z",
+    "latestRecordedRunId": "QA-20260526-0609",
+    "latestRecordedAt": "2026-05-26T05:23:27.822Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -71123,6 +71123,63 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0609",
+      "recordedAt": "2026-05-26T05:23:27.822Z",
+      "recordedAtKst": "2026-05-26 14:23:27 KST",
+      "title": "P10 수정 확인 — v8.12.47 backup 그룹 서버 필터 (단위 테스트 검증)",
+      "owner": "claude",
+      "source": "unit-test",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0609.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "frontend": "Vercel v8.12.47",
+        "backend": "Cloud Run AI Engine v8.12.47 (revision ai-engine-00553-6ph)",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "b013e5f86df344e7ab7ae0ae07cfc0510226edb4"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "ai-engine P10 backup group filter"
+      ],
+      "skippedSurfaces": [
+        "playwright-e2e (브라우저 종료 상태)"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P10 수정 확인: v8.12.47에서 GROUP_TARGET_HINTS에 backup 패턴 추가 + filterSnapshotServers ID 포함 폴백 추가. 단위 테스트 52/52 PASS. GitLab pipeline 2552256654 success. Cloud Run v8.12.47 health OK. Playwright 재검증은 브라우저 재시작 후 필요.",
+          "nextAction": "Playwright MCP 브라우저 재시작 후 프로덕션 UI 재검증"
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -71131,17 +71188,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 320,
-      "appropriateCount": 275,
+      "seenCount": 321,
+      "appropriateCount": 276,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 65,
-      "lastRunId": "QA-20260526-0608",
-      "lastSeenAt": "2026-05-26T04:01:53.841Z",
+      "lastRunId": "QA-20260526-0609",
+      "lastSeenAt": "2026-05-26T05:23:27.822Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Codex 직접 재검증에서 P4/Q-NEW38은 일반 대화가 아닌 서버 실시간 데이터 분석 + 분석 근거로 응답했고, P13/Q-NEW34는 CPU+메모리+디스크 3개 지표를 모두 반환했다.",
-      "lastNextAction": ""
+      "lastRationale": "P10 수정 확인: v8.12.47에서 GROUP_TARGET_HINTS에 backup 패턴 추가 + filterSnapshotServers ID 포함 폴백 추가. 단위 테스트 52/52 PASS. GitLab pipeline 2552256654 success. Cloud Run v8.12.47 health OK. Playwright 재검증은 브라우저 재시작 후 필요.",
+      "lastNextAction": "Playwright MCP 브라우저 재시작 후 프로덕션 UI 재검증"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

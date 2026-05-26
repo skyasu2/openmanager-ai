@@ -1,0 +1,55 @@
+{
+  "runId": "QA-20260526-0609",
+  "recordedAt": "2026-05-26T05:23:27.822Z",
+  "recordedAtKst": "2026-05-26 14:23:27 KST",
+  "runTitle": "P10 수정 확인 — v8.12.47 backup 그룹 서버 필터 (단위 테스트 검증)",
+  "owner": "claude",
+  "source": "unit-test",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+    "frontend": "Vercel v8.12.47",
+    "backend": "Cloud Run AI Engine v8.12.47 (revision ai-engine-00553-6ph)",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "b013e5f86df344e7ab7ae0ae07cfc0510226edb4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "ai-engine P10 backup group filter"
+  ],
+  "skippedSurfaces": [
+    "playwright-e2e (브라우저 종료 상태)"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P10 수정 확인: v8.12.47에서 GROUP_TARGET_HINTS에 backup 패턴 추가 + filterSnapshotServers ID 포함 폴백 추가. 단위 테스트 52/52 PASS. GitLab pipeline 2552256654 success. Cloud Run v8.12.47 health OK. Playwright 재검증은 브라우저 재시작 후 필요.",
+      "nextAction": "Playwright MCP 브라우저 재시작 후 프로덕션 UI 재검증"
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
