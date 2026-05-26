@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-26T08:11:39.764Z"
+    "updatedAt": "2026-05-26T08:37:39.090Z"
   },
   "sequence": {
-    "nextRunNumber": 612
+    "nextRunNumber": 613
   },
   "summary": {
-    "totalRecordedRuns": 609,
-    "totalRuns": 479,
+    "totalRecordedRuns": 610,
+    "totalRuns": 480,
     "excludedRuns": 130,
-    "totalChecks": 4235,
-    "totalPassed": 4049,
+    "totalChecks": 4241,
+    "totalPassed": 4053,
     "totalFailed": 153,
     "completionRate": 100,
     "completedItems": 708,
@@ -20,11 +20,11 @@
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260526-0611",
-    "lastRecordedAt": "2026-05-26T08:11:39.764Z",
-    "latestRecordedRunId": "QA-20260526-0611",
-    "latestRecordedAt": "2026-05-26T08:11:39.764Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260526-0612",
+    "lastRecordedAt": "2026-05-26T08:37:39.090Z",
+    "latestRecordedRunId": "QA-20260526-0612",
+    "latestRecordedAt": "2026-05-26T08:37:39.090Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -71410,6 +71410,78 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0612",
+      "recordedAt": "2026-05-26T08:37:39.090Z",
+      "recordedAtKst": "2026-05-26 17:37:39 KST",
+      "title": "17차 신규 6문항 평가 — v8.12.48 미테스트 영역 검증",
+      "owner": "claude",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0612.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.48",
+        "backend": "Cloud Run AI Engine v8.12.48 (revision ai-engine-00554-n6s)",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "cbca218e71df8ca9ce72d1a3b8bf5d46da326966"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "P10 fix 범위 확장 — backup CPU/MEM 쿼리 (Q-NEW40)",
+        "3중 AND 복합 조건 CPU+MEM+DISK >= 50% (Q-NEW41)",
+        "P8 storage vs db 그룹 비교 디스크 (Q-NEW42)",
+        "단일 그룹 집계 평균 메모리 쿼리 (Q-NEW43)",
+        "24h 전 대비 상승폭 랭킹 (Q-NEW44)",
+        "RCA + forecast 복합 장애 예측 (Q-NEW45)"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 6,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "4/6 PASS (Q-NEW40/41/42/44), 2/6 PARTIAL (Q-NEW43/45). 신규 강점 3개: 3중 AND 복합 조건 완전 처리(Q-NEW41), storage+db P8 그룹 비교 수정 확인(Q-NEW42), 24h 상승폭 랭킹(Q-NEW44). 신규 약점 P14: 단일 그룹 집계(db-mysql 평균 메모리) monitoring-evidence-unavailable. Q-NEW45 RCA+forecast 47분 예측 우수하나 응답 느림+capacity-forecast 전용 경로 미진입. OTel 교차 검증: db-mysql-dc1-backup CPU19%/MEM33%, storage 평균DISK 55.8%, DB 평균DISK 59.7% 수치 일치.",
+          "nextAction": "P14 단일 그룹 집계 패턴 추가 검토 — monitoring-metric-current에 단일 그룹 평균 계산 경로 추가 또는 group-aggregate evidence provider 신규 추가"
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "17차 AI 6문항 — Chrome DevTools MCP (v8.12.48)",
+          "path": "reports/qa/evidence/qa-20260526-17cha-ai-6questions.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -71418,17 +71490,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 323,
-      "appropriateCount": 278,
+      "seenCount": 324,
+      "appropriateCount": 279,
       "partialCount": 45,
       "inappropriateCount": 0,
-      "improvementNeededCount": 65,
-      "lastRunId": "QA-20260526-0611",
-      "lastSeenAt": "2026-05-26T08:11:39.764Z",
+      "improvementNeededCount": 66,
+      "lastRunId": "QA-20260526-0612",
+      "lastSeenAt": "2026-05-26T08:37:39.090Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Production UI query returned the exact backup host db-mysql-dc1-backup with DISK 70% and monitoring-metric-current evidence after the v8.12.48 AI Engine cleanup deployment.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "4/6 PASS (Q-NEW40/41/42/44), 2/6 PARTIAL (Q-NEW43/45). 신규 강점 3개: 3중 AND 복합 조건 완전 처리(Q-NEW41), storage+db P8 그룹 비교 수정 확인(Q-NEW42), 24h 상승폭 랭킹(Q-NEW44). 신규 약점 P14: 단일 그룹 집계(db-mysql 평균 메모리) monitoring-evidence-unavailable. Q-NEW45 RCA+forecast 47분 예측 우수하나 응답 느림+capacity-forecast 전용 경로 미진입. OTel 교차 검증: db-mysql-dc1-backup CPU19%/MEM33%, storage 평균DISK 55.8%, DB 평균DISK 59.7% 수치 일치.",
+      "lastNextAction": "P14 단일 그룹 집계 패턴 추가 검토 — monitoring-metric-current에 단일 그룹 평균 계산 경로 추가 또는 group-aggregate evidence provider 신규 추가"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
