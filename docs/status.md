@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-26 | **현재 버전 스냅샷**: v8.12.45
+**상태 스냅샷 기준일**: 2026-05-26 | **현재 버전 스냅샷**: v8.12.46
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.46** (2026-05-26) — Bug Fixes: ai-engine: preserve RCA routing over metric frames; Tests: qa: record v8.12.45 P13 verification
 - **v8.12.45** (2026-05-26) — Tests: qa: record host map and ai evaluation; Bug Fixes: ai-engine: preserve multi-metric server comparisons
 - **v8.12.44** (2026-05-26) — Code Refactoring: split line guard hotspots; Tests: spec: line guard regression baseline; Tests: deploy: avoid degraded single guard lint warning
 - **v8.12.43** (2026-05-26) — Bug Fixes: ai-engine: preserve leading spaces in streaming text deltas (P12); Tests: spec: sanitizeStreamingDelta preserves leading spaces in streaming delta
 - **v8.12.42** (2026-05-25) — Bug Fixes: ai-engine: detect group-compare in intentFrame path for P8; Tests: spec: add group-compare intentFrame regression tests before P8 fix; Tests: qa: record v8.12.41 Playwright routing recheck
-- **v8.12.41** (2026-05-25) — Tests: qa: record P11 routing regression closure; Tests: spec: add P11 capacity forecast wording regression; Tests: qa: record v8.12.40 routing deployment closure
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
