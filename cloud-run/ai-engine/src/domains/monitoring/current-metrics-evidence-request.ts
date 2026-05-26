@@ -604,6 +604,24 @@ function parseCurrentMetricsMessage(
 
   if (
     metric &&
+    groupTargets.length === 1 &&
+    explicitServerTargets.length === 0 &&
+    /평균|average|avg/i.test(message) &&
+    !isCurrentServerComparisonMessage(message) &&
+    !METRIC_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'group-aggregate',
+      answerQuery: message,
+      metric,
+      targets: groupTargets,
+    };
+  }
+
+  if (
+    metric &&
     explicitServerTargets.length === 1 &&
     (classification.intent === 'data-lookup' ||
       classification.intent === 'unknown') &&
