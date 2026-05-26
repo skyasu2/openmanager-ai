@@ -1996,4 +1996,60 @@ describe('current metrics domain evidence providers', () => {
       expect(parsed?.groupTargets).toContain('cache');
     });
   });
+
+  describe('P10 regression: backup group server filter', () => {
+    const backupSnapshot = {
+      timeLabel: '12:00',
+      servers: [
+        {
+          id: 'db-mysql-dc1-primary',
+          type: 'database',
+          status: 'online',
+          cpu: 41,
+          memory: 66,
+          disk: 62,
+          network: 13,
+        },
+        {
+          id: 'db-mysql-dc1-backup',
+          type: 'database',
+          status: 'online',
+          cpu: 22,
+          memory: 55,
+          disk: 69,
+          network: 8,
+        },
+        {
+          id: 'web-nginx-dc1-01',
+          type: 'web',
+          status: 'online',
+          cpu: 15,
+          memory: 40,
+          disk: 30,
+          network: 5,
+        },
+      ],
+    };
+
+    it('parses backup group query with target=backup', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('backup 서버들 CPU 상태는?', backupSnapshot)
+      );
+      expect(parsed).not.toBeNull();
+      expect(parsed?.targets).toContain('backup');
+    });
+
+    it('resolves backup group query to only the backup server', async () => {
+      const request = createEvidenceRequest(
+        'backup 서버들 디스크 상태 알려줘',
+        backupSnapshot
+      );
+      const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
+      expect(evidence).not.toBeNull();
+      const answer = (evidence as { fallback?: string } | null)?.fallback ?? '';
+      expect(answer).toContain('db-mysql-dc1-backup');
+      expect(answer).not.toContain('db-mysql-dc1-primary');
+      expect(answer).not.toContain('web-nginx-dc1-01');
+    });
+  });
 });
