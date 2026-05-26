@@ -84,6 +84,14 @@ describe('preFilterQuery', () => {
     expect(preFilterQuery('메모리 부족 해결 방법 알려줘').suggestedAgent).toBe('Advisor Agent');
   });
 
+  it('routes current metric why questions to Analyst instead of generic metric routing', () => {
+    const result = preFilterQuery('lb-haproxy-dc1-01 CPU 69% 원인이 뭐야?');
+
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('Analyst Agent');
+    expect(result.confidence).toBe(0.88);
+  });
+
   it('answers clear service command questions directly without generic metric handoff', () => {
     const result = preFilterQuery(
       'HAProxy에서 현재 연결된 백엔드 서버 목록이랑 상태 확인하는 명령어 알려줘'

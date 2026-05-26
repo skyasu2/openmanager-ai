@@ -35,6 +35,14 @@ export interface DirectRoutingContext {
 // 0.8 → 0.65: NLQ intentFrame이 routing primary signal로 실질 반영되도록 임계값 완화.
 // 기존 0.8은 실제 분류 신뢰도에 비해 높아 semantic_frame 경로가 fallback되는 빈도가 높았음.
 const SEMANTIC_AGENT_CONFIDENCE_THRESHOLD = 0.65;
+const ANALYST_PREFILTER_OVERRIDE_CAPABILITIES = new Set([
+  'monitoring.metric_current',
+  'monitoring.server_health',
+]);
+const ANALYST_PREFILTER_OVERRIDE_INTENTS = new Set([
+  'metric_current',
+  'server_health',
+]);
 
 function normalizeConfidence(value: number | undefined): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
@@ -62,6 +70,13 @@ function isExplicitAdvisorPreFilter(preFilterResult: PreFilterResult): boolean {
   );
 }
 
+function isExplicitAnalystPreFilter(preFilterResult: PreFilterResult): boolean {
+  return (
+    preFilterResult.suggestedAgent === 'Analyst Agent' &&
+    normalizeConfidence(preFilterResult.confidence) >= 0.75
+  );
+}
+
 function shouldAdvisorPreFilterOverrideSemanticFrame(
   preFilterResult: PreFilterResult,
   semanticAgent: string,
@@ -74,12 +89,48 @@ function shouldAdvisorPreFilterOverrideSemanticFrame(
   );
 }
 
+function shouldAnalystPreFilterOverrideSemanticFrame(
+  preFilterResult: PreFilterResult,
+  semanticAgent: string,
+  context: DirectRoutingContext
+): boolean {
+  if (
+    !isExplicitAnalystPreFilter(preFilterResult) ||
+    semanticAgent !== DEFAULT_DIRECT_ROUTING_AGENT
+  ) {
+    return false;
+  }
+
+  const capabilityId = context.intentFrame?.capabilityId?.trim().toLowerCase();
+  const intent = context.intentFrame?.intent?.trim().toLowerCase();
+  return (
+    (capabilityId !== undefined &&
+      ANALYST_PREFILTER_OVERRIDE_CAPABILITIES.has(capabilityId)) ||
+    (intent !== undefined && ANALYST_PREFILTER_OVERRIDE_INTENTS.has(intent))
+  );
+}
+
 export function resolveDirectRoutingTarget(
   preFilterResult: PreFilterResult,
   context: DirectRoutingContext = {}
 ): DirectRoutingTarget {
   const semanticAgent = resolveSemanticFrameAgent(context.intentFrame);
   if (semanticAgent) {
+    if (
+      shouldAnalystPreFilterOverrideSemanticFrame(
+        preFilterResult,
+        semanticAgent,
+        context
+      )
+    ) {
+      return {
+        agentName: 'Analyst Agent',
+        confidence: preFilterResult.confidence,
+        source: 'pre_filter',
+        reason: 'Direct routing (explicit RCA pre-filter)',
+      };
+    }
+
     if (
       semanticAgent !== 'Advisor Agent' &&
       shouldAdvisorPreFilterOverrideSemanticFrame(

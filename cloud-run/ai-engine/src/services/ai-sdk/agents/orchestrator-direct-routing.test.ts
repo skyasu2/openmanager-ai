@@ -183,4 +183,60 @@ describe('resolveDirectRoutingTarget', () => {
       source: 'semantic_frame',
     });
   });
+
+  it('keeps explicit RCA questions on Analyst before current-metric semantic routing', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          suggestedAgent: 'Analyst Agent',
+          confidence: 0.88,
+        },
+        {
+          intentFrame: frame({
+            capabilityId: 'monitoring.metric_current',
+            intent: 'metric_current',
+            scope: 'entity',
+            targets: ['lb-haproxy-dc1-01'],
+            metric: 'cpu',
+            aggregation: 'summary',
+            executionMode: 'single',
+            confidence: 0.93,
+          }),
+        }
+      )
+    ).toMatchObject({
+      agentName: 'Analyst Agent',
+      source: 'pre_filter',
+      reason: 'Direct routing (explicit RCA pre-filter)',
+    });
+  });
+
+  it('preserves peak-metric semantic routing even when the wording asks for cause candidates', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          suggestedAgent: 'Analyst Agent',
+          confidence: 0.88,
+        },
+        {
+          intentFrame: frame({
+            capabilityId: 'monitoring.metric_peak',
+            intent: 'metric_peak',
+            scope: 'whole_fleet',
+            targets: [],
+            metric: 'load1',
+            timeWindow: '24h',
+            aggregation: 'peak',
+            executionMode: 'single',
+            confidence: 0.93,
+          }),
+        }
+      )
+    ).toMatchObject({
+      agentName: 'Metrics Query Agent',
+      source: 'semantic_frame',
+    });
+  });
 });
