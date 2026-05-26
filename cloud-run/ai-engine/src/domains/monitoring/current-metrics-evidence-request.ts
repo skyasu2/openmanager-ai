@@ -418,6 +418,14 @@ function parseCurrentMetricsFrame(
     }
 
     const groupTargetsForFrame = extractGroupTargetsFromMessage(request.message);
+    const isExplicitServerCompare =
+      explicitServerTargets.length >= 2 &&
+      isCurrentServerComparisonMessage(request.message);
+    const serverCompareMetrics =
+      isExplicitServerCompare && mentionedMetrics.length >= 2
+        ? mentionedMetrics
+        : null;
+    const metricTargets = isExplicitServerCompare ? explicitServerTargets : targets;
     if (
       groupTargetsForFrame.length >= 2 &&
       isCurrentServerComparisonMessage(request.message)
@@ -435,11 +443,11 @@ function parseCurrentMetricsFrame(
     return {
       intent: 'metric_current',
       capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
-      sourceIntent: frame.intent,
+      sourceIntent: isExplicitServerCompare ? 'server-compare' : frame.intent,
       answerQuery: request.message,
-      metric,
+      ...(serverCompareMetrics ? { metrics: serverCompareMetrics } : { metric }),
       ...(frameThreshold ?? {}),
-      ...(targets.length > 0 && { targets }),
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
 
@@ -567,12 +575,14 @@ function parseCurrentMetricsMessage(
     explicitServerTargets.length >= 2 &&
     isCurrentServerComparisonMessage(message)
   ) {
+    const serverCompareMetrics =
+      mentionedMetrics.length >= 2 ? mentionedMetrics : null;
     return {
       intent: 'metric_current',
       capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
       sourceIntent: 'server-compare',
       answerQuery: message,
-      metric,
+      ...(serverCompareMetrics ? { metrics: serverCompareMetrics } : { metric }),
       targets: explicitServerTargets,
     };
   }

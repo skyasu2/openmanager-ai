@@ -605,11 +605,12 @@ function buildMultiMetricFilterAnswer(params: {
 
     const metricLabels = metrics.map(getMetricLabel).join(' + ');
     const timeLabel = readSnapshotTimeLabel(params.snapshot);
+    const isServerCompare = params.parsed.sourceIntent === 'server-compare';
     return [
-      `📊 **${targetLabel} ${metricLabels} 복합 부하 상위**`,
+      `📊 **${targetLabel} ${metricLabels} ${isServerCompare ? '비교' : '복합 부하 상위'}**`,
       `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
       ...buildNumberedServerSection(
-        `${metricLabels} 합산 내림차순`,
+        `${metricLabels} ${isServerCompare ? '서버별 비교' : '합산 내림차순'}`,
         rows.map((row) => {
           const metricText = row.values
             .map(
