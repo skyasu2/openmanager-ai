@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-26 14:23:28 KST
+> Generated at: 2026-05-26 14:33:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 607 |
-| Total Runs (Counted) | 477 |
+| Total Recorded Runs | 608 |
+| Total Runs (Counted) | 478 |
 | Non-counted Runs | 130 |
-| Total Checks | 4213 |
-| Passed | 4027 |
+| Total Checks | 4219 |
+| Passed | 4033 |
 | Failed | 153 |
 | Completed Items | 708 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260526-0609 (2026-05-26T05:23:27.822Z) |
-| Latest Recorded Run | QA-20260526-0609 (2026-05-26T05:23:27.822Z) |
+| Last Counted Run | QA-20260526-0610 (2026-05-26T05:33:38.310Z) |
+| Latest Recorded Run | QA-20260526-0610 (2026-05-26T05:33:38.310Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260526-0609 (2026-05-26T05:23:27.822Z)
+Latest run: QA-20260526-0610 (2026-05-26T05:33:38.310Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | Playwright MCP 브라우저 재시작 후 프로덕션 UI 재검증 |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period checked after targeted production AI QA; effective 16.6209 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T05:23:27.822Z -> 2026-05-26T05:23:27.822Z (24h)
+- Window: 2026-05-25T05:33:38.310Z -> 2026-05-26T05:33:38.310Z (24h)
 - Runs with observations: 5 recorded / 0 counted
 - Samples: 13
 
@@ -64,7 +64,7 @@ Latest run: QA-20260526-0609 (2026-05-26T05:23:27.822Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T05:23:27.822Z -> 2026-05-26T05:23:27.822Z (24h)
+- Window: 2026-05-25T05:33:38.310Z -> 2026-05-26T05:33:38.310Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -80,20 +80,20 @@ Latest run: QA-20260526-0609 (2026-05-26T05:23:27.822Z)
 - Counts Toward Summary: yes
 - Deployment: SHA b013e5f8
 - Coverage Packs: ai-core
-- Covered Surfaces: ai-engine P10 backup group filter
-- Skipped Surfaces: playwright-e2e (브라우저 종료 상태)
+- Covered Surfaces: Vercel production dashboard AI sidebar, P10 backup group natural-language filter, monitoring-metric-current evidence path, db-mysql-dc1-backup DISK metric response
+- Skipped Surfaces: broad route pack, full standard five-question conversational QA, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | P10 backup group production AI response | `reports/qa/evidence/qa-20260526-p10-backup-prod.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -893,6 +893,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260526-0610 | 2026-05-26T05:33:38.310Z | targeted | no | yes | P10 production Playwright recheck — backup group filter | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0609 | 2026-05-26T05:23:27.822Z | targeted | no | yes | P10 수정 확인 — v8.12.47 backup 그룹 서버 필터 (단위 테스트 검증) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0608 | 2026-05-26T04:01:53.841Z | targeted | no | no | Codex 직접 재검증 — v8.12.46 P4/P13 AI Assistant fixes | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0607 | 2026-05-26T03:34:11.537Z | targeted | no | yes | P4 수정 확인 — v8.12.46 원인/RCA 쿼리 Analyst 경로 라우팅 (Q-NEW38 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -912,4 +913,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260525-0593 | 2026-05-25T08:02:14.837Z | targeted | no | no | v8.12.39 핫픽스 검증 — P8/Q-NEW25 LLM pre-filter 회귀 수정 확인 | 2 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260525-0592 | 2026-05-25T07:46:05.844Z | targeted | no | no | 10차 AI 어시스턴트 평가 — LLM pre-filter v8.12.38 신규질문·회귀 검증 | 7 | 2 | 1 | 0 | 1 | 1 |
 | QA-20260525-0591 | 2026-05-25T04:28:13.683Z | targeted | yes | yes | v8.12.37 Production QA - Q-NEW13 Advisor evidence closure | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260525-0590 | 2026-05-25T03:57:03.861Z | targeted | yes | yes | v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check | 4 | 0 | 1 | 0 | 0 | 1 |

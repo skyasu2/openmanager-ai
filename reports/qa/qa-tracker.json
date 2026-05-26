@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-26T05:23:27.822Z"
+    "updatedAt": "2026-05-26T05:33:38.310Z"
   },
   "sequence": {
-    "nextRunNumber": 610
+    "nextRunNumber": 611
   },
   "summary": {
-    "totalRecordedRuns": 607,
-    "totalRuns": 477,
+    "totalRecordedRuns": 608,
+    "totalRuns": 478,
     "excludedRuns": 130,
-    "totalChecks": 4213,
-    "totalPassed": 4027,
+    "totalChecks": 4219,
+    "totalPassed": 4033,
     "totalFailed": 153,
     "completionRate": 100,
     "completedItems": 708,
@@ -21,10 +21,10 @@
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260526-0609",
-    "lastRecordedAt": "2026-05-26T05:23:27.822Z",
-    "latestRecordedRunId": "QA-20260526-0609",
-    "latestRecordedAt": "2026-05-26T05:23:27.822Z"
+    "lastRunId": "QA-20260526-0610",
+    "lastRecordedAt": "2026-05-26T05:33:38.310Z",
+    "latestRecordedRunId": "QA-20260526-0610",
+    "latestRecordedAt": "2026-05-26T05:33:38.310Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -71180,6 +71180,91 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260526-0610",
+      "recordedAt": "2026-05-26T05:33:38.310Z",
+      "recordedAtKst": "2026-05-26 14:33:38 KST",
+      "title": "P10 production Playwright recheck — backup group filter",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260526-0610.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.47",
+        "backend": "Cloud Run AI Engine v8.12.47 (revision ai-engine-00553-6ph)",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "b013e5f86df344e7ab7ae0ae07cfc0510226edb4"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production dashboard AI sidebar",
+        "P10 backup group natural-language filter",
+        "monitoring-metric-current evidence path",
+        "db-mysql-dc1-backup DISK metric response"
+      ],
+      "skippedSurfaces": [
+        "broad route pack",
+        "full standard five-question conversational QA",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production UI query 'backup 서버들 디스크 상태 알려줘' returned db-mysql-dc1-backup only, with DISK 70% and monitoring-metric-current evidence. This closes the Playwright recheck gap left by QA-20260526-0609.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-26T14:31:52+09:00",
+          "summary": "Current billing period checked after targeted production AI QA; effective 16.6209 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "P10 backup group production AI response",
+          "path": "reports/qa/evidence/qa-20260526-p10-backup-prod.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -71188,17 +71273,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 321,
-      "appropriateCount": 276,
+      "seenCount": 322,
+      "appropriateCount": 277,
       "partialCount": 45,
       "inappropriateCount": 0,
       "improvementNeededCount": 65,
-      "lastRunId": "QA-20260526-0609",
-      "lastSeenAt": "2026-05-26T05:23:27.822Z",
+      "lastRunId": "QA-20260526-0610",
+      "lastSeenAt": "2026-05-26T05:33:38.310Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "P10 수정 확인: v8.12.47에서 GROUP_TARGET_HINTS에 backup 패턴 추가 + filterSnapshotServers ID 포함 폴백 추가. 단위 테스트 52/52 PASS. GitLab pipeline 2552256654 success. Cloud Run v8.12.47 health OK. Playwright 재검증은 브라우저 재시작 후 필요.",
-      "lastNextAction": "Playwright MCP 브라우저 재시작 후 프로덕션 UI 재검증"
+      "lastRationale": "Production UI query 'backup 서버들 디스크 상태 알려줘' returned db-mysql-dc1-backup only, with DISK 70% and monitoring-metric-current evidence. This closes the Playwright recheck gap left by QA-20260526-0609.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

@@ -1,0 +1,88 @@
+{
+  "runId": "QA-20260526-0610",
+  "recordedAt": "2026-05-26T05:33:38.310Z",
+  "recordedAtKst": "2026-05-26 14:33:38 KST",
+  "runTitle": "P10 production Playwright recheck — backup group filter",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.47",
+    "backend": "Cloud Run AI Engine v8.12.47 (revision ai-engine-00553-6ph)",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "b013e5f86df344e7ab7ae0ae07cfc0510226edb4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "Vercel production dashboard AI sidebar",
+    "P10 backup group natural-language filter",
+    "monitoring-metric-current evidence path",
+    "db-mysql-dc1-backup DISK metric response"
+  ],
+  "skippedSurfaces": [
+    "broad route pack",
+    "full standard five-question conversational QA",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production UI query 'backup 서버들 디스크 상태 알려줘' returned db-mysql-dc1-backup only, with DISK 70% and monitoring-metric-current evidence. This closes the Playwright recheck gap left by QA-20260526-0609.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-26T14:31:52+09:00",
+      "summary": "Current billing period checked after targeted production AI QA; effective 16.6209 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "P10 backup group production AI response",
+      "path": "reports/qa/evidence/qa-20260526-p10-backup-prod.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Question: backup 서버들 디스크 상태 알려줘",
+    "Answer target: db-mysql-dc1-backup only",
+    "Answer metric: DISK 70% at 14:30 KST slot 87/143",
+    "Evidence route shown in UI: monitoring-metric-current"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
