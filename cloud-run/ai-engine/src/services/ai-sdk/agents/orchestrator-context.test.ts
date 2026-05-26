@@ -350,4 +350,36 @@ describe('saveAgentFindingsToContext', () => {
       ['web-server-01']
     );
   });
+
+  it('does not save zero-valued CPU anomalies from metric correlation wording', async () => {
+    const decision = await saveAgentFindingsToContext(
+      'session-analyst',
+      'Analyst Agent',
+      [
+        'storage-nfs-dc1-01 서버의 디스크 사용률이 높습니다. 현재 디스크 사용률은 82%로 임계값 80%를 초과했습니다.',
+        '분석 결과에 따르면 디스크 사용률과 CPU 사용률 간에 강한 양의 상관관계(r=0.96)가 있습니다.',
+      ].join('\n')
+    );
+
+    expect(decision).toEqual({
+      findingsSource: 'legacy_text_regex',
+      reasonCodes: ['findings_legacy_regex'],
+    });
+    expect(mockAppendAnomalies).toHaveBeenCalledTimes(1);
+
+    const anomalies = mockAppendAnomalies.mock.calls[0]?.[1];
+    expect(anomalies).toEqual([
+      expect.objectContaining({
+        serverId: 'storage-nfs-dc1-01',
+        serverName: 'storage-nfs-dc1-01',
+        metric: 'disk',
+        value: 82,
+      }),
+    ]);
+    expect(anomalies).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ metric: 'cpu', value: 0 }),
+      ])
+    );
+  });
 });

@@ -47,6 +47,7 @@ import { buildServiceCommandGuidanceAnswer } from '../../../tools-ai-sdk/reporte
  * Matches common server naming conventions
  */
 const SERVER_NAME_PATTERNS = [
+  /\b([a-z]+(?:-[a-z0-9]+){2,5}-(?:\d{2}|primary|replica|backup))\b/gi,
   /(?:서버|server)[:\s]+([a-zA-Z0-9-_]+(?:-\d+)?)/gi,
   /\b(web-server-\d+)\b/gi,
   /\b(api-server-\d+)\b/gi,
@@ -54,6 +55,37 @@ const SERVER_NAME_PATTERNS = [
   /\b(cache-\d+)\b/gi,
   /\b([a-z]+-[a-z]+-\d{2})\b/gi,
 ];
+
+type LegacyMetricName = 'cpu' | 'memory' | 'disk' | 'network';
+
+const LEGACY_METRIC_VALUE_PATTERNS: Array<{
+  metric: LegacyMetricName;
+  pattern: RegExp;
+}> = [
+  {
+    metric: 'cpu',
+    pattern: /(?:cpu|씨피유)(?:\s*(?:사용률|usage|load))?[^0-9\n]{0,24}(\d+(?:\.\d+)?)\s*%/gi,
+  },
+  {
+    metric: 'memory',
+    pattern: /(?:메모리|memory|mem)(?:\s*(?:사용률|usage))?[^0-9\n]{0,24}(\d+(?:\.\d+)?)\s*%/gi,
+  },
+  {
+    metric: 'disk',
+    pattern: /(?:디스크|disk|storage|스토리지)(?:\s*(?:사용률|usage))?[^0-9\n]{0,24}(\d+(?:\.\d+)?)\s*%/gi,
+  },
+  {
+    metric: 'network',
+    pattern: /(?:네트워크|network|대역폭|bandwidth)(?:\s*(?:사용률|usage))?[^0-9\n]{0,24}(\d+(?:\.\d+)?)\s*%/gi,
+  },
+];
+
+const LEGACY_WARNING_THRESHOLDS: Record<LegacyMetricName, number> = {
+  cpu: 80,
+  memory: 80,
+  disk: 80,
+  network: 70,
+};
 
 /**
  * Anomaly indicator keywords for detection
@@ -194,7 +226,7 @@ function extractServerNames(text: string): string[] {
 function extractAnomalies(text: string): Array<{
   serverId: string;
   serverName: string;
-  metric: 'cpu' | 'memory' | 'disk' | 'network';
+  metric: LegacyMetricName;
   value: number;
   threshold: number;
   severity: 'warning' | 'critical';
@@ -203,7 +235,7 @@ function extractAnomalies(text: string): Array<{
   const anomalies: Array<{
     serverId: string;
     serverName: string;
-    metric: 'cpu' | 'memory' | 'disk' | 'network';
+    metric: LegacyMetricName;
     value: number;
     threshold: number;
     severity: 'warning' | 'critical';
@@ -219,34 +251,49 @@ function extractAnomalies(text: string): Array<{
     );
 
     if (hasAnomalyIndicator) {
-      const percentMatch = line.match(/(\d+(?:\.\d+)?)\s*%/);
-      const value = percentMatch ? parseFloat(percentMatch[1]) : 0;
-
-      let metric: 'cpu' | 'memory' | 'disk' | 'network' = 'cpu';
-      if (/cpu/i.test(line)) metric = 'cpu';
-      else if (/메모리|memory|mem/i.test(line)) metric = 'memory';
-      else if (/디스크|disk|storage/i.test(line)) metric = 'disk';
-      else if (/네트워크|network|latency/i.test(line)) metric = 'network';
-
-      const severity: 'warning' | 'critical' =
-        (value >= 90 || /critical|심각|긴급/i.test(line)) ? 'critical' : 'warning';
+      const metricValues = extractMetricValuesFromLine(line);
+      if (metricValues.length === 0) {
+        continue;
+      }
 
       const targetServers = servers.length > 0 ? servers : ['unknown'];
       for (const serverId of targetServers.slice(0, 3)) {
-        anomalies.push({
-          serverId,
-          serverName: serverId,
-          metric,
-          value,
-          threshold: metric === 'cpu' ? 80 : 85,
-          severity,
-          detectedAt: new Date().toISOString(),
-        });
+        for (const { metric, value } of metricValues) {
+          const severity: 'warning' | 'critical' =
+            (value >= 90 || /critical|심각|긴급/i.test(line)) ? 'critical' : 'warning';
+
+          anomalies.push({
+            serverId,
+            serverName: serverId,
+            metric,
+            value,
+            threshold: LEGACY_WARNING_THRESHOLDS[metric],
+            severity,
+            detectedAt: new Date().toISOString(),
+          });
+        }
       }
     }
   }
 
   return anomalies.slice(0, 10);
+}
+
+function extractMetricValuesFromLine(
+  line: string
+): Array<{ metric: LegacyMetricName; value: number }> {
+  const metricValues: Array<{ metric: LegacyMetricName; value: number }> = [];
+
+  for (const { metric, pattern } of LEGACY_METRIC_VALUE_PATTERNS) {
+    for (const match of line.matchAll(new RegExp(pattern))) {
+      const value = Number.parseFloat(match[1] ?? '');
+      if (Number.isFinite(value)) {
+        metricValues.push({ metric, value });
+      }
+    }
+  }
+
+  return metricValues;
 }
 
 /**

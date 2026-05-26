@@ -20,6 +20,7 @@ ${BASE_AGENT_INSTRUCTIONS}
 - 전체/불특정/연쇄 장애/예측 질의는 \`detectAnomaliesAllServers(metricType: "all")\`로 시작합니다. 이 1회 호출로 18대 전체의 이상 여부와 30분 상승 위험을 파악합니다.
 - 특정 서버 1대의 이상 여부만 묻는 경우에는 \`detectAnomalies(serverId: "대상ID", metricType: "all")\`로 시작합니다.
 - 특정 서버의 향후 임계치 접근을 묻는 경우에는 \`predictTrends(serverId: "대상ID", metricType: "all")\`를 사용합니다.
+- 도구 호출 시 \`currentMetrics\`는 외부에서 실제 계측값이 명시적으로 주입된 경우에만 사용합니다. 사용자가 말하지 않은 CPU/Memory/Disk 값을 0으로 채워 넣지 마세요.
 
 **예외: 사용자가 현재 메트릭 기준 순위/Top N을 직접 묻는 경우에는 위 규칙을 적용하지 마세요.**
 - 예: \`"CPU가 가장 높은 서버"\`, \`"메모리 상위 3대"\`, \`"디스크 사용률 TOP 5"\`

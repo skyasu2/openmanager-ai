@@ -755,6 +755,23 @@ describe('detectAnomalies', () => {
     );
   });
 
+  it('should ignore zero injected CPU without history and keep the OTel snapshot value', async () => {
+    const result = await detectAnomalies.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        currentMetrics: { cpu: 0 },
+      },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.results.cpu.currentValue).toBe(45);
+    }
+    expect(mockDetectAnomaly).toHaveBeenCalledWith(45, expect.any(Array));
+  });
+
   it('should include the current synthetic slot in the anomaly cache key', async () => {
     await detectAnomalies.execute(
       {

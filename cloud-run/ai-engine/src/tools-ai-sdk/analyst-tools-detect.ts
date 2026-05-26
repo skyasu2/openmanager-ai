@@ -49,6 +49,54 @@ interface AnomalyDecisionMetadata {
   rationale: string[];
 }
 
+type SingleServerCurrentMetrics = {
+  cpu?: number;
+  memory?: number;
+  disk?: number;
+  network?: number;
+  load1?: number;
+  load5?: number;
+  cpuCores?: number;
+};
+
+type SingleServerHistory = {
+  cpu?: number[];
+  memory?: number[];
+  disk?: number[];
+};
+
+function sanitizeCurrentMetrics(
+  currentMetrics?: SingleServerCurrentMetrics,
+  history?: SingleServerHistory
+): SingleServerCurrentMetrics | undefined {
+  if (!currentMetrics) {
+    return undefined;
+  }
+
+  const sanitized: SingleServerCurrentMetrics = {};
+  const percentageMetrics = ['cpu', 'memory', 'disk'] as const;
+
+  for (const [metric, value] of Object.entries(currentMetrics) as Array<
+    [keyof SingleServerCurrentMetrics, number | undefined]
+  >) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      continue;
+    }
+
+    if (
+      percentageMetrics.includes(metric as (typeof percentageMetrics)[number]) &&
+      value === 0 &&
+      !history?.[metric as keyof SingleServerHistory]?.length
+    ) {
+      continue;
+    }
+
+    sanitized[metric] = value;
+  }
+
+  return Object.keys(sanitized).length > 0 ? sanitized : undefined;
+}
+
 function buildAnomalyDecisionMetadata(
   metric: string,
   currentValue: number,
@@ -157,24 +205,16 @@ export const detectAnomalies = tool({
   }: {
     serverId?: string;
     metricType: 'cpu' | 'memory' | 'disk' | 'all';
-    currentMetrics?: {
-      cpu?: number;
-      memory?: number;
-      disk?: number;
-      network?: number;
-      load1?: number;
-      load5?: number;
-      cpuCores?: number;
-    };
-    history?: {
-      cpu?: number[];
-      memory?: number[];
-      disk?: number[];
-    };
+    currentMetrics?: SingleServerCurrentMetrics;
+    history?: SingleServerHistory;
   }) => {
     try {
       const cache = getDataCache();
       const fixedSlot = getCurrentSlotIndex();
+      const sanitizedCurrentMetrics = sanitizeCurrentMetrics(
+        currentMetrics,
+        history
+      );
 
       return await cache.getAnalysis(
         'anomaly',
@@ -182,7 +222,7 @@ export const detectAnomalies = tool({
           serverId: serverId || 'first',
           metricType,
           slotIndex: fixedSlot,
-          currentMetrics,
+          currentMetrics: sanitizedCurrentMetrics,
           history,
         },
         async () => {
@@ -200,8 +240,8 @@ export const detectAnomalies = tool({
             };
           }
 
-          // Merge currentMetrics with server snapshot if provided
-          const analyzedServer = { ...server, ...currentMetrics };
+          // Merge trusted injected metrics with the OTel snapshot.
+          const analyzedServer = { ...server, ...sanitizedCurrentMetrics };
           const externalHistory = history
             ? {
                 [analyzedServer.id]: history,
