@@ -68,4 +68,8 @@ export const GROUP_TARGET_HINTS = [
     pattern:
       /(?:로드\s*밸런서|로드밸런서|load\s*balancer|loadbalancer|lb)\s*(?:서버|그룹)?/i,
   },
+  {
+    target: 'backup',
+    pattern: /(?:백업|backup)\s*(?:서버|그룹)?/i,
+  },
 ] as const;

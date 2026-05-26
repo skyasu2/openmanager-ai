@@ -187,6 +187,19 @@ function filterSnapshotServers(
     }
   }
 
+  // ID substring 폴백: 'backup' 같이 server.type 매핑이 없는 경우 server.id 포함 여부로 필터
+  const substringMatches = servers.filter((server) =>
+    normalizedTargets.some((target) =>
+      server.id.toLowerCase().includes(target.toLowerCase())
+    )
+  );
+  if (substringMatches.length > 0) {
+    return {
+      servers: substringMatches,
+      targetLabel: `${substringMatches.length}대`,
+    };
+  }
+
   return { servers: [], targetLabel: '지정 서버 0대' };
 }
 
