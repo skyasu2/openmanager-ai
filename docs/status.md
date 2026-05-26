@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-26 | **현재 버전 스냅샷**: v8.12.48
+**상태 스냅샷 기준일**: 2026-05-26 | **현재 버전 스냅샷**: v8.12.49
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.49** (2026-05-26) — Tests: qa: record QA-20260526-0612 v8.12.48 17th evaluation; Tests: spec: P14 add failing tests for single-group aggregate metric query; Tests: qa: record v8.12.48 release smoke
 - **v8.12.48** (2026-05-26) — Code Refactoring: ai-engine: remove unused runtime code; Tests: qa: record p10 production backup recheck; Tests: qa: record P10 backup group filter fix verification (QA-20260526-0609)
 - **v8.12.47** (2026-05-26) — Bug Fixes: ai-engine: use English notation for technical units in agent instructions; Bug Fixes: ai-engine: P10 backup group server filter; Tests: spec: P10 backup group filter regression baseline
 - **v8.12.46** (2026-05-26) — Bug Fixes: ai-engine: preserve RCA routing over metric frames; Tests: qa: record v8.12.45 P13 verification
 - **v8.12.45** (2026-05-26) — Tests: qa: record host map and ai evaluation; Bug Fixes: ai-engine: preserve multi-metric server comparisons
-- **v8.12.44** (2026-05-26) — Code Refactoring: split line guard hotspots; Tests: spec: line guard regression baseline; Tests: deploy: avoid degraded single guard lint warning
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
