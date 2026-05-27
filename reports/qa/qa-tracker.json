@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-27T07:17:17.887Z"
+    "updatedAt": "2026-05-27T08:31:25.273Z"
   },
   "sequence": {
-    "nextRunNumber": 625
+    "nextRunNumber": 626
   },
   "summary": {
-    "totalRecordedRuns": 622,
-    "totalRuns": 491,
+    "totalRecordedRuns": 623,
+    "totalRuns": 492,
     "excludedRuns": 131,
-    "totalChecks": 4335,
-    "totalPassed": 4137,
+    "totalChecks": 4341,
+    "totalPassed": 4143,
     "totalFailed": 159,
-    "completionRate": 99.58,
-    "completedItems": 719,
-    "pendingItems": 3,
+    "completionRate": 100,
+    "completedItems": 722,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260527-0624",
-    "lastRecordedAt": "2026-05-27T07:17:17.887Z",
-    "latestRecordedRunId": "QA-20260527-0624",
-    "latestRecordedAt": "2026-05-27T07:17:17.887Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260527-0625",
+    "lastRecordedAt": "2026-05-27T08:31:25.273Z",
+    "latestRecordedRunId": "QA-20260527-0625",
+    "latestRecordedAt": "2026-05-27T08:31:25.273Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17665,25 +17665,25 @@
       "id": "q-new48-inverse-directional-metric-filter",
       "title": "Q-NEW48 CPU 낮고 메모리 높은 역상관 복합 조건 필터",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260527-0618",
       "firstSeenAt": "2026-05-27T00:02:33.378Z",
-      "lastSeenRunId": "QA-20260527-0624",
-      "lastSeenAt": "2026-05-27T07:17:17.887Z",
-      "seenCount": 2,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260527-0625",
+      "lastSeenAt": "2026-05-27T08:31:25.273Z",
+      "seenCount": 3,
+      "completedCount": 2,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Fresh Playwright MCP AI sidebar prompt 'CPU는 낮고 메모리는 높은 서버 찾아줘' returned generic fleet health summary via monitoring-server-health instead of applying CPU-low AND memory-high directional filter.",
-      "lastNote": "",
+      "lastEvidence": "v8.12.60 Playwright MCP AI sidebar prompt 'CPU는 낮고 메모리는 높은 서버 찾아줘' returned monitoring-metric-current with condition CPU <= 50% AND 메모리 >= 80%; current slot had no matching servers.",
+      "lastNote": "The no-match result is data-correct for 17:20 KST and confirms the regression from generic monitoring-server-health summary is closed.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-27T07:17:17.887Z"
+      "lastStatusChangeAt": "2026-05-27T08:31:25.273Z"
     },
     "q-new46a-generic-anomaly-scan-clarification-bypass": {
       "id": "q-new46a-generic-anomaly-scan-clarification-bypass",
@@ -17761,49 +17761,49 @@
       "id": "vercel-analytics-script-404",
       "title": "Vercel Web Analytics script loads without production console errors",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260527-0624",
       "firstSeenAt": "2026-05-27T07:17:17.887Z",
-      "lastSeenRunId": "QA-20260527-0624",
-      "lastSeenAt": "2026-05-27T07:17:17.887Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260527-0625",
+      "lastSeenAt": "2026-05-27T08:31:25.273Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Playwright MCP landing load: /_vercel/insights/script.js returned 404 and strict MIME console error after Analytics import reactivation.",
-      "lastNote": "",
+      "lastEvidence": "v8.12.60 Playwright MCP landing/network check showed no /_vercel/insights/script.js request and no 404/MIME failure after gating Web Analytics behind NEXT_PUBLIC_ENABLE_VERCEL_WEB_ANALYTICS.",
+      "lastNote": "Web Analytics collection remains opt-in until the Vercel project setting and env flag are intentionally enabled.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-27T07:17:17.887Z"
+      "lastStatusChangeAt": "2026-05-27T08:31:25.273Z"
     },
     "q-new34-p13-single-server-multi-metric-regression": {
       "id": "q-new34-p13-single-server-multi-metric-regression",
       "title": "P13/Q-NEW34 single-server CPU+memory query returns both requested metrics",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260527-0624",
       "firstSeenAt": "2026-05-27T07:17:17.887Z",
-      "lastSeenRunId": "QA-20260527-0624",
-      "lastSeenAt": "2026-05-27T07:17:17.887Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260527-0625",
+      "lastSeenAt": "2026-05-27T08:31:25.273Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Playwright MCP prompt 'api-was-dc1-01의 CPU와 메모리 상태를 같이 알려줘' returned CPU 63% only and omitted memory, while the server detail page showed memory 53%.",
+      "lastEvidence": "v8.12.60 Playwright MCP AI sidebar prompt 'api-was-dc1-01의 CPU와 메모리 상태를 같이 알려줘' returned api-was-dc1-01 CPU 72%, 메모리 56% via monitoring-metric-current.",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-27T07:17:17.887Z"
+      "lastStatusChangeAt": "2026-05-27T08:31:25.273Z"
     }
   },
   "runs": [
@@ -34589,6 +34589,119 @@
       "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260527-0625",
+      "recordedAt": "2026-05-27T08:31:25.273Z",
+      "recordedAtKst": "2026-05-27 17:31:25 KST",
+      "title": "Vercel Playwright MCP targeted recheck - v8.12.60 QA-0624 regressions",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260527-0625.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.60",
+        "backend": "Cloud Run AI Engine v8.12.60",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "12c58e7338b5fccf7529cca0ac5729ec16d297b0"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Production version API - PASS v8.12.60 commit 12c58e7338b5fccf7529cca0ac5729ec16d297b0",
+        "Vercel Analytics 404 regression - PASS no /_vercel/insights/script.js request and no 404 after opt-in gate",
+        "Vercel Speed Insights after Analytics gate - PASS /_vercel/speed-insights/script.js 200 and vitals 200",
+        "Dashboard AI sidebar P13/Q-NEW34 single-server CPU+memory - PASS api-was-dc1-01 CPU 72%, memory 56%",
+        "Dashboard AI sidebar Q-NEW48 CPU low + memory high - PASS monitoring-metric-current returned CPU <= 50% AND memory >= 80% condition",
+        "Dashboard AI sidebar Q-NEW48 current-slot no-match handling - PASS returned no matching servers for 17:20 KST instead of generic fleet health summary"
+      ],
+      "skippedSurfaces": [
+        "Broad route pack - skipped; this run only rechecked QA-20260527-0624 failed surfaces fixed in v8.12.60",
+        "Host Map/server detail tabs/P17/P14/P10/Q3 - skipped; already passed in QA-20260527-0624 and unchanged by this fix",
+        "Vision live image QA - skipped; no Vision routing/provider change"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The two AI routing regressions from QA-20260527-0624 were rechecked on Vercel production after v8.12.60 deploy and both now use deterministic monitoring-metric-current evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The Web Analytics 404/MIME regression is closed by opt-in gating; Speed Insights remained healthy.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The recheck used Playwright MCP against the production URL and only covered the failed modified surfaces requested by the user.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-27T17:16:55+09:00",
+          "summary": "Vercel usage checked after v8.12.60 production deploy and targeted Playwright MCP recheck; effective usage 17.9292 USD, billed 0.0000 USD, no billed overage observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.60 targeted regression recheck evidence",
+          "path": "reports/qa/evidence/2026/qa-20260527-0818/qa-20260527-v81260-targeted-regression-recheck.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Current production version API",
+          "url": "https://openmanager-ai.vercel.app/api/version",
+          "note": "Returned v8.12.60, releaseTag v8.12.60, pipeline 2555408779"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.12.60 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555408779",
+          "note": "status=success"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -34597,34 +34710,34 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 335,
-      "appropriateCount": 287,
+      "seenCount": 336,
+      "appropriateCount": 288,
       "partialCount": 48,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260527-0624",
-      "lastSeenAt": "2026-05-27T07:17:17.887Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "P17, anomaly scan wording, P14 and P10 passed, but Q-NEW48 directional filtering and P13 single-server multi-metric behavior regressed in the Playwright production UI.",
-      "lastNextAction": "Fix Q-NEW48 directional route preservation and P13 multi-metric metric selection, then rerun the two failed prompts on Vercel."
+      "lastRunId": "QA-20260527-0625",
+      "lastSeenAt": "2026-05-27T08:31:25.273Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The two AI routing regressions from QA-20260527-0624 were rechecked on Vercel production after v8.12.60 deploy and both now use deterministic monitoring-metric-current evidence.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 138,
-      "appropriateCount": 105,
+      "seenCount": 139,
+      "appropriateCount": 106,
       "partialCount": 33,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260527-0624",
-      "lastSeenAt": "2026-05-27T07:17:17.887Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Speed Insights posted vitals successfully, but Web Analytics script returned 404 and produced production console errors after Analytics reactivation.",
-      "lastNextAction": "Enable Web Analytics for the Vercel project or gate/remove Analytics import until /_vercel/insights/script.js is served."
+      "lastRunId": "QA-20260527-0625",
+      "lastSeenAt": "2026-05-27T08:31:25.273Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The Web Analytics 404/MIME regression is closed by opt-in gating; Speed Insights remained healthy.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
@@ -34665,16 +34778,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 260,
-      "appropriateCount": 233,
+      "seenCount": 261,
+      "appropriateCount": 234,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260527-0624",
-      "lastSeenAt": "2026-05-27T07:17:17.887Z",
+      "lastRunId": "QA-20260527-0625",
+      "lastSeenAt": "2026-05-27T08:31:25.273Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The requested modified surfaces were exercised through Playwright MCP using real Vercel production navigation and AI sidebar form submission.",
+      "lastRationale": "The recheck used Playwright MCP against the production URL and only covered the failed modified surfaces requested by the user.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

@@ -1,0 +1,38 @@
+Target: https://openmanager-ai.vercel.app
+Run type: Vercel production targeted Playwright MCP recheck
+Date: 2026-05-27 KST
+Release: v8.12.60
+Commit: 12c58e7338b5fccf7529cca0ac5729ec16d297b0
+GitLab pipeline: 2555408779 success
+
+Scope
+- Recheck only the QA-20260527-0624 failed surfaces fixed in v8.12.60:
+  1. Vercel Analytics script 404/MIME error
+  2. Q-NEW48 CPU-low + memory-high directional filter
+  3. P13/Q-NEW34 single-server CPU + memory multi-metric answer
+
+Checks
+- /api/version returned version 8.12.60, releaseTag v8.12.60, commit 12c58e7338b5fccf7529cca0ac5729ec16d297b0.
+- Playwright MCP landing load network requests included:
+  - GET /_vercel/speed-insights/script.js => 200
+  - no /_vercel/insights/script.js request
+  - no /_vercel/insights/script.js 404/MIME failure
+- Dashboard AI sidebar prompt: "api-was-dc1-01의 CPU와 메모리 상태를 같이 알려줘"
+  - Response used tool monitoring-metric-current.
+  - Response included "api-was-dc1-01: CPU 72%, 메모리 56% (상태 online)".
+  - PASS: both requested metrics were preserved.
+- Dashboard AI sidebar prompt: "CPU는 낮고 메모리는 높은 서버 찾아줘"
+  - Response used tool monitoring-metric-current.
+  - Response included condition "CPU <= 50% AND 메모리 >= 80%".
+  - Response returned "현재 조건을 동시에 만족하는 서버는 없습니다." for slot 17:20 KST.
+  - PASS: the directional compound filter executed; the no-match result is data-correct for the current slot and is not a generic fleet health summary.
+
+Usage
+- npm run check:usage:vercel PASS.
+- Current billing period effective usage: 17.9292 USD.
+- Billed usage: 0.0000 USD.
+- chargeCount: 15834.
+
+Operator note
+- Vercel Web Analytics collection is now opt-in behind NEXT_PUBLIC_ENABLE_VERCEL_WEB_ANALYTICS.
+- This closes the production 404/MIME regression by not requesting the script until the Vercel project Web Analytics setting and env opt-in are explicitly enabled.
