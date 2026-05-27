@@ -122,6 +122,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "env": {
+    "DISABLE_BACKGROUND_JOBS": "true",
+    "DISABLE_CRON_JOBS": "true",
     "VERCEL_TIER": "pro"
   },
   "build": {
