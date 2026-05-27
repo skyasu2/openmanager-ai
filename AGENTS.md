@@ -102,6 +102,18 @@
   - 상태 확인: `npm run qa:status`
   - 증거 무결성 감사: `npm run qa:evidence:audit` (고아 파일·누락 참조·부채 런 탐지)
 
+#### AI 어시스턴트 평가 기록 규약
+- **SSOT 파일**: Claude memory `ai-assistant-evaluation.md` (상단 스코어카드 테이블)
+- **포트폴리오 기준선: 90/100** — 이 이상이면 치명적이거나 간단한 항목 외 수정 보류
+- Codex가 AI 어시스턴트를 직접 평가한 경우 반드시 스코어카드 테이블의 `Codex` 행을 갱신한다
+  - 갱신 항목: 차수, 버전, 점수(N/100), 날짜, 비고(수정 확인·신규 약점 한 줄 요약)
+  - 위치: `~/.claude/projects/-mnt-d-dev-openmanager-ai/memory/ai-assistant-evaluation.md`
+- 잔여 약점 판정 기준
+  - 치명적(응답 불가·데이터 오류): 즉시 수정
+  - 간단(패턴 1줄 추가): 즉시 수정
+  - 그 외: 90/100 이상이면 보류(`🔕 wont-fix` 또는 `🔶 검토 중` 표기)
+- QA 런 기록은 별도로 `npm run qa:record -- --input <json>` 으로 누적한다
+
 ### 2.6 저장소/배포 토폴로지 (Codex)
 - **정본 개발 저장소는 `gitlab` remote** 입니다. 전체 이력/테스트/문서/QA 자산을 유지합니다.
 - **Vercel Git Integration은 해제되어 있으며**, Frontend production 배포 권한은 GitLab CI semver tag `deploy` job이 보유합니다.
