@@ -1,0 +1,135 @@
+{
+  "runTitle": "AI 어시스턴트 신규 질문 평가 Q-NEW52~Q-NEW57 + P15 재확인 (v8.12.56)",
+  "owner": "claude",
+  "source": "chrome-devtools-mcp",
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "경고 상태 서버 목록 질의 (Q-NEW52)",
+    "db 그룹 비공식 부하 순위 질의 (Q-NEW53)",
+    "api vs web CPU 크로스 그룹 비교 (Q-NEW54) — P17 신규 후보",
+    "역방향 조치불필요 서버 목록 (Q-NEW55)",
+    "cache-redis-dc1-01 Redis 메모리 급등 RCA (Q-NEW56) — 신규 강점",
+    "이상 징후 탐지 P15 fix 재확인 (Q-NEW57)"
+  ],
+  "skippedSurfaces": [
+    "Reporter 전체 보고서 — 이번 세션 범위 외",
+    "Vision 탭 — 미변경",
+    "Advisor 탭 — 미변경"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.12.56-cloud-run-ai-engine-00559-62w",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "304c72c4d"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 4,
+    "failed": 1,
+    "partial": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Q-NEW52 경고 서버 목록",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "chrome-devtools-mcp 스톱워치",
+      "latencyMs": 800,
+      "note": "응답 빠름"
+    },
+    {
+      "surface": "Q-NEW53 db 그룹 부하 순위",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-metric-ranking",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "chrome-devtools-mcp 스톱워치",
+      "latencyMs": 700,
+      "note": "응답 빠름"
+    },
+    {
+      "surface": "Q-NEW56 Redis RCA",
+      "agent": "Analyst Agent",
+      "provider": "cloud-run-ai",
+      "model": "analyst",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "chrome-devtools-mcp 스톱워치",
+      "latencyMs": 8000,
+      "note": "응답 느림 (Analyst — wont-fix known)"
+    },
+    {
+      "surface": "Q-NEW57 이상 징후 탐지 (P15 재확인)",
+      "agent": "Analyst Agent",
+      "provider": "cloud-run-ai",
+      "model": "analyst",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "chrome-devtools-mcp 스톱워치",
+      "latencyMs": 7000,
+      "note": "응답 느림 (Analyst agent 정상 라우팅 확인)"
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "신규 질문 6개 평가. PASS 4건(Q-NEW52 경고서버, Q-NEW53 db부하, Q-NEW56 Redis RCA신규강점, Q-NEW57 P15 fix재확인). PARTIAL 1건(Q-NEW55 역방향안전서버). FAIL 1건 P17 신규(Q-NEW54 api-vs-web 크로스그룹비교 미처리). Redis 도메인특화 RCA 신규 강점 확인. P15 fix v8.12.52/56 Analyst라우팅 정상 재확인.",
+      "nextAction": "P17: api-was vs web-nginx 타입 간 크로스 그룹 비교 경로 추가. 두 그룹 데이터 동시 제공 필요."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-00-landing.png",
+      "label": "랜딩 v8.12.56 확인"
+    },
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-01-dashboard.png",
+      "label": "대시보드 슬롯 72 (12:00 KST)"
+    },
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q52-warning-status.png",
+      "label": "Q-NEW52 경고 서버 목록 PASS"
+    },
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q53-db-hardest.png",
+      "label": "Q-NEW53 db 그룹 부하 순위 PASS"
+    },
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q54-api-vs-web-cpu.png",
+      "label": "Q-NEW54 api-vs-web 크로스 비교 FAIL P17 신규"
+    },
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q55-safe-servers.png",
+      "label": "Q-NEW55 역방향 안전 서버 목록 PARTIAL"
+    },
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q56-redis-mem-rca.png",
+      "label": "Q-NEW56 Redis 메모리 RCA 신규 강점 PASS"
+    },
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q57-anomaly-p15-fix.png",
+      "label": "Q-NEW57 P15 fix Analyst 라우팅 재확인 PASS"
+    }
+  ],
+  "notes": "v8.12.56 신규 질문 6개 + P15 재확인. 신규 약점 P17(api-vs-web 크로스그룹비교). 신규 강점 Q-NEW56 Redis 도메인특화 RCA. P15 Analyst 라우팅 fix 재확인. 데이터슬롯 72/143 (12:00 KST). Chrome DevTools MCP 사용."
+}
