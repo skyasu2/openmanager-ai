@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-27 | **현재 버전 스냅샷**: v8.12.57
+**상태 스냅샷 기준일**: 2026-05-27 | **현재 버전 스냅샷**: v8.12.58
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.58** (2026-05-27) — Bug Fixes: ai: route anomaly scan wording to analyst
 - **v8.12.57** (2026-05-27) — Tests: qa: add qa-0620-input.json for QA-20260527-0620; Tests: spec: P17 add failing tests — "보다" 조사 포함 크로스 그룹 비교 group-compare 미처리; Tests: qa: record QA-20260527-0620 신규 질문 평가 P17 발견 + P15 재확인
 - **v8.12.56** (2026-05-27) — Bug Fixes: ai: skip clarification for anomaly scan prompts; Tests: qa: record QA-0618 Q-NEW48 inverse filter recheck; Tests: qa: record QA-0617 Q-NEW51 resource pressure recheck
 - **v8.12.55** (2026-05-27) — Bug Fixes: ai: align evidence trace capability with provider
 - **v8.12.54** (2026-05-27) — Bug Fixes: ai: route resource pressure ranking to current metrics; Tests: qa: record QA-0616 v8.12.53 analyst recheck
-- **v8.12.53** (2026-05-27) — Bug Fixes: ai: prevent false zero metrics in analyst context
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
