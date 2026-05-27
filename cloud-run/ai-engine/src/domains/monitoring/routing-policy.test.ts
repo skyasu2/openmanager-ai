@@ -351,6 +351,15 @@ describe('getIntentCategory', () => {
     ).not.toBe('math');
   });
 
+  it('P19a: 증가율/성장률은 수치 계산이 아닌 트렌드/예측 의도로 분류', () => {
+    // 운영 컨텍스트의 "증가율"은 math가 아님 — metric_trend 경로로 흘러가야 함
+    expect(
+      getIntentCategory('네트워크 트래픽이 가장 많이 증가한 서버 3개')
+    ).not.toBe('math');
+    expect(getIntentCategory('CPU 증가율이 높은 서버')).not.toBe('math');
+    expect(getIntentCategory('메모리 상승률 상위 서버')).not.toBe('math');
+  });
+
   it('should classify RCA queries', () => {
     expect(getIntentCategory('장애 원인 분석')).toBe('rca');
     expect(getIntentCategory('타임라인 구성')).toBe('rca');

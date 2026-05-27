@@ -2274,6 +2274,79 @@ describe('current metrics domain evidence providers', () => {
       );
       expect(parsed?.intent).not.toBe('metric_trend');
     });
+
+    // P19a: 증가율/상승률/많이 증가한 표현이 metric_trend로 라우팅 (math intent 우회 방지)
+    it.each([
+      ['네트워크 트래픽이 가장 많이 증가한 서버 3개', 'network'],
+      ['CPU 증가율이 가장 높은 서버 알려줘', 'cpu'],
+      ['메모리 상승률 상위 서버 보여줘', 'memory'],
+      ['디스크 사용량이 많이 증가한 서버는?', 'disk'],
+    ])('P19a "%s" → metric_trend (metric=%s)', (query, expectedMetric) => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest(query, { servers: trendServers })
+      );
+      expect(parsed?.intent).toBe('metric_trend');
+      if (parsed?.intent === 'metric_trend') {
+        const metrics = parsed.metric ? [parsed.metric] : (parsed.metrics ?? []);
+        expect(metrics).toContain(expectedMetric);
+      }
+    });
+  });
+
+  describe('P18 near-threshold: "둘 다 임계치 근처" 표현이 AND 임계 필터로 라우팅', () => {
+    const nearThresholdServers = [
+      // CPU·디스크 모두 임계 근처
+      { id: 'db-mysql-dc1-primary', type: 'database', status: 'warning', cpu: 64, memory: 50, disk: 63 },
+      // CPU만 높고 디스크는 낮음 — 제외되어야 함
+      { id: 'lb-haproxy-dc1-01', type: 'loadbalancer', status: 'warning', cpu: 75, memory: 40, disk: 26 },
+      // 디스크만 높고 CPU는 낮음 — 제외되어야 함
+      { id: 'db-mysql-dc1-backup', type: 'database', status: 'online', cpu: 18, memory: 34, disk: 71 },
+      // 둘 다 낮음 — 제외
+      { id: 'web-nginx-dc1-03', type: 'web', status: 'online', cpu: 17, memory: 31, disk: 28 },
+    ];
+
+    it('"CPU와 디스크 둘 다 임계치 근처인 서버" → multi-metric-near-threshold AND filter', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('CPU와 디스크 둘 다 임계치 근처인 서버 알려줘', {
+          servers: nearThresholdServers,
+        })
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'multi-metric-near-threshold',
+        metrics: expect.arrayContaining(['cpu', 'disk']),
+        filterOperator: 'AND',
+      });
+      // 임계치 근처는 inferredThreshold(>= 60%)로 처리
+      expect((parsed as { threshold?: number } | null)?.threshold).toBeGreaterThanOrEqual(50);
+    });
+
+    it('evidence 응답은 양쪽 메트릭이 모두 임계 근처인 서버만 노출', async () => {
+      const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+        createEvidenceRequest('CPU와 디스크 둘 다 임계치 근처인 서버 알려줘', {
+          timeLabel: '22:50',
+          servers: nearThresholdServers,
+        })
+      );
+      expect(evidence?.fallback).toContain('db-mysql-dc1-primary');
+      // 한쪽만 위반한 서버는 제외되어야 함
+      expect(evidence?.fallback).not.toContain('lb-haproxy-dc1-01');
+      expect(evidence?.fallback).not.toContain('db-mysql-dc1-backup');
+      expect(evidence?.fallback).not.toContain('web-nginx-dc1-03');
+    });
+
+    it('"곧 위험" 표현도 동일 경로로 라우팅', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('CPU와 메모리 둘 다 곧 위험해질 서버 알려줘', {
+          servers: nearThresholdServers,
+        })
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'multi-metric-near-threshold',
+        filterOperator: 'AND',
+      });
+    });
   });
 
   describe('group-compare: 두 그룹 비교 표현이 group-compare 경로로 라우팅 (P8)', () => {
