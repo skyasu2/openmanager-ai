@@ -1,0 +1,63 @@
+- generic [ref=e1]:
+  - alert [ref=e2]
+  - main "대시보드" [ref=e20]:
+    - complementary [ref=e21]:
+      - navigation "대시보드 내비게이션" [ref=e22]:
+        - link "개요" [ref=e23] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e25]
+          - generic: 개요
+        - link "서버" [ref=e31] [cursor=pointer]:
+          - /url: /dashboard/servers
+          - img [ref=e33]
+          - generic: 서버
+        - link "알림" [ref=e37] [cursor=pointer]:
+          - /url: /dashboard/alerts
+          - img [ref=e39]
+          - generic: 알림
+        - link "로그" [ref=e43] [cursor=pointer]:
+          - /url: /dashboard/logs
+          - img [ref=e45]
+          - generic: 로그
+        - link "토폴로지" [ref=e51] [cursor=pointer]:
+          - /url: /dashboard/topology
+          - img [ref=e53]
+          - generic: 토폴로지
+    - generic [ref=e59]:
+      - generic [ref=e62]:
+        - link "OpenManager AI" [ref=e64] [cursor=pointer]:
+          - /url: /
+          - heading "OpenManager AI" [level=1] [ref=e68]
+        - generic [ref=e71]:
+          - img [ref=e72]
+          - generic [ref=e75]: 2026.05.27 13:23:51
+          - generic [ref=e76]: (수)
+        - generic [ref=e77]:
+          - button "AI 어시스턴트 닫기" [pressed] [ref=e530] [cursor=pointer]:
+            - generic [ref=e82]
+          - button "GU 게스트 사용자 게스트 로그인" [ref=e90] [cursor=pointer]:
+            - generic [ref=e92]: GU
+            - generic [ref=e94]
+            - img [ref=e102]
+      - main [ref=e105]:
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - generic [ref=e108]
+            - generic [ref=e124]
+            - generic [ref=e160]
+          - generic [ref=e190]:
+            - generic [ref=e191]
+            - generic [ref=e218]
+          - generic [ref=e236]:
+            - generic [ref=e240]
+            - complementary "인시던트 피드" [ref=e508]
+      - dialog "AI 어시스턴트" [ref=e635]:
+        - separator "사이드바 너비 조절" [ref=e636]:
+          - img [ref=e638]
+        - generic [ref=e645]:
+          - generic [ref=e646]:
+            - generic [ref=e647]
+            - tablist "AI 기능" [ref=e681]
+          - generic [ref=e698]:
+            - log "AI 대화 메시지" [ref=e761]
+            - generic [ref=e743]
