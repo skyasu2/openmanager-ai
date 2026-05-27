@@ -1,0 +1,101 @@
+{
+  "runTitle": "Chrome DevTools MCP 18차 신규 질문 평가 — v8.12.65 P17/P18/P19a/stable ranking/group compare",
+  "owner": "claude",
+  "source": "chrome-devtools-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Q-NEW58: api-was vs web-nginx 크로스 그룹 CPU 비교 (P17 보다 조사) - PASS: web 37.7% vs api 54%, 16.3%p 정확",
+    "Q-NEW59: CPU+MEM 둘 다 임계치 근처 (P18 near-threshold AND) - PASS: CPU>=55% AND MEM>=55% inferred, api-was-dc1-01 정확",
+    "Q-NEW60: CPU 증가율이 가장 높은 서버 (P19a ranking+증가율) - PARTIAL: P20 신규, peak 오라우팅",
+    "Q-NEW61: 가장 안정적인 서버 5대 (stable ascending ranking) - PASS: CPU 하위 5대 오름차순",
+    "Q-NEW62: 비정상 동작 감지된 서버 (anomaly scan Analyst routing) - PARTIAL: Analyst 라우팅 성공, 응답 느림",
+    "Q-NEW63: cache vs db 그룹 메모리 비교 (group compare summary) - PASS: cache 47% vs DB 48.7% 정확",
+    "Q-NEW64: 최근 메모리 많이 증가한 서버 (P19a 많이 증가한) - PASS: monitoring-metric-trend 라우팅 성공"
+  ],
+  "skippedSurfaces": [
+    "Reporter, Vision, Advisor - 이번 평가 범위 외",
+    "P20 수정 - 신규 발견, 이번 배포에 미포함",
+    "session context (P5) - wont-fix 유지"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-v8.12.65",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "759f1936d"
+  },
+  "checks": {
+    "total": 7,
+    "passed": 5,
+    "failed": 0,
+    "partial": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Q-NEW58 P17 크로스 그룹 비교",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Chrome DevTools MCP UI transcript",
+      "latencyMs": 1000,
+      "note": "UI badge: 응답 빠름"
+    },
+    {
+      "surface": "Q-NEW62 비정상 동작 감지 Analyst",
+      "agent": "Analyst Agent",
+      "provider": "streaming-ai",
+      "model": "streaming-ai",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Chrome DevTools MCP UI transcript",
+      "latencyMs": 7000,
+      "note": "UI badge: 응답 느림 (08:03:06 → 08:03:13)"
+    }
+  ],
+  "summary": "5 PASS, 2 PARTIAL, 0 FAIL / 7 total. P17(크로스그룹 보다 비교), P18(near-threshold AND), stable ranking(오름차순), group compare(cache vs db), P19a(많이 증가한)를 확인했습니다. 신규 약점 P20: ranking+증가율 조합(CPU 증가율이 가장 높은)이 metric_trend 대신 peak로 오라우팅. Analyst 응답 느림 지속.",
+  "notes": "slot 48/143 (08:00 KST). OTel 교차 검증: api-was-dc1-01 CPU 82%/MEM 70%, cache avg 47%, DB avg 48.7% 모두 일치.",
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "7개 신규 질문 평가에서 5 PASS, 2 PARTIAL. P17/P18/stable ranking/group compare/P19a(많이 증가한) 수정 확인. 신규 P20(ranking+증가율 조합 peak 오라우팅) 발견.",
+      "nextAction": "P20 수정 — METRIC_TREND_PATTERN이 ranking-trend 분기에서 증가율+ranking 조합을 처리하도록 수정 필요"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "프로덕션 v8.12.65 확인. Cloud Run AI Engine 정상. Vercel 사용량 정상(17.93 USD, billed 0).",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Chrome DevTools MCP를 통해 7개 신규 표현 패턴 검증. OTel 교차 검증으로 수치 정합성 확인.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "collection": "checked",
+      "result": "normal",
+      "summary": "18차 신규 질문 평가(Chrome DevTools MCP) 후 Vercel 사용량 확인. effective 17.9292 USD, billed 0.0000 USD, 초과 없음."
+    }
+  ]
+}

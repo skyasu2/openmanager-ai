@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-27T22:43:05.057Z"
+    "updatedAt": "2026-05-27T23:33:40.324Z"
   },
   "sequence": {
-    "nextRunNumber": 628
+    "nextRunNumber": 629
   },
   "summary": {
-    "totalRecordedRuns": 625,
-    "totalRuns": 494,
+    "totalRecordedRuns": 626,
+    "totalRuns": 495,
     "excludedRuns": 131,
-    "totalChecks": 4353,
-    "totalPassed": 4155,
+    "totalChecks": 4360,
+    "totalPassed": 4160,
     "totalFailed": 159,
     "completionRate": 100,
     "completedItems": 725,
@@ -21,10 +21,10 @@
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260528-0627",
-    "lastRecordedAt": "2026-05-27T22:43:05.057Z",
-    "latestRecordedRunId": "QA-20260528-0627",
-    "latestRecordedAt": "2026-05-27T22:43:05.057Z"
+    "lastRunId": "QA-20260528-0628",
+    "lastRecordedAt": "2026-05-27T23:33:40.324Z",
+    "latestRecordedRunId": "QA-20260528-0628",
+    "latestRecordedAt": "2026-05-27T23:33:40.324Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -35040,6 +35040,118 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260528-0628",
+      "recordedAt": "2026-05-27T23:33:40.324Z",
+      "recordedAtKst": "2026-05-28 08:33:40 KST",
+      "title": "Chrome DevTools MCP 18차 신규 질문 평가 — v8.12.65 P17/P18/P19a/stable ranking/group compare",
+      "owner": "claude",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260528-0628.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-v8.12.65",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "759f1936d"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Q-NEW58: api-was vs web-nginx 크로스 그룹 CPU 비교 (P17 보다 조사) - PASS: web 37.7% vs api 54%, 16.3%p 정확",
+        "Q-NEW59: CPU+MEM 둘 다 임계치 근처 (P18 near-threshold AND) - PASS: CPU>=55% AND MEM>=55% inferred, api-was-dc1-01 정확",
+        "Q-NEW60: CPU 증가율이 가장 높은 서버 (P19a ranking+증가율) - PARTIAL: P20 신규, peak 오라우팅",
+        "Q-NEW61: 가장 안정적인 서버 5대 (stable ascending ranking) - PASS: CPU 하위 5대 오름차순",
+        "Q-NEW62: 비정상 동작 감지된 서버 (anomaly scan Analyst routing) - PARTIAL: Analyst 라우팅 성공, 응답 느림",
+        "Q-NEW63: cache vs db 그룹 메모리 비교 (group compare summary) - PASS: cache 47% vs DB 48.7% 정확",
+        "Q-NEW64: 최근 메모리 많이 증가한 서버 (P19a 많이 증가한) - PASS: monitoring-metric-trend 라우팅 성공"
+      ],
+      "skippedSurfaces": [
+        "Reporter, Vision, Advisor - 이번 평가 범위 외",
+        "P20 수정 - 신규 발견, 이번 배포에 미포함",
+        "session context (P5) - wont-fix 유지"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Q-NEW58 P17 크로스 그룹 비교",
+          "agent": "Metrics Query Agent",
+          "provider": "cloud-run-ai",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Chrome DevTools MCP UI transcript",
+          "latencyMs": 1000
+        },
+        {
+          "surface": "Q-NEW62 비정상 동작 감지 Analyst",
+          "agent": "Analyst Agent",
+          "provider": "streaming-ai",
+          "model": "streaming-ai",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Chrome DevTools MCP UI transcript",
+          "latencyMs": 7000
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "7개 신규 질문 평가에서 5 PASS, 2 PARTIAL. P17/P18/stable ranking/group compare/P19a(많이 증가한) 수정 확인. 신규 P20(ranking+증가율 조합 peak 오라우팅) 발견.",
+          "nextAction": "P20 수정 — METRIC_TREND_PATTERN이 ranking-trend 분기에서 증가율+ranking 조합을 처리하도록 수정 필요"
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "프로덕션 v8.12.65 확인. Cloud Run AI Engine 정상. Vercel 사용량 정상(17.93 USD, billed 0).",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Chrome DevTools MCP를 통해 7개 신규 표현 패턴 검증. OTel 교차 검증으로 수치 정합성 확인.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "18차 신규 질문 평가(Chrome DevTools MCP) 후 Vercel 사용량 확인. effective 17.9292 USD, billed 0.0000 USD, 초과 없음.",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -35048,17 +35160,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 338,
-      "appropriateCount": 290,
+      "seenCount": 339,
+      "appropriateCount": 291,
       "partialCount": 48,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260528-0627",
-      "lastSeenAt": "2026-05-27T22:43:05.057Z",
+      "lastRunId": "QA-20260528-0628",
+      "lastSeenAt": "2026-05-27T23:33:40.324Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The two changed AI routing/evidence surfaces were verified on Vercel production in clean new-chat sessions. P19c delta ranking and P21 empty trend-threshold evidence both returned deterministic monitoring-metric-trend answers.",
-      "lastNextAction": ""
+      "lastRationale": "7개 신규 질문 평가에서 5 PASS, 2 PARTIAL. P17/P18/stable ranking/group compare/P19a(많이 증가한) 수정 확인. 신규 P20(ranking+증가율 조합 peak 오라우팅) 발견.",
+      "lastNextAction": "P20 수정 — METRIC_TREND_PATTERN이 ranking-trend 분기에서 증가율+ranking 조합을 처리하도록 수정 필요"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -35099,16 +35211,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 227,
-      "appropriateCount": 206,
+      "seenCount": 228,
+      "appropriateCount": 207,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260528-0627",
-      "lastSeenAt": "2026-05-27T22:43:05.057Z",
+      "lastRunId": "QA-20260528-0628",
+      "lastSeenAt": "2026-05-27T23:33:40.324Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab release pipeline succeeded, production version API and Cloud Run health both report v8.12.65, and free-tier guardrails remain intact.",
+      "lastRationale": "프로덕션 v8.12.65 확인. Cloud Run AI Engine 정상. Vercel 사용량 정상(17.93 USD, billed 0).",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -35116,16 +35228,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 263,
-      "appropriateCount": 236,
+      "seenCount": 264,
+      "appropriateCount": 237,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260528-0627",
-      "lastSeenAt": "2026-05-27T22:43:05.057Z",
+      "lastRunId": "QA-20260528-0628",
+      "lastSeenAt": "2026-05-27T23:33:40.324Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Regression coverage includes a new deterministic unit test plus production Playwright MCP transcript evidence for both changed behavior paths.",
+      "lastRationale": "Chrome DevTools MCP를 통해 7개 신규 표현 패턴 검증. OTel 교차 검증으로 수치 정합성 확인.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
