@@ -1,0 +1,53 @@
+Vercel Playwright MCP targeted QA evidence - v8.12.65 trend filters
+
+Target:
+- https://openmanager-ai.vercel.app/dashboard
+- Frontend/API version: 8.12.65
+- Cloud Run AI Engine version: 8.12.65
+- GitLab pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557378770
+- Commit: aae7956166450105df46539a8a4a22a42a0e8748
+
+P21 clean new-chat recheck
+Question:
+디스크 70% 이상이면서 24h 증가한 서버 알려줘
+
+Observed answer:
+📈 전체 서버 디스크 추이
+• 대상: 18대 · 데이터 슬롯 07:40 KST
+• 조건: 디스크 >= 70%
+• 추세 조건: 24h 평균 대비 상승
+• 결과: 현재 조건과 추세 조건을 동시에 만족하는 서버는 없습니다.
+
+Evidence footer:
+Streaming AI · 모니터링 도메인 근거
+도구: monitoring-metric-trend
+
+Verdict:
+PASS. The trend+threshold query stayed on monitoring-metric-trend even when the filtered result was empty. It did not fall back to the realtime "DISK 사용률 70% 이상 서버" response.
+
+P19c clean new-chat recheck
+Question:
+메모리 상승률 가장 높은 서버 5개
+
+Observed answer:
+📈 전체 서버 메모리 추이
+• 대상: 3대 · 데이터 슬롯 07:40 KST
+• 추세 조건: 24h 평균 대비 상승
+• 현재 평균 메모리: 59.2% · 24h 평균 53.8% · 전체 상승
+• 추세 분포: 상승 3대, 안정 0대, 하락 0대 📌 메모리 증가폭 상위 5대
+cache-redis-dc1-03: 현재 메모리 63.6% (24h 평균 56.1%, 상승 +7.5%p)
+api-was-dc1-01: 현재 메모리 66% (24h 평균 60.7%, 상승 +5.3%p)
+web-nginx-dc1-01: 현재 메모리 48% (24h 평균 44.6%, 상승 +3.4%p)
+
+Evidence footer:
+Streaming AI · 모니터링 도메인 근거
+도구: monitoring-metric-trend
+
+Verdict:
+PASS. The ranking is ordered by delta/increase amount, not current memory value.
+
+Supporting checks:
+- /api/version returned version=8.12.65, releaseTag=v8.12.65, pipelineUrl=https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557378770
+- Cloud Run /health returned status=ok, version=8.12.65, routesReady=true
+- Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00571-jzx
+- Vercel usage checked: effective=17.9292 USD, billed=0.0000 USD

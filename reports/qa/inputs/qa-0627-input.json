@@ -1,0 +1,153 @@
+{
+  "runTitle": "Vercel Playwright MCP targeted recheck - v8.12.65 P19c/P21 trend filters",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "GitLab v8.12.65 release pipeline - PASS status=success",
+    "Production version API - PASS v8.12.65 commit aae7956166450105df46539a8a4a22a42a0e8748",
+    "Cloud Run AI Engine health - PASS version 8.12.65 routesReady=true",
+    "Cloud Run free-tier guardrails - PASS maxScale=1 concurrency=16 timeout=300 memory=512Mi cpu-throttling=true",
+    "P21 trend + threshold empty result - PASS disk >=70% and 24h increase returned monitoring-metric-trend with deterministic 0-server answer",
+    "P19c trend delta ranking - PASS memory increase-rate top query returned memory increase amount ordering through monitoring-metric-trend",
+    "Vercel usage - PASS effective=17.9292 USD billed=0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "Standard five conversational AI QA - skipped to avoid broad live LLM spend; this run targets only v8.12.64/v8.12.65 changed P19c/P21 surfaces",
+    "Reporter, Vision, Advisor, and modal/detail packs - unchanged in this patch",
+    "P22 volatility and P23 group stability backlog - explicitly outside current acceptance bar"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2557378770-v8.12.65-cloud-run-ai-engine-00571-jzx",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "aae7956166450105df46539a8a4a22a42a0e8748"
+  },
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P21 disk >=70 and 24h increase empty-result trend evidence",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-metric-trend",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI transcript; same-second response timestamp",
+      "latencyMs": 1000,
+      "note": "UI badge: 응답 빠름"
+    },
+    {
+      "surface": "P19c memory increase-rate delta ranking",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-metric-trend",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI transcript; same-second response timestamp",
+      "latencyMs": 1000,
+      "note": "UI badge: 응답 빠름"
+    }
+  ],
+  "plannerShadowObservations": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T07:37:56+09:00",
+      "summary": "Vercel usage checked after v8.12.65 production deploy and targeted P19c/P21 Playwright MCP recheck; effective usage 17.9292 USD, billed 0.0000 USD, no billed overage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.65 P19c/P21 Playwright MCP transcript evidence",
+      "path": "reports/qa/evidence/2026/qa-20260528-v81265-trend-filters/qa-20260528-v81265-p19-p21-playwright-transcript.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p19c-trend-delta-ranking",
+      "title": "Trend ranking queries sort by increase delta instead of current value",
+      "priority": "P1",
+      "isBlocking": true,
+      "evidence": "v8.12.65 production query '메모리 상승률 가장 높은 서버 5개' returned monitoring-metric-trend and ordered cache-redis-dc1-03 +7.5%p, api-was-dc1-01 +5.3%p, web-nginx-dc1-01 +3.4%p.",
+      "status": "completed"
+    },
+    {
+      "id": "p21-trend-threshold-empty-deterministic",
+      "title": "Trend plus threshold filters return deterministic trend evidence even when no servers match",
+      "priority": "P1",
+      "isBlocking": true,
+      "evidence": "v8.12.65 production query '디스크 70% 이상이면서 24h 증가한 서버 알려줘' returned monitoring-metric-trend with condition disk >=70%, 24h increase, and deterministic no-match result.",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The two changed AI routing/evidence surfaces were verified on Vercel production in clean new-chat sessions. P19c delta ranking and P21 empty trend-threshold evidence both returned deterministic monitoring-metric-trend answers.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab release pipeline succeeded, production version API and Cloud Run health both report v8.12.65, and free-tier guardrails remain intact.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Regression coverage includes a new deterministic unit test plus production Playwright MCP transcript evidence for both changed behavior paths.",
+      "nextAction": ""
+    }
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.12.65 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557378770",
+      "note": "status=success"
+    },
+    {
+      "type": "general",
+      "label": "Current production version API",
+      "url": "https://openmanager-ai.vercel.app/api/version",
+      "note": "Returned v8.12.65 releaseTag v8.12.65"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "Returned status=ok and version 8.12.65"
+    }
+  ],
+  "notes": [
+    "Local gates before release: targeted current-metrics evidence test PASS (74 tests), ai-engine type-check PASS, ai-engine test PASS (145 files / 1587 tests), root test:contract PASS (24 tests), npm run lint PASS, git diff --check PASS.",
+    "v8.12.64 production initially reproduced P21 fallback to realtime threshold answer when the filtered trend result was empty. v8.12.65 fixes that by keeping empty trend-filter results deterministic.",
+    "Vercel usage after production QA: effective=17.9292 USD, billed=0.0000 USD.",
+    "Cloud Run free-tier guardrails after deploy: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, latestReadyRevision=ai-engine-00571-jzx."
+  ]
+}
