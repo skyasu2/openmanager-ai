@@ -32,6 +32,7 @@ describe('routing-patterns', () => {
       '부하 가장 낮은 서버',
       '최저 cpu 서버',
       '가장 여유 있는 서버',
+      '가장 안정적인 서버',
       '가장 효율적인 서버',
       'lowest load server',
       'least loaded',
