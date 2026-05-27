@@ -614,7 +614,9 @@ function buildMultiMetricFilterAnswer(params: {
 
     const metricLabels = metrics.map(getMetricLabel).join(' + ');
     const timeLabel = readSnapshotTimeLabel(params.snapshot);
-    const isServerCompare = params.parsed.sourceIntent === 'server-compare';
+    const isServerCompare =
+      params.parsed.sourceIntent === 'server-compare' ||
+      params.parsed.sourceIntent === 'server-detail-multi-metric';
     return [
       `📊 **${targetLabel} ${metricLabels} ${isServerCompare ? '비교' : '복합 부하 상위'}**`,
       `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,

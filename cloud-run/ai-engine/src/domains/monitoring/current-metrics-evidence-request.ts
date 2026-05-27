@@ -153,6 +153,47 @@ function parseCurrentMetricsFrame(
   const classification = classifyQueryIntent(request.message);
   const messageMetric = normalizeSupportedMetric(classification.metric);
   const explicitServerTargets = extractServerIdTargetsFromMessage(request.message);
+  const mentionedMetrics = extractMentionedMetrics(request.message);
+  const metricConditions = extractMetricDirectionalConditions(request.message);
+
+  if (
+    metricConditions.length >= 2 &&
+    isAndMetricFilterMessage(request.message) &&
+    !HISTORICAL_OR_TREND_PATTERN.test(request.message) &&
+    explicitServerTargets.length === 0
+  ) {
+    const groupTarget = inferGroupTargetFromMessage(request.message);
+    const metricTargets = resolveMetricTargets({
+      request,
+      explicitServerTargets,
+      groupTarget,
+    });
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'multi-metric-directional-filter',
+      answerQuery: request.message,
+      metrics: metricConditions.map((condition) => condition.metric),
+      metricConditions,
+      filterOperator: 'AND',
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
+    };
+  }
+
+  if (
+    explicitServerTargets.length === 1 &&
+    mentionedMetrics.length >= 2 &&
+    !HISTORICAL_OR_TREND_PATTERN.test(request.message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'server-detail-multi-metric',
+      answerQuery: request.message,
+      metrics: mentionedMetrics,
+      targets: explicitServerTargets,
+    };
+  }
 
   if (
     messageMetric &&
@@ -475,6 +516,21 @@ function parseCurrentMetricsMessage(
       answerQuery: message,
       metric,
       targets: groupTargets,
+    };
+  }
+
+  if (
+    explicitServerTargets.length === 1 &&
+    mentionedMetrics.length >= 2 &&
+    !HISTORICAL_OR_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'server-detail-multi-metric',
+      answerQuery: message,
+      metrics: mentionedMetrics,
+      targets: explicitServerTargets,
     };
   }
 

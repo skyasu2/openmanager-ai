@@ -496,6 +496,69 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
   });
 
+  it('keeps all requested metrics for single-server detail prompts with health frames (P13/Q-NEW34)', async () => {
+    const request = {
+      ...createEvidenceRequest('api-was-dc1-01의 CPU와 메모리 상태를 같이 알려줘', {
+        timeLabel: '16:00',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 63,
+            memory: 53,
+            disk: 41,
+            network: 18,
+          },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        scope: 'entity',
+        targets: ['api-was-dc1-01'],
+        metric: 'cpu',
+        timeWindow: 'current',
+        aggregation: 'detail',
+        ambiguity: 'low',
+        executionMode: 'single',
+        confidence: 0.93,
+      },
+    };
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'server-detail-multi-metric',
+      metrics: ['cpu', 'memory'],
+      targets: ['api-was-dc1-01'],
+    });
+    expect(monitoringServerHealthEvidenceProvider.canHandle(request)).toBe(
+      false
+    );
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      request
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        intent: 'metric_current',
+        sourceIntent: 'server-detail-multi-metric',
+        metrics: ['cpu', 'memory'],
+        targets: ['api-was-dc1-01'],
+      },
+    });
+    expect(evidence?.fallback).toContain(
+      'api-was-dc1-01**: CPU 63%, 메모리 53%'
+    );
+    expect(evidence?.fallback).not.toContain('디스크 41%');
+  });
+
   it('resolves WAS group current metric prompts through application group hints', async () => {
     const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
       createEvidenceRequest('WAS 서버 CPU 현황 알려줘', {
@@ -1184,6 +1247,87 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('CPU + 메모리 50% 이상 서버');
     expect(evidence?.fallback).toContain('api-was-dc1-01');
     expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
+  it('routes inverse directional multi-metric filters before generic health frames (Q-NEW48)', async () => {
+    const request = {
+      ...createEvidenceRequest('CPU는 낮고 메모리는 높은 서버 찾아줘', {
+        timeLabel: '16:00',
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'warning',
+            cpu: 44,
+            memory: 91,
+            disk: 40,
+            network: 12,
+          },
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 63,
+            memory: 53,
+            disk: 41,
+            network: 18,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 35,
+            memory: 45,
+            disk: 28,
+            network: 11,
+          },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        scope: 'fleet',
+        targets: [],
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        executionMode: 'single',
+        confidence: 0.9,
+      },
+    };
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'multi-metric-directional-filter',
+      metrics: ['cpu', 'memory'],
+      filterOperator: 'AND',
+      metricConditions: [
+        { metric: 'cpu', operator: '<=', threshold: 50 },
+        { metric: 'memory', operator: '>=', threshold: 80 },
+      ],
+    });
+    expect(monitoringServerHealthEvidenceProvider.canHandle(request)).toBe(
+      false
+    );
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      request
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-metric-current',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        sourceIntent: 'multi-metric-directional-filter',
+        metrics: ['cpu', 'memory'],
+      },
+    });
+    expect(evidence?.fallback).toContain('조건: CPU <= 50% AND 메모리 >= 80%');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).not.toContain('api-was-dc1-01');
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
   });
 
