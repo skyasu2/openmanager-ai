@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-28 | **현재 버전 스냅샷**: v8.12.64
+**상태 스냅샷 기준일**: 2026-05-28 | **현재 버전 스냅샷**: v8.12.65
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.65** (2026-05-28) — Bug Fixes: ai-engine: keep empty trend filters deterministic
 - **v8.12.64** (2026-05-28) — Bug Fixes: ai-engine: rank trend deltas and threshold filters
 - **v8.12.63** (2026-05-28) — Bug Fixes: ai-engine: route near-threshold AND filters and trend ranking phrases; Tests: spec: P18 near-threshold AND + P19a trend routing failing tests; Tests: qa: record v8.12.62 stable ranking recheck
 - **v8.12.62** (2026-05-27) — Bug Fixes: ai: preserve ascending stable server rankings
 - **v8.12.61** (2026-05-27) — Bug Fixes: ai: route stable server ranking queries; Tests: qa: record v8.12.60 targeted regression recheck
-- **v8.12.60** (2026-05-27) — Bug Fixes: vercel: gate web analytics script opt-in; Bug Fixes: ai: preserve multi-metric monitoring evidence routes; Tests: qa: record targeted modified-surface Playwright QA
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
