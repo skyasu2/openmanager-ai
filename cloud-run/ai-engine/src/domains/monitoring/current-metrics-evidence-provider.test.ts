@@ -2419,6 +2419,64 @@ describe('current metrics domain evidence providers', () => {
       expect(evidence?.fallback).not.toContain('db-mysql-dc1-backup');
       expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
     });
+
+    it('P21: trend + threshold 결과가 0대여도 deterministic trend evidence로 fail-open하지 않음', async () => {
+      const request = createEvidenceRequest(
+        '디스크 70% 이상이면서 24h 증가한 서버 알려줘',
+        {
+          timeLabel: '07:10',
+          servers: [
+            {
+              id: 'db-mysql-dc1-backup',
+              type: 'database',
+              status: 'online',
+              cpu: 18,
+              memory: 34,
+              disk: 69,
+            },
+            {
+              id: 'web-nginx-dc1-01',
+              type: 'web',
+              status: 'online',
+              cpu: 36,
+              memory: 45,
+              disk: 29,
+            },
+          ],
+        }
+      );
+
+      expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+        intent: 'metric_trend',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        metric: 'disk',
+        threshold: 70,
+        thresholdOperator: '>=',
+        trendDirection: 'increase',
+      });
+
+      const evidence = await monitoringMetricTrendEvidenceProvider.resolve(
+        request
+      );
+
+      expect(evidence).toMatchObject({
+        id: 'monitoring-metric-trend',
+        metadata: {
+          responsePolicy: 'deterministic_answer',
+          intent: 'metric_trend',
+          metric: 'disk',
+          threshold: 70,
+          thresholdOperator: '>=',
+          trendDirection: 'increase',
+        },
+      });
+      expect(evidence?.fallback).toContain('조건: 디스크 >= 70%');
+      expect(evidence?.fallback).toContain('추세 조건: 24h 평균 대비 상승');
+      expect(evidence?.fallback).toContain(
+        '조건을 동시에 만족하는 서버는 없습니다'
+      );
+      expect(evidence?.fallback).not.toContain('DISK 사용률 70% 이상 서버');
+    });
   });
 
   describe('P18 near-threshold: "둘 다 임계치 근처" 표현이 AND 임계 필터로 라우팅', () => {

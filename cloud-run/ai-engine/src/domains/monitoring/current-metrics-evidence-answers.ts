@@ -799,25 +799,11 @@ export function buildMetricTrendAnswer(params: {
         ? right.delta - left.delta || right.current - left.current
         : right.current - left.current
     );
-  if (rows.length === 0) return null;
-
   const metricLabel = getMetricLabel(metric);
-  const avgCurrent = round1(
-    rows.reduce((sum, row) => sum + row.current, 0) / rows.length
-  );
-  const avg24h = round1(
-    rows.reduce((sum, row) => sum + row.avg24h, 0) / rows.length
-  );
-  const directionCounts = rows.reduce<Record<string, number>>((acc, row) => {
-    acc[row.direction] = (acc[row.direction] ?? 0) + 1;
-    return acc;
-  }, {});
-  const timeLabel = readSnapshotTimeLabel(params.snapshot);
   const rankCount =
     params.parsed.rankCount !== undefined
       ? normalizeRankCount(params.parsed.rankCount)
       : 5;
-  const topRows = rows.slice(0, rankCount);
   const thresholdLines =
     threshold === undefined
       ? []
@@ -834,6 +820,29 @@ export function buildMetricTrendAnswer(params: {
             params.parsed.trendDirection === 'increase' ? '상승' : '하락'
           }`,
         ];
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+
+  if (rows.length === 0) {
+    return [
+      `📈 **${targetLabel} ${metricLabel} 추이**`,
+      `• 대상: ${servers.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+      ...thresholdLines,
+      ...directionLines,
+      '• 결과: 현재 조건과 추세 조건을 동시에 만족하는 서버는 없습니다.',
+    ].join('\n');
+  }
+
+  const avgCurrent = round1(
+    rows.reduce((sum, row) => sum + row.current, 0) / rows.length
+  );
+  const avg24h = round1(
+    rows.reduce((sum, row) => sum + row.avg24h, 0) / rows.length
+  );
+  const directionCounts = rows.reduce<Record<string, number>>((acc, row) => {
+    acc[row.direction] = (acc[row.direction] ?? 0) + 1;
+    return acc;
+  }, {});
+  const topRows = rows.slice(0, rankCount);
   const sectionTitle =
     params.parsed.trendRankBy === 'delta' ||
     params.parsed.trendDirection !== undefined
