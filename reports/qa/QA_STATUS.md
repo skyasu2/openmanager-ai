@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-27 10:08:38 KST
+> Generated at: 2026-05-27 12:05:18 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 617 |
-| Total Runs (Counted) | 487 |
+| Total Recorded Runs | 618 |
+| Total Runs (Counted) | 488 |
 | Non-counted Runs | 130 |
-| Total Checks | 4285 |
-| Passed | 4092 |
-| Failed | 155 |
+| Total Checks | 4291 |
+| Passed | 4096 |
+| Failed | 156 |
 | Completed Items | 718 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260527-0619 (2026-05-27T01:08:32.983Z) |
-| Latest Recorded Run | QA-20260527-0619 (2026-05-27T01:08:32.983Z) |
+| Last Counted Run | QA-20260527-0620 (2026-05-27T03:05:16.952Z) |
+| Latest Recorded Run | QA-20260527-0620 (2026-05-27T03:05:16.952Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,34 +34,34 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260527-0619 (2026-05-27T01:08:32.983Z)
+Latest run: QA-20260527-0620 (2026-05-27T03:05:16.952Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | P17: api-was vs web-nginx 타입 간 크로스 그룹 비교 경로 추가. 두 그룹 데이터 동시 제공 필요. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage CLI checked current billing period after production QA; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-26T01:08:32.983Z -> 2026-05-27T01:08:32.983Z (24h)
-- Runs with observations: 8 recorded / 8 counted
-- Samples: 16
+- Window: 2026-05-26T03:05:16.952Z -> 2026-05-27T03:05:16.952Z (24h)
+- Runs with observations: 9 recorded / 9 counted
+- Samples: 20
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Analyst Agent | cloud-run-ai | 5 | 13240ms | 20000ms | - | - | - | - | QA-20260527-0619 |
-| Metrics Query Agent | cloud-run-ai | 9 | 1920ms | 5900ms | - | - | 1692ms | 2545ms | QA-20260527-0618 |
+| Analyst Agent | cloud-run-ai | 7 | 11600ms | 20000ms | - | - | - | - | QA-20260527-0620 |
+| Metrics Query Agent | cloud-run-ai | 11 | 1708ms | 5900ms | - | - | 1692ms | 2545ms | QA-20260527-0620 |
 | Metrics Query Agent | streaming-ai | 1 | 1487ms | 1487ms | - | - | 1487ms | 1487ms | QA-20260526-0611 |
 | Metrics Query | deterministic-monitoring | 1 | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | QA-20260526-0613 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-26T01:08:32.983Z -> 2026-05-27T01:08:32.983Z (24h)
+- Window: 2026-05-26T03:05:16.952Z -> 2026-05-27T03:05:16.952Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,32 +73,36 @@ Latest run: QA-20260527-0619 (2026-05-27T01:08:32.983Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2554787402-v8.12.56-vercel-production / SHA 304c72c4
+- Deployment: v8.12.56-cloud-run-ai-engine-00559-62w / SHA 304c72c4
 - Coverage Packs: ai-core
-- Covered Surfaces: Q-NEW46a generic anomaly prompt — PASS no clarification dialog, Q-NEW46a routing — PASS Cloud Run AI Analyst/anomaly path, Q-NEW46a evidence — PASS analysis basis includes 전체 서버 이상 징후 확인, Q-NEW46a response grounding — PASS names anomalous servers and metrics, v8.12.56 production release smoke — PASS GitLab tag pipeline deploy/smoke
-- Skipped Surfaces: standard five conversational AI QA — skipped to avoid repeated live LLM spend after focused Q-NEW46a production recheck; v8.12.51 release-gate and QA-0617/0618 remain current baselines, Reporter and Vision surfaces — unchanged, auth/login flow — unchanged and covered by release smoke
+- Covered Surfaces: 경고 상태 서버 목록 질의 (Q-NEW52), db 그룹 비공식 부하 순위 질의 (Q-NEW53), api vs web CPU 크로스 그룹 비교 (Q-NEW54) — P17 신규 후보, 역방향 조치불필요 서버 목록 (Q-NEW55), cache-redis-dc1-01 Redis 메모리 급등 RCA (Q-NEW56) — 신규 강점, 이상 징후 탐지 P15 fix 재확인 (Q-NEW57)
+- Skipped Surfaces: Reporter 전체 보고서 — 이번 세션 범위 외, Vision 탭 — 미변경, Advisor 탭 — 미변경
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2554787402 | [GitLab release pipeline 2554787402](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2554787402) | v8.12.56 release/deploy/smoke success |
-| general | Implementation commit 43eb8304b | [Implementation commit 43eb8304b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/43eb8304b) | skip clarification for anomaly scan prompts |
-| general | Release commit 304c72c4d | [Release commit 304c72c4d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/304c72c4d) | release v8.12.56 |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Q-NEW46a v8.12.56 dialog transcript | `reports/qa/evidence/2026/qa-20260527-0619/qa-20260527-qnew46a-dialog-text.txt` | - |
-| playwright-console | Q-NEW46a v8.12.56 Playwright accessibility snapshot | `reports/qa/evidence/2026/qa-20260527-0619/qa-20260527-qnew46a-playwright-snapshot.md` | - |
-| playwright-screenshot | Q-NEW46a v8.12.56 production result screenshot | `reports/qa/evidence/2026/qa-20260527-0619/qa-20260527-qnew46a-playwright.png` | - |
+| playwright-screenshot | 랜딩 v8.12.56 확인 | `reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-00-landing.png` | - |
+| playwright-screenshot | 대시보드 슬롯 72 (12:00 KST) | `reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-01-dashboard.png` | - |
+| playwright-screenshot | Q-NEW52 경고 서버 목록 PASS | `reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q52-warning-status.png` | - |
+| playwright-screenshot | Q-NEW53 db 그룹 부하 순위 PASS | `reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q53-db-hardest.png` | - |
+| playwright-screenshot | Q-NEW54 api-vs-web 크로스 비교 FAIL P17 신규 | `reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q54-api-vs-web-cpu.png` | - |
+| playwright-screenshot | Q-NEW55 역방향 안전 서버 목록 PARTIAL | `reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q55-safe-servers.png` | - |
+| playwright-screenshot | Q-NEW56 Redis 메모리 RCA 신규 강점 PASS | `reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q56-redis-mem-rca.png` | - |
+| playwright-screenshot | Q-NEW57 P15 fix Analyst 라우팅 재확인 PASS | `reports/qa/evidence/2026/qa-20260527-0620/qa-20260527-0620-q57-anomaly-p15-fix.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260527-0620)
+  next: P17: api-was vs web-nginx 타입 간 크로스 그룹 비교 경로 추가. 두 그룹 데이터 동시 제공 필요.
 
 ## Pending Improvements
 
@@ -201,6 +205,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260527-0620 | 2026-05-27T03:05:16.952Z | targeted | no | yes | AI 어시스턴트 신규 질문 평가 Q-NEW52~Q-NEW57 + P15 재확인 (v8.12.56) | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260527-0619 | 2026-05-27T01:08:32.983Z | targeted | yes | yes | Vercel Playwright QA - v8.12.56 Q-NEW46a anomaly clarification bypass recheck | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0618 | 2026-05-27T00:02:33.378Z | targeted | yes | yes | Vercel Playwright QA - v8.12.55 Q-NEW48 inverse metric filter recheck | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0617 | 2026-05-26T23:41:16.615Z | targeted | yes | yes | Vercel Playwright QA - v8.12.55 Q-NEW51 resource pressure ranking recheck | 4 | 2 | 0 | 0 | 0 | 0 |
@@ -220,4 +225,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260526-0603 | 2026-05-25T16:49:56.870Z | targeted | no | no | WONT-FIX cleanup - retire no-action policy and tooling items | 9 | 9 | 0 | 0 | 0 | 0 |
 | QA-20260526-0602 | 2026-05-25T16:29:04.864Z | targeted | no | no | WONT-FIX tracker triage - convert completed DoD evidence items | 7 | 7 | 0 | 0 | 0 | 0 |
 | QA-20260526-0601 | 2026-05-25T15:54:39.843Z | targeted | no | no | v8.12.43 Vercel Playwright hotfix QA - P8 group compare and P12 streaming spaces | 6 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260526-0600 | 2026-05-25T15:50:57.311Z | targeted | no | no | P12 streaming spaces fix verification — v8.12.43 | 1 | 0 | 0 | 0 | 0 | 0 |
