@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-27 | **현재 버전 스냅샷**: v8.12.61
+**상태 스냅샷 기준일**: 2026-05-27 | **현재 버전 스냅샷**: v8.12.62
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.62** (2026-05-27) — Bug Fixes: ai: preserve ascending stable server rankings
 - **v8.12.61** (2026-05-27) — Bug Fixes: ai: route stable server ranking queries; Tests: qa: record v8.12.60 targeted regression recheck
 - **v8.12.60** (2026-05-27) — Bug Fixes: vercel: gate web analytics script opt-in; Bug Fixes: ai: preserve multi-metric monitoring evidence routes; Tests: qa: record targeted modified-surface Playwright QA
 - **v8.12.59** (2026-05-27) — Bug Fixes: vercel: restore periodic job guards; Bug Fixes: ai-engine: compare group metric summaries; Bug Fixes: vercel: Pro 플랜 기준 설정 정리 및 Analytics 활성화
 - **v8.12.58** (2026-05-27) — Bug Fixes: ai: route anomaly scan wording to analyst
-- **v8.12.57** (2026-05-27) — Tests: qa: add qa-0620-input.json for QA-20260527-0620; Tests: spec: P17 add failing tests — "보다" 조사 포함 크로스 그룹 비교 group-compare 미처리; Tests: qa: record QA-20260527-0620 신규 질문 평가 P17 발견 + P15 재확인
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
