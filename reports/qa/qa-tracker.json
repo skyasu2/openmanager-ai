@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-27T05:02:40.316Z"
+    "updatedAt": "2026-05-27T06:56:44.859Z"
   },
   "sequence": {
-    "nextRunNumber": 623
+    "nextRunNumber": 624
   },
   "summary": {
-    "totalRecordedRuns": 620,
-    "totalRuns": 489,
+    "totalRecordedRuns": 621,
+    "totalRuns": 490,
     "excludedRuns": 131,
-    "totalChecks": 4296,
-    "totalPassed": 4101,
+    "totalChecks": 4319,
+    "totalPassed": 4124,
     "totalFailed": 156,
     "completionRate": 100,
-    "completedItems": 719,
+    "completedItems": 720,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260527-0621",
-    "lastRecordedAt": "2026-05-27T04:26:21.736Z",
-    "latestRecordedRunId": "QA-20260527-0622",
-    "latestRecordedAt": "2026-05-27T05:02:40.316Z"
+    "lastRunId": "QA-20260527-0623",
+    "lastRecordedAt": "2026-05-27T06:56:44.859Z",
+    "latestRecordedRunId": "QA-20260527-0623",
+    "latestRecordedAt": "2026-05-27T06:56:44.859Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17732,6 +17732,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-27T04:26:21.736Z"
+    },
+    "q-new54-api-vs-web-cross-group-comparison": {
+      "id": "q-new54-api-vs-web-cross-group-comparison",
+      "title": "Q-NEW54/P17 api-vs-web CPU cross-group comparison returns both group averages",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260527-0623",
+      "firstSeenAt": "2026-05-27T06:56:44.859Z",
+      "lastSeenRunId": "QA-20260527-0623",
+      "lastSeenAt": "2026-05-27T06:56:44.859Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "v8.12.59 live Cloud Run check: application/api average CPU 33.7%, web average CPU 28.3%, conclusion app/api is 5.4%p higher; tools called getServerByGroupAdvanced twice.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-27T06:56:44.859Z"
     }
   },
   "runs": [
@@ -34262,6 +34286,137 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260527-0623",
+      "recordedAt": "2026-05-27T06:56:44.859Z",
+      "recordedAtKst": "2026-05-27 15:56:44 KST",
+      "title": "v8.12.59 Release Smoke - Vercel, Cloud Run, and P17 group comparison",
+      "owner": "codex",
+      "source": "cli-smoke+cloud-run-live",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260527-0623.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.59",
+        "backend": "Cloud Run AI Engine v8.12.59 (revision ai-engine-00565-7mh)",
+        "branch": "main",
+        "deploymentId": "dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1",
+        "deploymentUrl": "https://openmanager-r0t2d1f4i-skyasus-projects.vercel.app",
+        "commitSha": "c017a2b7f60d348b72433f5ed327630e67940206"
+      },
+      "scope": "smoke",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel production GET / - PASS",
+        "Vercel production GET /login - PASS",
+        "Vercel production GET /api/version - PASS version 8.12.59 and commit c017a2b7f60d348b72433f5ed327630e67940206",
+        "Cloud Run GET /health - PASS version 8.12.59",
+        "Cloud Run GET /warmup - PASS",
+        "Cloud Run authenticated /api/ai/supervisor/health - PASS with zero LLM calls",
+        "Cloud Run unauthenticated /monitoring guard - PASS 403",
+        "Cloud Run free-tier guardrails - PASS maxScale 1, concurrency 16, CPU 1, memory 512Mi, cpu throttling true",
+        "P17 live regression: api vs web CPU group comparison - PASS, app/api average 33.7% vs web average 28.3%",
+        "Vercel usage check - PASS effective 17.2740 USD, billed 0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "Broad browser Playwright route pack - skipped because this was a post-release smoke/P17 verification and no broad UI surface changed after the prior release-facing QA",
+        "Full five-question conversational AI QA pack - skipped because the changed AI surface was the P17 group-comparison path and it was directly rechecked live",
+        "Vision live image QA - skipped by routine QA policy; no Vision routing or provider change in scope",
+        "Reporter advanced flow - skipped because no reporter prompt/routing behavior changed in v8.12.59"
+      ],
+      "checks": {
+        "total": 23,
+        "passed": 23,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The changed P17 AI path was exercised live against Cloud Run production and returned a grounded api/application vs web CPU comparison with both group tool calls and explicit averages.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab release pipeline 2555233803 completed successfully; Vercel reports the new production deployment ready and Cloud Run reports revision ai-engine-00565-7mh with version 8.12.59.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The P17 answer preserved metric direction and compared group averages from the same 15:50 KST data slot instead of returning an empty or single-group summary.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run health, warmup, auth health, unauth monitoring protection, and free-tier guardrails all passed after deployment.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-27T15:50:29+09:00",
+          "summary": "Vercel usage CLI checked current billing period after v8.12.59 production smoke; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.59 release smoke and P17 CLI evidence",
+          "path": "reports/qa/evidence/2026/qa-20260527-0623/qa-20260527-v81259-release-smoke.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2555233803",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555233803",
+          "note": "v8.12.59 release pipeline succeeded"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+          "note": "Health OK and version 8.12.59 during release smoke"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1",
+          "url": "https://openmanager-r0t2d1f4i-skyasus-projects.vercel.app/",
+          "note": "Ready production deployment aliased by openmanager-ai.vercel.app"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -34270,16 +34425,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 333,
-      "appropriateCount": 286,
+      "seenCount": 334,
+      "appropriateCount": 287,
       "partialCount": 47,
       "inappropriateCount": 0,
       "improvementNeededCount": 68,
-      "lastRunId": "QA-20260527-0621",
-      "lastSeenAt": "2026-05-27T04:26:21.736Z",
+      "lastRunId": "QA-20260527-0623",
+      "lastSeenAt": "2026-05-27T06:56:44.859Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The targeted production recheck exercised the exact Q3 wording after the entity extractor scan wording fix. The response used the whole-fleet anomaly evidence path and surfaced cache-redis-dc1-01 memory warning/action instead of stopping at generic server-health evidence.",
+      "lastRationale": "The changed P17 AI path was exercised live against Cloud Run production and returned a grounded api/application vs web CPU comparison with both group tool calls and explicit averages.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -34287,16 +34442,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 136,
-      "appropriateCount": 104,
+      "seenCount": 137,
+      "appropriateCount": 105,
       "partialCount": 32,
       "inappropriateCount": 0,
       "improvementNeededCount": 33,
-      "lastRunId": "QA-20260526-0608",
-      "lastSeenAt": "2026-05-26T04:01:53.841Z",
+      "lastRunId": "QA-20260527-0623",
+      "lastSeenAt": "2026-05-27T06:56:44.859Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "응답이 현재 OTel 스냅샷 기준으로 잘못된 사용자 전제(CPU 높음)를 정정하고 현재 CPU 28% 정상 범위를 명시했다.",
+      "lastRationale": "Cloud Run health, warmup, auth health, unauth monitoring protection, and free-tier guardrails all passed after deployment.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -34321,16 +34476,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 225,
-      "appropriateCount": 204,
+      "seenCount": 226,
+      "appropriateCount": 205,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260526-0614",
-      "lastSeenAt": "2026-05-26T12:52:44.071Z",
+      "lastRunId": "QA-20260527-0623",
+      "lastSeenAt": "2026-05-27T06:56:44.859Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab release pipeline 2553301909 succeeded, Vercel serves commit ad7735e72, and Cloud Run revision ai-engine-00559-62w reports health ok for v8.12.51.",
+      "lastRationale": "GitLab release pipeline 2555233803 completed successfully; Vercel reports the new production deployment ready and Cloud Run reports revision ai-engine-00565-7mh with version 8.12.59.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -34355,16 +34510,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 77,
-      "appropriateCount": 55,
+      "seenCount": 78,
+      "appropriateCount": 56,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260526-0611",
-      "lastSeenAt": "2026-05-26T08:11:39.764Z",
+      "lastRunId": "QA-20260527-0623",
+      "lastSeenAt": "2026-05-27T06:56:44.859Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard and AI response used the same OTel-backed 17:00 KST snapshot: db-mysql-dc1-backup DISK 70% appears in Top 5 and the AI answer.",
+      "lastRationale": "The P17 answer preserved metric direction and compared group averages from the same 15:50 KST data slot instead of returning an empty or single-group summary.",
       "lastNextAction": ""
     },
     "infra-reliability": {

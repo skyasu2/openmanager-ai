@@ -1,0 +1,146 @@
+{
+  "runId": "QA-20260527-0623",
+  "recordedAt": "2026-05-27T06:56:44.859Z",
+  "recordedAtKst": "2026-05-27 15:56:44 KST",
+  "runTitle": "v8.12.59 Release Smoke - Vercel, Cloud Run, and P17 group comparison",
+  "owner": "codex",
+  "source": "cli-smoke+cloud-run-live",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.59",
+    "backend": "Cloud Run AI Engine v8.12.59 (revision ai-engine-00565-7mh)",
+    "branch": "main",
+    "deploymentId": "dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1",
+    "deploymentUrl": "https://openmanager-r0t2d1f4i-skyasus-projects.vercel.app",
+    "commitSha": "c017a2b7f60d348b72433f5ed327630e67940206"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Vercel production GET / - PASS",
+    "Vercel production GET /login - PASS",
+    "Vercel production GET /api/version - PASS version 8.12.59 and commit c017a2b7f60d348b72433f5ed327630e67940206",
+    "Cloud Run GET /health - PASS version 8.12.59",
+    "Cloud Run GET /warmup - PASS",
+    "Cloud Run authenticated /api/ai/supervisor/health - PASS with zero LLM calls",
+    "Cloud Run unauthenticated /monitoring guard - PASS 403",
+    "Cloud Run free-tier guardrails - PASS maxScale 1, concurrency 16, CPU 1, memory 512Mi, cpu throttling true",
+    "P17 live regression: api vs web CPU group comparison - PASS, app/api average 33.7% vs web average 28.3%",
+    "Vercel usage check - PASS effective 17.2740 USD, billed 0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "Broad browser Playwright route pack - skipped because this was a post-release smoke/P17 verification and no broad UI surface changed after the prior release-facing QA",
+    "Full five-question conversational AI QA pack - skipped because the changed AI surface was the P17 group-comparison path and it was directly rechecked live",
+    "Vision live image QA - skipped by routine QA policy; no Vision routing or provider change in scope",
+    "Reporter advanced flow - skipped because no reporter prompt/routing behavior changed in v8.12.59"
+  ],
+  "checks": {
+    "total": 23,
+    "passed": 23,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed P17 AI path was exercised live against Cloud Run production and returned a grounded api/application vs web CPU comparison with both group tool calls and explicit averages.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab release pipeline 2555233803 completed successfully; Vercel reports the new production deployment ready and Cloud Run reports revision ai-engine-00565-7mh with version 8.12.59.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The P17 answer preserved metric direction and compared group averages from the same 15:50 KST data slot instead of returning an empty or single-group summary.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run health, warmup, auth health, unauth monitoring protection, and free-tier guardrails all passed after deployment.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-27T15:50:29+09:00",
+      "summary": "Vercel usage CLI checked current billing period after v8.12.59 production smoke; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.59 release smoke and P17 CLI evidence",
+      "path": "reports/qa/evidence/2026/qa-20260527-0623/qa-20260527-v81259-release-smoke.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new54-api-vs-web-cross-group-comparison",
+      "title": "Q-NEW54/P17 api-vs-web CPU cross-group comparison returns both group averages",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.59 live Cloud Run check: application/api average CPU 33.7%, web average CPU 28.3%, conclusion app/api is 5.4%p higher; tools called getServerByGroupAdvanced twice.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run is release-facing smoke plus the changed P17 AI path. It is not intended to replace the latest broad UI baseline.",
+    "Release decision: go for the tested deployment and P17 regression scope."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2555233803",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555233803",
+      "note": "v8.12.59 release pipeline succeeded"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "Health OK and version 8.12.59 during release smoke"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1",
+      "url": "https://openmanager-r0t2d1f4i-skyasus-projects.vercel.app/",
+      "note": "Ready production deployment aliased by openmanager-ai.vercel.app"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+# QA-20260527-0623 Evidence: v8.12.59 release smoke
+
+Date: 2026-05-27 KST
+Target: Vercel production + Cloud Run ai-engine
+Release tag: v8.12.59
+Release commit: c017a2b7f60d348b72433f5ed327630e67940206
+GitLab release pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555233803
+Vercel deployment: dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1
+Vercel deployment URL: https://openmanager-r0t2d1f4i-skyasus-projects.vercel.app
+Production URL: https://openmanager-ai.vercel.app
+Cloud Run URL: https://ai-engine-jdhrhws7ia-an.a.run.app
+Cloud Run revision: ai-engine-00565-7mh
+
+## Pre-release checks
+
+- `bash scripts/ci/runner-health-check.sh`: PASS (`runner=true docker=true scope=local`)
+- `npm run release:dry-run -- --release-as patch`: PASS, planned `8.12.58 -> 8.12.59`
+- `npm run check:cloud-run-guard`: PASS before release, latest ready revision `ai-engine-00564-g8r`
+- `cd cloud-run/ai-engine && npm run type-check`: PASS
+- `cd cloud-run/ai-engine && SKIP_RUN=true npm run docker:preflight`: PASS
+
+## Release and deploy
+
+- `npm run release:publish:patch`: PASS
+- Created release commit `c017a2b7f60d348b72433f5ed327630e67940206`
+- Created tag `v8.12.59`
+- Pushed `main` and `v8.12.59` to GitLab
+- GitLab pipeline `2555233803`: SUCCESS
+- Release script production verification: PASS on `https://openmanager-ai.vercel.app`
+
+## Vercel production smoke
+
+Command:
+
+`npm run test:vercel:post-deploy:smoke -- --url=https://openmanager-ai.vercel.app --expected-version=8.12.59 --expected-commit-sha=c017a2b7f60d348b72433f5ed327630e67940206`
+
+Result: PASS.
+
+Verified surfaces:
+
+- GET `/`: PASS
+- GET `/login`: PASS
+- GET `/api/version`: PASS, version `8.12.59`, commit `c017a2b7f60d348b72433f5ed327630e67940206`
+
+## Cloud Run smoke
+
+Cloud Run service describe:
+
+- URL: `https://ai-engine-jdhrhws7ia-an.a.run.app`
+- Latest ready revision: `ai-engine-00565-7mh`
+
+Strict essential smoke:
+
+`npm run test:cloud:essential:strict -- --url=https://ai-engine-jdhrhws7ia-an.a.run.app`
+
+Result: PASS.
+
+- `/health`: PASS
+- `/warmup`: PASS
+- authenticated `/api/ai/supervisor/health`: PASS
+- LLM calls: 0
+
+Post-deploy ai-engine smoke:
+
+`bash scripts/ci/ai-engine-post-deploy-smoke.sh --url=https://ai-engine-jdhrhws7ia-an.a.run.app`
+
+Result: PASS.
+
+- health: PASS
+- warmup: PASS
+- unauthenticated `/monitoring`: PASS 403
+
+Health payload:
+
+```json
+{
+  "status": "ok",
+  "service": "ai-engine",
+  "version": "8.12.59",
+  "config": {
+    "hasVercelUrl": true,
+    "hasApiSecret": true,
+    "hasAiGatewayKey": true
+  }
+}
+```
+
+## P17 live regression check
+
+Prompt:
+
+`api 서버들이 web 서버들보다 CPU를 더 많이 쓰고 있어?`
+
+Endpoint:
+
+`POST https://ai-engine-jdhrhws7ia-an.a.run.app/api/ai/supervisor`
+
+Result: PASS.
+
+Response summary:
+
+- Target groups: application servers 3, web servers 3
+- Data slot: 15:50 KST
+- Average CPU: application servers 33.7%, web servers 28.3%
+- Conclusion: application servers are 5.4 percentage points higher
+- Tools called: `getServerByGroupAdvanced`, `getServerByGroupAdvanced`
+- Provider/model: `mistral` / `mistral-small-latest`
+- Final agent: Metrics Query Agent
+
+This confirms the P17 group-comparison path returns a grounded comparative answer instead of empty group summaries.
+
+## Guardrails and usage
+
+Cloud Run guard:
+
+`npm run check:cloud-run-guard`
+
+Result: PASS.
+
+- maxScale: 1
+- concurrency: 16
+- timeout: 300
+- CPU: 1
+- memory: 512Mi
+- CPU throttling: true
+- latest ready revision: `ai-engine-00565-7mh`
+
+Vercel usage:
+
+`npm run check:usage:vercel`
+
+Result: PASS.
+
+- Billing period: `2026-05-01T07:00:00.000Z..2026-05-27T06:50:29.504Z`
+- Effective usage: `17.2740 USD`
+- Billed usage: `0.0000 USD`
+- Charge count: 15225
+
+## Release decision
+
+Decision: go.
+
+No blocking regression observed in the tested release smoke and P17 AI path. This run is a release-facing smoke/P17 verification, not a broad UI baseline replacement.
