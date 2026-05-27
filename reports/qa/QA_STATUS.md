@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-27 15:56:46 KST
+> Generated at: 2026-05-27 16:17:19 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 621 |
-| Total Runs (Counted) | 490 |
+| Total Recorded Runs | 622 |
+| Total Runs (Counted) | 491 |
 | Non-counted Runs | 131 |
-| Total Checks | 4319 |
-| Passed | 4124 |
-| Failed | 156 |
-| Completed Items | 720 |
-| Pending Items | 0 |
+| Total Checks | 4335 |
+| Passed | 4137 |
+| Failed | 159 |
+| Completed Items | 719 |
+| Pending Items | 3 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260527-0623 (2026-05-27T06:56:44.859Z) |
-| Latest Recorded Run | QA-20260527-0623 (2026-05-27T06:56:44.859Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.58% |
+| Last Counted Run | QA-20260527-0624 (2026-05-27T07:17:17.887Z) |
+| Latest Recorded Run | QA-20260527-0624 (2026-05-27T07:17:17.887Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260527-0623 (2026-05-27T06:56:44.859Z)
+Latest run: QA-20260527-0624 (2026-05-27T07:17:17.887Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Fix Q-NEW48 directional route preservation and P13 multi-metric metric selection, then rerun the two failed prompts on Vercel. |
+| IT Monitoring & Observability SME | partially-appropriate | yes | Enable Web Analytics for the Vercel project or gate/remove Analytics import until /_vercel/insights/script.js is served. |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage CLI checked current billing period after v8.12.59 production smoke; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed. |
+| vercel | cli | checked | normal | Vercel usage checked after targeted Playwright MCP QA; effective usage 17.9292 USD, billed 0.0000 USD, no billed overage observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-26T06:56:44.859Z -> 2026-05-27T06:56:44.859Z (24h)
+- Window: 2026-05-26T07:17:17.887Z -> 2026-05-27T07:17:17.887Z (24h)
 - Runs with observations: 10 recorded / 10 counted
 - Samples: 21
 
@@ -65,7 +64,7 @@ Latest run: QA-20260527-0623 (2026-05-27T06:56:44.859Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-26T06:56:44.859Z -> 2026-05-27T06:56:44.859Z (24h)
+- Window: 2026-05-26T07:17:17.887Z -> 2026-05-27T07:17:17.887Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -76,35 +75,39 @@ Latest run: QA-20260527-0623 (2026-05-27T06:56:44.859Z)
 
 ## Coverage (Latest Run)
 
-- Scope: smoke
-- Release-Facing: yes
+- Scope: targeted
+- Release-Facing: no
 - Counts Toward Summary: yes
 - Deployment: dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1 / SHA c017a2b7
-- Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: Vercel production GET / - PASS, Vercel production GET /login - PASS, Vercel production GET /api/version - PASS version 8.12.59 and commit c017a2b7f60d348b72433f5ed327630e67940206, Cloud Run GET /health - PASS version 8.12.59, Cloud Run GET /warmup - PASS, Cloud Run authenticated /api/ai/supervisor/health - PASS with zero LLM calls, Cloud Run unauthenticated /monitoring guard - PASS 403, Cloud Run free-tier guardrails - PASS maxScale 1, concurrency 16, CPU 1, memory 512Mi, cpu throttling true, P17 live regression: api vs web CPU group comparison - PASS, app/api average 33.7% vs web average 28.3%, Vercel usage check - PASS effective 17.2740 USD, billed 0.0000 USD
-- Skipped Surfaces: Broad browser Playwright route pack - skipped because this was a post-release smoke/P17 verification and no broad UI surface changed after the prior release-facing QA, Full five-question conversational AI QA pack - skipped because the changed AI surface was the P17 group-comparison path and it was directly rechecked live, Vision live image QA - skipped by routine QA policy; no Vision routing or provider change in scope, Reporter advanced flow - skipped because no reporter prompt/routing behavior changed in v8.12.59
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
+- Covered Surfaces: Landing production version badge v8.12.59 - PASS, Vercel Analytics script after reactivation - FAIL /_vercel/insights/script.js 404 and MIME console error, Vercel Speed Insights vitals after reactivation - PASS /_vercel/speed-insights/vitals 200, Dashboard Host Map tab render - PASS Hexagonal host map with 8 nodes, Host Map node click - PASS api-was-dc1-01 navigated to /dashboard/servers/api-was-dc1-01, Server detail route after Host Map click - PASS Application · DC1-AZ1 and tabs rendered, Server detail tab switch - PASS 성능 분석 and 로그 & 네트워크, /api/version from browser context - PASS 8.12.59 and commit c017a2b7f60d348b72433f5ed327630e67940206, /api/health from browser context - PASS 200, Deleted root /api/servers route - PASS direct fetch returned 404 and dashboard did not call root /api/servers, P17 api vs web CPU group comparison - PASS application 41.7% vs web 25.3%, Q3/Q-NEW46a anomaly scan wording - PASS no clarification, full fleet anomaly summary returned, Q-NEW48 CPU low + memory high directional filter - FAIL returned generic health summary using monitoring-server-health, P14 db-mysql average memory - PASS average 55.3% with three DB servers, P10 backup disk filter - PASS only db-mysql-dc1-backup returned with DISK 65%, P13 api-was-dc1-01 CPU+memory multi-metric query - FAIL returned CPU only and omitted memory
+- Skipped Surfaces: Full broad route pack - skipped by user request to test only yesterday/today modified areas, Vision live image QA - skipped; no Vision routing/provider change in the selected commits, Reporter advanced flow - skipped; no reporter UI flow change in the selected commits, Cloud Run admin /monitoring and /monitoring/traces - skipped; selected Vercel Playwright scope was frontend/UI and AI sidebar behavior
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2555233803 | [GitLab release pipeline 2555233803](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555233803) | v8.12.59 release pipeline succeeded |
-| monitoring | Cloud Run ai-engine health | [Cloud Run ai-engine health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | Health OK and version 8.12.59 during release smoke |
-| vercel-deployment | Vercel production deployment dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1 | [Vercel production deployment dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1](https://openmanager-r0t2d1f4i-skyasus-projects.vercel.app/) | Ready production deployment aliased by openmanager-ai.vercel.app |
+| general | Current production version API | [Current production version API](https://openmanager-ai.vercel.app/api/version) | Returned v8.12.59 and c017a2b7f60d348b72433f5ed327630e67940206 |
+| vercel-deployment | Vercel production deployment dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1 | [Vercel production deployment dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1](https://openmanager-r0t2d1f4i-skyasus-projects.vercel.app/) | Production deployment tested through openmanager-ai.vercel.app |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.59 release smoke and P17 CLI evidence | `reports/qa/evidence/2026/qa-20260527-0623/qa-20260527-v81259-release-smoke.txt` | - |
+| playwright-console | Targeted Playwright MCP modified-surface evidence | `reports/qa/evidence/2026/qa-20260527-0624/qa-20260527-targeted-playwright-modified-surfaces.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260527-0624)
+  next: Fix Q-NEW48 directional route preservation and P13 multi-metric metric selection, then rerun the two failed prompts on Vercel.
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260527-0624)
+  next: Enable Web Analytics for the Vercel project or gate/remove Analytics import until /_vercel/insights/script.js is served.
 
 ## Pending Improvements
 
-- None
+- [P1] q-new34-p13-single-server-multi-metric-regression: P13/Q-NEW34 single-server CPU+memory query returns both requested metrics (seen 1회, last QA-20260527-0624)
+- [P1] q-new48-inverse-directional-metric-filter: Q-NEW48 CPU 낮고 메모리 높은 역상관 복합 조건 필터 (seen 2회, last QA-20260527-0624)
+- [P1] vercel-analytics-script-404: Vercel Web Analytics script loads without production console errors (seen 1회, last QA-20260527-0624)
 
 ## Deferred Improvements
 
@@ -191,18 +194,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 720 items completed (full list in qa-tracker.json)
+- Total: 719 items completed (full list in qa-tracker.json)
 - Recently completed:
   - q-new54-api-vs-web-cross-group-comparison: Q-NEW54/P17 api-vs-web CPU cross-group comparison returns both group averages (last QA-20260527-0623)
   - q3-anomaly-scan-wording-analyst-routing: Q3 전체 서버 이상징후 스캔 프롬프트가 anomaly evidence path로 실행 (last QA-20260527-0621)
   - q-new46a-generic-anomaly-scan-clarification-bypass: Q-NEW46a 이상 징후 분석 프롬프트가 clarification 없이 전체 anomaly scan으로 실행 (last QA-20260527-0619)
-  - q-new48-inverse-directional-metric-filter: Q-NEW48 CPU 낮고 메모리 높은 역상관 복합 조건 필터 (last QA-20260527-0618)
   - q-new51-evidence-label-provider-alignment: Q-NEW51 evidence trace label uses validated provider capability (last QA-20260527-0617)
+  - q-new51-resource-pressure-ranking-current-path: Q-NEW51 리소스 압박 순위가 현재 metric-ranking 경로로 응답 (last QA-20260527-0617)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260527-0624 | 2026-05-27T07:17:17.887Z | targeted | no | yes | Vercel Playwright MCP targeted QA - 2026-05-26..27 modified surfaces only | 16 | 0 | 3 | 0 | 0 | 2 |
 | QA-20260527-0623 | 2026-05-27T06:56:44.859Z | smoke | yes | yes | v8.12.59 Release Smoke - Vercel, Cloud Run, and P17 group comparison | 23 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0622 | 2026-05-27T05:02:40.316Z | smoke | no | no | Deployment Smoke Recheck - v8.12.58 Vercel and Cloud Run | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260527-0621 | 2026-05-27T04:26:21.736Z | targeted | yes | yes | Vercel Playwright QA - v8.12.58 Q3 anomaly scan routing recheck | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -222,4 +226,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260526-0607 | 2026-05-26T03:34:11.537Z | targeted | no | yes | P4 수정 확인 — v8.12.46 원인/RCA 쿼리 Analyst 경로 라우팅 (Q-NEW38 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0606 | 2026-05-26T02:18:46.663Z | targeted | no | yes | P13 수정 확인 — v8.12.45 서버 1:1 다중 메트릭 비교 (Q-NEW34 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0605 | 2026-05-26T01:24:48.297Z | targeted | no | yes | 14차 AI 어시스턴트 평가 + Host Map UX Phase 6 배포 점검 (Q-NEW34~39) | 9 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260526-0604 | 2026-05-25T17:08:49.837Z | targeted | no | yes | WONT-FIX → completed 복구: 수정 커밋 확인된 5개 항목 | 5 | 5 | 0 | 0 | 0 | 0 |

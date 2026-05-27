@@ -1,0 +1,150 @@
+# QA-20260527-0624 Evidence: targeted Playwright MCP QA for 2026-05-26..2026-05-27 changes
+
+Date: 2026-05-27 KST
+Target: https://openmanager-ai.vercel.app
+Scope: only surfaces changed on 2026-05-26 and 2026-05-27 KST
+Browser automation: Playwright MCP
+Production version: 8.12.59
+Production commit: c017a2b7f60d348b72433f5ed327630e67940206
+Vercel deployment: dpl_LrHxeU8siSzXj8LAZeCfJ5b8cpW1
+
+## Changed surfaces selected
+
+- Dashboard Host Map / server cards (`src/components/dashboard/*HostMap*`, `ServerDashboard*`)
+- AI routing and monitoring answer paths:
+  - P17 api/application vs web cross-group comparison
+  - Q-NEW46a / Q3 anomaly scan wording
+  - Q-NEW48 directional metric filter (`CPU 낮고 메모리 높음`)
+  - P14 single-group aggregate metric query
+  - P10 backup group filter
+  - P13 single-server multi-metric comparison
+- Vercel config/runtime changes:
+  - Analytics and Speed Insights activation
+  - `/api/servers` root route removal
+  - `/api/version` cache rule
+  - periodic job guards
+
+## Playwright MCP setup
+
+- `npm run mcp:playwright:windows:start`: PASS, Windows Playwright MCP server started on port 8931.
+- `bash scripts/mcp/mcp-health-check-codex.sh --probe playwright`: PASS overall; live probe skipped because configured playwright MCP is stdio mode.
+
+## Browser route and UI checks
+
+1. Landing `/`
+   - PASS: version badge showed `v8.12.59`.
+   - PASS: guest session already active; `대시보드 열기` navigated to `/dashboard`.
+   - FAIL: Vercel Web Analytics script request failed:
+     - `GET /_vercel/insights/script.js` -> `404`
+     - Browser console: MIME type `text/html` not executable.
+     - Console log: `[Vercel Web Analytics] Failed to load script from /_vercel/insights/script.js`.
+
+2. Dashboard Host Map
+   - PASS: `/dashboard` rendered OTel slot `16:00 KST`, total `18`, online `17`, risk `1`.
+   - PASS: `호스트 맵` tab rendered `Hexagonal host map` with `8 nodes`.
+   - PASS: host nodes included `cache-redis-dc1-01`, `api-was-dc1-01`, `api-was-dc1-02`, `api-was-dc1-03`, `cache-redis-dc1-02`, `cache-redis-dc1-03`, `db-mysql-dc1-backup`, `db-mysql-dc1-primary`.
+   - PASS: clicking `api-was-dc1-01 호스트 맵 상세 보기` navigated to `/dashboard/servers/api-was-dc1-01`.
+   - PASS: server detail header showed `api-was-dc1-01`, `Application · DC1-AZ1`.
+   - PASS: detail tabs `종합 상황`, `성능 분석`, `프로세스`, `로그 & 네트워크` rendered; `성능 분석` and `로그 & 네트워크` tab clicks did not produce new app errors.
+
+3. Vercel route/config checks via browser context
+   - PASS: `fetch('/api/version')` -> `200`, version `8.12.59`, commit `c017a2b7f60d348b72433f5ed327630e67940206`.
+   - PASS: `fetch('/api/health')` -> `200`.
+   - PASS: `fetch('/api/servers')` -> `404`, expected after deleting the unused root `/api/servers` route.
+   - PASS: no dashboard runtime request to root `/api/servers`; server detail used `/api/servers/api-was-dc1-01?...` and returned `200`.
+   - PASS: Speed Insights vitals posted successfully to `/_vercel/speed-insights/vitals` -> `200`.
+
+## AI modified-path checks
+
+All prompts were sent through the AI sidebar UI form, not by bypassing CSRF.
+
+1. P17 cross-group comparison
+   - Prompt: `api 서버들이 web 서버들보다 CPU를 더 많이 쓰고 있어?`
+   - PASS.
+   - Response: web servers 3 vs application servers 3, slot `16:00 KST`.
+   - Average CPU: web `25.3%`, application `41.7%`.
+   - Conclusion: application servers higher by `16.4%p`.
+   - Evidence label: `도구: monitoring-metric-current`.
+
+2. Q3 / Q-NEW46a anomaly scan wording
+   - Prompt: `전체 서버 이상 징후 분석해줘`
+   - PASS.
+   - Response avoided clarification and returned full fleet summary.
+   - Summary: total 18, normal 17, warning 0, risk 1, offline 0.
+   - Flagged server: `cache-redis-dc1-01` memory `91%`.
+   - Evidence label: `도구: 전체 서버 이상 징후 확인 · 기간: 최근 1시간`.
+
+3. Q-NEW48 directional metric filter
+   - Prompt: `CPU는 낮고 메모리는 높은 서버 찾아줘`
+   - FAIL.
+   - Rechecked in a fresh conversation to exclude conversation-context contamination.
+   - Actual response was a generic fleet health summary and only flagged `cache-redis-dc1-01` memory 91%.
+   - It did not apply the requested compound directional condition (`CPU low` AND `memory high`) or return a matched server set.
+   - Evidence label: `도구: monitoring-server-health`.
+
+4. P14 single-group aggregate
+   - Prompt: `db-mysql 서버들의 평균 메모리 사용률 알려줘`
+   - PASS.
+   - Response: DB servers 3, average memory `55.3%`.
+   - Server details: primary `71%`, replica `62%`, backup `33%`.
+   - Evidence label: `도구: monitoring-metric-current`.
+
+5. P10 backup group filter
+   - Prompt: `backup 서버들의 디스크 상태 알려줘`
+   - PASS.
+   - Response limited the target set to 1 backup server.
+   - Server detail: `db-mysql-dc1-backup` disk `65%`.
+   - Evidence label: `도구: monitoring-metric-current`.
+
+6. P13 single-server multi-metric comparison
+   - Prompt: `api-was-dc1-01의 CPU와 메모리 상태를 같이 알려줘`
+   - FAIL.
+   - Expected: CPU and memory should both be returned because the user requested both metrics.
+   - Actual response returned CPU only:
+     - `api-was-dc1-01: CPU 63%`
+   - The server detail page simultaneously showed `메모리 53%`, so the memory value was available in the product surface but omitted from the AI answer.
+   - Evidence label: `도구: monitoring-metric-current`.
+
+## Network and console notes
+
+- Persistent console errors:
+  - `/_vercel/insights/script.js` 404
+  - Strict MIME error for the same Analytics script
+- Expected/accepted noise:
+  - `GET /api/system` `net::ERR_ABORTED` occurred during route transitions; page navigation and detail rendering completed.
+  - `GET /api/servers` 404 was intentionally triggered by the test and is expected after root route removal.
+- AI requests observed:
+  - `/api/ai/nlq/extract-entities` -> 200
+  - `/api/ai/supervisor/stream/v2` -> 200
+  - `/api/ai/jobs` -> 201 for async anomaly path
+
+## Vercel usage
+
+Command: `npm run check:usage:vercel`
+
+Result: PASS.
+
+- Billing period: `2026-05-01T07:00:00.000Z..2026-05-27T07:14:26.517Z`
+- Effective usage: `17.9292 USD`
+- Billed usage: `0.0000 USD`
+- Charge count: `15834`
+
+## Decision
+
+Decision: no-go for the tested modified scope.
+
+Reason:
+
+- Analytics import currently produces production browser console errors because `/_vercel/insights/script.js` is not available.
+- Q-NEW48 directional filter regressed to a generic health summary.
+- P13 single-server multi-metric query returned CPU only and omitted memory.
+
+Passing surfaces:
+
+- Host Map UI and host-node detail navigation.
+- P17 cross-group comparison.
+- Q3/Q-NEW46a anomaly scan wording.
+- P14 single-group average.
+- P10 backup group filter.
+- Speed Insights vitals.
+- `/api/version`, `/api/health`, and root `/api/servers` deletion behavior.
