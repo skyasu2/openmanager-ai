@@ -1,0 +1,41 @@
+Vercel Playwright MCP targeted recheck - v8.12.62 stable-server ranking
+
+Run context
+- Date: 2026-05-27 KST
+- Target: https://openmanager-ai.vercel.app
+- Scope: Q4 only - "가장 안정적인 서버" routing/ranking direction
+- GitLab release pipeline: 2556234912
+- Release tag: v8.12.62
+- Commit SHA: 8deeb27509cc1b8521b2ee87c8b6da508a049566
+
+Deployment verification
+- GET https://openmanager-ai.vercel.app/api/version: PASS version=8.12.62, releaseTag=v8.12.62, commitSha=8deeb27509cc1b8521b2ee87c8b6da508a049566
+- GET https://ai-engine-jdhrhws7ia-an.a.run.app/health: PASS status=ok, service=ai-engine, version=8.12.62
+- GitLab pipeline 2556234912: PASS status=success
+
+Playwright MCP UI check
+- URL: https://openmanager-ai.vercel.app/dashboard?qa=stable-v81262
+- Query sent through AI Assistant UI: 가장 안정적인 서버 알려줘
+- Result: PASS
+- Direction check: response contains "CPU 사용률 하위 3대"
+- Regression check: response does not contain "CPU 사용률 상위"
+- Evidence provider: monitoring-metric-ranking
+- Response excerpt:
+  - 📊 CPU 사용률 하위 3대
+  - db-mysql-dc1-backup: CPU 14%
+  - storage-nfs-dc1-02: CPU 18%
+  - web-nginx-dc1-03: CPU 18%
+
+Network observations from browser Performance API
+- /api/ai/wake-up: fetch, duration 1499ms
+- /api/ai/supervisor/stream/v2: fetch, duration 1561ms, transferSize 6539
+
+Usage check
+- npm run check:usage:vercel: PASS
+- Effective usage: 17.9292 USD
+- Billed usage: 0.0000 USD
+- Charge count: 15834
+
+Notes
+- v8.12.61 was first deployed with MIN_METRIC_PATTERN coverage, but the production UI still returned "CPU 사용률 상위 3대" because the planner intentFrame path normalized "안정" to default descending.
+- v8.12.62 adds frame-path rank direction coverage, so stable/safe server wording is preserved as ascending ranking.

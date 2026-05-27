@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-27 17:31:26 KST
+> Generated at: 2026-05-27 22:32:51 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 623 |
-| Total Runs (Counted) | 492 |
+| Total Recorded Runs | 624 |
+| Total Runs (Counted) | 493 |
 | Non-counted Runs | 131 |
-| Total Checks | 4341 |
-| Passed | 4143 |
+| Total Checks | 4346 |
+| Passed | 4148 |
 | Failed | 159 |
-| Completed Items | 722 |
+| Completed Items | 723 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260527-0625 (2026-05-27T08:31:25.273Z) |
-| Latest Recorded Run | QA-20260527-0625 (2026-05-27T08:31:25.273Z) |
+| Last Counted Run | QA-20260527-0626 (2026-05-27T13:32:42.014Z) |
+| Latest Recorded Run | QA-20260527-0626 (2026-05-27T13:32:42.014Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260527-0625 (2026-05-27T08:31:25.273Z)
+Latest run: QA-20260527-0626 (2026-05-27T13:32:42.014Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -46,24 +46,23 @@ Latest run: QA-20260527-0625 (2026-05-27T08:31:25.273Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after v8.12.60 production deploy and targeted Playwright MCP recheck; effective usage 17.9292 USD, billed 0.0000 USD, no billed overage observed. |
+| vercel | cli | checked | normal | Vercel usage checked after v8.12.62 production deploy and targeted Q4 Playwright MCP recheck; effective usage 17.9292 USD, billed 0.0000 USD, no billed overage observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-26T08:31:25.273Z -> 2026-05-27T08:31:25.273Z (24h)
-- Runs with observations: 9 recorded / 9 counted
-- Samples: 20
+- Window: 2026-05-26T13:32:42.014Z -> 2026-05-27T13:32:42.014Z (24h)
+- Runs with observations: 8 recorded / 8 counted
+- Samples: 15
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | cloud-run-ai | 7 | 11600ms | 20000ms | - | - | - | - | QA-20260527-0620 |
-| Metrics Query Agent | cloud-run-ai | 11 | 1708ms | 5900ms | - | - | 1692ms | 2545ms | QA-20260527-0620 |
+| Metrics Query Agent | cloud-run-ai | 7 | 2009ms | 5900ms | - | - | 1561ms | 1561ms | QA-20260527-0626 |
 | Analyst Agent | streaming-ai | 1 | 3000ms | 3000ms | - | - | - | - | QA-20260527-0621 |
-| Metrics Query | deterministic-monitoring | 1 | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | QA-20260526-0613 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-26T08:31:25.273Z -> 2026-05-27T08:31:25.273Z (24h)
+- Window: 2026-05-26T13:32:42.014Z -> 2026-05-27T13:32:42.014Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -77,23 +76,24 @@ Latest run: QA-20260527-0625 (2026-05-27T08:31:25.273Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA 12c58e73
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
-- Covered Surfaces: Production version API - PASS v8.12.60 commit 12c58e7338b5fccf7529cca0ac5729ec16d297b0, Vercel Analytics 404 regression - PASS no /_vercel/insights/script.js request and no 404 after opt-in gate, Vercel Speed Insights after Analytics gate - PASS /_vercel/speed-insights/script.js 200 and vitals 200, Dashboard AI sidebar P13/Q-NEW34 single-server CPU+memory - PASS api-was-dc1-01 CPU 72%, memory 56%, Dashboard AI sidebar Q-NEW48 CPU low + memory high - PASS monitoring-metric-current returned CPU <= 50% AND memory >= 80% condition, Dashboard AI sidebar Q-NEW48 current-slot no-match handling - PASS returned no matching servers for 17:20 KST instead of generic fleet health summary
-- Skipped Surfaces: Broad route pack - skipped; this run only rechecked QA-20260527-0624 failed surfaces fixed in v8.12.60, Host Map/server detail tabs/P17/P14/P10/Q3 - skipped; already passed in QA-20260527-0624 and unchanged by this fix, Vision live image QA - skipped; no Vision routing/provider change
+- Deployment: SHA 8deeb275
+- Coverage Packs: core-routes-smoke, ai-core, observability-pack
+- Covered Surfaces: Production version API - PASS v8.12.62 commit 8deeb27509cc1b8521b2ee87c8b6da508a049566, Cloud Run AI Engine health - PASS version 8.12.62, GitLab v8.12.62 release pipeline - PASS status=success, Dashboard AI sidebar Q4 stable-server query - PASS '가장 안정적인 서버 알려줘' returned monitoring-metric-ranking with CPU 사용률 하위 3대, Q4 regression direction guard - PASS response did not contain CPU 사용률 상위 after v8.12.62 frame-path fix
+- Skipped Surfaces: Broad route pack - skipped; this run only rechecked Q4 stable-server ranking after the targeted fix, Standard five-question conversational AI QA - skipped; unchanged broad AI paths were already covered by recent QA runs and this run targeted the changed Q4 phrase, Vision live image QA - skipped; no Vision routing/provider change, Q1/Q2/Q3/Q6 - skipped; not changed in this patch and still tracked separately from Q4
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Current production version API | [Current production version API](https://openmanager-ai.vercel.app/api/version) | Returned v8.12.60, releaseTag v8.12.60, pipeline 2555408779 |
-| general | GitLab v8.12.60 deploy pipeline | [GitLab v8.12.60 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555408779) | status=success |
+| general | Current production version API | [Current production version API](https://openmanager-ai.vercel.app/api/version) | Returned v8.12.62, releaseTag v8.12.62, pipeline 2556234912 |
+| general | GitLab v8.12.62 deploy pipeline | [GitLab v8.12.62 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2556234912) | status=success |
+| monitoring | Cloud Run ai-engine health | [Cloud Run ai-engine health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | Returned status=ok and version 8.12.62 |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.60 targeted regression recheck evidence | `reports/qa/evidence/2026/qa-20260527-0818/qa-20260527-v81260-targeted-regression-recheck.txt` | - |
+| playwright-console | v8.12.62 Q4 stable-server ranking Playwright MCP evidence | `reports/qa/evidence/2026/qa-20260527-0626/qa-20260527-v81262-stable-ranking-recheck.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -188,18 +188,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 722 items completed (full list in qa-tracker.json)
+- Total: 723 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - q4-stable-server-ranking-direction: Q4 안정적인 서버 질의가 fallback 또는 상위 랭킹으로 가지 않고 하위 랭킹으로 처리 (last QA-20260527-0626)
   - q-new34-p13-single-server-multi-metric-regression: P13/Q-NEW34 single-server CPU+memory query returns both requested metrics (last QA-20260527-0625)
   - q-new48-inverse-directional-metric-filter: Q-NEW48 CPU 낮고 메모리 높은 역상관 복합 조건 필터 (last QA-20260527-0625)
   - vercel-analytics-script-404: Vercel Web Analytics script loads without production console errors (last QA-20260527-0625)
   - q-new54-api-vs-web-cross-group-comparison: Q-NEW54/P17 api-vs-web CPU cross-group comparison returns both group averages (last QA-20260527-0623)
-  - q3-anomaly-scan-wording-analyst-routing: Q3 전체 서버 이상징후 스캔 프롬프트가 anomaly evidence path로 실행 (last QA-20260527-0621)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260527-0626 | 2026-05-27T13:32:42.014Z | targeted | no | yes | Vercel Playwright MCP targeted recheck - v8.12.62 Q4 stable-server ranking | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0625 | 2026-05-27T08:31:25.273Z | targeted | no | yes | Vercel Playwright MCP targeted recheck - v8.12.60 QA-0624 regressions | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260527-0624 | 2026-05-27T07:17:17.887Z | targeted | no | yes | Vercel Playwright MCP targeted QA - 2026-05-26..27 modified surfaces only | 16 | 0 | 3 | 0 | 0 | 2 |
 | QA-20260527-0623 | 2026-05-27T06:56:44.859Z | smoke | yes | yes | v8.12.59 Release Smoke - Vercel, Cloud Run, and P17 group comparison | 23 | 1 | 0 | 0 | 0 | 0 |
@@ -219,4 +220,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260526-0609 | 2026-05-26T05:23:27.822Z | targeted | no | yes | P10 수정 확인 — v8.12.47 backup 그룹 서버 필터 (단위 테스트 검증) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0608 | 2026-05-26T04:01:53.841Z | targeted | no | no | Codex 직접 재검증 — v8.12.46 P4/P13 AI Assistant fixes | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260526-0607 | 2026-05-26T03:34:11.537Z | targeted | no | yes | P4 수정 확인 — v8.12.46 원인/RCA 쿼리 Analyst 경로 라우팅 (Q-NEW38 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260526-0606 | 2026-05-26T02:18:46.663Z | targeted | no | yes | P13 수정 확인 — v8.12.45 서버 1:1 다중 메트릭 비교 (Q-NEW34 재검증) | 1 | 0 | 0 | 0 | 0 | 0 |

@@ -1,0 +1,143 @@
+{
+  "runId": "QA-20260527-0626",
+  "recordedAt": "2026-05-27T13:32:42.014Z",
+  "recordedAtKst": "2026-05-27 22:32:42 KST",
+  "runTitle": "Vercel Playwright MCP targeted recheck - v8.12.62 Q4 stable-server ranking",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.62",
+    "backend": "Cloud Run AI Engine v8.12.62",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "8deeb27509cc1b8521b2ee87c8b6da508a049566"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Production version API - PASS v8.12.62 commit 8deeb27509cc1b8521b2ee87c8b6da508a049566",
+    "Cloud Run AI Engine health - PASS version 8.12.62",
+    "GitLab v8.12.62 release pipeline - PASS status=success",
+    "Dashboard AI sidebar Q4 stable-server query - PASS '가장 안정적인 서버 알려줘' returned monitoring-metric-ranking with CPU 사용률 하위 3대",
+    "Q4 regression direction guard - PASS response did not contain CPU 사용률 상위 after v8.12.62 frame-path fix"
+  ],
+  "skippedSurfaces": [
+    "Broad route pack - skipped; this run only rechecked Q4 stable-server ranking after the targeted fix",
+    "Standard five-question conversational AI QA - skipped; unchanged broad AI paths were already covered by recent QA runs and this run targeted the changed Q4 phrase",
+    "Vision live image QA - skipped; no Vision routing/provider change",
+    "Q1/Q2/Q3/Q6 - skipped; not changed in this patch and still tracked separately from Q4"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar Q4 stable-server ranking",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP browser Performance API",
+      "latencyMs": 1561,
+      "processingTimeMs": 1561
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed stable-server natural-language phrase was exercised through the production AI sidebar and returned the deterministic monitoring-metric-ranking provider with ascending CPU ranking.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The answer is grounded in current monitoring metrics and shows concrete server IDs and CPU percentages instead of a generic fallback.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The recheck used Playwright MCP against Vercel production, verified the version/health endpoints, and recorded durable run evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-27T22:29:25+09:00",
+      "summary": "Vercel usage checked after v8.12.62 production deploy and targeted Q4 Playwright MCP recheck; effective usage 17.9292 USD, billed 0.0000 USD, no billed overage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.62 Q4 stable-server ranking Playwright MCP evidence",
+      "path": "reports/qa/evidence/2026/qa-20260527-0626/qa-20260527-v81262-stable-ranking-recheck.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q4-stable-server-ranking-direction",
+      "title": "Q4 안정적인 서버 질의가 fallback 또는 상위 랭킹으로 가지 않고 하위 랭킹으로 처리",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.62 Playwright MCP AI sidebar prompt '가장 안정적인 서버 알려줘' returned 'CPU 사용률 하위 3대' via monitoring-metric-ranking and did not contain 'CPU 사용률 상위'.",
+      "note": "v8.12.61 fixed MIN_METRIC_PATTERN coverage but production QA found planner intentFrame still defaulted to desc; v8.12.62 fixed normalizeRankOrder for 안정/안전 wording.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release decision for the tested Q4 scope: go.",
+    "Q1/Q2/Q3/Q6 remain separate follow-up items from the user's broader analysis and were not changed or revalidated in this Q4-only run."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Current production version API",
+      "url": "https://openmanager-ai.vercel.app/api/version",
+      "note": "Returned v8.12.62, releaseTag v8.12.62, pipeline 2556234912"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.12.62 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2556234912",
+      "note": "status=success"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "Returned status=ok and version 8.12.62"
+    }
+  ]
+}
