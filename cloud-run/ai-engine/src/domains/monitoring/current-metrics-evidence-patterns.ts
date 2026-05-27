@@ -35,7 +35,7 @@ export const CONTEXTUAL_TOP_N_PATTERN =
 export const RANKED_SERVER_LINE_PATTERN =
   /^\s*(?:\d{1,2}[.)]|[-*])\s*([a-z][a-z0-9]+(?:-[a-z0-9]+){2,})\b/gim;
 export const SERVER_COMPARISON_CONNECTOR_PATTERN =
-  /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b/i;
+  /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b|보다(?=\s|$)/i;
 export const TIME_SERIES_COMPARISON_PATTERN =
   /(지난\s*\d|최근\s*\d|24\s*시간|하루|어제|last\s+\d|last24h|past\s+\d|평균|avg|추세|트렌드|trend|예측|forecast|변화)/i;
 export const DEFAULT_TREND_METRICS: SupportedMetric[] = [
