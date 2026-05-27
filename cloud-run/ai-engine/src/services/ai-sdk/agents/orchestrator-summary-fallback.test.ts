@@ -242,6 +242,73 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('메모리 사용률 상위');
   });
 
+  it('combines two group payloads into a deterministic group metric comparison', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'api 서버들이 web 서버들보다 CPU를 더 많이 쓰고 있어?',
+      'Metrics Query Agent',
+      [
+        {
+          toolName: 'getServerByGroupAdvanced',
+          result: {
+            success: true,
+            group: 'application',
+            servers: [
+              {
+                id: 'api-was-dc1-01',
+                type: 'application',
+                status: 'online',
+                cpu: 38,
+                memory: 55,
+                disk: 28,
+              },
+              {
+                id: 'api-was-dc1-02',
+                type: 'application',
+                status: 'online',
+                cpu: 36,
+                memory: 52,
+                disk: 27,
+              },
+            ],
+          },
+        },
+        {
+          toolName: 'getServerByGroupAdvanced',
+          result: {
+            success: true,
+            group: 'web',
+            servers: [
+              {
+                id: 'web-nginx-dc1-01',
+                type: 'web',
+                status: 'online',
+                cpu: 37,
+                memory: 45,
+                disk: 29,
+              },
+              {
+                id: 'web-nginx-dc1-02',
+                type: 'web',
+                status: 'online',
+                cpu: 35,
+                memory: 44,
+                disk: 28,
+              },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('애플리케이션 서버 vs 웹 서버 CPU 비교');
+    expect(summary).toContain('애플리케이션 서버 37%');
+    expect(summary).toContain('웹 서버 36%');
+    expect(summary).toContain('평균 CPU 1%p 높습니다');
+    expect(summary).toContain('api-was-dc1-01');
+    expect(summary).toContain('web-nginx-dc1-01');
+    expect(summary).not.toContain('서버 현황 요약');
+  });
+
   it('prioritizes critical operational alerts before higher-metric warnings', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 위험/경고 서버를 기준으로 운영자가 해야 할 조치 2가지를 제안해줘',
