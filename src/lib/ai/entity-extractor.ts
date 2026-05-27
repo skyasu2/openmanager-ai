@@ -206,7 +206,7 @@ Rules:
 - Use scope "server" only when the user asks about one specific server.
 - Set executionMode "single" for simple/current metric lookups, rankings, status checks, and formatting-only rewrites.
 - Set intent "anomaly_detection" for current anomaly, abnormal, spike, detection, "이상 탐지", "비정상 감지" questions.
-- Set intent "anomaly_detection" for current anomaly signal analysis such as "이상 징후 분석", "징후 분석", or "비정상 징후".
+- Set intent "anomaly_detection" for current anomaly signal scan/analysis such as "이상 징후 분석", "징후 분석", "이상징후 스캔", "전체 스캔", or "비정상 징후".
 - Set intent "anomaly_prediction" for future-looking anomaly signal questions such as "이상 징후 예측", "미리 감지", or "위험 징후".
 - Set intent "capacity_forecast" for resource exhaustion/capacity forecasts such as disk/memory/cpu saturation, "고갈", "임계치 넘기 전", "언제 포화", "위험 수준 도달", or "언제 90% 넘을까".
 - Set intent "failure_risk" for broad failure-risk questions such as "장애 날 것 같은 서버", "장애 위험", or "불안정한 서버".
@@ -350,7 +350,7 @@ const CAPACITY_FORECAST_QUERY_PATTERN =
 const ANOMALY_PREDICTION_QUERY_PATTERN =
   /(?:이상|비정상|위험|장애)?\s*징후.{0,24}(?:예측|전망|미리|앞으로|사전)|(?:예측|전망|미리|사전).{0,24}(?:이상|비정상|위험|장애)?\s*징후/i;
 const ANOMALY_DETECTION_QUERY_PATTERN =
-  /(?:이상|비정상|징후|스파이크|급증|급감|anomal).{0,32}(?:분석|탐지|감지|찾|확인|있)|(?:분석|탐지|감지|확인).{0,32}(?:이상|비정상|징후|스파이크|anomal)/i;
+  /(?:이상|비정상|징후|스파이크|급증|급감|anomal).{0,32}(?:분석|탐지|감지|찾|확인|스캔|scan|detect|있)|(?:분석|탐지|감지|확인|스캔|scan|detect).{0,32}(?:이상|비정상|징후|스파이크|anomal)|(?:전체|모든|all).{0,24}(?:서버|fleet|systems?)?.{0,24}(?:스캔|scan)/i;
 const ROOT_CAUSE_QUERY_PATTERN = /왜|원인|근본|rca|root.?cause|cause/i;
 
 function inferCapacityMetricForQuery(

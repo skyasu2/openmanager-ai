@@ -340,7 +340,11 @@ describe('normalizeExtractedEntities', () => {
     });
   });
 
-  it('corrects anomaly-signal wording to analyst anomaly detection intent', () => {
+  it.each([
+    '이상 징후 분석해줘',
+    '전체 서버 이상징후 스캔해줘',
+    '전체 스캔해줘',
+  ])('corrects anomaly-signal wording to analyst anomaly detection intent: %s', (query) => {
     expect(
       normalizeExtractedEntitiesForQuery(
         {
@@ -360,7 +364,7 @@ describe('normalizeExtractedEntities', () => {
             confidence: 83,
           },
         },
-        '이상 징후 분석해줘'
+        query
       )
     ).toEqual({
       confidence: 83,
