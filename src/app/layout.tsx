@@ -5,11 +5,10 @@ import { RootClientRuntime } from '@/app/RootClientRuntime';
 import { ClientProviders } from '@/components/providers/ClientProviders';
 import './globals.css';
 import './global-effects.css';
-import { getSiteUrl } from '@/lib/site-url';
+import { Analytics } from '@vercel/analytics/react';
 
-// Vercel Analytics & Speed Insights (무료 티어 최적화 - 비활성화)
-// import { SpeedInsights } from '@vercel/speed-insights/next';
-// import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { getSiteUrl } from '@/lib/site-url';
 
 // 🌐 SEO Configuration
 const SITE_URL = getSiteUrl();
@@ -137,9 +136,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           {children}
           <RootClientRuntime />
         </ClientProviders>
-        {/* Vercel Analytics 비활성화 - 무료 티어 최적화 (6개 404 에러 제거) */}
-        {/* <SpeedInsights key="speed-insights" /> */}
-        {/* <Analytics key="analytics" /> */}
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

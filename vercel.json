@@ -12,24 +12,6 @@
       ]
     },
     {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "X-Vercel-Plan",
-          "value": "pro"
-        }
-      ]
-    },
-    {
-      "source": "/api/system/status",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, s-maxage=1800, stale-while-revalidate=3600"
-        }
-      ]
-    },
-    {
       "source": "/api/health",
       "headers": [
         {
@@ -39,25 +21,7 @@
       ]
     },
     {
-      "source": "/api/cache/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, s-maxage=1800, stale-while-revalidate=3600"
-        }
-      ]
-    },
-    {
-      "source": "/api/ai/edge-v2",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, s-maxage=300, stale-while-revalidate=600"
-        }
-      ]
-    },
-    {
-      "source": "/api/version/(.*)",
+      "source": "/api/version",
       "headers": [
         {
           "key": "Cache-Control",
@@ -110,23 +74,11 @@
       ]
     },
     {
-      "source": "/(main|login)",
+      "source": "/data/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-store, no-cache, must-revalidate, max-age=0"
-        },
-        {
-          "key": "X-Timer-Stability",
-          "value": "enabled"
-        },
-        {
-          "key": "X-Environment-Detection",
-          "value": "stable"
-        },
-        {
-          "key": "X-Refresh-Prevention",
-          "value": "active"
+          "value": "public, max-age=3600, s-maxage=86400"
         }
       ]
     },
@@ -158,19 +110,6 @@
           "value": "max-age=31536000; includeSubDomains; preload"
         }
       ]
-    },
-    {
-      "source": "/data/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, s-maxage=86400"
-        },
-        {
-          "key": "X-Static-Optimization",
-          "value": "enabled"
-        }
-      ]
     }
   ],
   "redirects": [],
@@ -183,59 +122,18 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "env": {
-    "DISABLE_LOCAL_RAG": "true",
-    "PREFER_SUPABASE_RAG": "true",
-    "AI_ENGINE_PRIORITY": "supabase_rag,rule_based,mcp,google_ai",
-    "VERCEL_HEALTH_OPTIMIZATION": "true",
-    "HEALTH_CHECK_CACHE_HOURS": "6",
-    "DISABLE_EXCESSIVE_HEALTH_CHECKS": "true",
-    "DISABLE_CRON_JOBS": "true",
-    "AI_STREAM_TIMEOUT_PREVENTION": "true",
-    "NEXT_PUBLIC_FREE_TIER_MODE": "false",
-    "VERCEL_HOBBY_PLAN": "false",
-    "VERCEL_PRO_PLAN": "true",
-    "VERCEL_TIER": "pro",
-    "SERVERLESS_FUNCTION_TIMEOUT": "60",
-    "MEMORY_LIMIT_MB": "512",
-    "STATIC_JSON_OPTIMIZATION": "true",
-    "DISABLE_BACKGROUND_JOBS": "true",
-    "ENABLE_QUOTA_PROTECTION": "true",
-    "VERCEL_ANALYTICS_ENABLED": "true",
-    "SPEED_INSIGHTS_ENABLED": "true",
-    "CDN_CACHE_HIT_RATE_TARGET": "95",
-    "API_RESPONSE_TIME_TARGET": "100",
-    "VERCEL_TIMER_STABILITY": "true",
-    "VERCEL_ENV_DETECTION_STABLE": "true",
-    "VERCEL_AUTH_RETRY_DELAY": "10000",
-    "VERCEL_INIT_DELAY": "1000",
-    "VERCEL_SYNC_DEBOUNCE": "3000",
-    "PREVENT_AUTO_REFRESH": "true",
-    "STABLE_ENVIRONMENT_DETECTION": "true",
-    "VERCEL_EDGE_MIDDLEWARE": "true",
-    "VERCEL_BUILD_OPTIMIZATION": "true",
-    "NEXT_OPTIMIZE_FONTS": "true",
-    "NEXT_OPTIMIZE_IMAGES": "true",
-    "VERCEL_ANALYTICS_DEBUG": "false",
-    "SPEED_INSIGHTS_DEBUG": "false"
+    "VERCEL_TIER": "pro"
   },
   "build": {
     "env": {
       "NODE_OPTIONS": "--max-old-space-size=2048",
-      "SKIP_ENV_VALIDATION": "false",
-      "BUILD_TIME_OPTIMIZATION": "true",
-      "SKIP_SUPABASE_CONNECTION_CHECK": "true",
-      "DISABLE_HEALTH_CHECK": "true",
-      "HEALTH_CHECK_CONTEXT": "false",
-      "VALIDATE_ENV_ON_BUILD": "true",
-      "NEXT_DISABLE_DEVTOOLS": "1",
-      "SKIP_E2E_TESTS": "true",
-      "ENABLE_QA_TESTS": "false"
+      "NEXT_DISABLE_DEVTOOLS": "1"
     }
   },
   "functions": {
-    "src/app/api/ai/supervisor/route.ts": { "memory": 512, "maxDuration": 60 },
+    "src/app/api/ai/supervisor/route.ts": { "memory": 1024, "maxDuration": 60 },
     "src/app/api/ai/supervisor/stream/v2/route.ts": {
-      "memory": 512,
+      "memory": 1024,
       "maxDuration": 60
     },
     "src/app/api/ai/jobs/[id]/stream/route.ts": {
