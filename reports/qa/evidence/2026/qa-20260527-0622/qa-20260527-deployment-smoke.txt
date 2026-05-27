@@ -1,0 +1,64 @@
+Deployment smoke recheck for v8.12.58
+Recorded: 2026-05-27T14:01:21+09:00
+
+Target deployment
+- Vercel production: https://openmanager-ai.vercel.app
+- Vercel deployment id: dpl_AQKHuh8m1Yp4biCDWkVmehARGyKL
+- Vercel deployment URL: https://openmanager-7xn6b2q5s-skyasus-projects.vercel.app
+- GitLab release pipeline: 2555046185
+- Release tag: v8.12.58
+- Frontend commit: d892f1fb9a8aaf94e47e312ec08e5c2150109346
+- Cloud Run URL: https://ai-engine-jdhrhws7ia-an.a.run.app
+- Cloud Run latest ready revision: ai-engine-00564-g8r
+
+Vercel post-deploy smoke
+Command:
+  npm run test:vercel:post-deploy:smoke -- --url=https://openmanager-ai.vercel.app --expected-version=8.12.58 --expected-commit-sha=d892f1fb9a8aaf94e47e312ec08e5c2150109346
+
+Result:
+- GET /: PASS
+- GET /login: PASS
+- GET /api/version: PASS
+- Smoke passed on attempt 1/9
+
+Cloud Run authenticated essential smoke
+Command:
+  bash -lc 'set -a; source .env.local; set +a; npm run test:cloud:essential:strict -- --url=https://ai-engine-jdhrhws7ia-an.a.run.app'
+
+Result:
+- GET /health: PASS
+- GET /warmup: PASS
+- GET /api/ai/supervisor/health authenticated: PASS
+- LLM calls: 0
+
+Cloud Run post-deploy smoke
+Command:
+  bash scripts/ci/ai-engine-post-deploy-smoke.sh --url=https://ai-engine-jdhrhws7ia-an.a.run.app
+
+Result:
+- GET /health: PASS
+- GET /warmup: PASS
+- GET /monitoring unauthenticated: PASS (403)
+
+Free-tier guard
+Command:
+  npm run check:cloud-run-guard
+
+Result:
+- maxScale: PASS (actual=1, expected=1)
+- concurrency: PASS (actual=16, expected=16)
+- timeoutSeconds: PASS (actual=300, expected=300)
+- cpu: PASS (actual=1, expected=1)
+- memory: PASS (actual=512Mi, expected=512Mi)
+- cpu-throttling: PASS (actual=true, expected=true)
+- summary: PASS free-tier guardrails intact
+
+Vercel usage
+Command:
+  npm run check:usage:vercel
+
+Result:
+- Current billing period: 2026-05-01T07:00:00.000Z..2026-05-27T05:00:17.191Z
+- Effective usage: 17.2740 USD
+- Billed usage: 0.0000 USD
+- Result: PASS, no unexpected billed spike observed

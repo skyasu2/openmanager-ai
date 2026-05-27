@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-27 13:26:29 KST
+> Generated at: 2026-05-27 14:02:41 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 619 |
+| Total Recorded Runs | 620 |
 | Total Runs (Counted) | 489 |
-| Non-counted Runs | 130 |
+| Non-counted Runs | 131 |
 | Total Checks | 4296 |
 | Passed | 4101 |
 | Failed | 156 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260527-0621 (2026-05-27T04:26:21.736Z) |
-| Latest Recorded Run | QA-20260527-0621 (2026-05-27T04:26:21.736Z) |
+| Latest Recorded Run | QA-20260527-0622 (2026-05-27T05:02:40.316Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260527-0621 (2026-05-27T04:26:21.736Z)
+Latest run: QA-20260527-0622 (2026-05-27T05:02:40.316Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage CLI checked current billing period after production QA; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed. |
+| vercel | cli | checked | normal | Vercel usage CLI checked current billing period after deployment smoke; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-26T04:26:21.736Z -> 2026-05-27T04:26:21.736Z (24h)
+- Window: 2026-05-26T05:02:40.316Z -> 2026-05-27T05:02:40.316Z (24h)
 - Runs with observations: 10 recorded / 10 counted
 - Samples: 21
 
@@ -62,7 +62,7 @@ Latest run: QA-20260527-0621 (2026-05-27T04:26:21.736Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-26T04:26:21.736Z -> 2026-05-27T04:26:21.736Z (24h)
+- Window: 2026-05-26T05:02:40.316Z -> 2026-05-27T05:02:40.316Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,29 +73,27 @@ Latest run: QA-20260527-0621 (2026-05-27T04:26:21.736Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2555046185-v8.12.58-vercel-production / SHA d892f1fb
-- Coverage Packs: ai-core
-- Covered Surfaces: Q3 anomaly scan prompt — PASS no clarification dialog, Q3 anomaly scan routing — PASS uses 전체 서버 이상 징후 확인 evidence path, Q3 cache anomaly coverage — PASS response includes cache-redis-dc1-01 memory warning/action, Q3 stale server-health route guard — PASS no monitoring-server-health/server-health evidence label observed, v8.12.58 production release smoke — PASS GitLab tag pipeline deploy/smoke
-- Skipped Surfaces: standard five conversational AI QA — skipped to avoid repeated live LLM spend after focused Q3 production recheck; QA-0619/0620 remain current AI baselines, Reporter and Vision surfaces — unchanged, auth/login flow — unchanged and covered by release smoke
+- Scope: smoke
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: dpl_AQKHuh8m1Yp4biCDWkVmehARGyKL / SHA d892f1fb
+- Coverage Packs: core-routes-smoke, observability-pack
+- Covered Surfaces: Vercel production GET / - PASS, Vercel production GET /login - PASS, Vercel production GET /api/version - PASS version 8.12.58 and commit d892f1fb9a8aaf94e47e312ec08e5c2150109346, Cloud Run GET /health - PASS, Cloud Run GET /warmup - PASS, Cloud Run authenticated /api/ai/supervisor/health - PASS with zero LLM calls, Cloud Run unauthenticated /monitoring guard - PASS 403, Cloud Run free-tier guardrails - PASS maxScale 1, CPU 1, memory 512Mi, cpu throttling true, Vercel usage check - PASS billed 0.0000 USD
+- Skipped Surfaces: Conversational AI live prompt pack - skipped because QA-20260527-0621 already covered the current release-facing AI path and this run is a deployment smoke recheck, Vision live image QA - skipped by routine QA policy; no Vision routing or provider change in scope, Full browser Playwright UI navigation - skipped because CLI post-deploy smoke covers route/version availability and no UI code changed after QA-20260527-0621
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2555046185 | [GitLab release pipeline 2555046185](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555046185) | v8.12.58 release/deploy/smoke success |
-| general | Implementation commit a76125ba6 | [Implementation commit a76125ba6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a76125ba6) | route anomaly scan wording to analyst |
-| general | Release commit d892f1fb9 | [Release commit d892f1fb9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d892f1fb9) | release v8.12.58 |
+| general | GitLab release pipeline 2555046185 | [GitLab release pipeline 2555046185](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555046185) | v8.12.58 deploy and smoke success |
+| monitoring | Cloud Run ai-engine health | [Cloud Run ai-engine health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | Health OK during deployment smoke |
+| vercel-deployment | Vercel production deployment dpl_AQKHuh8m1Yp4biCDWkVmehARGyKL | [Vercel production deployment dpl_AQKHuh8m1Yp4biCDWkVmehARGyKL](https://openmanager-7xn6b2q5s-skyasus-projects.vercel.app/) | Ready production deployment aliased by openmanager-ai.vercel.app |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Q3 v8.12.58 dialog transcript | `reports/qa/evidence/2026/qa-20260527-0621/qa-20260527-q3-anomaly-scan-dialog-text.txt` | - |
-| playwright-console | Q3 v8.12.58 Playwright accessibility snapshot | `reports/qa/evidence/2026/qa-20260527-0621/qa-20260527-q3-anomaly-scan-snapshot.md` | - |
-| playwright-screenshot | Q3 v8.12.58 production result screenshot | `reports/qa/evidence/2026/qa-20260527-0621/qa-20260527-q3-anomaly-scan.png` | - |
+| playwright-console | v8.12.58 deployment smoke CLI evidence | `reports/qa/evidence/2026/qa-20260527-0622/qa-20260527-deployment-smoke.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -202,6 +200,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260527-0622 | 2026-05-27T05:02:40.316Z | smoke | no | no | Deployment Smoke Recheck - v8.12.58 Vercel and Cloud Run | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260527-0621 | 2026-05-27T04:26:21.736Z | targeted | yes | yes | Vercel Playwright QA - v8.12.58 Q3 anomaly scan routing recheck | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0620 | 2026-05-27T03:05:16.952Z | targeted | no | yes | AI 어시스턴트 신규 질문 평가 Q-NEW52~Q-NEW57 + P15 재확인 (v8.12.56) | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260527-0619 | 2026-05-27T01:08:32.983Z | targeted | yes | yes | Vercel Playwright QA - v8.12.56 Q-NEW46a anomaly clarification bypass recheck | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -221,4 +220,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260526-0605 | 2026-05-26T01:24:48.297Z | targeted | no | yes | 14차 AI 어시스턴트 평가 + Host Map UX Phase 6 배포 점검 (Q-NEW34~39) | 9 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260526-0604 | 2026-05-25T17:08:49.837Z | targeted | no | yes | WONT-FIX → completed 복구: 수정 커밋 확인된 5개 항목 | 5 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260526-0603 | 2026-05-25T16:49:56.870Z | targeted | no | no | WONT-FIX cleanup - retire no-action policy and tooling items | 9 | 9 | 0 | 0 | 0 | 0 |
-| QA-20260526-0602 | 2026-05-25T16:29:04.864Z | targeted | no | no | WONT-FIX tracker triage - convert completed DoD evidence items | 7 | 7 | 0 | 0 | 0 | 0 |

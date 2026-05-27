@@ -1,0 +1,96 @@
+{
+  "runId": "QA-20260527-0622",
+  "recordedAt": "2026-05-27T05:02:40.316Z",
+  "recordedAtKst": "2026-05-27 14:02:40 KST",
+  "runTitle": "Deployment Smoke Recheck - v8.12.58 Vercel and Cloud Run",
+  "owner": "codex",
+  "source": "cli-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_AQKHuh8m1Yp4biCDWkVmehARGyKL",
+    "deploymentUrl": "https://openmanager-7xn6b2q5s-skyasus-projects.vercel.app",
+    "commitSha": "d892f1fb9a8aaf94e47e312ec08e5c2150109346"
+  },
+  "scope": "smoke",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Vercel production GET / - PASS",
+    "Vercel production GET /login - PASS",
+    "Vercel production GET /api/version - PASS version 8.12.58 and commit d892f1fb9a8aaf94e47e312ec08e5c2150109346",
+    "Cloud Run GET /health - PASS",
+    "Cloud Run GET /warmup - PASS",
+    "Cloud Run authenticated /api/ai/supervisor/health - PASS with zero LLM calls",
+    "Cloud Run unauthenticated /monitoring guard - PASS 403",
+    "Cloud Run free-tier guardrails - PASS maxScale 1, CPU 1, memory 512Mi, cpu throttling true",
+    "Vercel usage check - PASS billed 0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "Conversational AI live prompt pack - skipped because QA-20260527-0621 already covered the current release-facing AI path and this run is a deployment smoke recheck",
+    "Vision live image QA - skipped by routine QA policy; no Vision routing or provider change in scope",
+    "Full browser Playwright UI navigation - skipped because CLI post-deploy smoke covers route/version availability and no UI code changed after QA-20260527-0621"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-27T14:00:17+09:00",
+      "summary": "Vercel usage CLI checked current billing period after deployment smoke; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.58 deployment smoke CLI evidence",
+      "path": "reports/qa/evidence/2026/qa-20260527-0622/qa-20260527-deployment-smoke.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This is a non-counting smoke recheck on an already release-facing QA-covered deployment. It validates availability, version drift, Cloud Run health, auth health, unauth monitoring protection, free-tier guardrails, and Vercel usage without adding live LLM prompt calls.",
+    "Current local HEAD includes QA evidence/archive commits after release d892f1fb, but production remains on release tag v8.12.58 as expected."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2555046185",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2555046185",
+      "note": "v8.12.58 deploy and smoke success"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "Health OK during deployment smoke"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_AQKHuh8m1Yp4biCDWkVmehARGyKL",
+      "url": "https://openmanager-7xn6b2q5s-skyasus-projects.vercel.app/",
+      "note": "Ready production deployment aliased by openmanager-ai.vercel.app"
+    }
+  ]
+}
