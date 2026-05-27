@@ -2267,4 +2267,48 @@ describe('current metrics domain evidence providers', () => {
       expect(parsed?.targets).toContain('web');
     });
   });
+
+  describe('P17: api-vs-web 크로스 그룹 비교 — "보다" 조사 포함 쿼리도 group-compare 경로', () => {
+    it('"api 서버들이 web 서버들보다 CPU를 더 많이 쓰고 있어?" → group-compare로 파싱', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('api 서버들이 web 서버들보다 CPU를 더 많이 쓰고 있어?')
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'group-compare',
+        metric: 'cpu',
+      });
+      expect(parsed?.groupTargets).toHaveLength(2);
+      expect(parsed?.groupTargets).toContain('application');
+      expect(parsed?.groupTargets).toContain('web');
+    });
+
+    it('"was 그룹이 web 그룹보다 메모리가 높아?" → group-compare로 파싱', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('was 그룹이 web 그룹보다 메모리가 높아?')
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'group-compare',
+        metric: 'memory',
+      });
+      expect(parsed?.groupTargets).toHaveLength(2);
+      expect(parsed?.groupTargets).toContain('application');
+      expect(parsed?.groupTargets).toContain('web');
+    });
+
+    it('"db 서버가 cache 서버보다 디스크 많이 써?" → group-compare로 파싱', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('db 서버가 cache 서버보다 디스크 많이 써?')
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'group-compare',
+        metric: 'disk',
+      });
+      expect(parsed?.groupTargets).toHaveLength(2);
+      expect(parsed?.groupTargets).toContain('database');
+      expect(parsed?.groupTargets).toContain('cache');
+    });
+  });
 });
