@@ -20,8 +20,20 @@ export const COMPOSITE_PRESSURE_RANKING_PATTERN =
   /(?:리소스|자원|resource|resources?|메트릭|지표|metric|metrics?|부하|로드|\bload\b).{0,40}(?:압박|부담|포화|심한|높|많|상위|순위|랭킹|ranking|rank|top|pressure|stress|saturation)|(?:압박|부담|포화|pressure|stress|saturation).{0,40}(?:리소스|자원|resource|resources?|서버|호스트|상위|순위|랭킹|ranking|rank|top)|(?:가장\s*)?(?:버거운|힘든).{0,24}(?:서버|호스트|대상)/i;
 export const CURRENT_METRIC_GROUP_PATTERN =
   /(?:\b(?:db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend)\b|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
+/**
+ * "둘 다 임계치 근처" / "곧 위험" 등 명시적 임계치 없이 양쪽 메트릭이 모두
+ * 임계 근처라는 의미의 AND 필터 표현.
+ *
+ * P18: multi-metric-no-threshold 합산 정렬이 단일 메트릭만 위반한 서버까지
+ * 결과에 포함하는 문제를 inferred threshold AND 필터로 교정.
+ */
+export const NEAR_THRESHOLD_PATTERN =
+  /임계(?:치|값)?\s*(?:근처|가까|근접|에\s*가까)|곧\s*(?:위험|넘|초과|도달)|위험\s*(?:해질|에\s*가까)|임박|near\s*threshold|approaching\s*(?:limit|threshold)/i;
+
+export const NEAR_THRESHOLD_INFERRED_VALUE = 55;
+
 export const METRIC_TREND_PATTERN =
-  /추이|추세|트렌드|trend|변화|변동|(?:계속|지속|꾸준히|점점).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)/i;
+  /추이|추세|트렌드|trend|변화|변동|(?:계속|지속|꾸준히|점점|많이).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)|증가율|상승률|성장률|growth\s*rate/i;
 export const GENERIC_METRIC_TREND_PATTERN =
   /메트릭|지표|리소스|resource|metrics?/i;
 export const GROUP_SERVER_LIST_PATTERN =

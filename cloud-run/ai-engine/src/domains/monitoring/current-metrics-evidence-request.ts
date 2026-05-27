@@ -30,6 +30,8 @@ import {
   GROUP_SERVER_LIST_PATTERN,
   HISTORICAL_OR_TREND_PATTERN,
   METRIC_TREND_PATTERN,
+  NEAR_THRESHOLD_PATTERN,
+  NEAR_THRESHOLD_INFERRED_VALUE,
   SERVER_DETAIL_PATTERN,
   SERVER_HEALTH_EXCLUSION_PATTERN,
   SERVER_HEALTH_PATTERN,
@@ -575,6 +577,21 @@ function parseCurrentMetricsMessage(
     !HISTORICAL_OR_TREND_PATTERN.test(message) &&
     explicitServerTargets.length === 0
   ) {
+    // P18: 임계치 근처 / 곧 위험 — inferred threshold AND filter (multi-metric-filter
+    // 분기보다 우선해 sourceIntent를 명확히 보존)
+    if (NEAR_THRESHOLD_PATTERN.test(message)) {
+      return {
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        sourceIntent: 'multi-metric-near-threshold',
+        answerQuery: message,
+        metrics: mentionedMetrics,
+        threshold: NEAR_THRESHOLD_INFERRED_VALUE,
+        thresholdOperator: '>=',
+        filterOperator: 'AND',
+        ...(metricTargets.length > 0 && { targets: metricTargets }),
+      };
+    }
     if (
       classification.intent === 'data-filter' &&
       classification.threshold !== undefined &&
@@ -619,6 +636,22 @@ function parseCurrentMetricsMessage(
       metric,
       threshold: classification.threshold,
       thresholdOperator: classification.operator ?? '>=',
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
+    };
+  }
+
+  // P19a: data-ranking이라도 명시적 트렌드 표현(증가율/상승률 등)이면 metric_trend 우선
+  if (
+    classification.intent === 'data-ranking' &&
+    metric &&
+    METRIC_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_trend',
+      capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+      sourceIntent: 'ranking-trend',
+      answerQuery: message,
+      metric,
       ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
