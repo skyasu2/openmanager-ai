@@ -1,0 +1,125 @@
+{
+  "runId": "QA-20260527-0618",
+  "recordedAt": "2026-05-27T00:02:33.378Z",
+  "recordedAtKst": "2026-05-27 09:02:33 KST",
+  "runTitle": "Vercel Playwright QA - v8.12.55 Q-NEW48 inverse metric filter recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2554682099-v8.12.55-cloud-run-ai-engine",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "5b2a85625615f4db062345385d1c6391aa3e2def"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "Q-NEW48 inverse CPU-low memory-high filter — PASS directional AND filter",
+    "Q-NEW48 evidence tool — PASS monitoring-metric-current",
+    "Q-NEW48 stale peak route guard — PASS no monitoring-peak-metric",
+    "Cloud Run ai-engine v8.12.55 health OK"
+  ],
+  "skippedSurfaces": [
+    "standard five conversational AI QA — skipped to avoid repeated live LLM spend after targeted Q-NEW48 fix verification; v8.12.51 release-gate and QA-0617 remain current baselines",
+    "Reporter and Vision surfaces — unchanged",
+    "auth/login flow — unchanged and covered by release smoke"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Q-NEW48 inverse CPU-low memory-high filter",
+      "agent": "Metrics Query Agent",
+      "provider": "cloud-run-ai",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI footer reported 응답 빠름; exact header timing was not captured",
+      "latencyMs": 1000
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The targeted production AI sidebar recheck exercised the exact Q-NEW48 wording after the directional metric filter implementation. The answer used monitoring-metric-current and returned the intended CPU <= 50% AND memory >= 80% condition instead of a generic ranking or peak-metric route.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-27T09:01:12+09:00",
+      "summary": "Vercel usage CLI checked current billing period after production QA; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Q-NEW48 v8.12.55 production transcript",
+      "path": "reports/qa/evidence/2026/qa-20260527-0618/qa-20260527-0618-qnew48-v81255-transcript.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new48-inverse-directional-metric-filter",
+      "title": "Q-NEW48 CPU 낮고 메모리 높은 역상관 복합 조건 필터",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.55 Playwright production QA returned monitoring-metric-current with CPU <= 50% AND 메모리 >= 80% directional AND conditions.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "The implementation commit 6496b02c9 is contained in deployed tags v8.12.52 through v8.12.55.",
+    "Local validation before production recheck: cd cloud-run/ai-engine && npm run test -- current-metrics-evidence-provider.test.ts PASS (58 tests).",
+    "Cloud Run ai-engine /health reports version 8.12.55.",
+    "Q-NEW48 production answer did not use monitoring-peak-metric and did not collapse the inverse condition into a single high/low ranking."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2554682099",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2554682099",
+      "note": "v8.12.55 release/deploy/smoke success"
+    },
+    {
+      "type": "general",
+      "label": "Implementation commit 6496b02c9",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/commit/6496b02c9b",
+      "note": "route anomaly signals and directional metric filters"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "version 8.12.55"
+    }
+  ]
+}
