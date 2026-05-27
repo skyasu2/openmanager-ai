@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_KR } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { RootClientRuntime } from '@/app/RootClientRuntime';
+import { shouldEnableVercelWebAnalytics } from '@/app/root-client-runtime-flags';
 import { ClientProviders } from '@/components/providers/ClientProviders';
 import './globals.css';
 import './global-effects.css';
@@ -137,7 +138,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <RootClientRuntime />
         </ClientProviders>
         <SpeedInsights />
-        <Analytics />
+        {shouldEnableVercelWebAnalytics() && <Analytics />}
       </body>
     </html>
   );
