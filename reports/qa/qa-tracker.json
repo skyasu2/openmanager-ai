@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-27T00:02:33.378Z"
+    "updatedAt": "2026-05-27T01:08:32.983Z"
   },
   "sequence": {
-    "nextRunNumber": 619
+    "nextRunNumber": 620
   },
   "summary": {
-    "totalRecordedRuns": 616,
-    "totalRuns": 486,
+    "totalRecordedRuns": 617,
+    "totalRuns": 487,
     "excludedRuns": 130,
-    "totalChecks": 4280,
-    "totalPassed": 4087,
+    "totalChecks": 4285,
+    "totalPassed": 4092,
     "totalFailed": 155,
     "completionRate": 100,
-    "completedItems": 717,
+    "completedItems": 718,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260527-0618",
-    "lastRecordedAt": "2026-05-27T00:02:33.378Z",
-    "latestRecordedRunId": "QA-20260527-0618",
-    "latestRecordedAt": "2026-05-27T00:02:33.378Z"
+    "lastRunId": "QA-20260527-0619",
+    "lastRecordedAt": "2026-05-27T01:08:32.983Z",
+    "latestRecordedRunId": "QA-20260527-0619",
+    "latestRecordedAt": "2026-05-27T01:08:32.983Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17684,6 +17684,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-27T00:02:33.378Z"
+    },
+    "q-new46a-generic-anomaly-scan-clarification-bypass": {
+      "id": "q-new46a-generic-anomaly-scan-clarification-bypass",
+      "title": "Q-NEW46a 이상 징후 분석 프롬프트가 clarification 없이 전체 anomaly scan으로 실행",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260527-0619",
+      "firstSeenAt": "2026-05-27T01:08:32.983Z",
+      "lastSeenRunId": "QA-20260527-0619",
+      "lastSeenAt": "2026-05-27T01:08:32.983Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "v8.12.56 Playwright production QA showed no '조금 더 구체적으로 알려주세요' dialog and returned Cloud Run AI anomaly analysis with 전체 서버 이상 징후 확인 evidence.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-27T01:08:32.983Z"
     }
   },
   "runs": [
@@ -33739,6 +33763,125 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260527-0619",
+      "recordedAt": "2026-05-27T01:08:32.983Z",
+      "recordedAtKst": "2026-05-27 10:08:32 KST",
+      "title": "Vercel Playwright QA - v8.12.56 Q-NEW46a anomaly clarification bypass recheck",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260527-0619.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2554787402-v8.12.56-vercel-production",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "304c72c4ded7469fa09b4d3d365a4947b9fcec37"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Q-NEW46a generic anomaly prompt — PASS no clarification dialog",
+        "Q-NEW46a routing — PASS Cloud Run AI Analyst/anomaly path",
+        "Q-NEW46a evidence — PASS analysis basis includes 전체 서버 이상 징후 확인",
+        "Q-NEW46a response grounding — PASS names anomalous servers and metrics",
+        "v8.12.56 production release smoke — PASS GitLab tag pipeline deploy/smoke"
+      ],
+      "skippedSurfaces": [
+        "standard five conversational AI QA — skipped to avoid repeated live LLM spend after focused Q-NEW46a production recheck; v8.12.51 release-gate and QA-0617/0618 remain current baselines",
+        "Reporter and Vision surfaces — unchanged",
+        "auth/login flow — unchanged and covered by release smoke"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Q-NEW46a generic anomaly scan",
+          "agent": "Analyst Agent",
+          "provider": "cloud-run-ai",
+          "model": "anomaly-analysis",
+          "route": "/api/ai/jobs",
+          "source": "Playwright MCP observed queued analysis completion after ~20s; UI footer reported 응답 느림",
+          "latencyMs": 20000
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The targeted production AI sidebar recheck exercised the exact Q-NEW46a wording after the frontend clarification bypass fix. The prompt no longer stopped at the server-scope clarification UI and produced a grounded anomaly analysis with whole-fleet anomaly evidence.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-27T10:05:42+09:00",
+          "summary": "Vercel usage CLI checked current billing period after production QA; effective usage 17.2740 USD, billed 0.0000 USD, no unexpected billed spike observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Q-NEW46a v8.12.56 dialog transcript",
+          "path": "reports/qa/evidence/2026/qa-20260527-0619/qa-20260527-qnew46a-dialog-text.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Q-NEW46a v8.12.56 Playwright accessibility snapshot",
+          "path": "reports/qa/evidence/2026/qa-20260527-0619/qa-20260527-qnew46a-playwright-snapshot.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q-NEW46a v8.12.56 production result screenshot",
+          "path": "reports/qa/evidence/2026/qa-20260527-0619/qa-20260527-qnew46a-playwright.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2554787402",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2554787402",
+          "note": "v8.12.56 release/deploy/smoke success"
+        },
+        {
+          "type": "general",
+          "label": "Implementation commit 43eb8304b",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/commit/43eb8304b",
+          "note": "skip clarification for anomaly scan prompts"
+        },
+        {
+          "type": "general",
+          "label": "Release commit 304c72c4d",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/commit/304c72c4d",
+          "note": "release v8.12.56"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -33747,16 +33890,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 330,
-      "appropriateCount": 284,
+      "seenCount": 331,
+      "appropriateCount": 285,
       "partialCount": 46,
       "inappropriateCount": 0,
       "improvementNeededCount": 67,
-      "lastRunId": "QA-20260527-0618",
-      "lastSeenAt": "2026-05-27T00:02:33.378Z",
+      "lastRunId": "QA-20260527-0619",
+      "lastSeenAt": "2026-05-27T01:08:32.983Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The targeted production AI sidebar recheck exercised the exact Q-NEW48 wording after the directional metric filter implementation. The answer used monitoring-metric-current and returned the intended CPU <= 50% AND memory >= 80% condition instead of a generic ranking or peak-metric route.",
+      "lastRationale": "The targeted production AI sidebar recheck exercised the exact Q-NEW46a wording after the frontend clarification bypass fix. The prompt no longer stopped at the server-scope clarification UI and produced a grounded anomaly analysis with whole-fleet anomaly evidence.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
