@@ -126,6 +126,51 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.prompt).toContain('[결정적 monitoring 현재 지표 근거]');
   });
 
+  it('keeps stable-server frame rankings ascending', async () => {
+    const request = {
+      ...createEvidenceRequest('가장 안정적인 서버 알려줘', {
+        timeLabel: '08:50',
+        servers: [
+          { id: 'api-was-dc1-01', status: 'online', cpu: 66, memory: 55, disk: 40 },
+          { id: 'web-nginx-dc1-01', status: 'online', cpu: 20, memory: 30, disk: 25 },
+          { id: 'cache-redis-dc1-01', status: 'online', cpu: 35, memory: 42, disk: 30 },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_ranking',
+        capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+        metric: 'cpu',
+        timeWindow: 'current',
+        aggregation: 'top_n',
+        topN: 3,
+        ambiguity: 'low',
+        executionMode: 'single',
+        confidence: 0.93,
+      },
+    };
+
+    const parsed = parseCurrentMetricsEvidenceRequest(request);
+    const evidence = await monitoringMetricRankingEvidenceProvider.resolve(request);
+
+    expect(parsed).toMatchObject({
+      intent: 'metric_ranking',
+      capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+      metric: 'cpu',
+      rankCount: 3,
+      rankOrder: 'asc',
+    });
+    expect(evidence?.metadata).toMatchObject({
+      rankOrder: 'asc',
+      rankCount: 3,
+    });
+    expect(evidence?.fallback).toContain('CPU 사용률 하위 3대');
+    expect(evidence?.fallback).toMatch(
+      /1\. web-nginx-dc1-01[\s\S]+2\. cache-redis-dc1-01[\s\S]+3\. api-was-dc1-01/
+    );
+    expect(evidence?.fallback).not.toContain('CPU 사용률 상위');
+  });
+
   it('resolves frame-only metric ranking without raw ranking keywords', async () => {
     const evidence = await monitoringMetricRankingEvidenceProvider.resolve({
       ...createEvidenceRequest('frame only metric current request'),
