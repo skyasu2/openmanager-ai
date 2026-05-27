@@ -166,6 +166,23 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it.each([
+      '이상 징후 분석해줘',
+      '징후 분석해줘',
+      '전체 이상 징후 탐지해줘',
+      'anomaly scan 해줘',
+      'scan anomalies across servers',
+    ])('이상 징후 분석은 전체 anomaly scan으로 보고 clarification을 스킵: %s', (query) => {
+      expect(
+        generateClarification(query, {
+          complexity: 4,
+          localIntent: 'analysis',
+          reasoning: 'Keyword match: Analysis',
+          confidence: 80,
+        })
+      ).toBeNull();
+    });
+
     it('실제 서버 ID가 있으면 analysis intent여도 clarification을 스킵', () => {
       expect(
         generateClarification('api-was-dc1-01 CPU 상태 분석해줘', {

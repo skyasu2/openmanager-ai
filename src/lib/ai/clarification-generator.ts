@@ -63,6 +63,11 @@ const SPECIFIC_CONDITION_PATTERNS = {
   // 전체 서버 탐색 의도: 특정 서버명이 없어도 fleet scan으로 실행 가능
   fleetScanIntent:
     /(?:조치|대응|확인).{0,16}필요.{0,16}서버|서버.{0,16}(?:조치|대응|확인).{0,16}필요|문제.{0,12}있는.{0,12}서버|위험.{0,12}서버|경고.{0,12}서버|장애.{0,12}서버|당장.{0,12}서버/i,
+  // 이상 징후 분석은 특정 서버명이 없어도 전체 fleet anomaly scan으로 실행 가능
+  anomalyScanIntentForward:
+    /(?:이상|비정상|anomal(?:y|ies)|징후|스파이크|spike|급증|급감).{0,20}(?:분석|탐지|감지|확인|찾아|보여|알려|스캔|scan|detect|analy[sz]e)/i,
+  anomalyScanIntentReverse:
+    /(?:분석|탐지|감지|확인|찾아|보여|알려|스캔|scan|detect|analy[sz]e).{0,20}(?:이상|비정상|anomal(?:y|ies)|징후|스파이크|spike|급증|급감)/i,
   // 대화 후속 참조: 직전 응답/분석 대상이 scope를 제공하므로 추가 서버 clarification을 피한다.
   followUpContextReference:
     /(?:방금|직전|이전|앞서|위에서|최근).{0,20}(?:분석|확인|언급|답변|본|살펴본)|(?:그중|그\s*중|이\s*중|중에서).{0,20}(?:골라|추려|필터|보여|알려)/i,
@@ -104,6 +109,8 @@ function hasSpecificConditions(query: string): boolean {
     SPECIFIC_CONDITION_PATTERNS.explicitScope.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.groupScope.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.fleetScanIntent.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.anomalyScanIntentForward.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.anomalyScanIntentReverse.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.followUpContextReference.test(query)
   );
 }
