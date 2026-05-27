@@ -1,7 +1,7 @@
 import type { SupportedMetric } from './current-metrics-evidence-request';
 
 export const HISTORICAL_OR_TREND_PATTERN =
-  /(지난\s*\d|최근\s*\d|24\s*시간|하루|어제|last\s+\d|last24h|past\s+\d|평균|avg|추세|트렌드|trend|예측|forecast|비교|대비|변화|compare)/i;
+  /(지난\s*\d|최근\s*\d|24\s*(?:시간|h)|하루|어제|last\s+\d|last24h|past\s+\d|평균|avg|추세|트렌드|trend|예측|forecast|비교|대비|변화|compare)/i;
 export const SERVER_HEALTH_PATTERN =
   /(?:서버|인프라|시스템|fleet|server|infra|system).{0,20}(상태|현황|요약|health|summary|status)|(?:상태|현황|요약|health|summary|status).{0,20}(서버|인프라|시스템|fleet|server|infra|system)/i;
 export const SERVER_HEALTH_EXCLUSION_PATTERN =
@@ -33,7 +33,7 @@ export const NEAR_THRESHOLD_PATTERN =
 export const NEAR_THRESHOLD_INFERRED_VALUE = 55;
 
 export const METRIC_TREND_PATTERN =
-  /추이|추세|트렌드|trend|변화|변동|(?:계속|지속|꾸준히|점점|많이).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향)|증가율|상승률|성장률|growth\s*rate/i;
+  /추이|추세|트렌드|trend|변화|변동|24\s*h|(?:계속|지속|꾸준히|점점|많이).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향|한|한\s*서버|했|된)|증가율|상승률|성장률|growth\s*rate/i;
 export const GENERIC_METRIC_TREND_PATTERN =
   /메트릭|지표|리소스|resource|metrics?/i;
 export const GROUP_SERVER_LIST_PATTERN =

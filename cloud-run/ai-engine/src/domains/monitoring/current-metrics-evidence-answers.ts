@@ -221,6 +221,15 @@ function formatTrendDirection(delta: number): string {
   return '안정';
 }
 
+function matchesTrendDirection(
+  delta: number,
+  direction: ParsedCurrentMetricsEvidenceRequest['trendDirection']
+): boolean {
+  if (direction === 'increase') return delta > 3;
+  if (direction === 'decrease') return delta < -3;
+  return true;
+}
+
 function normalizeRankCount(value: number | undefined): number {
   return value !== undefined && Number.isInteger(value) && value > 0
     ? Math.min(value, 10)
@@ -756,7 +765,7 @@ export function buildMetricTrendAnswer(params: {
   }
 
   const metric = metrics[0];
-  const rows = servers
+  const rawRows = servers
     .map((server) => {
       const current = getMetricValue(server, metric);
       const trend = trendMap.get(server.id)?.[metric];
@@ -772,8 +781,24 @@ export function buildMetricTrendAnswer(params: {
         direction: formatTrendDirection(delta),
       };
     })
-    .filter((row): row is NonNullable<typeof row> => row !== null)
-    .sort((left, right) => right.current - left.current);
+    .filter((row): row is NonNullable<typeof row> => row !== null);
+
+  const threshold = params.parsed.threshold;
+  const thresholdOperator = params.parsed.thresholdOperator;
+  const rows = rawRows
+    .filter((row) =>
+      threshold === undefined
+        ? true
+        : compareMetricValue(row.current, thresholdOperator, threshold)
+    )
+    .filter((row) =>
+      matchesTrendDirection(row.delta, params.parsed.trendDirection)
+    )
+    .sort((left, right) =>
+      params.parsed.trendRankBy === 'delta'
+        ? right.delta - left.delta || right.current - left.current
+        : right.current - left.current
+    );
   if (rows.length === 0) return null;
 
   const metricLabel = getMetricLabel(metric);
@@ -788,15 +813,44 @@ export function buildMetricTrendAnswer(params: {
     return acc;
   }, {});
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
-  const topRows = rows.slice(0, 5);
+  const rankCount =
+    params.parsed.rankCount !== undefined
+      ? normalizeRankCount(params.parsed.rankCount)
+      : 5;
+  const topRows = rows.slice(0, rankCount);
+  const thresholdLines =
+    threshold === undefined
+      ? []
+      : [
+          `• 조건: ${metricLabel} ${getThresholdOperatorSymbol(
+            thresholdOperator
+          )} ${threshold}%`,
+        ];
+  const directionLines =
+    params.parsed.trendDirection === undefined
+      ? []
+      : [
+          `• 추세 조건: 24h 평균 대비 ${
+            params.parsed.trendDirection === 'increase' ? '상승' : '하락'
+          }`,
+        ];
+  const sectionTitle =
+    params.parsed.trendRankBy === 'delta' ||
+    params.parsed.trendDirection !== undefined
+      ? `${metricLabel} ${
+          params.parsed.trendDirection === 'decrease' ? '감소폭' : '증가폭'
+        } 상위 ${rankCount}대`
+      : `현재 ${metricLabel} 상위`;
 
   return [
     `📈 **${targetLabel} ${metricLabel} 추이**`,
     `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    ...thresholdLines,
+    ...directionLines,
     `• 현재 평균 ${metricLabel}: ${formatMetricPercent(avgCurrent)} · 24h 평균 ${formatMetricPercent(avg24h)} · 전체 ${formatTrendDirection(avgCurrent - avg24h)}`,
     `• 추세 분포: 상승 ${directionCounts['상승'] ?? 0}대, 안정 ${directionCounts['안정'] ?? 0}대, 하락 ${directionCounts['하락'] ?? 0}대`,
     ...buildNumberedServerSection(
-      `현재 ${metricLabel} 상위`,
+      sectionTitle,
       topRows.map(
         (row) =>
           `**${row.server.id}**: 현재 ${metricLabel} ${formatMetricPercent(row.current)} (24h 평균 ${formatMetricPercent(row.avg24h)}, ${row.direction} ${row.delta >= 0 ? '+' : ''}${row.delta}%p)`

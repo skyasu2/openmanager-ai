@@ -2291,6 +2291,134 @@ describe('current metrics domain evidence providers', () => {
         expect(metrics).toContain(expectedMetric);
       }
     });
+
+    it('P19c: 증가율 랭킹은 현재값이 아니라 24h 평균 대비 delta 기준으로 정렬', async () => {
+      const request = createEvidenceRequest(
+        'CPU 증가율이 가장 높은 서버 3개 알려줘',
+        {
+          timeLabel: '22:50',
+          servers: [
+            {
+              id: 'api-was-dc1-01',
+              type: 'application',
+              status: 'online',
+              cpu: 65,
+              memory: 55,
+              disk: 30,
+            },
+            {
+              id: 'web-nginx-dc1-01',
+              type: 'web',
+              status: 'online',
+              cpu: 50,
+              memory: 44,
+              disk: 29,
+            },
+            {
+              id: 'cache-redis-dc1-01',
+              type: 'cache',
+              status: 'online',
+              cpu: 40,
+              memory: 60,
+              disk: 24,
+            },
+          ],
+        }
+      );
+
+      expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+        intent: 'metric_trend',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        metric: 'cpu',
+        rankCount: 3,
+        trendRankBy: 'delta',
+      });
+
+      const evidence = await monitoringMetricTrendEvidenceProvider.resolve(
+        request
+      );
+
+      expect(evidence?.metadata).toMatchObject({
+        intent: 'metric_trend',
+        metric: 'cpu',
+        rankCount: 3,
+        trendRankBy: 'delta',
+      });
+      expect(evidence?.fallback).toContain('CPU 증가폭 상위 3대');
+      expect(evidence?.fallback).toMatch(
+        /1\. \*\*web-nginx-dc1-01\*\*[\s\S]+2\. \*\*cache-redis-dc1-01\*\*[\s\S]+3\. \*\*api-was-dc1-01\*\*/
+      );
+    });
+
+    it('P21: trend + threshold 쿼리는 현재 임계값과 24h 증가 조건을 함께 적용', async () => {
+      const request = createEvidenceRequest(
+        '디스크 70% 이상이면서 24h 증가한 서버 알려줘',
+        {
+          timeLabel: '22:50',
+          servers: [
+            {
+              id: 'storage-nfs-dc1-01',
+              type: 'storage',
+              status: 'warning',
+              cpu: 22,
+              memory: 55,
+              disk: 86,
+            },
+            {
+              id: 'db-mysql-dc1-primary',
+              type: 'database',
+              status: 'warning',
+              cpu: 53,
+              memory: 65,
+              disk: 82,
+            },
+            {
+              id: 'db-mysql-dc1-backup',
+              type: 'database',
+              status: 'online',
+              cpu: 18,
+              memory: 34,
+              disk: 72,
+            },
+            {
+              id: 'web-nginx-dc1-01',
+              type: 'web',
+              status: 'online',
+              cpu: 36,
+              memory: 45,
+              disk: 60,
+            },
+          ],
+        }
+      );
+
+      expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+        intent: 'metric_trend',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        metric: 'disk',
+        threshold: 70,
+        thresholdOperator: '>=',
+        trendDirection: 'increase',
+      });
+
+      const evidence = await monitoringMetricTrendEvidenceProvider.resolve(
+        request
+      );
+
+      expect(evidence?.metadata).toMatchObject({
+        intent: 'metric_trend',
+        metric: 'disk',
+        threshold: 70,
+        thresholdOperator: '>=',
+        trendDirection: 'increase',
+      });
+      expect(evidence?.fallback).toContain('조건: 디스크 >= 70%');
+      expect(evidence?.fallback).toContain('추세 조건: 24h 평균 대비 상승');
+      expect(evidence?.fallback).toContain('storage-nfs-dc1-01');
+      expect(evidence?.fallback).toContain('db-mysql-dc1-primary');
+      expect(evidence?.fallback).not.toContain('db-mysql-dc1-backup');
+      expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+    });
   });
 
   describe('P18 near-threshold: "둘 다 임계치 근처" 표현이 AND 임계 필터로 라우팅', () => {

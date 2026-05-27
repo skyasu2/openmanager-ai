@@ -62,6 +62,8 @@ export type CurrentMetricsEvidenceIntent =
   | 'server_health';
 export type SupportedMetric = Exclude<QueryMetric, 'status'>;
 export type { MetricCondition };
+export type TrendDirection = 'increase' | 'decrease';
+export type TrendRankBy = 'current' | 'delta';
 
 export interface ParsedCurrentMetricsEvidenceRequest {
   intent: CurrentMetricsEvidenceIntent;
@@ -80,6 +82,8 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   rankOrder?: QueryRankOrder;
   rankBasis?: 'composite-load';
   statusFilter?: 'healthy-only';
+  trendDirection?: TrendDirection;
+  trendRankBy?: TrendRankBy;
 }
 
 
@@ -122,6 +126,69 @@ function isAndMetricFilterMessage(message: string): boolean {
   return /모두|둘\s*다|동시에|전부|와|과|및|고(?=\s)|면서|반면|\band\b|&&|\+/i.test(
     message
   );
+}
+
+function extractExplicitTrendRankCount(message: string): number | undefined {
+  const match =
+    message.match(/(?:상위|하위|top|bottom)\s*(\d{1,2})/i) ??
+    message.match(/(\d{1,2})\s*(?:개|대|위)/);
+  if (!match) return undefined;
+
+  const parsed = Number(match[1]);
+  return Number.isInteger(parsed) && parsed > 0
+    ? normalizeRankCount(parsed)
+    : undefined;
+}
+
+function inferTrendRankBy(message: string): TrendRankBy | undefined {
+  return /증가율|상승률|성장률|증가폭|상승폭|변화량|delta|growth\s*rate|increase\s*rate|change\s*rate|(?:가장|제일|상위|top).{0,24}(?:많이\s*)?(?:증가|상승|늘어|올라)|(?:증가|상승|늘어|올라).{0,24}(?:가장|제일|많이|큰|높|상위|top)/i.test(
+    message
+  )
+    ? 'delta'
+    : undefined;
+}
+
+function inferTrendDirection(message: string): TrendDirection | undefined {
+  if (/감소|하락|내려|낮아|줄어|decreas|declin|drop|fall/i.test(message)) {
+    return 'decrease';
+  }
+  if (/증가|상승|올라|높아|늘어|increase|rise|grow/i.test(message)) {
+    return 'increase';
+  }
+  return undefined;
+}
+
+function buildTrendRequestOptions(
+  message: string
+): Pick<
+  ParsedCurrentMetricsEvidenceRequest,
+  'rankCount' | 'trendDirection' | 'trendRankBy'
+> {
+  const rankCount = extractExplicitTrendRankCount(message);
+  const trendDirection = inferTrendDirection(message);
+  const trendRankBy = inferTrendRankBy(message);
+  return {
+    ...(rankCount !== undefined && { rankCount }),
+    ...(trendDirection && { trendDirection }),
+    ...(trendRankBy && { trendRankBy }),
+  };
+}
+
+function buildTrendThresholdOptions(
+  classification: ReturnType<typeof classifyQueryIntent>,
+  metric: SupportedMetric
+): Pick<
+  ParsedCurrentMetricsEvidenceRequest,
+  'threshold' | 'thresholdOperator'
+> {
+  return classification.intent === 'data-filter' &&
+    classification.metric === metric &&
+    classification.threshold !== undefined
+    ? {
+        threshold: classification.threshold,
+        thresholdOperator: classification.operator ?? '>=',
+      }
+    : {};
 }
 
 function resolveMetricTargets(params: {
@@ -350,6 +417,8 @@ function parseCurrentMetricsFrame(
       sourceIntent: frame.intent,
       answerQuery: request.message,
       metric,
+      ...buildTrendThresholdOptions(classification, metric),
+      ...buildTrendRequestOptions(request.message),
       ...(targets.length > 0 && { targets }),
     };
   }
@@ -368,6 +437,7 @@ function parseCurrentMetricsFrame(
         sourceIntent: frame.intent,
         answerQuery: request.message,
         metrics: trendMetrics,
+        ...buildTrendRequestOptions(request.message),
         ...(targets.length > 0 && { targets }),
       };
     }
@@ -626,6 +696,26 @@ function parseCurrentMetricsMessage(
     classification.intent === 'data-filter' &&
     metric &&
     classification.threshold !== undefined &&
+    (METRIC_TREND_PATTERN.test(message) ||
+      HISTORICAL_OR_TREND_PATTERN.test(message))
+  ) {
+    return {
+      intent: 'metric_trend',
+      capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+      sourceIntent: 'trend-threshold-filter',
+      answerQuery: message,
+      metric,
+      threshold: classification.threshold,
+      thresholdOperator: classification.operator ?? '>=',
+      ...buildTrendRequestOptions(message),
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
+    };
+  }
+
+  if (
+    classification.intent === 'data-filter' &&
+    metric &&
+    classification.threshold !== undefined &&
     !HISTORICAL_OR_TREND_PATTERN.test(message)
   ) {
     return {
@@ -652,6 +742,7 @@ function parseCurrentMetricsMessage(
       sourceIntent: 'ranking-trend',
       answerQuery: message,
       metric,
+      ...buildTrendRequestOptions(message),
       ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
@@ -716,6 +807,7 @@ function parseCurrentMetricsMessage(
       sourceIntent: classification.intent,
       answerQuery: message,
       metric,
+      ...buildTrendRequestOptions(message),
       ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
@@ -733,6 +825,7 @@ function parseCurrentMetricsMessage(
         sourceIntent: 'generic-metric-trend',
         answerQuery: message,
         metrics: trendMetrics,
+        ...buildTrendRequestOptions(message),
         ...(metricTargets.length > 0 && { targets: metricTargets }),
       };
     }
