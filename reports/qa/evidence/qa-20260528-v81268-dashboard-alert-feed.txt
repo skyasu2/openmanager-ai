@@ -1,0 +1,37 @@
+Vercel production targeted QA evidence
+Date: 2026-05-28 KST
+Version: 8.12.68
+GitLab pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557819992
+
+Changed surface:
+- Dashboard inline incident feed
+- Server card focus/highlight target
+- Mobile system resource gauge layout
+
+Desktop Playwright MCP check:
+1. Resize viewport to 1440x900.
+2. Navigate to https://openmanager-ai.vercel.app/dashboard.
+3. Click inline incident row: cache-redis-dc1-01 서버 카드로 이동.
+4. Confirm target card id exists: server-card-cache-redis-dc1-01.
+5. Immediate result:
+   - hasRing: true
+   - hasWarningRing: true
+   - hasCriticalRing: false
+   - activeInsideCard: true
+   - activeLabel: cache-redis-dc1-01 상세 보기
+6. After 2600ms:
+   - hasRing: false
+   - hasWarningRing: false
+
+Mobile Playwright MCP check:
+1. Resize viewport to 390x844.
+2. Navigate to dashboard.
+3. Confirm system resource labels visible: CPU, Memory, Disk.
+4. Confirm no horizontal overflow:
+   - scrollWidth: 390
+   - clientWidth: 390
+5. Confirm AI Assistant label remains visible.
+
+Usage check:
+- Cloud Run guardrails intact.
+- Vercel usage effective 17.9292 USD, billed 0.0000 USD, chargeCount 15834.

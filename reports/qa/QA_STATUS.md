@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-28 10:16:51 KST
+> Generated at: 2026-05-28 13:37:16 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 627 |
-| Total Runs (Counted) | 496 |
+| Total Recorded Runs | 628 |
+| Total Runs (Counted) | 497 |
 | Non-counted Runs | 131 |
-| Total Checks | 4368 |
-| Passed | 4168 |
+| Total Checks | 4377 |
+| Passed | 4177 |
 | Failed | 159 |
-| Completed Items | 727 |
+| Completed Items | 729 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260528-0629 (2026-05-28T01:16:50.267Z) |
-| Latest Recorded Run | QA-20260528-0629 (2026-05-28T01:16:50.267Z) |
+| Last Counted Run | QA-20260528-0630 (2026-05-28T04:37:16.133Z) |
+| Latest Recorded Run | QA-20260528-0630 (2026-05-28T04:37:16.133Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,36 +34,35 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260528-0629 (2026-05-28T01:16:50.267Z)
+Latest run: QA-20260528-0630 (2026-05-28T04:37:16.133Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | 전체 점수 재산정은 다음 broad matrix에서 수행. 현재는 targeted hotfix pass로 기록. |
-| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | v8.12.67 production deploy 후 확인. effective 17.9292 USD, billed 0.0000 USD, chargeCount 15834로 Pro 결제 초과 없음. |
+| vercel | cli | checked | normal | v8.12.68 production deploy 후 확인. effective 17.9292 USD, billed 0.0000 USD, chargeCount 15834로 Pro 결제 초과 없음. |
 | cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00573-fvk. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-27T01:16:50.267Z -> 2026-05-28T01:16:50.267Z (24h)
-- Runs with observations: 5 recorded / 5 counted
-- Samples: 10
+- Window: 2026-05-27T04:37:16.133Z -> 2026-05-28T04:37:16.133Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Analyst Agent | cloud-run-ai | 2 | 7500ms | 8000ms | - | - | - | - | QA-20260527-0620 |
-| Analyst Agent | streaming-ai | 2 | 5000ms | 7000ms | - | - | - | - | QA-20260528-0628 |
-| Metrics Query Agent | cloud-run-ai | 6 | 1010ms | 1561ms | - | - | 1561ms | 1561ms | QA-20260528-0628 |
+| Analyst Agent | streaming-ai | 1 | 7000ms | 7000ms | - | - | - | - | QA-20260528-0628 |
+| Metrics Query Agent | cloud-run-ai | 4 | 1140ms | 1561ms | - | - | 1561ms | 1561ms | QA-20260528-0628 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-27T01:16:50.267Z -> 2026-05-28T01:16:50.267Z (24h)
+- Window: 2026-05-27T04:37:16.133Z -> 2026-05-28T04:37:16.133Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -77,23 +76,23 @@ Latest run: QA-20260528-0629 (2026-05-28T01:16:50.267Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2557564249-v8.12.67 / SHA 8ff72dd7
-- Coverage Packs: dashboard-core, ai-core, observability-pack
-- Covered Surfaces: /dashboard production render at v8.12.67, AI Assistant button label remains visible after always-show change, P20 query: CPU 증가율이 가장 높은 서버 알려줘, P20 routing result: monitoring-metric-trend, P20 response content: CPU 증가폭 상위 ranking, no 최고 시간대 peak answer, Cloud Run free-tier guard after v8.12.67 deploy, Vercel usage after v8.12.67 deploy
-- Skipped Surfaces: Full broad 18차-style matrix - targeted hotfix recheck only, Reporter/Vision/Advisor - unchanged by this patch, Long-running Analyst latency tuning - accepted as non-blocking for this release
+- Deployment: gitlab-pipeline-2557819992-v8.12.68 / SHA c7b54f50
+- Coverage Packs: dashboard-core, modal-detail-pack
+- Covered Surfaces: /dashboard production render at v8.12.68, Desktop incident feed row: cache-redis-dc1-01 서버 카드로 이동, Server card target id: server-card-cache-redis-dc1-01, Incident feed click applies warning ring and focuses card action, Incident feed highlight clears after timeout, Mobile system resource gauge wrap without horizontal overflow, AI Assistant button label remains visible on mobile, Cloud Run free-tier guard after v8.12.68 deploy, Vercel usage after v8.12.68 deploy
+- Skipped Surfaces: AI conversational QA - no AI routing/prompt/data-source change in v8.12.68, Reporter/Vision/Advisor - unchanged by this release, Full broad matrix - targeted dashboard UX release recheck only
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline v8.12.67 | [GitLab pipeline v8.12.67](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557564249) | - |
+| general | GitLab pipeline v8.12.68 | [GitLab pipeline v8.12.68](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557819992) | - |
 | general | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | P20 Playwright MCP response transcript | `reports/qa/evidence/qa-20260528-v81267-p20-transcript.txt` | - |
+| playwright-console | Dashboard alert-feed Playwright MCP evidence | `reports/qa/evidence/qa-20260528-v81268-dashboard-alert-feed.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -188,18 +187,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 727 items completed (full list in qa-tracker.json)
+- Total: 729 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - dashboard-alert-feed-card-focus: Inline alert feed clicks focus and highlight the matching server card (last QA-20260528-0630)
+  - dashboard-mobile-resource-gauge-wrap: System resource gauges wrap on mobile without horizontal overflow (last QA-20260528-0630)
   - ai-assistant-button-label-visible: AI Assistant button label always-visible change retained and verified (last QA-20260528-0629)
   - p20-trend-rate-ranking-routing: P20 증가율이 가장 높은 서버 질의가 peak 시간대가 아닌 metric_trend 증가폭 랭킹으로 라우팅 (last QA-20260528-0629)
   - p19c-trend-delta-ranking: Trend ranking queries sort by increase delta instead of current value (last QA-20260528-0627)
-  - p21-trend-threshold-empty-deterministic: Trend plus threshold filters return deterministic trend evidence even when no servers match (last QA-20260528-0627)
-  - q4-stable-server-ranking-direction: Q4 안정적인 서버 질의가 fallback 또는 상위 랭킹으로 가지 않고 하위 랭킹으로 처리 (last QA-20260527-0626)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260528-0630 | 2026-05-28T04:37:16.133Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.68 dashboard alert-feed focus | 9 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260528-0629 | 2026-05-28T01:16:50.267Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.67 P20 trend-rate ranking | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260528-0628 | 2026-05-27T23:33:40.324Z | targeted | yes | yes | Chrome DevTools MCP 18차 신규 질문 평가 — v8.12.65 P17/P18/P19a/stable ranking/group compare | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0627 | 2026-05-27T22:43:05.057Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.65 P19c/P21 trend filters | 7 | 2 | 0 | 0 | 0 | 0 |
@@ -219,4 +219,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260526-0613 | 2026-05-26T09:58:33.066Z | targeted | yes | yes | Vercel Playwright QA - P14 group aggregate metric and Cloud Tasks dispatch | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260526-0612 | 2026-05-26T08:37:39.090Z | targeted | no | yes | 17차 신규 6문항 평가 — v8.12.48 미테스트 영역 검증 | 6 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260526-0611 | 2026-05-26T08:11:39.764Z | release-gate | yes | yes | v8.12.48 Vercel production Playwright MCP release smoke | 16 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260526-0610 | 2026-05-26T05:33:38.310Z | targeted | no | yes | P10 production Playwright recheck — backup group filter | 6 | 0 | 0 | 0 | 0 | 0 |

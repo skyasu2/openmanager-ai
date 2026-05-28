@@ -1,0 +1,152 @@
+{
+  "runId": "QA-20260528-0630",
+  "recordedAt": "2026-05-28T04:37:16.133Z",
+  "recordedAtKst": "2026-05-28 13:37:16 KST",
+  "runTitle": "Vercel Playwright MCP targeted recheck - v8.12.68 dashboard alert-feed focus",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2557819992-v8.12.68",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "c7b54f501369d5d05de4ffbfe90d324d70da4089"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "dashboard-core",
+    "modal-detail-pack"
+  ],
+  "coveredSurfaces": [
+    "/dashboard production render at v8.12.68",
+    "Desktop incident feed row: cache-redis-dc1-01 서버 카드로 이동",
+    "Server card target id: server-card-cache-redis-dc1-01",
+    "Incident feed click applies warning ring and focuses card action",
+    "Incident feed highlight clears after timeout",
+    "Mobile system resource gauge wrap without horizontal overflow",
+    "AI Assistant button label remains visible on mobile",
+    "Cloud Run free-tier guard after v8.12.68 deploy",
+    "Vercel usage after v8.12.68 deploy"
+  ],
+  "skippedSurfaces": [
+    "AI conversational QA - no AI routing/prompt/data-source change in v8.12.68",
+    "Reporter/Vision/Advisor - unchanged by this release",
+    "Full broad matrix - targeted dashboard UX release recheck only"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Desktop click/focus/highlight and mobile no-overflow behavior were verified through Playwright MCP on production.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline v8.12.68 succeeded and production /api/version reports the expected commit/tag.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The tested UX keeps alert context on the dashboard instead of forcing route navigation, with visible focus and severity highlight.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T13:33:45+09:00",
+      "summary": "v8.12.68 production deploy 후 확인. effective 17.9292 USD, billed 0.0000 USD, chargeCount 15834로 Pro 결제 초과 없음.",
+      "evidence": "npm run check:usage",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T13:33:45+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00573-fvk.",
+      "evidence": "npm run check:usage",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Dashboard alert-feed Playwright MCP evidence",
+      "path": "reports/qa/evidence/qa-20260528-v81268-dashboard-alert-feed.txt",
+      "note": "Structured DOM/evaluation evidence captured from production dashboard after v8.12.68 deploy."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-alert-feed-card-focus",
+      "title": "Inline alert feed clicks focus and highlight the matching server card",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.68 production Playwright MCP: ring-4/ring-amber-500 applied immediately and cleared after 2600ms",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-mobile-resource-gauge-wrap",
+      "title": "System resource gauges wrap on mobile without horizontal overflow",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.68 production mobile viewport 390x844: scrollWidth=390, clientWidth=390",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production /api/version returned 8.12.68 with commit c7b54f501369d5d05de4ffbfe90d324d70da4089 and pipeline 2557819992.",
+    "AI conversational QA was skipped because this release changed dashboard UI only, not AI routing/prompt/data contracts.",
+    "Vercel billed usage remained 0.0000 USD and Cloud Run guardrails remained intact."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.68",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557819992"
+    },
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
