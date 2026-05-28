@@ -1,0 +1,169 @@
+{
+  "runId": "QA-20260528-0634",
+  "recordedAt": "2026-05-28T09:01:00.708Z",
+  "recordedAtKst": "2026-05-28 18:01:00 KST",
+  "runTitle": "Vercel production stream QA - v8.12.72 Q-NEW72 metric risk compare",
+  "owner": "codex",
+  "source": "vercel-stream-curl+cloud-run-probe+gitlab-ci",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2558270507-v8.12.72",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "9d1870d402ed7a2cf322ae0f19df6527a4b02e80"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack",
+    "core-routes-smoke"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.12.72 completed successfully",
+    "release:publish production smoke passed on attempt 1/81",
+    "Production /api/version reports 8.12.72, v8.12.72, and commit 9d1870d402ed7a2cf322ae0f19df6527a4b02e80",
+    "Cloud Run /health reports status ok and version 8.12.72",
+    "Cloud Run direct /api/ai/supervisor Q-NEW72 returns deterministic monitoring-metric-current answer",
+    "Vercel primary /api/ai/supervisor/stream/v2 Q-NEW72 returns event-stream from cloud-run",
+    "Vercel stream data-done reports provider deterministic, modelId monitoring-metric-current, and toolsCalled monitoring-metric-current",
+    "Q-NEW72 answer ranks memory as the highest-risk metric with CPU and disk below it",
+    "Guest login auth path works for the production stream probe",
+    "Cloud Run free-tier guardrails remain intact",
+    "Vercel usage remains billed 0.0000 USD after deploy"
+  ],
+  "skippedSurfaces": [
+    "Full broad dashboard visual QA was not rerun; this was a targeted AI routing/answer-quality release recheck",
+    "Full five-question conversational QA pack was not rerun after the targeted Q-NEW72 fix",
+    "Legacy JSON /api/ai/supervisor BFF route was not treated as primary because dashboard chat uses /api/ai/supervisor/stream/v2"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Q-NEW72 Cloud Run direct non-stream supervisor",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor",
+      "source": "curl total time + supervisor metadata",
+      "latencyMs": 305,
+      "processingTimeMs": 5
+    },
+    {
+      "surface": "Q-NEW72 Vercel primary stream route",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "curl total time + x-ai-latency-ms header + stream data-done",
+      "latencyMs": 1321,
+      "processingTimeMs": 185
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production direct and primary stream probes both returned the deterministic monitoring-metric-current answer for Q-NEW72 with zero-token provider metadata.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The answer uses current monitoring data and ranks CPU, memory, and disk by critical/warning count, peak usage, and average usage.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Vercel version endpoint, Cloud Run health, and free-tier usage guardrails all passed for v8.12.72.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T17:56:00+09:00",
+      "summary": "v8.12.72 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.",
+      "evidence": "npm run check:usage",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T17:56:00+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00577-tfn.",
+      "evidence": "npm run check:usage",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.72 Q-NEW72 live production stream evidence",
+      "path": "reports/qa/evidence/qa-20260528-v81272-qnew72-live-smoke.txt",
+      "note": "Structured curl and release evidence from GitLab pipeline, production /api/version, Cloud Run /health, direct supervisor, Vercel stream/v2, and usage guard checks."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new72-metric-risk-compare",
+      "title": "CPU/MEM/DISK 중 가장 위험 메트릭 질의가 deterministic metric-current 위험도 비교로 응답",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.72 production: direct Cloud Run and Vercel stream/v2 both returned provider=deterministic, modelId=monitoring-metric-current, toolsCalled=monitoring-metric-current, and selected memory as highest risk.",
+      "note": "20차 평가 Q-NEW72의 직접 비교 미제공 약점을 production primary stream route 기준으로 재확인했다.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production /api/version returned v8.12.72 with commit 9d1870d402ed7a2cf322ae0f19df6527a4b02e80 and pipeline 2558270507.",
+    "Vercel stream/v2 response headers showed x-ai-source=cloud-run and x-backend=cloud-run-stream-v2.",
+    "Direct and primary stream responses both used deterministic domain evidence with responsePolicy=deterministic_answer.",
+    "The legacy JSON BFF /api/ai/supervisor route is not the dashboard primary route; /api/ai/supervisor/stream/v2 is the primary chat contract."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.72",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558270507"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

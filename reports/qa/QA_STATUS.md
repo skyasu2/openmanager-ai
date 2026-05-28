@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-28 17:02:29 KST
+> Generated at: 2026-05-28 18:01:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 631 |
-| Total Runs (Counted) | 497 |
+| Total Recorded Runs | 632 |
+| Total Runs (Counted) | 498 |
 | Non-counted Runs | 134 |
-| Total Checks | 4377 |
-| Passed | 4177 |
+| Total Checks | 4390 |
+| Passed | 4190 |
 | Failed | 159 |
-| Completed Items | 729 |
+| Completed Items | 730 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260528-0630 (2026-05-28T04:37:16.133Z) |
-| Latest Recorded Run | QA-20260528-0633 (2026-05-28T08:02:28.899Z) |
+| Last Counted Run | QA-20260528-0634 (2026-05-28T09:01:00.708Z) |
+| Latest Recorded Run | QA-20260528-0634 (2026-05-28T09:01:00.708Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,35 +34,36 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260528-0633 (2026-05-28T08:02:28.899Z)
+Latest run: QA-20260528-0634 (2026-05-28T09:01:00.708Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | partially-appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | v8.12.71 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443. |
-| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00576-zh8. |
+| vercel | cli | checked | normal | v8.12.72 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443. |
+| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00577-tfn. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-27T08:02:28.899Z -> 2026-05-28T08:02:28.899Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 5
+- Window: 2026-05-27T09:01:00.708Z -> 2026-05-28T09:01:00.708Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | streaming-ai | 1 | 7000ms | 7000ms | - | - | - | - | QA-20260528-0628 |
 | Metrics Query Agent | cloud-run-ai | 4 | 1140ms | 1561ms | - | - | 1561ms | 1561ms | QA-20260528-0628 |
+| Metrics Query Agent | deterministic | 2 | 813ms | 1321ms | - | - | 95ms | 185ms | QA-20260528-0634 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-27T08:02:28.899Z -> 2026-05-28T08:02:28.899Z (24h)
+- Window: 2026-05-27T09:01:00.708Z -> 2026-05-28T09:01:00.708Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,19 +74,19 @@ Latest run: QA-20260528-0633 (2026-05-28T08:02:28.899Z)
 
 ## Coverage (Latest Run)
 
-- Scope: smoke
+- Scope: targeted
 - Release-Facing: yes
-- Counts Toward Summary: no
-- Deployment: gitlab-pipeline-2558135816-v8.12.71 / SHA 0306d55d
-- Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: GitLab tag pipeline v8.12.71 completed successfully, Frontend deploy job succeeded, Cloud Run AI Engine deploy job succeeded, Vercel post-deploy smoke succeeded, AI Engine post-deploy smoke succeeded, Production /api/version reports 8.12.71, v8.12.71, and commit 0306d55d529fed984451931226403310c63d56a1, Cloud Run /health reports status ok and version 8.12.71, Cloud Run /monitoring without auth returns 403 as expected, Vercel usage remains billed 0.0000 USD after deploy, Cloud Run free-tier guardrails remain intact
-- Skipped Surfaces: Interactive dashboard visual QA was not rerun in this deployment-smoke record, Conversational five-question AI QA was not rerun in this deployment-smoke record, Full broad route/device matrix was not run
+- Counts Toward Summary: yes
+- Deployment: gitlab-pipeline-2558270507-v8.12.72 / SHA 9d1870d4
+- Coverage Packs: ai-core, observability-pack, core-routes-smoke
+- Covered Surfaces: GitLab tag pipeline v8.12.72 completed successfully, release:publish production smoke passed on attempt 1/81, Production /api/version reports 8.12.72, v8.12.72, and commit 9d1870d402ed7a2cf322ae0f19df6527a4b02e80, Cloud Run /health reports status ok and version 8.12.72, Cloud Run direct /api/ai/supervisor Q-NEW72 returns deterministic monitoring-metric-current answer, Vercel primary /api/ai/supervisor/stream/v2 Q-NEW72 returns event-stream from cloud-run, Vercel stream data-done reports provider deterministic, modelId monitoring-metric-current, and toolsCalled monitoring-metric-current, Q-NEW72 answer ranks memory as the highest-risk metric with CPU and disk below it, Guest login auth path works for the production stream probe, Cloud Run free-tier guardrails remain intact, Vercel usage remains billed 0.0000 USD after deploy
+- Skipped Surfaces: Full broad dashboard visual QA was not rerun; this was a targeted AI routing/answer-quality release recheck, Full five-question conversational QA pack was not rerun after the targeted Q-NEW72 fix, Legacy JSON /api/ai/supervisor BFF route was not treated as primary because dashboard chat uses /api/ai/supervisor/stream/v2
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline v8.12.71 | [GitLab pipeline v8.12.71](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558135816) | - |
+| general | GitLab pipeline v8.12.72 | [GitLab pipeline v8.12.72](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558270507) | - |
 | monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
 | vercel-deployment | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
 
@@ -93,7 +94,7 @@ Latest run: QA-20260528-0633 (2026-05-28T08:02:28.899Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.71 release smoke command evidence | `reports/qa/evidence/qa-20260528-v81271-release-smoke.txt` | - |
+| playwright-console | v8.12.72 Q-NEW72 live production stream evidence | `reports/qa/evidence/qa-20260528-v81272-qnew72-live-smoke.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -188,18 +189,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 729 items completed (full list in qa-tracker.json)
+- Total: 730 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - q-new72-metric-risk-compare: CPU/MEM/DISK 중 가장 위험 메트릭 질의가 deterministic metric-current 위험도 비교로 응답 (last QA-20260528-0634)
   - dashboard-alert-feed-card-focus: Inline alert feed clicks focus and highlight the matching server card (last QA-20260528-0630)
   - dashboard-mobile-resource-gauge-wrap: System resource gauges wrap on mobile without horizontal overflow (last QA-20260528-0630)
   - ai-assistant-button-label-visible: AI Assistant button label always-visible change retained and verified (last QA-20260528-0629)
   - p20-trend-rate-ranking-routing: P20 증가율이 가장 높은 서버 질의가 peak 시간대가 아닌 metric_trend 증가폭 랭킹으로 라우팅 (last QA-20260528-0629)
-  - p19c-trend-delta-ranking: Trend ranking queries sort by increase delta instead of current value (last QA-20260528-0627)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260528-0634 | 2026-05-28T09:01:00.708Z | targeted | yes | yes | Vercel production stream QA - v8.12.72 Q-NEW72 metric risk compare | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260528-0633 | 2026-05-28T08:02:28.899Z | smoke | yes | no | GitLab production release smoke - v8.12.71 Q-NEW72 metric risk compare | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0632 | 2026-05-28T07:05:27.882Z | smoke | yes | no | GitLab production release smoke - v8.12.70 P23 metric ranking fix | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0631 | 2026-05-28T06:15:13.877Z | smoke | yes | no | GitLab production release smoke - v8.12.69 AI routing fixes | 10 | 0 | 0 | 0 | 0 | 0 |
@@ -219,4 +221,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260527-0617 | 2026-05-26T23:41:16.615Z | targeted | yes | yes | Vercel Playwright QA - v8.12.55 Q-NEW51 resource pressure ranking recheck | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260527-0616 | 2026-05-26T17:49:46.355Z | targeted | yes | yes | Vercel Playwright QA - v8.12.53 Q-NEW46 Analyst zero-metric regression recheck | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260526-0615 | 2026-05-26T14:54:35.345Z | targeted | no | yes | AI 어시스턴트 신규 질문 평가 Q-NEW46~Q-NEW51 (P15/P16 발견) | 7 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260526-0614 | 2026-05-26T12:52:44.071Z | release-gate | yes | yes | Vercel Playwright QA - v8.12.51 Release Gate | 12 | 3 | 0 | 0 | 0 | 0 |
