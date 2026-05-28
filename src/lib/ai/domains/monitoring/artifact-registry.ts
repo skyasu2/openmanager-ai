@@ -23,5 +23,3 @@ export type MonitoringChatArtifact =
   | ServerMonitoringAnalysisArtifact
   | ServerSnapshotArtifact
   | OpsProcedureArtifact;
-
-export type MonitoringArtifactKind = MonitoringChatArtifact['kind'];

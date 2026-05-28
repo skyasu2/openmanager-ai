@@ -406,12 +406,6 @@ const _getTypographyClass = (
   return TYPOGRAPHY[scale][size] || TYPOGRAPHY.body.medium;
 };
 
-// ===== 페이지 배경 시스템 =====
-export const PAGE_BACKGROUNDS = {
-  // 표준 다크 페이지 배경 (Slate-900 기반)
-  DARK_PAGE_BG: 'bg-linear-to-br from-slate-900 via-slate-800 to-slate-900',
-} as const;
-
 // ===== 버튼 스타일 시스템 (2025 업데이트) =====
 // 업계 표준 참고: GitHub 16px/600, Google 14px/500 → 균형잡힌 16px/600 적용
 const _BUTTON_STYLES = {

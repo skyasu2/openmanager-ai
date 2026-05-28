@@ -52,12 +52,6 @@ export function registerArtifactExecutor(
   };
 }
 
-export function unregisterArtifactExecutor(
-  input: ArtifactExecutorKeyInput | string
-): void {
-  artifactExecutorMap.delete(readArtifactExecutorKey(input));
-}
-
 export function resolveArtifactExecutor(
   input: ArtifactExecutorKeyInput | string
 ): ArtifactExecutorFn | undefined {
