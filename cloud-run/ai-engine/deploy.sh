@@ -421,7 +421,19 @@ enforce_free_tier_guards() {
   echo "   ✅ Free-tier guardrails passed"
 }
 
+enforce_cloud_build_dockerfile_compatibility() {
+  echo ""
+  echo "🧱 Enforcing Cloud Build Dockerfile compatibility..."
+
+  if grep -Ev '^[[:space:]]*#' "$SCRIPT_DIR/Dockerfile" | grep -Eq '^[[:space:]]*RUN[[:space:]]+--mount='; then
+    fail_free_tier_guard "Dockerfile uses BuildKit-only RUN --mount while deploy.sh uses gcloud builds submit --tag"
+  fi
+
+  echo "   ✅ Cloud Build Dockerfile compatibility passed"
+}
+
 enforce_free_tier_guards
+enforce_cloud_build_dockerfile_compatibility
 validate_non_negative_integer "KEEP_IMAGES" "$KEEP_IMAGES"
 validate_non_negative_integer "KEEP_SOURCES" "$KEEP_SOURCES"
 validate_non_negative_integer "KEEP_REVISIONS" "$KEEP_REVISIONS"

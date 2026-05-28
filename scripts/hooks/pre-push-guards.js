@@ -91,6 +91,20 @@ function findGitLabCiSemanticIssues(content) {
   return issues;
 }
 
+function deployUsesDefaultCloudBuildTagMode(deployBody) {
+  return (
+    /\bgcloud\s+builds\s+submit\b/.test(deployBody) &&
+    /(^|\n)\s*--tag\b/.test(deployBody) &&
+    !/(^|\n)\s*--config\b/.test(deployBody)
+  );
+}
+
+function dockerfileUsesBuildKitRunMount(dockerfileBody) {
+  return dockerfileBody
+    .split('\n')
+    .some((line) => /^\s*RUN\s+--mount=/.test(line));
+}
+
 // ─── Canonical remote push guard ─────────────────────────────────────────
 
 function resolveCanonicalRemote(runGit) {
@@ -175,6 +189,7 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
   const changedFiles = changedFilesResult.files;
   const watchedFiles = [
     'cloud-run/ai-engine/cloudbuild.yaml',
+    'cloud-run/ai-engine/Dockerfile',
     'cloud-run/ai-engine/deploy.sh',
   ];
   const hasChangedFiles = changedFiles.length > 0;
@@ -191,9 +206,14 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
   }
 
   const cloudbuildPath = path.join(cwd, 'cloud-run/ai-engine/cloudbuild.yaml');
+  const dockerfilePath = path.join(cwd, 'cloud-run/ai-engine/Dockerfile');
   const deployPath = path.join(cwd, 'cloud-run/ai-engine/deploy.sh');
 
-  if (!fs.existsSync(cloudbuildPath) || !fs.existsSync(deployPath)) {
+  if (
+    !fs.existsSync(cloudbuildPath) ||
+    !fs.existsSync(dockerfilePath) ||
+    !fs.existsSync(deployPath)
+  ) {
     return createGuardResult(true, { skipped: true });
   }
 
@@ -201,7 +221,10 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
 
   const cloudbuildRaw = fs.readFileSync(cloudbuildPath, 'utf8');
   const cloudbuildBody = stripHashComments(cloudbuildRaw);
+  const dockerfileRaw = fs.readFileSync(dockerfilePath, 'utf8');
+  const dockerfileBody = stripHashComments(dockerfileRaw);
   const deployRaw = fs.readFileSync(deployPath, 'utf8');
+  const deployBody = stripHashComments(deployRaw);
   const failures = [];
 
   if (/\bmachineType\b/.test(cloudbuildBody)) {
@@ -224,6 +247,15 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
 
   if (!deployRaw.includes('enforce_free_tier_guards')) {
     failures.push('cloud-run/ai-engine/deploy.sh missing free-tier guard enforcement');
+  }
+
+  if (
+    deployUsesDefaultCloudBuildTagMode(deployBody) &&
+    dockerfileUsesBuildKitRunMount(dockerfileBody)
+  ) {
+    failures.push(
+      'cloud-run/ai-engine/Dockerfile contains BuildKit-only RUN --mount while deploy.sh uses gcloud builds submit --tag'
+    );
   }
 
   if (failures.length > 0) {

@@ -130,6 +130,9 @@ deploy_ai_engine:
         if (normalized.endsWith('/cloud-run/ai-engine/cloudbuild.yaml')) {
           return 'options:\n  machineType: E2_HIGHCPU_8\n';
         }
+        if (normalized.endsWith('/cloud-run/ai-engine/Dockerfile')) {
+          return 'FROM node:24-alpine3.21\nRUN npm ci --ignore-scripts\n';
+        }
         if (normalized.endsWith('/cloud-run/ai-engine/deploy.sh')) {
           return '#!/usr/bin/env bash\n# guard strings intentionally missing\n';
         }
@@ -180,6 +183,9 @@ deploy_ai_engine:
         if (normalized.endsWith('/cloud-run/ai-engine/cloudbuild.yaml')) {
           return '# machineType: E2_HIGHCPU_8\nsteps:\n  - name: gcr.io/cloud-builders/docker\n';
         }
+        if (normalized.endsWith('/cloud-run/ai-engine/Dockerfile')) {
+          return 'FROM node:24-alpine3.21\n# RUN --mount=commented\nRUN npm ci --ignore-scripts\n';
+        }
         if (normalized.endsWith('/cloud-run/ai-engine/deploy.sh')) {
           return [
             '#!/usr/bin/env bash',
@@ -211,6 +217,57 @@ deploy_ai_engine:
     );
     expect(result).toEqual({ ok: true });
     expect(exitSpy).not.toHaveBeenCalled();
+  });
+
+  it('blocks BuildKit-only Dockerfile RUN mounts when deploy uses Cloud Build tag mode', () => {
+    vi.spyOn(fs, 'existsSync').mockReturnValue(true);
+    vi.spyOn(fs, 'readFileSync').mockImplementation(
+      (filePath: fs.PathOrFileDescriptor) => {
+        const normalized = String(filePath).replace(/\\/g, '/');
+        if (normalized.endsWith('/cloud-run/ai-engine/cloudbuild.yaml')) {
+          return 'steps:\n  - name: gcr.io/cloud-builders/docker\n';
+        }
+        if (normalized.endsWith('/cloud-run/ai-engine/Dockerfile')) {
+          return [
+            'FROM node:24-alpine3.21',
+            'RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts',
+          ].join('\n');
+        }
+        if (normalized.endsWith('/cloud-run/ai-engine/deploy.sh')) {
+          return [
+            '#!/usr/bin/env bash',
+            'assert_no_forbidden_args "$' + '{BUILD_CMD[@]}"',
+            'assert_no_forbidden_args "$' + '{DEPLOY_CMD[@]}"',
+            'enforce_free_tier_guards',
+            'BUILD_CMD=(',
+            '  gcloud builds submit',
+            '  --tag "$IMAGE_URI"',
+            '  .',
+            ')',
+          ].join('\n');
+        }
+        throw new Error(`Unexpected readFileSync path: ${normalized}`);
+      }
+    );
+
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const result = checkCloudBuildFreeTierGuard(
+      {
+        files: ['cloud-run/ai-engine/Dockerfile'],
+        isKnown: true,
+      },
+      '/repo',
+      false
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      reason: 'cloud-build-free-tier-guard',
+      failures: [
+        'cloud-run/ai-engine/Dockerfile contains BuildKit-only RUN --mount while deploy.sh uses gcloud builds submit --tag',
+      ],
+    });
   });
 
   it('returns ok:false with reason when critical node modules are missing', () => {
