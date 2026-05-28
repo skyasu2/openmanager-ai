@@ -327,6 +327,54 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('P20: falls back to metric trend when a stale semantic frame selects peak evidence', async () => {
+    const query = 'CPU 증가율이 가장 높은 서버 알려줘';
+    const support = await resolveDomainEvidenceSupport({
+      query,
+      domain: monitoringDomainPack,
+      sessionId: 'session-p20-stale-peak-frame',
+      traceId: 'trace-p20-stale-peak-frame',
+      metadata: {
+        intentFrame: {
+          ...monitoringMetricPeakFrame,
+          metric: 'cpu',
+          aggregation: 'peak',
+        },
+        semanticQueryTrace: {
+          originalQuery: query,
+          selectedDomain: monitoringDomainPack.id,
+          selectedCapability: 'monitoring.metric_peak',
+          selectedEvidenceProvider: 'monitoring-peak-metric',
+          evidenceAvailable: false,
+          clarificationRequired: false,
+          reasonCodes: ['semantic_frame_from_llm'],
+        },
+      },
+    } as Parameters<typeof resolveDomainEvidenceSupport>[0] & {
+      metadata: Record<string, unknown>;
+    });
+
+    expect(support?.id).toBe('monitoring-metric-trend');
+    expect(support?.fallback).toContain('CPU 증가폭 상위');
+    expect(support?.fallback).not.toContain('최고 시간대');
+    expect(support?.metadata).toMatchObject({
+      capabilityId: 'monitoring.metric_trend',
+      intent: 'metric_trend',
+      metric: 'cpu',
+      trendRankBy: 'delta',
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_trend',
+        selectedEvidenceProvider: 'monitoring-metric-trend',
+        evidenceAvailable: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_raw_fallback_used',
+          'semantic_frame_evidence_validated',
+        ]),
+      },
+    });
+  });
+
   it('resolves current metric ranking as deterministic domain evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query: '현재 CPU 사용률 상위 3대 알려줘',

@@ -141,7 +141,12 @@ function isPeakAggregation(aggregation: string | undefined): boolean {
 export function parseMonitoringPeakMetricFrame(
   request: DomainEvidenceRequest
 ): ParsedPeakMetricRequest | null {
-  if (isCurrentResourcePressureRankingRequest(request.message)) return null;
+  if (
+    isCurrentResourcePressureRankingRequest(request.message) ||
+    METRIC_TREND_RANKING_PATTERN.test(request.message)
+  ) {
+    return null;
+  }
 
   const frame = request.intentFrame;
   if (!frame || frame.domainId !== MONITORING_DOMAIN_ID) return null;

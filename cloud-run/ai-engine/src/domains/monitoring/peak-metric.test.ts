@@ -98,6 +98,31 @@ describe('parseMonitoringPeakMetricMessage', () => {
     ).toBeNull();
   });
 
+  it('P20: ignores stale peak semantic frames for increase-rate ranking phrasing', () => {
+    expect(
+      parseMonitoringPeakMetricFrame({
+        requestId: 'p20-stale-peak-frame',
+        domainId: MONITORING_DOMAIN_ID,
+        message: 'CPU 증가율이 가장 높은 서버 알려줘',
+        messages: [
+          { role: 'user', content: 'CPU 증가율이 가장 높은 서버 알려줘' },
+        ],
+        intentFrame: {
+          domainId: MONITORING_DOMAIN_ID,
+          intent: 'metric_peak',
+          capabilityId: MONITORING_PEAK_METRIC_CAPABILITY_ID,
+          scope: 'whole_fleet',
+          targets: [],
+          metric: 'cpu',
+          timeWindow: '24h',
+          aggregation: 'peak',
+          ambiguity: 'low',
+          confidence: 0.78,
+        },
+      })
+    ).toBeNull();
+  });
+
   it('keeps peak questions routable when they also ask for response guidance', () => {
     expect(
       parseMonitoringPeakMetricMessage(
