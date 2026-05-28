@@ -30,6 +30,9 @@ function elapsedMs(startTime: number): number {
 }
 
 function normalizeDurationMs(durationMs: number): number {
+  if (!Number.isFinite(durationMs)) {
+    return 0;
+  }
   return Math.max(0, durationMs);
 }
 
@@ -263,7 +266,7 @@ export async function* streamWithTrace(
         typeof doneData.metadata?.durationMs === 'number'
           ? doneData.metadata.durationMs
           : elapsedMs(startTime);
-      const durationMs = Math.max(0, rawDurationMs);
+      const durationMs = normalizeDurationMs(rawDurationMs);
       const enrichedMetadata: Record<string, unknown> = {
         ...(doneData.metadata ?? {}),
         ...(metadata ?? {}),

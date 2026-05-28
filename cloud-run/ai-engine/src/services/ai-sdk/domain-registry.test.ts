@@ -52,4 +52,24 @@ describe('domain-registry', () => {
       monitoring.getDefaultMonitoringAssistantRuntimeHost()
     );
   });
+
+  it('registers the real monitoring host through domain bootstrap', async () => {
+    vi.resetModules();
+    vi.doUnmock('./monitoring-runtime-host');
+
+    const registry = await import('./domain-registry');
+    await import('./domain-bootstrap');
+
+    const host = registry.getDefaultDomainHost();
+    expect(host.domain.id).toBe('openmanager-monitoring');
+    expect(host.createToolSet).toEqual(expect.any(Function));
+    expect(host.createSystemPrompt).toEqual(expect.any(Function));
+    expect(host.adapterKinds).toEqual(
+      expect.objectContaining({
+        stateStore: expect.any(String),
+        sessionStore: expect.any(String),
+        jobQueue: expect.any(String),
+      })
+    );
+  }, 60_000);
 });
