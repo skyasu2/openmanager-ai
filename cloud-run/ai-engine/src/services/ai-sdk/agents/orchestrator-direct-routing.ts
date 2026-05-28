@@ -11,6 +11,7 @@ import {
   type RoutingDecisionTrace,
 } from '../routing/routing-decision-trace';
 import { resolveMonitoringSemanticFrameRoute } from '../routing/semantic-frame-policy';
+import { normalizeConfidence } from '../routing/confidence-utils';
 
 export const DEFAULT_DIRECT_ROUTING_AGENT = 'Metrics Query Agent' as const;
 
@@ -43,11 +44,6 @@ const ANALYST_PREFILTER_OVERRIDE_INTENTS = new Set([
   'metric_current',
   'server_health',
 ]);
-
-function normalizeConfidence(value: number | undefined): number {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
-  return value > 1 ? value / 100 : value;
-}
 
 function resolveSemanticFrameAgent(
   intentFrame: DomainIntentFrame | undefined

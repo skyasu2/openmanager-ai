@@ -88,7 +88,8 @@ export function extractGroupTargetsFromMessage(message: string): string[] {
 
 export function extractServerIdTargetsFromMessage(message: string): string[] {
   const targets = new Set<string>();
-  for (const match of message.matchAll(SERVER_ID_PATTERN)) {
+  const globalPattern = new RegExp(SERVER_ID_PATTERN.source, 'gi');
+  for (const match of message.matchAll(globalPattern)) {
     const serverId = match[0]?.toLowerCase();
     if (serverId) targets.add(serverId);
   }

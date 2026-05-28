@@ -13,20 +13,15 @@ import {
   MONITORING_LOCATION_LOAD_BALANCE_CAPABILITY_ID,
 } from './constants';
 import { CAPACITY_FULL_FORECAST_PATTERN } from '../../services/ai-sdk/routing/routing-patterns';
+import {
+  type SnapshotServer,
+  isRecord,
+  readString,
+  readFiniteNumber,
+  readSnapshotTimeLabel,
+} from './snapshot-utils';
 
 type PercentMetric = 'cpu' | 'memory' | 'disk' | 'network';
-
-interface SnapshotServer {
-  id: string;
-  name?: string;
-  type?: string;
-  status?: string;
-  cpu?: number;
-  memory?: number;
-  disk?: number;
-  network?: number;
-  location?: string;
-}
 
 interface LocationSummary {
   location: string;
@@ -54,22 +49,6 @@ const LOCATION_LOAD_BALANCE_PATTERN =
   /(?:(?<![a-z\d-])az\d+|dc\d+-?az\d+|(?<![a-z\d-])dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치).{0,40}(?:부하|로드|load|균형|balance|비교|분산|높|낮|어느)|(?:부하|로드|load|균형|balance|비교|분산|높|낮|어느).{0,40}(?:(?<![a-z\d-])az\d+|dc\d+-?az\d+|(?<![a-z\d-])dc\d+|데이터\s*센터|데이터센터|data\s*center|datacenter|가용\s*영역|availability\s*zone|구역|영역|zone|location|위치)/i;
 const CAPACITY_FORECAST_PATTERN =
   /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function readString(value: unknown): string | undefined {
-  return typeof value === 'string' && value.trim().length > 0
-    ? value.trim()
-    : undefined;
-}
-
-function readFiniteNumber(value: unknown): number | undefined {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value
-    : undefined;
-}
 
 function round1(value: number): number {
   return Math.round(value * 10) / 10;
@@ -101,10 +80,6 @@ function readSnapshotServers(snapshot: DomainSnapshot): SnapshotServer[] {
       location: readString(server.location),
     }))
     .filter((server) => server.id.length > 0);
-}
-
-function readSnapshotTimeLabel(snapshot: DomainSnapshot): string | undefined {
-  return isRecord(snapshot.data) ? readString(snapshot.data.timeLabel) : undefined;
 }
 
 function getLocationMap(): Map<string, string> {

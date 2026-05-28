@@ -1,29 +1,7 @@
 import type { DomainSnapshot } from '../../core/assistant-runtime';
 import type { get24hTrendSummaries } from '../../tools-ai-sdk/server-metrics/data';
 import type { SupportedMetric } from './current-metrics-evidence-request';
-
-type SnapshotServer = {
-  id: string;
-  status?: string;
-  cpu?: number;
-  memory?: number;
-  disk?: number;
-  network?: number;
-};
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function readString(value: unknown): string | undefined {
-  return typeof value === 'string' && value.trim().length > 0
-    ? value.trim()
-    : undefined;
-}
-
-function readSnapshotTimeLabel(snapshot: DomainSnapshot): string | undefined {
-  return isRecord(snapshot.data) ? readString(snapshot.data.timeLabel) : undefined;
-}
+import { type SnapshotServer, readSnapshotTimeLabel } from './snapshot-utils';
 
 function round1(value: number): number {
   return Math.round(value * 10) / 10;

@@ -16,11 +16,15 @@ import {
   normalizeSemanticQueryTrace,
   type SemanticQueryTrace,
 } from './supervisor-semantic-metadata';
+import { normalizeConfidence } from './routing/confidence-utils';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+// Intentionally higher than SEMANTIC_AGENT_CONFIDENCE_THRESHOLD (0.65):
+// fail-closed only when the semantic frame is highly confident about the capability.
+// See routing/confidence-utils.ts for the reasoning.
 const SEMANTIC_EVIDENCE_CONFIDENCE_THRESHOLD = 0.8;
 
 function readString(value: unknown): string | undefined {
@@ -41,11 +45,6 @@ function readFiniteNumber(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isFinite(value)
     ? value
     : undefined;
-}
-
-function normalizeSemanticConfidence(value: number | undefined): number {
-  if (value === undefined || !Number.isFinite(value)) return 0;
-  return value > 1 ? value / 100 : value;
 }
 
 function isDomainIntentScope(value: string): value is DomainIntentScope {
@@ -319,7 +318,7 @@ function shouldFailClosedOnEvidenceMiss(params: {
   }
 
   return (
-    normalizeSemanticConfidence(params.intentFrame.confidence) >=
+    normalizeConfidence(params.intentFrame.confidence) >=
     SEMANTIC_EVIDENCE_CONFIDENCE_THRESHOLD
   );
 }

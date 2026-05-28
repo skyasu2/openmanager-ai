@@ -8,6 +8,14 @@ export const SERVER_HEALTH_EXCLUSION_PATTERN =
   /왜|원인|해결|방법|명령어|command|script|예측|트렌드|보고서|리포트|장애\s*보고서/i;
 export const SERVER_DETAIL_PATTERN =
   /\b[a-z0-9]+(?:-[a-z0-9]+){1,}\b.{0,24}(상태|현황|자세|상세|health|status|detail|어때|알려)/i;
+// 각 그룹 설명:
+//   (A) "지금 조치 필요한 서버" / "즉시 대응 위험"
+//   (B) "조치 필요한 서버 순위"
+//   (C) "가장 위험한 서버"
+//   (D) "어느 서버가 위험한"
+//   (E) "문제 있는 서버/시스템"
+//   (F) "이상 있는/비정상/장애 서버"
+//   (G) 영어 표현 (immediate action, unhealthy servers 등)
 export const ACTION_NEEDED_PATTERN =
   /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응|위험).{0,32}(?:필요|해야|대상|있|시급|서버)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)|(?:어떤|어느|무슨)?\s*(?:서버|대상).{0,24}(?:가장\s*)?(?:위험한|위험도\s*높은)|문제\s*(?:있는|가\s*있는|있\s*는)\s*(?:서버|대상|시스템)|(?:서버|대상|시스템).{0,20}문제\s*(?:있|가\s*있)|이상\s*(?:있는|이\s*있는)\s*(?:서버|대상)|비정상\s*(?:서버|대상|인\s*서버)|장애\s*(?:있는|가\s*있는)\s*(?:서버|대상)|immediate\s+action|urgent\s+action|action\s+needed|most\s+at\s+risk|problematic\s+servers?|faulty\s+servers?|unhealthy\s+servers?/i;
 export const HEALTHY_ONLY_PATTERN =
@@ -42,7 +50,9 @@ export const GENERIC_METRIC_TREND_PATTERN =
   /메트릭|지표|리소스|resource|metrics?/i;
 export const GROUP_SERVER_LIST_PATTERN =
   /서버\s*(?:들|목록|리스트)|호스트\s*(?:목록|리스트)?|목록|리스트|보여|알려|나열|show|list|servers?|hosts?|instances?|nodes?/i;
-export const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi;
+// Non-global: use new RegExp(SERVER_ID_PATTERN.source, 'gi') for matchAll calls
+// to avoid stateful lastIndex accumulation from exported regex constants.
+export const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/i;
 export const CONTEXTUAL_FOLLOW_UP_PATTERN =
   /방금|직전|이전|앞서|위\s*(?:결과|답변|내용)|방금\s*분석한|분석한\s*서버\s*중|방금\s*본|앞에서\s*본|(?:그|해당|이|위)\s*(?:서버|대상|호스트|노드)\s*(?:들|중|만|의)?/i;
 export const MAX_CONTEXTUAL_SERVER_TARGETS = 12;

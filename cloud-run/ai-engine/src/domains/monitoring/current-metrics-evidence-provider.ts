@@ -22,6 +22,10 @@ import {
   type CurrentMetricsEvidenceIntent,
   type ParsedCurrentMetricsEvidenceRequest,
 } from './current-metrics-evidence-request';
+import {
+  readSnapshotSlotIndex,
+  readSnapshotTimeLabel,
+} from './snapshot-utils';
 
 export type {
   MetricCondition,
@@ -30,34 +34,10 @@ export type {
 } from './current-metrics-evidence-request';
 export { parseCurrentMetricsEvidenceRequest } from './current-metrics-evidence-request';
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function readString(value: unknown): string | undefined {
-  return typeof value === 'string' && value.trim().length > 0
-    ? value.trim()
-    : undefined;
-}
-
-function readFiniteNumber(value: unknown): number | undefined {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value
-    : undefined;
-}
-
 async function resolveCurrentSnapshot(
   request: DomainEvidenceRequest
 ): Promise<DomainSnapshot | null> {
   return request.dataSource?.snapshot(request) ?? null;
-}
-
-function readSnapshotSlotIndex(snapshot: DomainSnapshot): number | undefined {
-  return isRecord(snapshot.data) ? readFiniteNumber(snapshot.data.slotIndex) : undefined;
-}
-
-function readSnapshotTimeLabel(snapshot: DomainSnapshot): string | undefined {
-  return isRecord(snapshot.data) ? readString(snapshot.data.timeLabel) : undefined;
 }
 
 function buildCurrentMetricsPrompt(params: {
