@@ -40,6 +40,7 @@ import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-h
 import { getOffDomainGuardrail } from '../../lib/off-domain-guard';
 import { sanitizeUserFacingResponse } from '../../lib/text-sanitizer';
 
+import type { DomainEvidenceResult } from '../../core/assistant-runtime';
 import {
   SupervisorRequest,
   SupervisorResponse,
@@ -88,6 +89,7 @@ import {
 import { normalizeSupervisorIntentFrame } from './supervisor-semantic-metadata';
 import { buildToolResultSummary } from './supervisor-tool-results';
 import { enrichResponseWithToolResults } from './supervisor-response-enrichment';
+import { resolveDomainEvidenceForStream } from './supervisor-domain-evidence';
 
 export { executeSupervisorStream } from './supervisor-stream';
 
@@ -105,6 +107,25 @@ function getResponseQualityAgentName(intent: IntentCategory): string {
     default:
       return 'Supervisor';
   }
+}
+
+function shouldUseDeterministicDomainEvidenceAnswer(
+  domainEvidence: DomainEvidenceResult | undefined
+): boolean {
+  return [
+    'deterministic_answer',
+    'deterministic_read_only_advice',
+    'deterministic_fail_closed',
+  ].includes(String(domainEvidence?.metadata?.responsePolicy ?? ''));
+}
+
+function buildDomainEvidenceMetadata(domainEvidence: DomainEvidenceResult) {
+  return {
+    id: domainEvidence.id,
+    responsePolicy: domainEvidence.metadata?.responsePolicy,
+    capabilityId: domainEvidence.metadata?.capabilityId,
+    intent: domainEvidence.metadata?.intent,
+  };
 }
 
 // ============================================================================
@@ -129,6 +150,10 @@ export async function executeSupervisor(
   const queryText = runtimeRequest.messages
     .filter((message) => message.role === 'user')
     .at(-1)?.content ?? '';
+  const intentFrame = normalizeSupervisorIntentFrame(
+    runtimeRequest.metadata?.intentFrame
+  );
+  const queryIntent = getIntentCategory(queryText, intentFrame);
 
   logger.info({
     sessionId: request.sessionId,
@@ -156,6 +181,50 @@ export async function executeSupervisor(
         ...buildInternalImplementationPathPolicyMetadata(durationMs),
         ...buildSupervisorModeMetadata(modeDecision),
         ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
+      },
+    };
+  }
+
+  const domainEvidence = await resolveDomainEvidenceForStream({
+    request: runtimeRequest,
+    query: queryText,
+    domain: runtimeContext.host.domain,
+  }) ?? undefined;
+  if (
+    domainEvidence &&
+    shouldUseDeterministicDomainEvidenceAnswer(domainEvidence)
+  ) {
+    const durationMs = Date.now() - startTime;
+    const response = sanitizeUserFacingResponse(domainEvidence.fallback);
+    const qualityAgentName = getResponseQualityAgentName(queryIntent);
+    const quality = evaluateAgentResponseQuality(qualityAgentName, response, {
+      durationMs,
+    });
+
+    return {
+      success: true,
+      response,
+      toolsCalled: [domainEvidence.id],
+      toolResults: [],
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      metadata: {
+        provider: 'deterministic',
+        modelId: domainEvidence.id,
+        stepsExecuted: 0,
+        durationMs,
+        responseChars: quality.responseChars,
+        formatCompliance: quality.formatCompliance,
+        qualityFlags: quality.qualityFlags,
+        latencyTier: quality.latencyTier,
+        finalAgent: qualityAgentName,
+        mode: modeDecision.resolvedMode,
+        ...buildSupervisorModeMetadata(modeDecision),
+        ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
+        domainEvidence: buildDomainEvidenceMetadata(domainEvidence),
+        ...(domainEvidence.metadata?.semanticQueryTrace !== undefined &&
+        domainEvidence.metadata.semanticQueryTrace !== null
+          ? { semanticQueryTrace: domainEvidence.metadata.semanticQueryTrace }
+          : {}),
       },
     };
   }

@@ -734,6 +734,48 @@ describe('supervisor domain wiring contract', () => {
     }
   );
 
+  it('short-circuits Q-NEW72 metric risk comparison in the non-stream supervisor entrypoint', async () => {
+    const runtimeHost = createMonitoringAssistantRuntimeHost();
+
+    const result = await executeSupervisor({
+      mode: 'auto',
+      messages: [
+        { role: 'user', content: 'CPU/MEM/DISK 중 가장 위험 메트릭은?' },
+      ],
+      sessionId: 'session-qnew72-non-stream',
+      enableRAG: false,
+      enableWebSearch: false,
+      runtimeHost,
+    });
+
+    expect(mockGenerateText).not.toHaveBeenCalled();
+    expect(mockExecuteMultiAgent).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      success: true,
+      toolsCalled: ['monitoring-metric-current'],
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      metadata: {
+        provider: 'deterministic',
+        modelId: 'monitoring-metric-current',
+        domainEvidence: {
+          id: 'monitoring-metric-current',
+          responsePolicy: 'deterministic_answer',
+          capabilityId: 'monitoring.metric_current',
+          intent: 'metric_current',
+        },
+        semanticQueryTrace: {
+          selectedCapability: 'monitoring.metric_current',
+          selectedEvidenceProvider: 'monitoring-metric-current',
+          evidenceAvailable: true,
+          clarificationRequired: false,
+        },
+      },
+    });
+    expect('response' in result ? result.response : '').toContain(
+      '가장 위험한 메트릭'
+    );
+  });
+
   it('short-circuits forced KRL SSOT queries to direct knowledge search before multi-agent routing', async () => {
     mockSelectExecutionMode.mockReturnValue('multi');
     vi.mocked(resolveRAGSetting).mockReturnValue(true);

@@ -269,6 +269,13 @@ export interface SupervisorResponse {
       preview?: string;
       status: 'completed' | 'failed';
     }>;
+    domainEvidence?: {
+      id: string;
+      responsePolicy?: unknown;
+      capabilityId?: unknown;
+      intent?: unknown;
+    };
+    semanticQueryTrace?: unknown;
     finalAgent?: string;
     /** Provider 불가 시 fallback 응답 여부 */
     fallback?: boolean;
