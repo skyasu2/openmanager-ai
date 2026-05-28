@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-28 18:20:19 KST
+> Generated at: 2026-05-28 19:42:23 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 633 |
-| Total Runs (Counted) | 498 |
+| Total Recorded Runs | 634 |
+| Total Runs (Counted) | 499 |
 | Non-counted Runs | 135 |
-| Total Checks | 4390 |
-| Passed | 4190 |
+| Total Checks | 4405 |
+| Passed | 4205 |
 | Failed | 159 |
-| Completed Items | 730 |
+| Completed Items | 731 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260528-0634 (2026-05-28T09:01:00.708Z) |
-| Latest Recorded Run | QA-20260528-0635 (2026-05-28T09:20:18.560Z) |
+| Last Counted Run | QA-20260528-0636 (2026-05-28T10:42:22.198Z) |
+| Latest Recorded Run | QA-20260528-0636 (2026-05-28T10:42:22.198Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,34 +34,36 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260528-0635 (2026-05-28T09:20:18.560Z)
+Latest run: QA-20260528-0636 (2026-05-28T10:42:22.198Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | P20 residual recheck after usage check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443. |
-| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00577-tfn. |
+| vercel | cli | checked | normal | v8.12.73 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443. |
+| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00578-tqc. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-27T09:20:18.560Z -> 2026-05-28T09:20:18.560Z (24h)
-- Runs with observations: 5 recorded / 4 counted
-- Samples: 9
+- Window: 2026-05-27T10:42:22.198Z -> 2026-05-28T10:42:22.198Z (24h)
+- Runs with observations: 6 recorded / 5 counted
+- Samples: 11
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | streaming-ai | 1 | 7000ms | 7000ms | - | - | - | - | QA-20260528-0628 |
 | Metrics Query Agent | cloud-run-ai | 4 | 1140ms | 1561ms | - | - | 1561ms | 1561ms | QA-20260528-0628 |
-| Metrics Query Agent | deterministic | 4 | 514ms | 1321ms | - | - | 95ms | 185ms | QA-20260528-0635 |
+| Metrics Query Agent | deterministic | 6 | 630ms | 1377ms | - | - | 122ms | 224ms | QA-20260528-0636 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-27T09:20:18.560Z -> 2026-05-28T09:20:18.560Z (24h)
+- Window: 2026-05-27T10:42:22.198Z -> 2026-05-28T10:42:22.198Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,25 +75,26 @@ Latest run: QA-20260528-0635 (2026-05-28T09:20:18.560Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: gitlab-pipeline-2558270507-v8.12.72 / SHA 9d1870d4
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: Cloud Run direct /api/ai/supervisor P20 exact query returns deterministic monitoring-metric-trend answer, Cloud Run direct /api/ai/supervisor P20 top-3 query returns deterministic monitoring-metric-trend answer, P20 response content returns CPU increase-delta ranking instead of peak-time answer, Cloud Run free-tier guardrails remain intact, Vercel usage remains billed 0.0000 USD after recheck
-- Skipped Surfaces: Vercel browser/UI route was not rerun because QA-20260528-0629 already covered P20 in production UI, Full conversational AI pack was not rerun because this was a residual status recheck, not a new AI behavior change, P5 pronoun/session-context behavior was not retested because it is currently classified as portfolio no-fix
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: gitlab-pipeline-2558589906-v8.12.73 / SHA 095023c0
+- Coverage Packs: ai-core, observability-pack, core-routes-smoke
+- Covered Surfaces: GitLab main validate pipeline 2558542772 completed successfully for the Q-NEW76 fix commit, GitLab tag pipeline v8.12.73 completed successfully, release:publish production smoke passed on attempt 1/81, Production /api/version reports 8.12.73, v8.12.73, and commit 095023c002b5b7b13783eda9f7c61f6d6a36951c, Cloud Run /health reports status ok and version 8.12.73, Cloud Run direct /api/ai/supervisor Q-NEW76 omitted-noun wording returns deterministic monitoring-metric-current answer, Vercel primary /api/ai/supervisor/stream/v2 Q-NEW76 returns event-stream from cloud-run, Vercel stream data-done reports provider deterministic, modelId monitoring-metric-current, and toolsCalled monitoring-metric-current, Q-NEW76 answer ranks disk as the highest-risk metric with memory and CPU below it, Guest login auth path works for the production stream probe, Cloud Run free-tier guardrails remain intact, Vercel usage remains billed 0.0000 USD after deploy, Pre-push root artifact audit guard was triggered and remediated before the successful push, Cold Docker preflight timeout was cleared by a warm-cache rerun before release
+- Skipped Surfaces: Full broad dashboard visual QA was not rerun; this was a targeted AI routing/answer-quality release recheck, Full five-question conversational QA pack was not rerun after the targeted Q-NEW76 fix, P5 pronoun/session-context behavior was not retested because it is classified as portfolio no-fix
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline v8.12.72 | [GitLab pipeline v8.12.72](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558270507) | - |
+| general | GitLab pipeline v8.12.73 | [GitLab pipeline v8.12.73](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558589906) | - |
 | monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
+| vercel-deployment | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.72 P20 residual Cloud Run evidence | `reports/qa/evidence/qa-20260528-v81272-p20-residual-recheck.txt` | - |
+| playwright-console | v8.12.73 Q-NEW76 live production stream evidence | `reports/qa/evidence/qa-20260528-v81273-qnew76-live-smoke.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -186,18 +189,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 730 items completed (full list in qa-tracker.json)
+- Total: 731 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - q-new76-metric-risk-compare-omitted-noun: CPU/메모리/디스크 중 어느 게 가장 위험? 질의가 deterministic metric-current 위험도 비교로 응답 (last QA-20260528-0636)
   - q-new72-metric-risk-compare: CPU/MEM/DISK 중 가장 위험 메트릭 질의가 deterministic metric-current 위험도 비교로 응답 (last QA-20260528-0634)
   - dashboard-alert-feed-card-focus: Inline alert feed clicks focus and highlight the matching server card (last QA-20260528-0630)
   - dashboard-mobile-resource-gauge-wrap: System resource gauges wrap on mobile without horizontal overflow (last QA-20260528-0630)
   - ai-assistant-button-label-visible: AI Assistant button label always-visible change retained and verified (last QA-20260528-0629)
-  - p20-trend-rate-ranking-routing: P20 증가율이 가장 높은 서버 질의가 peak 시간대가 아닌 metric_trend 증가폭 랭킹으로 라우팅 (last QA-20260528-0629)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260528-0636 | 2026-05-28T10:42:22.198Z | targeted | yes | yes | Vercel production stream QA - v8.12.73 Q-NEW76 metric risk compare omitted noun | 15 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260528-0635 | 2026-05-28T09:20:18.560Z | targeted | no | no | Cloud Run production residual recheck - v8.12.72 P20 trend-rate ranking | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0634 | 2026-05-28T09:01:00.708Z | targeted | yes | yes | Vercel production stream QA - v8.12.72 Q-NEW72 metric risk compare | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260528-0633 | 2026-05-28T08:02:28.899Z | smoke | yes | no | GitLab production release smoke - v8.12.71 Q-NEW72 metric risk compare | 10 | 0 | 0 | 0 | 0 | 0 |
@@ -217,4 +221,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260527-0619 | 2026-05-27T01:08:32.983Z | targeted | yes | yes | Vercel Playwright QA - v8.12.56 Q-NEW46a anomaly clarification bypass recheck | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0618 | 2026-05-27T00:02:33.378Z | targeted | yes | yes | Vercel Playwright QA - v8.12.55 Q-NEW48 inverse metric filter recheck | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0617 | 2026-05-26T23:41:16.615Z | targeted | yes | yes | Vercel Playwright QA - v8.12.55 Q-NEW51 resource pressure ranking recheck | 4 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260527-0616 | 2026-05-26T17:49:46.355Z | targeted | yes | yes | Vercel Playwright QA - v8.12.53 Q-NEW46 Analyst zero-metric regression recheck | 4 | 1 | 0 | 0 | 0 | 0 |

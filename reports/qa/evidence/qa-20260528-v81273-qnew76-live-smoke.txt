@@ -1,0 +1,81 @@
+QA evidence: v8.12.73 Q-NEW76 live production smoke
+
+Target
+- Frontend: https://openmanager-ai.vercel.app
+- Cloud Run direct URL: https://ai-engine-jdhrhws7ia-an.a.run.app
+- Vercel configured Cloud Run URL observed in stream developer context: https://ai-engine-490817238363.asia-northeast1.run.app
+- Commit: 095023c002b5b7b13783eda9f7c61f6d6a36951c
+- Tag: v8.12.73
+- Pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558589906
+
+Release/deploy checks
+- GitLab main validate pipeline 2558542772 completed with status=success for commit cc230ac62a52bab300e2f544ebca49d3e9dbcfeb.
+- GitLab tag pipeline 2558589906 completed with status=success for v8.12.73.
+- release:publish post-deploy smoke passed on attempt 1/81.
+- Production /api/version returned version=8.12.73, releaseTag=v8.12.73, commitSha=095023c002b5b7b13783eda9f7c61f6d6a36951c.
+- Cloud Run /health returned status=ok and version=8.12.73.
+- Latest Cloud Run ready revision after deploy: ai-engine-00578-tqc.
+
+Pre-release process observations
+- The first git push attempt was blocked by the pre-push root artifact audit because QA screenshots and .playwright-mcp artifacts were left in the repository root.
+- npm run root:artifacts:cleanup:all moved those artifacts into tmp/root-artifacts/2026-05-28 and root:artifacts:audit:strict passed afterward.
+- The first Docker build-only preflight reached the final chown step but timed out at the 420s script limit; the warm-cache rerun completed successfully.
+- npm audit --omit=dev --audit-level=high exited 0. It still reported one moderate ws advisory in production dependencies, so this is not a high/critical deploy blocker but remains dependency maintenance debt.
+
+Free-tier and usage checks
+- npm run check:usage passed Cloud Run guardrails:
+  - maxScale=1
+  - concurrency=16
+  - timeoutSeconds=300
+  - cpu=1
+  - memory=512Mi
+  - cpu-throttling=true
+  - latestReadyRevision=ai-engine-00578-tqc
+- Vercel usage check returned effective=18.5833 USD, billed=0.0000 USD, chargeCount=16443.
+- Latest Cloud Build list showed the v8.12.73 build status=SUCCESS with no explicit machineType value.
+
+Direct Cloud Run Q-NEW76 probe
+- Request: POST /api/ai/supervisor
+- Query: CPU/메모리/디스크 중 어느 게 가장 위험?
+- HTTP status: 200
+- Total time: 0.347472s
+- success: true
+- toolsCalled: ["monitoring-metric-current"]
+- metadata.provider: deterministic
+- metadata.modelId: monitoring-metric-current
+- metadata.durationMs: 72
+- metadata.domainEvidence.id: monitoring-metric-current
+- metadata.domainEvidence.responsePolicy: deterministic_answer
+- semanticQueryTrace.selectedCapability: monitoring.metric_current
+- Answer summary:
+  - 판정: 현재 가장 위험한 메트릭은 디스크
+  - 디스크: critical 0대, warning 0대, 최고 db-mysql-dc1-backup 70%, 평균 36.9%
+  - 메모리: critical 0대, warning 0대, 최고 db-mysql-dc1-replica 62%, 평균 44.8%
+  - CPU: critical 0대, warning 0대, 최고 lb-haproxy-dc1-01 63%, 평균 32.1%
+
+Vercel primary stream route Q-NEW76 probe
+- Guest login: HTTP 200.
+- Request: POST /api/ai/supervisor/stream/v2
+- Query: CPU/메모리/디스크 중 어느 게 가장 위험?
+- HTTP status: 200
+- Content-Type: text/event-stream
+- x-ai-source: cloud-run
+- x-backend: cloud-run-stream-v2
+- x-ai-mode: streaming
+- x-ai-latency-ms: 224
+- x-stream-protocol: ui-message-stream
+- Total time: 1.376548s
+- Stream data-done success: true
+- Stream data-done durationMs: 47
+- Stream data-done toolsCalled: ["monitoring-metric-current"]
+- Stream data-done metadata.provider: deterministic
+- Stream data-done metadata.modelId: monitoring-metric-current
+- Stream data-done metadata.durationMs: 5
+- Stream data-done metadata.domainEvidence.id: monitoring-metric-current
+- Stream data-done metadata.domainEvidence.responsePolicy: deterministic_answer
+- Stream answer text matched the direct Cloud Run deterministic metric-risk ranking and selected disk as the highest-risk metric.
+
+Conclusion
+- Q-NEW76 is fixed in production for both the Cloud Run non-stream supervisor entrypoint and the dashboard primary Vercel stream route.
+- The issue was specifically the omitted trailing "메트릭/지표" noun form; production now routes that wording to deterministic monitoring.metric_current evidence instead of Analyst fallback.
+- P5 session context remains intentionally outside this release scope as portfolio no-fix.
