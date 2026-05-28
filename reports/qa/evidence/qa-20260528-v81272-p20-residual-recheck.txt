@@ -1,0 +1,52 @@
+QA evidence: v8.12.72 P20 residual production recheck
+
+Target
+- Cloud Run direct URL: https://ai-engine-jdhrhws7ia-an.a.run.app
+- Version: 8.12.72
+- Commit in production release: 9d1870d402ed7a2cf322ae0f19df6527a4b02e80
+
+Reason
+- User requested the next recommended step after deployment review.
+- Recent external evaluation still listed P20 trend-rate ranking as a residual weakness, even though QA tracker already marked it completed in QA-20260528-0629.
+- This run rechecked the exact residual shape against production Cloud Run.
+
+Probe 1
+- Query: CPU 증가율이 가장 높은 서버
+- HTTP status: 200
+- Total time: 0.255851s
+- success: true
+- toolsCalled: ["monitoring-metric-trend"]
+- metadata.provider: deterministic
+- metadata.modelId: monitoring-metric-trend
+- metadata.domainEvidence.id: monitoring-metric-trend
+- metadata.domainEvidence.responsePolicy: deterministic_answer
+- semanticQueryTrace.selectedCapability: monitoring.metric_trend
+- Answer summary:
+  - CPU 증가폭 상위 5대 ranking returned.
+  - Top entries included cache-redis-dc1-01 and api-was-dc1-03.
+  - No peak-time answer was returned.
+
+Probe 2
+- Query: CPU 증가율이 가장 높은 서버 3개 알려줘
+- HTTP status: 200
+- Total time: 0.172413s
+- success: true
+- toolsCalled: ["monitoring-metric-trend"]
+- metadata.provider: deterministic
+- metadata.modelId: monitoring-metric-trend
+- metadata.domainEvidence.id: monitoring-metric-trend
+- metadata.domainEvidence.responsePolicy: deterministic_answer
+- semanticQueryTrace.selectedCapability: monitoring.metric_trend
+- Answer summary:
+  - CPU 증가폭 상위 3대 ranking returned.
+  - Top entries included cache-redis-dc1-01 and api-was-dc1-03.
+  - No peak-time answer was returned.
+
+Usage/free-tier check
+- npm run check:usage passed.
+- Cloud Run guardrails intact: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00577-tfn.
+- Vercel usage: effective=18.5833 USD, billed=0.0000 USD, chargeCount=16443.
+
+Conclusion
+- P20 is not an active production blocker in v8.12.72.
+- Current next state: no active TODO/backlog item; P5 pronoun/session context remains portfolio no-fix unless product scope changes.

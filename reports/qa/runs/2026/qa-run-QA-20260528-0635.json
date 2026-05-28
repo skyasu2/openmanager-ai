@@ -1,0 +1,115 @@
+{
+  "runId": "QA-20260528-0635",
+  "recordedAt": "2026-05-28T09:20:18.560Z",
+  "recordedAtKst": "2026-05-28 18:20:18 KST",
+  "runTitle": "Cloud Run production residual recheck - v8.12.72 P20 trend-rate ranking",
+  "owner": "codex",
+  "source": "cloud-run-probe+usage-check",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2558270507-v8.12.72",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "9d1870d402ed7a2cf322ae0f19df6527a4b02e80"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Cloud Run direct /api/ai/supervisor P20 exact query returns deterministic monitoring-metric-trend answer",
+    "Cloud Run direct /api/ai/supervisor P20 top-3 query returns deterministic monitoring-metric-trend answer",
+    "P20 response content returns CPU increase-delta ranking instead of peak-time answer",
+    "Cloud Run free-tier guardrails remain intact",
+    "Vercel usage remains billed 0.0000 USD after recheck"
+  ],
+  "skippedSurfaces": [
+    "Vercel browser/UI route was not rerun because QA-20260528-0629 already covered P20 in production UI",
+    "Full conversational AI pack was not rerun because this was a residual status recheck, not a new AI behavior change",
+    "P5 pronoun/session-context behavior was not retested because it is currently classified as portfolio no-fix"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P20 Cloud Run direct exact query",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-trend",
+      "route": "/api/ai/supervisor",
+      "source": "curl total time + supervisor metadata",
+      "latencyMs": 256
+    },
+    {
+      "surface": "P20 Cloud Run direct top-3 query",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-trend",
+      "route": "/api/ai/supervisor",
+      "source": "curl total time + supervisor metadata",
+      "latencyMs": 172
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T18:19:00+09:00",
+      "summary": "P20 residual recheck after usage check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.",
+      "evidence": "npm run check:usage",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T18:19:00+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00577-tfn.",
+      "evidence": "npm run check:usage",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.72 P20 residual Cloud Run evidence",
+      "path": "reports/qa/evidence/qa-20260528-v81272-p20-residual-recheck.txt",
+      "note": "Structured curl evidence from direct Cloud Run P20 probes plus usage guard checks."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run is verification-only and intentionally excluded from summary totals because QA-20260528-0629 already completed P20.",
+    "Both exact and top-3 P20 queries returned monitoring-metric-trend, provider=deterministic, and responsePolicy=deterministic_answer.",
+    "Current active TODO/backlog remains empty; P5 session/pronoun scope remains a portfolio no-fix item unless product requirements change."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.72",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558270507"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    }
+  ]
+}
