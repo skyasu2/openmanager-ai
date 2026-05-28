@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7
 # ============================================================================
 # AI Engine - Cloud Run Service (Multi-stage Build)
 # Optimized for Cloud Run cold start & minimal image size
@@ -42,15 +43,14 @@ RUN apk add --no-cache dumb-init
 
 # Keep npm aligned with the workspace lockfile generator to avoid npm ci drift.
 ARG NPM_VERSION
-RUN npm install -g npm@${NPM_VERSION}
+RUN --mount=type=cache,target=/root/.npm,sharing=locked npm install -g npm@${NPM_VERSION}
 
 # Copy package files first (maximize cache hit)
 COPY package.json package-lock.json ./
 
-# Install dependencies with npm ci for reproducibility
-# Note: Cloud Build caches layers, so npm cache is cleaned to reduce image size
-RUN npm ci --ignore-scripts && \
-    npm cache clean --force
+# Install dependencies with npm ci for reproducibility.
+# The cache mount stays outside the image layer, so no npm cache cleanup is needed.
+RUN --mount=type=cache,target=/root/.npm,sharing=locked npm ci --ignore-scripts
 
 # ============================================================================
 # Stage 1.5: Production dependencies (avoid prune hang on Alpine/BuildKit path)
@@ -60,12 +60,11 @@ FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS prod-deps
 WORKDIR /app
 
 ARG NPM_VERSION
-RUN npm install -g npm@${NPM_VERSION}
+RUN --mount=type=cache,target=/root/.npm,sharing=locked npm install -g npm@${NPM_VERSION}
 
 COPY package.json package-lock.json ./
 
-RUN npm ci --omit=dev --ignore-scripts && \
-    npm cache clean --force
+RUN --mount=type=cache,target=/root/.npm,sharing=locked npm ci --omit=dev --ignore-scripts
 
 # ============================================================================
 # Stage 2: Build

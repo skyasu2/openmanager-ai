@@ -1,3 +1,4 @@
+import * as path from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 
 /**
@@ -24,6 +25,14 @@ const vercelWorkers =
   Number.isFinite(parsedVercelWorkers) && parsedVercelWorkers > 0
     ? Math.min(parsedVercelWorkers, 4)
     : defaultVercelWorkers;
+const resolvedOutputDir =
+  process.env.PLAYWRIGHT_VERCEL_OUTPUT_DIR ||
+  process.env.PLAYWRIGHT_OUTPUT_DIR ||
+  'tmp/playwright/vercel/test-results';
+const resolvedHtmlReportDir =
+  process.env.PLAYWRIGHT_VERCEL_REPORT_DIR ||
+  process.env.PLAYWRIGHT_REPORT_DIR ||
+  'tmp/playwright/vercel/report';
 const chromiumLaunchArgs = [
   '--no-sandbox',
   '--disable-setuid-sandbox',
@@ -59,8 +68,9 @@ if (includeMobileProject) {
 
 export default defineConfig({
   // Load environment variables globally before any tests run
-  globalSetup: require.resolve('./tests/support/globalSetup'),
+  globalSetup: path.resolve(__dirname, 'tests/support/globalSetup'),
   testDir: './tests/e2e',
+  outputDir: resolvedOutputDir,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -70,7 +80,15 @@ export default defineConfig({
   /* 병렬 테스트 worker 수 - CI에서도 병렬 실행 활성화 */
   workers: vercelWorkers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    [
+      'html',
+      {
+        open: 'never',
+        outputFolder: resolvedHtmlReportDir,
+      },
+    ],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

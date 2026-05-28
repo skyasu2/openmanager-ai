@@ -9,9 +9,11 @@ IMAGE_TAG="${IMAGE_TAG:-openmanager-ai-engine:preflight}"
 CONTAINER_NAME="${CONTAINER_NAME:-ai-engine-preflight}"
 HEALTH_PORT="${HEALTH_PORT:-18080}"
 SKIP_RUN="${SKIP_RUN:-false}"
-# WSL + cold Docker cache 기준으로 production image build가 5분을 넘길 수 있어
-# 기본값을 여유 있게 잡고, 필요하면 env로 더 낮추거나 높일 수 있게 둔다.
-DOCKER_BUILD_TIMEOUT_SECONDS="${DOCKER_BUILD_TIMEOUT_SECONDS:-420}"
+# WSL + fully cold Docker/BuildKit cache can exceed 7 minutes because both
+# dev and production dependency stages run npm ci. Keep this high enough to
+# catch real Docker regressions without failing a valid cold preflight.
+DOCKER_BUILD_TIMEOUT_SECONDS="${DOCKER_BUILD_TIMEOUT_SECONDS:-900}"
+export DOCKER_BUILDKIT="${DOCKER_BUILDKIT:-1}"
 
 DOCKER_MODE=""
 
@@ -112,14 +114,14 @@ fi
 cd "$ENGINE_DIR"
 ensure_build_assets
 
-log "building image with timeout ${DOCKER_BUILD_TIMEOUT_SECONDS}s"
+log "building image with timeout ${DOCKER_BUILD_TIMEOUT_SECONDS}s (BuildKit=${DOCKER_BUILDKIT})"
 set +e
 if [ "$DOCKER_MODE" = "wsl" ]; then
-  run_with_timeout "$DOCKER_BUILD_TIMEOUT_SECONDS" docker build -t "$IMAGE_TAG" .
+  run_with_timeout "$DOCKER_BUILD_TIMEOUT_SECONDS" docker build --build-arg BUILDKIT_INLINE_CACHE=1 -t "$IMAGE_TAG" .
   build_status=$?
 else
   WINDOWS_ENGINE_DIR="$(wslpath -w "$ENGINE_DIR")"
-  run_with_timeout "$DOCKER_BUILD_TIMEOUT_SECONDS" cmd.exe /c docker build -t "$IMAGE_TAG" "$WINDOWS_ENGINE_DIR"
+  run_with_timeout "$DOCKER_BUILD_TIMEOUT_SECONDS" cmd.exe /c "set DOCKER_BUILDKIT=${DOCKER_BUILDKIT}&& docker build --build-arg BUILDKIT_INLINE_CACHE=1 -t \"${IMAGE_TAG}\" \"${WINDOWS_ENGINE_DIR}\""
   build_status=$?
 fi
 set -e

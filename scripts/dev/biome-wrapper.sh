@@ -73,5 +73,21 @@ BIOME_PATH=$(find_working_biome) || {
     }
 }
 
+add_no_errors_on_unmatched_if_needed() {
+    case "${1:-}" in
+        check|ci|format|lint)
+            for arg in "$@"; do
+                if [ "$arg" = "--no-errors-on-unmatched" ]; then
+                    return 0
+                fi
+            done
+            BIOME_ARGS+=("--no-errors-on-unmatched")
+            ;;
+    esac
+}
+
+BIOME_ARGS=("$@")
+add_no_errors_on_unmatched_if_needed "$@"
+
 # 실행
-exec "$BIOME_PATH" "$@"
+exec "$BIOME_PATH" "${BIOME_ARGS[@]}"

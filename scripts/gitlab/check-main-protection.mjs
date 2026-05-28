@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 
 import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const REQUIRED_VARIABLES = ['VERCEL_TOKEN', 'GCP_SERVICE_KEY', 'GCP_PROJECT_ID'];
 const REQUIRED_TAG_PATTERN = 'v*.*.*';
+const TOKEN_ENV_KEYS = ['GITLAB_TOKEN', 'GL_TOKEN', 'GLAB_TOKEN', 'GITLAB_PRIVATE_TOKEN'];
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const ROOT_DIR = resolve(SCRIPT_DIR, '../..');
 const API_BASE = (process.env.GITLAB_API_BASE_URL || 'https://gitlab.com/api/v4').replace(
   /\/$/,
   ''
@@ -34,13 +39,56 @@ function parseGitLabProjectPath(remoteUrl) {
 }
 
 function tokenFromEnv() {
-  return (
-    process.env.GITLAB_TOKEN ||
-    process.env.GL_TOKEN ||
-    process.env.GLAB_TOKEN ||
-    process.env.GITLAB_PRIVATE_TOKEN ||
-    ''
-  );
+  return TOKEN_ENV_KEYS.map((key) => process.env[key]).find(Boolean) || '';
+}
+
+function unquoteDotenvValue(value) {
+  const trimmed = value.trim();
+  if (trimmed.length < 2) return trimmed;
+
+  const first = trimmed[0];
+  const last = trimmed[trimmed.length - 1];
+  if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+    return trimmed.slice(1, -1);
+  }
+
+  return trimmed;
+}
+
+export function parseDotenvAssignments(content) {
+  const assignments = new Map();
+
+  for (const rawLine of content.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+
+    const normalized = line.startsWith('export ') ? line.slice('export '.length).trim() : line;
+    const separatorIndex = normalized.indexOf('=');
+    if (separatorIndex <= 0) continue;
+
+    const key = normalized.slice(0, separatorIndex).trim();
+    const value = normalized.slice(separatorIndex + 1);
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) continue;
+
+    assignments.set(key, unquoteDotenvValue(value));
+  }
+
+  return assignments;
+}
+
+export function loadDotenvIfNeeded(envPath = resolve(ROOT_DIR, '.env.local')) {
+  if (tokenFromEnv()) return false;
+  if (!existsSync(envPath)) return false;
+
+  const assignments = parseDotenvAssignments(readFileSync(envPath, 'utf8'));
+  for (const key of TOKEN_ENV_KEYS) {
+    const value = assignments.get(key);
+    if (value && !process.env[key]) {
+      process.env[key] = value;
+    }
+  }
+
+  return Boolean(tokenFromEnv());
 }
 
 export function buildManualChecklist(projectPath) {
@@ -318,6 +366,7 @@ function printApiEvaluation(branchResult, tagResult, variableResult) {
 async function main() {
   const remote = runGit(['remote', 'get-url', 'gitlab']);
   const projectPath = parseGitLabProjectPath(remote);
+  loadDotenvIfNeeded();
   const token = tokenFromEnv();
 
   if (!projectPath) {
