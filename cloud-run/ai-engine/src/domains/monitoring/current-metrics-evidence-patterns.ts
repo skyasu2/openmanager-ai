@@ -51,7 +51,9 @@ export const RANKED_SERVER_LINE_PATTERN =
 export const SERVER_COMPARISON_CONNECTOR_PATTERN =
   /\bvs\.?\b|versus|비교|대비|차이|와|과|\band\b|보다(?=\s|$)/i;
 export const TIME_SERIES_COMPARISON_PATTERN =
-  /(지난\s*\d|최근\s*\d|24\s*시간|하루|어제|last\s+\d|last24h|past\s+\d|평균|avg|추세|트렌드|trend|예측|forecast|변화)/i;
+  /(지난\s*\d|최근\s*\d|24\s*시간|하루|어제|last\s+\d|last24h|past\s+\d|추세|트렌드|trend|예측|forecast|변화)/i;
+export const GROUP_HEALTH_COMPARISON_PATTERN =
+  /불안정|안정|위험|문제|비정상|상태|health|unstable|stability|risk/i;
 export const DEFAULT_TREND_METRICS: SupportedMetric[] = [
   'cpu',
   'memory',

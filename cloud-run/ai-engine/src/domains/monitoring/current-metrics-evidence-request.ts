@@ -27,6 +27,7 @@ import {
   CURRENT_METRIC_GROUP_PATTERN,
   DEFAULT_TREND_METRICS,
   GENERIC_METRIC_TREND_PATTERN,
+  GROUP_HEALTH_COMPARISON_PATTERN,
   GROUP_SERVER_LIST_PATTERN,
   HISTORICAL_OR_TREND_PATTERN,
   METRIC_TREND_PATTERN,
@@ -188,6 +189,29 @@ function buildTrendThresholdOptions(
     : {};
 }
 
+function buildGroupHealthCompareRequest(params: {
+  message: string;
+  groupTargets: string[];
+  metric: SupportedMetric | null;
+}): ParsedCurrentMetricsEvidenceRequest | null {
+  if (
+    params.metric ||
+    params.groupTargets.length < 2 ||
+    !isCurrentServerComparisonMessage(params.message) ||
+    !GROUP_HEALTH_COMPARISON_PATTERN.test(params.message)
+  ) {
+    return null;
+  }
+
+  return {
+    intent: 'server_health',
+    capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+    sourceIntent: 'group-health-compare',
+    answerQuery: params.message,
+    groupTargets: params.groupTargets.slice(0, 2),
+  };
+}
+
 function resolveMetricTargets(params: {
   request: DomainEvidenceRequest;
   explicitServerTargets: string[];
@@ -294,6 +318,14 @@ function parseCurrentMetricsFrame(
         ...(healthGroupTarget && { targets: [healthGroupTarget] }),
       };
     }
+
+    const healthGroupTargets = extractGroupTargetsFromMessage(request.message);
+    const healthGroupCompare = buildGroupHealthCompareRequest({
+      message: request.message,
+      groupTargets: healthGroupTargets,
+      metric: messageMetric,
+    });
+    if (healthGroupCompare) return healthGroupCompare;
 
     const groupTarget = inferGroupTargetFromMessage(request.message);
     if (
@@ -521,6 +553,13 @@ function parseCurrentMetricsMessage(
       ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
+
+  const groupHealthCompare = buildGroupHealthCompareRequest({
+    message,
+    groupTargets,
+    metric,
+  });
+  if (groupHealthCompare) return groupHealthCompare;
 
   if (
     !metric &&

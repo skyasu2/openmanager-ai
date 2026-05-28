@@ -9,6 +9,7 @@ import {
 } from '../../services/ai-sdk/agents/orchestrator-summary-fallback';
 import {
   buildCompositeLoadRankingAnswer,
+  buildGroupHealthCompareAnswer,
   buildGroupServerHealthAnswer,
   buildHealthyOnlyServerAnswer,
   buildMetricCurrentAnswer,
@@ -107,6 +108,11 @@ async function resolveCurrentMetricsEvidence(
     parsed.rankBasis === 'composite-load'
   ) {
     answer = buildCompositeLoadRankingAnswer({ parsed, snapshot });
+  } else if (
+    parsed.intent === 'server_health' &&
+    parsed.sourceIntent === 'group-health-compare'
+  ) {
+    answer = buildGroupHealthCompareAnswer({ parsed, snapshot });
   } else if (
     parsed.intent === 'server_health' &&
     parsed.sourceIntent === 'group-server-list'

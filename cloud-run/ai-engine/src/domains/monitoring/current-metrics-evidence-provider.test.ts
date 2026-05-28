@@ -2351,6 +2351,53 @@ describe('current metrics domain evidence providers', () => {
       );
     });
 
+    it('P20: 증가 조건 만족 서버가 없어도 delta 랭킹을 제공한다', async () => {
+      const request = createEvidenceRequest(
+        'CPU 증가율이 가장 높은 서버 3개 알려줘',
+        {
+          timeLabel: '13:40',
+          servers: [
+            {
+              id: 'api-was-dc1-01',
+              type: 'application',
+              status: 'online',
+              cpu: 1,
+              memory: 55,
+              disk: 30,
+            },
+            {
+              id: 'web-nginx-dc1-01',
+              type: 'web',
+              status: 'online',
+              cpu: 1,
+              memory: 44,
+              disk: 29,
+            },
+            {
+              id: 'cache-redis-dc1-01',
+              type: 'cache',
+              status: 'online',
+              cpu: 1,
+              memory: 60,
+              disk: 24,
+            },
+          ],
+        }
+      );
+
+      const evidence = await monitoringMetricTrendEvidenceProvider.resolve(
+        request
+      );
+
+      expect(evidence?.fallback).toContain(
+        '상승 조건을 만족하는 서버는 없습니다'
+      );
+      expect(evidence?.fallback).toContain('CPU 증가폭 상위 3대');
+      expect(evidence?.fallback).toContain('api-was-dc1-01');
+      expect(evidence?.fallback).toContain('web-nginx-dc1-01');
+      expect(evidence?.fallback).toContain('cache-redis-dc1-01');
+    });
+
     it('P21: trend + threshold 쿼리는 현재 임계값과 24h 증가 조건을 함께 적용', async () => {
       const request = createEvidenceRequest(
         '디스크 70% 이상이면서 24h 증가한 서버 알려줘',
@@ -2589,6 +2636,139 @@ describe('current metrics domain evidence providers', () => {
       expect(parsed?.groupTargets).toHaveLength(2);
       expect(parsed?.groupTargets).toContain('database');
       expect(parsed?.groupTargets).toContain('cache');
+    });
+
+    it('P22: DB vs cache CPU 평균 비교는 evidence-unavailable 대신 group-compare로 파싱', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('DB vs cache CPU 평균 비교해줘')
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'group-compare',
+        metric: 'cpu',
+      });
+      expect(parsed?.groupTargets).toHaveLength(2);
+      expect(parsed?.groupTargets).toContain('database');
+      expect(parsed?.groupTargets).toContain('cache');
+    });
+
+    it('P22: DB vs cache CPU 평균 비교는 두 그룹 평균을 모두 응답한다', async () => {
+      const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+        createEvidenceRequest('DB vs cache CPU 평균 비교해줘', {
+          timeLabel: '13:40',
+          servers: [
+            {
+              id: 'db-mysql-dc1-primary',
+              type: 'database',
+              status: 'online',
+              cpu: 54,
+              memory: 62,
+              disk: 58,
+            },
+            {
+              id: 'db-mysql-dc1-replica',
+              type: 'database',
+              status: 'online',
+              cpu: 50,
+              memory: 60,
+              disk: 55,
+            },
+            {
+              id: 'cache-redis-dc1-01',
+              type: 'cache',
+              status: 'warning',
+              cpu: 41,
+              memory: 91,
+              disk: 45,
+            },
+            {
+              id: 'cache-redis-dc1-02',
+              type: 'cache',
+              status: 'online',
+              cpu: 39,
+              memory: 74,
+              disk: 43,
+            },
+          ],
+        })
+      );
+
+      expect(evidence?.id).toBe('monitoring-metric-current');
+      expect(evidence?.fallback).toContain('DB 서버 vs 캐시 서버 CPU 비교');
+      expect(evidence?.fallback).toContain('DB 서버 52%');
+      expect(evidence?.fallback).toContain('캐시 서버 40%');
+      expect(evidence?.fallback).toContain('db-mysql-dc1-primary');
+      expect(evidence?.fallback).toContain('cache-redis-dc1-01');
+    });
+  });
+
+  describe('P21 regression: group instability comparison', () => {
+    it('api-was vs lb 불안정 비교를 양쪽 그룹 server_health 비교로 파싱', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('api-was와 lb 중 더 불안정한 쪽은?')
+      );
+
+      expect(parsed).toMatchObject({
+        intent: 'server_health',
+        sourceIntent: 'group-health-compare',
+      });
+      expect(parsed?.groupTargets).toHaveLength(2);
+      expect(parsed?.groupTargets).toContain('application');
+      expect(parsed?.groupTargets).toContain('loadbalancer');
+    });
+
+    it('api-was vs lb 불안정 비교는 lb 그룹을 누락하지 않는다', async () => {
+      const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+        createEvidenceRequest('api-was와 lb 중 더 불안정한 쪽은?', {
+          timeLabel: '13:40',
+          servers: [
+            {
+              id: 'api-was-dc1-01',
+              type: 'application',
+              status: 'warning',
+              cpu: 76,
+              memory: 68,
+              disk: 47,
+            },
+            {
+              id: 'api-was-dc1-02',
+              type: 'application',
+              status: 'online',
+              cpu: 44,
+              memory: 57,
+              disk: 42,
+            },
+            {
+              id: 'lb-haproxy-dc1-01',
+              type: 'loadbalancer',
+              status: 'warning',
+              cpu: 62,
+              memory: 55,
+              disk: 33,
+            },
+            {
+              id: 'lb-haproxy-dc1-02',
+              type: 'loadbalancer',
+              status: 'online',
+              cpu: 31,
+              memory: 45,
+              disk: 28,
+            },
+          ],
+        })
+      );
+
+      expect(evidence?.id).toBe('monitoring-server-health');
+      expect(evidence?.metadata).toMatchObject({
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+        sourceIntent: 'group-health-compare',
+        groupTargets: expect.arrayContaining(['application', 'loadbalancer']),
+      });
+      expect(evidence?.fallback).toContain('애플리케이션 서버 vs 로드밸런서 안정성 비교');
+      expect(evidence?.fallback).toContain('api-was-dc1-01');
+      expect(evidence?.fallback).toContain('lb-haproxy-dc1-01');
+      expect(evidence?.fallback).toContain('로드밸런서');
     });
   });
 

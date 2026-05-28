@@ -433,6 +433,108 @@ export function buildGroupServerHealthAnswer(params: {
   ].join('\n');
 }
 
+function getStatusPenalty(server: SnapshotServer): number {
+  switch (server.status) {
+    case 'critical':
+    case 'offline':
+      return 40;
+    case 'warning':
+      return 20;
+    default:
+      return 0;
+  }
+}
+
+function getServerInstabilityScore(server: SnapshotServer): number {
+  const metricPressure = Math.max(
+    getMetricValue(server, 'cpu') ?? 0,
+    getMetricValue(server, 'memory') ?? 0,
+    getMetricValue(server, 'disk') ?? 0
+  );
+  return round1(metricPressure + getStatusPenalty(server));
+}
+
+export function buildGroupHealthCompareAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  if (params.parsed.sourceIntent !== 'group-health-compare') return null;
+
+  const groupTargets = params.parsed.groupTargets ?? [];
+  if (groupTargets.length < 2) return null;
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const summaries = groupTargets
+    .map((target) => {
+      const targetType = normalizeServerType(target);
+      const { servers } = filterSnapshotServers(allServers, [target]);
+      if (servers.length === 0) return null;
+
+      const rows = [...servers]
+        .map((server) => ({
+          server,
+          score: getServerInstabilityScore(server),
+        }))
+        .sort((left, right) => right.score - left.score);
+      const avgScore = round1(
+        rows.reduce((sum, row) => sum + row.score, 0) / rows.length
+      );
+      const statusCounts = rows.reduce<Record<string, number>>((acc, row) => {
+        const status = formatServerStatus(row.server);
+        acc[status] = (acc[status] ?? 0) + 1;
+        return acc;
+      }, {});
+
+      return {
+        targetType,
+        label: getServerTypeKoreanLabel(targetType),
+        rows,
+        avgScore,
+        statusCounts,
+      };
+    })
+    .filter((summary): summary is NonNullable<typeof summary> => summary !== null);
+  if (summaries.length < 2) return null;
+
+  const sortedByScore = [...summaries].sort(
+    (left, right) => right.avgScore - left.avgScore
+  );
+  const leader = sortedByScore[0];
+  const follower = sortedByScore[1];
+  if (!leader || !follower) return null;
+
+  const diff = round1(leader.avgScore - follower.avgScore);
+  const conclusion =
+    diff === 0
+      ? '두 그룹의 불안정 점수가 동일합니다.'
+      : `${leader.label}가 ${follower.label}보다 불안정 점수 ${diff}점 높습니다.`;
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+
+  return [
+    `📊 **${summaries.map((summary) => summary.label).join(' vs ')} 안정성 비교**`,
+    '• 기준: 서버별 최고 리소스 사용률(CPU/메모리/디스크) + 상태 페널티(warning +20, critical/offline +40)',
+    `• 대상: ${summaries
+      .map((summary) => `${summary.label} ${summary.rows.length}대`)
+      .join(' · ')}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 그룹 점수: ${summaries
+      .map(
+        (summary) =>
+          `${summary.label} ${summary.avgScore}점 (online ${summary.statusCounts.online ?? 0}, warning ${summary.statusCounts.warning ?? 0}, critical ${summary.statusCounts.critical ?? 0}, offline ${summary.statusCounts.offline ?? 0})`
+      )
+      .join(' · ')}`,
+    `• 결론: ${conclusion}`,
+    ...buildNumberedServerSection(
+      '그룹별 서버 현황',
+      summaries.flatMap((summary) =>
+        summary.rows.map(
+          (row) =>
+            `${summary.label} / **${row.server.id}**: 불안정 점수 ${row.score}점, 상태 ${formatServerStatus(row.server)}, CPU ${formatMetricPercent(getMetricValue(row.server, 'cpu') ?? 0)}, 메모리 ${formatMetricPercent(getMetricValue(row.server, 'memory') ?? 0)}, 디스크 ${formatMetricPercent(getMetricValue(row.server, 'disk') ?? 0)}`
+        )
+      )
+    ),
+  ].join('\n');
+}
+
 function isHealthyServer(server: SnapshotServer): boolean {
   return (
     server.status === 'online' &&
@@ -785,20 +887,30 @@ export function buildMetricTrendAnswer(params: {
 
   const threshold = params.parsed.threshold;
   const thresholdOperator = params.parsed.thresholdOperator;
-  const rows = rawRows
-    .filter((row) =>
-      threshold === undefined
-        ? true
-        : compareMetricValue(row.current, thresholdOperator, threshold)
-    )
-    .filter((row) =>
-      matchesTrendDirection(row.delta, params.parsed.trendDirection)
-    )
-    .sort((left, right) =>
-      params.parsed.trendRankBy === 'delta'
-        ? right.delta - left.delta || right.current - left.current
-        : right.current - left.current
-    );
+  const thresholdMatchedRows = rawRows.filter((row) =>
+    threshold === undefined
+      ? true
+      : compareMetricValue(row.current, thresholdOperator, threshold)
+  );
+  const trendMatchedRows = thresholdMatchedRows.filter((row) =>
+    matchesTrendDirection(row.delta, params.parsed.trendDirection)
+  );
+  const shouldFallbackToDeltaRanking =
+    trendMatchedRows.length === 0 &&
+    thresholdMatchedRows.length > 0 &&
+    params.parsed.trendRankBy === 'delta' &&
+    params.parsed.trendDirection !== undefined;
+  const rows = (
+    shouldFallbackToDeltaRanking ? thresholdMatchedRows : trendMatchedRows
+  ).sort((left, right) => {
+    if (params.parsed.trendRankBy !== 'delta') {
+      return right.current - left.current;
+    }
+
+    return params.parsed.trendDirection === 'decrease'
+      ? left.delta - right.delta || right.current - left.current
+      : right.delta - left.delta || right.current - left.current;
+  });
   const metricLabel = getMetricLabel(metric);
   const rankCount =
     params.parsed.rankCount !== undefined
@@ -821,6 +933,14 @@ export function buildMetricTrendAnswer(params: {
           }`,
         ];
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
+  const fallbackLines = shouldFallbackToDeltaRanking
+    ? [
+        `• 결과: 24h 평균 대비 ${
+          params.parsed.trendDirection === 'increase' ? '상승' : '하락'
+        } 조건을 만족하는 서버는 없습니다.`,
+        '• 대체 기준: 조건 없음으로 끝내지 않고 24h 평균 대비 변화폭이 큰 순서로 표시합니다.',
+      ]
+    : [];
 
   if (rows.length === 0) {
     return [
@@ -856,6 +976,7 @@ export function buildMetricTrendAnswer(params: {
     `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
     ...thresholdLines,
     ...directionLines,
+    ...fallbackLines,
     `• 현재 평균 ${metricLabel}: ${formatMetricPercent(avgCurrent)} · 24h 평균 ${formatMetricPercent(avg24h)} · 전체 ${formatTrendDirection(avgCurrent - avg24h)}`,
     `• 추세 분포: 상승 ${directionCounts['상승'] ?? 0}대, 안정 ${directionCounts['안정'] ?? 0}대, 하락 ${directionCounts['하락'] ?? 0}대`,
     ...buildNumberedServerSection(

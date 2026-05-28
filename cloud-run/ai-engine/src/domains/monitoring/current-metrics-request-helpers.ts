@@ -75,11 +75,15 @@ export function inferGroupTargetFromMessage(message: string): string | undefined
 }
 
 export function extractGroupTargetsFromMessage(message: string): string[] {
-  const targets = new Set<string>();
+  const indexedTargets = new Map<string, number>();
   for (const hint of GROUP_TARGET_HINTS) {
-    if (hint.pattern.test(message)) targets.add(hint.target);
+    const index = message.search(hint.pattern);
+    if (index < 0 || indexedTargets.has(hint.target)) continue;
+    indexedTargets.set(hint.target, index);
   }
-  return Array.from(targets);
+  return Array.from(indexedTargets.entries())
+    .sort((left, right) => left[1] - right[1])
+    .map(([target]) => target);
 }
 
 export function extractServerIdTargetsFromMessage(message: string): string[] {
