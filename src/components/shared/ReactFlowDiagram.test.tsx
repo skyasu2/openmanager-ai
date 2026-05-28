@@ -60,7 +60,7 @@ vi.mock('@xyflow/react', () => ({
 }));
 
 // 컴포넌트 import (모킹 후)
-import ReactFlowDiagram from './ReactFlowDiagram';
+import ReactFlowDiagram from './react-flow-diagram';
 
 // =============================================================================
 // Test Fixtures

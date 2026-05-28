@@ -40,11 +40,7 @@
     "tailwindcss",
     "tailwindcss-animate"
   ],
-  "ignoreFiles": [
-    "docs/guides/auth-complete.tsx",
-    "src/schemas/ai.schema.ts",
-    "src/types/environment.ts"
-  ],
+  "ignoreFiles": ["src/schemas/ai.schema.ts", "src/types/environment.ts"],
   "ignoreIssues": {
     "src/schemas/api.ai.schema.ts": ["exports"],
     "src/schemas/api.dashboard.schema.ts": ["exports"],
