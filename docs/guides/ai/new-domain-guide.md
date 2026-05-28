@@ -1,5 +1,12 @@
 # 새 도메인 추가 가이드
 
+> Owner: project
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-05-29
+> Canonical: docs/guides/ai/new-domain-guide.md
+> Tags: ai-engine, assistant, domain-registry
+
 이 시스템의 AI 어시스턴트는 **도메인 플러그인 구조**로 설계되어 있습니다.
 현재 `openmanager-monitoring` 도메인이 기본으로 등록되어 있으며,
 아래 단계를 따라 새 도메인을 추가할 수 있습니다.
@@ -126,17 +133,17 @@ registerDomainHost(MY_DOMAIN_ID, getDefaultMyDomainHost);
 
 ---
 
-## Step 4 — agent-configs.ts에 import 추가
+## Step 4 — domain-bootstrap.ts에 import 추가
 
-`services/ai-sdk/agents/config/agent-configs.ts` 상단에:
+`services/ai-sdk/domain-bootstrap.ts`에:
 
 ```typescript
 // 도메인 레지스트리에 등록을 보장하기 위한 사이드이펙트 import
-import '../../my-domain-runtime-host';
+import './my-domain-runtime-host';
 ```
 
-> 현재 `agent-configs.ts`는 모듈 로드 시점에 registry에서 도메인 호스트를 조회합니다.
-> 이 import가 그 조회보다 먼저 등록이 이루어지도록 보장합니다.
+> supervisor, streaming, route, agent config 진입점은 `domain-bootstrap.ts`를 먼저 import합니다.
+> 새 도메인은 이 파일에 runtime host import 1줄만 추가하면 registry 등록이 보장됩니다.
 
 ---
 
@@ -208,7 +215,7 @@ LLM을 호출하지 않고 `fallback`을 바로 응답합니다.
 - [ ] `constants.ts`에 도메인 ID와 capability ID 정의
 - [ ] `domain-pack.ts`에서 `AssistantDomain` 구현
 - [ ] `*-runtime-host.ts` 파일 생성 + `registerDomainHost()` 호출
-- [ ] `agent-configs.ts`에 사이드이펙트 import 추가
+- [ ] `domain-bootstrap.ts`에 사이드이펙트 import 추가
 - [ ] evidence provider 구현 (deterministic 응답이 필요한 경우)
 - [ ] 테스트 작성 (domain-pack.contract.test.ts 패턴 참고)
 

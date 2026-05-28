@@ -38,6 +38,7 @@ import {
   runWithQueryAsOf,
 } from '../data/query-as-of-context';
 import { logger } from '../lib/logger';
+import '../services/ai-sdk/domain-bootstrap';
 import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import { normalizeSupervisorSemanticMetadata } from '../services/ai-sdk/supervisor-semantic-metadata';
 import { getDefaultDomainHost } from '../services/ai-sdk/domain-registry';

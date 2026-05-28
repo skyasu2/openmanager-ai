@@ -15,6 +15,8 @@
  * @updated 2026-01-30 - Split into 5 files for maintainability
  */
 
+import './domain-bootstrap';
+
 // ============================================================================
 // Re-exports (Public API - no breaking changes for consumers)
 // ============================================================================

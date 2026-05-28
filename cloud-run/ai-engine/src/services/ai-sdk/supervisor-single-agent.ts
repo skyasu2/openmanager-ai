@@ -11,6 +11,7 @@ import {
   type ModelMessage,
   type ToolSet,
 } from 'ai';
+import './domain-bootstrap';
 import {
   getSupervisorModel,
   recordModelUsage,

@@ -1,3 +1,4 @@
+import './domain-bootstrap';
 import type { DomainEvidenceResult } from '../../core/assistant-runtime';
 import { logger } from '../../lib/logger';
 import { isSingleModeAllowed } from '../../lib/config-parser';

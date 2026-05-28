@@ -29,6 +29,10 @@ function elapsedMs(startTime: number): number {
   return Math.max(0, Date.now() - startTime);
 }
 
+function normalizeDurationMs(durationMs: number): number {
+  return Math.max(0, durationMs);
+}
+
 export function getLastUserQuery(
   request: MultiAgentRequest
 ): string | null {
@@ -192,10 +196,14 @@ export function finalizeMultiAgentResponse(
   const traceId = getTraceId(trace);
   const handoffCount = response.handoffs?.length ?? 0;
   const responseWithTraceId = attachTraceIdToResponse(response, traceId);
+  const durationMs = normalizeDurationMs(
+    responseWithTraceId.metadata.durationMs
+  );
   const tracedResponse = {
     ...responseWithTraceId,
     metadata: {
       ...responseWithTraceId.metadata,
+      durationMs,
       handoffCount,
     },
   };
@@ -207,7 +215,7 @@ export function finalizeMultiAgentResponse(
     toolsCalled: tracedResponse.toolsCalled,
     totalRounds: tracedResponse.metadata.totalRounds,
     handoffCount,
-    durationMs: tracedResponse.metadata.durationMs,
+    durationMs,
     provider: tracedResponse.metadata.provider,
     modelId: tracedResponse.metadata.modelId,
     usedFallback: tracedResponse.metadata.usedFallback,
@@ -223,10 +231,11 @@ export function finalizeMultiAgentError(
   error: MultiAgentError,
   durationMs: number
 ): MultiAgentError {
+  const safeDurationMs = normalizeDurationMs(durationMs);
   finalizeTrace(trace, error.error, false, {
     mode: 'multi',
     code: error.code,
-    durationMs,
+    durationMs: safeDurationMs,
   });
 
   return error;

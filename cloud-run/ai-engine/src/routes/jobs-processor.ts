@@ -13,6 +13,7 @@ import {
   executeSupervisorStream,
   logProviderStatus,
 } from '../services/ai-sdk';
+import '../services/ai-sdk/domain-bootstrap';
 import { getDefaultDomainHost } from '../services/ai-sdk/domain-registry';
 import { SessionMemoryService } from '../services/ai-sdk/session-memory';
 import {
