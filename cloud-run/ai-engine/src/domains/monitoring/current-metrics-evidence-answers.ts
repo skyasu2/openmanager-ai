@@ -1,4 +1,5 @@
 import type { DomainSnapshot } from '../../core/assistant-runtime';
+import { STATUS_THRESHOLDS } from '../../config/status-thresholds';
 import { get24hTrendSummaries, normalizeServerType } from '../../tools-ai-sdk/server-metrics/data';
 import type { QueryOperator } from '../../services/ai-sdk/agents/orchestrator-query-intent';
 import type { ParsedCurrentMetricsEvidenceRequest, SupportedMetric } from './current-metrics-evidence-provider';
@@ -236,10 +237,96 @@ function normalizeRankCount(value: number | undefined): number {
     : 3;
 }
 
+function buildMetricRiskComparisonAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  if (params.parsed.sourceIntent !== 'metric-risk-compare') return null;
+
+  const metrics = (params.parsed.metrics ?? []).filter(
+    (metric, index, list) => list.indexOf(metric) === index
+  );
+  if (metrics.length < 2) return null;
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const { servers, targetLabel } = filterSnapshotServers(
+    allServers,
+    params.parsed.targets
+  );
+  if (servers.length === 0) return null;
+
+  const rows = metrics
+    .map((metric) => {
+      const values = servers
+        .filter((server) => server.status !== 'offline')
+        .map((server) => ({
+          server,
+          value: getMetricValue(server, metric),
+        }))
+        .filter(
+          (row): row is { server: SnapshotServer; value: number } =>
+            row.value !== null
+        );
+      if (values.length === 0) return null;
+
+      const threshold = STATUS_THRESHOLDS[metric];
+      const sorted = [...values].sort((left, right) => right.value - left.value);
+      const max = sorted[0];
+      const avg = round1(
+        values.reduce((sum, row) => sum + row.value, 0) / values.length
+      );
+      const criticalCount = values.filter(
+        (row) => row.value >= threshold.critical
+      ).length;
+      const warningCount = values.filter(
+        (row) =>
+          row.value >= threshold.warning && row.value < threshold.critical
+      ).length;
+      const score = round1(
+        criticalCount * 10000 + warningCount * 1000 + max.value * 10 + avg
+      );
+
+      return {
+        metric,
+        metricLabel: getMetricLabel(metric),
+        avg,
+        max,
+        warningCount,
+        criticalCount,
+        threshold,
+        score,
+      };
+    })
+    .filter((row): row is NonNullable<typeof row> => row !== null)
+    .sort((left, right) => right.score - left.score);
+
+  if (rows.length === 0) return null;
+
+  const top = rows[0];
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+
+  return [
+    `📊 **${targetLabel} 메트릭 위험도 비교**`,
+    `• 판정: 현재 가장 위험한 메트릭은 **${top.metricLabel}**입니다.${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    '• 기준: critical 서버 수 → warning 서버 수 → 최고 사용률 → 평균 사용률',
+    ...rows.map(
+      (row, index) =>
+        `${index + 1}. ${row.metricLabel}: critical ${row.criticalCount}대 · warning ${row.warningCount}대 · 최고 ${row.max.server.id} ${formatMetricPercent(row.max.value)} · 평균 ${formatMetricPercent(row.avg)} (임계치 ${row.threshold.warning}/${row.threshold.critical}%)`
+    ),
+    '',
+    '💡 **확인 항목**',
+    `${top.metricLabel}가 1순위입니다. 해당 지표의 최고 서버(${top.max.server.id})와 같은 그룹 내 편차, 최근 배포/배치 작업, 관련 로그를 우선 확인하세요.`,
+  ].join('\n');
+}
+
 export function buildMetricCurrentAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
 }): string | null {
+  if (params.parsed.sourceIntent === 'metric-risk-compare') {
+    return buildMetricRiskComparisonAnswer(params);
+  }
+
   if (params.parsed.groupTargets && params.parsed.groupTargets.length >= 2) {
     return buildGroupMetricCompareAnswer(params);
   }

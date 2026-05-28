@@ -2035,6 +2035,76 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('최고 시간대');
   });
 
+  it('Q-NEW72: compares CPU/MEM/DISK risk directly instead of falling through to Analyst', async () => {
+    const request = createEvidenceRequest('CPU/MEM/DISK 중 가장 위험 메트릭은?', {
+      timeLabel: '15:20',
+      servers: [
+        { id: 'api-was-dc1-01', status: 'online', cpu: 65, memory: 70, disk: 30 },
+        { id: 'web-nginx-dc1-01', status: 'online', cpu: 20, memory: 30, disk: 25 },
+        { id: 'storage-nfs-dc1-01', status: 'critical', cpu: 70, memory: 75, disk: 93 },
+        { id: 'db-mysql-dc1-primary', status: 'warning', cpu: 80, memory: 60, disk: 70 },
+      ],
+    });
+    const parsed = parseCurrentMetricsEvidenceRequest(request);
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
+
+    expect(parsed).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'metric-risk-compare',
+      metrics: ['cpu', 'memory', 'disk'],
+      rankOrder: 'desc',
+      rankCount: 3,
+    });
+    expect(evidence?.metadata).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'metric-risk-compare',
+      metrics: ['cpu', 'memory', 'disk'],
+    });
+    expect(evidence?.fallback).toContain('메트릭 위험도 비교');
+    expect(evidence?.fallback).toContain('가장 위험한 메트릭은 **디스크**');
+    expect(evidence?.fallback).toMatch(
+      /1\. 디스크: critical 1대 · warning 0대 · 최고 storage-nfs-dc1-01 93%/
+    );
+    expect(evidence?.fallback).toMatch(/2\. CPU:/);
+    expect(evidence?.fallback).toMatch(/3\. 메모리:/);
+    expect(evidence?.fallback).not.toContain('서버별 현황');
+  });
+
+  it('Q-NEW72: preserves metric risk comparison when a metric_current frame names only CPU', async () => {
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve({
+      ...createEvidenceRequest('CPU/MEM/DISK 중 가장 위험 메트릭은?', {
+        timeLabel: '15:20',
+        servers: [
+          { id: 'api-was-dc1-01', status: 'online', cpu: 65, memory: 70, disk: 30 },
+          { id: 'storage-nfs-dc1-01', status: 'critical', cpu: 70, memory: 75, disk: 93 },
+          { id: 'db-mysql-dc1-primary', status: 'warning', cpu: 80, memory: 60, disk: 70 },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'cpu',
+        timeWindow: 'current',
+        aggregation: 'summary',
+        ambiguity: 'low',
+        confidence: 0.9,
+      },
+    });
+
+    expect(evidence?.metadata).toMatchObject({
+      intent: 'metric_current',
+      sourceIntent: 'metric-risk-compare',
+      metrics: ['cpu', 'memory', 'disk'],
+    });
+    expect(evidence?.fallback).toContain('가장 위험한 메트릭은 **디스크**');
+    expect(evidence?.fallback).not.toContain('CPU 현황');
+  });
+
   it('resolves server alias detail prompts without falling back to whole-fleet summaries', async () => {
     const evidence = await monitoringServerHealthEvidenceProvider.resolve(
       createEvidenceRequest('web-server-01 상태를 자세히 알려줘')

@@ -402,6 +402,35 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('Q-NEW72: resolves cross-metric risk comparison as metric current evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: 'CPU/MEM/DISK 중 가장 위험 메트릭은?',
+      domain: monitoringDomainPack,
+      sessionId: 'session-qnew72-metric-risk-compare',
+      traceId: 'trace-qnew72-metric-risk-compare',
+    });
+
+    expect(support?.id).toBe('monitoring-metric-current');
+    expect(support?.fallback).toContain('메트릭 위험도 비교');
+    expect(support?.fallback).toContain('가장 위험한 메트릭');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.metric_current',
+      intent: 'metric_current',
+      sourceIntent: 'metric-risk-compare',
+      metrics: ['cpu', 'memory', 'disk'],
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_current',
+        selectedEvidenceProvider: 'monitoring-metric-current',
+        evidenceAvailable: true,
+        reasonCodes: expect.arrayContaining([
+          'semantic_frame_evidence_validated',
+        ]),
+      },
+    });
+  });
+
   it('updates semantic trace capability when a safer raw evidence provider overrides a stale frame', async () => {
     const query = '전체 서버 리소스 압박 순위 알려줘';
     const support = await resolveDomainEvidenceSupport({

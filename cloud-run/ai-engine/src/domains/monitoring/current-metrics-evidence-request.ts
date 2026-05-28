@@ -32,6 +32,7 @@ import {
   HISTORICAL_OR_TREND_PATTERN,
   METRIC_TREND_PATTERN,
   METRIC_TREND_RANKING_PATTERN,
+  METRIC_RISK_COMPARISON_PATTERN,
   NEAR_THRESHOLD_PATTERN,
   NEAR_THRESHOLD_INFERRED_VALUE,
   SERVER_DETAIL_PATTERN,
@@ -236,6 +237,30 @@ function resolveMetricTargets(params: {
   return extractContextualServerTargetsFromMessages(params.request);
 }
 
+function buildMetricRiskComparisonRequest(params: {
+  message: string;
+  metrics: SupportedMetric[];
+  targets: string[];
+}): ParsedCurrentMetricsEvidenceRequest | null {
+  if (
+    params.metrics.length < 2 ||
+    !METRIC_RISK_COMPARISON_PATTERN.test(params.message)
+  ) {
+    return null;
+  }
+
+  return {
+    intent: 'metric_current',
+    capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+    sourceIntent: 'metric-risk-compare',
+    answerQuery: params.message,
+    metrics: params.metrics,
+    rankOrder: 'desc',
+    rankCount: params.metrics.length,
+    ...(params.targets.length > 0 && { targets: params.targets }),
+  };
+}
+
 function isMetricRankingFrame(frame: DomainIntentFrame): boolean {
   return (
     frame.intent === 'metric_ranking' ||
@@ -258,6 +283,22 @@ function parseCurrentMetricsFrame(
   const requestGroupTarget = inferGroupTargetFromMessage(request.message);
   const mentionedMetrics = extractMentionedMetrics(request.message);
   const metricConditions = extractMetricDirectionalConditions(request.message);
+
+  if (
+    mentionedMetrics.length >= 2 &&
+    METRIC_RISK_COMPARISON_PATTERN.test(request.message)
+  ) {
+    const metricTargets = resolveMetricTargets({
+      request,
+      explicitServerTargets,
+      groupTarget: requestGroupTarget,
+    });
+    return buildMetricRiskComparisonRequest({
+      message: request.message,
+      metrics: mentionedMetrics,
+      targets: metricTargets,
+    });
+  }
 
   if (
     metricConditions.length >= 2 &&
@@ -569,6 +610,17 @@ function parseCurrentMetricsMessage(
       rankCount: normalizeCompositePressureRankCount(message),
       ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
+  }
+
+  if (
+    mentionedMetrics.length >= 2 &&
+    METRIC_RISK_COMPARISON_PATTERN.test(message)
+  ) {
+    return buildMetricRiskComparisonRequest({
+      message,
+      metrics: mentionedMetrics,
+      targets: metricTargets,
+    });
   }
 
   const groupHealthCompare = buildGroupHealthCompareRequest({
