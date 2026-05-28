@@ -85,6 +85,19 @@ describe('parseMonitoringPeakMetricMessage', () => {
     ).toBeNull();
   });
 
+  it('P20: does not claim increase-rate ranking phrasing as peak metric intent', () => {
+    expect(
+      parseMonitoringPeakMetricMessage(
+        '최근 CPU 증가율이 가장 높은 서버 알려줘'
+      )
+    ).toBeNull();
+    expect(
+      parseMonitoringPeakMetricMessage(
+        '지난 24시간 메모리 상승률 상위 서버 보여줘'
+      )
+    ).toBeNull();
+  });
+
   it('keeps peak questions routable when they also ask for response guidance', () => {
     expect(
       parseMonitoringPeakMetricMessage(

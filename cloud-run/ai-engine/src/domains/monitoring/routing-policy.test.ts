@@ -867,6 +867,23 @@ describe('createPrepareStep', () => {
     });
   });
 
+  it('P20: should not force current ranking tools for increase-rate ranking trend queries', async () => {
+    const prepare = createPrepareStep('CPU 증가율이 가장 높은 서버 알려줘', {
+      intentFrame: buildSemanticIntentFrame({
+        intent: 'metric_trend',
+        capabilityId: 'monitoring.metric_trend',
+        metric: 'cpu',
+        aggregation: 'summary',
+        executionMode: 'single',
+      }),
+    });
+    const result = await prepare({ stepNumber: 0 });
+
+    expect(result.activeTools).toContain('predictTrends');
+    expect(result.activeTools).not.toContain('getServerMetricsAdvanced');
+    expect(result.toolChoice).toBe('required');
+  });
+
   it('should force getServerMetricsAdvanced for AZ load-balance queries', async () => {
     const prepare = createPrepareStep(
       'DC1-AZ1/AZ2/AZ3 구역별 부하 균형이 잡혀 있어?'

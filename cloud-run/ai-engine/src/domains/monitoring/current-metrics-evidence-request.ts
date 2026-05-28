@@ -30,6 +30,7 @@ import {
   GROUP_SERVER_LIST_PATTERN,
   HISTORICAL_OR_TREND_PATTERN,
   METRIC_TREND_PATTERN,
+  METRIC_TREND_RANKING_PATTERN,
   NEAR_THRESHOLD_PATTERN,
   NEAR_THRESHOLD_INFERRED_VALUE,
   SERVER_DETAIL_PATTERN,
@@ -141,11 +142,7 @@ function extractExplicitTrendRankCount(message: string): number | undefined {
 }
 
 function inferTrendRankBy(message: string): TrendRankBy | undefined {
-  return /증가율|상승률|성장률|증가폭|상승폭|변화량|delta|growth\s*rate|increase\s*rate|change\s*rate|(?:가장|제일|상위|top).{0,24}(?:많이\s*)?(?:증가|상승|늘어|올라)|(?:증가|상승|늘어|올라).{0,24}(?:가장|제일|많이|큰|높|상위|top)/i.test(
-    message
-  )
-    ? 'delta'
-    : undefined;
+  return METRIC_TREND_RANKING_PATTERN.test(message) ? 'delta' : undefined;
 }
 
 function inferTrendDirection(message: string): TrendDirection | undefined {

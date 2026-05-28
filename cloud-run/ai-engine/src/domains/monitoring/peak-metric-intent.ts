@@ -7,6 +7,7 @@ import {
   MONITORING_DOMAIN_ID,
   MONITORING_PEAK_METRIC_CAPABILITY_ID,
 } from './constants';
+import { METRIC_TREND_RANKING_PATTERN } from './current-metrics-evidence-patterns';
 import type { PeakMetric } from './peak-metric';
 
 export interface ParsedPeakMetricRequest {
@@ -75,6 +76,7 @@ export function parseMonitoringPeakMetricMessage(
   if (
     !metric ||
     isAdviceOnlyRequest(message) ||
+    METRIC_TREND_RANKING_PATTERN.test(message) ||
     !EXTREME_OR_PEAK_PATTERN.test(message) ||
     !TEMPORAL_OR_RANKING_FOCUS_PATTERN.test(message) ||
     !TIME_WINDOW_PATTERN.test(message)

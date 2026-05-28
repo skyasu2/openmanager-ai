@@ -300,6 +300,33 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('P20: resolves increase-rate ranking as metric trend evidence instead of peak evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '최근 CPU 증가율이 가장 높은 서버 알려줘',
+      domain: monitoringDomainPack,
+      sessionId: 'session-p20-trend-rate-ranking',
+      traceId: 'trace-p20-trend-rate-ranking',
+    });
+
+    expect(support?.id).toBe('monitoring-metric-trend');
+    expect(support?.fallback).toContain('CPU 추이');
+    expect(support?.fallback).toContain('CPU 증가폭 상위');
+    expect(support?.fallback).not.toContain('최고 시간대');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.metric_trend',
+      intent: 'metric_trend',
+      metric: 'cpu',
+      trendRankBy: 'delta',
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_trend',
+        selectedEvidenceProvider: 'monitoring-metric-trend',
+        evidenceAvailable: true,
+      },
+    });
+  });
+
   it('resolves current metric ranking as deterministic domain evidence', async () => {
     const support = await resolveDomainEvidenceSupport({
       query: '현재 CPU 사용률 상위 3대 알려줘',

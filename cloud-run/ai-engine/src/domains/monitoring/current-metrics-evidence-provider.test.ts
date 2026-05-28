@@ -2279,6 +2279,7 @@ describe('current metrics domain evidence providers', () => {
     it.each([
       ['네트워크 트래픽이 가장 많이 증가한 서버 3개', 'network'],
       ['CPU 증가율이 가장 높은 서버 알려줘', 'cpu'],
+      ['최근 CPU 증가율이 가장 높은 서버 알려줘', 'cpu'],
       ['메모리 상승률 상위 서버 보여줘', 'memory'],
       ['디스크 사용량이 많이 증가한 서버는?', 'disk'],
     ])('P19a "%s" → metric_trend (metric=%s)', (query, expectedMetric) => {

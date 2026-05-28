@@ -31,6 +31,7 @@ import {
 import { createRoutingDecisionTrace } from '../../services/ai-sdk/routing/routing-decision-trace';
 import { CAPACITY_FULL_FORECAST_PATTERN } from '../../services/ai-sdk/routing/routing-patterns';
 import { resolveMonitoringSemanticFrameRoute } from '../../services/ai-sdk/routing/semantic-frame-policy';
+import { METRIC_TREND_RANKING_PATTERN } from './current-metrics-evidence-patterns';
 
 export function createSystemPrompt(deviceType?: string): string {
   return createMonitoringSystemPrompt(deviceType);
@@ -331,6 +332,7 @@ function shouldForceMetricRankingTool(query: string): boolean {
       (CURRENT_RANKING_SIGNAL_PATTERNS.test(q) &&
         METRIC_NAME_PATTERNS.test(q))) &&
     !HISTORICAL_METRIC_AGGREGATION_PATTERNS.test(q) &&
+    !METRIC_TREND_RANKING_PATTERN.test(q) &&
     !getServerIdPattern().test(q)
   );
 }
