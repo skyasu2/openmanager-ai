@@ -28,7 +28,7 @@ describe('AIAssistantButton', () => {
     expect(screen.getByText('AI 어시스턴트')).toBeDefined();
   });
 
-  it('keeps the text label hidden until wide desktop widths to avoid header crowding', () => {
+  it('keeps the text label visible across dashboard header breakpoints', () => {
     render(
       <AIAssistantButton
         isOpen={false}
@@ -37,7 +37,9 @@ describe('AIAssistantButton', () => {
       />
     );
 
-    expect(screen.getByText('AI 어시스턴트').className).toContain('xl:inline');
+    const labelClassName = screen.getByText('AI 어시스턴트').className;
+    expect(labelClassName).not.toContain('hidden');
+    expect(labelClassName).not.toContain('xl:inline');
   });
 
   it('calls onClick handler when clicked', () => {
