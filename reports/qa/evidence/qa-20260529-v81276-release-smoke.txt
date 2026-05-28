@@ -1,0 +1,52 @@
+v8.12.76 release smoke evidence
+
+Recorded at: 2026-05-29T03:20:49+09:00
+Commit: 6321e3f8b23e4bb367c51e21913a50d1bb433611
+Tag: v8.12.76
+GitLab pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2559759512
+
+Pipeline result:
+- deploy: success
+- deploy_ai_engine: success
+- post_deploy_smoke: success
+- post_deploy_ai_engine_smoke: success
+
+Production version:
+- GET https://openmanager-ai.vercel.app/api/version
+- version: 8.12.76
+- releaseTag: v8.12.76
+- shortCommitSha: 6321e3f8b2
+
+Cloud Run health:
+- GET https://ai-engine-jdhrhws7ia-an.a.run.app/health
+- status: ok
+- service: ai-engine
+- version: 8.12.76
+- routesReady: true
+
+Cloud Run guardrails:
+- latestReadyRevisionName: ai-engine-00580-859
+- containerConcurrency: 16
+- timeoutSeconds: 300
+- cpu: 1
+- memory: 512Mi
+- maxScale: 1
+- cpu-throttling: true
+
+Local validation before release:
+- cloud-run/ai-engine npm run type-check: pass
+- cloud-run/ai-engine npm run test: 146 files, 1611 tests passed
+- FREE_TIER_GUARD_ONLY=true bash deploy.sh: pass
+- git diff --check: pass
+- Dockerfile BuildKit-only RUN --mount residual search: none
+- legacy Docker build with DOCKER_BUILDKIT=0: previous failing Step 8 parser error passed; run was stopped during slow local WSL layer copy after later stages progressed. Final Cloud Build in GitLab is authoritative and passed.
+
+Usage:
+- Vercel usage check: normal
+- effective: 18.5833 USD
+- billed: 0.0000 USD
+- chargeCount: 16443
+
+Public snapshot:
+- npm run sync:github: success
+- target: git@github.com:skyasu2/openmanager-ai.git

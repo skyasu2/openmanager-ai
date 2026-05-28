@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-28T13:35:35.677Z"
+    "updatedAt": "2026-05-28T18:22:11.038Z"
   },
   "sequence": {
-    "nextRunNumber": 638
+    "nextRunNumber": 639
   },
   "summary": {
-    "totalRecordedRuns": 635,
+    "totalRecordedRuns": 636,
     "totalRuns": 499,
-    "excludedRuns": 136,
+    "excludedRuns": 137,
     "totalChecks": 4405,
     "totalPassed": 4205,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 731,
+    "completedItems": 732,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260528-0636",
     "lastRecordedAt": "2026-05-28T10:42:22.198Z",
-    "latestRecordedRunId": "QA-20260528-0637",
-    "latestRecordedAt": "2026-05-28T13:35:35.677Z"
+    "latestRecordedRunId": "QA-20260529-0638",
+    "latestRecordedAt": "2026-05-28T18:22:11.038Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18020,6 +18020,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-28T10:42:22.198Z"
+    },
+    "ai-engine-cloud-build-buildkit-mount-compatibility": {
+      "id": "ai-engine-cloud-build-buildkit-mount-compatibility",
+      "title": "AI Engine Cloud Build default Docker builder compatibility",
+      "priority": "P0",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260529-0638",
+      "firstSeenAt": "2026-05-28T18:22:11.038Z",
+      "lastSeenRunId": "QA-20260529-0638",
+      "lastSeenAt": "2026-05-28T18:22:11.038Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.75 failed on Dockerfile RUN --mount with BuildKit disabled; v8.12.76 removed BuildKit-only syntax and deploy_ai_engine succeeded.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-28T18:22:11.038Z"
     }
   },
   "runs": [
@@ -36495,6 +36519,139 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260529-0638",
+      "recordedAt": "2026-05-28T18:22:11.038Z",
+      "recordedAtKst": "2026-05-29 03:22:11 KST",
+      "title": "v8.12.76 GitLab Release Smoke - AI Engine Cloud Build Recovery",
+      "owner": "codex",
+      "source": "gitlab-ci-release-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260529-0638.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2559759512-v8.12.76",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "6321e3f8b23e4bb367c51e21913a50d1bb433611"
+      },
+      "scope": "smoke",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.12.76 deploy job success",
+        "GitLab tag pipeline v8.12.76 deploy_ai_engine job success",
+        "GitLab post_deploy_smoke and post_deploy_ai_engine_smoke success",
+        "Production /api/version reports 8.12.76, v8.12.76, commit 6321e3f8b23e4bb367c51e21913a50d1bb433611",
+        "Cloud Run /health reports status ok and version 8.12.76",
+        "Cloud Run free-tier guardrails remain intact",
+        "AI Engine type-check and full test suite passed before release",
+        "Dockerfile no longer contains BuildKit-only RUN --mount cache syntax",
+        "GitHub public frontend snapshot synced through npm run sync:github"
+      ],
+      "skippedSurfaces": [
+        "Interactive dashboard visual QA was not rerun in this deployment-smoke record",
+        "Full conversational five-question AI QA was not rerun because the change was Docker build/deploy compatibility",
+        "Full broad route/device matrix was not run"
+      ],
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Cloud Build, Cloud Run deploy, and post-deploy smoke all passed after Dockerfile compatibility fix.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI Engine type-check and full deterministic test suite passed; runtime /health is ok on v8.12.76.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production version endpoint, Cloud Run health, and free-tier runtime guardrails were verified after deploy.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-29T03:20:49+09:00",
+          "summary": "v8.12.76 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-29T03:20:49+09:00",
+          "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00580-859.",
+          "evidence": "gcloud run services describe ai-engine --platform managed --region asia-northeast1",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.76 release smoke command evidence",
+          "path": "reports/qa/evidence/qa-20260529-v81276-release-smoke.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitHub public snapshot",
+          "url": "https://github.com/skyasu2/openmanager-ai"
+        },
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.76",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2559759512"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production app",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -36503,16 +36660,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 346,
-      "appropriateCount": 295,
+      "seenCount": 347,
+      "appropriateCount": 296,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260528-0637",
-      "lastSeenAt": "2026-05-28T13:35:35.677Z",
+      "lastRunId": "QA-20260529-0638",
+      "lastSeenAt": "2026-05-28T18:22:11.038Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The deployed AI Engine answered a direct server-id CPU comparison through deterministic monitoring-metric-current evidence with no LLM fallback.",
+      "lastRationale": "AI Engine type-check and full deterministic test suite passed; runtime /health is ok on v8.12.76.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -36520,16 +36677,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 147,
-      "appropriateCount": 114,
+      "seenCount": 148,
+      "appropriateCount": 115,
       "partialCount": 33,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260528-0637",
-      "lastSeenAt": "2026-05-28T13:35:35.677Z",
+      "lastRunId": "QA-20260529-0638",
+      "lastSeenAt": "2026-05-28T18:22:11.038Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Run health and usage checks confirm the deployed monitoring AI path is live and remains within configured guardrails.",
+      "lastRationale": "Production version endpoint, Cloud Run health, and free-tier runtime guardrails were verified after deploy.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -36554,16 +36711,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 236,
-      "appropriateCount": 215,
+      "seenCount": 237,
+      "appropriateCount": 216,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260528-0637",
-      "lastSeenAt": "2026-05-28T13:35:35.677Z",
+      "lastRunId": "QA-20260529-0638",
+      "lastSeenAt": "2026-05-28T18:22:11.038Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main validate, tag deploy pipeline, production /api/version, Cloud Run /health, and usage guardrails all passed for v8.12.74.",
+      "lastRationale": "GitLab tag pipeline, Cloud Build, Cloud Run deploy, and post-deploy smoke all passed after Dockerfile compatibility fix.",
       "lastNextAction": ""
     },
     "test-automation": {

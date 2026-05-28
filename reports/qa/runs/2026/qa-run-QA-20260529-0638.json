@@ -1,0 +1,149 @@
+{
+  "runId": "QA-20260529-0638",
+  "recordedAt": "2026-05-28T18:22:11.038Z",
+  "recordedAtKst": "2026-05-29 03:22:11 KST",
+  "runTitle": "v8.12.76 GitLab Release Smoke - AI Engine Cloud Build Recovery",
+  "owner": "codex",
+  "source": "gitlab-ci-release-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2559759512-v8.12.76",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "6321e3f8b23e4bb367c51e21913a50d1bb433611"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.12.76 deploy job success",
+    "GitLab tag pipeline v8.12.76 deploy_ai_engine job success",
+    "GitLab post_deploy_smoke and post_deploy_ai_engine_smoke success",
+    "Production /api/version reports 8.12.76, v8.12.76, commit 6321e3f8b23e4bb367c51e21913a50d1bb433611",
+    "Cloud Run /health reports status ok and version 8.12.76",
+    "Cloud Run free-tier guardrails remain intact",
+    "AI Engine type-check and full test suite passed before release",
+    "Dockerfile no longer contains BuildKit-only RUN --mount cache syntax",
+    "GitHub public frontend snapshot synced through npm run sync:github"
+  ],
+  "skippedSurfaces": [
+    "Interactive dashboard visual QA was not rerun in this deployment-smoke record",
+    "Full conversational five-question AI QA was not rerun because the change was Docker build/deploy compatibility",
+    "Full broad route/device matrix was not run"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Cloud Build, Cloud Run deploy, and post-deploy smoke all passed after Dockerfile compatibility fix.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Engine type-check and full deterministic test suite passed; runtime /health is ok on v8.12.76.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production version endpoint, Cloud Run health, and free-tier runtime guardrails were verified after deploy.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-29T03:20:49+09:00",
+      "summary": "v8.12.76 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-29T03:20:49+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00580-859.",
+      "evidence": "gcloud run services describe ai-engine --platform managed --region asia-northeast1",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.76 release smoke command evidence",
+      "path": "reports/qa/evidence/qa-20260529-v81276-release-smoke.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-engine-cloud-build-buildkit-mount-compatibility",
+      "title": "AI Engine Cloud Build default Docker builder compatibility",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.75 failed on Dockerfile RUN --mount with BuildKit disabled; v8.12.76 removed BuildKit-only syntax and deploy_ai_engine succeeded.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.12.75 tag pipeline failed in deploy_ai_engine because deploy.sh uses gcloud builds submit --tag and therefore did not apply cloudbuild.yaml DOCKER_BUILDKIT=1.",
+    "v8.12.76 preserved immutable release history instead of rewriting the failed v8.12.75 tag.",
+    "Local legacy Docker build reached later stages after passing the previous Step 8 parser failure, then was stopped during slow WSL layer copy; GitLab Cloud Build is the authoritative release proof and passed."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitHub public snapshot",
+      "url": "https://github.com/skyasu2/openmanager-ai"
+    },
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.76",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2559759512"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
