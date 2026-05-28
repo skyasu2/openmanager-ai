@@ -1,0 +1,148 @@
+{
+  "runId": "QA-20260528-0637",
+  "recordedAt": "2026-05-28T13:35:35.677Z",
+  "recordedAtKst": "2026-05-28 22:35:35 KST",
+  "runTitle": "GitLab production release smoke - v8.12.74 AI Engine shared utils refactor",
+  "owner": "codex",
+  "source": "gitlab-ci+cloud-run-probe",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2559040681-v8.12.74",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "7e402ced4010bf7fcf467ae2a78f4d51e5c8f2a5"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Code review of commit 458c2d159 found no blocking regressions",
+    "AI Engine type-check passed",
+    "Root AI/API contract tests passed",
+    "Targeted AI Engine evidence/routing tests passed",
+    "Full AI Engine test suite passed",
+    "Root artifact audit guard was triggered, cleaned, and passed before push",
+    "GitLab main validate pipeline 2558990431 completed successfully",
+    "GitLab tag pipeline v8.12.74 completed successfully",
+    "release:publish production version smoke passed on attempt 1/81",
+    "Production /api/version reports 8.12.74, v8.12.74, and commit 7e402ced4010bf7fcf467ae2a78f4d51e5c8f2a5",
+    "Cloud Run /health reports status ok and version 8.12.74",
+    "Direct Cloud Run /api/ai/supervisor server-id CPU comparison returns deterministic monitoring-metric-current answer",
+    "Cloud Run free-tier guardrails remain intact",
+    "Vercel usage remains billed 0.0000 USD after deploy"
+  ],
+  "skippedSurfaces": [
+    "Interactive dashboard visual QA was not rerun in this deployment-smoke record",
+    "Full conversational five-question AI QA was not rerun in this deployment-smoke record",
+    "Full broad route/device matrix was not run"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Cloud Run direct server-id CPU comparison smoke",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor",
+      "source": "curl total time + supervisor metadata",
+      "latencyMs": 371
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab main validate, tag deploy pipeline, production /api/version, Cloud Run /health, and usage guardrails all passed for v8.12.74.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The deployed AI Engine answered a direct server-id CPU comparison through deterministic monitoring-metric-current evidence with no LLM fallback.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run health and usage checks confirm the deployed monitoring AI path is live and remains within configured guardrails.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T22:31:31+09:00",
+      "summary": "v8.12.74 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.",
+      "evidence": "npm run check:usage",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T22:31:31+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00579-hvn.",
+      "evidence": "npm run check:usage",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.74 release smoke command evidence",
+      "path": "reports/qa/evidence/qa-20260528-v81274-release-smoke.txt",
+      "note": "Structured release smoke evidence from code review, local validation, GitLab pipelines, production /api/version, Cloud Run /health, direct AI smoke, and usage guard checks."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run records deployment propagation and smoke evidence only; it intentionally does not count toward aggregate QA summary totals.",
+    "The first cold-cache Docker preflight timed out during build, then the warm-cache rerun passed before release.",
+    "The release readiness helper printed GitLab token not found/manual checklist mode, but the GitLab main and tag pipelines were verified separately and both succeeded.",
+    "The root artifact audit caught misplaced QA screenshots before push; cleanup moved them under tmp/root-artifacts and the strict audit passed.",
+    "The moderate ws advisory remains non-blocking dependency audit debt and was not fixed by this release."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.74",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2559040681"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

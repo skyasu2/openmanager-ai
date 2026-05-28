@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-28T10:42:22.198Z"
+    "updatedAt": "2026-05-28T13:35:35.677Z"
   },
   "sequence": {
-    "nextRunNumber": 637
+    "nextRunNumber": 638
   },
   "summary": {
-    "totalRecordedRuns": 634,
+    "totalRecordedRuns": 635,
     "totalRuns": 499,
-    "excludedRuns": 135,
+    "excludedRuns": 136,
     "totalChecks": 4405,
     "totalPassed": 4205,
     "totalFailed": 159,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260528-0636",
     "lastRecordedAt": "2026-05-28T10:42:22.198Z",
-    "latestRecordedRunId": "QA-20260528-0636",
-    "latestRecordedAt": "2026-05-28T10:42:22.198Z"
+    "latestRecordedRunId": "QA-20260528-0637",
+    "latestRecordedAt": "2026-05-28T13:35:35.677Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -36351,6 +36351,150 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260528-0637",
+      "recordedAt": "2026-05-28T13:35:35.677Z",
+      "recordedAtKst": "2026-05-28 22:35:35 KST",
+      "title": "GitLab production release smoke - v8.12.74 AI Engine shared utils refactor",
+      "owner": "codex",
+      "source": "gitlab-ci+cloud-run-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260528-0637.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2559040681-v8.12.74",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "7e402ced4010bf7fcf467ae2a78f4d51e5c8f2a5"
+      },
+      "scope": "smoke",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Code review of commit 458c2d159 found no blocking regressions",
+        "AI Engine type-check passed",
+        "Root AI/API contract tests passed",
+        "Targeted AI Engine evidence/routing tests passed",
+        "Full AI Engine test suite passed",
+        "Root artifact audit guard was triggered, cleaned, and passed before push",
+        "GitLab main validate pipeline 2558990431 completed successfully",
+        "GitLab tag pipeline v8.12.74 completed successfully",
+        "release:publish production version smoke passed on attempt 1/81",
+        "Production /api/version reports 8.12.74, v8.12.74, and commit 7e402ced4010bf7fcf467ae2a78f4d51e5c8f2a5",
+        "Cloud Run /health reports status ok and version 8.12.74",
+        "Direct Cloud Run /api/ai/supervisor server-id CPU comparison returns deterministic monitoring-metric-current answer",
+        "Cloud Run free-tier guardrails remain intact",
+        "Vercel usage remains billed 0.0000 USD after deploy"
+      ],
+      "skippedSurfaces": [
+        "Interactive dashboard visual QA was not rerun in this deployment-smoke record",
+        "Full conversational five-question AI QA was not rerun in this deployment-smoke record",
+        "Full broad route/device matrix was not run"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Cloud Run direct server-id CPU comparison smoke",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/supervisor",
+          "source": "curl total time + supervisor metadata",
+          "latencyMs": 371
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main validate, tag deploy pipeline, production /api/version, Cloud Run /health, and usage guardrails all passed for v8.12.74.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The deployed AI Engine answered a direct server-id CPU comparison through deterministic monitoring-metric-current evidence with no LLM fallback.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run health and usage checks confirm the deployed monitoring AI path is live and remains within configured guardrails.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-28T22:31:31+09:00",
+          "summary": "v8.12.74 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.",
+          "evidence": "npm run check:usage",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-28T22:31:31+09:00",
+          "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00579-hvn.",
+          "evidence": "npm run check:usage",
+          "url": "https://console.cloud.google.com/run"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.74 release smoke command evidence",
+          "path": "reports/qa/evidence/qa-20260528-v81274-release-smoke.txt",
+          "note": "Structured release smoke evidence from code review, local validation, GitLab pipelines, production /api/version, Cloud Run /health, direct AI smoke, and usage guard checks."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.74",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2559040681"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production app",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -36359,16 +36503,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 345,
-      "appropriateCount": 294,
+      "seenCount": 346,
+      "appropriateCount": 295,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260528-0636",
-      "lastSeenAt": "2026-05-28T10:42:22.198Z",
+      "lastRunId": "QA-20260528-0637",
+      "lastSeenAt": "2026-05-28T13:35:35.677Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production direct and primary stream probes both returned the deterministic monitoring-metric-current answer for Q-NEW76 omitted-noun wording with zero-token usage.",
+      "lastRationale": "The deployed AI Engine answered a direct server-id CPU comparison through deterministic monitoring-metric-current evidence with no LLM fallback.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -36376,16 +36520,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 146,
-      "appropriateCount": 113,
+      "seenCount": 147,
+      "appropriateCount": 114,
       "partialCount": 33,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260528-0636",
-      "lastSeenAt": "2026-05-28T10:42:22.198Z",
+      "lastRunId": "QA-20260528-0637",
+      "lastSeenAt": "2026-05-28T13:35:35.677Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The answer uses current monitoring data and ranks CPU, memory, and disk by critical/warning count, peak usage, and average usage.",
+      "lastRationale": "Cloud Run health and usage checks confirm the deployed monitoring AI path is live and remains within configured guardrails.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -36410,16 +36554,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 235,
-      "appropriateCount": 214,
+      "seenCount": 236,
+      "appropriateCount": 215,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260528-0636",
-      "lastSeenAt": "2026-05-28T10:42:22.198Z",
+      "lastRunId": "QA-20260528-0637",
+      "lastSeenAt": "2026-05-28T13:35:35.677Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main validate, GitLab tag pipeline, Vercel version endpoint, Cloud Run health, and free-tier usage guardrails all passed for v8.12.73.",
+      "lastRationale": "GitLab main validate, tag deploy pipeline, production /api/version, Cloud Run /health, and usage guardrails all passed for v8.12.74.",
       "lastNextAction": ""
     },
     "test-automation": {

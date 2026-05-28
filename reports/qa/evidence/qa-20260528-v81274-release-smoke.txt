@@ -1,0 +1,88 @@
+OpenManager v8.12.74 release smoke evidence
+Recorded by: Codex
+Date: 2026-05-28 KST
+
+Scope
+- Commit reviewed: 458c2d159 refactor(ai-engine): extract shared utils and fix stateful regex
+- Release commit: 7e402ced4010bf7fcf467ae2a78f4d51e5c8f2a5
+- Release tag: v8.12.74
+- Production URL: https://openmanager-ai.vercel.app
+- Cloud Run URL: https://ai-engine-jdhrhws7ia-an.a.run.app
+
+Code review
+- Blocking findings: none.
+- SERVER_ID_PATTERN was changed from a global /gi RegExp export to a non-global /i RegExp export.
+- The one current matchAll caller reconstructs a fresh global RegExp with new RegExp(SERVER_ID_PATTERN.source, 'gi'), avoiding shared lastIndex state.
+- Extracted confidence helpers preserve the existing thresholds: agent route confidence threshold remains 0.65, while evidence fail-closed confidence remains 0.80.
+- Extracted snapshot-utils preserves prior JSON read behavior for migrated providers.
+- load-balance-capacity keeps its local snapshot reader because it performs location enrichment not provided by the shared helper.
+
+Local validation before push
+- cd cloud-run/ai-engine && npm run type-check: passed.
+- npm run test:contract: passed, 3 files / 24 tests.
+- cd cloud-run/ai-engine && npm run test -- current-metrics-evidence-provider.test.ts supervisor-domain-evidence.test.ts supervisor-domain-wiring.contract.test.ts: passed, 3 files / 139 tests.
+- cd cloud-run/ai-engine && npm run test: passed, 145 files / 1606 tests.
+- git diff --check gitlab/main..HEAD: passed.
+- npm run root:artifacts:audit:strict: initially failed because QA screenshots and .playwright-mcp artifacts were in the repository root.
+- npm run root:artifacts:cleanup:all moved those artifacts under tmp/root-artifacts/2026-05-28/.
+- npm run root:artifacts:audit:strict after cleanup: passed.
+
+Main push validation
+- git push gitlab main: pushed 458c2d159 to GitLab canonical remote.
+- GitLab main pipeline: 2558990431
+- Pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558990431
+- Pipeline status: success.
+
+Deployment preflight
+- bash scripts/ci/runner-health-check.sh: runner=true docker=true scope=local.
+- gcloud project: openmanager-free-tier.
+- public/data/otel-data/resource-catalog.json: present.
+- docker ps: daemon reachable.
+- Active paid Cloud Build machine setting: none found in deploy script/config.
+- npm run check:usage before release: passed.
+- Cloud Run guardrails before release: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00578-tqc.
+- Vercel usage before release: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.
+- cd cloud-run/ai-engine && SKIP_RUN=true npm run docker:preflight: first cold-cache run timed out at 420s during npm run build/tsc without a code error.
+- cd cloud-run/ai-engine && SKIP_RUN=true npm run docker:preflight: warm-cache rerun passed.
+
+Release and deploy
+- npm run release:publish:patch generated release commit 7e402ced4 and tag v8.12.74.
+- Release readiness check printed "GitLab token not found. Manual checklist mode."; separate GitLab pipeline checks were available and succeeded.
+- Release consistency checks passed for package version 8.12.74, AI Engine component 8.12.74, CHANGELOG section, local tag, and version route.
+- GitLab tag pipeline: 2559040681
+- Pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2559040681
+- Frontend deploy job: success.
+- post_deploy_smoke job: success.
+- deploy_ai_engine job: success.
+- Cloud Build id observed during deploy: 23624c4f-e419-4432-8e5f-bfd5efa62b6c, machineType empty.
+- Tag pipeline final status: success.
+- Production version verification: passed on attempt 1/81.
+
+Post-deploy production checks
+- /api/version returned:
+  version=8.12.74
+  releaseTag=v8.12.74
+  commitSha=7e402ced4010bf7fcf467ae2a78f4d51e5c8f2a5
+  pipelineUrl=https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2559040681
+  environment=production
+- Cloud Run /health returned status=ok, service=ai-engine, version=8.12.74, cloudRunApi=true, redis=closed.
+- Direct Cloud Run AI smoke query:
+  query="web-nginx-dc1-01과 api-was-dc1-01 CPU를 비교해줘"
+  HTTP status=200
+  total time=0.370796s
+  success=true
+  provider=deterministic
+  modelId=monitoring-metric-current
+  toolsCalled=["monitoring-metric-current"]
+  domainEvidence.id=monitoring-metric-current
+  semanticQueryTrace.selectedCapability=monitoring.metric_current
+  answer summary="지정 서버 2대 CPU 현황: 평균 CPU 38%, 최고 api-was-dc1-01 41%, 최저 web-nginx-dc1-01 35%."
+- npm run check:usage after release: passed.
+- Cloud Run guardrails after release: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00579-hvn.
+- Vercel usage after release: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.
+
+Process notes
+- Root artifact audit did catch misplaced QA artifacts before push; cleanup remediated it before release.
+- First Docker preflight failed by timeout in a cold build path, then passed on warm-cache rerun.
+- GitLab release readiness check could not auto-read token inside the release script and fell back to manual checklist mode, but push and pipeline verification succeeded outside that helper.
+- npm install/audit output still reports a moderate ws advisory in dependency audit output; this remains non-blocking dependency debt, not fixed by this release.
