@@ -452,7 +452,81 @@ describe('DashboardContent empty state', () => {
     expect(screen.getByText('CPU = 94.0%')).toBeInTheDocument();
   });
 
-  it('인라인 알림 row 클릭 시 해당 서버 상세 route로 이동한다', async () => {
+  it('인라인 알림 row 클릭 시 화면의 서버 카드로 이동하고 하이라이트한다', async () => {
+    monitoringReportMock.mockReturnValue({
+      data: {
+        firingAlerts: [createAlert()],
+      },
+      error: null,
+      isLoading: false,
+      isError: false,
+    });
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [
+            {
+              id: 'web-nginx-dc1-01',
+              name: 'web-nginx-dc1-01',
+              status: 'critical',
+            } as Server,
+          ],
+          allServers: [
+            {
+              id: 'web-nginx-dc1-01',
+              name: 'web-nginx-dc1-01',
+              status: 'critical',
+            } as Server,
+          ],
+          totalServers: 1,
+        })}
+      />
+    );
+
+    const scrollIntoView = vi.fn();
+    const cardElement = document.createElement('div');
+    const cardButton = document.createElement('button');
+    cardElement.id = 'server-card-web-nginx-dc1-01';
+    Object.defineProperty(cardElement, 'scrollIntoView', {
+      value: scrollIntoView,
+      configurable: true,
+    });
+    cardElement.appendChild(cardButton);
+    document.body.appendChild(cardElement);
+
+    try {
+      const alertButton = await screen.findByRole('button', {
+        name: 'web-nginx-dc1-01 서버 카드로 이동',
+      });
+
+      vi.useFakeTimers();
+      fireEvent.click(alertButton);
+
+      expect(routerPush).not.toHaveBeenCalled();
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      expect(cardButton).toHaveFocus();
+      expect(cardElement).toHaveClass(
+        'ring-4',
+        'ring-rose-500',
+        'ring-offset-2'
+      );
+
+      vi.advanceTimersByTime(2500);
+
+      expect(cardElement).not.toHaveClass('ring-4');
+      expect(cardElement).not.toHaveClass('ring-rose-500');
+      expect(cardElement).not.toHaveClass('ring-offset-2');
+    } finally {
+      cardElement.remove();
+      vi.useRealTimers();
+    }
+  });
+
+  it('인라인 알림 row 클릭 시 카드가 없으면 해당 서버 상세 route로 이동한다', async () => {
     monitoringReportMock.mockReturnValue({
       data: {
         firingAlerts: [createAlert()],
@@ -486,7 +560,7 @@ describe('DashboardContent empty state', () => {
 
     fireEvent.click(
       await screen.findByRole('button', {
-        name: 'web-nginx-dc1-01 서버 상세 보기',
+        name: 'web-nginx-dc1-01 서버 카드로 이동',
       })
     );
 

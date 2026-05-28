@@ -8,6 +8,11 @@ import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
 
 const MAX_INLINE_ALERTS = 5;
+const ALERT_CARD_HIGHLIGHT_MS = 2500;
+const ALERT_CARD_HIGHLIGHT_CLASSES = {
+  critical: 'ring-rose-500',
+  warning: 'ring-amber-500',
+} as const;
 
 const severityStyles: Record<
   MonitoringAlert['severity'],
@@ -172,13 +177,33 @@ function AlertFeedRow({ alert }: { alert: MonitoringAlert }) {
   const styles = severityStyles[alert.severity];
   const serverId = alert.serverId || alert.instance;
 
+  const handleAlertClick = () => {
+    const cardElement = document.getElementById(`server-card-${serverId}`);
+    if (cardElement) {
+      cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      cardElement.querySelector<HTMLButtonElement>('button')?.focus({
+        preventScroll: true,
+      });
+
+      const highlightColor = ALERT_CARD_HIGHLIGHT_CLASSES[alert.severity];
+      cardElement.classList.remove(
+        ...Object.values(ALERT_CARD_HIGHLIGHT_CLASSES)
+      );
+      cardElement.classList.add('ring-4', highlightColor, 'ring-offset-2');
+
+      window.setTimeout(() => {
+        cardElement.classList.remove('ring-4', highlightColor, 'ring-offset-2');
+      }, ALERT_CARD_HIGHLIGHT_MS);
+    } else {
+      router.push(`/dashboard/servers/${encodeURIComponent(serverId)}`);
+    }
+  };
+
   return (
     <button
       type="button"
-      aria-label={`${alert.instance} 서버 상세 보기`}
-      onClick={() =>
-        router.push(`/dashboard/servers/${encodeURIComponent(serverId)}`)
-      }
+      aria-label={`${alert.instance} 서버 카드로 이동`}
+      onClick={handleAlertClick}
       className={cn(
         'w-full rounded-lg border border-l-4 border-slate-200 bg-white px-3 py-3 text-left shadow-xs transition-colors hover:bg-slate-50',
         styles.border

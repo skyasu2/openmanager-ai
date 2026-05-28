@@ -115,7 +115,7 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
           <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">
             시스템 리소스
           </p>
-          <div className="flex items-center justify-evenly px-2 sm:px-0">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-evenly sm:gap-2 px-2 sm:px-0">
             {gauges.map((g) => (
               <MiniGauge
                 key={g.key}

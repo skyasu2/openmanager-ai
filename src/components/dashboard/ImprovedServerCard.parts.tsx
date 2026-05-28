@@ -98,17 +98,20 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
       return {
         chartColor: '#ef4444',
         textClass: 'text-red-700 font-semibold',
+        strokeWidth: 2.2,
       };
     }
     if (val >= threshold.warning) {
       return {
         chartColor: '#f97316',
         textClass: 'text-amber-700 font-medium',
+        strokeWidth: 1.8,
       };
     }
     return {
       chartColor: '#10b981',
       textClass: 'text-slate-600 font-medium',
+      strokeWidth: 1.2,
     };
   };
 
@@ -145,7 +148,7 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
           height={42}
           color={metricSeverity.chartColor}
           fill
-          strokeWidth={1.5}
+          strokeWidth={metricSeverity.strokeWidth}
           disableAnimation={false}
         />
       </div>
