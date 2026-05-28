@@ -13,6 +13,7 @@ import {
   buildGroupServerHealthAnswer,
   buildHealthyOnlyServerAnswer,
   buildMetricCurrentAnswer,
+  buildMetricRankingAnswer,
   buildMetricTrendAnswer,
 } from './current-metrics-evidence-answers';
 import { buildDirectionalMultiMetricFilterAnswer } from './current-metrics-directional-answer';
@@ -108,6 +109,8 @@ async function resolveCurrentMetricsEvidence(
     parsed.rankBasis === 'composite-load'
   ) {
     answer = buildCompositeLoadRankingAnswer({ parsed, snapshot });
+  } else if (parsed.intent === 'metric_ranking') {
+    answer = buildMetricRankingAnswer({ parsed, snapshot });
   } else if (
     parsed.intent === 'server_health' &&
     parsed.sourceIntent === 'group-health-compare'

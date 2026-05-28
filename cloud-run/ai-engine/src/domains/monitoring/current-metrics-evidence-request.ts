@@ -212,6 +212,18 @@ function buildGroupHealthCompareRequest(params: {
   };
 }
 
+function normalizeMetricRankingCount(
+  message: string,
+  rankCount: number | undefined
+): number {
+  const hasExplicitRankCount =
+    /(?:상위|하위|top|bottom)\s*\d{1,2}|(\d{1,2})\s*(?:개|대|위)/i.test(
+      message
+    );
+  if (hasExplicitRankCount) return normalizeRankCount(rankCount);
+  return /가장|최저|최고|highest|lowest|most|least/i.test(message) ? 1 : 3;
+}
+
 function resolveMetricTargets(params: {
   request: DomainEvidenceRequest;
   explicitServerTargets: string[];
@@ -243,6 +255,7 @@ function parseCurrentMetricsFrame(
   const classification = classifyQueryIntent(request.message);
   const messageMetric = normalizeSupportedMetric(classification.metric);
   const explicitServerTargets = extractServerIdTargetsFromMessage(request.message);
+  const requestGroupTarget = inferGroupTargetFromMessage(request.message);
   const mentionedMetrics = extractMentionedMetrics(request.message);
   const metricConditions = extractMetricDirectionalConditions(request.message);
 
@@ -370,7 +383,11 @@ function parseCurrentMetricsFrame(
   const targets =
     frameTargets.length > 0
       ? frameTargets
-      : extractContextualServerTargetsFromMessages(request);
+      : resolveMetricTargets({
+          request,
+          explicitServerTargets,
+          groupTarget: requestGroupTarget,
+        });
   const frameThreshold =
     classification.intent === 'data-filter' &&
     classification.metric === metric &&
@@ -794,7 +811,7 @@ function parseCurrentMetricsMessage(
       sourceIntent: classification.intent,
       answerQuery: message,
       metric,
-      rankCount: normalizeRankCount(classification.rankCount),
+      rankCount: normalizeMetricRankingCount(message, classification.rankCount),
       rankOrder: classification.rankOrder ?? 'desc',
       ...(metricTargets.length > 0 && { targets: metricTargets }),
     };

@@ -198,6 +198,123 @@ describe('current metrics domain evidence providers', () => {
     });
   });
 
+  it('P23: 그룹 + 최저 메트릭 랭킹은 그룹 필터를 보존한다', async () => {
+    const request = createEvidenceRequest('cache 서버 중 메모리 최저 알려줘', {
+      timeLabel: '15:20',
+      servers: [
+        {
+          id: 'cache-redis-dc1-01',
+          type: 'cache',
+          status: 'warning',
+          cpu: 38,
+          memory: 91,
+          disk: 41,
+        },
+        {
+          id: 'cache-redis-dc1-02',
+          type: 'cache',
+          status: 'online',
+          cpu: 22,
+          memory: 74,
+          disk: 35,
+        },
+        {
+          id: 'web-nginx-dc1-01',
+          type: 'web',
+          status: 'online',
+          cpu: 16,
+          memory: 31,
+          disk: 24,
+        },
+      ],
+    });
+
+    const parsed = parseCurrentMetricsEvidenceRequest(request);
+    const evidence = await monitoringMetricRankingEvidenceProvider.resolve(request);
+
+    expect(parsed).toMatchObject({
+      intent: 'metric_ranking',
+      capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+      metric: 'memory',
+      rankOrder: 'asc',
+      rankCount: 1,
+      targets: ['cache'],
+    });
+    expect(evidence?.metadata).toMatchObject({
+      intent: 'metric_ranking',
+      sourceIntent: 'data-ranking',
+      metric: 'memory',
+      rankOrder: 'asc',
+      rankCount: 1,
+      targets: ['cache'],
+    });
+    expect(evidence?.fallback).toContain('캐시 서버 메모리 사용률 하위 1대');
+    expect(evidence?.fallback).toContain('1. cache-redis-dc1-02: 메모리 74%');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
+  it('P23: semantic frame metric_ranking도 raw 메시지의 그룹 힌트를 적용한다', async () => {
+    const request = {
+      ...createEvidenceRequest('cache 서버 중 메모리 최저 알려줘', {
+        timeLabel: '15:20',
+        servers: [
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'warning',
+            cpu: 38,
+            memory: 91,
+            disk: 41,
+          },
+          {
+            id: 'cache-redis-dc1-02',
+            type: 'cache',
+            status: 'online',
+            cpu: 22,
+            memory: 74,
+            disk: 35,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 16,
+            memory: 31,
+            disk: 24,
+          },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'metric_ranking',
+        capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        metric: 'memory',
+        timeWindow: 'current',
+        aggregation: 'top_n',
+        topN: 1,
+        ambiguity: 'low',
+        executionMode: 'single',
+        confidence: 0.93,
+      },
+    };
+
+    const parsed = parseCurrentMetricsEvidenceRequest(request);
+    const evidence = await monitoringMetricRankingEvidenceProvider.resolve(request);
+
+    expect(parsed).toMatchObject({
+      intent: 'metric_ranking',
+      metric: 'memory',
+      rankOrder: 'asc',
+      rankCount: 1,
+      targets: ['cache'],
+    });
+    expect(evidence?.fallback).toContain('캐시 서버 메모리 사용률 하위 1대');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-02');
+    expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
+  });
+
   it('resolves cache current memory frame as deterministic group metric evidence', async () => {
     const evidence = await monitoringMetricCurrentEvidenceProvider.resolve({
       ...createEvidenceRequest('캐시 서버 메모리 현황', {

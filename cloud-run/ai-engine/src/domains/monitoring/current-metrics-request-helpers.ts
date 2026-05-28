@@ -51,7 +51,7 @@ export function normalizeRankOrder(
   frame: DomainIntentFrame,
   message: string
 ): QueryRankOrder {
-  return /하위|낮|안전|안정|bottom|lowest|least|asc|min/i.test(
+  return /하위|낮|최저|최소|안전|안정|bottom|lowest|least|asc|min/i.test(
     `${frame.aggregation ?? ''} ${message}`
   )
     ? 'asc'

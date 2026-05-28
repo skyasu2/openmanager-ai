@@ -398,6 +398,80 @@ export function buildCompositeLoadRankingAnswer(params: {
   ].join('\n');
 }
 
+function buildMetricRankingCheckItem(params: {
+  metric: SupportedMetric;
+  rankOrder: 'asc' | 'desc';
+  server: SnapshotServer;
+}): string {
+  if (params.rankOrder === 'asc') {
+    return `${params.server.id}: 낮은 ${getMetricLabel(params.metric)} 서버입니다. 역할, 트래픽 분산, 유휴/예비 용도 여부를 확인하세요.`;
+  }
+  return `${params.server.id}: 높은 ${getMetricLabel(params.metric)} 서버입니다. 같은 그룹 내 편차, 최근 배포/배치, 관련 로그를 우선 확인하세요.`;
+}
+
+export function buildMetricRankingAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  const metric = params.parsed.metric;
+  if (
+    params.parsed.intent !== 'metric_ranking' ||
+    !metric ||
+    params.parsed.rankBasis === 'composite-load'
+  ) {
+    return null;
+  }
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const { servers, targetLabel } = filterSnapshotServers(
+    allServers,
+    params.parsed.targets
+  );
+  if (servers.length === 0) return null;
+
+  const rankOrder = params.parsed.rankOrder ?? 'desc';
+  const rankCount = normalizeRankCount(params.parsed.rankCount);
+  const rows = servers
+    .filter((server) => server.status !== 'offline')
+    .map((server) => ({
+      server,
+      value: getMetricValue(server, metric),
+    }))
+    .filter(
+      (row): row is { server: SnapshotServer; value: number } =>
+        row.value !== null
+    )
+    .sort((left, right) =>
+      rankOrder === 'asc' ? left.value - right.value : right.value - left.value
+    )
+    .slice(0, rankCount);
+  if (rows.length === 0) return null;
+
+  const metricLabel = getMetricLabel(metric);
+  const orderLabel = rankOrder === 'asc' ? '하위' : '상위';
+  const titlePrefix =
+    targetLabel === '전체 서버' ? '' : `${removeTargetCountSuffix(targetLabel)} `;
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+
+  return [
+    `📊 **${titlePrefix}${metricLabel} 사용률 ${orderLabel} ${rankCount}대**`,
+    `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    ...rows.map(
+      (row, index) =>
+        `${index + 1}. ${row.server.id}: ${metricLabel} ${formatMetricPercent(row.value)} (상태 ${formatServerStatus(row.server)})`
+    ),
+    '',
+    '💡 **서버별 확인 항목**',
+    ...rows.map((row, index) => {
+      return `${index + 1}. ${buildMetricRankingCheckItem({
+        metric,
+        rankOrder,
+        server: row.server,
+      })}`;
+    }),
+  ].join('\n');
+}
+
 export function buildGroupServerHealthAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;

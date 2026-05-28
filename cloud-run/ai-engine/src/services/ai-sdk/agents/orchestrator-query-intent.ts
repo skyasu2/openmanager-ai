@@ -73,7 +73,7 @@ const THRESHOLD_FILTER_SIGNALS =
 // Ranking: ordinal + metric — "top N", "highest", "lowest", "rank by"
 // e.g. "상위 5개", "top 3 by CPU", "가장 높은", "순위"
 const RANKING_SIGNALS =
-  /(상위|하위|top|bottom)\s*\d{1,2}|(가장\s*(높|낮|많|적))|(\d{1,2}\s*(개|위|번째))\s*(순|위)|순위|랭킹|rank(ing|ed)?\s+by|sort\s+by|highest|lowest|most|least|높은|낮은/i;
+  /(상위|하위|top|bottom)\s*\d{1,2}|(가장\s*(높|낮|많|적))|(\d{1,2}\s*(개|위|번째))\s*(순|위)|순위|랭킹|rank(ing|ed)?\s+by|sort\s+by|highest|lowest|most|least|최고|최저|높은|낮은/i;
 
 // Metric issue filter without an explicit threshold.
 // e.g. "네트워크 문제가 있는 서버만", "방금 분석한 서버 중 disk 이상만 골라줘"
@@ -179,7 +179,9 @@ export function classifyQueryIntent(query: string): IntentClassification {
   const comparison = parseThresholdComparison(query);
   const rankCount = extractRankCount(query);
   const rankOrder: QueryRankOrder =
-    /하위|bottom|낮|lowest|least|asc/i.test(query) ? 'asc' : 'desc';
+    /하위|bottom|낮|최저|최소|lowest|least|asc|min/i.test(query)
+      ? 'asc'
+      : 'desc';
 
   if (CAUSAL_SIGNALS.test(query)) {
     return { intent: 'causal-analysis', confidence: 'high', metric, statusValue };

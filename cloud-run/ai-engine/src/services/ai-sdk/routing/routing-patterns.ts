@@ -18,7 +18,7 @@ export const INVERSE_STATUS_PATTERN =
  * Merged from query-routing-signals + orchestrator-query-intent.
  */
 export const MIN_METRIC_PATTERN =
-  /(?:가장\s*(?:낮은|적은|여유|안전|안정(?:적(?:인)?)?|(?<!비)효율|idle)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|적은|최저|최소)|(?:최저|최소|min(?:imum)?)\s*(?:cpu|메모리|memory|디스크|disk|부하|load)|(?:여유\s*(?:많은|있는)|(?<!비)효율(?:적|적인)?|idle).*서버|lowest\s*(?:load|cpu|memory|disk)|least\s*(?:loaded|busy)|most\s+efficient\s+server)/i;
+  /(?:가장\s*(?:낮은|적은|여유|안전|안정(?:적(?:인)?)?|(?<!비)효율|idle)|(?:부하|로드|load)\s*(?:가장\s*)?(?:낮은|적은|최저|최소)|(?:최저|최소|min(?:imum)?)\s*(?:cpu|메모리|memory|디스크|disk|부하|load)|(?:cpu|메모리|memory|디스크|disk|부하|load).{0,16}(?:최저|최소|min(?:imum)?)|(?:여유\s*(?:많은|있는)|(?<!비)효율(?:적|적인)?|idle).*서버|lowest\s*(?:load|cpu|memory|disk)|least\s*(?:loaded|busy)|most\s+efficient\s+server)/i;
 
 /**
  * 시간 창이 붙은 용량 포화 예측 표현.
