@@ -2072,6 +2072,43 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).not.toContain('서버별 현황');
   });
 
+  it('Q-NEW76: compares CPU/메모리/디스크 risk when the query omits the metric noun', async () => {
+    const request = createEvidenceRequest(
+      'CPU/메모리/디스크 중 어느 게 가장 위험?',
+      {
+        timeLabel: '18:40',
+        servers: [
+          { id: 'api-was-dc1-01', status: 'online', cpu: 65, memory: 70, disk: 30 },
+          { id: 'web-nginx-dc1-01', status: 'online', cpu: 20, memory: 30, disk: 25 },
+          { id: 'storage-nfs-dc1-01', status: 'critical', cpu: 70, memory: 75, disk: 93 },
+          { id: 'cache-redis-dc1-01', status: 'warning', cpu: 45, memory: 88, disk: 40 },
+        ],
+      }
+    );
+    const parsed = parseCurrentMetricsEvidenceRequest(request);
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
+
+    expect(parsed).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'metric-risk-compare',
+      metrics: ['cpu', 'memory', 'disk'],
+      rankOrder: 'desc',
+      rankCount: 3,
+    });
+    expect(evidence?.metadata).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'metric-risk-compare',
+      metrics: ['cpu', 'memory', 'disk'],
+    });
+    expect(evidence?.fallback).toContain('메트릭 위험도 비교');
+    expect(evidence?.fallback).toContain('가장 위험한 메트릭은 **디스크**');
+    expect(evidence?.fallback).toMatch(/1\. 디스크:/);
+    expect(evidence?.fallback).toMatch(/2\. 메모리:/);
+    expect(evidence?.fallback).toMatch(/3\. CPU:/);
+  });
+
   it('Q-NEW72: preserves metric risk comparison when a metric_current frame names only CPU', async () => {
     const evidence = await monitoringMetricCurrentEvidenceProvider.resolve({
       ...createEvidenceRequest('CPU/MEM/DISK 중 가장 위험 메트릭은?', {

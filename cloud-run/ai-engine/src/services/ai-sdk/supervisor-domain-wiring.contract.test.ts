@@ -776,6 +776,48 @@ describe('supervisor domain wiring contract', () => {
     );
   });
 
+  it('short-circuits Q-NEW76 metric risk comparison wording without the metric noun', async () => {
+    const runtimeHost = createMonitoringAssistantRuntimeHost();
+
+    const result = await executeSupervisor({
+      mode: 'auto',
+      messages: [
+        { role: 'user', content: 'CPU/메모리/디스크 중 어느 게 가장 위험?' },
+      ],
+      sessionId: 'session-qnew76-non-stream',
+      enableRAG: false,
+      enableWebSearch: false,
+      runtimeHost,
+    });
+
+    expect(mockGenerateText).not.toHaveBeenCalled();
+    expect(mockExecuteMultiAgent).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      success: true,
+      toolsCalled: ['monitoring-metric-current'],
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      metadata: {
+        provider: 'deterministic',
+        modelId: 'monitoring-metric-current',
+        domainEvidence: {
+          id: 'monitoring-metric-current',
+          responsePolicy: 'deterministic_answer',
+          capabilityId: 'monitoring.metric_current',
+          intent: 'metric_current',
+        },
+        semanticQueryTrace: {
+          selectedCapability: 'monitoring.metric_current',
+          selectedEvidenceProvider: 'monitoring-metric-current',
+          evidenceAvailable: true,
+          clarificationRequired: false,
+        },
+      },
+    });
+    expect('response' in result ? result.response : '').toContain(
+      '가장 위험한 메트릭'
+    );
+  });
+
   it('short-circuits forced KRL SSOT queries to direct knowledge search before multi-agent routing', async () => {
     mockSelectExecutionMode.mockReturnValue('multi');
     vi.mocked(resolveRAGSetting).mockReturnValue(true);
