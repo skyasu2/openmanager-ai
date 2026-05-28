@@ -19,6 +19,14 @@ function toSafeMetricValue(value: number | undefined): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0;
 }
 
+function toSafeOptionalMetricValue(
+  value: number | undefined
+): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
+}
+
 /**
  * 🛠️ View Model Hook for Server Objects
  *
@@ -41,8 +49,12 @@ export const useSafeServer = (server: ServerType | undefined | null) => {
       memory: toSafeMetricValue(server?.memory),
       disk: toSafeMetricValue(server?.disk),
       network: toSafeMetricValue(server?.network),
+      responseTime: toSafeOptionalMetricValue(server?.responseTime),
+      uptimePercent: toSafeOptionalMetricValue(server?.uptimePercent),
       alerts: server?.alerts || 0,
       services: Array.isArray(server?.services) ? server.services : [],
+      load1: toSafeOptionalMetricValue(server?.load1),
+      cpuCores: toSafeOptionalMetricValue(server?.cpuCores),
       lastUpdate: server?.lastUpdate || new Date(),
     }),
     [server]

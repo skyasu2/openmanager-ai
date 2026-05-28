@@ -2,7 +2,12 @@ import { FileText, MapPin } from 'lucide-react';
 import React, { type FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { useSafeServer } from '@/hooks/useSafeServer';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
-import { getServerStatusTheme } from '@/styles/design-constants';
+import {
+  DASHBOARD_STATUS_GRADIENTS,
+  getServerStatusTheme,
+  SERVER_CARD_HOVER_SHADOW_CLASSES,
+  SERVER_CARD_STATUS_ACCENT_BORDER_CLASSES,
+} from '@/styles/design-constants';
 import type { Server as ServerType } from '@/types/server';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
 import { withCurrentMetricPoint } from './dashboard-metric-points';
@@ -11,6 +16,7 @@ import {
   MetricItem,
   SecondaryMetrics,
 } from './ImprovedServerCard.parts';
+import type { DashboardTimeRange } from './types/dashboard.types';
 
 /**
  * 🎨 Premium Server Card v2.2
@@ -30,65 +36,12 @@ export interface ImprovedServerCardProps {
   showRealTimeUpdates?: boolean;
   index?: number;
   enableProgressiveDisclosure?: boolean;
+  metricsTimeRange?: DashboardTimeRange;
 }
-
-// TODO: dashboard-status-tokens — 향후 공유 디자인 토큰으로 통합 예정
-// 상태별 그라데이션 (모듈 레벨 상수 — 매 렌더시 재생성 방지)
-const statusGradients = {
-  critical: {
-    gradient: 'from-red-500 via-rose-500 to-red-600',
-    shadow: 'shadow-red-500/30',
-    glow: 'rgba(239, 68, 68, 0.4)',
-  },
-  warning: {
-    gradient: 'from-amber-500 via-orange-500 to-amber-600',
-    shadow: 'shadow-amber-500/30',
-    glow: 'rgba(245, 158, 11, 0.4)',
-  },
-  online: {
-    gradient: 'from-emerald-500 via-green-500 to-emerald-600',
-    shadow: 'shadow-emerald-500/30',
-    glow: 'rgba(16, 185, 129, 0.3)',
-  },
-  offline: {
-    gradient: 'from-gray-500 via-slate-500 to-gray-600',
-    shadow: 'shadow-gray-500/20',
-    glow: 'rgba(107, 114, 128, 0.3)',
-  },
-  maintenance: {
-    gradient: 'from-blue-500 via-indigo-500 to-blue-600',
-    shadow: 'shadow-blue-500/30',
-    glow: 'rgba(59, 130, 246, 0.3)',
-  },
-  unknown: {
-    gradient: 'from-purple-500 via-violet-500 to-purple-600',
-    shadow: 'shadow-purple-500/20',
-    glow: 'rgba(139, 92, 246, 0.3)',
-  },
-};
-
-// BUG-5 fix: Tailwind JIT는 동적 클래스를 감지 못함 → 정적 룩업 맵 사용
-const hoverShadowClasses: Record<string, string> = {
-  critical: 'hover:shadow-red-500/30',
-  warning: 'hover:shadow-amber-500/30',
-  online: 'hover:shadow-emerald-500/30',
-  offline: 'hover:shadow-gray-500/20',
-  maintenance: 'hover:shadow-blue-500/30',
-  unknown: 'hover:shadow-purple-500/20',
-};
-
-const statusAccentBorderClasses: Record<string, string> = {
-  critical: 'border-l-4 border-l-red-500',
-  warning: 'border-l-4 border-l-orange-500',
-  online: 'border-l-4 border-l-green-500',
-  offline: 'border-l-4 border-l-slate-400',
-  maintenance: 'border-l-4 border-l-blue-500',
-  unknown: 'border-l-4 border-l-purple-500',
-};
 
 const statusLabels: Record<string, string> = {
   critical: '위험',
-  warning: '주의',
+  warning: '경고',
   online: '정상',
   offline: '오프라인',
   maintenance: '점검',
@@ -102,6 +55,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     onOpenLogs,
     variant = 'standard',
     showRealTimeUpdates = true,
+    metricsTimeRange = '24h',
   }) => {
     // Basic data preparation
     const { safeServer, serverIcon, serverTypeLabel, osIcon, osShortName } =
@@ -110,16 +64,17 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     const statusTheme = getServerStatusTheme(safeServer.status);
 
     const currentGradient =
-      statusGradients[safeServer.status] || statusGradients.online;
+      DASHBOARD_STATUS_GRADIENTS[
+        safeServer.status as keyof typeof DASHBOARD_STATUS_GRADIENTS
+      ] || DASHBOARD_STATUS_GRADIENTS.online;
     const isCompactVariant = variant === 'compact';
 
     // 📈 서버 메트릭 히스토리 로드 (OTel TimeSeries)
     const { metricsHistory, loadMetricsHistory } = useServerMetrics();
 
     useEffect(() => {
-      // 컴포넌트 마운트 시 24시간 히스토리 로드
-      loadMetricsHistory(safeServer.id, '24h');
-    }, [safeServer.id, loadMetricsHistory]);
+      loadMetricsHistory(safeServer.id, metricsTimeRange);
+    }, [metricsTimeRange, safeServer.id, loadMetricsHistory]);
 
     // 실시간 메트릭 (Props 기반 SSOT)
     const realtimeMetrics = useMemo(
@@ -155,13 +110,13 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     const variantStyles = useMemo(() => {
       const styles = {
         compact: {
-          container: 'h-[192px] p-3 pb-4',
+          container: 'min-h-[192px] p-3 pb-4',
         },
         detailed: {
-          container: 'h-[244px] p-4 pb-5',
+          container: 'min-h-[244px] p-4 pb-5',
         },
         standard: {
-          container: 'h-[226px] p-3 pb-4',
+          container: 'min-h-[226px] p-3 pb-4',
         },
       };
       return styles[variant] || styles.standard;
@@ -189,10 +144,11 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     );
 
     const currentHoverShadow =
-      hoverShadowClasses[safeServer.status] || hoverShadowClasses.online;
+      SERVER_CARD_HOVER_SHADOW_CLASSES[safeServer.status] ||
+      SERVER_CARD_HOVER_SHADOW_CLASSES.online;
     const currentAccentBorder =
-      statusAccentBorderClasses[safeServer.status] ||
-      statusAccentBorderClasses.online;
+      SERVER_CARD_STATUS_ACCENT_BORDER_CLASSES[safeServer.status] ||
+      SERVER_CARD_STATUS_ACCENT_BORDER_CLASSES.online;
     const actionRailClass = `flex items-center gap-1 ${isCompactVariant ? 'pt-1 sm:pt-2' : 'pt-4'}`;
     const actionButtonClass = `flex items-center justify-center bg-slate-100 text-gray-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
       isCompactVariant ? 'h-9 w-9 rounded-lg' : 'h-11 w-11 rounded-full'
@@ -210,6 +166,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
 
     return (
       <div
+        id={`server-card-${safeServer.id}`}
         className={`group relative w-full cursor-pointer overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 backdrop-blur-md text-left bg-transparent ${statusTheme.background} ${statusTheme.border} ${currentAccentBorder} ${variantStyles.container} ${currentHoverShadow}`}
       >
         {/* 🎨 그라데이션 애니메이션 배경 (랜딩 카드 스타일) */}
@@ -225,7 +182,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         <div
           className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-40 pointer-events-none rounded-2xl"
           style={{
-            boxShadow: `inset 0 0 30px ${currentGradient.glow}`,
+            boxShadow: `inset 0 0 30px ${currentGradient.inlineGlow}`,
           }}
         />
 
@@ -255,7 +212,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           <div className="absolute right-3 top-3 z-10">
             <span
               className={`block h-2.5 w-2.5 rounded-full ring-1 ring-white/80 shadow-md ${shouldAnimateStatusSignal ? 'animate-pulse' : ''} ${statusTheme.text.replace('text-', 'bg-')}`}
-              style={{ boxShadow: `0 0 6px ${currentGradient.glow}` }}
+              style={{ boxShadow: `0 0 6px ${currentGradient.inlineGlow}` }}
             />
           </div>
         )}
@@ -276,7 +233,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             <div
               className={`relative rounded-xl p-2 shadow-md backdrop-blur-sm transition-transform duration-200 bg-linear-to-br ${currentGradient.gradient} ${needsAttention ? 'group-hover:scale-105' : ''}`}
               style={{
-                boxShadow: `0 4px 15px ${currentGradient.glow}`,
+                boxShadow: `0 4px 15px ${currentGradient.inlineGlow}`,
               }}
             >
               <div className="text-white">{serverIcon}</div>

@@ -1,6 +1,7 @@
 import { CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
+import { getThreshold } from '@/config/rules';
 import type { Server } from '@/types/server';
 
 const GAUGE_COLORS = {
@@ -14,18 +15,41 @@ interface SystemOverviewSectionProps {
 }
 
 function getHighestResourceMetric(server: Server): {
+  metricKey: 'cpu' | 'memory' | 'disk';
   metricLabel: 'CPU' | 'MEM' | 'DISK';
   metricValue: number;
 } {
   const metrics = [
-    { metricLabel: 'CPU' as const, metricValue: server.cpu ?? 0 },
-    { metricLabel: 'MEM' as const, metricValue: server.memory ?? 0 },
-    { metricLabel: 'DISK' as const, metricValue: server.disk ?? 0 },
+    {
+      metricKey: 'cpu' as const,
+      metricLabel: 'CPU' as const,
+      metricValue: server.cpu ?? 0,
+    },
+    {
+      metricKey: 'memory' as const,
+      metricLabel: 'MEM' as const,
+      metricValue: server.memory ?? 0,
+    },
+    {
+      metricKey: 'disk' as const,
+      metricLabel: 'DISK' as const,
+      metricValue: server.disk ?? 0,
+    },
   ];
 
   return metrics.reduce((highest, current) =>
     current.metricValue > highest.metricValue ? current : highest
   );
+}
+
+function getResourceSeverity(
+  metricKey: 'cpu' | 'memory' | 'disk',
+  metricValue: number
+): 'normal' | 'warning' | 'critical' {
+  const threshold = getThreshold(metricKey);
+  if (metricValue >= threshold.critical) return 'critical';
+  if (metricValue >= threshold.warning) return 'warning';
+  return 'normal';
 }
 
 export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
@@ -64,6 +88,7 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
           id: s.id ?? s.name,
           name: s.name,
           maxUsage: top.metricValue,
+          maxMetricKey: top.metricKey,
           maxMetric: top.metricLabel,
           status: s.status,
         };
@@ -90,7 +115,7 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
           <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">
             시스템 리소스
           </p>
-          <div className="flex items-center justify-evenly px-2 sm:px-0">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-evenly sm:gap-2 px-2 sm:px-0">
             {gauges.map((g) => (
               <MiniGauge
                 key={g.key}
@@ -109,8 +134,12 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
           </p>
           <div className="space-y-0">
             {topAlerts.map((alert, idx) => {
-              const isWarning = alert.maxUsage >= 70;
-              const isCritical = alert.maxUsage >= 85;
+              const severity = getResourceSeverity(
+                alert.maxMetricKey,
+                alert.maxUsage
+              );
+              const isWarning = severity === 'warning';
+              const isCritical = severity === 'critical';
               return (
                 <button
                   type="button"

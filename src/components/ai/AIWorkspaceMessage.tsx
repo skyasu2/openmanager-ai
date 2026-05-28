@@ -1,4 +1,4 @@
-import { Bot, Brain, ChevronDown, ChevronUp, Play, User } from 'lucide-react';
+import { Brain, ChevronDown, ChevronUp, Play, User } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
 import { AssistantAgentBadge } from '@/components/ai/AssistantAgentBadge';
@@ -135,7 +135,7 @@ export const AIWorkspaceMessage = memo<{
 
     return (
       <div
-        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+        className={`group flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
         data-testid={message.role === 'user' ? 'user-message' : 'ai-message'}
       >
         <div
@@ -144,29 +144,32 @@ export const AIWorkspaceMessage = memo<{
           }`}
         >
           <div
+            data-testid={
+              message.role === 'user' ? 'user-avatar' : 'assistant-avatar'
+            }
             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-xs ${
               message.role === 'user'
-                ? 'bg-blue-100 text-blue-600'
+                ? 'bg-slate-100 text-slate-600'
                 : 'bg-linear-to-br from-purple-500 to-pink-500 text-white'
             }`}
           >
             {message.role === 'user' ? (
               <User className="h-4 w-4" />
             ) : (
-              <Bot className="h-4 w-4" />
+              <Brain className="h-4 w-4" />
             )}
           </div>
 
           <div className="min-w-0 flex-1">
             {hasTextContent && (
               <div
-                className={`overflow-hidden rounded-2xl p-4 shadow-xs ${
+                className={`${
                   message.role === 'user'
-                    ? 'rounded-tr-sm bg-linear-to-br from-blue-500 to-blue-600 text-white'
-                    : 'rounded-tl-sm border border-slate-200 bg-gradient-to-br from-slate-50 to-white text-slate-800'
+                    ? 'overflow-hidden rounded-2xl rounded-tr-sm bg-slate-100 p-4 text-slate-900 shadow-xs'
+                    : 'overflow-visible px-0 py-1 text-slate-800'
                 }`}
                 data-testid={
-                  message.role === 'assistant' ? 'ai-response' : undefined
+                  message.role === 'assistant' ? 'ai-response' : 'user-response'
                 }
               >
                 {message.role === 'assistant' ? (
@@ -212,6 +215,16 @@ export const AIWorkspaceMessage = memo<{
                         <span className="truncate">{guidanceCta.label}</span>
                       </button>
                     )}
+                    {message.isStreaming && (
+                      <span
+                        aria-label="응답 작성 중"
+                        className="mt-2 inline-flex animate-pulse text-sm font-semibold text-purple-600"
+                        data-testid="assistant-typing-dots"
+                        role="status"
+                      >
+                        •••
+                      </span>
+                    )}
                   </div>
                 ) : (
                   <div className="text-chat leading-relaxed wrap-break-word whitespace-pre-wrap">
@@ -229,7 +242,11 @@ export const AIWorkspaceMessage = memo<{
               className={`mt-1 flex items-center justify-between ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
             >
               <div className="flex items-center gap-2">
-                <p className="text-xs text-gray-500" suppressHydrationWarning>
+                <p
+                  className="text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+                  data-testid="message-timestamp"
+                  suppressHydrationWarning
+                >
                   {formatTime(message.timestamp)}
                 </p>
                 {showAssistantMetaChips && (

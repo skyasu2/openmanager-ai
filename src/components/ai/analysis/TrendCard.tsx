@@ -112,7 +112,7 @@ export function TrendCard({ metric, data }: TrendCardProps) {
             : '안정'}
         {data.confidence && (
           <span className="ml-1 opacity-60">
-            (신뢰도 {Math.round(data.confidence * 100)}%)
+            (신호 강도 {Math.round(data.confidence * 100)}%)
           </span>
         )}
       </div>

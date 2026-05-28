@@ -10,11 +10,11 @@ type StoredSession = { sessionId: string; savedAt: number };
 function loadPersistedSession(): string | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
     if (!raw) return null;
     const stored: StoredSession = JSON.parse(raw);
     if (Date.now() - stored.savedAt > SESSION_TTL_MS) {
-      localStorage.removeItem(SESSION_STORAGE_KEY);
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
       return null;
     }
     return stored.sessionId;
@@ -26,7 +26,7 @@ function loadPersistedSession(): string | null {
 function persistSession(sessionId: string): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(
+    sessionStorage.setItem(
       SESSION_STORAGE_KEY,
       JSON.stringify({ sessionId, savedAt: Date.now() } satisfies StoredSession)
     );
@@ -38,7 +38,7 @@ function persistSession(sessionId: string): void {
 function clearPersistedSession(): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.removeItem(SESSION_STORAGE_KEY);
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
   } catch {
     /* ignore */
   }
@@ -61,8 +61,9 @@ function generateSessionId(): string {
  * - useState: 세션 변경 시 리렌더 트리거
  * - useRef: 콜백 내부에서 최신 값 참조
  *
- * localStorage 영속화 (30분 TTL):
+ * sessionStorage 영속화 (30분 TTL):
  * - 새로고침 시 Cloud Run 컨텍스트와 동일 세션 유지
+ * - 다른 탭은 독립 대화 세션으로 분리
  * - TTL 만료 또는 명시적 새 대화 시작 시 새 세션 생성
  */
 export function useChatSession(initialSessionId?: string) {

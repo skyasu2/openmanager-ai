@@ -62,6 +62,9 @@ const REPORT_ACTION_PATTERN =
 
 const MONITORING_PATTERN =
   /(이상\s*감지|이상감지|이상\s*탐지|추세|트렌드|리스크\s*(추세|분석)|예측|예상|anomaly|forecast|trend)/i;
+// 용량 예측·임계치 도달 시점 쿼리는 artifact가 아닌 일반 AI 경로로 처리
+const CAPACITY_FORECAST_EXCLUSION_PATTERN =
+  /(?:언제.{0,24}\d+\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d+\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:넘|초과|도달|돌파).{0,16}(?:시점|예측)|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|(?:고갈|포화|가득\s*차|가득\s*찰).{0,16}(?:예측|시점|언제|예상|알려)|디스크\s*(?:가득|고갈|부족)\s*(?:언제|예상))/i;
 const MONITORING_ACTION_PATTERN =
   /(분석\s*(해|해줘|해주세요|해줄래|좀|부탁|요청)|분석해|실행|돌려|요약\s*(해|해줘|해주세요|해줄래|부탁|요청)|요약해|확인\s*(해|해줘|해주세요|해줄래|부탁|요청)|확인해|생성(?!\s*(방법|법|기능|설명|안내))|만들|다운로드(?!\s*(방법|법|기능|설명|안내))|예측\s*(해|해줘|해주세요|해줄래|부탁|요청)|예측해|forecast|analy[sz]e|run)/i;
 const MONITORING_ARTIFACT_PATTERN =
@@ -145,6 +148,7 @@ function readServerMonitoringServerId(query: string): string | undefined {
 }
 
 function isServerMonitoringArtifactRequest(query: string): boolean {
+  if (CAPACITY_FORECAST_EXCLUSION_PATTERN.test(query)) return false;
   return (
     MONITORING_ACTION_PATTERN.test(query) ||
     (MONITORING_ARTIFACT_PATTERN.test(query) && isImplicitKeywordRequest(query))
@@ -156,6 +160,8 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   if (!normalized) return withRuleVersion({ kind: 'none' });
 
   const isNegated = ARTIFACT_NEGATION_PATTERN.test(normalized);
+  const isCapacityForecastRequest =
+    CAPACITY_FORECAST_EXCLUSION_PATTERN.test(normalized);
 
   if (isFormattingOnlyRequest(normalized)) {
     return withRuleVersion({ kind: 'none' });
@@ -252,7 +258,7 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
     }
   }
 
-  if (MONITORING_PATTERN.test(normalized)) {
+  if (MONITORING_PATTERN.test(normalized) && !isCapacityForecastRequest) {
     if (ARTIFACT_GUIDANCE_PRIORITY_PATTERN.test(normalized)) {
       return withRuleVersion({
         kind: 'guidance',

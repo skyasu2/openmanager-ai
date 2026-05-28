@@ -20,7 +20,6 @@ import {
   type EnhancedChatMessage,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { SessionState } from '@/types/session';
 import { ChatInputArea } from './ChatInputArea';
 import { ChatMessageList } from './ChatMessageList';
@@ -81,8 +80,6 @@ interface EnhancedAIChatProps {
   currentHandoff?: HandoffEventData | null;
   webSearchEnabled?: boolean;
   onToggleWebSearch?: () => void;
-  analysisMode?: AnalysisMode;
-  onSelectAnalysisMode?: (mode: AnalysisMode) => void;
   /** Cloud Run AI Engine 웜업 중 여부 */
   warmingUp?: boolean;
   /** 웜업 예상 대기 시간 (초) */
@@ -133,8 +130,6 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   currentHandoff,
   webSearchEnabled,
   onToggleWebSearch,
-  analysisMode,
-  onSelectAnalysisMode,
   warmingUp,
   estimatedWaitSeconds,
   queuedQueries,
@@ -210,12 +205,25 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
     dismissRestoreBanner();
     setHasPersistedHistory(false);
   };
+  const activeBanner = error
+    ? 'error'
+    : queryMode === 'streaming' && warmingUp && isGenerating
+      ? 'warmup'
+      : queryMode === 'job-queue' && isGenerating
+        ? 'job-progress'
+        : queryMode === 'streaming' &&
+            isGenerating &&
+            (currentAgentStatus || currentHandoff)
+          ? 'agent-status'
+          : sessionState?.isLimitReached
+            ? 'session-limit'
+            : null;
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-linear-to-br from-slate-50 to-blue-50">
+    <div className="flex h-full min-h-0 flex-col bg-gray-50/50">
       {/* 헤더 */}
       {showInternalHeader && (
-        <div className="border-b border-gray-200 bg-white/80 p-4 backdrop-blur-sm">
+        <div className="border-b border-purple-100 bg-white p-4">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-purple-500 to-blue-600">
@@ -273,15 +281,23 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           />
         )}
 
-      {/* Streaming 모드 웜업 인디케이터 */}
-      {queryMode === 'streaming' && warmingUp && isGenerating && (
+      {/* 우선순위 상태 배너 */}
+      {activeBanner === 'error' && (
+        <ColdStartErrorBanner
+          error={error ?? ''}
+          errorDetails={errorDetails}
+          onRetry={onRetry}
+          onClearError={onClearError}
+        />
+      )}
+
+      {activeBanner === 'warmup' && (
         <StreamingWarmupIndicator
           estimatedWaitSeconds={estimatedWaitSeconds ?? 60}
         />
       )}
 
-      {/* Job Queue 진행률 */}
-      {queryMode === 'job-queue' && isGenerating && (
+      {activeBanner === 'job-progress' && (
         <JobProgressIndicator
           progress={jobProgress ?? null}
           isLoading={isGenerating}
@@ -290,44 +306,30 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         />
       )}
 
-      {/* 실시간 Agent 상태 */}
-      {queryMode === 'streaming' &&
-        isGenerating &&
-        (currentAgentStatus || currentHandoff) && (
-          <div className="border-t border-blue-100 bg-linear-to-r from-blue-50/80 to-indigo-50/50 px-4 py-2.5">
-            <div className="mx-auto flex max-w-3xl items-center gap-2">
-              {currentAgentStatus && (
-                <AgentStatusIndicator
-                  agent={currentAgentStatus.agent}
-                  status={currentAgentStatus.status}
-                  message={currentAgentStatus.message}
-                  compact
-                />
-              )}
-              {currentHandoff && (
-                <AgentHandoffBadge
-                  from={currentHandoff.from}
-                  to={currentHandoff.to}
-                  reason={currentHandoff.reason}
-                  compact
-                />
-              )}
-            </div>
+      {activeBanner === 'agent-status' && (
+        <div className="border-t border-blue-100 bg-linear-to-r from-blue-50/80 to-indigo-50/50 px-4 py-2.5">
+          <div className="mx-auto flex max-w-3xl items-center gap-2">
+            {currentAgentStatus && (
+              <AgentStatusIndicator
+                agent={currentAgentStatus.agent}
+                status={currentAgentStatus.status}
+                message={currentAgentStatus.message}
+                compact
+              />
+            )}
+            {currentHandoff && (
+              <AgentHandoffBadge
+                from={currentHandoff.from}
+                to={currentHandoff.to}
+                reason={currentHandoff.reason}
+                compact
+              />
+            )}
           </div>
-        )}
-
-      {/* 에러 표시 - warmup 중에는 숨김 (warmup indicator가 우선) */}
-      {error && !(queryMode === 'streaming' && warmingUp && isGenerating) && (
-        <ColdStartErrorBanner
-          error={error}
-          errorDetails={errorDetails}
-          onRetry={onRetry}
-          onClearError={onClearError}
-        />
+        </div>
       )}
 
-      {/* 세션 제한 안내 */}
-      {sessionState?.isLimitReached && (
+      {activeBanner === 'session-limit' && (
         <div className="border-t border-blue-200 bg-linear-to-r from-blue-50 to-indigo-50 p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -349,32 +351,6 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
               >
                 <RefreshCw className="h-4 w-4" />
                 <span>새 대화</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* 세션 경고 */}
-      {sessionState?.isWarning && !sessionState.isLimitReached && (
-        <div className="border-t border-slate-200 bg-linear-to-r from-slate-50 to-gray-50 px-4 py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-slate-500">
-                💬 대화 {sessionState.count}/20
-              </span>
-              <span className="text-xs text-slate-400">·</span>
-              <span className="text-xs text-slate-500">
-                새 주제는 새 대화에서 더 정확해요
-              </span>
-            </div>
-            {onNewSession && (
-              <button
-                type="button"
-                onClick={onNewSession}
-                className="text-xs text-blue-600 hover:text-blue-700 hover:underline"
-              >
-                새 대화
               </button>
             )}
           </div>
@@ -443,8 +419,6 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         onStopGeneration={onStopGeneration}
         webSearchEnabled={webSearchEnabled}
         onToggleWebSearch={onToggleWebSearch}
-        analysisMode={analysisMode}
-        onSelectAnalysisMode={onSelectAnalysisMode}
       />
     </div>
   );

@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { DashboardNavigation } from '@/components/dashboard/shell/DashboardNavigation';
+import type { DashboardStats } from '@/components/dashboard/types/dashboard.types';
 import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useAutoLogout } from '@/hooks/useAutoLogout';
@@ -75,6 +76,20 @@ function toJobDataSlot(
     minuteOfDay: timeInfo.minuteOfDay,
     timeLabel: `${hours}:${minutes} KST`,
   };
+}
+
+function areDashboardStatsEqual(
+  left: DashboardStats,
+  right: DashboardStats
+): boolean {
+  return (
+    left.total === right.total &&
+    left.online === right.online &&
+    left.warning === right.warning &&
+    left.critical === right.critical &&
+    left.offline === right.offline &&
+    left.unknown === right.unknown
+  );
 }
 
 const DashboardHeader = dynamic(
@@ -158,11 +173,13 @@ export default function DashboardInteractiveShell({
     process.env.NODE_ENV === 'development'
   );
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [, setServerStats] = useState({
+  const [, setServerStats] = useState<DashboardStats>({
     total: 0,
     online: 0,
     warning: 0,
+    critical: 0,
     offline: 0,
+    unknown: 0,
   });
 
   const {
@@ -216,6 +233,7 @@ export default function DashboardInteractiveShell({
   const {
     paginatedServers: realServers,
     servers: allServers,
+    filteredServers,
     filteredTotal,
     currentPage,
     totalPages,
@@ -351,17 +369,11 @@ export default function DashboardInteractiveShell({
     debug.log('🔒 사용자가 즉시 로그아웃을 선택했습니다');
   }, [forceLogout]);
 
-  const handleStatsUpdate = useCallback(
-    (stats: {
-      total: number;
-      online: number;
-      warning: number;
-      offline: number;
-    }) => {
-      setServerStats(stats);
-    },
-    []
-  );
+  const handleStatsUpdate = useCallback((stats: DashboardStats) => {
+    setServerStats((previousStats) =>
+      areDashboardStatsEqual(previousStats, stats) ? previousStats : stats
+    );
+  }, []);
 
   return (
     <>
@@ -382,6 +394,7 @@ export default function DashboardInteractiveShell({
                   showSequentialGeneration={false}
                   servers={realServers}
                   allServers={allServers}
+                  displayServers={filteredServers}
                   dataSlotInfo={initialTimeInfo}
                   dataSourceInfo={initialDataSourceInfo}
                   totalServers={filteredTotal}
@@ -401,6 +414,7 @@ export default function DashboardInteractiveShell({
                   view={dashboardView}
                   servers={realServers}
                   allServers={allServers}
+                  displayServers={filteredServers}
                   dataSlotInfo={initialTimeInfo}
                   dataSourceInfo={initialDataSourceInfo}
                   initialFocusServerId={initialFocusServerId}

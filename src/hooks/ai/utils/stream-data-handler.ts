@@ -21,7 +21,6 @@ import type {
 import type { StreamRagSource } from '../types/stream-rag.types';
 import {
   buildStructuredResponseView,
-  extractAnalysisModeFromDoneData,
   extractEvidenceCardsFromDoneData,
   extractLatencyTierFromDoneData,
   extractModeSelectionSourceFromDoneData,
@@ -427,7 +426,6 @@ export function handleStreamDataPart(
     const structuredView = buildStructuredResponseView(doneData);
     const traceId = extractTraceIdFromDoneData(doneData);
     const toolsCalled = normalizeToolNames(doneData?.toolsCalled);
-    const analysisMode = extractAnalysisModeFromDoneData(doneData);
     const processingTime = extractProcessingTimeFromDoneData(doneData);
     const latencyTier = extractLatencyTierFromDoneData(doneData);
     const resolvedMode = extractResolvedModeFromDoneData(doneData);
@@ -458,7 +456,6 @@ export function handleStreamDataPart(
       ...(resolvedMode && { resolvedMode }),
       ...(modeSelectionSource && { modeSelectionSource }),
       ...(toolsCalled.length > 0 && { toolsCalled }),
-      ...(analysisMode && { analysisMode }),
       ...(evidenceCards && { evidenceCards }),
       ...(retrieval && { retrieval }),
       ...(provider && { provider }),
@@ -483,7 +480,6 @@ export function handleStreamDataPart(
       structuredView ||
       traceId ||
       toolsCalled.length > 0 ||
-      analysisMode ||
       evidenceCards ||
       retrieval ||
       provider ||

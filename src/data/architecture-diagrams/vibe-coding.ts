@@ -46,8 +46,8 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
         },
         {
           id: 'local-ci',
-          label: 'Local Docker CI',
-          sublabel: 'broad/release 변경만',
+          label: 'ci:local',
+          sublabel: 'broad/release 변경 시',
           type: 'primary',
           icon: '🐋',
         },

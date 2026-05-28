@@ -17,6 +17,7 @@
 'use client';
 
 import { type FormEvent, useState } from 'react';
+import { MouseSpotlight } from '@/components/landing/MouseSpotlight';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import {
   Dialog,
@@ -214,6 +215,7 @@ export default function LoginClient() {
 
   return (
     <div className="landing-visual-surface relative flex min-h-screen flex-col overflow-hidden bg-black font-sans">
+      <MouseSpotlight />
       <div className="wave-particles" />
 
       <header className="relative z-50 flex items-center p-4 sm:p-6">

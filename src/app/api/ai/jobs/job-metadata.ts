@@ -24,7 +24,6 @@ export interface ClientProviderAttempt {
 export interface ClientJobMetadata {
   [key: string]: unknown;
   traceId?: string;
-  analysisMode?: 'auto' | 'thinking';
   enableRAG?: boolean;
   enableWebSearch?: boolean | 'auto';
   queryAsOf?: unknown;
@@ -158,10 +157,6 @@ export function sanitizeJobMetadataForClient(
   if (!isRecord(metadata)) return undefined;
 
   const traceId = getNonEmptyString(metadata.traceId);
-  const analysisMode =
-    metadata.analysisMode === 'auto' || metadata.analysisMode === 'thinking'
-      ? metadata.analysisMode
-      : undefined;
   const enableRAG =
     typeof metadata.enableRAG === 'boolean' ? metadata.enableRAG : undefined;
   const enableWebSearch =
@@ -200,7 +195,6 @@ export function sanitizeJobMetadataForClient(
 
   const result: ClientJobMetadata = {
     ...(traceId && { traceId }),
-    ...(analysisMode && { analysisMode }),
     ...(enableRAG !== undefined && { enableRAG }),
     ...(enableWebSearch !== undefined && { enableWebSearch }),
     ...(metadata.queryAsOf !== undefined && { queryAsOf: metadata.queryAsOf }),

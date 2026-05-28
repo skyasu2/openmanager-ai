@@ -7,30 +7,18 @@ import {
   Globe,
   Image as ImageIcon,
   Paperclip,
-  Plus,
   Send,
   Square,
   Upload,
   X,
 } from 'lucide-react';
 import Image from 'next/image';
-import React, {
-  memo,
-  type RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { memo, type RefObject, useCallback } from 'react';
 import { AutoResizeTextarea } from '@/components/ui/AutoResizeTextarea';
 import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
 import { formatFileSize } from '@/hooks/ai/useFileAttachments';
 import type { AIStreamStatus } from '@/hooks/ai/useHybridAIQuery';
-import {
-  ANALYSIS_MODE_LABELS,
-  type AnalysisMode,
-} from '@/types/ai/analysis-mode';
 import { SESSION_LIMITS, type SessionState } from '@/types/session';
 
 const CHAT_INPUT_MAX_LENGTH = 10_000;
@@ -66,8 +54,6 @@ interface ChatInputAreaProps {
   onStopGeneration?: () => void;
   webSearchEnabled?: boolean;
   onToggleWebSearch?: () => void;
-  analysisMode?: AnalysisMode;
-  onSelectAnalysisMode?: (mode: AnalysisMode) => void;
 }
 
 export const ChatInputArea = memo(function ChatInputArea({
@@ -95,75 +81,20 @@ export const ChatInputArea = memo(function ChatInputArea({
   onStopGeneration,
   webSearchEnabled,
   onToggleWebSearch,
-  analysisMode = 'auto',
-  onSelectAnalysisMode,
 }: ChatInputAreaProps) {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const toggleButtonRef = useRef<HTMLButtonElement>(null);
-
-  const closePopover = useCallback((restoreFocus: boolean = false) => {
-    setIsPopoverOpen(false);
-    if (restoreFocus) {
-      requestAnimationFrame(() => {
-        toggleButtonRef.current?.focus();
-      });
-    }
-  }, []);
-
-  // 활성화된 도구 수 (badge 표시용)
-  const activeToolCount = webSearchEnabled ? 1 : 0;
-  const showAnalysisModeBadge = analysisMode !== 'auto';
   const sessionCount = sessionState?.count ?? 0;
   const showSessionWarning =
     Boolean(sessionState?.isWarning) && !sessionState?.isLimitReached;
+  const showSessionHint =
+    Boolean(sessionState?.isWarning) || Boolean(sessionState?.isLimitReached);
   const inputLength = inputValue.length;
   const showInputLengthWarning = inputLength >= CHAT_INPUT_WARNING_LENGTH;
   const isInputAtHardCap = inputLength >= CHAT_INPUT_MAX_LENGTH;
   const inputLengthLabel = `입력 ${formatChatInputCount(inputLength)}/${formatChatInputCount(CHAT_INPUT_MAX_LENGTH)}자`;
 
-  // 외부 클릭 시 popover 닫기
-  useEffect(() => {
-    if (!isPopoverOpen) return;
-
-    const handlePointerOutside = (e: MouseEvent | TouchEvent) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(e.target as Node) &&
-        toggleButtonRef.current &&
-        !toggleButtonRef.current.contains(e.target as Node)
-      ) {
-        closePopover();
-      }
-    };
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        closePopover(true);
-      }
-    };
-
-    document.addEventListener('mousedown', handlePointerOutside);
-    document.addEventListener('touchstart', handlePointerOutside);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerOutside);
-      document.removeEventListener('touchstart', handlePointerOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [closePopover, isPopoverOpen]);
-
-  const handleTogglePopover = useCallback(() => {
-    setIsPopoverOpen((prev) => !prev);
-  }, []);
-
   const handleFileAttach = useCallback(() => {
     onOpenFileDialog();
-    closePopover();
-  }, [closePopover, onOpenFileDialog]);
+  }, [onOpenFileDialog]);
 
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
@@ -176,7 +107,7 @@ export const ChatInputArea = memo(function ChatInputArea({
   return (
     <>
       <div
-        className="relative shrink-0 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
+        className="relative shrink-0 border-t border-purple-100 bg-white"
         {...dragHandlers}
       >
         {/* 드래그앤드롭 오버레이 */}
@@ -277,26 +208,6 @@ export const ChatInputArea = memo(function ChatInputArea({
             </div>
           )}
 
-          {/* 활성 도구 뱃지 (popover 밖에 표시) */}
-          {(activeToolCount > 0 || showAnalysisModeBadge) && (
-            <div className="mb-2 flex flex-wrap gap-1.5">
-              {webSearchEnabled && (
-                <span
-                  className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700"
-                  title="Web 검색을 항상 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
-                >
-                  <Globe className="h-3 w-3" />
-                  Web On
-                </span>
-              )}
-              {showAnalysisModeBadge && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
-                  {ANALYSIS_MODE_LABELS[analysisMode]}
-                </span>
-              )}
-            </div>
-          )}
-
           {/* 메인 입력 컨테이너 */}
           <form
             onSubmit={handleSubmit}
@@ -304,133 +215,35 @@ export const ChatInputArea = memo(function ChatInputArea({
             onPaste={onPaste}
             aria-label="AI 질문 전송"
           >
-            {/* + 버튼 (도구 popover 트리거) */}
-            <div className="relative flex items-end pb-1.5 pl-2">
+            {/* 직접 노출되는 입력 도구 */}
+            <div className="relative flex items-end gap-1 pb-1.5 pl-2">
               <button
-                ref={toggleButtonRef}
                 type="button"
-                onClick={handleTogglePopover}
-                disabled={sessionState?.isLimitReached}
-                className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9 ${
-                  isPopoverOpen || activeToolCount > 0 || showAnalysisModeBadge
-                    ? 'bg-blue-500/10 text-blue-500'
-                    : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
-                }`}
-                title="도구 및 옵션"
-                aria-label="도구 메뉴 열기"
-                aria-expanded={isPopoverOpen}
-                aria-haspopup="dialog"
+                onClick={handleFileAttach}
+                disabled={!canAddMore || sessionState?.isLimitReached}
+                className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9"
+                title="파일 첨부"
+                aria-label="파일 첨부"
               >
-                <Plus
-                  className={`h-5 w-5 transition-transform duration-200 ${isPopoverOpen ? 'rotate-45' : ''}`}
-                />
+                <Paperclip className="h-5 w-5" aria-hidden="true" />
               </button>
 
-              {/* Popover */}
-              {isPopoverOpen && (
-                <div
-                  ref={popoverRef}
-                  role="dialog"
-                  aria-label="도구 및 옵션"
-                  className="absolute bottom-12 left-0 z-50 max-h-[min(70vh,28rem)] w-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
+              {onToggleWebSearch && (
+                <button
+                  type="button"
+                  onClick={onToggleWebSearch}
+                  disabled={sessionState?.isLimitReached}
+                  aria-label="Web 검색"
+                  aria-pressed={Boolean(webSearchEnabled)}
+                  className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9 ${
+                    webSearchEnabled
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                  }`}
+                  title="Web 검색"
                 >
-                  {/* Web source mode */}
-                  {onToggleWebSearch && (
-                    <div
-                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                        webSearchEnabled
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Globe
-                        className={`h-4 w-4 ${webSearchEnabled ? 'text-blue-500' : 'text-gray-400'}`}
-                      />
-                      <div className="min-w-0 flex-1 text-left">
-                        <div className="font-medium">Web 검색 (외부 웹)</div>
-                        <div className="text-xs text-gray-500">
-                          최신 문서/CVE는 보수적 자동 판단
-                        </div>
-                      </div>
-                      <fieldset className="grid shrink-0 grid-cols-2 gap-0.5 rounded-lg border-0 bg-gray-100 p-0.5">
-                        <legend className="sr-only">Web 검색 모드</legend>
-                        {([false, true] as const).map((enabled) => (
-                          <button
-                            key={String(enabled)}
-                            type="button"
-                            onClick={() => {
-                              if (webSearchEnabled !== enabled) {
-                                onToggleWebSearch();
-                              }
-                            }}
-                            className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
-                              webSearchEnabled === enabled
-                                ? 'bg-white text-blue-700 shadow-xs'
-                                : 'text-gray-500 hover:bg-white/70'
-                            }`}
-                          >
-                            {enabled ? 'On' : 'Auto'}
-                          </button>
-                        ))}
-                      </fieldset>
-                    </div>
-                  )}
-
-                  {onSelectAnalysisMode && (
-                    <>
-                      <div className="my-1 border-t border-gray-100" />
-
-                      <div className="px-3 py-2">
-                        <div className="mb-2 text-xs font-medium text-gray-500">
-                          응답 모드
-                        </div>
-                        <div className="grid grid-cols-2 gap-1 rounded-lg bg-gray-100 p-1">
-                          {(['auto', 'thinking'] as AnalysisMode[]).map(
-                            (mode) => {
-                              const selected = analysisMode === mode;
-                              return (
-                                <button
-                                  key={mode}
-                                  type="button"
-                                  onClick={() => onSelectAnalysisMode(mode)}
-                                  className={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
-                                    selected
-                                      ? 'bg-white text-emerald-700 shadow-xs'
-                                      : 'text-gray-600 hover:bg-white/70'
-                                  }`}
-                                >
-                                  {ANALYSIS_MODE_LABELS[mode]}
-                                </button>
-                              );
-                            }
-                          )}
-                        </div>
-                        <p className="mt-2 text-xs leading-relaxed text-gray-500">
-                          멀티 에이전트 분석 활성화 · 예상 +5~15초
-                        </p>
-                      </div>
-                    </>
-                  )}
-
-                  {/* 구분선 */}
-                  <div className="my-1 border-t border-gray-100" />
-
-                  {/* 파일 첨부 */}
-                  <button
-                    type="button"
-                    onClick={handleFileAttach}
-                    disabled={!canAddMore || sessionState?.isLimitReached}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <Paperclip className="h-4 w-4 text-gray-400" />
-                    <div className="flex-1 text-left">
-                      <div className="font-medium">파일 첨부</div>
-                      <div className="text-xs text-gray-500">
-                        이미지/PDF/MD 시각·문서 분석 ({attachments.length}/3)
-                      </div>
-                    </div>
-                  </button>
-                </div>
+                  <Globe className="h-5 w-5" aria-hidden="true" />
+                </button>
               )}
             </div>
 
@@ -512,7 +325,7 @@ export const ChatInputArea = memo(function ChatInputArea({
           {/* 하단 힌트 */}
           <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-400">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              {sessionState && (
+              {sessionState && showSessionHint && (
                 <span
                   className={
                     sessionState.isLimitReached
@@ -556,14 +369,8 @@ export const ChatInputArea = memo(function ChatInputArea({
                   최대 입력 길이에 도달했습니다
                 </span>
               )}
-              {attachments.length > 0 && (
-                <span className="text-blue-500">
-                  {attachments.length}/3 파일
-                </span>
-              )}
-              <span>서버 운영 중심</span>
             </div>
-            <span className="shrink-0">Enter로 전송, Shift+Enter로 줄바꿈</span>
+            <span className="shrink-0">Shift+Enter로 줄바꿈</span>
           </div>
         </div>
       </div>

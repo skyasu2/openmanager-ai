@@ -25,6 +25,7 @@
       "!**/config",
       "!**/docs",
       "!**/archive",
+      "!**/reports",
       "!**/*.min.js",
       "!**/*.d.ts",
       "!**/*.css",

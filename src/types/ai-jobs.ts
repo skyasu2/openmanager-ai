@@ -12,7 +12,6 @@ import type {
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 
 // ============================================
 // Job 상태 및 타입
@@ -59,7 +58,6 @@ export interface CreateJobRequest {
     priority?: JobPriority;
     sessionId?: string;
     metadata?: Record<string, unknown> & {
-      analysisMode?: AnalysisMode;
       enableRAG?: boolean;
       enableWebSearch?: boolean;
       queryAsOfDataSlot?: JobDataSlot;
@@ -139,7 +137,6 @@ export interface AIJob {
     factors: Record<string, unknown>;
     ownerKey: string;
     retryCount?: number;
-    analysisMode?: AnalysisMode;
     enableRAG?: boolean;
     enableWebSearch?: boolean;
     internalDisclosureMode?: 'developer';

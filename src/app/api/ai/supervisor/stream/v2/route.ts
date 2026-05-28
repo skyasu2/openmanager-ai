@@ -2,23 +2,23 @@
  * Cloud Run AI Supervisor Stream V2 Proxy
  *
  * @endpoint POST /api/ai/supervisor/stream/v2
- * @endpoint GET /api/ai/supervisor/stream/v2?sessionId=xxx (Resume stream)
  *
  * AI SDK v6 Native UIMessageStream proxy to Cloud Run.
  *
  * Features:
- * - Optional Upstash-compatible resumable stream (polling-based)
- * - Redis List storage for stream chunks when AI_RESUMABLE_STREAMS_ENABLED=true
- * - Auto-expire after 10 minutes
+ * - Pass-through UIMessageStream proxy
+ * - Output filtering before returning to clients
+ * - Fallback stream on Cloud Run timeout or retryable failures
  *
- * @see https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-resume-streams
+ * @see https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol
  * @created 2026-01-24
- * @updated 2026-01-24 - Implemented Upstash-compatible resumable stream
+ * @updated 2026-05-20 - Removed unsupported Redis-backed stream resume
  */
 
 import { generateId } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
@@ -53,16 +53,12 @@ import {
   AI_FIRST_QUERY_HEADER,
   AI_WARMUP_STARTED_AT_HEADER,
   createDeveloperContextDataParts as buildDeveloperContextDataParts,
-  cleanupStaleStreamMapping,
   createDeveloperContextStreamPart,
   createSupervisorStreamHeaders,
-  isResumableStreamsEnabled,
   normalizeFrontendLocalRouteDecision,
   prependStreamDataPart,
-  resumeStreamHandler,
   trackFirstQueryLatency,
 } from './stream-response-builder';
-import { clearActiveStreamId, saveActiveStreamId } from './stream-state';
 import {
   getSupervisorStreamAbortTimeoutMs,
   getSupervisorStreamRetryTimeoutMs,
@@ -70,7 +66,6 @@ import {
   parseOptionalDurationHeader,
   parseWarmupStartedAt,
 } from './stream-timeouts';
-import { createUpstashResumableContext } from './upstash-resumable';
 
 // ============================================================================
 // ⚡ maxDuration - Vercel 빌드 타임 상수
@@ -81,9 +76,23 @@ import { createUpstashResumableContext } from './upstash-resumable';
 // ============================================================================
 export const maxDuration = 60;
 
+const STREAM_CIRCUIT_BREAKER_SERVICE = 'cloud-run-supervisor-stream';
+
+type CloudRunStreamFetchResult =
+  | { type: 'upstream'; response: Response }
+  | { type: 'terminal'; response: Response };
+
 export const GET = withRateLimit(
   rateLimiters.aiAnalysis,
-  withAuth(resumeStreamHandler)
+  withAuth(async () =>
+    NextResponse.json(
+      { error: 'Stream resume is not supported' },
+      {
+        status: 405,
+        headers: { Allow: 'POST' },
+      }
+    )
+  )
 );
 
 export const POST = withRateLimit(
@@ -109,11 +118,11 @@ export const POST = withRateLimit(
       }
 
       const {
+        id: chatSessionId,
         messages,
         sessionId: bodySessionId,
         enableWebSearch,
         enableRAG,
-        analysisMode,
         queryAsOfDataSlot,
         localRouteDecision: rawLocalRouteDecision,
         metadata,
@@ -132,9 +141,9 @@ export const POST = withRateLimit(
         );
       }
 
-      const { sessionId, ownerKey } = resolveScopedSessionIds(
+      const { sessionId } = resolveScopedSessionIds(
         req,
-        bodySessionId
+        bodySessionId ?? chatSessionId
       );
       const deviceType = normalizeSupervisorDeviceType(
         req.headers.get('X-Device-Type')
@@ -224,12 +233,6 @@ export const POST = withRateLimit(
       }
 
       const streamId = generateId();
-      const resumableStreamsEnabled = isResumableStreamsEnabled();
-
-      // Best-effort cleanup for stale stream mapping in same owner/session scope
-      if (resumableStreamsEnabled) {
-        await cleanupStaleStreamMapping({ sessionId, ownerKey, streamId });
-      }
 
       const streamUrl = `${cloudRunConfig.url}/api/ai/supervisor/stream/v2`;
       const createDeveloperContextDataParts = (cloudRunHealthy: boolean) =>
@@ -243,243 +246,217 @@ export const POST = withRateLimit(
       logger.info(`🆔 [SupervisorStreamV2] Stream ID: ${streamId}`);
       const aiTimer = startAITimer();
 
-      try {
-        const primaryTimeoutMs = getSupervisorStreamAbortTimeoutMs({
-          isFirstQuery,
-          warmupStartedAt,
-        });
-        const retryTimeoutMs = isFirstWarmupQuery
-          ? getSupervisorStreamRetryTimeoutMs(primaryTimeoutMs)
-          : null;
-        const attemptTimeouts = [
-          primaryTimeoutMs,
-          ...(retryTimeoutMs ? [retryTimeoutMs] : []),
-        ];
+      const primaryTimeoutMs = getSupervisorStreamAbortTimeoutMs({
+        isFirstQuery,
+        warmupStartedAt,
+      });
+      const retryTimeoutMs = isFirstWarmupQuery
+        ? getSupervisorStreamRetryTimeoutMs(primaryTimeoutMs)
+        : null;
+      const attemptTimeouts = [
+        primaryTimeoutMs,
+        ...(retryTimeoutMs ? [retryTimeoutMs] : []),
+      ];
 
-        let cloudRunResponse: Response | null = null;
-        let lastError: unknown = null;
-
-        for (const [i, timeoutMs] of attemptTimeouts.entries()) {
-          const attempt = i + 1;
-          const hasNextAttempt = i < attemptTimeouts.length - 1;
-
-          try {
-            logger.info(
-              `[SupervisorStreamV2] Cloud Run attempt ${attempt}/${attemptTimeouts.length} (timeout=${timeoutMs}ms)`
-            );
-            const response = await fetch(streamUrl, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Accept: 'text/event-stream',
-                // NOTE: API secret in header is safe in transit (HTTPS) but may appear
-                // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
-                'X-API-Key': cloudRunConfig.apiSecret,
-                [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity,
-              },
-              body: JSON.stringify({
-                messages: normalizedMessages,
-                sessionId,
-                deviceType,
-                enableWebSearch,
-                enableRAG,
-                analysisMode,
-                queryAsOf,
-                ...(internalDisclosureMode && { internalDisclosureMode }),
-                ...(localRouteDecision && { localRouteDecision }),
-                ...(metadata && { metadata }),
-                ...(semanticQueryTrace !== undefined &&
-                semanticQueryTrace !== null
-                  ? { semanticQueryTrace }
-                  : {}),
-              }),
-              signal: AbortSignal.timeout(timeoutMs),
-            });
-
-            if (response.ok) {
-              cloudRunResponse = response;
-              break;
-            }
-
-            const errorText = await response.text();
-            const status = response.status;
-            const isRetryableStatus =
-              status >= 500 || status === 408 || status === 504;
-
-            logger.error(
-              `❌ [SupervisorStreamV2] Cloud Run error (attempt ${attempt}): ${status} - ${errorText}`
-            );
-
-            if (isRetryableStatus && hasNextAttempt) {
-              logger.warn(
-                `[SupervisorStreamV2] Retrying after upstream ${status} (attempt ${attempt + 1}/${attemptTimeouts.length})`
-              );
-              continue;
-            }
-
-            if (isRetryableStatus) {
-              return createStreamFallbackResponse({
-                message: fallbackText,
-                reason: `cloud_run_${status}`,
-                retryAfterMs: fallback.retryAfter,
-                headers: buildAITimingHeaders({
-                  latencyMs: aiTimer.elapsed(),
-                  cacheStatus: 'BYPASS',
-                  mode: 'streaming',
-                  source: 'fallback',
-                }),
-                dataParts: createDeveloperContextDataParts(false),
-              });
-            }
-
-            return createStreamErrorResponse(
-              `AI 엔진 오류 (${status}). 잠시 후 다시 시도해주세요.`
-            );
-          } catch (error) {
-            lastError = error;
-            // AbortError: 수동 abort | TimeoutError: AbortSignal.timeout() 만료
-            const isAbortError =
-              error instanceof Error &&
-              (error.name === 'AbortError' || error.name === 'TimeoutError');
-
-            if (isAbortError && hasNextAttempt) {
-              logger.warn(
-                `[SupervisorStreamV2] Attempt ${attempt} timeout; retrying (${attempt + 1}/${attemptTimeouts.length})`
-              );
-              continue;
-            }
-
-            if (!isAbortError && hasNextAttempt) {
-              logger.warn(
-                `[SupervisorStreamV2] Attempt ${attempt} failed; retrying (${attempt + 1}/${attemptTimeouts.length})`
-              );
-              continue;
-            }
-
-            if (isAbortError) {
-              logger.error(
-                '❌ [SupervisorStreamV2] Request timeout, using fallback'
-              );
-              return createStreamFallbackResponse({
-                message: fallbackText,
-                reason: 'cloud_run_timeout',
-                retryAfterMs: fallback.retryAfter,
-                headers: buildAITimingHeaders({
-                  latencyMs: aiTimer.elapsed(),
-                  cacheStatus: 'BYPASS',
-                  mode: 'streaming',
-                  source: 'fallback',
-                }),
-                dataParts: createDeveloperContextDataParts(false),
-              });
-            }
-
-            logger.error(
-              '❌ [SupervisorStreamV2] Upstream fetch failed, using fallback'
-            );
-            return createStreamFallbackResponse({
-              message: fallbackText,
-              reason: 'cloud_run_fetch_failed',
-              retryAfterMs: fallback.retryAfter,
-              headers: buildAITimingHeaders({
-                latencyMs: aiTimer.elapsed(),
-                cacheStatus: 'BYPASS',
-                mode: 'streaming',
-                source: 'fallback',
-              }),
-              dataParts: createDeveloperContextDataParts(false),
-            });
-          }
-        }
-
-        if (!cloudRunResponse) {
-          logger.error(
-            '[SupervisorStreamV2] No Cloud Run response after retries, using fallback',
-            lastError
-          );
-          return createStreamFallbackResponse({
-            message: fallbackText,
-            reason: 'cloud_run_unavailable',
-            retryAfterMs: fallback.retryAfter,
-            headers: buildAITimingHeaders({
+      const createFallbackStreamResponse = (reason: string) =>
+        createStreamFallbackResponse({
+          message: fallbackText,
+          reason,
+          retryAfterMs: fallback.retryAfter,
+          headers: createSupervisorStreamHeaders({
+            sessionId,
+            streamId,
+            resumable: false,
+            timingHeaders: buildAITimingHeaders({
               latencyMs: aiTimer.elapsed(),
               cacheStatus: 'BYPASS',
               mode: 'streaming',
               source: 'fallback',
             }),
-            dataParts: createDeveloperContextDataParts(false),
-          });
-        }
-
-        if (!cloudRunResponse.body) {
-          return NextResponse.json(
-            { success: false, error: 'No response body' },
-            { status: 500 }
-          );
-        }
-
-        const processingTimeMs = parseOptionalDurationHeader(
-          cloudRunResponse.headers.get('x-ai-latency-ms')
-        );
-        const timingHeaders = buildAITimingHeaders({
-          latencyMs: aiTimer.elapsed(),
-          processingTimeMs,
-          cacheStatus: 'BYPASS',
-          mode: 'streaming',
-          source: 'cloud-run',
+          }) as Record<string, string>,
+          dataParts: createDeveloperContextDataParts(false),
         });
-        const streamBody = internalDisclosureMode
-          ? prependStreamDataPart(
-              cloudRunResponse.body,
-              createDeveloperContextStreamPart({
-                cloudRunHealthy: true,
-                cloudRunUrl: cloudRunConfig.url,
-              })
-            )
-          : cloudRunResponse.body;
-        const filteredStreamBody = streamBody.pipeThrough(
-          createOutputFilterStream()
+
+      let fallbackReason = 'circuit_breaker_open';
+      const fetchResult =
+        await executeWithCircuitBreakerAndFallback<CloudRunStreamFetchResult>(
+          STREAM_CIRCUIT_BREAKER_SERVICE,
+          async () => {
+            for (const [i, timeoutMs] of attemptTimeouts.entries()) {
+              const attempt = i + 1;
+              const hasNextAttempt = i < attemptTimeouts.length - 1;
+
+              try {
+                logger.info(
+                  `[SupervisorStreamV2] Cloud Run attempt ${attempt}/${attemptTimeouts.length} (timeout=${timeoutMs}ms)`
+                );
+                const response = await fetch(streamUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'text/event-stream',
+                    // NOTE: API secret in header is safe in transit (HTTPS) but may appear
+                    // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
+                    'X-API-Key': cloudRunConfig.apiSecret,
+                    [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity,
+                  },
+                  body: JSON.stringify({
+                    messages: normalizedMessages,
+                    sessionId,
+                    deviceType,
+                    enableWebSearch,
+                    enableRAG,
+                    queryAsOf,
+                    ...(internalDisclosureMode && { internalDisclosureMode }),
+                    ...(localRouteDecision && { localRouteDecision }),
+                    ...(metadata && { metadata }),
+                    ...(semanticQueryTrace !== undefined &&
+                    semanticQueryTrace !== null
+                      ? { semanticQueryTrace }
+                      : {}),
+                  }),
+                  signal: AbortSignal.timeout(timeoutMs),
+                });
+
+                if (response.ok) {
+                  return { type: 'upstream', response };
+                }
+
+                const errorText = await response.text();
+                const status = response.status;
+                const isRetryableStatus =
+                  status >= 500 || status === 408 || status === 504;
+
+                logger.error(
+                  `❌ [SupervisorStreamV2] Cloud Run error (attempt ${attempt}): ${status} - ${errorText}`
+                );
+
+                if (isRetryableStatus && hasNextAttempt) {
+                  logger.warn(
+                    `[SupervisorStreamV2] Retrying after upstream ${status} (attempt ${attempt + 1}/${attemptTimeouts.length})`
+                  );
+                  continue;
+                }
+
+                if (isRetryableStatus) {
+                  fallbackReason = `cloud_run_${status}`;
+                  throw new Error(
+                    `Cloud Run retryable status ${status}: ${errorText}`
+                  );
+                }
+
+                return {
+                  type: 'terminal',
+                  response: createStreamErrorResponse(
+                    `AI 엔진 오류 (${status}). 잠시 후 다시 시도해주세요.`
+                  ),
+                };
+              } catch (error) {
+                if (
+                  error instanceof Error &&
+                  error.message.startsWith('Cloud Run retryable status')
+                ) {
+                  throw error;
+                }
+
+                // AbortError: 수동 abort | TimeoutError: AbortSignal.timeout() 만료
+                const isAbortError =
+                  error instanceof Error &&
+                  (error.name === 'AbortError' ||
+                    error.name === 'TimeoutError');
+
+                if (isAbortError && hasNextAttempt) {
+                  logger.warn(
+                    `[SupervisorStreamV2] Attempt ${attempt} timeout; retrying (${attempt + 1}/${attemptTimeouts.length})`
+                  );
+                  continue;
+                }
+
+                if (!isAbortError && hasNextAttempt) {
+                  logger.warn(
+                    `[SupervisorStreamV2] Attempt ${attempt} failed; retrying (${attempt + 1}/${attemptTimeouts.length})`
+                  );
+                  continue;
+                }
+
+                if (isAbortError) {
+                  logger.error(
+                    '❌ [SupervisorStreamV2] Request timeout, using fallback'
+                  );
+                  fallbackReason = 'cloud_run_timeout';
+                  throw error;
+                }
+
+                logger.error(
+                  '❌ [SupervisorStreamV2] Upstream fetch failed, using fallback'
+                );
+                fallbackReason = 'cloud_run_fetch_failed';
+                throw error;
+              }
+            }
+
+            fallbackReason = 'cloud_run_unavailable';
+            throw new Error('No Cloud Run response after retries');
+          },
+          async () => ({
+            type: 'terminal',
+            response: createFallbackStreamResponse(fallbackReason),
+          })
         );
 
-        if (!resumableStreamsEnabled) {
-          logger.info(`✅ [SupervisorStreamV2] Stream started (pass-through)`);
-
-          return new Response(filteredStreamBody, {
-            headers: createSupervisorStreamHeaders({
-              sessionId,
-              streamId,
-              resumable: false,
-              timingHeaders,
-            }),
-          });
-        }
-
-        await saveActiveStreamId(sessionId, streamId, ownerKey);
-
-        const resumableContext = createUpstashResumableContext();
-        const resumableStream = await resumableContext.createNewResumableStream(
-          streamId,
-          () => filteredStreamBody
+      if (fetchResult.source === 'fallback') {
+        logger.info(
+          `[SupervisorStreamV2] Circuit breaker fallback response (${fallbackReason})`
         );
-
-        logger.info(`✅ [SupervisorStreamV2] Stream started (resumable)`);
-
-        return new Response(resumableStream, {
-          headers: createSupervisorStreamHeaders({
-            sessionId,
-            streamId,
-            resumable: true,
-            timingHeaders,
-          }),
-        });
-      } catch (error) {
-        if (resumableStreamsEnabled) {
-          await clearActiveStreamId(sessionId, ownerKey);
-          const cleanupContext = createUpstashResumableContext();
-          await cleanupContext.clearStream(streamId);
-        }
-        throw error;
+        return fetchResult.data.response;
       }
+
+      if (fetchResult.data.type === 'terminal') {
+        return fetchResult.data.response;
+      }
+
+      const cloudRunResponse = fetchResult.data.response;
+
+      if (!cloudRunResponse.body) {
+        return NextResponse.json(
+          { success: false, error: 'No response body' },
+          { status: 500 }
+        );
+      }
+
+      const processingTimeMs = parseOptionalDurationHeader(
+        cloudRunResponse.headers.get('x-ai-latency-ms')
+      );
+      const timingHeaders = buildAITimingHeaders({
+        latencyMs: aiTimer.elapsed(),
+        processingTimeMs,
+        cacheStatus: 'BYPASS',
+        mode: 'streaming',
+        source: 'cloud-run',
+      });
+      const streamBody = internalDisclosureMode
+        ? prependStreamDataPart(
+            cloudRunResponse.body,
+            createDeveloperContextStreamPart({
+              cloudRunHealthy: true,
+              cloudRunUrl: cloudRunConfig.url,
+            })
+          )
+        : cloudRunResponse.body;
+      const filteredStreamBody = streamBody.pipeThrough(
+        createOutputFilterStream()
+      );
+
+      logger.info(`✅ [SupervisorStreamV2] Stream started (pass-through)`);
+
+      return new Response(filteredStreamBody, {
+        headers: createSupervisorStreamHeaders({
+          sessionId,
+          streamId,
+          resumable: false,
+          timingHeaders,
+        }),
+      });
     } catch (error) {
       logger.error('❌ [SupervisorStreamV2] Error:', error);
       return createStreamErrorResponse(

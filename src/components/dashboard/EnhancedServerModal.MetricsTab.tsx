@@ -21,7 +21,6 @@ import {
 import { type FC, useState } from 'react';
 
 import { NivoTimeSeriesChart } from '@/components/charts/NivoTimeSeriesChart';
-import { SERVER_DATA_INTERVAL_MS } from '@/config/server-data-polling';
 import { useTimeSeriesMetrics } from '@/hooks/useTimeSeriesMetrics';
 
 import { RealtimeChart } from './EnhancedServerModal.components';
@@ -91,7 +90,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
     range: timeRange,
     includePrediction: showPrediction,
     includeAnomalies: showAnomalies,
-    refreshInterval: isRealtime ? SERVER_DATA_INTERVAL_MS : 0,
+    refreshInterval: 0, // 접속 시각 슬롯 고정 — 세션 내 자동 갱신 없음
   });
 
   // 차트 데이터 구성

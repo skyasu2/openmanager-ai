@@ -98,6 +98,10 @@ export function getOffDomainGuardrail(
     return null;
   }
 
+  if (hasOperationalContext(trimmedQuery)) {
+    return null;
+  }
+
   if (EXTERNAL_ACTION_PATTERN.test(trimmedQuery)) {
     return {
       category: 'external_action',
@@ -105,10 +109,6 @@ export function getOffDomainGuardrail(
       warning: OFF_DOMAIN_WARNING,
       response: buildResponse('external_action'),
     };
-  }
-
-  if (hasOperationalContext(trimmedQuery)) {
-    return null;
   }
 
   if (isGeneralCodingRequest(trimmedQuery)) {

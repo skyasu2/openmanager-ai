@@ -100,6 +100,98 @@ export const SERVER_STATUS_COLORS = {
   },
 } as const;
 
+export const DASHBOARD_STATUS_GRADIENTS = {
+  online: {
+    gradient: 'from-emerald-500 via-green-500 to-emerald-600',
+    border: 'border-emerald-200/50',
+    bg: 'bg-emerald-50/30',
+    text: 'text-emerald-600',
+    glow: 'hover:shadow-emerald-200/50',
+    shadow: 'shadow-emerald-500/30',
+    inlineGlow: 'rgba(16, 185, 129, 0.3)',
+  },
+  warning: {
+    gradient: 'from-amber-500 via-orange-500 to-amber-600',
+    border: 'border-amber-200/50',
+    bg: 'bg-amber-50/30',
+    text: 'text-amber-600',
+    glow: 'hover:shadow-amber-200/50',
+    shadow: 'shadow-amber-500/30',
+    inlineGlow: 'rgba(245, 158, 11, 0.4)',
+  },
+  critical: {
+    gradient: 'from-red-500 via-rose-500 to-red-600',
+    border: 'border-rose-200/50',
+    bg: 'bg-rose-50/30',
+    text: 'text-rose-600',
+    glow: 'hover:shadow-rose-200/50',
+    shadow: 'shadow-red-500/30',
+    inlineGlow: 'rgba(239, 68, 68, 0.4)',
+  },
+  offline: {
+    gradient: 'from-gray-500 via-slate-500 to-gray-600',
+    border: 'border-slate-200/60',
+    bg: 'bg-slate-50/50',
+    text: 'text-slate-600',
+    glow: 'hover:shadow-slate-200/50',
+    shadow: 'shadow-gray-500/20',
+    inlineGlow: 'rgba(107, 114, 128, 0.3)',
+  },
+  maintenance: {
+    gradient: 'from-blue-500 via-indigo-500 to-blue-600',
+    border: 'border-blue-200/50',
+    bg: 'bg-blue-50/30',
+    text: 'text-blue-600',
+    glow: 'hover:shadow-blue-200/50',
+    shadow: 'shadow-blue-500/30',
+    inlineGlow: 'rgba(59, 130, 246, 0.3)',
+  },
+  unknown: {
+    gradient: 'from-purple-500 via-violet-500 to-purple-600',
+    border: 'border-purple-200/50',
+    bg: 'bg-purple-50/30',
+    text: 'text-purple-600',
+    glow: 'hover:shadow-purple-200/50',
+    shadow: 'shadow-purple-500/20',
+    inlineGlow: 'rgba(139, 92, 246, 0.3)',
+  },
+  total: {
+    gradient: 'from-blue-500 via-indigo-500 to-blue-600',
+    border: 'border-blue-200/50',
+    bg: 'bg-blue-50/30',
+    text: 'text-blue-600',
+    glow: 'hover:shadow-blue-200/50',
+    shadow: 'shadow-blue-500/30',
+    inlineGlow: 'rgba(59, 130, 246, 0.3)',
+  },
+} as const;
+
+export const DASHBOARD_STATUS_RING_CLASSES: Record<string, string> = {
+  online: 'ring-emerald-500',
+  warning: 'ring-amber-500',
+  critical: 'ring-rose-500',
+  offline: 'ring-slate-500',
+};
+
+export const SERVER_CARD_HOVER_SHADOW_CLASSES: Record<string, string> = {
+  critical: 'hover:shadow-red-500/30',
+  warning: 'hover:shadow-amber-500/30',
+  online: 'hover:shadow-emerald-500/30',
+  offline: 'hover:shadow-gray-500/20',
+  maintenance: 'hover:shadow-blue-500/30',
+  unknown: 'hover:shadow-purple-500/20',
+};
+
+export const SERVER_CARD_STATUS_ACCENT_BORDER_CLASSES: Record<string, string> =
+  {
+    critical: 'border-l-4 border-l-red-500',
+    warning: 'border-l-4 border-l-orange-500',
+    online: 'border-l-4 border-l-green-500',
+    offline: 'border-l-4 border-l-slate-400',
+    maintenance: 'border-l-4 border-l-blue-500',
+    unknown: 'border-l-4 border-l-purple-500',
+  };
+
 // ===== 서버 상태별 색상 시스템 (다크 모드 - Glassmorphism) =====
 export const SERVER_STATUS_DARK_COLORS = {
   online: {
@@ -248,15 +340,14 @@ const _AI_GRADIENT_STYLE = 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)';
 
 // 🎨 AI 그라데이션 인라인 스타일 (애니메이션 동작 보장)
 // Tailwind v4에서 gradient 클래스와 background-position 애니메이션이 충돌하므로 인라인 스타일 사용
-// ease-in-out + 대각선 이동으로 자연스러운 호흡감 연출
 export const AI_GRADIENT_ANIMATED_STYLE = {
-  background:
-    'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6, #8b5cf6)',
-  backgroundSize: '300% 300%',
-  animation: 'gradient-diagonal 6s ease-in-out infinite',
+  background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6)',
+  backgroundSize: '200% 200%',
+  animation: 'gradient-diagonal 3s ease infinite',
   WebkitBackgroundClip: 'text',
   backgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
+  color: 'transparent',
 } as const;
 
 // 🎨 AI 아이콘 그라데이션 상수 (핑크 → 보라 → 밝은 청색)
@@ -266,21 +357,31 @@ export const AI_ICON_GRADIENT_CLASSES =
 
 // 🎨 AI 아이콘 그라데이션 인라인 스타일 (애니메이션 동작 보장)
 export const AI_ICON_GRADIENT_ANIMATED_STYLE = {
-  background:
-    'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899, #a855f7)',
-  backgroundSize: '300% 300%',
-  animation: 'gradient-diagonal 6s ease-in-out infinite',
+  background: 'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899)',
+  backgroundSize: '200% 200%',
+  animation: 'gradient-diagonal 3s ease infinite',
 } as const;
 
 // 🎨 AI 텍스트 그라데이션 (아이콘과 동일 색상: 핑크 → 보라 → 시안)
 export const AI_TEXT_GRADIENT_ANIMATED_STYLE = {
-  background:
-    'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899, #a855f7)',
-  backgroundSize: '300% 300%',
-  animation: 'gradient-diagonal 6s ease-in-out infinite',
+  background: 'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899)',
+  backgroundSize: '200% 200%',
+  animation: 'gradient-diagonal 3s ease infinite',
   WebkitBackgroundClip: 'text',
   backgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
+  color: 'transparent',
+} as const;
+
+// Landing hero H1 uses a static high-contrast clipped gradient to avoid
+// subpixel shimmer on very large text over a dark animated background.
+export const AI_TEXT_GRADIENT_CRISP_STYLE = {
+  background: 'linear-gradient(135deg, #a5f3fc 0%, #60a5fa 48%, #c4b5fd 100%)',
+  backgroundSize: '100% 100%',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  color: 'transparent',
 } as const;
 
 export const AI_ICON_GRADIENT_ID = 'ai-icon-gradient';

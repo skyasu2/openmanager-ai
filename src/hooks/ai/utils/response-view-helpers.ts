@@ -24,8 +24,6 @@ export type ResponseSourceData = {
   metadata?: unknown;
   /** 실제 호출된 도구 이름 목록 (Cloud Run done 이벤트에서 전달) */
   toolsCalled?: unknown;
-  /** 사용자 선택 분석 모드 */
-  analysisMode?: unknown;
   processingTime?: unknown;
   durationMs?: unknown;
   latencyTier?: unknown;
@@ -71,32 +69,6 @@ export function buildStructuredResponseView(
     details: structured.details,
     shouldCollapse: structured.shouldCollapse,
   };
-}
-
-export function extractAnalysisModeFromDoneData(
-  doneData: ResponseSourceData | undefined
-): 'auto' | 'thinking' | undefined {
-  if (!doneData) return undefined;
-
-  const directValue = doneData.analysisMode;
-  if (directValue === 'auto' || directValue === 'thinking') {
-    return directValue;
-  }
-
-  const metadata = doneData.metadata;
-  if (
-    metadata &&
-    typeof metadata === 'object' &&
-    'analysisMode' in metadata &&
-    (metadata as { analysisMode?: unknown }).analysisMode
-  ) {
-    const nestedValue = (metadata as { analysisMode?: unknown }).analysisMode;
-    if (nestedValue === 'auto' || nestedValue === 'thinking') {
-      return nestedValue;
-    }
-  }
-
-  return undefined;
 }
 
 export function extractProcessingTimeFromDoneData(

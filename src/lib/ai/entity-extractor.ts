@@ -63,6 +63,10 @@ export const SEMANTIC_INTENTS = [
   'metric_peak',
   'metric_current',
   'metric_trend',
+  'anomaly_detection',
+  'anomaly_prediction',
+  'capacity_forecast',
+  'failure_risk',
   'server_health',
   'root_cause',
   'incident_report',
@@ -87,6 +91,7 @@ export const SEMANTIC_METRICS = [
   'network',
   'load1',
   'load5',
+  'all',
   'unknown',
 ] as const;
 export type SemanticMetric = (typeof SEMANTIC_METRICS)[number];
@@ -139,6 +144,30 @@ export interface SemanticIntentFrame {
   confidence: number;
 }
 
+const GROUP_TARGET_HINTS = [
+  {
+    target: 'cache',
+    pattern: /(?:캐시|cache|redis)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'storage',
+    pattern: /(?:스토리지|저장소|storage|nfs|s3gw)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'web',
+    pattern: /(?:웹|web|nginx)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'database',
+    pattern: /(?:db|database|mysql|디비|데이터베이스)\s*(?:서버|그룹)?/i,
+  },
+  {
+    target: 'loadbalancer',
+    pattern:
+      /(?:로드\s*밸런서|로드밸런서|load\s*balancer|loadbalancer|lb)\s*(?:서버|그룹)?/i,
+  },
+] as const;
+
 const SYSTEM_PROMPT = `You are an entity extractor for a server monitoring system.
 Extract entities from the user query and return ONLY valid JSON.
 You are a semantic parser, not an answer generator.
@@ -154,10 +183,10 @@ Output format (JSON only, no explanation):
   "timeRange": "<1h|6h|24h|7d|null>",
   "intentFrame": {
     "domain": "<monitoring|unknown>",
-    "intent": "<metric_peak|metric_current|metric_trend|server_health|root_cause|incident_report|ops_advice|log_analysis|unknown>",
+    "intent": "<metric_peak|metric_current|metric_trend|anomaly_detection|anomaly_prediction|capacity_forecast|failure_risk|server_health|root_cause|incident_report|ops_advice|log_analysis|unknown>",
     "scope": "<whole_fleet|server|group|unknown>",
     "targets": ["<known server ID or group hint>"],
-    "metric": "<cpu|memory|disk|network|load1|load5|unknown>",
+    "metric": "<cpu|memory|disk|network|load1|load5|all|unknown>",
     "timeWindow": "<current|1h|6h|24h|7d|unknown>",
     "aggregation": "<peak|max|avg|top_n|summary|unknown>",
     "topN": <number or null>,
@@ -176,11 +205,16 @@ Rules:
 - Whole-fleet questions do not need a server ID. Use scope "whole_fleet" when the user asks across all servers, the fleet, or does not name a single server but asks for a ranking/peak/summary.
 - Use scope "server" only when the user asks about one specific server.
 - Set executionMode "single" for simple/current metric lookups, rankings, status checks, and formatting-only rewrites.
+- Set intent "anomaly_detection" for current anomaly, abnormal, spike, detection, "이상 탐지", "비정상 감지" questions.
+- Set intent "anomaly_detection" for current anomaly signal scan/analysis such as "이상 징후 분석", "징후 분석", "이상징후 스캔", "전체 스캔", or "비정상 징후".
+- Set intent "anomaly_prediction" for future-looking anomaly signal questions such as "이상 징후 예측", "미리 감지", or "위험 징후".
+- Set intent "capacity_forecast" for resource exhaustion/capacity forecasts such as disk/memory/cpu saturation, "고갈", "임계치 넘기 전", "언제 포화", "위험 수준 도달", or "언제 90% 넘을까".
+- Set intent "failure_risk" for broad failure-risk questions such as "장애 날 것 같은 서버", "장애 위험", or "불안정한 서버".
 - Set intent "root_cause" for RCA, causality, correlation, incident cause, "왜", "원인", "근본 원인" questions.
 - Set intent "incident_report" for incident/failure report creation or timeline report requests.
 - Set intent "ops_advice" for runbooks, commands, remediation, troubleshooting, or action-plan advice.
 - Set intent "log_analysis" for pasted logs or requests to analyze error/warning logs.
-- Set executionMode "multi" for root-cause analysis, incident reports, runbooks, advice/action plans, log analysis, correlation, prediction/trend analysis, or multi-step operational investigation.
+- Set executionMode "multi" for anomaly detection/prediction, capacity forecast, failure risk, root-cause analysis, incident reports, runbooks, advice/action plans, log analysis, correlation, prediction/trend analysis, or multi-step operational investigation.
 - Set executionMode "unknown" when the execution path is unclear; do not guess from provider/tool names.
 - Keep provider/function/tool names out of every field.`;
 
@@ -291,6 +325,204 @@ function normalizeTargets(value: unknown): string[] {
     .map((target) => target.trim())
     .filter((target) => target.length > 0 && target.length <= 80)
     .slice(0, 10);
+}
+
+function inferKnownServerIdFromQuery(
+  query: string
+): KnownEntityServerId | undefined {
+  const normalizedQuery = query.toLowerCase();
+  return (KNOWN_ENTITY_SERVER_IDS as readonly KnownEntityServerId[]).find(
+    (serverId) => normalizedQuery.includes(serverId.toLowerCase())
+  );
+}
+
+function queryMentionsKnownServerId(query: string): boolean {
+  return inferKnownServerIdFromQuery(query) !== undefined;
+}
+
+function inferGroupTargetFromQuery(query: string): string | undefined {
+  return GROUP_TARGET_HINTS.find((hint) => hint.pattern.test(query))?.target;
+}
+
+const CAPACITY_FORECAST_QUERY_PATTERN =
+  /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
+
+const ANOMALY_PREDICTION_QUERY_PATTERN =
+  /(?:이상|비정상|위험|장애)?\s*징후.{0,24}(?:예측|전망|미리|앞으로|사전)|(?:예측|전망|미리|사전).{0,24}(?:이상|비정상|위험|장애)?\s*징후/i;
+const ANOMALY_DETECTION_QUERY_PATTERN =
+  /(?:이상|비정상|징후|스파이크|급증|급감|anomal).{0,32}(?:분석|탐지|감지|찾|확인|스캔|scan|detect|있)|(?:분석|탐지|감지|확인|스캔|scan|detect).{0,32}(?:이상|비정상|징후|스파이크|anomal)|(?:전체|모든|all).{0,24}(?:서버|fleet|systems?)?.{0,24}(?:스캔|scan)/i;
+const ROOT_CAUSE_QUERY_PATTERN = /왜|원인|근본|rca|root.?cause|cause/i;
+
+function inferCapacityMetricForQuery(
+  query: string,
+  entities: ExtractedEntities
+): SemanticMetric {
+  const frameMetric = entities.intentFrame?.metric;
+  if (
+    frameMetric &&
+    frameMetric !== 'unknown' &&
+    frameMetric !== 'load1' &&
+    frameMetric !== 'load5'
+  ) {
+    return frameMetric;
+  }
+  if (entities.metric) return entities.metric;
+  if (/\bcpu\b|씨피유/i.test(query)) return 'cpu';
+  if (/메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/i.test(query)) {
+    return 'memory';
+  }
+  if (/디스크|\bdisk\b|스토리지|\bstorage\b|용량/i.test(query)) return 'disk';
+  if (/네트워크|\bnetwork\b|\bnet\b/i.test(query)) return 'network';
+  return 'all';
+}
+
+function buildCapacityForecastCorrection(
+  entities: ExtractedEntities,
+  query: string
+): ExtractedEntities | null {
+  if (!CAPACITY_FORECAST_QUERY_PATTERN.test(query)) return null;
+
+  const groupTarget = inferGroupTargetFromQuery(query);
+  const inferredServer = entities.server ?? inferKnownServerIdFromQuery(query);
+  const hasKnownServer = Boolean(inferredServer);
+  const targets = inferredServer
+    ? [inferredServer]
+    : groupTarget
+      ? [groupTarget]
+      : (entities.intentFrame?.targets ?? []);
+  const scope: SemanticScope = hasKnownServer
+    ? 'server'
+    : groupTarget
+      ? 'group'
+      : 'whole_fleet';
+  const metric = inferCapacityMetricForQuery(query, entities);
+  const confidence = Math.max(
+    entities.intentFrame?.confidence ?? 0,
+    entities.confidence,
+    80
+  );
+
+  const { intentFrame: _intentFrame, server: _server, ...rest } = entities;
+  return {
+    ...rest,
+    ...(inferredServer ? { server: inferredServer } : {}),
+    intentFrame: {
+      domain: 'monitoring',
+      intent: 'capacity_forecast',
+      scope,
+      targets,
+      metric,
+      timeWindow: '24h',
+      aggregation: 'summary',
+      ambiguity: 'low',
+      executionMode: 'multi',
+      confidence,
+    },
+    confidence,
+  };
+}
+
+function inferAnomalyMetricForQuery(
+  query: string,
+  entities: ExtractedEntities
+): SemanticMetric {
+  const frameMetric = entities.intentFrame?.metric;
+  if (frameMetric && frameMetric !== 'unknown') return frameMetric;
+  if (entities.metric) return entities.metric;
+  if (/\bcpu\b|씨피유/i.test(query)) return 'cpu';
+  if (/메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/i.test(query)) {
+    return 'memory';
+  }
+  if (/디스크|\bdisk\b|스토리지|\bstorage\b/i.test(query)) return 'disk';
+  if (/네트워크|\bnetwork\b|\bnet\b/i.test(query)) return 'network';
+  return 'all';
+}
+
+function buildAnomalyIntentCorrection(
+  entities: ExtractedEntities,
+  query: string
+): ExtractedEntities | null {
+  if (!ANOMALY_DETECTION_QUERY_PATTERN.test(query)) return null;
+  if (ANOMALY_PREDICTION_QUERY_PATTERN.test(query)) return null;
+  if (ROOT_CAUSE_QUERY_PATTERN.test(query)) return null;
+
+  const groupTarget = inferGroupTargetFromQuery(query);
+  const inferredServer = entities.server ?? inferKnownServerIdFromQuery(query);
+  const targets = inferredServer
+    ? [inferredServer]
+    : groupTarget
+      ? [groupTarget]
+      : (entities.intentFrame?.targets ?? []);
+  const scope: SemanticScope = inferredServer
+    ? 'server'
+    : groupTarget
+      ? 'group'
+      : 'whole_fleet';
+  const metric = inferAnomalyMetricForQuery(query, entities);
+  const confidence = Math.max(
+    entities.intentFrame?.confidence ?? 0,
+    entities.confidence,
+    80
+  );
+
+  const { intentFrame: _intentFrame, server: _server, ...rest } = entities;
+  return {
+    ...rest,
+    ...(inferredServer ? { server: inferredServer } : {}),
+    intentFrame: {
+      domain: 'monitoring',
+      intent: 'anomaly_detection',
+      scope,
+      targets,
+      metric,
+      timeWindow: 'current',
+      aggregation: 'summary',
+      ambiguity: 'low',
+      executionMode: 'multi',
+      confidence,
+    },
+    confidence,
+  };
+}
+
+export function normalizeExtractedEntitiesForQuery(
+  data: unknown,
+  query: string
+): ExtractedEntities {
+  const entities = normalizeExtractedEntities(data);
+  const anomalyCorrection = buildAnomalyIntentCorrection(entities, query);
+  if (anomalyCorrection) {
+    return anomalyCorrection;
+  }
+
+  const capacityCorrection = buildCapacityForecastCorrection(entities, query);
+  if (capacityCorrection) {
+    return capacityCorrection;
+  }
+
+  const groupTarget = inferGroupTargetFromQuery(query);
+  if (!groupTarget || queryMentionsKnownServerId(query)) {
+    return entities;
+  }
+
+  const correctedFrame =
+    entities.intentFrame && entities.intentFrame.domain === 'monitoring'
+      ? {
+          ...entities.intentFrame,
+          scope: 'group' as const,
+          targets: [groupTarget],
+          confidence: Math.max(
+            entities.intentFrame.confidence,
+            entities.confidence
+          ),
+        }
+      : undefined;
+
+  const { server: _server, intentFrame: _intentFrame, ...rest } = entities;
+  return {
+    ...rest,
+    ...(correctedFrame && { intentFrame: correctedFrame }),
+  };
 }
 
 export function normalizeSemanticIntentFrame(

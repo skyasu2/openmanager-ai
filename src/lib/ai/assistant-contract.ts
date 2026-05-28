@@ -23,7 +23,6 @@ export type MultiAgentEscalationReasonCode =
   | 'cross_domain_evidence_required'
   | 'advisor_requested'
   | 'vision_input_present'
-  | 'analysis_mode_thinking'
   | 'single_path_low_confidence';
 export type AssistantPlannerDriftReasonCode =
   | 'execution_path_mismatch'
@@ -157,7 +156,6 @@ const ESCALATION_REASON_CODES = new Set<MultiAgentEscalationReasonCode>([
   'cross_domain_evidence_required',
   'advisor_requested',
   'vision_input_present',
-  'analysis_mode_thinking',
   'single_path_low_confidence',
 ]);
 const PLANNER_DRIFT_REASON_CODES = new Set<AssistantPlannerDriftReasonCode>([

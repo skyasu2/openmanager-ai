@@ -26,25 +26,36 @@
  * ```
  *
  * @created 2025-12-30
- * @updated 2026-02-10 - Split into sub-hooks (876 → ~590 lines)
+ * @updated 2026-05-19 - Split async result message helpers (704 → 523 lines)
  */
 
 import type { UIMessage } from '@ai-sdk/react';
 import { useChat } from '@ai-sdk/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   generateTraceId,
   getComplexityThreshold,
   getObservabilityConfig,
   getStreamRetryConfig,
 } from '@/config/ai-proxy.config';
+import {
+  buildAssistantMessageFromAsyncResult,
+  mergeFinishedAssistantIntoMessages,
+} from './core/async-result-message';
 import { createHybridChatTransport } from './core/createHybridChatTransport';
 import { createHybridStreamCallbacks } from './core/createHybridStreamCallbacks';
 import { buildSourceToolRequestOptions } from './core/source-tool-request-options';
 import { useClarificationHandlers } from './core/useClarificationHandlers';
 import { useQueryControls } from './core/useQueryControls';
 import { useQueryExecution } from './core/useQueryExecution';
-import { type AsyncQueryResult, useAsyncAIQuery } from './useAsyncAIQuery';
+import { useAsyncAIQuery } from './useAsyncAIQuery';
 import { generateMessageId } from './utils/hybrid-query-utils';
 
 export type {
@@ -83,7 +94,6 @@ import {
   buildSemanticIntentRequestMetadata,
   type SemanticPreprocessingMetadata,
 } from '@/lib/ai/semantic-intent-frame';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AIStreamStatus,
@@ -94,9 +104,11 @@ import type {
 import type { FileAttachment } from './useFileAttachments';
 
 export {
+  buildAssistantMessageFromAsyncResult,
   COLD_START_ERROR_PATTERNS,
   extractStreamError,
   isColdStartRelatedError,
+  mergeFinishedAssistantIntoMessages,
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 };
@@ -113,10 +125,6 @@ function normalizeStreamStatus(status: string): AIStreamStatus {
     return status;
   }
   return 'ready';
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
 }
 
 function resolveRateLimitUntilMs(
@@ -144,189 +152,6 @@ function resolveRateLimitUntilMs(
   return Math.max(...candidates);
 }
 
-export function buildAssistantMessageFromAsyncResult(
-  result: AsyncQueryResult,
-  createMessageId: (prefix: string) => string = generateMessageId
-): UIMessage {
-  const response = result.response ?? '';
-  const hasExplicitHandoffHistory = Array.isArray(result.handoffHistory);
-  const hasProviderTelemetry =
-    Boolean(result.provider) ||
-    Boolean(result.modelId) ||
-    Boolean(result.providerAttempts && result.providerAttempts.length > 0) ||
-    typeof result.usedFallback === 'boolean' ||
-    Boolean(result.fallbackReason) ||
-    typeof result.ttfbMs === 'number' ||
-    typeof result.rotationSlot === 'number';
-  const metadata =
-    result.ragSources ||
-    (result.evidenceCards && result.evidenceCards.length > 0) ||
-    result.traceId ||
-    typeof result.processingTimeMs === 'number' ||
-    Boolean(result.latencyTier) ||
-    Boolean(result.resolvedMode) ||
-    Boolean(result.modeSelectionSource) ||
-    Boolean(result.retrieval) ||
-    Boolean(result.analysisMode) ||
-    Boolean(result.routeDecision) ||
-    Boolean(result.assistantPlan) ||
-    Boolean(result.assistantResult) ||
-    Boolean(result.semanticQueryTrace) ||
-    (result.toolsCalled && result.toolsCalled.length > 0) ||
-    hasExplicitHandoffHistory ||
-    (result.toolResultSummaries && result.toolResultSummaries.length > 0) ||
-    hasProviderTelemetry
-      ? {
-          ...(result.ragSources && { ragSources: result.ragSources }),
-          ...(result.evidenceCards &&
-            result.evidenceCards.length > 0 && {
-              evidenceCards: result.evidenceCards,
-            }),
-          ...(result.retrieval && { retrieval: result.retrieval }),
-          ...(result.traceId && { traceId: result.traceId }),
-          ...(typeof result.processingTimeMs === 'number' && {
-            processingTime: result.processingTimeMs,
-          }),
-          ...(result.latencyTier && {
-            latencyTier: result.latencyTier,
-          }),
-          ...(result.resolvedMode && {
-            resolvedMode: result.resolvedMode,
-          }),
-          ...(result.modeSelectionSource && {
-            modeSelectionSource: result.modeSelectionSource,
-          }),
-          ...(result.toolsCalled &&
-            result.toolsCalled.length > 0 && {
-              toolsCalled: result.toolsCalled,
-            }),
-          ...(result.analysisMode && {
-            analysisMode: result.analysisMode,
-          }),
-          ...(result.routeDecision && {
-            routeDecision: result.routeDecision,
-          }),
-          ...(result.assistantPlan && {
-            assistantPlan: result.assistantPlan,
-          }),
-          ...(result.assistantResult && {
-            assistantResult: result.assistantResult,
-          }),
-          ...(result.semanticQueryTrace && {
-            semanticQueryTrace: result.semanticQueryTrace,
-          }),
-          ...(hasExplicitHandoffHistory && {
-            handoffHistory: result.handoffHistory,
-          }),
-          ...(result.toolResultSummaries &&
-            result.toolResultSummaries.length > 0 && {
-              toolResultSummaries: result.toolResultSummaries,
-            }),
-          ...(result.provider && { provider: result.provider }),
-          ...(result.modelId && { modelId: result.modelId }),
-          ...(result.providerAttempts &&
-            result.providerAttempts.length > 0 && {
-              providerAttempts: result.providerAttempts,
-            }),
-          ...(typeof result.usedFallback === 'boolean' && {
-            usedFallback: result.usedFallback,
-          }),
-          ...(result.fallbackReason && {
-            fallbackReason: result.fallbackReason,
-          }),
-          ...(typeof result.ttfbMs === 'number' && {
-            ttfbMs: result.ttfbMs,
-          }),
-          ...(typeof result.rotationSlot === 'number' && {
-            rotationSlot: result.rotationSlot,
-          }),
-        }
-      : undefined;
-
-  return {
-    id: createMessageId('assistant'),
-    role: 'assistant',
-    content: response,
-    parts: [{ type: 'text', text: response }],
-    ...(metadata && { metadata }),
-  } as UIMessage;
-}
-
-export function mergeFinishedAssistantIntoMessages(
-  previousMessages: UIMessage[],
-  message: UIMessage,
-  fallbackTraceId: string
-): UIMessage[] {
-  if (message.role !== 'assistant') {
-    return previousMessages;
-  }
-
-  const finishedMetadata = isRecord(message.metadata) ? message.metadata : {};
-  const nextMetadata =
-    typeof finishedMetadata.traceId === 'string'
-      ? finishedMetadata
-      : { ...finishedMetadata, traceId: fallbackTraceId };
-  const nextParts =
-    Array.isArray(message.parts) && message.parts.length > 0
-      ? message.parts
-      : undefined;
-
-  const mergeAssistantMessage = (targetMessage: UIMessage): UIMessage => {
-    const currentMetadata = isRecord(targetMessage.metadata)
-      ? targetMessage.metadata
-      : {};
-    const mergedMetadata =
-      Object.keys(nextMetadata).length > 0
-        ? { ...currentMetadata, ...nextMetadata }
-        : targetMessage.metadata;
-
-    const mergedParts = nextParts ?? targetMessage.parts;
-    const metadataChanged =
-      mergedMetadata !== targetMessage.metadata &&
-      JSON.stringify(mergedMetadata) !== JSON.stringify(targetMessage.metadata);
-    const partsChanged =
-      mergedParts !== targetMessage.parts &&
-      JSON.stringify(mergedParts) !== JSON.stringify(targetMessage.parts);
-
-    if (!metadataChanged && !partsChanged) {
-      return targetMessage;
-    }
-
-    return {
-      ...targetMessage,
-      ...(metadataChanged && { metadata: mergedMetadata }),
-      ...(partsChanged && mergedParts && { parts: mergedParts }),
-    };
-  };
-
-  let matched = false;
-  const mergedById = previousMessages.map((prevMessage) => {
-    if (prevMessage.id !== message.id) {
-      return prevMessage;
-    }
-
-    matched = true;
-    return mergeAssistantMessage(prevMessage);
-  });
-
-  if (matched) {
-    return mergedById;
-  }
-
-  const fallbackAssistantIndex = mergedById
-    .map((prevMessage) => prevMessage.role)
-    .lastIndexOf('assistant');
-  if (fallbackAssistantIndex < 0) {
-    return previousMessages;
-  }
-
-  return mergedById.map((prevMessage, index) =>
-    index === fallbackAssistantIndex
-      ? mergeAssistantMessage(prevMessage)
-      : prevMessage
-  );
-}
-
 export function useHybridAIQuery(
   options: UseHybridAIQueryOptions = {}
 ): UseHybridAIQueryReturn {
@@ -341,7 +166,6 @@ export function useHybridAIQuery(
     onData,
     webSearchEnabled,
     ragEnabled,
-    analysisMode,
     queryAsOfDataSlot,
   } = options;
   const traceIdRef = useRef<string>(generateTraceId());
@@ -352,9 +176,6 @@ export function useHybridAIQuery(
     webSearchEnabled ?? undefined
   );
   const ragEnabledRef = useRef<boolean | undefined>(ragEnabled ?? undefined);
-  const analysisModeRef = useRef<AnalysisMode | undefined>(
-    analysisMode ?? undefined
-  );
   const queryAsOfDataSlotRef = useRef<JobDataSlot | undefined>(
     queryAsOfDataSlot
   );
@@ -373,16 +194,14 @@ export function useHybridAIQuery(
     ragEnabledRef.current = ragEnabled ?? undefined;
   }, [ragEnabled]);
   useEffect(() => {
-    analysisModeRef.current = analysisMode ?? undefined;
-  }, [analysisMode]);
-  useEffect(() => {
     queryAsOfDataSlotRef.current = queryAsOfDataSlot;
   }, [queryAsOfDataSlot]);
   const apiEndpoint = customEndpoint ?? DEFAULT_AI_STREAM_ENDPOINT;
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
   );
-  const resumeEnabled = false;
+  const effectiveSessionId = initialSessionId || sessionIdRef.current;
+  sessionIdRef.current = effectiveSessionId;
   const [state, setState] = useState<HybridQueryState>({
     mode: 'streaming',
     complexity: null,
@@ -398,7 +217,7 @@ export function useHybridAIQuery(
     estimatedWaitSeconds: 0,
   });
   // warmingUpRef: onData/transport body 콜백에서 stale closure 방지
-  useEffect(() => {
+  useLayoutEffect(() => {
     warmingUpRef.current = state.warmingUp;
   }, [state.warmingUp]);
   const pendingQueryRef = useRef<string | null>(null);
@@ -429,7 +248,7 @@ export function useHybridAIQuery(
         traceIdHeader: observabilityConfig.traceIdHeader,
         webSearchEnabledRef,
         ragEnabledRef,
-        analysisModeRef,
+        sessionIdRef,
         queryAsOfDataSlotRef,
         localRouteDecisionRef: currentRouteDecisionRef,
         currentQueryRef,
@@ -475,9 +294,6 @@ export function useHybridAIQuery(
             preprocessing: semanticPreprocessingRef.current,
           });
           const jobQueueOptions = {
-            ...(analysisModeRef.current && {
-              analysisMode: analysisModeRef.current,
-            }),
             ...(queryAsOfDataSlotRef.current && {
               queryAsOfDataSlot: queryAsOfDataSlotRef.current,
             }),
@@ -517,9 +333,8 @@ export function useHybridAIQuery(
     setMessages,
     stop: stopChat,
   } = useChat({
-    id: sessionIdRef.current,
+    id: effectiveSessionId,
     transport,
-    resume: resumeEnabled,
     experimental_throttle: 50,
     onFinish: streamCallbacks.onFinish,
     onData: streamCallbacks.onData,
@@ -540,7 +355,7 @@ export function useHybridAIQuery(
   };
 
   const asyncQuery = useAsyncAIQuery({
-    sessionId: sessionIdRef.current,
+    sessionId: effectiveSessionId,
     timeout: 120_000,
     onProgress: (progress) => {
       setState((prev) => ({ ...prev, progress }));
@@ -617,7 +432,6 @@ export function useHybridAIQuery(
       semanticIntentFrame: semanticIntentFrameRef,
       semanticPreprocessing: semanticPreprocessingRef,
     },
-    analysisMode,
     ragEnabled,
     webSearchEnabled,
     queryAsOfDataSlot,

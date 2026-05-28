@@ -27,11 +27,9 @@ import {
 } from './core/chat-artifact-guidance';
 import type { GuidanceCtaTarget } from './core/chat-artifact-metadata';
 import {
-  createDebugRoutingMessages,
-  createQAAssistantMessages,
-  isDebugRoutingPrompt,
-  isQAThinkingVisualizerPrompt,
-} from './core/routing-debug-messages';
+  executeLocalChatCoreSendPlan,
+  resolveChatCoreSendPlan,
+} from './core/chat-core-send-plan';
 import { useArtifactManager } from './core/useArtifactManager';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
@@ -92,7 +90,6 @@ export function useAIChatCore(
 
   // 웹 검색 UI 상태 (Store에서 읽기). 지식 검색은 서버의 Auto 정책이 결정한다.
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
-  const analysisMode = useAISidebarStore((s) => s.analysisMode);
   const persistedSidebarMessages = useAISidebarStore((s) => s.messages);
   const persistedSidebarSessionId = useAISidebarStore((s) => s.sessionId);
   const syncChatSnapshot = useAISidebarStore((s) => s.syncChatSnapshot);
@@ -208,7 +205,6 @@ export function useAIChatCore(
   } = useHybridAIQuery({
     sessionId,
     webSearchEnabled,
-    analysisMode,
     queryAsOfDataSlot,
     ...hybridCallbacks,
   });
@@ -448,64 +444,37 @@ export function useAIChatCore(
     ]
   );
 
-  // ============================================================================
-  // Input Handler
-  // ============================================================================
-
   const handleSendInput = useCallback(
     async (attachments?: FileAttachment[], overrideText?: string) => {
-      // 🎯 Fix: 텍스트 또는 첨부 중 하나는 있어야 전송
-      const textInput = overrideText ?? input;
-      const hasText = textInput.trim().length > 0;
-      const hasAttachments = attachments && attachments.length > 0;
+      const sendPlan = resolveChatCoreSendPlan({
+        input,
+        overrideText,
+        attachments,
+        disableSessionLimit,
+        sessionLimitReached: sessionState.isLimitReached,
+        sessionMessageCount: sessionState.count,
+        hybridIsLoading,
+        artifactBusy: isArtifactBusy(),
+      });
+      const localPlanResult = executeLocalChatCoreSendPlan(sendPlan, {
+        messages,
+        addToQueue,
+        setInput,
+        setError,
+        setMessages,
+        resetRequestState: resetOutgoingRequestState,
+        onSessionLimitReached: (messageCount) => {
+          logger.warn(`⚠️ [Session] Limit reached (${messageCount} messages)`);
+        },
+      });
+      if (localPlanResult.handled) return;
 
-      if (!hasText && !hasAttachments) return;
-
-      if (!disableSessionLimit && sessionState.isLimitReached) {
-        logger.warn(
-          `⚠️ [Session] Limit reached (${sessionState.count} messages)`
-        );
-        return;
-      }
-
-      // 🎯 Fix: 첨부만 있을 경우 기본 텍스트 설정
-      const effectiveText = hasText ? textInput : '[이미지/파일 분석 요청]';
-
-      // 🎯 Batching: 스트리밍 중이면 큐에 추가 (즉시 전송하지 않음)
-      if (hybridIsLoading) {
-        addToQueue(effectiveText, attachments);
-        setInput('');
-        return;
-      }
-
-      if (isArtifactBusy()) {
-        setError(
-          '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
-        );
-        return;
-      }
-
-      if (isQAThinkingVisualizerPrompt(effectiveText)) {
-        resetOutgoingRequestState(effectiveText, attachments || null);
-        const [qaUserMessage, qaAssistantMessage] =
-          createQAAssistantMessages(effectiveText);
-        setMessages([...messages, qaUserMessage, qaAssistantMessage]);
-        return;
-      }
-
-      if (isDebugRoutingPrompt(effectiveText)) {
-        resetOutgoingRequestState(effectiveText, attachments || null);
-        const [dbgUserMsg, dbgAssistantMsg] = createDebugRoutingMessages(
-          effectiveText,
-          analysisMode
-        );
-        setMessages([...messages, dbgUserMsg, dbgAssistantMsg]);
-        return;
-      }
+      const { effectiveText, attachments: resolvedAttachments } =
+        localPlanResult;
 
       const artifactHandled = await tryHandleChatArtifactRequest({
         query: effectiveText,
-        attachments,
+        attachments: resolvedAttachments,
         messages,
         resetRequestState: resetOutgoingRequestState,
         artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
@@ -525,11 +494,10 @@ export function useAIChatCore(
 
       resetOutgoingRequestState(
         effectiveText,
-        attachments || null,
+        resolvedAttachments || null,
         effectiveText
       );
-      // 🎯 파일 첨부와 함께 전송
-      sendQuery(effectiveText, attachments);
+      sendQuery(effectiveText, resolvedAttachments);
     },
     [
       input,
@@ -540,7 +508,6 @@ export function useAIChatCore(
       addToQueue,
       messages,
       setMessages,
-      analysisMode,
       sessionId,
       queryAsOfDataSlot,
       resetOutgoingRequestState,

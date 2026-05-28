@@ -190,6 +190,11 @@ export function buildAssistantAnalysisBasis(params: {
   const hasServerAnalysisEvidence = completedToolNames.some(
     isServerAnalysisToolName
   );
+  const hasAdvisorCommandEvidence =
+    completedToolNames.includes('recommendCommands') ||
+    toolResultSummaries.some(
+      (summary) => summary.toolName === 'recommendCommands'
+    );
 
   const metadataEvidenceCards = normalizeEvidenceCards(metadata?.evidenceCards);
   const evidenceCards =
@@ -233,7 +238,6 @@ export function buildAssistantAnalysisBasis(params: {
       webSearchEnabled: effectiveWebSearchEnabled,
       hasKnowledgeEvidence: hasKnowledgeSearch,
       hasWebEvidence: hasWebSearch,
-      analysisMode: metadata?.analysisMode,
     });
   const retrievalIndicatesKnowledgeUse = Boolean(retrieval?.retrievalUsed);
   const retrievalIndicatesWebUse = Boolean(retrieval?.webUsed);
@@ -266,6 +270,8 @@ export function buildAssistantAnalysisBasis(params: {
     dataSource = `지식 근거 검색 (${retrieval?.evidenceCount ?? 0}건)`;
   } else if (semanticEvidenceDataSource) {
     dataSource = semanticEvidenceDataSource;
+  } else if (hasAdvisorCommandEvidence) {
+    dataSource = 'Advisor Agent 조치 명령어 근거';
   } else if (hasServerAnalysisEvidence) {
     dataSource = '서버 실시간 데이터 분석';
   } else if (effectiveRagEnabled) {
@@ -285,6 +291,5 @@ export function buildAssistantAnalysisBasis(params: {
     ...(retrieval && { retrieval }),
     featureStatus,
     sourceGroups: sourceGroups.length > 0 ? sourceGroups : undefined,
-    analysisMode: metadata?.analysisMode,
   };
 }

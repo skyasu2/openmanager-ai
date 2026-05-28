@@ -26,7 +26,6 @@ import {
   type SemanticQueryTrace,
 } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { FileAttachment } from '../useFileAttachments';
@@ -60,7 +59,6 @@ interface AsyncQueryLike {
 }
 
 interface AsyncJobRequestOptions {
-  analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
@@ -128,7 +126,6 @@ export interface QueryExecutionDeps {
       SemanticPreprocessingMetadata | undefined | null
     >;
   };
-  analysisMode?: AnalysisMode;
   ragEnabled?: boolean;
   webSearchEnabled?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
@@ -150,7 +147,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     onRouteDecision,
     chatStatus,
     refs,
-    analysisMode,
     ragEnabled,
     webSearchEnabled,
     queryAsOfDataSlot,
@@ -295,7 +291,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       const routingDecision = buildFrontendQueryRoutingDecision({
         query: trimmedQuery,
         complexityThreshold,
-        analysisMode,
         hasAttachments,
         queryAsOfDataSlot,
       });
@@ -315,7 +310,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           `[HybridAI] Query complexity: ${analysis.level} (score: ${analysis.score}), ` +
             `Force Job Queue: ${forceJobQueue.force}${forceJobQueue.matchedKeyword ? ` (keyword: "${forceJobQueue.matchedKeyword}")` : ''}, ` +
             `Attachments: ${hasAttachments ? attachments!.length : 0}, ` +
-            `AnalysisMode: ${analysisMode ?? 'auto'}, ` +
             `ModeAdjustedThreshold: ${modeAdjustedThreshold}, ` +
             `Mode: ${isComplex ? 'job-queue' : 'streaming'}`
         );
@@ -390,7 +384,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         }));
 
         const jobQueueOptions: AsyncJobRequestOptions = {
-          ...(analysisMode && { analysisMode }),
           ...(queryAsOfDataSlot && { queryAsOfDataSlot }),
           ...buildSourceToolRequestOptions({
             ragEnabled,
@@ -472,7 +465,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             },
             body: JSON.stringify({
               messages: nextMessages,
-              analysisMode,
               ...buildSourceToolRequestOptions({
                 webSearchEnabled,
                 ragEnabled,
@@ -481,6 +473,34 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             }),
           })
             .then(async (response) => {
+              if (response.status === 202) {
+                const data = (await response.json().catch(() => ({}))) as {
+                  message?: string;
+                };
+                const responseText =
+                  data.message?.trim() ||
+                  '복잡한 분석 요청입니다. 비동기 처리 경로에서 다시 시도해주세요.';
+
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: generateMessageId('assistant'),
+                    role: 'assistant',
+                    parts: [{ type: 'text', text: responseText }],
+                  },
+                ]);
+
+                setState((prev) => ({
+                  ...prev,
+                  isLoading: false,
+                  warning: null,
+                  processingTime: 0,
+                  warmingUp: false,
+                  estimatedWaitSeconds: 0,
+                }));
+                return;
+              }
+
               if (!response.ok) {
                 throw new Error(`로컬 AI 응답 실패 (${response.status})`);
               }
@@ -571,7 +591,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       setState,
       chatStatus,
       refs,
-      analysisMode,
       ragEnabled,
       webSearchEnabled,
       queryAsOfDataSlot,
@@ -625,17 +644,19 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         }
 
         // 1. 쿼리 분류
-        const classification = await classifyQuery(query);
+        const classification = classifyQuery(query);
 
         if (process.env.NODE_ENV === 'development') {
           logger.info(
-            `[HybridAI] Classification: intent=${classification.intent}, complexity=${classification.complexity}, confidence=${classification.confidence}%`
+            `[HybridAI] Classification: localIntent=${classification.localIntent}, complexity=${classification.complexity}, confidence=${classification.confidence}%`
           );
         }
 
+        const needsRoutingHint = shouldExtractSemanticIntentFrame(query);
         let clarificationRequest = generateClarification(query, classification);
+        const needsClarificationCheck = clarificationRequest !== null;
 
-        if (clarificationRequest || shouldExtractSemanticIntentFrame(query)) {
+        if (needsRoutingHint || needsClarificationCheck) {
           const entities = await extractEntitiesCached(query);
           if (entities.blocked) {
             setState((prev) => ({
@@ -652,7 +673,11 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             return;
           }
 
-          if (refs.semanticIntentFrame) {
+          if (
+            needsRoutingHint &&
+            entities.intentFrame &&
+            refs.semanticIntentFrame
+          ) {
             refs.semanticIntentFrame.current = entities.intentFrame;
           }
           if (refs.semanticPreprocessing) {
@@ -666,7 +691,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             );
           }
 
-          if (clarificationRequest) {
+          if (needsClarificationCheck) {
             clarificationRequest = generateClarification(
               query,
               classification,

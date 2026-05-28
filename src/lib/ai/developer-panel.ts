@@ -1,5 +1,7 @@
 import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
 
+type GroundingMode = 'llm-synthesized' | 'template-fallback';
+
 export type DeveloperPanelData = {
   ts: string;
   session: {
@@ -13,6 +15,7 @@ export type DeveloperPanelData = {
     analysisBasis: string;
     stepsExecuted: number;
     tokensUsed?: number;
+    groundingMode?: GroundingMode;
   } | null;
   system: {
     cloudRunHealthy: boolean;
@@ -64,6 +67,12 @@ function normalizeStringArray(value: unknown): string[] {
     .filter((entry): entry is string => entry !== null);
 }
 
+function normalizeGroundingMode(value: unknown): GroundingMode | null {
+  return value === 'llm-synthesized' || value === 'template-fallback'
+    ? value
+    : null;
+}
+
 function readField(source: unknown, key: string): unknown {
   if (!isRecord(source)) return undefined;
   if (source[key] !== undefined) return source[key];
@@ -100,10 +109,12 @@ function normalizeStream(value: unknown): DeveloperPanelData['stream'] {
   if (!analysisBasis || stepsExecuted === null) return null;
 
   const tokensUsed = normalizeNonNegativeInteger(value.tokensUsed);
+  const groundingMode = normalizeGroundingMode(value.groundingMode);
   return {
     analysisBasis,
     stepsExecuted,
     ...(tokensUsed !== null ? { tokensUsed } : {}),
+    ...(groundingMode ? { groundingMode } : {}),
   };
 }
 
@@ -257,6 +268,9 @@ export function buildDeveloperPanelPatchFromDoneData(
   const tokensUsed = normalizeNonNegativeInteger(
     readField(doneData, 'tokensUsed')
   );
+  const groundingMode = normalizeGroundingMode(
+    readField(doneData, 'groundingMode')
+  );
   const retrieval = normalizeRetrievalMetadata(
     readField(doneData, 'retrieval')
   );
@@ -285,6 +299,7 @@ export function buildDeveloperPanelPatchFromDoneData(
             analysisBasis,
             stepsExecuted,
             ...(tokensUsed !== null ? { tokensUsed } : {}),
+            ...(groundingMode ? { groundingMode } : {}),
           },
         }
       : {}),

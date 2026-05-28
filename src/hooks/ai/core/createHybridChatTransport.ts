@@ -11,7 +11,6 @@ import {
   buildSemanticIntentRequestMetadata,
   type SemanticPreprocessingMetadata,
 } from '@/lib/ai/semantic-intent-frame';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
 import { buildSourceToolRequestOptions } from './source-tool-request-options';
@@ -27,7 +26,7 @@ interface CreateHybridChatTransportParams {
   traceIdHeader: string;
   webSearchEnabledRef: MutableRefObject<boolean | undefined>;
   ragEnabledRef: MutableRefObject<boolean | undefined>;
-  analysisModeRef: MutableRefObject<AnalysisMode | undefined>;
+  sessionIdRef?: MutableRefObject<string | undefined>;
   queryAsOfDataSlotRef?: MutableRefObject<JobDataSlot | undefined>;
   localRouteDecisionRef?: MutableRefObject<RouteDecision | undefined>;
   currentQueryRef?: MutableRefObject<string | null>;
@@ -48,7 +47,7 @@ export function createHybridChatTransport(
     traceIdHeader,
     webSearchEnabledRef,
     ragEnabledRef,
-    analysisModeRef,
+    sessionIdRef,
     queryAsOfDataSlotRef,
     localRouteDecisionRef,
     currentQueryRef,
@@ -85,7 +84,7 @@ export function createHybridChatTransport(
           webSearchEnabled: webSearchEnabledRef.current,
           ragEnabled: ragEnabledRef.current,
         }),
-        analysisMode: analysisModeRef.current,
+        ...(sessionIdRef?.current && { sessionId: sessionIdRef.current }),
         ...(queryAsOfDataSlotRef?.current && {
           queryAsOfDataSlot: queryAsOfDataSlotRef.current,
         }),
@@ -95,8 +94,5 @@ export function createHybridChatTransport(
         ...semanticIntentPayload,
       };
     },
-    prepareReconnectToStreamRequest: ({ id }) => ({
-      api: `${apiEndpoint}?sessionId=${id}`,
-    }),
   });
 }

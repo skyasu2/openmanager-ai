@@ -5,6 +5,12 @@ const SAFE_MALICIOUS_OUTPUT =
   '죄송합니다. 해당 요청에 응답할 수 없습니다. 서버 모니터링 관련 질문을 해주세요.';
 const SSE_FRAME_DELIMITER = '\n\n';
 const MAX_PENDING_CHARS = 32 * 1024;
+const RAW_MODEL_MARKER_PATTERN =
+  /<\|(?:tool_call_begin|tool_call_end|tool_call|tool_result|tool_sep|assistant|system|user|end)[^|]*\|>/gi;
+const STANDALONE_NOTHING_TO_PROCESS_PATTERN =
+  /^\s*Nothing to process\.?\s*$/gim;
+const REASONING_JSON_OBJECT_PATTERN =
+  /\{(?=[^{}\n]*"reasoning"\s*:)[^{}\n]*\}/gi;
 
 function containsMaliciousOutput(text: string): boolean {
   for (const { pattern } of MALICIOUS_OUTPUT_PATTERNS) {
@@ -18,8 +24,29 @@ function containsMaliciousOutput(text: string): boolean {
   return false;
 }
 
+function containsRawModelArtifacts(text: string): boolean {
+  RAW_MODEL_MARKER_PATTERN.lastIndex = 0;
+  STANDALONE_NOTHING_TO_PROCESS_PATTERN.lastIndex = 0;
+  REASONING_JSON_OBJECT_PATTERN.lastIndex = 0;
+  const matched =
+    RAW_MODEL_MARKER_PATTERN.test(text) ||
+    STANDALONE_NOTHING_TO_PROCESS_PATTERN.test(text) ||
+    REASONING_JSON_OBJECT_PATTERN.test(text);
+  RAW_MODEL_MARKER_PATTERN.lastIndex = 0;
+  STANDALONE_NOTHING_TO_PROCESS_PATTERN.lastIndex = 0;
+  REASONING_JSON_OBJECT_PATTERN.lastIndex = 0;
+  return matched;
+}
+
 function filterPlainContent(content: string): string {
-  const filtered = filterResponse(content).filtered;
+  const withoutModelArtifacts = content
+    .replace(RAW_MODEL_MARKER_PATTERN, '')
+    .replace(REASONING_JSON_OBJECT_PATTERN, '')
+    .replace(STANDALONE_NOTHING_TO_PROCESS_PATTERN, '')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+  const filtered = filterResponse(withoutModelArtifacts).filtered;
   return containsMaliciousOutput(filtered) ? SAFE_MALICIOUS_OUTPUT : filtered;
 }
 
@@ -45,14 +72,21 @@ function filterSseContent(content: string): string {
 
   const initialFilter = filterResponse(content);
   const hasMaliciousOutput = containsMaliciousOutput(initialFilter.filtered);
-  if (!initialFilter.wasFiltered && !hasMaliciousOutput) {
+  const hasRawModelArtifacts = containsRawModelArtifacts(content);
+  if (
+    !initialFilter.wasFiltered &&
+    !hasMaliciousOutput &&
+    !hasRawModelArtifacts
+  ) {
     return content;
   }
 
   try {
     return JSON.stringify(filterJsonValue(JSON.parse(content)));
   } catch {
-    return hasMaliciousOutput ? SAFE_MALICIOUS_OUTPUT : initialFilter.filtered;
+    return hasMaliciousOutput
+      ? SAFE_MALICIOUS_OUTPUT
+      : filterPlainContent(content);
   }
 }
 

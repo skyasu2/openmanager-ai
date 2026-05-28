@@ -15,7 +15,15 @@ import type {
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
-import type { DashboardStats } from './types/dashboard.types';
+import {
+  DASHBOARD_STATUS_GRADIENTS,
+  DASHBOARD_STATUS_RING_CLASSES,
+} from '@/styles/design-constants';
+import {
+  DASHBOARD_TIME_RANGE_OPTIONS,
+  type DashboardStats,
+  type DashboardTimeRange,
+} from './types/dashboard.types';
 
 interface DashboardSummaryProps {
   stats: DashboardStats;
@@ -27,6 +35,9 @@ interface DashboardSummaryProps {
   onOpenLogExplorer?: () => void;
   /** 현재 활성 알림 건수 */
   activeAlertsCount?: number;
+  /** 서버 카드 스파크라인 히스토리 범위 */
+  timeRange?: DashboardTimeRange;
+  onTimeRangeChange?: (range: DashboardTimeRange) => void;
 }
 
 function formatSlotLabel(dataSlotInfo: DashboardTimeInfo): string {
@@ -46,54 +57,6 @@ function formatDataSourceLabel(
     : 'unknown';
   return `Telemetry catalog v${dataSourceInfo.scopeVersion} · updated ${generatedAt}`;
 }
-
-// TODO: dashboard-status-tokens — 향후 공유 디자인 토큰으로 통합 예정
-// 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
-const statusGradients = {
-  online: {
-    gradient: 'from-emerald-500 via-green-500 to-emerald-600',
-    border: 'border-emerald-200/50',
-    bg: 'bg-emerald-50/30',
-    text: 'text-emerald-600',
-    glow: 'hover:shadow-emerald-200/50',
-  },
-  warning: {
-    gradient: 'from-amber-500 via-orange-500 to-amber-600',
-    border: 'border-amber-200/50',
-    bg: 'bg-amber-50/30',
-    text: 'text-amber-600',
-    glow: 'hover:shadow-amber-200/50',
-  },
-  critical: {
-    gradient: 'from-red-500 via-rose-500 to-red-600',
-    border: 'border-rose-200/50',
-    bg: 'bg-rose-50/30',
-    text: 'text-rose-600',
-    glow: 'hover:shadow-rose-200/50',
-  },
-  offline: {
-    gradient: 'from-gray-500 via-slate-500 to-gray-600',
-    border: 'border-slate-200/60',
-    bg: 'bg-slate-50/50',
-    text: 'text-slate-600',
-    glow: 'hover:shadow-slate-200/50',
-  },
-  total: {
-    gradient: 'from-blue-500 via-indigo-500 to-blue-600',
-    border: 'border-blue-200/50',
-    bg: 'bg-blue-50/30',
-    text: 'text-blue-600',
-    glow: 'hover:shadow-blue-200/50',
-  },
-};
-
-// 링 색상 매핑
-const ringColors: Record<string, string> = {
-  online: 'ring-emerald-500',
-  warning: 'ring-amber-500',
-  critical: 'ring-rose-500',
-  offline: 'ring-slate-500',
-};
 
 // 상태 카드 컴포넌트 (4개 반복 패턴 추출)
 function StatusCard({
@@ -118,8 +81,9 @@ function StatusCard({
   className?: string;
 }) {
   const gradient =
-    statusGradients[status as keyof typeof statusGradients] ??
-    statusGradients.online;
+    DASHBOARD_STATUS_GRADIENTS[
+      status as keyof typeof DASHBOARD_STATUS_GRADIENTS
+    ] ?? DASHBOARD_STATUS_GRADIENTS.online;
 
   const handleClick = () => {
     if (!onFilterChange) return;
@@ -136,7 +100,7 @@ function StatusCard({
       aria-label={`${label} ${count}대 필터`}
       aria-pressed={isInteractive ? activeFilter === status : undefined}
       className={cn(
-        'group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-md p-4 text-left min-h-[84px]',
+        'group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-md p-3 text-left min-h-[72px]',
         'border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ring-1 ring-white/60',
         gradient.border,
         gradient.glow,
@@ -144,7 +108,7 @@ function StatusCard({
         !onFilterChange &&
           'disabled:cursor-default disabled:hover:scale-100 disabled:hover:shadow-none',
         activeFilter === status &&
-          `ring-1 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`,
+          `ring-1 ${DASHBOARD_STATUS_RING_CLASSES[status] ?? 'ring-blue-500'} ring-offset-1`,
         className
       )}
     >
@@ -166,7 +130,7 @@ function StatusCard({
         </span>
         <span
           className={cn(
-            'mt-2 text-3xl font-bold tracking-tight tabular-nums leading-none',
+            'mt-1.5 text-2xl font-bold tracking-tight tabular-nums leading-none',
             countColorClass && count > 0 ? countColorClass : 'text-slate-700'
           )}
         >
@@ -221,6 +185,41 @@ function StatusHeaderActionButton({
   );
 }
 
+function TimeRangePicker({
+  value,
+  onChange,
+}: {
+  value: DashboardTimeRange;
+  onChange: (range: DashboardTimeRange) => void;
+}) {
+  return (
+    <fieldset className="inline-flex shrink-0 overflow-hidden rounded-xl border border-white/80 bg-white/90 p-1 shadow-xs ring-1 ring-slate-200/70 backdrop-blur-sm">
+      <legend className="sr-only">스파크라인 시간 범위</legend>
+      {DASHBOARD_TIME_RANGE_OPTIONS.map((option) => {
+        const isActive = option.value === value;
+
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-label={option.ariaLabel}
+            aria-pressed={isActive}
+            onClick={() => onChange(option.value)}
+            className={cn(
+              'min-h-8 min-w-10 rounded-lg px-2.5 text-xs font-semibold tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-300',
+              isActive
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            )}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </fieldset>
+  );
+}
+
 export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
   function DashboardSummary({
     stats,
@@ -231,6 +230,8 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
     onOpenAlertHistory,
     onOpenLogExplorer,
     activeAlertsCount = 0,
+    timeRange = '24h',
+    onTimeRangeChange,
   }) {
     // Null-safe 처리
     const safeStats = {
@@ -244,14 +245,15 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
 
     // 시스템 상태에 따른 그라데이션 결정
     const systemHealthGradient =
-      safeStats.critical > 0
-        ? statusGradients.critical
+      safeStats.critical > 0 || safeStats.offline > 0
+        ? DASHBOARD_STATUS_GRADIENTS.critical
         : safeStats.warning > 0
-          ? statusGradients.warning
-          : statusGradients.online;
+          ? DASHBOARD_STATUS_GRADIENTS.warning
+          : DASHBOARD_STATUS_GRADIENTS.online;
 
     // 위험/경고 상태일 때 펄스 활성화
-    const showPulse = safeStats.critical > 0 || safeStats.warning > 0;
+    const showPulse =
+      safeStats.critical > 0 || safeStats.warning > 0 || safeStats.offline > 0;
 
     return (
       <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">
@@ -262,7 +264,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         >
           {/* 그라데이션 배경 */}
           <div
-            className={`absolute inset-0 bg-linear-to-br ${statusGradients.total.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
+            className={`absolute inset-0 bg-linear-to-br ${DASHBOARD_STATUS_GRADIENTS.total.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
           />
           <div className="relative z-10">
             <div className="flex items-center gap-1.5 text-gray-500 mb-1.5">
@@ -290,7 +292,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
           </div>
           {/* 그라데이션 아이콘 박스 */}
           <div
-            className={`relative h-10 w-10 rounded-full bg-linear-to-br ${statusGradients.total.gradient} flex items-center justify-center text-white shadow-md`}
+            className={`relative h-10 w-10 rounded-full bg-linear-to-br ${DASHBOARD_STATUS_GRADIENTS.total.gradient} flex items-center justify-center text-white shadow-md`}
           >
             <Activity size={18} />
           </div>
@@ -420,42 +422,9 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                 )}
               </StatusHeaderActionGroup>
             </div>
-
-            {/* 오른쪽: 위험/경고 카운트 */}
-            <div className="flex flex-1 shrink-0 flex-wrap items-center justify-end gap-3 text-center pr-1 sm:gap-4 sm:pr-4">
-              <div className="flex flex-col items-center">
-                <div
-                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.critical > 0 ? 'text-rose-500' : 'text-slate-300'}`}
-                >
-                  {safeStats.critical}
-                </div>
-                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
-                  위험
-                </div>
-              </div>
-              <div className="h-10 w-px bg-slate-100" />
-              <div className="flex flex-col items-center">
-                <div
-                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.warning > 0 ? 'text-amber-500' : 'text-slate-300'}`}
-                >
-                  {safeStats.warning}
-                </div>
-                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
-                  경고
-                </div>
-              </div>
-              <div className="h-10 w-px bg-slate-100" />
-              <div className="flex flex-col items-center">
-                <div
-                  className={`text-4xl font-bold leading-none tabular-nums transition-colors ${safeStats.offline > 0 ? 'text-slate-500' : 'text-slate-300'}`}
-                >
-                  {safeStats.offline}
-                </div>
-                <div className="mt-1 text-[10px] font-semibold uppercase text-slate-400 tracking-widest">
-                  오프라인
-                </div>
-              </div>
-            </div>
+            {onTimeRangeChange && (
+              <TimeRangePicker value={timeRange} onChange={onTimeRangeChange} />
+            )}
           </div>
         </div>
       </div>

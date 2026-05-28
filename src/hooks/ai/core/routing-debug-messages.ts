@@ -1,6 +1,5 @@
 import type { UIMessage } from '@ai-sdk/react';
 import { getComplexityThreshold } from '@/config/ai-proxy.config';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import { buildFrontendQueryRoutingDecision } from './query-routing';
 
 const QA_THINKING_VISUALIZER_PROMPT = '/qa-thinking-visualizer';
@@ -16,8 +15,7 @@ export function isDebugRoutingPrompt(text: string): boolean {
 }
 
 export function createDebugRoutingMessages(
-  fullText: string,
-  analysisMode: AnalysisMode
+  fullText: string
 ): [UIMessage, UIMessage] {
   const query = fullText.replace(/^\/debug-routing\s*/i, '').trim();
   const token = Date.now().toString(36);
@@ -26,7 +24,6 @@ export function createDebugRoutingMessages(
   const routingDecision = buildFrontendQueryRoutingDecision({
     query: query || '(쿼리 없음)',
     complexityThreshold: threshold,
-    analysisMode,
   });
   const {
     analysis,
@@ -49,11 +46,6 @@ export function createDebugRoutingMessages(
     ? `\n⚡ 강제 Job Queue: 키워드 "${forceResult.matchedKeyword}" 감지`
     : '';
 
-  const thinkingNote =
-    analysisMode === 'thinking'
-      ? `\n🧠 thinking 모드: threshold ${threshold} → ${modeAdjustedThreshold} (−8)`
-      : '';
-
   const resultText =
     `🔍 **Routing Debug**\n` +
     `\`\`\`\n` +
@@ -63,8 +55,7 @@ export function createDebugRoutingMessages(
     `경로:       ${isComplex ? '🔄 ' : '⚡ '}${routePath}\n` +
     `\`\`\`\n` +
     `**factors**\n${factorLines}` +
-    forceNote +
-    thinkingNote;
+    forceNote;
 
   const userMessage: UIMessage = {
     id: `debug-user-${token}`,

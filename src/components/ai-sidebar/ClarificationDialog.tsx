@@ -114,7 +114,7 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
         </div>
 
         {/* 옵션 그리드 */}
-        <div className="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div className="mb-3 grid max-h-52 grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2">
           {clarification.options.map((option, index) => (
             <button
               key={option.id}
@@ -173,7 +173,7 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
           className="mt-2 flex w-full items-center justify-center rounded-lg border border-blue-200 bg-white py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-50"
           data-testid="clarification-skip"
         >
-          건너뛰고 바로 실행
+          필터 없이 전체 대상으로 실행
         </button>
 
         {/* 취소 힌트 */}

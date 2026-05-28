@@ -56,6 +56,7 @@ declare global {
       readonly ENABLE_LOGGING?: string;
       readonly LOG_LEVEL?: 'debug' | 'info' | 'warn' | 'error';
       readonly ANALYTICS_ID?: string;
+      readonly NEXT_PUBLIC_ENABLE_VERCEL_WEB_ANALYTICS?: string;
 
       // 🛠️ 빌드 및 배포
       readonly npm_lifecycle_event?: string;

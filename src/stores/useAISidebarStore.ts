@@ -26,7 +26,6 @@ import type {
 } from '@/lib/ai/chat-artifacts/types';
 import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
   EvidenceCard,
@@ -84,10 +83,6 @@ function normalizeActiveTab(tab: unknown): AISidebarTab {
     : 'chat';
 }
 
-function normalizeAnalysisMode(mode: unknown): AnalysisMode {
-  return mode === 'thinking' ? 'thinking' : 'auto';
-}
-
 function normalizeSessionId(sessionId: unknown): string {
   return typeof sessionId === 'string' && sessionId.trim().length > 0
     ? sessionId
@@ -135,8 +130,6 @@ export interface AnalysisBasis {
   featureStatus?: AnalysisFeatureStatus;
   /** Operator-facing grouping of evidence/source origins */
   sourceGroups?: AnalysisBasisSourceGroup[];
-  /** 사용자가 선택한 분석 강도 모드 */
-  analysisMode?: AnalysisMode;
 }
 
 export type AnalysisBasisSourceGroupType =
@@ -265,7 +258,6 @@ export type AIEntryFunction = 'chat' | 'auto-report' | 'intelligent-monitoring';
 export interface PendingAIEntryState {
   draft?: string;
   selectedFunction?: AIEntryFunction;
-  analysisMode?: AnalysisMode;
   queryAsOfDataSlot?: JobDataSlot;
   artifactWorkspaceId?: string;
   target?: AIEntryTarget;
@@ -303,7 +295,6 @@ function normalizeMessageSnapshot(
 function normalizeRehydratedState(state: AISidebarState): void {
   const persisted = state as AISidebarState & {
     activeTab?: unknown;
-    analysisMode?: unknown;
     isMinimized?: unknown;
     messages?: unknown;
     restoreBannerDismissed?: unknown;
@@ -317,7 +308,6 @@ function normalizeRehydratedState(state: AISidebarState): void {
   state.activeTab = normalizeActiveTab(persisted.activeTab);
   state.sidebarWidth = normalizeAISidebarWidth(persisted.sidebarWidth);
   state.webSearchEnabled = persisted.webSearchEnabled === true;
-  state.analysisMode = normalizeAnalysisMode(persisted.analysisMode);
   state.restoreBannerDismissed = persisted.restoreBannerDismissed === true;
   state.messages = normalizeMessageSnapshot(
     persisted.messages,
@@ -437,9 +427,6 @@ interface AISidebarState {
   // 웹 검색 source mode. false=Auto, true=On.
   webSearchEnabled: boolean;
 
-  // 분석 강도 모드
-  analysisMode: AnalysisMode;
-
   // 대화 복원 배너 닫힘 상태 (탭 전환 시 재노출 방지)
   restoreBannerDismissed: boolean;
 
@@ -457,7 +444,6 @@ interface AISidebarState {
   setWebSearchEnabled: (
     enabled: boolean | ((prev: boolean) => boolean)
   ) => void;
-  setAnalysisMode: (mode: AnalysisMode) => void;
   dismissRestoreBanner: () => void;
   setActiveTab: (tab: AISidebarTab) => void;
 
@@ -490,7 +476,6 @@ export const useAISidebarStore = create<AISidebarState>()(
         pendingPrefillMessage: null,
         pendingEntryState: null,
         webSearchEnabled: false,
-        analysisMode: 'auto',
         restoreBannerDismissed: false,
         messages: [],
         sessionId: createSessionId(),
@@ -569,8 +554,6 @@ export const useAISidebarStore = create<AISidebarState>()(
                 : enabled,
           })),
 
-        setAnalysisMode: (mode) => set({ analysisMode: mode }),
-
         dismissRestoreBanner: () => set({ restoreBannerDismissed: true }),
 
         setActiveTab: (tab) => set({ activeTab: tab }),
@@ -613,7 +596,6 @@ export const useAISidebarStore = create<AISidebarState>()(
             pendingPrefillMessage: null,
             pendingEntryState: null,
             webSearchEnabled: false,
-            analysisMode: 'auto',
             restoreBannerDismissed: false,
             messages: [],
             sessionId: createSessionId(),
@@ -628,7 +610,6 @@ export const useAISidebarStore = create<AISidebarState>()(
           activeTab: normalizeActiveTab(state.activeTab),
           sidebarWidth: normalizeAISidebarWidth(state.sidebarWidth),
           webSearchEnabled: state.webSearchEnabled,
-          analysisMode: normalizeAnalysisMode(state.analysisMode),
           restoreBannerDismissed: state.restoreBannerDismissed,
           messages: normalizeMessageSnapshot(
             state.messages,

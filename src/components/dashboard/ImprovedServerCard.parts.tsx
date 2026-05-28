@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { getThreshold } from '@/config/rules';
 import type { Server as ServerType, Service } from '@/types/server';
 import { formatMetricValue } from '@/utils/metric-formatters';
 import { SvgSparkline } from '../shared/SvgSparkline';
@@ -7,6 +8,79 @@ interface MetricItemProps {
   type: 'cpu' | 'memory' | 'disk' | 'network';
   value: number;
   history?: number[];
+}
+
+const METRIC_TREND_SAMPLE_SIZE = 5;
+const METRIC_TREND_FLAT_THRESHOLD = 0.5;
+
+type MetricTrendDirection = 'up' | 'down' | 'flat';
+
+interface MetricTrend {
+  accessibleLabel: string;
+  displayLabel: string;
+  direction: MetricTrendDirection;
+  title: string;
+}
+
+function getMetricTrendClass(
+  type: MetricItemProps['type'],
+  direction: MetricTrendDirection
+): string {
+  if (direction === 'flat') {
+    return 'text-slate-400';
+  }
+
+  if (direction === 'down') {
+    return 'text-emerald-600';
+  }
+
+  return type === 'network' ? 'text-slate-500' : 'text-rose-600';
+}
+
+function calculateMetricTrend(
+  label: string,
+  value: number,
+  history?: number[]
+): MetricTrend {
+  const baseline = (history ?? [])
+    .slice(0, -1)
+    .filter((point) => Number.isFinite(point))
+    .slice(-METRIC_TREND_SAMPLE_SIZE);
+
+  if (!Number.isFinite(value) || baseline.length === 0) {
+    return {
+      accessibleLabel: `${label} 추세 변화 없음`,
+      displayLabel: '—',
+      direction: 'flat',
+      title: '비교 가능한 히스토리 없음',
+    };
+  }
+
+  const average =
+    baseline.reduce((sum, point) => sum + point, 0) / baseline.length;
+  const delta = value - average;
+
+  if (Math.abs(delta) < METRIC_TREND_FLAT_THRESHOLD) {
+    return {
+      accessibleLabel: `${label} 추세 변화 없음`,
+      displayLabel: '—',
+      direction: 'flat',
+      title: `최근 ${baseline.length}개 평균 대비 변화 없음`,
+    };
+  }
+
+  const direction: MetricTrendDirection = delta > 0 ? 'up' : 'down';
+  const directionText = direction === 'up' ? '상승' : '하락';
+  const symbol = direction === 'up' ? '↑' : '↓';
+  const signedDelta = `${delta > 0 ? '+' : '-'}${Math.abs(delta).toFixed(1)}%`;
+  const displayDelta = `${delta > 0 ? '+' : '-'}${Math.round(Math.abs(delta))}%`;
+
+  return {
+    accessibleLabel: `${label} 추세 ${directionText} ${signedDelta}`,
+    displayLabel: `${symbol} ${displayDelta}`,
+    direction,
+    title: `최근 ${baseline.length}개 평균 ${average.toFixed(1)}% 대비 ${signedDelta}`,
+  };
 }
 
 export const MetricItem = ({ type, value, history }: MetricItemProps) => {
@@ -18,65 +92,63 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
   };
 
   const getMetricSeverity = (val: number) => {
-    if (type === 'network') {
-      if (val >= 85) {
-        return {
-          chartColor: '#ef4444',
-          textClass: 'text-red-700 font-semibold',
-        };
-      }
-      if (val >= 70) {
-        return {
-          chartColor: '#f97316',
-          textClass: 'text-amber-700 font-medium',
-        };
-      }
-      return {
-        chartColor: '#10b981',
-        textClass: 'text-slate-600 font-medium',
-      };
-    }
+    const threshold = getThreshold(type);
 
-    if (val >= 85) {
+    if (val >= threshold.critical) {
       return {
         chartColor: '#ef4444',
         textClass: 'text-red-700 font-semibold',
+        strokeWidth: 2.2,
       };
     }
-    if (val >= 70) {
+    if (val >= threshold.warning) {
       return {
         chartColor: '#f97316',
         textClass: 'text-amber-700 font-medium',
+        strokeWidth: 1.8,
       };
     }
     return {
       chartColor: '#10b981',
       textClass: 'text-slate-600 font-medium',
+      strokeWidth: 1.2,
     };
   };
 
   const metricSeverity = getMetricSeverity(value);
+  const metricTrend = calculateMetricTrend(labels[type], value, history);
+  const metricTrendClass = getMetricTrendClass(type, metricTrend.direction);
 
   return (
     <div className="flex flex-col">
-      <div className="mb-1 flex items-center justify-between">
-        <span className="text-xs-plus font-medium tracking-wide text-gray-500">
-          {labels[type]}
-        </span>
+      <div className="mb-1 space-y-0.5">
+        <div className="flex items-center justify-between gap-1">
+          <span className="text-xs-plus font-medium tracking-wide text-gray-500">
+            {labels[type]}
+          </span>
+          <span
+            className={`text-sm tracking-tight tabular-nums transition-all duration-700 ease-in-out ${metricSeverity.textClass}`}
+          >
+            {formatMetricValue(type, value)}
+          </span>
+        </div>
         <span
-          className={`text-sm tracking-tight tabular-nums transition-all duration-700 ease-in-out ${metricSeverity.textClass}`}
+          aria-label={metricTrend.accessibleLabel}
+          className={`block h-3 text-right text-[10px] font-semibold leading-none tabular-nums ${metricTrendClass}`}
+          role="img"
+          title={metricTrend.title}
         >
-          {formatMetricValue(type, value)}
+          {metricTrend.displayLabel}
         </span>
       </div>
-      <div className="flex h-14 w-full items-center justify-center">
+      <div className="flex h-12 w-full items-center justify-center">
         <SvgSparkline
           data={history && history.length > 1 ? history : [value, value]}
           width={72}
-          height={48}
+          height={42}
           color={metricSeverity.chartColor}
           fill
-          strokeWidth={1.5}
+          strokeWidth={metricSeverity.strokeWidth}
           disableAnimation={false}
         />
       </div>
@@ -119,6 +191,63 @@ export const DetailRow = ({ icon, label, value }: DetailRowProps) => (
   </div>
 );
 
+const UPTIME_WINDOW_SECONDS = 24 * 60 * 60;
+
+function clampPercent(value: number): number {
+  return Math.min(100, Math.max(0, value));
+}
+
+function parseUptimeSeconds(uptime: ServerType['uptime']): number | null {
+  if (typeof uptime === 'number') {
+    return Number.isFinite(uptime) && uptime >= 0 ? uptime : null;
+  }
+
+  const normalized = uptime.trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+
+  const numericValue = Number.parseFloat(normalized);
+  if (/^\d+(\.\d+)?$/.test(normalized) && Number.isFinite(numericValue)) {
+    return numericValue;
+  }
+
+  const days = Number.parseFloat(
+    normalized.match(/(\d+(?:\.\d+)?)\s*(?:d|day|days|일)/)?.[1] ?? '0'
+  );
+  const hours = Number.parseFloat(
+    normalized.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours|시간)/)?.[1] ??
+      '0'
+  );
+  const minutes = Number.parseFloat(
+    normalized.match(
+      /(\d+(?:\.\d+)?)\s*(?:m|min|mins|minute|minutes|분)/
+    )?.[1] ?? '0'
+  );
+
+  const seconds = days * 86400 + hours * 3600 + minutes * 60;
+  return seconds > 0 ? seconds : null;
+}
+
+function formatUptimePercent(server: ServerType): string {
+  if (
+    typeof server.uptimePercent === 'number' &&
+    Number.isFinite(server.uptimePercent)
+  ) {
+    return `${clampPercent(server.uptimePercent).toFixed(1)}%`;
+  }
+
+  const uptimeSeconds = parseUptimeSeconds(server.uptime);
+  if (uptimeSeconds === null) {
+    return '—';
+  }
+
+  const uptimePercent = clampPercent(
+    (uptimeSeconds / UPTIME_WINDOW_SECONDS) * 100
+  );
+  return `${uptimePercent.toFixed(1)}%`;
+}
+
 export const SecondaryMetrics = ({
   server,
   compact = false,
@@ -129,8 +258,9 @@ export const SecondaryMetrics = ({
   const hasLoad = server.load1 !== undefined && server.cpuCores !== undefined;
   const hasResponse =
     server.responseTime !== undefined && server.responseTime > 0;
+  const uptimePercentLabel = formatUptimePercent(server);
 
-  if (!hasLoad && !hasResponse) {
+  if (!hasLoad && !hasResponse && compact) {
     return null;
   }
 
@@ -148,7 +278,7 @@ export const SecondaryMetrics = ({
 
   return (
     <div
-      className={`mt-2 items-center gap-3 border-t border-gray-200/50 pt-2 text-xs ${compact ? 'hidden sm:flex' : 'flex'}`}
+      className={`mt-2 items-center gap-3 border-t border-gray-200/50 pt-2 text-xs ${compact ? 'hidden sm:flex' : 'flex flex-wrap'}`}
     >
       {hasLoad && (
         <span
@@ -162,6 +292,17 @@ export const SecondaryMetrics = ({
         <span className={respColor} title={`응답 시간: ${respMs}ms`}>
           Resp:{' '}
           {respMs >= 1000 ? `${(respMs / 1000).toFixed(1)}s` : `${respMs}ms`}
+        </span>
+      )}
+      {!compact && (
+        <span
+          className="inline-flex items-center gap-1 text-gray-500"
+          title={`최근 24시간 가동률: ${uptimePercentLabel}`}
+        >
+          <span>가동률</span>
+          <span className="font-medium tabular-nums text-gray-700">
+            {uptimePercentLabel} / 24h
+          </span>
         </span>
       )}
     </div>

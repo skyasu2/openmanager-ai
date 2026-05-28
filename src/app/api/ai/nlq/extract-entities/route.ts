@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { GROQ_TEXT_MODEL_ID } from '@/config/ai-providers';
 import {
   KNOWN_ENTITY_SERVER_IDS,
-  normalizeExtractedEntities,
+  normalizeExtractedEntitiesForQuery,
   SEMANTIC_AGGREGATIONS,
   SEMANTIC_AMBIGUITIES,
   SEMANTIC_DOMAINS,
@@ -38,6 +38,8 @@ import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 
 // MIGRATED: Removed export const runtime = "nodejs" (default)
 export const maxDuration = 10;
+
+const GROQ_TIMEOUT_MS = 3000;
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -100,13 +102,26 @@ async function postHandler(request: NextRequest) {
       ? buildLogSummaryPrompt(guard.logExtract ?? '', guard.sanitizedQuery)
       : guard.sanitizedQuery;
 
+  if (!process.env.GROQ_API_KEY) {
+    return NextResponse.json(
+      {
+        confidence: 0,
+        inputType: guard.inputType,
+        ...(guard.logExtract && { logExtract: guard.logExtract }),
+        ...(guard.truncated && { truncated: true }),
+      },
+      { status: 200 }
+    );
+  }
+
   try {
     const { output } = await generateText({
       model: groq(GROQ_TEXT_MODEL_ID),
       system: SYSTEM_PROMPT,
       prompt: queryForLLM,
       temperature: 0,
-      maxOutputTokens: 160,
+      maxOutputTokens: 320,
+      timeout: GROQ_TIMEOUT_MS,
       output: Output.object({
         schema: EntitySchema,
         name: 'nlq_entities',
@@ -116,7 +131,7 @@ async function postHandler(request: NextRequest) {
     });
 
     return NextResponse.json({
-      ...normalizeExtractedEntities(output),
+      ...normalizeExtractedEntitiesForQuery(output, queryForLLM),
       inputType: guard.inputType,
       ...(guard.logExtract && { logExtract: guard.logExtract }),
       ...(guard.truncated && { truncated: true }),

@@ -9,7 +9,6 @@ import {
   getToolLabel,
 } from '@/lib/ai/utils/tool-presentation';
 import type { AnalysisBasis } from '@/stores/useAISidebarStore';
-import { ANALYSIS_MODE_LABELS } from '@/types/ai/analysis-mode';
 import { extractDomain, getEngineColor } from './shared';
 
 interface AnalysisBasisMetadataProps {
@@ -60,7 +59,6 @@ export function AnalysisBasisMetadata({
       retrieval: basis.retrieval,
       hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
       hasWebEvidence,
-      analysisMode: basis.analysisMode,
     });
   const featureBadges = buildVisibleFeatureStatusBadges(featureStatus);
 
@@ -76,17 +74,6 @@ export function AnalysisBasisMetadata({
 
   return (
     <>
-      {basis.analysisMode && (
-        <div className="rounded-md border border-slate-200 bg-white p-3">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
-            분석 강도
-          </p>
-          <p className="text-xs text-slate-700">
-            {ANALYSIS_MODE_LABELS[basis.analysisMode]}
-          </p>
-        </div>
-      )}
-
       <div className="flex items-center gap-2">
         <Database className="h-3.5 w-3.5 text-gray-400" />
         <span className="text-gray-500">데이터:</span>

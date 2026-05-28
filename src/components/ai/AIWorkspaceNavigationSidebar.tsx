@@ -1,10 +1,11 @@
 'use client';
 
-import { Bot, FileText, MessageSquare, Monitor, Plus } from 'lucide-react';
+import { Bot, MessageSquare, Plus } from 'lucide-react';
 import { CloudRunStatusIndicator } from '@/components/ai-sidebar/CloudRunStatusIndicator';
 import { APP_VERSION } from '@/config/app-meta';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
+import { AI_WORKSPACE_FUNCTION_TABS } from './AIWorkspace.constants';
 
 type AIWorkspaceNavigationSidebarProps = {
   selectedFunction: AIAssistantFunction;
@@ -12,6 +13,13 @@ type AIWorkspaceNavigationSidebarProps = {
   userQuestionCount: number;
   onNewSession: () => void;
   onFunctionSelect: (func: AIAssistantFunction) => void;
+};
+
+const FUNCTION_NAV_SELECTED_CLASS: Record<AIAssistantFunction, string> = {
+  chat: 'bg-blue-50 text-blue-700 border border-blue-200',
+  'auto-report': 'bg-pink-50 text-pink-700 border border-pink-200',
+  'intelligent-monitoring':
+    'bg-emerald-50 text-emerald-700 border border-emerald-200',
 };
 
 export function AIWorkspaceNavigationSidebar({
@@ -68,53 +76,31 @@ export function AIWorkspaceNavigationSidebar({
           AI 기능
         </div>
         <div className="space-y-1">
-          <button
-            type="button"
-            onClick={() => onFunctionSelect('chat')}
-            className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-              selectedFunction === 'chat'
-                ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <MessageSquare className="h-4 w-4 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium">AI Chat</div>
-              <div className="text-xs text-gray-500 truncate">자연어 질의</div>
-            </div>
-          </button>
-          <button
-            type="button"
-            onClick={() => onFunctionSelect('auto-report')}
-            className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-              selectedFunction === 'auto-report'
-                ? 'bg-pink-50 text-pink-700 border border-pink-200'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <FileText className="h-4 w-4 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium">장애 보고서</div>
-              <div className="text-xs text-gray-500 truncate">보고서 생성</div>
-            </div>
-          </button>
-          <button
-            type="button"
-            onClick={() => onFunctionSelect('intelligent-monitoring')}
-            className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-              selectedFunction === 'intelligent-monitoring'
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <Monitor className="h-4 w-4 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium">이상감지/추세</div>
-              <div className="text-xs text-gray-500 truncate">
-                이상 신호 분석
-              </div>
-            </div>
-          </button>
+          {AI_WORKSPACE_FUNCTION_TABS.map((item) => {
+            const Icon = item.icon;
+            const active = selectedFunction === item.id;
+
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onFunctionSelect(item.id)}
+                className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
+                  active
+                    ? FUNCTION_NAV_SELECTED_CLASS[item.id]
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium">{item.label}</div>
+                  <div className="text-xs text-gray-500 truncate">
+                    {item.description}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 

@@ -26,6 +26,7 @@ import {
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
 import type { JobDataSlot } from '@/types/ai-jobs';
+import type { Server } from '@/types/server';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
 import {
@@ -47,6 +48,8 @@ interface AIWorkspaceProps {
   embedded?: boolean;
   /** Dashboard data slot used to keep AI pages aligned with visible metrics. */
   queryAsOfDataSlot?: JobDataSlot;
+  /** Dashboard servers used for read-only contextual matching in embedded mode. */
+  serverContextServers?: Server[];
   /** @deprecated kept for older stories/tests; sidebar uses AISidebarV4. */
   mode?: 'fullscreen';
 }
@@ -61,6 +64,7 @@ interface AIWorkspaceProps {
 export default function AIWorkspace({
   embedded = false,
   queryAsOfDataSlot,
+  serverContextServers,
 }: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
@@ -85,8 +89,6 @@ export default function AIWorkspace({
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    analysisMode,
-    selectAnalysisMode,
     pendingEntryState,
     consumePendingEntryState,
     pendingPrefillMessage,
@@ -219,7 +221,6 @@ export default function AIWorkspace({
     const sidebarEntry: PendingAIEntryState = {
       ...(pendingEntryState ?? {}),
       selectedFunction: pendingEntryState?.selectedFunction ?? selectedFunction,
-      analysisMode: pendingEntryState?.analysisMode ?? analysisMode,
       target: 'sidebar',
     };
     const handoffQueryAsOfDataSlot =
@@ -242,7 +243,6 @@ export default function AIWorkspace({
     setIsMobileHandoffActive(true);
     router.replace(DASHBOARD_ROUTE);
   }, [
-    analysisMode,
     input,
     openSidebar,
     pendingEntryState,
@@ -270,10 +270,6 @@ export default function AIWorkspace({
 
     setSelectedFunction(entry.selectedFunction ?? 'chat');
 
-    if (entry.analysisMode) {
-      selectAnalysisMode(entry.analysisMode);
-    }
-
     setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot ?? queryAsOfDataSlot);
     setWorkspaceArtifactId(entry.artifactWorkspaceId);
 
@@ -284,7 +280,6 @@ export default function AIWorkspace({
     consumePendingEntryState,
     pendingEntryState,
     queryAsOfDataSlot,
-    selectAnalysisMode,
     setInput,
     setSelectedFunction,
   ]);
@@ -361,8 +356,6 @@ export default function AIWorkspace({
           currentHandoff={currentHandoff}
           webSearchEnabled={webSearchEnabled}
           onToggleWebSearch={toggleWebSearch}
-          analysisMode={analysisMode}
-          onSelectAnalysisMode={selectAnalysisMode}
           warmingUp={warmingUp}
           estimatedWaitSeconds={estimatedWaitSeconds}
           queuedQueries={queuedQueries}
@@ -415,6 +408,9 @@ export default function AIWorkspace({
         finalProvider={latestAssistantRuntime?.provider}
         artifactWorkspaceId={artifactWorkspaceId}
         messages={enhancedMessages}
+        queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
+        serverContextMessages={enhancedMessages}
+        serverContextServers={serverContextServers}
         onFunctionSelect={handleFunctionSelect}
         onToggleRightPanel={handleToggleRightPanel}
       />

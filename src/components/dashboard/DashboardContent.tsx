@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type {
@@ -12,10 +12,14 @@ import type {
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
+import { AlertFeedPanel } from './AlertFeedPanel';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
 import { SystemOverviewSection } from './SystemOverviewSection';
-import type { DashboardStats } from './types/dashboard.types';
+import type {
+  DashboardStats,
+  DashboardTimeRange,
+} from './types/dashboard.types';
 
 const ServerDashboard = dynamic(() => import('./ServerDashboard'), {
   ssr: false,
@@ -49,6 +53,8 @@ interface DashboardContentProps {
   servers: Server[];
   /** 전체 서버 목록 (통계 계산용) */
   allServers?: Server[];
+  /** 현재 필터가 반영된 전체 서버 목록 (카드 정렬/표시용) */
+  displayServers?: Server[];
   /** 현재 synthetic OTel 데이터 슬롯 메타데이터 */
   dataSlotInfo?: DashboardTimeInfo;
   /** 현재 synthetic OTel 데이터 소스 메타데이터 */
@@ -78,6 +84,7 @@ export default memo(function DashboardContent({
   showSequentialGeneration,
   servers,
   allServers,
+  displayServers,
   dataSlotInfo,
   dataSourceInfo,
   totalServers,
@@ -93,6 +100,13 @@ export default memo(function DashboardContent({
   onStatusFilterChange,
 }: DashboardContentProps) {
   const router = useRouter();
+  const [metricsTimeRange, setMetricsTimeRange] =
+    useState<DashboardTimeRange>('24h');
+  const currentPageServers = servers;
+  const fleetServers = allServers?.length ? allServers : currentPageServers;
+  const cardSourceServers = displayServers?.length
+    ? displayServers
+    : fleetServers;
   // 🛡️ P1-8 Fix: onStatsUpdate를 ref에 저장하여 useEffect 무한 루프 방지
   const onStatsUpdateRef = useRef(onStatsUpdate);
   onStatsUpdateRef.current = onStatsUpdate;
@@ -102,7 +116,7 @@ export default memo(function DashboardContent({
   useEffect(() => {
     debug.log('🔍 DashboardContent 초기 렌더링:', {
       showSequentialGeneration,
-      serversCount: servers?.length,
+      serversCount: currentPageServers.length,
       status: status?.type,
       timestamp: new Date().toISOString(),
     });
@@ -112,6 +126,7 @@ export default memo(function DashboardContent({
   const {
     data: monitoringReport,
     error: monitoringError,
+    isLoading: isMonitoringLoading,
     isError: isMonitoringError,
   } = useMonitoringReport();
   const monitoringErrorMessage = isMonitoringError
@@ -127,11 +142,15 @@ export default memo(function DashboardContent({
   // 🛡️ currentTime 제거: 미사용 상태에서 불필요한 interval 실행 (v5.83.13)
 
   // 🚀 리팩토링: Custom Hook으로 통계 계산 로직 분리
-  const serverStats = useDashboardStats(servers, allServers, statsLoading);
+  const serverStats = useDashboardStats(
+    currentPageServers,
+    fleetServers,
+    statsLoading
+  );
   const overallServerCount =
-    allServers?.length ?? Math.max(totalServers, servers.length);
+    allServers?.length ?? Math.max(totalServers, currentPageServers.length);
   const emptyStateMode = resolveDashboardEmptyState({
-    visibleServersCount: servers.length,
+    visibleServersCount: currentPageServers.length,
     totalServersCount: overallServerCount,
     hasActiveFilter: Boolean(statusFilter),
   });
@@ -202,30 +221,44 @@ export default memo(function DashboardContent({
           onOpenAlertHistory={() => router.push('/dashboard/alerts')}
           onOpenLogExplorer={() => router.push('/dashboard/logs')}
           activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
+          timeRange={metricsTimeRange}
+          onTimeRangeChange={setMetricsTimeRange}
         />
 
         {/* 🎯 메인 컨텐츠 영역 */}
-        {servers.length > 0 ? (
+        {currentPageServers.length > 0 ? (
           <>
             {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
-            <SystemOverviewSection servers={servers} />
+            <SystemOverviewSection servers={fleetServers} />
 
-            {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
-                  - DashboardClient → DashboardContent → ServerDashboard로 전달
-                  - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화)
-                  - ServerDashboard 그래프는 client-only lazy chunk로 분리 */}
-            <ServerDashboard
-              servers={servers}
-              totalServers={totalServers}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              onPageChange={onPageChange}
-              onPageSizeChange={onPageSizeChange}
-              onStatsUpdate={onStatsUpdate}
-              initialVisibleRows={2}
-              surface="overview"
-            />
+            <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
+              <div className="min-w-0">
+                {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
+                      - DashboardClient → DashboardContent → ServerDashboard로 전달
+                      - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화)
+                      - ServerDashboard 그래프는 client-only lazy chunk로 분리 */}
+                <ServerDashboard
+                  servers={currentPageServers}
+                  allServers={cardSourceServers}
+                  totalServers={totalServers}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={onPageChange}
+                  onPageSizeChange={onPageSizeChange}
+                  onStatsUpdate={onStatsUpdate}
+                  initialVisibleRows={2}
+                  surface="overview"
+                  metricsTimeRange={metricsTimeRange}
+                />
+              </div>
+              <AlertFeedPanel
+                alerts={monitoringReport?.firingAlerts ?? []}
+                isLoading={isMonitoringLoading}
+                isError={isMonitoringError}
+                errorMessage={monitoringErrorMessage}
+              />
+            </div>
           </>
         ) : (
           <div className="rounded-xl border border-slate-200/60 bg-white/80 p-6 shadow-sm backdrop-blur-sm">

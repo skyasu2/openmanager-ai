@@ -158,11 +158,12 @@ const semanticMetadataSchema = z
   .passthrough();
 
 export const requestSchema = z.object({
+  // AI SDK DefaultChatTransport sends the chat id as `id`.
+  id: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
   messages: z.array(messageSchema).min(1).max(50),
   sessionId: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),
-  analysisMode: z.enum(['auto', 'thinking']).optional(),
   queryAsOfDataSlot: z.unknown().optional(),
   localRouteDecision: z.unknown().optional(),
   metadata: semanticMetadataSchema.optional(),

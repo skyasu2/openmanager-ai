@@ -43,13 +43,13 @@ const AI_ASSISTANT_ICONS: AIAssistantIcon[] = [
     id: 'auto-report',
     icon: FileText,
     label: '자동장애 보고서',
-    description: 'Reporter Agent 장애 분석 보고서 생성',
+    description: '장애·운영 보고서 생성 및 MD/TXT 다운로드',
   },
   {
     id: 'intelligent-monitoring',
     icon: Monitor,
     label: '이상감지/추세',
-    description: '경량 이상 신호와 리스크 추세 분석',
+    description: '서버별 이상 신호 탐지 및 추세 분석 실행',
   },
 ];
 
@@ -108,7 +108,7 @@ const IconButton = memo(function IconButton({
         onClick={handleClick}
         className={`group relative h-12 w-12 shrink-0 rounded-xl border transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 ${
           isSelected
-            ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+            ? 'border-purple-600 bg-purple-600 text-white shadow-sm'
             : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
         } `}
       >
@@ -134,7 +134,7 @@ const IconButton = memo(function IconButton({
       onClick={handleClick}
       className={`animate-fade-in group relative h-12 w-12 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 ${
         isSelected
-          ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+          ? 'border-purple-600 bg-purple-600 text-white shadow-sm'
           : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
       } `}
       title={`${item.label}\n${item.description}`}
@@ -143,7 +143,7 @@ const IconButton = memo(function IconButton({
       <Icon className="mx-auto h-5 w-5" aria-hidden="true" />
       {/* 선택 표시 */}
       {isSelected && (
-        <div className="animate-fade-in absolute -left-1 top-1/2 h-6 w-1 -translate-y-1/2 transform rounded-r-full bg-slate-900" />
+        <div className="animate-fade-in absolute -left-1 top-1/2 h-6 w-1 -translate-y-1/2 transform rounded-r-full bg-purple-600" />
       )}
       {/* 호버 툴팁 - 왼쪽으로 위치 변경 (화이트 모드) */}
       <div
@@ -214,7 +214,7 @@ export default function AIAssistantIconPanel({
 
   return (
     <div
-      className={`flex flex-col space-y-2 border-l border-gray-200 bg-white p-3 ${className}`}
+      className={`flex flex-col space-y-2 border-l border-gray-100 bg-gray-50/50 p-3 ${className}`}
     >
       {/* 헤더 */}
       <div className="mb-2 flex justify-center">
@@ -238,7 +238,7 @@ export default function AIAssistantIconPanel({
 
       {/* 전체 화면 이동 버튼 (Desktop - 하단 분리) */}
       {showFullscreenButton && (
-        <div className="mt-4 border-t border-gray-200 pt-2">
+        <div className="mt-4 border-t border-gray-100 pt-2">
           <button
             type="button"
             onClick={handleFullscreen}

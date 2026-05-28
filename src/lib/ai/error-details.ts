@@ -47,7 +47,6 @@ const UPSTREAM_PROVIDER_KEYWORDS = [
   'groq',
   'mistral',
   'cerebras',
-  'openrouter',
 ];
 
 function isRecord(value: unknown): value is Record<string, unknown> {

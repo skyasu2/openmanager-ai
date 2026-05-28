@@ -36,13 +36,13 @@ export const AI_WORKSPACE_FUNCTION_TABS: Array<{
   {
     id: 'auto-report',
     label: '장애 보고서',
-    description: '보고서 생성',
+    description: 'MD/TXT 다운로드',
     icon: FileText,
   },
   {
     id: 'intelligent-monitoring',
     label: '이상감지/추세',
-    description: '이상 신호 분석',
+    description: '실시간 분석 실행',
     icon: Monitor,
   },
 ];

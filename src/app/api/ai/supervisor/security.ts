@@ -14,7 +14,6 @@
 import {
   DANGEROUS_OUTPUT_PATTERNS,
   HTML_ESCAPE_MAP,
-  MALICIOUS_OUTPUT_PATTERNS,
   MAX_INPUT_LENGTH,
   MAX_OUTPUT_LENGTH,
   PROMPT_INJECTION_PATTERNS,
@@ -219,49 +218,6 @@ export function sanitizeForPrompt(text: string): string {
   const { sanitized } = sanitizeInput(text);
   const { sanitizedQuery } = detectPromptInjection(sanitized);
   return escapeXml(sanitizedQuery);
-}
-
-// ============================================================================
-// 악성 출력 필터링
-// ============================================================================
-
-export interface MaliciousOutputResult {
-  isMalicious: boolean;
-  patterns: string[];
-  filteredOutput: string;
-  warning?: string;
-}
-
-/**
- * 악성 출력 필터링 (AI 응답에서 Injection 성공 징후 탐지)
- */
-function _filterMaliciousOutput(text: string): MaliciousOutputResult {
-  const detectedPatterns: string[] = [];
-  let filteredOutput = text;
-
-  for (const { pattern, name } of MALICIOUS_OUTPUT_PATTERNS) {
-    if (pattern.test(text)) {
-      detectedPatterns.push(name);
-      filteredOutput = filteredOutput.replace(
-        pattern,
-        '[응답이 필터링되었습니다]'
-      );
-      pattern.lastIndex = 0;
-    }
-  }
-
-  const isMalicious = detectedPatterns.length > 0;
-
-  return {
-    isMalicious,
-    patterns: detectedPatterns,
-    filteredOutput: isMalicious
-      ? '죄송합니다. 해당 요청에 응답할 수 없습니다. 서버 모니터링 관련 질문을 해주세요.'
-      : filteredOutput,
-    warning: isMalicious
-      ? `잠재적 보안 위협 감지: ${detectedPatterns.join(', ')}`
-      : undefined,
-  };
 }
 
 // ============================================================================

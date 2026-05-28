@@ -31,8 +31,10 @@ export interface ClarificationRequest {
 const SERVER_PATTERNS = {
   missing: /서버|server|상태|status|확인|check/i,
   hasSpecific:
-    /web-\d+|db-\d+|api-\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i,
+    /web-\d+|db-\d+|api-\d+|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|was|api|app|application|backend|애플리케이션|캐시|cache|스토리지|저장소|storage|nfs|s3/i,
 };
+
+const MAX_CLARIFICATION_OPTIONS = 6;
 
 // 구체적 조건 패턴 (숫자 조건, 정렬, 필터링이 있으면 이미 구체적)
 const SPECIFIC_CONDITION_PATTERNS = {
@@ -51,13 +53,21 @@ const SPECIFIC_CONDITION_PATTERNS = {
     /(?:cpu|메모리|디스크|memory|disk).+(?:찾아|알려|보여|목록)|(?:찾아|알려|보여).+(?:cpu|메모리|디스크|memory|disk)/i,
   // 명확화 선택으로 생성된 쿼리 접미사 (재명확화 방지)
   clarifiedSuffix:
-    /\(전체 서버\)|\(web-server 그룹\)|\(db-server 그룹\)|\(loadbalancer 그룹\)|\(cache 그룹\)|\(최근 \d+시간\)|\(최근 24시간\)|\(지난 7일\)/i,
+    /\(전체 서버\)|\(web-server 그룹\)|\(db-server 그룹\)|\(loadbalancer 그룹\)|\(cache 그룹\)|\(storage 그룹\)|\(최근 \d+시간\)|\(최근 24시간\)|\(지난 7일\)/i,
   // 명시적 스코프: "모든 서버", "전체 서버" 등 스코프가 명확한 쿼리
   explicitScope:
     /모든\s*(서버|server)|전체\s*(서버|server|시스템|system)|서버명\s*없이|전부|all\s*(서버|server|systems?)|whole\s*(fleet|system)/i,
+  // 명시적 서버 그룹: "WAS 서버들", "캐시 서버"처럼 단일 서버 ID는 없어도 scope가 분명한 질의
+  groupScope:
+    /(?:\b(?:was|api|app|application|backend|web|db|database|mysql|redis|cache|storage|nfs|lb|loadbalancer)\b|애플리케이션|캐시|스토리지|저장소|웹|디비|데이터베이스|로드\s*밸런서)\s*(?:서버|서버들|그룹|servers?|hosts?|instances?|nodes?)/i,
   // 전체 서버 탐색 의도: 특정 서버명이 없어도 fleet scan으로 실행 가능
   fleetScanIntent:
     /(?:조치|대응|확인).{0,16}필요.{0,16}서버|서버.{0,16}(?:조치|대응|확인).{0,16}필요|문제.{0,12}있는.{0,12}서버|위험.{0,12}서버|경고.{0,12}서버|장애.{0,12}서버|당장.{0,12}서버/i,
+  // 이상 징후 분석은 특정 서버명이 없어도 전체 fleet anomaly scan으로 실행 가능
+  anomalyScanIntentForward:
+    /(?:이상|비정상|anomal(?:y|ies)|징후|스파이크|spike|급증|급감).{0,20}(?:분석|탐지|감지|확인|찾아|보여|알려|스캔|scan|detect|analy[sz]e)/i,
+  anomalyScanIntentReverse:
+    /(?:분석|탐지|감지|확인|찾아|보여|알려|스캔|scan|detect|analy[sz]e).{0,20}(?:이상|비정상|anomal(?:y|ies)|징후|스파이크|spike|급증|급감)/i,
   // 대화 후속 참조: 직전 응답/분석 대상이 scope를 제공하므로 추가 서버 clarification을 피한다.
   followUpContextReference:
     /(?:방금|직전|이전|앞서|위에서|최근).{0,20}(?:분석|확인|언급|답변|본|살펴본)|(?:그중|그\s*중|이\s*중|중에서).{0,20}(?:골라|추려|필터|보여|알려)/i,
@@ -97,7 +107,10 @@ function hasSpecificConditions(query: string): boolean {
     SPECIFIC_CONDITION_PATTERNS.filterIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.clarifiedSuffix.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.explicitScope.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.groupScope.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.fleetScanIntent.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.anomalyScanIntentForward.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.anomalyScanIntentReverse.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.followUpContextReference.test(query)
   );
 }
@@ -237,6 +250,12 @@ export function generateClarification(
         text: '캐시 서버만',
         suggestedQuery: `${query} (cache 그룹)`,
         category: 'specificity',
+      },
+      {
+        id: 'server-storage',
+        text: '스토리지 서버만',
+        suggestedQuery: `${query} (storage 그룹)`,
+        category: 'specificity',
       }
     );
   }
@@ -302,7 +321,7 @@ export function generateClarification(
   }
 
   // 4. 인텐트별 추가 명확화
-  if (classification.intent === 'analysis' && options.length < 2) {
+  if (classification.localIntent === 'analysis' && options.length < 2) {
     options.push({
       id: 'analysis-root-cause',
       text: '근본 원인 분석',
@@ -341,8 +360,7 @@ export function generateClarification(
     return null;
   }
 
-  // 최대 4개 옵션으로 제한
-  const limitedOptions = options.slice(0, 4);
+  const limitedOptions = options.slice(0, MAX_CLARIFICATION_OPTIONS);
 
   return {
     originalQuery: query,

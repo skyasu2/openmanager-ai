@@ -9,10 +9,11 @@
 import {
   Activity,
   CheckSquare,
+  ChevronDown,
+  ChevronUp,
   ClipboardCopy,
   Clock,
   Download,
-  Eye,
   Server,
   TrendingUp,
 } from 'lucide-react';
@@ -96,7 +97,7 @@ function SystemSummarySection({
 function ReportQuickSummary({ report }: { report: IncidentReport }) {
   const nextAction = report.recommendations?.[0]?.action;
   const impact = report.systemSummary
-    ? `주의 ${report.systemSummary.warningServers}대 · 위험 ${report.systemSummary.criticalServers}대`
+    ? `임계값 초과: 주의 ${report.systemSummary.warningServers}대 · 위험 ${report.systemSummary.criticalServers}대`
     : null;
 
   if (!nextAction && !impact) return null;
@@ -104,7 +105,7 @@ function ReportQuickSummary({ report }: { report: IncidentReport }) {
   return (
     <div className="mb-3 space-y-1 rounded-lg bg-white/60 px-3 py-2 text-xs text-gray-600">
       <div>원인: {report.description}</div>
-      {impact && <div>영향: {impact}</div>}
+      {impact && <div>{impact}</div>}
       {nextAction && <div>다음 조치: {nextAction}</div>}
     </div>
   );
@@ -112,6 +113,10 @@ function ReportQuickSummary({ report }: { report: IncidentReport }) {
 
 function hasReportQuickSummary(report: IncidentReport): boolean {
   return Boolean(report.recommendations?.[0]?.action || report.systemSummary);
+}
+
+function buildDetailSectionId(reportId: string): string {
+  return `report-${reportId.replace(/[^a-zA-Z0-9_-]/g, '-')}-details`;
 }
 
 /**
@@ -333,6 +338,7 @@ export default function ReportCard({
 }: ReportCardProps) {
   const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
   const hasQuickSummary = hasReportQuickSummary(report);
+  const detailSectionId = buildDetailSectionId(report.id);
 
   useEffect(() => {
     if (copyState !== 'copied') return;
@@ -381,42 +387,7 @@ export default function ReportCard({
         <SystemSummarySection systemSummary={report.systemSummary} />
       )}
 
-      {/* Detail Section (collapsed by default) */}
-      {isSelected && (
-        <div className="space-y-3">
-          {report.anomalies && report.anomalies.length > 0 && (
-            <AnomaliesSection anomalies={report.anomalies} />
-          )}
-
-          {report.relatedServers && (
-            <RelatedServersSection relatedServers={report.relatedServers} />
-          )}
-
-          {report.recommendations && report.recommendations.length > 0 && (
-            <RecommendationsSection recommendations={report.recommendations} />
-          )}
-
-          {report.pattern && (
-            <div className="rounded-lg bg-purple-50 p-3">
-              <h4 className="mb-1 text-xs font-semibold text-purple-700">
-                감지된 패턴
-              </h4>
-              <p className="text-xs text-purple-600">{report.pattern}</p>
-            </div>
-          )}
-
-          {report.postmortem && (
-            <PostmortemSection postmortem={report.postmortem} />
-          )}
-
-          <LogTimeline
-            timestamp={report.timestamp}
-            affectedServerIds={report.affectedServers}
-          />
-        </div>
-      )}
-
-      {/* Footer */}
+      {/* Actions */}
       <div
         data-testid="report-card-footer"
         className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-3 sm:flex-row sm:items-center sm:justify-between"
@@ -424,7 +395,8 @@ export default function ReportCard({
         <div className="flex min-w-0 items-center gap-2">
           <Server className="h-4 w-4 text-gray-400" />
           <span className="min-w-0 break-words text-xs text-gray-500">
-            영향받는 서버: {report.affectedServers.join(', ') || '없음'}
+            영향 범위(의존 서버 포함):{' '}
+            {report.affectedServers.join(', ') || '없음'}
           </span>
         </div>
 
@@ -441,15 +413,22 @@ export default function ReportCard({
           <button
             type="button"
             onClick={() => onToggleDetail(report.id)}
-            className={`rounded p-1.5 transition-all duration-200 hover:scale-110 active:scale-90 ${
+            className={`inline-flex min-h-10 w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold shadow-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 active:scale-95 sm:w-auto ${
               isSelected
-                ? 'bg-blue-100 text-blue-600'
-                : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                ? 'border-blue-600 bg-blue-600 text-white hover:bg-blue-700'
+                : 'border-blue-200 bg-blue-50 text-blue-700 ring-1 ring-blue-100 hover:border-blue-300 hover:bg-blue-100'
             }`}
-            aria-label="상세보기"
-            title="상세보기"
+            aria-controls={detailSectionId}
+            aria-expanded={isSelected}
+            aria-label={isSelected ? '보고서 상세 접기' : '보고서 상세 보기'}
+            title={isSelected ? '보고서 상세 접기' : '보고서 상세 보기'}
           >
-            <Eye className="h-4 w-4" />
+            {isSelected ? (
+              <ChevronUp className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <ChevronDown className="h-4 w-4" aria-hidden="true" />
+            )}
+            <span>{isSelected ? '상세 접기' : '보고서 상세 보기'}</span>
           </button>
 
           {report.status !== 'resolved' && (
@@ -502,6 +481,41 @@ export default function ReportCard({
           </div>
         </div>
       </div>
+
+      {/* Detail Section (collapsed by default) */}
+      {isSelected && (
+        <div id={detailSectionId} className="mt-3 space-y-3">
+          {report.anomalies && report.anomalies.length > 0 && (
+            <AnomaliesSection anomalies={report.anomalies} />
+          )}
+
+          {report.relatedServers && (
+            <RelatedServersSection relatedServers={report.relatedServers} />
+          )}
+
+          {report.recommendations && report.recommendations.length > 0 && (
+            <RecommendationsSection recommendations={report.recommendations} />
+          )}
+
+          {report.pattern && (
+            <div className="rounded-lg bg-purple-50 p-3">
+              <h4 className="mb-1 text-xs font-semibold text-purple-700">
+                감지된 패턴
+              </h4>
+              <p className="text-xs text-purple-600">{report.pattern}</p>
+            </div>
+          )}
+
+          {report.postmortem && (
+            <PostmortemSection postmortem={report.postmortem} />
+          )}
+
+          <LogTimeline
+            timestamp={report.timestamp}
+            affectedServerIds={report.affectedServers}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -34,7 +34,6 @@ import {
   RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AIJob,
   CreateJobRequest,
@@ -57,6 +56,17 @@ import {
   JOB_RESULT_QUALITY_FAILURE_MESSAGE,
   shouldFailCompletedJobResult,
 } from './job-result-quality';
+
+function createJobQueueUnavailableResponse(reason: string) {
+  return NextResponse.json(
+    {
+      error: 'Job queue unavailable',
+      reason,
+      fallback: 'Use /api/ai/supervisor directly',
+    },
+    { status: 503 }
+  );
+}
 
 // ============================================
 // 상수 정의
@@ -82,7 +92,6 @@ type JobRequestMetadata = NonNullable<
 >;
 
 interface JobToolOptions {
-  analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   internalDisclosureMode?: SupervisorInternalDisclosureMode;
@@ -102,10 +111,6 @@ function mapJobComplexityToRouteDecision(
   return undefined;
 }
 
-function isAnalysisMode(value: unknown): value is AnalysisMode {
-  return value === 'auto' || value === 'thinking';
-}
-
 function isSupervisorInputType(value: unknown): value is string {
   return (
     value === 'natural_query' ||
@@ -116,7 +121,6 @@ function isSupervisorInputType(value: unknown): value is string {
 }
 
 function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
-  const analysisMode = metadata?.analysisMode;
   const enableRAG = metadata?.enableRAG;
   const enableWebSearch = metadata?.enableWebSearch;
   const semanticQueryTrace = normalizeSemanticQueryTrace(
@@ -137,9 +141,6 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
   };
 
   return {
-    ...(isAnalysisMode(analysisMode) && {
-      analysisMode,
-    }),
     ...(typeof enableRAG === 'boolean' && {
       enableRAG,
     }),
@@ -170,13 +171,7 @@ async function handlePOST(request: NextRequest) {
     // Redis 가용성 확인
     const redis = getRedisClient();
     if (!redis) {
-      return NextResponse.json(
-        {
-          error: 'Job queue unavailable',
-          fallback: 'Use /api/ai/supervisor directly',
-        },
-        { status: 503 }
-      );
+      return createJobQueueUnavailableResponse('redis_unavailable');
     }
 
     // 복잡도 분석
@@ -244,10 +239,7 @@ async function handlePOST(request: NextRequest) {
 
     if (!saved) {
       logger.error('[AI Jobs] Failed to save job to Redis');
-      return NextResponse.json(
-        { error: 'Failed to create job' },
-        { status: 500 }
-      );
+      return createJobQueueUnavailableResponse('redis_write_failed');
     }
 
     // 초기 진행률 저장
@@ -360,6 +352,11 @@ async function handleGET(request: NextRequest) {
         { error: 'limit must be an integer between 1 and 50' },
         { status: 400 }
       );
+    }
+
+    const redis = getRedisClient();
+    if (!redis) {
+      return createJobQueueUnavailableResponse('redis_unavailable');
     }
 
     // Session의 Job 목록 조회

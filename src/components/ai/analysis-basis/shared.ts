@@ -12,7 +12,6 @@ import type {
   ResponseHandoff,
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
-import { ANALYSIS_MODE_LABELS } from '@/types/ai/analysis-mode';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 
 export type LatencyTier = 'fast' | 'normal' | 'slow' | 'very_slow';
@@ -113,7 +112,6 @@ const RESOLVED_MODE_DESCRIPTION_LABELS: Record<ResolvedMode, string> = {
 const MODE_SELECTION_SOURCE_LABELS: Record<string, string> = {
   explicit: '사용자 지정',
   auto_complexity: '복잡도 자동 판단',
-  analysis_mode_thinking: '심층 분석 모드',
   auto_default: '기본 자동 규칙',
   single_disallowed_upgrade: '단일 금지 업그레이드',
 };
@@ -449,7 +447,6 @@ export function buildDebugBundle(params: {
         label: processRoute.label,
       },
       traceId: traceId ?? null,
-      analysisMode: basis.analysisMode ?? null,
       engine: basis.engine,
       dataSource: basis.dataSource,
       timeRange: basis.timeRange ?? null,
@@ -574,9 +571,6 @@ export function buildCollapsedSummary(params: {
   const parts = [
     analysisStepSummary,
     executionPath.length > 0 && toolCount > 0 ? `도구 ${toolCount}개` : null,
-    basis.analysisMode
-      ? `모드: ${ANALYSIS_MODE_LABELS[basis.analysisMode]}`
-      : null,
     basis.timeRange ? `기간: ${basis.timeRange}` : null,
     handoffCount > 0 ? `handoff ${handoffCount}회` : null,
   ].filter(Boolean) as string[];
@@ -641,7 +635,6 @@ export function getProviderDisplayName(provider: string): string {
     zai: 'Z.AI',
     cerebras: 'Cerebras',
     gemini: 'Gemini',
-    openrouter: 'OpenRouter',
   };
   return map[provider] ?? provider;
 }
@@ -673,7 +666,6 @@ export function getProviderDotColor(provider: string): string {
     zai: 'bg-purple-400',
     cerebras: 'bg-green-400',
     gemini: 'bg-sky-400',
-    openrouter: 'bg-slate-400',
   };
   return colors[provider] ?? 'bg-slate-400';
 }

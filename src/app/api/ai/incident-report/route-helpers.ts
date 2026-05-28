@@ -32,7 +32,7 @@ const NO_STORE_RESPONSE_HEADERS = {
 export const INCIDENT_REPORT_ENDPOINT: 'incident-report' = 'incident-report';
 const ATTEMPT_GUARD_MS = 250;
 export const DIRECT_RETRY_MIN_BUFFER_MS = 1_000;
-const INCIDENT_REPORT_ROUTE_MAX_DURATION_SECONDS = 60;
+export const INCIDENT_REPORT_ROUTE_MAX_DURATION_SECONDS = 60;
 
 export function getIncidentReportRouteBudgetMs(): number {
   return getRouteMaxExecutionMs(INCIDENT_REPORT_ROUTE_MAX_DURATION_SECONDS);

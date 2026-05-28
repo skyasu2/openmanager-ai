@@ -33,3 +33,16 @@ export interface DashboardStats {
   offline: number;
   unknown: number;
 }
+
+export type DashboardTimeRange = '2h' | '6h' | '12h' | '24h';
+
+export const DASHBOARD_TIME_RANGE_OPTIONS: Array<{
+  value: DashboardTimeRange;
+  label: string;
+  ariaLabel: string;
+}> = [
+  { value: '2h', label: '2h', ariaLabel: '2시간' },
+  { value: '6h', label: '6h', ariaLabel: '6시간' },
+  { value: '12h', label: '12h', ariaLabel: '12시간' },
+  { value: '24h', label: '24h', ariaLabel: '24시간' },
+];

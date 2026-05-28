@@ -3,9 +3,13 @@
 import { Bot, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
+import type { JobDataSlot } from '@/types/ai-jobs';
+import type { Server } from '@/types/server';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import { AI_WORKSPACE_FUNCTION_TABS } from './AIWorkspace.constants';
 import { ArtifactWorkspacePanel } from './artifact-workspace/ArtifactWorkspacePanel';
+import { ServerContextPanel } from './ServerContextPanel';
 import SystemContextPanel from './SystemContextPanel';
 
 type AIWorkspaceEmbeddedLayoutProps = {
@@ -16,6 +20,9 @@ type AIWorkspaceEmbeddedLayoutProps = {
   finalProvider?: string;
   artifactWorkspaceId: string;
   messages: ComponentProps<typeof ArtifactWorkspacePanel>['messages'];
+  queryAsOfDataSlot?: JobDataSlot;
+  serverContextMessages: EnhancedChatMessage[];
+  serverContextServers?: Server[];
   onFunctionSelect: (func: AIAssistantFunction) => void;
   onToggleRightPanel: () => void;
 };
@@ -28,6 +35,9 @@ export function AIWorkspaceEmbeddedLayout({
   finalProvider,
   artifactWorkspaceId,
   messages,
+  queryAsOfDataSlot,
+  serverContextMessages,
+  serverContextServers,
   onFunctionSelect,
   onToggleRightPanel,
 }: AIWorkspaceEmbeddedLayoutProps) {
@@ -108,6 +118,15 @@ export function AIWorkspaceEmbeddedLayout({
           {assistantContent}
         </div>
       </div>
+
+      {selectedFunction === 'chat' && (
+        <ServerContextPanel
+          className="hidden lg:flex"
+          messages={serverContextMessages}
+          queryAsOfDataSlot={queryAsOfDataSlot}
+          servers={serverContextServers}
+        />
+      )}
 
       {selectedFunction === 'chat' && isRightPanelOpen && (
         <SystemContextPanel

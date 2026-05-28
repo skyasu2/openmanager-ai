@@ -6,6 +6,8 @@ import {
 
 const SEMANTIC_METRIC_PATTERN =
   /부하|로드|\bload(?:1|5)?\b|cpu|씨피유|메모리|\bmem(?:ory)?\b|디스크|\bdisk\b|네트워크|\bnet(?:work)?\b|힘들|버거|느린|느려|느리|부담|응답.*느|과부하|리소스|자원/i;
+const SEMANTIC_ANALYSIS_PATTERN =
+  /이상|비정상|탐지|감지|예측|forecast|prediction|고갈|포화|임계치|장애\s*(날|위험|징후|예측)|불안정/i;
 const SEMANTIC_PEAK_PATTERN = /피크|peak|max|최고|최대|높/i;
 const SEMANTIC_TIME_WINDOW_PATTERN = /24\s*시간|\b24h\b|최근|지난|last\s*24/i;
 const LOG_LINE_HINT_PATTERN =
@@ -18,6 +20,7 @@ export function shouldExtractSemanticIntentFrame(query: string): boolean {
 
   return (
     SEMANTIC_METRIC_PATTERN.test(query) ||
+    SEMANTIC_ANALYSIS_PATTERN.test(query) ||
     (SEMANTIC_PEAK_PATTERN.test(query) &&
       SEMANTIC_TIME_WINDOW_PATTERN.test(query))
   );

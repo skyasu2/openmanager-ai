@@ -22,7 +22,6 @@ import type {
   ResponseHandoff,
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
   EvidenceCard,
@@ -47,7 +46,6 @@ export type MessageMetadata = {
   enableRAG?: boolean;
   enableWebSearch?: boolean | 'auto';
   toolsCalled?: string[];
-  analysisMode?: AnalysisMode;
   processingTime?: number;
   latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
   resolvedMode?: 'single' | 'multi';

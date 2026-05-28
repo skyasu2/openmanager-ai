@@ -1,4 +1,3 @@
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
   EvidenceCard,
@@ -161,7 +160,6 @@ export function buildAnalysisFeatureStatus(params: {
   webSearchEnabled?: boolean | 'auto';
   hasKnowledgeEvidence: boolean;
   hasWebEvidence: boolean;
-  analysisMode?: AnalysisMode;
 }): AnalysisFeatureStatus {
   const {
     retrieval,
@@ -169,7 +167,6 @@ export function buildAnalysisFeatureStatus(params: {
     webSearchEnabled,
     hasKnowledgeEvidence,
     hasWebEvidence,
-    analysisMode,
   } = params;
 
   const rag: FeatureExecutionState = hasKnowledgeEvidence
@@ -193,12 +190,7 @@ export function buildAnalysisFeatureStatus(params: {
           ? { status: 'enabled', reason: 'auto' }
           : { status: 'disabled' };
 
-  const thinking: FeatureExecutionState =
-    analysisMode === 'thinking'
-      ? { status: 'enabled', reason: 'routing_mode' }
-      : { status: 'disabled' };
-
-  return { rag, web, thinking };
+  return { rag, web };
 }
 
 const FEATURE_STATUS_LABELS: Record<
@@ -219,13 +211,6 @@ const FEATURE_STATUS_LABELS: Record<
     suppressed: 'Web 생략됨',
     unavailable: 'Web 사용 불가',
   },
-  thinking: {
-    disabled: '심층 분석 꺼짐',
-    enabled: '심층 분석 요청됨',
-    used: '심층 분석 사용됨',
-    suppressed: '심층 분석 생략됨',
-    unavailable: '심층 분석 사용 불가',
-  },
 };
 
 const FEATURE_STATUS_CLASSNAMES: Record<
@@ -244,7 +229,7 @@ export function buildVisibleFeatureStatusBadges(
 ): FeatureStatusBadge[] {
   if (!featureStatus) return [];
 
-  return (['rag', 'web', 'thinking'] as const)
+  return (['rag', 'web'] as const)
     .map((feature) => {
       const state = featureStatus[feature];
       return {
