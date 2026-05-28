@@ -2,7 +2,7 @@ import type { DomainEvidenceResult } from '../../core/assistant-runtime';
 import { logger } from '../../lib/logger';
 import { isSingleModeAllowed } from '../../lib/config-parser';
 import { executeMultiAgentStream } from './agents';
-import { resolveMonitoringSupervisorRuntimeContext } from './monitoring-runtime-host';
+import { resolveDomainRuntimeContext } from './domain-registry';
 import {
   hasMeaningfulMultiAgentOutput,
   shouldFallbackFromMultiAgentError,
@@ -66,7 +66,7 @@ export async function* executeSupervisorStream(
   request: SupervisorRequest
 ): AsyncGenerator<StreamEvent> {
   const startTime = Date.now();
-  const runtimeContext = await resolveMonitoringSupervisorRuntimeContext(request);
+  const runtimeContext = await resolveDomainRuntimeContext(request);
   const runtimeMetadata = runtimeContext.metadata;
   const runtimeTools = runtimeContext.host.createToolSet(
     runtimeContext.result.context

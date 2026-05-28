@@ -19,7 +19,9 @@ import {
   type AssistantRuntimeMetadata,
   type SupervisorRuntimeContext,
 } from './assistant-runtime-host';
+import { registerDomainHost } from './domain-registry';
 import type { SupervisorRequest } from './supervisor-types';
+import { MONITORING_DOMAIN_ID } from '../../domains/monitoring/constants';
 
 const IN_MEMORY_ADAPTER_KINDS: AssistantRuntimeAdapterKinds = {
   stateStore: 'in-memory',
@@ -78,3 +80,7 @@ export function resolveMonitoringSupervisorRuntimeContext(
     getDefaultMonitoringAssistantRuntimeHost()
   );
 }
+
+// Auto-register the monitoring domain as the system default.
+// Importing this module is sufficient — no explicit registerDomainHost call needed.
+registerDomainHost(MONITORING_DOMAIN_ID, getDefaultMonitoringAssistantRuntimeHost, true);

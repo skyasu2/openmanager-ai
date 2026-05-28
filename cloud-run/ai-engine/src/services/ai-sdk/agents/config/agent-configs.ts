@@ -14,6 +14,9 @@
  */
 
 import type { ToolSet } from 'ai';
+// Ensure the monitoring domain is registered in the domain registry before
+// AGENT_CONFIGS is initialized (module-level buildAgentTools calls getDefaultDomainHost).
+import '../../monitoring-runtime-host';
 
 // Tool type from AI SDK
 type ToolsMap = ToolSet;

@@ -40,7 +40,7 @@ import {
 import { logger } from '../lib/logger';
 import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import { normalizeSupervisorSemanticMetadata } from '../services/ai-sdk/supervisor-semantic-metadata';
-import { getDefaultMonitoringAssistantRuntimeHost } from '../services/ai-sdk/monitoring-runtime-host';
+import { getDefaultDomainHost } from '../services/ai-sdk/domain-registry';
 import { flushLangfuseBestEffort } from '../services/observability/langfuse-flush';
 import { extractTraceId } from './supervisor-trace';
 import { emitSupervisorStreamError } from './supervisor-stream-error';
@@ -575,7 +575,7 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       deviceType,
       localRouteDecision,
       metadata,
-      runtimeHost: getDefaultMonitoringAssistantRuntimeHost(),
+      runtimeHost: getDefaultDomainHost(),
       ...(guardV2.shouldWarn && guardV2.warningMessage && { securityWarning: guardV2.warningMessage }),
     });
 

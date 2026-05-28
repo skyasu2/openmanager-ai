@@ -13,7 +13,7 @@ import {
   executeSupervisorStream,
   logProviderStatus,
 } from '../services/ai-sdk';
-import { getDefaultMonitoringAssistantRuntimeHost } from '../services/ai-sdk/monitoring-runtime-host';
+import { getDefaultDomainHost } from '../services/ai-sdk/domain-registry';
 import { SessionMemoryService } from '../services/ai-sdk/session-memory';
 import {
   normalizeSemanticQueryTrace,
@@ -238,7 +238,7 @@ export async function processJobSynchronously({
       localRouteDecision,
       metadata,
       queryAsOf,
-      runtimeHost: getDefaultMonitoringAssistantRuntimeHost(),
+      runtimeHost: getDefaultDomainHost(),
     })) {
       if (event.type === 'text_delta' && typeof event.data === 'string') {
         responseChunks.push(event.data);

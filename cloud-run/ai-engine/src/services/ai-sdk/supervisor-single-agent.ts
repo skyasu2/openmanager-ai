@@ -49,10 +49,12 @@ import {
 } from './supervisor-types';
 import { logger } from '../../lib/logger';
 import {
-  getDefaultMonitoringAssistantRuntimeHost,
-  resolveMonitoringSupervisorRuntimeContext,
   type AssistantRuntimeMetadata,
 } from './monitoring-runtime-host';
+import {
+  getDefaultDomainHost,
+  resolveDomainRuntimeContext,
+} from './domain-registry';
 import {
   buildSupervisorModeMetadata,
   resolveSupervisorModeDecision,
@@ -136,7 +138,7 @@ export async function executeSupervisor(
   request: SupervisorRequest
 ): Promise<SupervisorResponse | SupervisorError> {
   const startTime = Date.now();
-  const runtimeContext = await resolveMonitoringSupervisorRuntimeContext(request);
+  const runtimeContext = await resolveDomainRuntimeContext(request);
   const runtimeMetadata = runtimeContext.metadata;
   const runtimeTools = runtimeContext.host.createToolSet(
     runtimeContext.result.context
@@ -791,7 +793,7 @@ async function executeSupervisorAttempt(
 export async function checkSupervisorHealth(): Promise<SupervisorHealth> {
   try {
     const { provider, modelId } = getSupervisorModel();
-    const runtimeHost = getDefaultMonitoringAssistantRuntimeHost();
+    const runtimeHost = getDefaultDomainHost();
     const toolCount = Object.keys(
       runtimeHost.createToolSet({
         id: 'supervisor-health-check',

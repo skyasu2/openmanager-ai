@@ -1,9 +1,7 @@
 import type { ToolSet } from 'ai';
 
 import type { AssistantRequest } from '../../../../core/assistant-runtime';
-import {
-  getDefaultMonitoringAssistantRuntimeHost,
-} from '../../monitoring-runtime-host';
+import { getDefaultDomainHost } from '../../domain-registry';
 import type { AssistantRuntimeHost } from '../../assistant-runtime-host';
 import type { AgentToolName } from './agent-runtime-policy';
 
@@ -58,7 +56,7 @@ export function resolveDefaultMonitoringAgentTools(
   toolAllowlist: readonly AgentToolName[]
 ): ToolSet {
   return resolveAgentToolsFromRuntimeHost(
-    getDefaultMonitoringAssistantRuntimeHost(),
+    getDefaultDomainHost(),
     toolAllowlist
   );
 }
