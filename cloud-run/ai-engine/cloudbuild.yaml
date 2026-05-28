@@ -3,8 +3,8 @@
 #
 # Features:
 # - Artifact Registry (gcr.io deprecated)
-# - BuildKit enabled for cache mounts
-# - Kaniko caching for faster rebuilds
+# - Optional BuildKit inline cache metadata for manual config-based builds
+# - Docker layer cache hints for faster rebuilds
 # - Parallel steps where possible
 # - cpu-boost enabled for faster cold start
 #
@@ -31,7 +31,7 @@ options:
   # ⚠️ FREE TIER: Do NOT add machineType here!
   #    Keep the default pool/machine selection to stay within the official free-tier rule.
   #    E2_HIGHCPU_8, N1_HIGHCPU_8 등은 무료 대상 아님.
-  # Enable BuildKit for cache mounts in Dockerfile
+  # Enable BuildKit for inline cache metadata in manual config-based builds.
   env:
     - 'DOCKER_BUILDKIT=1'
   # Logging to Cloud Logging
@@ -44,7 +44,7 @@ substitutions:
   _IMAGE_TAG: 'latest'
 
 steps:
-  # Step 1: Build Docker image with BuildKit
+  # Step 1: Build Docker image with optional BuildKit inline cache metadata
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build'
     args:

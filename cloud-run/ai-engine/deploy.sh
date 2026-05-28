@@ -33,7 +33,7 @@
 #   - Auto-create Artifact Registry repository if not exists
 #
 # v4.0 - 2026-01-06 (Docker & Cloud Run Optimization)
-#   - BuildKit enabled for cache mounts
+#   - Cloud Build default-pool compatible Docker build
 #   - Startup/Liveness probes optimized
 #   - Memory updated to 512Mi for Free Tier compliance
 #   - Added --service-min-instances for warm pool (optional)
@@ -465,13 +465,13 @@ else
   echo "ℹ️ LOCAL_DOCKER_PREFLIGHT=false, skipping local Docker preflight."
 fi
 
-# 1. Build Container Image (Cloud Build with BuildKit)
+# 1. Build Container Image (Cloud Build)
 echo ""
 echo "📦 Building Container Image..."
-echo "   Using BuildKit for cache optimization..."
+echo "   Using Cloud Build default Docker builder..."
 echo "   Target: Artifact Registry"
 
-# Use Cloud Build with BuildKit enabled
+# Use Cloud Build's default builder path used by GitLab CI release deploys.
 # ⚠️ FREE TIER: Do NOT add --machine-type (default pool free tier: e2-standard-2 2,500 build-min/month)
 #    e2-highcpu-8 등 커스텀 머신은 무료 대상 아님!
 # Note: --tag mode uses Dockerfile ARG defaults for APP_VERSION/BUILD_DATE/GIT_SHA.

@@ -12,7 +12,7 @@
 # v6.0 - 2026-01-06 (Docker & Build Optimization)
 # - Node.js 24.x LTS (latest stable)
 # - npm ci for reproducible builds
-# - BuildKit cache mounts for faster rebuilds
+# - Cloud Build default-builder compatible dependency layers
 # - Optimized COPY order for better layer caching
 # - Updated memory to 512MB for SSOT data handling
 #
@@ -43,28 +43,28 @@ RUN apk add --no-cache dumb-init
 
 # Keep npm aligned with the workspace lockfile generator to avoid npm ci drift.
 ARG NPM_VERSION
-RUN --mount=type=cache,target=/root/.npm,sharing=locked npm install -g npm@${NPM_VERSION}
+RUN npm install -g npm@${NPM_VERSION} && npm cache clean --force
 
 # Copy package files first (maximize cache hit)
 COPY package.json package-lock.json ./
 
-# Install dependencies with npm ci for reproducibility.
-# The cache mount stays outside the image layer, so no npm cache cleanup is needed.
-RUN --mount=type=cache,target=/root/.npm,sharing=locked npm ci --ignore-scripts
+# Install dependencies with npm ci for reproducibility. Keep this compatible
+# with Cloud Build's default Docker builder used by deploy.sh.
+RUN npm ci --ignore-scripts && npm cache clean --force
 
 # ============================================================================
-# Stage 1.5: Production dependencies (avoid prune hang on Alpine/BuildKit path)
+# Stage 1.5: Production dependencies (avoid prune hang on Alpine path)
 # ============================================================================
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS prod-deps
 
 WORKDIR /app
 
 ARG NPM_VERSION
-RUN --mount=type=cache,target=/root/.npm,sharing=locked npm install -g npm@${NPM_VERSION}
+RUN npm install -g npm@${NPM_VERSION} && npm cache clean --force
 
 COPY package.json package-lock.json ./
 
-RUN --mount=type=cache,target=/root/.npm,sharing=locked npm ci --omit=dev --ignore-scripts
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # ============================================================================
 # Stage 2: Build
