@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-27T23:33:40.324Z"
+    "updatedAt": "2026-05-28T01:16:50.267Z"
   },
   "sequence": {
-    "nextRunNumber": 629
+    "nextRunNumber": 630
   },
   "summary": {
-    "totalRecordedRuns": 626,
-    "totalRuns": 495,
+    "totalRecordedRuns": 627,
+    "totalRuns": 496,
     "excludedRuns": 131,
-    "totalChecks": 4360,
-    "totalPassed": 4160,
+    "totalChecks": 4368,
+    "totalPassed": 4168,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 725,
+    "completedItems": 727,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260528-0628",
-    "lastRecordedAt": "2026-05-27T23:33:40.324Z",
-    "latestRecordedRunId": "QA-20260528-0628",
-    "latestRecordedAt": "2026-05-27T23:33:40.324Z"
+    "lastRunId": "QA-20260528-0629",
+    "lastRecordedAt": "2026-05-28T01:16:50.267Z",
+    "latestRecordedRunId": "QA-20260528-0629",
+    "latestRecordedAt": "2026-05-28T01:16:50.267Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -17876,6 +17876,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-27T22:43:05.057Z"
+    },
+    "p20-trend-rate-ranking-routing": {
+      "id": "p20-trend-rate-ranking-routing",
+      "title": "P20 증가율이 가장 높은 서버 질의가 peak 시간대가 아닌 metric_trend 증가폭 랭킹으로 라우팅",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260528-0629",
+      "firstSeenAt": "2026-05-28T01:16:50.267Z",
+      "lastSeenRunId": "QA-20260528-0629",
+      "lastSeenAt": "2026-05-28T01:16:50.267Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.67 production Playwright MCP response: 도구 monitoring-metric-trend, CPU 증가폭 상위 5대",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-28T01:16:50.267Z"
+    },
+    "ai-assistant-button-label-visible": {
+      "id": "ai-assistant-button-label-visible",
+      "title": "AI Assistant button label always-visible change retained and verified",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260528-0629",
+      "firstSeenAt": "2026-05-28T01:16:50.267Z",
+      "lastSeenRunId": "QA-20260528-0629",
+      "lastSeenAt": "2026-05-28T01:16:50.267Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Playwright MCP DOM computed display=block, visibility=visible",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-28T01:16:50.267Z"
     }
   },
   "runs": [
@@ -35152,6 +35200,128 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260528-0629",
+      "recordedAt": "2026-05-28T01:16:50.267Z",
+      "recordedAtKst": "2026-05-28 10:16:50 KST",
+      "title": "Vercel Playwright MCP targeted recheck - v8.12.67 P20 trend-rate ranking",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260528-0629.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2557564249-v8.12.67",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "8ff72dd752c1323cb3940a1e05017d2b28d69978"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/dashboard production render at v8.12.67",
+        "AI Assistant button label remains visible after always-show change",
+        "P20 query: CPU 증가율이 가장 높은 서버 알려줘",
+        "P20 routing result: monitoring-metric-trend",
+        "P20 response content: CPU 증가폭 상위 ranking, no 최고 시간대 peak answer",
+        "Cloud Run free-tier guard after v8.12.67 deploy",
+        "Vercel usage after v8.12.67 deploy"
+      ],
+      "skippedSurfaces": [
+        "Full broad 18차-style matrix - targeted hotfix recheck only",
+        "Reporter/Vision/Advisor - unchanged by this patch",
+        "Long-running Analyst latency tuning - accepted as non-blocking for this release"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P20 ranking+증가율 오라우팅이 production UI에서 monitoring-metric-trend로 회복됨. 이전 peak answer 회귀 없음.",
+          "nextAction": "전체 점수 재산정은 다음 broad matrix에서 수행. 현재는 targeted hotfix pass로 기록."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline v8.12.67 성공, Vercel version endpoint와 Cloud Run smoke/guardrail 확인 완료.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Regression tests and production Playwright MCP targeted QA both cover raw message and stale semantic-frame paths.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-28T10:12:02+09:00",
+          "summary": "v8.12.67 production deploy 후 확인. effective 17.9292 USD, billed 0.0000 USD, chargeCount 15834로 Pro 결제 초과 없음.",
+          "evidence": "npm run check:usage",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-28T10:12:02+09:00",
+          "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00573-fvk.",
+          "evidence": "npm run check:usage",
+          "url": "https://console.cloud.google.com/run"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "P20 Playwright MCP response transcript",
+          "path": "reports/qa/evidence/qa-20260528-v81267-p20-transcript.txt",
+          "note": "DOM transcript captured from production AI Assistant after v8.12.67 deploy."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.67",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557564249"
+        },
+        {
+          "type": "general",
+          "label": "Production app",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -35160,17 +35330,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 339,
-      "appropriateCount": 291,
+      "seenCount": 340,
+      "appropriateCount": 292,
       "partialCount": 48,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260528-0628",
-      "lastSeenAt": "2026-05-27T23:33:40.324Z",
+      "lastRunId": "QA-20260528-0629",
+      "lastSeenAt": "2026-05-28T01:16:50.267Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "7개 신규 질문 평가에서 5 PASS, 2 PARTIAL. P17/P18/stable ranking/group compare/P19a(많이 증가한) 수정 확인. 신규 P20(ranking+증가율 조합 peak 오라우팅) 발견.",
-      "lastNextAction": "P20 수정 — METRIC_TREND_PATTERN이 ranking-trend 분기에서 증가율+ranking 조합을 처리하도록 수정 필요"
+      "lastRationale": "P20 ranking+증가율 오라우팅이 production UI에서 monitoring-metric-trend로 회복됨. 이전 peak answer 회귀 없음.",
+      "lastNextAction": "전체 점수 재산정은 다음 broad matrix에서 수행. 현재는 targeted hotfix pass로 기록."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -35211,16 +35381,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 228,
-      "appropriateCount": 207,
+      "seenCount": 229,
+      "appropriateCount": 208,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260528-0628",
-      "lastSeenAt": "2026-05-27T23:33:40.324Z",
+      "lastRunId": "QA-20260528-0629",
+      "lastSeenAt": "2026-05-28T01:16:50.267Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "프로덕션 v8.12.65 확인. Cloud Run AI Engine 정상. Vercel 사용량 정상(17.93 USD, billed 0).",
+      "lastRationale": "GitLab tag pipeline v8.12.67 성공, Vercel version endpoint와 Cloud Run smoke/guardrail 확인 완료.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -35228,16 +35398,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 264,
-      "appropriateCount": 237,
+      "seenCount": 265,
+      "appropriateCount": 238,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260528-0628",
-      "lastSeenAt": "2026-05-27T23:33:40.324Z",
+      "lastRunId": "QA-20260528-0629",
+      "lastSeenAt": "2026-05-28T01:16:50.267Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Chrome DevTools MCP를 통해 7개 신규 표현 패턴 검증. OTel 교차 검증으로 수치 정합성 확인.",
+      "lastRationale": "Regression tests and production Playwright MCP targeted QA both cover raw message and stale semantic-frame paths.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

@@ -1,0 +1,152 @@
+{
+  "runId": "QA-20260528-0629",
+  "recordedAt": "2026-05-28T01:16:50.267Z",
+  "recordedAtKst": "2026-05-28 10:16:50 KST",
+  "runTitle": "Vercel Playwright MCP targeted recheck - v8.12.67 P20 trend-rate ranking",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2557564249-v8.12.67",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "8ff72dd752c1323cb3940a1e05017d2b28d69978"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/dashboard production render at v8.12.67",
+    "AI Assistant button label remains visible after always-show change",
+    "P20 query: CPU 증가율이 가장 높은 서버 알려줘",
+    "P20 routing result: monitoring-metric-trend",
+    "P20 response content: CPU 증가폭 상위 ranking, no 최고 시간대 peak answer",
+    "Cloud Run free-tier guard after v8.12.67 deploy",
+    "Vercel usage after v8.12.67 deploy"
+  ],
+  "skippedSurfaces": [
+    "Full broad 18차-style matrix - targeted hotfix recheck only",
+    "Reporter/Vision/Advisor - unchanged by this patch",
+    "Long-running Analyst latency tuning - accepted as non-blocking for this release"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P20 ranking+증가율 오라우팅이 production UI에서 monitoring-metric-trend로 회복됨. 이전 peak answer 회귀 없음.",
+      "nextAction": "전체 점수 재산정은 다음 broad matrix에서 수행. 현재는 targeted hotfix pass로 기록."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline v8.12.67 성공, Vercel version endpoint와 Cloud Run smoke/guardrail 확인 완료.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Regression tests and production Playwright MCP targeted QA both cover raw message and stale semantic-frame paths.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T10:12:02+09:00",
+      "summary": "v8.12.67 production deploy 후 확인. effective 17.9292 USD, billed 0.0000 USD, chargeCount 15834로 Pro 결제 초과 없음.",
+      "evidence": "npm run check:usage",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T10:12:02+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00573-fvk.",
+      "evidence": "npm run check:usage",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "P20 Playwright MCP response transcript",
+      "path": "reports/qa/evidence/qa-20260528-v81267-p20-transcript.txt",
+      "note": "DOM transcript captured from production AI Assistant after v8.12.67 deploy."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p20-trend-rate-ranking-routing",
+      "title": "P20 증가율이 가장 높은 서버 질의가 peak 시간대가 아닌 metric_trend 증가폭 랭킹으로 라우팅",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.67 production Playwright MCP response: 도구 monitoring-metric-trend, CPU 증가폭 상위 5대",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-button-label-visible",
+      "title": "AI Assistant button label always-visible change retained and verified",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP DOM computed display=block, visibility=visible",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production /api/version returned 8.12.67 with commit 8ff72dd752c1323cb3940a1e05017d2b28d69978 and pipeline 2557564249.",
+    "P20 production UI answer contains monitoring-metric-trend and CPU 증가폭 상위; previous 최고 시간대 peak response not observed.",
+    "This run is targeted and does not replace the next broad AI matrix score.",
+    "Free-tier/Pro usage posture remains normal: Vercel billed 0.0000 USD and Cloud Run guardrails intact."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.67",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557564249"
+    },
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

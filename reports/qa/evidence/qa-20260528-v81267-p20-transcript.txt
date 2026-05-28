@@ -1,0 +1,30 @@
+Vercel production targeted QA evidence
+Date: 2026-05-28 KST
+Version: 8.12.67
+GitLab pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2557564249
+
+Playwright MCP flow:
+1. Navigate to https://openmanager-ai.vercel.app/dashboard
+2. Open AI Assistant
+3. Start a new conversation
+4. Submit: CPU 증가율이 가장 높은 서버 알려줘
+
+Observed assistant response excerpt:
+도구: monitoring-metric-trend
+📈 전체 서버 CPU 추이
+📌 CPU 증가폭 상위 5대
+
+Top rows returned:
+1. api-was-dc1-02: 현재 CPU 86% (24h 평균 48.4%, 상승 +37.6%p)
+2. api-was-dc1-01: 현재 CPU 92% (24h 평균 59.4%, 상승 +32.6%p)
+3. lb-haproxy-dc1-01: 현재 CPU 66% (24h 평균 39.6%, 상승 +26.4%p)
+
+Regression guard:
+- PASS: response used monitoring-metric-trend evidence.
+- PASS: response included CPU 증가폭 상위 ranking.
+- PASS: response did not return the previous monitoring-peak-metric / 최고 시간대 answer.
+
+Button visibility spot check:
+- AI Assistant label class: text-sm font-semibold tracking-wide text-white
+- Computed display: block
+- Computed visibility: visible
