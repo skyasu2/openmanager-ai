@@ -1,0 +1,132 @@
+{
+  "runId": "QA-20260528-0632",
+  "recordedAt": "2026-05-28T07:05:27.882Z",
+  "recordedAtKst": "2026-05-28 16:05:27 KST",
+  "runTitle": "GitLab production release smoke - v8.12.70 P23 metric ranking fix",
+  "owner": "codex",
+  "source": "gitlab-ci",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2558018609-v8.12.70",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "93aefb7ec01cf38cb2a01d5dfabb77804c843092"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.12.70 completed successfully",
+    "Frontend deploy job succeeded",
+    "Cloud Run AI Engine deploy job succeeded",
+    "Vercel post-deploy smoke succeeded",
+    "AI Engine post-deploy smoke succeeded",
+    "Production /api/version reports 8.12.70, v8.12.70, and commit 93aefb7ec01cf38cb2a01d5dfabb77804c843092",
+    "Cloud Run /health reports status ok and version 8.12.70",
+    "Cloud Run /monitoring without auth returns 403 as expected",
+    "Vercel usage remains billed 0.0000 USD after deploy",
+    "Cloud Run free-tier guardrails remain intact"
+  ],
+  "skippedSurfaces": [
+    "Interactive dashboard visual QA was not rerun in this deployment-smoke record",
+    "Conversational five-question AI QA was not rerun in this deployment-smoke record",
+    "Full broad route/device matrix was not run"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline v8.12.70 completed deploy and smoke jobs, and production /api/version matches the expected commit/tag.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "Deployment smoke confirms the fixed AI Engine build is live; P23 behavior was covered by deterministic AI Engine regression tests before release.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run health reports version 8.12.70 and unauthenticated /monitoring remains protected with 403.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T16:03:20+09:00",
+      "summary": "v8.12.70 production deploy after check: effective 18.5823 USD, billed 0.0000 USD, chargeCount 16443.",
+      "evidence": "npm run check:usage",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-28T16:03:20+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00575-qkp.",
+      "evidence": "npm run check:usage",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.70 release smoke command evidence",
+      "path": "reports/qa/evidence/qa-20260528-v81270-release-smoke.txt",
+      "note": "Structured release smoke evidence from GitLab pipeline, production /api/version, Cloud Run /health, and usage guard checks."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run records deployment propagation and smoke evidence only; it intentionally does not count toward aggregate QA summary totals.",
+    "P23 group plus MIN metric-ranking logic was covered by local AI Engine regression tests before release, and GitLab tag smoke confirmed the corrected build is deployed.",
+    "Interactive conversational AI QA was not rerun as part of this smoke-only record."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.70",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558018609"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

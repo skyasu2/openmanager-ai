@@ -1,0 +1,32 @@
+v8.12.70 release smoke evidence
+
+Release:
+- tag: v8.12.70
+- commit: 93aefb7ec01cf38cb2a01d5dfabb77804c843092
+- GitLab pipeline: 2558018609
+- pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558018609
+- pipeline status: success
+
+GitLab jobs:
+- deploy: success
+- deploy_ai_engine: success
+- post_deploy_smoke: success
+- post_deploy_ai_engine_smoke: success
+
+Production version:
+- URL: https://openmanager-ai.vercel.app/api/version
+- version: 8.12.70
+- releaseTag: v8.12.70
+- commitSha: 93aefb7ec01cf38cb2a01d5dfabb77804c843092
+- pipelineUrl: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558018609
+
+Cloud Run:
+- service URL: https://ai-engine-jdhrhws7ia-an.a.run.app
+- /health status: ok
+- /health version: 8.12.70
+- /monitoring without auth: 403 expected
+- latestReadyRevision: ai-engine-00575-qkp
+
+Usage / cost:
+- Cloud Run guardrails: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true
+- Vercel usage: effective=18.5823 USD, billed=0.0000 USD, chargeCount=16443

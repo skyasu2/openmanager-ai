@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-28T06:15:13.877Z"
+    "updatedAt": "2026-05-28T07:05:27.882Z"
   },
   "sequence": {
-    "nextRunNumber": 632
+    "nextRunNumber": 633
   },
   "summary": {
-    "totalRecordedRuns": 629,
+    "totalRecordedRuns": 630,
     "totalRuns": 497,
-    "excludedRuns": 132,
+    "excludedRuns": 133,
     "totalChecks": 4377,
     "totalPassed": 4177,
     "totalFailed": 159,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260528-0630",
     "lastRecordedAt": "2026-05-28T04:37:16.133Z",
-    "latestRecordedRunId": "QA-20260528-0631",
-    "latestRecordedAt": "2026-05-28T06:15:13.877Z"
+    "latestRecordedRunId": "QA-20260528-0632",
+    "latestRecordedAt": "2026-05-28T07:05:27.882Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -35623,6 +35623,136 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260528-0632",
+      "recordedAt": "2026-05-28T07:05:27.882Z",
+      "recordedAtKst": "2026-05-28 16:05:27 KST",
+      "title": "GitLab production release smoke - v8.12.70 P23 metric ranking fix",
+      "owner": "codex",
+      "source": "gitlab-ci",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260528-0632.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2558018609-v8.12.70",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "93aefb7ec01cf38cb2a01d5dfabb77804c843092"
+      },
+      "scope": "smoke",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.12.70 completed successfully",
+        "Frontend deploy job succeeded",
+        "Cloud Run AI Engine deploy job succeeded",
+        "Vercel post-deploy smoke succeeded",
+        "AI Engine post-deploy smoke succeeded",
+        "Production /api/version reports 8.12.70, v8.12.70, and commit 93aefb7ec01cf38cb2a01d5dfabb77804c843092",
+        "Cloud Run /health reports status ok and version 8.12.70",
+        "Cloud Run /monitoring without auth returns 403 as expected",
+        "Vercel usage remains billed 0.0000 USD after deploy",
+        "Cloud Run free-tier guardrails remain intact"
+      ],
+      "skippedSurfaces": [
+        "Interactive dashboard visual QA was not rerun in this deployment-smoke record",
+        "Conversational five-question AI QA was not rerun in this deployment-smoke record",
+        "Full broad route/device matrix was not run"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline v8.12.70 completed deploy and smoke jobs, and production /api/version matches the expected commit/tag.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "Deployment smoke confirms the fixed AI Engine build is live; P23 behavior was covered by deterministic AI Engine regression tests before release.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run health reports version 8.12.70 and unauthenticated /monitoring remains protected with 403.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-28T16:03:20+09:00",
+          "summary": "v8.12.70 production deploy after check: effective 18.5823 USD, billed 0.0000 USD, chargeCount 16443.",
+          "evidence": "npm run check:usage",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-28T16:03:20+09:00",
+          "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00575-qkp.",
+          "evidence": "npm run check:usage",
+          "url": "https://console.cloud.google.com/run"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.70 release smoke command evidence",
+          "path": "reports/qa/evidence/qa-20260528-v81270-release-smoke.txt",
+          "note": "Structured release smoke evidence from GitLab pipeline, production /api/version, Cloud Run /health, and usage guard checks."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.70",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2558018609"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production app",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -35631,16 +35761,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 341,
+      "seenCount": 342,
       "appropriateCount": 292,
-      "partialCount": 49,
+      "partialCount": 50,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260528-0631",
-      "lastSeenAt": "2026-05-28T06:15:13.877Z",
+      "lastRunId": "QA-20260528-0632",
+      "lastSeenAt": "2026-05-28T07:05:27.882Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Deployment smoke confirms the fixed AI Engine build is live; detailed conversational coverage remains represented by deterministic regression tests and the prior targeted evaluation scope.",
+      "lastRationale": "Deployment smoke confirms the fixed AI Engine build is live; P23 behavior was covered by deterministic AI Engine regression tests before release.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -35648,16 +35778,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 142,
-      "appropriateCount": 109,
+      "seenCount": 143,
+      "appropriateCount": 110,
       "partialCount": 33,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260528-0631",
-      "lastSeenAt": "2026-05-28T06:15:13.877Z",
+      "lastRunId": "QA-20260528-0632",
+      "lastSeenAt": "2026-05-28T07:05:27.882Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Run health reports version 8.12.69 and unauthenticated /monitoring remains protected with 403.",
+      "lastRationale": "Cloud Run health reports version 8.12.70 and unauthenticated /monitoring remains protected with 403.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -35682,16 +35812,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 231,
-      "appropriateCount": 210,
+      "seenCount": 232,
+      "appropriateCount": 211,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260528-0631",
-      "lastSeenAt": "2026-05-28T06:15:13.877Z",
+      "lastRunId": "QA-20260528-0632",
+      "lastSeenAt": "2026-05-28T07:05:27.882Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline v8.12.69 completed deploy and smoke jobs, and production /api/version matches the expected commit/tag.",
+      "lastRationale": "GitLab tag pipeline v8.12.70 completed deploy and smoke jobs, and production /api/version matches the expected commit/tag.",
       "lastNextAction": ""
     },
     "test-automation": {
