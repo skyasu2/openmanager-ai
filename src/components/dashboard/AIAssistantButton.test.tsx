@@ -42,6 +42,18 @@ describe('AIAssistantButton', () => {
     expect(labelClassName).not.toContain('xl:inline');
   });
 
+  it('keeps the attention pointer separated from the button label', () => {
+    render(
+      <AIAssistantButton
+        isOpen={false}
+        isEnabled={false}
+        onClick={mockOnClick}
+      />
+    );
+
+    expect(screen.getByText('👆').className).toContain('mt-1');
+  });
+
   it('calls onClick handler when clicked', () => {
     render(
       <AIAssistantButton

@@ -98,7 +98,7 @@ export const AIAssistantButton = memo(function AIAssistantButton({
       {/* 주의 유도 손가락 이모지 */}
       {!isOpen && (
         <span
-          className="hidden animate-bounce text-xs leading-none xl:inline"
+          className="mt-1 hidden animate-bounce text-xs leading-none xl:inline"
           aria-hidden="true"
         >
           👆
