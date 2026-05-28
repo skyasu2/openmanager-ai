@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-28 | **현재 버전 스냅샷**: v8.12.69
+**상태 스냅샷 기준일**: 2026-05-28 | **현재 버전 스냅샷**: v8.12.70
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.70** (2026-05-28) — Bug Fixes: ai-engine: preserve group filters in metric rankings; Tests: qa: record v8.12.69 release smoke
 - **v8.12.69** (2026-05-28) — Bug Fixes: ai-engine: handle monitoring group comparisons; Bug Fixes: dashboard: offset assistant pointer; Tests: qa: record v8.12.68 dashboard production recheck
 - **v8.12.68** (2026-05-28) — Features: dashboard: focus alert feed on server cards; Tests: qa: record v8.12.67 p20 production recheck
 - **v8.12.67** (2026-05-28) — Bug Fixes: ai-engine: guard peak semantic frames for trend-rate rankings
 - **v8.12.66** (2026-05-28) — Bug Fixes: ai-engine: exclude blocked cerebras fallback from runtime metadata; Bug Fixes: ai-engine: route trend-rate rankings to trend evidence; Features: dashboard: keep AI assistant label visible
-- **v8.12.65** (2026-05-28) — Bug Fixes: ai-engine: keep empty trend filters deterministic
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
