@@ -115,7 +115,7 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
    * - gpt-oss-120b account limit: 1M TPD, 30K TPM, 5 RPM, 2.4K RPD
    * - Context/capability lives in provider-model-metadata; this tracker only enforces usage quotas.
    */
-  cerebras: CEREBRAS_MODEL_QUOTAS[CEREBRAS_LLAMA_FALLBACK_MODEL_ID],
+  cerebras: CEREBRAS_MODEL_QUOTAS[CEREBRAS_GPT_OSS_MODEL_ID],
   /**
    * Groq Free Tier (meta-llama/llama-4-scout-17b-16e-instruct)
    * @see https://console.groq.com/docs/rate-limits
@@ -197,7 +197,7 @@ export function getQuotaForProvider(
     return CEREBRAS_MODEL_QUOTAS[effectiveModelId as CerebrasQuotaModelId];
   }
 
-  return CEREBRAS_MODEL_QUOTAS[CEREBRAS_LLAMA_FALLBACK_MODEL_ID];
+  return CEREBRAS_MODEL_QUOTAS[CEREBRAS_GPT_OSS_MODEL_ID];
 }
 
 export function getQuotaModelCandidates(

@@ -381,10 +381,10 @@ describe('QuotaTracker — getQuotaStatus', () => {
     expect(status.quota).toEqual(PROVIDER_QUOTAS.gemini);
   });
 
-  it('Cerebras 기본 quota는 llama3.1-8b production 계정 제한을 적용한다', async () => {
+  it('Cerebras 기본 quota는 gpt-oss-120b production 계정 제한을 적용한다', async () => {
     const status = await getQuotaStatus('cerebras');
 
-    expect(status.quota).toEqual(CEREBRAS_MODEL_QUOTAS['llama3.1-8b']);
+    expect(status.quota).toEqual(CEREBRAS_MODEL_QUOTAS['gpt-oss-120b']);
     expect(status.quota.requestsPerMinute).toBe(5);
     expect(status.quota.tokensPerMinute).toBe(30_000);
     expect(status.quota.requestsPerDay).toBe(2_400);

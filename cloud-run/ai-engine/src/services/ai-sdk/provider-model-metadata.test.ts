@@ -103,7 +103,6 @@ describe('provider model metadata', () => {
     expect(metadata.map((entry) => entry.provider)).toEqual([
       'groq',
       'cerebras',
-      'cerebras',
       'mistral',
       'zai',
       'gemini',
@@ -117,12 +116,7 @@ describe('provider model metadata', () => {
     });
     expect(
       metadata.find((entry) => entry.modelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID)
-    ).toMatchObject({
-      modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-      role: expect.stringContaining('fallback'),
-      lifecycle: 'production',
-      smokeStatus: 'green',
-    });
+    ).toBeUndefined();
     expect(
       metadata.find((entry) => entry.modelId === CEREBRAS_GPT_OSS_MODEL_ID)
     ).toMatchObject({

@@ -49,14 +49,27 @@ const providerReasoningPolicyModule = providerModelPolicy as typeof providerMode
 };
 
 describe('provider model policy SSOT', () => {
-  it('uses gpt-oss-120b as the default primary and keeps llama3.1-8b as deprecated fallback', () => {
+  it('uses gpt-oss-120b as the default primary and removes blocked llama3.1-8b from active runtime', () => {
     expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_GPT_OSS_MODEL_ID);
-    expect(getCerebrasRuntimeModelIds()).toEqual([
+    expect(
+      getCerebrasRuntimeModelIds({
+        asOf: new Date('2026-05-27T23:59:59Z'),
+      })
+    ).toEqual([
       CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
       CEREBRAS_GPT_OSS_MODEL_ID,
     ]);
+    expect(
+      getCerebrasRuntimeModelIds({
+        asOf: new Date('2026-05-28T00:00:00Z'),
+      })
+    ).toEqual([CEREBRAS_GPT_OSS_MODEL_ID]);
 
-    expect(getCerebrasRuntimeModelPolicies()).toHaveLength(2);
+    expect(
+      getCerebrasRuntimeModelPolicies({
+        asOf: new Date('2026-05-28T00:00:00Z'),
+      })
+    ).toHaveLength(1);
     expect(getCerebrasModelPolicy(CEREBRAS_QWEN_MODEL_ID)).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_QWEN_MODEL_ID,
@@ -159,14 +172,20 @@ describe('provider model policy SSOT', () => {
   it('reports runtime model deprecation only after the scheduled block date', () => {
     expect(
       getDeprecatedProviderModelPolicyFindings(
-        getCerebrasRuntimeModelPolicies(),
+        getCerebrasRuntimeModelPolicies({
+          asOf: new Date('2026-04-26T00:00:00Z'),
+          includeBlocked: true,
+        }),
         new Date('2026-04-26T00:00:00Z')
       )
     ).toEqual([]);
 
     expect(
       getDeprecatedProviderModelPolicyFindings(
-        getCerebrasRuntimeModelPolicies(),
+        getCerebrasRuntimeModelPolicies({
+          asOf: new Date('2026-05-28T00:00:00Z'),
+          includeBlocked: true,
+        }),
         new Date('2026-05-28T00:00:00Z')
       )
     ).toEqual([
@@ -188,7 +207,10 @@ describe('provider model policy SSOT', () => {
 
   it('does not recommend another same-date blocked Cerebras runtime model', () => {
     const blockedRuntimeModelIds = new Set(
-      getCerebrasRuntimeModelPolicies()
+      getCerebrasRuntimeModelPolicies({
+        asOf: new Date('2026-05-28T00:00:00Z'),
+        includeBlocked: true,
+      })
         .filter(
           (policy) =>
             policy.blockAfterDeprecation &&
@@ -197,7 +219,10 @@ describe('provider model policy SSOT', () => {
         .map((policy) => policy.modelId)
     );
 
-    for (const policy of getCerebrasRuntimeModelPolicies()) {
+    for (const policy of getCerebrasRuntimeModelPolicies({
+      asOf: new Date('2026-05-28T00:00:00Z'),
+      includeBlocked: true,
+    })) {
       expect(blockedRuntimeModelIds).not.toContain(policy.recommendedReplacement);
     }
   });
@@ -227,10 +252,15 @@ describe('provider model policy SSOT', () => {
     ]);
 
     expect(
-      getStaleProviderModelPolicyFindings(getCerebrasRuntimeModelPolicies(), {
-        asOf: new Date('2026-05-03T00:00:00Z'),
-        maxAgeDays: 14,
-      })
+      getStaleProviderModelPolicyFindings(
+        getCerebrasRuntimeModelPolicies({
+          asOf: new Date('2026-05-03T00:00:00Z'),
+        }),
+        {
+          asOf: new Date('2026-05-03T00:00:00Z'),
+          maxAgeDays: 14,
+        }
+      )
     ).toEqual([]);
   });
 

@@ -142,6 +142,16 @@ export type CerebrasRuntimeModelId =
   | typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID
   | typeof CEREBRAS_GPT_OSS_MODEL_ID;
 
+export interface CerebrasRuntimeModelOptions {
+  asOf?: Date;
+  includeBlocked?: boolean;
+}
+
+const CEREBRAS_RUNTIME_MODEL_IDS = [
+  CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+  CEREBRAS_GPT_OSS_MODEL_ID,
+] as const satisfies readonly CerebrasRuntimeModelId[];
+
 const DEFAULT_PROVIDER_SMOKE_MAX_AGE_DAYS = 14;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -265,12 +275,22 @@ export const CEREBRAS_MODEL_POLICIES = {
   },
 } as const satisfies Record<string, ProviderModelPolicy>;
 
-export function getCerebrasRuntimeModelIds(): CerebrasRuntimeModelId[] {
-  return [CEREBRAS_LLAMA_FALLBACK_MODEL_ID, CEREBRAS_GPT_OSS_MODEL_ID];
+export function getCerebrasRuntimeModelIds(
+  options: CerebrasRuntimeModelOptions = {}
+): CerebrasRuntimeModelId[] {
+  const asOf = options.asOf ?? new Date();
+  return CEREBRAS_RUNTIME_MODEL_IDS.filter((modelId) => {
+    const policy = CEREBRAS_MODEL_POLICIES[modelId];
+    return options.includeBlocked || !isPastPolicyBlockDate(policy, asOf);
+  });
 }
 
-export function getCerebrasRuntimeModelPolicies(): ProviderModelPolicy[] {
-  return getCerebrasRuntimeModelIds().map((modelId) => CEREBRAS_MODEL_POLICIES[modelId]);
+export function getCerebrasRuntimeModelPolicies(
+  options: CerebrasRuntimeModelOptions = {}
+): ProviderModelPolicy[] {
+  return getCerebrasRuntimeModelIds(options).map(
+    (modelId) => CEREBRAS_MODEL_POLICIES[modelId]
+  );
 }
 
 export function getCerebrasModelPolicy(modelId = DEFAULT_CEREBRAS_MODEL): ProviderModelPolicy {
