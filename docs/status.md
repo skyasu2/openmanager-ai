@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-28
+> Last reviewed: 2026-05-29
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-28 | **현재 버전 스냅샷**: v8.12.74
+**상태 스냅샷 기준일**: 2026-05-29 | **현재 버전 스냅샷**: v8.12.75
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.75** (2026-05-29) — Tests: ai-engine: harden domain registry telemetry coverage; Tests: qa: record v8.12.74 release smoke; Bug Fixes: ai-engine: bootstrap domain registry entrypoints
 - **v8.12.74** (2026-05-28) — Code Refactoring: ai-engine: extract shared utils and fix stateful regex; Tests: qa: record v8.12.73 Q-NEW76 live smoke
 - **v8.12.73** (2026-05-28) — Bug Fixes: ai-engine: route metric risk comparison wording; Tests: qa: record v8.12.72 P20 residual recheck; Tests: qa: record v8.12.72 Q-NEW72 live smoke
 - **v8.12.72** (2026-05-28) — Bug Fixes: ai-engine: short-circuit deterministic supervisor evidence; Tests: qa: record v8.12.71 release smoke
 - **v8.12.71** (2026-05-28) — Bug Fixes: ai-engine: compare metric risk directly; Tests: qa: record v8.12.70 release smoke
-- **v8.12.70** (2026-05-28) — Bug Fixes: ai-engine: preserve group filters in metric rankings; Tests: qa: record v8.12.69 release smoke
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
