@@ -519,6 +519,30 @@ function parseCurrentMetricsMessage(
     };
   }
 
+  // P24: all-scope 평균 집계 — "전체 서버 평균 CPU"처럼 그룹/서버 타깃이 없는
+  // 단일 메트릭 평균 질의. buildMetricCurrentAnswer는 targets 미지정 시
+  // filterSnapshotServers(allServers, undefined)로 전체 서버(label '전체 서버')의
+  // 평균/최고/최저를 계산하므로 별도 answer 분기 없이 그대로 재사용한다.
+  // 주의: HISTORICAL_OR_TREND_PATTERN 에는 '평균'이 포함되어 있어 group-aggregate
+  // 와 동일하게 METRIC_TREND_PATTERN 만으로 트렌드 질의를 배제한다.
+  if (
+    metric &&
+    groupTargets.length === 0 &&
+    explicitServerTargets.length === 0 &&
+    metricTargets.length === 0 &&
+    /평균|average|avg/i.test(message) &&
+    !isCurrentServerComparisonMessage(message) &&
+    !METRIC_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'all-aggregate',
+      answerQuery: message,
+      metric,
+    };
+  }
+
   if (
     explicitServerTargets.length === 1 &&
     mentionedMetrics.length >= 2 &&

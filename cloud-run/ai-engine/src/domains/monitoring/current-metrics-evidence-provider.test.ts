@@ -3220,4 +3220,54 @@ describe('current metrics domain evidence providers', () => {
       expect(parsed?.groupTargets).toContain('cache');
     });
   });
+
+  describe('P24 all-scope 평균 집계', () => {
+    it('"전체 서버 평균 CPU 사용률 알려줘" → all-aggregate (그룹/타깃 없음)', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('전체 서버 평균 CPU 사용률 알려줘')
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        sourceIntent: 'all-aggregate',
+        metric: 'cpu',
+      });
+      expect(parsed?.targets).toBeUndefined();
+      expect(parsed?.groupTargets).toBeUndefined();
+    });
+
+    it('"전체 18대 서버의 평균 디스크 사용률은 몇 퍼센트야?" → all-aggregate', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest(
+          '전체 18대 서버의 평균 디스크 사용률은 몇 퍼센트야?'
+        )
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'all-aggregate',
+        metric: 'disk',
+      });
+      expect(parsed?.targets).toBeUndefined();
+    });
+
+    it('all-aggregate를 전체 서버 평균 현황 답변으로 해소한다 (evidence-unavailable 회귀 방지)', async () => {
+      const request = createEvidenceRequest('전체 서버 평균 CPU 사용률 알려줘');
+      const evidence =
+        await monitoringMetricCurrentEvidenceProvider.resolve(request);
+      expect(evidence).not.toBeNull();
+      expect(evidence?.fallback).toContain('전체 서버');
+      expect(evidence?.fallback).toContain('평균');
+    });
+
+    it('그룹 한정 평균은 여전히 group-aggregate로 유지한다 (회귀 방지)', () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('db 서버들 평균 메모리 알려줘')
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'group-aggregate',
+        metric: 'memory',
+      });
+    });
+  });
 });
