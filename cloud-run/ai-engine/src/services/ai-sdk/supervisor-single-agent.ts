@@ -41,7 +41,6 @@ import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-h
 import { getOffDomainGuardrail } from '../../lib/off-domain-guard';
 import { sanitizeUserFacingResponse } from '../../lib/text-sanitizer';
 
-import type { DomainEvidenceResult } from '../../core/assistant-runtime';
 import {
   SupervisorRequest,
   SupervisorResponse,
@@ -72,7 +71,6 @@ import {
   RETRY_CONFIG,
   getIntentCategory,
   getLLMParamsForIntent,
-  type IntentCategory,
 } from '../../domains/monitoring/routing-policy';
 
 import { evaluateAgentResponseQuality } from './agents/response-quality';
@@ -93,43 +91,13 @@ import { normalizeSupervisorIntentFrame } from './supervisor-semantic-metadata';
 import { buildToolResultSummary } from './supervisor-tool-results';
 import { enrichResponseWithToolResults } from './supervisor-response-enrichment';
 import { resolveDomainEvidenceForStream } from './supervisor-domain-evidence';
+import {
+  buildDomainEvidenceMetadata,
+  getResponseQualityAgentName,
+  shouldUseDeterministicDomainEvidenceAnswer,
+} from './supervisor-domain-evidence-response';
 
 export { executeSupervisorStream } from './supervisor-stream';
-
-function getResponseQualityAgentName(intent: IntentCategory): string {
-  switch (intent) {
-    case 'metrics':
-    case 'serverGroup':
-      return 'Metrics Query Agent';
-    case 'anomaly':
-    case 'prediction':
-    case 'rca':
-      return 'Analyst Agent';
-    case 'advisor':
-      return 'Advisor Agent';
-    default:
-      return 'Supervisor';
-  }
-}
-
-function shouldUseDeterministicDomainEvidenceAnswer(
-  domainEvidence: DomainEvidenceResult | undefined
-): boolean {
-  return [
-    'deterministic_answer',
-    'deterministic_read_only_advice',
-    'deterministic_fail_closed',
-  ].includes(String(domainEvidence?.metadata?.responsePolicy ?? ''));
-}
-
-function buildDomainEvidenceMetadata(domainEvidence: DomainEvidenceResult) {
-  return {
-    id: domainEvidence.id,
-    responsePolicy: domainEvidence.metadata?.responsePolicy,
-    capabilityId: domainEvidence.metadata?.capabilityId,
-    intent: domainEvidence.metadata?.intent,
-  };
-}
 
 // ============================================================================
 // Main Entry Point
