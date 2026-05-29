@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-29T15:28:02.565Z"
+    "updatedAt": "2026-05-29T17:45:34.038Z"
   },
   "sequence": {
-    "nextRunNumber": 644
+    "nextRunNumber": 645
   },
   "summary": {
-    "totalRecordedRuns": 641,
+    "totalRecordedRuns": 642,
     "totalRuns": 501,
-    "excludedRuns": 140,
+    "excludedRuns": 141,
     "totalChecks": 4413,
     "totalPassed": 4212,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 735,
+    "completedItems": 736,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 30,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260529-0641",
     "lastRecordedAt": "2026-05-29T12:50:47.147Z",
-    "latestRecordedRunId": "QA-20260530-0643",
-    "latestRecordedAt": "2026-05-29T15:28:02.565Z"
+    "latestRecordedRunId": "QA-20260530-0644",
+    "latestRecordedAt": "2026-05-29T17:45:34.038Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18092,6 +18092,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-29T12:50:47.147Z"
+    },
+    "p24-all-scope-average-metric-routing": {
+      "id": "p24-all-scope-average-metric-routing",
+      "title": "전체 서버 평균 CPU/디스크 같은 all-scope 평균 질의가 deterministic metric_current evidence로 라우팅됨",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260530-0644",
+      "firstSeenAt": "2026-05-29T17:45:34.038Z",
+      "lastSeenRunId": "QA-20260530-0644",
+      "lastSeenAt": "2026-05-29T17:45:34.038Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.79 release includes e9dfab31c and Cloud Run ai-engine-00585-kvp reports version 8.12.79",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-29T17:45:34.038Z"
     }
   },
   "runs": [
@@ -37189,6 +37213,142 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260530-0644",
+      "recordedAt": "2026-05-29T17:45:34.038Z",
+      "recordedAtKst": "2026-05-30 02:45:34 KST",
+      "title": "GitLab production release smoke - v8.12.79 P24 all-scope average routing",
+      "owner": "codex",
+      "source": "gitlab-ci",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260530-0644.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FzwcXdc1aYwfQGHerTJqFH3SP8ew",
+        "deploymentUrl": "https://openmanager-9b3nmj7vh-skyasus-projects.vercel.app",
+        "commitSha": "dc08d19d15a7594fd4146407b3e00a42ee7224b1"
+      },
+      "scope": "smoke",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Current main deployed through semver tag v8.12.79",
+        "GitLab tag deploy pipeline 2562464239 completed successfully",
+        "Vercel production /api/version reports 8.12.79 and commit dc08d19d15a7594fd4146407b3e00a42ee7224b1",
+        "Vercel production /api/health reports database/cache/ai connected",
+        "Cloud Run ai-engine /health reports version 8.12.79 and routesReady true",
+        "Cloud Run latestReadyRevision ai-engine-00585-kvp receives 100% traffic",
+        "Cloud Run unauthenticated /monitoring remains protected",
+        "P24 all-scope average metric routing fix is included in deployed release commit range",
+        "Cloud Run and Vercel usage/cost guardrails remain normal after deploy"
+      ],
+      "skippedSurfaces": [
+        "Full conversational browser QA was not rerun because P24 was already covered by deterministic parser/evidence tests and this smoke run validated production propagation",
+        "Full dashboard visual matrix was not rerun; no frontend UI behavior changed in this release",
+        "Authenticated Cloud Run /monitoring admin query was not run; unauthenticated protection and /health were sufficient for this release smoke"
+      ],
+      "checks": {
+        "total": 22,
+        "passed": 22,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Vercel production version, Cloud Run revision, health checks, and free-tier guardrails were verified.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P24 deterministic parser/evidence regression tests, contract tests, AI Engine full suite, and release smoke cover the changed risk surface.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release fixes a deterministic current-metric evidence routing gap and verifies the fix is deployed to Cloud Run.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel /api/health, Cloud Run /health, revision metadata, protected /monitoring behavior, and usage checks were captured.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-30T02:43:47+09:00",
+          "summary": "Vercel usage checked after v8.12.79 production deploy: effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052.",
+          "evidence": "npm run check:usage",
+          "url": ""
+        },
+        {
+          "platform": "cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-30T02:43:47+09:00",
+          "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00585-kvp.",
+          "evidence": "npm run check:usage",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.79 release smoke command evidence",
+          "path": "reports/qa/evidence/qa-20260530-v81279-release-smoke.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.79",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562464239"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-9b3nmj7vh-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -37197,16 +37357,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 350,
-      "appropriateCount": 299,
+      "seenCount": 351,
+      "appropriateCount": 300,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260530-0643",
-      "lastSeenAt": "2026-05-29T15:28:02.565Z",
+      "lastRunId": "QA-20260530-0644",
+      "lastSeenAt": "2026-05-29T17:45:34.038Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The Q5 contextual label fix remains included in the deployed release, and the prior targeted production QA-20260529-0641 already validated the AI behavior with durable evidence.",
+      "lastRationale": "The release fixes a deterministic current-metric evidence routing gap and verifies the fix is deployed to Cloud Run.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -37214,16 +37374,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 148,
-      "appropriateCount": 115,
+      "seenCount": 149,
+      "appropriateCount": 116,
       "partialCount": 33,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260529-0638",
-      "lastSeenAt": "2026-05-28T18:22:11.038Z",
+      "lastRunId": "QA-20260530-0644",
+      "lastSeenAt": "2026-05-29T17:45:34.038Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production version endpoint, Cloud Run health, and free-tier runtime guardrails were verified after deploy.",
+      "lastRationale": "Vercel /api/health, Cloud Run /health, revision metadata, protected /monitoring behavior, and usage checks were captured.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -37248,16 +37408,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 239,
-      "appropriateCount": 218,
+      "seenCount": 240,
+      "appropriateCount": 219,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260530-0643",
-      "lastSeenAt": "2026-05-29T15:28:02.565Z",
+      "lastRunId": "QA-20260530-0644",
+      "lastSeenAt": "2026-05-29T17:45:34.038Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag deploy pipeline, production /api/version, Vercel deployment readiness, Cloud Run /health, and free-tier guardrails all passed for v8.12.78.",
+      "lastRationale": "GitLab tag pipeline, Vercel production version, Cloud Run revision, health checks, and free-tier guardrails were verified.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -37265,16 +37425,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 268,
-      "appropriateCount": 241,
+      "seenCount": 269,
+      "appropriateCount": 242,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260530-0643",
-      "lastSeenAt": "2026-05-29T15:28:02.565Z",
+      "lastRunId": "QA-20260530-0644",
+      "lastSeenAt": "2026-05-29T17:45:34.038Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "ci:local completed before release, covering root type/lint/quick/contract/component-map gates and AI Engine type-check/test.",
+      "lastRationale": "P24 deterministic parser/evidence regression tests, contract tests, AI Engine full suite, and release smoke cover the changed risk surface.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

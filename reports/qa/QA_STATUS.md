@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-30 00:28:03 KST
+> Generated at: 2026-05-30 02:45:34 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 641 |
+| Total Recorded Runs | 642 |
 | Total Runs (Counted) | 501 |
-| Non-counted Runs | 140 |
+| Non-counted Runs | 141 |
 | Total Checks | 4413 |
 | Passed | 4212 |
 | Failed | 159 |
-| Completed Items | 735 |
+| Completed Items | 736 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 30 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260529-0641 (2026-05-29T12:50:47.147Z) |
-| Latest Recorded Run | QA-20260530-0643 (2026-05-29T15:28:02.565Z) |
+| Latest Recorded Run | QA-20260530-0644 (2026-05-29T17:45:34.038Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,25 +34,25 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260530-0643 (2026-05-29T15:28:02.565Z)
+Latest run: QA-20260530-0644 (2026-05-29T17:45:34.038Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| Frontend UX Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | billing period 2026-05-01..05-30 effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052. |
-| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00584-k7f. |
+| vercel | cli | checked | normal | Vercel usage checked after v8.12.79 production deploy: effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052. |
+| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00585-kvp. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-28T15:28:02.565Z -> 2026-05-29T15:28:02.565Z (24h)
+- Window: 2026-05-28T17:45:34.038Z -> 2026-05-29T17:45:34.038Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -62,7 +62,7 @@ Latest run: QA-20260530-0643 (2026-05-29T15:28:02.565Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-28T15:28:02.565Z -> 2026-05-29T15:28:02.565Z (24h)
+- Window: 2026-05-28T17:45:34.038Z -> 2026-05-29T17:45:34.038Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -76,24 +76,24 @@ Latest run: QA-20260530-0643 (2026-05-29T15:28:02.565Z)
 - Scope: smoke
 - Release-Facing: yes
 - Counts Toward Summary: no
-- Deployment: dpl_7cnEgWfFHU9snTSuUEdBGSqfRgvh / SHA 49cf8d62
+- Deployment: dpl_FzwcXdc1aYwfQGHerTJqFH3SP8ew / SHA dc08d19d
 - Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: Current main deployed through semver tag v8.12.78, GitLab tag deploy pipeline 2562175787 completed successfully, Vercel production /api/version reports 8.12.78 and commit 49cf8d6230082fd1adb12e9790a19aa5a174fe96, Vercel production /api/health reports database/cache/ai connected, Cloud Run ai-engine /health reports version 8.12.78 and routesReady true, Cloud Run free-tier guardrails remain intact, Vercel usage remains billed 0.0000 USD after deploy, Landing MouseSpotlight halo removal and Q5 contextual label fixes are included in the deployed release commit range
-- Skipped Surfaces: Full conversational five-question AI QA was not rerun because QA-20260529-0641 already covered the Q5 AI behavior on the same fixed backend path, Full dashboard/device visual matrix was not run; release smoke covered production route health, version propagation, deploy pipeline success, and Cloud Run health, Manual pixel-level landing screenshot was not captured in this smoke run
+- Covered Surfaces: Current main deployed through semver tag v8.12.79, GitLab tag deploy pipeline 2562464239 completed successfully, Vercel production /api/version reports 8.12.79 and commit dc08d19d15a7594fd4146407b3e00a42ee7224b1, Vercel production /api/health reports database/cache/ai connected, Cloud Run ai-engine /health reports version 8.12.79 and routesReady true, Cloud Run latestReadyRevision ai-engine-00585-kvp receives 100% traffic, Cloud Run unauthenticated /monitoring remains protected, P24 all-scope average metric routing fix is included in deployed release commit range, Cloud Run and Vercel usage/cost guardrails remain normal after deploy
+- Skipped Surfaces: Full conversational browser QA was not rerun because P24 was already covered by deterministic parser/evidence tests and this smoke run validated production propagation, Full dashboard visual matrix was not rerun; no frontend UI behavior changed in this release, Authenticated Cloud Run /monitoring admin query was not run; unauthenticated protection and /health were sufficient for this release smoke
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline v8.12.78 | [GitLab pipeline v8.12.78](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562175787) | - |
+| general | GitLab pipeline v8.12.79 | [GitLab pipeline v8.12.79](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562464239) | - |
 | monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-drlb0kdqd-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-9b3nmj7vh-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.78 release smoke command evidence | `reports/qa/evidence/qa-20260530-v81278-release-smoke.txt` | - |
+| playwright-console | v8.12.79 release smoke command evidence | `reports/qa/evidence/qa-20260530-v81279-release-smoke.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -186,18 +186,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 735 items completed (full list in qa-tracker.json)
+- Total: 736 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - p24-all-scope-average-metric-routing: 전체 서버 평균 CPU/디스크 같은 all-scope 평균 질의가 deterministic metric_current evidence로 라우팅됨 (last QA-20260530-0644)
   - q-new10-pronoun-resolution: Q5 '방금 분석한 서버' 컨텍스트 팔로업 오진 항목 정정 (last QA-20260529-0642)
   - multi-agent-data-source-history-threading: multi-agent 스트림 경로 createAgentDataSourceContext에 대화 히스토리 전달 (latent 갭 보완) (last QA-20260529-0641)
   - q5-contextual-followup-label-clarity: 컨텍스트 팔로업 타깃이 동종 단일 타입일 때 '로드밸런서 N대' 대신 '지정 서버 N대'로 라벨링 (last QA-20260529-0641)
   - ai-engine-cloud-build-buildkit-mount-compatibility: AI Engine Cloud Build default Docker builder compatibility (last QA-20260529-0638)
-  - q-new76-metric-risk-compare-omitted-noun: CPU/메모리/디스크 중 어느 게 가장 위험? 질의가 deterministic metric-current 위험도 비교로 응답 (last QA-20260528-0636)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260530-0644 | 2026-05-29T17:45:34.038Z | smoke | yes | no | GitLab production release smoke - v8.12.79 P24 all-scope average routing | 22 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260530-0643 | 2026-05-29T15:28:02.565Z | smoke | yes | no | GitLab production release smoke - v8.12.78 current main deployment | 20 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260529-0642 | 2026-05-29T13:55:43.521Z | targeted | no | no | QA metadata correction - close superseded Q5 pronoun-resolution item | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260529-0641 | 2026-05-29T12:50:47.147Z | targeted | yes | yes | Vercel Playwright MCP - Q5 컨텍스트 팔로업 라벨 명확화 검증 (ai-engine-00583) | 3 | 2 | 0 | 0 | 0 | 0 |
@@ -217,4 +218,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260528-0627 | 2026-05-27T22:43:05.057Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.65 P19c/P21 trend filters | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260527-0626 | 2026-05-27T13:32:42.014Z | targeted | no | yes | Vercel Playwright MCP targeted recheck - v8.12.62 Q4 stable-server ranking | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0625 | 2026-05-27T08:31:25.273Z | targeted | no | yes | Vercel Playwright MCP targeted recheck - v8.12.60 QA-0624 regressions | 6 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260527-0624 | 2026-05-27T07:17:17.887Z | targeted | no | yes | Vercel Playwright MCP targeted QA - 2026-05-26..27 modified surfaces only | 16 | 0 | 3 | 0 | 0 | 2 |

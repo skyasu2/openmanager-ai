@@ -1,0 +1,153 @@
+{
+  "runId": "QA-20260530-0644",
+  "recordedAt": "2026-05-29T17:45:34.038Z",
+  "recordedAtKst": "2026-05-30 02:45:34 KST",
+  "runTitle": "GitLab production release smoke - v8.12.79 P24 all-scope average routing",
+  "owner": "codex",
+  "source": "gitlab-ci",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FzwcXdc1aYwfQGHerTJqFH3SP8ew",
+    "deploymentUrl": "https://openmanager-9b3nmj7vh-skyasus-projects.vercel.app",
+    "commitSha": "dc08d19d15a7594fd4146407b3e00a42ee7224b1"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Current main deployed through semver tag v8.12.79",
+    "GitLab tag deploy pipeline 2562464239 completed successfully",
+    "Vercel production /api/version reports 8.12.79 and commit dc08d19d15a7594fd4146407b3e00a42ee7224b1",
+    "Vercel production /api/health reports database/cache/ai connected",
+    "Cloud Run ai-engine /health reports version 8.12.79 and routesReady true",
+    "Cloud Run latestReadyRevision ai-engine-00585-kvp receives 100% traffic",
+    "Cloud Run unauthenticated /monitoring remains protected",
+    "P24 all-scope average metric routing fix is included in deployed release commit range",
+    "Cloud Run and Vercel usage/cost guardrails remain normal after deploy"
+  ],
+  "skippedSurfaces": [
+    "Full conversational browser QA was not rerun because P24 was already covered by deterministic parser/evidence tests and this smoke run validated production propagation",
+    "Full dashboard visual matrix was not rerun; no frontend UI behavior changed in this release",
+    "Authenticated Cloud Run /monitoring admin query was not run; unauthenticated protection and /health were sufficient for this release smoke"
+  ],
+  "checks": {
+    "total": 22,
+    "passed": 22,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Vercel production version, Cloud Run revision, health checks, and free-tier guardrails were verified.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P24 deterministic parser/evidence regression tests, contract tests, AI Engine full suite, and release smoke cover the changed risk surface.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The release fixes a deterministic current-metric evidence routing gap and verifies the fix is deployed to Cloud Run.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel /api/health, Cloud Run /health, revision metadata, protected /monitoring behavior, and usage checks were captured.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-30T02:43:47+09:00",
+      "summary": "Vercel usage checked after v8.12.79 production deploy: effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052.",
+      "evidence": "npm run check:usage",
+      "url": ""
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-30T02:43:47+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00585-kvp.",
+      "evidence": "npm run check:usage",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.79 release smoke command evidence",
+      "path": "reports/qa/evidence/qa-20260530-v81279-release-smoke.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p24-all-scope-average-metric-routing",
+      "title": "전체 서버 평균 CPU/디스크 같은 all-scope 평균 질의가 deterministic metric_current evidence로 라우팅됨",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.79 release includes e9dfab31c and Cloud Run ai-engine-00585-kvp reports version 8.12.79",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "State triage: symptom=deployment drift, scope=cloud-run, root cause=P24 fix existed on main but production still served v8.12.78/49cf8d62, next step=deploy-and-qa.",
+    "Release path used GitLab CI semver tag v8.12.79, not manual deploy.sh fallback.",
+    "Latest Cloud Build 67cdb155-1071-4435-bea5-a65680eb914c completed SUCCESS with default machineType.",
+    "mode audit: not applicable; no live conversational AI prompt was sent in this release smoke."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.79",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562464239"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-9b3nmj7vh-skyasus-projects.vercel.app/"
+    }
+  ]
+}

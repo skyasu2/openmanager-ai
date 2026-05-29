@@ -1,0 +1,53 @@
+OpenManager v8.12.79 release smoke evidence
+Date: 2026-05-30 KST
+
+Release scope
+- Recommended next action: deploy-and-qa for P24 all-scope average metric routing.
+- Release commit: dc08d19d15a7594fd4146407b3e00a42ee7224b1
+- Release tag: v8.12.79
+- GitLab release pipeline: 2562464239
+- Pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562464239
+
+Why this release was needed
+- Production before release served v8.12.78 / commit 49cf8d6230082fd1adb12e9790a19aa5a174fe96.
+- Current main contained P24 fix e9dfab31c, which was validated on GitLab main but not deployed to Cloud Run production.
+- P24 fixes all-scope average metric queries such as "전체 서버 평균 CPU 사용률 알려줘".
+
+Pre-release verification
+- P24 targeted parser/evidence-provider test: 90 passed.
+- Root contract tests: 24 passed.
+- AI Engine type-check: pass.
+- AI Engine full test: 147 files / 1618 tests passed.
+- GitLab main validate pipeline for P24: 2562360890 success.
+- Runner/Docker local readiness: runner=true docker=true scope=local.
+- GCP project: openmanager-free-tier.
+- OTel resource catalog exists at public/data/otel-data/resource-catalog.json.
+- Cloud Run free-tier settings preserved: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true.
+
+Release pipeline result
+- Pipeline 2562464239 status: success.
+- deploy job 14607642699: success.
+- deploy_ai_engine job 14607642700: success.
+- post_deploy_smoke job 14607642702: success.
+- post_deploy_ai_engine_smoke job 14607642701: success.
+- Resource queues: none.
+- Release script production smoke: /, /login, /api/version passed on attempt 1/81.
+
+Production verification
+- Vercel /api/version: version=8.12.79, commitSha=dc08d19d15a7594fd4146407b3e00a42ee7224b1, releaseTag=v8.12.79.
+- Vercel /api/health: healthy; database/cache/ai connected.
+- Vercel deployment: dpl_FzwcXdc1aYwfQGHerTJqFH3SP8ew, production Ready.
+- Cloud Run latestReadyRevision: ai-engine-00585-kvp.
+- Cloud Run service URL: https://ai-engine-jdhrhws7ia-an.a.run.app.
+- Cloud Run /health: ok; version=8.12.79; routesReady=true; redis degraded=false.
+- Cloud Run /monitoring without auth: {"error":"Monitoring endpoints require authentication"}.
+- Latest Cloud Build: 67cdb155-1071-4435-bea5-a65680eb914c SUCCESS, machineType empty/default.
+
+Usage and cost check
+- npm run check:usage passed.
+- Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00585-kvp.
+- Vercel usage checked via CLI for 2026-05-01..2026-05-29 period: effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052.
+
+Skipped
+- Full conversational browser QA was not repeated; this release changed deterministic AI Engine evidence routing only.
+- Dashboard visual matrix was not repeated; release smoke covered route health, version propagation, GitLab pipeline, Cloud Run health, and cost guardrails.
