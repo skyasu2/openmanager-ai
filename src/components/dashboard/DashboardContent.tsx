@@ -24,11 +24,11 @@ import type {
 const ServerDashboard = dynamic(() => import('./ServerDashboard'), {
   ssr: false,
   loading: () => (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-slate-700/50 bg-slate-800/60 p-6">
       <div className="animate-pulse space-y-4">
-        <div className="h-4 rounded bg-slate-200" />
-        <div className="h-4 rounded bg-slate-200" />
-        <div className="h-4 w-5/6 rounded bg-slate-200" />
+        <div className="h-4 rounded bg-slate-700/60" />
+        <div className="h-4 rounded bg-slate-700/60" />
+        <div className="h-4 w-5/6 rounded bg-slate-700/60" />
       </div>
     </div>
   ),
