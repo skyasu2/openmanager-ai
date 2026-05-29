@@ -24,7 +24,7 @@ describe('feature card public data', () => {
   it('describes the AI assistant with current artifact and retrieval wording', () => {
     const copy = stringify(FEATURE_CARDS_DATA);
 
-    expect(copy).toContain('18대 서버의 24시간 OTel 데이터');
+    expect(copy).toContain('시뮬레이션 OTel 관측 데이터');
     expect(copy).toContain('자연어 질의, 장애 보고서');
     expect(copy).toContain('무료 티어 친화 실행 경계');
     expect(copy).toContain('다운로드 가능한 장애/이상감지 아티팩트');
@@ -42,6 +42,7 @@ describe('feature card public data', () => {
     expect(copy).not.toContain('Sentry');
     expect(copy).not.toContain('로컬과 배포 환경 차이 제거');
     expect(copy).not.toContain('환경 불일치 원천 차단');
+    expect(copy).not.toContain('18대 서버의 24시간 OTel 데이터');
   });
 
   it('aligns supporting modal and diagram data with runtime wording', () => {

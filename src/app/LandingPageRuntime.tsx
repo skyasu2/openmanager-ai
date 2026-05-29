@@ -124,7 +124,7 @@ function Home() {
             서버 운영을 AI에게 묻다
           </p>
           <p className="landing-hero-kicker text-sm font-medium leading-relaxed tracking-normal text-white/[0.78] sm:text-base">
-            18대 서버 · OTel 데이터 기반 포트폴리오 프로젝트
+            시뮬레이션 OTel 데이터 기반 AI 운영 포트폴리오
           </p>
         </div>
 
