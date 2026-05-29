@@ -1,0 +1,115 @@
+{
+  "runId": "QA-20260529-0641",
+  "recordedAt": "2026-05-29T12:50:47.147Z",
+  "recordedAtKst": "2026-05-29 21:50:47 KST",
+  "runTitle": "Vercel Playwright MCP - Q5 컨텍스트 팔로업 라벨 명확화 검증 (ai-engine-00583)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EhLf7tgfW7Hm3cQYz9pDEca9rxw9",
+    "deploymentUrl": "https://openmanager-55ihntdvt-skyasus-projects.vercel.app",
+    "commitSha": "ef784e4d6"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "conversational-ai-qa",
+    "/dashboard AI assistant sidebar",
+    "contextual-follow-up-label"
+  ],
+  "skippedSurfaces": [
+    "observability pack",
+    "vision live",
+    "reporter/anomaly tabs"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Q5 '방금 분석한 서버' 컨텍스트 팔로업이 이전 turn 서버로 정확히 스코핑되고, 동종 단일 타입에서도 '지정 서버' 라벨로 명확히 표기됨을 라이브 검증. 회귀 테스트 포함 monitoring 216 테스트 PASS.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-29T21:50:00+09:00",
+      "summary": "billing period 2026-05-01..05-29 effective=19.23 USD, billed=0.00 USD. AI Engine은 Cloud Run Free Tier(512Mi/1vCPU). 예상 외 급증 없음.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q5 컨텍스트 팔로업 '지정 서버 3대 중 1대' 라벨 수정 검증",
+      "path": "reports/qa/evidence/qa-20260529-q5-contextual-label-fix.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q5-contextual-followup-label-clarity",
+      "title": "컨텍스트 팔로업 타깃이 동종 단일 타입일 때 '로드밸런서 N대' 대신 '지정 서버 N대'로 라벨링",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "ef784e4d6: contextualTargets 플래그 + filterSnapshotServers preferExplicitLabel. ai-engine-00583-7pw 라이브 검증 '지정 서버 3대 중 1대'",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "multi-agent-data-source-history-threading",
+      "title": "multi-agent 스트림 경로 createAgentDataSourceContext에 대화 히스토리 전달 (latent 갭 보완)",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "4057fc82c: executeMultiAgentStream → executeAgentStream → createAgentDataSourceContext. ai-engine-00582-tk5",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "초기 진단 정정: Q5 '방금 분석한 서버' 컨텍스트 해석은 single-agent deterministic 경로(resolveDomainEvidenceForStream → createEvidenceContext)에서 Redis SessionMemoryService 히스토리로 이미 정상 동작. 최초 QA(QA-20260529-0640)에서 '로드밸런서 1대 중 1대' 라벨을 group 추론 실패로 오독한 것이 원인.",
+    "결정적 검증: 직전 turn이 혼합 타입 6대 → Q5 '지정 서버 6대'; 직전 turn이 lb-haproxy 1대 → (수정 전)'로드밸런서 1대'/(수정 후)'지정 서버 N대'. 컨텍스트 스코핑 자체는 항상 정상이었고, 라벨만 모호했음.",
+    "수정 후 라이브(ai-engine-00583-7pw): 직전 '조치 필요' turn 서버집합 → Q5 '지정 서버 3대 중 1대', lb-haproxy-dc1-01 네트워크 73.8% warning 정확 필터. 도구 monitoring-metric-current.",
+    "데이터 슬롯 20:40 KST(slotIndex 124), 대시보드 slot 124/143와 일치. 콘솔 에러 0건.",
+    "기존 동작 유지: 혼합 타입 컨텍스트 팔로업은 '지정 서버 N대'(test 895), 명시 단일 타입 그룹 조회는 '로드밸런서 N대'."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

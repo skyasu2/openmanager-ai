@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-29T03:17:33.247Z"
+    "updatedAt": "2026-05-29T12:50:47.147Z"
   },
   "sequence": {
-    "nextRunNumber": 640
+    "nextRunNumber": 642
   },
   "summary": {
-    "totalRecordedRuns": 637,
-    "totalRuns": 499,
+    "totalRecordedRuns": 639,
+    "totalRuns": 501,
     "excludedRuns": 138,
-    "totalChecks": 4405,
-    "totalPassed": 4205,
+    "totalChecks": 4413,
+    "totalPassed": 4212,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 732,
+    "completedItems": 734,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260528-0636",
-    "lastRecordedAt": "2026-05-28T10:42:22.198Z",
-    "latestRecordedRunId": "QA-20260529-0639",
-    "latestRecordedAt": "2026-05-29T03:17:33.247Z"
+    "lastRunId": "QA-20260529-0641",
+    "lastRecordedAt": "2026-05-29T12:50:47.147Z",
+    "latestRecordedRunId": "QA-20260529-0641",
+    "latestRecordedAt": "2026-05-29T12:50:47.147Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16847,27 +16847,27 @@
     },
     "q-new10-pronoun-resolution": {
       "id": "q-new10-pronoun-resolution",
-      "title": "팔로업 대명사 해석 미완 — 그 서버들 = 전체 18대로 확장",
+      "title": "Q5 '방금 분석한 서버' 다중 서버 세션 컨텍스트 미해석 — 로드밸런서 카테고리로 재해석",
       "priority": "P5",
       "status": "wont-fix",
       "firstSeenRunId": "QA-20260525-0584",
       "firstSeenAt": "2026-05-24T15:52:12.919Z",
-      "lastSeenRunId": "QA-20260525-0584",
-      "lastSeenAt": "2026-05-24T15:52:12.919Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260529-0640",
+      "lastSeenAt": "2026-05-29T10:28:51.014Z",
+      "seenCount": 2,
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 1,
+      "wontFixCount": 2,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "v8.12.28 히스토리 복원은 됐으나 이전 응답 대상을 대명사로 참조하는 pronoun resolution 미구현",
+      "lastNote": "Q5 응답은 lb-haproxy-dc1-01 네트워크 70.8% warning을 정확히 반환했으나 '방금 분석한 서버'(lb-haproxy/web-nginx/db-mysql primary·replica/api-was) 다중 컨텍스트 대신 로드밸런서 타입으로 범위 재해석. 기존 P5/q-new10 wont-fix 재확인, 회귀 아님.",
       "isBlocking": false,
       "isBlockingExplicit": true,
-      "overengineeringScope": "",
+      "overengineeringScope": "포트폴리오 운영성 우선: 비차단 세션 컨텍스트 추적은 wont-fix 유지",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-05-24T15:52:12.919Z"
+      "lastStatusChangeAt": "2026-05-29T10:28:51.014Z"
     },
     "q-new11-location-clarification": {
       "id": "q-new11-location-clarification",
@@ -18044,6 +18044,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-28T18:22:11.038Z"
+    },
+    "q5-contextual-followup-label-clarity": {
+      "id": "q5-contextual-followup-label-clarity",
+      "title": "컨텍스트 팔로업 타깃이 동종 단일 타입일 때 '로드밸런서 N대' 대신 '지정 서버 N대'로 라벨링",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260529-0641",
+      "firstSeenAt": "2026-05-29T12:50:47.147Z",
+      "lastSeenRunId": "QA-20260529-0641",
+      "lastSeenAt": "2026-05-29T12:50:47.147Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "ef784e4d6: contextualTargets 플래그 + filterSnapshotServers preferExplicitLabel. ai-engine-00583-7pw 라이브 검증 '지정 서버 3대 중 1대'",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-29T12:50:47.147Z"
+    },
+    "multi-agent-data-source-history-threading": {
+      "id": "multi-agent-data-source-history-threading",
+      "title": "multi-agent 스트림 경로 createAgentDataSourceContext에 대화 히스토리 전달 (latent 갭 보완)",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260529-0641",
+      "firstSeenAt": "2026-05-29T12:50:47.147Z",
+      "lastSeenRunId": "QA-20260529-0641",
+      "lastSeenAt": "2026-05-29T12:50:47.147Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "4057fc82c: executeMultiAgentStream → executeAgentStream → createAgentDataSourceContext. ai-engine-00582-tk5",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-29T12:50:47.147Z"
     }
   },
   "runs": [
@@ -36792,6 +36840,173 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260529-0640",
+      "recordedAt": "2026-05-29T10:28:51.014Z",
+      "recordedAtKst": "2026-05-29 19:28:51 KST",
+      "title": "Vercel Playwright MCP 대화형 AI QA - 표준 5문항 점검 (v8.12.77)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260529-0640.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EhLf7tgfW7Hm3cQYz9pDEca9rxw9",
+        "deploymentUrl": "https://openmanager-55ihntdvt-skyasus-projects.vercel.app",
+        "commitSha": "97c74ad7dba719f774c4ac493dcb423e9e2477d5"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "conversational-ai-qa",
+        "/dashboard AI assistant sidebar"
+      ],
+      "skippedSurfaces": [
+        "observability pack",
+        "vision live",
+        "reporter/anomaly tabs"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "표준 5문항 모두 구체 수치/근거/도구 라벨을 포함해 응답. Q1~Q4 PASS, Q5는 데이터는 정확하나 세션 컨텍스트 해석은 기존 wont-fix 한계 재확인.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-29T19:22:00+09:00",
+          "summary": "billing period 2026-05-01..05-29 effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052. 예상 외 build/function/bandwidth 급증 없음.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI 어시스턴트 Q5 응답 + 데이터 슬롯 parity 증거",
+          "path": "reports/qa/evidence/qa-20260529-ai-assistant-parity.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260529-0641",
+      "recordedAt": "2026-05-29T12:50:47.147Z",
+      "recordedAtKst": "2026-05-29 21:50:47 KST",
+      "title": "Vercel Playwright MCP - Q5 컨텍스트 팔로업 라벨 명확화 검증 (ai-engine-00583)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260529-0641.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EhLf7tgfW7Hm3cQYz9pDEca9rxw9",
+        "deploymentUrl": "https://openmanager-55ihntdvt-skyasus-projects.vercel.app",
+        "commitSha": "ef784e4d6"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "conversational-ai-qa",
+        "/dashboard AI assistant sidebar",
+        "contextual-follow-up-label"
+      ],
+      "skippedSurfaces": [
+        "observability pack",
+        "vision live",
+        "reporter/anomaly tabs"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Q5 '방금 분석한 서버' 컨텍스트 팔로업이 이전 turn 서버로 정확히 스코핑되고, 동종 단일 타입에서도 '지정 서버' 라벨로 명확히 표기됨을 라이브 검증. 회귀 테스트 포함 monitoring 216 테스트 PASS.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-29T21:50:00+09:00",
+          "summary": "billing period 2026-05-01..05-29 effective=19.23 USD, billed=0.00 USD. AI Engine은 Cloud Run Free Tier(512Mi/1vCPU). 예상 외 급증 없음.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Q5 컨텍스트 팔로업 '지정 서버 3대 중 1대' 라벨 수정 검증",
+          "path": "reports/qa/evidence/qa-20260529-q5-contextual-label-fix.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -36800,16 +37015,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 347,
-      "appropriateCount": 296,
+      "seenCount": 349,
+      "appropriateCount": 298,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260529-0638",
-      "lastSeenAt": "2026-05-28T18:22:11.038Z",
+      "lastRunId": "QA-20260529-0641",
+      "lastSeenAt": "2026-05-29T12:50:47.147Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI Engine type-check and full deterministic test suite passed; runtime /health is ok on v8.12.76.",
+      "lastRationale": "Q5 '방금 분석한 서버' 컨텍스트 팔로업이 이전 turn 서버로 정확히 스코핑되고, 동종 단일 타입에서도 '지정 서버' 라벨로 명확히 표기됨을 라이브 검증. 회귀 테스트 포함 monitoring 216 테스트 PASS.",
       "lastNextAction": ""
     },
     "observability-monitoring": {

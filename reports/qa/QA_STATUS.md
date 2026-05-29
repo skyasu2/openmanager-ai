@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-29 12:17:34 KST
+> Generated at: 2026-05-29 21:50:48 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 637 |
-| Total Runs (Counted) | 499 |
+| Total Recorded Runs | 639 |
+| Total Runs (Counted) | 501 |
 | Non-counted Runs | 138 |
-| Total Checks | 4405 |
-| Passed | 4205 |
+| Total Checks | 4413 |
+| Passed | 4212 |
 | Failed | 159 |
-| Completed Items | 732 |
+| Completed Items | 734 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260528-0636 (2026-05-28T10:42:22.198Z) |
-| Latest Recorded Run | QA-20260529-0639 (2026-05-29T03:17:33.247Z) |
+| Last Counted Run | QA-20260529-0641 (2026-05-29T12:50:47.147Z) |
+| Latest Recorded Run | QA-20260529-0641 (2026-05-29T12:50:47.147Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,34 +34,31 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260529-0639 (2026-05-29T03:17:33.247Z)
+Latest run: QA-20260529-0641 (2026-05-29T12:50:47.147Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| Frontend UX Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | v8.12.77 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443. |
-| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00581-cfc. |
+| vercel | cli | checked | normal | billing period 2026-05-01..05-29 effective=19.23 USD, billed=0.00 USD. AI Engine은 Cloud Run Free Tier(512Mi/1vCPU). 예상 외 급증 없음. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-28T03:17:33.247Z -> 2026-05-29T03:17:33.247Z (24h)
-- Runs with observations: 4 recorded / 2 counted
-- Samples: 7
+- Window: 2026-05-28T12:50:47.147Z -> 2026-05-29T12:50:47.147Z (24h)
+- Runs with observations: 1 recorded / 0 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Metrics Query Agent | deterministic | 7 | 593ms | 1377ms | - | - | 122ms | 224ms | QA-20260528-0637 |
+| Metrics Query Agent | deterministic | 1 | 371ms | 371ms | - | - | - | - | QA-20260528-0637 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-28T03:17:33.247Z -> 2026-05-29T03:17:33.247Z (24h)
+- Window: 2026-05-28T12:50:47.147Z -> 2026-05-29T12:50:47.147Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -72,28 +69,25 @@ Latest run: QA-20260529-0639 (2026-05-29T03:17:33.247Z)
 
 ## Coverage (Latest Run)
 
-- Scope: smoke
+- Scope: targeted
 - Release-Facing: yes
-- Counts Toward Summary: no
-- Deployment: gitlab-pipeline-2560675094-v8.12.77 / SHA 97c74ad7
-- Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: Code review confirmed the changed runtime surface is limited to landing/login/system-boot MouseSpotlight canvas background motion, MouseSpotlight cleanup uses requestAnimationFrame timestamp for idle drift and preserves reduced-motion early return plus rAF cleanup, npm run lint passed, git diff --check passed, npm run docs:components:verify passed after regenerating the component dependency map, MouseSpotlight DOM unit test passed with 1 file and 5 tests after bypassing the local jsdom startup healthcheck, npm run test:quick passed, npm run type-check passed, GitLab main validate pipeline 2560660985 completed successfully for commit 4b3d8af0442b14b7b97fafc2cc44d0d901e12876, GitLab tag pipeline v8.12.77 completed successfully, release:publish production version smoke passed on attempt 1/81, Production /api/version reports 8.12.77, v8.12.77, releaseTag v8.12.77, and commit 97c74ad7dba719f774c4ac493dcb423e9e2477d5, Cloud Run /health reports status ok and version 8.12.77 with routesReady true, Cloud Run free-tier guardrails remain intact, Vercel usage remains billed 0.0000 USD after deploy, GitHub public frontend snapshot synced through npm run sync:github
-- Skipped Surfaces: Full conversational five-question AI QA was not rerun because this was a landing visual canvas change, not an AI routing, prompt, or output-format change, Full dashboard/device visual matrix was not run; release smoke covered production route health, version propagation, and deploy pipeline success, Manual pixel-level landing screenshot review was not recorded as durable evidence in this smoke run
+- Counts Toward Summary: yes
+- Deployment: dpl_EhLf7tgfW7Hm3cQYz9pDEca9rxw9 / SHA ef784e4d
+- Coverage Packs: ai-core
+- Covered Surfaces: conversational-ai-qa, /dashboard AI assistant sidebar, contextual-follow-up-label
+- Skipped Surfaces: observability pack, vision live, reporter/anomaly tabs
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitHub public snapshot | [GitHub public snapshot](https://github.com/skyasu2/openmanager-ai) | - |
-| general | GitLab pipeline v8.12.77 | [GitLab pipeline v8.12.77](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2560675094) | - |
-| monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
-| vercel-deployment | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
+| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.77 release smoke command evidence | `reports/qa/evidence/qa-20260529-v81277-release-smoke.txt` | - |
+| playwright-screenshot | Q5 컨텍스트 팔로업 '지정 서버 3대 중 1대' 라벨 수정 검증 | `reports/qa/evidence/qa-20260529-q5-contextual-label-fix.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -161,7 +155,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P5] q-new10-pronoun-resolution: 팔로업 대명사 해석 미완 — 그 서버들 = 전체 18대로 확장 (seen 1회, last QA-20260525-0584)
+- [P5] q-new10-pronoun-resolution: Q5 '방금 분석한 서버' 다중 서버 세션 컨텍스트 미해석 — 로드밸런서 카테고리로 재해석 (seen 2회, last QA-20260529-0640)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P4] q-new8-advisor-routing: P4 재확인: 특정 서버 성능 개선 조언 시 Advisor 대신 AZ 라우팅 오발동 (seen 1회, last QA-20260525-0584)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -188,18 +182,20 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 732 items completed (full list in qa-tracker.json)
+- Total: 734 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - multi-agent-data-source-history-threading: multi-agent 스트림 경로 createAgentDataSourceContext에 대화 히스토리 전달 (latent 갭 보완) (last QA-20260529-0641)
+  - q5-contextual-followup-label-clarity: 컨텍스트 팔로업 타깃이 동종 단일 타입일 때 '로드밸런서 N대' 대신 '지정 서버 N대'로 라벨링 (last QA-20260529-0641)
   - ai-engine-cloud-build-buildkit-mount-compatibility: AI Engine Cloud Build default Docker builder compatibility (last QA-20260529-0638)
   - q-new76-metric-risk-compare-omitted-noun: CPU/메모리/디스크 중 어느 게 가장 위험? 질의가 deterministic metric-current 위험도 비교로 응답 (last QA-20260528-0636)
   - q-new72-metric-risk-compare: CPU/MEM/DISK 중 가장 위험 메트릭 질의가 deterministic metric-current 위험도 비교로 응답 (last QA-20260528-0634)
-  - dashboard-alert-feed-card-focus: Inline alert feed clicks focus and highlight the matching server card (last QA-20260528-0630)
-  - dashboard-mobile-resource-gauge-wrap: System resource gauges wrap on mobile without horizontal overflow (last QA-20260528-0630)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260529-0641 | 2026-05-29T12:50:47.147Z | targeted | yes | yes | Vercel Playwright MCP - Q5 컨텍스트 팔로업 라벨 명확화 검증 (ai-engine-00583) | 3 | 2 | 0 | 0 | 0 | 0 |
+| QA-20260529-0640 | 2026-05-29T10:28:51.014Z | targeted | yes | yes | Vercel Playwright MCP 대화형 AI QA - 표준 5문항 점검 (v8.12.77) | 5 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260529-0639 | 2026-05-29T03:17:33.247Z | smoke | yes | no | GitLab production release smoke - v8.12.77 landing mouse spotlight motion | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260529-0638 | 2026-05-28T18:22:11.038Z | smoke | yes | no | v8.12.76 GitLab Release Smoke - AI Engine Cloud Build Recovery | 15 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260528-0637 | 2026-05-28T13:35:35.677Z | smoke | yes | no | GitLab production release smoke - v8.12.74 AI Engine shared utils refactor | 14 | 0 | 0 | 0 | 0 | 0 |
@@ -218,5 +214,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260527-0624 | 2026-05-27T07:17:17.887Z | targeted | no | yes | Vercel Playwright MCP targeted QA - 2026-05-26..27 modified surfaces only | 16 | 0 | 3 | 0 | 0 | 2 |
 | QA-20260527-0623 | 2026-05-27T06:56:44.859Z | smoke | yes | yes | v8.12.59 Release Smoke - Vercel, Cloud Run, and P17 group comparison | 23 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0622 | 2026-05-27T05:02:40.316Z | smoke | no | no | Deployment Smoke Recheck - v8.12.58 Vercel and Cloud Run | 15 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260527-0621 | 2026-05-27T04:26:21.736Z | targeted | yes | yes | Vercel Playwright QA - v8.12.58 Q3 anomaly scan routing recheck | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260527-0620 | 2026-05-27T03:05:16.952Z | targeted | no | yes | AI 어시스턴트 신규 질문 평가 Q-NEW52~Q-NEW57 + P15 재확인 (v8.12.56) | 6 | 0 | 0 | 0 | 0 | 1 |

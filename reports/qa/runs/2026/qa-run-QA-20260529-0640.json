@@ -1,0 +1,103 @@
+{
+  "runId": "QA-20260529-0640",
+  "recordedAt": "2026-05-29T10:28:51.014Z",
+  "recordedAtKst": "2026-05-29 19:28:51 KST",
+  "runTitle": "Vercel Playwright MCP 대화형 AI QA - 표준 5문항 점검 (v8.12.77)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EhLf7tgfW7Hm3cQYz9pDEca9rxw9",
+    "deploymentUrl": "https://openmanager-55ihntdvt-skyasus-projects.vercel.app",
+    "commitSha": "97c74ad7dba719f774c4ac493dcb423e9e2477d5"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "conversational-ai-qa",
+    "/dashboard AI assistant sidebar"
+  ],
+  "skippedSurfaces": [
+    "observability pack",
+    "vision live",
+    "reporter/anomaly tabs"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "표준 5문항 모두 구체 수치/근거/도구 라벨을 포함해 응답. Q1~Q4 PASS, Q5는 데이터는 정확하나 세션 컨텍스트 해석은 기존 wont-fix 한계 재확인.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-29T19:22:00+09:00",
+      "summary": "billing period 2026-05-01..05-29 effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052. 예상 외 build/function/bandwidth 급증 없음.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI 어시스턴트 Q5 응답 + 데이터 슬롯 parity 증거",
+      "path": "reports/qa/evidence/qa-20260529-ai-assistant-parity.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "q-new10-pronoun-resolution",
+      "title": "Q5 '방금 분석한 서버' 다중 서버 세션 컨텍스트 미해석 — 로드밸런서 카테고리로 재해석",
+      "priority": "P5",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "포트폴리오 운영성 우선: 비차단 세션 컨텍스트 추적은 wont-fix 유지",
+      "evidence": "",
+      "note": "Q5 응답은 lb-haproxy-dc1-01 네트워크 70.8% warning을 정확히 반환했으나 '방금 분석한 서버'(lb-haproxy/web-nginx/db-mysql primary·replica/api-was) 다중 컨텍스트 대신 로드밸런서 타입으로 범위 재해석. 기존 P5/q-new10 wont-fix 재확인, 회귀 아님.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Q1 현재 전체 상태 요약 PASS: 18대(정상17/경고1/위험0), 평균 CPU32%/메모리45%/디스크35%, 경고서버 lb-haproxy-dc1-01 식별, 추세·권고 포함. 도구 monitoring-server-health.",
+    "Q2 web-server-01 상세 PASS: 별칭 web-server-01→web-nginx-dc1-01 해석, online CPU31%/메모리41%/디스크29%/네트워크1%, load1 1.07/load5 0.82/응답시간167ms, 진단 명령어 제공.",
+    "Q3 24시간 피크 PASS: 피크 2026-05-29 03:50, load1 최고 16.58/상위평균 9.08, 상위서버 db-mysql-dc1-primary 16.58·replica 5.80·api-was 4.87, 운영해석 포함. 도구 monitoring-peak-metric.",
+    "Q4 즉시 조치 필요 PASS: 즉시 대상 없음, 주의관찰 1대 lb-haproxy-dc1-01(CPU42% warning), 우선순위·권장확인·진단명령어(haproxy socat). Q1과 경고서버 일관.",
+    "Q5 팔로업 네트워크 필터 WARN: 데이터(lb-haproxy 네트워크70.8% warning) 정확하나 세션 컨텍스트 미해석(P5 wont-fix 재확인).",
+    "데이터 parity 검증 PASS: /api/health?service=parity globalSlotIndex=114(hour 19) = 대시보드 'slot 114/143' = AI 응답 '데이터 슬롯 19:00 KST' 일치. 대시보드 평균 CPU32%/Mem45%/Disk35%·경고1·위험0이 Q1 응답과 일치.",
+    "콘솔 에러 0건, 5문항 모두 정상 스트리밍 응답, 500/타임아웃 미관측."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
