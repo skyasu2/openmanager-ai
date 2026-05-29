@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-29T13:55:43.521Z"
+    "updatedAt": "2026-05-29T15:28:02.565Z"
   },
   "sequence": {
-    "nextRunNumber": 643
+    "nextRunNumber": 644
   },
   "summary": {
-    "totalRecordedRuns": 640,
+    "totalRecordedRuns": 641,
     "totalRuns": 501,
-    "excludedRuns": 139,
+    "excludedRuns": 140,
     "totalChecks": 4413,
     "totalPassed": 4212,
     "totalFailed": 159,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260529-0641",
     "lastRecordedAt": "2026-05-29T12:50:47.147Z",
-    "latestRecordedRunId": "QA-20260529-0642",
-    "latestRecordedAt": "2026-05-29T13:55:43.521Z"
+    "latestRecordedRunId": "QA-20260530-0643",
+    "latestRecordedAt": "2026-05-29T15:28:02.565Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -37054,6 +37054,141 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260530-0643",
+      "recordedAt": "2026-05-29T15:28:02.565Z",
+      "recordedAtKst": "2026-05-30 00:28:02 KST",
+      "title": "GitLab production release smoke - v8.12.78 current main deployment",
+      "owner": "codex",
+      "source": "gitlab-ci-release-smoke+vercel-production-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260530-0643.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7cnEgWfFHU9snTSuUEdBGSqfRgvh",
+        "deploymentUrl": "https://openmanager-drlb0kdqd-skyasus-projects.vercel.app",
+        "commitSha": "49cf8d6230082fd1adb12e9790a19aa5a174fe96"
+      },
+      "scope": "smoke",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Current main deployed through semver tag v8.12.78",
+        "GitLab tag deploy pipeline 2562175787 completed successfully",
+        "Vercel production /api/version reports 8.12.78 and commit 49cf8d6230082fd1adb12e9790a19aa5a174fe96",
+        "Vercel production /api/health reports database/cache/ai connected",
+        "Cloud Run ai-engine /health reports version 8.12.78 and routesReady true",
+        "Cloud Run free-tier guardrails remain intact",
+        "Vercel usage remains billed 0.0000 USD after deploy",
+        "Landing MouseSpotlight halo removal and Q5 contextual label fixes are included in the deployed release commit range"
+      ],
+      "skippedSurfaces": [
+        "Full conversational five-question AI QA was not rerun because QA-20260529-0641 already covered the Q5 AI behavior on the same fixed backend path",
+        "Full dashboard/device visual matrix was not run; release smoke covered production route health, version propagation, deploy pipeline success, and Cloud Run health",
+        "Manual pixel-level landing screenshot was not captured in this smoke run"
+      ],
+      "checks": {
+        "total": 20,
+        "passed": 20,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag deploy pipeline, production /api/version, Vercel deployment readiness, Cloud Run /health, and free-tier guardrails all passed for v8.12.78.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "ci:local completed before release, covering root type/lint/quick/contract/component-map gates and AI Engine type-check/test.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "frontend-ux",
+          "domainName": "Frontend UX Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release includes the landing MouseSpotlight halo removal and production version propagation succeeded. No new frontend availability issue was observed in route smoke.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The Q5 contextual label fix remains included in the deployed release, and the prior targeted production QA-20260529-0641 already validated the AI behavior with durable evidence.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-30T00:25:34+09:00",
+          "summary": "billing period 2026-05-01..05-30 effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052.",
+          "evidence": "npm run check:usage",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-30T00:25:34+09:00",
+          "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00584-k7f.",
+          "evidence": "npm run check:usage",
+          "url": "https://console.cloud.google.com/run"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.78 release smoke command evidence",
+          "path": "reports/qa/evidence/qa-20260530-v81278-release-smoke.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.78",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562175787"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-drlb0kdqd-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -37062,16 +37197,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 349,
-      "appropriateCount": 298,
+      "seenCount": 350,
+      "appropriateCount": 299,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 69,
-      "lastRunId": "QA-20260529-0641",
-      "lastSeenAt": "2026-05-29T12:50:47.147Z",
+      "lastRunId": "QA-20260530-0643",
+      "lastSeenAt": "2026-05-29T15:28:02.565Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Q5 '방금 분석한 서버' 컨텍스트 팔로업이 이전 turn 서버로 정확히 스코핑되고, 동종 단일 타입에서도 '지정 서버' 라벨로 명확히 표기됨을 라이브 검증. 회귀 테스트 포함 monitoring 216 테스트 PASS.",
+      "lastRationale": "The Q5 contextual label fix remains included in the deployed release, and the prior targeted production QA-20260529-0641 already validated the AI behavior with durable evidence.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -37113,16 +37248,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 238,
-      "appropriateCount": 217,
+      "seenCount": 239,
+      "appropriateCount": 218,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260529-0639",
-      "lastSeenAt": "2026-05-29T03:17:33.247Z",
+      "lastRunId": "QA-20260530-0643",
+      "lastSeenAt": "2026-05-29T15:28:02.565Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main validate, tag deploy/smoke pipeline, production /api/version, Cloud Run /health, and usage guardrails all passed for v8.12.77.",
+      "lastRationale": "GitLab tag deploy pipeline, production /api/version, Vercel deployment readiness, Cloud Run /health, and free-tier guardrails all passed for v8.12.78.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -37130,16 +37265,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 267,
-      "appropriateCount": 240,
+      "seenCount": 268,
+      "appropriateCount": 241,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260529-0639",
-      "lastSeenAt": "2026-05-29T03:17:33.247Z",
+      "lastRunId": "QA-20260530-0643",
+      "lastSeenAt": "2026-05-29T15:28:02.565Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The changed component has a focused DOM test that passed, and the standard quick/type/lint/component-map gates covered the local regression surface.",
+      "lastRationale": "ci:local completed before release, covering root type/lint/quick/contract/component-map gates and AI Engine type-check/test.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -37266,16 +37401,16 @@
       "domainName": "Frontend UX Engineer",
       "firstSeenRunId": "QA-20260507-0419",
       "firstSeenAt": "2026-05-07T01:09:27.132Z",
-      "seenCount": 6,
-      "appropriateCount": 6,
+      "seenCount": 7,
+      "appropriateCount": 7,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260529-0639",
-      "lastSeenAt": "2026-05-29T03:17:33.247Z",
+      "lastRunId": "QA-20260530-0643",
+      "lastSeenAt": "2026-05-29T15:28:02.565Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The change is isolated to a non-interactive background canvas, keeps pointer-events disabled, and preserves reduced-motion handling.",
+      "lastRationale": "The release includes the landing MouseSpotlight halo removal and production version propagation succeeded. No new frontend availability issue was observed in route smoke.",
       "lastNextAction": ""
     },
     "frontend-platform": {

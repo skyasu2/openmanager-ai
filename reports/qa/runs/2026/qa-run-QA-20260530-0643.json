@@ -1,0 +1,137 @@
+{
+  "runId": "QA-20260530-0643",
+  "recordedAt": "2026-05-29T15:28:02.565Z",
+  "recordedAtKst": "2026-05-30 00:28:02 KST",
+  "runTitle": "GitLab production release smoke - v8.12.78 current main deployment",
+  "owner": "codex",
+  "source": "gitlab-ci-release-smoke+vercel-production-probe",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7cnEgWfFHU9snTSuUEdBGSqfRgvh",
+    "deploymentUrl": "https://openmanager-drlb0kdqd-skyasus-projects.vercel.app",
+    "commitSha": "49cf8d6230082fd1adb12e9790a19aa5a174fe96"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Current main deployed through semver tag v8.12.78",
+    "GitLab tag deploy pipeline 2562175787 completed successfully",
+    "Vercel production /api/version reports 8.12.78 and commit 49cf8d6230082fd1adb12e9790a19aa5a174fe96",
+    "Vercel production /api/health reports database/cache/ai connected",
+    "Cloud Run ai-engine /health reports version 8.12.78 and routesReady true",
+    "Cloud Run free-tier guardrails remain intact",
+    "Vercel usage remains billed 0.0000 USD after deploy",
+    "Landing MouseSpotlight halo removal and Q5 contextual label fixes are included in the deployed release commit range"
+  ],
+  "skippedSurfaces": [
+    "Full conversational five-question AI QA was not rerun because QA-20260529-0641 already covered the Q5 AI behavior on the same fixed backend path",
+    "Full dashboard/device visual matrix was not run; release smoke covered production route health, version propagation, deploy pipeline success, and Cloud Run health",
+    "Manual pixel-level landing screenshot was not captured in this smoke run"
+  ],
+  "checks": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag deploy pipeline, production /api/version, Vercel deployment readiness, Cloud Run /health, and free-tier guardrails all passed for v8.12.78.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "ci:local completed before release, covering root type/lint/quick/contract/component-map gates and AI Engine type-check/test.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "frontend-ux",
+      "domainName": "Frontend UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The release includes the landing MouseSpotlight halo removal and production version propagation succeeded. No new frontend availability issue was observed in route smoke.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The Q5 contextual label fix remains included in the deployed release, and the prior targeted production QA-20260529-0641 already validated the AI behavior with durable evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-30T00:25:34+09:00",
+      "summary": "billing period 2026-05-01..05-30 effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052.",
+      "evidence": "npm run check:usage",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-30T00:25:34+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00584-k7f.",
+      "evidence": "npm run check:usage",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.78 release smoke command evidence",
+      "path": "reports/qa/evidence/qa-20260530-v81278-release-smoke.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release publish path: ./scripts/release/publish.sh patch.",
+    "Production version smoke passed on attempt 1/81 after GitLab tag pipeline success.",
+    "This smoke is release-facing but countsTowardSummary=false to avoid inflating aggregate totals after a narrow release verification run."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.78",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562175787"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-drlb0kdqd-skyasus-projects.vercel.app/"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+QA evidence: v8.12.78 release smoke
+
+Recorded by: Codex
+Run time: 2026-05-30 KST
+Target: https://openmanager-ai.vercel.app
+Commit: 49cf8d6230082fd1adb12e9790a19aa5a174fe96
+Tag: v8.12.78
+GitLab pipeline: 2562175787
+Pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562175787
+Vercel deployment: dpl_7cnEgWfFHU9snTSuUEdBGSqfRgvh
+Cloud Run revision: ai-engine-00584-k7f
+
+Pre-release gates:
+- runner health: runner=true docker=true scope=local
+- release dry-run: next=8.12.78, release-as=patch, previous-tag=v8.12.77
+- ci:local: PASS
+  - type-check PASS
+  - lint PASS
+  - test:quick PASS
+  - test:contract PASS (3 files / 24 tests)
+  - docs:components:verify PASS
+  - ai-engine type-check PASS
+  - ai-engine test PASS (147 files / 1614 tests)
+
+Release pipeline:
+- GitLab pipeline 2562175787 status=success ref=v8.12.78
+- deploy: success
+- deploy_ai_engine: success
+- post_deploy_smoke: success
+- post_deploy_ai_engine_smoke: success
+
+Production verification:
+- /api/version reports version=8.12.78, releaseTag=v8.12.78, commitSha=49cf8d6230082fd1adb12e9790a19aa5a174fe96
+- /api/health reports healthy, database/cache/ai connected, version=8.12.78
+- Cloud Run /health reports ok, version=8.12.78, routesReady=true
+- Cloud Run /monitoring without auth returns "Monitoring endpoints require authentication" as expected
+- Vercel inspect reports production deployment dpl_7cnEgWfFHU9snTSuUEdBGSqfRgvh Ready
+- Cloud Run service reports latestReadyRevision=ai-engine-00584-k7f and traffic 100%
+
+Usage/cost:
+- Cloud Run free-tier guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true
+- Latest Cloud Build machineType was empty/default
+- Vercel usage checked: effective=19.2319 USD, billed=0.0000 USD
