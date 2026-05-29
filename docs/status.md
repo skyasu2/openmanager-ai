@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-30 | **현재 버전 스냅샷**: v8.12.78
+**상태 스냅샷 기준일**: 2026-05-30 | **현재 버전 스냅샷**: v8.12.79
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.79** (2026-05-30) — Bug Fixes: ai-engine: route all-scope average metric queries; Tests: qa: record v8.12.78 release smoke
 - **v8.12.78** (2026-05-30) — Tests: qa: close superseded Q5 metadata item; Tests: ai-engine: align stream routing history expectations; Tests: qa: record Q5 contextual follow-up QA + label-clarity fix verification
 - **v8.12.77** (2026-05-29) — Code Refactoring: remove dead legacy files; Code Refactoring: remove unused exports; Bug Fixes: ops: guard cloud build dockerfile compatibility
 - **v8.12.76** (2026-05-29) — Bug Fixes: ai-engine: keep cloud build dockerfile compatible
 - **v8.12.75** (2026-05-29) — Tests: ai-engine: harden domain registry telemetry coverage; Tests: qa: record v8.12.74 release smoke; Bug Fixes: ai-engine: bootstrap domain registry entrypoints
-- **v8.12.74** (2026-05-28) — Code Refactoring: ai-engine: extract shared utils and fix stateful regex; Tests: qa: record v8.12.73 Q-NEW76 live smoke
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
