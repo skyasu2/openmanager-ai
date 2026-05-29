@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-29 03:22:11 KST
+> Generated at: 2026-05-29 12:17:34 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 636 |
+| Total Recorded Runs | 637 |
 | Total Runs (Counted) | 499 |
-| Non-counted Runs | 137 |
+| Non-counted Runs | 138 |
 | Total Checks | 4405 |
 | Passed | 4205 |
 | Failed | 159 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260528-0636 (2026-05-28T10:42:22.198Z) |
-| Latest Recorded Run | QA-20260529-0638 (2026-05-28T18:22:11.038Z) |
+| Latest Recorded Run | QA-20260529-0639 (2026-05-29T03:17:33.247Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,36 +34,34 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260529-0638 (2026-05-28T18:22:11.038Z)
+Latest run: QA-20260529-0639 (2026-05-29T03:17:33.247Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| Frontend UX Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | v8.12.76 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443. |
-| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00580-859. |
+| vercel | cli | checked | normal | v8.12.77 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443. |
+| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00581-cfc. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-27T18:22:11.038Z -> 2026-05-28T18:22:11.038Z (24h)
-- Runs with observations: 6 recorded / 4 counted
-- Samples: 11
+- Window: 2026-05-28T03:17:33.247Z -> 2026-05-29T03:17:33.247Z (24h)
+- Runs with observations: 4 recorded / 2 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Analyst Agent | streaming-ai | 1 | 7000ms | 7000ms | - | - | - | - | QA-20260528-0628 |
 | Metrics Query Agent | deterministic | 7 | 593ms | 1377ms | - | - | 122ms | 224ms | QA-20260528-0637 |
-| Metrics Query Agent | cloud-run-ai | 3 | 1000ms | 1000ms | - | - | - | - | QA-20260528-0628 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-27T18:22:11.038Z -> 2026-05-28T18:22:11.038Z (24h)
+- Window: 2026-05-28T03:17:33.247Z -> 2026-05-29T03:17:33.247Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -77,17 +75,17 @@ Latest run: QA-20260529-0638 (2026-05-28T18:22:11.038Z)
 - Scope: smoke
 - Release-Facing: yes
 - Counts Toward Summary: no
-- Deployment: gitlab-pipeline-2559759512-v8.12.76 / SHA 6321e3f8
+- Deployment: gitlab-pipeline-2560675094-v8.12.77 / SHA 97c74ad7
 - Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: GitLab tag pipeline v8.12.76 deploy job success, GitLab tag pipeline v8.12.76 deploy_ai_engine job success, GitLab post_deploy_smoke and post_deploy_ai_engine_smoke success, Production /api/version reports 8.12.76, v8.12.76, commit 6321e3f8b23e4bb367c51e21913a50d1bb433611, Cloud Run /health reports status ok and version 8.12.76, Cloud Run free-tier guardrails remain intact, AI Engine type-check and full test suite passed before release, Dockerfile no longer contains BuildKit-only RUN --mount cache syntax, GitHub public frontend snapshot synced through npm run sync:github
-- Skipped Surfaces: Interactive dashboard visual QA was not rerun in this deployment-smoke record, Full conversational five-question AI QA was not rerun because the change was Docker build/deploy compatibility, Full broad route/device matrix was not run
+- Covered Surfaces: Code review confirmed the changed runtime surface is limited to landing/login/system-boot MouseSpotlight canvas background motion, MouseSpotlight cleanup uses requestAnimationFrame timestamp for idle drift and preserves reduced-motion early return plus rAF cleanup, npm run lint passed, git diff --check passed, npm run docs:components:verify passed after regenerating the component dependency map, MouseSpotlight DOM unit test passed with 1 file and 5 tests after bypassing the local jsdom startup healthcheck, npm run test:quick passed, npm run type-check passed, GitLab main validate pipeline 2560660985 completed successfully for commit 4b3d8af0442b14b7b97fafc2cc44d0d901e12876, GitLab tag pipeline v8.12.77 completed successfully, release:publish production version smoke passed on attempt 1/81, Production /api/version reports 8.12.77, v8.12.77, releaseTag v8.12.77, and commit 97c74ad7dba719f774c4ac493dcb423e9e2477d5, Cloud Run /health reports status ok and version 8.12.77 with routesReady true, Cloud Run free-tier guardrails remain intact, Vercel usage remains billed 0.0000 USD after deploy, GitHub public frontend snapshot synced through npm run sync:github
+- Skipped Surfaces: Full conversational five-question AI QA was not rerun because this was a landing visual canvas change, not an AI routing, prompt, or output-format change, Full dashboard/device visual matrix was not run; release smoke covered production route health, version propagation, and deploy pipeline success, Manual pixel-level landing screenshot review was not recorded as durable evidence in this smoke run
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | GitHub public snapshot | [GitHub public snapshot](https://github.com/skyasu2/openmanager-ai) | - |
-| general | GitLab pipeline v8.12.76 | [GitLab pipeline v8.12.76](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2559759512) | - |
+| general | GitLab pipeline v8.12.77 | [GitLab pipeline v8.12.77](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2560675094) | - |
 | monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
 | vercel-deployment | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
 
@@ -95,7 +93,7 @@ Latest run: QA-20260529-0638 (2026-05-28T18:22:11.038Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.76 release smoke command evidence | `reports/qa/evidence/qa-20260529-v81276-release-smoke.txt` | - |
+| playwright-console | v8.12.77 release smoke command evidence | `reports/qa/evidence/qa-20260529-v81277-release-smoke.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -202,6 +200,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260529-0639 | 2026-05-29T03:17:33.247Z | smoke | yes | no | GitLab production release smoke - v8.12.77 landing mouse spotlight motion | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260529-0638 | 2026-05-28T18:22:11.038Z | smoke | yes | no | v8.12.76 GitLab Release Smoke - AI Engine Cloud Build Recovery | 15 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260528-0637 | 2026-05-28T13:35:35.677Z | smoke | yes | no | GitLab production release smoke - v8.12.74 AI Engine shared utils refactor | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0636 | 2026-05-28T10:42:22.198Z | targeted | yes | yes | Vercel production stream QA - v8.12.73 Q-NEW76 metric risk compare omitted noun | 15 | 1 | 0 | 0 | 0 | 0 |
@@ -221,4 +220,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260527-0622 | 2026-05-27T05:02:40.316Z | smoke | no | no | Deployment Smoke Recheck - v8.12.58 Vercel and Cloud Run | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260527-0621 | 2026-05-27T04:26:21.736Z | targeted | yes | yes | Vercel Playwright QA - v8.12.58 Q3 anomaly scan routing recheck | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260527-0620 | 2026-05-27T03:05:16.952Z | targeted | no | yes | AI 어시스턴트 신규 질문 평가 Q-NEW52~Q-NEW57 + P15 재확인 (v8.12.56) | 6 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260527-0619 | 2026-05-27T01:08:32.983Z | targeted | yes | yes | Vercel Playwright QA - v8.12.56 Q-NEW46a anomaly clarification bypass recheck | 5 | 1 | 0 | 0 | 0 | 0 |

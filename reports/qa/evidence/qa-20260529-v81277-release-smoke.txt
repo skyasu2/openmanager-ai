@@ -1,0 +1,47 @@
+v8.12.77 release smoke evidence
+================================
+
+Scope
+- Change reviewed before commit: landing MouseSpotlight canvas motion only.
+- Runtime contract impact: none; API/auth/AI behavior unchanged.
+- Code adjustment before commit: removed unused particle index path and used requestAnimationFrame timestamp for idle drift.
+
+Local validation
+- npm run lint: PASS
+- git diff --check: PASS
+- npm run docs:components:verify: PASS
+- VITEST_SKIP_JSDOM_HEALTHCHECK=true npm run test:dom -- src/components/landing/MouseSpotlight.test.tsx: PASS, 1 file / 5 tests
+- npm run test:quick: PASS
+- npm run type-check: PASS, TypeScript compile success
+
+Canonical commit and validation
+- Change commit: 4b3d8af0442b14b7b97fafc2cc44d0d901e12876 style(landing): refine mouse spotlight motion
+- Main validation pipeline: 2560660985, status success
+- Main pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2560660985
+
+Release and deployment
+- Release commit: 97c74ad7dba719f774c4ac493dcb423e9e2477d5 chore(release): 8.12.77
+- Release tag: v8.12.77
+- Release pipeline: 2560675094, status success
+- Release pipeline URL: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2560675094
+- release:publish production smoke: PASS on attempt 1/81
+
+Production probes
+- GET https://openmanager-ai.vercel.app/api/version:
+  version=8.12.77, buildVersion=8.12.77, releaseTag=v8.12.77, commitSha=97c74ad7dba719f774c4ac493dcb423e9e2477d5
+- GET https://ai-engine-jdhrhws7ia-an.a.run.app/health:
+  status=ok, version=8.12.77, routesReady=true, redis.configured=true, redis.degraded=false
+
+Usage and cost guardrails
+- npm run check:usage: PASS
+- Cloud Run guardrails: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true
+- Cloud Run latestReadyRevision=ai-engine-00581-cfc
+- Vercel usage: effective=18.5833 USD, billed=0.0000 USD, chargeCount=16443
+
+Public snapshot
+- npm run sync:github: PASS
+- GitHub public snapshot synced from gitlab@97c74ad7d
+
+Skipped
+- Full conversational AI QA skipped because this release changed only landing visual canvas motion.
+- Full dashboard/device matrix skipped; release smoke covered production route health and version propagation.

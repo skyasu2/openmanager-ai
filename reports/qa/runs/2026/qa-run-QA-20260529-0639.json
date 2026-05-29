@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260529-0639",
+  "recordedAt": "2026-05-29T03:17:33.247Z",
+  "recordedAtKst": "2026-05-29 12:17:33 KST",
+  "runTitle": "GitLab production release smoke - v8.12.77 landing mouse spotlight motion",
+  "owner": "codex",
+  "source": "gitlab-ci-release-smoke+vercel-production-probe",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2560675094-v8.12.77",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "97c74ad7dba719f774c4ac493dcb423e9e2477d5"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Code review confirmed the changed runtime surface is limited to landing/login/system-boot MouseSpotlight canvas background motion",
+    "MouseSpotlight cleanup uses requestAnimationFrame timestamp for idle drift and preserves reduced-motion early return plus rAF cleanup",
+    "npm run lint passed",
+    "git diff --check passed",
+    "npm run docs:components:verify passed after regenerating the component dependency map",
+    "MouseSpotlight DOM unit test passed with 1 file and 5 tests after bypassing the local jsdom startup healthcheck",
+    "npm run test:quick passed",
+    "npm run type-check passed",
+    "GitLab main validate pipeline 2560660985 completed successfully for commit 4b3d8af0442b14b7b97fafc2cc44d0d901e12876",
+    "GitLab tag pipeline v8.12.77 completed successfully",
+    "release:publish production version smoke passed on attempt 1/81",
+    "Production /api/version reports 8.12.77, v8.12.77, releaseTag v8.12.77, and commit 97c74ad7dba719f774c4ac493dcb423e9e2477d5",
+    "Cloud Run /health reports status ok and version 8.12.77 with routesReady true",
+    "Cloud Run free-tier guardrails remain intact",
+    "Vercel usage remains billed 0.0000 USD after deploy",
+    "GitHub public frontend snapshot synced through npm run sync:github"
+  ],
+  "skippedSurfaces": [
+    "Full conversational five-question AI QA was not rerun because this was a landing visual canvas change, not an AI routing, prompt, or output-format change",
+    "Full dashboard/device visual matrix was not run; release smoke covered production route health, version propagation, and deploy pipeline success",
+    "Manual pixel-level landing screenshot review was not recorded as durable evidence in this smoke run"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab main validate, tag deploy/smoke pipeline, production /api/version, Cloud Run /health, and usage guardrails all passed for v8.12.77.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed component has a focused DOM test that passed, and the standard quick/type/lint/component-map gates covered the local regression surface.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "frontend-ux",
+      "domainName": "Frontend UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The change is isolated to a non-interactive background canvas, keeps pointer-events disabled, and preserves reduced-motion handling.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-29T12:15:00+09:00",
+      "summary": "v8.12.77 production deploy after check: effective 18.5833 USD, billed 0.0000 USD, chargeCount 16443.",
+      "evidence": "npm run check:usage",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-29T12:15:00+09:00",
+      "summary": "Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00581-cfc.",
+      "evidence": "npm run check:usage",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.12.77 release smoke command evidence",
+      "path": "reports/qa/evidence/qa-20260529-v81277-release-smoke.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitHub public snapshot",
+      "url": "https://github.com/skyasu2/openmanager-ai"
+    },
+    {
+      "type": "general",
+      "label": "GitLab pipeline v8.12.77",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2560675094"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
