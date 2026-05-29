@@ -30,13 +30,11 @@ interface Particle {
   color: BrandColor;
 }
 
-function createParticle(
-  width: number,
-  height: number,
-  index: number
-): Particle {
+function createParticle(width: number, height: number): Particle {
   const x = Math.random() * width;
   const y = Math.random() * height;
+  const colorIndex = Math.floor(Math.random() * BRAND_COLORS.length);
+
   return {
     x,
     y,
@@ -44,9 +42,9 @@ function createParticle(
     vy: 0,
     homeX: x,
     homeY: y,
-    r: Math.random() * 1.6 + 0.6,
+    r: Math.random() * 2.0 + 1.0,
     opacity: Math.random() * 0.38 + 0.2,
-    color: BRAND_COLORS[index % BRAND_COLORS.length] ?? BRAND_COLORS[0],
+    color: BRAND_COLORS[colorIndex] ?? BRAND_COLORS[0],
   };
 }
 
@@ -81,8 +79,8 @@ export function MouseSpotlight() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       mouseX = -9999;
       mouseY = -9999;
-      particles = Array.from({ length: PARTICLE_COUNT }, (_, i) =>
-        createParticle(width, height, i)
+      particles = Array.from({ length: PARTICLE_COUNT }, () =>
+        createParticle(width, height)
       );
     };
 
@@ -100,8 +98,10 @@ export function MouseSpotlight() {
       mouseActive = false;
     };
 
-    const tick = () => {
+    const tick = (now = performance.now()) => {
       ctx.clearRect(0, 0, width, height);
+
+      const driftT = now * 0.00025;
 
       for (const p of particles) {
         const dx = mouseX - p.x;
@@ -114,6 +114,11 @@ export function MouseSpotlight() {
           p.vx -= (dx / dist) * force;
           p.vy -= (dy / dist) * force;
         }
+
+        // Idle drift gives each particle a slow independent orbit around home.
+        p.vx += Math.sin(driftT + p.homeX * 0.009 + p.homeY * 0.003) * 0.06;
+        p.vy +=
+          Math.cos(driftT * 0.7 + p.homeY * 0.009 + p.homeX * 0.003) * 0.06;
 
         p.vx += (p.homeX - p.x) * SPRING;
         p.vy += (p.homeY - p.y) * SPRING;
@@ -143,8 +148,8 @@ export function MouseSpotlight() {
 
       for (const p of particles) {
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color},${(p.opacity * 0.12).toFixed(3)})`;
+        ctx.arc(p.x, p.y, p.r * 7, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color},${(p.opacity * 0.22).toFixed(3)})`;
         ctx.fill();
 
         ctx.beginPath();
