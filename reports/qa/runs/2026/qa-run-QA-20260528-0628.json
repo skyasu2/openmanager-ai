@@ -101,6 +101,13 @@
     }
   ],
   "artifacts": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "chrome-devtools-mcp-transcript-only",
+    "reason": "QA-20260528-0628 was recorded from an already completed Chrome DevTools MCP AI evaluation transcript without contemporaneous durable artifact capture. Follow-up QA-20260528-0629 and later runs preserve the actionable P20/P21 findings and fixes.",
+    "recordedAt": "2026-05-29T04:51:39.000Z",
+    "recordedBy": "codex"
+  },
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],

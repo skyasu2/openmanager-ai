@@ -27,6 +27,10 @@ const BUDGET = {
 const METADATA_REQUIRED_FIELDS = ['Owner', 'Status', 'Doc type', 'Last reviewed'];
 const METADATA_RECOMMENDED_FIELDS = ['Canonical', 'Tags'];
 const DUPLICATE_PREFIX_EXCLUDE = new Set(['readme']);
+const DISTINCT_TOPIC_DUPLICATE_GROUPS = new Map([
+  ['ai-engine', ['reference/architecture/ai/ai-engine-architecture.md', 'reference/architecture/ai/ai-engine-evaluation.md']],
+  ['project', ['development/project-setup.md', 'history/project-evolution.md']],
+]);
 
 const ARGS = new Set(process.argv.slice(2));
 const SHOULD_WRITE = ARGS.has('--write');
@@ -205,6 +209,7 @@ function duplicateCandidates(activeFiles: string[]): DuplicateResult {
 
   const prefixCandidates = [...basenameGroups.entries()]
     .filter(([prefix]) => !DUPLICATE_PREFIX_EXCLUDE.has(prefix))
+    .filter(([prefix, files]) => !isDistinctTopicDuplicateGroup(prefix, files))
     .filter(([, files]) => files.length >= 2)
     .sort((a, b) => b[1].length - a[1].length)
     .slice(0, 10)
@@ -214,6 +219,15 @@ function duplicateCandidates(activeFiles: string[]): DuplicateResult {
     summary: prefixCandidates.length === 0 ? ['none'] : prefixCandidates.slice(0, 5),
     prefixCandidates,
   };
+}
+
+function isDistinctTopicDuplicateGroup(prefix: string, files: string[]): boolean {
+  const expected = DISTINCT_TOPIC_DUPLICATE_GROUPS.get(prefix);
+  if (!expected) return false;
+  const normalizedFiles = [...files].sort();
+  const normalizedExpected = [...expected].sort();
+  if (normalizedFiles.length !== normalizedExpected.length) return false;
+  return normalizedFiles.every((file, index) => file === normalizedExpected[index]);
 }
 
 function safeGit(args: string[]): string {

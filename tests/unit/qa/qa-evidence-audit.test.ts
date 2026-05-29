@@ -12,6 +12,7 @@ const {
   summarizeSharedReferencedRuns,
   summarizeUniqueReferencedRuns,
   summarizeRunArtifactSizes,
+  filterRefsForRuns,
   formatBytes,
 } = require('../../../scripts/qa/audit-qa-evidence.js');
 
@@ -51,6 +52,18 @@ describe('qa-evidence-audit', () => {
 
   it('formats MiB values for audit output', () => {
     expect(formatBytes(56.45 * 1024 * 1024)).toBe('56.45 MiB');
+  });
+
+  it('filters issue refs to the selected run window', () => {
+    const refs = [
+      'QA-OLD -> reports/qa/evidence/legacy/old.png',
+      'QA-RECENT -> reports/qa/evidence/recent.png',
+      'malformed ref',
+    ];
+
+    expect(filterRefsForRuns(refs, [{ runId: 'QA-RECENT' }])).toEqual([
+      'QA-RECENT -> reports/qa/evidence/recent.png',
+    ]);
   });
 
   it('groups referenced legacy evidence by run and sorts by total bytes', () => {

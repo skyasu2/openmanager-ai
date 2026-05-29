@@ -340,6 +340,15 @@ function formatList(title, items) {
   return [title, ...items.map((item) => `- ${item}`)].join('\n');
 }
 
+function filterRefsForRuns(refs, runs) {
+  const runIds = new Set(runs.map((run) => run.runId));
+  return refs.filter((entry) => {
+    const separatorIndex = entry.indexOf(' -> ');
+    if (separatorIndex < 0) return false;
+    return runIds.has(entry.slice(0, separatorIndex));
+  });
+}
+
 function sortByRecordedAtAscending(runs) {
   return [...runs].sort((left, right) => {
     const leftTime = Date.parse(left.recordedAt || '') || 0;
@@ -433,6 +442,16 @@ function main() {
     : nonEvidenceArtifactRefs.filter((entry) =>
         recentRuns.some((run) => entry.startsWith(`${run.runId} -> `))
       ));
+  const showAllIssueDetails = args.all || args.strict;
+  const recentMissingDurableArtifactRefs = filterRefsForRuns(
+    missingDurableArtifactRefs,
+    recentRuns
+  );
+  const visibleMissingDurableArtifactRefs = showAllIssueDetails
+    ? missingDurableArtifactRefs
+    : recentMissingDurableArtifactRefs;
+  const hiddenMissingDurableArtifactRefs =
+    missingDurableArtifactRefs.length - visibleMissingDurableArtifactRefs.length;
 
   const qaSummary = summarizeSize(qaFileInfos);
   const runSummary = summarizeSize(runFileInfos);
@@ -570,6 +589,14 @@ function main() {
   console.log(`- referenced durable evidence: ${referencedEvidence.size}`);
   console.log(`- orphan durable evidence: ${orphanEvidence.length}`);
   console.log(`- missing durable artifact paths: ${missingDurableArtifactRefs.length}`);
+  if (!showAllIssueDetails) {
+    console.log(
+      `- recent missing durable artifact paths: ${recentMissingDurableArtifactRefs.length}`
+    );
+    console.log(
+      `- historical missing durable artifact paths hidden: ${hiddenMissingDurableArtifactRefs}`
+    );
+  }
   console.log(
     `- ${args.all ? 'all' : 'recent'} counted runs without artifacts: ${countedRunsWithoutArtifacts.length}`
   );
@@ -599,7 +626,19 @@ function main() {
   console.log('');
   console.log(formatList('Orphan durable evidence', orphanEvidence));
   console.log('');
-  console.log(formatList('Missing durable artifact refs', missingDurableArtifactRefs));
+  console.log(
+    formatList(
+      showAllIssueDetails
+        ? 'Missing durable artifact refs'
+        : 'Recent missing durable artifact refs',
+      visibleMissingDurableArtifactRefs
+    )
+  );
+  if (!showAllIssueDetails && hiddenMissingDurableArtifactRefs > 0) {
+    console.log(
+      `Historical missing durable artifact refs hidden: ${hiddenMissingDurableArtifactRefs}. Run \`npm run qa:evidence:audit:all\` to list the full legacy set.`
+    );
+  }
   console.log('');
   console.log(
     formatList(
@@ -704,5 +743,6 @@ module.exports = {
   summarizeSharedReferencedRuns,
   summarizeUniqueReferencedRuns,
   summarizeRunArtifactSizes,
+  filterRefsForRuns,
   formatBytes,
 };
