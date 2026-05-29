@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-26 KST
+**Last Updated**: 2026-05-29 KST (라우팅 리팩토링 Phase 1~3 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -24,6 +24,14 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | _None_ | - | 현재 대기 중인 작업 없음. |
+
+---
+
+## On Hold
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| 라우팅 패턴 Phase 4 — artifact intent BFF 이관 | Low | Phase 1~3 완료 (`fc7a26b87`, `7ed7eb811`). Phase 4는 stream handler post-decision 메커니즘 선행 필요. 계획서: [`refactor-routing-patterns.md`](refactor-routing-patterns.md). |
 
 ---
 
