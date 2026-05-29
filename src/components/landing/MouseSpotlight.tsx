@@ -148,11 +148,6 @@ export function MouseSpotlight() {
 
       for (const p of particles) {
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 7, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color},${(p.opacity * 0.22).toFixed(3)})`;
-        ctx.fill();
-
-        ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${p.color},${p.opacity.toFixed(3)})`;
         ctx.fill();

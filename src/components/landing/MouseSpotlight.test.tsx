@@ -111,4 +111,15 @@ describe('MouseSpotlight', () => {
     expect(mockCtx.arc).toHaveBeenCalled();
     expect(mockCtx.fill).toHaveBeenCalled();
   });
+
+  it('draws particles without expanded halo circles', () => {
+    render(<MouseSpotlight />);
+    mockCtx.arc.mockClear();
+
+    frameCallback?.(performance.now());
+
+    const radii = mockCtx.arc.mock.calls.map(([, , radius]) => radius);
+    expect(radii.length).toBeGreaterThan(0);
+    expect(radii.every((radius) => radius < 7)).toBe(true);
+  });
 });
