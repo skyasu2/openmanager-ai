@@ -311,7 +311,8 @@ describe('executeMultiAgent direct routing contract', () => {
       null,
       undefined,
       undefined,
-      undefined
+      undefined,
+      [{ role: 'user', content: '첨부한 스크린샷 분석해줘' }]
     );
 
     const fallbackStatus = events.find((event) => event.type === 'agent_status');
@@ -361,7 +362,8 @@ describe('executeMultiAgent direct routing contract', () => {
       null,
       undefined,
       undefined,
-      undefined
+      undefined,
+      [{ role: 'user', content: '저신뢰 Vision direct fallback 확인' }]
     );
 
     const statusMessages = events
@@ -701,7 +703,8 @@ describe('executeMultiAgent direct routing contract', () => {
       null,
       undefined,
       undefined,
-      undefined
+      undefined,
+      [{ role: 'user', content: '장애 대응 순서 알려줘' }]
     );
   });
 
