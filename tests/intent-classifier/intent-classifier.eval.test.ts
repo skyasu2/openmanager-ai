@@ -22,7 +22,6 @@ const LOCAL_CLASSIFIER_MIN_KIND_SUPPORT = {
   'monitoring-analysis': 18,
   'server-monitoring-analysis': 4,
   'server-snapshot': 12,
-  guidance: 30,
   none: 43,
 } satisfies Record<ArtifactIntentEvaluationKind, number>;
 const LOCAL_CLASSIFIER_MIN_CATEGORY_SUPPORT = {

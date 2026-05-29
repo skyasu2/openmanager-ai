@@ -11,7 +11,6 @@ export const ARTIFACT_INTENT_EVALUATION_KINDS = [
   'monitoring-analysis',
   'server-monitoring-analysis',
   'server-snapshot',
-  'guidance',
   'none',
 ] as const satisfies readonly ArtifactIntentExpectedKind[];
 
@@ -72,7 +71,6 @@ function createZeroCounts(): Record<ArtifactIntentEvaluationKind, number> {
     'monitoring-analysis': 0,
     'server-monitoring-analysis': 0,
     'server-snapshot': 0,
-    guidance: 0,
     none: 0,
   };
 }
@@ -83,7 +81,6 @@ export function createEmptyConfusionMatrix(): ArtifactIntentConfusionMatrix {
     'monitoring-analysis': createZeroCounts(),
     'server-monitoring-analysis': createZeroCounts(),
     'server-snapshot': createZeroCounts(),
-    guidance: createZeroCounts(),
     none: createZeroCounts(),
   };
 }

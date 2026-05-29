@@ -95,9 +95,12 @@ function isImplicitKeywordRequest(query: string): boolean {
   return !/[?？]/.test(normalized);
 }
 
-/** "기능/설명/어떻게" 등 방법을 묻는 쿼리 — artifact 실행이 아닌 안내 의도 */
+/**
+ * 방법을 묻는 쿼리인지 판단 — artifact 실행이 아닌 안내/탐색 의도.
+ * "기능"은 제외: "기능 실행해줘"처럼 실행 요청에도 등장하므로 별도 처리.
+ */
 function isHowToRequest(query: string): boolean {
-  return /(기능|설명|안내|어떻게|방법|사용법|어디\s*서?|가능|되나|뭐야|무엇|무슨|지원)/i.test(
+  return /(설명|안내|어떻게|방법|사용법|어디\s*(?:서|에서)?|가능|되나|뭐야|무엇|무슨|지원|위치|어떤)/i.test(
     query
   );
 }
@@ -185,13 +188,21 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
     SERVER_SNAPSHOT_SUBJECT_PATTERN.test(normalized) &&
     SERVER_SNAPSHOT_ARTIFACT_PATTERN.test(normalized)
   ) {
-    if (!isNegated && SERVER_SNAPSHOT_ACTION_PATTERN.test(normalized)) {
+    if (
+      !isNegated &&
+      !isHowToRequest(normalized) &&
+      SERVER_SNAPSHOT_ACTION_PATTERN.test(normalized)
+    ) {
       return withRuleVersion({
         kind: 'server-snapshot',
         reason: 'server_snapshot_action_pattern',
       });
     }
-    if (!isNegated && isImplicitKeywordRequest(normalized)) {
+    if (
+      !isNegated &&
+      !isHowToRequest(normalized) &&
+      isImplicitKeywordRequest(normalized)
+    ) {
       return withRuleVersion({
         kind: 'server-snapshot',
         reason: 'server_snapshot_implicit_artifact_keyword',
@@ -212,7 +223,11 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   }
 
   if (REPORT_PATTERN.test(normalized)) {
-    if (!isNegated && REPORT_ACTION_PATTERN.test(normalized)) {
+    if (
+      !isNegated &&
+      !isHowToRequest(normalized) &&
+      REPORT_ACTION_PATTERN.test(normalized)
+    ) {
       return withRuleVersion({
         kind: 'incident-report',
         reason: 'incident_report_action_pattern',
@@ -231,7 +246,11 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   }
 
   if (MONITORING_PATTERN.test(normalized) && !isCapacityForecastRequest) {
-    if (!isNegated && MONITORING_ACTION_PATTERN.test(normalized)) {
+    if (
+      !isNegated &&
+      !isHowToRequest(normalized) &&
+      MONITORING_ACTION_PATTERN.test(normalized)
+    ) {
       return withRuleVersion({
         kind: 'monitoring-analysis',
         reason: 'monitoring_action_pattern',
