@@ -955,6 +955,7 @@ describe('current metrics domain evidence providers', () => {
       metric: 'network',
       threshold: 70,
       targets: ['lb-haproxy-dc1-01', 'api-was-dc1-01'],
+      contextualTargets: true,
     });
 
     const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
@@ -975,6 +976,61 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('lb-haproxy-dc1-01');
     expect(evidence?.fallback).not.toContain('web-nginx-dc1-01');
     expect(evidence?.fallback).not.toContain('db-mysql-dc1-primary');
+  });
+
+  it('labels homogeneous single-type contextual follow-ups as 지정 서버, not the group type', async () => {
+    // Q5 회귀: 직전 turn이 로드밸런서 1대만 언급한 경우에도 컨텍스트 팔로업은
+    // "지정 서버 1대"로 표기되어야 한다. "로드밸런서 1대"는 일반 그룹 조회와
+    // 구분되지 않아 컨텍스트 스코핑이 무시된 것처럼 오인된다.
+    const query = '방금 분석한 서버 중 네트워크 문제가 있는 것만 골라줘';
+    const request = createEvidenceRequest(
+      query,
+      {
+        timeLabel: '20:40',
+        servers: [
+          {
+            id: 'lb-haproxy-dc1-01',
+            type: 'loadbalancer',
+            status: 'warning',
+            cpu: 74,
+            memory: 61,
+            disk: 39,
+            network: 73.8,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 31,
+            memory: 41,
+            disk: 29,
+            network: 1,
+          },
+        ],
+      },
+      [
+        { role: 'user', content: '지금 당장 조치가 필요한 서버가 있어?' },
+        {
+          role: 'assistant',
+          content: '주의 관찰 대상은 1대입니다: lb-haproxy-dc1-01 (CPU 74%).',
+        },
+        { role: 'user', content: query },
+      ]
+    );
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      metric: 'network',
+      threshold: 70,
+      targets: ['lb-haproxy-dc1-01'],
+      contextualTargets: true,
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(request);
+
+    expect(evidence?.fallback).toContain('지정 서버 1대');
+    expect(evidence?.fallback).not.toContain('로드밸런서 1대');
+    expect(evidence?.fallback).toContain('lb-haproxy-dc1-01');
   });
 
   it('scopes pronoun metric follow-ups to the prior assistant server ids', async () => {

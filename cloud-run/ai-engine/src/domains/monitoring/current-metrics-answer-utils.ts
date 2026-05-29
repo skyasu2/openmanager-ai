@@ -108,7 +108,8 @@ export function getServerTypeKoreanLabel(type: string): string {
 
 export function filterSnapshotServers(
   servers: SnapshotServer[],
-  targets: string[] | undefined
+  targets: string[] | undefined,
+  options?: { preferExplicitLabel?: boolean }
 ): { servers: SnapshotServer[]; targetLabel: string } {
   const normalizedTargets = targets ?? [];
   if (normalizedTargets.length === 0) {
@@ -127,10 +128,12 @@ export function filterSnapshotServers(
         exactMatches.map((server) => normalizeServerType(server.type ?? ''))
       )
     ).filter((type) => type !== 'unknown');
+    // 컨텍스트 팔로업 등 명시적으로 지정된 서버 집합은, 동종 단일 타입이어도
+    // 타입명(예: "로드밸런서 1대")이 일반 그룹 조회와 혼동되므로 "지정 서버"로 표기.
     return {
       servers: exactMatches,
       targetLabel:
-        uniqueTypes.length === 1
+        !options?.preferExplicitLabel && uniqueTypes.length === 1
           ? `${getServerTypeKoreanLabel(uniqueTypes[0])} ${exactMatches.length}대`
           : `지정 서버 ${exactMatches.length}대`,
     };

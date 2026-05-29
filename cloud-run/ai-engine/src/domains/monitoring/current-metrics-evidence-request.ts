@@ -76,6 +76,8 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   sourceIntent: string;
   answerQuery: string;
   targets?: string[];
+  /** targets가 현재 메시지의 명시 ID/그룹이 아닌 이전 turn(팔로업)에서 유래했는지 */
+  contextualTargets?: boolean;
   groupTargets?: string[];
   metric?: SupportedMetric;
   metrics?: SupportedMetric[];
@@ -792,7 +794,20 @@ export function parseCurrentMetricsEvidenceRequest(
   if (FORCE_KB_QUERY_PATTERN.test(request.message)) return null;
   if (shouldPreferAdvisorForOperationalAdvice(request.message)) return null;
 
-  return (
-    parseCurrentMetricsFrame(request) ?? parseCurrentMetricsMessage(request)
-  );
+  const parsed =
+    parseCurrentMetricsFrame(request) ?? parseCurrentMetricsMessage(request);
+
+  // 팔로업 대명사("방금 분석한 서버 중 …")로 해석된 타깃은, 현재 메시지에
+  // 명시 서버 ID나 그룹 힌트가 없을 때 이전 turn에서 추출된 것이다. 이 경우
+  // 답변 라벨이 서버 타입명("로드밸런서 1대")으로 표기되면 일반 그룹 조회와
+  // 구분되지 않으므로, 컨텍스트 유래임을 표시해 "지정 서버"로 라벨링한다.
+  if (parsed?.targets && parsed.targets.length > 0) {
+    const explicitTargets = extractServerIdTargetsFromMessage(request.message);
+    const groupTarget = inferGroupTargetFromMessage(request.message);
+    if (explicitTargets.length === 0 && !groupTarget) {
+      return { ...parsed, contextualTargets: true };
+    }
+  }
+
+  return parsed;
 }

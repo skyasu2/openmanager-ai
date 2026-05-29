@@ -40,7 +40,8 @@ function buildMetricRiskComparisonAnswer(params: {
   const allServers = readSnapshotServers(params.snapshot);
   const { servers, targetLabel } = filterSnapshotServers(
     allServers,
-    params.parsed.targets
+    params.parsed.targets,
+    { preferExplicitLabel: params.parsed.contextualTargets === true }
   );
   if (servers.length === 0) return null;
 
@@ -130,7 +131,8 @@ export function buildMetricCurrentAnswer(params: {
   const allServers = readSnapshotServers(params.snapshot);
   const { servers, targetLabel } = filterSnapshotServers(
     allServers,
-    params.parsed.targets
+    params.parsed.targets,
+    { preferExplicitLabel: params.parsed.contextualTargets === true }
   );
   if (servers.length === 0) return null;
 
@@ -318,7 +320,8 @@ function buildMultiMetricFilterAnswer(params: {
     const allServers = readSnapshotServers(params.snapshot);
     const { servers, targetLabel } = filterSnapshotServers(
       allServers,
-      params.parsed.targets
+      params.parsed.targets,
+      { preferExplicitLabel: params.parsed.contextualTargets === true }
     );
     if (servers.length === 0) return null;
 
@@ -371,7 +374,8 @@ function buildMultiMetricFilterAnswer(params: {
   const allServers = readSnapshotServers(params.snapshot);
   const { servers, targetLabel } = filterSnapshotServers(
     allServers,
-    params.parsed.targets
+    params.parsed.targets,
+    { preferExplicitLabel: params.parsed.contextualTargets === true }
   );
   if (servers.length === 0) return null;
 
