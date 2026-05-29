@@ -16,8 +16,8 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - `cat reports/qa/qa-tracker.json`
 - `sed -n '1,220p' reports/qa/QA_STATUS.md`
 - `sed -n '1,220p' reports/qa/README.md`
-- `sed -n '1,220p' reports/qa/production-qa-2026-02-25.md`
 - `sed -n '1,220p' .agents/skills/qa-ops/references/current-surface-checklist.md`
+- For broad/release-facing baseline comparisons, use the current production reference named in `current-surface-checklist.md` and inspect that run JSON only when needed.
 - If the user says `latest`, `recent`, or names a run id, inspect the latest 1-3 run JSON files in `reports/qa/runs/<year>/`.
 - Treat `qa-tracker.json` + `QA_STATUS.md` as the current QA state SSOT.
 - Distinguish:

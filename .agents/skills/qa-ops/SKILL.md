@@ -1,7 +1,7 @@
 ---
 name: qa-ops
 description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, record every run into reports/qa tracker, and include conversational AI QA for AI-related changes.
-version: v1.5.3
+version: v1.5.4
 ---
 
 # OpenManager QA Ops
@@ -29,12 +29,11 @@ Final QA operation workflow with cumulative tracking.
 - `cat reports/qa/qa-tracker.json`
 - `sed -n '1,220p' reports/qa/QA_STATUS.md`
 - `sed -n '1,220p' reports/qa/README.md`
-- `sed -n '1,220p' reports/qa/production-qa-2026-02-25.md`
 - `sed -n '1,220p' .agents/skills/qa-ops/references/current-surface-checklist.md`
 - Treat `qa-tracker.json` + `QA_STATUS.md` as the current state SSOT.
-- Treat `production-qa-2026-02-25.md` as a historical baseline/reference, not the only coverage source.
+- Treat the `Current Production Reference` section in `current-surface-checklist.md` as the baseline selector. Inspect the named run JSON, such as `reports/qa/runs/2026/qa-run-QA-20260415-0291.json`, when broad or release-facing comparisons need historical detail.
 
-2. Decide target environment.
+1. Decide target environment.
 - Default: **Vercel + Playwright MCP** (`https://openmanager-ai.vercel.app`) for functional QA and E2E flows.
 - For Codex/WSL browser QA, verify Windows HTTP Playwright MCP readiness before starting the run:
   - `npm run mcp:playwright:windows:start` when the Windows server is not already running.
@@ -47,7 +46,7 @@ Final QA operation workflow with cumulative tracking.
 - If `next-devtools.browser_eval` fails to start with `Connection closed` or a similar session-start error, switch browser automation to direct Playwright MCP and keep `nextjs_call` for runtime diagnostics only.
 - When this fallback is used in release-facing QA, state it explicitly in the evidence/report so the automation gap stays visible.
 
-3. Select the QA pack from the current product surface.
+1. Select the QA pack from the current product surface.
 - Core route pack:
   - `/`, `/main`, `/login`, `/system-boot`, `/dashboard`
 - AI surface pack:
@@ -59,7 +58,7 @@ Final QA operation workflow with cumulative tracking.
 - Secondary route pack:
   - `/auth/error`, `/auth/success`, `/privacy`
 
-3.5. Run conversational AI QA for AI-related changes.
+1. Run conversational AI QA for AI-related changes.
 - Required when AI prompt, agent routing, knowledge base, precomputed-state/data source, response parsing, or output formatting behavior changes.
 - Ask the AI Assistant the standard five questions in order. Details: `docs/guides/testing/test-strategy.md` § 1.5.
   1. "현재 서버 전체 상태를 요약해줘"
@@ -71,14 +70,14 @@ Final QA operation workflow with cumulative tracking.
 - Warn/Fail means fix prompt/routing/data grounding and rerun the failed question before recording a passing release-facing run.
 - Record the result with `coveredSurfaces: ["conversational-ai-qa"]` and an `expertAssessments` entry.
 
-3.6. Treat Vision real-image QA as manual-only.
+1. Treat Vision real-image QA as manual-only.
 - Do not include Gemini Vision or Z.AI GLM Vision live image calls in routine release QA, standard five-question QA, or repeated provider matrices.
 - Run one real-image Vision smoke only when the user explicitly asks for it or when Vision routing/provider behavior is the changed surface.
 - Prefer deterministic routing/provider-selection tests for routine validation. Live Vision calls spend deployed provider quota and can quickly exhaust Gemini/GLM free-tier limits.
 - When a Vision live smoke is executed, record provider, model, image count, and pass/fail in `reports/qa`; do not rerun just to collect extra samples.
 - Z.AI GLM Vision fallback live smoke is not assumed from selection tests. Mark it as unverified unless a manual image call explicitly exercised `provider=zai`, `modelId=glm-4.6v-flash`.
 
-4. Run QA scenarios and record coverage explicitly.
+1. Run QA scenarios and record coverage explicitly.
 - Broad QA must list which route/feature packs were covered.
 - If a changed route or feature was not tested, state the reason explicitly.
 - Select the smallest representative pack that covers the changed risk. Do not expand route/device/provider matrices without a concrete risk reason.
@@ -91,7 +90,7 @@ Final QA operation workflow with cumulative tracking.
 - Keep `countsTowardSummary=true` for real product-surface QA that should affect the
   aggregate totals.
 
-5. For Vercel QA/deploy, check usage before recording the run.
+1. For Vercel QA/deploy, check usage before recording the run.
 - Preferred:
   - `npm run check:usage:vercel`
 - If CLI/auth is unavailable:
@@ -103,7 +102,7 @@ Final QA operation workflow with cumulative tracking.
   - `result`
   - `summary`
 
-6. Record QA result (mandatory).
+1. Record QA result (mandatory).
 - Prepare input JSON from template:
   - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
 - Record:
@@ -116,7 +115,7 @@ Final QA operation workflow with cumulative tracking.
 - Do not let meta verification runs inflate public totals. If the run exists only to
   confirm propagation of an already-recorded state, mark it `countsTowardSummary=false`.
 
-7. Report with completion tracking.
+1. Report with completion tracking.
 - Always include:
   - target
   - run id
@@ -216,7 +215,7 @@ Close with one short operator note that explains the highest remaining risk or s
 
 - `docs/guides/testing/test-strategy.md`
 - `.agents/skills/qa-ops/references/current-surface-checklist.md`
-- `reports/qa/production-qa-2026-02-25.md`
+- `reports/qa/runs/2026/qa-run-QA-20260415-0291.json`
 - `reports/qa/README.md`
 - `reports/qa/qa-tracker.json`
 - `reports/qa/QA_STATUS.md`
@@ -228,3 +227,4 @@ Close with one short operator note that explains the highest remaining risk or s
 - 2026-05-07: v1.5.1 - Aligned QA selection with risk-based test methodology, cost guardrails, and representative live-run limits.
 - 2026-05-19: v1.5.2 - Made Vision real-image Gemini/GLM smoke manual-only and documented GLM fallback live-smoke evidence requirements.
 - 2026-05-23: v1.5.3 - Added Codex/WSL Playwright MCP Windows HTTP readiness checks before browser-driven Vercel QA.
+- 2026-05-29: v1.5.4 - Replaced stale production-qa markdown reference with current-surface checklist baseline selection and the current broad run JSON reference.
