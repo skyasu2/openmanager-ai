@@ -21,11 +21,7 @@ import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { logger } from '@/lib/logging';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import {
-  runArtifactGuidanceCta,
-  tryHandleChatArtifactRequest,
-} from './core/chat-artifact-guidance';
-import type { GuidanceCtaTarget } from './core/chat-artifact-metadata';
+import { tryHandleChatArtifactRequest } from './core/chat-artifact-guidance';
 import {
   executeLocalChatCoreSendPlan,
   resolveChatCoreSendPlan,
@@ -406,44 +402,6 @@ export function useAIChatCore(
     [selectClarification]
   );
 
-  const handleArtifactGuidanceCta = useCallback(
-    (target: GuidanceCtaTarget) => {
-      runArtifactGuidanceCta({
-        target,
-        disableSessionLimit,
-        sessionLimitReached: sessionState.isLimitReached,
-        sessionMessageCount: sessionState.count,
-        hybridIsLoading,
-        resetRequestState: resetOutgoingRequestState,
-        onSessionLimitReached: (messageCount) => {
-          logger.warn(`⚠️ [Session] Limit reached (${messageCount} messages)`);
-        },
-        sessionId,
-        queryAsOfDataSlot,
-        messagesRef,
-        setMessages,
-        setError,
-        setArtifactIsLoading,
-        artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
-        artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
-        artifactInFlightRef: artifactRefs.artifactInFlightRef,
-        artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
-      });
-    },
-    [
-      artifactRefs,
-      disableSessionLimit,
-      sessionState.isLimitReached,
-      sessionState.count,
-      hybridIsLoading,
-      resetOutgoingRequestState,
-      sessionId,
-      queryAsOfDataSlot,
-      setMessages,
-      setArtifactIsLoading,
-    ]
-  );
-
   const handleSendInput = useCallback(
     async (attachments?: FileAttachment[], overrideText?: string) => {
       const sendPlan = resolveChatCoreSendPlan({
@@ -554,7 +512,6 @@ export function useAIChatCore(
     stop: stopGeneration,
     cancel,
     handleSendInput,
-    handleArtifactGuidanceCta,
     clarification: hybridState.clarification ?? null,
     selectClarification: wrappedSelectClarification,
     submitCustomClarification,

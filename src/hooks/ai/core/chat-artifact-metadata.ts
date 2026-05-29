@@ -3,10 +3,7 @@ import {
   buildAssistantPlanFromRouteDecision,
   buildAssistantResultFromRouteDecision,
 } from '@/lib/ai/assistant-contract';
-import {
-  type ChatArtifactIntentReason,
-  createArtifactGuidanceMessage,
-} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import { createArtifactEnvelope } from '@/lib/ai/chat-artifacts/types';
 import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
 import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
@@ -45,40 +42,6 @@ export function createTextMessage({
     parts: [{ type: 'text', text }],
     ...(metadata && { metadata }),
   };
-}
-
-export function createArtifactGuidanceMessages({
-  query,
-  target,
-  reason,
-}: {
-  query: string;
-  target: 'incident-report' | 'monitoring-analysis';
-  reason: ChatArtifactIntentReason;
-}): [UIMessage, UIMessage] {
-  const token = Date.now().toString(36);
-
-  return [
-    createTextMessage({
-      id: `artifact-guidance-user-${token}`,
-      role: 'user',
-      text: query,
-    }),
-    createTextMessage({
-      id: `artifact-guidance-assistant-${token}`,
-      role: 'assistant',
-      text: createArtifactGuidanceMessage(target),
-      metadata: {
-        type: 'guidance',
-        artifactIntentReason: reason,
-        artifactIntentTarget: target,
-        guidanceCta: {
-          target,
-          label: getGuidanceCtaLabel(target),
-        },
-      },
-    }),
-  ];
 }
 
 export function getArtifactLoadingText(kind: ChatArtifact['kind']): string {

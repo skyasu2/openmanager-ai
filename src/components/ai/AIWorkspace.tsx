@@ -149,7 +149,6 @@ export default function AIWorkspace({
     cancel,
     // 통합 입력 핸들러
     handleSendInput,
-    handleArtifactGuidanceCta,
     // 명확화 기능
     clarification,
     selectClarification,
@@ -337,7 +336,6 @@ export default function AIWorkspace({
           isGenerating={isLoading}
           streamStatus={streamStatus}
           regenerateResponse={regenerateLastResponse}
-          onArtifactGuidanceCta={handleArtifactGuidanceCta}
           onStopGeneration={stop}
           jobProgress={hybridState.progress}
           jobId={hybridState.jobId}

@@ -21,11 +21,6 @@ type ChatArtifactIntentWithoutVersion =
       kind: 'ops-procedure';
       procedureType: 'runbook' | 'alert-rule' | 'script';
       reason: ChatArtifactIntentReason;
-    }
-  | {
-      kind: 'guidance';
-      target: 'incident-report' | 'monitoring-analysis';
-      reason: ChatArtifactIntentReason;
     };
 
 export type ChatArtifactIntent = ChatArtifactIntentWithoutVersion &
@@ -33,10 +28,8 @@ export type ChatArtifactIntent = ChatArtifactIntentWithoutVersion &
 
 export type ChatArtifactIntentReason =
   | 'incident_report_action_pattern'
-  | 'incident_report_guidance_pattern'
   | 'incident_report_implicit_keyword'
   | 'monitoring_action_pattern'
-  | 'monitoring_guidance_pattern'
   | 'monitoring_implicit_artifact_keyword'
   | 'ops_procedure_action_pattern'
   | 'ops_procedure_followup_edit_pattern'
@@ -48,9 +41,6 @@ export type ChatArtifactIntentReason =
 
 const ARTIFACT_NEGATION_PATTERN =
   /(말고|아니고|없이|나중에|필요\s*없|하지\s*마|하지\s*말|제외)/i;
-const ARTIFACT_GUIDANCE_PRIORITY_PATTERN =
-  /(어떻게|방법|어디|어떤|가능|사용법|뭐야|무엇|무슨|지원|되나|돼\?|될까|샘플|예시|화면|위치|보여줄\s*수)/i;
-const ARTIFACT_GUIDANCE_PATTERN = /(기능|설명|안내)/i;
 const ARTIFACT_FORMATTING_ONLY_PATTERN =
   /(보고서용|리포트용|문장으로|문장만|다시\s*작성|재작성|고쳐\s*써|다듬어|rewrite|rephrase|paraphrase)/i;
 const ARTIFACT_EXPLICIT_EXECUTION_PATTERN =
@@ -105,6 +95,13 @@ function isImplicitKeywordRequest(query: string): boolean {
   return !/[?？]/.test(normalized);
 }
 
+/** "기능/설명/어떻게" 등 방법을 묻는 쿼리 — artifact 실행이 아닌 안내 의도 */
+function isHowToRequest(query: string): boolean {
+  return /(기능|설명|안내|어떻게|방법|사용법|어디\s*서?|가능|되나|뭐야|무엇|무슨|지원)/i.test(
+    query
+  );
+}
+
 function isFormattingOnlyRequest(query: string): boolean {
   return (
     ARTIFACT_FORMATTING_ONLY_PATTERN.test(query) &&
@@ -149,6 +146,7 @@ function readServerMonitoringServerId(query: string): string | undefined {
 
 function isServerMonitoringArtifactRequest(query: string): boolean {
   if (CAPACITY_FORECAST_EXCLUSION_PATTERN.test(query)) return false;
+  if (isHowToRequest(query)) return false;
   return (
     MONITORING_ACTION_PATTERN.test(query) ||
     (MONITORING_ARTIFACT_PATTERN.test(query) && isImplicitKeywordRequest(query))
@@ -187,12 +185,6 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
     SERVER_SNAPSHOT_SUBJECT_PATTERN.test(normalized) &&
     SERVER_SNAPSHOT_ARTIFACT_PATTERN.test(normalized)
   ) {
-    if (
-      ARTIFACT_GUIDANCE_PRIORITY_PATTERN.test(normalized) ||
-      ARTIFACT_GUIDANCE_PATTERN.test(normalized)
-    ) {
-      return withRuleVersion({ kind: 'none' });
-    }
     if (!isNegated && SERVER_SNAPSHOT_ACTION_PATTERN.test(normalized)) {
       return withRuleVersion({
         kind: 'server-snapshot',
@@ -209,16 +201,6 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
 
   const serverMonitoringServerId = readServerMonitoringServerId(normalized);
   if (serverMonitoringServerId && MONITORING_PATTERN.test(normalized)) {
-    if (
-      ARTIFACT_GUIDANCE_PRIORITY_PATTERN.test(normalized) ||
-      ARTIFACT_GUIDANCE_PATTERN.test(normalized)
-    ) {
-      return withRuleVersion({
-        kind: 'guidance',
-        target: 'monitoring-analysis',
-        reason: 'monitoring_guidance_pattern',
-      });
-    }
     if (!isNegated && isServerMonitoringArtifactRequest(normalized)) {
       return withRuleVersion({
         kind: 'server-monitoring-analysis',
@@ -230,27 +212,17 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   }
 
   if (REPORT_PATTERN.test(normalized)) {
-    if (ARTIFACT_GUIDANCE_PRIORITY_PATTERN.test(normalized)) {
-      return withRuleVersion({
-        kind: 'guidance',
-        target: 'incident-report',
-        reason: 'incident_report_guidance_pattern',
-      });
-    }
     if (!isNegated && REPORT_ACTION_PATTERN.test(normalized)) {
       return withRuleVersion({
         kind: 'incident-report',
         reason: 'incident_report_action_pattern',
       });
     }
-    if (ARTIFACT_GUIDANCE_PATTERN.test(normalized)) {
-      return withRuleVersion({
-        kind: 'guidance',
-        target: 'incident-report',
-        reason: 'incident_report_guidance_pattern',
-      });
-    }
-    if (!isNegated && isImplicitKeywordRequest(normalized)) {
+    if (
+      !isNegated &&
+      !isHowToRequest(normalized) &&
+      isImplicitKeywordRequest(normalized)
+    ) {
       return withRuleVersion({
         kind: 'incident-report',
         reason: 'incident_report_implicit_keyword',
@@ -259,30 +231,17 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   }
 
   if (MONITORING_PATTERN.test(normalized) && !isCapacityForecastRequest) {
-    if (ARTIFACT_GUIDANCE_PRIORITY_PATTERN.test(normalized)) {
-      return withRuleVersion({
-        kind: 'guidance',
-        target: 'monitoring-analysis',
-        reason: 'monitoring_guidance_pattern',
-      });
-    }
     if (!isNegated && MONITORING_ACTION_PATTERN.test(normalized)) {
       return withRuleVersion({
         kind: 'monitoring-analysis',
         reason: 'monitoring_action_pattern',
       });
     }
-    if (ARTIFACT_GUIDANCE_PATTERN.test(normalized)) {
-      return withRuleVersion({
-        kind: 'guidance',
-        target: 'monitoring-analysis',
-        reason: 'monitoring_guidance_pattern',
-      });
-    }
     // Bare "추세" is often a normal chat topic, so monitoring implicit routing
     // requires an artifact-shaped phrase while "장애보고서" remains actionable.
     if (
       !isNegated &&
+      !isHowToRequest(normalized) &&
       MONITORING_ARTIFACT_PATTERN.test(normalized) &&
       isImplicitKeywordRequest(normalized)
     ) {
@@ -347,22 +306,4 @@ export async function fetchLLMChatArtifactIntent(
   } catch {
     return withRuleVersion({ kind: 'none' });
   }
-}
-
-export function createArtifactGuidanceMessage(
-  target: 'incident-report' | 'monitoring-analysis'
-): string {
-  if (target === 'incident-report') {
-    return [
-      '장애 보고서 작성 기능은 사용자가 명시적으로 요청할 때만 실행합니다.',
-      '예: "장애 보고서 작성해줘", "현재 장애 리포트를 MD로 다운로드하게 만들어줘"',
-      '요청하면 기존 장애 보고서 작성 기능을 1회 실행하고, 채팅에 다운로드 가능한 보고서 아티팩트로 보여드립니다.',
-    ].join('\n');
-  }
-
-  return [
-    '이상감지/추세 기능은 사용자가 명시적으로 요청할 때만 실행합니다.',
-    '예: "전체 서버 이상감지 돌려줘", "최근 추세 기준으로 리스크 분석해줘"',
-    '요청하면 기존 이상감지/추세 분석을 1회 실행하고, 채팅에 다운로드 가능한 분석 아티팩트로 보여드립니다.',
-  ].join('\n');
 }

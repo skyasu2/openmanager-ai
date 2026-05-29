@@ -89,8 +89,7 @@ describe('classifyChatArtifactIntent', () => {
     expect(
       classifyChatArtifactIntent('api-was-dc1-01 이상감지 기능 설명해줘')
     ).toMatchObject({
-      kind: 'guidance',
-      target: 'monitoring-analysis',
+      kind: 'none',
     });
   });
 
@@ -111,48 +110,22 @@ describe('classifyChatArtifactIntent', () => {
     }
   });
 
-  it('keeps ambiguous feature questions as local guidance without API execution', () => {
+  it('routes ambiguous feature questions to none (handled by Cloud Run)', () => {
     expect(
       classifyChatArtifactIntent('장애 보고는 어떻게 하면 돼?')
-    ).toMatchObject({
-      kind: 'guidance',
-      target: 'incident-report',
-    });
+    ).toMatchObject({ kind: 'none' });
     expect(classifyChatArtifactIntent('추세 기능 어디서 봐?')).toMatchObject({
-      kind: 'guidance',
-      target: 'monitoring-analysis',
-      reason: 'monitoring_guidance_pattern',
+      kind: 'none',
     });
     expect(classifyChatArtifactIntent('추세 분석 기능 설명해줘')).toMatchObject(
-      {
-        kind: 'guidance',
-        target: 'monitoring-analysis',
-      }
+      { kind: 'none' }
     );
     expect(
       classifyChatArtifactIntent('장애 보고서 기능 설명해줘')
-    ).toMatchObject({
-      kind: 'guidance',
-      target: 'incident-report',
-    });
+    ).toMatchObject({ kind: 'none' });
     expect(
       classifyChatArtifactIntent('장애 보고서 작성 방법 알려줘')
-    ).toMatchObject({
-      kind: 'guidance',
-      target: 'incident-report',
-    });
-    expect(
-      classifyChatArtifactIntent('장애 보고서 파일 형식 설명해줘')
-    ).toMatchObject({
-      kind: 'guidance',
-      target: 'incident-report',
-    });
-    expect(
-      classifyChatArtifactIntent('추세 보고서 기능 설명해줘')
-    ).toMatchObject({
-      kind: 'guidance',
-      target: 'monitoring-analysis',
-    });
+    ).toMatchObject({ kind: 'none' });
   });
 
   it('does not capture normal operational chat questions', () => {

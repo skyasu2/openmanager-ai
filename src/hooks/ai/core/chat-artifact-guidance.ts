@@ -11,10 +11,7 @@ import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifac
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { FileAttachment } from '../useFileAttachments';
 import { startChatArtifactGeneration } from './chat-artifact-execution';
-import {
-  createArtifactGuidanceMessages,
-  type GuidanceCtaTarget,
-} from './chat-artifact-metadata';
+import type { GuidanceCtaTarget } from './chat-artifact-metadata';
 
 type ChatArtifact = MonitoringChatArtifact;
 
@@ -212,22 +209,6 @@ export async function tryHandleChatArtifactRequest({
     if (intentAbortController.signal.aborted) {
       return true;
     }
-  }
-
-  if (artifactIntent.kind === 'guidance') {
-    resetRequestState(query, attachments || null);
-    const [guidanceUserMessage, guidanceAssistantMessage] =
-      createArtifactGuidanceMessages({
-        query,
-        target: artifactIntent.target,
-        reason: artifactIntent.reason,
-      });
-    runtime.setMessages([
-      ...messages,
-      guidanceUserMessage,
-      guidanceAssistantMessage,
-    ]);
-    return true;
   }
 
   if (!isExecutableChatArtifactIntent(artifactIntent)) {
