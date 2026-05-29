@@ -136,6 +136,15 @@ FREE_TIER_GUARD_ONLY=true bash deploy.sh  # CI에서 가드레일만 검증
 | `--cpu-boost` | Cold start 시 CPU 2배 할당 (과금 없음) |
 | `--min-instances 0` | 트래픽 없을 때 인스턴스 0으로 축소 |
 
+### Cloud Run 런타임 코드 최적화
+
+인프라 플래그 제한 외에, AI Engine 런타임에는 **1 vCPU / 512MiB** 제약에 맞춘 애플리케이션 레벨 최적화가 적용되어 있습니다.
+
+- **V8 heap 상한**: Dockerfile에서 `NODE_OPTIONS="--max-old-space-size=256 --enable-source-maps --dns-result-order=ipv4first"`를 설정합니다. 512Mi 컨테이너 안에서 Node.js old-space가 전체 메모리를 독점하지 않도록 제한하고, 나머지 메모리를 native heap, stack, 런타임 오버헤드에 남깁니다.
+- **API 라우터 lazy loading**: `server.ts`는 `/health`, `/warmup`, `/ready`를 먼저 열고, 주요 API 라우터는 서버 listen 이후 `Promise.all([import(...)])`로 비동기 등록합니다. cold start 경로에서 동기 import 부하를 분산합니다.
+- **Pre-computed state 캐시**: `precomputed-state.ts`는 24시간 × 10분 간격의 144개 슬롯을 메모리에 캐시하고 `getCurrentState()` / `getStateBySlot()`에서 슬롯 인덱스로 조회합니다. 기본값은 runtime build이며, `PRECOMPUTED_STATES_MODE=prebuilt`일 때 `data/precomputed-states.json`을 우선 로드하고 stale 검증 후 사용합니다.
+- **압축 컨텍스트**: `getCompactContext()` / `formatTextSummary()`는 전체 OTel 원본 대신 요약, 상위 critical/warning, 임계값 중심의 compact context를 생성합니다. LLM prompt payload와 문자열 할당을 줄이는 용도이며, 정확한 토큰 수는 슬롯 상태와 출력 포맷에 따라 달라질 수 있습니다.
+
 ### Cloud Build 비용 최적화
 
 | 항목 | 설정 | 이유 |
