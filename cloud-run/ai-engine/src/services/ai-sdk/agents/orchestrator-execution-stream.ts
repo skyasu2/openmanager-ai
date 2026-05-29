@@ -146,7 +146,8 @@ export async function* executeMultiAgentStream(
       contextSummary,
       request.dataSource,
       request.domainId,
-      request.domainEvidencePrompt
+      request.domainEvidencePrompt,
+      request.messages
     ),
     buildRoutingTraceMetadata()
   );

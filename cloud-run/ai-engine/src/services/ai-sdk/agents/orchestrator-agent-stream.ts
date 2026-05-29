@@ -3,7 +3,10 @@ import {
   type UserContent,
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
-import type { DomainDataSource } from '../../../core/assistant-runtime';
+import type {
+  AssistantMessage,
+  DomainDataSource,
+} from '../../../core/assistant-runtime';
 import { buildMultimodalContent } from '../../../lib/ai-sdk-utils';
 import { logger } from '../../../lib/logger';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
@@ -73,6 +76,7 @@ export async function* executeAgentStream(
   dataSource?: DomainDataSource,
   domainId?: string,
   domainEvidencePrompt?: string,
+  conversationMessages?: AssistantMessage[],
 ): AsyncGenerator<StreamEvent> {
   // Buffer model text for queries that may be answered deterministically; once
   // tool results are available, the route is re-evaluated with data evidence.
@@ -86,6 +90,7 @@ export async function* executeAgentStream(
     query,
     domainId,
     sessionId,
+    conversationMessages,
   });
   let snapshotResolved = false;
   let snapshotData: unknown;
