@@ -130,7 +130,7 @@
   - `exit 0` → tag/push 후 GitLab pipeline 상태를 별도 확인합니다.
   - `exit 1` → runner 미가동으로 CI 배포 불가. runner를 복구한 뒤 tag pipeline을 재시도/재확인합니다.
 - production `resource_group`을 stale pipeline이 점유하는 경우에는 실제 배포/QA가 별도 완료됐거나 사용자 승인이 있을 때만 cancel/clear합니다.
-- 로컬 전체 검증 표준 경로는 `npm run ci:local:docker` (SSOT 유지, CI와 별개)입니다.
+- 로컬 전체 검증 표준 경로는 `npm run ci:local` (GitLab shell executor 동등 직접 실행)입니다.
 
 ## 2.7 작업 계획서 규칙 (Codex)
 

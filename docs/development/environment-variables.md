@@ -19,7 +19,7 @@
 │ 로컬 개발     │ .env.local (Git 무시)                 │
 │ Vercel Prod  │ Vercel Dashboard → Settings → Env    │
 │ Cloud Run    │ GCP Secret Manager + deploy.sh       │
-│ Local CI     │ shell env + Docker daemon            │
+│ Local CI     │ shell env + WSL2 Node/npm            │
 │ GitLab CI    │ GitLab CI/CD Variables               │
 └──────────────┴──────────────────────────────────────┘
 ```
@@ -65,11 +65,10 @@ LOCAL_DOCKER_SECRET=dev-only-secret
 
 #### 4. 로컬 CI 정책 (선택)
 
-GitLab CI는 활성 상태이지만, broad change나 release 직전의 전체 검증은 여전히 로컬 Docker CI로 한 번 더 확인합니다.
+GitLab CI는 활성 상태이지만, broad change나 release 직전의 전체 검증은 `npm run ci:local`로 한 번 더 확인합니다. 이 경로는 GitLab shell executor와 같은 WSL2 Node/npm 환경을 재현하며 Docker daemon은 기본 요구사항이 아닙니다.
 
 ```bash
-# .env.local 또는 셸 환경
-CI_DOCKER_INSTALL_MODE=prefer-local
+npm run ci:local
 ```
 
 이 값들은 앱 런타임 설정이 아니라 개발 워크플로우/검증 정책용입니다.

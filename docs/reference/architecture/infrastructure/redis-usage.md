@@ -3,7 +3,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-21
+> Last reviewed: 2026-05-29
 > Canonical: docs/reference/architecture/infrastructure/redis-usage.md
 > Tags: redis,upstash,cache,rate-limit,job-queue,infrastructure
 
@@ -191,4 +191,4 @@
 - [복원력 아키텍처](./resilience.md) — Circuit Breaker 패턴 상세
 - [Free Tier 최적화](./free-tier-optimization.md) — 비용 가드레일
 - [Upstash Pricing](https://upstash.com/pricing) — Free Tier command 한도 확인
-- [Redis 정비 계획](../../../../reports/planning/redis-usage-cleanup-plan.md)
+- [Redis 정비 완료 계획](../../../../reports/planning/archive/redis-usage-cleanup-plan.md)

@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-29
 > Canonical: docs/development/git-hooks-workflow.md
 > Tags: git,hooks,cicd,workflow
 >
@@ -20,7 +20,7 @@
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │ [코드 작성] → [Pre-commit] → [Commit] → [Pre-push] → [Push] → [GitLab CI] │
-│                  <1초          즉시       <10초(기본)   + 로컬 Docker CI │
+│                  <1초          즉시       <10초(기본)   + ci:local      │
 │                                                                      │
 │  ┌──────────┐   ┌──────────┐   ┌──────────┐                         │
 │  │ 빠른 검증 │   │ 정책     │   │ 권위있는 │                         │
@@ -161,7 +161,7 @@ STRICT_PUSH_ENV=true PRE_PUSH_MODE=verify git push
 │                                                          │
 │  3. TypeScript 검증                                      │
 │     └─ 관련 TS 파일이 있을 때만 실행                     │
-│     └─ soft-timeout 시 Vercel/로컬 Docker CI로 위임 가능 │
+│     └─ soft-timeout 시 GitLab CI/ci:local로 위임 가능    │
 │                                                          │
 │  4. Cloud Build Guard (변경 파일 있을 때만)              │
 │     └─ cloudbuild.yaml / deploy.sh 변경 시만 검사        │

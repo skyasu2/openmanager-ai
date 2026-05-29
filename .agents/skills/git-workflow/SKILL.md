@@ -85,7 +85,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - Ensure intended files only.
 - If code changed, run `npm run test:quick` or targeted checks.
 - Add `npm run test:contract` when API, auth, env, proxy, or deploy-facing behavior changed.
-- Prefer local Docker CI when changes are broad or deployment-sensitive: `npm run ci:local:docker`
+- Prefer `npm run ci:local` when changes are broad or deployment-sensitive.
 - For high-risk changes or explicit review requests, include key findings/residual risks in PR body.
 
 1. Push safely.
@@ -113,7 +113,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 
 ### Workflow D: Canonical deploy + public refresh
 
-1. Validate locally (`pre-push`, targeted tests, or `npm run ci:local:docker` as needed).
+1. Validate locally (`pre-push`, targeted tests, or `npm run ci:local` as needed).
 1. Push canonical change: `git push gitlab main`
 1. Treat GitLab CI status as the deployment authority; verify the pushed `HEAD` with `npm run gitlab:pipeline:head -- --wait` rather than relying on stale memory.
 1. If the pipeline is still nonterminal after the wait, inspect it with `npm run gitlab:pipeline:inspect -- --pipeline <id>` before choosing a fallback.

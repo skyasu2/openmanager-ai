@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Supporting
 > Doc type: How-to
-> Last reviewed: 2026-05-20
+> Last reviewed: 2026-05-29
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: architecture,system,hybrid,vercel,cloud-run,design-guide
 
@@ -65,7 +65,7 @@ flowchart TB
 ## 해야 하는 것
 
 - API route 추가/삭제 시 [Architecture Design Index](../reference/architecture/README.md)와 [API Endpoints](../reference/api/endpoints.md)를 같이 확인합니다.
-- Vercel에서 오래 걸리는 AI 실행을 직접 끝까지 처리하지 않고 Cloud Run streaming/direct 경계로 넘깁니다. async Job Queue(Cloud Tasks/Redis)는 유지 여부를 [Redis 정비 계획](../../reports/planning/redis-usage-cleanup-plan.md) R-0에서 결정합니다.
+- Vercel에서 오래 걸리는 AI 실행을 직접 끝까지 처리하지 않고 Cloud Run streaming/direct 경계로 넘깁니다. async Job Queue(Cloud Tasks/Redis)는 [Redis 정비 완료 계획](../../reports/planning/archive/redis-usage-cleanup-plan.md) R-0 결정에 따라 유지합니다.
 - BFF route는 인증, 입력 검증, proxy, contract preservation에 집중합니다.
 - Cloud Run route는 AI 실행, job worker, deterministic fallback, provider gate를 책임집니다.
 - 수치 변경은 `rg --files` 같은 실제 코드 기준으로 확인한 뒤 문서에 반영합니다.

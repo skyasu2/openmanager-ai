@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-05-19
+> Last reviewed: 2026-05-29
 > Canonical: docs/guides/testing/test-strategy.md
 > Tags: testing,strategy,quality,conversational-qa
 
@@ -18,7 +18,7 @@ OpenManager AI의 기본 테스트 전략은 **Risk-Based Local-First + Contract
 - 외부 API/LLM 실호출은 자동 회귀에서 제외
 - Playwright는 로컬 핵심 사용자 플로우 검증에 한정
 - Playwright 기본 구성(Chromium 기본, DevTools 비활성화, Vercel bypass header)은 유지하되 `test:e2e:critical`은 release/보조 CI 게이트로 유지
-- GitLab CI는 `type-check`, `lint`, `test:quick`, `test:contract` 중심의 deterministic gate를 유지
+- GitLab CI frontend validate는 `type-check`, `lint:ci`, `test:quick`, `test:contract`, `docs:components:verify` 중심의 deterministic gate를 유지
 - 최종 릴리즈 QA는 필요할 때 Vercel production + Playwright MCP로 수행하고 `reports/qa`에 기록
 
 > 핵심 원칙: 무료 티어를 보호하면서도, 회귀를 빠르게 탐지한다. "과도한 텍스트 기반 커버리지(%) 쫓기"를 철저히 배제하고 작동 검증에만 집중한다.
@@ -249,8 +249,8 @@ npm run test:e2e:critical
 # 개발 중 최소 게이트
 npm run test:gate
 
-# 전체(필요 시)
-npm run validate:all
+# 로컬 전체 CI 재현(필요 시)
+npm run ci:local
 ```
 
 ## 3.1 외부/느린 테스트 실행 가이드 (선택)
@@ -277,13 +277,17 @@ npm run validate:all
 ### Canonical GitLab 기본 게이트 (branch / MR / main)
 
 1. `npm run type-check`
-2. `npm run lint`
+2. `npm run lint:ci`
 3. `npm run test:quick`
 4. `npm run test:contract`
+5. `npm run docs:components:verify`
+
+AI Engine 변경 시 별도 `validate_ai_engine` job이 `cloud-run/ai-engine`에서 `npm run type-check`와 `npm run test`를 실행합니다.
+Storybook/UI 경로 변경 시 `validate_storybook_smoke`, bundle 관련 경로 변경 시 `validate_bundle_budget`이 추가로 동작합니다.
 
 ### 릴리즈/강화 게이트 (main 병합 전 또는 수동)
 
-1. `npm run test:gate`
+1. `npm run ci:local`
 2. `npm run test:e2e:critical`
 3. `npm run test:cloud:essential` (Cloud Run 변경 시)
 4. Vercel production + Playwright MCP final QA (릴리즈 게이트에서 필요할 때)

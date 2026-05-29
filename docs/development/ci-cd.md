@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-25
+> Last reviewed: 2026-05-29
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,gitlab,vercel,github-actions,automation
 
@@ -284,7 +284,7 @@ npm run storybook:build:ci
 - smoke는 통과했지만 preview bundle이나 static build drift가 의심되는 경우
 - Merge Request가 열려 있는 branch는 duplicate pipeline 방지를 위해 branch push pipeline 대신 MR pipeline이 우선합니다.
 
-즉, **현재는 self-hosted validate + self-hosted semver tag deploy + local Docker CI 보강 검증** 구성이 기본 운영값입니다.
+즉, **현재는 self-hosted validate + self-hosted semver tag deploy + `npm run ci:local` 보강 검증** 구성이 기본 운영값입니다.
 
 ### 비용 정책
 

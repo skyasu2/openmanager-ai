@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-22
+> Last reviewed: 2026-05-29
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.12.6 | **Updated**: 2026-05-22
+> **프로젝트 버전**: v8.12.76 | **Updated**: 2026-05-29
 
 ## 개요
 
@@ -214,7 +214,7 @@ Supabase 무료 티어는 **1주일 미사용 시 자동 일시 정지**.
 ### Job Queue 상태 저장 경계
 
 현재 async Job Queue는 **Redis와 Cloud Tasks를 함께 사용**합니다. Redis는 queue worker가 아니라 상태 저장소이며, Cloud Tasks가 실제 worker HTTP delivery를 담당합니다.
-이 경로는 과거 Vercel timeout 회피를 위해 도입됐고, 현재도 `useHybridAIQuery`/`useAsyncAIQuery`와 Cloud Run job worker에 연결되어 있습니다. 유지/제거 결정은 [Redis 정비 계획](../../../../reports/planning/redis-usage-cleanup-plan.md) R-0에서 별도로 확정합니다.
+이 경로는 과거 Vercel timeout 회피를 위해 도입됐고, 현재도 `useHybridAIQuery`/`useAsyncAIQuery`와 Cloud Run job worker에 연결되어 있습니다. [Redis 정비 완료 계획](../../../../reports/planning/archive/redis-usage-cleanup-plan.md) R-0 결정에 따라 Job Queue와 Upstash 인스턴스는 현재 유지합니다.
 
 | 계층 | 역할 | 비용/한도 관점 |
 |------|------|---------------|

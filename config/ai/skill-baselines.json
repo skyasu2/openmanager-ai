@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewed": "2026-05-20",
+  "lastReviewed": "2026-05-29",
   "policy": {
     "standardsDoc": "docs/development/vibe-coding/skills.md",
     "geminiSameNameOverlay": "forbidden",
@@ -78,6 +78,7 @@
         "Treat GitHub public snapshot as frontend-only and refresh it only through npm run sync:github.",
         "After gitlab push, verify the pushed HEAD pipeline when GitLab token access is available.",
         "Diagnose nonterminal GitLab pipelines with gitlab:pipeline:inspect before classifying runner outage or using a manual fallback.",
+        "Use npm run ci:local for broad or deployment-sensitive local validation; ci:local:docker is not a valid script.",
         "Do not stage or revert unrelated user changes."
       ],
       "adapters": {
