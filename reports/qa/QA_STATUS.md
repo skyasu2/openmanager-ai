@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-29 21:50:48 KST
+> Generated at: 2026-05-29 22:55:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 639 |
+| Total Recorded Runs | 640 |
 | Total Runs (Counted) | 501 |
-| Non-counted Runs | 138 |
+| Non-counted Runs | 139 |
 | Total Checks | 4413 |
 | Passed | 4212 |
 | Failed | 159 |
-| Completed Items | 734 |
+| Completed Items | 735 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 31 |
+| Wont-Fix Items | 30 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260529-0641 (2026-05-29T12:50:47.147Z) |
-| Latest Recorded Run | QA-20260529-0641 (2026-05-29T12:50:47.147Z) |
+| Latest Recorded Run | QA-20260529-0642 (2026-05-29T13:55:43.521Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,31 +34,31 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260529-0641 (2026-05-29T12:50:47.147Z)
+Latest run: QA-20260529-0642 (2026-05-29T13:55:43.521Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | billing period 2026-05-01..05-29 effective=19.23 USD, billed=0.00 USD. AI Engine은 Cloud Run Free Tier(512Mi/1vCPU). 예상 외 급증 없음. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-28T12:50:47.147Z -> 2026-05-29T12:50:47.147Z (24h)
-- Runs with observations: 1 recorded / 0 counted
-- Samples: 1
+- Window: 2026-05-28T13:55:43.521Z -> 2026-05-29T13:55:43.521Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Metrics Query Agent | deterministic | 1 | 371ms | 371ms | - | - | - | - | QA-20260528-0637 |
+| - | - | 0 | - | - | - | - | - | - | - |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-28T12:50:47.147Z -> 2026-05-29T12:50:47.147Z (24h)
+- Window: 2026-05-28T13:55:43.521Z -> 2026-05-29T13:55:43.521Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -70,24 +70,23 @@ Latest run: QA-20260529-0641 (2026-05-29T12:50:47.147Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_EhLf7tgfW7Hm3cQYz9pDEca9rxw9 / SHA ef784e4d
-- Coverage Packs: ai-core
-- Covered Surfaces: conversational-ai-qa, /dashboard AI assistant sidebar, contextual-follow-up-label
-- Skipped Surfaces: observability pack, vision live, reporter/anomaly tabs
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA 9d08bc93
+- Covered Surfaces: qa-metadata, Q5 contextual follow-up tracker state
+- Skipped Surfaces: live product QA already covered by QA-20260529-0641
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel Production | [Vercel Production](https://openmanager-ai.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Q5 컨텍스트 팔로업 '지정 서버 3대 중 1대' 라벨 수정 검증 | `reports/qa/evidence/qa-20260529-q5-contextual-label-fix.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -103,13 +102,13 @@ Latest run: QA-20260529-0641 (2026-05-29T12:50:47.147Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Portfolio Deferral 31
-- Review classes: Verify Before Promotion 14, Future Product Expansion 6, Low-Priority Polish 8, Accepted No-Action 3
+- Reason categories: Portfolio Deferral 30
+- Review classes: Verify Before Promotion 14, Future Product Expansion 5, Low-Priority Polish 8, Accepted No-Action 3
 
 ### Review Classes
 
 - Verify Before Promotion 14: Potentially stale accepted debt. Re-run a targeted QA check before promoting it back to implementation work.
-- Future Product Expansion 6: Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.
+- Future Product Expansion 5: Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.
 - Low-Priority Polish 8: Non-blocking answer, copy, layout, or evidence-label polish. Keep accepted unless it appears in a release-facing regression.
 - Accepted No-Action 3: Accepted no-fix item with no current trigger for implementation work.
 
@@ -155,8 +154,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P5] q-new10-pronoun-resolution: Q5 '방금 분석한 서버' 다중 서버 세션 컨텍스트 미해석 — 로드밸런서 카테고리로 재해석 (seen 2회, last QA-20260529-0640)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P4] q-new8-advisor-routing: P4 재확인: 특정 서버 성능 개선 조언 시 Advisor 대신 AZ 라우팅 오발동 (seen 1회, last QA-20260525-0584)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] vision-gemini-exact-forecast-delta-attribution: Gemini Vision misattributes exact forecast delta values in the screenshot (seen 1회, last QA-20260520-0542)
@@ -182,18 +179,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 734 items completed (full list in qa-tracker.json)
+- Total: 735 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - q-new10-pronoun-resolution: Q5 '방금 분석한 서버' 컨텍스트 팔로업 오진 항목 정정 (last QA-20260529-0642)
   - multi-agent-data-source-history-threading: multi-agent 스트림 경로 createAgentDataSourceContext에 대화 히스토리 전달 (latent 갭 보완) (last QA-20260529-0641)
   - q5-contextual-followup-label-clarity: 컨텍스트 팔로업 타깃이 동종 단일 타입일 때 '로드밸런서 N대' 대신 '지정 서버 N대'로 라벨링 (last QA-20260529-0641)
   - ai-engine-cloud-build-buildkit-mount-compatibility: AI Engine Cloud Build default Docker builder compatibility (last QA-20260529-0638)
   - q-new76-metric-risk-compare-omitted-noun: CPU/메모리/디스크 중 어느 게 가장 위험? 질의가 deterministic metric-current 위험도 비교로 응답 (last QA-20260528-0636)
-  - q-new72-metric-risk-compare: CPU/MEM/DISK 중 가장 위험 메트릭 질의가 deterministic metric-current 위험도 비교로 응답 (last QA-20260528-0634)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260529-0642 | 2026-05-29T13:55:43.521Z | targeted | no | no | QA metadata correction - close superseded Q5 pronoun-resolution item | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260529-0641 | 2026-05-29T12:50:47.147Z | targeted | yes | yes | Vercel Playwright MCP - Q5 컨텍스트 팔로업 라벨 명확화 검증 (ai-engine-00583) | 3 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260529-0640 | 2026-05-29T10:28:51.014Z | targeted | yes | yes | Vercel Playwright MCP 대화형 AI QA - 표준 5문항 점검 (v8.12.77) | 5 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260529-0639 | 2026-05-29T03:17:33.247Z | smoke | yes | no | GitLab production release smoke - v8.12.77 landing mouse spotlight motion | 16 | 0 | 0 | 0 | 0 | 0 |
@@ -213,4 +211,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260527-0625 | 2026-05-27T08:31:25.273Z | targeted | no | yes | Vercel Playwright MCP targeted recheck - v8.12.60 QA-0624 regressions | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260527-0624 | 2026-05-27T07:17:17.887Z | targeted | no | yes | Vercel Playwright MCP targeted QA - 2026-05-26..27 modified surfaces only | 16 | 0 | 3 | 0 | 0 | 2 |
 | QA-20260527-0623 | 2026-05-27T06:56:44.859Z | smoke | yes | yes | v8.12.59 Release Smoke - Vercel, Cloud Run, and P17 group comparison | 23 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260527-0622 | 2026-05-27T05:02:40.316Z | smoke | no | no | Deployment Smoke Recheck - v8.12.58 Vercel and Cloud Run | 15 | 0 | 0 | 0 | 0 | 0 |

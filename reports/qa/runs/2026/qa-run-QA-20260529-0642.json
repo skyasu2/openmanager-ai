@@ -1,0 +1,62 @@
+{
+  "runId": "QA-20260529-0642",
+  "recordedAt": "2026-05-29T13:55:43.521Z",
+  "recordedAtKst": "2026-05-29 22:55:43 KST",
+  "runTitle": "QA metadata correction - close superseded Q5 pronoun-resolution item",
+  "owner": "codex",
+  "source": "manual",
+  "environment": {
+    "target": "local-metadata",
+    "url": "",
+    "frontend": "",
+    "backend": "",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "9d08bc934c901feb5ace19bb0abfd3f2707dabc9"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "qa-metadata",
+    "Q5 contextual follow-up tracker state"
+  ],
+  "skippedSurfaces": [
+    "live product QA already covered by QA-20260529-0641"
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "q-new10-pronoun-resolution",
+      "title": "Q5 '방금 분석한 서버' 컨텍스트 팔로업 오진 항목 정정",
+      "priority": "P5",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "QA-20260529-0641 verified the actual behavior: contextual scoping was already correct and ef784e4d6 clarified the ambiguous same-type label as '지정 서버 N대'. The old QA-20260529-0640 wont-fix item was a diagnosis artifact, not an active product gap.",
+      "note": "Superseded by completed item q5-contextual-followup-label-clarity; close the stale wont-fix status for the original q-new10 tracking id.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Metadata-only correction. No live QA rerun: QA-20260529-0641 already recorded release-facing production evidence and durable screenshot.",
+    "State triage classification: qa-metadata. Product behavior was verified; tracker had a stale WONT-FIX item under the original Q5 id."
+  ],
+  "links": []
+}

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-29T12:50:47.147Z"
+    "updatedAt": "2026-05-29T13:55:43.521Z"
   },
   "sequence": {
-    "nextRunNumber": 642
+    "nextRunNumber": 643
   },
   "summary": {
-    "totalRecordedRuns": 639,
+    "totalRecordedRuns": 640,
     "totalRuns": 501,
-    "excludedRuns": 138,
+    "excludedRuns": 139,
     "totalChecks": 4413,
     "totalPassed": 4212,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 734,
+    "completedItems": 735,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 31,
+    "wontFixItems": 30,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260529-0641",
     "lastRecordedAt": "2026-05-29T12:50:47.147Z",
-    "latestRecordedRunId": "QA-20260529-0641",
-    "latestRecordedAt": "2026-05-29T12:50:47.147Z"
+    "latestRecordedRunId": "QA-20260529-0642",
+    "latestRecordedAt": "2026-05-29T13:55:43.521Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16847,27 +16847,27 @@
     },
     "q-new10-pronoun-resolution": {
       "id": "q-new10-pronoun-resolution",
-      "title": "Q5 '방금 분석한 서버' 다중 서버 세션 컨텍스트 미해석 — 로드밸런서 카테고리로 재해석",
+      "title": "Q5 '방금 분석한 서버' 컨텍스트 팔로업 오진 항목 정정",
       "priority": "P5",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260525-0584",
       "firstSeenAt": "2026-05-24T15:52:12.919Z",
-      "lastSeenRunId": "QA-20260529-0640",
-      "lastSeenAt": "2026-05-29T10:28:51.014Z",
-      "seenCount": 2,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260529-0642",
+      "lastSeenAt": "2026-05-29T13:55:43.521Z",
+      "seenCount": 3,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 2,
       "aliases": [],
-      "owner": "",
-      "lastEvidence": "",
-      "lastNote": "Q5 응답은 lb-haproxy-dc1-01 네트워크 70.8% warning을 정확히 반환했으나 '방금 분석한 서버'(lb-haproxy/web-nginx/db-mysql primary·replica/api-was) 다중 컨텍스트 대신 로드밸런서 타입으로 범위 재해석. 기존 P5/q-new10 wont-fix 재확인, 회귀 아님.",
+      "owner": "codex",
+      "lastEvidence": "QA-20260529-0641 verified the actual behavior: contextual scoping was already correct and ef784e4d6 clarified the ambiguous same-type label as '지정 서버 N대'. The old QA-20260529-0640 wont-fix item was a diagnosis artifact, not an active product gap.",
+      "lastNote": "Superseded by completed item q5-contextual-followup-label-clarity; close the stale wont-fix status for the original q-new10 tracking id.",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "포트폴리오 운영성 우선: 비차단 세션 컨텍스트 추적은 wont-fix 유지",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-05-29T10:28:51.014Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-29T13:55:43.521Z"
     },
     "q-new11-location-clarification": {
       "id": "q-new11-location-clarification",
@@ -37004,6 +37004,53 @@
       "expertCount": 1,
       "expertNeedsImprovementCount": 0,
       "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260529-0642",
+      "recordedAt": "2026-05-29T13:55:43.521Z",
+      "recordedAtKst": "2026-05-29 22:55:43 KST",
+      "title": "QA metadata correction - close superseded Q5 pronoun-resolution item",
+      "owner": "codex",
+      "source": "manual",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260529-0642.json",
+      "environment": {
+        "target": "local-metadata",
+        "url": "",
+        "frontend": "",
+        "backend": "",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "9d08bc934c901feb5ace19bb0abfd3f2707dabc9"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "qa-metadata",
+        "Q5 contextual follow-up tracker state"
+      ],
+      "skippedSurfaces": [
+        "live product QA already covered by QA-20260529-0641"
+      ],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
