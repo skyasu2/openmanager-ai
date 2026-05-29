@@ -1,6 +1,5 @@
-import type { ReactNode } from 'react';
 import { getThreshold } from '@/config/rules';
-import type { Server as ServerType, Service } from '@/types/server';
+import type { Server as ServerType } from '@/types/server';
 import { formatMetricValue } from '@/utils/metric-formatters';
 import { SvgSparkline } from '../shared/SvgSparkline';
 
@@ -173,24 +172,6 @@ export const CompactMetricChip = ({
   </div>
 );
 
-interface DetailRowProps {
-  icon: ReactNode;
-  label: string;
-  value: string | number;
-}
-
-export const DetailRow = ({ icon, label, value }: DetailRowProps) => (
-  <div className="flex items-center gap-1.5 rounded-md border border-gray-200/50 bg-slate-50 px-2 py-1.5">
-    <div className="text-gray-500">{icon}</div>
-    <div className="min-w-0">
-      <div className="text-2xs font-medium uppercase tracking-wide text-gray-500">
-        {label}
-      </div>
-      <div className="truncate text-xs font-medium text-gray-700">{value}</div>
-    </div>
-  </div>
-);
-
 const UPTIME_WINDOW_SECONDS = 24 * 60 * 60;
 
 function clampPercent(value: number): number {
@@ -305,31 +286,6 @@ export const SecondaryMetrics = ({
           </span>
         </span>
       )}
-    </div>
-  );
-};
-
-export const ServiceChip = ({ service }: { service: Service }) => {
-  const statusColors =
-    service.status === 'running'
-      ? 'border-emerald-400/50 bg-emerald-100/80 text-emerald-700'
-      : service.status === 'stopped'
-        ? 'border-red-400/50 bg-red-100/80 text-red-700'
-        : 'border-amber-400/50 bg-amber-100/80 text-amber-700';
-
-  const dotColor =
-    service.status === 'running'
-      ? 'bg-emerald-500'
-      : service.status === 'stopped'
-        ? 'bg-red-500'
-        : 'bg-amber-500';
-
-  return (
-    <div
-      className={`flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs-plus font-medium backdrop-blur-sm ${statusColors}`}
-    >
-      <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
-      <span>{service.name}</span>
     </div>
   );
 };

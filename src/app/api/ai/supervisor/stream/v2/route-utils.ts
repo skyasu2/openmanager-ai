@@ -3,10 +3,8 @@ import {
   createUIMessageStreamResponse,
   generateId,
 } from 'ai';
-import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import type { HybridMessage } from '@/lib/ai/utils/message-normalizer';
-import { getSessionOwnerKey } from '../../session-owner';
 
 export const UI_MESSAGE_STREAM_HEADERS = {
   'Content-Type': 'text/event-stream',
@@ -62,10 +60,6 @@ export const NORMALIZED_MESSAGES_SCHEMA = z
   .max(50);
 
 const MAX_CONTEXT_MESSAGES = 24;
-
-export function getStreamOwnerKey(req: NextRequest): string {
-  return getSessionOwnerKey(req);
-}
 
 export function trimMessagesForContext(
   messages: HybridMessage[]
