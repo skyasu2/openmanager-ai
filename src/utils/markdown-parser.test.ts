@@ -141,6 +141,24 @@ describe('normalizeAssistantMarkdown', () => {
     expect(normalized).toMatch(/\n결론: 즉시 스케일아웃/);
   });
 
+  it('splits a trailing horizontal rule at end of line', () => {
+    const normalized = normalizeAssistantMarkdown(
+      'CPU 70% 초과 시 자동 알림 설정 ---\n다음 단계: WAS 점검'
+    );
+    expect(normalized).toMatch(/설정\n\n---/);
+    expect(normalized).not.toMatch(/설정 ---/);
+  });
+
+  it('splits a trailing horizontal rule inside a list item', () => {
+    const normalized = normalizeAssistantMarkdown('- PagerDuty 연동 ---');
+    expect(normalized).toMatch(/연동\n\n---/);
+  });
+
+  it('does not break a list bullet that is only dashes', () => {
+    // "- ---" 의 불릿("-")은 보존되어야 한다 (직전 문자가 '-' 라 규칙 제외).
+    expect(normalizeAssistantMarkdown('- ---')).toBe('- ---');
+  });
+
   it('trims edge spaces inside bold delimiters', () => {
     const normalized = normalizeAssistantMarkdown(
       '**api-was-dc1-01 서버가 현재 **'
