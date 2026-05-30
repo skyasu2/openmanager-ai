@@ -58,10 +58,6 @@ describe('GitLab CI policy', () => {
     expect(bundleRules).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          if: '$CI_PIPELINE_SOURCE == "schedule"',
-          when: 'on_success',
-        }),
-        expect.objectContaining({
           if: '$CI_PIPELINE_SOURCE == "web"',
           when: 'manual',
           allow_failure: true,
@@ -80,9 +76,7 @@ describe('GitLab CI policy', () => {
     );
 
     const automaticBranchRules = bundleRules?.filter(
-      (rule) =>
-        rule.when === 'on_success' &&
-        rule.if !== '$CI_PIPELINE_SOURCE == "schedule"'
+      (rule) => rule.when === 'on_success'
     );
     expect(automaticBranchRules).toEqual([]);
   });
