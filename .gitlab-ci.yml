@@ -4,9 +4,9 @@
 #   - validate(frontend): branch / MR / main 프론트엔드/공용 코드 변경 시 실행
 #   - validate(ai-engine): branch / MR / main AI Engine 변경 시 실행
 #   - deploy(frontend): semver tag(v*.*.*) push 시 실행
-#   - deploy_ai(ai-engine): semver tag(v*.*.*) push 시 실행
+#   - deploy_ai_engine(ai-engine): semver tag(v*.*.*) push 시 실행
 #   - smoke(frontend/ai-engine): 각 배포 경로 후 최소 smoke 수행
-# 구조: validate_ci_config / validate(frontend + ai-engine) → deploy(frontend) / deploy_ai(ai-engine) → smoke(frontend + ai-engine)
+# 구조: validate_ci_config / validate(frontend + ai-engine) → deploy(frontend + ai-engine) → smoke(frontend + ai-engine)
 # Runner 전략:
 #   모든 job: tags: [wsl2-docker] → self-hosted shell executor (분 소진 0)
 #   executor = "shell": Docker 불필요, WSL2에 설치된 node/npm/vercel/gcloud 직접 사용
@@ -161,7 +161,6 @@ workflow:
 stages:
   - validate
   - deploy
-  - deploy_ai
   - smoke
 
 variables:
@@ -515,7 +514,7 @@ deploy:
   # validate 성공 시에만 실행 (GitLab이 stage 순서로 자동 보장)
 
 deploy_ai_engine:
-  stage: deploy_ai
+  stage: deploy
   tags:
     - wsl2-docker  # self-hosted runner (분 소진 0). 미가동 시 pending 상태 유지.
   <<: *main_ai_engine_changes_only
@@ -547,7 +546,7 @@ deploy_ai_engine:
     - gcloud config set project "$GCP_PROJECT_ID"
     - echo "▶ AI Engine Cloud Run 배포..."
     - cd cloud-run/ai-engine
-    - LOCAL_DOCKER_PREFLIGHT=false CLEANUP_ENABLED=true CLEANUP_KEEP_IMAGES=3 CLEANUP_KEEP_SOURCES=5 CLEANUP_KEEP_REVISIONS=3 bash deploy.sh
+    - LOCAL_DOCKER_PREFLIGHT=false CLEANUP_ENABLED=true CLEANUP_PARALLEL=true CLEANUP_KEEP_IMAGES=3 CLEANUP_KEEP_SOURCES=5 CLEANUP_KEEP_REVISIONS=3 bash deploy.sh
     - echo "✅ AI Engine 배포 완료"
   after_script:
     - rm -f gcp-key.json

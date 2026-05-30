@@ -23,6 +23,13 @@ type RulesAnchor = {
   }>;
 };
 
+type JobConfig = {
+  stage?: string;
+  needs?: Array<string | { job?: string; optional?: boolean }>;
+  resource_group?: string;
+  script?: string[];
+};
+
 describe('GitLab CI policy', () => {
   it('uses stable npm HTTP cache keys that survive release version bumps', () => {
     const ci = YAML.parse(
@@ -79,5 +86,36 @@ describe('GitLab CI policy', () => {
       (rule) => rule.when === 'on_success'
     );
     expect(automaticBranchRules).toEqual([]);
+  });
+
+  it('allows frontend and AI Engine release deploy jobs to schedule independently', () => {
+    const ci = YAML.parse(
+      readFileSync(join(REPO_ROOT, '.gitlab-ci.yml'), 'utf8')
+    ) as Record<string, unknown> & {
+      stages?: string[];
+    };
+
+    const frontendDeploy = ci.deploy as JobConfig;
+    const aiEngineDeploy = ci.deploy_ai_engine as JobConfig;
+    const frontendSmoke = ci.post_deploy_smoke as JobConfig;
+    const aiEngineSmoke = ci.post_deploy_ai_engine_smoke as JobConfig;
+
+    expect(ci.stages).toEqual(['validate', 'deploy', 'smoke']);
+    expect(frontendDeploy.stage).toBe('deploy');
+    expect(aiEngineDeploy.stage).toBe('deploy');
+    expect(frontendDeploy.resource_group).toBe('production');
+    expect(aiEngineDeploy.resource_group).toBe('ai-engine-production');
+    expect(frontendDeploy.resource_group).not.toBe(
+      aiEngineDeploy.resource_group
+    );
+
+    expect(frontendSmoke.needs).toContain('deploy');
+    expect(aiEngineSmoke.needs).toContainEqual({
+      job: 'deploy_ai_engine',
+      optional: true,
+    });
+    expect(aiEngineDeploy.script).toEqual(
+      expect.arrayContaining([expect.stringContaining('CLEANUP_PARALLEL=true')])
+    );
   });
 });
