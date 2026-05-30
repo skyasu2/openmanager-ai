@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-30 09:20:53 KST
+> Generated at: 2026-05-30 17:57:49 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 643 |
-| Total Runs (Counted) | 502 |
+| Total Recorded Runs | 644 |
+| Total Runs (Counted) | 503 |
 | Non-counted Runs | 141 |
-| Total Checks | 4416 |
-| Passed | 4215 |
+| Total Checks | 4421 |
+| Passed | 4220 |
 | Failed | 159 |
-| Completed Items | 738 |
+| Completed Items | 740 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260530-0645 (2026-05-30T00:20:52.444Z) |
-| Latest Recorded Run | QA-20260530-0645 (2026-05-30T00:20:52.444Z) |
+| Last Counted Run | QA-20260530-0646 (2026-05-30T08:57:48.785Z) |
+| Latest Recorded Run | QA-20260530-0646 (2026-05-30T08:57:48.785Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,33 +34,33 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260530-0645 (2026-05-30T00:20:52.444Z)
+Latest run: QA-20260530-0646 (2026-05-30T08:57:48.785Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | 요약 블록 렌더러의 heading/hr/code-fence 처리 및 아코디언 split 토큰 경계 보완 검토 |
-| Data Quality & Metrics Analyst | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Vercel usage checked after v8.12.84 production QA: effective=19.8825 USD, billed=0.0000 USD, chargeCount=17661. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-29T00:20:52.444Z -> 2026-05-30T00:20:52.444Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
+- Window: 2026-05-29T08:57:48.785Z -> 2026-05-30T08:57:48.785Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| - | - | 0 | - | - | - | - | - | - | - |
+| Analyst Agent | cloud run ai | 1 | 11376ms | 11376ms | - | - | 11376ms | 11376ms | QA-20260530-0646 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-29T00:20:52.444Z -> 2026-05-30T00:20:52.444Z (24h)
+- Window: 2026-05-29T08:57:48.785Z -> 2026-05-30T08:57:48.785Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -72,29 +72,30 @@ Latest run: QA-20260530-0645 (2026-05-30T00:20:52.444Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA 4d88c248
-- Covered Surfaces: -
-- Skipped Surfaces: -
+- Deployment: dpl_B9gD74nvF4FwUahzo3NwFmKZ85WA / SHA 2510ade1
+- Coverage Packs: ai-core, dashboard-core
+- Covered Surfaces: Vercel production /api/version v8.12.84, /dashboard AI assistant sidebar, Analyst Agent full-server RCA prefetch path, Async job + SSE stream path, Analyst prefetch internal-name redaction
+- Skipped Surfaces: standard five-question conversational AI QA, Reporter tab, Vision live image QA, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel URL | [Vercel URL](https://openmanager-ai.vercel.app/) | - |
+| general | GitLab pipeline v8.12.84 | [GitLab pipeline v8.12.84](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2563500079) | - |
+| general | Vercel production URL | [Vercel production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-l8gdmqwq3-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | 요약 블록 마크다운 렌더링 결함 | `reports/qa/evidence/qa-20260530-summary-block-markdown-defect.png` | - |
-| playwright-screenshot | 대시보드 baseline 실측치 | `reports/qa/evidence/qa-20260530-dashboard-baseline.png` | - |
+| playwright-screenshot | Analyst prefetch v8.12.84 RCA response without internal function name leakage | `reports/qa/evidence/qa-20260530-analyst-prefetch-v81284-no-internal-leak.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260530-0645)
-  next: 요약 블록 렌더러의 heading/hr/code-fence 처리 및 아코디언 split 토큰 경계 보완 검토
+- None
 
 ## Pending Improvements
 
@@ -185,18 +186,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 738 items completed (full list in qa-tracker.json)
+- Total: 740 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - analyst-latency-evidence-prefetch: Analyst RCA first-step latency reduction via deterministic all-server anomaly evidence prefetch (last QA-20260530-0646)
+  - analyst-prefetch-internal-name-redaction: Analyst prefetch prompt no longer leaks internal tool/function names into user-visible RCA answers (last QA-20260530-0646)
   - ai-disk-threshold-conditional-count: 디스크 임계값 조건부 카운트 질의 정확 처리 (신규 강점) (last QA-20260530-0645)
   - p24-all-scope-average-memory-variant-verify: all-scope 평균 라우팅 메모리 변형 production 검증 (last QA-20260530-0645)
   - p24-all-scope-average-metric-routing: 전체 서버 평균 CPU/디스크 같은 all-scope 평균 질의가 deterministic metric_current evidence로 라우팅됨 (last QA-20260530-0644)
-  - q-new10-pronoun-resolution: Q5 '방금 분석한 서버' 컨텍스트 팔로업 오진 항목 정정 (last QA-20260529-0642)
-  - multi-agent-data-source-history-threading: multi-agent 스트림 경로 createAgentDataSourceContext에 대화 히스토리 전달 (latent 갭 보완) (last QA-20260529-0641)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260530-0646 | 2026-05-30T08:57:48.785Z | targeted | yes | yes | Vercel production Analyst prefetch QA - v8.12.84 internal prompt redaction | 5 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260530-0645 | 2026-05-30T00:20:52.444Z | targeted | no | yes | Vercel Playwright MCP 신규 질문 평가 - v8.12.79 (all-scope 평균/조건부 카운트/가정형 영향분석) | 3 | 2 | 0 | 0 | 1 | 1 |
 | QA-20260530-0644 | 2026-05-29T17:45:34.038Z | smoke | yes | no | GitLab production release smoke - v8.12.79 P24 all-scope average routing | 22 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260530-0643 | 2026-05-29T15:28:02.565Z | smoke | yes | no | GitLab production release smoke - v8.12.78 current main deployment | 20 | 0 | 0 | 0 | 0 | 0 |
@@ -216,4 +218,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260528-0629 | 2026-05-28T01:16:50.267Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.67 P20 trend-rate ranking | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260528-0628 | 2026-05-27T23:33:40.324Z | targeted | yes | yes | Chrome DevTools MCP 18차 신규 질문 평가 — v8.12.65 P17/P18/P19a/stable ranking/group compare | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0627 | 2026-05-27T22:43:05.057Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.65 P19c/P21 trend filters | 7 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260527-0626 | 2026-05-27T13:32:42.014Z | targeted | no | yes | Vercel Playwright MCP targeted recheck - v8.12.62 Q4 stable-server ranking | 5 | 1 | 0 | 0 | 0 | 0 |

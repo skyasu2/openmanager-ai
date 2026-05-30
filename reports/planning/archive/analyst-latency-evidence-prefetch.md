@@ -1,10 +1,10 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Last reviewed: 2026-05-30
 
 # Analyst Latency Evidence Prefetch Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-30
 - TODO.md 연결: Active Tasks > Analyst evidence prefetch로 RCA 첫 LLM step 단축
 
@@ -49,12 +49,12 @@ Analyst Agent의 전체/불특정 RCA 질의에서 첫 LLM step이 `detectAnomal
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] 공유 스캔 동치성: `runAllServerAnomalyScan({ metricType: "all" })` 결과가 기존 tool execute 결과와 주요 계약 필드에서 동등하다.
-- [ ] evidence prompt 포맷: prompt에 `Analyst precomputed anomaly evidence`, `anomalyCount`, `risingTrendScan`, `Do not call detectAnomaliesAllServers again`가 포함되고 길이가 제한된다.
-- [ ] Analyst 게이트: `maybeBuildAnalystEvidencePrefetchPrompt`는 `Analyst Agent`에서만 prompt를 반환하고, 다른 agent나 기존 prefetch prompt가 있는 경우 반환하지 않는다.
-- [ ] non-streaming 주입: Analyst forced routing system prompt에 prefetch prompt가 포함된다.
-- [ ] streaming 주입: Analyst stream system prompt에 prefetch prompt가 포함된다.
-- [ ] 실패 격리: prefetch 오류는 main response/stream을 실패시키지 않는다.
+- [x] 공유 스캔 동치성: `runAllServerAnomalyScan({ metricType: "all" })` 결과가 기존 tool execute 결과와 주요 계약 필드에서 동등하다.
+- [x] evidence prompt 포맷: prompt에 `Internal analyst anomaly scan context`, `anomalyCount`, `risingTrendScan`, `Do not repeat the full-server anomaly scan`이 포함되고, 내부 함수명은 노출하지 않으며 길이가 제한된다.
+- [x] Analyst 게이트: `maybeBuildAnalystEvidencePrefetchPrompt`는 `Analyst Agent`에서만 prompt를 반환하고, 다른 agent나 기존 prefetch prompt가 있는 경우 반환하지 않는다.
+- [x] non-streaming 주입: Analyst forced routing system prompt에 prefetch prompt가 포함된다.
+- [x] streaming 주입: Analyst stream system prompt에 prefetch prompt가 포함된다.
+- [x] 실패 격리: prefetch 오류는 main response/stream을 실패시키지 않는다.
 
 ## Task 목록
 
@@ -80,8 +80,8 @@ Analyst Agent의 전체/불특정 RCA 질의에서 첫 LLM step이 `detectAnomal
 - [x] `cd cloud-run/ai-engine && npm run test` 통과
 - [x] root `npm run test:contract` 통과
 - [x] root `npm run type-check`, `npm run lint`, `npm run test:quick` 또는 `npm run ci:local` 결과 보고
-- [ ] GitLab push 시 pipeline id/status/url 보고
-- [ ] QA 지연 before/after는 실제 배포 후 별도 QA record로 누적
+- [x] GitLab push 시 pipeline id/status/url 보고
+- [x] QA 지연 before/after는 실제 배포 후 별도 QA record로 누적
 
 ## 검증 기록
 
@@ -91,8 +91,16 @@ Analyst Agent의 전체/불특정 RCA 질의에서 첫 LLM step이 `detectAnomal
 - 2026-05-30: `cd cloud-run/ai-engine && npm test` 통과 (`148 files / 1626 tests`)
 - 2026-05-30: root `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `git diff --check` 통과
 - 2026-05-30: `npm run ci:local` 통과 (GitLab validate job 동등)
+- 2026-05-30: GitLab main pipeline `2563401828` success (`a2f4ba9a9`, Analyst prefetch 구현)
+- 2026-05-30: GitLab release pipeline `2563462770` success (`v8.12.83`, production smoke pass)
+- 2026-05-30: v8.12.83 production QA에서 내부 함수명 노출을 발견해 `a57c05f6e fix(ai-engine): hide analyst prefetch internals` 추가
+- 2026-05-30: `npm test -- analyst-evidence-prefetch.test.ts orchestrator-routing.test.ts orchestrator-agent-stream.test.ts` 통과 (`45 tests`)
+- 2026-05-30: `cd cloud-run/ai-engine && npm run type-check` 통과
+- 2026-05-30: `cd cloud-run/ai-engine && npm run test` 통과 (`148 files / 1626 tests`)
+- 2026-05-30: root `npm run test:contract`, `git diff --check` 통과
+- 2026-05-30: GitLab release pipeline `2563500079` success (`v8.12.84`, production smoke pass)
+- 2026-05-30: QA `QA-20260530-0646` 기록. Analyst RCA prefetch production 응답 내부명 노출 없음(`leakedInternalName=false`), `POST /api/ai/jobs=1095ms`, SSE stream `11376ms`, usage normal.
 
 ## 남은 운영 항목
 
-- GitLab push/pipeline 확인은 implementation commit 이후 수행 여부를 결정한다.
-- production 배포와 지연 before/after QA는 GitLab CI release/tag pipeline 또는 별도 승인된 운영 절차에서 수행한다.
+- 남은 운영 항목 없음. Latency sample은 `reports/qa/runs/2026/qa-run-QA-20260530-0646.json`에 누적 기록됨.

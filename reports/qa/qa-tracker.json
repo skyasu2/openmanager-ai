@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-30T00:20:52.444Z"
+    "updatedAt": "2026-05-30T08:57:48.785Z"
   },
   "sequence": {
-    "nextRunNumber": 646
+    "nextRunNumber": 647
   },
   "summary": {
-    "totalRecordedRuns": 643,
-    "totalRuns": 502,
+    "totalRecordedRuns": 644,
+    "totalRuns": 503,
     "excludedRuns": 141,
-    "totalChecks": 4416,
-    "totalPassed": 4215,
+    "totalChecks": 4421,
+    "totalPassed": 4220,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 738,
+    "completedItems": 740,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260530-0645",
-    "lastRecordedAt": "2026-05-30T00:20:52.444Z",
-    "latestRecordedRunId": "QA-20260530-0645",
-    "latestRecordedAt": "2026-05-30T00:20:52.444Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260530-0646",
+    "lastRecordedAt": "2026-05-30T08:57:48.785Z",
+    "latestRecordedRunId": "QA-20260530-0646",
+    "latestRecordedAt": "2026-05-30T08:57:48.785Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18188,6 +18188,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-30T00:20:52.444Z"
+    },
+    "analyst-latency-evidence-prefetch": {
+      "id": "analyst-latency-evidence-prefetch",
+      "title": "Analyst RCA first-step latency reduction via deterministic all-server anomaly evidence prefetch",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260530-0646",
+      "firstSeenAt": "2026-05-30T08:57:48.785Z",
+      "lastSeenRunId": "QA-20260530-0646",
+      "lastSeenAt": "2026-05-30T08:57:48.785Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "a2f4ba9a9 introduced Analyst prefetch; v8.12.84 production QA completed with one async job and one SSE stream.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-30T08:57:48.785Z"
+    },
+    "analyst-prefetch-internal-name-redaction": {
+      "id": "analyst-prefetch-internal-name-redaction",
+      "title": "Analyst prefetch prompt no longer leaks internal tool/function names into user-visible RCA answers",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260530-0646",
+      "firstSeenAt": "2026-05-30T08:57:48.785Z",
+      "lastSeenRunId": "QA-20260530-0646",
+      "lastSeenAt": "2026-05-30T08:57:48.785Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "a57c05f6e removed internal function names from prefetch context and v8.12.84 Playwright QA reported leakedInternalName=false.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-30T08:57:48.785Z"
     }
   },
   "runs": [
@@ -37505,6 +37553,130 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260530-0646",
+      "recordedAt": "2026-05-30T08:57:48.785Z",
+      "recordedAtKst": "2026-05-30 17:57:48 KST",
+      "title": "Vercel production Analyst prefetch QA - v8.12.84 internal prompt redaction",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260530-0646.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_B9gD74nvF4FwUahzo3NwFmKZ85WA",
+        "deploymentUrl": "https://openmanager-l8gdmqwq3-skyasus-projects.vercel.app",
+        "commitSha": "2510ade16e4ae3bb00fcc98d71df32214f809f62"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version v8.12.84",
+        "/dashboard AI assistant sidebar",
+        "Analyst Agent full-server RCA prefetch path",
+        "Async job + SSE stream path",
+        "Analyst prefetch internal-name redaction"
+      ],
+      "skippedSurfaces": [
+        "standard five-question conversational AI QA",
+        "Reporter tab",
+        "Vision live image QA",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar Analyst full-server RCA prefetch",
+          "agent": "Analyst Agent",
+          "provider": "cloud run ai",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright Performance API EventSource resource",
+          "latencyMs": 11376,
+          "processingTimeMs": 11376
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Live Analyst RCA query completed on v8.12.84, used the prefetch context, and the latest answer segment did not expose detectAnomaliesAllServers, runAllServerAnomalyScan, or precomputed evidence labels.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Regression assertions cover prompt redaction in the prefetch builder plus non-streaming and streaming system prompt injection paths; targeted tests, ai-engine full suite, and contract tests passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2563500079 completed successfully and production smoke verified v8.12.84.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-30T17:56:07+09:00",
+          "summary": "Vercel usage checked after v8.12.84 production QA: effective=19.8825 USD, billed=0.0000 USD, chargeCount=17661.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Analyst prefetch v8.12.84 RCA response without internal function name leakage",
+          "path": "reports/qa/evidence/qa-20260530-analyst-prefetch-v81284-no-internal-leak.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline v8.12.84",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2563500079"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-l8gdmqwq3-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -37513,17 +37685,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 352,
-      "appropriateCount": 301,
+      "seenCount": 353,
+      "appropriateCount": 302,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 70,
-      "lastRunId": "QA-20260530-0645",
-      "lastSeenAt": "2026-05-30T00:20:52.444Z",
+      "lastRunId": "QA-20260530-0646",
+      "lastSeenAt": "2026-05-30T08:57:48.785Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "신규 3유형(all-scope 평균 메모리/디스크 조건부 카운트/가정형 영향분석) 모두 라우팅·내용 정확. 단 Analyst RCA 요약 블록에서 마크다운 heading/hr/code-fence literal 노출 결함 관찰",
-      "lastNextAction": "요약 블록 렌더러의 heading/hr/code-fence 처리 및 아코디언 split 토큰 경계 보완 검토"
+      "lastImprovementNeeded": false,
+      "lastRationale": "Live Analyst RCA query completed on v8.12.84, used the prefetch context, and the latest answer segment did not expose detectAnomaliesAllServers, runAllServerAnomalyScan, or precomputed evidence labels.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -37564,16 +37736,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 240,
-      "appropriateCount": 219,
+      "seenCount": 241,
+      "appropriateCount": 220,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260530-0644",
-      "lastSeenAt": "2026-05-29T17:45:34.038Z",
+      "lastRunId": "QA-20260530-0646",
+      "lastSeenAt": "2026-05-30T08:57:48.785Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel production version, Cloud Run revision, health checks, and free-tier guardrails were verified.",
+      "lastRationale": "GitLab tag pipeline 2563500079 completed successfully and production smoke verified v8.12.84.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -37581,16 +37753,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 269,
-      "appropriateCount": 242,
+      "seenCount": 270,
+      "appropriateCount": 243,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260530-0644",
-      "lastSeenAt": "2026-05-29T17:45:34.038Z",
+      "lastRunId": "QA-20260530-0646",
+      "lastSeenAt": "2026-05-30T08:57:48.785Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "P24 deterministic parser/evidence regression tests, contract tests, AI Engine full suite, and release smoke cover the changed risk surface.",
+      "lastRationale": "Regression assertions cover prompt redaction in the prefetch builder plus non-streaming and streaming system prompt injection paths; targeted tests, ai-engine full suite, and contract tests passed.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
