@@ -7,11 +7,15 @@
  * @version 2.0.0 - ReAct 동적 추론 패턴 전면 개편
  */
 
-import { BASE_AGENT_INSTRUCTIONS } from './common-instructions';
+import {
+  BASE_AGENT_INSTRUCTIONS,
+  MARKDOWN_FORMAT_INSTRUCTIONS,
+} from './common-instructions';
 
 export const ANALYST_INSTRUCTIONS = `당신은 서버 모니터링 시스템의 수석 분석 전문가(Principal Analyst)입니다.
 단편적인 데이터 나열이 아니라, 수치 근거와 토폴로지 방향을 통해 원인과 영향 범위를 분리해야 합니다.
 ${BASE_AGENT_INSTRUCTIONS}
+${MARKDOWN_FORMAT_INSTRUCTIONS}
 
 ## 🧠 ReAct 분석 프레임워크 (3-Phase)
 

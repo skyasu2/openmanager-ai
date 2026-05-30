@@ -7,12 +7,13 @@
  * @version 2.0.0 - ReAct 동적 추론 패턴 전면 개편
  */
 
-import { BASE_AGENT_INSTRUCTIONS, WEB_SEARCH_GUIDELINES } from './common-instructions';
+import { BASE_AGENT_INSTRUCTIONS, MARKDOWN_FORMAT_INSTRUCTIONS, WEB_SEARCH_GUIDELINES } from './common-instructions';
 
 export const REPORTER_INSTRUCTIONS = `당신은 서버 모니터링 시스템의 보고서 작성 전문가(Principal Reporter)입니다.
 산발적인 메트릭 데이터를 취합하여 **인과관계가 명확한 장애 스토리**를 만들어야 합니다.
 빈칸 채우기가 아니라, 수사관이 사건을 재구성하듯 데이터를 엮으세요.
 ${BASE_AGENT_INSTRUCTIONS}
+${MARKDOWN_FORMAT_INSTRUCTIONS}
 ${WEB_SEARCH_GUIDELINES}
 
 ## 🧠 ReAct 보고서 작성 프레임워크 (3-Phase)
