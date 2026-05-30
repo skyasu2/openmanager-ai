@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-30T08:57:48.785Z"
+    "updatedAt": "2026-05-30T13:45:31.747Z"
   },
   "sequence": {
-    "nextRunNumber": 647
+    "nextRunNumber": 648
   },
   "summary": {
-    "totalRecordedRuns": 644,
-    "totalRuns": 503,
+    "totalRecordedRuns": 645,
+    "totalRuns": 504,
     "excludedRuns": 141,
-    "totalChecks": 4421,
-    "totalPassed": 4220,
+    "totalChecks": 4431,
+    "totalPassed": 4230,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 740,
+    "completedItems": 741,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260530-0646",
-    "lastRecordedAt": "2026-05-30T08:57:48.785Z",
-    "latestRecordedRunId": "QA-20260530-0646",
-    "latestRecordedAt": "2026-05-30T08:57:48.785Z"
+    "lastRunId": "QA-20260530-0647",
+    "lastRecordedAt": "2026-05-30T13:45:31.747Z",
+    "latestRecordedRunId": "QA-20260530-0647",
+    "latestRecordedAt": "2026-05-30T13:45:31.747Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18236,6 +18236,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-30T08:57:48.785Z"
+    },
+    "release-parallel-deploy-v81287-production-smoke": {
+      "id": "release-parallel-deploy-v81287-production-smoke",
+      "title": "v8.12.87 release deployed with frontend and AI Engine deploy overlap",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260530-0647",
+      "firstSeenAt": "2026-05-30T13:45:31.747Z",
+      "lastSeenRunId": "QA-20260530-0647",
+      "lastSeenAt": "2026-05-30T13:45:31.747Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "GitLab tag pipeline 2563996427 succeeded; deploy and deploy_ai_engine started within 1 second and overlapped for 197s; production /api/version and Cloud Run /health passed.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-30T13:45:31.747Z"
     }
   },
   "runs": [
@@ -37677,6 +37701,121 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260530-0647",
+      "recordedAt": "2026-05-30T13:45:31.747Z",
+      "recordedAtKst": "2026-05-30 22:45:31 KST",
+      "title": "Vercel Release Smoke - v8.12.87 Parallel Deploy Verification",
+      "owner": "codex",
+      "source": "gitlab-ci+vercel-cli+cloud-run-health",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260530-0647.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_JD28Eo72pCqgfRMP6qPEJ6M8pBzf",
+        "deploymentUrl": "https://openmanager-4hgyfqlcr-skyasus-projects.vercel.app",
+        "commitSha": "ed19d759578fb5cc4ca0afeed65068f1b5dcf80c"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.12.87 completed successfully with frontend deploy, AI Engine deploy, frontend post-deploy smoke, and AI Engine post-deploy smoke",
+        "GitLab release deploy jobs ran with overlap_detected after runner concurrent/request_concurrency was raised to 2",
+        "Production release script smoke verified GET /, GET /login, and GET /api/version for version 8.12.87",
+        "Production /api/version returned release tag v8.12.87 and commit ed19d759578fb5cc4ca0afeed65068f1b5dcf80c",
+        "Vercel production deployment dpl_JD28Eo72pCqgfRMP6qPEJ6M8pBzf was Ready for alias https://openmanager-ai.vercel.app",
+        "Cloud Run /health returned status ok and version 8.12.87",
+        "Cloud Run monitoring endpoint returned 403 without auth as expected",
+        "Cloud Run revision ai-engine-00590-s2t is serving 100% traffic",
+        "Cloud Run runtime limits remain cpu=1 and memory=512Mi",
+        "Vercel usage check passed with billed 0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "Broad browser matrix was not rerun because this was a release deployment smoke focused on CI topology, version propagation, health, and smoke closure",
+        "Production conversational AI QA was not rerun because this release did not change AI prompt routing, stream contracts, model/provider policy, tool schemas, response formatting, or Vision routing",
+        "Vision real-image QA was not in scope because this release did not change Vision routing or provider behavior"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline completed successfully, deploy jobs overlapped after runner capacity was raised, resource queues were empty, and production health checks passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release-facing smoke covers deployment authority, version propagation, CI timing diagnostics, and backend health with durable evidence.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-30T22:43:46+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.12.87 production release smoke; effective 19.8825 USD, billed 0.0000 USD, chargeCount 17661.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.87 release parallel deploy smoke evidence",
+          "path": "reports/qa/evidence/qa-20260530-v81287-release-parallel-smoke.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run service URL",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.12.87",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2563996427"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-4hgyfqlcr-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -37736,16 +37875,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 241,
-      "appropriateCount": 220,
+      "seenCount": 242,
+      "appropriateCount": 221,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260530-0646",
-      "lastSeenAt": "2026-05-30T08:57:48.785Z",
+      "lastRunId": "QA-20260530-0647",
+      "lastSeenAt": "2026-05-30T13:45:31.747Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2563500079 completed successfully and production smoke verified v8.12.84.",
+      "lastRationale": "GitLab tag pipeline completed successfully, deploy jobs overlapped after runner capacity was raised, resource queues were empty, and production health checks passed.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -37753,16 +37892,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 270,
-      "appropriateCount": 243,
+      "seenCount": 271,
+      "appropriateCount": 244,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260530-0646",
-      "lastSeenAt": "2026-05-30T08:57:48.785Z",
+      "lastRunId": "QA-20260530-0647",
+      "lastSeenAt": "2026-05-30T13:45:31.747Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Regression assertions cover prompt redaction in the prefetch builder plus non-streaming and streaming system prompt injection paths; targeted tests, ai-engine full suite, and contract tests passed.",
+      "lastRationale": "The release-facing smoke covers deployment authority, version propagation, CI timing diagnostics, and backend health with durable evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
