@@ -10,6 +10,7 @@ import type {
 import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { logger } from '@/lib/logging';
 import type { StreamRagSource } from './types/stream-rag.types';
+import type { AsyncQueryResult } from './useAsyncAIQuery';
 import type { DeferredMetadataHandlers } from './useDeferredMessageMetadata';
 import { handleStreamDataPart } from './utils/stream-data-handler';
 
@@ -25,6 +26,7 @@ interface UseAIChatHybridCallbacksOptions {
   setStreamRagSources: Dispatch<SetStateAction<StreamRagSource[]>>;
   getDeveloperPanelData?: () => DeveloperPanelData | null;
   setDeveloperPanelData?: Dispatch<SetStateAction<DeveloperPanelData | null>>;
+  onPostDecisionArtifactResult?: (result: AsyncQueryResult) => boolean;
 }
 
 export function useAIChatHybridCallbacks({
@@ -39,6 +41,7 @@ export function useAIChatHybridCallbacks({
   setStreamRagSources,
   getDeveloperPanelData,
   setDeveloperPanelData,
+  onPostDecisionArtifactResult,
 }: UseAIChatHybridCallbacksOptions) {
   return useMemo(
     () => ({
@@ -54,7 +57,8 @@ export function useAIChatHybridCallbacks({
         if (!dh) return;
         dh.flushPendingToMessage(message.id);
       },
-      onJobResult: (result: { success: boolean; error?: string | null }) => {
+      onJobResult: (result: AsyncQueryResult) => {
+        const artifactHandled = onPostDecisionArtifactResult?.(result) ?? false;
         onMessageSend?.(getPendingQuery());
         if (result.success) {
           setError(null);
@@ -65,6 +69,7 @@ export function useAIChatHybridCallbacks({
         if (process.env.NODE_ENV === 'development') {
           logger.info('📦 [Job Queue] Result received:', result.success);
         }
+        return artifactHandled;
       },
       onProgress: (progress: { progress: number; stage: string }) => {
         if (process.env.NODE_ENV === 'development') {
@@ -106,6 +111,7 @@ export function useAIChatHybridCallbacks({
       setStreamRagSources,
       getDeveloperPanelData,
       setDeveloperPanelData,
+      onPostDecisionArtifactResult,
     ]
   );
 }

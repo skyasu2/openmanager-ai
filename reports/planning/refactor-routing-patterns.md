@@ -2,7 +2,7 @@
 
 **작성일**: 2026-05-29  
 **Owner**: project  
-**상태**: Approved (Phase 4A 계약 확정, Phase 4B/C 보류)  
+**상태**: In Progress (Phase 4A 완료, Phase 4B/C 보류)
 **우선순위**: Medium  
 
 ---
@@ -129,17 +129,17 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 
 #### Task 목록
 
-- [ ] Task 0 — failing test 커밋: 위 테스트 시나리오를 계약 테스트로 추가
-- [ ] Task 1 — post-decision resolver 추가
-- [ ] Task 2 — async result 수신 후 `startChatArtifactGeneration()` 연결
-- [ ] Task 3 — targeted test/type-check 실행
+- [x] Task 0 — failing test 커밋: 위 테스트 시나리오를 계약 테스트로 추가 (`91e69e24c`)
+- [x] Task 1 — post-decision resolver 추가
+- [x] Task 2 — async result 수신 후 `startChatArtifactGeneration()` 연결
+- [x] Task 3 — targeted test/type-check 실행
 
 #### Phase 4A 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `npm run type-check` 통과
-- [ ] `npm run test:quick` 또는 관련 targeted test 통과
-- [ ] 프론트 pre-send 분류 fallback 유지 확인
+- [x] 테스트 시나리오 전체 통과
+- [x] `npm run type-check` 통과
+- [x] `npm run test:quick` 및 targeted test 통과
+- [x] 프론트 pre-send 분류 fallback 유지 확인
 
 ---
 

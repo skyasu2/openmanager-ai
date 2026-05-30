@@ -369,9 +369,9 @@ export function useHybridAIQuery(
         errorDetails: null,
         clarification: null,
       }));
-      onJobResult?.(result);
+      const jobResultHandled = onJobResult?.(result) === true;
 
-      if (result.success && result.response) {
+      if (result.success && result.response && !jobResultHandled) {
         const messageWithRag = buildAssistantMessageFromAsyncResult(result);
         setMessages((prev) => [...prev, messageWithRag]);
       }

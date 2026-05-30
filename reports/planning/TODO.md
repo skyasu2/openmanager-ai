@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-30 KST (라우팅 패턴 Phase 4A 착수)
+**Last Updated**: 2026-05-30 KST (라우팅 패턴 Phase 4A 구현 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| 라우팅 패턴 Phase 4A — post-decision artifact bridge | Medium | Cloud Run/BFF가 반환한 `artifactKind`를 프론트 아티팩트 실행으로 연결하는 최소 단계. 상세 계약: [`refactor-routing-patterns.md`](refactor-routing-patterns.md). |
+| _None_ | - | 현재 진행 중인 작업 없음. |
 
 ---
 
@@ -23,7 +23,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 대기 중인 작업 없음. |
+| Off-domain 응답 정책 2트랙화 — block/warn | High | Vercel production QA에서 날씨 질의 timeout 확인. `block`: 답변 불가 fast-exit, `warn`: 일반 기술 답변 허용 + 정확성 경고. 별도 AI routing contract plan 필요. |
 
 ---
 

@@ -9,9 +9,11 @@ import {
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import type { JobDataSlot } from '@/types/ai-jobs';
+import type { AsyncQueryResult } from '../useAsyncAIQuery';
 import type { FileAttachment } from '../useFileAttachments';
 import { startChatArtifactGeneration } from './chat-artifact-execution';
 import type { GuidanceCtaTarget } from './chat-artifact-metadata';
+import { resolvePostDecisionArtifactIntent } from './post-decision-artifact';
 
 type ChatArtifact = MonitoringChatArtifact;
 
@@ -233,6 +235,51 @@ export async function tryHandleChatArtifactRequest({
   return true;
 }
 
+export function tryHandlePostDecisionChatArtifactResult({
+  result,
+  query,
+  artifactIntentInFlightRef,
+  ...runtime
+}: ArtifactGenerationRuntimeContext & {
+  result: AsyncQueryResult;
+  query: string;
+  artifactIntentInFlightRef: MutableRefObject<boolean>;
+}): boolean {
+  const normalizedQuery = query.trim();
+  if (!normalizedQuery) return false;
+  if (
+    runtime.artifactInFlightRef.current ||
+    artifactIntentInFlightRef.current
+  ) {
+    return false;
+  }
+
+  const artifactIntent = resolvePostDecisionArtifactIntent({
+    result,
+    query: normalizedQuery,
+  });
+  if (!artifactIntent) return false;
+
+  startChatArtifactGeneration({
+    artifactIntent,
+    query: normalizedQuery,
+    sessionId: runtime.sessionId,
+    queryAsOfDataSlot: runtime.queryAsOfDataSlot,
+    messages: withoutTrailingMatchingUserMessage(
+      runtime.messagesRef.current,
+      normalizedQuery
+    ),
+    messagesRef: runtime.messagesRef,
+    setMessages: runtime.setMessages,
+    setError: runtime.setError,
+    setArtifactIsLoading: runtime.setArtifactIsLoading,
+    artifactRequestIdRef: runtime.artifactRequestIdRef,
+    artifactAbortControllerRef: runtime.artifactAbortControllerRef,
+    artifactInFlightRef: runtime.artifactInFlightRef,
+  });
+  return true;
+}
+
 function isExecutableChatArtifactIntent(
   intent: ChatArtifactIntent
 ): intent is ExecutableChatArtifactIntent {
@@ -243,4 +290,30 @@ function isExecutableChatArtifactIntent(
     intent.kind === 'server-snapshot' ||
     intent.kind === 'ops-procedure'
   );
+}
+
+function withoutTrailingMatchingUserMessage(
+  messages: UIMessage[],
+  query: string
+): UIMessage[] {
+  const lastMessage = messages.at(-1);
+  if (lastMessage?.role !== 'user') return messages;
+
+  return readMessageText(lastMessage).trim() === query
+    ? messages.slice(0, -1)
+    : messages;
+}
+
+function readMessageText(message: UIMessage): string {
+  const content = (message as { content?: unknown }).content;
+  if (typeof content === 'string') return content;
+  if (!Array.isArray(message.parts)) return '';
+
+  return message.parts
+    .map((part) =>
+      part && typeof part === 'object' && 'text' in part
+        ? String(part.text ?? '')
+        : ''
+    )
+    .join('');
 }

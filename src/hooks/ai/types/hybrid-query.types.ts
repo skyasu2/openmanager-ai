@@ -160,7 +160,7 @@ export interface UseHybridAIQueryOptions {
   /** 스트리밍 완료 메시지 콜백 (message.id 기준 후처리) */
   onStreamMessageFinish?: (message: UIMessage) => void;
   /** Job 결과 콜백 */
-  onJobResult?: (result: AsyncQueryResult) => void;
+  onJobResult?: (result: AsyncQueryResult) => boolean | undefined;
   /** 진행률 업데이트 콜백 */
   onProgress?: (progress: AsyncQueryProgress) => void;
   /** 웹 검색 활성화 여부 (Tavily) */

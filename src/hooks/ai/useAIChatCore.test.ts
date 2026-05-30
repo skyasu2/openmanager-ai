@@ -1138,7 +1138,7 @@ describe('useAIChatCore', () => {
     );
   });
 
-  it('answers ambiguous artifact feature questions locally without API calls', async () => {
+  it('routes ambiguous artifact feature questions through chat without artifact generation', async () => {
     const { result } = renderHook(() => useAIChatCore());
 
     await act(async () => {
@@ -1149,14 +1149,11 @@ describe('useAIChatCore', () => {
       result.current.handleSendInput();
     });
 
-    expect(mocks.sendQuery).not.toHaveBeenCalled();
+    expect(mocks.sendQuery).toHaveBeenCalledWith(
+      '장애 보고는 어떻게 하면 돼?',
+      undefined
+    );
     expect(mocks.generateIncidentReportArtifact).not.toHaveBeenCalled();
     expect(mocks.generateMonitoringAnalysisArtifact).not.toHaveBeenCalled();
-    expect(result.current.messages[1]?.content).toContain(
-      '장애 보고서 작성 기능'
-    );
-    expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
-      'incident_report_guidance_pattern'
-    );
   });
 });
