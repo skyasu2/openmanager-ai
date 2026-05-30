@@ -200,9 +200,35 @@ export async function executeSupervisor(
     };
   }
 
-  // Off-domain: prepend warning and continue to LLM (no blocking)
   const offDomainGuardrail = getOffDomainGuardrail(queryText);
-  if (offDomainGuardrail) {
+  if (offDomainGuardrail?.action === 'block') {
+    const durationMs = Date.now() - startTime;
+    logger.info(
+      { category: offDomainGuardrail.category },
+      'Supervisor: off-domain hard block triggered'
+    );
+    return {
+      success: true,
+      response: offDomainGuardrail.response ?? offDomainGuardrail.offDomainWarning,
+      toolsCalled: [],
+      toolResults: [],
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      metadata: {
+        provider: 'deterministic',
+        modelId: 'off-domain-guard',
+        stepsExecuted: 0,
+        durationMs,
+        mode,
+        ...buildSupervisorModeMetadata(modeDecision),
+        ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
+        offDomainAction: 'block',
+        offDomainCategory: offDomainGuardrail.category,
+      },
+    };
+  }
+
+  // Off-domain warn: append warning and continue to LLM.
+  if (offDomainGuardrail?.action === 'warn') {
     logger.info({ category: offDomainGuardrail.category }, 'Supervisor: off-domain detected, delegating to LLM with warning');
   }
   const warningPrefix = Array.from(

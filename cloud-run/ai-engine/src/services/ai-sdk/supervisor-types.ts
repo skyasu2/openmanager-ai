@@ -285,6 +285,15 @@ export interface SupervisorResponse {
     retrieval?: RetrievalMetadata;
     /** Data slot captured when the async job was created. */
     queryAsOf?: QueryAsOf;
+    /** Off-domain guard action when the request was handled by the deterministic guard. */
+    offDomainAction?: 'block' | 'warn';
+    /** Off-domain category detected by the guard. */
+    offDomainCategory?:
+      | 'live_fact'
+      | 'external_action'
+      | 'local_recommendation'
+      | 'personal_general'
+      | 'general_coding';
     /** 상위 실행 모드에서 강등된 경우의 원래 모드 */
     degradedFromMode?: 'multi';
     /** 강등(Degraded)된 직접 원인 */

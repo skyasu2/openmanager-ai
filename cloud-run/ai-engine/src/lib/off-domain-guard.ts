@@ -5,10 +5,15 @@ export type OffDomainGuardCategory =
   | 'personal_general'
   | 'general_coding';
 
+export type OffDomainGuardAction = 'block' | 'warn';
+
 export interface OffDomainGuardrailResult {
   category: OffDomainGuardCategory;
-  /** Warning message to prepend before the LLM response. No blocking. */
+  action: OffDomainGuardAction;
+  /** Warning message to append after the LLM response for warn, and expose in metadata for block. */
   offDomainWarning: string;
+  /** Deterministic response for block actions. */
+  response?: string;
 }
 
 const OFF_DOMAIN_WARNING =
@@ -49,6 +54,60 @@ function isGeneralCodingRequest(query: string): boolean {
   );
 }
 
+function buildBlockResponse(category: OffDomainGuardCategory): string {
+  switch (category) {
+    case 'live_fact':
+      return [
+        '실시간 외부 조회 도구가 연결되어 있지 않아 현재 가격, 날씨, 뉴스, 환율 같은 값을 확인할 수 없습니다.',
+        '정확한 현재값은 공식 앱, 거래소, 기상청, 금융 정보 서비스에서 확인해 주세요.',
+        '',
+        'OpenManager 범위 안에서는 서버 CPU, 메모리, 디스크, 알림, 로그, 토폴로지, 장애 징후를 바로 분석할 수 있습니다.',
+      ].join('\n');
+    case 'local_recommendation':
+      return [
+        '최신 영업 여부, 위치, 대기 시간, 리뷰 데이터를 확인할 수 없습니다.',
+        '장소 추천은 지도/리뷰 서비스에서 현재 정보를 확인해야 합니다.',
+        '',
+        'OpenManager 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률을 분석할 수 있습니다.',
+      ].join('\n');
+    case 'personal_general':
+      return [
+        '저는 서버 운영·모니터링 중심 AI라 이 질문은 지원 범위 밖입니다.',
+        '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률, 조치 명령어를 근거와 함께 분석할 수 있습니다.',
+      ].join('\n');
+    case 'external_action':
+    case 'general_coding':
+      return '';
+  }
+}
+
+function blockResult(
+  category: Extract<
+    OffDomainGuardCategory,
+    'live_fact' | 'local_recommendation' | 'personal_general'
+  >
+): OffDomainGuardrailResult {
+  return {
+    category,
+    action: 'block',
+    offDomainWarning: OFF_DOMAIN_WARNING,
+    response: buildBlockResponse(category),
+  };
+}
+
+function warnResult(
+  category: Extract<
+    OffDomainGuardCategory,
+    'external_action' | 'general_coding'
+  >
+): OffDomainGuardrailResult {
+  return {
+    category,
+    action: 'warn',
+    offDomainWarning: OFF_DOMAIN_WARNING,
+  };
+}
+
 export function getOffDomainGuardrail(
   query: string
 ): OffDomainGuardrailResult | null {
@@ -62,23 +121,23 @@ export function getOffDomainGuardrail(
   }
 
   if (EXTERNAL_ACTION_PATTERN.test(trimmedQuery)) {
-    return { category: 'external_action', offDomainWarning: OFF_DOMAIN_WARNING };
+    return warnResult('external_action');
   }
 
   if (isGeneralCodingRequest(trimmedQuery)) {
-    return { category: 'general_coding', offDomainWarning: OFF_DOMAIN_WARNING };
+    return warnResult('general_coding');
   }
 
   if (LIVE_FACT_PATTERN.test(trimmedQuery)) {
-    return { category: 'live_fact', offDomainWarning: OFF_DOMAIN_WARNING };
+    return blockResult('live_fact');
   }
 
   if (LOCAL_RECOMMENDATION_PATTERN.test(trimmedQuery)) {
-    return { category: 'local_recommendation', offDomainWarning: OFF_DOMAIN_WARNING };
+    return blockResult('local_recommendation');
   }
 
   if (PERSONAL_GENERAL_PATTERN.test(trimmedQuery)) {
-    return { category: 'personal_general', offDomainWarning: OFF_DOMAIN_WARNING };
+    return blockResult('personal_general');
   }
 
   return null;

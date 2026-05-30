@@ -7,15 +7,18 @@ export type OffDomainGuardCategory =
   | 'personal_general'
   | 'general_coding';
 
+export type OffDomainGuardAction = 'block' | 'warn';
+
 export interface OffDomainGuardrailResult {
   category: OffDomainGuardCategory;
-  shouldShortCircuit: true;
+  action: OffDomainGuardAction;
+  shouldShortCircuit?: true;
   warning: string;
-  response: string;
+  response?: string;
 }
 
 const OFF_DOMAIN_WARNING =
-  '서버 운영·모니터링 범위를 벗어난 질문이라 실시간 조회나 외부 실행 없이 제한된 안내만 제공합니다.';
+  '서버 운영·모니터링 범위를 벗어난 질문이라 답변 정확도가 낮을 수 있습니다.';
 
 const OPERATIONAL_CONTEXT_PATTERN =
   /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|운영|점검|명령어|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|promql|otel|runbook|krl|rag/i;
@@ -105,24 +108,23 @@ export function getOffDomainGuardrail(
   if (EXTERNAL_ACTION_PATTERN.test(trimmedQuery)) {
     return {
       category: 'external_action',
-      shouldShortCircuit: true,
+      action: 'warn',
       warning: OFF_DOMAIN_WARNING,
-      response: buildResponse('external_action'),
     };
   }
 
   if (isGeneralCodingRequest(trimmedQuery)) {
     return {
       category: 'general_coding',
-      shouldShortCircuit: true,
+      action: 'warn',
       warning: OFF_DOMAIN_WARNING,
-      response: buildResponse('general_coding'),
     };
   }
 
   if (LIVE_FACT_PATTERN.test(trimmedQuery)) {
     return {
       category: 'live_fact',
+      action: 'block',
       shouldShortCircuit: true,
       warning: OFF_DOMAIN_WARNING,
       response: buildResponse('live_fact'),
@@ -132,6 +134,7 @@ export function getOffDomainGuardrail(
   if (LOCAL_RECOMMENDATION_PATTERN.test(trimmedQuery)) {
     return {
       category: 'local_recommendation',
+      action: 'block',
       shouldShortCircuit: true,
       warning: OFF_DOMAIN_WARNING,
       response: buildResponse('local_recommendation'),
@@ -141,6 +144,7 @@ export function getOffDomainGuardrail(
   if (PERSONAL_GENERAL_PATTERN.test(trimmedQuery)) {
     return {
       category: 'personal_general',
+      action: 'block',
       shouldShortCircuit: true,
       warning: OFF_DOMAIN_WARNING,
       response: buildResponse('personal_general'),

@@ -245,6 +245,44 @@ export async function* executeSupervisorStream(
     return;
   }
 
+  const offDomainResult = getOffDomainGuardrail(queryText);
+  if (offDomainResult?.action === 'block') {
+    const durationMs = Date.now() - startTime;
+    const response = offDomainResult.response ?? offDomainResult.offDomainWarning;
+    logger.info(
+      { category: offDomainResult.category },
+      '[SupervisorStream] off-domain hard block triggered'
+    );
+    yield { type: 'text_delta', data: response };
+    yield {
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: [],
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'off-domain-guard',
+          stepsExecuted: 0,
+          durationMs,
+          mode,
+          ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
+          ...buildSupervisorModeMetadata(modeDecision),
+          routeDecision,
+          assistantPlan,
+          assistantRuntime: runtimeMetadata,
+          assistantResult: buildSupervisorAssistantResult(routeDecision),
+          offDomainAction: 'block',
+          offDomainCategory: offDomainResult.category,
+          ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
+            ? { semanticQueryTrace }
+            : {}),
+        },
+      },
+    };
+    return;
+  }
+
   // Build warning suffix — appended at the bottom of LLM response (GPT/Gemini style)
   const warningSuffixParts: string[] = [];
 
@@ -253,8 +291,7 @@ export async function* executeSupervisorStream(
     logger.info('[SupervisorStream] security warning suffix queued');
   }
 
-  const offDomainResult = getOffDomainGuardrail(queryText);
-  if (offDomainResult) {
+  if (offDomainResult?.action === 'warn') {
     warningSuffixParts.push(offDomainResult.offDomainWarning);
     logger.info({ category: offDomainResult.category }, '[SupervisorStream] off-domain detected, delegating to LLM');
   }

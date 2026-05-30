@@ -1,10 +1,10 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-05-30
 
 # Off-domain Block/Warn Policy Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-30
 - TODO.md 연결: Active Tasks > Off-domain 응답 정책 2트랙화 — block/warn
 
@@ -70,29 +70,29 @@ off-domain query
 
 ### 테스트 시나리오
 
-- [ ] Root guard: `오늘 서울 날씨 알려줘` → `action=block`, response 포함
-- [ ] Root guard: `파이썬 피보나치 코드 짜줘` → `action=warn`, warning 포함, response 없음
-- [ ] Root `useQueryExecution`: weather block은 `asyncQuery.sendQuery`/`sendMessage`를 호출하지 않는다
-- [ ] Root `useQueryExecution`: general coding warn은 deterministic block 없이 기존 AI 경로로 진행한다
-- [ ] Cloud Run guard: weather/live fact는 `action=block`, general coding은 `action=warn`
-- [ ] Cloud Run stream: weather block은 multi/single LLM stream을 호출하지 않고 `text_delta` + `done`으로 종료한다
-- [ ] Cloud Run stream: general coding warn은 기존 LLM path를 유지하고 warning suffix를 붙인다
-- [ ] Cloud Run non-stream: weather block은 LLM 호출 없이 deterministic response를 반환한다
+- [x] Root guard: `오늘 서울 날씨 알려줘` → `action=block`, response 포함
+- [x] Root guard: `파이썬 피보나치 코드 짜줘` → `action=warn`, warning 포함, response 없음
+- [x] Root `useQueryExecution`: weather block은 `asyncQuery.sendQuery`/`sendMessage`를 호출하지 않는다
+- [x] Root `useQueryExecution`: general coding warn은 deterministic block 없이 기존 AI 경로로 진행한다
+- [x] Cloud Run guard: weather/live fact는 `action=block`, general coding은 `action=warn`
+- [x] Cloud Run stream: weather block은 multi/single LLM stream을 호출하지 않고 `text_delta` + `done`으로 종료한다
+- [x] Cloud Run stream: general coding warn은 기존 LLM path를 유지하고 warning suffix를 붙인다
+- [x] Cloud Run non-stream: weather block은 LLM 호출 없이 deterministic response를 반환한다
 
 ## Task 목록
 
-- [ ] Task 0 — failing test 커밋
-- [ ] Task 1 — Root App guard/action 계약 구현
-- [ ] Task 2 — Cloud Run guard/action 계약 구현
-- [ ] Task 3 — Cloud Run stream/non-stream fast block 구현
-- [ ] Task 4 — targeted tests, root checks, AI Engine checks
+- [x] Task 0 — failing test 커밋 (`ab14ea5f9`)
+- [x] Task 1 — Root App guard/action 계약 구현
+- [x] Task 2 — Cloud Run guard/action 계약 구현
+- [x] Task 3 — Cloud Run stream/non-stream fast block 구현
+- [x] Task 4 — targeted tests, root checks, AI Engine checks
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `npm run type-check` 통과
-- [ ] `npm run lint` 통과
-- [ ] `npm run test:quick` 통과
-- [ ] `npm run test:contract` 통과
-- [ ] `cd cloud-run/ai-engine && npm run type-check` 통과
-- [ ] `cd cloud-run/ai-engine && npm run test` 통과
+- [x] 테스트 시나리오 전체 통과
+- [x] `npm run type-check` 통과
+- [x] `npm run lint` 통과
+- [x] `npm run test:quick` 통과
+- [x] `npm run test:contract` 통과
+- [x] `cd cloud-run/ai-engine && npm run type-check` 통과
+- [x] `cd cloud-run/ai-engine && npm run test` 통과

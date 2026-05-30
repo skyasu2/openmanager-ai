@@ -246,14 +246,14 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         ? null
         : getOffDomainGuardrail(trimmedQuery);
 
-      if (offDomainGuardrail) {
+      if (offDomainGuardrail?.action === 'block') {
         const assistantMessage: UIMessage = {
           id: generateMessageId('assistant'),
           role: 'assistant',
           parts: [
             {
               type: 'text',
-              text: offDomainGuardrail.response,
+              text: offDomainGuardrail.response ?? offDomainGuardrail.warning,
             },
           ],
         };
