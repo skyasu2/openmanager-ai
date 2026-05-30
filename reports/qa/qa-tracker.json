@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-29T17:45:34.038Z"
+    "updatedAt": "2026-05-30T00:20:52.444Z"
   },
   "sequence": {
-    "nextRunNumber": 645
+    "nextRunNumber": 646
   },
   "summary": {
-    "totalRecordedRuns": 642,
-    "totalRuns": 501,
+    "totalRecordedRuns": 643,
+    "totalRuns": 502,
     "excludedRuns": 141,
-    "totalChecks": 4413,
-    "totalPassed": 4212,
+    "totalChecks": 4416,
+    "totalPassed": 4215,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 736,
+    "completedItems": 738,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 30,
+    "wontFixItems": 31,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260529-0641",
-    "lastRecordedAt": "2026-05-29T12:50:47.147Z",
-    "latestRecordedRunId": "QA-20260530-0644",
-    "latestRecordedAt": "2026-05-29T17:45:34.038Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260530-0645",
+    "lastRecordedAt": "2026-05-30T00:20:52.444Z",
+    "latestRecordedRunId": "QA-20260530-0645",
+    "latestRecordedAt": "2026-05-30T00:20:52.444Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18116,6 +18116,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-29T17:45:34.038Z"
+    },
+    "p24-all-scope-average-memory-variant-verify": {
+      "id": "p24-all-scope-average-memory-variant-verify",
+      "title": "all-scope 평균 라우팅 메모리 변형 production 검증",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260530-0645",
+      "firstSeenAt": "2026-05-30T00:20:52.444Z",
+      "lastSeenRunId": "QA-20260530-0645",
+      "lastSeenAt": "2026-05-30T00:20:52.444Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Playwright MCP: 전체 서버 평균 메모리 질의 -> metric_current deterministic 경로 적중, 44.3%/최고64%/최저31.1% 정확 (P24 fix CPU 외 메모리 메트릭에서도 동작 확인)",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-30T00:20:52.444Z"
+    },
+    "ai-disk-threshold-conditional-count": {
+      "id": "ai-disk-threshold-conditional-count",
+      "title": "디스크 임계값 조건부 카운트 질의 정확 처리 (신규 강점)",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260530-0645",
+      "firstSeenAt": "2026-05-30T00:20:52.444Z",
+      "lastSeenRunId": "QA-20260530-0645",
+      "lastSeenAt": "2026-05-30T00:20:52.444Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Playwright MCP: 디스크>=60% 서버 질의 -> 2대(db-mysql-dc1-backup 68%, db-mysql-dc1-primary 63%) 정확 카운트+나열, 대시보드 Top5와 일치",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-30T00:20:52.444Z"
+    },
+    "summary-block-markdown-heading-hr-code-fence": {
+      "id": "summary-block-markdown-heading-hr-code-fence",
+      "title": "핵심 요약 스트리밍 블록에서 마크다운 heading(###)/hr(---)/code-fence(```bash) 미렌더링 literal 노출",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260530-0645",
+      "firstSeenAt": "2026-05-30T00:20:52.444Z",
+      "lastSeenRunId": "QA-20260530-0645",
+      "lastSeenAt": "2026-05-30T00:20:52.444Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Playwright MCP: api-was-dc1-01 가정형 영향분석(Analyst) 응답 요약 블록에 ### 현황 요약 / --- / ```bash 가 raw 텍스트로 표시. 내용 정확, 렌더링만 결함. numbered-list-accordion-split 계열",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-30T00:20:52.444Z"
     }
   },
   "runs": [
@@ -37349,6 +37421,90 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260530-0645",
+      "recordedAt": "2026-05-30T00:20:52.444Z",
+      "recordedAtKst": "2026-05-30 09:20:52 KST",
+      "title": "Vercel Playwright MCP 신규 질문 평가 - v8.12.79 (all-scope 평균/조건부 카운트/가정형 영향분석)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260530-0645.json",
+      "environment": {
+        "target": "",
+        "url": "",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "4d88c2488fb312af5b2db7504573d8b9c8e3d047"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [],
+      "coveredSurfaces": [],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "신규 3유형(all-scope 평균 메모리/디스크 조건부 카운트/가정형 영향분석) 모두 라우팅·내용 정확. 단 Analyst RCA 요약 블록에서 마크다운 heading/hr/code-fence literal 노출 결함 관찰",
+          "nextAction": "요약 블록 렌더러의 heading/hr/code-fence 처리 및 아코디언 split 토큰 경계 보완 검토"
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "평균 메모리 44.3%(대시보드 44% 일치), 최고 api-was-dc1-01 64%, 디스크>=60% 2대(db-backup 68%/db-primary 63%) 모두 대시보드 실측치와 정합",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "api-was-dc1-01 장애 RCA에서 토폴로지 의존성(LB→API-WAS→DB/캐시) 추론 및 HAProxy 제외·graceful restart·수평확장 등 구체적 대응 제시",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "요약 블록 마크다운 렌더링 결함",
+          "path": "reports/qa/evidence/qa-20260530-summary-block-markdown-defect.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "대시보드 baseline 실측치",
+          "path": "reports/qa/evidence/qa-20260530-dashboard-baseline.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -37357,33 +37513,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 351,
-      "appropriateCount": 300,
+      "seenCount": 352,
+      "appropriateCount": 301,
       "partialCount": 51,
       "inappropriateCount": 0,
-      "improvementNeededCount": 69,
-      "lastRunId": "QA-20260530-0644",
-      "lastSeenAt": "2026-05-29T17:45:34.038Z",
+      "improvementNeededCount": 70,
+      "lastRunId": "QA-20260530-0645",
+      "lastSeenAt": "2026-05-30T00:20:52.444Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The release fixes a deterministic current-metric evidence routing gap and verifies the fix is deployed to Cloud Run.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "신규 3유형(all-scope 평균 메모리/디스크 조건부 카운트/가정형 영향분석) 모두 라우팅·내용 정확. 단 Analyst RCA 요약 블록에서 마크다운 heading/hr/code-fence literal 노출 결함 관찰",
+      "lastNextAction": "요약 블록 렌더러의 heading/hr/code-fence 처리 및 아코디언 split 토큰 경계 보완 검토"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 149,
-      "appropriateCount": 116,
+      "seenCount": 150,
+      "appropriateCount": 117,
       "partialCount": 33,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260530-0644",
-      "lastSeenAt": "2026-05-29T17:45:34.038Z",
+      "lastRunId": "QA-20260530-0645",
+      "lastSeenAt": "2026-05-30T00:20:52.444Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel /api/health, Cloud Run /health, revision metadata, protected /monitoring behavior, and usage checks were captured.",
+      "lastRationale": "api-was-dc1-01 장애 RCA에서 토폴로지 의존성(LB→API-WAS→DB/캐시) 추론 및 HAProxy 제외·graceful restart·수평확장 등 구체적 대응 제시",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -37442,16 +37598,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 78,
-      "appropriateCount": 56,
+      "seenCount": 79,
+      "appropriateCount": 57,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260527-0623",
-      "lastSeenAt": "2026-05-27T06:56:44.859Z",
+      "lastRunId": "QA-20260530-0645",
+      "lastSeenAt": "2026-05-30T00:20:52.444Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The P17 answer preserved metric direction and compared group averages from the same 15:50 KST data slot instead of returning an empty or single-group summary.",
+      "lastRationale": "평균 메모리 44.3%(대시보드 44% 일치), 최고 api-was-dc1-01 64%, 디스크>=60% 2대(db-backup 68%/db-primary 63%) 모두 대시보드 실측치와 정합",
       "lastNextAction": ""
     },
     "infra-reliability": {

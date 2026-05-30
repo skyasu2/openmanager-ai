@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-30 02:45:34 KST
+> Generated at: 2026-05-30 09:20:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 642 |
-| Total Runs (Counted) | 501 |
+| Total Recorded Runs | 643 |
+| Total Runs (Counted) | 502 |
 | Non-counted Runs | 141 |
-| Total Checks | 4413 |
-| Passed | 4212 |
+| Total Checks | 4416 |
+| Passed | 4215 |
 | Failed | 159 |
-| Completed Items | 736 |
+| Completed Items | 738 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 30 |
+| Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260529-0641 (2026-05-29T12:50:47.147Z) |
-| Latest Recorded Run | QA-20260530-0644 (2026-05-29T17:45:34.038Z) |
+| Last Counted Run | QA-20260530-0645 (2026-05-30T00:20:52.444Z) |
+| Latest Recorded Run | QA-20260530-0645 (2026-05-30T00:20:52.444Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,25 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260530-0644 (2026-05-29T17:45:34.038Z)
+Latest run: QA-20260530-0645 (2026-05-30T00:20:52.444Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | yes | 요약 블록 렌더러의 heading/hr/code-fence 처리 및 아코디언 split 토큰 경계 보완 검토 |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage checked after v8.12.79 production deploy: effective=19.2319 USD, billed=0.0000 USD, chargeCount=17052. |
-| cloud-run | cli | checked | normal | Cloud Run guardrails intact: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00585-kvp. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-28T17:45:34.038Z -> 2026-05-29T17:45:34.038Z (24h)
+- Window: 2026-05-29T00:20:52.444Z -> 2026-05-30T00:20:52.444Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -62,7 +60,7 @@ Latest run: QA-20260530-0644 (2026-05-29T17:45:34.038Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-28T17:45:34.038Z -> 2026-05-29T17:45:34.038Z (24h)
+- Window: 2026-05-29T00:20:52.444Z -> 2026-05-30T00:20:52.444Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,31 +71,30 @@ Latest run: QA-20260530-0644 (2026-05-29T17:45:34.038Z)
 
 ## Coverage (Latest Run)
 
-- Scope: smoke
-- Release-Facing: yes
-- Counts Toward Summary: no
-- Deployment: dpl_FzwcXdc1aYwfQGHerTJqFH3SP8ew / SHA dc08d19d
-- Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: Current main deployed through semver tag v8.12.79, GitLab tag deploy pipeline 2562464239 completed successfully, Vercel production /api/version reports 8.12.79 and commit dc08d19d15a7594fd4146407b3e00a42ee7224b1, Vercel production /api/health reports database/cache/ai connected, Cloud Run ai-engine /health reports version 8.12.79 and routesReady true, Cloud Run latestReadyRevision ai-engine-00585-kvp receives 100% traffic, Cloud Run unauthenticated /monitoring remains protected, P24 all-scope average metric routing fix is included in deployed release commit range, Cloud Run and Vercel usage/cost guardrails remain normal after deploy
-- Skipped Surfaces: Full conversational browser QA was not rerun because P24 was already covered by deterministic parser/evidence tests and this smoke run validated production propagation, Full dashboard visual matrix was not rerun; no frontend UI behavior changed in this release, Authenticated Cloud Run /monitoring admin query was not run; unauthenticated protection and /health were sufficient for this release smoke
+- Scope: targeted
+- Release-Facing: no
+- Counts Toward Summary: yes
+- Deployment: SHA 4d88c248
+- Covered Surfaces: -
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline v8.12.79 | [GitLab pipeline v8.12.79](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2562464239) | - |
-| monitoring | Cloud Run health | [Cloud Run health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-9b3nmj7vh-skyasus-projects.vercel.app/) | - |
+| general | Vercel URL | [Vercel URL](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.12.79 release smoke command evidence | `reports/qa/evidence/qa-20260530-v81279-release-smoke.txt` | - |
+| playwright-screenshot | 요약 블록 마크다운 렌더링 결함 | `reports/qa/evidence/qa-20260530-summary-block-markdown-defect.png` | - |
+| playwright-screenshot | 대시보드 baseline 실측치 | `reports/qa/evidence/qa-20260530-dashboard-baseline.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260530-0645)
+  next: 요약 블록 렌더러의 heading/hr/code-fence 처리 및 아코디언 split 토큰 경계 보완 검토
 
 ## Pending Improvements
 
@@ -109,15 +106,15 @@ Latest run: QA-20260530-0644 (2026-05-29T17:45:34.038Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Portfolio Deferral 30
-- Review classes: Verify Before Promotion 14, Future Product Expansion 5, Low-Priority Polish 8, Accepted No-Action 3
+- Reason categories: Portfolio Deferral 31
+- Review classes: Verify Before Promotion 14, Future Product Expansion 5, Low-Priority Polish 8, Accepted No-Action 4
 
 ### Review Classes
 
 - Verify Before Promotion 14: Potentially stale accepted debt. Re-run a targeted QA check before promoting it back to implementation work.
 - Future Product Expansion 5: Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.
 - Low-Priority Polish 8: Non-blocking answer, copy, layout, or evidence-label polish. Keep accepted unless it appears in a release-facing regression.
-- Accepted No-Action 3: Accepted no-fix item with no current trigger for implementation work.
+- Accepted No-Action 4: Accepted no-fix item with no current trigger for implementation work.
 
 ### Portfolio Deferral
 
@@ -181,23 +178,26 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] reporter-dashboard-threshold-unification: Reporter 영향 서버 기준 대시보드와 불일치 (seen 1회, last QA-20260522-0559)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] summary-block-markdown-heading-hr-code-fence: 핵심 요약 스트리밍 블록에서 마크다운 heading(###)/hr(---)/code-fence(```bash) 미렌더링 literal 노출 (seen 1회, last QA-20260530-0645)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] vision-ui-upload-e2e: Authenticated frontend image-upload UI E2E path (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 
 ## Completed Improvements
 
-- Total: 736 items completed (full list in qa-tracker.json)
+- Total: 738 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - ai-disk-threshold-conditional-count: 디스크 임계값 조건부 카운트 질의 정확 처리 (신규 강점) (last QA-20260530-0645)
+  - p24-all-scope-average-memory-variant-verify: all-scope 평균 라우팅 메모리 변형 production 검증 (last QA-20260530-0645)
   - p24-all-scope-average-metric-routing: 전체 서버 평균 CPU/디스크 같은 all-scope 평균 질의가 deterministic metric_current evidence로 라우팅됨 (last QA-20260530-0644)
   - q-new10-pronoun-resolution: Q5 '방금 분석한 서버' 컨텍스트 팔로업 오진 항목 정정 (last QA-20260529-0642)
   - multi-agent-data-source-history-threading: multi-agent 스트림 경로 createAgentDataSourceContext에 대화 히스토리 전달 (latent 갭 보완) (last QA-20260529-0641)
-  - q5-contextual-followup-label-clarity: 컨텍스트 팔로업 타깃이 동종 단일 타입일 때 '로드밸런서 N대' 대신 '지정 서버 N대'로 라벨링 (last QA-20260529-0641)
-  - ai-engine-cloud-build-buildkit-mount-compatibility: AI Engine Cloud Build default Docker builder compatibility (last QA-20260529-0638)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260530-0645 | 2026-05-30T00:20:52.444Z | targeted | no | yes | Vercel Playwright MCP 신규 질문 평가 - v8.12.79 (all-scope 평균/조건부 카운트/가정형 영향분석) | 3 | 2 | 0 | 0 | 1 | 1 |
 | QA-20260530-0644 | 2026-05-29T17:45:34.038Z | smoke | yes | no | GitLab production release smoke - v8.12.79 P24 all-scope average routing | 22 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260530-0643 | 2026-05-29T15:28:02.565Z | smoke | yes | no | GitLab production release smoke - v8.12.78 current main deployment | 20 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260529-0642 | 2026-05-29T13:55:43.521Z | targeted | no | no | QA metadata correction - close superseded Q5 pronoun-resolution item | 1 | 1 | 0 | 0 | 0 | 0 |
@@ -217,4 +217,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260528-0628 | 2026-05-27T23:33:40.324Z | targeted | yes | yes | Chrome DevTools MCP 18차 신규 질문 평가 — v8.12.65 P17/P18/P19a/stable ranking/group compare | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0627 | 2026-05-27T22:43:05.057Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.65 P19c/P21 trend filters | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260527-0626 | 2026-05-27T13:32:42.014Z | targeted | no | yes | Vercel Playwright MCP targeted recheck - v8.12.62 Q4 stable-server ranking | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260527-0625 | 2026-05-27T08:31:25.273Z | targeted | no | yes | Vercel Playwright MCP targeted recheck - v8.12.60 QA-0624 regressions | 6 | 3 | 0 | 0 | 0 | 0 |

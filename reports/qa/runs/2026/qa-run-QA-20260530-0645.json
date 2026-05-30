@@ -1,0 +1,126 @@
+{
+  "runId": "QA-20260530-0645",
+  "recordedAt": "2026-05-30T00:20:52.444Z",
+  "recordedAtKst": "2026-05-30 09:20:52 KST",
+  "runTitle": "Vercel Playwright MCP 신규 질문 평가 - v8.12.79 (all-scope 평균/조건부 카운트/가정형 영향분석)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "",
+    "url": "",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "4d88c2488fb312af5b2db7504573d8b9c8e3d047"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [],
+  "coveredSurfaces": [],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "신규 3유형(all-scope 평균 메모리/디스크 조건부 카운트/가정형 영향분석) 모두 라우팅·내용 정확. 단 Analyst RCA 요약 블록에서 마크다운 heading/hr/code-fence literal 노출 결함 관찰",
+      "nextAction": "요약 블록 렌더러의 heading/hr/code-fence 처리 및 아코디언 split 토큰 경계 보완 검토"
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "평균 메모리 44.3%(대시보드 44% 일치), 최고 api-was-dc1-01 64%, 디스크>=60% 2대(db-backup 68%/db-primary 63%) 모두 대시보드 실측치와 정합",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "api-was-dc1-01 장애 RCA에서 토폴로지 의존성(LB→API-WAS→DB/캐시) 추론 및 HAProxy 제외·graceful restart·수평확장 등 구체적 대응 제시",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "요약 블록 마크다운 렌더링 결함",
+      "path": "reports/qa/evidence/qa-20260530-summary-block-markdown-defect.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "대시보드 baseline 실측치",
+      "path": "reports/qa/evidence/qa-20260530-dashboard-baseline.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p24-all-scope-average-memory-variant-verify",
+      "title": "all-scope 평균 라우팅 메모리 변형 production 검증",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: 전체 서버 평균 메모리 질의 -> metric_current deterministic 경로 적중, 44.3%/최고64%/최저31.1% 정확 (P24 fix CPU 외 메모리 메트릭에서도 동작 확인)",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-disk-threshold-conditional-count",
+      "title": "디스크 임계값 조건부 카운트 질의 정확 처리 (신규 강점)",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: 디스크>=60% 서버 질의 -> 2대(db-mysql-dc1-backup 68%, db-mysql-dc1-primary 63%) 정확 카운트+나열, 대시보드 Top5와 일치",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "summary-block-markdown-heading-hr-code-fence",
+      "title": "핵심 요약 스트리밍 블록에서 마크다운 heading(###)/hr(---)/code-fence(```bash) 미렌더링 literal 노출",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: api-was-dc1-01 가정형 영향분석(Analyst) 응답 요약 블록에 ### 현황 요약 / --- / ```bash 가 raw 텍스트로 표시. 내용 정확, 렌더링만 결함. numbered-list-accordion-split 계열",
+      "note": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "신규 미탐색 질문 3유형 평가: (Q1) 전체 서버 평균 메모리 = PASS 정확 - P24 fix 메모리 변형 검증, (Q2) 디스크>=60% 조건부 카운트 = PASS 정확 신규강점, (Q3) api-was-dc1-01 가정형 영향분석 = 내용 PASS(Analyst RCA 우수)이나 응답 느림 + 요약블록 마크다운 렌더링 결함",
+    "최근 변경 분석: v8.12.79 P24 all-scope 평균(e9dfab31c), v8.12.78 multi-agent 대화 히스토리 threading(4057fc82c), 컨텍스트 팔로업 라벨 명확화(ef784e4d6) 확인"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
