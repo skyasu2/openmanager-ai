@@ -131,6 +131,42 @@ describe('normalizeAssistantMarkdown', () => {
     const table = '| a | b |\n|---|---|\n| 1 | 2 |';
     expect(normalizeAssistantMarkdown(table)).toBe(table);
   });
+
+  it('splits a line-leading horizontal rule glued to text', () => {
+    const normalized = normalizeAssistantMarkdown(
+      '서킷 브레이커 도입\n--- 결론: 즉시 스케일아웃'
+    );
+    // 줄 시작 "--- 결론:" 의 "---" 가 단독 라인이 되어야 한다.
+    expect(normalized).toMatch(/\n---\n/);
+    expect(normalized).toMatch(/\n결론: 즉시 스케일아웃/);
+  });
+
+  it('trims edge spaces inside bold delimiters', () => {
+    const normalized = normalizeAssistantMarkdown(
+      '**api-was-dc1-01 서버가 현재 **'
+    );
+    expect(normalized).toContain('**api-was-dc1-01 서버가 현재**');
+  });
+
+  it('preserves valid bold and internal spaces', () => {
+    expect(normalizeAssistantMarkdown('**api-was-dc1-01**')).toBe(
+      '**api-was-dc1-01**'
+    );
+    expect(normalizeAssistantMarkdown('**CPU 81% 초과**')).toBe(
+      '**CPU 81% 초과**'
+    );
+  });
+
+  it('removes empty bold artifacts', () => {
+    expect(normalizeAssistantMarkdown('제외하고,****로 트래픽')).toBe(
+      '제외하고,로 트래픽'
+    );
+  });
+
+  it('leaves a standalone horizontal rule untouched', () => {
+    const hr = '위 분석\n\n---\n\n아래 결론';
+    expect(normalizeAssistantMarkdown(hr)).toBe(hr);
+  });
 });
 
 describe('RenderMarkdownContent', () => {
